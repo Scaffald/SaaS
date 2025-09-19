@@ -1,31 +1,4 @@
-⚠️ **Please note**: Takeout is closed source for now. We've had a number of people create public repos on accident. Please be careful to keep the source private as per the license.
-
-# Tamagui's Takeout Starter
-
-A good but long tutorial showing building a real app using Tamagui Takeout can be seen on the [notjust.dev YouTube stream](https://www.youtube.com/watch?v=XbKkKXH-dfc).
-
-For a more edited, paid (but cheap) course covering all the basics of Tamagui, a few Tamagui users have said they found [this course by Simon very helpful](https://galaxies.dev/course/react-native-tamagui/1-1).
-
 ## Getting Started
-
-If you want to clone this starter, you can run
-
-```bash
-yarn create tamagui --template takeout-starter
-```
-
-the `yarn create tamagui --template takeout-starter` command has a requirement on `gh`
-
-`gh` setup:
-
-1. [gh install](https://cli.github.com/)
-1. `gh auth login`
-1. select ` https` from the menu
-1. authenticate
-
-Otherwise, ignore this section. If you're getting authentication issues with `yarn create tamagui`, clone the template (using `gh` or just `git`), cd into the project and run `yarn install`, and then `yarn setup`.
-
-To rename the project recommended way is to change the `yourprojectsname` in `apps/expo/app.config.js`. This will update the name in the Expo app and when building the native apps.
 
 If you're getting issues with the /android or /ios directories when setting up the starter, you can safely remove them and re-generate them using `yarn ios` and `yarn android`.
 
@@ -70,33 +43,9 @@ The following are the tested and supported versions of packages:
 
 Setup your environment variables in the `.env` file. See [`env.example`](.env.example) for the full list of environment variables.
 
-```bash
-# -- NEXT --
-NEXT_PUBLIC_URL=http://localhost:3000
-# Use NEXT_PUBLIC_URL=https://localhost:3000 if you're running next with --experimental-https
-NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
-NEXT_PUBLIC_SUPABASE_ANON_KEY=OBFUSCATED_KEY
-NEXT_PUBLIC_PROJECT_ID=OBFUSCATED_PROJECT_ID
+https://react-native-google-signin.github.io/docs/setting-up/expo
 
-# -- EXPO --
-# @see https://docs.expo.dev/guides/environment-variables/
-EXPO_PUBLIC_URL=http://localhost:3000
-# Use NEXT_PUBLIC_URL=https://localhost:3000 if you're running next with --experimental-https
-EXPO_PUBLIC_SUPABASE_URL=http://localhost:54321
-EXPO_PUBLIC_SUPABASE_ANON_KEY=OBFUSCATED_KEY
 
-# IMPORTANT: JWT Secret must be at least 32 characters long
-SUPABASE_AUTH_JWT_SECRET=super-secret-jwt-token-with-at-least-32-characters-long
-
-# -- GOOGLE SIGN IN --
-# Documentation: https://react-native-google-signin.github.io/docs/setting-up/expo
-GOOGLE_IOS_SCHEME=this-is-the-ios-scheme
-GOOGLE_IOS_CLIENT_ID=this-is-the-ios-client-id
-# Note: This is the web client ID for
-GOOGLE_WEB_CLIENT_ID=this-is-the-web-client-id
-# Android
-GOOGLE_SECRET=this-is-the-secret
-```
 
 ### Setting up iOS
 
@@ -128,8 +77,6 @@ Note that you don't need to do this if you've already cloned this using `create 
 To configure the project, `cd` into the root of the project and run `yarn setup`.
 
 ## Supabase Authentication and Database
-
-Takeout is designed for and works best with Supabase.
 
 We use Supabase Auth, Storage, Database, and Client Libraries.
 
@@ -190,8 +137,6 @@ These steps will create the necessary tables in your online Supabase project.
 <details>
   <summary>Self-hosting Supabase</summary>
 
-[Docker](https://www.docker.com) based workflow is recommended if your takeout project is using Supabase as a dependency.
-
 Please reference [Supabase's documentation](https://supabase.com/docs/guides/self-hosting/docker) for docker configuration instructions.
 
 ## </details>
@@ -200,7 +145,7 @@ Please reference [Supabase's documentation](https://supabase.com/docs/guides/sel
 
 > Note: If you don't want to setup locally - some users have a second Supabase project that they use for development.
 
-## Development of your Takeout App
+## Development
 
 ### Development scripts
 
@@ -352,7 +297,7 @@ The simplest way to run a native project. A iOS or Android physical device is ne
 - [Android](https://docs.expo.dev/workflow/android-studio-emulator/)
 - [iOS](https://docs.expo.dev/workflow/ios-simulator/)
 
-#### First-time Takeout Setup
+#### First-time Setup
 
 - run a build for either native platform `yarn ios` or `yarn android`
 
@@ -375,7 +320,7 @@ To run a [native build](https://docs.expo.dev/develop/development-builds/introdu
 
 ## Expo Go
 
-Expo Go works in Takeout, but you may need to replace the imports from `@tamagui/animations-moti` to `@tamagui/animations-react-native`.
+Expo Go works, but you may need to replace the imports from `@tamagui/animations-moti` to `@tamagui/animations-react-native`.
 
 ## Expo EAS Update
 
@@ -401,7 +346,7 @@ Redirect URL for email signup needs to be configured in Supabase Auth dashboard 
 
 Getting OAuth to work on web is as easy as it gets but on native, you will need to manually get the OAuth credentials, and then feed them to the Supabase session. See [this article](https://dev.to/fedorish/google-sign-in-using-supabase-and-react-native-expo-14jf) for more info on how to handle native OAuth with Supabase.
 
-For a detailed guide about Supabase on Takeout and all available script commands see [Supabase README](/supabase/README.md)
+For a detailed guide about Supabase and all available script commands see [Supabase README](/supabase/README.md)
 
 ### Protecting Pages on Web
 
@@ -527,7 +472,7 @@ This error is likely caused my not having Supabase setup correctly and running i
 
 - Where is the initial page that gets rendered on the Expo app?
 
-We recommend you familiarize yourself with how Expo Router handles routing on [their docs](https://docs.expo.dev/router/introduction/). In a fresh Takeout project, the initial page would be on `apps/expo/app/(tabs)/index.tsx`.
+We recommend you familiarize yourself with how Expo Router handles routing on [their docs](https://docs.expo.dev/router/introduction/). In a fresh project, the initial page would be on `apps/expo/app/(tabs)/index.tsx`.
 
 ## Troubleshooting
 

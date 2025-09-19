@@ -18,14 +18,14 @@ type Story = StoryObj<typeof TodoCard>
 
 export const Unchecked: Story = {
   args: {
-    label: 'Contribute to Tamagui',
+    label: 'Contribute',
     checked: false,
   },
 }
 
 export const Checked: Story = {
   args: {
-    label: 'Purchase Takeout',
+    label: 'Purchase',
     checked: true,
     theme: 'green_alt2',
   },
