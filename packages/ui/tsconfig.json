@@ -1,10 +1,18 @@
 {
   "extends": "../../tsconfig.base",
-  "include": ["src", "../app"],
+  "include": [
+    "src",
+    "../app",
+    "../app/package.json",
+    "../api/src",
+    "../api/package.json",
+    "../../package.json"
+  ],
   "compilerOptions": {
     "noEmit": true,
     "composite": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "plugins": []
   },
   "references": []
 }
