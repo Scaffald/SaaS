@@ -1,18 +1,20 @@
 {
   "expo": {
-    "name": "myapp-sb",
-    "slug": "myapp-sb",
-    "scheme": "myapp-sb",
+    "name": "scaffald-storybook",
+    "slug": "scaffald-storybook",
+    "scheme": "scaffald-storybook",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.acme.myapp-sb"
+      "bundleIdentifier": "com.scaffald.storybook"
     },
     "android": {
-      "package": "com.acme.myapp-sb"
+      "package": "com.scaffald.storybook"
     }
   }
 }

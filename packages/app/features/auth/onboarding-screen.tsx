@@ -30,7 +30,7 @@ const steps: OnboardingStepInfo[] = [
       <StepContent
         title="Deploy"
         icon={Rocket}
-        description="The Takeout starter is the best way to go from zero to deploy and target all platforms at the same time."
+        description="The starter is the best way to go from zero to deploy and target all platforms at the same time."
       />
     ),
   },
