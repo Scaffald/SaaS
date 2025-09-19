@@ -1,7 +1,11 @@
 {
   "name": "unistack",
   "private": true,
-  "workspaces": ["apps/*", "packages/*", "supabase"],
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "supabase"
+  ],
   "scripts": {
     "_with-env": "dotenv -e .env -c -- ",
     "ios": "cd apps/expo && yarn ios",
