@@ -1,4 +1,4 @@
-import { StorybookConfig } from '@storybook/react-native';
+import type { StorybookConfig } from '@storybook/react-native'
 
 const main: StorybookConfig = {
   stories: [
@@ -9,13 +9,10 @@ const main: StorybookConfig = {
       files: '**/*.stories.?(ts|tsx|js|jsx)',
     },
   ],
-  addons: [
-    { name: '@storybook/addon-ondevice-controls' },
-    '@storybook/addon-ondevice-actions',
-  ],
+  addons: [{ name: '@storybook/addon-ondevice-controls' }, '@storybook/addon-ondevice-actions'],
   reactNative: {
     playFn: false,
   },
-};
+}
 
-export default main;
+export default main

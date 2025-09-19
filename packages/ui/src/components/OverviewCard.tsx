@@ -36,8 +36,8 @@ export const OverviewCard = ({
                 badgeState === 'success'
                   ? 'green_alt1'
                   : badgeState === 'failure'
-                  ? 'red_alt1'
-                  : undefined
+                    ? 'red_alt1'
+                    : undefined
               }
             >
               <Button size="$2" disabled>

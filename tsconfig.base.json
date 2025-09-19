@@ -3,15 +3,9 @@
     "baseUrl": ".",
     "rootDir": ".",
     "paths": {
-      "@my/*": [
-        "packages/*"
-      ],
-      "app/*": [
-        "packages/app/*"
-      ],
-      "ui/*": [
-        "packages/ui/*"
-      ]
+      "@my/*": ["packages/*"],
+      "app/*": ["packages/app/*"],
+      "ui/*": ["packages/ui/*"]
     },
     "importHelpers": true,
     "allowJs": false,
@@ -35,21 +29,12 @@
     "removeComments": false,
     "strict": true,
     "skipLibCheck": true,
-    "typeRoots": [
-      "node_modules/@types",
-      "environment.d.ts"
-    ],
+    "typeRoots": ["node_modules/@types", "environment.d.ts"],
     "sourceMap": false,
     "target": "ESNext",
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "jsx": "react-jsx",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "resolveJsonModule": true,
     "plugins": [
       {
@@ -59,9 +44,7 @@
       }
     ]
   },
-  "exclude": [
-    "_"
-  ],
+  "exclude": ["_"],
   "typeAcquisition": {
     "enable": true
   }

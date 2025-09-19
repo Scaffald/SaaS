@@ -43,14 +43,7 @@
   },
   {
     "shape": "SYSTEM_FILE_TYPE",
-    "examples": [
-      "application",
-      "text",
-      "image",
-      "video",
-      "audio",
-      "font"
-    ]
+    "examples": ["application", "text", "image", "video", "audio", "font"]
   },
   {
     "shape": "SYSTEM_FILE_PATH",
@@ -364,13 +357,7 @@
   },
   {
     "shape": "INTERNET_HTTP_METHOD",
-    "examples": [
-      "POST",
-      "PATCH",
-      "PUT",
-      "DELETE",
-      "GET"
-    ]
+    "examples": ["POST", "PATCH", "PUT", "DELETE", "GET"]
   },
   {
     "shape": "INTERNET_DOMAIN_NAME",
@@ -483,9 +470,7 @@
   },
   {
     "shape": "IMAGE_URL",
-    "examples": [
-      "https://loremflickr.com/640/480"
-    ]
+    "examples": ["https://loremflickr.com/640/480"]
   },
   {
     "shape": "STREET_ADDRESS",
@@ -598,12 +583,7 @@
   },
   {
     "shape": "FINANCE_TRANSACTION_TYPE",
-    "examples": [
-      "invoice",
-      "payment",
-      "withdrawal",
-      "deposit"
-    ]
+    "examples": ["invoice", "payment", "withdrawal", "deposit"]
   },
   {
     "shape": "POST_BODY",
@@ -782,14 +762,7 @@
   },
   {
     "shape": "ROLE",
-    "examples": [
-      "Owner",
-      "Contributor",
-      "Admin",
-      "Developer",
-      "Editor",
-      "Viewer"
-    ]
+    "examples": ["Owner", "Contributor", "Admin", "Developer", "Editor", "Viewer"]
   },
   {
     "shape": "EMAIL",

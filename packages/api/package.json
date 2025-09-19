@@ -5,8 +5,8 @@
   "types": "./src",
   "private": true,
   "scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
     "check:type": "tsc --outDir /tmp",
     "check:type:watch": "yarn check:type -w",
     "check-circular-deps": "../../scripts/check-circular-deps.sh ./src/index.ts"
@@ -16,7 +16,6 @@
     "@supabase/auth-helpers-react": "^0.5.0",
     "@supabase/supabase-js": "^2.48.1",
     "@types/jsonwebtoken": "^9.0.5",
-    "eslint-config-custom": "*",
     "typescript": "~5.8.3"
   },
   "dependencies": {

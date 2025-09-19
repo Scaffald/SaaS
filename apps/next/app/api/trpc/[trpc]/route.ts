@@ -1,6 +1,6 @@
 import { appRouter, createTRPCContext } from '@my/api'
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
-import { ServerRuntime } from 'next'
+import type { ServerRuntime } from 'next'
 
 export const runtime: ServerRuntime = 'edge'
 

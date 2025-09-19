@@ -76,24 +76,14 @@ export const CookieConsentBanner = ({
           {...containerProps}
         >
           <Card elevate size="$4" padding="$4" gap="$3" {...cardProps}>
-            <XStack
-              gap="$4"
-              ai="flex-start"
-              flexWrap="wrap"
-              $gtSm={{ ai: 'center' }}
-            >
+            <XStack gap="$4" ai="flex-start" flexWrap="wrap" $gtSm={{ ai: 'center' }}>
               <YStack f={1} gap="$2" miw={220}>
                 <SizableText size="$6" fontWeight="700">
                   {title}
                 </SizableText>
                 {description ? description : defaultDescription(privacyPolicyUrl)}
               </YStack>
-              <YStack
-                gap="$2"
-                w="100%"
-                miw={220}
-                $gtSm={{ w: 'auto', ai: 'flex-end' }}
-              >
+              <YStack gap="$2" w="100%" miw={220} $gtSm={{ w: 'auto', ai: 'flex-end' }}>
                 <Button
                   variant="outlined"
                   size="$3"

@@ -71,7 +71,10 @@ export const OpportunityCard = ({ item }: OpportunityCardProps) => {
   )
 }
 
-const StatusPill = ({ children, tone = 'default' }: { children: ReactNode; tone?: OpportunityItem['statusTone'] }) => {
+const StatusPill = ({
+  children,
+  tone = 'default',
+}: { children: ReactNode; tone?: OpportunityItem['statusTone'] }) => {
   const palette = STATUS_TONES[tone ?? 'default']
   return (
     <XStack
@@ -91,7 +94,10 @@ const StatusPill = ({ children, tone = 'default' }: { children: ReactNode; tone?
   )
 }
 
-const STATUS_TONES: Record<'default' | 'success' | 'warning', { bg: string; border: string; text: string }> = {
+const STATUS_TONES: Record<
+  'default' | 'success' | 'warning',
+  { bg: string; border: string; text: string }
+> = {
   default: {
     bg: '$gray3',
     border: '$gray5',

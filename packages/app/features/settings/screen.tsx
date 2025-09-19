@@ -1,4 +1,13 @@
-import { Paragraph, ScrollView, Separator, Settings, YStack, isWeb, useCookieConsent, useMedia } from '@my/ui'
+import {
+  Paragraph,
+  ScrollView,
+  Separator,
+  Settings,
+  YStack,
+  isWeb,
+  useCookieConsent,
+  useMedia,
+} from '@my/ui'
 import { Book, Cog, Cookie, Info, Lock, LogOut, Mail, Moon, Twitter } from '@tamagui/lucide-icons'
 import { useThemeSetting } from 'app/provider/theme'
 import { redirect } from 'app/utils/redirect'
@@ -13,6 +22,7 @@ export const SettingsScreen = () => {
   const media = useMedia()
   const pathname = usePathname()
   const { openPreferences, consentState, isReady } = useCookieConsent()
+  const aboutLink = useLink({ href: '/about' })
 
   return (
     <YStack f={1}>
@@ -73,9 +83,7 @@ export const SettingsScreen = () => {
               </Settings.Item>
               {/* removing about from web since landing pages are more common on web - feel free to add back if needed */}
               {!isWeb && (
-                // isWeb is a constant so this isn't really a conditional hook
-                // eslint-disable-next-line react-hooks/rules-of-hooks
-                <Settings.Item icon={Info} {...useLink({ href: '/about' })} accentTheme="blue">
+                <Settings.Item icon={Info} {...aboutLink} accentTheme="blue">
                   About
                 </Settings.Item>
               )}

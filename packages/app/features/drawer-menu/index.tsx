@@ -229,11 +229,17 @@ type DrawerNavItemWrapperProps = {
   collapsed: boolean
 }
 
-const DrawerNavItemWrapper = ({ item, pathname, navigation, collapsed }: DrawerNavItemWrapperProps) => {
+const DrawerNavItemWrapper = ({
+  item,
+  pathname,
+  navigation,
+  collapsed,
+}: DrawerNavItemWrapperProps) => {
   const link = useLink({ href: item.href })
-  const isActive = item.href === '/'
-    ? pathname === '/' || pathname === '/index'
-    : pathname === item.href || pathname.startsWith(`${item.href}/`)
+  const isActive =
+    item.href === '/'
+      ? pathname === '/' || pathname === '/index'
+      : pathname === item.href || pathname.startsWith(`${item.href}/`)
 
   const handlePress = (event: GestureResponderEvent) => {
     if (item.disabled) return
@@ -242,12 +248,7 @@ const DrawerNavItemWrapper = ({ item, pathname, navigation, collapsed }: DrawerN
   }
 
   return (
-    <DrawerNavItem
-      item={item}
-      isActive={isActive}
-      onNavigate={handlePress}
-      collapsed={collapsed}
-    />
+    <DrawerNavItem item={item} isActive={isActive} onNavigate={handlePress} collapsed={collapsed} />
   )
 }
 
@@ -297,13 +298,7 @@ export const DrawerMenu = (props: DrawerContentComponentProps) => {
     >
       <YStack f={1} gap="$5" px="$4">
         <Theme name="surface2">
-          <YStack
-            backgroundColor="$color3"
-            borderRadius="$10"
-            px="$4"
-            py="$4"
-            gap="$4"
-          >
+          <YStack backgroundColor="$color3" borderRadius="$10" px="$4" py="$4" gap="$4">
             <XStack alignItems="center" gap="$3">
               <XStack
                 width="$4.5"
@@ -326,12 +321,7 @@ export const DrawerMenu = (props: DrawerContentComponentProps) => {
                 </YStack>
               )}
               {!collapsed && (
-                <Button
-                  themeInverse
-                  size="$2"
-                  px="$3"
-                  onPress={updateProfile}
-                >
+                <Button themeInverse size="$2" px="$3" onPress={updateProfile}>
                   Refresh
                 </Button>
               )}

@@ -5,7 +5,7 @@ import { Drawer } from 'expo-router/drawer'
 export default function Layout() {
   const media = useMedia()
   const tokens = getTokens()
-  const drawerWidth = media.gtSm ? tokens.size['$20'].val : tokens.size['$10'].val
+  const drawerWidth = media.gtSm ? tokens.size.$20.val : tokens.size.$10.val
 
   return (
     <Drawer

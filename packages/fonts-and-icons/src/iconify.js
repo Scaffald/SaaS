@@ -2,8 +2,8 @@ import axios from 'axios'
 import { ensureDir, ensureFile } from 'fs-extra'
 import { existsSync, rmSync, mkdirSync, writeFileSync, appendFileSync } from 'node:fs'
 import path, { dirname, join } from 'node:path'
+import { spawnSync } from 'node:child_process'
 import { pascalCase } from 'change-case'
-import prettier from 'prettier'
 import { transform } from '@svgr/core'
 import { fileURLToPath } from 'node:url'
 import { throttleAll } from 'promise-throttle-all'
@@ -223,7 +223,7 @@ async function transformSvgr(svg, componentName) {
       exportType: 'named',
       // ref: true,
       memo: true,
-      plugins: ['@svgr/plugin-svgo', '@svgr/plugin-jsx', '@svgr/plugin-prettier'],
+      plugins: ['@svgr/plugin-svgo', '@svgr/plugin-jsx'],
     },
     { componentName }
   )
@@ -234,7 +234,7 @@ async function transformSvgr(svg, componentName) {
   transformedIcon = transformedIcon.replace('Svg, {', '{ Svg,')
 
   transformedIcon =
-    `/* eslint-disable @typescript-eslint/no-explicit-any */\nimport { themed } from "@tamagui/helpers-icon";\nimport type { IconProps } from "@tamagui/helpers-icon";\n${transformedIcon}`
+    `/* biome-ignore lint/suspicious/noExplicitAny: generated icons rely on any props */\nimport { themed } from "@tamagui/helpers-icon";\nimport type { IconProps } from "@tamagui/helpers-icon";\n${transformedIcon}`
       .replace(/props: SvgProps/g, '_props: any')
       .replace(
         /\) => \(((.|\n)*)\);\nconst Memo = memo/g,
@@ -258,19 +258,25 @@ const Memo = memo`
       .replace('</Svg>\n)', '</Svg>\n}')
       .replace('<Svg', 'return <Svg')
 
-  try {
-    const setTransformedIcon = prettier.format(transformedIcon, {
-      singleQuote: true,
-      trailingComma: 'es5',
-      arrowParens: 'always',
-      parser: 'typescript',
-      semi: false,
-    })
-    transformedIcon = setTransformedIcon
-  } catch (e) {
-    console.log('error formatting:', e)
+  return formatWithBiome(transformedIcon, `${componentName}.tsx`)
+}
+
+function formatWithBiome(source, fileName) {
+  const result = spawnSync('biome', ['format', '--stdin-file-path', fileName], {
+    input: source,
+    encoding: 'utf8',
+    stdio: ['pipe', 'pipe', 'pipe'],
+  })
+
+  if (result.status === 0 && typeof result.stdout === 'string' && result.stdout.length > 0) {
+    return result.stdout
   }
-  return transformedIcon
+
+  if (result.stderr) {
+    console.warn('Biome formatting failed:', result.stderr)
+  }
+
+  return source
 }
 
 export default main

@@ -37,7 +37,11 @@ const storageAdapter: CookieConsentStorage = {
 
 export const CookieConsentProvider = ({ children }: { children: ReactNode }) => {
   return (
-    <UICookieConsentProvider storage={storageAdapter} storageKey={STORAGE_KEY} policyVersion={POLICY_VERSION}>
+    <UICookieConsentProvider
+      storage={storageAdapter}
+      storageKey={STORAGE_KEY}
+      policyVersion={POLICY_VERSION}
+    >
       {children}
       <CookieConsentBanner />
       <CookiePreferencesDialog />

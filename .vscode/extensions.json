@@ -1,6 +1,6 @@
 {
   "recommendations": [
-    "dbaeumer.vscode-eslint",
+    "biomejs.biome",
     "expo.vscode-expo-tools",
     "ms-azuretools.vscode-docker",
     "yoavbls.pretty-ts-errors"

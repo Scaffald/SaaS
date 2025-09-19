@@ -7,6 +7,8 @@ export type LegalLayoutProps = {
 }
 
 export const LegalLayout = ({ children }: LegalLayoutProps) => {
+  const homeLink = useLink({ href: '/' })
+
   return (
     <YStack f={1}>
       <YStack
@@ -24,16 +26,7 @@ export const LegalLayout = ({ children }: LegalLayoutProps) => {
         <YStack maw={800} f={1}>
           {isWeb && (
             <Theme>
-              <Button
-                chromeless
-                mt="$4"
-                ml="$4"
-                als="flex-start"
-                // isWeb is a constant so this isn't really a conditional hook
-                // eslint-disable-next-line react-hooks/rules-of-hooks
-                {...useLink({ href: '/' })}
-                icon={ChevronLeft}
-              >
+              <Button chromeless mt="$4" ml="$4" als="flex-start" {...homeLink} icon={ChevronLeft}>
                 Go Home
               </Button>
             </Theme>

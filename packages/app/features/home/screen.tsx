@@ -1,17 +1,5 @@
-import {
-  Button,
-  FullscreenSpinner,
-  ScrollView,
-  View,
-  XStack,
-  YStack,
-  isWeb,
-} from '@my/ui'
-import {
-  ArrowRight,
-  Handshake,
-  Megaphone,
-} from '@tamagui/lucide-icons'
+import { Button, FullscreenSpinner, ScrollView, View, XStack, YStack, isWeb } from '@my/ui'
+import { ArrowRight, Handshake, Megaphone } from '@tamagui/lucide-icons'
 
 import { useUser } from 'app/utils/useUser'
 
@@ -170,19 +158,22 @@ const NEWS_ARTICLES = [
     id: 'article-1',
     title: 'Company cited for housing workers in unsafe living conditions',
     excerpt: 'Safety investigators found multiple violations at a temporary construction camp.',
-    imageUrl: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=600&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=600&q=80',
   },
   {
     id: 'article-2',
     title: 'Construction hiring in “wait-and-see” mode amid rate uncertainty',
     excerpt: 'Leaders expect a steady pipeline of infrastructure work through 2025.',
-    imageUrl: 'https://images.unsplash.com/photo-1600585154340-0ef3c08bb8e1?auto=format&fit=crop&w=600&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1600585154340-0ef3c08bb8e1?auto=format&fit=crop&w=600&q=80',
   },
   {
     id: 'article-3',
     title: 'Worker rescued from pit at Port Richmond construction site',
     excerpt: 'Local emergency crews highlight the importance of jobsite preparedness.',
-    imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80',
+    imageUrl:
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80',
   },
 ]
 
@@ -190,7 +181,8 @@ const RESOURCES = [
   {
     id: 'resource-1',
     title: 'How To Get Into The Construction Industry',
-    description: 'Practical steps to prepare for your first job on site and stand out in interviews.',
+    description:
+      'Practical steps to prepare for your first job on site and stand out in interviews.',
   },
   {
     id: 'resource-2',

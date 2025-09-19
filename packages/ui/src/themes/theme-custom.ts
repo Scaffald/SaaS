@@ -1,8 +1,34 @@
 import { createThemes, defaultComponentThemes } from '@tamagui/theme-builder'
 import * as Colors from '@tamagui/colors'
 
-const darkPalette = ['hsla(216, 16%, 9%, 1)','hsla(216, 16%, 14%, 1)','hsla(216, 16%, 18%, 1)','hsla(216, 16%, 23%, 1)','hsla(216, 16%, 27%, 1)','hsla(216, 16%, 32%, 1)','hsla(216, 16%, 36%, 1)','hsla(216, 16%, 41%, 1)','hsla(216, 16%, 45%, 1)','hsla(216, 16%, 50%, 1)','hsla(0, 15%, 93%, 1)','hsla(0, 15%, 99%, 1)']
-const lightPalette = ['hsla(216, 16%, 89%, 1)','hsla(216, 16%, 85%, 1)','hsla(216, 16%, 80%, 1)','hsla(216, 16%, 76%, 1)','hsla(216, 16%, 72%, 1)','hsla(216, 16%, 67%, 1)','hsla(216, 16%, 63%, 1)','hsla(216, 16%, 59%, 1)','hsla(216, 16%, 54%, 1)','hsla(216, 16%, 50%, 1)','hsla(0, 15%, 15%, 1)','hsla(0, 15%, 1%, 1)']
+const darkPalette = [
+  'hsla(216, 16%, 9%, 1)',
+  'hsla(216, 16%, 14%, 1)',
+  'hsla(216, 16%, 18%, 1)',
+  'hsla(216, 16%, 23%, 1)',
+  'hsla(216, 16%, 27%, 1)',
+  'hsla(216, 16%, 32%, 1)',
+  'hsla(216, 16%, 36%, 1)',
+  'hsla(216, 16%, 41%, 1)',
+  'hsla(216, 16%, 45%, 1)',
+  'hsla(216, 16%, 50%, 1)',
+  'hsla(0, 15%, 93%, 1)',
+  'hsla(0, 15%, 99%, 1)',
+]
+const lightPalette = [
+  'hsla(216, 16%, 89%, 1)',
+  'hsla(216, 16%, 85%, 1)',
+  'hsla(216, 16%, 80%, 1)',
+  'hsla(216, 16%, 76%, 1)',
+  'hsla(216, 16%, 72%, 1)',
+  'hsla(216, 16%, 67%, 1)',
+  'hsla(216, 16%, 63%, 1)',
+  'hsla(216, 16%, 59%, 1)',
+  'hsla(216, 16%, 54%, 1)',
+  'hsla(216, 16%, 50%, 1)',
+  'hsla(0, 15%, 15%, 1)',
+  'hsla(0, 15%, 1%, 1)',
+]
 
 const lightShadows = {
   shadow1: 'rgba(0,0,0,0.04)',
@@ -53,8 +79,34 @@ const builtThemes = createThemes({
 
   accent: {
     palette: {
-      dark: ['hsla(237, 29%, 45%, 1)','hsla(237, 29%, 47%, 1)','hsla(237, 29%, 48%, 1)','hsla(237, 29%, 50%, 1)','hsla(237, 29%, 52%, 1)','hsla(237, 29%, 53%, 1)','hsla(237, 29%, 55%, 1)','hsla(237, 29%, 57%, 1)','hsla(237, 29%, 58%, 1)','hsla(237, 29%, 60%, 1)','hsla(250, 50%, 90%, 1)','hsla(250, 50%, 95%, 1)'],
-      light: ['hsla(237, 29%, 41%, 1)','hsla(237, 29%, 44%, 1)','hsla(237, 29%, 46%, 1)','hsla(237, 29%, 49%, 1)','hsla(237, 29%, 52%, 1)','hsla(237, 29%, 54%, 1)','hsla(237, 29%, 57%, 1)','hsla(237, 29%, 60%, 1)','hsla(237, 29%, 62%, 1)','hsla(237, 29%, 65%, 1)','hsla(250, 50%, 95%, 1)','hsla(250, 50%, 95%, 1)'],
+      dark: [
+        'hsla(237, 29%, 45%, 1)',
+        'hsla(237, 29%, 47%, 1)',
+        'hsla(237, 29%, 48%, 1)',
+        'hsla(237, 29%, 50%, 1)',
+        'hsla(237, 29%, 52%, 1)',
+        'hsla(237, 29%, 53%, 1)',
+        'hsla(237, 29%, 55%, 1)',
+        'hsla(237, 29%, 57%, 1)',
+        'hsla(237, 29%, 58%, 1)',
+        'hsla(237, 29%, 60%, 1)',
+        'hsla(250, 50%, 90%, 1)',
+        'hsla(250, 50%, 95%, 1)',
+      ],
+      light: [
+        'hsla(237, 29%, 41%, 1)',
+        'hsla(237, 29%, 44%, 1)',
+        'hsla(237, 29%, 46%, 1)',
+        'hsla(237, 29%, 49%, 1)',
+        'hsla(237, 29%, 52%, 1)',
+        'hsla(237, 29%, 54%, 1)',
+        'hsla(237, 29%, 57%, 1)',
+        'hsla(237, 29%, 60%, 1)',
+        'hsla(237, 29%, 62%, 1)',
+        'hsla(237, 29%, 65%, 1)',
+        'hsla(250, 50%, 95%, 1)',
+        'hsla(250, 50%, 95%, 1)',
+      ],
     },
   },
 
@@ -110,7 +162,6 @@ export type Themes = typeof builtThemes
 // long as you are using the Vite, Next, Webpack plugins this should just work,
 // but if not you can just export builtThemes directly as themes:
 export const themes: Themes =
-  process.env.TAMAGUI_ENVIRONMENT === 'client' &&
-  process.env.NODE_ENV === 'production'
+  process.env.TAMAGUI_ENVIRONMENT === 'client' && process.env.NODE_ENV === 'production'
     ? ({} as any)
     : (builtThemes as any)

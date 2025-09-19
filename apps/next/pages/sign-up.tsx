@@ -2,7 +2,7 @@ import { AuthLayout } from 'app/features/auth/layout.web'
 import { SignUpScreen } from 'app/features/auth/sign-up-screen'
 import Head from 'next/head'
 
-import { NextPageWithLayout } from './_app'
+import type { NextPageWithLayout } from './_app'
 
 const Page: NextPageWithLayout = () => (
   <>

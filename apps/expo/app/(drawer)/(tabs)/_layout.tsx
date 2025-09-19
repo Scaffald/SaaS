@@ -72,7 +72,7 @@ export default function Layout() {
           options={{
             headerShown: false,
             title: 'Home',
-            tabBarIcon: ({ size, color, focused }) => (
+            tabBarIcon: ({ size, focused }) => (
               <Home color={focused ? '$color12' : '$color10'} size={size} strokeWidth={2} />
             ),
           }}
@@ -84,7 +84,7 @@ export default function Layout() {
             headerShown: false,
             title: 'Profile',
             tabBarLabel: 'Profile',
-            tabBarIcon: ({ size, color, focused }) => (
+            tabBarIcon: ({ size, focused }) => (
               <User color={focused ? '$color12' : '$color10'} size={size} strokeWidth={2} />
             ),
           }}
