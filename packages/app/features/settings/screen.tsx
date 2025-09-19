@@ -1,5 +1,5 @@
-import { Paragraph, ScrollView, Separator, Settings, YStack, isWeb, useMedia } from '@my/ui'
-import { Book, Cog, Info, Lock, LogOut, Mail, Moon, Twitter } from '@tamagui/lucide-icons'
+import { Paragraph, ScrollView, Separator, Settings, YStack, isWeb, useCookieConsent, useMedia } from '@my/ui'
+import { Book, Cog, Cookie, Info, Lock, LogOut, Mail, Moon, Twitter } from '@tamagui/lucide-icons'
 import { useThemeSetting } from 'app/provider/theme'
 import { redirect } from 'app/utils/redirect'
 import { useSupabase } from 'app/utils/supabase/useSupabase'
@@ -12,6 +12,7 @@ import packageJson from '../../package.json'
 export const SettingsScreen = () => {
   const media = useMedia()
   const pathname = usePathname()
+  const { openPreferences, consentState, isReady } = useCookieConsent()
 
   return (
     <YStack f={1}>
@@ -61,6 +62,14 @@ export const SettingsScreen = () => {
                 accentTheme="purple"
               >
                 Terms Of Service
+              </Settings.Item>
+              <Settings.Item
+                icon={Cookie}
+                accentTheme="purple"
+                onPress={isReady ? openPreferences : undefined}
+                rightLabel={consentState ? 'Updated' : 'Review'}
+              >
+                Manage Cookies
               </Settings.Item>
               {/* removing about from web since landing pages are more common on web - feel free to add back if needed */}
               {!isWeb && (

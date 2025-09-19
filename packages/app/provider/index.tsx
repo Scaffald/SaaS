@@ -4,6 +4,7 @@ import { GlobalStoreProvider } from 'app/utils/global-store'
 import React from 'react'
 
 import { AuthProvider } from './auth'
+import { CookieConsentProvider } from './cookie-consent'
 import { QueryClientProvider } from './react-query'
 import { SafeAreaProvider } from './safe-area'
 import { TamaguiProvider } from './tamagui'
@@ -45,6 +46,7 @@ const Providers = compose([
   UniversalThemeProvider,
   SafeAreaProvider,
   TamaguiProvider,
+  CookieConsentProvider,
   ToastProvider,
   QueryClientProvider,
   GlobalStoreProvider,
