@@ -143,7 +143,11 @@ const sanitiseSelections = (
   const next: CookieConsentSelections = {}
   categories.forEach((category) => {
     const existing = selections[category.id]
-    next[category.id] = category.required ? true : typeof existing === 'boolean' ? existing : defaults[category.id]
+    next[category.id] = category.required
+      ? true
+      : typeof existing === 'boolean'
+        ? existing
+        : defaults[category.id]
   })
   return next
 }
@@ -158,7 +162,9 @@ export const CookieConsentProvider = ({
   onLoad,
 }: CookieConsentProviderProps) => {
   const categories = useMemo(() => normaliseCategories(categoriesProp), [categoriesProp])
-  const [selections, setSelections] = useState<CookieConsentSelections>(() => buildSelections(categories))
+  const [selections, setSelections] = useState<CookieConsentSelections>(() =>
+    buildSelections(categories)
+  )
   const [consentState, setConsentState] = useState<CookieConsentState | null>(null)
   const [isReady, setIsReady] = useState(false)
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false)

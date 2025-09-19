@@ -10,15 +10,7 @@ export const ProfileLayout = () => {
   const name = profile?.name ?? 'No Name'
 
   return (
-    <YStack
-      f={1}
-      maw={600}
-      mx="auto"
-      w="100%"
-      gap="$5"
-      $sm={{ px: '$3' }}
-      px="$4"
-    >
+    <YStack f={1} maw={600} mx="auto" w="100%" gap="$5" $sm={{ px: '$3' }} px="$4">
       <Settings>
         <Settings.Items>
           <Settings.Group>

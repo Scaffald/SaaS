@@ -243,12 +243,8 @@
           "isRequired": false,
           "kind": "object",
           "relationName": "achievementsTousers",
-          "relationFromFields": [
-            "profile_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["profile_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -259,9 +255,7 @@
       "uniqueConstraints": [
         {
           "name": "achievements_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         }
       ]
@@ -345,9 +339,7 @@
       "uniqueConstraints": [
         {
           "name": "audit_log_entries_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         }
       ]
@@ -489,12 +481,8 @@
           "isRequired": false,
           "kind": "object",
           "relationName": "bucketsTousers",
-          "relationFromFields": [
-            "owner"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["owner"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -519,16 +507,12 @@
       "uniqueConstraints": [
         {
           "name": "buckets_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         },
         {
           "name": "bname",
-          "fields": [
-            "name"
-          ],
+          "fields": ["name"],
           "nullNotDistinct": false
         }
       ]
@@ -612,9 +596,7 @@
       "uniqueConstraints": [
         {
           "name": "categories_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         }
       ]
@@ -740,9 +722,7 @@
       "uniqueConstraints": [
         {
           "name": "events_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         }
       ]
@@ -938,9 +918,7 @@
       "uniqueConstraints": [
         {
           "name": "flow_state_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         }
       ]
@@ -1028,9 +1006,7 @@
       "uniqueConstraints": [
         {
           "name": "hooks_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         }
       ]
@@ -1268,12 +1244,8 @@
           "isRequired": true,
           "kind": "object",
           "relationName": "identitiesTousers",
-          "relationFromFields": [
-            "user_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["user_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -1284,17 +1256,12 @@
       "uniqueConstraints": [
         {
           "name": "identities_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         },
         {
           "name": "identities_provider_id_provider_unique",
-          "fields": [
-            "provider",
-            "provider_id"
-          ],
+          "fields": ["provider", "provider_id"],
           "nullNotDistinct": false
         }
       ]
@@ -1338,12 +1305,8 @@
           "isRequired": true,
           "kind": "object",
           "relationName": "installsTousers",
-          "relationFromFields": [
-            "user_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["user_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -1354,9 +1317,7 @@
       "uniqueConstraints": [
         {
           "name": "installs_pkey",
-          "fields": [
-            "user_id"
-          ],
+          "fields": ["user_id"],
           "nullNotDistinct": false
         }
       ]
@@ -1440,9 +1401,7 @@
       "uniqueConstraints": [
         {
           "name": "instances_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         }
       ]
@@ -1658,12 +1617,8 @@
           "isRequired": false,
           "kind": "object",
           "relationName": "keyTokey",
-          "relationFromFields": [
-            "parent_key"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["parent_key"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -1702,25 +1657,17 @@
       "uniqueConstraints": [
         {
           "name": "key_key_id_key_context_key_type_idx",
-          "fields": [
-            "key_context",
-            "key_id",
-            "key_type"
-          ],
+          "fields": ["key_context", "key_id", "key_type"],
           "nullNotDistinct": false
         },
         {
           "name": "key_status_idx1",
-          "fields": [
-            "status"
-          ],
+          "fields": ["status"],
           "nullNotDistinct": false
         },
         {
           "name": "pgsodium_key_unique_name",
-          "fields": [
-            "name"
-          ],
+          "fields": ["name"],
           "nullNotDistinct": false
         }
       ]
@@ -1806,12 +1753,8 @@
           "isRequired": true,
           "kind": "object",
           "relationName": "mfa_amr_claimsTosessions",
-          "relationFromFields": [
-            "session_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["session_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -1822,17 +1765,12 @@
       "uniqueConstraints": [
         {
           "name": "amr_id_pk",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         },
         {
           "name": "mfa_amr_claims_session_id_authentication_method_pkey",
-          "fields": [
-            "authentication_method",
-            "session_id"
-          ],
+          "fields": ["authentication_method", "session_id"],
           "nullNotDistinct": false
         }
       ]
@@ -1918,12 +1856,8 @@
           "isRequired": true,
           "kind": "object",
           "relationName": "mfa_challengesTomfa_factors",
-          "relationFromFields": [
-            "factor_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["factor_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -1934,9 +1868,7 @@
       "uniqueConstraints": [
         {
           "name": "mfa_challenges_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         }
       ]
@@ -2064,12 +1996,8 @@
           "isRequired": true,
           "kind": "object",
           "relationName": "mfa_factorsTousers",
-          "relationFromFields": [
-            "user_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["user_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -2094,17 +2022,12 @@
       "uniqueConstraints": [
         {
           "name": "mfa_factors_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         },
         {
           "name": "mfa_factors_user_friendly_name_unique",
-          "fields": [
-            "friendly_name",
-            "user_id"
-          ],
+          "fields": ["friendly_name", "user_id"],
           "nullNotDistinct": false
         }
       ]
@@ -2174,16 +2097,12 @@
       "uniqueConstraints": [
         {
           "name": "migrations_name_key",
-          "fields": [
-            "name"
-          ],
+          "fields": ["name"],
           "nullNotDistinct": false
         },
         {
           "name": "migrations_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         }
       ]
@@ -2225,9 +2144,7 @@
       "uniqueConstraints": [
         {
           "name": "migrations_pkey",
-          "fields": [
-            "version"
-          ],
+          "fields": ["version"],
           "nullNotDistinct": false
         }
       ]
@@ -2383,12 +2300,8 @@
           "isRequired": false,
           "kind": "object",
           "relationName": "objectsTobuckets",
-          "relationFromFields": [
-            "bucket_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["bucket_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -2399,17 +2312,12 @@
       "uniqueConstraints": [
         {
           "name": "objects_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         },
         {
           "name": "bucketid_objname",
-          "fields": [
-            "bucket_id",
-            "name"
-          ],
+          "fields": ["bucket_id", "name"],
           "nullNotDistinct": false
         }
       ]
@@ -2537,12 +2445,8 @@
           "isRequired": false,
           "kind": "object",
           "relationName": "postsTousers",
-          "relationFromFields": [
-            "profile_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["profile_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -2555,12 +2459,8 @@
           "isRequired": false,
           "kind": "object",
           "relationName": "postsTocategories",
-          "relationFromFields": [
-            "category_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["category_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -2571,9 +2471,7 @@
       "uniqueConstraints": [
         {
           "name": "posts_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         }
       ]
@@ -2645,12 +2543,8 @@
           "isRequired": true,
           "kind": "object",
           "relationName": "profilesTousers",
-          "relationFromFields": [
-            "id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -2661,9 +2555,7 @@
       "uniqueConstraints": [
         {
           "name": "profiles_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         }
       ]
@@ -2833,12 +2725,8 @@
           "isRequired": false,
           "kind": "object",
           "relationName": "projectsTousers",
-          "relationFromFields": [
-            "profile_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["profile_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -2849,9 +2737,7 @@
       "uniqueConstraints": [
         {
           "name": "projects_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         }
       ]
@@ -2937,12 +2823,8 @@
           "isRequired": false,
           "kind": "object",
           "relationName": "referrals_referred_idTousers",
-          "relationFromFields": [
-            "referred_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["referred_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -2955,12 +2837,8 @@
           "isRequired": false,
           "kind": "object",
           "relationName": "referrals_referrer_idTousers",
-          "relationFromFields": [
-            "referrer_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["referrer_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -2971,9 +2849,7 @@
       "uniqueConstraints": [
         {
           "name": "referrals_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         }
       ]
@@ -3119,12 +2995,8 @@
           "isRequired": false,
           "kind": "object",
           "relationName": "refresh_tokensTosessions",
-          "relationFromFields": [
-            "session_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["session_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -3135,16 +3007,12 @@
       "uniqueConstraints": [
         {
           "name": "refresh_tokens_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         },
         {
           "name": "refresh_tokens_token_unique",
-          "fields": [
-            "token"
-          ],
+          "fields": ["token"],
           "nullNotDistinct": false
         }
       ]
@@ -3286,12 +3154,8 @@
           "isRequired": true,
           "kind": "object",
           "relationName": "saml_providersTosso_providers",
-          "relationFromFields": [
-            "sso_provider_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["sso_provider_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -3302,16 +3166,12 @@
       "uniqueConstraints": [
         {
           "name": "saml_providers_entity_id_key",
-          "fields": [
-            "entity_id"
-          ],
+          "fields": ["entity_id"],
           "nullNotDistinct": false
         },
         {
           "name": "saml_providers_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         }
       ]
@@ -3439,12 +3299,8 @@
           "isRequired": false,
           "kind": "object",
           "relationName": "saml_relay_statesToflow_state",
-          "relationFromFields": [
-            "flow_state_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["flow_state_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -3457,12 +3313,8 @@
           "isRequired": true,
           "kind": "object",
           "relationName": "saml_relay_statesTosso_providers",
-          "relationFromFields": [
-            "sso_provider_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["sso_provider_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -3473,9 +3325,7 @@
       "uniqueConstraints": [
         {
           "name": "saml_relay_states_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         }
       ]
@@ -3503,9 +3353,7 @@
       "uniqueConstraints": [
         {
           "name": "schema_migrations_pkey",
-          "fields": [
-            "version"
-          ],
+          "fields": ["version"],
           "nullNotDistinct": false
         }
       ]
@@ -3561,9 +3409,7 @@
       "uniqueConstraints": [
         {
           "name": "schema_migrations_pkey",
-          "fields": [
-            "version"
-          ],
+          "fields": ["version"],
           "nullNotDistinct": false
         }
       ]
@@ -3691,12 +3537,8 @@
           "isRequired": false,
           "kind": "object",
           "relationName": "secretsTokey",
-          "relationFromFields": [
-            "key_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["key_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -3707,9 +3549,7 @@
       "uniqueConstraints": [
         {
           "name": "secrets_name_idx",
-          "fields": [
-            "name"
-          ],
+          "fields": ["name"],
           "nullNotDistinct": false
         }
       ]
@@ -3879,12 +3719,8 @@
           "isRequired": true,
           "kind": "object",
           "relationName": "sessionsTousers",
-          "relationFromFields": [
-            "user_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["user_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -3923,9 +3759,7 @@
       "uniqueConstraints": [
         {
           "name": "sessions_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         }
       ]
@@ -4011,12 +3845,8 @@
           "isRequired": true,
           "kind": "object",
           "relationName": "sso_domainsTosso_providers",
-          "relationFromFields": [
-            "sso_provider_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["sso_provider_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -4027,9 +3857,7 @@
       "uniqueConstraints": [
         {
           "name": "sso_domains_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         }
       ]
@@ -4141,9 +3969,7 @@
       "uniqueConstraints": [
         {
           "name": "sso_providers_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         }
       ]
@@ -4257,12 +4083,8 @@
           "isRequired": false,
           "kind": "object",
           "relationName": "user_statsTousers",
-          "relationFromFields": [
-            "profile_id"
-          ],
-          "relationToFields": [
-            "id"
-          ],
+          "relationFromFields": ["profile_id"],
+          "relationToFields": ["id"],
           "isList": false,
           "isId": false,
           "isGenerated": false,
@@ -4273,9 +4095,7 @@
       "uniqueConstraints": [
         {
           "name": "user_stats_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         }
       ]
@@ -4947,58 +4767,42 @@
       "uniqueConstraints": [
         {
           "name": "users_phone_key",
-          "fields": [
-            "phone"
-          ],
+          "fields": ["phone"],
           "nullNotDistinct": false
         },
         {
           "name": "users_pkey",
-          "fields": [
-            "id"
-          ],
+          "fields": ["id"],
           "nullNotDistinct": false
         },
         {
           "name": "confirmation_token_idx",
-          "fields": [
-            "confirmation_token"
-          ],
+          "fields": ["confirmation_token"],
           "nullNotDistinct": false
         },
         {
           "name": "email_change_token_current_idx",
-          "fields": [
-            "email_change_token_current"
-          ],
+          "fields": ["email_change_token_current"],
           "nullNotDistinct": false
         },
         {
           "name": "email_change_token_new_idx",
-          "fields": [
-            "email_change_token_new"
-          ],
+          "fields": ["email_change_token_new"],
           "nullNotDistinct": false
         },
         {
           "name": "reauthentication_token_idx",
-          "fields": [
-            "reauthentication_token"
-          ],
+          "fields": ["reauthentication_token"],
           "nullNotDistinct": false
         },
         {
           "name": "recovery_token_idx",
-          "fields": [
-            "recovery_token"
-          ],
+          "fields": ["recovery_token"],
           "nullNotDistinct": false
         },
         {
           "name": "users_email_partial_key",
-          "fields": [
-            "email"
-          ],
+          "fields": ["email"],
           "nullNotDistinct": false
         }
       ]

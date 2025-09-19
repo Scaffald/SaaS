@@ -27,7 +27,10 @@ export type ProfileProgressSectionProps = {
 export const ProfileProgressSection = ({ checklist, advanced }: ProfileProgressSectionProps) => {
   return (
     <DashboardCard gap="$5">
-      <SectionHeading title="Complete your profile" subtitle="Each task helps recruiters understand your experience." />
+      <SectionHeading
+        title="Complete your profile"
+        subtitle="Each task helps recruiters understand your experience."
+      />
 
       <YStack gap="$2">
         {checklist.map((item) => (
@@ -69,7 +72,12 @@ const ChecklistRow = ({ item }: { item: ChecklistItem }) => {
 const AdvancedTaskRow = ({ task }: { task: AdvancedTask }) => {
   return (
     <YStack gap="$2">
-      <XStack ai="center" gap="$3" jc="space-between" $sm={{ fd: 'column', ai: 'flex-start', gap: '$2' }}>
+      <XStack
+        ai="center"
+        gap="$3"
+        jc="space-between"
+        $sm={{ fd: 'column', ai: 'flex-start', gap: '$2' }}
+      >
         <YStack gap="$1" f={1}>
           <XStack ai="center" gap="$2">
             <SizableText size="$3" fontWeight="600">
@@ -80,9 +88,7 @@ const AdvancedTaskRow = ({ task }: { task: AdvancedTask }) => {
                 +{task.points}
               </SizableText>
             ) : null}
-            {task.paid ? (
-              <PaidBadge />
-            ) : null}
+            {task.paid ? <PaidBadge /> : null}
           </XStack>
           <Paragraph size="$2" color="$gray11">
             {task.description}

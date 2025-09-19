@@ -2,9 +2,7 @@
   "files": [],
   "compilerOptions": {
     "outDir": "/tmp",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
+    "typeRoots": ["node_modules/@types"],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "noEmit": true

@@ -1,4 +1,4 @@
-module.exports = function (api) {
+module.exports = (api) => {
   api.cache(true)
   return {
     presets: [['babel-preset-expo', { jsxRuntime: 'automatic' }]],
@@ -8,19 +8,16 @@ module.exports = function (api) {
       ...(process.env.EAS_BUILD_PLATFORM === 'android'
         ? []
         : [
-          [
-            '@tamagui/babel-plugin',
-            {
-              components: ['@my/ui', 'tamagui'],
-              config: '../../packages/ui/src/tamagui.config.ts',
-              disable: true
-            },
-          ],
-        ]),
-      [
-        'transform-inline-environment-variables',
-        {},
-      ],
+            [
+              '@tamagui/babel-plugin',
+              {
+                components: ['@my/ui', 'tamagui'],
+                config: '../../packages/ui/src/tamagui.config.ts',
+                disable: true,
+              },
+            ],
+          ]),
+      ['transform-inline-environment-variables', {}],
     ],
   }
 }

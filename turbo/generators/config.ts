@@ -1,4 +1,4 @@
-import { PlopTypes } from '@turbo/gen'
+import type { PlopTypes } from '@turbo/gen'
 
 export default function generator(plop: PlopTypes.NodePlopAPI): void {
   plop.setGenerator('component', {
@@ -32,7 +32,7 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         message: 'Do you want a .native.tsx file to be created?',
       },
     ],
-    actions: (prompts) => {
+    actions: (_prompts) => {
       const actions: PlopTypes.ActionType[] = [
         {
           type: 'add',
@@ -46,14 +46,14 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
           template: "\nexport * from './{{ pascalCase name }}'\n", // newline before and after
         },
       ]
-      if (prompts?.createStory) {
+      if (_prompts?.createStory) {
         actions.push({
           type: 'add',
           path: '{{ turbo.paths.root }}/packages/ui/src/components/{{ pascalCase name }}.stories.tsx',
           templateFile: 'templates/story.hbs',
         })
       }
-      if (prompts?.createNativeFile) {
+      if (_prompts?.createNativeFile) {
         actions.push({
           type: 'add',
           path: '{{ turbo.paths.root }}/packages/ui/src/components/{{ pascalCase name }}.native.tsx',
@@ -120,21 +120,21 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         screenName,
       }
     },
-    actions: (prompts) => {
+    actions: (_prompts) => {
       const actions: PlopTypes.ActionType[] = [
         {
           type: 'add',
-          path: `{{ turbo.paths.root }}/packages/app/features/{{ dashCase featureName }}/{{ dashCase screenName }}-screen.tsx`,
+          path: '{{ turbo.paths.root }}/packages/app/features/{{ dashCase featureName }}/{{ dashCase screenName }}-screen.tsx',
           templateFile: 'templates/screen.hbs',
         },
         {
           type: 'add',
-          path: `{{ turbo.paths.root }}/apps/next/pages{{ path }}/index.tsx`,
+          path: '{{ turbo.paths.root }}/apps/next/pages{{ path }}/index.tsx',
           templateFile: 'templates/nextjs-page.hbs',
         },
         {
           type: 'add',
-          path: `{{ turbo.paths.root }}/apps/expo/app{{ path }}/index.tsx`,
+          path: '{{ turbo.paths.root }}/apps/expo/app{{ path }}/index.tsx',
           templateFile: 'templates/expo-page.hbs',
         },
       ]
@@ -160,22 +160,22 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         name,
       }
     },
-    actions: (prompts) => {
+    actions: (_prompts) => {
       const actions: PlopTypes.ActionType[] = [
         {
           type: 'add',
-          path: `{{ turbo.paths.root }}/packages/api/src/routers/{{ camelCase name }}.ts`,
+          path: '{{ turbo.paths.root }}/packages/api/src/routers/{{ camelCase name }}.ts',
           templateFile: 'templates/trpc-router.hbs',
         },
         {
           type: 'append',
-          path: `{{ turbo.paths.root }}/packages/api/src/routers/_app.ts`,
+          path: '{{ turbo.paths.root }}/packages/api/src/routers/_app.ts',
           pattern: "import { createTRPCRouter } from '../trpc'",
           template: "import { {{ camelCase name }}Router } from './{{ camelCase name }}'",
         },
         {
           type: 'append',
-          path: `{{ turbo.paths.root }}/packages/api/src/routers/_app.ts`,
+          path: '{{ turbo.paths.root }}/packages/api/src/routers/_app.ts',
           pattern: 'createTRPCRouter({',
           template: '  {{ camelCase name }}: {{ camelCase name }}Router,',
         },

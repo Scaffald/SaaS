@@ -1,11 +1,13 @@
-import { TamaguiProvider, Theme, ThemeName, YStack } from '@my/ui'
-import { Decorator } from '@storybook/react'
+import { TamaguiProvider, Theme, type ThemeName, YStack } from '@my/ui'
+import type { Decorator } from '@storybook/react'
 import { UniversalThemeProvider } from 'app/provider/theme'
 import { ToastProvider } from 'app/provider/toast'
 import React from 'react'
 import { config } from '@my/ui'
 
-export const StorybookDecorator: Decorator = (Story, args: any) => {
+type StoryArgs = Parameters<Decorator>[1]
+
+export const StorybookDecorator: Decorator = (Story, args: StoryArgs) => {
   const {
     theme1,
     theme2,

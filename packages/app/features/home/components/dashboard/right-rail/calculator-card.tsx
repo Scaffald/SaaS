@@ -26,7 +26,11 @@ export const ConcreteCalculatorCard = () => {
   )
 }
 
-const FieldRow = ({ label, suffix, flex = 0 }: { label: string; suffix?: string; flex?: number }) => {
+const FieldRow = ({
+  label,
+  suffix,
+  flex = 0,
+}: { label: string; suffix?: string; flex?: number }) => {
   return (
     <YStack gap="$1" f={flex}>
       <Label size="$1" color="$gray11">

@@ -28,8 +28,8 @@ export interface CookiePreferencesDialogProps {
 
 const defaultDescription = (
   <Paragraph size="$4" color="$color11">
-    Choose which categories of cookies to allow. Required cookies stay active because they keep critical
-    features running safely.
+    Choose which categories of cookies to allow. Required cookies stay active because they keep
+    critical features running safely.
   </Paragraph>
 )
 
@@ -81,14 +81,8 @@ export const CookiePreferencesDialog = ({
   showRejectAll = true,
   alwaysOnLabel = 'Always on',
 }: CookiePreferencesDialogProps) => {
-  const {
-    categories,
-    selections,
-    isPreferencesOpen,
-    closePreferences,
-    saveSelections,
-    rejectAll,
-  } = useCookieConsent()
+  const { categories, selections, isPreferencesOpen, closePreferences, saveSelections, rejectAll } =
+    useCookieConsent()
 
   const initialDraft = useMemo(() => selections, [selections])
   const [draft, setDraft] = useState<CookieConsentSelections>(initialDraft)
@@ -124,7 +118,11 @@ export const CookiePreferencesDialog = ({
   }
 
   return (
-    <Dialog modal open={isPreferencesOpen} onOpenChange={(open) => (!open ? closePreferences() : undefined)}>
+    <Dialog
+      modal
+      open={isPreferencesOpen}
+      onOpenChange={(open) => (!open ? closePreferences() : undefined)}
+    >
       <Dialog.Portal>
         <Dialog.Overlay
           key="overlay"

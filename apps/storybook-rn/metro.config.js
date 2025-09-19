@@ -3,16 +3,16 @@
  * @type {import('expo/metro-config')}
  */
 const { getDefaultConfig } = require('expo/metro-config')
-const path = require('path')
+const path = require('node:path')
 
 const projectRoot = __dirname
 const workspaceRoot = path.resolve(__dirname, '../..')
 
-const config = getDefaultConfig(__dirname);
+const config = getDefaultConfig(__dirname)
 
-config.resolver.resolverMainFields.unshift('sbmodern');
+config.resolver.resolverMainFields.unshift('sbmodern')
 
-module.exports = config;
+module.exports = config
 
 config.watchFolders = [workspaceRoot]
 config.resolver.nodeModulesPaths = [

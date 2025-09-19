@@ -9,7 +9,13 @@ export type SectionHeadingProps = {
   titleProps?: ComponentProps<typeof SizableText>
 }
 
-export const SectionHeading = ({ title, subtitle, icon, action, titleProps }: SectionHeadingProps) => {
+export const SectionHeading = ({
+  title,
+  subtitle,
+  icon,
+  action,
+  titleProps,
+}: SectionHeadingProps) => {
   return (
     <XStack ai="flex-start" jc="space-between" gap="$3">
       <XStack ai="center" gap="$2" f={1}>

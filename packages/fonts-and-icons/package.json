@@ -6,12 +6,7 @@
   "module": "dist/esm",
   "type": "module",
   "bin": "./dist/esm/index.mjs",
-  "files": [
-    "types",
-    "dist",
-    "css",
-    "fonts"
-  ],
+  "files": ["types", "dist", "css", "fonts"],
   "scripts": {
     "add:icon": "node dist/esm/index.mjs icon",
     "add:font": "node dist/esm/index.mjs font",
@@ -26,7 +21,6 @@
   "dependencies": {
     "@svgr/core": "^8.1.0",
     "@svgr/plugin-jsx": "^8.1.0",
-    "@svgr/plugin-prettier": "^8.1.0",
     "@svgr/plugin-svgo": "^8.1.0",
     "@types/fs-extra": "^11",
     "axios": "^1.7.2",

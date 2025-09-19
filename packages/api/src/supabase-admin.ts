@@ -3,12 +3,12 @@ import { createClient } from '@supabase/supabase-js'
 
 if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
   throw new Error(
-    `NEXT_PUBLIC_SUPABASE_URL is not set. Please update the root .env.local and restart the server.`
+    'NEXT_PUBLIC_SUPABASE_URL is not set. Please update the root .env.local and restart the server.'
   )
 }
 if (!process.env.SUPABASE_SERVICE_ROLE) {
   throw new Error(
-    `SUPABASE_SERVICE_ROLE is not set. Please update the root .env.local and restart the server.`
+    'SUPABASE_SERVICE_ROLE is not set. Please update the root .env.local and restart the server.'
   )
 }
 
