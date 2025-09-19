@@ -6,6 +6,7 @@ import { animations } from './config/animations'
 import { bodyFont, headingFont } from './config/fonts'
 import { media, mediaQueryDefaultActive } from './config/media'
 import { themes as themesIn } from './themes/theme-generated'
+import { themes as themesInCustom } from './themes/theme-custom'
 import { color } from './themes/token-colors'
 import { radius } from './themes/token-radius'
 import { size } from './themes/token-size'
@@ -28,7 +29,10 @@ const themes =
 
 export const config = createTamagui({
   ...defaultConfig,
-  themes,
+  themes: {
+    ...themesIn,
+    ...themesInCustom,
+  },
   defaultFont: 'body',
   animations,
   shouldAddPrefersColorThemes: true,

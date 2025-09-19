@@ -1,0 +1,1 @@
+export { CookieConsentProvider } from './CookieConsentProvider'
