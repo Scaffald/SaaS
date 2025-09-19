@@ -31,7 +31,7 @@ export const config = createTamagui({
   ...defaultConfig,
   themes: {
     ...themesIn,
-    ...themesInCustom,
+    // ...themesInCustom,
   },
   defaultFont: 'body',
   animations,
