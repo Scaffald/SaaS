@@ -4,7 +4,9 @@
   "main": "index.ts",
   "types": "./index.ts",
   "private": true,
-  "sideEffects": ["*.css"],
+  "sideEffects": [
+    "*.css"
+  ],
   "scripts": {
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
@@ -17,6 +19,7 @@
     "@my/ui": "*",
     "@react-native-async-storage/async-storage": "2.1.2",
     "@rehookify/datepicker": "^6.6.6",
+    "@rnmapbox/maps": "^10.1.44",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/auth-helpers-react": "^0.5.0",
     "@supabase/supabase-js": "^2.48.1",
@@ -38,6 +41,7 @@
     "expo-image-picker": "~16.1.4",
     "expo-linking": "~7.1.5",
     "expo-secure-store": "~14.2.3",
+    "mapbox-gl": "^3.3.0",
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.46.1",
     "react-native": "0.79.2",
@@ -48,6 +52,8 @@
     "zustand": "5.0.2"
   },
   "devDependencies": {
+    "@types/geojson": "^7946.0.14",
+    "@types/mapbox-gl": "^2.7.21",
     "@types/react": "^18.0.27",
     "typescript": "~5.8.3"
   }

@@ -1,4 +1,5 @@
 import '../public/web.css'
+import 'mapbox-gl/dist/mapbox-gl.css'
 import '@tamagui/core/reset.css'
 import '@tamagui/font-inter/css/400.css'
 import '@tamagui/font-inter/css/700.css'

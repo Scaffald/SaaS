@@ -1,6 +1,6 @@
 import { useTheme, Button } from '@my/ui'
 import { DrawerActions } from '@react-navigation/native'
-import { Home, Menu, Plus, User } from '@tamagui/lucide-icons'
+import { Home, Map as MapIcon, Menu, Plus, User } from '@tamagui/lucide-icons'
 // import { IconGearFill, IconGear, IconHouse, IconHouseFill } from '@tamagui-icons/icon-ph'
 import { router, Stack, Tabs, useNavigation, usePathname } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -74,6 +74,17 @@ export default function Layout() {
             title: 'Home',
             tabBarIcon: ({ size, focused }) => (
               <Home color={focused ? '$color12' : '$color10'} size={size} strokeWidth={2} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="discover"
+          key="discover"
+          options={{
+            headerShown: false,
+            title: 'Discover',
+            tabBarIcon: ({ size, focused }) => (
+              <MapIcon color={focused ? '$color12' : '$color10'} size={size} strokeWidth={2} />
             ),
           }}
         />

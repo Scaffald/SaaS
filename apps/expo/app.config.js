@@ -1,3 +1,12 @@
+import 'dotenv/config'
+
+const {
+  MAPBOX_DOWNLOADS_TOKEN = '',
+  MAPBOX_PUBLIC_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? '',
+  NEXT_PUBLIC_MAPBOX_STYLE_URL = process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL ?? '',
+  NEXT_PUBLIC_MAPBOX_API_URL = process.env.EXPO_PUBLIC_MAPBOX_API_URL ?? 'https://api.mapbox.com',
+} = process.env
+
 export default {
   expo: {
     name: 'scaffald',
@@ -62,6 +71,12 @@ export default {
       'expo-router',
       'expo-build-properties',
       'expo-font',
+      [
+        '@rnmapbox/maps',
+        {
+          RNMapboxMapsDownloadToken: MAPBOX_DOWNLOADS_TOKEN,
+        },
+      ],
     ],
     extra: {
       router: {
@@ -69,6 +84,11 @@ export default {
       },
       eas: {
         projectId: 'b5f02af2-6475-4d9e-81b3-664f89564580',
+      },
+      mapbox: {
+        accessToken: MAPBOX_PUBLIC_TOKEN,
+        styleURL: NEXT_PUBLIC_MAPBOX_STYLE_URL,
+        apiBaseUrl: NEXT_PUBLIC_MAPBOX_API_URL,
       },
     },
     runtimeVersion: {
