@@ -52,5 +52,6 @@ export const useUser = () => {
     isLoadingSession,
     isLoadingProfile,
     isLoading: isLoadingSession || isLoadingProfile,
+    isPending: isLoadingSession || isLoadingProfile,
   }
 }

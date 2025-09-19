@@ -74,7 +74,6 @@
     "@types/fs-extra": "^11",
     "axios": "^1.7.2",
     "check-dependency-version-consistency": "^3.0.3",
-    "dotenv": "^16.4.7",
     "dotenv-cli": "^8.0.0",
     "eslint": "^8.46.0",
     "fs-extra": "^11.2.0",
