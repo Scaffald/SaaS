@@ -4,7 +4,6 @@ import {
   Paragraph,
   Separator,
   SizableText,
-  Theme,
   XStack,
   YStack,
   getTokens,
@@ -13,24 +12,15 @@ import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import { DrawerContentScrollView } from '@react-navigation/drawer'
 import {
   BarChart3,
-  Bell,
+  ChevronDown,
+  ChevronUp,
   CircleUser,
-  FileText,
   Info,
-  Layers,
-  LifeBuoy,
+  Map,
   Settings2,
   ShieldCheck,
   ShoppingBag,
   Sparkles,
-  ChevronDown,
-  ChevronUp,
-  Binoculars,
-  Map,
-  Coins,
-  Megaphone,
-  Crown,
-  Hand,
 } from '@tamagui/lucide-icons'
 import { GestureResponderEvent } from 'react-native'
 import { useState } from 'react'
@@ -62,126 +52,29 @@ export type DrawerSectionConfig = {
 
 export const drawerSections: DrawerSectionConfig[] = [
   {
-    key: 'dashboards',
-    title: 'Dashboards',
-    isExpandable: true,
+    key: 'main',
+    title: 'Main',
     items: [
+      {
+        key: 'dashboard',
+        title: 'Dashboard',
+        description: 'Overview of crews and active projects.',
+        href: '/',
+        icon: BarChart3,
+        theme: 'purple',
+      },
       {
         key: 'discover',
         title: 'Discover',
+        description: 'Match with new talent and opportunities.',
         href: '/discover',
         icon: Map,
         theme: 'purple',
       },
-      {
-        key: 'daily-overview',
-        title: 'Daily Overview',
-        href: '/',
-        icon: Binoculars,
-        theme: 'purple',
-      },
-      {
-        key: 'revenue-profit',
-        title: 'Revenue & Profit',
-        href: '/revenue',
-        icon: Coins,
-        theme: 'purple',
-        subItems: [
-          {
-            key: 'revenue-daily',
-            title: 'Daily Revenue',
-            href: '/revenue/daily',
-            icon: BarChart3,
-            theme: 'purple',
-          },
-          {
-            key: 'revenue-monthly',
-            title: 'Monthly Revenue',
-            href: '/revenue/monthly',
-            icon: BarChart3,
-            theme: 'purple',
-          },
-        ],
-      },
-      {
-        key: 'marketing',
-        title: 'Marketing',
-        href: '/marketing',
-        icon: Megaphone,
-        theme: 'purple',
-        subItems: [
-          {
-            key: 'marketing-campaigns',
-            title: 'Campaigns',
-            href: '/marketing/campaigns',
-            icon: Sparkles,
-            theme: 'purple',
-          },
-          {
-            key: 'marketing-analytics',
-            title: 'Analytics',
-            href: '/marketing/analytics',
-            icon: BarChart3,
-            theme: 'purple',
-          },
-        ],
-      },
-      {
-        key: 'retention',
-        title: 'Retention',
-        href: '/retention',
-        icon: Crown,
-        theme: 'purple',
-        subItems: [
-          {
-            key: 'retention-customers',
-            title: 'Customer Retention',
-            href: '/retention/customers',
-            icon: Crown,
-            theme: 'purple',
-          },
-          {
-            key: 'retention-churn',
-            title: 'Churn Analysis',
-            href: '/retention/churn',
-            icon: BarChart3,
-            theme: 'purple',
-          },
-        ],
-      },
-      {
-        key: 'product-relations',
-        title: 'Product Relations',
-        href: '/products',
-        icon: ShoppingBag,
-        theme: 'purple',
-      },
-      {
-        key: 'attribution',
-        title: 'Attribution',
-        href: '/attribution',
-        icon: Hand,
-        theme: 'purple',
-        subItems: [
-          {
-            key: 'attribution-sources',
-            title: 'Traffic Sources',
-            href: '/attribution/sources',
-            icon: BarChart3,
-            theme: 'purple',
-          },
-          {
-            key: 'attribution-conversion',
-            title: 'Conversion Paths',
-            href: '/attribution/conversion',
-            icon: Hand,
-            theme: 'purple',
-          },
-        ],
-      },
     ],
   },
 ]
+
 
 export const quickLinks: DrawerItemConfig[] = [
   {
@@ -205,7 +98,15 @@ export const quickLinks: DrawerItemConfig[] = [
     icon: Info,
     theme: 'blue',
   },
+  {
+    key: 'privacy',
+    title: 'Privacy Policy',
+    href: '/privacy-policy',
+    icon: ShieldCheck,
+    theme: 'blue',
+  },
 ]
+
 
 export const normalizePath = (value: string) => {
   if (!value) return '/'
@@ -454,7 +355,7 @@ export const DrawerMenu = (props: DrawerContentComponentProps) => {
 
   // State for accordion sections
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    dashboards: true, // Start with dashboards expanded to match the image
+    main: true, // Keep primary navigation visible by default
   })
 
   const toggleSection = (sectionKey: string) => {
@@ -516,15 +417,19 @@ export const DrawerMenu = (props: DrawerContentComponentProps) => {
 
         <YStack gap="$5">
           {drawerSections.map((section) => {
-            const isExpanded = expandedSections[section.key] ?? false
-            
+            const isExpanded = section.isExpandable ? expandedSections[section.key] ?? false : true
+            const handleToggle = () => {
+              if (!section.isExpandable) return
+              toggleSection(section.key)
+            }
+
             return (
               <YStack key={section.key} gap="$3">
                 <DrawerSectionHeader
                   section={section}
                   collapsed={collapsed}
                   isExpanded={isExpanded}
-                  onToggle={() => toggleSection(section.key)}
+                  onToggle={handleToggle}
                 />
                 {isExpanded && (
                   <YStack gap="$2">

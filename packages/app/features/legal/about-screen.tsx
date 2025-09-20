@@ -1,29 +1,14 @@
-import { Paragraph, Text, YStack } from '@my/ui'
-import { Link } from 'expo-router'
+import { H1, ScrollView, YStack, isWeb } from '@my/ui'
+
+import { AboutContent } from './components/about-content'
 
 export const AboutScreen = () => {
   return (
-    <YStack gap="$4" p="$4">
-      <Link href="/create">
-        <Text>go to modal</Text>
-      </Link>
-      <Paragraph>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae quidem neque maxime
-        soluta nostrum unde eligendi, culpa qui exercitationem modi quasi debitis voluptatibus,
-        deleniti porro! Nihil magni dicta neque aliquid.
-      </Paragraph>
-
-      <Paragraph>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae quidem neque maxime
-        soluta nostrum unde eligendi, culpa qui exercitationem modi quasi debitis voluptatibus,
-        deleniti porro! Nihil magni dicta neque aliquid.
-      </Paragraph>
-
-      <Paragraph>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae quidem neque maxime
-        soluta nostrum unde eligendi, culpa qui exercitationem modi quasi debitis voluptatibus,
-        deleniti porro! Nihil magni dicta neque aliquid.
-      </Paragraph>
-    </YStack>
+    <ScrollView flex={1} showsVerticalScrollIndicator>
+      <YStack gap="$4" px="$4" py="$6" maw={800} mx="auto">
+        {isWeb && <H1>About SCF Neue</H1>}
+        <AboutContent />
+      </YStack>
+    </ScrollView>
   )
 }
