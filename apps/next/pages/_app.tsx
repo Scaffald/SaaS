@@ -1,3 +1,5 @@
+'use client'
+
 import '../public/web.css'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import '@tamagui/core/reset.css'

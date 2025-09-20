@@ -8,8 +8,6 @@ import {
   XStack,
   YStack,
   getTokens,
-  useMedia,
-  useTheme,
 } from '@my/ui'
 import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import { DrawerContentScrollView } from '@react-navigation/drawer'
@@ -27,7 +25,6 @@ import {
   Sparkles,
   ChevronDown,
   ChevronUp,
-  Grid3X3,
   Binoculars,
   Map,
   Coins,
@@ -44,7 +41,7 @@ import { useSafeAreaInsets } from 'app/utils/useSafeAreaInsets'
 import { useUser } from 'app/utils/useUser'
 import { SolitoImage } from 'solito/image'
 
-type DrawerItemConfig = {
+export type DrawerItemConfig = {
   key: string
   title: string
   href: string
@@ -56,14 +53,14 @@ type DrawerItemConfig = {
   subItems?: DrawerItemConfig[]
 }
 
-type DrawerSectionConfig = {
+export type DrawerSectionConfig = {
   key: string
   title: string
   items: DrawerItemConfig[]
   isExpandable?: boolean
 }
 
-const drawerSections: DrawerSectionConfig[] = [
+export const drawerSections: DrawerSectionConfig[] = [
   {
     key: 'dashboards',
     title: 'Dashboards',
@@ -186,7 +183,7 @@ const drawerSections: DrawerSectionConfig[] = [
   },
 ]
 
-const quickLinks: DrawerItemConfig[] = [
+export const quickLinks: DrawerItemConfig[] = [
   {
     key: 'store-config',
     title: 'Store Configurator',
@@ -210,7 +207,7 @@ const quickLinks: DrawerItemConfig[] = [
   },
 ]
 
-const normalizePath = (value: string) => {
+export const normalizePath = (value: string) => {
   if (!value) return '/'
   const withoutQuery = value.split('?')[0]
   const cleaned = withoutQuery.replace(/\/\((drawer|tabs)\)/g, '')
@@ -279,6 +276,40 @@ type DrawerAccordionItemProps = {
   collapsed: boolean
 }
 
+const DrawerSubNavItem = ({
+  item,
+  pathname,
+  navigation,
+  collapsed,
+}: {
+  item: DrawerItemConfig
+  pathname: string
+  navigation: DrawerContentComponentProps['navigation']
+  collapsed: boolean
+}) => {
+  const link = useLink({ href: item.href })
+  const isActive =
+    item.href === '/'
+      ? pathname === '/' || pathname === '/index'
+      : pathname === item.href || pathname.startsWith(`${item.href}/`)
+
+  const handlePress = (event: GestureResponderEvent) => {
+    if (item.disabled) return
+    link.onPress?.(event)
+    navigation.closeDrawer()
+  }
+
+  return (
+    <DrawerNavItem
+      item={item}
+      isActive={isActive}
+      onNavigate={handlePress}
+      collapsed={collapsed}
+      isSubItem
+    />
+  )
+}
+
 const DrawerAccordionItem = ({ item, pathname, navigation, collapsed }: DrawerAccordionItemProps) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const link = useLink({ href: item.href })
@@ -297,13 +328,6 @@ const DrawerAccordionItem = ({ item, pathname, navigation, collapsed }: DrawerAc
     }
   }
 
-  const handleSubItemPress = (subItem: DrawerItemConfig) => (event: GestureResponderEvent) => {
-    if (subItem.disabled) return
-    const subLink = useLink({ href: subItem.href })
-    subLink.onPress?.(event)
-    navigation.closeDrawer()
-  }
-
   const hasSubItems = item.subItems && item.subItems.length > 0
 
   return (
@@ -316,23 +340,15 @@ const DrawerAccordionItem = ({ item, pathname, navigation, collapsed }: DrawerAc
       />
       {hasSubItems && isExpanded && !collapsed && (
         <YStack gap="$1" mt="$2">
-          {item.subItems!.map((subItem) => {
-            const isSubActive =
-              subItem.href === '/'
-                ? pathname === '/' || pathname === '/index'
-                : pathname === subItem.href || pathname.startsWith(`${subItem.href}/`)
-            
-            return (
-              <DrawerNavItem
-                key={subItem.key}
-                item={subItem}
-                isActive={isSubActive}
-                onNavigate={handleSubItemPress(subItem)}
-                collapsed={collapsed}
-                isSubItem={true}
-              />
-            )
-          })}
+          {item.subItems!.map((subItem) => (
+            <DrawerSubNavItem
+              key={subItem.key}
+              item={subItem}
+              pathname={pathname}
+              navigation={navigation}
+              collapsed={collapsed}
+            />
+          ))}
         </YStack>
       )}
     </YStack>
@@ -433,8 +449,7 @@ export const DrawerMenu = (props: DrawerContentComponentProps) => {
   const { profile, avatarUrl, user, updateProfile } = useUser()
   const pathname = normalizePath(usePathname())
   const tokens = getTokens()
-  const media = useMedia()
-  const collapsed = media.sm && !media.gtSm
+  const collapsed = false
   const verticalPadding = tokens.space['$5'].val
 
   // State for accordion sections
@@ -564,7 +579,7 @@ export const DrawerMenu = (props: DrawerContentComponentProps) => {
                   {profile?.name ?? 'No Name'}
                 </SizableText>
                 <Paragraph size="$2" color="$gray10">
-                  {profile?.email ?? user?.email ?? 'View profile'}
+                  {user?.email ?? 'View profile'}
                 </Paragraph>
               </YStack>
             )}
