@@ -12,8 +12,6 @@ import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import { DrawerContentScrollView } from '@react-navigation/drawer'
 import {
   BarChart3,
-  ChevronDown,
-  ChevronUp,
   CircleUser,
   Info,
   Map,
@@ -22,8 +20,8 @@ import {
   ShoppingBag,
   Sparkles,
 } from '@tamagui/lucide-icons'
+import { useCallback } from 'react'
 import { GestureResponderEvent } from 'react-native'
-import { useState } from 'react'
 import { useLink } from 'solito/link'
 
 import { usePathname } from 'app/utils/usePathname'
@@ -47,7 +45,6 @@ export type DrawerSectionConfig = {
   key: string
   title: string
   items: DrawerItemConfig[]
-  isExpandable?: boolean
 }
 
 export const drawerSections: DrawerSectionConfig[] = [
@@ -74,7 +71,6 @@ export const drawerSections: DrawerSectionConfig[] = [
     ],
   },
 ]
-
 
 export const quickLinks: DrawerItemConfig[] = [
   {
@@ -107,56 +103,60 @@ export const quickLinks: DrawerItemConfig[] = [
   },
 ]
 
-
 export const normalizePath = (value: string) => {
   if (!value) return '/'
   const withoutQuery = value.split('?')[0]
-  const cleaned = withoutQuery.replace(/\/\((drawer|tabs)\)/g, '')
+  const cleaned = withoutQuery.replace(/\/(\(drawer|tabs\))/g, '')
   const normalized = cleaned.replace(/\/+/g, '/')
   if (normalized === '' || normalized === '/') return '/'
   return normalized.endsWith('/') ? normalized.slice(0, -1) : normalized
 }
 
-type DrawerNavItemProps = {
-  item: DrawerItemConfig
-  isActive: boolean
-  onNavigate: (event: GestureResponderEvent) => void
-  collapsed: boolean
-  isSubItem?: boolean
+const isActivePath = (pathname: string, href: string) => {
+  if (href === '/') {
+    return pathname === '/' || pathname === '/index'
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`)
 }
 
-const DrawerNavItem = ({ item, isActive, onNavigate, collapsed, isSubItem = false }: DrawerNavItemProps) => {
+type DrawerLinkProps = {
+  item: DrawerItemConfig
+  pathname: string
+  collapsed?: boolean
+  onNavigate?: (href: string, event: GestureResponderEvent) => void
+}
+
+const DrawerLink = ({ item, pathname, collapsed = false, onNavigate }: DrawerLinkProps) => {
+  const link = useLink({ href: item.href })
+  const active = isActivePath(pathname, item.href)
   const Icon = item.icon
 
+  const handlePress = (event: GestureResponderEvent) => {
+    if (item.disabled) return
+    link.onPress?.(event)
+    onNavigate?.(item.href, event)
+  }
+
   return (
-    <XStack
+    <Button
+      {...link}
       accessibilityRole="button"
-      alignItems="center"
-      gap="$3"
-      px={isSubItem ? "$6" : "$4"}
-      py="$3"
-      borderRadius="$2"
-      pressStyle={{ scale: 0.98 }}
-      hoverStyle={{ backgroundColor: '$color2' }}
-      backgroundColor={isActive ? '$purple2' : 'transparent'}
-      opacity={item.disabled ? 0.5 : 1}
-      onPress={item.disabled ? undefined : onNavigate}
-      borderLeftWidth={isActive ? 3 : 0}
-      borderLeftColor={isActive ? '$purple9' : 'transparent'}
+      justifyContent="flex-start"
+      width="100%"
+      size="$3"
+      borderRadius="$3"
+      backgroundColor={active ? '$purple3' : 'transparent'}
+      color={active ? '$purple12' : '$gray11'}
+      icon={<Icon size={20} color={active ? '$purple11' : '$gray10'} />}
+      iconAfter={null}
+      disabled={item.disabled}
+      onPress={handlePress}
+      theme={active ? 'purple' : undefined}
     >
-      <XStack
-        alignItems="center"
-        justifyContent="center"
-        width="$3.5"
-        height="$3.5"
-        borderRadius="$2"
-        backgroundColor={isActive ? '$purple3' : 'transparent'}
-      >
-        <Icon size={20} color={isActive ? '$purple11' : '$gray11'} />
-      </XStack>
       {!collapsed && (
-        <YStack f={1} gap="$1">
-          <SizableText size="$4" fontWeight="600" color={isActive ? '$purple12' : '$gray12'}>
+        <YStack alignItems="flex-start" gap="$1">
+          <SizableText size="$4" fontWeight="600">
             {item.title}
           </SizableText>
           {item.description ? (
@@ -166,204 +166,185 @@ const DrawerNavItem = ({ item, isActive, onNavigate, collapsed, isSubItem = fals
           ) : null}
         </YStack>
       )}
-    </XStack>
+    </Button>
   )
 }
 
-type DrawerAccordionItemProps = {
-  item: DrawerItemConfig
+type DrawerSectionProps = {
+  section: DrawerSectionConfig
   pathname: string
-  navigation: DrawerContentComponentProps['navigation']
-  collapsed: boolean
+  collapsed?: boolean
+  onNavigate?: (href: string, event: GestureResponderEvent) => void
 }
 
-const DrawerSubNavItem = ({
-  item,
-  pathname,
-  navigation,
-  collapsed,
-}: {
-  item: DrawerItemConfig
-  pathname: string
-  navigation: DrawerContentComponentProps['navigation']
-  collapsed: boolean
-}) => {
-  const link = useLink({ href: item.href })
-  const isActive =
-    item.href === '/'
-      ? pathname === '/' || pathname === '/index'
-      : pathname === item.href || pathname.startsWith(`${item.href}/`)
-
-  const handlePress = (event: GestureResponderEvent) => {
-    if (item.disabled) return
-    link.onPress?.(event)
-    navigation.closeDrawer()
-  }
-
+const DrawerSection = ({ section, pathname, collapsed, onNavigate }: DrawerSectionProps) => {
   return (
-    <DrawerNavItem
-      item={item}
-      isActive={isActive}
-      onNavigate={handlePress}
-      collapsed={collapsed}
-      isSubItem
-    />
-  )
-}
-
-const DrawerAccordionItem = ({ item, pathname, navigation, collapsed }: DrawerAccordionItemProps) => {
-  const [isExpanded, setIsExpanded] = useState(false)
-  const link = useLink({ href: item.href })
-  const isActive =
-    item.href === '/'
-      ? pathname === '/' || pathname === '/index'
-      : pathname === item.href || pathname.startsWith(`${item.href}/`)
-
-  const handlePress = (event: GestureResponderEvent) => {
-    if (item.disabled) return
-    if (item.subItems && item.subItems.length > 0) {
-      setIsExpanded(!isExpanded)
-    } else {
-      link.onPress?.(event)
-      navigation.closeDrawer()
-    }
-  }
-
-  const hasSubItems = item.subItems && item.subItems.length > 0
-
-  return (
-    <YStack>
-      <DrawerNavItem 
-        item={item} 
-        isActive={isActive} 
-        onNavigate={handlePress} 
-        collapsed={collapsed}
-      />
-      {hasSubItems && isExpanded && !collapsed && (
-        <YStack gap="$1" mt="$2">
-          {item.subItems!.map((subItem) => (
-            <DrawerSubNavItem
-              key={subItem.key}
-              item={subItem}
-              pathname={pathname}
-              navigation={navigation}
-              collapsed={collapsed}
-            />
-          ))}
-        </YStack>
+    <YStack gap="$2">
+      {!collapsed && (
+        <SizableText size="$2" fontWeight="600" color="$gray10" textTransform="uppercase">
+          {section.title}
+        </SizableText>
       )}
+      <YStack gap="$1">
+        {section.items.map((item) => (
+          <YStack key={item.key} gap="$1">
+            <DrawerLink item={item} pathname={pathname} collapsed={collapsed} onNavigate={onNavigate} />
+            {item.subItems?.map((sub) => (
+              <DrawerLink
+                key={sub.key}
+                item={sub}
+                pathname={pathname}
+                collapsed={collapsed}
+                onNavigate={onNavigate}
+              />
+            ))}
+          </YStack>
+        ))}
+      </YStack>
     </YStack>
   )
 }
 
-type DrawerNavItemWrapperProps = {
-  item: DrawerItemConfig
+type DrawerContentProps = {
   pathname: string
-  navigation: DrawerContentComponentProps['navigation']
-  collapsed: boolean
+  collapsed?: boolean
+  onNavigate?: (href: string, event: GestureResponderEvent) => void
 }
 
-const DrawerNavItemWrapper = ({
-  item,
-  pathname,
-  navigation,
-  collapsed,
-}: DrawerNavItemWrapperProps) => {
-  const link = useLink({ href: item.href })
-  const isActive =
-    item.href === '/'
-      ? pathname === '/' || pathname === '/index'
-      : pathname === item.href || pathname.startsWith(`${item.href}/`)
+export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: DrawerContentProps) => {
+  const { profile, avatarUrl, user, updateProfile } = useUser()
+  const manageLink = useLink({ href: '/profile' })
 
-  const handlePress = (event: GestureResponderEvent) => {
-    if (item.disabled) return
-    link.onPress?.(event)
-    navigation.closeDrawer()
+  const handleManagePress = (event: GestureResponderEvent) => {
+    manageLink.onPress?.(event)
+    onNavigate?.('/profile', event)
   }
 
   return (
-    <DrawerNavItem item={item} isActive={isActive} onNavigate={handlePress} collapsed={collapsed} />
-  )
-}
-
-type DrawerSectionHeaderProps = {
-  section: DrawerSectionConfig
-  collapsed: boolean
-  isExpanded: boolean
-  onToggle: () => void
-}
-
-const DrawerSectionHeader = ({ section, collapsed, isExpanded, onToggle }: DrawerSectionHeaderProps) => {
-  if (collapsed) return null
-
-  return (
-    <XStack
-      alignItems="center"
-      justifyContent="space-between"
+    <YStack
+      width="100%"
+      maxWidth={320}
+      backgroundColor="$color1"
+      borderRightWidth={1}
+      borderColor="$color4"
       px="$4"
-      py="$2"
-      onPress={section.isExpandable ? onToggle : undefined}
-      pressStyle={{ scale: 0.98 }}
-      cursor={section.isExpandable ? 'pointer' : 'default'}
+      py="$4"
+      gap="$5"
     >
-      <SizableText size="$2" fontWeight="600" color="$gray10" textTransform="uppercase">
-        {section.title}
-      </SizableText>
-      {section.isExpandable && (
-        <XStack alignItems="center" justifyContent="center" width="$3" height="$3">
-          {isExpanded ? (
-            <ChevronUp size={16} color="$gray10" />
-          ) : (
-            <ChevronDown size={16} color="$gray10" />
+      <YStack backgroundColor="$gray2" borderRadius="$4" px="$4" py="$4" gap="$4">
+        <XStack alignItems="center" gap="$3">
+          <XStack
+            width="$4.5"
+            height="$4.5"
+            borderRadius="$3"
+            backgroundColor="$purple3"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <CircleUser size={24} color="$purple11" />
+          </XStack>
+          {!collapsed && (
+            <YStack f={1} gap="$1">
+              <SizableText size="$5" fontWeight="700" color="$gray12">
+                {profile?.name ?? 'Store Name'}
+              </SizableText>
+              <Paragraph size="$2" color="$gray10">
+                Synced moments ago
+              </Paragraph>
+            </YStack>
+          )}
+          {!collapsed && (
+            <Button theme="purple" size="$2" px="$3" onPress={updateProfile}>
+              Refresh
+            </Button>
           )}
         </XStack>
-      )}
-    </XStack>
-  )
-}
+        {!collapsed && (
+          <XStack gap="$2" ai="center">
+            <Sparkles size={16} color="$gray10" />
+            <Paragraph size="$2" color="$gray10">
+              Updated moments ago
+            </Paragraph>
+          </XStack>
+        )}
+      </YStack>
 
-const ProfileManageButton = ({
-  navigation,
-}: {
-  navigation: DrawerContentComponentProps['navigation']
-}) => {
-  const link = useLink({ href: '/profile' })
+      <YStack gap="$5">
+        {drawerSections.map((section) => (
+          <DrawerSection
+            key={section.key}
+            section={section}
+            pathname={pathname}
+            collapsed={collapsed}
+            onNavigate={onNavigate}
+          />
+        ))}
+      </YStack>
 
-  return (
-    <Button
-      size="$2"
-      px="$3"
-      theme="purple"
-      onPress={(event) => {
-        link.onPress?.(event)
-        navigation.closeDrawer()
-      }}
-    >
-      Manage
-    </Button>
+      <YStack gap="$4">
+        {!collapsed && <Separator borderColor="$color4" />}
+        <YStack gap="$2">
+          {quickLinks.map((item) => (
+            <DrawerLink
+              key={item.key}
+              item={item}
+              pathname={pathname}
+              collapsed={collapsed}
+              onNavigate={onNavigate}
+            />
+          ))}
+        </YStack>
+        <XStack
+          backgroundColor="$gray2"
+          borderRadius="$4"
+          px="$4"
+          py="$4"
+          gap="$3"
+          alignItems="center"
+        >
+          <Avatar circular size="$3">
+            <SolitoImage
+              src={avatarUrl}
+              alt="Profile avatar"
+              width={getTokens().size['3'].val}
+              height={getTokens().size['3'].val}
+            />
+          </Avatar>
+          {!collapsed && (
+            <YStack f={1} gap="$1">
+              <SizableText size="$4" fontWeight="600" color="$gray12">
+                {profile?.name ?? 'No Name'}
+              </SizableText>
+              <Paragraph size="$2" color="$gray10">
+                {user?.email ?? 'View profile'}
+              </Paragraph>
+            </YStack>
+          )}
+          {!collapsed && (
+            <Button size="$2" px="$3" onPress={handleManagePress}>
+              Manage
+            </Button>
+          )}
+        </XStack>
+      </YStack>
+    </YStack>
   )
 }
 
 export const DrawerMenu = (props: DrawerContentComponentProps) => {
   const { navigation } = props
   const { top, bottom } = useSafeAreaInsets()
-  const { profile, avatarUrl, user, updateProfile } = useUser()
-  const pathname = normalizePath(usePathname())
   const tokens = getTokens()
+  const pathname = normalizePath(usePathname())
   const collapsed = false
   const verticalPadding = tokens.space['$5'].val
 
-  // State for accordion sections
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    main: true, // Keep primary navigation visible by default
-  })
-
-  const toggleSection = (sectionKey: string) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [sectionKey]: !prev[sectionKey]
-    }))
-  }
+  const handleNavigate = useCallback(
+    (_href: string, _event?: GestureResponderEvent) => {
+      navigation.closeDrawer()
+    },
+    [navigation],
+  )
 
   return (
     <DrawerContentScrollView
@@ -374,124 +355,10 @@ export const DrawerMenu = (props: DrawerContentComponentProps) => {
         flexGrow: 1,
         paddingTop: top + verticalPadding,
         paddingBottom: bottom + verticalPadding,
+        alignItems: 'center',
       }}
     >
-      <YStack f={1} gap="$5" px="$4">
-        <YStack backgroundColor="$gray2" borderRadius="$4" px="$4" py="$4" gap="$4">
-          <XStack alignItems="center" gap="$3">
-            <XStack
-              width="$4.5"
-              height="$4.5"
-              borderRadius="$3"
-              backgroundColor="$purple3"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <CircleUser size={24} color="$purple11" />
-            </XStack>
-            {!collapsed && (
-              <YStack f={1} gap="$1">
-                <SizableText size="$5" fontWeight="700" color="$gray12">
-                  {profile?.name ?? 'Store Name'}
-                </SizableText>
-                <Paragraph size="$2" color="$gray10">
-                  Synced moments ago
-                </Paragraph>
-              </YStack>
-            )}
-            {!collapsed && (
-              <Button theme="purple" size="$2" px="$3" onPress={updateProfile}>
-                Refresh
-              </Button>
-            )}
-          </XStack>
-          {!collapsed && (
-            <XStack gap="$2" ai="center">
-              <Sparkles size={16} color="$gray10" />
-              <Paragraph size="$2" color="$gray10">
-                Updated moments ago
-              </Paragraph>
-            </XStack>
-          )}
-        </YStack>
-
-        <YStack gap="$5">
-          {drawerSections.map((section) => {
-            const isExpanded = section.isExpandable ? expandedSections[section.key] ?? false : true
-            const handleToggle = () => {
-              if (!section.isExpandable) return
-              toggleSection(section.key)
-            }
-
-            return (
-              <YStack key={section.key} gap="$3">
-                <DrawerSectionHeader
-                  section={section}
-                  collapsed={collapsed}
-                  isExpanded={isExpanded}
-                  onToggle={handleToggle}
-                />
-                {isExpanded && (
-                  <YStack gap="$2">
-                    {section.items.map((item) => (
-                      <DrawerAccordionItem
-                        key={item.key}
-                        item={item}
-                        pathname={pathname}
-                        navigation={navigation}
-                        collapsed={collapsed}
-                      />
-                    ))}
-                  </YStack>
-                )}
-              </YStack>
-            )
-          })}
-        </YStack>
-
-        <YStack gap="$4">
-          {!collapsed && <Separator borderColor="$color4" />}
-          <YStack gap="$2">
-            {quickLinks.map((item) => (
-              <DrawerNavItemWrapper
-                key={item.key}
-                item={item}
-                pathname={pathname}
-                navigation={navigation}
-                collapsed={collapsed}
-              />
-            ))}
-          </YStack>
-          <XStack
-            backgroundColor="$gray2"
-            borderRadius="$4"
-            px="$4"
-            py="$4"
-            gap="$3"
-            alignItems="center"
-          >
-            <Avatar circular size="$3">
-              <SolitoImage
-                src={avatarUrl}
-                alt="Profile avatar"
-                width={getTokens().size['3'].val}
-                height={getTokens().size['3'].val}
-              />
-            </Avatar>
-            {!collapsed && (
-              <YStack f={1} gap="$1">
-                <SizableText size="$4" fontWeight="600" color="$gray12">
-                  {profile?.name ?? 'No Name'}
-                </SizableText>
-                <Paragraph size="$2" color="$gray10">
-                  {user?.email ?? 'View profile'}
-                </Paragraph>
-              </YStack>
-            )}
-            {!collapsed && <ProfileManageButton navigation={navigation} />}
-          </XStack>
-        </YStack>
-      </YStack>
+      <DrawerContent pathname={pathname} collapsed={collapsed} onNavigate={handleNavigate} />
     </DrawerContentScrollView>
   )
 }
