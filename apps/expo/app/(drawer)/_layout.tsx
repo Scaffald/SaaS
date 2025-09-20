@@ -1,5 +1,5 @@
 import { DrawerMenu } from '@my/app/features/drawer-menu'
-import { Button, getTokens, useTheme } from '@my/ui'
+import { Button, useTheme } from '@my/ui'
 import { DrawerActions } from '@react-navigation/native'
 import { Menu, Plus } from '@tamagui/lucide-icons'
 import { router } from 'expo-router'
@@ -8,10 +8,9 @@ import { useMedia } from 'tamagui'
 
 export default function Layout() {
   const media = useMedia()
-  const tokens = getTokens()
   const { accentColor } = useTheme()
 
-  const drawerWidth = media.gtSm ? tokens.size.$20.val : tokens.size.$10.val
+  const drawerWidth = media.gtSm ? 320 : 300
   const isDesktop = media.gtSm
 
   return (
@@ -60,6 +59,7 @@ export default function Layout() {
         },
         drawerContentStyle: {
           padding: 0,
+          backgroundColor: 'transparent',
         },
       })}
       drawerContent={(props) => <DrawerMenu {...props} />}
