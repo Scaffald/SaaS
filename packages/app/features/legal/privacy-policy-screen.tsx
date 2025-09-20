@@ -1,27 +1,14 @@
-import { H1, Paragraph, YStack, isWeb } from '@my/ui'
+import { H1, ScrollView, YStack, isWeb } from '@my/ui'
+
+import { PrivacyPolicyContent } from './components/privacy-policy-content'
 
 export const PrivacyPolicyScreen = () => {
   return (
-    <YStack gap="$4" p="$4">
-      {/* only show title on web since mobile has navigator title */}
-      {isWeb && <H1>Privacy Policy</H1>}
-      <Paragraph>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae quidem neque maxime
-        soluta nostrum unde eligendi, culpa qui exercitationem modi quasi debitis voluptatibus,
-        deleniti porro! Nihil magni dicta neque aliquid.
-      </Paragraph>
-
-      <Paragraph>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae quidem neque maxime
-        soluta nostrum unde eligendi, culpa qui exercitationem modi quasi debitis voluptatibus,
-        deleniti porro! Nihil magni dicta neque aliquid.
-      </Paragraph>
-
-      <Paragraph>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae quidem neque maxime
-        soluta nostrum unde eligendi, culpa qui exercitationem modi quasi debitis voluptatibus,
-        deleniti porro! Nihil magni dicta neque aliquid.
-      </Paragraph>
-    </YStack>
+    <ScrollView flex={1} showsVerticalScrollIndicator>
+      <YStack gap="$4" px="$4" py="$6" maw={800} mx="auto">
+        {isWeb && <H1>Privacy Policy</H1>}
+        <PrivacyPolicyContent />
+      </YStack>
+    </ScrollView>
   )
 }
