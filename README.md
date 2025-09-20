@@ -251,7 +251,7 @@ The main apps are:
     - `provider` All providers that wrap the app, sometimes forked by platform.
 - `supabase` Supabase files, migrations, types, etc. + [scripts](/supabase/README.md)
 
-Note that the main entry point for the Expo app is at `apps/expo/app/(tabs)/index.tsx`. This is because folders in parenthesis are flattened and Expo Router finds the first index.tsx file. For more on how Expo Router works, [check out their docs](https://docs.expo.dev/router/create-pages/).
+Note that the main entry point for the Expo app is at `apps/expo/app/(drawer)/index.tsx`. This is because folders in parenthesis are flattened and Expo Router finds the first index.tsx file. For more on how Expo Router works, [check out their docs](https://docs.expo.dev/router/create-pages/).
 
 ## Layouts
 
@@ -472,7 +472,7 @@ This error is likely caused my not having Supabase setup correctly and running i
 
 - Where is the initial page that gets rendered on the Expo app?
 
-We recommend you familiarize yourself with how Expo Router handles routing on [their docs](https://docs.expo.dev/router/introduction/). In a fresh project, the initial page would be on `apps/expo/app/(tabs)/index.tsx`.
+We recommend you familiarize yourself with how Expo Router handles routing on [their docs](https://docs.expo.dev/router/introduction/). In a fresh project, the initial page would be on `apps/expo/app/(drawer)/index.tsx`.
 
 ## Troubleshooting
 

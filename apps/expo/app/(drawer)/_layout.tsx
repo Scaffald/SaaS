@@ -1,19 +1,56 @@
 import { DrawerMenu } from '@my/app/features/drawer-menu'
-import { getTokens, useMedia } from '@my/ui'
+import { Button, getTokens, useTheme } from '@my/ui'
+import { DrawerActions } from '@react-navigation/native'
+import { Menu, Plus } from '@tamagui/lucide-icons'
+import { router } from 'expo-router'
 import { Drawer } from 'expo-router/drawer'
+import { useMedia } from 'tamagui'
 
 export default function Layout() {
   const media = useMedia()
   const tokens = getTokens()
+  const { accentColor } = useTheme()
+
   const drawerWidth = media.gtSm ? tokens.size.$20.val : tokens.size.$10.val
+  const isDesktop = media.gtSm
 
   return (
     <Drawer
-      screenOptions={{
-        headerShown: false,
-        drawerType: media.gtSm ? 'permanent' : 'front',
-        swipeEnabled: !media.gtSm,
-        overlayColor: 'rgba(10,10,10,0.15)',
+      screenOptions={({ navigation }) => ({
+        headerShown: true,
+        headerTintColor: accentColor.val,
+        headerLeft: isDesktop
+          ? undefined
+          : () => (
+              <Button
+                borderStyle="unset"
+                borderWidth={0}
+                backgroundColor="transparent"
+                marginLeft="$-1"
+                paddingHorizontal="$4"
+                onPress={() => {
+                  navigation.dispatch(DrawerActions.toggleDrawer())
+                }}
+              >
+                <Menu size={24} />
+              </Button>
+            ),
+        headerRight: () => (
+          <Button
+            borderStyle="unset"
+            borderWidth={0}
+            marginRight="$-1"
+            backgroundColor="transparent"
+            onPress={() => {
+              router.navigate('/create')
+            }}
+          >
+            <Plus size={24} />
+          </Button>
+        ),
+        drawerType: isDesktop ? 'permanent' : 'front',
+        swipeEnabled: !isDesktop,
+        overlayColor: isDesktop ? 'transparent' : 'rgba(10,10,10,0.15)',
         drawerStyle: {
           width: drawerWidth,
           backgroundColor: 'transparent',
@@ -24,8 +61,12 @@ export default function Layout() {
         drawerContentStyle: {
           padding: 0,
         },
-      }}
+      })}
       drawerContent={(props) => <DrawerMenu {...props} />}
-    />
+    >
+      <Drawer.Screen name="index" options={{ title: 'Home' }} />
+      <Drawer.Screen name="discover" options={{ title: 'Discover' }} />
+      <Drawer.Screen name="profile" options={{ title: 'Profile' }} />
+    </Drawer>
   )
 }
