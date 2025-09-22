@@ -221,8 +221,15 @@ begin
     raise exception 'Visibility must be public or private';
   end if;
 
+  v_base_slug := lower(trim(p_slug));
+
+  if v_base_slug is not null and v_base_slug <> '' then
+    v_base_slug := regexp_replace(v_base_slug, '[^a-z0-9]+', '-', 'g');
+    v_base_slug := regexp_replace(v_base_slug, '(^-|-$)', '', 'g');
+  end if;
+
   v_base_slug := coalesce(
-    nullif(lower(trim(p_slug)), ''),
+    nullif(v_base_slug, ''),
     lower(regexp_replace(trim(p_name), '[^a-z0-9]+', '-', 'g'))
   );
 
