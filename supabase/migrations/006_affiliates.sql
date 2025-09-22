@@ -6,13 +6,18 @@
 
 begin;
 
--- Enum to describe the type of affiliate relationship
-create type if not exists public.affiliate_type as enum (
-  'education',
-  'certification',
-  'training',
-  'resource'
-);
+do $$
+begin
+  if not exists (select 1 from pg_type where typname = 'affiliate_type') then
+    create type public.affiliate_type as enum (
+      'education',
+      'certification',
+      'training',
+      'resource'
+    );
+  end if;
+end
+$$;
 
 create table if not exists public.affiliates (
   id uuid primary key default gen_random_uuid(),
