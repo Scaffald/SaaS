@@ -21,7 +21,13 @@ type FilterFlyoutProps = {
   onClear?: () => void
 }
 
-export const FilterFlyout = ({ label, summary, children, isCompact = false, onClear }: FilterFlyoutProps) => {
+export const FilterFlyout = ({
+  label,
+  summary,
+  children,
+  isCompact = false,
+  onClear,
+}: FilterFlyoutProps) => {
   const triggerLabel = summary ? `${label}: ${summary}` : label
 
   const renderContent = (variant: 'popover' | 'sheet') => (
@@ -71,9 +77,7 @@ export const FilterFlyout = ({ label, summary, children, isCompact = false, onCl
           <Sheet.Overlay />
           <Sheet.Handle />
           <Sheet.Frame>
-            <Sheet.ScrollView>
-              {renderContent('sheet')}
-            </Sheet.ScrollView>
+            <Sheet.ScrollView>{renderContent('sheet')}</Sheet.ScrollView>
           </Sheet.Frame>
         </Sheet>
       </Adapt>

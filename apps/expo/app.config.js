@@ -2,7 +2,9 @@ import 'dotenv/config'
 
 const {
   MAPBOX_DOWNLOADS_TOKEN = '',
-  MAPBOX_PUBLIC_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? '',
+  MAPBOX_PUBLIC_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ??
+    process.env.EXPO_PUBLIC_MAPBOX_TOKEN ??
+    '',
   NEXT_PUBLIC_MAPBOX_STYLE_URL = process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL ?? '',
   NEXT_PUBLIC_MAPBOX_API_URL = process.env.EXPO_PUBLIC_MAPBOX_API_URL ?? 'https://api.mapbox.com',
 } = process.env

@@ -10,11 +10,15 @@ import { createRadiusFeature, radiusToZoomLevel } from './geometry'
 let isTokenInitialized = false
 
 const getConfig = () => {
-  const extras = Constants.expoConfig?.extra as { mapbox?: { accessToken?: string; styleURL?: string } }
+  const extras = Constants.expoConfig?.extra as {
+    mapbox?: { accessToken?: string; styleURL?: string }
+  }
   return {
     accessToken: extras?.mapbox?.accessToken ?? process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? '',
     styleURL:
-      extras?.mapbox?.styleURL ?? process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL ?? MapboxGL.StyleURL.Street,
+      extras?.mapbox?.styleURL ??
+      process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL ??
+      MapboxGL.StyleURL.Street,
   }
 }
 
@@ -40,7 +44,10 @@ export const TalentMap = ({
     return createRadiusFeature(center, radiusMeters)
   }, [center, radiusMeters])
 
-  const zoomLevel = useMemo(() => (radiusMeters ? radiusToZoomLevel(radiusMeters) : 8), [radiusMeters])
+  const zoomLevel = useMemo(
+    () => (radiusMeters ? radiusToZoomLevel(radiusMeters) : 8),
+    [radiusMeters]
+  )
 
   return (
     <View flex={1} position="relative" overflow="hidden" borderRadius="$5">

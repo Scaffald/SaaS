@@ -5,7 +5,7 @@ const EARTH_RADIUS_METERS = 6378137
 export const createRadiusFeature = (
   center: [number, number],
   radiusMeters: number,
-  points = 64,
+  points = 64
 ): Feature<Polygon> => {
   const [lng, lat] = center
   const toRadians = (degrees: number) => (degrees * Math.PI) / 180
@@ -20,13 +20,13 @@ export const createRadiusFeature = (
     const bearing = (2 * Math.PI * i) / points
     const latitude = Math.asin(
       Math.sin(latitudeRadians) * Math.cos(angularDistance) +
-        Math.cos(latitudeRadians) * Math.sin(angularDistance) * Math.cos(bearing),
+        Math.cos(latitudeRadians) * Math.sin(angularDistance) * Math.cos(bearing)
     )
     const longitude =
       longitudeRadians +
       Math.atan2(
         Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(latitudeRadians),
-        Math.cos(angularDistance) - Math.sin(latitudeRadians) * Math.sin(latitude),
+        Math.cos(angularDistance) - Math.sin(latitudeRadians) * Math.sin(latitude)
       )
     coordinates.push([toDegrees(longitude), toDegrees(latitude)])
   }

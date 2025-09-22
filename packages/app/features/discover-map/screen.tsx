@@ -1,16 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import {
-  Button,
-  Paragraph,
-  Separator,
-  Sheet,
-  Text,
-  XStack,
-  YStack,
-  useMedia,
-} from '@my/ui'
+import { Button, Paragraph, Separator, Sheet, Text, XStack, YStack, useMedia } from '@my/ui'
 import { Filter, MapPin, RefreshCw } from '@tamagui/lucide-icons'
 
 import { FilterBar } from './components/FilterBar'
@@ -26,11 +17,19 @@ const metersToMilesLabel = (meters: number) => {
 }
 
 const INITIAL_FILTERS: ActiveFilter[] = [
-  { id: 'location:marlborough', label: 'Marlborough, Connecticut, United States', category: 'location' },
+  {
+    id: 'location:marlborough',
+    label: 'Marlborough, Connecticut, United States',
+    category: 'location',
+  },
   { id: 'radius:<50', label: 'Radius: < 50 mi', category: 'radius' },
   { id: 'score:40', label: 'Elevate score: > 40', category: 'other' },
   { id: 'skills:hardwood', label: 'Skills: Hardwood, Exterior, Interior', category: 'skill' },
-  { id: 'cert:osha', label: 'Certification: OSHA Outreach · Construction', category: 'certification' },
+  {
+    id: 'cert:osha',
+    label: 'Certification: OSHA Outreach · Construction',
+    category: 'certification',
+  },
 ]
 
 export const DiscoverMapScreen = () => {
@@ -40,7 +39,9 @@ export const DiscoverMapScreen = () => {
   const [locationQuery, setLocationQuery] = useState('Marlborough, Connecticut, United States')
   const [radiusMeters] = useState(defaultRadiusMeters)
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>(INITIAL_FILTERS)
-  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(mockTalentProfiles[0]?.id ?? null)
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(
+    mockTalentProfiles[0]?.id ?? null
+  )
   const [filtersOpen, setFiltersOpen] = useState(false)
 
   const markers: TalentMarker[] = useMemo(
@@ -51,9 +52,8 @@ export const DiscoverMapScreen = () => {
         title: profile.organization ?? 'Worker',
         metric: `e ${profile.score}`,
       })),
-    [],
+    []
   )
-
 
   return (
     <YStack flex={1} backgroundColor="$backgroundSoft" padding="$5" gap="$4">
@@ -65,7 +65,8 @@ export const DiscoverMapScreen = () => {
           </Text>
         </XStack>
         <Paragraph maxWidth={680} color="$color11">
-          Search by location, certifications, and skill focus to see available workers and organizations on the map.
+          Search by location, certifications, and skill focus to see available workers and
+          organizations on the map.
         </Paragraph>
       </YStack>
 
@@ -127,12 +128,18 @@ export const DiscoverMapScreen = () => {
             <Text fontSize="$5" fontWeight="700">
               Filters
             </Text>
-            <Button size="$2" theme="gray" icon={RefreshCw} onPress={() => setActiveFilters(INITIAL_FILTERS)}>
+            <Button
+              size="$2"
+              theme="gray"
+              icon={RefreshCw}
+              onPress={() => setActiveFilters(INITIAL_FILTERS)}
+            >
               Reset
             </Button>
           </XStack>
           <Paragraph color="$color11">
-            Filter controls will connect to live data in a follow-up pass. For now this keeps the layout and interactions consistent across web and native.
+            Filter controls will connect to live data in a follow-up pass. For now this keeps the
+            layout and interactions consistent across web and native.
           </Paragraph>
           <Separator />
           <YStack gap="$3">
@@ -147,7 +154,12 @@ export const DiscoverMapScreen = () => {
                 padding="$3"
               >
                 <Text fontWeight="600">{filter.label}</Text>
-                <Button size="$2" theme="surface2" icon={Filter} onPress={() => setFiltersOpen(false)}>
+                <Button
+                  size="$2"
+                  theme="surface2"
+                  icon={Filter}
+                  onPress={() => setFiltersOpen(false)}
+                >
                   Adjust
                 </Button>
               </XStack>

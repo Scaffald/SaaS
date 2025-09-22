@@ -38,7 +38,9 @@ export const HomeLayout = ({ children, fullPage = false, padded = false }: HomeL
     ),
     ...quickLinks,
   ]
-  const activeItem = allNavItems.find((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
+  const activeItem = allNavItems.find(
+    (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
+  )
   const headerTitle = activeItem?.title ?? 'Dashboard'
 
   return (
@@ -119,15 +121,7 @@ const CtaButton = (props: ButtonProps) => {
 
   return (
     <Theme inverse>
-      <Button
-        {...discoverLink}
-        size="$3"
-        space="$1.5"
-        my="$-1"
-        icon={MapIcon}
-        br="$10"
-        {...props}
-      >
+      <Button {...discoverLink} size="$3" space="$1.5" my="$-1" icon={MapIcon} br="$10" {...props}>
         Discover
       </Button>
     </Theme>
