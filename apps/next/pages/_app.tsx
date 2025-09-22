@@ -23,14 +23,33 @@ export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode
 }
 
+// Create a separate component that uses the hook inside the provider context
+function AppWithTheme({
+  Component,
+  pageProps,
+  router,
+}: SolitoAppProps<{ initialSession: AuthProviderProps['initialSession'] }>) {
+  const [, setTheme] = useRootTheme()
+  const getLayout = Component.getLayout || ((page) => page)
+
+  return (
+    <NextThemeProvider
+      onChangeTheme={(next) => {
+        setTheme(next as ColorScheme)
+      }}
+    >
+      <Provider initialSession={pageProps.initialSession}>
+        {getLayout(<Component {...pageProps} />)}
+      </Provider>
+    </NextThemeProvider>
+  )
+}
+
 function MyApp({
   Component,
   pageProps,
+  router,
 }: SolitoAppProps<{ initialSession: AuthProviderProps['initialSession'] }>) {
-  // reference: https://nextjs.org/docs/pages/building-your-application/routing/pages-and-layouts
-  const getLayout = Component.getLayout || ((page) => page)
-  const [, setTheme] = useRootTheme()
-
   return (
     <>
       <Head>
@@ -39,15 +58,7 @@ function MyApp({
         <link rel="icon" href="/favicon.svg" />
         <link rel="stylesheet" href="/tamagui.css" />
       </Head>
-      <NextThemeProvider
-        onChangeTheme={(next) => {
-          setTheme(next as ColorScheme)
-        }}
-      >
-        <Provider initialSession={pageProps.initialSession}>
-          {getLayout(<Component {...pageProps} />)}
-        </Provider>
-      </NextThemeProvider>
+      <AppWithTheme Component={Component} pageProps={pageProps} router={router} />
     </>
   )
 }

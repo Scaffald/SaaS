@@ -1,6 +1,5 @@
 import { DatePickerProvider } from '@rehookify/datepicker'
 import { Session } from '@supabase/supabase-js'
-import { GlobalStoreProvider } from 'app/utils/global-store'
 import React from 'react'
 
 import { AuthProvider } from './auth'
@@ -49,5 +48,4 @@ const Providers = compose([
   CookieConsentProvider,
   ToastProvider,
   QueryClientProvider,
-  GlobalStoreProvider,
 ])
