@@ -262,8 +262,8 @@ We've decided not to move to app dir just yet, but since layouts are crucial to 
 You can define these layouts anywhere but we've been keeping them in `layout.web.tsx` files in the `features` directory as needed. You can then use them like so:
 
 ```tsx
-import { MyPageScreen } from 'app/features/myfeat/screen'
-import { MyLayout } from 'app/features/myfeat/layout.web'
+import { MyPageScreen } from '@app/features/myfeat/screen'
+import { MyLayout } from '@app/features/myfeat/layout.web'
 import Head from 'next/head'
 import { NextPageWithLayout } from './_app'
 
@@ -414,7 +414,7 @@ We actively maintain the starter and add new features and updates to it.
 
 Note we're following the [design systems guide](https://tamagui.dev/docs/guides/design-systems) and creating our own package for components.
 
-See `packages/ui` named `@my/ui` for how this works.
+See `packages/ui` named `@app/ui` for how this works.
 
 ## Adding new dependencies
 

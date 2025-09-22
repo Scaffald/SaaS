@@ -6,7 +6,8 @@
     "../app/package.json",
     "../api/src",
     "../api/package.json",
-    "../../package.json"
+    "../../package.json",
+    "../../supabase"
   ],
   "compilerOptions": {
     "noEmit": true,

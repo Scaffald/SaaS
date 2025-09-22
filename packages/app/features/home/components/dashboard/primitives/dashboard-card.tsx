@@ -1,4 +1,4 @@
-import { Card, type CardProps } from '@my/ui'
+import { Card, type CardProps } from '@app/ui'
 
 export type DashboardCardProps = CardProps
 

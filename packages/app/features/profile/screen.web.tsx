@@ -1,4 +1,4 @@
-import { ScrollView, getTokens } from '@my/ui'
+import { ScrollView, getTokens } from '@app/ui'
 
 import { ProfileLayout } from './profile-layout'
 

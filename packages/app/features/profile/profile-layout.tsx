@@ -1,6 +1,6 @@
-import { Avatar, Paragraph, Settings, XStack, YStack, getTokens } from '@my/ui'
+import { Avatar, Paragraph, Settings, XStack, YStack, getTokens } from '@app/ui'
 import { Box, Cog, Milestone, ShoppingCart, User, Users } from '@tamagui/lucide-icons'
-import { useUser } from 'app/utils/useUser'
+import { useUser } from '@app/utils/useUser'
 import { SolitoImage } from 'solito/image'
 import { useLink } from 'solito/link'
 

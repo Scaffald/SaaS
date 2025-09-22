@@ -10,13 +10,13 @@ import {
   YStack,
   getTokens,
   useMedia,
-} from '@my/ui'
+} from '@app/ui'
 import { Dialog } from 'tamagui'
 import { Map as MapIcon, Menu } from '@tamagui/lucide-icons'
-import { StaticDrawer } from 'app/features/drawer-menu/StaticDrawer.web'
-import { drawerSections, normalizePath, quickLinks } from 'app/features/drawer-menu'
-import { usePathname } from 'app/utils/usePathname'
-import { useUser } from 'app/utils/useUser'
+import { StaticDrawer } from '@app/features/drawer-menu/StaticDrawer.web'
+import { drawerSections, normalizePath, quickLinks } from '@app/features/drawer-menu'
+import { usePathname } from '@app/utils/usePathname'
+import { useUser } from '@app/utils/useUser'
 import { useState } from 'react'
 import { SolitoImage } from 'solito/image'
 import { Link, useLink } from 'solito/link'

@@ -1,4 +1,4 @@
-import { Database } from '@my/supabase/types'
+import { Database } from '@app/supabase/types'
 import { createClient } from '@supabase/supabase-js'
 import * as SecureStore from 'expo-secure-store'
 

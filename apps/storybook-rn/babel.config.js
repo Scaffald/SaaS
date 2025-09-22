@@ -11,7 +11,7 @@ module.exports = (api) => {
             [
               '@tamagui/babel-plugin',
               {
-                components: ['@my/ui', 'tamagui'],
+                components: ['@app/ui', 'tamagui'],
                 config: '../../packages/ui/src/tamagui.config.ts',
                 disable: true,
               },

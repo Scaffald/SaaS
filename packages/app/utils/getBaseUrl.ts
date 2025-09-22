@@ -1,4 +1,4 @@
-import { isWeb } from '@my/ui'
+import { isWeb } from '@app/ui'
 
 import { replaceLocalhost } from './getLocalhost.native'
 

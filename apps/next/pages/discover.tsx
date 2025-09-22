@@ -1,6 +1,6 @@
 import Head from 'next/head'
 
-import { DiscoverMapScreen } from 'app/features/discover-map'
+import { DiscoverMapScreen } from '@app/features/discover-map'
 import type { NextPageWithLayout } from './_app'
 
 export const Page: NextPageWithLayout = () => {

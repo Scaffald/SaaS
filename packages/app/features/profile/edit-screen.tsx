@@ -7,11 +7,11 @@ import {
   View,
   YStack,
   useToastController,
-} from '@my/ui'
+} from '@app/ui'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { SchemaForm, formFields } from 'app/utils/SchemaForm'
-import { useSupabase } from 'app/utils/supabase/useSupabase'
-import { useUser } from 'app/utils/useUser'
+import { SchemaForm, formFields } from '@app/utils/SchemaForm'
+import { useSupabase } from '@app/utils/supabase/useSupabase'
+import { useUser } from '@app/utils/useUser'
 import { createParam } from 'solito'
 import { SolitoImage } from 'solito/image'
 import { useRouter } from 'solito/router'

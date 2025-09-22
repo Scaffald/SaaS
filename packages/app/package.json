@@ -4,7 +4,9 @@
   "main": "index.ts",
   "types": "./index.ts",
   "private": true,
-  "sideEffects": ["*.css"],
+  "sideEffects": [
+    "*.css"
+  ],
   "scripts": {
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
@@ -12,9 +14,9 @@
     "check:type:watch": "yarn check:type -w"
   },
   "dependencies": {
-    "@my/api": "*",
-    "@my/supabase": "*",
-    "@my/ui": "*",
+    "@app/api": "*",
+    "@app/supabase": "*",
+    "@app/ui": "*",
     "@react-native-async-storage/async-storage": "2.1.2",
     "@rehookify/datepicker": "^6.6.6",
     "@rnmapbox/maps": "^10.1.44",

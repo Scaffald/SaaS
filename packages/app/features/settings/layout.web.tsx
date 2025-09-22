@@ -1,5 +1,5 @@
-import { Separator, XStack, YStack, styled } from '@my/ui'
-import { useUser } from 'app/utils/useUser'
+import { Separator, XStack, YStack, styled } from '@app/ui'
+import { useUser } from '@app/utils/useUser'
 
 import { SettingsScreen } from './screen'
 

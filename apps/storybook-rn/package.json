@@ -13,7 +13,7 @@
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
     "@gorhom/bottom-sheet": "^5.1.6",
-    "@my/ui": "*",
+    "@app/ui": "*",
     "@react-native-community/datetimepicker": "8.3.0",
     "app": "*",
     "expo": "53.0.9",

@@ -1,4 +1,4 @@
-import { ScrollView, Separator, Text, XStack, YStack } from '@my/ui'
+import { ScrollView, Separator, Text, XStack, YStack } from '@app/ui'
 
 import type { TalentProfile } from '../types'
 import { ResultCard } from './ResultCard'

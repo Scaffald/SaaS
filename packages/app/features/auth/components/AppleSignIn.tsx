@@ -1,5 +1,5 @@
-import { Button } from '@my/ui'
-import { useSupabase } from 'app/utils/supabase/useSupabase'
+import { Button } from '@app/ui'
+import { useSupabase } from '@app/utils/supabase/useSupabase'
 import { useRouter } from 'solito/router'
 
 import { IconApple } from './IconApple'

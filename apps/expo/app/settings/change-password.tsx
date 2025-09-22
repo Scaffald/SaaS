@@ -1,4 +1,4 @@
-import { ChangePasswordScreen } from 'app/features/settings/change-password-screen'
+import { ChangePasswordScreen } from '@app/features/settings/change-password-screen'
 import { Stack } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 

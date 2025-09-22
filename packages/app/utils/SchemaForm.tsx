@@ -13,12 +13,12 @@ import {
   TextAreaField,
   TextField,
   Theme,
-} from '@my/ui'
-import { DateField, DateSchema } from '@my/ui/src/components/FormFields/DateField'
+} from '@app/ui'
+import { DateField, DateSchema } from '@app/ui/src/components/FormFields/DateField'
 import {
   ImagePickerField,
   ImagePickerSchema,
-} from '@my/ui/src/components/FormFields/ImagePickerField'
+} from '@app/ui/src/components/FormFields/ImagePickerField'
 import { createTsForm, createUniqueFieldSchema } from '@ts-react/form'
 import type { ComponentProps } from 'react'
 import { useFormContext } from 'react-hook-form'

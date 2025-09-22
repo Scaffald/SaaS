@@ -9,15 +9,17 @@
     "package.json",
     "../../package.json",
     "../ui/src",
-    "../api/src"
+    "../api/src",
+    "../../supabase"
   ],
   "compilerOptions": {
     "noEmit": true,
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "app/*": ["./*"],
-      "@my/*": ["../*"]
+      "@app/*": ["./*", "../*"],
+      "@app/supabase": ["../../supabase"],
+      "@app/supabase/*": ["../../supabase/*"]
     },
     "plugins": []
   },

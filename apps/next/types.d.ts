@@ -1,5 +1,5 @@
-export type Conf = typeof import('@my/ui').config
+export type Conf = typeof import('@app/ui').config
 
-declare module '@my/ui' {
+declare module '@app/ui' {
   interface TamaguiCustomConfig extends Conf {}
 }
