@@ -98,7 +98,6 @@ export const ImagePicker = forwardRef<
           </Label>
         </View>
       </View>
-
       <ScrollView
         display={images.length ? 'flex' : 'none'}
         flexDirection="row"
@@ -141,5 +140,5 @@ export const ImagePicker = forwardRef<
         </XStack>
       </ScrollView>
     </View>
-  )
+  );
 })
