@@ -11,9 +11,9 @@
     "android": "cross-env EXPO_PUBLIC_STORYBOOK_ENABLED=true expo start --android -c"
   },
   "dependencies": {
+    "@app/ui": "*",
     "@expo/vector-icons": "^14.1.0",
     "@gorhom/bottom-sheet": "^5.1.6",
-    "@app/ui": "*",
     "@react-native-community/datetimepicker": "8.3.0",
     "app": "*",
     "expo": "53.0.9",

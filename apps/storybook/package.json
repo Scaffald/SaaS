@@ -10,8 +10,8 @@
     "serve-sb": "npx serve ./public-storybook"
   },
   "dependencies": {
-    "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
     "@app/ui": "*",
+    "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
     "app": "*",
     "react": "19.0.0",
     "react-dom": "19.0.0",
