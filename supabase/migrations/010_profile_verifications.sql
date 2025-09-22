@@ -48,11 +48,13 @@ security definer
 set search_path = public
 as $$
 begin
-  if p_subject_type = 'user' and p_field = 'skills.list' then
-    update public.user_skills
-    set source = 'verified',
-        last_verified_at = p_verified_at
-    where user_id = p_subject_id;
+  if to_regclass('public.user_skills') is not null then
+    if p_subject_type = 'user' and p_field = 'skills.list' then
+      update public.user_skills
+      set source = 'verified',
+          last_verified_at = p_verified_at
+      where user_id = p_subject_id;
+    end if;
   end if;
 end;
 $$;
@@ -68,11 +70,13 @@ security definer
 set search_path = public
 as $$
 begin
-  if p_subject_type = 'user' and array_position(p_fields, 'skills.list') is not null then
-    update public.user_skills
-    set source = 'self',
-        last_verified_at = null
-    where user_id = p_subject_id;
+  if to_regclass('public.user_skills') is not null then
+    if p_subject_type = 'user' and array_position(p_fields, 'skills.list') is not null then
+      update public.user_skills
+      set source = 'self',
+          last_verified_at = null
+      where user_id = p_subject_id;
+    end if;
   end if;
 end;
 $$;
@@ -320,7 +324,7 @@ begin
     v_fields := array_append(v_fields, 'basic.industry');
   end if;
 
-  if coalesce(new.years_of_experience, -1) is distinct from coalesce(old.years_of_experience, -1) then
+  if new.years_of_experience is distinct from old.years_of_experience then
     v_fields := array_append(v_fields, 'basic.experience');
   end if;
 
@@ -369,7 +373,7 @@ begin
     v_fields := array_append(v_fields, 'contact.address');
   end if;
 
-  if coalesce(new.geo, 'POINT(0 0)'::geography) is distinct from coalesce(old.geo, 'POINT(0 0)'::geography) then
+  if new.geo is distinct from old.geo then
     v_fields := array_append(v_fields, 'contact.geo');
   end if;
 
@@ -389,7 +393,7 @@ begin
     v_fields := array_append(v_fields, 'background.us_passport');
   end if;
 
-  if coalesce(new.travel_mileage, -1) is distinct from coalesce(old.travel_mileage, -1) then
+  if new.travel_mileage is distinct from old.travel_mileage then
     v_fields := array_append(v_fields, 'background.travel_mileage');
   end if;
 
@@ -397,7 +401,7 @@ begin
     v_fields := array_append(v_fields, 'background.education');
   end if;
 
-  if coalesce(new.hourly_rate_cents, -1) is distinct from coalesce(old.hourly_rate_cents, -1) then
+  if new.hourly_rate_cents is distinct from old.hourly_rate_cents then
     v_fields := array_append(v_fields, 'compensation.hourly_rate');
   end if;
 
@@ -511,7 +515,7 @@ begin
     v_fields := array_append(v_fields, 'projects.zip');
   end if;
 
-  if coalesce(new.number_of_days, -1) is distinct from coalesce(old.number_of_days, -1) then
+  if new.number_of_days is distinct from old.number_of_days then
     v_fields := array_append(v_fields, 'projects.duration');
   end if;
 
