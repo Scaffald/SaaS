@@ -1,7 +1,17 @@
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
 import { useFieldInfo, useTsController } from '@ts-react/form'
 import React, { useId, useState } from 'react'
-import { Adapt, Fieldset, Label, Select, type SelectProps, Sheet, Theme, YStack } from 'tamagui'
+import {
+  Adapt,
+  Fieldset,
+  Label,
+  Select,
+  type SelectProps,
+  Sheet,
+  Theme,
+  YStack,
+  useDidFinishSSR,
+} from 'tamagui'
 import { LinearGradient } from 'tamagui/linear-gradient'
 
 import { FieldError } from '../FieldError'
@@ -32,6 +42,7 @@ export const SelectField = ({
   // const disabled = isSubmitting
 
   const items = options
+  const isHydrated = useDidFinishSSR()
 
   return (
     <Theme name={error ? 'red' : null} forceClassName>
@@ -52,34 +63,36 @@ export const SelectField = ({
             <Select.Value placeholder={placeholder} />
           </Select.Trigger>
 
-          <Adapt when="sm" platform="touch">
-            <Sheet
-              zIndex={1000}
-              native={!!native}
-              dismissOnSnapToBottom
-              modal
-              animationConfig={{
-                type: 'spring',
-                damping: 20,
-                mass: 1.2,
-                stiffness: 250,
-              }}
-              snapPointsMode="fit"
-            >
-              <Sheet.Frame marginBottom="$12">
-                <Sheet.ScrollView>
-                  <Adapt.Contents />
-                </Sheet.ScrollView>
-              </Sheet.Frame>
-              <Sheet.Overlay
-                opacity={0.5}
-                animation="lazy"
-                enterStyle={{ opacity: 0 }}
-                exitStyle={{ opacity: 0 }}
-                zIndex={0}
-              />
-            </Sheet>
-          </Adapt>
+          {isHydrated ? (
+            <Adapt when="sm" platform="touch">
+              <Sheet
+                zIndex={1000}
+                native={!!native}
+                dismissOnSnapToBottom
+                modal
+                animationConfig={{
+                  type: 'spring',
+                  damping: 20,
+                  mass: 1.2,
+                  stiffness: 250,
+                }}
+                snapPointsMode="fit"
+              >
+                <Sheet.Frame marginBottom="$12">
+                  <Sheet.ScrollView>
+                    <Adapt.Contents />
+                  </Sheet.ScrollView>
+                </Sheet.Frame>
+                <Sheet.Overlay
+                  opacity={0.5}
+                  animation="lazy"
+                  enterStyle={{ opacity: 0 }}
+                  exitStyle={{ opacity: 0 }}
+                  zIndex={0}
+                />
+              </Sheet>
+            </Adapt>
+          ) : null}
 
           <Select.Content>
             {/* <Select.ScrollUpButton

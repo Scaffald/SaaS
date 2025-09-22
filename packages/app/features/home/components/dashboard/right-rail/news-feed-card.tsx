@@ -12,6 +12,7 @@ import {
   XStack,
   YStack,
   isWeb,
+  useDidFinishSSR,
 } from '@app/ui'
 import { ArrowRight, Check, ChevronDown } from '@tamagui/lucide-icons'
 import { Sheet } from 'tamagui'
@@ -45,7 +46,10 @@ const decodeEntities = (value: string) =>
     .replace(/&quot;/gi, '"')
     .replace(/&#39;|&apos;/gi, "'")
 
-const stripHtml = (input: string) => decodeEntities(input.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim()
+const stripHtml = (input: string) =>
+  decodeEntities(input.replace(/<[^>]+>/g, ' '))
+    .replace(/\s+/g, ' ')
+    .trim()
 
 const formatPublishDate = (value?: string) => {
   if (!value) return undefined
@@ -115,12 +119,13 @@ export const NewsFeedCard = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [requestVersion, setRequestVersion] = useState(0)
+  const isHydrated = useDidFinishSSR()
 
   const selectedSource = useMemo<NewsSource | undefined>(
     () =>
       NEWS_SOURCE_LOOKUP[selectedSourceId] ??
       (DEFAULT_NEWS_SOURCE_ID ? NEWS_SOURCE_LOOKUP[DEFAULT_NEWS_SOURCE_ID] : undefined),
-    [selectedSourceId],
+    [selectedSourceId]
   )
 
   useEffect(() => {
@@ -186,20 +191,22 @@ export const NewsFeedCard = () => {
           <Select.Trigger minWidth="100%" iconAfter={ChevronDown}>
             <Select.Value placeholder="Choose a news source" />
           </Select.Trigger>
-          <Adapt when="sm" platform="touch">
-            <Sheet animation="medium" dismissOnSnapToBottom modal snapPointsMode="fit">
-              <Sheet.Frame marginBottom="$4">
-                <Sheet.ScrollView>
-                  <Adapt.Contents />
-                </Sheet.ScrollView>
-              </Sheet.Frame>
-              <Sheet.Overlay
-                animation="lazy"
-                enterStyle={{ opacity: 0 }}
-                exitStyle={{ opacity: 0 }}
-              />
-            </Sheet>
-          </Adapt>
+          {isHydrated ? (
+            <Adapt when="sm" platform="touch">
+              <Sheet animation="medium" dismissOnSnapToBottom modal snapPointsMode="fit">
+                <Sheet.Frame marginBottom="$4">
+                  <Sheet.ScrollView>
+                    <Adapt.Contents />
+                  </Sheet.ScrollView>
+                </Sheet.Frame>
+                <Sheet.Overlay
+                  animation="lazy"
+                  enterStyle={{ opacity: 0 }}
+                  exitStyle={{ opacity: 0 }}
+                />
+              </Sheet>
+            </Adapt>
+          ) : null}
           <Select.Content>
             <Select.Viewport minWidth={220}>
               {NEWS_SOURCES.map((source, index) => (
