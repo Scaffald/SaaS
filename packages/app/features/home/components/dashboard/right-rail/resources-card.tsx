@@ -1,4 +1,4 @@
-import { Paragraph, SizableText, YStack } from '@my/ui'
+import { Paragraph, SizableText, YStack } from '@app/ui'
 
 import { DashboardCard, SectionHeading } from '../primitives'
 

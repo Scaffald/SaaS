@@ -1,4 +1,4 @@
-import { Button, Paragraph, SizableText, XStack, YStack } from '@my/ui'
+import { Button, Paragraph, SizableText, XStack, YStack } from '@app/ui'
 import type { ReactNode } from 'react'
 
 export type OpportunityAction = {

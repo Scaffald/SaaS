@@ -1,4 +1,4 @@
-import { Paragraph, SizableText, XStack, YStack } from '@my/ui'
+import { Paragraph, SizableText, XStack, YStack } from '@app/ui'
 import type { ComponentProps, ReactNode } from 'react'
 
 export type SectionHeadingProps = {

@@ -1,7 +1,7 @@
-import { Button, FullscreenSpinner, ScrollView, View, XStack, YStack, isWeb } from '@my/ui'
+import { Button, FullscreenSpinner, ScrollView, View, XStack, YStack, isWeb } from '@app/ui'
 import { ArrowRight, Handshake, Megaphone } from '@tamagui/lucide-icons'
 
-import { useUser } from 'app/utils/useUser'
+import { useUser } from '@app/utils/useUser'
 
 import {
   AfterProfileSummaryCard,

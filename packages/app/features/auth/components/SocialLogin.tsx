@@ -1,4 +1,4 @@
-import { Separator, SizableText, YStack, isWeb } from '@my/ui'
+import { Separator, SizableText, YStack, isWeb } from '@app/ui'
 
 import { AppleSignIn } from './AppleSignIn'
 import { GoogleSignIn } from './GoogleSignIn'

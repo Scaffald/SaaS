@@ -8,7 +8,7 @@ import {
   Tabs,
   TabsProps,
   TabsTabProps,
-} from '@my/ui'
+} from '@app/ui'
 import { useRouter as useNextRouter } from 'next/router'
 import { useState } from 'react'
 import { useRouter } from 'solito/router'

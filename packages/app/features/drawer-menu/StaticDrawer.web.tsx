@@ -1,9 +1,9 @@
 'use client'
 
-import { YStack } from '@my/ui'
+import { YStack } from '@app/ui'
 
 import { DrawerContent, normalizePath } from './index'
-import { usePathname } from 'app/utils/usePathname'
+import { usePathname } from '@app/utils/usePathname'
 
 export const StaticDrawer = ({ onNavigate }: { onNavigate?: () => void } = {}) => {
   const pathname = normalizePath(usePathname())

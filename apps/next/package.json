@@ -16,7 +16,7 @@
     "check:type:watch": "yarn check:type -w"
   },
   "dependencies": {
-    "@my/ui": "*",
+    "@app/ui": "*",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/auth-helpers-react": "^0.5.0",
     "@supabase/supabase-js": "^2.48.1",

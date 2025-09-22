@@ -1,4 +1,4 @@
-import { XStack, YStack } from '@my/ui'
+import { XStack, YStack } from '@app/ui'
 
 import { OnboardingScreen } from './onboarding-screen'
 

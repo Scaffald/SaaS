@@ -1,4 +1,4 @@
-import type { Database } from '@my/supabase/types'
+import type { Database } from '@app/supabase/types'
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { createClient } from '@supabase/supabase-js'
 import { TRPCError, initTRPC } from '@trpc/server'
