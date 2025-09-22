@@ -19,6 +19,7 @@ import {
   BarChart3,
   ChevronRight,
   CircleUser,
+  Building2,
   Map,
   Settings2,
   Sparkles,
@@ -71,6 +72,20 @@ export const drawerSections: DrawerSectionConfig[] = [
         href: '/discover',
         icon: Map,
         theme: 'purple',
+      },
+    ],
+  },
+  {
+    key: 'organizations',
+    title: 'Organizations',
+    items: [
+      {
+        key: 'create-organization',
+        title: 'Create organization',
+        description: 'Set up a new company profile and invite your crew.',
+        href: '/organizations/new',
+        icon: Building2,
+        theme: 'green',
       },
     ],
   },
