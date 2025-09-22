@@ -10,6 +10,7 @@ import {
   DashboardHero,
   NewsFeedCard,
   OpportunitySection,
+  OrganizationQuickActionsCard,
   ProfileProgressSection,
   ResourceListCard,
   type OpportunityItem,
@@ -210,6 +211,8 @@ export function HomeScreen() {
       <ScrollView f={1} showsVerticalScrollIndicator contentContainerStyle={{ gap: 24 }}>
         <YStack gap="$5" pb="$8" pr="$2">
           <DashboardHero name={firstName} score={60} />
+
+          <OrganizationQuickActionsCard />
 
           <OpportunitySection
             title="Inquiries"

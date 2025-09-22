@@ -209,7 +209,76 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
-      }
+      },
+      organizations: {
+        Row: {
+          address: Json | null
+          annual_revenue_range: string | null
+          created_at: string
+          description: string | null
+          employee_count_range: string | null
+          geo: unknown | null
+          id: string
+          industry_id: string | null
+          logo_url: string | null
+          name: string
+          owner_user_id: string | null
+          slug: string
+          updated_at: string
+          visibility: 'public' | 'private'
+          website_url: string | null
+        }
+        Insert: {
+          address?: Json | null
+          annual_revenue_range?: string | null
+          created_at?: string
+          description?: string | null
+          employee_count_range?: string | null
+          geo?: unknown | null
+          id?: string
+          industry_id?: string | null
+          logo_url?: string | null
+          name: string
+          owner_user_id?: string | null
+          slug: string
+          updated_at?: string
+          visibility?: 'public' | 'private'
+          website_url?: string | null
+        }
+        Update: {
+          address?: Json | null
+          annual_revenue_range?: string | null
+          created_at?: string
+          description?: string | null
+          employee_count_range?: string | null
+          geo?: unknown | null
+          id?: string
+          industry_id?: string | null
+          logo_url?: string | null
+          name?: string
+          owner_user_id?: string | null
+          slug?: string
+          updated_at?: string
+          visibility?: 'public' | 'private'
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'organizations_industry_id_fkey'
+            columns: ['industry_id']
+            isOneToOne: false
+            referencedRelation: 'industries'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'organizations_owner_user_id_fkey'
+            columns: ['owner_user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      },
       profiles: {
         Row: {
           about: string | null
@@ -366,6 +435,72 @@ export type Database = {
           },
         ]
       }
+      roles: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          scope: 'platform' | 'organization' | 'team'
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          scope: 'platform' | 'organization' | 'team'
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          scope?: 'platform' | 'organization' | 'team'
+        }
+        Relationships: []
+      },
+      role_assignments: {
+        Row: {
+          created_at: string
+          id: string
+          role_id: string | null
+          scope_org_id: string | null
+          scope_team_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role_id?: string | null
+          scope_org_id?: string | null
+          scope_team_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role_id?: string | null
+          scope_org_id?: string | null
+          scope_team_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'role_assignments_role_id_fkey'
+            columns: ['role_id']
+            isOneToOne: false
+            referencedRelation: 'roles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'role_assignments_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      },
       referrals: {
         Row: {
           created_at: string
@@ -504,10 +639,46 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_organization_memberships: {
+        Row: {
+          address: Json | null
+          annual_revenue_range: string | null
+          assignment_id: string
+          employee_count_range: string | null
+          industry_id: string | null
+          is_admin: boolean
+          is_owner: boolean
+          organization_created_at: string
+          organization_description: string | null
+          organization_id: string | null
+          organization_name: string | null
+          organization_slug: string | null
+          organization_updated_at: string
+          owner_user_id: string | null
+          role_id: string | null
+          role_name: string | null
+          user_id: string | null
+          visibility: 'public' | 'private'
+          website_url: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      create_organization: {
+        Args: {
+          p_name: string
+          p_slug?: string | null
+          p_website_url?: string | null
+          p_industry_id?: string | null
+          p_employee_count_range?: string | null
+          p_annual_revenue_range?: string | null
+          p_description?: string | null
+          p_address?: Json | null
+          p_visibility?: 'public' | 'private' | null
+        }
+        Returns: Database['public']['Tables']['organizations']['Row']
+      }
     }
     Enums: {
       [_ in never]: never

@@ -123,13 +123,13 @@ export const SelectField = ({
               minWidth={200}
             >
               <Select.Group>
-                <Select.Label>Project Type</Select.Label>
+                <Select.Label>Options</Select.Label>
                 {/* for longer lists memoizing these is useful */}
                 {React.useMemo(
                   () =>
                     items.map((item, i) => {
                       return (
-                        <Select.Item index={i} key={item.name} value={item.name.toLowerCase()}>
+                        <Select.Item index={i} key={item.value} value={item.value}>
                           <Select.ItemText>{item.name}</Select.ItemText>
                           <Select.ItemIndicator marginLeft="auto">
                             <Check size={16} />
