@@ -7,13 +7,16 @@ import {
   AfterProfileSummaryCard,
   CareerInsightCard,
   CertificationSpotlightCard,
+  ConcreteCalculatorCard,
   DashboardHero,
   NewsFeedCard,
   OpportunitySection,
   ProfileProgressSection,
   ResourceListCard,
   type OpportunityItem,
+  type ResourceItem,
 } from './components/dashboard'
+import { useAffiliateResources } from './hooks/useAffiliateResources'
 
 const INQUIRIES: OpportunityItem[] = [
   {
@@ -152,7 +155,7 @@ const CERTIFICATIONS = [
   },
 ]
 
-const RESOURCES = [
+const RESOURCE_FALLBACK: ResourceItem[] = [
   {
     id: 'resource-1',
     title: 'How To Get Into The Construction Industry',
@@ -173,6 +176,7 @@ const RESOURCES = [
 
 export function HomeScreen() {
   const { user, profile, isPending } = useUser()
+  const { data: affiliateOffers = [] } = useAffiliateResources()
 
   if (isPending)
     return (
@@ -185,13 +189,22 @@ export function HomeScreen() {
 
   const firstName = extractFirstName(profile?.name, user.email)
 
+  const affiliateResources: ResourceItem[] = affiliateOffers.map((offer) => ({
+    id: offer.id,
+    title: offer.name,
+    description: offer.description ?? '',
+    href: offer.affiliate_url,
+    ctaLabel: offer.cta_label ?? undefined,
+  }))
+
   const rightRail = (
     <YStack gap="$5">
       <NewsFeedCard />
+      <ConcreteCalculatorCard />
       <ResourceListCard
         title="New to construction?"
         subtitle="Start building experience with curated resources."
-        resources={RESOURCES}
+        resources={affiliateResources.length > 0 ? affiliateResources : RESOURCE_FALLBACK}
       />
     </YStack>
   )
