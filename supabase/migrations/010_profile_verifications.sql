@@ -180,31 +180,33 @@ begin
     raise exception 'field must not be empty';
   end if;
 
-  if p_actor_id is not null then
-    if p_subject_type in ('user', 'profile', 'user_private') then
-      v_subject_user := p_subject_id;
-    elsif p_subject_type = 'project' then
-      if to_regclass('public.projects') is not null then
-        select profile_id into v_subject_user from public.projects where id = p_subject_id;
-      end if;
-    end if;
+  if p_actor_id is null then
+    raise exception 'actor_id is required';
+  end if;
 
-    v_has_permission := public.user_has_role(p_actor_id, 'super_admin', null);
-
-    if not v_has_permission and v_subject_user is not null then
-      v_has_permission := exists (
-        select 1
-        from public.role_assignments ra
-        where ra.user_id = v_subject_user
-          and ra.scope_org_id is not null
-          and public.user_has_role(p_actor_id, 'partner_admin', ra.scope_org_id)
-      );
+  if p_subject_type in ('user', 'profile', 'user_private') then
+    v_subject_user := p_subject_id;
+  elsif p_subject_type = 'project' then
+    if to_regclass('public.projects') is not null then
+      select profile_id into v_subject_user from public.projects where id = p_subject_id;
     end if;
+  end if;
 
-    if not v_has_permission then
-      raise exception 'insufficient privileges to revoke %', v_field
-        using errcode = '42501';
-    end if;
+  v_has_permission := public.user_has_role(p_actor_id, 'super_admin', null);
+
+  if not v_has_permission and v_subject_user is not null then
+    v_has_permission := exists (
+      select 1
+      from public.role_assignments ra
+      where ra.user_id = v_subject_user
+        and ra.scope_org_id is not null
+        and public.user_has_role(p_actor_id, 'partner_admin', ra.scope_org_id)
+    );
+  end if;
+
+  if not v_has_permission then
+    raise exception 'insufficient privileges to revoke %', v_field
+      using errcode = '42501';
   end if;
 
   with updated as (
