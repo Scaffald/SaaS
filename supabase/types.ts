@@ -180,6 +180,36 @@ export type Database = {
           },
         ]
       }
+      industries: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           about: string | null
@@ -203,6 +233,83 @@ export type Database = {
           {
             foreignKeyName: 'profiles_id_fkey'
             columns: ['id']
+            isOneToOne: true
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      user_private: {
+        Row: {
+          address: Json | null
+          availability: string[] | null
+          certifications: string[] | null
+          contact_prefs: string[] | null
+          created_at: string
+          education_level: string | null
+          email: string | null
+          geo: unknown
+          hourly_rate_cents: number | null
+          location: string | null
+          open_to_travel: boolean | null
+          phone: string | null
+          phone_os: string | null
+          drivers_license_class: string | null
+          travel_mileage: number | null
+          updated_at: string
+          us_passport: boolean | null
+          us_resident: boolean | null
+          user_id: string
+          veteran: boolean | null
+        }
+        Insert: {
+          address?: Json | null
+          availability?: string[] | null
+          certifications?: string[] | null
+          contact_prefs?: string[] | null
+          created_at?: string
+          education_level?: string | null
+          email?: string | null
+          geo?: unknown
+          hourly_rate_cents?: number | null
+          location?: string | null
+          open_to_travel?: boolean | null
+          phone?: string | null
+          phone_os?: string | null
+          drivers_license_class?: string | null
+          travel_mileage?: number | null
+          updated_at?: string
+          us_passport?: boolean | null
+          us_resident?: boolean | null
+          user_id: string
+          veteran?: boolean | null
+        }
+        Update: {
+          address?: Json | null
+          availability?: string[] | null
+          certifications?: string[] | null
+          contact_prefs?: string[] | null
+          created_at?: string
+          education_level?: string | null
+          email?: string | null
+          geo?: unknown
+          hourly_rate_cents?: number | null
+          location?: string | null
+          open_to_travel?: boolean | null
+          phone?: string | null
+          phone_os?: string | null
+          drivers_license_class?: string | null
+          travel_mileage?: number | null
+          updated_at?: string
+          us_passport?: boolean | null
+          us_resident?: boolean | null
+          user_id?: string
+          veteran?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'user_private_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: true
             referencedRelation: 'users'
             referencedColumns: ['id']
@@ -332,6 +439,65 @@ export type Database = {
             columns: ['profile_id']
             isOneToOne: false
             referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      users: {
+        Row: {
+          avatar_media_id: string | null
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          headline: string | null
+          id: string
+          industry_id: string | null
+          open_to_work: boolean | null
+          skills_summary: Json | null
+          slug: string | null
+          updated_at: string
+          username: string | null
+          years_of_experience: number | null
+        }
+        Insert: {
+          avatar_media_id?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          headline?: string | null
+          id: string
+          industry_id?: string | null
+          open_to_work?: boolean | null
+          skills_summary?: Json | null
+          slug?: string | null
+          updated_at?: string
+          username?: string | null
+          years_of_experience?: number | null
+        }
+        Update: {
+          avatar_media_id?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          headline?: string | null
+          id?: string
+          industry_id?: string | null
+          open_to_work?: boolean | null
+          skills_summary?: Json | null
+          slug?: string | null
+          updated_at?: string
+          username?: string | null
+          years_of_experience?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'users_industry_id_fkey'
+            columns: ['industry_id']
+            isOneToOne: false
+            referencedRelation: 'industries'
             referencedColumns: ['id']
           },
         ]
