@@ -1,4 +1,6 @@
-import { Paragraph, SizableText, YStack } from '@my/ui'
+import { Button, Paragraph, SizableText, YStack } from '@my/ui'
+
+import { redirect } from '../../../../../utils/redirect'
 
 import { DashboardCard, SectionHeading } from '../primitives'
 
@@ -6,6 +8,8 @@ export type ResourceItem = {
   id: string
   title: string
   description: string
+  href?: string
+  ctaLabel?: string
 }
 
 export type ResourceListCardProps = {
@@ -24,9 +28,23 @@ export const ResourceListCard = ({ title, subtitle, resources }: ResourceListCar
             <SizableText size="$3" fontWeight="600">
               {resource.title}
             </SizableText>
-            <Paragraph size="$2" color="$gray11">
-              {resource.description}
-            </Paragraph>
+            {resource.description ? (
+              <Paragraph size="$2" color="$gray11">
+                {resource.description}
+              </Paragraph>
+            ) : null}
+            {resource.href ? (
+              <Button
+                size="$2"
+                onPress={() => {
+                  redirect(resource.href!)
+                }}
+                alignSelf="flex-start"
+                mt="$2"
+              >
+                {resource.ctaLabel ?? 'View resource'}
+              </Button>
+            ) : null}
           </YStack>
         ))}
       </YStack>
