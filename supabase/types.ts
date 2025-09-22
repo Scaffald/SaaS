@@ -3,6 +3,65 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      affiliates: {
+        Row: {
+          affiliate_code: string | null
+          affiliate_url: string
+          commission_terms: string | null
+          created_at: string
+          cta_label: string | null
+          description: string | null
+          id: string
+          industry_id: string | null
+          is_active: boolean
+          metadata: Json
+          name: string
+          program_type: string | null
+          type: Database['public']['Enums']['affiliate_type']
+          updated_at: string
+        }
+        Insert: {
+          affiliate_code?: string | null
+          affiliate_url: string
+          commission_terms?: string | null
+          created_at?: string
+          cta_label?: string | null
+          description?: string | null
+          id?: string
+          industry_id?: string | null
+          is_active?: boolean
+          metadata?: Json
+          name: string
+          program_type?: string | null
+          type?: Database['public']['Enums']['affiliate_type']
+          updated_at?: string
+        }
+        Update: {
+          affiliate_code?: string | null
+          affiliate_url?: string
+          commission_terms?: string | null
+          created_at?: string
+          cta_label?: string | null
+          description?: string | null
+          id?: string
+          industry_id?: string | null
+          is_active?: boolean
+          metadata?: Json
+          name?: string
+          program_type?: string | null
+          type?: Database['public']['Enums']['affiliate_type']
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'affiliates_industry_id_fkey'
+            columns: ['industry_id']
+            isOneToOne: false
+            referencedRelation: 'industries'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       achievements: {
         Row: {
           created_at: string
@@ -104,10 +163,40 @@ export type Database = {
             foreignKeyName: 'events_user_id_fkey'
             columns: ['profile_id']
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-        ]
+          referencedRelation: 'profiles'
+          referencedColumns: ['id']
+        },
+      ]
+      }
+      industries: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       installs: {
         Row: {
@@ -298,6 +387,65 @@ export type Database = {
           },
         ]
       }
+      users: {
+        Row: {
+          avatar_media_id: string | null
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          headline: string | null
+          id: string
+          industry_id: string | null
+          open_to_work: boolean | null
+          skills_summary: Json | null
+          slug: string | null
+          updated_at: string
+          username: string | null
+          years_of_experience: number | null
+        }
+        Insert: {
+          avatar_media_id?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          headline?: string | null
+          id: string
+          industry_id?: string | null
+          open_to_work?: boolean | null
+          skills_summary?: Json | null
+          slug?: string | null
+          updated_at?: string
+          username?: string | null
+          years_of_experience?: number | null
+        }
+        Update: {
+          avatar_media_id?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          headline?: string | null
+          id?: string
+          industry_id?: string | null
+          open_to_work?: boolean | null
+          skills_summary?: Json | null
+          slug?: string | null
+          updated_at?: string
+          username?: string | null
+          years_of_experience?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'users_industry_id_fkey'
+            columns: ['industry_id']
+            isOneToOne: false
+            referencedRelation: 'industries'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       user_stats: {
         Row: {
           arr: number | null
@@ -344,7 +492,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      affiliate_type: 'education' | 'certification' | 'training' | 'resource'
     }
     CompositeTypes: {
       [_ in never]: never
