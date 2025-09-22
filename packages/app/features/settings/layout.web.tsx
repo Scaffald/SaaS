@@ -1,5 +1,5 @@
-import { FullscreenSpinner, Separator, XStack, YStack } from '@my/ui'
-import { useUser } from 'app/utils/useUser'
+import { FullscreenSpinner, Separator, XStack, YStack } from '@app/ui'
+import { useUser } from '@app/utils/useUser'
 
 import { SettingsScreen } from './screen'
 

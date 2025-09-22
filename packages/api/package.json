@@ -1,6 +1,6 @@
 {
   "version": "0.0.0",
-  "name": "@my/api",
+  "name": "@app/api",
   "main": "src/index.ts",
   "types": "./src",
   "private": true,
@@ -19,7 +19,7 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "@my/supabase": "*",
+    "@app/supabase": "*",
     "@tanstack/react-query": "^5.90.1",
     "@trpc/next": "^11.4.3",
     "@trpc/server": "^11.5.1",

@@ -10,7 +10,7 @@ import {
   Text,
   XStack,
   YStack,
-} from '@my/ui'
+} from '@app/ui'
 import { ChevronDown, X } from '@tamagui/lucide-icons'
 
 type FilterFlyoutProps = {

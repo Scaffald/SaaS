@@ -3852,11 +3852,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@my/api@npm:*, @my/api@workspace:packages/api":
+"@app/api@npm:*, @app/api@workspace:packages/api":
   version: 0.0.0-use.local
-  resolution: "@my/api@workspace:packages/api"
+  resolution: "@app/api@workspace:packages/api"
   dependencies:
-    "@my/supabase": "npm:*"
+    "@app/supabase": "npm:*"
     "@supabase/auth-helpers-nextjs": "npm:^0.10.0"
     "@supabase/auth-helpers-react": "npm:^0.5.0"
     "@supabase/supabase-js": "npm:^2.48.1"
@@ -3872,9 +3872,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@my/supabase@npm:*, @my/supabase@workspace:supabase":
+"@app/supabase@npm:*, @app/supabase@workspace:supabase":
   version: 0.0.0-use.local
-  resolution: "@my/supabase@workspace:supabase"
+  resolution: "@app/supabase@workspace:supabase"
   dependencies:
     "@snaplet/copycat": "npm:^5.0.0"
     "@snaplet/seed": "npm:0.97.20"
@@ -3885,9 +3885,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@my/ui@npm:*, @my/ui@workspace:packages/ui":
+"@app/ui@npm:*, @app/ui@workspace:packages/ui":
   version: 0.0.0-use.local
-  resolution: "@my/ui@workspace:packages/ui"
+  resolution: "@app/ui@workspace:packages/ui"
   dependencies:
     "@babel/runtime": "npm:^7.18.9"
     "@hookform/resolvers": "npm:^3.1.0"
@@ -10816,9 +10816,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "app@workspace:packages/app"
   dependencies:
-    "@my/api": "npm:*"
-    "@my/supabase": "npm:*"
-    "@my/ui": "npm:*"
+    "@app/api": "npm:*"
+    "@app/supabase": "npm:*"
+    "@app/ui": "npm:*"
     "@react-native-async-storage/async-storage": "npm:2.1.2"
     "@rehookify/datepicker": "npm:^6.6.6"
     "@rnmapbox/maps": "npm:^10.1.44"
@@ -14970,7 +14970,7 @@ __metadata:
   dependencies:
     "@babel/core": "npm:^7.26.0"
     "@babel/runtime": "npm:^7.18.9"
-    "@my/ui": "npm:*"
+    "@app/ui": "npm:*"
     "@react-native-async-storage/async-storage": "npm:2.1.2"
     "@react-native-community/netinfo": "npm:11.4.1"
     "@react-native-google-signin/google-signin": "npm:^13.1.0"
@@ -19806,7 +19806,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "next-app@workspace:apps/next"
   dependencies:
-    "@my/ui": "npm:*"
+    "@app/ui": "npm:*"
     "@next/bundle-analyzer": "npm:15.4.1"
     "@supabase/auth-helpers-nextjs": "npm:^0.10.0"
     "@supabase/auth-helpers-react": "npm:^0.5.0"
@@ -24332,7 +24332,7 @@ __metadata:
   dependencies:
     "@babel/plugin-proposal-export-namespace-from": "npm:^7.18.9"
     "@babel/runtime": "npm:^7.18.9"
-    "@my/ui": "npm:*"
+    "@app/ui": "npm:*"
     "@storybook/addon-essentials": "npm:8.6.4"
     "@storybook/addon-interactions": "npm:8.6.4"
     "@storybook/addon-links": "npm:8.6.4"
@@ -24363,7 +24363,7 @@ __metadata:
     "@babel/plugin-transform-class-static-block": "npm:^7.27.1"
     "@expo/vector-icons": "npm:^14.1.0"
     "@gorhom/bottom-sheet": "npm:^5.1.6"
-    "@my/ui": "npm:*"
+    "@app/ui": "npm:*"
     "@react-native-async-storage/async-storage": "npm:2.1.2"
     "@react-native-community/datetimepicker": "npm:8.3.0"
     "@react-native-community/slider": "npm:4.5.6"

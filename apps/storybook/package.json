@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
-    "@my/ui": "*",
+    "@app/ui": "*",
     "app": "*",
     "react": "19.0.0",
     "react-dom": "19.0.0",

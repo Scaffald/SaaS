@@ -1,5 +1,5 @@
 import { ArrowRight } from '@tamagui/lucide-icons'
-import { Button, Image, Paragraph, SizableText, YStack } from '@my/ui'
+import { Button, Image, Paragraph, SizableText, YStack } from '@app/ui'
 
 import { DashboardCard, SectionHeading } from '../primitives'
 

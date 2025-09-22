@@ -1,7 +1,11 @@
 {
   "name": "scaffald",
   "private": true,
-  "workspaces": ["apps/*", "packages/*", "supabase"],
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "supabase"
+  ],
   "scripts": {
     "_with-env": "dotenv -e .env -c -- ",
     "ios": "cd apps/expo && yarn ios",
@@ -33,7 +37,7 @@
     "upgrade:tamagui:canary": "yarn up '*tamagui*'@canary '@tamagui/*'@canary",
     "check-deps": "check-dependency-version-consistency .",
     "check-circular-deps": "yarn turbo check-circular-deps",
-    "supa": "yarn workspace @my/supabase",
+    "supa": "yarn workspace @app/supabase",
     "typecheck": "turbo check:type",
     "check:type": "tsc -b --preserveWatchOutput tsconfig.json",
     "check:type:watch": "yarn check:type -w",

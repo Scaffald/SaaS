@@ -1,5 +1,5 @@
 import { ArrowRight, CheckCircle2, CircleDashed, ShieldAlert } from '@tamagui/lucide-icons'
-import { Button, Paragraph, SizableText, Separator, XStack, YStack } from '@my/ui'
+import { Button, Paragraph, SizableText, Separator, XStack, YStack } from '@app/ui'
 
 import { DashboardCard, SectionHeading } from '../primitives'
 

@@ -7,11 +7,11 @@ import {
   isWeb,
   useCookieConsent,
   useMedia,
-} from '@my/ui'
+} from '@app/ui'
 import { Cog, Cookie, Lock, LogOut, Mail, Moon } from '@tamagui/lucide-icons'
-import { useThemeSetting } from 'app/provider/theme'
-import { useSupabase } from 'app/utils/supabase/useSupabase'
-import { usePathname } from 'app/utils/usePathname'
+import { useThemeSetting } from '@app/provider/theme'
+import { useSupabase } from '@app/utils/supabase/useSupabase'
+import { usePathname } from '@app/utils/usePathname'
 import { useLink } from 'solito/link'
 
 import rootPackageJson from '../../../../package.json'

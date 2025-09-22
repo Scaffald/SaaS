@@ -9,10 +9,10 @@ import {
   YStack,
   isWeb,
   useToastController,
-} from '@my/ui'
-import { SchemaForm, formFields } from 'app/utils/SchemaForm'
-import { useSupabase } from 'app/utils/supabase/useSupabase'
-import { useUser } from 'app/utils/useUser'
+} from '@app/ui'
+import { SchemaForm, formFields } from '@app/utils/SchemaForm'
+import { useSupabase } from '@app/utils/supabase/useSupabase'
+import { useUser } from '@app/utils/useUser'
 import { useRouter } from 'solito/router'
 import { z } from 'zod'
 

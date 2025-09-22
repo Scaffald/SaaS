@@ -8,10 +8,10 @@ import {
   Theme,
   YStack,
   isWeb,
-} from '@my/ui'
+} from '@app/ui'
 import { ChevronLeft } from '@tamagui/lucide-icons'
-import { SchemaForm, formFields } from 'app/utils/SchemaForm'
-import { useSupabase } from 'app/utils/supabase/useSupabase'
+import { SchemaForm, formFields } from '@app/utils/SchemaForm'
+import { useSupabase } from '@app/utils/supabase/useSupabase'
 import { useEffect } from 'react'
 import { FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form'
 import { createParam } from 'solito'

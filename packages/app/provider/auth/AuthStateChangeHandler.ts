@@ -1,4 +1,4 @@
-import { useSupabase } from 'app/utils/supabase/useSupabase'
+import { useSupabase } from '@app/utils/supabase/useSupabase'
 import { useEffect } from 'react'
 import { useRouter } from 'solito/router'
 

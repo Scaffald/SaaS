@@ -1,5 +1,5 @@
 import { ArrowRight } from '@tamagui/lucide-icons'
-import { Button, Paragraph, SizableText, Separator, YStack } from '@my/ui'
+import { Button, Paragraph, SizableText, Separator, YStack } from '@app/ui'
 import type { ReactNode } from 'react'
 
 import { DashboardCard, SectionHeading } from '../primitives'

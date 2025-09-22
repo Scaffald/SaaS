@@ -1,5 +1,5 @@
 import { CalendarClock } from '@tamagui/lucide-icons'
-import { Paragraph, SizableText, XStack, YStack } from '@my/ui'
+import { Paragraph, SizableText, XStack, YStack } from '@app/ui'
 
 import { DashboardCard, SectionHeading } from '../primitives'
 
