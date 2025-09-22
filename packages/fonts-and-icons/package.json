@@ -38,9 +38,9 @@
     "prompts": "^2.4.2"
   },
   "devDependencies": {
-    "@tamagui/build": "^1.132.7",
-    "@tamagui/core": "^1.132.7",
+    "@tamagui/build": "^1.133.1",
+    "@tamagui/core": "^1.133.1",
     "subset-font": "^1.6.1",
-    "typescript": "~5.8.3"
+    "typescript": "^5.9.2"
   }
 }

@@ -33,6 +33,6 @@
     "chromatic": "^6.20.0",
     "metro-react-native-babel-preset": "^0.77.0",
     "storybook": "8.6.4",
-    "typescript": "~5.8.3"
+    "typescript": "^5.9.2"
   }
 }

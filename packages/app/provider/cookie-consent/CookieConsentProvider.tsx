@@ -17,7 +17,7 @@ export const CookieConsentProvider = ({ children }: { children: ReactNode }) => 
   return (
     <UICookieConsentProvider storageKey={STORAGE_KEY} policyVersion={POLICY_VERSION}>
       {children}
-      <CookieConsentBanner privacyPolicyUrl="/privacy-policy" />
+      <CookieConsentBanner />
       <CookiePreferencesDialog />
     </UICookieConsentProvider>
   )

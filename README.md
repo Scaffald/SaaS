@@ -262,7 +262,7 @@ We've decided not to move to app dir just yet, but since layouts are crucial to 
 You can define these layouts anywhere but we've been keeping them in `layout.web.tsx` files in the `features` directory as needed. You can then use them like so:
 
 ```tsx
-import { CreateScreen } from 'app/features/myfeat/screen'
+import { MyPageScreen } from 'app/features/myfeat/screen'
 import { MyLayout } from 'app/features/myfeat/layout.web'
 import Head from 'next/head'
 import { NextPageWithLayout } from './_app'

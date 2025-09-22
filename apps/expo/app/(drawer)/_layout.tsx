@@ -1,7 +1,7 @@
 import { DrawerMenu } from '@my/app/features/drawer-menu'
 import { Button, useTheme } from '@my/ui'
 import { DrawerActions } from '@react-navigation/native'
-import { Menu, Plus } from '@tamagui/lucide-icons'
+import { Map as MapIcon, Menu } from '@tamagui/lucide-icons'
 import { router } from 'expo-router'
 import { Drawer } from 'expo-router/drawer'
 import { useMedia } from 'tamagui'
@@ -41,10 +41,10 @@ export default function Layout() {
             marginRight="$-1"
             backgroundColor="transparent"
             onPress={() => {
-              router.navigate('/create')
+              router.navigate('/discover')
             }}
           >
-            <Plus size={24} />
+            <MapIcon size={24} />
           </Button>
         ),
         drawerType: isDesktop ? 'permanent' : 'front',

@@ -1,7 +1,6 @@
 'use client'
 
 import {
-  Adapt,
   Avatar,
   Button,
   type ButtonProps,
@@ -13,11 +12,9 @@ import {
   useMedia,
 } from '@my/ui'
 import { Dialog } from 'tamagui'
-import { CreateModal } from '@my/ui/src/components/CreateModal'
-import { Menu, Plus } from '@tamagui/lucide-icons'
+import { Map as MapIcon, Menu } from '@tamagui/lucide-icons'
 import { StaticDrawer } from 'app/features/drawer-menu/StaticDrawer.web'
 import { drawerSections, normalizePath, quickLinks } from 'app/features/drawer-menu'
-import { useGlobalStore } from 'app/utils/global-store'
 import { usePathname } from 'app/utils/usePathname'
 import { useUser } from 'app/utils/useUser'
 import { useState } from 'react'
@@ -118,43 +115,22 @@ const UserAvatar = () => {
 }
 
 const CtaButton = (props: ButtonProps) => {
-  const { toggleCreateModal, setToggleCreateModal } = useGlobalStore()
-  const pathName = usePathname()
+  const discoverLink = useLink({ href: '/discover' })
 
   return (
-    <>
-      <CreateModal toggleEvent={toggleCreateModal} setToggleEvent={setToggleCreateModal} />
-      <Theme inverse>
-        <Adapt when="sm">
-          <Button
-            {...useLink({ href: '/create' })}
-            size="$3"
-            space="$1.5"
-            my="$-1"
-            icon={Plus}
-            br="$10"
-            {...props}
-          >
-            Create
-          </Button>
-        </Adapt>
-        <Adapt when="gtSm">
-          <Button
-            onPress={() => {
-              if (pathName !== '/create') setToggleCreateModal()
-            }}
-            size="$3"
-            space="$1.5"
-            my="$-1"
-            icon={Plus}
-            br="$10"
-            {...props}
-          >
-            Create
-          </Button>
-        </Adapt>
-      </Theme>
-    </>
+    <Theme inverse>
+      <Button
+        {...discoverLink}
+        size="$3"
+        space="$1.5"
+        my="$-1"
+        icon={MapIcon}
+        br="$10"
+        {...props}
+      >
+        Discover
+      </Button>
+    </Theme>
   )
 }
 

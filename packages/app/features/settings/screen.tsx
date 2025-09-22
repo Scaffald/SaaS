@@ -8,9 +8,8 @@ import {
   useCookieConsent,
   useMedia,
 } from '@my/ui'
-import { Book, Cog, Cookie, Info, Lock, LogOut, Mail, Moon, Twitter } from '@tamagui/lucide-icons'
+import { Cog, Cookie, Lock, LogOut, Mail, Moon } from '@tamagui/lucide-icons'
 import { useThemeSetting } from 'app/provider/theme'
-import { redirect } from 'app/utils/redirect'
 import { useSupabase } from 'app/utils/supabase/useSupabase'
 import { usePathname } from 'app/utils/usePathname'
 import { useLink } from 'solito/link'
@@ -22,7 +21,6 @@ export const SettingsScreen = () => {
   const media = useMedia()
   const pathname = usePathname()
   const { openPreferences, consentState, isReady } = useCookieConsent()
-  const aboutLink = useLink({ href: '/about' })
 
   return (
     <YStack f={1}>
@@ -58,44 +56,12 @@ export const SettingsScreen = () => {
             {isWeb && <Separator boc="$color3" mx="$-4" bw="$0.25" />}
             <Settings.Group>
               <Settings.Item
-                icon={Book}
-                isActive={pathname === '/privacy-policy'}
-                {...useLink({ href: '/privacy-policy' })}
-                accentTheme="purple"
-              >
-                Privacy Policy
-              </Settings.Item>
-              <Settings.Item
-                icon={Book}
-                isActive={pathname === '/terms-of-service'}
-                {...useLink({ href: '/terms-of-service' })}
-                accentTheme="purple"
-              >
-                Terms Of Service
-              </Settings.Item>
-              <Settings.Item
                 icon={Cookie}
                 accentTheme="purple"
                 onPress={isReady ? openPreferences : undefined}
                 rightLabel={consentState ? 'Updated' : 'Review'}
               >
                 Manage Cookies
-              </Settings.Item>
-              {/* removing about from web since landing pages are more common on web - feel free to add back if needed */}
-              {!isWeb && (
-                <Settings.Item icon={Info} {...aboutLink} accentTheme="blue">
-                  About
-                </Settings.Item>
-              )}
-            </Settings.Group>
-            {isWeb && <Separator boc="$color3" mx="$-4" bw="$0.25" />}
-            <Settings.Group>
-              <Settings.Item
-                icon={Twitter}
-                onPress={() => redirect('https://twitter.com/tamagui_js')}
-                accentTheme="blue"
-              >
-                Our Twitter
               </Settings.Item>
             </Settings.Group>
             {isWeb && <Separator boc="$color3" mx="$-4" bw="$0.25" />}

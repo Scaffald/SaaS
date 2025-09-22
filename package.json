@@ -1,5 +1,5 @@
 {
-  "name": "unistack",
+  "name": "scaffald",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -57,12 +57,12 @@
     "react-refresh": "^0.14.0",
     "react-native-svg": "15.11.2",
     "react-native-web": "~0.20.0",
-    "next": "15.4.1",
+    "next": "^15.5.3",
     "@babel/core": "^7.26.0",
     "babel-loader": "^8.3.0"
   },
   "packageManager": "yarn@4.1.0",
-  "devDependencies": {
+  "dependencies": {
     "@babel/runtime": "^7.18.9",
     "@biomejs/biome": "^1.9.4",
     "@manypkg/cli": "^0.19.1",
@@ -71,8 +71,8 @@
     "@svgr/core": "^8.1.0",
     "@svgr/plugin-jsx": "^8.1.0",
     "@svgr/plugin-svgo": "^8.1.0",
-    "@tamagui/cli": "^1.132.7",
-    "@tamagui/config": "^1.132.7",
+    "@tamagui/cli": "^1.133.1",
+    "@tamagui/config": "^1.133.1",
     "@turbo/gen": "^2.5.3",
     "@types/fs-extra": "^11",
     "axios": "^1.7.2",
@@ -86,7 +86,7 @@
     "promise-throttle-all": "^1.1.1",
     "supabase": "2.40.7",
     "turbo": "^2.5.3",
-    "typescript": "~5.8.3",
+    "typescript": "^5.9.2",
     "ultra-runner": "^3.10.5"
   }
 }

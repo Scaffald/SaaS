@@ -10,16 +10,7 @@ import {
 } from '@my/ui'
 import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import { DrawerContentScrollView } from '@react-navigation/drawer'
-import {
-  BarChart3,
-  CircleUser,
-  Info,
-  Map,
-  Settings2,
-  ShieldCheck,
-  ShoppingBag,
-  Sparkles,
-} from '@tamagui/lucide-icons'
+import { BarChart3, CircleUser, Map, Settings2, Sparkles } from '@tamagui/lucide-icons'
 import { useCallback } from 'react'
 import { GestureResponderEvent } from 'react-native'
 import { useLink } from 'solito/link'
@@ -74,13 +65,6 @@ export const drawerSections: DrawerSectionConfig[] = [
 
 export const quickLinks: DrawerItemConfig[] = [
   {
-    key: 'store-config',
-    title: 'Store Configurator',
-    href: '/create',
-    icon: ShoppingBag,
-    theme: 'purple',
-  },
-  {
     key: 'account',
     title: 'Account Settings',
     href: '/settings',
@@ -88,18 +72,11 @@ export const quickLinks: DrawerItemConfig[] = [
     theme: 'gray',
   },
   {
-    key: 'about',
-    title: 'About SCF Neue',
-    href: '/about',
-    icon: Info,
-    theme: 'blue',
-  },
-  {
-    key: 'privacy',
-    title: 'Privacy Policy',
-    href: '/privacy-policy',
-    icon: ShieldCheck,
-    theme: 'blue',
+    key: 'profile',
+    title: 'Your Profile',
+    href: '/profile',
+    icon: CircleUser,
+    theme: 'purple',
   },
 ]
 
