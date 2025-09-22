@@ -37,9 +37,7 @@ export const SettingsLayout = ({ children, isSettingsHome = false }: SettingsLay
         {showSkeleton ? <SettingsSidebarSkeleton /> : <SettingsScreen />}
       </YStack>
       <YStack my="$10" f={1} ai="center" $sm={{ dsp: isSettingsHome ? 'none' : 'block' }}>
-        <YStack w="100%">
-          {showSkeleton ? <SettingsContentSkeleton /> : children}
-        </YStack>
+        <YStack w="100%">{showSkeleton ? <SettingsContentSkeleton /> : children}</YStack>
       </YStack>
     </XStack>
   )

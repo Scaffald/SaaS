@@ -15,7 +15,14 @@ import {
 import type { ThemeName } from '@app/ui'
 import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import { DrawerContentScrollView } from '@react-navigation/drawer'
-import { BarChart3, ChevronRight, CircleUser, Map, Settings2, Sparkles } from '@tamagui/lucide-icons'
+import {
+  BarChart3,
+  ChevronRight,
+  CircleUser,
+  Map,
+  Settings2,
+  Sparkles,
+} from '@tamagui/lucide-icons'
 import type { JSX } from 'react'
 import { useCallback } from 'react'
 import { GestureResponderEvent } from 'react-native'
@@ -181,23 +188,23 @@ const DrawerLink = ({
       }}
       iconAfter={
         <XStack gap="$2" ai="center">
-          {item.badge ? (
-            (() => {
-              const badge = (
-                <XStack px="$2" py="$1" br="$10" bg="$color3">
-                  <Paragraph size="$1" color="$color11">
-                    {item.badge}
-                  </Paragraph>
-                </XStack>
-              )
+          {item.badge
+            ? (() => {
+                const badge = (
+                  <XStack px="$2" py="$1" br="$10" bg="$color3">
+                    <Paragraph size="$1" color="$color11">
+                      {item.badge}
+                    </Paragraph>
+                  </XStack>
+                )
 
-              if (!themeName && item.theme) {
-                return <Theme name={item.theme}>{badge}</Theme>
-              }
+                if (!themeName && item.theme) {
+                  return <Theme name={item.theme}>{badge}</Theme>
+                }
 
-              return badge
-            })()
-          ) : null}
+                return badge
+              })()
+            : null}
           <ChevronRight size={16} color="$color10" />
         </XStack>
       }
@@ -246,20 +253,10 @@ const DrawerSection = ({ section, pathname, collapsed, onNavigate }: DrawerSecti
       <SizableText size="$2" fontWeight="600" color="$gray10" textTransform="uppercase">
         {section.title}
       </SizableText>
-      <YGroup
-        bordered
-        size="$4"
-        separator={<Separator borderColor="$color4" />}
-        borderRadius="$5"
-      >
+      <YGroup bordered size="$4" separator={<Separator borderColor="$color4" />} borderRadius="$5">
         {items.map(({ item, depth }) => (
           <YGroup.Item key={`${section.key}-${item.key}-${depth}`}>
-            <DrawerLink
-              item={item}
-              pathname={pathname}
-              depth={depth}
-              onNavigate={onNavigate}
-            />
+            <DrawerLink item={item} pathname={pathname} depth={depth} onNavigate={onNavigate} />
           </YGroup.Item>
         ))}
       </YGroup>
@@ -312,19 +309,12 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
           px="$0"
           py="$0"
           bg="transparent"
-          title={!collapsed ? profile?.name ?? 'Store Name' : undefined}
+          title={!collapsed ? (profile?.name ?? 'Store Name') : undefined}
           subTitle={!collapsed ? 'Synced moments ago' : undefined}
           fontWeight="700"
           color="$color12"
           icon={({ size }) => (
-            <XStack
-              ai="center"
-              jc="center"
-              w={40}
-              h={40}
-              br="$4"
-              bg="$purple4"
-            >
+            <XStack ai="center" jc="center" w={40} h={40} br="$4" bg="$purple4">
               <CircleUser size={size ?? 20} color="$purple11" />
             </XStack>
           )}
@@ -402,8 +392,8 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
             py="$0"
             bg="transparent"
             onPress={handleManagePress}
-            title={!collapsed ? profile?.name ?? 'No Name' : undefined}
-            subTitle={!collapsed ? user?.email ?? 'View profile' : undefined}
+            title={!collapsed ? (profile?.name ?? 'No Name') : undefined}
+            subTitle={!collapsed ? (user?.email ?? 'View profile') : undefined}
             icon={() => (
               <Avatar circular size="$3">
                 <SolitoImage
