@@ -1,6 +1,6 @@
-import { H2, SubmitButton, Theme, YStack, isWeb, useToastController, FormWrapper } from '@my/ui'
-import { SchemaForm, formFields } from 'app/utils/SchemaForm'
-import { useSupabase } from 'app/utils/supabase/useSupabase'
+import { H2, SubmitButton, Theme, YStack, isWeb, useToastController, FormWrapper } from '@app/ui'
+import { SchemaForm, formFields } from '@app/utils/SchemaForm'
+import { useSupabase } from '@app/utils/supabase/useSupabase'
 import { useRouter } from 'solito/router'
 import { z } from 'zod'
 

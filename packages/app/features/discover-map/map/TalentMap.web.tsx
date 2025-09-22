@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import mapboxgl, { type GeoJSONSource } from 'mapbox-gl'
 import type { FeatureCollection } from 'geojson'
-import { View } from '@my/ui'
+import { View } from '@app/ui'
 
 import type { TalentMapProps } from './types'
 import { createRadiusFeature, radiusToZoomLevel } from './geometry'

@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Button, Paragraph, SizableText, Text, XStack, YStack } from '@my/ui'
+import { Button, Paragraph, SizableText, Text, XStack, YStack } from '@app/ui'
 import { Award, BadgeCheck, Building, Clock3, DollarSign } from '@tamagui/lucide-icons'
 
 import type { TalentProfile } from '../types'

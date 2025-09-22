@@ -1,4 +1,4 @@
-import { SignUpScreen } from 'app/features/auth/sign-up-screen'
+import { SignUpScreen } from '@app/features/auth/sign-up-screen'
 import { Stack } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 

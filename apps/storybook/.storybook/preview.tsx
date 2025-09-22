@@ -1,4 +1,4 @@
-import { themes } from '@my/ui/src/themes/theme'
+import { themes } from '@app/ui/src/themes/theme'
 import type { Preview } from '@storybook/react'
 import '@tamagui/core/reset.css'
 import '@tamagui/font-inter/css/400.css'

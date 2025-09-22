@@ -3,7 +3,7 @@ import {
   CookieConsentBanner,
   CookieConsentProvider as UICookieConsentProvider,
   CookiePreferencesDialog,
-} from '@my/ui'
+} from '@app/ui'
 
 const STORAGE_KEY = 'scf-cookie-consent'
 const POLICY_VERSION = '1'

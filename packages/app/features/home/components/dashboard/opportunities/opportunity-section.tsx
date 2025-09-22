@@ -1,5 +1,5 @@
 import { ArrowRight } from '@tamagui/lucide-icons'
-import { Button, Paragraph, SizableText, Separator, YGroup, YStack } from '@my/ui'
+import { Button, Paragraph, SizableText, Separator, YStack } from '@app/ui'
 import type { ReactNode } from 'react'
 
 import { DashboardCard, SectionHeading } from '../primitives'
@@ -37,18 +37,14 @@ export const OpportunitySection = ({
       <SectionHeading title={title} subtitle={subtitle} action={headerAction} />
 
       {hasItems ? (
-        <YGroup
-          bordered
-          size="$4"
-          separator={<Separator borderColor="$borderColor" />}
-          borderRadius="$5"
-        >
-          {items.map((item) => (
-            <YGroup.Item key={item.id}>
+        <YStack gap="$3">
+          {items.map((item, index) => (
+            <YStack key={item.id}>
+              {index > 0 ? <Separator borderColor="$borderColor" /> : null}
               <OpportunityCard item={item} />
-            </YGroup.Item>
+            </YStack>
           ))}
-        </YGroup>
+        </YStack>
       ) : emptyState ? (
         <EmptyState {...emptyState} />
       ) : null}

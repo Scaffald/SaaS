@@ -3,9 +3,13 @@
     "baseUrl": ".",
     "rootDir": ".",
     "paths": {
-      "@my/*": ["packages/*"],
-      "app/*": ["packages/app/*"],
-      "ui/*": ["packages/ui/*"]
+      "@app/*": ["packages/app/*"],
+      "@app/ui": ["packages/ui"],
+      "@app/ui/*": ["packages/ui/*"],
+      "@app/api": ["packages/api"],
+      "@app/api/*": ["packages/api/*"],
+      "@app/supabase": ["supabase"],
+      "@app/supabase/*": ["supabase/*"]
     },
     "importHelpers": true,
     "allowJs": false,

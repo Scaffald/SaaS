@@ -12,7 +12,7 @@ import {
   XStack,
   YStack,
   isWeb,
-} from '@my/ui'
+} from '@app/ui'
 import { ArrowRight, Check, ChevronDown } from '@tamagui/lucide-icons'
 import { Sheet } from 'tamagui'
 

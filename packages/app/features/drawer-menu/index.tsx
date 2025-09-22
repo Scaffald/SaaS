@@ -11,8 +11,8 @@ import {
   YGroup,
   YStack,
   getTokens,
-} from '@my/ui'
-import type { ThemeName } from '@my/ui'
+} from '@app/ui'
+import type { ThemeName } from '@app/ui'
 import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import { DrawerContentScrollView } from '@react-navigation/drawer'
 import { BarChart3, ChevronRight, CircleUser, Map, Settings2, Sparkles } from '@tamagui/lucide-icons'
@@ -21,9 +21,9 @@ import { useCallback } from 'react'
 import { GestureResponderEvent } from 'react-native'
 import { useLink } from 'solito/link'
 
-import { usePathname } from 'app/utils/usePathname'
-import { useSafeAreaInsets } from 'app/utils/useSafeAreaInsets'
-import { useUser } from 'app/utils/useUser'
+import { usePathname } from '@app/utils/usePathname'
+import { useSafeAreaInsets } from '@app/utils/useSafeAreaInsets'
+import { useUser } from '@app/utils/useUser'
 import { SolitoImage } from 'solito/image'
 
 export type DrawerItemConfig = {

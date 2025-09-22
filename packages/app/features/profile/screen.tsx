@@ -1,5 +1,5 @@
-import { ScrollView, YStack, getTokens } from '@my/ui'
-import { useSafeAreaInsets } from 'app/utils/useSafeAreaInsets'
+import { ScrollView, YStack, getTokens } from '@app/ui'
+import { useSafeAreaInsets } from '@app/utils/useSafeAreaInsets'
 
 import { ProfileLayout } from './profile-layout'
 

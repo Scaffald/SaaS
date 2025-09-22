@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react'
 import MapboxGL from '@rnmapbox/maps'
 import Constants from 'expo-constants'
 import { StyleSheet } from 'react-native'
-import { Text, Theme, View, YStack } from '@my/ui'
+import { Text, Theme, View, YStack } from '@app/ui'
 
 import type { TalentMapProps } from './types'
 import { createRadiusFeature, radiusToZoomLevel } from './geometry'

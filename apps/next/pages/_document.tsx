@@ -1,4 +1,4 @@
-import { config } from '@my/ui'
+import { config } from '@app/ui'
 import NextDocument, {
   type DocumentContext,
   type DocumentInitialProps,

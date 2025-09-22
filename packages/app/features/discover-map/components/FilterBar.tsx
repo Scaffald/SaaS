@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { Button, Input, ScrollView, Separator, Text, XStack, YStack, useTheme } from '@my/ui'
+import { Button, Input, ScrollView, Separator, Text, XStack, YStack, useTheme } from '@app/ui'
 import { Filter, MapPin, SlidersHorizontal, X as CloseIcon } from '@tamagui/lucide-icons'
 
 import type { ActiveFilter } from '../types'

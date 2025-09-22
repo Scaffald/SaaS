@@ -1,5 +1,5 @@
-import { DrawerMenu } from '@my/app/features/drawer-menu'
-import { Button, useTheme } from '@my/ui'
+import { DrawerMenu } from '@app/features/drawer-menu'
+import { Button, useTheme } from '@app/ui'
 import { DrawerActions } from '@react-navigation/native'
 import { Map as MapIcon, Menu } from '@tamagui/lucide-icons'
 import { router } from 'expo-router'

@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Button, Paragraph, Separator, Sheet, Text, XStack, YStack, useMedia } from '@my/ui'
+import { Button, Paragraph, Separator, Sheet, Text, XStack, YStack, useMedia } from '@app/ui'
 import { Filter, MapPin, RefreshCw } from '@tamagui/lucide-icons'
 
 import { FilterBar } from './components/FilterBar'
