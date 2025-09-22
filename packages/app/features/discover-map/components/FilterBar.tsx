@@ -50,12 +50,7 @@ export const FilterBar = ({
             placeholder="Search by city or address"
           />
         </XStack>
-        <Button
-          size="$3"
-          icon={SlidersHorizontal}
-          theme="blue"
-          onPress={onAdjustFilters}
-        >
+        <Button size="$3" icon={SlidersHorizontal} theme="blue" onPress={onAdjustFilters}>
           Adjust filters
         </Button>
         <Button size="$3" disabled theme="gray">

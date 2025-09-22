@@ -85,9 +85,7 @@ export const mockTalentProfiles: TalentProfile[] = [
     experienceYears: 32,
     hourlyRate: 0,
     score: 70,
-    badges: [
-      { id: 'organization', label: 'Hiring organization', tone: 'warning' },
-    ],
+    badges: [{ id: 'organization', label: 'Hiring organization', tone: 'warning' }],
     certifications: ['Bonded & insured'],
     skills: ['Program management', 'Quality assurance'],
     locationLabel: 'Middletown, CT',

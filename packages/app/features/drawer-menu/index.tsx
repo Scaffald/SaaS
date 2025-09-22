@@ -165,7 +165,12 @@ const DrawerSection = ({ section, pathname, collapsed, onNavigate }: DrawerSecti
       <YStack gap="$1">
         {section.items.map((item) => (
           <YStack key={item.key} gap="$1">
-            <DrawerLink item={item} pathname={pathname} collapsed={collapsed} onNavigate={onNavigate} />
+            <DrawerLink
+              item={item}
+              pathname={pathname}
+              collapsed={collapsed}
+              onNavigate={onNavigate}
+            />
             {item.subItems?.map((sub) => (
               <DrawerLink
                 key={sub.key}
@@ -320,7 +325,7 @@ export const DrawerMenu = (props: DrawerContentComponentProps) => {
     (_href: string, _event?: GestureResponderEvent) => {
       navigation.closeDrawer()
     },
-    [navigation],
+    [navigation]
   )
 
   return (

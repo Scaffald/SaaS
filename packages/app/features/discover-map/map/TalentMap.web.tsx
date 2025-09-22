@@ -66,7 +66,7 @@ const updateMarkerElement = (
   element: HTMLElement,
   metric: string | undefined,
   label: string,
-  selected: boolean,
+  selected: boolean
 ) => {
   const metricNode = element.querySelector<HTMLElement>('span[data-role="metric"]')
   const labelNode = element.querySelector<HTMLElement>('span[data-role="label"]')
@@ -106,7 +106,7 @@ export const TalentMap = ({
         instance: mapboxgl.Marker
         element: HTMLElement
       }
-    >(),
+    >()
   )
   const [isMapReady, setMapReady] = useState(false)
 
@@ -207,7 +207,7 @@ export const TalentMap = ({
     (id: string) => {
       onMarkerPress?.(id)
     },
-    [onMarkerPress],
+    [onMarkerPress]
   )
 
   useEffect(() => {
@@ -240,7 +240,12 @@ export const TalentMap = ({
         updateMarkerElement(element, marker.metric, marker.title, marker.id === selectedMarkerId)
       } else {
         existing.instance.setLngLat(marker.coordinate)
-        updateMarkerElement(existing.element, marker.metric, marker.title, marker.id === selectedMarkerId)
+        updateMarkerElement(
+          existing.element,
+          marker.metric,
+          marker.title,
+          marker.id === selectedMarkerId
+        )
       }
     })
   }, [handleMarkerInteraction, isMapReady, markers, selectedMarkerId])
