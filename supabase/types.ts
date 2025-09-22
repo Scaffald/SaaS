@@ -464,6 +464,72 @@ export type Database = {
           },
         ]
       }
+      role_assignments: {
+        Row: {
+          created_at: string
+          id: string
+          role_id: string | null
+          scope_org_id: string | null
+          scope_team_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role_id?: string | null
+          scope_org_id?: string | null
+          scope_team_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role_id?: string | null
+          scope_org_id?: string | null
+          scope_team_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'role_assignments_role_id_fkey'
+            columns: ['role_id']
+            isOneToOne: false
+            referencedRelation: 'roles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'role_assignments_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      roles: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          scope: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          scope: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          scope?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           avatar_media_id: string | null
@@ -622,10 +688,64 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_user_private: {
+        Row: {
+          id: string
+          email: string | null
+          phone: string | null
+          address: Json | null
+          geo: unknown
+          contact_prefs: string[] | null
+          veteran: boolean | null
+          us_resident: boolean | null
+          us_passport: boolean | null
+          travel_mileage: number | null
+          education_level: string | null
+          hourly_rate_cents: number | null
+          location: string | null
+          open_to_travel: boolean | null
+          drivers_license_class: string | null
+          phone_os: string | null
+          availability: string[] | null
+          certifications: string[] | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: never
+        Update: never
+        Relationships: []
+      }
+      v_user_search: {
+        Row: {
+          avatar_media_id: string | null
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          headline: string | null
+          id: string
+          industry_id: string | null
+          open_to_work: boolean | null
+          skills_summary: Json | null
+          slug: string | null
+          updated_at: string
+          username: string | null
+          years_of_experience: number | null
+        }
+        Insert: never
+        Update: never
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      user_has_role: {
+        Args: {
+          p_user_id: string
+          p_role_name: string
+          p_org_id?: string | null
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       affiliate_type: 'education' | 'certification' | 'training' | 'resource'
