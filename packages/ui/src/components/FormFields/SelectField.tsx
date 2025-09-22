@@ -59,7 +59,7 @@ export const SelectField = ({
           {...props}
           native={!!native}
         >
-          <Select.Trigger minWidth="100%" $md={{ maxWidth: 220 }}>
+          <Select.Trigger minWidth="100%">
             <Select.Value placeholder={placeholder} />
           </Select.Trigger>
 

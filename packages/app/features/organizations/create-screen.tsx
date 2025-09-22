@@ -5,7 +5,6 @@ import {
   SizableText,
   SubmitButton,
   Theme,
-  XStack,
   YStack,
   useToastController,
 } from '@app/ui'
@@ -42,10 +41,10 @@ const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 const OrganizationSchema = z
   .object({
-    name: formFields.text.describe('Organization name // Copperworks').min(2, 'Name is required'),
-    slug: formFields.text.describe('Organization slug // copperworks').min(1, 'Slug is required'),
-    description: formFields.textarea.describe('About the organization').optional(),
-    websiteUrl: formFields.text.describe('Website URL // https://www.example.com').optional(),
+    name: formFields.text.describe('Organization name // Acme Corp').min(2, 'Name is required'),
+    slug: formFields.text.describe('Organization slug // acme-corp').min(1, 'Slug is required'),
+    description: formFields.textarea.describe('About the organization // Tell us what Acme Corp does').optional(),
+    websiteUrl: formFields.text.describe('Website URL // https://www.acmecorp.com').optional(),
     industryId: formFields.select.describe('Industry').optional(),
     employeeCountRange: formFields.select.describe('Number of employees').optional(),
     annualRevenueRange: formFields.select.describe('Annual revenue').optional(),
@@ -289,10 +288,10 @@ const OrganizationFormFields = ({ fields }: OrganizationFormFieldsProps) => {
       {description}
       {websiteUrl}
       {industryId}
-      <XStack gap="$4" $sm={{ fd: 'column', gap: '$3' }}>
+      <YStack gap="$4">
         {employeeCountRange}
         {annualRevenueRange}
-      </XStack>
+      </YStack>
       {location}
     </YStack>
   )

@@ -1,4 +1,5 @@
 export * from './AchievementCard'
+export * from './AddressAutocomplete'
 export * from './Banner'
 export * from './CustomToast'
 export * from './EventCard'
