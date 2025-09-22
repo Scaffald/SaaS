@@ -97,3 +97,54 @@ yarn reset
 ```shell
 yarn lint
 ```
+
+## Profile verification fields
+
+Administrative clients should call the `public.verify_profile_field` and `public.revoke_profile_field` functions to manage the
+`public.profile_verifications` audit log. The `field` column uses canonical identifiers so UI layers can consistently map
+verification badges back to profile sections. The triggers created in the migration automatically revoke the relevant fields
+whenever worker jobs mutate the underlying tables (including `public.user_skills` for skill changes).
+
+### Basic profile (`public.users`)
+- `basic.display_name` — Display name surfaced on profile headers and cards.
+- `basic.headline` — Short professional headline.
+- `basic.bio` — Full bio/summary text.
+- `basic.avatar` — Avatar URL or media reference.
+- `basic.industry` — Selected industry reference.
+- `basic.experience` — Years of experience total.
+- `skills.summary` — JSON skills summary blob.
+- `skills.list` — Verified skill inventory; toggles `user_skills.source/last_verified_at`.
+- `availability.open_to_work` — Open-to-work availability toggle.
+
+### Contact & compliance (`public.user_private`)
+- `contact.email` — Primary email address.
+- `contact.phone` — Phone number.
+- `contact.address` — Structured mailing address JSON.
+- `contact.geo` — Geo coordinate point.
+- `contact.preferences` — Contact preference array.
+- `contact.location` — Free-form location text.
+- `contact.phone_os` — Mobile OS metadata.
+- `availability.open_to_travel` — Travel willingness flag.
+- `availability.schedule` — Availability selections array.
+- `background.veteran_status` — Veteran status indicator.
+- `background.us_resident` — U.S. residency flag.
+- `background.us_passport` — Passport possession flag.
+- `background.travel_mileage` — Travel radius mileage.
+- `background.education` — Highest education level.
+- `compensation.hourly_rate` — Hourly rate expectation.
+- `credentials.drivers_license` — Driver license class.
+- `credentials.certifications` — Certification list.
+
+### Account profile (`public.profiles`)
+- `basic.full_name` — Legal or preferred full name stored in `profiles`.
+- `basic.about` — Long-form about copy.
+- `basic.avatar` — Avatar override stored in `profiles` (if used).
+
+### Projects & work history (`public.projects`)
+- `projects.name` — Project/work item name.
+- `projects.description` — Description/body copy.
+- `projects.type` — Project type label.
+- `projects.paid` — Paid project flag.
+- `projects.location` — Street or locality string.
+- `projects.zip` — ZIP/postal code.
+- `projects.duration` — Number of days or duration metadata.

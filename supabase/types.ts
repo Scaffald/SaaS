@@ -298,6 +298,50 @@ export type Database = {
           },
         ]
       }
+      profile_verifications: {
+        Row: {
+          field: string
+          id: string
+          notes: string | null
+          revoked_at: string | null
+          source: string | null
+          subject_id: string
+          subject_type: Database['public']['Enums']['profile_verification_subject']
+          verified_at: string
+          verified_by: string
+        }
+        Insert: {
+          field: string
+          id?: string
+          notes?: string | null
+          revoked_at?: string | null
+          source?: string | null
+          subject_id: string
+          subject_type: Database['public']['Enums']['profile_verification_subject']
+          verified_at?: string
+          verified_by: string
+        }
+        Update: {
+          field?: string
+          id?: string
+          notes?: string | null
+          revoked_at?: string | null
+          source?: string | null
+          subject_id?: string
+          subject_type?: Database['public']['Enums']['profile_verification_subject']
+          verified_at?: string
+          verified_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'profile_verifications_verified_by_fkey'
+            columns: ['verified_by']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       user_private: {
         Row: {
           address: Json | null
@@ -738,6 +782,27 @@ export type Database = {
       }
     }
     Functions: {
+      profile_verifications_revoke_fields: {
+        Args: {
+          p_subject_type: Database['public']['Enums']['profile_verification_subject']
+          p_subject_id: string
+          p_fields: string[] | null
+          p_notes?: string | null
+          p_revoked_at?: string | null
+        }
+        Returns: void
+      }
+      revoke_profile_field: {
+        Args: {
+          p_actor_id: string | null
+          p_subject_type: Database['public']['Enums']['profile_verification_subject']
+          p_subject_id: string
+          p_field: string
+          p_notes?: string | null
+          p_revoked_at?: string | null
+        }
+        Returns: Database['public']['Tables']['profile_verifications']['Row'][]
+      }
       user_has_role: {
         Args: {
           p_user_id: string
@@ -746,9 +811,22 @@ export type Database = {
         }
         Returns: boolean
       }
+      verify_profile_field: {
+        Args: {
+          p_actor_id: string
+          p_subject_type: Database['public']['Enums']['profile_verification_subject']
+          p_subject_id: string
+          p_field: string
+          p_source?: string | null
+          p_notes?: string | null
+          p_verified_at?: string | null
+        }
+        Returns: Database['public']['Tables']['profile_verifications']['Row']
+      }
     }
     Enums: {
       affiliate_type: 'education' | 'certification' | 'training' | 'resource'
+      profile_verification_subject: 'profile' | 'user' | 'user_private' | 'project'
     }
     CompositeTypes: {
       [_ in never]: never
