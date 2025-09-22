@@ -1,25 +1,12 @@
 'use client'
 
-import {
-  Avatar,
-  Button,
-  type ButtonProps,
-  SizableText,
-  Theme,
-  XStack,
-  YStack,
-  getTokens,
-  useMedia,
-} from '@app/ui'
+import { Button, Input, SizableText, XStack, YStack, useMedia, useTheme } from '@app/ui'
 import { Dialog } from 'tamagui'
-import { Map as MapIcon, Menu } from '@tamagui/lucide-icons'
+import { Bell, Menu, Search } from '@tamagui/lucide-icons'
 import { StaticDrawer } from '@app/features/drawer-menu/StaticDrawer.web'
 import { drawerSections, normalizePath, quickLinks } from '@app/features/drawer-menu'
 import { usePathname } from '@app/utils/usePathname'
-import { useUser } from '@app/utils/useUser'
 import { useState } from 'react'
-import { SolitoImage } from 'solito/image'
-import { Link, useLink } from 'solito/link'
 
 export type HomeLayoutProps = {
   children?: React.ReactNode
@@ -44,19 +31,20 @@ export const HomeLayout = ({ children, fullPage = false, padded = false }: HomeL
   const headerTitle = activeItem?.title ?? 'Dashboard'
 
   return (
-    <XStack f={1} backgroundColor="$color1">
+    <XStack f={1} backgroundColor="$color1" minHeight="100vh">
       {media.gtSm && <StaticDrawer />}
-      <YStack f={1}>
+      <YStack f={1} minWidth={0}>
         <XStack
           ai="center"
-          jc="space-between"
           px="$4"
           py="$3"
           borderBottomWidth={1}
           borderColor="$color4"
           backgroundColor="$color1"
+          gap="$4"
+          jc="space-between"
         >
-          <XStack ai="center" gap="$3">
+          <XStack ai="center" gap="$3" flexShrink={1} minWidth={0}>
             {!media.gtSm && (
               <Dialog open={drawerOpen} onOpenChange={setDrawerOpen} modal>
                 <Dialog.Trigger asChild>
@@ -75,13 +63,13 @@ export const HomeLayout = ({ children, fullPage = false, padded = false }: HomeL
                 </Dialog.Portal>
               </Dialog>
             )}
-            <SizableText size="$6" fontWeight="700">
+            <SizableText size="$6" fontWeight="700" flexShrink={1} minWidth={0}>
               {headerTitle}
             </SizableText>
           </XStack>
-          <XStack ai="center" gap="$3">
-            <CtaButton />
-            <ProfileButton />
+          <XStack ai="center" gap="$3" flexGrow={1} justifyContent="flex-end" minWidth={0}>
+            <HeaderSearch />
+            <NotificationButton />
           </XStack>
         </XStack>
         <YStack
@@ -101,35 +89,60 @@ export const HomeLayout = ({ children, fullPage = false, padded = false }: HomeL
   )
 }
 
-const UserAvatar = () => {
-  const { avatarUrl } = useUser()
+const HeaderSearch = () => {
+  const [query, setQuery] = useState('')
+  const theme = useTheme()
+  const media = useMedia()
+
+  const minWidth = media.gtSm ? 260 : media.gtXs ? 200 : 120
+  const maxWidth = media.gtLg ? 480 : media.gtMd ? 380 : media.gtSm ? 320 : 260
 
   return (
-    <Avatar size="$2" circular>
-      <SolitoImage
-        src={avatarUrl}
-        alt="your avatar"
-        width={getTokens().size['2'].val}
-        height={getTokens().size['2'].val}
+    <XStack
+      ai="center"
+      gap="$2"
+      px="$3"
+      py="$2"
+      flexGrow={1}
+      flexShrink={1}
+      minWidth={minWidth}
+      maxWidth={maxWidth}
+      borderRadius="$6"
+      backgroundColor="$color2"
+      borderWidth={1}
+      borderColor="$color4"
+    >
+      <Search size={18} color={theme.color10.val} />
+      <Input
+        flexGrow={1}
+        size="$3"
+        borderWidth={0}
+        backgroundColor="transparent"
+        px="$0"
+        py="$0"
+        placeholder="Search"
+        value={query}
+        onChangeText={setQuery}
       />
-    </Avatar>
+    </XStack>
   )
 }
 
-const CtaButton = (props: ButtonProps) => {
-  const discoverLink = useLink({ href: '/discover' })
+const NotificationButton = () => {
+  const theme = useTheme()
 
   return (
-    <Theme inverse>
-      <Button {...discoverLink} size="$3" space="$1.5" my="$-1" icon={MapIcon} br="$10" {...props}>
-        Discover
-      </Button>
-    </Theme>
+    <Button
+      size="$3"
+      circular
+      borderWidth={1}
+      borderColor="$color4"
+      backgroundColor="$color2"
+      hoverStyle={{ backgroundColor: '$color3', borderColor: '$color5' }}
+      pressStyle={{ backgroundColor: '$color3', borderColor: '$color6' }}
+      icon={<Bell size={18} color={theme.color10.val} />}
+      accessibilityLabel="Open notifications"
+      flexShrink={0}
+    />
   )
 }
-
-const ProfileButton = () => (
-  <Link href="/profile">
-    <UserAvatar />
-  </Link>
-)
