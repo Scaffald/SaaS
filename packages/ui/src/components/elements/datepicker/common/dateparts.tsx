@@ -16,6 +16,7 @@ import {
   createStyledContext,
   styled,
   withStaticProperties,
+  useDidFinishSSR,
 } from 'tamagui'
 
 import { useDateAnimation } from './datePickerUtils'
@@ -38,24 +39,27 @@ export const { Provider: HeaderTypeProvider, useStyledContext: useHeaderType } =
 
 const DatePickerImpl = (props: DatePickerProps) => {
   const { children, config, ...rest } = props
+  const isHydrated = useDidFinishSSR()
 
   return (
     <Popover keepChildrenMounted size="$5" allowFlip {...rest}>
       {/* for mobile view */}
-      <Adapt when="sm" platform="touch">
-        <Popover.Sheet modal dismissOnSnapToBottom snapPointsMode="fit">
-          <Popover.Sheet.Frame padding="$2" alignItems="center">
-            <DatePickerProvider config={config}>
-              <Adapt.Contents />
-            </DatePickerProvider>
-          </Popover.Sheet.Frame>
-          <Popover.Sheet.Overlay
-            animation="lazy"
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
-          />
-        </Popover.Sheet>
-      </Adapt>
+      {isHydrated ? (
+        <Adapt when="sm" platform="touch">
+          <Popover.Sheet modal dismissOnSnapToBottom snapPointsMode="fit">
+            <Popover.Sheet.Frame padding="$2" alignItems="center">
+              <DatePickerProvider config={config}>
+                <Adapt.Contents />
+              </DatePickerProvider>
+            </Popover.Sheet.Frame>
+            <Popover.Sheet.Overlay
+              animation="lazy"
+              enterStyle={{ opacity: 0 }}
+              exitStyle={{ opacity: 0 }}
+            />
+          </Popover.Sheet>
+        </Adapt>
+      ) : null}
 
       {/* for desktop view */}
       <DatePickerProvider config={config}>{children}</DatePickerProvider>

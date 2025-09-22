@@ -10,6 +10,7 @@ import {
   Text,
   XStack,
   YStack,
+  useDidFinishSSR,
 } from '@app/ui'
 import { ChevronDown, X } from '@tamagui/lucide-icons'
 
@@ -29,6 +30,7 @@ export const FilterFlyout = ({
   onClear,
 }: FilterFlyoutProps) => {
   const triggerLabel = summary ? `${label}: ${summary}` : label
+  const isHydrated = useDidFinishSSR()
 
   const renderContent = (variant: 'popover' | 'sheet') => (
     <YStack
@@ -72,15 +74,17 @@ export const FilterFlyout = ({
           {isCompact ? label : triggerLabel}
         </Button>
       </Popover.Trigger>
-      <Adapt when="sm">
-        <Sheet modal dismissOnSnapToBottom snapPoints={[85]}>
-          <Sheet.Overlay />
-          <Sheet.Handle />
-          <Sheet.Frame>
-            <Sheet.ScrollView>{renderContent('sheet')}</Sheet.ScrollView>
-          </Sheet.Frame>
-        </Sheet>
-      </Adapt>
+      {isHydrated ? (
+        <Adapt when="sm">
+          <Sheet modal dismissOnSnapToBottom snapPoints={[85]}>
+            <Sheet.Overlay />
+            <Sheet.Handle />
+            <Sheet.Frame>
+              <Sheet.ScrollView>{renderContent('sheet')}</Sheet.ScrollView>
+            </Sheet.Frame>
+          </Sheet>
+        </Adapt>
+      ) : null}
       <Popover.Content padding={0} bordered elevate>
         {renderContent('popover')}
       </Popover.Content>
