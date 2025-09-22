@@ -1,16 +1,22 @@
 import {
   Avatar,
   Button,
+  Card,
+  ListItem,
   Paragraph,
   Separator,
   SizableText,
+  Theme,
   XStack,
+  YGroup,
   YStack,
   getTokens,
 } from '@my/ui'
+import type { ThemeName } from '@my/ui'
 import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import { DrawerContentScrollView } from '@react-navigation/drawer'
-import { BarChart3, CircleUser, Map, Settings2, Sparkles } from '@tamagui/lucide-icons'
+import { BarChart3, ChevronRight, CircleUser, Map, Settings2, Sparkles } from '@tamagui/lucide-icons'
+import type { JSX } from 'react'
 import { useCallback } from 'react'
 import { GestureResponderEvent } from 'react-native'
 import { useLink } from 'solito/link'
@@ -27,7 +33,7 @@ export type DrawerItemConfig = {
   icon: (props: { size?: number; color?: string }) => JSX.Element
   description?: string
   badge?: string
-  theme?: string
+  theme?: ThemeName
   disabled?: boolean
   subItems?: DrawerItemConfig[]
 }
@@ -102,9 +108,16 @@ type DrawerLinkProps = {
   pathname: string
   collapsed?: boolean
   onNavigate?: (href: string, event: GestureResponderEvent) => void
+  depth?: number
 }
 
-const DrawerLink = ({ item, pathname, collapsed = false, onNavigate }: DrawerLinkProps) => {
+const DrawerLink = ({
+  item,
+  pathname,
+  collapsed = false,
+  depth = 0,
+  onNavigate,
+}: DrawerLinkProps) => {
   const link = useLink({ href: item.href })
   const active = isActivePath(pathname, item.href)
   const Icon = item.icon
@@ -115,36 +128,87 @@ const DrawerLink = ({ item, pathname, collapsed = false, onNavigate }: DrawerLin
     onNavigate?.(item.href, event)
   }
 
-  return (
-    <Button
+  if (collapsed) {
+    return (
+      <Button
+        {...link}
+        accessibilityRole="button"
+        circular
+        size="$3"
+        icon={<Icon size={18} color="$gray11" />}
+        disabled={item.disabled}
+        onPress={handlePress}
+        theme={active ? item.theme : undefined}
+      />
+    )
+  }
+
+  const themeName = active ? item.theme : undefined
+
+  const content = (
+    <ListItem
       {...link}
-      accessibilityRole="button"
-      justifyContent="flex-start"
-      width="100%"
-      size="$3"
-      borderRadius="$3"
-      backgroundColor={active ? '$purple3' : 'transparent'}
-      color={active ? '$purple12' : '$gray11'}
-      icon={<Icon size={20} color={active ? '$purple11' : '$gray10'} />}
-      iconAfter={null}
+      hoverTheme
+      pressTheme
+      active={active}
       disabled={item.disabled}
       onPress={handlePress}
-      theme={active ? 'purple' : undefined}
-    >
-      {!collapsed && (
-        <YStack alignItems="flex-start" gap="$1">
-          <SizableText size="$4" fontWeight="600">
-            {item.title}
-          </SizableText>
-          {item.description ? (
-            <Paragraph size="$2" color="$gray10">
-              {item.description}
-            </Paragraph>
+      size="$4"
+      px="$4"
+      py="$3"
+      br="$5"
+      bg={active ? '$backgroundFocus' : 'transparent'}
+      borderColor={active ? '$color5' : 'transparent'}
+      borderWidth={active ? 1 : 0}
+      opacity={item.disabled ? 0.5 : 1}
+      title={item.title}
+      subTitle={item.description}
+      fontWeight={depth > 0 ? '500' : '600'}
+      color={active ? '$color12' : '$gray12'}
+      paddingLeft={depth > 0 ? '$6' : undefined}
+      icon={({ size }) => {
+        const iconNode = (
+          <XStack ai="center" jc="center" w={36} h={36} br="$4" bg={active ? '$color5' : '$color3'}>
+            <Icon size={size ?? 18} color={active ? '$color12' : '$color11'} />
+          </XStack>
+        )
+
+        if (!themeName && item.theme) {
+          return <Theme name={item.theme}>{iconNode}</Theme>
+        }
+
+        return iconNode
+      }}
+      iconAfter={
+        <XStack gap="$2" ai="center">
+          {item.badge ? (
+            (() => {
+              const badge = (
+                <XStack px="$2" py="$1" br="$10" bg="$color3">
+                  <Paragraph size="$1" color="$color11">
+                    {item.badge}
+                  </Paragraph>
+                </XStack>
+              )
+
+              if (!themeName && item.theme) {
+                return <Theme name={item.theme}>{badge}</Theme>
+              }
+
+              return badge
+            })()
           ) : null}
-        </YStack>
-      )}
-    </Button>
+          <ChevronRight size={16} color="$color10" />
+        </XStack>
+      }
+    />
   )
+
+  if (themeName) {
+    return <Theme name={themeName}>{content}</Theme>
+  }
+
+  return content
 }
 
 type DrawerSectionProps = {
@@ -155,34 +219,50 @@ type DrawerSectionProps = {
 }
 
 const DrawerSection = ({ section, pathname, collapsed, onNavigate }: DrawerSectionProps) => {
+  const items = section.items.flatMap((item) => [
+    { item, depth: 0 },
+    ...(item.subItems?.map((sub) => ({ item: sub, depth: 1 })) ?? []),
+  ])
+
+  if (collapsed) {
+    return (
+      <YStack gap="$2">
+        {items.map(({ item, depth }) => (
+          <DrawerLink
+            key={`${section.key}-${item.key}-${depth}`}
+            item={item}
+            pathname={pathname}
+            collapsed
+            depth={depth}
+            onNavigate={onNavigate}
+          />
+        ))}
+      </YStack>
+    )
+  }
+
   return (
-    <YStack gap="$2">
-      {!collapsed && (
-        <SizableText size="$2" fontWeight="600" color="$gray10" textTransform="uppercase">
-          {section.title}
-        </SizableText>
-      )}
-      <YStack gap="$1">
-        {section.items.map((item) => (
-          <YStack key={item.key} gap="$1">
+    <YStack gap="$3" width="100%">
+      <SizableText size="$2" fontWeight="600" color="$gray10" textTransform="uppercase">
+        {section.title}
+      </SizableText>
+      <YGroup
+        bordered
+        size="$4"
+        separator={<Separator borderColor="$color4" />}
+        borderRadius="$5"
+      >
+        {items.map(({ item, depth }) => (
+          <YGroup.Item key={`${section.key}-${item.key}-${depth}`}>
             <DrawerLink
               item={item}
               pathname={pathname}
-              collapsed={collapsed}
+              depth={depth}
               onNavigate={onNavigate}
             />
-            {item.subItems?.map((sub) => (
-              <DrawerLink
-                key={sub.key}
-                item={sub}
-                pathname={pathname}
-                collapsed={collapsed}
-                onNavigate={onNavigate}
-              />
-            ))}
-          </YStack>
+          </YGroup.Item>
         ))}
-      </YStack>
+      </YGroup>
     </YStack>
   )
 }
@@ -195,7 +275,9 @@ type DrawerContentProps = {
 
 export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: DrawerContentProps) => {
   const { profile, avatarUrl, user, updateProfile } = useUser()
+  const tokens = getTokens()
   const manageLink = useLink({ href: '/profile' })
+  const avatarSize = tokens.size['3'].val
 
   const handleManagePress = (event: GestureResponderEvent) => {
     manageLink.onPress?.(event)
@@ -213,45 +295,58 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
       py="$4"
       gap="$5"
     >
-      <YStack backgroundColor="$gray2" borderRadius="$4" px="$4" py="$4" gap="$4">
-        <XStack alignItems="center" gap="$3">
-          <XStack
-            width="$4.5"
-            height="$4.5"
-            borderRadius="$3"
-            backgroundColor="$purple3"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <CircleUser size={24} color="$purple11" />
-          </XStack>
-          {!collapsed && (
-            <YStack f={1} gap="$1">
-              <SizableText size="$5" fontWeight="700" color="$gray12">
-                {profile?.name ?? 'Store Name'}
-              </SizableText>
-              <Paragraph size="$2" color="$gray10">
-                Synced moments ago
-              </Paragraph>
-            </YStack>
+      <Card
+        width="100%"
+        px="$4"
+        py="$4"
+        gap="$3"
+        borderRadius="$5"
+        borderColor="$purple4"
+        backgroundColor="$purple2"
+        theme="purple"
+      >
+        <ListItem
+          hoverTheme={false}
+          pressTheme={false}
+          size="$4"
+          px="$0"
+          py="$0"
+          bg="transparent"
+          title={!collapsed ? profile?.name ?? 'Store Name' : undefined}
+          subTitle={!collapsed ? 'Synced moments ago' : undefined}
+          fontWeight="700"
+          color="$color12"
+          icon={({ size }) => (
+            <XStack
+              ai="center"
+              jc="center"
+              w={40}
+              h={40}
+              br="$4"
+              bg="$purple4"
+            >
+              <CircleUser size={size ?? 20} color="$purple11" />
+            </XStack>
           )}
-          {!collapsed && (
-            <Button theme="purple" size="$2" px="$3" onPress={updateProfile}>
-              Refresh
-            </Button>
-          )}
-        </XStack>
-        {!collapsed && (
+          iconAfter={
+            !collapsed ? (
+              <Button theme="purple" size="$2" px="$3" onPress={updateProfile}>
+                Refresh
+              </Button>
+            ) : undefined
+          }
+        />
+        {!collapsed ? (
           <XStack gap="$2" ai="center">
-            <Sparkles size={16} color="$gray10" />
-            <Paragraph size="$2" color="$gray10">
+            <Sparkles size={16} color="$purple11" />
+            <Paragraph size="$2" color="$purple11">
               Updated moments ago
             </Paragraph>
           </XStack>
-        )}
-      </YStack>
+        ) : null}
+      </Card>
 
-      <YStack gap="$5">
+      <YStack gap="$5" width="100%">
         {drawerSections.map((section) => (
           <DrawerSection
             key={section.key}
@@ -263,51 +358,71 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
         ))}
       </YStack>
 
-      <YStack gap="$4">
-        {!collapsed && <Separator borderColor="$color4" />}
-        <YStack gap="$2">
-          {quickLinks.map((item) => (
-            <DrawerLink
-              key={item.key}
-              item={item}
-              pathname={pathname}
-              collapsed={collapsed}
-              onNavigate={onNavigate}
-            />
-          ))}
-        </YStack>
-        <XStack
-          backgroundColor="$gray2"
-          borderRadius="$4"
+      <YStack gap="$4" width="100%">
+        {collapsed ? (
+          <YStack gap="$2">
+            {quickLinks.map((item) => (
+              <DrawerLink
+                key={item.key}
+                item={item}
+                pathname={pathname}
+                collapsed
+                onNavigate={onNavigate}
+              />
+            ))}
+          </YStack>
+        ) : (
+          <YGroup
+            bordered
+            size="$4"
+            separator={<Separator borderColor="$color4" />}
+            borderRadius="$5"
+          >
+            {quickLinks.map((item) => (
+              <YGroup.Item key={item.key}>
+                <DrawerLink item={item} pathname={pathname} onNavigate={onNavigate} />
+              </YGroup.Item>
+            ))}
+          </YGroup>
+        )}
+
+        <Card
           px="$4"
-          py="$4"
+          py="$3"
           gap="$3"
-          alignItems="center"
+          borderRadius="$5"
+          borderColor="$color4"
+          backgroundColor="$color2"
         >
-          <Avatar circular size="$3">
-            <SolitoImage
-              src={avatarUrl}
-              alt="Profile avatar"
-              width={getTokens().size['3'].val}
-              height={getTokens().size['3'].val}
-            />
-          </Avatar>
-          {!collapsed && (
-            <YStack f={1} gap="$1">
-              <SizableText size="$4" fontWeight="600" color="$gray12">
-                {profile?.name ?? 'No Name'}
-              </SizableText>
-              <Paragraph size="$2" color="$gray10">
-                {user?.email ?? 'View profile'}
-              </Paragraph>
-            </YStack>
-          )}
-          {!collapsed && (
-            <Button size="$2" px="$3" onPress={handleManagePress}>
-              Manage
-            </Button>
-          )}
-        </XStack>
+          <ListItem
+            hoverTheme
+            pressTheme
+            size="$4"
+            px="$0"
+            py="$0"
+            bg="transparent"
+            onPress={handleManagePress}
+            title={!collapsed ? profile?.name ?? 'No Name' : undefined}
+            subTitle={!collapsed ? user?.email ?? 'View profile' : undefined}
+            icon={() => (
+              <Avatar circular size="$3">
+                <SolitoImage
+                  src={avatarUrl}
+                  alt="Profile avatar"
+                  width={avatarSize}
+                  height={avatarSize}
+                />
+              </Avatar>
+            )}
+            iconAfter={
+              !collapsed ? (
+                <Button size="$2" px="$3" onPress={handleManagePress}>
+                  Manage
+                </Button>
+              ) : undefined
+            }
+          />
+        </Card>
       </YStack>
     </YStack>
   )

@@ -1,4 +1,4 @@
-import { Button, Paragraph, SizableText, XStack, YStack } from '@my/ui'
+import { Button, ListItem, Paragraph, XStack, YStack } from '@my/ui'
 import type { ReactNode } from 'react'
 
 export type OpportunityAction = {
@@ -24,50 +24,58 @@ export type OpportunityCardProps = {
 }
 
 export const OpportunityCard = ({ item }: OpportunityCardProps) => {
-  return (
-    <XStack
-      ai="flex-start"
-      jc="space-between"
-      gap="$4"
-      py="$3"
-      px="$1"
-      $sm={{ fd: 'column', gap: '$3' }}
-    >
-      <YStack gap="$1" f={1}>
-        <SizableText size="$4" fontWeight="600">
-          {item.title}
-        </SizableText>
-        <Paragraph size="$2" color="$gray11">
-          {item.company}
-          {item.location ? ` · ${item.location}` : ''}
-        </Paragraph>
-        {item.meta ? (
-          <Paragraph size="$1" color="$gray10">
-            {item.meta}
-          </Paragraph>
-        ) : null}
-      </YStack>
+  const hasActions = !!item.actions?.length
 
-      <YStack gap="$2" ai="flex-end" $sm={{ ai: 'flex-start' }}>
-        {item.statusLabel ? (
-          <StatusPill tone={item.statusTone}>{item.statusLabel}</StatusPill>
-        ) : null}
-        {item.actions?.length ? (
-          <XStack gap="$2" $sm={{ fd: 'row-reverse' }}>
-            {item.actions.map((action) => (
-              <Button
-                key={action.id}
-                size="$2"
-                onPress={action.onPress}
-                {...getButtonVariantProps(action.intent)}
-              >
-                {action.label}
-              </Button>
-            ))}
-          </XStack>
-        ) : null}
-      </YStack>
-    </XStack>
+  return (
+    <ListItem
+      hoverTheme
+      pressTheme={hasActions}
+      size="$4"
+      px="$4"
+      py="$3"
+      flexWrap="wrap"
+      gap="$3"
+      alignItems="flex-start"
+      justifyContent="space-between"
+      bg="$color1"
+      color="$gray12"
+      fontWeight="600"
+      title={item.title}
+      subTitle={
+        <YStack gap="$1">
+          <Paragraph size="$2" color="$gray11">
+            {item.company}
+            {item.location ? ` · ${item.location}` : ''}
+          </Paragraph>
+          {item.meta ? (
+            <Paragraph size="$1" color="$gray10">
+              {item.meta}
+            </Paragraph>
+          ) : null}
+        </YStack>
+      }
+      iconAfter={
+        <YStack gap="$2" ai="flex-end" $sm={{ ai: 'flex-start', width: '100%' }}>
+          {item.statusLabel ? (
+            <StatusPill tone={item.statusTone}>{item.statusLabel}</StatusPill>
+          ) : null}
+          {hasActions ? (
+            <XStack gap="$2" flexWrap="wrap" $sm={{ fd: 'row-reverse' }}>
+              {item.actions?.map((action) => (
+                <Button
+                  key={action.id}
+                  size="$2"
+                  onPress={action.onPress}
+                  {...getButtonVariantProps(action.intent)}
+                >
+                  {action.label}
+                </Button>
+              ))}
+            </XStack>
+          ) : null}
+        </YStack>
+      }
+    />
   )
 }
 
