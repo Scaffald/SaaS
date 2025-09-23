@@ -205,7 +205,14 @@ set
   external_id = coalesce(j.external_id, 'seed-' || md5(coalesce(j.slug, j.id::text))),
   external_url = coalesce(j.external_url, 'https://jobs.seed.local/' || o.slug || '/' || coalesce(j.slug, j.id::text)),
   source_posted_at = coalesce(j.source_posted_at, j.posted_at, now()),
-  source_updated_at = coalesce(j.source_updated_at, greatest(j.posted_at, j.updated_at, now())),
+  source_updated_at = coalesce(
+    j.source_updated_at,
+    greatest(
+      coalesce(j.posted_at, '-infinity'::timestamptz),
+      coalesce(j.updated_at, '-infinity'::timestamptz),
+      now()
+    )
+  ),
   last_seen_at = coalesce(j.last_seen_at, now()),
   raw_payload = case
     when j.raw_payload is null or j.raw_payload = '{}'::jsonb then
