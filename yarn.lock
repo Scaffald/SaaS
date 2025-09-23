@@ -10347,40 +10347,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vxrn/color-scheme@npm:^1.1.433":
-  version: 1.1.533
-  resolution: "@vxrn/color-scheme@npm:1.1.533"
-  dependencies:
-    "@vxrn/universal-color-scheme": "npm:1.1.533"
-    "@vxrn/use-isomorphic-layout-effect": "npm:1.1.533"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 10/84a7470f0ff6fc987894be7b529f024e52037c65b17ac3619a54135e8d2cf87c0f0c12d6f6bb91f506760d8409eac1ddeb83d502a939440794a2713c90580e32
-  languageName: node
-  linkType: hard
-
-"@vxrn/universal-color-scheme@npm:1.1.533":
-  version: 1.1.533
-  resolution: "@vxrn/universal-color-scheme@npm:1.1.533"
-  dependencies:
-    "@vxrn/use-isomorphic-layout-effect": "npm:1.1.533"
-    react: "npm:~19.0.0"
-  peerDependencies:
-    react-native: "*"
-  checksum: 10/4d8140e3fb8874ffa798412db78f61779bf4beb8d61a1d622514451bf93a6e4ef338d90246a0f443336b25eb0f1f3a69188dc36323e5e57ad9a4c1d61360541c
-  languageName: node
-  linkType: hard
-
-"@vxrn/use-isomorphic-layout-effect@npm:1.1.533":
-  version: 1.1.533
-  resolution: "@vxrn/use-isomorphic-layout-effect@npm:1.1.533"
-  dependencies:
-    react: "npm:~19.0.0"
-  checksum: 10/600b05e466ac97b3b68d33d4de8c8148b7266599b10239149471edc5c4d9475252823a09ded99bda68301d854cb9e36ddd78e2e8df6935628fef90bc848b6ae1
-  languageName: node
-  linkType: hard
-
 "@web3-storage/multipart-parser@npm:^1.0.0":
   version: 1.0.0
   resolution: "@web3-storage/multipart-parser@npm:1.0.0"
@@ -10957,7 +10923,6 @@ __metadata:
     "@types/geojson": "npm:^7946.0.14"
     "@types/mapbox-gl": "npm:^2.7.21"
     "@types/react": "npm:^19.0.0"
-    "@vxrn/color-scheme": "npm:^1.1.433"
     awesome-phonenumber: "npm:^3.0.0"
     base64-arraybuffer: "npm:^1.0.2"
     burnt: "npm:^0.12.1"

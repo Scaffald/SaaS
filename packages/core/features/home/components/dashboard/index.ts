@@ -1,5 +1,6 @@
 export * from './hero/dashboard-hero'
 export * from './opportunities'
+export * from './error-boundary'
 export * from './profile'
 export * from './insights'
 export * from './certifications'
