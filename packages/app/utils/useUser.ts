@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
+import { isNotFoundPostgrestError, wrapSupabaseError } from './supabase/errors'
 import { useSessionContext } from './supabase/useSessionContext'
 import { useSupabase } from './supabase/useSupabase'
 
@@ -9,18 +10,30 @@ function useProfile() {
   const supabase = useSupabase()
   const { data, isPending, refetch } = useQuery({
     queryKey: ['profile', user?.id],
+    enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       if (!user?.id) return null
-      const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+      const { data, error, status } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle()
+
       if (error) {
-        // no rows - edge case of user being deleted
         if (error.code === 'PGRST116') {
           await supabase.auth.signOut()
           return null
         }
-        throw new Error(error.message)
+
+        if (isNotFoundPostgrestError({ ...error, status })) {
+          return null
+        }
+
+        throw wrapSupabaseError(error)
       }
-      return data
+
+      return data ?? null
     },
   })
 

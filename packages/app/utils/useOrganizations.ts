@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { Database } from '@app/supabase/types'
 
+import { isNotFoundPostgrestError, wrapSupabaseError } from './supabase/errors'
 import { useSupabase } from './supabase/useSupabase'
 import { useUser } from './useUser'
 
@@ -15,6 +16,7 @@ export const useOrganizations = () => {
   return useQuery({
     queryKey: ['organizations', user?.id],
     enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000,
     queryFn: async (): Promise<OrganizationMembership[]> => {
       if (!user?.id) {
         return []
@@ -27,7 +29,11 @@ export const useOrganizations = () => {
         .order('organization_name', { ascending: true })
 
       if (error) {
-        throw new Error(error.message)
+        if (isNotFoundPostgrestError(error)) {
+          return []
+        }
+
+        throw wrapSupabaseError(error)
       }
 
       return data ?? []

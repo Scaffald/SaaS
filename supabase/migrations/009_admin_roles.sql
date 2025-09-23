@@ -53,6 +53,8 @@ as $$
 $$;
 
 -- Refresh views to align with updated policies and new columns.
+drop view if exists public.v_user_search cascade;
+drop view if exists public.v_user_private cascade;
 create or replace view public.v_user_search as
 select
   u.id,
@@ -71,7 +73,7 @@ select
   u.updated_at
 from public.users u;
 
-create or replace view public.v_user_private as
+create view public.v_user_private as
 select
   u.id,
   up.email,

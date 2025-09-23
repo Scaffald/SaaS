@@ -25,10 +25,14 @@ module.exports = (api) => {
           root: ['../..'],
           alias: {
             // define aliases to shorten the import paths
-            '@app': '../../packages/app',
-            '@app/ui': '../../packages/ui',
-            '@app/api': '../../packages/api',
-            '@app/supabase': '../../supabase',
+            '@app': './packages/app',
+            '@app/*': './packages/app/*',
+            '@app/ui': './packages/ui',
+            '@app/ui/*': './packages/ui/*',
+            '@app/api': './packages/api',
+            '@app/api/*': './packages/api/*',
+            '@app/supabase': './supabase',
+            '@app/supabase/*': './supabase/*',
           },
           extensions: ['.js', '.jsx', '.tsx', '.ios.js', '.android.js'],
         },

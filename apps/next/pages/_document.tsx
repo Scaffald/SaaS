@@ -7,7 +7,7 @@ import NextDocument, {
   Main,
   NextScript,
 } from 'next/document'
-import { Children } from 'react'
+import { Children, cloneElement } from 'react'
 import type { ReactElement } from 'react'
 import { AppRegistry } from 'react-native'
 
@@ -24,17 +24,21 @@ export default class Document extends NextDocument {
      * Note: be sure to keep tamagui styles after react-native-web styles like it is here!
      * So Tamagui styles can override the react-native-web styles.
      */
+    const reactNativeStyles = Children.toArray(getStyleElement()).map((element, index) =>
+      cloneElement(element as ReactElement, { key: `react-native-web-${index}` })
+    )
+
     const styles = [
-      getStyleElement(),
+      ...reactNativeStyles,
       <style
-        key="tamagui-css"
+        key="tamagui-inline-css"
         dangerouslySetInnerHTML={{
           __html: config.getCSS(),
         }}
       />,
     ]
 
-    return { ...page, styles: Children.toArray(styles) }
+    return { ...page, styles }
   }
 
   render() {
@@ -42,6 +46,7 @@ export default class Document extends NextDocument {
       <Html>
         <Head>
           <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+          <link rel="stylesheet" href="/tamagui.css" />
         </Head>
         <body>
           <Main />
