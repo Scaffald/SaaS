@@ -1,4 +1,6 @@
+import type { Database } from '@app/supabase/types'
 import { TRPCError } from '@trpc/server'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { ensureAdminAccess } from '../access'
@@ -172,7 +174,7 @@ describe('ensureAdminAccess', () => {
       .fn()
       .mockResolvedValueOnce({ data: true, error: null })
       .mockResolvedValueOnce({ data: null, error: null })
-    const supabase = { rpc } as any
+    const supabase = { rpc } as SupabaseClient<Database>
 
     const result = await ensureAdminAccess(supabase, 'user-id', 'org-id')
 
@@ -190,7 +192,7 @@ describe('ensureAdminAccess', () => {
       .mockResolvedValueOnce({ data: false, error: null })
       .mockResolvedValueOnce({ data: true, error: null })
       .mockResolvedValueOnce({ data: null, error: null })
-    const supabase = { rpc } as any
+    const supabase = { rpc } as SupabaseClient<Database>
 
     const result = await ensureAdminAccess(supabase, 'user-id', 'org-id')
 
@@ -204,7 +206,7 @@ describe('ensureAdminAccess', () => {
 
   it('rejects partner administrators when no organization is supplied', async () => {
     const rpc = vi.fn().mockResolvedValue({ data: false, error: null })
-    const supabase = { rpc } as any
+    const supabase = { rpc } as SupabaseClient<Database>
 
     await expect(ensureAdminAccess(supabase, 'user-id', undefined)).rejects.toHaveProperty(
       'code',
@@ -215,7 +217,7 @@ describe('ensureAdminAccess', () => {
   it('propagates RPC errors when verifying administrator roles', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     const rpc = vi.fn().mockResolvedValue({ data: null, error: new Error('boom') })
-    const supabase = { rpc } as any
+    const supabase = { rpc } as SupabaseClient<Database>
 
     await expect(ensureAdminAccess(supabase, 'user-id', undefined)).rejects.toBeInstanceOf(
       TRPCError,
