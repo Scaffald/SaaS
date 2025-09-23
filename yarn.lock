@@ -50,6 +50,7 @@ __metadata:
     next: "npm:^15.5.3"
     superjson: "npm:^1.13.1"
     typescript: "npm:^5.9.2"
+    vitest: "npm:^2.1.1"
     zod: "npm:^3.22.2"
   languageName: unknown
   linkType: soft
