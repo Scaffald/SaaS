@@ -49,7 +49,9 @@ describe('ImagePickerField', () => {
   const mockedUseFieldInfo = vi.mocked(useFieldInfo)
 
   beforeEach(() => {
-    mockedUseFieldInfo.mockReturnValue({ label: 'Cover image' })
+    mockedUseFieldInfo.mockReturnValue({ label: 'Cover image' } as unknown as ReturnType<
+      typeof useFieldInfo
+    >)
     mockedUseTsController.mockReturnValue({
       field: {
         value: { path: 'initial.png', fileURL: 'blob:initial' },

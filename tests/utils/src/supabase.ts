@@ -6,6 +6,10 @@ type SupabaseRpcArgs<TDatabase> = Parameters<SupabaseRpcMethod<TDatabase>>
 type SupabaseRpcResult<TDatabase> = Awaited<ReturnType<SupabaseRpcMethod<TDatabase>>>
 type SupabaseRpc<TDatabase> = (...args: SupabaseRpcArgs<TDatabase>) => Promise<SupabaseRpcResult<TDatabase>>
 
+type SupabaseRpcImplementation<TDatabase> = (
+  ...args: SupabaseRpcArgs<TDatabase>
+) => Promise<SupabaseRpcResult<TDatabase>>
+
 type SupabaseClientOverrides<TDatabase> = {
   [K in keyof SupabaseClient<TDatabase>]?: SupabaseClient<TDatabase>[K]
 }
@@ -35,7 +39,7 @@ export type SupabaseClientStub<TDatabase> = {
 
 export const createSupabaseClientStub = <TDatabase>(
   overrides: SupabaseClientOverrides<TDatabase> & {
-    rpc?: SupabaseRpc<TDatabase>
+    rpc?: SupabaseRpcImplementation<TDatabase>
   } = {}
 ): SupabaseClientStub<TDatabase> => {
   const { rpc, ...rest } = overrides

@@ -16,7 +16,7 @@ export default class Document extends NextDocument {
     AppRegistry.registerComponent('Main', () => Main)
     const page = await ctx.renderPage()
 
-    const { getStyleElement } = AppRegistry.getApplication('Main') as unknown as {
+    const { getStyleElement } = (AppRegistry as any).getApplication('Main') as unknown as {
       getStyleElement: () => ReactElement
     }
 

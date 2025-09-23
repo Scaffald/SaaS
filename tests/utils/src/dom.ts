@@ -19,7 +19,7 @@ export function stubGlobal<K extends keyof typeof globalThis>(
       if (hadValue) {
         target[key] = originalValue
       } else {
-        delete target[key]
+        Reflect.deleteProperty(target, key)
       }
     },
   }
