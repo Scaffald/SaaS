@@ -183,7 +183,7 @@ type DatePickerExampleProps = {
 
 export const DatePickerExample = forwardRef<HTMLInputElement, DatePickerExampleProps>(
   (
-    { disabled, placeholderTextColor, value, onChangeText, onBlur, placeholder, id, ...props },
+    { disabled, placeholderTextColor, value, onChangeText, onBlur, placeholder, id, ...restProps },
     ref
   ) => {
     const [selectedDates, onDatesChange] = useState<Date[]>([])
@@ -214,10 +214,16 @@ export const DatePickerExample = forwardRef<HTMLInputElement, DatePickerExampleP
       <DatePicker keepChildrenMounted open={open} onOpenChange={setOpen} config={datePickerConfig}>
         <DatePicker.Trigger>
           <DatePickerInput
-            placeholder="Select Date"
-            value={selectedDates[0]?.toDateString() || ''}
+            id={id}
+            disabled={disabled}
+            placeholder={placeholder ?? 'Select Date'}
+            placeholderTextColor={placeholderTextColor}
+            value={selectedDates[0]?.toDateString() || value || ''}
+            onBlur={onBlur}
             onReset={() => onDatesChange([])}
             onButtonPress={() => setOpen(true)}
+            ref={ref}
+            {...restProps}
           />
         </DatePicker.Trigger>
         <DatePicker.Content>

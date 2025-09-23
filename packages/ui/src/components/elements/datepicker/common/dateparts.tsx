@@ -139,7 +139,7 @@ export const DatePicker = withStaticProperties(DatePickerImpl, {
       borderColor: '$borderColor',
     }),
   }),
-}) as any
+})
 
 type DatePickerInputProps = {
   onReset: () => void

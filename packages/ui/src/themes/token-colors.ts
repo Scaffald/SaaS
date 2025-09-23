@@ -114,5 +114,12 @@ export function postfixObjKeys<A extends { [key: string]: string }, B extends st
 ): {
   [Key in `${keyof A extends string ? keyof A : never}${B}`]: string
 } {
-  return Object.fromEntries(Object.entries(obj).map(([k, v]) => [`${k}${postfix}`, v])) as any
+  type Key = Extract<keyof A, string>
+  const result = {} as { [K in `${Key}${B}`]: string }
+
+  for (const key of Object.keys(obj) as Key[]) {
+    result[`${key}${postfix}` as `${Key}${B}`] = obj[key]
+  }
+
+  return result
 }
