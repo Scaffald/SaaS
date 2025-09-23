@@ -1,5 +1,6 @@
 import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch'
 
 vi.mock('@supabase/auth-helpers-nextjs', () => ({
   createRouteHandlerClient: vi.fn(),

@@ -45,7 +45,7 @@ function AppWithTheme({
 }
 
 function MyApp(props: any) {
-  const { Component, pageProps, router } = props
+  const { Component, pageProps } = props
   return (
     <>
       <Head>

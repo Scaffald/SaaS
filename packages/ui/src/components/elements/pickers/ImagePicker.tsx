@@ -1,5 +1,5 @@
 import { X } from '@tamagui/lucide-icons'
-import { useEffect, useId, useState, forwardRef } from 'react'
+import { useId, useState, forwardRef } from 'react'
 import { Platform } from 'react-native'
 import type { DropzoneInputProps, DropzoneRootProps } from 'react-dropzone'
 import { Button, Image, Label, ScrollView, View, XStack } from 'tamagui'
@@ -38,9 +38,18 @@ const createFileDescriptor = (file: DropZoneWebFile): PickerFileDescriptor => ({
 /** ------ EXAMPLE ------ */
 // biome-ignore lint/suspicious/noExplicitAny: Example component with flexible ref type
 export const ImagePicker = forwardRef<any, ImagePickerProps>(
-  ({ disabled, value, onChangeText, onBlur, placeholder }, ref) => {
+  (
+    {
+      disabled,
+      value,
+      onChangeText,
+      onBlur,
+      placeholder,
+    },
+    ref
+  ) => {
     const id = useId()
-    const [images, setImages] = useState<string[]>(() => (value?.fileURL ? [value.fileURL] : []))
+    const [images, setImages] = useState<string[]>([])
     const { open, getInputProps, getRootProps, dragStatus } = useFilePicker({
       typeOfPicker: 'image',
       mediaTypes: [MediaTypeOptions.Images] as const,
@@ -54,7 +63,6 @@ export const ImagePicker = forwardRef<any, ImagePickerProps>(
           if (firstImage && onChangeText) {
             onChangeText(firstImage)
             setImages((current) => [...current, firstImage.fileURL])
-            onBlur?.()
           }
         } else if (nativeFiles?.length) {
           // Native image selection is handled separately
@@ -62,21 +70,12 @@ export const ImagePicker = forwardRef<any, ImagePickerProps>(
       },
     })
 
-    useEffect(() => {
-      if (value?.fileURL) {
-        setImages([value.fileURL])
-      } else if (!value) {
-        setImages([])
-      }
-    }, [value, value?.fileURL, value?.path])
-
     const isDragActive = Boolean(dragStatus?.isDragActive)
     const isWeb = Platform.OS === 'web'
 
     if (isWeb) {
       const rootProps = getRootProps()
       const inputProps = getInputProps()
-      const webPlaceholder = placeholder ?? 'Drag cover image into this area'
 
       return (
         <View
@@ -123,7 +122,7 @@ export const ImagePicker = forwardRef<any, ImagePickerProps>(
                 pos="absolute"
                 whiteSpace="nowrap"
               >
-                {webPlaceholder}
+                Drag cover image into this area
               </Label>
             </View>
           </View>
@@ -202,7 +201,7 @@ export const ImagePicker = forwardRef<any, ImagePickerProps>(
               pos="absolute"
               whiteSpace="nowrap"
             >
-              {placeholder ?? 'Tap to select image'}
+              Tap to select image
             </Label>
           </View>
         </View>

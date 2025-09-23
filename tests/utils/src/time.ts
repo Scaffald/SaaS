@@ -1,5 +1,8 @@
 import { vi, type VitestUtils } from 'vitest'
 
+type FakeTimersOptions = NonNullable<Parameters<typeof vi.useFakeTimers>[0]>
+type FakeTimersToFake = NonNullable<FakeTimersOptions['toFake']>
+
 export type FrozenClock = VitestUtils & {
   restore: () => void
 }
@@ -13,7 +16,7 @@ const defaultToFake = [
   'setImmediate',
   'clearImmediate',
   'performance',
-] as const
+] satisfies FakeTimersToFake
 
 const toDate = (value: Date | string | number) => {
   if (value instanceof Date) {
@@ -28,20 +31,18 @@ const toDate = (value: Date | string | number) => {
   return date
 }
 
-type FakeTimersOptions = Parameters<typeof vi.useFakeTimers>[0]
-
 export const freezeTime = (
   now: Date | string | number,
   options?: FakeTimersOptions
 ): FrozenClock => {
   const reference = toDate(now)
-  const mergedToFake = new Set([...(options?.toFake ?? defaultToFake), 'performance'])
-  const config = {
-    ...(options ?? {}),
+  const normalizedOptions = options ?? ({} as FakeTimersOptions)
+  const mergedToFake = new Set([...(normalizedOptions.toFake ?? defaultToFake), 'performance'])
+  const clock = vi.useFakeTimers({
+    ...normalizedOptions,
     now: reference,
-    toFake: Array.from(mergedToFake),
-  } as FakeTimersOptions
-  const clock = vi.useFakeTimers(config)
+    toFake: Array.from(mergedToFake) as FakeTimersToFake,
+  })
 
   clock.setSystemTime(reference)
 
