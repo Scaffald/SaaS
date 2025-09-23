@@ -46,9 +46,12 @@ module.exports = (api) => {
               },
             ],
           ]),
-      ['transform-inline-environment-variables', {
-        include: ['EXPO_OS']
-      }],
+      [
+        'transform-inline-environment-variables',
+        {
+          include: ['EXPO_OS'],
+        },
+      ],
     ],
   }
 }

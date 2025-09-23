@@ -26,7 +26,7 @@ export function Provider({
         <Providers>{children}</Providers>
       </AuthProvider>
     </DatePickerProvider>
-  );
+  )
 }
 
 const compose = (providers: React.FC<{ children: React.ReactNode }>[]) =>

@@ -15,7 +15,14 @@ import {
   YStack,
   useToastController,
 } from '@my/ui'
-import { Check, CheckCircle2, Circle, ExternalLink, SkipForward, Sparkles } from '@tamagui/lucide-icons'
+import {
+  Check,
+  CheckCircle2,
+  Circle,
+  ExternalLink,
+  SkipForward,
+  Sparkles,
+} from '@tamagui/lucide-icons'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSupabase } from 'app/utils/supabase/useSupabase'
@@ -68,7 +75,9 @@ const OnboardingSchema = z
     travelMileage: numericString('Mileage'),
     usResident: z.boolean(),
     usPassport: z.boolean(),
-    driversLicense: z.enum(DRIVER_LICENSE_OPTIONS.map((option) => option.value) as [string, ...string[]]),
+    driversLicense: z.enum(
+      DRIVER_LICENSE_OPTIONS.map((option) => option.value) as [string, ...string[]]
+    ),
     veteran: z.boolean(),
     yearsExperience: z
       .string()
@@ -116,7 +125,14 @@ const STEP_FIELDS: Record<Exclude<OnboardingStepId, 'summary'>, (keyof FormValue
     'veteran',
   ],
   roles: ['yearsExperience', 'jobTitle', 'primarySkills'],
-  education: ['educationLevel', 'certifications', 'contactMethods', 'phoneOs', 'availability', 'hourlyRate'],
+  education: [
+    'educationLevel',
+    'certifications',
+    'contactMethods',
+    'phoneOs',
+    'availability',
+    'hourlyRate',
+  ],
 }
 
 const stepOrder = PROFILE_STEPS.map((step) => step.id)
@@ -176,7 +192,12 @@ const determineInitialCompletion = (values: FormValues): OnboardingStepId[] => {
   if (values.yearsExperience && values.jobTitle && values.primarySkills.length > 0) {
     complete.push('roles')
   }
-  if (values.educationLevel || values.contactMethods.length > 0 || values.availability.length > 0 || values.hourlyRate) {
+  if (
+    values.educationLevel ||
+    values.contactMethods.length > 0 ||
+    values.availability.length > 0 ||
+    values.hourlyRate
+  ) {
     complete.push('education')
   }
   return complete
@@ -203,10 +224,11 @@ export const OnboardingFlowScreen = () => {
     enabled: Boolean(user?.id),
     queryFn: async () => {
       if (!user?.id) return { user: null, privateProfile: null }
-      const [{ data: userRow, error: userError }, { data: privateRow, error: privateError }] = await Promise.all([
-        supabase.from('users').select('*').eq('id', user.id).maybeSingle(),
-        supabase.from('user_private').select('*').eq('user_id', user.id).maybeSingle(),
-      ])
+      const [{ data: userRow, error: userError }, { data: privateRow, error: privateError }] =
+        await Promise.all([
+          supabase.from('users').select('*').eq('id', user.id).maybeSingle(),
+          supabase.from('user_private').select('*').eq('user_id', user.id).maybeSingle(),
+        ])
 
       if (userError) throw new Error(userError.message)
       if (privateError) throw new Error(privateError.message)
@@ -231,11 +253,15 @@ export const OnboardingFlowScreen = () => {
       travelMileage: onboardingProfile.privateProfile?.travel_mileage?.toString() ?? '',
       usResident: onboardingProfile.privateProfile?.us_resident ?? false,
       usPassport: onboardingProfile.privateProfile?.us_passport ?? false,
-      driversLicense: onboardingProfile.privateProfile?.drivers_license_class ?? DRIVER_LICENSE_OPTIONS[0]?.value ?? 'none',
+      driversLicense:
+        onboardingProfile.privateProfile?.drivers_license_class ??
+        DRIVER_LICENSE_OPTIONS[0]?.value ??
+        'none',
       veteran: onboardingProfile.privateProfile?.veteran ?? false,
-      yearsExperience: onboardingProfile.user?.years_of_experience != null
-        ? String(onboardingProfile.user.years_of_experience)
-        : '',
+      yearsExperience:
+        onboardingProfile.user?.years_of_experience != null
+          ? String(onboardingProfile.user.years_of_experience)
+          : '',
       jobTitle: onboardingProfile.user?.headline ?? '',
       primarySkills: skills,
       educationLevel: onboardingProfile.privateProfile?.education_level ?? '',
@@ -243,7 +269,8 @@ export const OnboardingFlowScreen = () => {
       contactMethods: onboardingProfile.privateProfile?.contact_prefs ?? [],
       phoneOs: onboardingProfile.privateProfile?.phone_os ?? '',
       availability: onboardingProfile.privateProfile?.availability ?? [],
-      hourlyRate: hourlyRate != null ? (hourlyRate / 100).toFixed(hourlyRate % 100 === 0 ? 0 : 2) : '',
+      hourlyRate:
+        hourlyRate != null ? (hourlyRate / 100).toFixed(hourlyRate % 100 === 0 ? 0 : 2) : '',
     }
 
     form.reset(nextValues)
@@ -260,12 +287,11 @@ export const OnboardingFlowScreen = () => {
         const travelMileage =
           values.openToTravel && values.travelMileage ? Number(values.travelMileage) : null
 
-        const [{ error: profileError }, { error: userError }, { error: privateError }] = await Promise.all([
-          supabase.from('profiles').update({ about }).eq('id', user.id),
-          supabase.from('users').update({ bio: about }).eq('id', user.id),
-          supabase
-            .from('user_private')
-            .upsert(
+        const [{ error: profileError }, { error: userError }, { error: privateError }] =
+          await Promise.all([
+            supabase.from('profiles').update({ about }).eq('id', user.id),
+            supabase.from('users').update({ bio: about }).eq('id', user.id),
+            supabase.from('user_private').upsert(
               {
                 user_id: user.id,
                 phone: values.phone?.trim() || null,
@@ -279,7 +305,7 @@ export const OnboardingFlowScreen = () => {
               },
               { onConflict: 'user_id' }
             ),
-        ])
+          ])
 
         if (profileError) throw new Error(profileError.message)
         if (userError) throw new Error(userError.message)
@@ -304,22 +330,22 @@ export const OnboardingFlowScreen = () => {
 
       if (step === 'education') {
         const certificationEntries = sanitizeCertifications(values.certifications ?? '')
-        const hourlyRateCents = values.hourlyRate ? Math.round(Number(values.hourlyRate) * 100) : null
+        const hourlyRateCents = values.hourlyRate
+          ? Math.round(Number(values.hourlyRate) * 100)
+          : null
 
-        const { error } = await supabase
-          .from('user_private')
-          .upsert(
-            {
-              user_id: user.id,
-              education_level: values.educationLevel,
-              certifications: certificationEntries.length ? certificationEntries : null,
-              contact_prefs: values.contactMethods,
-              phone_os: values.phoneOs,
-              availability: values.availability,
-              hourly_rate_cents: hourlyRateCents,
-            },
-            { onConflict: 'user_id' }
-          )
+        const { error } = await supabase.from('user_private').upsert(
+          {
+            user_id: user.id,
+            education_level: values.educationLevel,
+            certifications: certificationEntries.length ? certificationEntries : null,
+            contact_prefs: values.contactMethods,
+            phone_os: values.phoneOs,
+            availability: values.availability,
+            hourly_rate_cents: hourlyRateCents,
+          },
+          { onConflict: 'user_id' }
+        )
 
         if (error) throw new Error(error.message)
       }
@@ -329,7 +355,10 @@ export const OnboardingFlowScreen = () => {
         setCompletedSteps((prev) => (prev.includes(step) ? prev : [...prev, step]))
       }
       toast.show('Progress saved', {
-        message: step === 'summary' ? 'Your onboarding is complete.' : 'Keep going—your Elevate score is growing.',
+        message:
+          step === 'summary'
+            ? 'Your onboarding is complete.'
+            : 'Keep going—your Elevate score is growing.',
       })
     },
     onError: (error: unknown) => {
@@ -455,7 +484,10 @@ export const OnboardingFlowScreen = () => {
                 const nextSkills = currentSkills.includes(skill)
                   ? currentSkills.filter((item) => item !== skill)
                   : [...currentSkills, skill]
-                form.setValue('primarySkills', nextSkills, { shouldDirty: true, shouldValidate: true })
+                form.setValue('primarySkills', nextSkills, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
               }}
               onSelectStep={handleSelectStep}
             />
@@ -724,7 +756,8 @@ const RolesAndSkillsStep = ({ form, values, onToggleSkill }: RolesStepProps) => 
       <YStack gap="$2">
         <H2>Roles and skills</H2>
         <Paragraph size="$3" color="$gray11">
-          Selecting the right experience and skills increases your chances of being noticed by companies.
+          Selecting the right experience and skills increases your chances of being noticed by
+          companies.
         </Paragraph>
       </YStack>
 
@@ -760,7 +793,8 @@ const RolesAndSkillsStep = ({ form, values, onToggleSkill }: RolesStepProps) => 
         <YStack gap="$3">
           <FieldLabel>Primary skills</FieldLabel>
           <HelperText>
-            Pick the skills that best describe your background. Companies use these to match you with opportunities.
+            Pick the skills that best describe your background. Companies use these to match you
+            with opportunities.
           </HelperText>
           <SkillSelector selected={values.primarySkills} onToggle={onToggleSkill} />
           {form.formState.errors.primarySkills ? (
@@ -949,7 +983,8 @@ const SummaryStep = ({
       <YStack gap="$2">
         <H2>Your Elevate score</H2>
         <Paragraph size="$3" color="$gray11">
-          Elevate points are an evaluation metric measured by the skills and overall activity of a user. Increase your score by filling out your profile.
+          Elevate points are an evaluation metric measured by the skills and overall activity of a
+          user. Increase your score by filling out your profile.
         </Paragraph>
       </YStack>
 
@@ -959,7 +994,9 @@ const SummaryStep = ({
             <Paragraph size="$2" color="$gray11">
               Current score
             </Paragraph>
-            <SizableText size="$9" fontWeight="800">{score}</SizableText>
+            <SizableText size="$9" fontWeight="800">
+              {score}
+            </SizableText>
           </YStack>
           <Sparkles size={32} color="$yellow10" />
         </XStack>
@@ -971,7 +1008,13 @@ const SummaryStep = ({
             <SummaryTaskRow
               key={task.id}
               task={task}
-              completed={getTaskCompletion(task.id, values, completedSteps, profile, onboardingProfile)}
+              completed={getTaskCompletion(
+                task.id,
+                values,
+                completedSteps,
+                profile,
+                onboardingProfile
+              )}
               onAction={getTaskAction(task.id, onSelectStep)}
             />
           ))}
@@ -992,7 +1035,12 @@ const SummaryTaskRow = ({ task, completed, onAction }: SummaryTaskRowProps) => {
   const isCompletedWithoutAction = completed && !onAction
 
   return (
-    <XStack gap="$3" ai="center" jc="space-between" $sm={{ fd: 'column', ai: 'flex-start', gap: '$2' }}>
+    <XStack
+      gap="$3"
+      ai="center"
+      jc="space-between"
+      $sm={{ fd: 'column', ai: 'flex-start', gap: '$2' }}
+    >
       <XStack gap="$3" ai="center" f={1}>
         {completed ? (
           <CheckCircle2 size={18} color="$green10" />
@@ -1088,7 +1136,11 @@ const SidebarStepItem = ({ label, isCompleted, isActive, onPress }: SidebarStepI
       ) : (
         <Circle size={18} color="$gray8" />
       )}
-      <SizableText size="$3" fontWeight={isActive ? '700' : '500'} color={isActive ? '$color12' : '$gray11'}>
+      <SizableText
+        size="$3"
+        fontWeight={isActive ? '700' : '500'}
+        color={isActive ? '$color12' : '$gray11'}
+      >
         {label}
       </SizableText>
     </XStack>
@@ -1120,7 +1172,13 @@ const ScoreCard = ({ score, completedSteps }: ScoreCardProps) => {
       <YStack gap={4}>
         <XStack gap={4}>
           {segments.map((_, index) => (
-            <YStack key={index} f={1} h={6} br={9999} bg={index * 10 < score ? '$color9' : '$color5'} />
+            <YStack
+              key={index}
+              f={1}
+              h={6}
+              br={9999}
+              bg={index * 10 < score ? '$color9' : '$color5'}
+            />
           ))}
         </XStack>
         <Paragraph size="$2" color="$gray11">

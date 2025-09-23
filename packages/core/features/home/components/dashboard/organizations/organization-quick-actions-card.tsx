@@ -125,12 +125,7 @@ export const OrganizationQuickActionsCard = () => {
   return (
     <DashboardCard>
       <YStack gap="$4">
-        <XStack
-          jc="space-between"
-          ai="center"
-          gap="$4"
-          $sm={{ fd: 'column', ai: 'flex-start' }}
-        >
+        <XStack jc="space-between" ai="center" gap="$4" $sm={{ fd: 'column', ai: 'flex-start' }}>
           <YStack gap="$1">
             <SizableText size="$5" fontWeight="700">
               Organizations
@@ -140,13 +135,7 @@ export const OrganizationQuickActionsCard = () => {
             </Paragraph>
           </YStack>
 
-          <Button
-            {...createLink}
-            size="$3"
-            br="$10"
-            icon={Building2}
-            accessibilityRole="link"
-          >
+          <Button {...createLink} size="$3" br="$10" icon={Building2} accessibilityRole="link">
             Create organization
           </Button>
         </XStack>
