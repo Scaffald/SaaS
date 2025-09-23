@@ -1,3 +1,4 @@
+import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@supabase/auth-helpers-nextjs', () => ({
@@ -44,10 +45,24 @@ const setRequiredEnv = () => {
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'anon-key'
 }
 
-const createRequestOptions = (headersInit?: HeadersInit) => {
+const createRequestOptions = (headersInit?: HeadersInit): FetchCreateContextFnOptions => {
   const request = new Request('https://api.example.com', { headers: headersInit })
   const responseHeaders = new Headers()
-  return { req: request, resHeaders: responseHeaders }
+  const abortController = new AbortController()
+
+  return {
+    req: request,
+    resHeaders: responseHeaders,
+    info: {
+      accept: null,
+      type: 'unknown',
+      isBatchCall: false,
+      calls: [],
+      connectionParams: null,
+      signal: abortController.signal,
+      url: null,
+    },
+  }
 }
 
 const loadCreateTRPCContext = async () => {

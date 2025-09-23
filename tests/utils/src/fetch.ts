@@ -17,7 +17,8 @@ export type InstallFetchMockResult = {
 }
 
 export const installFetchMock = (implementation?: FetchImplementation): InstallFetchMockResult => {
-  const target = globalThis as typeof globalThis & Record<PropertyKey, unknown>
+  type MutableGlobal = typeof globalThis & Record<PropertyKey, unknown> & { fetch?: typeof fetch }
+  const target = globalThis as MutableGlobal
   const hadFetch = 'fetch' in target
   const originalFetch = hadFetch ? (target.fetch as typeof fetch) : undefined
   const mock = createFetchMock(implementation)
@@ -31,7 +32,7 @@ export const installFetchMock = (implementation?: FetchImplementation): InstallF
       if (hadFetch) {
         target.fetch = originalFetch as typeof fetch
       } else {
-        delete target.fetch
+        Reflect.deleteProperty(target, 'fetch')
       }
     },
   }
