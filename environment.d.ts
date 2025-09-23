@@ -16,6 +16,11 @@ declare global {
 
       EXPO_PUBLIC_SUPABASE_ANON_KEY: string
       NEXT_PUBLIC_SUPABASE_ANON_KEY: string
+
+      JOOBLE_API_KEY: string
+      JOOBLE_SEARCH_KEYWORDS?: string
+      JOOBLE_SEARCH_LOCATION?: string
+      JOOBLE_SEARCH_RADIUS?: string
     }
   }
 }
