@@ -74,7 +74,9 @@ describe('AddressField', () => {
   const mockedUseFieldInfo = vi.mocked(useFieldInfo)
 
   beforeEach(() => {
-    mockedUseFieldInfo.mockReturnValue({ label: 'Mailing address' })
+    mockedUseFieldInfo.mockReturnValue(
+      { label: 'Mailing address' } as unknown as ReturnType<typeof useFieldInfo>
+    )
     mockedUseTsController.mockReturnValue({
       field: {
         value: { street: '', zipCode: '' },

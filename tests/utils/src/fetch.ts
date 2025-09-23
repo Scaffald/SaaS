@@ -31,7 +31,7 @@ export const installFetchMock = (implementation?: FetchImplementation): InstallF
       if (hadFetch) {
         target.fetch = originalFetch as typeof fetch
       } else {
-        delete target.fetch
+        Reflect.deleteProperty(target, 'fetch')
       }
     },
   }

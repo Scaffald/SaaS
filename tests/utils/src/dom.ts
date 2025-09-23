@@ -2,11 +2,13 @@ export type GlobalStubResult = {
   restore: () => void
 }
 
+type MutableGlobal = typeof globalThis & Record<PropertyKey, unknown>
+
 export function stubGlobal<K extends keyof typeof globalThis>(
   key: K,
   value: (typeof globalThis)[K]
 ): GlobalStubResult {
-  const target = globalThis as typeof globalThis & Record<PropertyKey, unknown>
+  const target = globalThis as MutableGlobal
   const hadValue = Object.prototype.hasOwnProperty.call(target, key)
   const originalValue = target[key]
 
@@ -17,7 +19,7 @@ export function stubGlobal<K extends keyof typeof globalThis>(
       if (hadValue) {
         target[key] = originalValue
       } else {
-        delete target[key]
+        Reflect.deleteProperty(target, key)
       }
     },
   }
@@ -28,7 +30,7 @@ export type WindowShimResult = GlobalStubResult & {
 }
 
 export function installWindowShim(overrides: Partial<typeof window> = {}): WindowShimResult {
-  const target = globalThis as typeof globalThis & Record<PropertyKey, unknown>
+  const target = globalThis as MutableGlobal
   const hadWindow = typeof target.window !== 'undefined'
   const originalWindow = hadWindow ? (target.window as typeof window) : undefined
   const shim = hadWindow
@@ -44,7 +46,7 @@ export function installWindowShim(overrides: Partial<typeof window> = {}): Windo
     })
   }
 
-  const shimRecord = shim as Record<PropertyKey, unknown>
+  const shimRecord = shim as unknown as Record<PropertyKey, unknown>
   const previousValues = new Map<PropertyKey, unknown>()
   for (const [key, value] of Object.entries(overrides)) {
     previousValues.set(key, shimRecord[key])
@@ -63,7 +65,7 @@ export function installWindowShim(overrides: Partial<typeof window> = {}): Windo
       }
 
       if (!hadWindow) {
-        delete target.window
+        Reflect.deleteProperty(target, 'window')
       } else {
         target.window = originalWindow!
       }

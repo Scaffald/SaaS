@@ -22,8 +22,11 @@ if (typeof window.matchMedia !== 'function') {
 }
 
 if (typeof globalThis.matchMedia !== 'function') {
-  // @ts-expect-error - jsdom does not define matchMedia on globalThis
-  globalThis.matchMedia = createMatchMedia()
+  Object.defineProperty(globalThis, 'matchMedia', {
+    configurable: true,
+    writable: true,
+    value: createMatchMedia(),
+  })
 }
 
 if (!('ResizeObserver' in window)) {
@@ -33,8 +36,11 @@ if (!('ResizeObserver' in window)) {
     disconnect(): void {}
   }
 
-  // @ts-expect-error - define global for testing environment
-  window.ResizeObserver = ResizeObserverMock
+  Object.defineProperty(window, 'ResizeObserver', {
+    configurable: true,
+    writable: true,
+    value: ResizeObserverMock,
+  })
 }
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true

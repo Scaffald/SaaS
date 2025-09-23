@@ -3,16 +3,25 @@ import { vi, type MockInstance } from 'vitest'
 
 type SupabaseRpc<TDatabase> = SupabaseClient<TDatabase>['rpc']
 
+type SupabaseRpcParameters<TDatabase> = Parameters<SupabaseRpc<TDatabase>>
+
 type SupabaseRpcReturn<TDatabase> = Awaited<ReturnType<SupabaseRpc<TDatabase>>>
+
+type SupabaseRpcImplementation<TDatabase> = (
+  ...args: SupabaseRpcParameters<TDatabase>
+) =>
+  | ReturnType<SupabaseRpc<TDatabase>>
+  | SupabaseRpcReturn<TDatabase>
+  | Promise<SupabaseRpcReturn<TDatabase>>
 
 type SupabaseClientOverrides<TDatabase> = {
   [K in keyof SupabaseClient<TDatabase>]?: SupabaseClient<TDatabase>[K]
 }
 
-export type SupabaseRpcMock<TDatabase> = MockInstance<SupabaseRpc<TDatabase>>
+export type SupabaseRpcMock<TDatabase> = MockInstance<SupabaseRpcImplementation<TDatabase>>
 
 export const createSupabaseRpcMock = <TDatabase>(
-  implementation?: SupabaseRpc<TDatabase>,
+  implementation?: SupabaseRpcImplementation<TDatabase>,
   defaultValue: SupabaseRpcReturn<TDatabase> = {
     data: null,
     error: null,
@@ -22,13 +31,7 @@ export const createSupabaseRpcMock = <TDatabase>(
     return vi.fn(implementation) as SupabaseRpcMock<TDatabase>
   }
 
-  const mock = vi.fn<Parameters<SupabaseRpc<TDatabase>>, ReturnType<SupabaseRpc<TDatabase>>>(
-    async () => {
-      return defaultValue
-    }
-  ) as SupabaseRpcMock<TDatabase>
-
-  return mock
+  return vi.fn<SupabaseRpcImplementation<TDatabase>>(async () => defaultValue)
 }
 
 export type SupabaseClientStub<TDatabase> = {
@@ -38,7 +41,7 @@ export type SupabaseClientStub<TDatabase> = {
 
 export const createSupabaseClientStub = <TDatabase>(
   overrides: SupabaseClientOverrides<TDatabase> & {
-    rpc?: SupabaseRpc<TDatabase>
+    rpc?: SupabaseRpcImplementation<TDatabase>
   } = {}
 ): SupabaseClientStub<TDatabase> => {
   const { rpc, ...rest } = overrides
