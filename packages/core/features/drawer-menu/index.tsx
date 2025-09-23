@@ -4,7 +4,6 @@ import {
   Card,
   ListItem,
   Paragraph,
-  Separator,
   SizableText,
   Theme,
   XStack,
@@ -22,7 +21,9 @@ import {
   Building2,
   Map,
   Settings2,
-  Sparkles,
+  MessageCircle,
+  Headphones,
+  LogOut,
 } from '@tamagui/lucide-icons'
 import type { JSX } from 'react'
 import { useCallback } from 'react'
@@ -58,19 +59,24 @@ export const drawerSections: DrawerSectionConfig[] = [
     title: 'Main',
     items: [
       {
-        key: 'dashboard',
-        title: 'Dashboard',
-        description: 'Overview of crews and active projects.',
+        key: 'home',
+        title: 'Home',
         href: '/',
         icon: BarChart3,
-        theme: 'purple',
+        theme: 'blue',
       },
       {
         key: 'discover',
         title: 'Discover',
-        description: 'Match with new talent and opportunities.',
         href: '/discover',
         icon: Map,
+        theme: 'green',
+      },
+      {
+        key: 'profile',
+        title: 'Profile',
+        href: '/profile',
+        icon: CircleUser,
         theme: 'purple',
       },
     ],
@@ -81,30 +87,39 @@ export const drawerSections: DrawerSectionConfig[] = [
     items: [
       {
         key: 'create-organization',
-        title: 'Create organization',
-        description: 'Set up a new company profile and invite your crew.',
+        title: 'Create Organization',
         href: '/organizations/new',
         icon: Building2,
-        theme: 'green',
+        theme: 'orange',
       },
     ],
   },
-]
-
-export const quickLinks: DrawerItemConfig[] = [
   {
-    key: 'account',
-    title: 'Account Settings',
-    href: '/settings',
-    icon: Settings2,
-    theme: 'gray',
-  },
-  {
-    key: 'profile',
-    title: 'Your Profile',
-    href: '/profile',
-    icon: CircleUser,
-    theme: 'purple',
+    key: 'settings',
+    title: 'Settings',
+    items: [
+      {
+        key: 'settings-general',
+        title: 'General',
+        href: '/settings',
+        icon: Settings2,
+        theme: 'gray',
+      },
+      {
+        key: 'settings-email',
+        title: 'Change Email',
+        href: '/settings/change-email',
+        icon: MessageCircle,
+        theme: 'gray',
+      },
+      {
+        key: 'settings-password',
+        title: 'Change Password',
+        href: '/settings/change-password',
+        icon: Headphones,
+        theme: 'gray',
+      },
+    ],
   },
 ]
 
@@ -175,13 +190,13 @@ const DrawerLink = ({
       active={active}
       disabled={item.disabled}
       onPress={handlePress}
-      size="$4"
-      px="$4"
-      py="$3"
-      br="$5"
+      size="$3"
+      px="$3"
+      py="$2"
+      br="$3"
       bg={active ? '$backgroundFocus' : 'transparent'}
-      borderColor={active ? '$color5' : 'transparent'}
-      borderWidth={active ? 1 : 0}
+      borderColor="transparent"
+      borderWidth={0}
       opacity={item.disabled ? 0.5 : 1}
       title={item.title}
       subTitle={item.description}
@@ -190,8 +205,8 @@ const DrawerLink = ({
       paddingLeft={depth > 0 ? '$6' : undefined}
       icon={({ size }) => {
         const iconNode = (
-          <XStack ai="center" jc="center" w={36} h={36} br="$4" bg={active ? '$color5' : '$color3'}>
-            <Icon size={size ?? 18} color={active ? '$color12' : '$color11'} />
+          <XStack ai="center" jc="center" w={28} h={28} br="$3" bg={active ? '$color5' : '$color3'}>
+            <Icon size={size ?? 16} color={active ? '$color12' : '$color11'} />
           </XStack>
         )
 
@@ -202,26 +217,23 @@ const DrawerLink = ({
         return iconNode
       }}
       iconAfter={
-        <XStack gap="$2" ai="center">
-          {item.badge
-            ? (() => {
-                const badge = (
-                  <XStack px="$2" py="$1" br="$10" bg="$color3">
-                    <Paragraph size="$1" color="$color11">
-                      {item.badge}
-                    </Paragraph>
-                  </XStack>
-                )
+        item.badge
+          ? (() => {
+              const badge = (
+                <XStack px="$2" py="$1" br="$10" bg="$color3">
+                  <Paragraph size="$1" color="$color11">
+                    {item.badge}
+                  </Paragraph>
+                </XStack>
+              )
 
-                if (!themeName && item.theme) {
-                  return <Theme name={item.theme}>{badge}</Theme>
-                }
+              if (!themeName && item.theme) {
+                return <Theme name={item.theme}>{badge}</Theme>
+              }
 
-                return badge
-              })()
-            : null}
-          <ChevronRight size={16} color="$color10" />
-        </XStack>
+              return badge
+            })()
+          : null
       }
     />
   )
@@ -264,11 +276,11 @@ const DrawerSection = ({ section, pathname, collapsed, onNavigate }: DrawerSecti
   }
 
   return (
-    <YStack gap="$3" width="100%">
+    <YStack gap="$2" width="100%">
       <SizableText size="$2" fontWeight="600" color="$gray10" textTransform="uppercase">
         {section.title}
       </SizableText>
-      <YGroup bordered size="$4" separator={<Separator borderColor="$color4" />} borderRadius="$5">
+      <YGroup size="$3" borderRadius="$3">
         {items.map(({ item, depth }) => (
           <YGroup.Item key={`${section.key}-${item.key}-${depth}`}>
             <DrawerLink item={item} pathname={pathname} depth={depth} onNavigate={onNavigate} />
@@ -286,7 +298,7 @@ type DrawerContentProps = {
 }
 
 export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: DrawerContentProps) => {
-  const { profile, avatarUrl, user, updateProfile } = useUser()
+  const { profile, avatarUrl } = useUser()
   const tokens = getTokens()
   const manageLink = useLink({ href: '/profile' })
   const avatarSize = tokens.size['3'].val
@@ -326,8 +338,8 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
             py="$0"
             bg="transparent"
             onPress={handleManagePress}
-            title={!collapsed ? (profile?.name ?? 'No Name') : undefined}
-            subTitle={!collapsed ? (user?.email ?? 'View profile') : undefined}
+            title={!collapsed ? (profile?.name ?? 'Rajeev Ranjan') : undefined}
+            subTitle={!collapsed ? 'Partner ID: 304404' : undefined}
             icon={() => (
               <Avatar circular size="$3">
                 <SolitoImage
@@ -340,56 +352,10 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
             )}
             iconAfter={
               !collapsed ? (
-                <Button size="$2" px="$3" onPress={handleManagePress}>
-                  Manage
-                </Button>
+                <ChevronRight size={16} color="$gray10" />
               ) : undefined
             }
           />
-        </Card>
-
-        <Card
-          width="100%"
-          px="$4"
-          py="$4"
-          gap="$3"
-          borderRadius="$5"
-          borderColor="$purple4"
-          backgroundColor="$purple2"
-          theme="purple"
-        >
-          <ListItem
-            hoverTheme={false}
-            pressTheme={false}
-            size="$4"
-            px="$0"
-            py="$0"
-            bg="transparent"
-            title={!collapsed ? (profile?.name ?? 'Store Name') : undefined}
-            subTitle={!collapsed ? 'Synced moments ago' : undefined}
-            fontWeight="700"
-            color="$color12"
-            icon={({ size }) => (
-              <XStack ai="center" jc="center" w={40} h={40} br="$4" bg="$purple4">
-                <CircleUser size={size ?? 20} color="$purple11" />
-              </XStack>
-            )}
-            iconAfter={
-              !collapsed ? (
-                <Button theme="purple" size="$2" px="$3" onPress={updateProfile}>
-                  Refresh
-                </Button>
-              ) : undefined
-            }
-          />
-          {!collapsed ? (
-            <XStack gap="$2" ai="center">
-              <Sparkles size={16} color="$purple11" />
-              <Paragraph size="$2" color="$purple11">
-                Updated moments ago
-              </Paragraph>
-            </XStack>
-          ) : null}
         </Card>
       </YStack>
 
@@ -399,7 +365,7 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
         contentContainerStyle={{ paddingVertical: 16 }}
         showsVerticalScrollIndicator={false}
       >
-        <YStack gap="$5" width="100%">
+        <YStack gap="$4" width="100%">
           {drawerSections.map((section) => (
             <DrawerSection
               key={section.key}
@@ -410,53 +376,23 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
             />
           ))}
 
-          <YStack gap="$4" width="100%">
-            {collapsed ? (
-              <YStack gap="$2">
-                {quickLinks.map((item) => (
-                  <DrawerLink
-                    key={item.key}
-                    item={item}
-                    pathname={pathname}
-                    collapsed
-                    onNavigate={onNavigate}
-                  />
-                ))}
-              </YStack>
-            ) : (
-              <YGroup
-                bordered
-                size="$4"
-                separator={<Separator borderColor="$color4" />}
-                borderRadius="$5"
-              >
-                {quickLinks.map((item) => (
-                  <YGroup.Item key={item.key}>
-                    <DrawerLink item={item} pathname={pathname} onNavigate={onNavigate} />
-                  </YGroup.Item>
-                ))}
-              </YGroup>
-            )}
-          </YStack>
         </YStack>
       </ScrollView>
 
-      {/* Bottom Section - Settings */}
+      {/* Bottom Section - Logout */}
       <YStack gap="$4" width="100%">
         <YGroup
-          bordered
-          size="$4"
-          separator={<Separator borderColor="$color4" />}
-          borderRadius="$5"
+          size="$3"
+          borderRadius="$3"
         >
           <YGroup.Item>
             <DrawerLink
               item={{
-                key: 'settings',
-                title: 'Settings',
-                href: '/settings',
-                icon: Settings2,
-                theme: 'gray',
+                key: 'logout',
+                title: 'Logout',
+                href: '/logout',
+                icon: LogOut,
+                theme: 'red',
               }}
               pathname={pathname}
               onNavigate={onNavigate}

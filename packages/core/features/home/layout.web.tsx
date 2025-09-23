@@ -4,7 +4,7 @@ import { Button, Input, SizableText, XStack, YStack, useMedia, useTheme } from '
 import { Dialog } from 'tamagui'
 import { Bell, Menu, Search } from '@tamagui/lucide-icons'
 import { StaticDrawer } from '@app/core/features/drawer-menu/StaticDrawer.web'
-import { drawerSections, normalizePath, quickLinks } from '@app/core/features/drawer-menu'
+import { drawerSections, normalizePath } from '@app/core/features/drawer-menu'
 import { usePathname } from '@app/core/utils/usePathname'
 import { useState } from 'react'
 
@@ -23,7 +23,6 @@ export const HomeLayout = ({ children, fullPage = false, padded = false }: HomeL
     ...drawerSections.flatMap((section) =>
       section.items.flatMap((item) => [item, ...(item.subItems ?? [])])
     ),
-    ...quickLinks,
   ]
   const activeItem = allNavItems.find(
     (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
