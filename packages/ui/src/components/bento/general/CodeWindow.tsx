@@ -1,5 +1,5 @@
 import { AlertCircle, Copy, File } from '@tamagui/lucide-icons'
-import { useLocalStorage } from 'foxact/use-local-storage'
+import { useLocalStorageState } from 'use-local-storage-state'
 import { lazy, useEffect, useMemo, useState } from 'react'
 import {
   Button,

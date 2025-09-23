@@ -27,6 +27,7 @@ module.exports = (api) => {
             // define aliases to shorten the import paths
             '@app/core': '../../packages/core',
             '@app/ui': '../../packages/ui',
+            '@app/ui/bento': '../../packages/ui/src/components/bento',
             '@app/api': '../../packages/api',
             '@app/supabase': '../../supabase',
           },

@@ -350,11 +350,7 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
                 />
               </Avatar>
             )}
-            iconAfter={
-              !collapsed ? (
-                <ChevronRight size={16} color="$gray10" />
-              ) : undefined
-            }
+            iconAfter={!collapsed ? <ChevronRight size={16} color="$gray10" /> : undefined}
           />
         </Card>
       </YStack>
@@ -375,16 +371,12 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
               onNavigate={onNavigate}
             />
           ))}
-
         </YStack>
       </ScrollView>
 
       {/* Bottom Section - Logout */}
       <YStack gap="$4" width="100%">
-        <YGroup
-          size="$3"
-          borderRadius="$3"
-        >
+        <YGroup size="$3" borderRadius="$3">
           <YGroup.Item>
             <DrawerLink
               item={{
