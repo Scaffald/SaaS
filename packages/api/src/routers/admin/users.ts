@@ -111,6 +111,14 @@ const workerPrivateUpdateSchema = z
   })
   .strict()
 
+const workerProfileUpdateSchema = z
+  .object({
+    name: z.string().trim().max(120).nullable().optional(),
+    about: z.string().nullable().optional(),
+    avatarUrl: z.string().url().trim().max(512).nullable().optional(),
+  })
+  .strict()
+
 const updateWorkerInputSchema = workerIdentifierSchema
   .extend({
     profileData: workerProfileUpdateSchema.optional(),
@@ -122,25 +130,17 @@ const updateWorkerInputSchema = workerIdentifierSchema
     path: ['profileData'],
   })
 
+type WorkerPublicUpdateInput = z.infer<typeof workerPublicUpdateSchema>
+type WorkerPrivateUpdateInput = z.infer<typeof workerPrivateUpdateSchema>
+
+const verificationFieldSchema = z.string().trim().min(1).max(160)
+const verificationSubjectSchema = z.enum(verificationSubjectTypes)
+
 const verifyWorkerInputSchema = workerIdentifierSchema.extend({
   reason: z.string().trim().max(280).optional(),
   field: verificationFieldSchema,
   subjectType: verificationSubjectSchema,
 })
-
-type WorkerPublicUpdateInput = z.infer<typeof workerPublicUpdateSchema>
-type WorkerPrivateUpdateInput = z.infer<typeof workerPrivateUpdateSchema>
-
-const workerProfileUpdateSchema = z
-  .object({
-    name: z.string().trim().max(120).nullable().optional(),
-    about: z.string().nullable().optional(),
-    avatarUrl: z.string().url().trim().max(512).nullable().optional(),
-  })
-  .strict()
-
-const verificationFieldSchema = z.string().trim().min(1).max(160)
-const verificationSubjectSchema = z.enum(verificationSubjectTypes)
 
 type WorkerProfileUpdateInput = z.infer<typeof workerProfileUpdateSchema>
 
