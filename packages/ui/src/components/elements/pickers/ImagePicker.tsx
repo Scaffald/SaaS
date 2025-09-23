@@ -38,7 +38,7 @@ const createFileDescriptor = (file: DropZoneWebFile): PickerFileDescriptor => ({
 /** ------ EXAMPLE ------ */
 // biome-ignore lint/suspicious/noExplicitAny: Example component with flexible ref type
 export const ImagePicker = forwardRef<any, ImagePickerProps>(
-  ({ disabled, value, onChangeText, onBlur, placeholder }, ref) => {
+  ({ _disabled, _value, _onChangeText, _onBlur, _placeholder }, ref) => {
     const id = useId()
     const [images, setImages] = useState<string[]>([])
     const { open, getInputProps, getRootProps, dragStatus } = useFilePicker({

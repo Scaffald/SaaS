@@ -197,6 +197,7 @@ export class SupabaseJobIngestionRepository implements JobIngestionRepository {
     const provider = normalizeProvider(params.provider)
     const startedAtIso = toIso(params.startedAt)
     const { data, error } = await this.client
+      // biome-ignore lint/suspicious/noExplicitAny: Supabase table names require any type casting
       .from('job_ingest_runs' as any)
       .insert({
         adapter: params.adapter,
@@ -232,6 +233,7 @@ export class SupabaseJobIngestionRepository implements JobIngestionRepository {
 
     if (organizationRecords.length) {
       const { error } = await this.client
+        // biome-ignore lint/suspicious/noExplicitAny: Supabase table names require any type casting
         .from('organization_sources' as any)
         .upsert(organizationRecords, { onConflict: 'provider,external_organization_id' })
 
@@ -252,6 +254,7 @@ export class SupabaseJobIngestionRepository implements JobIngestionRepository {
     const existingJobMap = new Map<string, string>()
     if (externalIds.length) {
       const { data, error } = await this.client
+        // biome-ignore lint/suspicious/noExplicitAny: Supabase table names require any type casting
         .from('jobs' as any)
         .select('id, external_id')
         .eq('source_provider', provider)
@@ -280,6 +283,7 @@ export class SupabaseJobIngestionRepository implements JobIngestionRepository {
       }).length
 
       const { data, error } = await this.client
+        // biome-ignore lint/suspicious/noExplicitAny: Supabase table names require any type casting
         .from('jobs' as any)
         .upsert(jobPayloads, { onConflict: 'source_provider,external_id' })
         .select('id, external_id')
@@ -298,6 +302,7 @@ export class SupabaseJobIngestionRepository implements JobIngestionRepository {
     const existingSourceRecords = new Map<string, string>()
     if (externalIds.length) {
       const { data, error } = await this.client
+        // biome-ignore lint/suspicious/noExplicitAny: Supabase table names require any type casting
         .from('job_source_records' as any)
         .select('external_id, first_seen_at')
         .eq('provider', provider)
@@ -327,6 +332,7 @@ export class SupabaseJobIngestionRepository implements JobIngestionRepository {
 
     if (sourceRecords.length) {
       const { error } = await this.client
+        // biome-ignore lint/suspicious/noExplicitAny: Supabase table names require any type casting
         .from('job_source_records' as any)
         .upsert(sourceRecords, { onConflict: 'provider,external_id' })
 
@@ -336,6 +342,7 @@ export class SupabaseJobIngestionRepository implements JobIngestionRepository {
     }
 
     const { data: closedJobs, error: closeError } = await this.client
+      // biome-ignore lint/suspicious/noExplicitAny: Supabase table names require any type casting
       .from('jobs' as any)
       .update({
         status: 'closed',
@@ -364,6 +371,7 @@ export class SupabaseJobIngestionRepository implements JobIngestionRepository {
   async completeRun(params: CompleteJobIngestRunParams): Promise<void> {
     const finishedAtIso = toIso(params.finishedAt)
     const { error } = await this.client
+      // biome-ignore lint/suspicious/noExplicitAny: Supabase table names require any type casting
       .from('job_ingest_runs' as any)
       .update({
         status: 'succeeded',
@@ -385,6 +393,7 @@ export class SupabaseJobIngestionRepository implements JobIngestionRepository {
   async failRun(params: FailJobIngestRunParams): Promise<void> {
     const finishedAtIso = toIso(params.finishedAt)
     const { error } = await this.client
+      // biome-ignore lint/suspicious/noExplicitAny: Supabase table names require any type casting
       .from('job_ingest_runs' as any)
       .update({
         status: 'failed',

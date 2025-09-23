@@ -16,6 +16,7 @@ describe('SubmitButton', () => {
   })
 
   test('forwards props to the underlying button', () => {
+    // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
     mockedUseFormState.mockReturnValue({ isSubmitting: false } as any)
     const onPress = vi.fn()
 
@@ -33,6 +34,7 @@ describe('SubmitButton', () => {
   })
 
   test('disables the button when the form is submitting', () => {
+    // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
     mockedUseFormState.mockReturnValue({ isSubmitting: true } as any)
 
     render(<SubmitButton aria-label="Saving form">Save</SubmitButton>)

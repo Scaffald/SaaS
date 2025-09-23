@@ -18,6 +18,7 @@ vi.mock('@ts-react/form', () => ({
 vi.mock('../../elements/pickers/ImagePicker', async () => {
   const React = await import('react')
 
+  // biome-ignore lint/suspicious/noExplicitAny: Test mock component with flexible props
   const ImagePicker = React.forwardRef<HTMLInputElement, any>((props, ref) => {
     imagePickerMock.renderSpy(props)
     const { onChangeText, onBlur, value: _value, placeholder: _placeholder, ...rest } = props
@@ -58,6 +59,7 @@ describe('ImagePickerField', () => {
       },
       error: {},
       formState: { isSubmitting: false },
+    // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
     } as any)
     imagePickerMock.renderSpy.mockClear()
   })
@@ -84,6 +86,7 @@ describe('ImagePickerField', () => {
       },
       error: {},
       formState: { isSubmitting: false },
+    // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
     } as any)
 
     render(<ImagePickerField size="$3" />)
@@ -106,6 +109,7 @@ describe('ImagePickerField', () => {
       },
       error: {},
       formState: { isSubmitting: true },
+    // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
     } as any)
 
     render(<ImagePickerField size="$3" />)

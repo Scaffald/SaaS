@@ -25,6 +25,7 @@ vi.mock('@ts-react/form', () => ({
 vi.mock('../../AddressAutocomplete', async () => {
   const React = await import('react')
 
+  // biome-ignore lint/suspicious/noExplicitAny: Test mock component with flexible props
   const AddressAutocompleteInput = React.forwardRef<HTMLInputElement, any>((props, ref) => {
     addressAutocompleteMock.renderSpy(props)
     const { onValueChange, onSuggestionSelected, onBlur, value, debounceMs: _debounceMs, minQueryLength: _min, ...rest } = props
@@ -72,6 +73,7 @@ describe('AddressField', () => {
       },
       error: {},
       formState: { isSubmitting: false },
+    // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
     } as any)
     addressAutocompleteMock.renderSpy.mockClear()
   })
@@ -101,6 +103,7 @@ describe('AddressField', () => {
       },
       error: {},
       formState: { isSubmitting: false },
+    // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
     } as any)
 
     render(<AddressField size="$3" />)
@@ -122,6 +125,7 @@ describe('AddressField', () => {
       },
       error: {},
       formState: { isSubmitting: false },
+    // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
     } as any)
 
     render(<AddressField size="$3" />)
@@ -146,6 +150,7 @@ describe('AddressField', () => {
       },
       error: {},
       formState: { isSubmitting: false },
+    // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
     } as any)
 
     render(<AddressField size="$3" />)
@@ -166,6 +171,7 @@ describe('AddressField', () => {
       },
       error: {},
       formState: { isSubmitting: true },
+    // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
     } as any)
 
     render(<AddressField size="$3" />)
