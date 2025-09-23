@@ -64,6 +64,68 @@ type AdminUserDetailScreenProps = {
   organizationId?: string | null
 }
 
+type AdminUsersHooksResult = ReturnType<typeof createAdminUsersHooks>
+type AdminUsersUpdateMutation = ReturnType<AdminUsersHooksResult['useUpdate']>
+type AdminUsersUpdateInput = Parameters<AdminUsersUpdateMutation['mutate']>[0]
+
+type AdminUserSectionProps<TSchema extends z.ZodTypeAny> = {
+  title: string
+  schema: TSchema
+  defaultValues: z.infer<TSchema>
+  payloadBuilder: (values: z.infer<TSchema>) => AdminUsersUpdateInput
+  buttonLabel: string
+  verificationFields: VerificationFieldMeta[]
+  verifiedFields: Set<string>
+  isVerificationLoading: boolean
+  onVerificationToggle: (meta: VerificationFieldMeta, nextValue: boolean) => void
+  updateMutation: AdminUsersUpdateMutation
+}
+
+const AdminUserSection = <TSchema extends z.ZodTypeAny>({
+  title,
+  schema,
+  defaultValues,
+  payloadBuilder,
+  buttonLabel,
+  verificationFields,
+  verifiedFields,
+  isVerificationLoading,
+  onVerificationToggle,
+  updateMutation,
+}: AdminUserSectionProps<TSchema>) => {
+  return (
+    <YStack gap="$4" borderWidth={1} borderColor="$color5" borderRadius="$6" padding="$4">
+      <Paragraph fontWeight="700">{title}</Paragraph>
+      <SchemaForm
+        schema={schema}
+        defaultValues={defaultValues}
+        onSubmit={(values) => updateMutation.mutate(payloadBuilder(values))}
+        renderAfter={({ submit }) => (
+          <Button onPress={() => submit()} disabled={updateMutation.isPending}>
+            {buttonLabel}
+          </Button>
+        )}
+      >
+        {(fields) => <YStack gap="$3">{Object.values(fields)}</YStack>}
+      </SchemaForm>
+
+      <Separator />
+      <YStack gap="$3">
+        <Paragraph fontWeight="600">Verification controls</Paragraph>
+        {verificationFields.map((meta) => (
+          <VerificationToggle
+            key={meta.id}
+            meta={meta}
+            checked={verifiedFields.has(meta.field)}
+            disabled={isVerificationLoading}
+            onCheckedChange={(value) => onVerificationToggle(meta, Boolean(value))}
+          />
+        ))}
+      </YStack>
+    </YStack>
+  )
+}
+
 const VerificationToggle = ({
   meta,
   checked,
@@ -174,140 +236,83 @@ export const AdminUserDetailScreen = ({ workerId, organizationId }: AdminUserDet
           </XStack>
         </YStack>
 
-        <YStack gap="$4" borderWidth={1} borderColor="$color5" borderRadius="$6" padding="$4">
-          <Paragraph fontWeight="700">Profile basics</Paragraph>
-          <SchemaForm
-            schema={ProfileSchema}
-            defaultValues={{
-              name: detail.profile?.name ?? '',
-              about: detail.profile?.about ?? '',
-            }}
-            onSubmit={(values) =>
-              updateMutation.mutate({
-                workerId,
-                profileData: {
-                  name: values.name.trim() || null,
-                  about: values.about.trim() || null,
-                },
-              })
-            }
-            renderAfter={({ submit }) => (
-              <Button onPress={() => submit()} disabled={updateMutation.isPending}>
-                Save profile
-              </Button>
-            )}
-          >
-            {(fields) => <YStack gap="$3">{Object.values(fields)}</YStack>}
-          </SchemaForm>
+        <AdminUserSection
+          title="Profile basics"
+          schema={ProfileSchema}
+          defaultValues={{
+            name: detail.profile?.name ?? '',
+            about: detail.profile?.about ?? '',
+          }}
+          payloadBuilder={(values) => ({
+            workerId,
+            profileData: {
+              name: values.name.trim() || null,
+              about: values.about.trim() || null,
+            },
+          })}
+          buttonLabel="Save profile"
+          verificationFields={PROFILE_VERIFICATION_FIELDS}
+          verifiedFields={verifiedFields}
+          isVerificationLoading={isVerificationLoading}
+          onVerificationToggle={handleVerificationToggle}
+          updateMutation={updateMutation}
+        />
 
-          <Separator />
-          <YStack gap="$3">
-            <Paragraph fontWeight="600">Verification controls</Paragraph>
-            {PROFILE_VERIFICATION_FIELDS.map((meta) => (
-              <VerificationToggle
-                key={meta.id}
-                meta={meta}
-                checked={verifiedFields.has(meta.field)}
-                disabled={isVerificationLoading}
-                onCheckedChange={(value) => handleVerificationToggle(meta, Boolean(value))}
-              />
-            ))}
-          </YStack>
-        </YStack>
+        <AdminUserSection
+          title="Public profile"
+          schema={PublicSchema}
+          defaultValues={{
+            displayName: detail.displayName ?? '',
+            username: detail.username ?? '',
+            slug: detail.slug ?? '',
+            headline: detail.headline ?? '',
+            bio: detail.bio ?? '',
+            openToWork: Boolean(detail.openToWork),
+          }}
+          payloadBuilder={(values) => ({
+            workerId,
+            publicData: {
+              displayName: values.displayName.trim() || null,
+              username: values.username.trim() || null,
+              slug: values.slug.trim() || null,
+              headline: values.headline.trim() || null,
+              bio: values.bio.trim() || null,
+              openToWork: values.openToWork,
+            },
+          })}
+          buttonLabel="Save public profile"
+          verificationFields={USER_VERIFICATION_FIELDS}
+          verifiedFields={verifiedFields}
+          isVerificationLoading={isVerificationLoading}
+          onVerificationToggle={handleVerificationToggle}
+          updateMutation={updateMutation}
+        />
 
-        <YStack gap="$4" borderWidth={1} borderColor="$color5" borderRadius="$6" padding="$4">
-          <Paragraph fontWeight="700">Public profile</Paragraph>
-          <SchemaForm
-            schema={PublicSchema}
-            defaultValues={{
-              displayName: detail.displayName ?? '',
-              username: detail.username ?? '',
-              slug: detail.slug ?? '',
-              headline: detail.headline ?? '',
-              bio: detail.bio ?? '',
-              openToWork: Boolean(detail.openToWork),
-            }}
-            onSubmit={(values) =>
-              updateMutation.mutate({
-                workerId,
-                publicData: {
-                  displayName: values.displayName.trim() || null,
-                  username: values.username.trim() || null,
-                  slug: values.slug.trim() || null,
-                  headline: values.headline.trim() || null,
-                  bio: values.bio.trim() || null,
-                  openToWork: values.openToWork,
-                },
-              })
-            }
-            renderAfter={({ submit }) => (
-              <Button onPress={() => submit()} disabled={updateMutation.isPending}>
-                Save public profile
-              </Button>
-            )}
-          >
-            {(fields) => <YStack gap="$3">{Object.values(fields)}</YStack>}
-          </SchemaForm>
-
-          <Separator />
-          <YStack gap="$3">
-            <Paragraph fontWeight="600">Verification controls</Paragraph>
-            {USER_VERIFICATION_FIELDS.map((meta) => (
-              <VerificationToggle
-                key={meta.id}
-                meta={meta}
-                checked={verifiedFields.has(meta.field)}
-                disabled={isVerificationLoading}
-                onCheckedChange={(value) => handleVerificationToggle(meta, Boolean(value))}
-              />
-            ))}
-          </YStack>
-        </YStack>
-
-        <YStack gap="$4" borderWidth={1} borderColor="$color5" borderRadius="$6" padding="$4">
-          <Paragraph fontWeight="700">Private contact details</Paragraph>
-          <SchemaForm
-            schema={PrivateSchema}
-            defaultValues={{
-              email: detail.privateData?.email ?? '',
-              phone: detail.privateData?.phone ?? '',
-              location: detail.privateData?.location ?? '',
-              openToTravel: Boolean(detail.privateData?.openToTravel),
-            }}
-            onSubmit={(values) =>
-              updateMutation.mutate({
-                workerId,
-                privateData: {
-                  email: values.email.trim() || null,
-                  phone: values.phone.trim() || null,
-                  location: values.location.trim() || null,
-                  openToTravel: values.openToTravel,
-                },
-              })
-            }
-            renderAfter={({ submit }) => (
-              <Button onPress={() => submit()} disabled={updateMutation.isPending}>
-                Save private details
-              </Button>
-            )}
-          >
-            {(fields) => <YStack gap="$3">{Object.values(fields)}</YStack>}
-          </SchemaForm>
-
-          <Separator />
-          <YStack gap="$3">
-            <Paragraph fontWeight="600">Verification controls</Paragraph>
-            {PRIVATE_VERIFICATION_FIELDS.map((meta) => (
-              <VerificationToggle
-                key={meta.id}
-                meta={meta}
-                checked={verifiedFields.has(meta.field)}
-                disabled={isVerificationLoading}
-                onCheckedChange={(value) => handleVerificationToggle(meta, Boolean(value))}
-              />
-            ))}
-          </YStack>
-        </YStack>
+        <AdminUserSection
+          title="Private contact details"
+          schema={PrivateSchema}
+          defaultValues={{
+            email: detail.privateData?.email ?? '',
+            phone: detail.privateData?.phone ?? '',
+            location: detail.privateData?.location ?? '',
+            openToTravel: Boolean(detail.privateData?.openToTravel),
+          }}
+          payloadBuilder={(values) => ({
+            workerId,
+            privateData: {
+              email: values.email.trim() || null,
+              phone: values.phone.trim() || null,
+              location: values.location.trim() || null,
+              openToTravel: values.openToTravel,
+            },
+          })}
+          buttonLabel="Save private details"
+          verificationFields={PRIVATE_VERIFICATION_FIELDS}
+          verifiedFields={verifiedFields}
+          isVerificationLoading={isVerificationLoading}
+          onVerificationToggle={handleVerificationToggle}
+          updateMutation={updateMutation}
+        />
 
         <YStack gap="$3" borderWidth={1} borderColor="$color5" borderRadius="$6" padding="$4">
           <Paragraph fontWeight="700">Verification activity</Paragraph>
