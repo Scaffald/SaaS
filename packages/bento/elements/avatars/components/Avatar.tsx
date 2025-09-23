@@ -81,30 +81,27 @@ const AvatarIconFrame = styled(View, {
 // aligns icons to natural font size
 const getIconSize = (size: FontSizeTokens, scale: number) => {
   return (
-    (typeof size === 'number' ? size * 0.5 : getFontSize(size as FontSizeTokens) * 0.75) *
-    scale
+    (typeof size === 'number' ? size * 0.5 : getFontSize(size as FontSizeTokens) * 0.75) * scale
   )
 }
 
-export const AvatarIcon = AvatarIconFrame.styleable<{ scaleIcon?: number }>(
-  (props, ref) => {
-    const { children, scaleIcon = 1, ...rest } = props
-    const { size, color: colorProp } = AvatarContext.useStyledContext()
+export const AvatarIcon = AvatarIconFrame.styleable<{ scaleIcon?: number }>((props, ref) => {
+  const { children, scaleIcon = 1, ...rest } = props
+  const { size, color: colorProp } = AvatarContext.useStyledContext()
 
-    const theme = useTheme()
-    const color = getVariable(
-      colorProp || theme[colorProp as any]?.get('web') || theme.color10?.get('web')
-    )
-    const iconSize = getIconSize(size as FontSizeTokens, scaleIcon)
+  const theme = useTheme()
+  const color = getVariable(
+    colorProp || theme[colorProp as any]?.get('web') || theme.color10?.get('web')
+  )
+  const iconSize = getIconSize(size as FontSizeTokens, scaleIcon)
 
-    const getThemedIcon = useGetThemedIcon({ size: iconSize, color: color as any })
-    return (
-      <AvatarIconFrame ref={ref} {...rest}>
-        {getThemedIcon(children)}
-      </AvatarIconFrame>
-    )
-  }
-)
+  const getThemedIcon = useGetThemedIcon({ size: iconSize, color: color as any })
+  return (
+    <AvatarIconFrame ref={ref} {...rest}>
+      {getThemedIcon(children)}
+    </AvatarIconFrame>
+  )
+})
 
 const AvatarWrapper = styled(View, {
   context: AvatarContext,

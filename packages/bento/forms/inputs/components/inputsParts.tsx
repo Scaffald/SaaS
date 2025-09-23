@@ -114,10 +114,7 @@ const InputGroupImpl = InputGroupFrame.styleable((props, forwardedRef) => {
   )
 })
 
-export const inputSizeVariant: SizeVariantSpreadFunction<any> = (
-  val = '$true',
-  extras
-) => {
+export const inputSizeVariant: SizeVariantSpreadFunction<any> = (val = '$true', extras) => {
   const radiusToken = extras.tokens.radius[val] ?? extras.tokens.radius['$true']
   const paddingHorizontal = getSpace(val, {
     shift: -1,
@@ -210,9 +207,7 @@ export const InputIconFrame = styled(View, {
 })
 
 const getIconSize = (size: FontSizeTokens, scale: number) => {
-  return (
-    (typeof size === 'number' ? size * 0.5 : getFontSize(size as FontSizeTokens)) * scale
-  )
+  return (typeof size === 'number' ? size * 0.5 : getFontSize(size as FontSizeTokens)) * scale
 }
 
 const InputIcon = InputIconFrame.styleable<{

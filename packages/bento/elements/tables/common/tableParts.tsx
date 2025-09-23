@@ -1,10 +1,5 @@
 import type { SizeTokens } from 'tamagui'
-import {
-  ThemeableStack,
-  createStyledContext,
-  styled,
-  withStaticProperties,
-} from 'tamagui'
+import { ThemeableStack, createStyledContext, styled, withStaticProperties } from 'tamagui'
 
 type AlignCells = {
   y: 'center' | 'start' | 'end'

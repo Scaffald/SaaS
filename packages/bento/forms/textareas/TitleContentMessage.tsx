@@ -23,13 +23,7 @@ export function TitleContentMessage() {
         height={180}
         placeholder="Your text here"
       />
-      <View
-        flexDirection="row"
-        theme="alt1"
-        marginTop="$2.5"
-        alignItems="center"
-        gap="$2"
-      >
+      <View flexDirection="row" theme="alt1" marginTop="$2.5" alignItems="center" gap="$2">
         <Info size={15} />
         <Text fontWeight="300" theme="alt2" fontSize="$2">
           some hints or info about text area

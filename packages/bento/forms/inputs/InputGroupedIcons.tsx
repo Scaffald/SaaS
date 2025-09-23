@@ -1,9 +1,4 @@
-import {
-  ChevronFirst,
-  ChevronLast,
-  ChevronLeft,
-  ChevronRight,
-} from '@tamagui/lucide-icons'
+import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
 import type { SizeTokens } from 'tamagui'
 import { View } from 'tamagui'
 import { Input } from './components/inputsParts'

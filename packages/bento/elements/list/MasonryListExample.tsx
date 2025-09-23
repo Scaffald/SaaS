@@ -23,7 +23,7 @@ const ProductItem: FC<{ item: Product }> = ({ item }) => {
         shadowRadius={5}
         overflow="hidden"
         animation="quick"
-        cursor='pointer'
+        cursor="pointer"
       >
         <Image
           source={{ uri: item.image }}
@@ -75,12 +75,7 @@ const ProductItem: FC<{ item: Product }> = ({ item }) => {
           {item.name}
         </Text>
 
-        <View
-          flexDirection="row"
-          alignItems="center"
-          justifyContent="space-between"
-          gap="$2"
-        >
+        <View flexDirection="row" alignItems="center" justifyContent="space-between" gap="$2">
           <View f={1} flexDirection="row" alignItems="center" gap="$2" theme="alt1">
             <MapPin size="$1" color="$color10" />
             <Text numberOfLines={2} color="$color10" fontSize="$3">

@@ -1,13 +1,4 @@
-import {
-  AnimatePresence,
-  Button,
-  H1,
-  isWeb,
-  Label,
-  RadioGroup,
-  Spinner,
-  View,
-} from 'tamagui'
+import { AnimatePresence, Button, H1, isWeb, Label, RadioGroup, Spinner, View } from 'tamagui'
 import { Input } from '../inputs/components/inputsParts'
 import { useState } from 'react'
 import { Eye, EyeOff, Info } from '@tamagui/lucide-icons'
@@ -109,11 +100,7 @@ export function SignupValidatedHookForm() {
               >
                 <Input.Label>First Name</Input.Label>
                 <Input.Box>
-                  <Input.Area
-                    placeholder="First name"
-                    onChangeText={onChange}
-                    value={value}
-                  />
+                  <Input.Area placeholder="First name" onChangeText={onChange} value={value} />
                 </Input.Box>
                 <AnimatePresence>
                   {errors.firstName && (
@@ -163,11 +150,7 @@ export function SignupValidatedHookForm() {
               >
                 <Input.Label>Last Name</Input.Label>
                 <Input.Box>
-                  <Input.Area
-                    placeholder="Last name"
-                    onChangeText={onChange}
-                    value={value}
-                  />
+                  <Input.Area placeholder="Last name" onChangeText={onChange} value={value} />
                 </Input.Box>
                 <AnimatePresence>
                   {errors.lastName && (
@@ -214,11 +197,7 @@ export function SignupValidatedHookForm() {
             >
               <Input.Label>Email</Input.Label>
               <Input.Box>
-                <Input.Area
-                  placeholder="email@example.com"
-                  onChangeText={onChange}
-                  value={value}
-                />
+                <Input.Area placeholder="email@example.com" onChangeText={onChange} value={value} />
               </Input.Box>
               <AnimatePresence>
                 {errors.email && (
@@ -272,10 +251,7 @@ export function SignupValidatedHookForm() {
                   onChangeText={onChange}
                   value={value}
                 />
-                <Input.Icon
-                  cursor="pointer"
-                  onPress={() => setShowPassword(!showPassword)}
-                >
+                <Input.Icon cursor="pointer" onPress={() => setShowPassword(!showPassword)}>
                   {showPassword ? <Eye color="$gray11" /> : <EyeOff color="$gray11" />}
                 </Input.Icon>
               </Input.Box>
@@ -335,11 +311,7 @@ export function SignupValidatedHookForm() {
                   cursor="pointer"
                   onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
-                  {showConfirmPassword ? (
-                    <Eye color="$gray11" />
-                  ) : (
-                    <EyeOff color="$gray11" />
-                  )}
+                  {showConfirmPassword ? <Eye color="$gray11" /> : <EyeOff color="$gray11" />}
                 </Input.Icon>
               </Input.Box>
               <AnimatePresence>

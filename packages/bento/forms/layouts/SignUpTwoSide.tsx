@@ -126,9 +126,7 @@ export function SignUpTwoSideScreen() {
               </Input>
             </View>
             <View flexDirection="column" gap="$1">
-              <Input.Label htmlFor={uniqueId + '1-marital-status'}>
-                Marital Status
-              </Input.Label>
+              <Input.Label htmlFor={uniqueId + '1-marital-status'}>Marital Status</Input.Label>
               <RadioGroup
                 gap="$8"
                 flexDirection="row"
@@ -305,11 +303,7 @@ function CountrySelect({ data, id }: { data: typeof countries; id: string }) {
               <Adapt.Contents />
             </Sheet.ScrollView>
           </Sheet.Frame>
-          <Sheet.Overlay
-            animation="lazy"
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
-          />
+          <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
         </Sheet>
       </Adapt>
 

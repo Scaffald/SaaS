@@ -88,9 +88,8 @@ function Item({ data }: { data: { index: number } }) {
         />
       </View>
       <Paragraph size="$2" lh="$1" theme="alt1">
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nulla nesciunt
-        asperiores corrupti! Optio soluta excepturi aut sint nam vero, libero at
-        repellendus
+        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nulla nesciunt asperiores
+        corrupti! Optio soluta excepturi aut sint nam vero, libero at repellendus
       </Paragraph>
       <Separator marginHorizontal={-PADDING} />
       <View flexDirection="row" alignItems="center" gap="$4" padding="$2">

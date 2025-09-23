@@ -156,13 +156,7 @@ const MyRadio = (props: MyRadioProps) => {
       <H2 size={size} fontFamily="$body">
         {title}
       </H2>
-      <RadioGroup
-        gap="$8"
-        flexDirection="row"
-        onValueChange={onChange}
-        id={id}
-        {...restField}
-      >
+      <RadioGroup gap="$8" flexDirection="row" onValueChange={onChange} id={id} {...restField}>
         {values.map(({ value, label, labelId }) => (
           <View key={label} flexDirection="row" alignItems="center" gap="$3">
             <RadioGroup.Item id={labelId} value={value}>
@@ -221,9 +215,7 @@ const TwoInput = (props: TwoInputProps) => {
         animation="quickest"
         size={size}
       >
-        <Input.Label htmlFor={values.firstInput.labelId}>
-          {values.firstInput.label}
-        </Input.Label>
+        <Input.Label htmlFor={values.firstInput.labelId}>{values.firstInput.label}</Input.Label>
         <Input.Box>
           <Input.Area
             id={values.firstInput.labelId}
@@ -275,9 +267,7 @@ const TwoInput = (props: TwoInputProps) => {
         flexBasis={150}
         size={size}
       >
-        <Input.Label htmlFor={values.secondInput.labelId}>
-          {values.secondInput.label}
-        </Input.Label>
+        <Input.Label htmlFor={values.secondInput.labelId}>{values.secondInput.label}</Input.Label>
         <Input.Box>
           <Input.Area
             id={values.secondInput.labelId}
@@ -335,10 +325,7 @@ const mapping = [
 const schema = z
   .object({
     fullName: twoInputSchema,
-    email: z
-      .string()
-      .min(4, 'Email is required')
-      .email({ message: 'Invalid email format' }),
+    email: z.string().min(4, 'Email is required').email({ message: 'Invalid email format' }),
     password: passwordSchema,
     confirmedPassword: passwordSchema,
     accountType: radioSchema,

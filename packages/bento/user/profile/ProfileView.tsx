@@ -8,16 +8,7 @@ import Animated, {
   withSpring,
   type SharedValue,
 } from 'react-native-reanimated'
-import {
-  Button,
-  getTokenValue,
-  Image,
-  Text,
-  View,
-  XStack,
-  YStack,
-  type TextProps,
-} from 'tamagui'
+import { Button, getTokenValue, Image, Text, View, XStack, YStack, type TextProps } from 'tamagui'
 import { FlatList, Gesture, GestureDetector } from 'react-native-gesture-handler'
 import { Share } from '@tamagui/lucide-icons'
 
@@ -98,8 +89,8 @@ export const ProfileView = () => {
               </YStack>
 
               <HashText lineHeight="$5" fontSize="$5" color="$color10">
-                🚀 Built my first full-stack app from scratch, learned TypeScript, and
-                dove deep into React Native #CodeLife #DevJourney
+                🚀 Built my first full-stack app from scratch, learned TypeScript, and dove deep
+                into React Native #CodeLife #DevJourney
               </HashText>
 
               <Follower followed={followed} />

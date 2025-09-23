@@ -75,12 +75,7 @@ function MeetingItem({ item }: { item: (typeof data)[0] }) {
       borderRadius={10}
       overflow="hidden"
     >
-      <LinearGradient
-        colors={['color3', '$color7']}
-        start={[1, 1]}
-        end={[1, 0]}
-        fullscreen
-      />
+      <LinearGradient colors={['color3', '$color7']} start={[1, 1]} end={[1, 0]} fullscreen />
       <View flexDirection="column">
         <View flexDirection="row" justifyContent="space-between" alignItems="center">
           <SizableText>{item.title}</SizableText>

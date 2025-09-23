@@ -296,7 +296,6 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
     onNavigate?.('/profile', event)
   }
 
-
   return (
     <YStack
       width="100%"
@@ -395,7 +394,7 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
       </YStack>
 
       {/* Middle Section - Scrollable Content */}
-      <ScrollView 
+      <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingVertical: 16 }}
         showsVerticalScrollIndicator={false}
@@ -451,16 +450,16 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
           borderRadius="$5"
         >
           <YGroup.Item>
-            <DrawerLink 
+            <DrawerLink
               item={{
                 key: 'settings',
                 title: 'Settings',
                 href: '/settings',
                 icon: Settings2,
                 theme: 'gray',
-              }} 
-              pathname={pathname} 
-              onNavigate={onNavigate} 
+              }}
+              pathname={pathname}
+              onNavigate={onNavigate}
             />
           </YGroup.Item>
         </YGroup>

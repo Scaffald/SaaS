@@ -1,16 +1,5 @@
 import { useEffect, useState } from 'react'
-import {
-  Anchor,
-  Circle,
-  H2,
-  Image,
-  Stack,
-  Text,
-  View,
-  XStack,
-  YStack,
-  styled,
-} from 'tamagui'
+import { Anchor, Circle, H2, Image, Stack, Text, View, XStack, YStack, styled } from 'tamagui'
 import { getProducts } from './data/products'
 
 const Link = Anchor
@@ -25,13 +14,7 @@ const StyledText = styled(Text, {
 
 function Item({ item }: { item: Product }) {
   return (
-    <Link
-      flexGrow={1}
-      flexShrink={1}
-      flexBasis={300}
-      href="#"
-      textDecorationColor="transparent"
-    >
+    <Link flexGrow={1} flexShrink={1} flexBasis={300} href="#" textDecorationColor="transparent">
       <YStack
         paddingBottom="$4"
         borderBottomWidth={1}
@@ -41,12 +24,7 @@ function Item({ item }: { item: Product }) {
         role="article"
       >
         <Stack overflow="hidden" width="100%" height={300}>
-          <Image
-            source={{ uri: item.image }}
-            height="100%"
-            width="100%"
-            resizeMode="cover"
-          />
+          <Image source={{ uri: item.image }} height="100%" width="100%" resizeMode="cover" />
         </Stack>
         <YStack>
           <H2 size="$4">{item.name}</H2>
@@ -71,12 +49,7 @@ function Item({ item }: { item: Product }) {
             <Circle backgroundColor="$red9" size={20} />
             <Circle backgroundColor="$orange9" size={20} />
             <Circle backgroundColor="$purple9" size={20} />
-            <View
-              borderRadius={1000_000_000}
-              backgroundColor="$yellow9"
-              width={20}
-              height={20}
-            />
+            <View borderRadius={1000_000_000} backgroundColor="$yellow9" width={20} height={20} />
           </XStack>
         </YStack>
       </YStack>

@@ -65,13 +65,7 @@ const Alert = ({ children, ...rest }: AlertProps) => {
   })
 
   return (
-    <AlertProvider
-      open={open}
-      message={message}
-      title={title}
-      buttons={buttons}
-      alert={alert}
-    >
+    <AlertProvider open={open} message={message} title={title} buttons={buttons} alert={alert}>
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialog.Portal>
           <AlertDialog.Overlay
@@ -116,9 +110,7 @@ const Alert = ({ children, ...rest }: AlertProps) => {
               >
                 {title}
               </AlertDialog.Title>
-              <AlertDialog.Description alignSelf="center">
-                {message}
-              </AlertDialog.Description>
+              <AlertDialog.Description alignSelf="center">{message}</AlertDialog.Description>
             </View>
             {content}
             <View
@@ -130,8 +122,7 @@ const Alert = ({ children, ...rest }: AlertProps) => {
             >
               {buttons.map((button, index) => {
                 const makeItVertical = buttons.length > 2
-                const Base =
-                  button.style === 'cancel' ? AlertDialog.Cancel : AlertDialog.Action
+                const Base = button.style === 'cancel' ? AlertDialog.Cancel : AlertDialog.Action
                 const color = button.style === 'destructive' ? '$red10' : '$blue10'
                 return (
                   <View

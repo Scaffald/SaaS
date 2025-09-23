@@ -67,12 +67,7 @@ export function ScrollProgress() {
             {subTitle}
           </Text>
 
-          <Text
-            fontFamily="Times New Roman"
-            fontWeight="bold"
-            fontSize={24}
-            textAlign="center"
-          >
+          <Text fontFamily="Times New Roman" fontWeight="bold" fontSize={24} textAlign="center">
             THE FAMOUS GENTLEMAN DON QUIXOTE OF LA MANCHA
           </Text>
         </View>
@@ -96,7 +91,7 @@ export function ScrollProgress() {
         <AnimatedList
           onScroll={scrollHandler}
           renderItem={({ item }) => (
-            <Text fontSize="$6" fontFamily="Times New Roman" lineHeight={isWeb ? 31 : "$7"}>
+            <Text fontSize="$6" fontFamily="Times New Roman" lineHeight={isWeb ? 31 : '$7'}>
               {item}
             </Text>
           )}
@@ -183,10 +178,7 @@ const BottomView = () => {
   const nextAnimated = useAnimatedStyle(() => ({
     transform: [
       {
-        translateY: withSpring(
-          progress.value >= 0.95 || showBookmark ? 0 : 100,
-          SPRING_CONFIG
-        ),
+        translateY: withSpring(progress.value >= 0.95 || showBookmark ? 0 : 100, SPRING_CONFIG),
       },
     ],
   }))
@@ -194,10 +186,7 @@ const BottomView = () => {
   const currentAnimated = useAnimatedStyle(() => ({
     transform: [
       {
-        translateY: withSpring(
-          progress.value >= 0.95 || showBookmark ? -100 : 0,
-          SPRING_CONFIG
-        ),
+        translateY: withSpring(progress.value >= 0.95 || showBookmark ? -100 : 0, SPRING_CONFIG),
       },
     ],
   }))
@@ -206,10 +195,7 @@ const BottomView = () => {
     transform: [
       { scale: scale.value },
       {
-        translateY: withSpring(
-          progress.value >= 0.01 || showBookmark ? 0 : 100,
-          SPRING_CONFIG
-        ),
+        translateY: withSpring(progress.value >= 0.01 || showBookmark ? 0 : 100, SPRING_CONFIG),
       },
     ],
     borderRadius: 48,

@@ -112,8 +112,7 @@ const Alert = ({ children, ...rest }: AlertProps) => {
               paddingHorizontal="$2"
             >
               {buttons.map((button, index) => {
-                const Base =
-                  button.style === 'cancel' ? AlertDialog.Cancel : AlertDialog.Action
+                const Base = button.style === 'cancel' ? AlertDialog.Cancel : AlertDialog.Action
                 const color = button.style === 'active' ? '$color10' : '$color'
                 return (
                   <Base key={index} asChild>

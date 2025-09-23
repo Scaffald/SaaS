@@ -174,8 +174,7 @@ function Tour({
     activeStep: number
   }) => React.ReactNode
 }) {
-  const { activeStep, numberOfSteps, nextStep, prevStep, upsertItemDim } =
-    useWalkThrough()
+  const { activeStep, numberOfSteps, nextStep, prevStep, upsertItemDim } = useWalkThrough()
   const showTour = activeStep === stepNumber
   const itemRef = useRef<View | null>(null)
   const absoluteItemRef = useRef<View | null>(null)
@@ -305,11 +304,7 @@ function DialogContent({
           </Button>
         )}
         <Button onPress={nextStep}>
-          {isLastStep ? (
-            <Button.Text>Finish</Button.Text>
-          ) : (
-            <Button.Text>Next</Button.Text>
-          )}
+          {isLastStep ? <Button.Text>Finish</Button.Text> : <Button.Text>Next</Button.Text>}
         </Button>
       </XStack>
     </ThemeableStack>

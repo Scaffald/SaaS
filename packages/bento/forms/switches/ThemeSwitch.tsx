@@ -1,14 +1,6 @@
 import { MoonStar, Sun } from '@tamagui/lucide-icons'
 import { useEffect, useId, useState } from 'react'
-import {
-  AnimatePresence,
-  getVariableValue,
-  Switch,
-  useTheme,
-  View,
-  YStack,
-  isWeb,
-} from 'tamagui'
+import { AnimatePresence, getVariableValue, Switch, useTheme, View, YStack, isWeb } from 'tamagui'
 import type { SizeTokens } from 'tamagui'
 
 import { getSize } from '@tamagui/get-token'
@@ -91,10 +83,7 @@ export function ThemeSwitch({ size = '$8' }: { size?: SizeTokens }) {
               ai="center"
               jc="center"
               o={checked ? 0 : 1}
-              transform={[
-                { scale: !checked ? 1 : 0 },
-                { translateY: !checked ? 0 : thumbSize },
-              ]}
+              transform={[{ scale: !checked ? 1 : 0 }, { translateY: !checked ? 0 : thumbSize }]}
             >
               <Sun size={iconSize} fill={'white'} color={'$white'} />
             </YStack>

@@ -264,10 +264,7 @@ export function UsersTable() {
 
               <View gap="$2">
                 {Object.entries(row)
-                  .filter(
-                    ([name]) =>
-                      !['avatar', 'fullName', 'username', 'status'].includes(name)
-                  )
+                  .filter(([name]) => !['avatar', 'fullName', 'username', 'status'].includes(name))
                   .map(([name, value], i) => {
                     return (
                       <View key={i}>
@@ -282,8 +279,7 @@ export function UsersTable() {
                         </View>
                         {i !==
                           Object.entries(row).filter(
-                            ([name]) =>
-                              !['avatar', 'fullName', 'username', 'status'].includes(name)
+                            ([name]) => !['avatar', 'fullName', 'username', 'status'].includes(name)
                           ).length -
                             1 && <Separator />}
                       </View>
@@ -327,11 +323,7 @@ export function UsersTable() {
               {headerGroup.headers.map((header) => (
                 <Table.HeaderCell
                   cellLocation={
-                    header.id === 'fullName'
-                      ? 'first'
-                      : header.id === 'role'
-                        ? 'last'
-                        : 'middle'
+                    header.id === 'fullName' ? 'first' : header.id === 'role' ? 'last' : 'middle'
                   }
                   key={header.id}
                   borderWidth={0}

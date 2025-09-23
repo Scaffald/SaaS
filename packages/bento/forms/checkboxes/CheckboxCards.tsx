@@ -13,8 +13,7 @@ const packages = [
   },
   {
     title: 'Books',
-    description:
-      'A curated package of books, spanning tales of fantasy and slices of history.',
+    description: 'A curated package of books, spanning tales of fantasy and slices of history.',
     itemsCounts: 621,
     color: 'green',
   },
@@ -85,12 +84,7 @@ export function CheckboxCards() {
                       py="$2"
                       px="$3"
                     >
-                      <View
-                        width={10}
-                        height={10}
-                        backgroundColor="$color10"
-                        borderRadius={100}
-                      />
+                      <View width={10} height={10} backgroundColor="$color10" borderRadius={100} />
                       <Text fontSize="$3" color="$color11">
                         {item.title}
                       </Text>

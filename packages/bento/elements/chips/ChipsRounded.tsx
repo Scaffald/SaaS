@@ -10,12 +10,7 @@ export function ChipsRounded({ size }: { size?: SizeTokens }) {
     <View flexDirection="column" justifyContent="center" alignItems="center" width="100%">
       <View flexDirection="row" flexWrap="wrap" flexShrink={1} gap="$2" padding="$4">
         {colors.map((color) => (
-          <Chip
-            rounded
-            theme={color as ThemeName}
-            size={size as FontSizeTokens}
-            key={color}
-          >
+          <Chip rounded theme={color as ThemeName} size={size as FontSizeTokens} key={color}>
             <Chip.Text>Input</Chip.Text>
           </Chip>
         ))}

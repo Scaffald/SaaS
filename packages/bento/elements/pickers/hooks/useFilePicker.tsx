@@ -33,9 +33,7 @@ type UseFilePickerProps<MT extends MediaTypeOptions> = {
   typeOfPicker: 'file' | 'image'
 }
 
-export function useFilePicker<MT extends MediaTypeOptions>(
-  props?: UseFilePickerProps<MT>
-) {
+export function useFilePicker<MT extends MediaTypeOptions>(props?: UseFilePickerProps<MT>) {
   const { mediaTypes, onPick, ...rest } = props || {}
 
   const _onDrop = useEvent((webFiles) => {

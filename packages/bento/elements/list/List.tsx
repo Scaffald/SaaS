@@ -69,9 +69,7 @@ export function List() {
     setPersonsList(getPersonList())
   }, [])
 
-  const renderItem = ({ item: person }: { item: PersonList[number] }) => (
-    <Item person={person} />
-  )
+  const renderItem = ({ item: person }: { item: PersonList[number] }) => <Item person={person} />
 
   return (
     <View width="100%" flex={1} $gtMd={{ maxHeight: 800, paddingHorizontal: '$4' }}>

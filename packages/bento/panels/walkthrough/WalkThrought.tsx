@@ -194,11 +194,7 @@ function Dialog({
           </Button>
         )}
         <Button onPress={nextStep}>
-          {isLastStep ? (
-            <Button.Text>Finish</Button.Text>
-          ) : (
-            <Button.Text>Next</Button.Text>
-          )}
+          {isLastStep ? <Button.Text>Finish</Button.Text> : <Button.Text>Next</Button.Text>}
         </Button>
       </XStack>
     </ThemeableStack>

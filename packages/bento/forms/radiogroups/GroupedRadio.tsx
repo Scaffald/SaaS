@@ -42,12 +42,7 @@ export function GroupedRadio() {
       <RadioGroup value={value} onValueChange={setValue} minWidth="100%">
         <YGroup borderRadius="$6" data-ho>
           {items.map((item) => (
-            <Item
-              item={item}
-              key={item.id}
-              selected={value === item.id}
-              setValue={setValue}
-            />
+            <Item item={item} key={item.id} selected={value === item.id} setValue={setValue} />
           ))}
         </YGroup>
       </RadioGroup>
@@ -113,13 +108,7 @@ function Item({
             </View>
           </View>
           <View maxWidth="80%">
-            <Text
-              wordWrap="break-word"
-              fontSize="$3"
-              lineHeight="$3"
-              fontWeight="300"
-              col="$gray9"
-            >
+            <Text wordWrap="break-word" fontSize="$3" lineHeight="$3" fontWeight="300" col="$gray9">
               {description}
             </Text>
           </View>

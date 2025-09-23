@@ -51,9 +51,7 @@ export function useDateAnimation({
     }
     if (listenTo === 'month') {
       if (currentMonth === null) return { enterStyle: { opacity: 0 } }
-      const newDate = new Date(
-        `${calendars[0][listenTo]} 1, ${calendars[0].year}`
-      )
+      const newDate = new Date(`${calendars[0][listenTo]} 1, ${calendars[0].year}`)
       const currentDate = new Date(`${currentMonth} 1, ${calendars[0].year}`)
 
       if (currentMonth === 'December' && calendars[0].month === 'January') {
@@ -86,7 +84,6 @@ export function useDateAnimation({
   }
   return {
     prevNextAnimation,
-    prevNextAnimationKey:
-      listenTo === 'years' ? sumYears() : calendars[0][listenTo],
+    prevNextAnimationKey: listenTo === 'years' ? sumYears() : calendars[0][listenTo],
   }
 }

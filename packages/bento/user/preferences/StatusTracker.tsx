@@ -111,10 +111,7 @@ export function StatusTracker() {
 
 StatusTracker.fileName = 'StatusTracker'
 
-function User({
-  user,
-  type,
-}: { type: keyof typeof data; user: (typeof data)['absent'][0] }) {
+function User({ user, type }: { type: keyof typeof data; user: (typeof data)['absent'][0] }) {
   const { name, replacedBy, avatar, job, min } = user
   return (
     <View flexDirection="row" alignItems="center" gap="$3">

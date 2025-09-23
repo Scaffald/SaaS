@@ -95,13 +95,7 @@ function GeneralSelect({ data, ...rest }: SelectProps & { data: DataItem[] }) {
   )
 
   return (
-    <Select
-      id="food"
-      value={val}
-      onValueChange={setVal}
-      disablePreventBodyScroll
-      {...rest}
-    >
+    <Select id="food" value={val} onValueChange={setVal} disablePreventBodyScroll {...rest}>
       <Select.Trigger width="100%" iconAfter={ChevronDown}>
         <View flexDirection="row" gap="$3" justifyContent="center" alignItems="center">
           <Image source={{ uri: selectedItem.flag }} width={20} height={20} />
@@ -127,11 +121,7 @@ function GeneralSelect({ data, ...rest }: SelectProps & { data: DataItem[] }) {
               <Adapt.Contents />
             </Sheet.ScrollView>
           </Sheet.Frame>
-          <Sheet.Overlay
-            animation="lazy"
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
-          />
+          <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
         </Sheet>
       </Adapt>
 
@@ -221,9 +211,7 @@ export function LocationNotification() {
         <View flexDirection="column" flexShrink={1}>
           <SizableText size="$5">Update your Email Preferences</SizableText>
           <Theme name="alt1">
-            <SizableText size="$3">
-              Set your language and delivery preferences below.
-            </SizableText>
+            <SizableText size="$3">Set your language and delivery preferences below.</SizableText>
           </Theme>
         </View>
       </View>
@@ -242,9 +230,7 @@ export function LocationNotification() {
           </Label>
           <GeneralSelect id="select-location" data={locationsArray} />
           <Theme name="alt1">
-            <SizableText size="$3">
-              Please choose a location for relevant information.
-            </SizableText>
+            <SizableText size="$3">Please choose a location for relevant information.</SizableText>
           </Theme>
         </View>
       </View>

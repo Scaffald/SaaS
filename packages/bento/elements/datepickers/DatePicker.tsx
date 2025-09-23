@@ -117,9 +117,7 @@ function DayPicker() {
                     <Button.Text
                       fontWeight="500"
                       fontSize="$4"
-                      color={
-                        d.selected ? '$gray12' : d.inCurrentMonth ? '$gray11' : '$gray6'
-                      }
+                      color={d.selected ? '$gray12' : d.inCurrentMonth ? '$gray11' : '$gray6'}
                     >
                       {d.day}
                     </Button.Text>
@@ -139,14 +137,7 @@ function DatePickerBody({ config }: { config: DatePickerProviderProps['config'] 
 
   return (
     <HeaderTypeProvider config={config} type={header} setHeader={setHeader}>
-      <View
-        flexDirection="column"
-        alignItems="center"
-        gap="$4"
-        w="100%"
-        p="$4"
-        $gtMd={{ p: '$2' }}
-      >
+      <View flexDirection="column" alignItems="center" gap="$4" w="100%" p="$4" $gtMd={{ p: '$2' }}>
         <DateHeader />
         {header === 'month' && <MonthPicker onChange={() => setHeader('day')} />}
         {header === 'year' && <YearPicker onChange={() => setHeader('day')} />}

@@ -29,21 +29,23 @@ const AnimatedView = Animated.createAnimatedComponent(View)
 const AnimatedTextView = Animated.createAnimatedComponent(Text)
 
 // Individual character component
-const AnimatedCharacter = React.memo(({ char, textProps }: { char: CharacterObject; textProps: TextProps }) => {
-  return (
-    <AnimatedView
-      entering={FadeIn.duration(ANIMATION_DURATION)}
-      exiting={FadeOut.duration(ANIMATION_DURATION)}
-      key={char.id}
-      layout={LinearTransition.springify()
-        .damping(SPRING_CONFIG.damping)
-        .mass(SPRING_CONFIG.mass)
-        .stiffness(SPRING_CONFIG.stiffness)}
-    >
-      <AnimatedTextView {...textProps}>{char.char}</AnimatedTextView>
-    </AnimatedView>
-  )
-})
+const AnimatedCharacter = React.memo(
+  ({ char, textProps }: { char: CharacterObject; textProps: TextProps }) => {
+    return (
+      <AnimatedView
+        entering={FadeIn.duration(ANIMATION_DURATION)}
+        exiting={FadeOut.duration(ANIMATION_DURATION)}
+        key={char.id}
+        layout={LinearTransition.springify()
+          .damping(SPRING_CONFIG.damping)
+          .mass(SPRING_CONFIG.mass)
+          .stiffness(SPRING_CONFIG.stiffness)}
+      >
+        <AnimatedTextView {...textProps}>{char.char}</AnimatedTextView>
+      </AnimatedView>
+    )
+  }
+)
 
 AnimatedCharacter.displayName = 'AnimatedCharacter'
 
@@ -57,7 +59,7 @@ const AnimatedText = (props: AnimatedTextProps) => {
   const splitText: CharacterObject[] = useMemo(() => {
     const text = children.toString()
     let commaCount = 0
-    
+
     return text.split('').map((char, index) => ({
       id: char === ',' ? `comma-${++commaCount}` : `${index}`,
       char,

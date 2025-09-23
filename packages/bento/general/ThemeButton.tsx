@@ -1,14 +1,6 @@
 import { SwatchBook, X } from '@tamagui/lucide-icons'
 import { ReactNode, useState } from 'react'
-import {
-  Button,
-  Paragraph,
-  Popover,
-  Square,
-  Tooltip,
-  TooltipGroup,
-  YStack,
-} from 'tamagui'
+import { Button, Paragraph, Popover, Square, Tooltip, TooltipGroup, YStack } from 'tamagui'
 import { SizableText } from 'tamagui'
 
 import { type ShowcaseTheme, useShowCaseView } from './ShowcaseProvider'

@@ -34,13 +34,7 @@ export function DirectionSlide({
         {directions.map((dir) => {
           const active = dir === direction
           return (
-            <Item
-              themeInverse={active}
-              active={active}
-              value={dir}
-              aria-label={dir}
-              key={dir}
-            >
+            <Item themeInverse={active} active={active} value={dir} aria-label={dir} key={dir}>
               <Text
                 color={'$color12'}
                 fontFamily="$mono"

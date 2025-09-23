@@ -57,12 +57,7 @@ function Calendar({
 
   return (
     <View ai="center" jc="center" flexDirection="column" gap="$4">
-      <View
-        flexDirection="row"
-        minWidth="100%"
-        alignItems="center"
-        justifyContent="space-between"
-      >
+      <View flexDirection="row" minWidth="100%" alignItems="center" justifyContent="space-between">
         {order === 'first' || order === 'either' ? (
           <Button circular size="$4" {...swapOnClick(subtractOffset({ months: 1 }))}>
             <Button.Icon scaleIcon={1.5}>
@@ -96,14 +91,7 @@ function Calendar({
       </View>
 
       <AnimatePresence key={prevNextAnimationKey}>
-        <View
-          w="100%"
-          jc="center"
-          ai="center"
-          animation="medium"
-          gap="$4"
-          {...prevNextAnimation()}
-        >
+        <View w="100%" jc="center" ai="center" animation="medium" gap="$4" {...prevNextAnimation()}>
           <WeekView weekDays={weekDays} />
 
           <View flexDirection="column" gap="$2" ai="center" jc="center" w="100%">
@@ -135,13 +123,7 @@ function Calendar({
                       disabled={!d.inCurrentMonth}
                     >
                       <Button.Text
-                        color={
-                          !d.inCurrentMonth
-                            ? '$gray6'
-                            : d.selected
-                              ? '$gray12'
-                              : '$gray11'
-                        }
+                        color={!d.inCurrentMonth ? '$gray6' : d.selected ? '$gray12' : '$gray11'}
                       >
                         {d.day}
                       </Button.Text>
@@ -214,7 +196,9 @@ function DatePickerBody({ config }: { config: DatePickerProviderProps['config'] 
 
   return (
     <HeaderTypeProvider config={config} type={header} setHeader={setHeader}>
-      <View p="$4" $gtMd={{ p: '$0' }}>{renderView()}</View>
+      <View p="$4" $gtMd={{ p: '$0' }}>
+        {renderView()}
+      </View>
     </HeaderTypeProvider>
   )
 }
@@ -262,11 +246,7 @@ export function MultiSelectPicker() {
           width={250}
           placeholder="Start date, End date"
           value={`${selectedDates[0]?.toDateString() || ''}${
-            selectedDates[0] && selectedDates[1]
-              ? ' , '
-              : selectedDates[0]
-                ? ' , end date'
-                : ''
+            selectedDates[0] && selectedDates[1] ? ' , ' : selectedDates[0] ? ' , end date' : ''
           }${selectedDates[1]?.toDateString() || ''}`}
           onReset={() => onDatesChange([])}
           onButtonPress={() => setOpen(true)}

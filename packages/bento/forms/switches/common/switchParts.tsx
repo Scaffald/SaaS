@@ -103,8 +103,7 @@ export const SwitchThumb = styled(View, {
   },
 })
 
-const getSwitchHeight = (val: SizeTokens) =>
-  Math.round(getVariableValue(getSize(val)) * 0.65)
+const getSwitchHeight = (val: SizeTokens) => Math.round(getVariableValue(getSize(val)) * 0.65)
 
 const getSwitchWidth = (val: SizeTokens) => getSwitchHeight(val) * 2
 
@@ -186,9 +185,7 @@ const SwitchIconFrame = styled(View, {
 })
 
 const getIconSize = (size: FontSizeTokens, scale: number) => {
-  return (
-    (typeof size === 'number' ? size * 0.5 : getFontSize(size as FontSizeTokens)) * scale
-  )
+  return (typeof size === 'number' ? size * 0.5 : getFontSize(size as FontSizeTokens)) * scale
 }
 export const SwitchIcon = SwitchIconFrame.styleable<{
   scaleIcon?: number

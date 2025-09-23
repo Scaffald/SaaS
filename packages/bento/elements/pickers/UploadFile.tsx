@@ -57,14 +57,7 @@ export function UploadFile() {
               display: 'none',
             }}
           >
-            <Label
-              t="$1"
-              pos="absolute"
-              size="$3"
-              htmlFor={id}
-              color="$color9"
-              whiteSpace="nowrap"
-            >
+            <Label t="$1" pos="absolute" size="$3" htmlFor={id} color="$color9" whiteSpace="nowrap">
               Drag a file into this area
             </Label>
           </View>
@@ -74,13 +67,7 @@ export function UploadFile() {
       </View>
 
       {file && (
-        <XStack
-          width="100%"
-          gap="$4"
-          p="$4"
-          borderTopWidth={1}
-          borderTopColor="$borderColor"
-        >
+        <XStack width="100%" gap="$4" p="$4" borderTopWidth={1} borderTopColor="$borderColor">
           <View flex={1}>
             <View flexDirection="row" theme="alt1" gap="$2" ai={'center'} pos="absolute">
               <View flexShrink={0}>

@@ -22,11 +22,7 @@ export function InputBothSideIconsExample({ size }: { size?: SizeTokens }) {
           <Input.Icon {...focusTrigger}>
             <User />
           </Input.Icon>
-          <Input.Area
-            ref={inputRef}
-            paddingHorizontal={0}
-            placeholder="Search username"
-          />
+          <Input.Area ref={inputRef} paddingHorizontal={0} placeholder="Search username" />
           <Input.Icon {...focusTrigger}>
             <Cable />
           </Input.Icon>

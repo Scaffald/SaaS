@@ -240,10 +240,7 @@ function Sidebar() {
   )
 }
 
-function FloatingSideBar({
-  open,
-  setOpen,
-}: { open: boolean; setOpen: (open: boolean) => void }) {
+function FloatingSideBar({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {
   const { height, width } = useWindowDimensions()
   return (
     <View
@@ -330,15 +327,13 @@ const SideBarContent = View.styleable((props, ref) => {
         </View>
         <View flexDirection="column">
           <RovingFocusGroup>
-            {['Sign In', 'Sign Up', 'Forgot Password', 'Reset Password'].map(
-              (item, index) => (
-                <RovingFocusGroup.Item key={index} focusable>
-                  <NavLink paddingLeft="$5" href="#">
-                    {item}
-                  </NavLink>
-                </RovingFocusGroup.Item>
-              )
-            )}
+            {['Sign In', 'Sign Up', 'Forgot Password', 'Reset Password'].map((item, index) => (
+              <RovingFocusGroup.Item key={index} focusable>
+                <NavLink paddingLeft="$5" href="#">
+                  {item}
+                </NavLink>
+              </RovingFocusGroup.Item>
+            ))}
           </RovingFocusGroup>
         </View>
         <View backgroundColor="$backgroundFocus" padding="$2.5" paddingLeft="$5">

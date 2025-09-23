@@ -5,8 +5,10 @@ export type BentoShowcaseContext = {
   isProUser: boolean
 }
 
-export const [BentoShowcaseProvider, useBentoShowcase] =
-  createContext<BentoShowcaseContext>('BentoProvider', {
+export const [BentoShowcaseProvider, useBentoShowcase] = createContext<BentoShowcaseContext>(
+  'BentoProvider',
+  {
     showAppropriateModal: () => {},
     isProUser: false,
-  })
+  }
+)

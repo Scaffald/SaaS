@@ -3,16 +3,7 @@ import { useDatePickerContext } from '@rehookify/datepicker'
 import { ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
 import { useEffect, useMemo, useState } from 'react'
 import type { GetProps } from 'tamagui'
-import {
-  AnimatePresence,
-  Button,
-  H3,
-  Separator,
-  Stack,
-  View,
-  isWeb,
-  useMedia,
-} from 'tamagui'
+import { AnimatePresence, Button, H3, Separator, Stack, View, isWeb, useMedia } from 'tamagui'
 import { LinearGradient } from 'tamagui/linear-gradient'
 
 import {
@@ -103,14 +94,7 @@ function Calendar({
         )}
       </View>
       <AnimatePresence key={prevNextAnimationKey}>
-        <View
-          w="100%"
-          jc="center"
-          ai="center"
-          animation="medium"
-          gap="$4"
-          {...prevNextAnimation()}
-        >
+        <View w="100%" jc="center" ai="center" animation="medium" gap="$4" {...prevNextAnimation()}>
           <WeekView weekDays={weekDays} />
           <View flexDirection="column" gap="$2" ai="center" jc="center" w="100%">
             {calendarWeeks.map((days) => {
@@ -132,11 +116,7 @@ function Calendar({
                     const dayIsFirstOrLastOfMonth =
                       day.$date.getDate() === 1 ||
                       day.$date.getDate() ===
-                        new Date(
-                          day.$date.getFullYear(),
-                          day.$date.getMonth() + 1,
-                          0
-                        ).getDate()
+                        new Date(day.$date.getFullYear(), day.$date.getMonth() + 1, 0).getDate()
 
                     const shouldWrapInGradient =
                       dayIsFirstOrLastOfMonth && day.range && day.range === 'in-range'
@@ -149,9 +129,7 @@ function Calendar({
                       [key: string]: GetProps<typeof View>
                     } = {
                       'in-range': {
-                        backgroundColor: dayIsFirstOrLastOfMonth
-                          ? 'transprent'
-                          : '$color5',
+                        backgroundColor: dayIsFirstOrLastOfMonth ? 'transprent' : '$color5',
                       },
                       'range-start': {
                         backgroundColor: '$color5',
@@ -195,11 +173,7 @@ function Calendar({
                       >
                         <Button.Text
                           color={
-                            day.selected
-                              ? '$gray12'
-                              : day.inCurrentMonth
-                                ? '$gray11'
-                                : '$gray6'
+                            day.selected ? '$gray12' : day.inCurrentMonth ? '$gray11' : '$gray6'
                           }
                         >
                           {day.day}
@@ -208,8 +182,7 @@ function Calendar({
                     )
 
                     if (shouldWrapInGradient) {
-                      const direction =
-                        day.$date.getDate() === 1 ? 'rightToLeft' : 'leftToRight'
+                      const direction = day.$date.getDate() === 1 ? 'rightToLeft' : 'leftToRight'
 
                       return (
                         <LinearGradient
@@ -226,19 +199,8 @@ function Calendar({
                     }
 
                     return (
-                      <View
-                        jc="center"
-                        ai="center"
-                        key={day.$date.toString()}
-                        w="100%"
-                        flex={1}
-                      >
-                        <View
-                          pos="absolute"
-                          w="100%"
-                          h="100%"
-                          {...BG_RANGE_STYLE[day.range]}
-                        />
+                      <View jc="center" ai="center" key={day.$date.toString()} w="100%" flex={1}>
+                        <View pos="absolute" w="100%" h="100%" {...BG_RANGE_STYLE[day.range]} />
                         {buttonElement}
                       </View>
                     )
@@ -260,9 +222,7 @@ function DatePickerBody({ config }: { config: DatePickerProviderProps['config'] 
   return (
     <HeaderTypeProvider config={config} type={header} setHeader={setHeader}>
       <View flexDirection="row" gap="$4" p="$4" $gtMd={{ p: '$0' }}>
-        {header === 'day' && !fullWidthMode && (
-          <Calendar order="either" calendarIndex={0} />
-        )}
+        {header === 'day' && !fullWidthMode && <Calendar order="either" calendarIndex={0} />}
         {header === 'day' && fullWidthMode && (
           <>
             <Calendar order="first" calendarIndex={1} />

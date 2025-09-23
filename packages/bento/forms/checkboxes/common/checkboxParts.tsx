@@ -43,39 +43,37 @@ const FocusItemContext = createStyledContext({
   value: '',
 })
 
-const FocusGroupItem = forwardRef<any, RovingFocusItemProps & { value: string }>(
-  (props, ref) => {
-    const { value, ...rest } = props
-    const { values, onValuesChange } = CheckboxesContext.useStyledContext()
+const FocusGroupItem = forwardRef<any, RovingFocusItemProps & { value: string }>((props, ref) => {
+  const { value, ...rest } = props
+  const { values, onValuesChange } = CheckboxesContext.useStyledContext()
 
-    const attrs = {
-      focusable: true,
-      outlineOffset: 1,
-      flexShrink: 1,
-      focusStyle: {
-        zIndex: 1,
+  const attrs = {
+    focusable: true,
+    outlineOffset: 1,
+    flexShrink: 1,
+    focusStyle: {
+      zIndex: 1,
+    },
+    ...(isWeb && {
+      onKeyDown: (e: KeyboardEvent) => {
+        if (e.target !== e.currentTarget) return
+        if (e.key === 'Enter' || e.code === 'Space') {
+          onValuesChange({ ...values, [value]: !values[value] })
+        }
       },
-      ...(isWeb && {
-        onKeyDown: (e: KeyboardEvent) => {
-          if (e.target !== e.currentTarget) return
-          if (e.key === 'Enter' || e.code === 'Space') {
-            onValuesChange({ ...values, [value]: !values[value] })
-          }
-        },
-      }),
-      onPress: () => {
-        onValuesChange({ ...values, [value]: !values[value] })
-      },
-      ...rest,
-    }
-
-    return (
-      <FocusItemContext.Provider value={value}>
-        <RovingFocusGroup.Item ref={ref} {...attrs} />
-      </FocusItemContext.Provider>
-    )
+    }),
+    onPress: () => {
+      onValuesChange({ ...values, [value]: !values[value] })
+    },
+    ...rest,
   }
-)
+
+  return (
+    <FocusItemContext.Provider value={value}>
+      <RovingFocusGroup.Item ref={ref} {...attrs} />
+    </FocusItemContext.Provider>
+  )
+})
 
 const RadiusGroup = styled(Group, {
   orientation: 'vertical',
@@ -90,9 +88,7 @@ type CheckboxesProps<K extends string> = {
   onValuesChange: (values: Record<K, boolean>) => void
 } & YStackProps
 
-const CheckboxesImp = <K extends string>(
-  props: PropsWithChildren<CheckboxesProps<K>>
-) => {
+const CheckboxesImp = <K extends string>(props: PropsWithChildren<CheckboxesProps<K>>) => {
   const { values, onValuesChange, ...rest } = props
 
   return (
@@ -112,8 +108,7 @@ const Checkbox = TCheckbox.styleable((props, ref) => {
     onCheckedChange: (checked: CheckedState) => {
       onValuesChange({
         ...values,
-        [focusItemValue]:
-          typeof checked === 'boolean' ? checked : !values[focusItemValue],
+        [focusItemValue]: typeof checked === 'boolean' ? checked : !values[focusItemValue],
       })
     },
     ...rest,

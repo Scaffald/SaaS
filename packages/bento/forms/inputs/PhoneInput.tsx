@@ -1,16 +1,6 @@
 import { Globe2, Search, X } from '@tamagui/lucide-icons'
 import type { SizeTokens } from 'tamagui'
-import {
-  Adapt,
-  Avatar,
-  Image,
-  Popover,
-  ScrollView,
-  Spinner,
-  Text,
-  View,
-  isWeb,
-} from 'tamagui'
+import { Adapt, Avatar, Image, Popover, ScrollView, Spinner, Text, View, isWeb } from 'tamagui'
 import { Input } from './components/inputsParts'
 import { useState, useMemo, useEffect } from 'react'
 import {
@@ -153,10 +143,7 @@ function RegionFilterInput(props: RegionFilterInputProps) {
                       }}
                     >
                       <Avatar size="$1.5" br={5}>
-                        <Avatar.Image
-                          accessibilityLabel="Profile image"
-                          src={item.flag}
-                        />
+                        <Avatar.Image accessibilityLabel="Profile image" src={item.flag} />
                         <Avatar.Fallback backgroundColor="$color5" />
                       </Avatar>
                       <Text

@@ -78,8 +78,7 @@ const useTabs = () => {
   })
   const setCurrentTab = (currentTab: string) => setTabState({ ...tabState, currentTab })
 
-  const setIntentIndicator = (intentAt: TabLayout | null) =>
-    setTabState({ ...tabState, intentAt })
+  const setIntentIndicator = (intentAt: TabLayout | null) => setTabState({ ...tabState, intentAt })
 
   const setActiveIndicator = (activeAt: TabLayout | null) =>
     setTabState({ ...tabState, prevActiveAt: tabState.activeAt, activeAt })
@@ -328,35 +327,33 @@ const DropDownText = styled(Text, {
   },
 })
 
-const NavLink = View.styleable<{ href: string }>(
-  ({ children, href = '#', ...rest }, ref) => {
-    return (
-      <View
-        ref={ref}
-        borderRadius={5}
-        paddingVertical="$2"
-        alignItems="center"
-        justifyContent="center"
-        {...rest}
-      >
-        <Link href={href}>
-          <Text
-            opacity={0.9}
-            fontSize="$5"
-            fontWeight="$5"
-            lineHeight="$5"
-            color="$color12"
-            hoverStyle={{
-              opacity: 1,
-            }}
-          >
-            {children}
-          </Text>
-        </Link>
-      </View>
-    )
-  }
-)
+const NavLink = View.styleable<{ href: string }>(({ children, href = '#', ...rest }, ref) => {
+  return (
+    <View
+      ref={ref}
+      borderRadius={5}
+      paddingVertical="$2"
+      alignItems="center"
+      justifyContent="center"
+      {...rest}
+    >
+      <Link href={href}>
+        <Text
+          opacity={0.9}
+          fontSize="$5"
+          fontWeight="$5"
+          lineHeight="$5"
+          color="$color12"
+          hoverStyle={{
+            opacity: 1,
+          }}
+        >
+          {children}
+        </Text>
+      </Link>
+    </View>
+  )
+})
 
 /** SIDEBAR */
 function SideBar() {
@@ -383,10 +380,7 @@ function SideBar() {
   )
 }
 
-function SideBarContent({
-  onOpenChange,
-  open,
-}: { onOpenChange: () => void; open: boolean }) {
+function SideBarContent({ onOpenChange, open }: { onOpenChange: () => void; open: boolean }) {
   const { activeAt, currentTab, handleOnInteraction, intentAt, setCurrentTab } = useTabs()
   const { height, width } = useWindowDimensions()
 
@@ -397,12 +391,7 @@ function SideBarContent({
    *  */
 
   return (
-    <View
-      flexDirection="column"
-      position="absolute"
-      marginHorizontal={-12}
-      marginVertical="$-2"
-    >
+    <View flexDirection="column" position="absolute" marginHorizontal={-12} marginVertical="$-2">
       <Drawer open={open} onOpenChange={onOpenChange}>
         <Drawer.Portal>
           <Drawer.Overlay
@@ -447,11 +436,7 @@ function SideBarContent({
               </View>
               <Separator width="100%" />
               <View flexDirection="column" width="100%" tag="ul" gap="$2">
-                <Tabs
-                  value={currentTab}
-                  onValueChange={setCurrentTab}
-                  orientation="vertical"
-                >
+                <Tabs value={currentTab} onValueChange={setCurrentTab} orientation="vertical">
                   <View flexDirection="column" width="100%">
                     <AnimatePresence>
                       {intentAt && (

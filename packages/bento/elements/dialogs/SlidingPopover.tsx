@@ -54,60 +54,56 @@ const SlidingPopover = (props: PopoverProps) => {
   return (
     <Popover open={!!active} ref={popoverRef} {...props}>
       <Popover.Trigger />
-      <SlidingPopoverContext.Provider value={val}>
-        {props.children}
-      </SlidingPopoverContext.Provider>
+      <SlidingPopoverContext.Provider value={val}>{props.children}</SlidingPopoverContext.Provider>
     </Popover>
   )
 }
 
-const SlidingPopoverTrigger = YStack.styleable<{ id: string }>(
-  ({ id, ...props }, ref) => {
-    const context = React.useContext(SlidingPopoverContext)
-    const [layout, setLayout] = React.useState<LayoutRectangle>()
-    const getLayout = useGet(layout)
+const SlidingPopoverTrigger = YStack.styleable<{ id: string }>(({ id, ...props }, ref) => {
+  const context = React.useContext(SlidingPopoverContext)
+  const [layout, setLayout] = React.useState<LayoutRectangle>()
+  const getLayout = useGet(layout)
 
-    const setActive = useDebounce(() => {
-      const layout = getLayout()
-      if (layout) {
-        context.setActive(id, layout)
-      }
-    }, 250)
+  const setActive = useDebounce(() => {
+    const layout = getLayout()
+    if (layout) {
+      context.setActive(id, layout)
+    }
+  }, 250)
 
-    return (
-      <YStack
-        onMouseEnter={setActive}
-        onMouseLeave={() => {
-          setActive.cancel()
-          context.setInactive(id)
-        }}
-        onPress={() => {
-          setActive.cancel()
-          if (!isWeb) {
-            if (layout) {
-              context.setActive(id, layout)
-            }
-          } else {
-            setTimeout(() => {
-              context.close()
-            }, 400)
+  return (
+    <YStack
+      onMouseEnter={setActive}
+      onMouseLeave={() => {
+        setActive.cancel()
+        context.setInactive(id)
+      }}
+      onPress={() => {
+        setActive.cancel()
+        if (!isWeb) {
+          if (layout) {
+            context.setActive(id, layout)
           }
-        }}
-        onLayout={(e) =>
-          setLayout({
-            ...e.nativeEvent.layout,
-            // @ts-ignore
-            x: e.nativeEvent.layout.pageX,
-            // @ts-ignore
-            y: e.nativeEvent.layout.pageY,
-          })
+        } else {
+          setTimeout(() => {
+            context.close()
+          }, 400)
         }
-        ref={ref}
-        {...props}
-      />
-    )
-  }
-)
+      }}
+      onLayout={(e) =>
+        setLayout({
+          ...e.nativeEvent.layout,
+          // @ts-ignore
+          x: e.nativeEvent.layout.pageX,
+          // @ts-ignore
+          y: e.nativeEvent.layout.pageY,
+        })
+      }
+      ref={ref}
+      {...props}
+    />
+  )
+})
 
 const SlidingPopoverContent = () => {
   const context = React.useContext(SlidingPopoverContext)

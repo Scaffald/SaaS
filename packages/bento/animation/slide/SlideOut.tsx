@@ -80,25 +80,13 @@ function SlideOut({
                 <Image src="/avatar_pro.png" width={32} height={32} />
               </XStack>
 
-              <Text
-                pt="$4"
-                fontWeight="600"
-                fontSize="$8"
-                fontFamily="$mono"
-                color="$color"
-              >
+              <Text pt="$4" fontWeight="600" fontSize="$8" fontFamily="$mono" color="$color">
                 ···· ···· ···· 0225
               </Text>
             </View>
 
             <XStack backgroundColor="$background" p="$3.5" themeInverse>
-              <Text
-                flex={1}
-                fontWeight="500"
-                fontSize="$2"
-                fontFamily="$mono"
-                color="$color11"
-              >
+              <Text flex={1} fontWeight="500" fontSize="$2" fontFamily="$mono" color="$color11">
                 Nate Wienert
               </Text>
               <Text
