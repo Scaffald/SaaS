@@ -7,7 +7,7 @@ import '@tamagui/font-inter/css/400.css'
 import '@tamagui/font-inter/css/700.css'
 import { type ColorScheme, NextThemeProvider, useRootTheme } from '@tamagui/next-theme'
 import { Provider } from '@app/core/provider'
-import type { AuthProviderProps } from '@app/core/provider/auth'
+import type { AuthProviderProps } from '@app/core/provider/auth/AuthProvider.types'
 import { api } from '@app/core/utils/api'
 import type { NextPage } from 'next'
 import Head from 'next/head'
@@ -44,10 +44,8 @@ function AppWithTheme({
   )
 }
 
-function MyApp({
-  Component,
-  pageProps,
-}: SolitoAppProps<{ initialSession: AuthProviderProps['initialSession'] }>) {
+function MyApp(props: any) {
+  const { Component, pageProps, router } = props
   return (
     <>
       <Head>
@@ -60,4 +58,4 @@ function MyApp({
   )
 }
 
-export default api.withTRPC(MyApp)
+export default (api as any).withTRPC(MyApp)

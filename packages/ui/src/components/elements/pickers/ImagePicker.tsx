@@ -40,9 +40,7 @@ const createFileDescriptor = (file: DropZoneWebFile): PickerFileDescriptor => ({
 export const ImagePicker = forwardRef<any, ImagePickerProps>(
   ({ disabled, value, onChangeText, onBlur, placeholder }, ref) => {
     const id = useId()
-    const [images, setImages] = useState<string[]>(() =>
-      value?.fileURL ? [value.fileURL] : []
-    )
+    const [images, setImages] = useState<string[]>(() => (value?.fileURL ? [value.fileURL] : []))
     const { open, getInputProps, getRootProps, dragStatus } = useFilePicker({
       typeOfPicker: 'image',
       mediaTypes: [MediaTypeOptions.Images] as const,
@@ -78,8 +76,7 @@ export const ImagePicker = forwardRef<any, ImagePickerProps>(
     if (isWeb) {
       const rootProps = getRootProps()
       const inputProps = getInputProps()
-      const webPlaceholder =
-        placeholder ?? 'Drag cover image into this area'
+      const webPlaceholder = placeholder ?? 'Drag cover image into this area'
 
       return (
         <View

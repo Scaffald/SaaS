@@ -54,9 +54,9 @@ describe('DateField', () => {
   const mockedUseFieldInfo = vi.mocked(useFieldInfo)
 
   beforeEach(() => {
-    mockedUseFieldInfo.mockReturnValue(
-      { label: 'Event date' } as unknown as ReturnType<typeof useFieldInfo>
-    )
+    mockedUseFieldInfo.mockReturnValue({ label: 'Event date' } as unknown as ReturnType<
+      typeof useFieldInfo
+    >)
     mockedUseTsController.mockReturnValue({
       field: {
         value: { dateValue: new Date('2024-01-01T00:00:00.000Z') },

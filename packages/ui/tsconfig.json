@@ -24,7 +24,7 @@
     "jsx": "react-jsx",
     "plugins": [],
     "skipLibCheck": true,
-    "types": ["vitest", "node", "@testing-library/jest-dom"],
+    "types": ["vitest", "node", "@testing-library/jest-dom", "@types/jest"],
     "typeRoots": ["../../node_modules/@types", "../../node_modules", "../../environment.d.ts"]
   },
   "references": []

@@ -47,7 +47,7 @@ const setRequiredEnv = () => {
 const createRequestOptions = (headersInit?: HeadersInit) => {
   const request = new Request('https://api.example.com', { headers: headersInit })
   const responseHeaders = new Headers()
-  return { req: request, resHeaders: responseHeaders }
+  return { req: request, resHeaders: responseHeaders, info: {} as any }
 }
 
 const loadCreateTRPCContext = async () => {
