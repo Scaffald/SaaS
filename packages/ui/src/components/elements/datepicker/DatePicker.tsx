@@ -180,6 +180,7 @@ type DatePickerExampleProps = {
   id?: string
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: Example component with flexible ref type
 export const DatePickerExample = forwardRef<any, DatePickerExampleProps>(
   ({ disabled, placeholderTextColor, value, onChangeText, onBlur, placeholder, id }, ref) => {
     const [selectedDates, onDatesChange] = useState<Date[]>([])

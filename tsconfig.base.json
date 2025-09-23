@@ -54,7 +54,7 @@
       }
     ]
   },
-  "exclude": ["_"],
+  "exclude": ["_", "OLD"],
   "typeAcquisition": {
     "enable": true
   }

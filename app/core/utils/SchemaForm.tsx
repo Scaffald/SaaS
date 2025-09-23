@@ -80,7 +80,9 @@ const FormComponent: ComponentType<FormProps> = (props: FormProps) => {
   )
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: ts-react/form requires any types for complex generic constraints
 const createTsFormAny = createTsForm as any
+// biome-ignore lint/suspicious/noExplicitAny: ts-react/form requires any types for complex generic constraints
 const _SchemaForm: any = createTsFormAny(mapping, {
   FormComponent,
 })

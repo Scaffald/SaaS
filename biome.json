@@ -8,7 +8,8 @@
       "**/build/**",
       "packages/ui/src/themes/theme-generated.ts",
       "**/.vscode/**",
-      "**/.tamagui/**"
+      "**/.tamagui/**",
+      "OLD/**"
     ]
   },
   "formatter": {

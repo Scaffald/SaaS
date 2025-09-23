@@ -119,7 +119,7 @@ describe('JoobleClient', () => {
     const isAxiosErrorSpy = vi.spyOn(axios, 'isAxiosError').mockReturnValue(false)
 
     const { client, post } = createClient(
-      (url, payload, config) =>
+      (_url, _payload, config) =>
         new Promise((_, reject) => {
           config?.signal?.addEventListener('abort', () => reject(abortError))
         })

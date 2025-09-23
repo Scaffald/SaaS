@@ -10,7 +10,7 @@ const ScrollToTopTabBarContainer = ({ children, ...props }: ScrollToTopTabBarCon
   useScrollToTop(ref as Parameters<typeof useScrollToTop>[0])
 
   return (
-    <ScrollView {...props} ref={ref}>
+    <ScrollView {...props} ref={ref as any}>
       {children}
     </ScrollView>
   )
