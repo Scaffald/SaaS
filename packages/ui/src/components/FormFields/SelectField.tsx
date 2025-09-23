@@ -33,7 +33,7 @@ export const SelectField = ({
   const {
     field,
     error,
-    formState: { isSubmitting },
+    formState: { isSubmitting: _isSubmitting },
   } = useTsController<string>()
 
   const { label, isOptional } = useFieldInfo()

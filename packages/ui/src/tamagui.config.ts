@@ -22,7 +22,7 @@ setupDev({
  * This avoids shipping themes as JS. Instead, Tamagui will hydrate them from CSS.
  */
 
-const themes =
+const _themes =
   process.env.TAMAGUI_TARGET !== 'web' || process.env.TAMAGUI_IS_SERVER || process.env.STORYBOOK
     ? themesIn
     : ({} as typeof themesIn)

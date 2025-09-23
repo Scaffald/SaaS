@@ -27,7 +27,6 @@ export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
 function AppWithTheme({
   Component,
   pageProps,
-  router,
 }: SolitoAppProps<{ initialSession: AuthProviderProps['initialSession'] }>) {
   const [, setTheme] = useRootTheme()
   const getLayout = Component.getLayout || ((page) => page)
@@ -48,7 +47,6 @@ function AppWithTheme({
 function MyApp({
   Component,
   pageProps,
-  router,
 }: SolitoAppProps<{ initialSession: AuthProviderProps['initialSession'] }>) {
   return (
     <>
@@ -57,7 +55,7 @@ function MyApp({
         <meta name="description" content="Tamagui Universal Starter" />
         <link rel="icon" href="/favicon.svg" />
       </Head>
-      <AppWithTheme Component={Component} pageProps={pageProps} router={router} />
+      <AppWithTheme Component={Component} pageProps={pageProps} />
     </>
   )
 }
