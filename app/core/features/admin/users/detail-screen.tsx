@@ -19,6 +19,8 @@ import { SchemaForm, formFields } from '@app/core/utils/SchemaForm'
 import { api, createAdminUsersHooks, type RouterOutputs } from '@app/core/utils/api'
 import { z } from 'zod'
 
+import { formatDate } from './formatters'
+
 import {
   PRIVATE_VERIFICATION_FIELDS,
   PROFILE_VERIFICATION_FIELDS,
@@ -48,15 +50,6 @@ const PrivateSchema = z.object({
   location: formFields.text.describe('Location // City, State'),
   openToTravel: formFields.boolean_switch.describe('Open to travel'),
 })
-
-const formatDate = (value: string | null | undefined) => {
-  if (!value) return '—'
-  try {
-    return new Date(value).toLocaleString()
-  } catch (_error) {
-    return value
-  }
-}
 
 const verificationFields = [
   ...PROFILE_VERIFICATION_FIELDS,
