@@ -16,8 +16,8 @@ export const mergeOrganizationId = <T extends { organizationId?: string | null }
   }) as T
 
 type MutationResultLike = {
-  mutate: (...args: any[]) => any
-  mutateAsync: (...args: any[]) => Promise<any>
+  mutate: (...args: unknown[]) => unknown
+  mutateAsync: (...args: unknown[]) => Promise<unknown>
 }
 
 type MutationWithOptionalOrg<
@@ -39,11 +39,11 @@ export const createAdminUsersHooks =
     TApi extends {
       admin: {
         users: {
-          search: { useQuery: (...args: any[]) => any }
-          detail: { useQuery: (...args: any[]) => any }
-          update: { useMutation: (...args: any[]) => MutationResultLike }
-          verify: { useMutation: (...args: any[]) => MutationResultLike }
-          revoke: { useMutation: (...args: any[]) => MutationResultLike }
+          search: { useQuery: (...args: unknown[]) => unknown }
+          detail: { useQuery: (...args: unknown[]) => unknown }
+          update: { useMutation: (...args: unknown[]) => MutationResultLike }
+          verify: { useMutation: (...args: unknown[]) => MutationResultLike }
+          revoke: { useMutation: (...args: unknown[]) => MutationResultLike }
         }
       }
     },
@@ -55,17 +55,23 @@ export const createAdminUsersHooks =
       mergeOrganizationId<T>(organizationId ?? undefined, input)
 
     type AdminUsersApi = TApi['admin']['users']
-    type UpdateResult = AdminUsersApi['update']['useMutation'] extends (...args: any[]) => infer R
+    type UpdateResult = AdminUsersApi['update']['useMutation'] extends (
+      ...args: unknown[]
+    ) => infer R
       ? R extends MutationResultLike
         ? R
         : never
       : never
-    type VerifyResult = AdminUsersApi['verify']['useMutation'] extends (...args: any[]) => infer R
+    type VerifyResult = AdminUsersApi['verify']['useMutation'] extends (
+      ...args: unknown[]
+    ) => infer R
       ? R extends MutationResultLike
         ? R
         : never
       : never
-    type RevokeResult = AdminUsersApi['revoke']['useMutation'] extends (...args: any[]) => infer R
+    type RevokeResult = AdminUsersApi['revoke']['useMutation'] extends (
+      ...args: unknown[]
+    ) => infer R
       ? R extends MutationResultLike
         ? R
         : never

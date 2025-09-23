@@ -13,14 +13,14 @@ export const ImagePickerSchema = z.object({
   // fileURL: z.instanceof(Blob),
 })
 
-export const ImagePickerField = (props: Pick<InputProps, 'size'>) => {
+export const ImagePickerField = (_props: Pick<InputProps, 'size'>) => {
   const {
     field,
     error,
     formState: { isSubmitting },
   } = useTsController<z.infer<typeof ImagePickerSchema>>()
   const { label } = useFieldInfo()
-  const id = useId()
+  const _id = useId()
   const disabled = isSubmitting
   // Use the useImperativeHandle hook to set the ref callback
   const inputRef = useRef<HTMLInputElement>(null) // Initialize with null
