@@ -22,13 +22,12 @@ export const createSupabaseRpcMock = <TDatabase>(
     return vi.fn(implementation) as SupabaseRpcMock<TDatabase>
   }
 
-  const mock = vi.fn<Parameters<SupabaseRpc<TDatabase>>, ReturnType<SupabaseRpc<TDatabase>>>(
-    async () => {
-      return defaultValue
-    }
-  ) as SupabaseRpcMock<TDatabase>
+  const fallbackImplementation = (
+    ..._args: Parameters<SupabaseRpc<TDatabase>>
+  ): ReturnType<SupabaseRpc<TDatabase>> =>
+    Promise.resolve(defaultValue) as unknown as ReturnType<SupabaseRpc<TDatabase>>
 
-  return mock
+  return vi.fn(fallbackImplementation as SupabaseRpc<TDatabase>) as SupabaseRpcMock<TDatabase>
 }
 
 export type SupabaseClientStub<TDatabase> = {

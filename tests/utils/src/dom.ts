@@ -44,7 +44,7 @@ export function installWindowShim(overrides: Partial<typeof window> = {}): Windo
     })
   }
 
-  const shimRecord = shim as Record<PropertyKey, unknown>
+  const shimRecord = shim as unknown as Record<PropertyKey, unknown>
   const previousValues = new Map<PropertyKey, unknown>()
   for (const [key, value] of Object.entries(overrides)) {
     previousValues.set(key, shimRecord[key])
@@ -63,7 +63,7 @@ export function installWindowShim(overrides: Partial<typeof window> = {}): Windo
       }
 
       if (!hadWindow) {
-        delete target.window
+        Reflect.deleteProperty(target, 'window')
       } else {
         target.window = originalWindow!
       }
