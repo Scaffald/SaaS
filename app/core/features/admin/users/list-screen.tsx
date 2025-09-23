@@ -144,13 +144,19 @@ export const AdminUsersListScreen = ({ organizationId }: AdminUsersListScreenPro
         </XStack>
       ) : isUnauthorized ? (
         <Paragraph color="$red10">
-          You do not have permission to view this organization&apos;s members. Confirm you are assigned an admin role for the
-          selected organization.
+          You do not have permission to view this organization&apos;s members. Confirm you are
+          assigned an admin role for the selected organization.
         </Paragraph>
       ) : searchQuery.error ? (
         <Paragraph color="$red10">{searchQuery.error.message}</Paragraph>
       ) : (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} borderRadius="$4" borderWidth={1} borderColor="$color5">
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          borderRadius="$4"
+          borderWidth={1}
+          borderColor="$color5"
+        >
           <YStack minWidth={800} flex={1}>
             <XStack backgroundColor="$color3" paddingVertical="$2" paddingHorizontal="$3" gap="$3">
               {columns.map((column) => (
@@ -178,7 +184,11 @@ export const AdminUsersListScreen = ({ organizationId }: AdminUsersListScreenPro
                         <XStack key={column.key} flex={1}>
                           <VerificationAwareCell
                             value={column.getValue(row)}
-                            verified={column.fields.length ? hasVerifiedField(column.fields, row.verification) : false}
+                            verified={
+                              column.fields.length
+                                ? hasVerifiedField(column.fields, row.verification)
+                                : false
+                            }
                           />
                         </XStack>
                       ))}
@@ -203,7 +213,10 @@ export const AdminUsersListScreen = ({ organizationId }: AdminUsersListScreenPro
             Page {page + 1} of {totalPages}
           </Paragraph>
           <XStack gap="$2">
-            <Button disabled={page === 0} onPress={() => setPage((current) => Math.max(0, current - 1))}>
+            <Button
+              disabled={page === 0}
+              onPress={() => setPage((current) => Math.max(0, current - 1))}
+            >
               Previous
             </Button>
             <Button

@@ -62,11 +62,9 @@ const main = async ({ prefixToInstall } = {}) => {
   //   'kebabCaseTocapitalizeWords(prefixToInstall',
   //   kebabCaseTocapitalizeWords(prefixToInstall)
   // )
-  const { family, fonts, axes, subsets } = familyMetadataList.find(
-    ({ family, fonts, axes, subsets }) => {
-      return family === kebabCaseTocapitalizeWords(prefixToInstall)
-    }
-  )
+  const { family, fonts, axes, subsets } = familyMetadataList.find(({ family: familyName }) => {
+    return familyName === kebabCaseTocapitalizeWords(prefixToInstall)
+  })
 
   const weights = new Set()
   const styles = new Set()
@@ -99,13 +97,13 @@ const main = async ({ prefixToInstall } = {}) => {
 
   const hasVariableFont = axes.length > 0
 
-  let optionalAxes
+  let _optionalAxes
   if (hasVariableFont) {
     weights.add('variable')
 
     const nonWeightAxes = axes.filter(({ tag }) => tag !== 'wght')
     if (nonWeightAxes.length > 0) {
-      optionalAxes = nonWeightAxes
+      _optionalAxes = nonWeightAxes
     }
   }
 
@@ -234,7 +232,7 @@ export default function App() {
   const [loaded] = useFonts({
     ${fileRefs
       .filter(({ name }) => !name.includes(',') && !name.includes('_wght'))
-      .map(({ filename, name }, idx) => {
+      .map(({ filename, name }, _idx) => {
         name = name.replace('Regular', '') // used as default name
         return `${name}: require('${packageName}/fonts/${filename}'),`
       })
@@ -299,7 +297,7 @@ export const myFont = ${createFunctionName}(
     face: ${JSON.stringify(
       Object.fromEntries(
         Object.entries(fonts)
-          .map(([weight, info], idx) => {
+          .map(([weight, _info], idx) => {
             if (!fileRefs[idx]) return [null, null]
             const weightName = fileRefs[idx].name.replace('Regular', '') // used as default name
             const font = weightName.includes(',') ? null : { normal: weightName }

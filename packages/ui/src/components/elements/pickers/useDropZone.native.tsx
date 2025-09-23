@@ -2,7 +2,7 @@ import type { DropZoneMediaSelection, DropZoneOptionsCustom, PickerKind } from '
 
 export function useDropZone<
   Media extends DropZoneMediaSelection | undefined = DropZoneMediaSelection | undefined,
-  Kind extends PickerKind = 'file'
+  Kind extends PickerKind = 'file',
 >(_options: DropZoneOptionsCustom<Media, Kind>) {
   // fallback to make kitchensink work with bento
   return {}

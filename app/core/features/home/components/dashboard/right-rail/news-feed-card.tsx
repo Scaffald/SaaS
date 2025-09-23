@@ -57,7 +57,7 @@ const formatPublishDate = (value?: string) => {
   if (Number.isNaN(parsed.getTime())) return undefined
   try {
     return parsed.toLocaleDateString()
-  } catch (error) {
+  } catch (_error) {
     return undefined
   }
 }
@@ -149,7 +149,7 @@ export const NewsFeedCard = () => {
         if (isActive) {
           setArticles(parsed)
         }
-      } catch (err) {
+      } catch (_err) {
         if (!isActive) return
         setArticles([])
         setError('Unable to load news right now. Please try again later.')

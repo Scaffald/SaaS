@@ -102,20 +102,29 @@ export const AdminUserDetailScreen = ({ workerId, organizationId }: AdminUserDet
   const updateMutation = hooks.useUpdate({
     onSuccess: async () => {
       toast.show('Saved changes')
-      await utils.admin.users.detail.invalidate({ workerId, organizationId: organizationId ?? null })
+      await utils.admin.users.detail.invalidate({
+        workerId,
+        organizationId: organizationId ?? null,
+      })
       await utils.admin.users.search.invalidate()
     },
   })
   const verifyMutation = hooks.useVerify({
     onSuccess: async () => {
       toast.show('Field verified')
-      await utils.admin.users.detail.invalidate({ workerId, organizationId: organizationId ?? null })
+      await utils.admin.users.detail.invalidate({
+        workerId,
+        organizationId: organizationId ?? null,
+      })
     },
   })
   const revokeMutation = hooks.useRevoke({
     onSuccess: async () => {
       toast.show('Verification revoked')
-      await utils.admin.users.detail.invalidate({ workerId, organizationId: organizationId ?? null })
+      await utils.admin.users.detail.invalidate({
+        workerId,
+        organizationId: organizationId ?? null,
+      })
     },
   })
 
@@ -128,7 +137,11 @@ export const AdminUserDetailScreen = ({ workerId, organizationId }: AdminUserDet
   }
 
   if (detailQuery.error || !detailQuery.data) {
-    return <Paragraph color="$red10">{detailQuery.error?.message ?? 'Unable to load worker details.'}</Paragraph>
+    return (
+      <Paragraph color="$red10">
+        {detailQuery.error?.message ?? 'Unable to load worker details.'}
+      </Paragraph>
+    )
   }
 
   const detail = detailQuery.data as AdminUserDetail
@@ -310,7 +323,14 @@ export const AdminUserDetailScreen = ({ workerId, organizationId }: AdminUserDet
               {detail.verification.history.map((entry) => {
                 const label = verificationFieldLabel.get(entry.field) ?? entry.field
                 return (
-                  <YStack key={entry.id} borderWidth={1} borderColor="$color4" borderRadius="$4" padding="$3" gap="$2">
+                  <YStack
+                    key={entry.id}
+                    borderWidth={1}
+                    borderColor="$color4"
+                    borderRadius="$4"
+                    padding="$3"
+                    gap="$2"
+                  >
                     <XStack ai="center" jc="space-between">
                       <Paragraph fontWeight="600">{label}</Paragraph>
                       <Paragraph color={entry.revokedAt ? '$red10' : '$green10'}>
@@ -319,7 +339,9 @@ export const AdminUserDetailScreen = ({ workerId, organizationId }: AdminUserDet
                     </XStack>
                     <Text size="$2">Verified at: {formatDate(entry.verifiedAt)}</Text>
                     <Text size="$2">Verified by: {entry.verifiedBy}</Text>
-                    {entry.revokedAt ? <Text size="$2">Revoked at: {formatDate(entry.revokedAt)}</Text> : null}
+                    {entry.revokedAt ? (
+                      <Text size="$2">Revoked at: {formatDate(entry.revokedAt)}</Text>
+                    ) : null}
                     {entry.notes ? <Text size="$2">Notes: {entry.notes}</Text> : null}
                   </YStack>
                 )

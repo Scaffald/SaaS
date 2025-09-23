@@ -40,7 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.setHeader('Content-Type', 'application/xml; charset=utf-8')
     res.setHeader('Cache-Control', `s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate`)
     res.status(200).send(xml)
-  } catch (error) {
+  } catch (_error) {
     res.status(502).json({ error: 'Unable to reach RSS source' })
   }
 }

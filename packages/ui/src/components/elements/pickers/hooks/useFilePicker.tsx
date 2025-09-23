@@ -24,7 +24,7 @@ export type UseFilePickerControl = {
 
 type UseFilePickerProps<
   Media extends DropZoneMediaSelection | undefined = DropZoneMediaSelection | undefined,
-  Kind extends PickerKind = 'file'
+  Kind extends PickerKind = 'file',
 > = {
   mediaTypes?: Media
   onPick?: FilePickerOnPick<Kind>
@@ -33,9 +33,14 @@ type UseFilePickerProps<
 
 export function useFilePicker<
   Media extends DropZoneMediaSelection | undefined = DropZoneMediaSelection | undefined,
-  Kind extends PickerKind = 'file'
+  Kind extends PickerKind = 'file',
 >(props?: UseFilePickerProps<Media, Kind>) {
-  const { mediaTypes, onPick, typeOfPicker: _typeOfPicker = 'file', ...dropzoneOptions } = props || {}
+  const {
+    mediaTypes,
+    onPick,
+    typeOfPicker: _typeOfPicker = 'file',
+    ...dropzoneOptions
+  } = props || {}
 
   const _onDrop = useEvent((webFiles: DropZoneWebFile[]) => {
     if (onPick) {

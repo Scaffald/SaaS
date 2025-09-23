@@ -6,10 +6,7 @@ import {
   type HydrateCompanyResult,
 } from '../base'
 import type { AdapterFetchParams } from '../../utils'
-import {
-  NormalizedJobSchema,
-  type NormalizedJob,
-} from '../../domain/job'
+import { NormalizedJobSchema, type NormalizedJob } from '../../domain/job'
 import {
   NormalizedOrganizationSchema,
   type NormalizedOrganization,
@@ -62,7 +59,10 @@ function parseDate(raw?: string): Date | undefined {
 
 function parseLocation(raw?: string) {
   if (!raw) return undefined
-  const parts = raw.split(',').map((part) => part.trim()).filter(Boolean)
+  const parts = raw
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean)
 
   return {
     raw,
@@ -105,10 +105,7 @@ export class JoobleAdapter extends JobSourceAdapter {
     const metadata = (params.metadata ?? {}) as JoobleAdapterMetadata
 
     const metadataKeywords = parseKeywords(metadata.keywords)
-    const keywords =
-      metadataKeywords ??
-      parseKeywords(params.filters?.search) ??
-      defaults.keywords
+    const keywords = metadataKeywords ?? parseKeywords(params.filters?.search) ?? defaults.keywords
 
     const metadataLocation = metadata.location ?? undefined
     const filtersLocation = params.filters?.locations?.[0]
@@ -129,11 +126,7 @@ export class JoobleAdapter extends JobSourceAdapter {
     const metadataPageSize = parseNumber(metadata.pageSize)
     const paginationPageSize = params.pagination?.pageSize
     const paginationLimit = params.pagination?.limit
-    const pageSize =
-      metadataPageSize ??
-      paginationPageSize ??
-      paginationLimit ??
-      defaults.pageSize
+    const pageSize = metadataPageSize ?? paginationPageSize ?? paginationLimit ?? defaults.pageSize
 
     return {
       keywords,
@@ -144,7 +137,9 @@ export class JoobleAdapter extends JobSourceAdapter {
     }
   }
 
-  private mapJob(job: JoobleJob): { job: NormalizedJob; organization: NormalizedOrganization } | null {
+  private mapJob(
+    job: JoobleJob
+  ): { job: NormalizedJob; organization: NormalizedOrganization } | null {
     if (!job.id || !job.title || !job.link) {
       return null
     }
@@ -213,7 +208,10 @@ export class JoobleAdapter extends JobSourceAdapter {
       if (!normalized) continue
 
       jobs.push(normalized.job)
-      organizations.set(normalized.organization.id ?? normalized.organization.name, normalized.organization)
+      organizations.set(
+        normalized.organization.id ?? normalized.organization.name,
+        normalized.organization
+      )
     }
 
     const totalCount = response.data.totalCount ?? jobs.length

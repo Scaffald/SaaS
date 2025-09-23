@@ -29,7 +29,9 @@ const DiscoverHeader = ({
             onAdjustFilters={() => state.setFiltersOpen(true)}
             filters={state.activeFilters}
             onRemoveFilter={(filterId) =>
-              state.setActiveFilters((current) => current.filter((filter) => filter.id !== filterId))
+              state.setActiveFilters((current) =>
+                current.filter((filter) => filter.id !== filterId)
+              )
             }
             onClearFilters={() => state.setActiveFilters([])}
           />

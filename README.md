@@ -168,6 +168,17 @@ The iOS simulator will not make requests to localhost, you will need to run the 
 yarn web -H $(yarn get-local-ip-mac | head -n 1)
 ```
 
+### Testing
+
+- Run every package's test suite once with Turbo: `yarn test`
+- Keep tests running in watch mode: `yarn test:watch`
+- Filter to a specific workspace (for example jobs): `yarn test --filter=@app/jobs`
+- Run just the jobs package once: `yarn workspace @app/jobs test`
+- Watch a single package directly: `yarn workspace @app/jobs run test:watch`
+- Collect coverage reports (saved in each package's `coverage/` directory): `yarn test -- --coverage`
+
+All test projects share `vitest.workspace.ts`, which wires up the root TypeScript path aliases and uses Vitest as the runner. Use the `--coverage` flag with any command above to emit HTML, text, and LCOV coverage summaries.
+
 ### EAS dev builds
 
 > [!IMPORTANT]  

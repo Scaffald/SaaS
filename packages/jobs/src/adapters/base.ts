@@ -49,7 +49,7 @@ export abstract class JobSourceAdapter {
   abstract hydrateCompany(params: HydrateCompanyParams): Promise<HydrateCompanyResult>
 
   protected createTelemetry(
-    overrides: Partial<Omit<AdapterTelemetry, 'source'>> = {},
+    overrides: Partial<Omit<AdapterTelemetry, 'source'>> = {}
   ): AdapterTelemetry {
     return {
       source: this.source,

@@ -82,9 +82,7 @@ export const ImagePicker = forwardRef<
       gap="$2"
       borderRadius="$true"
     >
-      {isWeb && (
-        <View id={id} tag="input" width={0} height={0} {...(inputProps ?? {})} ref={ref} />
-      )}
+      {isWeb && <View id={id} tag="input" width={0} height={0} {...(inputProps ?? {})} ref={ref} />}
       <View>
         <Button size="$3" onPress={open} disabled={disabled} {...props}>
           Pick image

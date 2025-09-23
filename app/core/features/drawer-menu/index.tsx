@@ -15,7 +15,14 @@ import {
 import type { ThemeName } from '@app/ui'
 import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import { DrawerContentScrollView } from '@react-navigation/drawer'
-import { BarChart3, ChevronRight, Building2, Map, Settings2, CircleUser } from '@tamagui/lucide-icons'
+import {
+  BarChart3,
+  ChevronRight,
+  Building2,
+  Map,
+  Settings2,
+  CircleUser,
+} from '@tamagui/lucide-icons'
 import type { JSX } from 'react'
 import { useCallback } from 'react'
 import { GestureResponderEvent } from 'react-native'
@@ -320,7 +327,12 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
           subTitle={!collapsed ? (user?.email ?? 'View profile') : undefined}
           icon={() => (
             <Avatar circular size="$3">
-              <SolitoImage src={avatarUrl} alt="Profile avatar" width={avatarSize} height={avatarSize} />
+              <SolitoImage
+                src={avatarUrl}
+                alt="Profile avatar"
+                width={avatarSize}
+                height={avatarSize}
+              />
             </Avatar>
           )}
           iconAfter={
@@ -372,7 +384,6 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
             ))}
           </YGroup>
         )}
-
       </YStack>
     </YStack>
   )

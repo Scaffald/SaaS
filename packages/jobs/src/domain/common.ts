@@ -1,11 +1,11 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
 export const CoordinatesSchema = z.object({
   latitude: z.number().gte(-90).lte(90),
   longitude: z.number().gte(-180).lte(180),
-});
+})
 
-export type Coordinates = z.infer<typeof CoordinatesSchema>;
+export type Coordinates = z.infer<typeof CoordinatesSchema>
 
 export const LocationSchema = z.object({
   raw: z.string().trim().min(1).optional(),
@@ -19,20 +19,13 @@ export const LocationSchema = z.object({
   timeZone: z.string().trim().min(1).optional(),
   remote: z.boolean().optional(),
   coordinates: CoordinatesSchema.optional(),
-});
+})
 
-export type Location = z.infer<typeof LocationSchema>;
+export type Location = z.infer<typeof LocationSchema>
 
-export const CompensationFrequencySchema = z.enum([
-  'hour',
-  'day',
-  'week',
-  'month',
-  'year',
-  'total',
-]);
+export const CompensationFrequencySchema = z.enum(['hour', 'day', 'week', 'month', 'year', 'total'])
 
-export type CompensationFrequency = z.infer<typeof CompensationFrequencySchema>;
+export type CompensationFrequency = z.infer<typeof CompensationFrequencySchema>
 
 export const CompensationSchema = z
   .object({
@@ -54,7 +47,7 @@ export const CompensationSchema = z
         code: z.ZodIssueCode.custom,
         message: 'Provide at least one compensation amount',
         path: ['minAmount'],
-      });
+      })
     }
     if (
       value.minAmount !== undefined &&
@@ -65,23 +58,23 @@ export const CompensationSchema = z
         code: z.ZodIssueCode.custom,
         message: 'minAmount must be less than or equal to maxAmount',
         path: ['minAmount'],
-      });
+      })
     }
-  });
+  })
 
-export type Compensation = z.infer<typeof CompensationSchema>;
+export type Compensation = z.infer<typeof CompensationSchema>
 
 export const DateTimeSchema = z.preprocess((value) => {
   if (value instanceof Date) {
-    return value;
+    return value
   }
   if (typeof value === 'string' || typeof value === 'number') {
-    const parsed = new Date(value);
+    const parsed = new Date(value)
     if (!Number.isNaN(parsed.getTime())) {
-      return parsed;
+      return parsed
     }
   }
-  return value;
-}, z.date());
+  return value
+}, z.date())
 
-export type DateTime = z.infer<typeof DateTimeSchema>;
+export type DateTime = z.infer<typeof DateTimeSchema>

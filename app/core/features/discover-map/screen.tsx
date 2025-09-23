@@ -63,10 +63,7 @@ type DiscoverMapScreenProps = {
   showHeader?: boolean
 }
 
-export const DiscoverMapScreen = ({
-  state,
-  showHeader = true,
-}: DiscoverMapScreenProps = {}) => {
+export const DiscoverMapScreen = ({ state, showHeader = true }: DiscoverMapScreenProps = {}) => {
   const media = useMedia()
   const isSmallScreen = media.sm && !media.gtSm
 
@@ -183,7 +180,12 @@ export const DiscoverMapScreen = ({
                 padding="$3"
               >
                 <Text fontWeight="600">{filter.label}</Text>
-                <Button size="$2" theme="surface2" icon={Filter} onPress={() => setFiltersOpen(false)}>
+                <Button
+                  size="$2"
+                  theme="surface2"
+                  icon={Filter}
+                  onPress={() => setFiltersOpen(false)}
+                >
                   Adjust
                 </Button>
               </XStack>

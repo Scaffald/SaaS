@@ -14,7 +14,10 @@ export function useDropZone(options: DropZoneOptionsCustom) {
 
   return DropZone.useDropzone({
     ...dropzoneOptions,
-    accept: acceptFromMediaTypes && Object.keys(acceptFromMediaTypes).length > 0 ? acceptFromMediaTypes : { '*/*': [] },
+    accept:
+      acceptFromMediaTypes && Object.keys(acceptFromMediaTypes).length > 0
+        ? acceptFromMediaTypes
+        : { '*/*': [] },
   })
 }
 

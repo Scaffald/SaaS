@@ -1,9 +1,4 @@
-import type {
-  DropEvent,
-  DropzoneOptions,
-  FileRejection,
-  FileWithPath,
-} from 'react-dropzone'
+import type { DropEvent, DropzoneOptions, FileRejection, FileWithPath } from 'react-dropzone'
 import type { DocumentPickerResult } from 'expo-document-picker'
 import type { ImagePickerResult } from 'expo-image-picker'
 
@@ -39,7 +34,7 @@ export type DropZoneOnOpen<Kind extends PickerKind> = (
 
 export type DropZoneOptionsCustom<
   Media extends DropZoneMediaSelection | undefined = DropZoneMediaSelection | undefined,
-  Kind extends PickerKind = 'file'
+  Kind extends PickerKind = 'file',
 > = Omit<DropzoneOptions, 'accept' | 'onDrop'> & {
   onDrop?: DropZoneOnDrop
   onOpen?: DropZoneOnOpen<Kind>
