@@ -140,5 +140,5 @@ export const ImagePicker = forwardRef<
         </XStack>
       </ScrollView>
     </View>
-  );
+  )
 })

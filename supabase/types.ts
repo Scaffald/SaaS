@@ -268,7 +268,7 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
-      },
+      }
       organizations: {
         Row: {
           address: Json | null
@@ -337,7 +337,7 @@ export type Database = {
             referencedColumns: ['id']
           },
         ]
-      },
+      }
       profiles: {
         Row: {
           about: string | null
@@ -561,7 +561,7 @@ export type Database = {
           scope?: 'platform' | 'organization' | 'team'
         }
         Relationships: []
-      },
+      }
       role_assignments: {
         Row: {
           created_at: string
@@ -603,7 +603,7 @@ export type Database = {
             referencedColumns: ['id']
           },
         ]
-      },
+      }
       referrals: {
         Row: {
           created_at: string
