@@ -1,5 +1,5 @@
-import { AdminUserDetailScreen } from '@app/features/admin/users'
-import { HomeLayout } from '@app/features/home/layout.web'
+import { AdminUserDetailScreen } from '@app/core/features/admin/users'
+import { HomeLayout } from '@app/core/features/home/layout.web'
 import { Spinner, YStack } from '@app/ui'
 import Head from 'next/head'
 import { useRouter } from 'next/router'

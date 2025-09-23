@@ -3,7 +3,8 @@
     "baseUrl": ".",
     "rootDir": ".",
     "paths": {
-      "@app/*": ["packages/app/*"],
+      "@app/core": ["app/core/index"],
+      "@app/core/*": ["app/core/*"],
       "@app/ui": ["packages/ui"],
       "@app/ui/*": ["packages/ui/*"],
       "@app/api": ["packages/api"],

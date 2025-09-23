@@ -5,9 +5,9 @@ import {
   metersToMilesLabel,
   useDiscoverMapState,
   type DiscoverMapState,
-} from '@app/features/discover-map'
-import { FilterBar } from '@app/features/discover-map/components/FilterBar'
-import { HomeLayout, type HeaderRenderProps } from '@app/features/home/layout.web'
+} from '@app/core/features/discover-map'
+import { FilterBar } from '@app/core/features/discover-map/components/FilterBar'
+import { HomeLayout, type HeaderRenderProps } from '@app/core/features/home/layout.web'
 import type { NextPageWithLayout } from './_app'
 import { XStack, YStack } from '@app/ui'
 

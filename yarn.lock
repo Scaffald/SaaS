@@ -11254,9 +11254,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"app@npm:*, app@workspace:packages/app":
+"app@npm:*, app@workspace:app/core":
   version: 0.0.0-use.local
-  resolution: "app@workspace:packages/app"
+  resolution: "app@workspace:app/core"
   dependencies:
     "@app/api": "npm:*"
     "@app/supabase": "npm:*"

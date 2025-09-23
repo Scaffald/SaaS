@@ -1,5 +1,5 @@
-import { AuthLayout } from '@app/features/auth/layout.web'
-import { SignUpScreen } from '@app/features/auth/sign-up-screen'
+import { AuthLayout } from '@app/core/features/auth/layout.web'
+import { SignUpScreen } from '@app/core/features/auth/sign-up-screen'
 import Head from 'next/head'
 
 import type { NextPageWithLayout } from './_app'

@@ -1,6 +1,6 @@
-import { HomeLayout } from '@app/features/home/layout.web'
-import { ChangePasswordScreen } from '@app/features/settings/change-password-screen'
-import { SettingsLayout } from '@app/features/settings/layout.web'
+import { HomeLayout } from '@app/core/features/home/layout.web'
+import { ChangePasswordScreen } from '@app/core/features/settings/change-password-screen'
+import { SettingsLayout } from '@app/core/features/settings/layout.web'
 import Head from 'next/head'
 import type { NextPageWithLayout } from 'pages/_app'
 
