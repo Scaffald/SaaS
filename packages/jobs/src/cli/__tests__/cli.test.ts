@@ -1,167 +1,205 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const ORIGINAL_JOOBLE_KEY = process.env.JOOBLE_API_KEY
+import type { AdapterFetchParams } from '../../utils'
+import {
+  JobSourceAdapter,
+  type AdapterPullResult,
+  type HydrateCompanyParams,
+  type HydrateCompanyResult,
+} from '../../adapters/base'
+
+class TestAdapter extends JobSourceAdapter {
+  constructor(source = 'jooble') {
+    super(source)
+  }
+
+  async pullListings(_params: AdapterFetchParams): Promise<AdapterPullResult> {
+    throw new Error('Not implemented')
+  }
+
+  async hydrateCompany({ organization }: HydrateCompanyParams): Promise<HydrateCompanyResult> {
+    return {
+      organization,
+      telemetry: this.createTelemetry({ requestCount: 0, itemsReceived: 1 }),
+    }
+  }
+}
 
 describe('syncJobSources', () => {
   beforeEach(() => {
     vi.resetModules()
-    process.env.JOOBLE_API_KEY = 'test-key'
   })
 
   afterEach(() => {
     vi.restoreAllMocks()
-    if (ORIGINAL_JOOBLE_KEY === undefined) {
-      delete process.env.JOOBLE_API_KEY
-    } else {
-      process.env.JOOBLE_API_KEY = ORIGINAL_JOOBLE_KEY
-    }
   })
 
-  it('invokes the ingestion service with default arguments and logs the result', async () => {
-    const ingestionResult = {
+  const baseEnv = { JOOBLE_API_KEY: 'test-key' } as NodeJS.ProcessEnv
+
+  it('runs the ingestion service with parsed CLI arguments', async () => {
+    const ingestResult = {
       runId: 'run-123',
-      jobs: [],
-      organizations: [],
-      summary: {
-        fetched: 10,
-        processed: 5,
-        deduplicated: 5,
-        created: 3,
-        updated: 2,
-        closed: 0,
-      },
-      telemetry: {
-        source: 'jooble',
-        requestCount: 2,
-        itemsReceived: 10,
-        durationMs: 1500,
-        warnings: ['note'],
-        rateLimit: { limit: 100, remaining: 75 },
-      },
+      jobs: [] as any,
+      organizations: [] as any,
+      telemetry: { source: 'jooble', requestCount: 2, itemsReceived: 4, warnings: ['window'] },
+      summary: { fetched: 4, processed: 3, deduplicated: 1, created: 2, updated: 1, closed: 0 },
     }
+    const ingest = vi.fn().mockResolvedValue(ingestResult)
+    const adapter = new TestAdapter()
+    const adapterFactory = vi.fn().mockReturnValue(adapter)
+    const logger = { info: vi.fn() }
 
-    const services = await import('../../services')
-    const runJobIngestion = vi
-      .spyOn(services, 'runJobIngestion')
-      .mockResolvedValue(ingestionResult as any)
-    const logSpy = vi.spyOn(console, 'info').mockImplementation(() => {})
-
-    const { syncJobSources } = await import('../index')
-
-    const result = await syncJobSources([])
-
-    expect(result).toBe(ingestionResult)
-    expect(runJobIngestion).toHaveBeenCalledTimes(1)
-    const callOptions = runJobIngestion.mock.calls[0][0]
-    expect(callOptions.adapter.source).toBe('jooble')
-    expect(callOptions.fetchParams).toEqual({})
-    expect(logSpy).toHaveBeenCalledWith('Job ingestion run completed.', {
-      runId: ingestionResult.runId,
-      jobsProcessed: ingestionResult.summary.processed,
-      summary: ingestionResult.summary,
-      telemetry: {
-        source: ingestionResult.telemetry.source,
-        requestCount: ingestionResult.telemetry.requestCount,
-        itemsReceived: ingestionResult.telemetry.itemsReceived,
-        durationMs: ingestionResult.telemetry.durationMs,
-        warnings: ingestionResult.telemetry.warnings,
-        rateLimit: ingestionResult.telemetry.rateLimit,
-      },
-    })
-  })
-
-  it('parses pagination and filter arguments when provided', async () => {
-    const ingestionResult = {
-      runId: 'run-456',
-      jobs: [],
-      organizations: [],
-      summary: {
-        fetched: 0,
-        processed: 0,
-        deduplicated: 0,
-        created: 0,
-        updated: 0,
-        closed: 0,
-      },
-      telemetry: {
-        source: 'jooble',
-        requestCount: 0,
-        itemsReceived: 0,
-        warnings: [],
-      },
-    }
-
-    const services = await import('../../services')
-    const runJobIngestion = vi
-      .spyOn(services, 'runJobIngestion')
-      .mockResolvedValue(ingestionResult as any)
-    vi.spyOn(console, 'info').mockImplementation(() => {})
-
-    const { syncJobSources } = await import('../index')
-
-    await syncJobSources([
+    const argv = [
+      '--adapter',
+      'jooble',
+      '--pagination.page',
+      '2',
+      '--pagination.page-size',
+      '25',
       '--cursor',
       'cursor-1',
-      '--page',
-      '2',
-      '--page-size=25',
-      '--limit',
-      '50',
-      '--search',
-      'Data Engineer',
-      '--location',
-      'Remote',
-      '--remote-only',
-      '--include-closed=false',
-      '--tag',
-      'featured',
-      '--tag',
-      'urgent',
       '--since',
       '2024-01-01T00:00:00Z',
       '--until',
       '2024-02-01T00:00:00Z',
-    ])
+      '--search',
+      'platform engineer',
+      '--location',
+      'Austin, TX',
+      '--employment-types',
+      'full_time,contract',
+      '--experience-levels',
+      'mid,senior',
+      '--workplace-types',
+      'remote',
+      '--remote-only',
+      '--include-closed=true',
+      '--tags',
+      'platform,backend',
+      '--filters.metadata.windowStart',
+      '2024-01-15T00:00:00Z',
+      '--metadata.priority',
+      'urgent',
+    ]
 
-    expect(runJobIngestion).toHaveBeenCalledTimes(1)
-    const options = runJobIngestion.mock.calls[0][0]
-    expect(options.fetchParams).toMatchObject({
-      pagination: { cursor: 'cursor-1', page: 2, pageSize: 25, limit: 50 },
+    const { syncJobSources } = await import('../index')
+
+    const result = await syncJobSources({
+      argv,
+      env: baseEnv,
+      ingest,
+      adapters: { jooble: adapterFactory },
+      logger,
+    })
+
+    expect(result).toEqual(ingestResult)
+    expect(adapterFactory).toHaveBeenCalledWith(baseEnv)
+    expect(ingest).toHaveBeenCalledTimes(1)
+    const options = ingest.mock.calls[0][0]
+    expect(options.adapter).toBe(adapter)
+    expect(options.fetchParams).toEqual({
+      pagination: { cursor: 'cursor-1', page: 2, pageSize: 25 },
+      since: new Date('2024-01-01T00:00:00Z'),
+      until: new Date('2024-02-01T00:00:00Z'),
+      metadata: { priority: 'urgent' },
       filters: {
-        search: 'Data Engineer',
-        locations: [{ raw: 'Remote', formatted: 'Remote' }],
+        search: 'platform engineer',
+        locations: [{ raw: 'Austin, TX', formatted: 'Austin, TX' }],
+        employmentTypes: ['full_time', 'contract'],
+        experienceLevels: ['mid', 'senior'],
+        workplaceTypes: ['remote'],
         remoteOnly: true,
-        includeClosed: false,
-        tags: ['featured', 'urgent'],
+        includeClosed: true,
+        tags: ['platform', 'backend'],
+        metadata: { windowstart: '2024-01-15T00:00:00Z' },
       },
     })
-    expect(options.fetchParams?.since?.toISOString()).toBe('2024-01-01T00:00:00.000Z')
-    expect(options.fetchParams?.until?.toISOString()).toBe('2024-02-01T00:00:00.000Z')
-  })
-
-  it('throws an error when the adapter cannot be resolved', async () => {
-    const services = await import('../../services')
-    const runJobIngestion = vi.spyOn(services, 'runJobIngestion')
-    vi.spyOn(console, 'info').mockImplementation(() => {})
-
-    const { syncJobSources } = await import('../index')
-
-    await expect(syncJobSources(['--adapter', 'unknown'])).rejects.toThrow(
-      'Unknown job source adapter: unknown'
+    expect(logger.info).toHaveBeenNthCalledWith(1, 'Run ID: run-123')
+    expect(logger.info).toHaveBeenNthCalledWith(
+      2,
+      'Jobs fetched=4, processed=3, deduplicated=1'
     )
-    expect(runJobIngestion).not.toHaveBeenCalled()
+    expect(logger.info).toHaveBeenNthCalledWith(
+      3,
+      'Persistence: created=2, updated=1, closed=0'
+    )
+    expect(logger.info).toHaveBeenNthCalledWith(4, 'Telemetry:', ingestResult.telemetry)
   })
 
-  it('propagates errors from the ingestion service', async () => {
-    const services = await import('../../services')
-    const error = new Error('ingestion failed')
-    vi.spyOn(services, 'runJobIngestion').mockRejectedValue(error)
-    const logSpy = vi.spyOn(console, 'info').mockImplementation(() => {})
+  it('uses defaults when no CLI arguments are provided', async () => {
+    const ingestResult = {
+      runId: 'run-001',
+      jobs: [] as any,
+      organizations: [] as any,
+      telemetry: { source: 'jooble', requestCount: 1, itemsReceived: 0 },
+      summary: { fetched: 0, processed: 0, deduplicated: 0, created: 0, updated: 0, closed: 0 },
+    }
+    const ingest = vi.fn().mockResolvedValue(ingestResult)
+    const adapter = new TestAdapter()
+    const adapterFactory = vi.fn().mockReturnValue(adapter)
+    const logger = { info: vi.fn() }
 
     const { syncJobSources } = await import('../index')
 
-    await expect(syncJobSources([])).rejects.toThrow(error)
-    expect(logSpy).not.toHaveBeenCalled()
+    const result = await syncJobSources({
+      argv: [],
+      env: baseEnv,
+      ingest,
+      adapters: { jooble: adapterFactory },
+      logger,
+    })
+
+    expect(result).toEqual(ingestResult)
+    expect(adapterFactory).toHaveBeenCalledWith(baseEnv)
+    expect(ingest).toHaveBeenCalledTimes(1)
+    expect(ingest.mock.calls[0][0].fetchParams).toEqual({})
+  })
+
+  it('throws when the adapter key is not supported', async () => {
+    const { syncJobSources } = await import('../index')
+
+    await expect(
+      syncJobSources({
+        argv: ['--adapter', 'unknown'],
+        env: baseEnv,
+        adapters: {},
+      })
+    ).rejects.toThrow('Unsupported adapter: unknown')
+  })
+
+  it('propagates ingestion failures', async () => {
+    const error = new Error('boom')
+    const ingest = vi.fn().mockRejectedValue(error)
+    const adapterFactory = vi.fn().mockReturnValue(new TestAdapter())
+
+    const { syncJobSources } = await import('../index')
+
+    await expect(
+      syncJobSources({ argv: [], env: baseEnv, ingest, adapters: { jooble: adapterFactory } })
+    ).rejects.toBe(error)
+    expect(adapterFactory).toHaveBeenCalledTimes(1)
+    expect(ingest).toHaveBeenCalledTimes(1)
+  })
+
+  it('requires the Jooble API key from the environment', async () => {
+    const original = process.env.JOOBLE_API_KEY
+    delete process.env.JOOBLE_API_KEY
+    const ingest = vi.fn()
+
+    try {
+      const { syncJobSources } = await import('../index')
+
+      await expect(
+        syncJobSources({ argv: [], env: {} as NodeJS.ProcessEnv, ingest })
+      ).rejects.toThrow('JOOBLE_API_KEY is not defined')
+      expect(ingest).not.toHaveBeenCalled()
+    } finally {
+      if (original === undefined) {
+        delete process.env.JOOBLE_API_KEY
+      } else {
+        process.env.JOOBLE_API_KEY = original
+      }
+    }
   })
 })
 

@@ -1,275 +1,338 @@
-import { randomUUID } from 'node:crypto'
-
+import { createJoobleAdapter } from '../adapters'
+import { JoobleClient } from '../adapters/jooble/client'
 import type { JobSourceAdapter } from '../adapters/base'
-import { createJoobleAdapter } from '../adapters/jooble/adapter'
-import type { AdapterFetchParams, AdapterFilter, PaginationParams } from '../utils'
-import {
-  runJobIngestion,
-  type JobIngestionRepository,
-  type JobIngestionResult,
-  type PersistJobIngestionParams,
-  type StartJobIngestRunParams,
+import { runJobIngestion } from '../services'
+import type {
+  JobIngestionRepository,
+  JobIngestionResult,
+  JobIngestionRunnerOptions,
 } from '../services'
+import type { AdapterFetchParams } from '../utils'
 
-type AdapterFactory = () => JobSourceAdapter
-
-const ADAPTER_FACTORIES: Record<string, AdapterFactory> = {
-  jooble: () => createJoobleAdapter(),
-}
-
-const TRUE_LITERALS = new Set(['true', '1', 'yes', 'y', 'on'])
-const FALSE_LITERALS = new Set(['false', '0', 'no', 'n', 'off'])
+type AdapterFactory = (env: NodeJS.ProcessEnv) => JobSourceAdapter
 
 interface ParsedCliArguments {
   adapterKey: string
   fetchParams: AdapterFetchParams
 }
 
-const createRunIdentifier = (): string => {
-  try {
-    return randomUUID()
-  } catch (_error) {
-    return `local-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
+interface SyncJobSourcesOptions {
+  argv?: string[]
+  env?: NodeJS.ProcessEnv
+  ingest?: (options: JobIngestionRunnerOptions) => Promise<JobIngestionResult>
+  adapters?: Record<string, AdapterFactory>
+  repository?: JobIngestionRepository
+  logger?: Pick<typeof console, 'info'>
+}
+
+const DEFAULT_ADAPTER_FACTORIES: Record<string, AdapterFactory> = {
+  jooble: (env) => createJoobleAdapter(new JoobleClient({ apiKey: env.JOOBLE_API_KEY })),
+}
+
+class InMemoryJobIngestionRepository implements JobIngestionRepository {
+  private sequence = 0
+
+  async startRun(params: Parameters<JobIngestionRepository['startRun']>[0]) {
+    this.sequence += 1
+    return { id: `local-run-${this.sequence}`, startedAt: params.startedAt }
+  }
+
+  async persistIngestion(params: Parameters<JobIngestionRepository['persistIngestion']>[0]) {
+    return {
+      created: params.jobs.length,
+      updated: 0,
+      closed: 0,
+    }
+  }
+
+  async completeRun(): Promise<void> {
+    return undefined
+  }
+
+  async failRun(): Promise<void> {
+    return undefined
   }
 }
 
-const createRepository = (): JobIngestionRepository => ({
-  async startRun(params: StartJobIngestRunParams) {
-    return { id: createRunIdentifier(), startedAt: params.startedAt }
-  },
+const createDefaultRepository = (): JobIngestionRepository => new InMemoryJobIngestionRepository()
 
-  async persistIngestion(params: PersistJobIngestionParams) {
-    return { created: params.jobs.length, updated: 0, closed: 0 }
-  },
+const normalizeKey = (key: string) => key.trim().toLowerCase()
 
-  async completeRun() {
-    // Persistence is not yet wired for the CLI entrypoint.
-  },
-
-  async failRun() {
-    // Persistence is not yet wired for the CLI entrypoint.
-  },
-})
-
-const parseInteger = (value?: string): number | undefined => {
-  if (value === undefined) return undefined
-  const parsed = Number.parseInt(value, 10)
-  return Number.isNaN(parsed) ? undefined : parsed
-}
-
-const parseBoolean = (value?: string): boolean => {
-  if (value === undefined) return true
-  const normalized = value.trim().toLowerCase()
-  if (FALSE_LITERALS.has(normalized)) return false
-  if (TRUE_LITERALS.has(normalized)) return true
-  return normalized.length > 0
-}
-
-const parseDate = (value?: string): Date | undefined => {
-  if (!value) return undefined
-  const parsed = new Date(value)
-  return Number.isNaN(parsed.getTime()) ? undefined : parsed
-}
-
-const normalizeAdapterKey = (value?: string): string => {
-  const normalized = value?.trim().toLowerCase()
-  return normalized && normalized.length > 0 ? normalized : 'jooble'
-}
-
-const assignLocationFilter = (
-  filters: AdapterFilter,
-  location?: string
-): AdapterFilter => {
-  if (!location) return filters
-  const trimmed = location.trim()
-  if (!trimmed) return filters
-
-  return {
-    ...filters,
-    locations: [
-      {
-        raw: trimmed,
-        formatted: trimmed,
-      },
-    ],
-  }
-}
-
-const parseArguments = (argv: readonly string[]): ParsedCliArguments => {
-  let adapterKey = 'jooble'
-  const fetchParams: AdapterFetchParams = {}
-  const pagination: PaginationParams = {}
-  let hasPagination = false
-  let filters: AdapterFilter = {}
-  let hasFilters = false
+const parseArgv = (argv: string[]): Map<string, string[]> => {
+  const entries = new Map<string, string[]>()
 
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index]
+    if (!token.startsWith('--')) continue
 
-    if (token === '--') {
+    const raw = token.slice(2)
+    if (!raw) continue
+
+    const equalsIndex = raw.indexOf('=')
+    let key = raw
+    let value: string | undefined
+
+    if (equalsIndex >= 0) {
+      key = raw.slice(0, equalsIndex)
+      value = raw.slice(equalsIndex + 1)
+    } else {
       const next = argv[index + 1]
-      if (next) {
-        adapterKey = normalizeAdapterKey(next)
-      }
-      break
-    }
-
-    if (!token.startsWith('-')) {
-      adapterKey = normalizeAdapterKey(token)
-      continue
-    }
-
-    if (!token.startsWith('--')) {
-      continue
-    }
-
-    const [rawName, inlineValue] = token.slice(2).split('=', 2)
-    const flag = rawName.toLowerCase()
-    let value = inlineValue
-
-    if (value === undefined) {
-      const maybeValue = argv[index + 1]
-      if (maybeValue !== undefined && !maybeValue.startsWith('-')) {
-        value = maybeValue
+      if (next && !next.startsWith('--')) {
+        value = next
         index += 1
       }
     }
 
-    value = value?.trim()
-    if (value === '') {
-      value = undefined
-    }
-
-    switch (flag) {
-      case 'adapter':
-      case 'source':
-        adapterKey = normalizeAdapterKey(value)
-        break
-      case 'cursor':
-        if (value !== undefined) {
-          pagination.cursor = value
-          hasPagination = true
-        }
-        break
-      case 'page': {
-        const parsed = parseInteger(value)
-        if (parsed !== undefined) {
-          pagination.page = parsed
-          hasPagination = true
-        }
-        break
-      }
-      case 'page-size':
-      case 'page_size':
-      case 'pagesize': {
-        const parsed = parseInteger(value)
-        if (parsed !== undefined) {
-          pagination.pageSize = parsed
-          hasPagination = true
-        }
-        break
-      }
-      case 'limit': {
-        const parsed = parseInteger(value)
-        if (parsed !== undefined) {
-          pagination.limit = parsed
-          hasPagination = true
-        }
-        break
-      }
-      case 'search':
-        if (value !== undefined) {
-          filters = { ...filters, search: value }
-          hasFilters = true
-        }
-        break
-      case 'location':
-      case 'locations':
-        filters = assignLocationFilter(filters, value)
-        hasFilters = true
-        break
-      case 'remote-only':
-      case 'remote_only':
-      case 'remoteonly':
-        filters = { ...filters, remoteOnly: parseBoolean(value) }
-        hasFilters = true
-        break
-      case 'include-closed':
-      case 'include_closed':
-      case 'includeclosed':
-        filters = { ...filters, includeClosed: parseBoolean(value) }
-        hasFilters = true
-        break
-      case 'tag':
-      case 'tags':
-        if (value) {
-          const existing = filters.tags ?? []
-          filters = { ...filters, tags: [...existing, value] }
-          hasFilters = true
-        }
-        break
-      case 'since': {
-        const parsed = parseDate(value)
-        if (parsed) {
-          fetchParams.since = parsed
-        }
-        break
-      }
-      case 'until': {
-        const parsed = parseDate(value)
-        if (parsed) {
-          fetchParams.until = parsed
-        }
-        break
-      }
-      default:
-        break
+    const normalizedKey = normalizeKey(key)
+    const normalizedValue = value ?? 'true'
+    const existing = entries.get(normalizedKey)
+    if (existing) {
+      existing.push(normalizedValue)
+    } else {
+      entries.set(normalizedKey, [normalizedValue])
     }
   }
 
-  if (hasPagination) {
+  return entries
+}
+
+const getLastValue = (map: Map<string, string[]>, keys: string[]): string | undefined => {
+  for (const key of keys) {
+    const values = map.get(normalizeKey(key))
+    if (values?.length) {
+      const candidate = values[values.length - 1]?.trim()
+      if (candidate) return candidate
+    }
+  }
+  return undefined
+}
+
+const getAllValues = (map: Map<string, string[]>, keys: string[]): string[] => {
+  const result: string[] = []
+  for (const key of keys) {
+    const values = map.get(normalizeKey(key))
+    if (values?.length) {
+      for (const value of values) {
+        if (value?.trim()) {
+          result.push(value.trim())
+        }
+      }
+    }
+  }
+  return result
+}
+
+const parseInteger = (value: string, label: string): number => {
+  const parsed = Number.parseInt(value, 10)
+  if (Number.isNaN(parsed)) {
+    throw new Error(`Invalid integer for --${label}: ${value}`)
+  }
+  return parsed
+}
+
+const parseBoolean = (value: string, label: string): boolean => {
+  const normalized = value.trim().toLowerCase()
+  if (['true', '1', 'yes', 'on'].includes(normalized)) return true
+  if (['false', '0', 'no', 'off'].includes(normalized)) return false
+  throw new Error(`Invalid boolean for --${label}: ${value}`)
+}
+
+const parseDate = (value: string, label: string): Date => {
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.getTime())) {
+    throw new Error(`Invalid date for --${label}: ${value}`)
+  }
+  return parsed
+}
+
+const parseList = (values: string[]): string[] | undefined => {
+  const entries = values
+    .flatMap((entry) => entry.split(','))
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+  return entries.length ? entries : undefined
+}
+
+const parseMetadata = (
+  map: Map<string, string[]>,
+  prefix: string
+): Record<string, unknown> | undefined => {
+  const metadata: Record<string, unknown> = {}
+  for (const [key, values] of map.entries()) {
+    if (!key.startsWith(prefix)) continue
+    const path = key.slice(prefix.length)
+    if (!path) continue
+    const value = values[values.length - 1]
+    if (value === undefined) continue
+    const normalized = value.trim()
+    if (!normalized) continue
+    const lowered = normalized.toLowerCase()
+    if (['true', 'false'].includes(lowered)) {
+      metadata[path] = lowered === 'true'
+      continue
+    }
+    const asNumber = Number(normalized)
+    if (!Number.isNaN(asNumber) && normalized === asNumber.toString()) {
+      metadata[path] = asNumber
+      continue
+    }
+    if ((normalized.startsWith('{') && normalized.endsWith('}')) ||
+      (normalized.startsWith('[') && normalized.endsWith(']'))
+    ) {
+      try {
+        metadata[path] = JSON.parse(normalized)
+        continue
+      } catch {
+        // fall through to string assignment below
+      }
+    }
+    metadata[path] = normalized
+  }
+
+  return Object.keys(metadata).length ? metadata : undefined
+}
+
+const parseCliArguments = (argv: string[]): ParsedCliArguments => {
+  const args = parseArgv(argv)
+
+  const adapterKey = getLastValue(args, ['adapter', 'adapter-key'])?.toLowerCase() ?? 'jooble'
+
+  const fetchParams: AdapterFetchParams = {}
+
+  const paginationCursor = getLastValue(args, ['pagination.cursor', 'cursor'])
+  const paginationPageValue = getLastValue(args, ['pagination.page', 'page'])
+  const paginationPageSizeValue = getLastValue(args, [
+    'pagination.page-size',
+    'pagination.pagesize',
+    'page-size',
+    'pagesize',
+  ])
+  const paginationLimitValue = getLastValue(args, ['pagination.limit', 'limit'])
+
+  const pagination: AdapterFetchParams['pagination'] = {}
+  if (paginationCursor) {
+    pagination.cursor = paginationCursor
+  }
+  if (paginationPageValue) {
+    pagination.page = parseInteger(paginationPageValue, 'page')
+  }
+  if (paginationPageSizeValue) {
+    pagination.pageSize = parseInteger(paginationPageSizeValue, 'page-size')
+  }
+  if (paginationLimitValue) {
+    pagination.limit = parseInteger(paginationLimitValue, 'limit')
+  }
+  if (Object.keys(pagination).length) {
     fetchParams.pagination = pagination
   }
 
-  if (hasFilters) {
+  const sinceValue = getLastValue(args, ['since'])
+  if (sinceValue) {
+    fetchParams.since = parseDate(sinceValue, 'since')
+  }
+
+  const untilValue = getLastValue(args, ['until'])
+  if (untilValue) {
+    fetchParams.until = parseDate(untilValue, 'until')
+  }
+
+  const metadata = parseMetadata(args, 'metadata.')
+  if (metadata) {
+    fetchParams.metadata = metadata
+  }
+
+  const filters: NonNullable<AdapterFetchParams['filters']> = {}
+
+  const search = getLastValue(args, ['filters.search', 'search'])
+  if (search) {
+    filters.search = search
+  }
+
+  const locationValues = getAllValues(args, ['filters.location', 'filters.locations', 'location', 'locations'])
+  if (locationValues.length) {
+    filters.locations = locationValues.map((value) => ({ raw: value, formatted: value }))
+  }
+
+  const employmentTypes = parseList(
+    getAllValues(args, ['filters.employment-types', 'filters.employmenttypes', 'employment-types', 'employmenttypes'])
+  )
+  if (employmentTypes) {
+    filters.employmentTypes = employmentTypes as any
+  }
+
+  const experienceLevels = parseList(
+    getAllValues(args, ['filters.experience-levels', 'filters.experiencelevels', 'experience-levels', 'experiencelevels'])
+  )
+  if (experienceLevels) {
+    filters.experienceLevels = experienceLevels as any
+  }
+
+  const workplaceTypes = parseList(
+    getAllValues(args, ['filters.workplace-types', 'filters.workplacetypes', 'workplace-types', 'workplacetypes'])
+  )
+  if (workplaceTypes) {
+    filters.workplaceTypes = workplaceTypes as any
+  }
+
+  const remoteOnlyValue = getLastValue(args, ['filters.remote-only', 'filters.remoteonly', 'remote-only', 'remoteonly'])
+  if (remoteOnlyValue) {
+    filters.remoteOnly = parseBoolean(remoteOnlyValue, 'remote-only')
+  }
+
+  const includeClosedValue = getLastValue(
+    args,
+    ['filters.include-closed', 'filters.includeclosed', 'include-closed', 'includeclosed']
+  )
+  if (includeClosedValue) {
+    filters.includeClosed = parseBoolean(includeClosedValue, 'include-closed')
+  }
+
+  const tagValues = parseList(getAllValues(args, ['filters.tags', 'tags']))
+  if (tagValues) {
+    filters.tags = tagValues
+  }
+
+  const filterMetadata = parseMetadata(args, 'filters.metadata.')
+  if (filterMetadata) {
+    filters.metadata = filterMetadata
+  }
+
+  if (Object.keys(filters).length) {
     fetchParams.filters = filters
   }
 
   return { adapterKey, fetchParams }
 }
 
-const resolveAdapter = (key: string): JobSourceAdapter => {
-  const normalized = normalizeAdapterKey(key)
-  const factory = ADAPTER_FACTORIES[normalized]
-  if (!factory) {
-    throw new Error(`Unknown job source adapter: ${key}`)
+export async function syncJobSources(options: SyncJobSourcesOptions = {}) {
+  const {
+    argv = process.argv.slice(2),
+    env = process.env,
+    ingest = runJobIngestion,
+    adapters = DEFAULT_ADAPTER_FACTORIES,
+    repository = createDefaultRepository(),
+    logger = console,
+  } = options
+
+  const { adapterKey, fetchParams } = parseCliArguments(argv)
+  const adapterFactory = adapters[adapterKey]
+  if (!adapterFactory) {
+    throw new Error(`Unsupported adapter: ${adapterKey}`)
   }
-  return factory()
-}
 
-const logResult = (result: JobIngestionResult) => {
-  const { runId, summary, telemetry } = result
-  console.info('Job ingestion run completed.', {
-    runId,
-    jobsProcessed: summary.processed,
-    summary,
-    telemetry: {
-      source: telemetry.source,
-      requestCount: telemetry.requestCount,
-      itemsReceived: telemetry.itemsReceived,
-      durationMs: telemetry.durationMs,
-      warnings: telemetry.warnings ?? [],
-      rateLimit: telemetry.rateLimit,
-    },
-  })
-}
+  const adapter = adapterFactory(env)
+  const result = await ingest({ adapter, repository, fetchParams })
 
-export async function syncJobSources(argv: string[] = process.argv.slice(2)) {
-  const { adapterKey, fetchParams } = parseArguments(argv)
-  const adapter = resolveAdapter(adapterKey)
-  const repository = createRepository()
+  const { summary, telemetry } = result
 
-  const result = await runJobIngestion({ adapter, repository, fetchParams })
-  logResult(result)
+  logger.info(`Run ID: ${result.runId}`)
+  logger.info(
+    `Jobs fetched=${summary.fetched}, processed=${summary.processed}, deduplicated=${summary.deduplicated}`
+  )
+  logger.info(`Persistence: created=${summary.created}, updated=${summary.updated}, closed=${summary.closed}`)
+  logger.info('Telemetry:', telemetry)
+
   return result
 }
+
+export type { SyncJobSourcesOptions }
