@@ -124,7 +124,7 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
       const actions: PlopTypes.ActionType[] = [
         {
           type: 'add',
-          path: '{{ turbo.paths.root }}/packages/app/features/{{ dashCase featureName }}/{{ dashCase screenName }}-screen.tsx',
+          path: '{{ turbo.paths.root }}/packages/core/features/{{ dashCase featureName }}/{{ dashCase screenName }}-screen.tsx',
           templateFile: 'templates/screen.hbs',
         },
         {
