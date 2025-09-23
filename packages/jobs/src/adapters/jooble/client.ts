@@ -47,7 +47,7 @@ export interface JoobleClientResult {
   status: number
 }
 
-function assertApiKey(apiKey?: string): string {
+export function assertApiKey(apiKey?: string): string {
   const resolved = apiKey ?? process.env.JOOBLE_API_KEY
   if (!resolved) {
     throw new Error('JOOBLE_API_KEY is not defined')
@@ -56,7 +56,7 @@ function assertApiKey(apiKey?: string): string {
   return resolved
 }
 
-function cleanPayload(payload: JoobleSearchRequest): JoobleSearchRequest {
+export function cleanPayload(payload: JoobleSearchRequest): JoobleSearchRequest {
   const result: JoobleSearchRequest = {}
 
   if (payload.keywords) {
