@@ -11,7 +11,7 @@ import {
   DatePickerInput,
   YearPicker,
   YearRangeSlider,
-  swapOnClick,
+  createDatePickerButtonProps,
   useHeaderType,
   HeaderTypeProvider,
   MonthPicker,
@@ -42,7 +42,7 @@ function CalendarHeader() {
       <Button
         circular
         size="$3"
-        {...(subtractOffset ? swapOnClick(subtractOffset({ months: 1 })) : {})}
+        {...(subtractOffset ? createDatePickerButtonProps(subtractOffset({ months: 1 })) : {})}
       >
         <Button.Icon scaleIcon={1.5}>
           <ChevronLeft />
@@ -79,7 +79,7 @@ function CalendarHeader() {
         </SizableText>
       </YStack>
 
-      <Button circular size="$3" {...swapOnClick(subtractOffset({ months: -1 }))}>
+      <Button circular size="$3" {...createDatePickerButtonProps(subtractOffset({ months: -1 }))}>
         <Button.Icon scaleIcon={1.5}>
           <ChevronRight />
         </Button.Icon>
@@ -134,7 +134,7 @@ function DayPicker() {
                     circular
                     padding={0}
                     width={45}
-                    {...swapOnClick(dayButton(d))}
+                    {...createDatePickerButtonProps(dayButton(d))}
                     backgroundColor={d.selected ? '$background' : 'transparent'}
                     themeInverse={d.selected}
                     disabled={!d.inCurrentMonth}
@@ -170,30 +170,19 @@ function DatePickerBody() {
   )
 }
 
-/** ------ EXAMPLE ------ */
-export const DatePickerExample = forwardRef(
-  (
-    {
-      disabled,
-      placeholderTextColor,
-      value,
-      onChangeText,
-      onBlur,
-      placeholder,
-      id,
-      ...props
-    }: {
-      disabled: boolean
-      placeholderTextColor?: string
-      value: string | undefined
-      onChangeText: (dateValue: string) => void
-      onBlur: () => void
-      placeholder?: string
-      id: string
-      [key: string]: any
-    },
-    ref: React.Ref<HTMLInputElement>
-  ) => {
+type DatePickerExampleProps = {
+  disabled?: boolean
+  placeholderTextColor?: string
+  value?: string | undefined
+  onChangeText?: (dateValue: string) => void
+  onBlur?: () => void
+  placeholder?: string
+  id?: string
+}
+
+// biome-ignore lint/suspicious/noExplicitAny: Example component with flexible ref type
+export const DatePickerExample = forwardRef<any, DatePickerExampleProps>(
+  ({ disabled, placeholderTextColor, value, onChangeText, onBlur, placeholder, id }, ref) => {
     const [selectedDates, onDatesChange] = useState<Date[]>([])
     const [open, setOpen] = useState(false)
 
@@ -211,7 +200,9 @@ export const DatePickerExample = forwardRef(
       selectedDates,
       onDatesChange: (dates) => {
         onDatesChange(dates)
-        onChangeText(dates[0]?.toISOString().split('T')[0] || '')
+        if (onChangeText) {
+          onChangeText(dates[0]?.toISOString().split('T')[0] || '')
+        }
       },
       calendar: {
         startDay: 1,
@@ -222,10 +213,15 @@ export const DatePickerExample = forwardRef(
       <DatePicker keepChildrenMounted open={open} onOpenChange={setOpen} config={datePickerConfig}>
         <DatePicker.Trigger>
           <DatePickerInput
-            placeholder="Select Date"
-            value={selectedDates[0]?.toDateString() || ''}
+            id={id}
+            disabled={disabled}
+            placeholder={placeholder ?? 'Select Date'}
+            placeholderTextColor={placeholderTextColor}
+            value={selectedDates[0]?.toDateString() || value || ''}
+            onBlur={onBlur}
             onReset={() => onDatesChange([])}
             onButtonPress={() => setOpen(true)}
+            ref={ref}
           />
         </DatePicker.Trigger>
         <DatePicker.Content>

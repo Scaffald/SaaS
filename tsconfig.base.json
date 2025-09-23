@@ -9,6 +9,10 @@
       "@app/ui/*": ["packages/ui/*"],
       "@app/api": ["packages/api"],
       "@app/api/*": ["packages/api/*"],
+      "@app/jobs": ["packages/jobs/src"],
+      "@app/jobs/*": ["packages/jobs/src/*"],
+      "@app/test-utils": ["tests/utils/src/index"],
+      "@app/test-utils/*": ["tests/utils/src/*"],
       "@app/supabase": ["supabase"],
       "@app/supabase/*": ["supabase/*"]
     },
@@ -21,6 +25,7 @@
     "incremental": true,
     "module": "ESNext",
     "moduleResolution": "node",
+    "moduleSuffixes": [".web", ".native", ".ios", ".android", ""],
     "forceConsistentCasingInFileNames": true,
     "noEmitOnError": false,
     "noImplicitAny": false,
@@ -49,7 +54,7 @@
       }
     ]
   },
-  "exclude": ["_"],
+  "exclude": ["_", "OLD"],
   "typeAcquisition": {
     "enable": true
   }

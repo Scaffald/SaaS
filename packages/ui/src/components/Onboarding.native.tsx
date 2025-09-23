@@ -1,4 +1,5 @@
 import { useSafeAreaInsets } from '@app/core/utils/useSafeAreaInsets'
+
 import { useRef, useState } from 'react'
 import { ScrollView as RNScrollView } from 'react-native'
 import {
@@ -12,8 +13,18 @@ import {
   useWindowDimensions,
 } from 'tamagui'
 
-import { OnboardingProps } from './Onboarding'
 import { OnboardingControls } from './OnboardingControls'
+
+export type OnboardingStepInfo = {
+  theme: ThemeName
+  Content: React.FC
+}
+
+export type OnboardingProps = {
+  onOnboarded?: () => void
+  autoSwipe?: boolean
+  steps: OnboardingStepInfo[]
+}
 
 export const Onboarding = ({ onOnboarded, steps }: OnboardingProps) => {
   const dimensions = useWindowDimensions()

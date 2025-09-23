@@ -1,0 +1,28 @@
+{
+  "extends": "../../tsconfig.base",
+  "include": [
+    "features",
+    "provider",
+    "utils",
+    "index.ts",
+    "types.d.ts",
+    "package.json",
+    "../../package.json",
+    "../../packages/ui/src",
+    "../../packages/api/src",
+    "../../supabase"
+  ],
+  "compilerOptions": {
+    "noEmit": true,
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@app/core": ["./index"],
+      "@app/core/*": ["./*"],
+      "@app/supabase": ["../../supabase"],
+      "@app/supabase/*": ["../../supabase/*"]
+    },
+    "plugins": []
+  },
+  "references": []
+}

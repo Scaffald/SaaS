@@ -1,10 +1,11 @@
-import type { DatePickerProviderProps } from '@rehookify/datepicker'
+import type { DatePickerProviderProps, DPPropGetter } from '@rehookify/datepicker'
 import {
   DatePickerProvider as _DatePickerProvider,
   useDatePickerContext,
 } from '@rehookify/datepicker'
 import { Calendar, ChevronLeft, ChevronRight, X } from '@tamagui/lucide-icons'
-import type { GestureReponderEvent } from '@tamagui/web'
+import type { MouseEvent as ReactMouseEvent } from 'react'
+import type { GestureResponderEvent } from 'react-native'
 import type { PopoverProps } from 'tamagui'
 import {
   Adapt,
@@ -24,11 +25,46 @@ import { Input } from '../../../forms/inputs/components/inputsParts'
 
 /** rehookify internally return `onClick` and that's incompatible with native */
 
-export function swapOnClick<D>(d: D) {
-  //@ts-ignore
-  d.onPress = d.onClick
-  return d
+type DatePickerClickHandler = NonNullable<DPPropGetter['onClick']>
+
+type AdaptedDatePickerProps<T extends DPPropGetter> = Omit<T, 'onClick'> & {
+  onClick?: DatePickerClickHandler
+  onPress?: (event: GestureResponderEvent) => void
 }
+
+const createMouseEventShim = (event: GestureResponderEvent): ReactMouseEvent<HTMLElement> => {
+  return {
+    nativeEvent: event.nativeEvent,
+    currentTarget: event.currentTarget as unknown as EventTarget & HTMLElement,
+    target: event.target as unknown as EventTarget & HTMLElement,
+    timeStamp: event.timeStamp,
+    preventDefault: () => event.preventDefault?.(),
+    stopPropagation: () => event.stopPropagation?.(),
+    isDefaultPrevented: event.isDefaultPrevented?.bind(event),
+    isPropagationStopped: event.isPropagationStopped?.bind(event),
+    persist: () => event.persist?.(),
+  } as unknown as ReactMouseEvent<HTMLElement>
+}
+
+export function createDatePickerButtonProps<T extends DPPropGetter>(
+  props: T
+): AdaptedDatePickerProps<T> {
+  const { onClick, ...rest } = props
+
+  if (!onClick) {
+    return rest as AdaptedDatePickerProps<T>
+  }
+
+  return {
+    ...rest,
+    onClick,
+    onPress: (event) => {
+      onClick(createMouseEventShim(event))
+    },
+  }
+}
+
+export type DatePickerPressEvent = ReactMouseEvent<HTMLElement> | GestureResponderEvent | undefined
 
 const DatePickerProvider = _DatePickerProvider as React.ComponentType<DatePickerProviderProps>
 
@@ -103,11 +139,11 @@ export const DatePicker = withStaticProperties(DatePickerImpl, {
       borderColor: '$borderColor',
     }),
   }),
-}) as any
+})
 
 type DatePickerInputProps = {
   onReset: () => void
-  onButtonPress?: (e: GestureReponderEvent) => void
+  onButtonPress?: (e: GestureResponderEvent) => void
 }
 export const DatePickerInput = Input.Area.styleable<DatePickerInputProps>((props, ref) => {
   const { value, onButtonPress, size = '$3', onReset, ...rest } = props
@@ -147,9 +183,9 @@ export const DatePickerInput = Input.Area.styleable<DatePickerInputProps>((props
 })
 
 export function MonthPicker({
-  onChange = (e, date) => {},
+  onChange = () => {},
 }: {
-  onChange?: (e: MouseEvent, date: Date) => void
+  onChange?: (event: DatePickerPressEvent, date: Date) => void
 }) {
   const {
     data: { months },
@@ -185,9 +221,12 @@ export function MonthPicker({
             key={month.$date.toString()}
             chromeless
             padding={0}
-            {...swapOnClick(
+            {...createDatePickerButtonProps(
               monthButton(month, {
-                onClick: onChange as any,
+                onClick: (event, date) => {
+                  if (!date) return
+                  onChange(event, date)
+                },
               })
             )}
           >
@@ -202,7 +241,7 @@ export function MonthPicker({
 export function YearPicker({
   onChange = () => {},
 }: {
-  onChange?: (e: MouseEvent, date: Date) => void
+  onChange?: (event: DatePickerPressEvent, date: Date) => void
 }) {
   const {
     data: { years, calendars },
@@ -236,9 +275,12 @@ export function YearPicker({
             key={year.$date.toString()}
             chromeless
             padding={0}
-            {...swapOnClick(
+            {...createDatePickerButtonProps(
               yearButton(year, {
-                onClick: onChange as any,
+                onClick: (event, date) => {
+                  if (!date) return
+                  onChange(event, date)
+                },
               })
             )}
           >
@@ -259,7 +301,7 @@ export function YearRangeSlider() {
 
   return (
     <View flexDirection="row" width="100%" alignItems="center" justifyContent="space-between">
-      <Button circular size="$4" {...swapOnClick(previousYearsButton())}>
+      <Button circular size="$4" {...createDatePickerButtonProps(previousYearsButton())}>
         <Button.Icon scaleIcon={1.5}>
           <ChevronLeft />
         </Button.Icon>
@@ -267,7 +309,7 @@ export function YearRangeSlider() {
       <View y={2} flexDirection="column" alignItems="center">
         <SizableText size="$5">{`${years[0].year} - ${years[years.length - 1].year}`}</SizableText>
       </View>
-      <Button circular size="$4" {...swapOnClick(nextYearsButton())}>
+      <Button circular size="$4" {...createDatePickerButtonProps(nextYearsButton())}>
         <Button.Icon scaleIcon={1.5}>
           <ChevronRight />
         </Button.Icon>
@@ -292,7 +334,7 @@ export function YearSlider() {
       alignItems="center"
       justifyContent="space-between"
     >
-      <Button circular size="$3" {...swapOnClick(subtractOffset({ months: 12 }))}>
+      <Button circular size="$3" {...createDatePickerButtonProps(subtractOffset({ months: 12 }))}>
         <Button.Icon scaleIcon={1.5}>
           <ChevronLeft />
         </Button.Icon>
@@ -310,7 +352,7 @@ export function YearSlider() {
       >
         {year}
       </SizableText>
-      <Button circular size="$3" {...swapOnClick(subtractOffset({ months: -12 }))}>
+      <Button circular size="$3" {...createDatePickerButtonProps(subtractOffset({ months: -12 }))}>
         <Button.Icon scaleIcon={1.5}>
           <ChevronRight />
         </Button.Icon>

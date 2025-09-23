@@ -2,18 +2,30 @@
   "extends": "../../tsconfig.base",
   "include": [
     "src",
+    "test",
     "../app",
-    "../app/package.json",
     "../api/src",
-    "../api/package.json",
     "../../package.json",
-    "../../supabase"
+    "../../supabase",
+    "../../tests/utils/src",
+    "vitest.setup.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "../api/src/__tests__",
+    "../api/src/**/__tests__/*",
+    "../api/src/**/*.test.ts",
+    "../api/src/**/*.test.tsx"
   ],
   "compilerOptions": {
     "noEmit": true,
     "composite": true,
     "jsx": "react-jsx",
-    "plugins": []
+    "plugins": [],
+    "skipLibCheck": true,
+    "types": ["vitest", "node", "@testing-library/jest-dom", "@types/jest"],
+    "typeRoots": ["../../node_modules/@types", "../../node_modules", "../../environment.d.ts"]
   },
   "references": []
 }

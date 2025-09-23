@@ -1,7 +1,7 @@
 {
   "name": "scaffald",
   "private": true,
-  "workspaces": ["apps/*", "packages/*", "supabase"],
+  "workspaces": ["apps/*", "app/*", "packages/*", "supabase", "tests/*"],
   "scripts": {
     "_with-env": "dotenv -e .env -c -- ",
     "ios": "cd apps/expo && yarn ios",
@@ -34,6 +34,15 @@
     "check-deps": "check-dependency-version-consistency .",
     "check-circular-deps": "yarn turbo check-circular-deps",
     "supa": "yarn workspace @app/supabase",
+    "jobs": "yarn workspace @app/jobs",
+    "jobs:build": "yarn workspace @app/jobs run build",
+    "jobs:lint": "yarn workspace @app/jobs run lint",
+    "jobs:lint:fix": "yarn workspace @app/jobs run lint:fix",
+    "jobs:check:type": "yarn workspace @app/jobs run check:type",
+    "jobs:test": "yarn workspace @app/jobs run test",
+    "jobs:sync": "yarn workspace @app/jobs run sync",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
     "typecheck": "turbo check:type",
     "check:type": "tsc -b --preserveWatchOutput tsconfig.json",
     "check:type:watch": "yarn check:type -w",
@@ -56,6 +65,10 @@
     "next": "^15.5.3",
     "@babel/core": "^7.26.0",
     "babel-loader": "^8.3.0"
+  },
+  "devDependencies": {
+    "vite-tsconfig-paths": "^5.1.1",
+    "vitest": "^2.1.1"
   },
   "packageManager": "yarn@4.1.0",
   "dependencies": {

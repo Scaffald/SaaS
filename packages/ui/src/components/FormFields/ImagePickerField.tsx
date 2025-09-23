@@ -13,14 +13,14 @@ export const ImagePickerSchema = z.object({
   // fileURL: z.instanceof(Blob),
 })
 
-export const ImagePickerField = (props: Pick<InputProps, 'size'>) => {
+export const ImagePickerField = (_props: Pick<InputProps, 'size'>) => {
   const {
     field,
     error,
     formState: { isSubmitting },
   } = useTsController<z.infer<typeof ImagePickerSchema>>()
   const { label } = useFieldInfo()
-  const id = useId()
+  const _id = useId()
   const disabled = isSubmitting
   // Use the useImperativeHandle hook to set the ref callback
   const inputRef = useRef<HTMLInputElement>(null) // Initialize with null
@@ -39,8 +39,11 @@ export const ImagePickerField = (props: Pick<InputProps, 'size'>) => {
             <Shake shakeKey={error?.errorMessage}>
               <ImagePicker
                 disabled={disabled}
-                placeholderTextColor="$color10"
-                value={field?.value ? field.value.fileURL : ''}
+                value={
+                  field?.value
+                    ? { fileURL: field.value.fileURL || '', path: field.value.path }
+                    : undefined
+                }
                 onChangeText={(imageSource) => {
                   console.log('imageSource', imageSource)
                   console.log('field.value', field.value)
@@ -49,8 +52,6 @@ export const ImagePickerField = (props: Pick<InputProps, 'size'>) => {
                 onBlur={field.onBlur}
                 ref={inputRef}
                 placeholder=""
-                id={`${id}-date-value`}
-                {...props}
               />
             </Shake>
             <FieldError message={error?.errorMessage} />

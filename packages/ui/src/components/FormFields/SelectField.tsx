@@ -33,7 +33,7 @@ export const SelectField = ({
   const {
     field,
     error,
-    formState: { isSubmitting },
+    formState: { isSubmitting: _isSubmitting },
   } = useTsController<string>()
 
   const { label, isOptional } = useFieldInfo()
@@ -59,7 +59,7 @@ export const SelectField = ({
           {...props}
           native={!!native}
         >
-          <Select.Trigger minWidth="100%" $md={{ maxWidth: 220 }}>
+          <Select.Trigger minWidth="100%">
             <Select.Value placeholder={placeholder} />
           </Select.Trigger>
 

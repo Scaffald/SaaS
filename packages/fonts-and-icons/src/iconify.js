@@ -16,7 +16,7 @@ const iconData = {}
 async function main({ prefixToInstall = '' } = {}) {
   const collections = await axios.get('https://api.iconify.design/collections')
   const fontEntries = Object.entries(collections.data)
-  const [prefix, info] = fontEntries.find(([prefix, info]) => {
+  const [prefix, info] = fontEntries.find(([prefix, _info]) => {
     return prefixToInstall === prefix
   })
 
@@ -121,7 +121,7 @@ Make sure to re-install dependencies and re-build after cloning.
       icons.data.uncategorized.map((icon) => () => populateIcon(prefix, icon))
     )
   } else {
-    for (const [categoryTitle, categoryIcons] of Object.entries(icons.data.categories)) {
+    for (const [_categoryTitle, categoryIcons] of Object.entries(icons.data.categories)) {
       await throttleAll(
         20,
         categoryIcons.map((icon) => () => populateIcon(prefix, icon))
@@ -183,7 +183,7 @@ async function populateIcon(prefix, ogIconName, attemptNo = 1) {
     )
     await ensureFile(indexFilePath)
     appendFileSync(indexFilePath, `export { ${componentName} } from "./icons/${iconName}";\n`)
-  } catch (e) {
+  } catch (_e) {
     if (attemptNo > 5) {
       console.log('no more attempts left. componentName:', componentName, ' left out')
       return
@@ -227,8 +227,6 @@ async function transformSvgr(svg, componentName) {
     },
     { componentName }
   )
-
-  const transformedIconFirstTransform = `${transformedIcon}`
 
   // for some reason SVGR imports SVG as the default export - this is a temp fix
   transformedIcon = transformedIcon.replace('Svg, {', '{ Svg,')

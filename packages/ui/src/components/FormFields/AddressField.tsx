@@ -1,8 +1,10 @@
 import { useFieldInfo, useTsController } from '@ts-react/form'
 import { useId } from 'react'
+import { useEffect, useState } from 'react'
 import { Fieldset, Input, InputProps, Label, Theme, XStack } from 'tamagui'
 import { z } from 'zod'
 
+import { AddressAutocompleteInput, type AddressSuggestion } from '../AddressAutocomplete'
 import { FieldError } from '../FieldError'
 import { Shake } from '../Shake'
 
@@ -20,6 +22,25 @@ export const AddressField = (props: Pick<InputProps, 'size'>) => {
   const { label } = useFieldInfo()
   const id = useId()
   const disabled = isSubmitting
+  const [streetValue, setStreetValue] = useState(field.value?.street ?? '')
+
+  useEffect(() => {
+    setStreetValue(field.value?.street ?? '')
+  }, [field.value?.street])
+
+  const mergeAddress = (partial: Partial<z.infer<typeof AddressSchema>>) => ({
+    street: partial.street ?? field.value?.street ?? '',
+    zipCode: partial.zipCode ?? field.value?.zipCode ?? '',
+  })
+
+  const handleSuggestionSelected = (suggestion: AddressSuggestion) => {
+    field.onChange(
+      mergeAddress({
+        street: suggestion.street || suggestion.formatted,
+        zipCode: suggestion.zipCode || field.value?.zipCode || '',
+      })
+    )
+  }
 
   return (
     <Fieldset gap="$2">
@@ -34,16 +55,20 @@ export const AddressField = (props: Pick<InputProps, 'size'>) => {
               Street
             </Label>
             <Shake shakeKey={error?.street?.errorMessage}>
-              <Input
+              <AddressAutocompleteInput
+                id={`${id}-street`}
                 disabled={disabled}
                 placeholderTextColor="$color10"
-                value={field.value?.street}
-                onChangeText={(street) => field.onChange({ ...field.value, street })}
+                placeholder="e.g. 123 Main St"
+                value={streetValue}
+                onValueChange={(street) => {
+                  setStreetValue(street)
+                  field.onChange(mergeAddress({ street }))
+                }}
+                onSuggestionSelected={handleSuggestionSelected}
                 onBlur={field.onBlur}
                 ref={field.ref}
-                placeholder="e.g. 4116 Pretty View Lane"
-                id={`${id}-street`}
-                {...props}
+                size={props.size}
               />
             </Shake>
             <FieldError message={error?.street?.errorMessage} />
@@ -60,9 +85,8 @@ export const AddressField = (props: Pick<InputProps, 'size'>) => {
                 disabled={disabled}
                 placeholderTextColor="$color10"
                 value={field.value?.zipCode}
-                onChangeText={(zipCode) => field.onChange({ ...field.value, zipCode })}
+                onChangeText={(zipCode) => field.onChange(mergeAddress({ zipCode }))}
                 onBlur={field.onBlur}
-                ref={field.ref}
                 placeholder="e.g. 12345"
                 id={`${id}-zip-code`}
                 {...props}

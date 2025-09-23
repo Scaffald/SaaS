@@ -1,17 +1,28 @@
 // vite cjs compat:
 import * as DropZone from 'react-dropzone'
+import type { DropzoneState } from 'react-dropzone'
 
-import type { DropZoneOptionsCustom } from './types'
+import type { DropZoneMediaType, DropZoneOptionsCustom } from './types'
 
-export function useDropZone(options: DropZoneOptionsCustom) {
-  const accept = options.mediaTypes
-    ?.map((mediaType) => mimTypes[mediaType])
-    .reduce((a, b) => ({ ...a, ...b }))
+type AcceptRecord = Record<string, string[]>
 
-  return DropZone.useDropzone({ ...options, accept: accept || { '*/*': [] } })
+export function useDropZone(options: DropZoneOptionsCustom): DropzoneState {
+  const { mediaTypes, onOpen: _onOpen, allowsEditing: _allowsEditing, ...dropzoneOptions } = options
+
+  const acceptFromMediaTypes = mediaTypes?.reduce<AcceptRecord>((acc, mediaType) => {
+    return { ...acc, ...mimeTypes[mediaType] }
+  }, {})
+
+  return DropZone.useDropzone({
+    ...dropzoneOptions,
+    accept:
+      acceptFromMediaTypes && Object.keys(acceptFromMediaTypes).length > 0
+        ? acceptFromMediaTypes
+        : { '*/*': [] },
+  })
 }
 
-const mimTypes = {
+const mimeTypes: Record<DropZoneMediaType, AcceptRecord> = {
   Images: {
     'image/*': [],
   },

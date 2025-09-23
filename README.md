@@ -147,6 +147,13 @@ Please reference [Supabase's documentation](https://supabase.com/docs/guides/sel
 
 ## Development
 
+### Admin access controls
+
+- Administrative routes live under `/admin/*` and are guarded by our Next.js middleware.
+- The guard verifies the current session holds either the `super_admin` platform role or a `partner_admin` assignment scoped to the `organizationId` passed in the query string.
+- Requests that fail the check are redirected back to `/`, so workers without elevated permissions continue to see the standard experience.
+- See `apps/next/middleware.ts` for the full logic and update it when introducing new admin surfaces.
+
 ### Development scripts
 
 - Web: `yarn web`
@@ -159,6 +166,69 @@ The iOS simulator will not make requests to localhost, you will need to run the 
 
 ```bash
 yarn web -H $(yarn get-local-ip-mac | head -n 1)
+```
+
+### Testing
+
+- Run every package's test suite once with Turbo: `yarn test`
+- Keep tests running in watch mode: `yarn test:watch`
+- Filter to a specific workspace (for example jobs): `yarn test --filter=@app/jobs`
+- Run just the jobs package once: `yarn workspace @app/jobs test`
+- Watch a single package directly: `yarn workspace @app/jobs run test:watch`
+- Collect coverage reports (saved in each package's `coverage/` directory): `yarn test -- --coverage`
+
+All test projects share `vitest.workspace.ts`, which wires up the root TypeScript path aliases and uses Vitest as the runner. Use the `--coverage` flag with any command above to emit HTML, text, and LCOV coverage summaries.
+
+#### Shared test utilities
+
+The `@app/test-utils` workspace publishes helpers that keep mocks and shims consistent across Vitest projects.
+
+- `createSupabaseClientStub` builds typed Supabase clients with `rpc` mocks ready for `mockResolvedValueOnce` chaining and accepts overrides for methods like `.from()` when you need custom PostgREST builders.
+- `createEnvStub` tracks and restores environment variables without custom `beforeEach`/`afterEach` boilerplate.
+- `freezeTime` installs `vi.useFakeTimers()` with `performance.now()` support, returning a clock that exposes `advanceTimersByTime` and `restore()`.
+- `createFetchMock`/`installFetchMock` provide typed `fetch` spies and `mockJsonResponse` helpers.
+- `installWindowShim`/`stubGlobal` ensure Node-based suites can patch `window` or arbitrary globals and then roll them back safely.
+
+```ts
+import {
+  createEnvStub,
+  createSupabaseClientStub,
+  freezeTime,
+  installFetchMock,
+  installWindowShim,
+  mockJsonResponse,
+} from '@app/test-utils'
+import { vi } from 'vitest'
+
+const env = createEnvStub({ FEATURE_FLAG: 'enabled' })
+const { client, rpc } = createSupabaseClientStub<MyDatabase>()
+const profilesQuery = {
+  select: vi.fn().mockReturnThis(),
+  eq: vi.fn().mockReturnThis(),
+  maybeSingle: vi.fn().mockResolvedValue({ data: { id: 'user-123' }, error: null }),
+}
+const { client: supabaseWithFrom } = createSupabaseClientStub<MyDatabase>({
+  from: vi.fn((table) => {
+    if (table === 'profiles') {
+      return profilesQuery
+    }
+
+    throw new Error(`Unexpected table: ${table}`)
+  }),
+  auth: { signOut: vi.fn() } as unknown,
+})
+const clock = freezeTime('2024-01-01T00:00:00Z')
+const { mock: fetchMock, restore: restoreFetch } = installFetchMock(() =>
+  Promise.resolve(mockJsonResponse({ ok: true }))
+)
+const { restore: restoreWindow } = installWindowShim({ matchMedia: vi.fn() })
+
+// ...tests...
+
+clock.restore()
+restoreFetch()
+restoreWindow()
+env.restore()
 ```
 
 ### EAS dev builds
@@ -439,6 +509,7 @@ yarn add react-native-reanimated
 cd ..
 yarn
 ```
+
 
 You can also install the native library inside of `packages/core` if you want to get autoimport for that package inside of the `app` folder. However, you need to be careful and install the _exact_ same version in both packages. If the versions mismatch at all, you'll potentially get terrible bugs. This is a classic monorepo issue. I use `lerna-update-wizard` to help with this (you don't need to use Lerna to use that lib).
 

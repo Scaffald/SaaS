@@ -23,12 +23,15 @@ module.exports = (api) => {
         require.resolve('babel-plugin-module-resolver'),
         {
           root: ['../..'],
-          alias: {
-            // define aliases to shorten the import paths
-            '@app/core': '../../packages/core',
-            '@app/ui': '../../packages/ui',
-            '@app/api': '../../packages/api',
-            '@app/supabase': '../../supabase',
+          alias: {            
+            "@app/core": ["../../packages/core"],
+            "@app/core/*": ["../../packages/core/*"],
+            "@app/ui": ["../../packages/ui"],
+            "@app/ui/*": ["../../packages/ui/*"],
+            "@app/api": ["../../packages/api"],
+            "@app/api/*": ["../../packages/api/*"],
+            "@app/supabase": ["../../supabase"],
+            "@app/supabase/*": ["../../supabase/*"]
           },
           extensions: ['.js', '.jsx', '.tsx', '.ios.js', '.android.js'],
         },

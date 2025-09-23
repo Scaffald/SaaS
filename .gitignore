@@ -20,6 +20,7 @@
 
 # production
 /build
+**/dist/*
 
 # Old project for referenc
 /OLD

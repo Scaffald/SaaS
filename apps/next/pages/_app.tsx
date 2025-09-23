@@ -7,6 +7,7 @@ import '@tamagui/font-inter/css/400.css'
 import '@tamagui/font-inter/css/700.css'
 import { type ColorScheme, NextThemeProvider, useRootTheme } from '@tamagui/next-theme'
 import { Provider } from '@app/core/provider'
+
 import type { AuthProviderProps } from '@app/core/provider/auth'
 import { api } from '@app/core/utils/api'
 import type { NextPage } from 'next'
@@ -27,7 +28,6 @@ export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
 function AppWithTheme({
   Component,
   pageProps,
-  router,
 }: SolitoAppProps<{ initialSession: AuthProviderProps['initialSession'] }>) {
   const [, setTheme] = useRootTheme()
   const getLayout = Component.getLayout || ((page) => page)
@@ -45,22 +45,18 @@ function AppWithTheme({
   )
 }
 
-function MyApp({
-  Component,
-  pageProps,
-  router,
-}: SolitoAppProps<{ initialSession: AuthProviderProps['initialSession'] }>) {
+function MyApp(props: any) {
+  const { Component, pageProps } = props
   return (
     <>
       <Head>
         <title>Tamagui Universal App</title>
         <meta name="description" content="Tamagui Universal Starter" />
         <link rel="icon" href="/favicon.svg" />
-        <link rel="stylesheet" href="/tamagui.css" />
       </Head>
-      <AppWithTheme Component={Component} pageProps={pageProps} router={router} />
+      <AppWithTheme Component={Component} pageProps={pageProps} />
     </>
   )
 }
 
-export default api.withTRPC(MyApp)
+export default (api as any).withTRPC(MyApp)
