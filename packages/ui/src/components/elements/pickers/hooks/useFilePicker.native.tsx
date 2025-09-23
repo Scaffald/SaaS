@@ -15,7 +15,7 @@ import type { UseFilePickerControl } from './useFilePicker'
 
 type UseFilePickerProps<
   Media extends DropZoneMediaSelection | undefined = DropZoneMediaSelection | undefined,
-  Kind extends PickerKind = 'file'
+  Kind extends PickerKind = 'file',
 > = {
   mediaTypes?: Media
   onPick?: FilePickerOnPick<Kind>
@@ -24,7 +24,7 @@ type UseFilePickerProps<
 
 export function useFilePicker<
   Media extends DropZoneMediaSelection | undefined = DropZoneMediaSelection | undefined,
-  Kind extends PickerKind = 'file'
+  Kind extends PickerKind = 'file',
 >(props?: UseFilePickerProps<Media, Kind>) {
   const { mediaTypes, onPick, typeOfPicker = 'file', ...dropzoneOptions } = props || {}
 
@@ -54,8 +54,8 @@ export function useFilePicker<
     }
   }
 
-  const getInputProps = <T extends DropzoneInputProps>(props?: T) => (props ?? ({} as T))
-  const getRootProps = <T extends DropzoneRootProps>(props?: T) => (props ?? ({} as T))
+  const getInputProps = <T extends DropzoneInputProps>(props?: T) => props ?? ({} as T)
+  const getRootProps = <T extends DropzoneRootProps>(props?: T) => props ?? ({} as T)
 
   const control: UseFilePickerControl = {
     dragStatus: {

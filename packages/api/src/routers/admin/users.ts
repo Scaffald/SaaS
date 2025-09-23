@@ -53,7 +53,10 @@ type WorkerDetailRow = Database['public']['Tables']['users']['Row'] & {
         geo?: Database['public']['Tables']['user_private']['Row']['geo']
       })
     | null
-  profile: Pick<Database['public']['Tables']['profiles']['Row'], 'name' | 'about' | 'avatar_url'> | null
+  profile: Pick<
+    Database['public']['Tables']['profiles']['Row'],
+    'name' | 'about' | 'avatar_url'
+  > | null
 }
 
 type AdminAccess = {
@@ -121,20 +124,20 @@ const workerProfileUpdateSchema = z
     privateData: workerPrivateUpdateSchema.optional(),
   })
   .strict()
-  .refine((value) => {
-    if (value.publicData || value.privateData) {
-      return true
-    }
+  .refine(
+    (value) => {
+      if (value.publicData || value.privateData) {
+        return true
+      }
 
-    return (
-      value.name !== undefined ||
-      value.about !== undefined ||
-      value.avatarUrl !== undefined
-    )
-  }, {
-    message: 'At least one of name, about, avatarUrl, publicData, or privateData must be provided',
-    path: ['publicData'],
-  })
+      return value.name !== undefined || value.about !== undefined || value.avatarUrl !== undefined
+    },
+    {
+      message:
+        'At least one of name, about, avatarUrl, publicData, or privateData must be provided',
+      path: ['publicData'],
+    }
+  )
 
 const updateWorkerInputSchema = workerIdentifierSchema
   .extend({
@@ -142,27 +145,30 @@ const updateWorkerInputSchema = workerIdentifierSchema
     publicData: workerPublicUpdateSchema.optional(),
     privateData: workerPrivateUpdateSchema.optional(),
   })
-  .refine((value) => {
-    if (value.publicData || value.privateData) {
-      return true
-    }
+  .refine(
+    (value) => {
+      if (value.publicData || value.privateData) {
+        return true
+      }
 
-    const profile = value.profileData
-    if (!profile) {
-      return false
-    }
+      const profile = value.profileData
+      if (!profile) {
+        return false
+      }
 
-    return Boolean(
-      profile.publicData ||
-        profile.privateData ||
-        profile.name !== undefined ||
-        profile.about !== undefined ||
-        profile.avatarUrl !== undefined,
-    )
-  }, {
-    message: 'At least one of profileData, publicData, or privateData must be provided',
-    path: ['profileData'],
-  })
+      return Boolean(
+        profile.publicData ||
+          profile.privateData ||
+          profile.name !== undefined ||
+          profile.about !== undefined ||
+          profile.avatarUrl !== undefined
+      )
+    },
+    {
+      message: 'At least one of profileData, publicData, or privateData must be provided',
+      path: ['profileData'],
+    }
+  )
 
 type WorkerPublicUpdateInput = z.infer<typeof workerPublicUpdateSchema>
 type WorkerPrivateUpdateInput = z.infer<typeof workerPrivateUpdateSchema>
@@ -472,7 +478,7 @@ function mapProfileUpdates(input: WorkerProfileUpdateInput | undefined) {
 
 async function loadActiveVerificationFields(
   supabase: SupabaseClient<Database>,
-  workerIds: string[],
+  workerIds: string[]
 ) {
   const map = new Map<string, string[]>()
   if (!workerIds.length) {
@@ -505,7 +511,7 @@ async function loadActiveVerificationFields(
 
 async function loadVerificationLedger(
   supabase: SupabaseClient<Database>,
-  workerId: string,
+  workerId: string
 ): Promise<WorkerVerificationLedgerEntry[]> {
   const { data, error } = await supabase
     .from('profile_verifications')
@@ -711,7 +717,7 @@ export const adminUsersRouter = createTRPCRouter({
     const rows = (data ?? []) as WorkerSummaryRow[]
     const verificationFieldMap = await loadActiveVerificationFields(
       supabase,
-      rows.map((row) => row.id),
+      rows.map((row) => row.id)
     )
 
     return {
@@ -758,18 +764,24 @@ export const adminUsersRouter = createTRPCRouter({
     const profilePayload = mapProfileUpdates(input.profileData)
     const publicPayload = mergeUpdatePayloads(
       mapPublicUpdates(input.profileData?.publicData),
-      mapPublicUpdates(input.publicData),
+      mapPublicUpdates(input.publicData)
     )
     const privatePayload = mergeUpdatePayloads(
       mapPrivateUpdates(input.profileData?.privateData),
-      mapPrivateUpdates(input.privateData),
+      mapPrivateUpdates(input.privateData)
     )
 
     if (profilePayload) {
-      const { error } = await supabase.from('profiles').update(profilePayload).eq('id', input.workerId)
+      const { error } = await supabase
+        .from('profiles')
+        .update(profilePayload)
+        .eq('id', input.workerId)
       if (error) {
         console.error('Failed to update profile data', error)
-        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Unable to update worker profile.' })
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Unable to update worker profile.',
+        })
       }
     }
 

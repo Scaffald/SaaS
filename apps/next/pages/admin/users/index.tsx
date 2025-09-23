@@ -8,7 +8,8 @@ import type { NextPageWithLayout } from '../../_app'
 
 const AdminUsersPage: NextPageWithLayout = () => {
   const router = useRouter()
-  const organizationId = typeof router.query.organizationId === 'string' ? router.query.organizationId : null
+  const organizationId =
+    typeof router.query.organizationId === 'string' ? router.query.organizationId : null
 
   return (
     <>

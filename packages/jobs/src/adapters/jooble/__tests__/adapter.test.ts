@@ -14,7 +14,14 @@ describe('JoobleAdapter', () => {
   beforeAll(() => {
     nock.disableNetConnect()
     process.env.JOOBLE_API_KEY = 'test-key'
-    for (const key of ['HTTPS_PROXY', 'https_proxy', 'HTTP_PROXY', 'http_proxy', 'ALL_PROXY', 'all_proxy']) {
+    for (const key of [
+      'HTTPS_PROXY',
+      'https_proxy',
+      'HTTP_PROXY',
+      'http_proxy',
+      'ALL_PROXY',
+      'all_proxy',
+    ]) {
       delete process.env[key as keyof NodeJS.ProcessEnv]
     }
   })
@@ -104,7 +111,7 @@ describe('JoobleAdapter', () => {
         pageSize: 5,
         keywords: ['software', 'engineer'],
         location: 'Remote',
-      }),
+      })
     )
     expect(result.telemetry.metadata?.status).toBe(200)
   })
@@ -130,7 +137,9 @@ describe('JoobleAdapter', () => {
 
     const adapter = createAdapter()
 
-    await expect(adapter.pullListings()).rejects.toThrow('Jooble request failed (500): Internal error')
+    await expect(adapter.pullListings()).rejects.toThrow(
+      'Jooble request failed (500): Internal error'
+    )
     expect(scope.isDone()).toBe(true)
   })
 })

@@ -49,7 +49,9 @@ export const ProfileLayout = () => {
         </Avatar>
         <XStack ai="center" gap="$2" ml="$-1.5">
           <Paragraph ta="center">{name}</Paragraph>
-          {isNameVerified ? <BadgeCheck size={16} color={theme.green10.val} aria-label="Verified name" /> : null}
+          {isNameVerified ? (
+            <BadgeCheck size={16} color={theme.green10.val} aria-label="Verified name" />
+          ) : null}
         </XStack>
       </XStack>
     </YStack>

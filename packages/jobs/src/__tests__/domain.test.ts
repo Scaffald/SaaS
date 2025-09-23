@@ -1,10 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest'
 
-import {
-  CompensationSchema,
-  NormalizedJobSchema,
-} from '../domain/job';
-import { NormalizedOrganizationSchema } from '../domain/organization';
+import { CompensationSchema, NormalizedJobSchema } from '../domain/job'
+import { NormalizedOrganizationSchema } from '../domain/organization'
 
 const organizationFixture = {
   identifier: { externalId: 'acme-123' },
@@ -18,15 +15,15 @@ const organizationFixture = {
     countryCode: 'US',
     timeZone: 'America/New_York',
   },
-};
+}
 
 describe('domain schemas', () => {
   it('parses normalized organization data', () => {
-    const organization = NormalizedOrganizationSchema.parse(organizationFixture);
+    const organization = NormalizedOrganizationSchema.parse(organizationFixture)
 
-    expect(organization.name).toBe('Acme Corp');
-    expect(organization.headquarters?.timeZone).toBe('America/New_York');
-  });
+    expect(organization.name).toBe('Acme Corp')
+    expect(organization.headquarters?.timeZone).toBe('America/New_York')
+  })
 
   it('parses normalized job data and coerces dates', () => {
     const job = NormalizedJobSchema.parse({
@@ -57,12 +54,12 @@ describe('domain schemas', () => {
         },
       ],
       organization: organizationFixture,
-    });
+    })
 
-    expect(job.postedAt).toBeInstanceOf(Date);
-    expect(job.compensation?.currency).toBe('USD');
-    expect(job.organization.name).toBe('Acme Corp');
-  });
+    expect(job.postedAt).toBeInstanceOf(Date)
+    expect(job.compensation?.currency).toBe('USD')
+    expect(job.organization.name).toBe('Acme Corp')
+  })
 
   it('enforces description or summary presence', () => {
     expect(() =>
@@ -71,16 +68,16 @@ describe('domain schemas', () => {
         title: 'Copyless role',
         url: 'https://jobs.example/copyless',
         organization: organizationFixture,
-      }),
-    ).toThrow(/description/);
-  });
+      })
+    ).toThrow(/description/)
+  })
 
   it('requires compensation ranges to provide an amount', () => {
     expect(() =>
       CompensationSchema.parse({
         currency: 'usd',
         periodicity: 'year',
-      }),
-    ).toThrow(/Provide at least one compensation amount/);
-  });
-});
+      })
+    ).toThrow(/Provide at least one compensation amount/)
+  })
+})

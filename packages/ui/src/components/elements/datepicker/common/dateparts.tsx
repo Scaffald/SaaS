@@ -32,9 +32,7 @@ type AdaptedDatePickerProps<T extends DPPropGetter> = Omit<T, 'onClick'> & {
   onPress?: (event: GestureResponderEvent) => void
 }
 
-const createMouseEventShim = (
-  event: GestureResponderEvent
-): ReactMouseEvent<HTMLElement> => {
+const createMouseEventShim = (event: GestureResponderEvent): ReactMouseEvent<HTMLElement> => {
   return {
     nativeEvent: event.nativeEvent,
     currentTarget: event.currentTarget as unknown as EventTarget & HTMLElement,

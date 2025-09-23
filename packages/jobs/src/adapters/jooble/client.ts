@@ -102,7 +102,7 @@ export class JoobleClient {
 
   async search(
     payload: JoobleSearchRequest,
-    options: { signal?: AbortSignal } = {},
+    options: { signal?: AbortSignal } = {}
   ): Promise<JoobleClientResult> {
     const cleanedPayload = cleanPayload(payload)
     const startedAt = performance.now()
@@ -111,7 +111,7 @@ export class JoobleClient {
       const response = await this.http.post<JoobleSearchResponse>(
         `/${this.apiKey}`,
         cleanedPayload,
-        { signal: options.signal },
+        { signal: options.signal }
       )
 
       if (response.data?.error) {
@@ -134,9 +134,11 @@ export class JoobleClient {
         const errorMessage =
           typeof error.response?.data === 'string'
             ? error.response?.data
-            : error.response?.data?.error ?? error.message
+            : (error.response?.data?.error ?? error.message)
 
-        throw new Error(`Jooble request failed (${error.response?.status ?? 'no-status'}): ${errorMessage}`)
+        throw new Error(
+          `Jooble request failed (${error.response?.status ?? 'no-status'}): ${errorMessage}`
+        )
       }
 
       throw error

@@ -42,9 +42,7 @@ function CalendarHeader() {
       <Button
         circular
         size="$3"
-        {...(subtractOffset
-          ? createDatePickerButtonProps(subtractOffset({ months: 1 }))
-          : {})}
+        {...(subtractOffset ? createDatePickerButtonProps(subtractOffset({ months: 1 })) : {})}
       >
         <Button.Icon scaleIcon={1.5}>
           <ChevronLeft />
@@ -81,11 +79,7 @@ function CalendarHeader() {
         </SizableText>
       </YStack>
 
-      <Button
-        circular
-        size="$3"
-        {...createDatePickerButtonProps(subtractOffset({ months: -1 }))}
-      >
+      <Button circular size="$3" {...createDatePickerButtonProps(subtractOffset({ months: -1 }))}>
         <Button.Icon scaleIcon={1.5}>
           <ChevronRight />
         </Button.Icon>

@@ -1,6 +1,6 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
-import { DateTimeSchema, LocationSchema } from './common';
+import { DateTimeSchema, LocationSchema } from './common'
 
 export const OrganizationIdentifierSchema = z
   .object({
@@ -9,12 +9,11 @@ export const OrganizationIdentifierSchema = z
     slug: z.string().trim().min(1).optional(),
   })
   .refine(
-    (value) =>
-      Boolean(value.externalId || value.source || value.slug),
-    'At least one organization identifier must be provided',
-  );
+    (value) => Boolean(value.externalId || value.source || value.slug),
+    'At least one organization identifier must be provided'
+  )
 
-export type OrganizationIdentifier = z.infer<typeof OrganizationIdentifierSchema>;
+export type OrganizationIdentifier = z.infer<typeof OrganizationIdentifierSchema>
 
 export const OrganizationSizeSchema = z
   .object({
@@ -28,11 +27,11 @@ export const OrganizationSizeSchema = z
         code: z.ZodIssueCode.custom,
         message: 'min must be less than or equal to max',
         path: ['min'],
-      });
+      })
     }
-  });
+  })
 
-export type OrganizationSize = z.infer<typeof OrganizationSizeSchema>;
+export type OrganizationSize = z.infer<typeof OrganizationSizeSchema>
 
 export const SocialProfileSchema = z.object({
   type: z.enum([
@@ -50,9 +49,9 @@ export const SocialProfileSchema = z.object({
   ]),
   url: z.string().url(),
   handle: z.string().trim().min(1).optional(),
-});
+})
 
-export type SocialProfile = z.infer<typeof SocialProfileSchema>;
+export type SocialProfile = z.infer<typeof SocialProfileSchema>
 
 export const NormalizedOrganizationSchema = z.object({
   id: z.string().trim().min(1).optional(),
@@ -73,9 +72,9 @@ export const NormalizedOrganizationSchema = z.object({
   phoneNumbers: z.array(z.string().trim().min(1)).optional(),
   socialProfiles: z.array(SocialProfileSchema).optional(),
   metadata: z.record(z.unknown()).optional(),
-});
+})
 
-export type NormalizedOrganization = z.infer<typeof NormalizedOrganizationSchema>;
+export type NormalizedOrganization = z.infer<typeof NormalizedOrganizationSchema>
 
-export { DateTimeSchema, LocationSchema } from './common';
-export type { DateTime, Location } from './common';
+export { DateTimeSchema, LocationSchema } from './common'
+export type { DateTime, Location } from './common'

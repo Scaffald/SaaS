@@ -10,7 +10,15 @@ type SubjectType = (typeof SUBJECT_TYPES)[number]
 
 type ProfileVerificationRow = Pick<
   Database['public']['Tables']['profile_verifications']['Row'],
-  'id' | 'subject_type' | 'subject_id' | 'field' | 'verified_at' | 'verified_by' | 'revoked_at' | 'source' | 'notes'
+  | 'id'
+  | 'subject_type'
+  | 'subject_id'
+  | 'field'
+  | 'verified_at'
+  | 'verified_by'
+  | 'revoked_at'
+  | 'source'
+  | 'notes'
 >
 
 type ActiveVerificationMap = Record<string, ProfileVerificationRow>
@@ -26,7 +34,7 @@ export type ProfileVerificationState = {
 
 export const useProfileVerifications = (
   subjectId?: string | null,
-  subjectTypes: SubjectType[] = SUBJECT_TYPES,
+  subjectTypes: SubjectType[] = SUBJECT_TYPES
 ): ProfileVerificationState => {
   const supabase = useSupabase()
   const queryClient = useQueryClient()
@@ -39,7 +47,9 @@ export const useProfileVerifications = (
 
       const { data, error } = await supabase
         .from('profile_verifications')
-        .select('id, subject_type, subject_id, field, verified_at, verified_by, revoked_at, source, notes')
+        .select(
+          'id, subject_type, subject_id, field, verified_at, verified_by, revoked_at, source, notes'
+        )
         .eq('subject_id', subjectId)
         .in('subject_type', subjectTypes)
         .order('verified_at', { ascending: false })
@@ -59,12 +69,19 @@ export const useProfileVerifications = (
       .channel(`profile-verifications:${subjectId}`)
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'profile_verifications', filter: `subject_id=eq.${subjectId}` },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['profile-verifications', subjectId, subjectTypes.join(':')] }).catch(
-            () => {},
-          )
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profile_verifications',
+          filter: `subject_id=eq.${subjectId}`,
         },
+        () => {
+          queryClient
+            .invalidateQueries({
+              queryKey: ['profile-verifications', subjectId, subjectTypes.join(':')],
+            })
+            .catch(() => {})
+        }
       )
       .subscribe()
 
@@ -89,7 +106,7 @@ export const useProfileVerifications = (
       }
       return Boolean(activeByField[field])
     },
-    [activeByField],
+    [activeByField]
   )
 
   return {
