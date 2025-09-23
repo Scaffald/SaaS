@@ -17,6 +17,8 @@ import {
 import { createAdminUsersHooks, type RouterOutputs } from '@app/core/utils/api'
 import { Link } from 'solito/link'
 
+import { formatBoolean, formatDate } from './formatters'
+
 type SearchResult = RouterOutputs['admin']['users']['search']['results'][number]
 
 const PAGE_SIZE = 20
@@ -34,20 +36,6 @@ const VerificationAwareCell = ({ value, verified }: VerificationAwareCellProps) 
       {verified ? <BadgeCheck size={14} color={theme.green10.val} aria-label="Verified" /> : null}
     </XStack>
   )
-}
-
-const formatBoolean = (value: boolean | null | undefined) => {
-  if (value === null || value === undefined) return 'Unknown'
-  return value ? 'Yes' : 'No'
-}
-
-const formatDate = (value: string | null | undefined) => {
-  if (!value) return '—'
-  try {
-    return new Date(value).toLocaleString()
-  } catch (_error) {
-    return value
-  }
 }
 
 const hasVerifiedField = (fields: string[], verification: SearchResult['verification']) =>
