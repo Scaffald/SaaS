@@ -183,7 +183,7 @@ All test projects share `vitest.workspace.ts`, which wires up the root TypeScrip
 
 The `@app/test-utils` workspace publishes helpers that keep mocks and shims consistent across Vitest projects.
 
-- `createSupabaseClientStub` builds typed Supabase clients with `rpc` mocks ready for `mockResolvedValueOnce` chaining.
+- `createSupabaseClientStub` builds typed Supabase clients with `rpc` mocks ready for `mockResolvedValueOnce` chaining and accepts overrides for methods like `.from()` when you need custom PostgREST builders.
 - `createEnvStub` tracks and restores environment variables without custom `beforeEach`/`afterEach` boilerplate.
 - `freezeTime` installs `vi.useFakeTimers()` with `performance.now()` support, returning a clock that exposes `advanceTimersByTime` and `restore()`.
 - `createFetchMock`/`installFetchMock` provide typed `fetch` spies and `mockJsonResponse` helpers.
@@ -202,6 +202,21 @@ import { vi } from 'vitest'
 
 const env = createEnvStub({ FEATURE_FLAG: 'enabled' })
 const { client, rpc } = createSupabaseClientStub<MyDatabase>()
+const profilesQuery = {
+  select: vi.fn().mockReturnThis(),
+  eq: vi.fn().mockReturnThis(),
+  maybeSingle: vi.fn().mockResolvedValue({ data: { id: 'user-123' }, error: null }),
+}
+const { client: supabaseWithFrom } = createSupabaseClientStub<MyDatabase>({
+  from: vi.fn((table) => {
+    if (table === 'profiles') {
+      return profilesQuery
+    }
+
+    throw new Error(`Unexpected table: ${table}`)
+  }),
+  auth: { signOut: vi.fn() } as unknown,
+})
 const clock = freezeTime('2024-01-01T00:00:00Z')
 const { mock: fetchMock, restore: restoreFetch } = installFetchMock(() =>
   Promise.resolve(mockJsonResponse({ ok: true }))

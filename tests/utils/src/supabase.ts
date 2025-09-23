@@ -35,6 +35,13 @@ export type SupabaseClientStub<TDatabase> = {
   rpc: SupabaseRpcMock<TDatabase>
 }
 
+/**
+ * Creates a Supabase client stub with an overridable surface.
+ *
+ * Pass overrides for any client method (for example `.from()` or `auth`) to
+ * return custom query builders while keeping the RPC spy wired up for
+ * `mockResolvedValueOnce` chaining.
+ */
 export const createSupabaseClientStub = <TDatabase>(
   overrides: SupabaseClientOverrides<TDatabase> & {
     rpc?: SupabaseRpc<TDatabase>
