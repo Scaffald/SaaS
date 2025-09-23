@@ -42,7 +42,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const xml = await response.text()
 
     res.setHeader('Content-Type', 'application/xml; charset=utf-8')
-    res.setHeader('Cache-Control', `s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${STALE_WHILE_REVALIDATE_SECONDS}`)
+    res.setHeader(
+      'Cache-Control',
+      `s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${STALE_WHILE_REVALIDATE_SECONDS}`
+    )
     res.setHeader('Vary', 'Accept-Encoding')
     res.status(200).send(xml)
   } catch (error) {
