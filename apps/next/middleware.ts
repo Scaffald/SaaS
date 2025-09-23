@@ -41,6 +41,43 @@ export async function middleware(req: NextRequest) {
     // redirectUrl.searchParams.set(`redirected_from`, req.nextUrl.pathname)
     return NextResponse.redirect(redirectUrl)
   }
+  if (req.nextUrl.pathname.startsWith('/admin')) {
+    let hasAccess = false
+    const { data: isSuperAdmin, error: superError } = await supabase.rpc('user_has_role', {
+      p_user_id: user.id,
+      p_role_name: 'super_admin',
+    })
+
+    if (superError) {
+      console.error('Failed to evaluate super admin role in middleware', superError)
+    }
+
+    if (isSuperAdmin) {
+      hasAccess = true
+    } else {
+      const organizationId = req.nextUrl.searchParams.get('organizationId')
+      if (organizationId) {
+        const { data: isPartnerAdmin, error: partnerError } = await supabase.rpc('user_has_role', {
+          p_user_id: user.id,
+          p_role_name: 'partner_admin',
+          p_org_id: organizationId,
+        })
+
+        if (partnerError) {
+          console.error('Failed to evaluate partner admin role in middleware', partnerError)
+        }
+
+        hasAccess = Boolean(isPartnerAdmin)
+      }
+    }
+
+    if (!hasAccess) {
+      const redirectUrl = req.nextUrl.clone()
+      redirectUrl.pathname = '/'
+      redirectUrl.searchParams.delete('organizationId')
+      return NextResponse.redirect(redirectUrl)
+    }
+  }
   // show the protected page to logged in route
   return res
 }

@@ -10,6 +10,9 @@ const REVOKE_WORKER_VERIFICATION_RPC = 'admin_revoke_worker_verification' as con
 const GET_VERIFICATION_STATUS_RPC = 'admin_get_worker_verification_status' as const
 
 const verificationStatuses = ['verified', 'revoked', 'pending', 'unverified', 'unknown'] as const
+const verificationSubjectTypes = ['profile', 'user', 'user_private'] as const
+
+type VerificationSubjectType = (typeof verificationSubjectTypes)[number]
 
 type WorkerVerificationStatus = {
   status: (typeof verificationStatuses)[number]
@@ -19,7 +22,8 @@ type WorkerVerificationStatus = {
 }
 
 type WorkerSummaryRow = Database['public']['Tables']['users']['Row'] & {
-  user_private: Pick<Database['public']['Tables']['user_private']['Row'], 'email'> | null
+  profile: Pick<Database['public']['Tables']['profiles']['Row'], 'name'> | null
+  user_private: Pick<Database['public']['Tables']['user_private']['Row'], 'email' | 'phone'> | null
 }
 
 type WorkerDetailRow = Database['public']['Tables']['users']['Row'] & {
@@ -48,6 +52,7 @@ type WorkerDetailRow = Database['public']['Tables']['users']['Row'] & {
         geo?: Database['public']['Tables']['user_private']['Row']['geo']
       })
     | null
+  profile: Pick<Database['public']['Tables']['profiles']['Row'], 'name' | 'about' | 'avatar_url'> | null
 }
 
 type AdminAccess = {
@@ -106,20 +111,38 @@ const workerPrivateUpdateSchema = z
   })
   .strict()
 
-const updateWorkerInputSchema = workerIdentifierSchema.extend({
-  publicData: workerPublicUpdateSchema.optional(),
-  privateData: workerPrivateUpdateSchema.optional(),
-}).refine((value) => value.publicData || value.privateData, {
-  message: 'At least one of publicData or privateData must be provided',
-  path: ['publicData'],
-})
+const updateWorkerInputSchema = workerIdentifierSchema
+  .extend({
+    profileData: workerProfileUpdateSchema.optional(),
+    publicData: workerPublicUpdateSchema.optional(),
+    privateData: workerPrivateUpdateSchema.optional(),
+  })
+  .refine((value) => value.profileData || value.publicData || value.privateData, {
+    message: 'At least one of profileData, publicData, or privateData must be provided',
+    path: ['profileData'],
+  })
 
 const verifyWorkerInputSchema = workerIdentifierSchema.extend({
   reason: z.string().trim().max(280).optional(),
+  field: verificationFieldSchema,
+  subjectType: verificationSubjectSchema,
 })
 
 type WorkerPublicUpdateInput = z.infer<typeof workerPublicUpdateSchema>
 type WorkerPrivateUpdateInput = z.infer<typeof workerPrivateUpdateSchema>
+
+const workerProfileUpdateSchema = z
+  .object({
+    name: z.string().trim().max(120).nullable().optional(),
+    about: z.string().nullable().optional(),
+    avatarUrl: z.string().url().trim().max(512).nullable().optional(),
+  })
+  .strict()
+
+const verificationFieldSchema = z.string().trim().min(1).max(160)
+const verificationSubjectSchema = z.enum(verificationSubjectTypes)
+
+type WorkerProfileUpdateInput = z.infer<typeof workerProfileUpdateSchema>
 
 type WorkerDetail = {
   id: string
@@ -136,6 +159,7 @@ type WorkerDetail = {
   skillsSummary: Database['public']['Tables']['users']['Row']['skills_summary']
   createdAt: string
   updatedAt: string
+  profile: WorkerProfile | null
   privateData: {
     userId: string
     email: string | null
@@ -157,7 +181,29 @@ type WorkerDetail = {
     createdAt: string
     updatedAt: string
   } | null
-  verification: WorkerVerificationStatus
+  verification: WorkerVerification
+}
+
+type WorkerProfile = {
+  name: string | null
+  about: string | null
+  avatarUrl: string | null
+}
+
+type WorkerVerificationLedgerEntry = {
+  id: string
+  subjectType: VerificationSubjectType
+  field: string
+  verifiedAt: string
+  verifiedBy: string
+  revokedAt: string | null
+  source: string | null
+  notes: string | null
+}
+
+type WorkerVerification = WorkerVerificationStatus & {
+  fields: string[]
+  history: WorkerVerificationLedgerEntry[]
 }
 
 function normaliseVerificationStatus(payload: unknown): WorkerVerificationStatus {
@@ -341,6 +387,79 @@ function mapPrivateUpdates(input: WorkerPrivateUpdateInput | undefined) {
   return Object.keys(payload).length ? payload : null
 }
 
+function mapProfileUpdates(input: WorkerProfileUpdateInput | undefined) {
+  if (!input) return null
+
+  const payload: Partial<Database['public']['Tables']['profiles']['Update']> = {}
+
+  if (input.name !== undefined) payload.name = input.name
+  if (input.about !== undefined) payload.about = input.about
+  if (input.avatarUrl !== undefined) payload.avatar_url = input.avatarUrl
+
+  return Object.keys(payload).length ? payload : null
+}
+
+async function loadActiveVerificationFields(
+  supabase: SupabaseClient<Database>,
+  workerIds: string[],
+) {
+  const map = new Map<string, string[]>()
+  if (!workerIds.length) {
+    return map
+  }
+
+  const { data, error } = await supabase
+    .from('profile_verifications')
+    .select('subject_id, field')
+    .in('subject_id', workerIds)
+    .in('subject_type', verificationSubjectTypes)
+    .is('revoked_at', null)
+
+  if (error) {
+    console.warn('Failed to load active verification fields', error)
+    return map
+  }
+
+  for (const row of (data ?? []) as { subject_id: string; field: string }[]) {
+    if (!row.subject_id || !row.field) continue
+    const existing = map.get(row.subject_id) ?? []
+    if (!existing.includes(row.field)) {
+      existing.push(row.field)
+    }
+    map.set(row.subject_id, existing)
+  }
+
+  return map
+}
+
+async function loadVerificationLedger(
+  supabase: SupabaseClient<Database>,
+  workerId: string,
+): Promise<WorkerVerificationLedgerEntry[]> {
+  const { data, error } = await supabase
+    .from('profile_verifications')
+    .select('id, subject_type, field, verified_at, verified_by, revoked_at, source, notes')
+    .eq('subject_id', workerId)
+    .in('subject_type', verificationSubjectTypes)
+    .order('verified_at', { ascending: false })
+
+  if (error) {
+    console.warn('Failed to load verification ledger', error)
+    return []
+  }
+
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    subjectType: row.subject_type as VerificationSubjectType,
+    field: row.field,
+    verifiedAt: row.verified_at,
+    verifiedBy: row.verified_by,
+    revokedAt: row.revoked_at,
+    source: row.source ?? null,
+    notes: row.notes ?? null,
+  }))
+}
+
 async function loadWorkerDetail(
   supabase: SupabaseClient<Database>,
   workerId: string,
@@ -364,6 +483,11 @@ async function loadWorkerDetail(
         skills_summary,
         created_at,
         updated_at,
+        profile:profiles!left(
+          name,
+          about,
+          avatar_url
+        ),
         user_private:user_private!left(
           user_id,
           email,
@@ -399,6 +523,16 @@ async function loadWorkerDetail(
     throw new TRPCError({ code: 'NOT_FOUND', message: 'Worker not found.' })
   }
 
+  const profileRow = data.profile
+
+  const profile: WorkerProfile | null = profileRow
+    ? {
+        name: profileRow.name,
+        about: profileRow.about,
+        avatarUrl: profileRow.avatar_url,
+      }
+    : null
+
   const privateRow = data.user_private
 
   const privateData = privateRow
@@ -425,7 +559,13 @@ async function loadWorkerDetail(
       }
     : null
 
-  const verification = await fetchVerificationStatus(supabase, workerId, organizationId)
+  const [verificationStatus, activeFieldMap, history] = await Promise.all([
+    fetchVerificationStatus(supabase, workerId, organizationId),
+    loadActiveVerificationFields(supabase, [workerId]),
+    loadVerificationLedger(supabase, workerId),
+  ])
+
+  const fields = activeFieldMap.get(workerId) ?? []
 
   return {
     id: data.id,
@@ -442,8 +582,9 @@ async function loadWorkerDetail(
     skillsSummary: data.skills_summary,
     createdAt: data.created_at,
     updatedAt: data.updated_at,
+    profile,
     privateData,
-    verification,
+    verification: { ...verificationStatus, fields, history },
   }
 }
 
@@ -471,7 +612,8 @@ export const adminUsersRouter = createTRPCRouter({
           open_to_work,
           created_at,
           updated_at,
-          user_private:user_private!left(email)
+          profile:profiles!left(name),
+          user_private:user_private!left(email, phone)
         `,
         { count: 'exact' },
       )
@@ -493,6 +635,10 @@ export const adminUsersRouter = createTRPCRouter({
     }
 
     const rows = (data ?? []) as WorkerSummaryRow[]
+    const verificationFieldMap = await loadActiveVerificationFields(
+      supabase,
+      rows.map((row) => row.id),
+    )
 
     return {
       results: rows.map((row) => ({
@@ -502,9 +648,14 @@ export const adminUsersRouter = createTRPCRouter({
         slug: row.slug,
         headline: row.headline,
         openToWork: row.open_to_work,
+        fullName: row.profile?.name ?? null,
         email: row.user_private?.email ?? null,
+        phone: row.user_private?.phone ?? null,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
+        verification: {
+          fields: verificationFieldMap.get(row.id) ?? [],
+        },
       })),
       count: typeof count === 'number' ? count : rows.length,
       organizationId,
@@ -530,8 +681,17 @@ export const adminUsersRouter = createTRPCRouter({
 
     const { organizationId } = await ensureAdminAccess(supabase, user.id, input.organizationId)
 
+    const profilePayload = mapProfileUpdates(input.profileData)
     const publicPayload = mapPublicUpdates(input.publicData)
     const privatePayload = mapPrivateUpdates(input.privateData)
+
+    if (profilePayload) {
+      const { error } = await supabase.from('profiles').update(profilePayload).eq('id', input.workerId)
+      if (error) {
+        console.error('Failed to update profile data', error)
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Unable to update worker profile.' })
+      }
+    }
 
     if (publicPayload) {
       const { error } = await supabase.from('users').update(publicPayload).eq('id', input.workerId)
@@ -567,6 +727,8 @@ export const adminUsersRouter = createTRPCRouter({
     const rpcInput: Record<string, unknown> = {
       worker_id: input.workerId,
       organization_id: organizationId,
+      field: input.field,
+      subject_type: input.subjectType,
     }
     if (input.reason !== undefined) {
       rpcInput.reason = input.reason
@@ -595,6 +757,8 @@ export const adminUsersRouter = createTRPCRouter({
     const rpcInput: Record<string, unknown> = {
       worker_id: input.workerId,
       organization_id: organizationId,
+      field: input.field,
+      subject_type: input.subjectType,
     }
     if (input.reason !== undefined) {
       rpcInput.reason = input.reason
