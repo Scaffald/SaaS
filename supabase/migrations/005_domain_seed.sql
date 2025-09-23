@@ -210,6 +210,32 @@ select count(*) as user_skills_created from user_skills_inserts;
 -- 4) Jobs (realistic job postings)
 -- =========================================================
 
+-- Ensure provider metadata columns exist before seeding jobs.
+do $$
+begin
+  if not exists (select 1 from pg_type where typname = 'job_provider') then
+    create type public.job_provider as enum (
+      'manual',
+      'indeed',
+      'ziprecruiter',
+      'linkedin',
+      'greenhouse',
+      'workday',
+      'other'
+    );
+  end if;
+end
+$$;
+
+alter table public.jobs
+  add column if not exists source_provider public.job_provider not null default 'manual',
+  add column if not exists external_id text,
+  add column if not exists external_url text,
+  add column if not exists source_posted_at timestamptz,
+  add column if not exists source_updated_at timestamptz,
+  add column if not exists last_seen_at timestamptz default now(),
+  add column if not exists raw_payload jsonb default '{}'::jsonb;
+
 with job_templates as (
   select * from (values
     ('Electrician', 'We are seeking a skilled electrician to join our team. Must have experience with residential and commercial electrical work.', 'full_time', 'on_site', 'Construction Electrician', 3, 25.00, 35.00),
@@ -232,11 +258,13 @@ team_sample as (
 ),
 job_inserts as (
   insert into public.jobs (
-    organization_id, team_id, title, description, status, employment_type, 
+    organization_id, team_id, title, description, status, employment_type,
     remote_option, location, address, geo, compensation, visibility, slug,
-    posted_at, closes_at, position_level, min_reputation
+    posted_at, closes_at, position_level, min_reputation,
+    source_provider, external_id, external_url, source_posted_at,
+    source_updated_at, last_seen_at, raw_payload
   )
-  select 
+  select
     os.id,
     ts.id,
     jt.title,
@@ -260,14 +288,35 @@ job_inserts as (
       'currency', 'USD'
     ),
     'public',
-    jt.title::text || '-' || os.slug || '-' || floor(random()*1000)::text,
-    now() - interval '1 day' * floor(random()*30),
-    now() + interval '30 days' + interval '1 day' * floor(random()*30),
+    jt.title::text || '-' || os.slug || '-' || meta.slug_token,
+    meta.posted_at,
+    meta.closes_at,
     jt.position_level,
-    jt.min_level::numeric
+    jt.min_level::numeric,
+    'manual'::public.job_provider,
+    meta.external_id,
+    'https://jobs.seed.local/' || os.slug || '/' || meta.slug_token,
+    meta.posted_at,
+    greatest(meta.source_updated_at, meta.posted_at),
+    meta.last_seen_at,
+    jsonb_build_object(
+      'seed_source', 'domain_seed',
+      'template_title', jt.title,
+      'organization_slug', os.slug,
+      'team_id', ts.id
+    )
   from job_templates jt
   cross join lateral (select id, name, slug from org_sample order by random() limit 1) os
   cross join lateral (select id from team_sample where organization_id = os.id order by random() limit 1) ts
+  cross join lateral (
+    select
+      lpad((floor(random()*9999)+1)::int::text, 4, '0') as slug_token,
+      now() - interval '1 day' * floor(random()*30) as posted_at,
+      now() + interval '30 days' + interval '1 day' * floor(random()*30) as closes_at,
+      now() - interval '1 day' * floor(random()*15) as source_updated_at,
+      now() as last_seen_at,
+      'seed-' || md5(jt.title::text || '-' || os.slug || '-' || ts.id::text) as external_id
+  ) as meta
   on conflict (slug) do nothing
   returning id, title, organization_id
 )
