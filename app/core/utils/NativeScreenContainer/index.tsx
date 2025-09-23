@@ -1,4 +1,4 @@
-import { ScrollView, TamaguiElement } from '@app/ui'
+import { ScrollView } from '@app/ui'
 import { useScrollToTop } from '@react-navigation/native'
 import { useRef } from 'react'
 import type { ComponentProps } from 'react'
@@ -6,11 +6,11 @@ import type { ComponentProps } from 'react'
 type ScrollToTopTabBarContainerProps = ComponentProps<typeof ScrollView>
 
 const ScrollToTopTabBarContainer = ({ children, ...props }: ScrollToTopTabBarContainerProps) => {
-  const ref = useRef<TamaguiElement>(null)
+  const ref = useRef<any>(null)
   useScrollToTop(ref as Parameters<typeof useScrollToTop>[0])
 
   return (
-    <ScrollView {...props} ref={ref}>
+    <ScrollView {...props} ref={ref as any}>
       {children}
     </ScrollView>
   )
