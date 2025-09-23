@@ -1,0 +1,126 @@
+import nock from 'nock'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+
+import { JoobleAdapter } from '../adapter'
+import { JoobleClient } from '../client'
+
+const API_HOST = 'https://jooble.org'
+
+function createAdapter() {
+  return new JoobleAdapter(new JoobleClient({ apiKey: 'test-key' }))
+}
+
+describe('JoobleAdapter', () => {
+  beforeAll(() => {
+    nock.disableNetConnect()
+    process.env.JOOBLE_API_KEY = 'test-key'
+    for (const key of ['HTTPS_PROXY', 'https_proxy', 'HTTP_PROXY', 'http_proxy', 'ALL_PROXY', 'all_proxy']) {
+      delete process.env[key as keyof NodeJS.ProcessEnv]
+    }
+  })
+
+  beforeEach(() => {
+    delete process.env.JOOBLE_SEARCH_KEYWORDS
+    delete process.env.JOOBLE_SEARCH_LOCATION
+    delete process.env.JOOBLE_SEARCH_RADIUS
+    delete process.env.JOOBLE_SEARCH_PAGE_SIZE
+  })
+
+  afterEach(() => {
+    nock.cleanAll()
+  })
+
+  afterAll(() => {
+    nock.enableNetConnect()
+  })
+
+  it('normalizes Jooble responses into jobs and organizations', async () => {
+    const scope = nock(API_HOST)
+      .post('/api/test-key', {
+        keywords: 'software engineer',
+        location: 'Remote',
+        radius: 10,
+        page: 2,
+        size: 5,
+      })
+      .reply(200, {
+        totalCount: 42,
+        jobs: [
+          {
+            id: '123',
+            title: 'Software Engineer',
+            location: 'Remote, USA',
+            snippet: 'Work on exciting problems.',
+            salary: '$120k',
+            type: 'Full-time',
+            company: 'Acme Corp',
+            link: 'https://example.com/jobs/123',
+            updated: '2024-01-02',
+            published: '2024-01-01',
+          },
+        ],
+      })
+
+    const adapter = createAdapter()
+    const result = await adapter.sync({
+      keywords: ['software', 'engineer'],
+      location: 'Remote',
+      radius: 10,
+      page: 2,
+      pageSize: 5,
+    })
+
+    expect(scope.isDone()).toBe(true)
+    expect(result.jobs).toHaveLength(1)
+    expect(result.organizations).toHaveLength(1)
+
+    const job = result.jobs[0]
+    expect(job.id).toBe('jooble-123')
+    expect(job.externalId).toBe('123')
+    expect(job.title).toBe('Software Engineer')
+    expect(job.organizationId).toBe('acme-corp')
+    expect(job.location?.raw).toBe('Remote, USA')
+    expect(job.salary?.raw).toBe('$120k')
+    expect(job.postedAt).toBe('2024-01-01T00:00:00.000Z')
+    expect(job.updatedAt).toBe('2024-01-02T00:00:00.000Z')
+    expect(job.applyUrl).toBe('https://example.com/jobs/123')
+
+    const organization = result.organizations[0]
+    expect(organization).toEqual({ id: 'acme-corp', name: 'Acme Corp' })
+
+    expect(result.meta.source).toBe('jooble')
+    expect(result.meta.returnedCount).toBe(1)
+    expect(result.meta.totalCount).toBe(42)
+    expect(result.meta.config.page).toBe(2)
+    expect(result.meta.config.pageSize).toBe(5)
+    expect(result.meta.config.keywords).toEqual(['software', 'engineer'])
+    expect(result.meta.config.location).toBe('Remote')
+    expect(result.meta.durationMs).toBeGreaterThanOrEqual(0)
+    expect(Date.parse(result.meta.requestedAt)).not.toBeNaN()
+  })
+
+  it('handles empty responses gracefully', async () => {
+    const scope = nock(API_HOST).post('/api/test-key', { page: 1, size: 20 }).reply(200, {
+      totalCount: 0,
+      jobs: [],
+    })
+
+    const adapter = createAdapter()
+    const result = await adapter.sync()
+
+    expect(scope.isDone()).toBe(true)
+    expect(result.jobs).toEqual([])
+    expect(result.organizations).toEqual([])
+    expect(result.meta.totalCount).toBe(0)
+    expect(result.meta.returnedCount).toBe(0)
+  })
+
+  it('propagates errors from the Jooble API', async () => {
+    const scope = nock(API_HOST).post('/api/test-key').reply(500, { error: 'Internal error' })
+
+    const adapter = createAdapter()
+
+    await expect(adapter.sync()).rejects.toThrow('Jooble request failed (500): Internal error')
+    expect(scope.isDone()).toBe(true)
+  })
+})
