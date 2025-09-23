@@ -2,7 +2,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { NEWS_SOURCE_LOOKUP } from 'app/features/home/components/dashboard/right-rail/news-sources'
 
-const CACHE_TTL_SECONDS = 300
+const CACHE_TTL_SECONDS = 300 // 5 minutes
+const STALE_WHILE_REVALIDATE_SECONDS = 600 // 10 minutes
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -27,7 +28,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const response = await fetch(newsSource.feedUrl, {
       headers: {
         Accept: 'application/xml, text/xml;q=0.9, */*;q=0.8',
+        'User-Agent': 'SCF-Neue/1.0 (+https://scaffald.com)',
       },
+      // Add timeout to prevent hanging requests
+      signal: AbortSignal.timeout(8000), // 8 second timeout
     })
 
     if (!response.ok) {
@@ -38,9 +42,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const xml = await response.text()
 
     res.setHeader('Content-Type', 'application/xml; charset=utf-8')
-    res.setHeader('Cache-Control', `s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate`)
+    res.setHeader('Cache-Control', `s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${STALE_WHILE_REVALIDATE_SECONDS}`)
+    res.setHeader('Vary', 'Accept-Encoding')
     res.status(200).send(xml)
   } catch (error) {
+    console.warn('News API error:', error)
     res.status(502).json({ error: 'Unable to reach RSS source' })
   }
 }

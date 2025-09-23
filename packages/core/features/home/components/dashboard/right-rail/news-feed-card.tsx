@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useCallback } from 'react'
 import { Linking } from 'react-native'
 
 import {
@@ -36,6 +36,19 @@ type NewsArticle = {
 
 const ARTICLE_LIMIT = 5
 
+// Loading skeleton component
+const NewsLoadingSkeleton = () => (
+  <YStack gap="$3">
+    {Array.from({ length: 3 }).map((_, i) => (
+      <YStack key={i} gap="$2">
+        <YStack h={16} bg="$gray4" br="$2" w="85%" />
+        <YStack h={12} bg="$gray3" br="$2" w="100%" />
+        <YStack h={10} bg="$gray3" br="$2" w="60%" />
+      </YStack>
+    ))}
+  </YStack>
+)
+
 const stripCdata = (input: string) => input.replace(/<!\[CDATA\[|\]\]>/g, '')
 
 const decodeEntities = (value: string) =>
@@ -57,7 +70,7 @@ const formatPublishDate = (value?: string) => {
   if (Number.isNaN(parsed.getTime())) return undefined
   try {
     return parsed.toLocaleDateString()
-  } catch (error) {
+  } catch {
     return undefined
   }
 }
@@ -116,9 +129,10 @@ const openLink = (url?: string) => {
 export const NewsFeedCard = () => {
   const [selectedSourceId, setSelectedSourceId] = useState<string>(DEFAULT_NEWS_SOURCE_ID)
   const [articles, setArticles] = useState<NewsArticle[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false) // Start as false for lazy loading
   const [error, setError] = useState<string | null>(null)
   const [requestVersion, setRequestVersion] = useState(0)
+  const [hasLoaded, setHasLoaded] = useState(false)
   const isHydrated = useDidFinishSSR()
 
   const selectedSource = useMemo<NewsSource | undefined>(
@@ -128,39 +142,57 @@ export const NewsFeedCard = () => {
     [selectedSourceId]
   )
 
-  useEffect(() => {
-    if (!selectedSource) return
+  const loadArticles = useCallback(async () => {
+    if (!selectedSource || hasLoaded) return
 
     let isActive = true
-    const loadArticles = async () => {
-      setIsLoading(true)
-      setError(null)
-      setArticles([])
-      try {
-        const endpoint = isWeb
-          ? `/api/news?source=${encodeURIComponent(selectedSource.id)}`
-          : selectedSource.feedUrl
+    setIsLoading(true)
+    setError(null)
+    
+    try {
+      const endpoint = isWeb
+        ? `/api/news?source=${encodeURIComponent(selectedSource.id)}`
+        : selectedSource.feedUrl
 
-        const response = await fetch(endpoint)
-        if (!response.ok) throw new Error(`Request failed: ${response.status}`)
-        const text = await response.text()
-        const parsed = parseRssFeed(text).slice(0, ARTICLE_LIMIT)
+      const response = await fetch(endpoint, {
+        // Add timeout to prevent hanging requests
+        signal: AbortSignal.timeout(10000), // 10 second timeout
+      })
+      
+      if (!response.ok) throw new Error(`Request failed: ${response.status}`)
+      const text = await response.text()
+      const parsed = parseRssFeed(text).slice(0, ARTICLE_LIMIT)
 
-        if (isActive) {
-          setArticles(parsed)
-        }
-      } catch (err) {
-        if (!isActive) return
-        setArticles([])
-        setError('Unable to load news right now. Please try again later.')
-      } finally {
-        if (isActive) setIsLoading(false)
+      if (isActive) {
+        setArticles(parsed)
+        setHasLoaded(true)
       }
+    } catch (err) {
+      if (!isActive) return
+      console.warn('News feed loading failed:', err)
+      setError('Unable to load news right now. Please try again later.')
+    } finally {
+      if (isActive) setIsLoading(false)
     }
+  }, [selectedSource, hasLoaded])
 
-    loadArticles()
-    return () => {
-      isActive = false
+  // Lazy load articles after hydration with a small delay
+  useEffect(() => {
+    if (!isHydrated || hasLoaded) return
+    
+    const timer = setTimeout(() => {
+      loadArticles()
+    }, 100) // Small delay to let other critical content load first
+
+    return () => clearTimeout(timer)
+  }, [isHydrated, loadArticles, hasLoaded])
+
+  // Reload when source changes
+  useEffect(() => {
+    if (hasLoaded) {
+      setHasLoaded(false)
+      setArticles([])
+      loadArticles()
     }
   }, [selectedSource?.feedUrl, requestVersion])
 
@@ -222,9 +254,7 @@ export const NewsFeedCard = () => {
         </Select>
 
         {isLoading ? (
-          <YStack ai="center" py="$6">
-            <Spinner />
-          </YStack>
+          <NewsLoadingSkeleton />
         ) : error ? (
           <YStack gap="$2">
             <Paragraph size="$2" color="$red10">
@@ -239,7 +269,7 @@ export const NewsFeedCard = () => {
               Retry
             </Button>
           </YStack>
-        ) : (
+        ) : articles.length > 0 ? (
           <YStack gap="$3">
             {articles.map((article) => {
               const formattedDate = formatPublishDate(article.publishedAt)
@@ -281,6 +311,8 @@ export const NewsFeedCard = () => {
               )
             })}
           </YStack>
+        ) : (
+          <NewsLoadingSkeleton />
         )}
       </YStack>
     </DashboardCard>

@@ -8,6 +8,7 @@ import {
   CareerInsightCard,
   CertificationSpotlightCard,
   ConcreteCalculatorCard,
+  DashboardErrorBoundary,
   DashboardHero,
   NewsFeedCard,
   OpportunitySection,
@@ -181,7 +182,7 @@ export function HomeScreen() {
 
   if (isPending)
     return (
-      <View flex={1} height={'80vh' as any} ai="center" jc="center">
+      <View flex={1} height="80vh" ai="center" jc="center">
         <FullscreenSpinner />
       </View>
     )
@@ -200,7 +201,9 @@ export function HomeScreen() {
 
   const rightRail = (
     <YStack gap="$5">
-      <NewsFeedCard />
+      <DashboardErrorBoundary>
+        <NewsFeedCard />
+      </DashboardErrorBoundary>
       <ConcreteCalculatorCard />
       <ResourceListCard
         title="New to construction?"
