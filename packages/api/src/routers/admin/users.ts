@@ -28,7 +28,8 @@ type WorkerSummaryRow = Database['public']['Tables']['users']['Row'] & {
 
 type WorkerDetailRow = Database['public']['Tables']['users']['Row'] & {
   user_private:
-    | (Pick<Database['public']['Tables']['user_private']['Row'],
+    | (Pick<
+        Database['public']['Tables']['user_private']['Row'],
         | 'address'
         | 'availability'
         | 'certifications'
@@ -259,12 +260,18 @@ function buildIlikeFilter(value: string) {
 
 async function applyOrganizationContext(
   supabase: SupabaseClient<Database>,
-  organizationId: string,
+  organizationId: string
 ) {
-  const { error } = await supabase.rpc('set_org_context' as never, { p_org_id: organizationId } as never)
+  const { error } = await supabase.rpc(
+    'set_org_context' as never,
+    { p_org_id: organizationId } as never
+  )
   if (error) {
     console.error('Failed to set organization context', error)
-    throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Unable to apply organization context.' })
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Unable to apply organization context.',
+    })
   }
 }
 
@@ -272,7 +279,7 @@ async function ensureAdminAccess(
   supabase: SupabaseClient<Database>,
   userId: string,
   organizationId: string | undefined,
-  { requireOrgContext = false }: { requireOrgContext?: boolean } = {},
+  { requireOrgContext = false }: { requireOrgContext?: boolean } = {}
 ): Promise<AdminAccess> {
   const { data: isSuperAdmin, error: superError } = await supabase.rpc('user_has_role', {
     p_user_id: userId,
@@ -281,7 +288,10 @@ async function ensureAdminAccess(
 
   if (superError) {
     console.error('Failed to verify admin access', superError)
-    throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Could not verify administrator role.' })
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Could not verify administrator role.',
+    })
   }
 
   if (isSuperAdmin) {
@@ -289,7 +299,10 @@ async function ensureAdminAccess(
       await applyOrganizationContext(supabase, organizationId)
     }
     if (requireOrgContext && !organizationId) {
-      throw new TRPCError({ code: 'BAD_REQUEST', message: 'organizationId is required for this operation.' })
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'organizationId is required for this operation.',
+      })
     }
     return { role: 'super_admin', organizationId: organizationId ?? null }
   }
@@ -309,11 +322,17 @@ async function ensureAdminAccess(
 
   if (partnerError) {
     console.error('Failed to verify partner admin access', partnerError)
-    throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Could not verify partner administrator role.' })
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Could not verify partner administrator role.',
+    })
   }
 
   if (!isPartnerAdmin) {
-    throw new TRPCError({ code: 'FORBIDDEN', message: 'You do not have permission to perform this action.' })
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: 'You do not have permission to perform this action.',
+    })
   }
 
   await applyOrganizationContext(supabase, organizationId)
@@ -324,12 +343,15 @@ async function ensureAdminAccess(
 async function fetchVerificationStatus(
   supabase: SupabaseClient<Database>,
   workerId: string,
-  organizationId: string | null,
+  organizationId: string | null
 ): Promise<WorkerVerificationStatus> {
-  const { data, error } = await supabase.rpc(GET_VERIFICATION_STATUS_RPC as never, {
-    worker_id: workerId,
-    organization_id: organizationId,
-  } as never)
+  const { data, error } = await supabase.rpc(
+    GET_VERIFICATION_STATUS_RPC as never,
+    {
+      worker_id: workerId,
+      organization_id: organizationId,
+    } as never
+  )
 
   if (error) {
     const pgError = error as PostgrestError
@@ -353,8 +375,7 @@ function mapPublicUpdates(input: WorkerPublicUpdateInput | undefined) {
   if (input.industryId !== undefined) payload.industry_id = input.industryId
   if (input.openToWork !== undefined) payload.open_to_work = input.openToWork
   if (input.yearsOfExperience !== undefined) payload.years_of_experience = input.yearsOfExperience
-  if (input.skillsSummary !== undefined)
-    payload.skills_summary = input.skillsSummary as Json | null
+  if (input.skillsSummary !== undefined) payload.skills_summary = input.skillsSummary as Json | null
   if (input.avatarUrl !== undefined) payload.avatar_url = input.avatarUrl
   if (input.avatarMediaId !== undefined) payload.avatar_media_id = input.avatarMediaId
 
@@ -463,7 +484,7 @@ async function loadVerificationLedger(
 async function loadWorkerDetail(
   supabase: SupabaseClient<Database>,
   workerId: string,
-  organizationId: string | null,
+  organizationId: string | null
 ): Promise<WorkerDetail> {
   const { data, error } = await supabase
     .from('users')
@@ -509,14 +530,17 @@ async function loadWorkerDetail(
           created_at,
           updated_at
         )
-      `,
+      `
     )
     .eq('id', workerId)
     .maybeSingle<WorkerDetailRow>()
 
   if (error) {
     console.error('Failed to load worker detail', error)
-    throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Unable to fetch worker details.' })
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Unable to fetch worker details.',
+    })
   }
 
   if (!data) {
@@ -615,7 +639,7 @@ export const adminUsersRouter = createTRPCRouter({
           profile:profiles!left(name),
           user_private:user_private!left(email, phone)
         `,
-        { count: 'exact' },
+        { count: 'exact' }
       )
       .order('display_name', { ascending: true })
       .range(input.offset, Math.max(input.offset, rangeEnd))
@@ -623,7 +647,7 @@ export const adminUsersRouter = createTRPCRouter({
     if (likeQuery) {
       const filter = buildIlikeFilter(likeQuery)
       query = query.or(
-        `display_name.ilike.${filter},username.ilike.${filter},user_private.email.ilike.${filter}`,
+        `display_name.ilike.${filter},username.ilike.${filter},user_private.email.ilike.${filter}`
       )
     }
 
@@ -697,7 +721,10 @@ export const adminUsersRouter = createTRPCRouter({
       const { error } = await supabase.from('users').update(publicPayload).eq('id', input.workerId)
       if (error) {
         console.error('Failed to update public worker data', error)
-        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Unable to update worker profile.' })
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Unable to update worker profile.',
+        })
       }
     }
 
@@ -707,7 +734,10 @@ export const adminUsersRouter = createTRPCRouter({
         .upsert({ user_id: input.workerId, ...privatePayload }, { onConflict: 'user_id' })
       if (error) {
         console.error('Failed to update private worker data', error)
-        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Unable to update worker private data.' })
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Unable to update worker private data.',
+        })
       }
     }
 
@@ -768,7 +798,10 @@ export const adminUsersRouter = createTRPCRouter({
 
     if (error) {
       console.error('Failed to revoke worker verification', error)
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Unable to revoke worker verification.' })
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Unable to revoke worker verification.',
+      })
     }
 
     return fetchVerificationStatus(supabase, input.workerId, organizationId)

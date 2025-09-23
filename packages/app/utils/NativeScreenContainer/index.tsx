@@ -1,7 +1,7 @@
 import { ScrollView } from '@app/ui'
 import { useScrollToTop } from '@react-navigation/native'
-import { Stack } from 'expo-router'
 import { useRef } from 'react'
+import type { ScrollView as RNScrollView } from 'react-native'
 
 const ScrollToTopTabBarContainer = ({
   children,
@@ -10,7 +10,7 @@ const ScrollToTopTabBarContainer = ({
   children: React.ReactNode
   style?: any
 }) => {
-  const ref = useRef(null)
+  const ref = useRef<RNScrollView | null>(null)
   useScrollToTop(ref)
 
   return (

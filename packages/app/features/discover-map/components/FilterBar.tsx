@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { Button, Input, ScrollView, Separator, Text, XStack, YStack, useTheme } from '@app/ui'
+import { Button, Input, ScrollView, Separator, Text, XStack, YStack } from '@app/ui'
 import { Filter, MapPin, SlidersHorizontal, X as CloseIcon } from '@tamagui/lucide-icons'
 
 import type { ActiveFilter } from '../types'
@@ -23,8 +23,6 @@ export const FilterBar = ({
   onRemoveFilter,
   onClearFilters,
 }: FilterBarProps) => {
-  const theme = useTheme()
-
   return (
     <YStack gap="$3" width="100%">
       <XStack gap="$3" width="100%" flexWrap="wrap" alignItems="center">
@@ -40,7 +38,7 @@ export const FilterBar = ({
           paddingVertical="$2"
           gap="$2"
         >
-          <MapPin size={16} color={theme.color10.val} />
+          <MapPin size={16} color="$color10" />
           <Input
             flexGrow={1}
             borderWidth={0}
@@ -62,7 +60,7 @@ export const FilterBar = ({
         <XStack gap="$2" alignItems="center">
           {filters.length === 0 ? (
             <XStack alignItems="center" gap="$2">
-              <Filter size={16} color={theme.color10.val} />
+              <Filter size={16} color="$color10" />
               <Text color="$color11">Add filters to narrow results</Text>
             </XStack>
           ) : (

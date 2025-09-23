@@ -20,7 +20,7 @@ import {
   ImagePickerSchema,
 } from '@app/ui/src/components/FormFields/ImagePickerField'
 import { createTsForm, createUniqueFieldSchema } from '@ts-react/form'
-import type { ComponentProps } from 'react'
+import type { ComponentProps, ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -72,7 +72,7 @@ const mapping = [
   [formFields.image, ImagePickerField] as const,
 ] as const
 
-const FormComponent = (props: FormProps) => {
+const FormComponent: ComponentType<FormProps> = (props: FormProps) => {
   return (
     <Form asChild {...props} minWidth="100%">
       <FormWrapper tag="form">{props.children}</FormWrapper>

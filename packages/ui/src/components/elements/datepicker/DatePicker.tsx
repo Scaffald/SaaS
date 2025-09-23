@@ -184,22 +184,12 @@ type DatePickerExampleProps = {
   onBlur: () => void
   placeholder?: string
   id: string
-  [key: string]: any
+  [key: string]: unknown
 }
 
-/** ------ EXAMPLE ------ */
 export const DatePickerExample = forwardRef<HTMLInputElement, DatePickerExampleProps>(
   (
-    {
-      disabled,
-      placeholderTextColor,
-      value,
-      onChangeText,
-      onBlur,
-      placeholder,
-      id,
-      ...props
-    },
+    { disabled, placeholderTextColor, value, onChangeText, onBlur, placeholder, id, ...props },
     ref
   ) => {
     const [selectedDates, onDatesChange] = useState<Date[]>([])

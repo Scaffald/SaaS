@@ -43,7 +43,9 @@ const OrganizationSchema = z
   .object({
     name: formFields.text.describe('Organization name // Acme Corp').min(2, 'Name is required'),
     slug: formFields.text.describe('Organization slug // acme-corp').min(1, 'Slug is required'),
-    description: formFields.textarea.describe('About the organization // Tell us what Acme Corp does').optional(),
+    description: formFields.textarea
+      .describe('About the organization // Tell us what Acme Corp does')
+      .optional(),
     websiteUrl: formFields.text.describe('Website URL // https://www.acmecorp.com').optional(),
     industryId: formFields.select.describe('Industry').optional(),
     employeeCountRange: formFields.select.describe('Number of employees').optional(),
@@ -104,7 +106,7 @@ type SchemaFormChildRenderer = NonNullable<SchemaFormComponentProps['children']>
 type SchemaFormRenderedFields = Parameters<SchemaFormChildRenderer>[0]
 type OrganizationFieldElements = Omit<SchemaFormRenderedFields, 'children'>
 type SchemaFormPropConfig = NonNullable<SchemaFormComponentProps['props']>
-type SelectFieldProps = Parameters<(typeof import('@app/ui'))['SelectField']>[0]
+type SelectFieldProps = Parameters<typeof import('@app/ui')['SelectField']>[0]
 type SelectFieldConfig = Pick<SelectFieldProps, 'options' | 'placeholder' | 'native' | 'size'>
 type OrganizationSelectFieldProps = Partial<
   Record<'industryId' | 'employeeCountRange' | 'annualRevenueRange', SelectFieldConfig>
@@ -142,7 +144,7 @@ const CreateOrganizationForm = ({ userId }: OrganizationFormProps) => {
         value: industry.id,
         name: industry.name,
       })) ?? [],
-    [industriesQuery.data],
+    [industriesQuery.data]
   )
 
   const selectFieldProps = useMemo<OrganizationSelectFieldProps>(
@@ -160,7 +162,7 @@ const CreateOrganizationForm = ({ userId }: OrganizationFormProps) => {
         placeholder: 'Choose a range',
       },
     }),
-    [industryOptions, industriesQuery.isPending],
+    [industryOptions, industriesQuery.isPending]
   )
 
   const mutation = useMutation<
@@ -226,8 +228,8 @@ const CreateOrganizationForm = ({ userId }: OrganizationFormProps) => {
           Create an organization
         </SizableText>
         <Paragraph size="$3" color="$gray11">
-          Set up your company profile to invite team members, publish opportunities, and manage
-          your crews.
+          Set up your company profile to invite team members, publish opportunities, and manage your
+          crews.
         </Paragraph>
       </YStack>
 

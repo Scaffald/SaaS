@@ -3,7 +3,8 @@ import { QueryClient, QueryClientProvider as ClientProvider } from '@tanstack/re
 const isNotFoundError = (error: unknown) => {
   if (!error) return false
 
-  const asRecord = typeof error === 'object' && error !== null ? (error as Record<string, unknown>) : null
+  const asRecord =
+    typeof error === 'object' && error !== null ? (error as Record<string, unknown>) : null
   const message = typeof error === 'string' ? error : (asRecord?.message as string | undefined)
   const details = asRecord?.details as string | undefined
   const status = asRecord?.status as number | undefined

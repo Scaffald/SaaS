@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, Input, SizableText, XStack, YStack, useMedia, useTheme } from '@app/ui'
+import { Button, Input, SizableText, XStack, YStack, useMedia, useDidFinishSSR } from '@app/ui'
 import { Dialog } from 'tamagui'
 import { Bell, Menu, Search } from '@tamagui/lucide-icons'
 import { StaticDrawer } from '@app/features/drawer-menu/StaticDrawer.web'
@@ -18,6 +18,7 @@ export const HomeLayout = ({ children, fullPage = false, padded = false }: HomeL
   const media = useMedia()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const pathname = normalizePath(usePathname())
+  const isHydrated = useDidFinishSSR()
 
   const allNavItems = [
     ...drawerSections.flatMap((section) =>
@@ -45,7 +46,7 @@ export const HomeLayout = ({ children, fullPage = false, padded = false }: HomeL
           jc="space-between"
         >
           <XStack ai="center" gap="$3" flexShrink={1} minWidth={0}>
-            {!media.gtSm && (
+            {!media.gtSm && isHydrated && (
               <Dialog open={drawerOpen} onOpenChange={setDrawerOpen} modal>
                 <Dialog.Trigger asChild>
                   <Button
@@ -91,7 +92,6 @@ export const HomeLayout = ({ children, fullPage = false, padded = false }: HomeL
 
 const HeaderSearch = () => {
   const [query, setQuery] = useState('')
-  const theme = useTheme()
   const media = useMedia()
 
   const minWidth = media.gtSm ? 260 : media.gtXs ? 200 : 120
@@ -112,7 +112,7 @@ const HeaderSearch = () => {
       borderWidth={1}
       borderColor="$color4"
     >
-      <Search size={18} color={theme.color10.val} />
+      <Search size={18} color="$color10" />
       <Input
         flexGrow={1}
         size="$3"
@@ -129,8 +129,6 @@ const HeaderSearch = () => {
 }
 
 const NotificationButton = () => {
-  const theme = useTheme()
-
   return (
     <Button
       size="$3"
@@ -140,7 +138,7 @@ const NotificationButton = () => {
       backgroundColor="$color2"
       hoverStyle={{ backgroundColor: '$color3', borderColor: '$color5' }}
       pressStyle={{ backgroundColor: '$color3', borderColor: '$color6' }}
-      icon={<Bell size={18} color={theme.color10.val} />}
+      icon={<Bell size={18} color="$color10" />}
       accessibilityLabel="Open notifications"
       flexShrink={0}
     />

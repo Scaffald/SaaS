@@ -22,6 +22,7 @@
     "incremental": true,
     "module": "ESNext",
     "moduleResolution": "node",
+    "moduleSuffixes": [".web", ".native", ".ios", ".android", ""],
     "forceConsistentCasingInFileNames": true,
     "noEmitOnError": false,
     "noImplicitAny": false,
