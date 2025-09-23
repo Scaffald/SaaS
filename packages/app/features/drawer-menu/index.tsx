@@ -15,15 +15,7 @@ import {
 import type { ThemeName } from '@app/ui'
 import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import { DrawerContentScrollView } from '@react-navigation/drawer'
-import {
-  BarChart3,
-  ChevronRight,
-  CircleUser,
-  Building2,
-  Map,
-  Settings2,
-  Sparkles,
-} from '@tamagui/lucide-icons'
+import { BarChart3, ChevronRight, Building2, Map, Settings2, CircleUser } from '@tamagui/lucide-icons'
 import type { JSX } from 'react'
 import { useCallback } from 'react'
 import { GestureResponderEvent } from 'react-native'
@@ -286,7 +278,7 @@ type DrawerContentProps = {
 }
 
 export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: DrawerContentProps) => {
-  const { profile, avatarUrl, user, updateProfile } = useUser()
+  const { profile, avatarUrl, user } = useUser()
   const tokens = getTokens()
   const manageLink = useLink({ href: '/profile' })
   const avatarSize = tokens.size['3'].val
@@ -308,47 +300,37 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
       gap="$5"
     >
       <Card
-        width="100%"
         px="$4"
-        py="$4"
+        py="$3"
         gap="$3"
         borderRadius="$5"
-        borderColor="$purple4"
-        backgroundColor="$purple2"
-        theme="purple"
+        borderColor="$color4"
+        backgroundColor="$color2"
+        width="100%"
       >
         <ListItem
-          hoverTheme={false}
-          pressTheme={false}
+          hoverTheme
+          pressTheme
           size="$4"
           px="$0"
           py="$0"
           bg="transparent"
-          title={!collapsed ? (profile?.name ?? 'Store Name') : undefined}
-          subTitle={!collapsed ? 'Synced moments ago' : undefined}
-          fontWeight="700"
-          color="$color12"
-          icon={({ size }) => (
-            <XStack ai="center" jc="center" w={40} h={40} br="$4" bg="$purple4">
-              <CircleUser size={size ?? 20} color="$purple11" />
-            </XStack>
+          onPress={handleManagePress}
+          title={!collapsed ? (profile?.name ?? 'No Name') : undefined}
+          subTitle={!collapsed ? (user?.email ?? 'View profile') : undefined}
+          icon={() => (
+            <Avatar circular size="$3">
+              <SolitoImage src={avatarUrl} alt="Profile avatar" width={avatarSize} height={avatarSize} />
+            </Avatar>
           )}
           iconAfter={
             !collapsed ? (
-              <Button theme="purple" size="$2" px="$3" onPress={updateProfile}>
-                Refresh
+              <Button size="$2" px="$3" onPress={handleManagePress}>
+                Manage
               </Button>
             ) : undefined
           }
         />
-        {!collapsed ? (
-          <XStack gap="$2" ai="center">
-            <Sparkles size={16} color="$purple11" />
-            <Paragraph size="$2" color="$purple11">
-              Updated moments ago
-            </Paragraph>
-          </XStack>
-        ) : null}
       </Card>
 
       <YStack gap="$5" width="100%">
@@ -391,43 +373,6 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
           </YGroup>
         )}
 
-        <Card
-          px="$4"
-          py="$3"
-          gap="$3"
-          borderRadius="$5"
-          borderColor="$color4"
-          backgroundColor="$color2"
-        >
-          <ListItem
-            hoverTheme
-            pressTheme
-            size="$4"
-            px="$0"
-            py="$0"
-            bg="transparent"
-            onPress={handleManagePress}
-            title={!collapsed ? (profile?.name ?? 'No Name') : undefined}
-            subTitle={!collapsed ? (user?.email ?? 'View profile') : undefined}
-            icon={() => (
-              <Avatar circular size="$3">
-                <SolitoImage
-                  src={avatarUrl}
-                  alt="Profile avatar"
-                  width={avatarSize}
-                  height={avatarSize}
-                />
-              </Avatar>
-            )}
-            iconAfter={
-              !collapsed ? (
-                <Button size="$2" px="$3" onPress={handleManagePress}>
-                  Manage
-                </Button>
-              ) : undefined
-            }
-          />
-        </Card>
       </YStack>
     </YStack>
   )

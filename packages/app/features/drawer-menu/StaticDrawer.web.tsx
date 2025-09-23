@@ -9,8 +9,17 @@ export const StaticDrawer = ({ onNavigate }: { onNavigate?: () => void } = {}) =
   const pathname = normalizePath(usePathname())
 
   return (
-    <YStack ai="center" backgroundColor="$color1" flexShrink={0} minHeight="100vh" px="$0">
-      <DrawerContent pathname={pathname} onNavigate={() => onNavigate?.()} />
+    <YStack
+      width={320}
+      maxWidth={320}
+      height="100vh"
+      backgroundColor="$color1"
+      flexShrink={0}
+      overflow="hidden"
+    >
+      <YStack flex={1} overflow="auto">
+        <DrawerContent pathname={pathname} onNavigate={() => onNavigate?.()} />
+      </YStack>
     </YStack>
   )
 }
