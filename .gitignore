@@ -58,3 +58,7 @@ thumbs.db
 
 # Turborepo
 .turbo
+
+# test coverage artifacts
+coverage-summary.md
+**/coverage/**

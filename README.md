@@ -175,9 +175,9 @@ yarn web -H $(yarn get-local-ip-mac | head -n 1)
 - Filter to a specific workspace (for example jobs): `yarn test --filter=@app/jobs`
 - Run just the jobs package once: `yarn workspace @app/jobs test`
 - Watch a single package directly: `yarn workspace @app/jobs run test:watch`
-- Collect coverage reports (saved in each package's `coverage/` directory): `yarn test -- --coverage`
+- Collect coverage reports (saved in each package's `coverage/` directory): `yarn test --coverage`
 
-All test projects share `vitest.workspace.ts`, which wires up the root TypeScript path aliases and uses Vitest as the runner. Use the `--coverage` flag with any command above to emit HTML, text, and LCOV coverage summaries.
+All test projects share `vitest.workspace.ts`, which wires up the root TypeScript path aliases and uses Vitest as the runner. Running with `--coverage` now emits LCOV, text-summary, and JSON summaries. Continuous integration enforces minimum coverage thresholds (1% lines/statements, 15% functions, and 20% branches to mirror the current baseline) and uploads a consolidated report as a pull request comment and workflow artifact so regressions are immediately visible.
 
 #### Shared test utilities
 

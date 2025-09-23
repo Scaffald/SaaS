@@ -1,7 +1,13 @@
 {
   "name": "scaffald",
   "private": true,
-  "workspaces": ["apps/*", "app/*", "packages/*", "supabase", "tests/*"],
+  "workspaces": [
+    "apps/*",
+    "app/*",
+    "packages/*",
+    "supabase",
+    "tests/*"
+  ],
   "scripts": {
     "_with-env": "dotenv -e .env -c -- ",
     "ios": "cd apps/expo && yarn ios",
@@ -41,7 +47,7 @@
     "jobs:check:type": "yarn workspace @app/jobs run check:type",
     "jobs:test": "yarn workspace @app/jobs run test",
     "jobs:sync": "yarn workspace @app/jobs run sync",
-    "test": "turbo run test",
+    "test": "turbo run test --",
     "test:watch": "turbo run test:watch",
     "typecheck": "turbo check:type",
     "check:type": "tsc -b --preserveWatchOutput tsconfig.json",
@@ -67,6 +73,7 @@
     "babel-loader": "^8.3.0"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^2.1.1",
     "vite-tsconfig-paths": "^5.1.1",
     "vitest": "^2.1.1"
   },

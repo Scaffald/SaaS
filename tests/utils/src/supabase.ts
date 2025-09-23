@@ -1,4 +1,8 @@
-import type { SupabaseClient } from '@supabase/supabase-js'
+import type {
+  PostgrestError,
+  PostgrestSingleResponse,
+  SupabaseClient,
+} from '@supabase/supabase-js'
 import { vi, type MockInstance } from 'vitest'
 
 type SupabaseRpc<TDatabase> = SupabaseClient<TDatabase>['rpc']
@@ -10,6 +14,31 @@ type SupabaseClientOverrides<TDatabase> = {
 }
 
 export type SupabaseRpcMock<TDatabase> = MockInstance<SupabaseRpc<TDatabase>>
+
+export type PostgrestErrorOverrides = Partial<PostgrestError>
+
+export const createPostgrestError = (
+  overrides: PostgrestErrorOverrides = {}
+): PostgrestError => ({
+  message: 'Unexpected error',
+  details: null,
+  hint: null,
+  code: 'PGRST_UNKNOWN_ERROR',
+  ...overrides,
+})
+
+export type PostgrestSingleResponseOverrides<T> = Partial<PostgrestSingleResponse<T>>
+
+export const createPostgrestSingleResponse = <T>(
+  overrides: PostgrestSingleResponseOverrides<T> = {}
+): PostgrestSingleResponse<T> => ({
+  data: null,
+  error: null,
+  count: null,
+  status: 200,
+  statusText: 'OK',
+  ...overrides,
+})
 
 export const createSupabaseRpcMock = <TDatabase>(
   implementation?: SupabaseRpc<TDatabase>,

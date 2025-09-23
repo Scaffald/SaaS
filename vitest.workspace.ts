@@ -23,7 +23,13 @@ export const createWorkspaceVitestConfig = async (
       environment: options.environment ?? 'node',
       coverage: {
         provider: 'v8',
-        reporter: ['text', 'html', 'lcov'],
+        reporter: ['text-summary', 'lcov', 'json-summary'],
+        thresholds: {
+          lines: 1,
+          functions: 15,
+          statements: 1,
+          branches: 20,
+        },
       },
     },
   }
