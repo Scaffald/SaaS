@@ -40,11 +40,6 @@ const createFileDescriptor = (file: DropZoneWebFile): PickerFileDescriptor => ({
 export const ImagePicker = forwardRef<any, ImagePickerProps>(
   (
     {
-      _disabled,
-      _value,
-      _onChangeText,
-      _onBlur,
-      _placeholder,
       disabled,
       value,
       onChangeText,
