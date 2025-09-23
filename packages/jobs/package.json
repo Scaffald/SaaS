@@ -20,6 +20,7 @@
     "zod": "^3.22.2"
   },
   "devDependencies": {
+    "@app/test-utils": "*",
     "@types/node": "^24.5.2",
     "nock": "^13.5.2",
     "tsup": "^8.2.4",

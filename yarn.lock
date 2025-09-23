@@ -39,6 +39,7 @@ __metadata:
   resolution: "@app/api@workspace:packages/api"
   dependencies:
     "@app/supabase": "npm:*"
+    "@app/test-utils": "npm:*"
     "@supabase/auth-helpers-nextjs": "npm:^0.10.0"
     "@supabase/auth-helpers-react": "npm:^0.5.0"
     "@supabase/supabase-js": "npm:^2.48.1"
@@ -59,6 +60,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@app/jobs@workspace:packages/jobs"
   dependencies:
+    "@app/test-utils": "npm:*"
     "@types/node": "npm:^24.5.2"
     axios: "npm:^1.7.2"
     nock: "npm:^13.5.2"
@@ -81,6 +83,15 @@ __metadata:
     dotenv-cli: "npm:^8.0.0"
     pg: "npm:^8.12.0"
     supabase: "npm:2.40.7"
+  languageName: unknown
+  linkType: soft
+
+"@app/test-utils@npm:*, @app/test-utils@workspace:tests/utils":
+  version: 0.0.0-use.local
+  resolution: "@app/test-utils@workspace:tests/utils"
+  dependencies:
+    typescript: "npm:^5.9.2"
+    vitest: "npm:^2.1.1"
   languageName: unknown
   linkType: soft
 

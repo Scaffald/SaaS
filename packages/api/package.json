@@ -13,6 +13,7 @@
     "test": "vitest"
   },
   "devDependencies": {
+    "@app/test-utils": "*",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/auth-helpers-react": "^0.5.0",
     "@supabase/supabase-js": "^2.48.1",

@@ -1,17 +1,19 @@
 import axios, { type AxiosInstance } from 'axios'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { performance } from 'node:perf_hooks'
+import { createEnvStub, freezeTime } from '@app/test-utils'
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { JoobleClient, assertApiKey, cleanPayload, type JoobleSearchResponse } from '../client'
 
-const ORIGINAL_API_KEY = process.env.JOOBLE_API_KEY
+const env = createEnvStub()
+
+afterAll(() => {
+  env.restore()
+})
 
 describe('assertApiKey', () => {
   afterEach(() => {
-    if (ORIGINAL_API_KEY === undefined) {
-      delete process.env.JOOBLE_API_KEY
-    } else {
-      process.env.JOOBLE_API_KEY = ORIGINAL_API_KEY
-    }
+    env.reset('JOOBLE_API_KEY')
   })
 
   it('returns explicit keys when provided', () => {
@@ -19,12 +21,12 @@ describe('assertApiKey', () => {
   })
 
   it('reads the key from the environment', () => {
-    process.env.JOOBLE_API_KEY = 'env-key'
+    env.set({ JOOBLE_API_KEY: 'env-key' })
     expect(assertApiKey()).toBe('env-key')
   })
 
   it('throws when no key can be resolved', () => {
-    delete process.env.JOOBLE_API_KEY
+    env.clear('JOOBLE_API_KEY')
     expect(() => assertApiKey()).toThrowError('JOOBLE_API_KEY is not defined')
   })
 })
@@ -52,15 +54,11 @@ describe('JoobleClient', () => {
   }
 
   beforeEach(() => {
-    process.env.JOOBLE_API_KEY = 'env-key'
+    env.set({ JOOBLE_API_KEY: 'env-key' })
   })
 
   afterEach(() => {
-    if (ORIGINAL_API_KEY === undefined) {
-      delete process.env.JOOBLE_API_KEY
-    } else {
-      process.env.JOOBLE_API_KEY = ORIGINAL_API_KEY
-    }
+    env.reset('JOOBLE_API_KEY')
     vi.restoreAllMocks()
   })
 
@@ -73,26 +71,38 @@ describe('JoobleClient', () => {
       ],
     }
 
-    const { client, post } = createClient((_url, _payload, _config) =>
-      Promise.resolve({ status: 200, data: response })
-    )
+    const clock = freezeTime('2024-01-01T00:00:00Z')
+    const performanceNowSpy = vi.spyOn(performance, 'now')
+    performanceNowSpy.mockImplementationOnce(() => 100)
+    performanceNowSpy.mockImplementationOnce(() => 142)
+    performanceNowSpy.mockImplementation(() => 142)
 
-    const result = await client.search({
-      keywords: 'engineer',
-      location: 'Remote',
-      radius: 10,
-      page: undefined,
-      size: 50,
-    })
+    try {
+      const { client, post } = createClient(async (_url, _payload, _config) => {
+        clock.advanceTimersByTime(42)
+        return { status: 200, data: response }
+      })
 
-    expect(post).toHaveBeenCalledWith(
-      '/test-key',
-      { keywords: 'engineer', location: 'Remote', radius: 10, size: 50 },
-      { signal: undefined }
-    )
-    expect(result.data).toEqual(response)
-    expect(result.status).toBe(200)
-    expect(result.durationMs).toBeGreaterThanOrEqual(0)
+      const result = await client.search({
+        keywords: 'engineer',
+        location: 'Remote',
+        radius: 10,
+        page: undefined,
+        size: 50,
+      })
+
+      expect(post).toHaveBeenCalledWith(
+        '/test-key',
+        { keywords: 'engineer', location: 'Remote', radius: 10, size: 50 },
+        { signal: undefined }
+      )
+      expect(result.data).toEqual(response)
+      expect(result.status).toBe(200)
+      expect(result.durationMs).toBe(42)
+    } finally {
+      performanceNowSpy.mockRestore()
+      clock.restore()
+    }
   })
 
   it('throws when the API returns an error payload', async () => {

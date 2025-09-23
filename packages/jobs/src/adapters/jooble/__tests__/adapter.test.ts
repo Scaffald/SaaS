@@ -1,10 +1,12 @@
 import nock from 'nock'
+import { createEnvStub } from '@app/test-utils'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { JoobleAdapter } from '../adapter'
 import { JoobleClient } from '../client'
 
 const API_HOST = 'https://jooble.org'
+const env = createEnvStub()
 
 function createAdapter() {
   return new JoobleAdapter(new JoobleClient({ apiKey: 'test-key' }))
@@ -13,24 +15,24 @@ function createAdapter() {
 describe('JoobleAdapter', () => {
   beforeAll(() => {
     nock.disableNetConnect()
-    process.env.JOOBLE_API_KEY = 'test-key'
-    for (const key of [
+    env.set({ JOOBLE_API_KEY: 'test-key' })
+    env.clear(
       'HTTPS_PROXY',
       'https_proxy',
       'HTTP_PROXY',
       'http_proxy',
       'ALL_PROXY',
-      'all_proxy',
-    ]) {
-      delete process.env[key as keyof NodeJS.ProcessEnv]
-    }
+      'all_proxy'
+    )
   })
 
   beforeEach(() => {
-    delete process.env.JOOBLE_SEARCH_KEYWORDS
-    delete process.env.JOOBLE_SEARCH_LOCATION
-    delete process.env.JOOBLE_SEARCH_RADIUS
-    delete process.env.JOOBLE_SEARCH_PAGE_SIZE
+    env.clear(
+      'JOOBLE_SEARCH_KEYWORDS',
+      'JOOBLE_SEARCH_LOCATION',
+      'JOOBLE_SEARCH_RADIUS',
+      'JOOBLE_SEARCH_PAGE_SIZE'
+    )
   })
 
   afterEach(() => {
@@ -39,6 +41,7 @@ describe('JoobleAdapter', () => {
 
   afterAll(() => {
     nock.enableNetConnect()
+    env.restore()
   })
 
   it('normalizes Jooble responses into jobs and organizations', async () => {

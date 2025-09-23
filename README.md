@@ -179,6 +179,43 @@ yarn web -H $(yarn get-local-ip-mac | head -n 1)
 
 All test projects share `vitest.workspace.ts`, which wires up the root TypeScript path aliases and uses Vitest as the runner. Use the `--coverage` flag with any command above to emit HTML, text, and LCOV coverage summaries.
 
+#### Shared test utilities
+
+The `@app/test-utils` workspace publishes helpers that keep mocks and shims consistent across Vitest projects.
+
+- `createSupabaseClientStub` builds typed Supabase clients with `rpc` mocks ready for `mockResolvedValueOnce` chaining.
+- `createEnvStub` tracks and restores environment variables without custom `beforeEach`/`afterEach` boilerplate.
+- `freezeTime` installs `vi.useFakeTimers()` with `performance.now()` support, returning a clock that exposes `advanceTimersByTime` and `restore()`.
+- `createFetchMock`/`installFetchMock` provide typed `fetch` spies and `mockJsonResponse` helpers.
+- `installWindowShim`/`stubGlobal` ensure Node-based suites can patch `window` or arbitrary globals and then roll them back safely.
+
+```ts
+import {
+  createEnvStub,
+  createSupabaseClientStub,
+  freezeTime,
+  installFetchMock,
+  installWindowShim,
+  mockJsonResponse,
+} from '@app/test-utils'
+import { vi } from 'vitest'
+
+const env = createEnvStub({ FEATURE_FLAG: 'enabled' })
+const { client, rpc } = createSupabaseClientStub<MyDatabase>()
+const clock = freezeTime('2024-01-01T00:00:00Z')
+const { mock: fetchMock, restore: restoreFetch } = installFetchMock(() =>
+  Promise.resolve(mockJsonResponse({ ok: true }))
+)
+const { restore: restoreWindow } = installWindowShim({ matchMedia: vi.fn() })
+
+// ...tests...
+
+clock.restore()
+restoreFetch()
+restoreWindow()
+env.restore()
+```
+
 ### EAS dev builds
 
 > [!IMPORTANT]  
