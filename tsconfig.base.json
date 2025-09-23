@@ -8,6 +8,8 @@
       "@app/ui/*": ["packages/ui/*"],
       "@app/api": ["packages/api"],
       "@app/api/*": ["packages/api/*"],
+      "@app/jobs": ["packages/jobs/src"],
+      "@app/jobs/*": ["packages/jobs/src/*"],
       "@app/supabase": ["supabase"],
       "@app/supabase/*": ["supabase/*"]
     },
