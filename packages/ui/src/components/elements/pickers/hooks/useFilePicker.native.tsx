@@ -40,7 +40,7 @@ export function useFilePicker<
     noClick: true,
     ...dropzoneOptions,
   })
-  
+
   const { isDragAccept = false, isDragActive = false, isDragReject = false } = dropZoneResult
 
   const openNative = async () => {

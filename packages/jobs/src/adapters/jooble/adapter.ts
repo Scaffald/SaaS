@@ -196,8 +196,6 @@ export class JoobleAdapter extends JobSourceAdapter {
     this.client = client
   }
 
- 
-
   async pullListings(params: AdapterFetchParams = {}): Promise<AdapterPullResult> {
     const config = buildConfig(params)
 

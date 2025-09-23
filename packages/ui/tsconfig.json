@@ -1,16 +1,7 @@
 {
   "extends": "../../tsconfig.base",
-  "include": [
-    "src",
-    "../app",
-    "../api/src",
-    "../../package.json",
-    "../../supabase"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ],
+  "include": ["src", "../app", "../api/src", "../../package.json", "../../supabase"],
+  "exclude": ["node_modules", "dist"],
   "compilerOptions": {
     "noEmit": true,
     "composite": true,

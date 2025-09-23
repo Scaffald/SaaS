@@ -31,7 +31,7 @@ export const createTrpcClient = () =>
         },
       }),
     ],
-})
+  })
 
 export const createAdminUsersHooks = createAdminUsersHooksFactory(api)
 

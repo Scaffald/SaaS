@@ -1,12 +1,7 @@
 import axios, { type AxiosInstance } from 'axios'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import {
-  JoobleClient,
-  assertApiKey,
-  cleanPayload,
-  type JoobleSearchResponse,
-} from '../client'
+import { JoobleClient, assertApiKey, cleanPayload, type JoobleSearchResponse } from '../client'
 
 const ORIGINAL_API_KEY = process.env.JOOBLE_API_KEY
 
@@ -113,17 +108,22 @@ describe('JoobleClient', () => {
     const abortError = new Error('aborted')
     const isAxiosErrorSpy = vi.spyOn(axios, 'isAxiosError').mockReturnValue(false)
 
-    const { client, post } = createClient((url, payload, config) =>
-      new Promise((_, reject) => {
-        config?.signal?.addEventListener('abort', () => reject(abortError))
-      })
+    const { client, post } = createClient(
+      (url, payload, config) =>
+        new Promise((_, reject) => {
+          config?.signal?.addEventListener('abort', () => reject(abortError))
+        })
     )
 
     const pending = client.search({ keywords: 'test' }, { signal: controller.signal })
     controller.abort()
 
     await expect(pending).rejects.toBe(abortError)
-    expect(post).toHaveBeenCalledWith('/test-key', { keywords: 'test' }, { signal: controller.signal })
+    expect(post).toHaveBeenCalledWith(
+      '/test-key',
+      { keywords: 'test' },
+      { signal: controller.signal }
+    )
     expect(isAxiosErrorSpy).toHaveBeenCalledWith(abortError)
   })
 
@@ -155,8 +155,6 @@ describe('JoobleClient', () => {
 
     const { client } = createClient((_url, _payload, _config) => Promise.reject(axiosError))
 
-    await expect(client.search({})).rejects.toThrow(
-      'Jooble request failed (400): Bad request'
-    )
+    await expect(client.search({})).rejects.toThrow('Jooble request failed (400): Bad request')
   })
 })

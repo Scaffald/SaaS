@@ -31,7 +31,6 @@ export type OnboardingProps = {
   steps: OnboardingStepInfo[]
 }
 
-
 const AUTO_SWIPE_THRESHOLD = 15_000 // ms
 export const Onboarding = ({ onOnboarded, autoSwipe, steps }: OnboardingProps) => {
   const [stepIdx, _setStepIdx] = useState(0)

@@ -181,10 +181,7 @@ type DatePickerExampleProps = {
 }
 
 export const DatePickerExample = forwardRef<any, DatePickerExampleProps>(
-  (
-    { disabled, placeholderTextColor, value, onChangeText, onBlur, placeholder, id },
-    ref
-  ) => {
+  ({ disabled, placeholderTextColor, value, onChangeText, onBlur, placeholder, id }, ref) => {
     const [selectedDates, onDatesChange] = useState<Date[]>([])
     const [open, setOpen] = useState(false)
 

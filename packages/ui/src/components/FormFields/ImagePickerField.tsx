@@ -39,7 +39,11 @@ export const ImagePickerField = (props: Pick<InputProps, 'size'>) => {
             <Shake shakeKey={error?.errorMessage}>
               <ImagePicker
                 disabled={disabled}
-                value={field?.value ? { fileURL: field.value.fileURL || '', path: field.value.path } : undefined}
+                value={
+                  field?.value
+                    ? { fileURL: field.value.fileURL || '', path: field.value.path }
+                    : undefined
+                }
                 onChangeText={(imageSource) => {
                   console.log('imageSource', imageSource)
                   console.log('field.value', field.value)

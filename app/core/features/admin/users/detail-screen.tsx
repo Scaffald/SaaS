@@ -337,9 +337,7 @@ export const AdminUserDetailScreen = ({ workerId, organizationId }: AdminUserDet
                     {entry.revokedAt ? (
                       <Paragraph size="$2">Revoked at: {formatDate(entry.revokedAt)}</Paragraph>
                     ) : null}
-                    {entry.notes ? (
-                      <Paragraph size="$2">Notes: {entry.notes}</Paragraph>
-                    ) : null}
+                    {entry.notes ? <Paragraph size="$2">Notes: {entry.notes}</Paragraph> : null}
                   </YStack>
                 )
               })}

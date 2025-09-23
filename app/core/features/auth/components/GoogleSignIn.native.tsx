@@ -39,11 +39,11 @@ export function GoogleSignIn() {
       if (typeof error === 'object' && error && 'code' in error) {
         const code = (error as { code: string }).code
         if (code === statusCodes.SIGN_IN_CANCELLED) {
-        // user cancelled the login flow
+          // user cancelled the login flow
         } else if (code === statusCodes.IN_PROGRESS) {
-        // operation (e.g. sign in) is in progress already
+          // operation (e.g. sign in) is in progress already
         } else if (code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        // play services not available or outdated
+          // play services not available or outdated
         } else {
           // some other error happened
         }

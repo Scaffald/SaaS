@@ -22,7 +22,7 @@ type MutationResultLike = {
 
 type MutationWithOptionalOrg<
   TMutationResult extends MutationResultLike,
-  TInput extends { organizationId?: string | null }
+  TInput extends { organizationId?: string | null },
 > = Omit<TMutationResult, 'mutate' | 'mutateAsync'> & {
   mutate: (
     input: OptionalOrg<TInput>,
@@ -34,32 +34,41 @@ type MutationWithOptionalOrg<
   ) => ReturnType<TMutationResult['mutateAsync']>
 }
 
-export const createAdminUsersHooks = <
-  TApi extends {
-    admin: {
-      users: {
-        search: { useQuery: (...args: any[]) => any }
-        detail: { useQuery: (...args: any[]) => any }
-        update: { useMutation: (...args: any[]) => MutationResultLike }
-        verify: { useMutation: (...args: any[]) => MutationResultLike }
-        revoke: { useMutation: (...args: any[]) => MutationResultLike }
+export const createAdminUsersHooks =
+  <
+    TApi extends {
+      admin: {
+        users: {
+          search: { useQuery: (...args: any[]) => any }
+          detail: { useQuery: (...args: any[]) => any }
+          update: { useMutation: (...args: any[]) => MutationResultLike }
+          verify: { useMutation: (...args: any[]) => MutationResultLike }
+          revoke: { useMutation: (...args: any[]) => MutationResultLike }
+        }
       }
-    }
-  }
->(api: TApi) =>
+    },
+  >(
+    api: TApi
+  ) =>
   (organizationId?: string | null) => {
     const applyOrg = <T extends { organizationId?: string | null }>(input: OptionalOrg<T>) =>
       mergeOrganizationId<T>(organizationId ?? undefined, input)
 
     type AdminUsersApi = TApi['admin']['users']
     type UpdateResult = AdminUsersApi['update']['useMutation'] extends (...args: any[]) => infer R
-      ? (R extends MutationResultLike ? R : never)
+      ? R extends MutationResultLike
+        ? R
+        : never
       : never
     type VerifyResult = AdminUsersApi['verify']['useMutation'] extends (...args: any[]) => infer R
-      ? (R extends MutationResultLike ? R : never)
+      ? R extends MutationResultLike
+        ? R
+        : never
       : never
     type RevokeResult = AdminUsersApi['revoke']['useMutation'] extends (...args: any[]) => infer R
-      ? (R extends MutationResultLike ? R : never)
+      ? R extends MutationResultLike
+        ? R
+        : never
       : never
 
     return {
@@ -73,10 +82,7 @@ export const createAdminUsersHooks = <
       ) => api.admin.users.detail.useQuery(applyOrg(input), options),
       useUpdate: (options?: Parameters<AdminUsersApi['update']['useMutation']>[0]) => {
         const mutation = api.admin.users.update.useMutation(options)
-        const result: MutationWithOptionalOrg<
-          UpdateResult,
-          AdminUsersInputs['update']
-        > = {
+        const result: MutationWithOptionalOrg<UpdateResult, AdminUsersInputs['update']> = {
           ...mutation,
           mutate: (
             input: OptionalOrg<AdminUsersInputs['update']>,
@@ -91,10 +97,7 @@ export const createAdminUsersHooks = <
       },
       useVerify: (options?: Parameters<AdminUsersApi['verify']['useMutation']>[0]) => {
         const mutation = api.admin.users.verify.useMutation(options)
-        const result: MutationWithOptionalOrg<
-          VerifyResult,
-          AdminUsersInputs['verify']
-        > = {
+        const result: MutationWithOptionalOrg<VerifyResult, AdminUsersInputs['verify']> = {
           ...mutation,
           mutate: (
             input: OptionalOrg<AdminUsersInputs['verify']>,
@@ -109,10 +112,7 @@ export const createAdminUsersHooks = <
       },
       useRevoke: (options?: Parameters<AdminUsersApi['revoke']['useMutation']>[0]) => {
         const mutation = api.admin.users.revoke.useMutation(options)
-        const result: MutationWithOptionalOrg<
-          RevokeResult,
-          AdminUsersInputs['revoke']
-        > = {
+        const result: MutationWithOptionalOrg<RevokeResult, AdminUsersInputs['revoke']> = {
           ...mutation,
           mutate: (
             input: OptionalOrg<AdminUsersInputs['revoke']>,
