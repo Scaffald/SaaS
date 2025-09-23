@@ -106,13 +106,34 @@ const workerPrivateUpdateSchema = z
   })
   .strict()
 
-const updateWorkerInputSchema = workerIdentifierSchema.extend({
-  publicData: workerPublicUpdateSchema.optional(),
-  privateData: workerPrivateUpdateSchema.optional(),
-}).refine((value) => value.publicData || value.privateData, {
-  message: 'At least one of publicData or privateData must be provided',
-  path: ['publicData'],
-})
+const workerProfileUpdateSchema = z
+  .object({
+    publicData: workerPublicUpdateSchema.optional(),
+    privateData: workerPrivateUpdateSchema.optional(),
+  })
+  .strict()
+  .refine((value) => value.publicData || value.privateData, {
+    message: 'At least one of publicData or privateData must be provided',
+    path: ['publicData'],
+  })
+
+const updateWorkerInputSchema = workerIdentifierSchema
+  .extend({
+    profileData: workerProfileUpdateSchema.optional(),
+    publicData: workerPublicUpdateSchema.optional(),
+    privateData: workerPrivateUpdateSchema.optional(),
+  })
+  .refine((value) => {
+    if (value.publicData || value.privateData) {
+      return true
+    }
+
+    const profile = value.profileData
+    return Boolean(profile?.publicData || profile?.privateData)
+  }, {
+    message: 'At least one of profileData, publicData, or privateData must be provided',
+    path: ['profileData'],
+  })
 
 const verifyWorkerInputSchema = workerIdentifierSchema.extend({
   reason: z.string().trim().max(280).optional(),
@@ -341,6 +362,23 @@ function mapPrivateUpdates(input: WorkerPrivateUpdateInput | undefined) {
   return Object.keys(payload).length ? payload : null
 }
 
+function mergeUpdatePayloads<T extends Record<string, unknown>>(
+  ...payloads: Array<T | null | undefined>
+): T | null {
+  let merged: T | null = null
+
+  for (const payload of payloads) {
+    if (!payload) continue
+    if (merged) {
+      merged = { ...merged, ...payload } as T
+    } else {
+      merged = { ...payload } as T
+    }
+  }
+
+  return merged
+}
+
 async function loadWorkerDetail(
   supabase: SupabaseClient<Database>,
   workerId: string,
@@ -530,8 +568,14 @@ export const adminUsersRouter = createTRPCRouter({
 
     const { organizationId } = await ensureAdminAccess(supabase, user.id, input.organizationId)
 
-    const publicPayload = mapPublicUpdates(input.publicData)
-    const privatePayload = mapPrivateUpdates(input.privateData)
+    const publicPayload = mergeUpdatePayloads(
+      mapPublicUpdates(input.profileData?.publicData),
+      mapPublicUpdates(input.publicData),
+    )
+    const privatePayload = mergeUpdatePayloads(
+      mapPrivateUpdates(input.profileData?.privateData),
+      mapPrivateUpdates(input.privateData),
+    )
 
     if (publicPayload) {
       const { error } = await supabase.from('users').update(publicPayload).eq('id', input.workerId)
