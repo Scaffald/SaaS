@@ -1,8 +1,11 @@
 import { X } from '@tamagui/lucide-icons'
 import { useId, useState, forwardRef } from 'react'
+import { Platform } from 'react-native'
+import type { DropzoneInputProps, DropzoneRootProps } from 'react-dropzone'
 import { Button, Image, Label, ScrollView, View, XStack } from 'tamagui'
 
 import { useFilePicker } from './hooks/useFilePicker'
+import type { DropZoneWebFile, PickerFileDescriptor } from './types'
 
 enum MediaTypeOptions {
   /**
@@ -19,48 +22,54 @@ enum MediaTypeOptions {
   Images = 'Images',
 }
 
+const createFileDescriptor = (file: DropZoneWebFile): PickerFileDescriptor => ({
+  fileURL: URL.createObjectURL(file),
+  path: file.path,
+})
+
 /** ------ EXAMPLE ------ */
 export const ImagePicker = forwardRef<
   HTMLInputElement,
   {
     disabled: boolean
-    value: { fileURL: string; path: string } | undefined
-    onChangeText: (imageSource: { fileURL: string; path: string }) => void
+    value: PickerFileDescriptor | undefined
+    onChangeText: (imageSource: PickerFileDescriptor) => void
     onBlur: () => void
     placeholder?: string
-    [key: string]: any
+    [key: string]: unknown
   }
 >(({ disabled, value, onChangeText, onBlur, placeholder, ...props }, ref) => {
   const id = useId()
   const [images, setImages] = useState<string[]>([])
   const { open, getInputProps, getRootProps, dragStatus } = useFilePicker({
     typeOfPicker: 'image',
-    mediaTypes: [MediaTypeOptions.Images],
+    mediaTypes: [MediaTypeOptions.Images] as const,
     multiple: true,
 
     onPick: ({ webFiles, nativeFiles }) => {
       if (webFiles?.length) {
-        const pickedImages = webFiles?.map((file: File) => {
-          return {
-            fileURL: URL.createObjectURL(file),
-            path: (file as any)?.path, // Type assertion to bypass the TypeScript error
-          }
-        })
-        onChangeText(pickedImages[0])
-        setImages((images) => [...images, pickedImages[0].fileURL])
+        const descriptors = webFiles.map(createFileDescriptor)
+        const [firstImage] = descriptors
+
+        if (firstImage) {
+          onChangeText(firstImage)
+          setImages((current) => [...current, firstImage.fileURL])
+        }
       } else if (nativeFiles?.length) {
-        // setImages((images) => [...images, pickedImages[0]])
+        // Native image selection is handled separately
       }
     },
   })
 
-  const { isDragActive } = dragStatus
+  const { isDragActive } = dragStatus || {}
+  const isWeb = Platform.OS === 'web'
+  const rootProps: DropzoneRootProps | undefined = isWeb ? getRootProps() : undefined
+  const inputProps: DropzoneInputProps | undefined = isWeb ? getInputProps() : undefined
 
   return (
-    // @ts-ignore reason: getRootProps() which is web specific return some react-native incompatible props, but it's fine
     <View
       flexDirection="column"
-      {...getRootProps()}
+      {...(rootProps ?? {})}
       borderStyle="dashed"
       id="image-picker"
       maxWidth={600}
@@ -73,11 +82,11 @@ export const ImagePicker = forwardRef<
       gap="$2"
       borderRadius="$true"
     >
-      {/* need an empty input div just have image drop feature in the web */}
-      {/* @ts-ignore */}
-      <View id={id} tag="input" width={0} height={0} {...getInputProps()} ref={ref} />
+      {isWeb && (
+        <View id={id} tag="input" width={0} height={0} {...(inputProps ?? {})} ref={ref} />
+      )}
       <View>
-        <Button size="$3" onPress={open}>
+        <Button size="$3" onPress={open} disabled={disabled} {...props}>
           Pick image
         </Button>
 
@@ -140,5 +149,5 @@ export const ImagePicker = forwardRef<
         </XStack>
       </ScrollView>
     </View>
-  );
+  )
 })
