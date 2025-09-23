@@ -4,94 +4,68 @@ import type { DropzoneInputProps, DropzoneRootProps } from 'react-dropzone'
 import { useEvent } from 'tamagui'
 
 import { useDropZone } from '../useDropZone'
+import type {
+  DropZoneMediaSelection,
+  DropZoneOptionsCustom,
+  FilePickerOnPick,
+  NativeFileSelection,
+  PickerKind,
+} from '../types'
+import type { UseFilePickerControl } from './useFilePicker'
 
-export type MediaTypeOptions = 'All' | 'Videos' | 'Images' | 'Audios'
-export type UseFilePickerControl = {
-  open: () => void
-  getInputProps: <T extends DropzoneInputProps>(props?: T | undefined) => T
-  getRootProps: <T extends DropzoneRootProps>(props?: T | undefined) => T
-  dragStatus?: {
-    isDragAccept: boolean
-    isDragActive: boolean
-    isDragReject: boolean
-  }
-  typeOfPicker: 'file' | 'image'
-}
+type UseFilePickerProps<
+  Media extends DropZoneMediaSelection | undefined = DropZoneMediaSelection | undefined,
+  Kind extends PickerKind = 'file'
+> = {
+  mediaTypes?: Media
+  onPick?: FilePickerOnPick<Kind>
+  typeOfPicker?: Kind
+} & Omit<DropZoneOptionsCustom<Media, Kind>, 'mediaTypes' | 'onDrop' | 'onOpen'>
 
-type NativeFiles<MT extends MediaTypeOptions[]> = MT[number] extends 'Images'
-  ? ImagePicker.ImagePickerResult['assets']
-  : //@ts-ignore
-    DocumentPicker.DocumentResult[]
-export type OnPickType<MT extends MediaTypeOptions[]> = (param: {
-  webFiles: File[] | null
-  nativeFiles: NativeFiles<MT> | null
-}) => void | Promise<void>
-type UseFilePickerProps<MT extends MediaTypeOptions> = {
-  mediaTypes: MT[]
-  onPick: OnPickType<MT[]>
-  /** multiple only works for image only types on native, but on web it works regarding the media types */
-  multiple: boolean
-  typeOfPicker: 'file' | 'image'
-}
+export function useFilePicker<
+  Media extends DropZoneMediaSelection | undefined = DropZoneMediaSelection | undefined,
+  Kind extends PickerKind = 'file'
+>(props?: UseFilePickerProps<Media, Kind>) {
+  const { mediaTypes, onPick, typeOfPicker = 'file', ...dropzoneOptions } = props || {}
 
-export function useFilePicker<MT extends MediaTypeOptions>(props?: UseFilePickerProps<MT>) {
-  const { mediaTypes, onPick, typeOfPicker, ...rest } = props || {}
-
-  // const _onDrop = useEvent((webFiles) => {
-  //   if (onPick) {
-  //     onPick({ webFiles, nativeFiles: null })
-  //   }
-  // })
-
-  // const _onOpenDocumentNative = useEvent(async () => {
-  //   let result = await DocumentPicker.getDocumentAsync({
-  //     type: 'application/pdf',
-  //     multiple: false,
-  //   })
-
-  //   if (result.type === 'success') {
-  //     onPick({ webFiles: null, nativeFiles: result.uri })
-  //   }
-  // })
-
-  const _onOpenNative = useEvent((nativeFiles) => {
+  const handleNativeSelection = useEvent((nativeFiles: NativeFileSelection<Kind>) => {
     if (onPick) {
       onPick({ webFiles: null, nativeFiles })
     }
   })
 
-  const { open, getInputProps, getRootProps, isDragAccept, isDragActive, isDragReject } =
-    useDropZone({
-      onOpen: _onOpenNative,
-      // @ts-ignore
-      mediaTypes,
-      noClick: true,
-      ...rest,
-    })
+  const { isDragAccept, isDragActive, isDragReject } = useDropZone({
+    onOpen: handleNativeSelection,
+    mediaTypes,
+    noClick: true,
+    ...dropzoneOptions,
+  })
 
-  const _handleOpenNative = async () => {
-    // No permissions request is necessary for launching the image or document library
+  const openNative = async () => {
     if (typeOfPicker === 'image') {
       const result = await ImagePicker.launchImageLibraryAsync({
         quality: 1,
         allowsMultipleSelection: true,
       })
-      _onOpenNative(result.assets)
+      handleNativeSelection(result.assets)
     } else {
       const result = await DocumentPicker.getDocumentAsync()
-      _onOpenNative(result.assets)
+      handleNativeSelection(result.assets)
     }
   }
 
-  const control = {
+  const getInputProps = <T extends DropzoneInputProps>(props?: T) => (props ?? ({} as T))
+  const getRootProps = <T extends DropzoneRootProps>(props?: T) => (props ?? ({} as T))
+
+  const control: UseFilePickerControl = {
     dragStatus: {
-      isDragAccept,
-      isDragActive,
-      isDragReject,
+      isDragAccept: Boolean(isDragAccept),
+      isDragActive: Boolean(isDragActive),
+      isDragReject: Boolean(isDragReject),
     },
-    getInputProps: () => null,
-    getRootProps: () => null,
-    open: _handleOpenNative,
+    getInputProps,
+    getRootProps,
+    open: openNative,
   }
 
   return { control, ...control }
