@@ -1,6 +1,7 @@
 import { CustomToast, ToastProvider as ToastProviderOG } from '@app/ui'
 
-import { ToastViewport, ToastViewportProps } from './ToastViewport'
+import { ToastViewport } from './ToastViewport'
+import type { ToastViewportProps } from './ToastViewport.types'
 
 export const ToastProvider = ({
   children,

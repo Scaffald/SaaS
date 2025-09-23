@@ -78,11 +78,13 @@ export const SignUpScreen = () => {
             email: params?.email || '',
             password: '',
           }}
-          props={{
+        props={
+          {
             password: {
               secureTextEntry: true,
             },
-          }}
+          } as any
+        }
           onSubmit={signUpWithEmail}
           renderAfter={({ submit }) => (
             <>

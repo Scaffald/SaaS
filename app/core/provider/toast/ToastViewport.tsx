@@ -1,8 +1,6 @@
 import { ToastViewport as ToastViewportOg } from '@app/ui'
 
-export interface ToastViewportProps {
-  noSafeArea?: boolean
-}
+import type { ToastViewportProps } from './ToastViewport.types'
 export const ToastViewport = ({ noSafeArea }: ToastViewportProps) => {
   return (
     <ToastViewportOg

@@ -68,14 +68,16 @@ const EditProfileForm = ({
     <FormWrapper>
       <SchemaForm
         schema={ProfileSchema}
-        props={{
-          name: {
-            autoFocus: !!params?.edit_name,
-          },
-          about: {
-            autoFocus: !!params?.edit_about,
-          },
-        }}
+        props={
+          {
+            name: {
+              autoFocus: !!params?.edit_name,
+            },
+            about: {
+              autoFocus: !!params?.edit_about,
+            },
+          } as any
+        }
         defaultValues={{
           name: initial.name ?? '',
           about: initial.about ?? '',

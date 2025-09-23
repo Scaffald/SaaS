@@ -80,7 +80,8 @@ const FormComponent: ComponentType<FormProps> = (props: FormProps) => {
   )
 }
 
-const _SchemaForm = createTsForm(mapping, {
+const createTsFormAny = createTsForm as any
+const _SchemaForm: any = createTsFormAny(mapping, {
   FormComponent,
 })
 

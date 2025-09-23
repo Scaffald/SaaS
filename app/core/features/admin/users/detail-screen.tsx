@@ -59,6 +59,8 @@ const verificationFields = [
 
 const verificationFieldLabel = new Map(verificationFields.map((meta) => [meta.field, meta.label]))
 
+const toOptionalString = (value: string | null | undefined) => (value == null ? undefined : value)
+
 type AdminUserDetailScreenProps = {
   workerId: string
   organizationId?: string | null
@@ -97,7 +99,7 @@ export const AdminUserDetailScreen = ({ workerId, organizationId }: AdminUserDet
       toast.show('Saved changes')
       await utils.admin.users.detail.invalidate({
         workerId,
-        organizationId: organizationId ?? null,
+        organizationId: organizationId ?? undefined,
       })
       await utils.admin.users.search.invalidate()
     },
@@ -107,7 +109,7 @@ export const AdminUserDetailScreen = ({ workerId, organizationId }: AdminUserDet
       toast.show('Field verified')
       await utils.admin.users.detail.invalidate({
         workerId,
-        organizationId: organizationId ?? null,
+        organizationId: organizationId ?? undefined,
       })
     },
   })
@@ -116,7 +118,7 @@ export const AdminUserDetailScreen = ({ workerId, organizationId }: AdminUserDet
       toast.show('Verification revoked')
       await utils.admin.users.detail.invalidate({
         workerId,
-        organizationId: organizationId ?? null,
+        organizationId: organizationId ?? undefined,
       })
     },
   })
@@ -179,8 +181,8 @@ export const AdminUserDetailScreen = ({ workerId, organizationId }: AdminUserDet
           <SchemaForm
             schema={ProfileSchema}
             defaultValues={{
-              name: detail.profile?.name ?? undefined,
-              about: detail.profile?.about ?? undefined,
+              name: toOptionalString(detail.profile?.name),
+              about: toOptionalString(detail.profile?.about),
             }}
             onSubmit={(values) =>
               updateMutation.mutate({
@@ -220,11 +222,11 @@ export const AdminUserDetailScreen = ({ workerId, organizationId }: AdminUserDet
           <SchemaForm
             schema={PublicSchema}
             defaultValues={{
-              displayName: detail.displayName ?? undefined,
-              username: detail.username ?? undefined,
-              slug: detail.slug ?? undefined,
-              headline: detail.headline ?? undefined,
-              bio: detail.bio ?? undefined,
+              displayName: toOptionalString(detail.displayName),
+              username: toOptionalString(detail.username),
+              slug: toOptionalString(detail.slug),
+              headline: toOptionalString(detail.headline),
+              bio: toOptionalString(detail.bio),
               openToWork: Boolean(detail.openToWork),
             }}
             onSubmit={(values) =>
@@ -269,9 +271,9 @@ export const AdminUserDetailScreen = ({ workerId, organizationId }: AdminUserDet
           <SchemaForm
             schema={PrivateSchema}
             defaultValues={{
-              email: detail.privateData?.email ?? undefined,
-              phone: detail.privateData?.phone ?? undefined,
-              location: detail.privateData?.location ?? undefined,
+              email: toOptionalString(detail.privateData?.email),
+              phone: toOptionalString(detail.privateData?.phone),
+              location: toOptionalString(detail.privateData?.location),
               openToTravel: Boolean(detail.privateData?.openToTravel),
             }}
             onSubmit={(values) =>

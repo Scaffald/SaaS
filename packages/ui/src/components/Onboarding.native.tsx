@@ -15,12 +15,15 @@ import {
 
 import { OnboardingControls } from './OnboardingControls'
 
-type OnboardingProps = {
+export type OnboardingStepInfo = {
+  theme: ThemeName
+  Content: React.FC
+}
+
+export type OnboardingProps = {
   onOnboarded?: () => void
-  steps: Array<{
-    theme: string
-    Content: React.FC
-  }>
+  autoSwipe?: boolean
+  steps: OnboardingStepInfo[]
 }
 
 export const Onboarding = ({ onOnboarded, steps }: OnboardingProps) => {

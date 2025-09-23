@@ -9,7 +9,7 @@ import {
   useToastController,
 } from '@app/ui'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, type ReactNode } from 'react'
 import { useFormContext, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -101,11 +101,17 @@ export const CreateOrganizationScreen = () => {
 
 type OrganizationFormValues = z.infer<typeof OrganizationSchema>
 
-type SchemaFormComponentProps = Parameters<typeof SchemaForm>[0]
-type SchemaFormChildRenderer = NonNullable<SchemaFormComponentProps['children']>
-type SchemaFormRenderedFields = Parameters<SchemaFormChildRenderer>[0]
-type OrganizationFieldElements = Omit<SchemaFormRenderedFields, 'children'>
-type SchemaFormPropConfig = NonNullable<SchemaFormComponentProps['props']>
+type SchemaFormPropConfig = Record<string, unknown>
+type OrganizationFieldElements = {
+  name: ReactNode
+  slug: ReactNode
+  description: ReactNode
+  websiteUrl: ReactNode
+  industryId: ReactNode
+  employeeCountRange: ReactNode
+  annualRevenueRange: ReactNode
+  location: ReactNode
+}
 type SelectFieldProps = Parameters<typeof import('@app/ui')['SelectField']>[0]
 type SelectFieldConfig = Pick<SelectFieldProps, 'options' | 'placeholder' | 'native' | 'size'>
 type OrganizationSelectFieldProps = Partial<
@@ -174,17 +180,18 @@ const CreateOrganizationForm = ({ userId }: OrganizationFormProps) => {
       const payload = {
         p_name: values.name.trim(),
         p_slug: slugify(values.slug),
-        p_website_url: values.websiteUrl?.trim() ? values.websiteUrl.trim() : null,
-        p_industry_id: values.industryId && values.industryId.length > 0 ? values.industryId : null,
+        p_website_url: values.websiteUrl?.trim() ? values.websiteUrl.trim() : undefined,
+        p_industry_id:
+          values.industryId && values.industryId.length > 0 ? values.industryId : undefined,
         p_employee_count_range:
           values.employeeCountRange && values.employeeCountRange.length > 0
             ? values.employeeCountRange
-            : null,
+            : undefined,
         p_annual_revenue_range:
           values.annualRevenueRange && values.annualRevenueRange.length > 0
             ? values.annualRevenueRange
-            : null,
-        p_description: values.description?.trim() ? values.description.trim() : null,
+            : undefined,
+        p_description: values.description?.trim() ? values.description.trim() : undefined,
         p_address: values.location
           ? {
               street: values.location.street.trim(),
@@ -276,7 +283,7 @@ const OrganizationFormFields = ({ fields }: OrganizationFormFieldsProps) => {
     employeeCountRange,
     annualRevenueRange,
     location,
-  } = fields
+  } = fields as OrganizationFieldElements
 
   return (
     <YStack gap="$4">
@@ -299,8 +306,8 @@ const OrganizationFormFields = ({ fields }: OrganizationFormFieldsProps) => {
   )
 }
 
-const renderOrganizationFields: SchemaFormChildRenderer = ({ children: _unused, ...fields }) => (
-  <OrganizationFormFields fields={fields} />
+const renderOrganizationFields = ({ children: _unused, ...fields }: Record<string, unknown>) => (
+  <OrganizationFormFields fields={fields as OrganizationFieldElements} />
 )
 
 const useAutoSlug = (form: UseFormReturn<OrganizationFormValues>) => {

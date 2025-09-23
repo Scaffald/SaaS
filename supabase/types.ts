@@ -1604,6 +1604,33 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          id: string
+          name: string | null
+          about: string | null
+          avatar_url: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id: string
+          name?: string | null
+          about?: string | null
+          avatar_url?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string | null
+          about?: string | null
+          avatar_url?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       geography_columns: {

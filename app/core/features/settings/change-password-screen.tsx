@@ -45,14 +45,16 @@ export const ChangePasswordScreen = () => {
           password: '',
           passwordConfirm: '',
         }}
-        props={{
-          password: {
-            secureTextEntry: true,
-          },
-          passwordConfirm: {
-            secureTextEntry: true,
-          },
-        }}
+        props={
+          {
+            password: {
+              secureTextEntry: true,
+            },
+            passwordConfirm: {
+              secureTextEntry: true,
+            },
+          } as any
+        }
         renderBefore={() =>
           isWeb && (
             <YStack px="$4" py="$4" pb="$2">

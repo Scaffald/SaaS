@@ -34,7 +34,7 @@ export type ProfileVerificationState = {
 
 export const useProfileVerifications = (
   subjectId?: string | null,
-  subjectTypes: SubjectType[] = SUBJECT_TYPES
+  subjectTypes: readonly SubjectType[] = SUBJECT_TYPES
 ): ProfileVerificationState => {
   const supabase = useSupabase()
   const queryClient = useQueryClient()

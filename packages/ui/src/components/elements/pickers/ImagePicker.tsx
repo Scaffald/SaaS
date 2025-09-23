@@ -7,6 +7,14 @@ import { Button, Image, Label, ScrollView, View, XStack } from 'tamagui'
 import { useFilePicker } from './hooks/useFilePicker'
 import type { DropZoneWebFile, PickerFileDescriptor } from './types'
 
+type ImagePickerProps = {
+  disabled?: boolean
+  value?: PickerFileDescriptor
+  onChangeText?: (imageSource: PickerFileDescriptor) => void
+  onBlur?: () => void
+  placeholder?: string
+}
+
 enum MediaTypeOptions {
   /**
    * Images and videos.
@@ -28,16 +36,8 @@ const createFileDescriptor = (file: DropZoneWebFile): PickerFileDescriptor => ({
 })
 
 /** ------ EXAMPLE ------ */
-export const ImagePicker = forwardRef<
-  any,
-  {
-    disabled?: boolean
-    value?: PickerFileDescriptor | undefined
-    onChangeText?: (imageSource: PickerFileDescriptor) => void
-    onBlur?: () => void
-    placeholder?: string
-  }
->(({ disabled, value, onChangeText, onBlur, placeholder }, ref) => {
+export const ImagePicker = forwardRef<any, ImagePickerProps>(
+  ({ disabled, value, onChangeText, onBlur, placeholder }, ref) => {
   const id = useId()
   const [images, setImages] = useState<string[]>([])
   const { open, getInputProps, getRootProps, dragStatus } = useFilePicker({
@@ -60,7 +60,7 @@ export const ImagePicker = forwardRef<
     },
   })
 
-  const { isDragActive = false } = dragStatus || {}
+  const isDragActive = Boolean(dragStatus?.isDragActive)
   const isWeb = Platform.OS === 'web'
 
   if (isWeb) {
@@ -83,13 +83,13 @@ export const ImagePicker = forwardRef<
         gap="$2"
         borderRadius="$true"
       >
-        <View 
-          id={id} 
-          tag="input" 
-          width={0} 
-          height={0} 
-          {...(inputProps as any)} 
-          ref={ref} 
+        <View
+          id={id}
+          tag="input"
+          width={0}
+          height={0}
+          {...(inputProps as any)}
+          ref={ref as any}
         />
         <View>
           <Button size="$3" onPress={open} disabled={disabled}>
@@ -235,4 +235,5 @@ export const ImagePicker = forwardRef<
       </ScrollView>
     </View>
   )
-})
+  }
+)

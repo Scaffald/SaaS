@@ -177,8 +177,9 @@ export const inputSizeVariant: SizeVariantSpreadFunction<VariantProps> = (
 
   const fontSizeToken = isFontSizeToken(val) ? val : '$true'
   const fontStyle = getFontSized(fontSizeToken, extras as GetFontSizedExtras)
-  const { lineHeight: _lineHeight, ...fontStyleWithoutLineHeight } = fontStyle || {}
-  const resolvedFontStyle = isWeb ? fontStyle : fontStyleWithoutLineHeight
+  const fontStyleRecord = (fontStyle ?? {}) as Record<string, unknown>
+  const { lineHeight: _lineHeight, ...fontStyleWithoutLineHeight } = fontStyleRecord
+  const resolvedFontStyle = isWeb ? fontStyleRecord : fontStyleWithoutLineHeight
 
   return {
     ...resolvedFontStyle,

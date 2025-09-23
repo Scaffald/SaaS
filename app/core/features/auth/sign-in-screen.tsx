@@ -74,12 +74,14 @@ export const SignInScreen = () => {
             password: '',
           }}
           onSubmit={signInWithEmail}
-          props={{
-            password: {
-              afterElement: <ForgotPasswordLink />,
-              secureTextEntry: true,
-            },
-          }}
+          props={
+            {
+              password: {
+                afterElement: <ForgotPasswordLink />,
+                secureTextEntry: true,
+              },
+            } as any
+          }
           renderAfter={({ submit }) => {
             return (
               <>
