@@ -1,7 +1,7 @@
 import { TamaguiProvider, Theme, type ThemeName, YStack } from '@app/ui'
 import type { Decorator } from '@storybook/react'
-import { UniversalThemeProvider } from '@app/provider/theme'
-import { ToastProvider } from '@app/provider/toast'
+import { UniversalThemeProvider } from '@app/core/provider/theme'
+import { ToastProvider } from '@app/core/provider/toast'
 import React from 'react'
 import { config } from '@app/ui'
 

@@ -262,8 +262,8 @@ We've decided not to move to app dir just yet, but since layouts are crucial to 
 You can define these layouts anywhere but we've been keeping them in `layout.web.tsx` files in the `features` directory as needed. You can then use them like so:
 
 ```tsx
-import { MyPageScreen } from '@app/features/myfeat/screen'
-import { MyLayout } from '@app/features/myfeat/layout.web'
+import { MyPageScreen } from '@app/core/features/myfeat/screen'
+import { MyLayout } from '@app/core/features/myfeat/layout.web'
 import Head from 'next/head'
 import { NextPageWithLayout } from './_app'
 
@@ -420,10 +420,10 @@ See `packages/ui` named `@app/ui` for how this works.
 
 ### Pure JS dependencies
 
-If you're installing a JavaScript-only dependency that will be used across platforms, install it in `packages/app`:
+If you're installing a JavaScript-only dependency that will be used across platforms, install it in `packages/core`:
 
 ```sh
-cd packages/app
+cd packages/core
 yarn add date-fns
 cd ../..
 yarn
@@ -440,7 +440,7 @@ cd ..
 yarn
 ```
 
-You can also install the native library inside of `packages/app` if you want to get autoimport for that package inside of the `app` folder. However, you need to be careful and install the _exact_ same version in both packages. If the versions mismatch at all, you'll potentially get terrible bugs. This is a classic monorepo issue. I use `lerna-update-wizard` to help with this (you don't need to use Lerna to use that lib).
+You can also install the native library inside of `packages/core` if you want to get autoimport for that package inside of the `app` folder. However, you need to be careful and install the _exact_ same version in both packages. If the versions mismatch at all, you'll potentially get terrible bugs. This is a classic monorepo issue. I use `lerna-update-wizard` to help with this (you don't need to use Lerna to use that lib).
 
 You may potentially want to have the native module transpiled for the next app. If you get error messages with `Cannot use import statement outside a module`, you may need to use `transpilePackages` in your `next.config.js` and add the module to the array there.
 

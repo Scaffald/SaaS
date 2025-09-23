@@ -1,6 +1,6 @@
 import type { Session } from '@supabase/supabase-js'
-import { Provider, loadThemePromise } from '@app/provider'
-import { supabase } from '@app/utils/supabase/client.native'
+import { Provider, loadThemePromise } from '@app/core/provider'
+import { supabase } from '@app/core/utils/supabase/client.native'
 import { useFonts } from 'expo-font'
 import { SplashScreen, Stack } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
@@ -62,12 +62,6 @@ export default function HomeLayout() {
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen
               name="(drawer)"
-              options={{
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="create"
               options={{
                 headerShown: false,
               }}

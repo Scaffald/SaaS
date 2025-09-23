@@ -25,7 +25,7 @@ module.exports = (api) => {
           root: ['../..'],
           alias: {
             // define aliases to shorten the import paths
-            '@app': '../../packages/app',
+            '@app/core': '../../packages/core',
             '@app/ui': '../../packages/ui',
             '@app/api': '../../packages/api',
             '@app/supabase': '../../supabase',
@@ -46,7 +46,9 @@ module.exports = (api) => {
               },
             ],
           ]),
-      ['transform-inline-environment-variables', {}],
+      ['transform-inline-environment-variables', {
+        include: ['EXPO_OS']
+      }],
     ],
   }
 }

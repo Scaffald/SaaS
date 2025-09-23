@@ -1,5 +1,5 @@
-import { HomeLayout } from '@app/features/home/layout.web'
-import { HomeScreen } from '@app/features/home/screen'
+import { HomeLayout } from '@app/core/features/home/layout.web'
+import { HomeScreen } from '@app/core/features/home/screen'
 import Head from 'next/head'
 
 import type { NextPageWithLayout } from './_app'
