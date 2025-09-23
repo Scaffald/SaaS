@@ -10,17 +10,7 @@ import type {
   PickerKind,
   FilePickerOnPick,
 } from '../types'
-
-export type UseFilePickerControl = {
-  open: () => void
-  getInputProps: <T extends DropzoneInputProps>(props?: T | undefined) => T
-  getRootProps: <T extends DropzoneRootProps>(props?: T | undefined) => T
-  dragStatus?: {
-    isDragAccept: boolean
-    isDragActive: boolean
-    isDragReject: boolean
-  }
-}
+import type { DragStatusSnapshot, UseFilePickerControl } from './useFilePicker.types'
 
 type UseFilePickerProps<
   Media extends DropZoneMediaSelection | undefined = DropZoneMediaSelection | undefined,
@@ -54,24 +44,34 @@ export function useFilePicker<
     }
   })
 
-  const { open, getInputProps, getRootProps, isDragAccept, isDragActive, isDragReject } =
-    useDropZone({
-      onDrop: _onDrop,
-      onOpen,
-      mediaTypes,
-      noClick: true,
-      ...dropzoneOptions,
-    })
+  const dropZoneResult = useDropZone({
+    onDrop: _onDrop,
+    onOpen,
+    mediaTypes,
+    noClick: true,
+    ...dropzoneOptions,
+  })
 
-  const control = {
+  const {
     open,
     getInputProps,
     getRootProps,
-    dragStatus: {
-      isDragAccept,
-      isDragActive,
-      isDragReject,
-    },
+    isDragAccept = false,
+    isDragActive = false,
+    isDragReject = false,
+  } = dropZoneResult
+
+  const dragStatus: DragStatusSnapshot = {
+    isDragAccept,
+    isDragActive,
+    isDragReject,
+  }
+
+  const control: UseFilePickerControl = {
+    open,
+    getInputProps,
+    getRootProps,
+    dragStatus,
   }
 
   return { control, ...control }

@@ -179,8 +179,8 @@ export const AdminUserDetailScreen = ({ workerId, organizationId }: AdminUserDet
           <SchemaForm
             schema={ProfileSchema}
             defaultValues={{
-              name: detail.profile?.name ?? '',
-              about: detail.profile?.about ?? '',
+              name: detail.profile?.name ?? undefined,
+              about: detail.profile?.about ?? undefined,
             }}
             onSubmit={(values) =>
               updateMutation.mutate({
@@ -220,11 +220,11 @@ export const AdminUserDetailScreen = ({ workerId, organizationId }: AdminUserDet
           <SchemaForm
             schema={PublicSchema}
             defaultValues={{
-              displayName: detail.displayName ?? '',
-              username: detail.username ?? '',
-              slug: detail.slug ?? '',
-              headline: detail.headline ?? '',
-              bio: detail.bio ?? '',
+              displayName: detail.displayName ?? undefined,
+              username: detail.username ?? undefined,
+              slug: detail.slug ?? undefined,
+              headline: detail.headline ?? undefined,
+              bio: detail.bio ?? undefined,
               openToWork: Boolean(detail.openToWork),
             }}
             onSubmit={(values) =>
@@ -269,9 +269,9 @@ export const AdminUserDetailScreen = ({ workerId, organizationId }: AdminUserDet
           <SchemaForm
             schema={PrivateSchema}
             defaultValues={{
-              email: detail.privateData?.email ?? '',
-              phone: detail.privateData?.phone ?? '',
-              location: detail.privateData?.location ?? '',
+              email: detail.privateData?.email ?? undefined,
+              phone: detail.privateData?.phone ?? undefined,
+              location: detail.privateData?.location ?? undefined,
               openToTravel: Boolean(detail.privateData?.openToTravel),
             }}
             onSubmit={(values) =>
@@ -330,12 +330,14 @@ export const AdminUserDetailScreen = ({ workerId, organizationId }: AdminUserDet
                         {entry.revokedAt ? 'Revoked' : 'Verified'}
                       </Paragraph>
                     </XStack>
-                    <Text size="$2">Verified at: {formatDate(entry.verifiedAt)}</Text>
-                    <Text size="$2">Verified by: {entry.verifiedBy}</Text>
+                    <Paragraph size="$2">Verified at: {formatDate(entry.verifiedAt)}</Paragraph>
+                    <Paragraph size="$2">Verified by: {entry.verifiedBy}</Paragraph>
                     {entry.revokedAt ? (
-                      <Text size="$2">Revoked at: {formatDate(entry.revokedAt)}</Text>
+                      <Paragraph size="$2">Revoked at: {formatDate(entry.revokedAt)}</Paragraph>
                     ) : null}
-                    {entry.notes ? <Text size="$2">Notes: {entry.notes}</Text> : null}
+                    {entry.notes ? (
+                      <Paragraph size="$2">Notes: {entry.notes}</Paragraph>
+                    ) : null}
                   </YStack>
                 )
               })}

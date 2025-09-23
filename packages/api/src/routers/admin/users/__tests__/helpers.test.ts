@@ -210,7 +210,7 @@ describe('ensureAdminAccess', () => {
 
     await expect(ensureAdminAccess(supabase, 'user-id', undefined)).rejects.toHaveProperty(
       'code',
-      'FORBIDDEN',
+      'FORBIDDEN'
     )
   })
 
@@ -220,7 +220,7 @@ describe('ensureAdminAccess', () => {
     const supabase = { rpc } as SupabaseClient<Database>
 
     await expect(ensureAdminAccess(supabase, 'user-id', undefined)).rejects.toBeInstanceOf(
-      TRPCError,
+      TRPCError
     )
     expect(consoleErrorSpy).toHaveBeenCalled()
   })

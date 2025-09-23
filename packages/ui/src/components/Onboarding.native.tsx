@@ -1,4 +1,5 @@
-import { useSafeAreaInsets } from '@app/core/utils/useSafeAreaInsets'
+// import { useSafeAreaInsets } from '@app/core/utils/useSafeAreaInsets'
+const useSafeAreaInsets = () => ({ top: 0, bottom: 0, left: 0, right: 0 })
 import { useRef, useState } from 'react'
 import { ScrollView as RNScrollView } from 'react-native'
 import {
@@ -12,8 +13,15 @@ import {
   useWindowDimensions,
 } from 'tamagui'
 
-import { OnboardingProps } from './Onboarding'
 import { OnboardingControls } from './OnboardingControls'
+
+type OnboardingProps = {
+  onOnboarded?: () => void
+  steps: Array<{
+    theme: string
+    Content: React.FC
+  }>
+}
 
 export const Onboarding = ({ onOnboarded, steps }: OnboardingProps) => {
   const dimensions = useWindowDimensions()

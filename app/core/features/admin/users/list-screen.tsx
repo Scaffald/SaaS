@@ -95,8 +95,9 @@ export const AdminUsersListScreen = ({ organizationId }: AdminUsersListScreenPro
     offset,
   })
 
-  const results = searchQuery.data?.results ?? []
-  const total = searchQuery.data?.count ?? 0
+  const searchData = searchQuery.data as RouterOutputs['admin']['users']['search'] | undefined
+  const results = searchData?.results ?? []
+  const total = searchData?.count ?? 0
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
   const isUnauthorized = searchQuery.error?.data?.code === 'FORBIDDEN'
 
@@ -158,8 +159,9 @@ export const AdminUsersListScreen = ({ organizationId }: AdminUsersListScreenPro
               const href = `/admin/users/${row.id}${organizationId ? `?organizationId=${organizationId}` : ''}`
               return (
                 <YStack key={row.id}>
-                  <Link href={href} asChild>
+                  <Link href={href}>
                     <XStack
+                      tag="a"
                       paddingVertical="$3"
                       paddingHorizontal="$3"
                       gap="$3"

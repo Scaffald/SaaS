@@ -39,8 +39,7 @@ export const ImagePickerField = (props: Pick<InputProps, 'size'>) => {
             <Shake shakeKey={error?.errorMessage}>
               <ImagePicker
                 disabled={disabled}
-                placeholderTextColor="$color10"
-                value={field?.value ? field.value.fileURL : ''}
+                value={field?.value ? { fileURL: field.value.fileURL || '', path: field.value.path } : undefined}
                 onChangeText={(imageSource) => {
                   console.log('imageSource', imageSource)
                   console.log('field.value', field.value)
@@ -49,8 +48,6 @@ export const ImagePickerField = (props: Pick<InputProps, 'size'>) => {
                 onBlur={field.onBlur}
                 ref={inputRef}
                 placeholder=""
-                id={`${id}-date-value`}
-                {...props}
               />
             </Shake>
             <FieldError message={error?.errorMessage} />

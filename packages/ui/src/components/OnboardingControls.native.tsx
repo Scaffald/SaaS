@@ -1,7 +1,12 @@
 import { ChevronRight } from '@tamagui/lucide-icons'
 import { Button, XStack } from 'tamagui'
 
-import { OnboardingControlsProps } from './OnboardingControls'
+type OnboardingControlsProps = {
+  currentIdx: number
+  onChange: (newIdx: number) => void
+  stepsCount: number
+  onFinish?: () => void
+}
 
 export const OnboardingControls = ({
   currentIdx,

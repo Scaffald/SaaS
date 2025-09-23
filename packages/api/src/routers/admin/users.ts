@@ -50,7 +50,7 @@ export const adminUsersRouter = createTRPCRouter({
           profile:profiles!left(name),
           user_private:user_private!left(email, phone)
         `,
-        { count: 'exact' },
+        { count: 'exact' }
       )
       .order('display_name', { ascending: true })
       .range(input.offset, Math.max(input.offset, rangeEnd))
@@ -58,7 +58,7 @@ export const adminUsersRouter = createTRPCRouter({
     if (likeQuery) {
       const filter = buildIlikeFilter(likeQuery)
       query = query.or(
-        `display_name.ilike.${filter},username.ilike.${filter},user_private.email.ilike.${filter}`,
+        `display_name.ilike.${filter},username.ilike.${filter},user_private.email.ilike.${filter}`
       )
     }
 
@@ -72,7 +72,7 @@ export const adminUsersRouter = createTRPCRouter({
     const rows = (data ?? []) as unknown as WorkerSummaryRow[]
     const verificationFieldMap = await loadActiveVerificationFields(
       supabase,
-      rows.map((row) => row.id),
+      rows.map((row) => row.id)
     )
 
     return {
@@ -119,11 +119,11 @@ export const adminUsersRouter = createTRPCRouter({
     const profilePayload = mapProfileUpdates(input.profileData)
     const publicPayload = mergeUpdatePayloads(
       mapPublicUpdates(input.profileData?.publicData),
-      mapPublicUpdates(input.publicData),
+      mapPublicUpdates(input.publicData)
     )
     const privatePayload = mergeUpdatePayloads(
       mapPrivateUpdates(input.profileData?.privateData),
-      mapPrivateUpdates(input.privateData),
+      mapPrivateUpdates(input.privateData)
     )
 
     if (profilePayload) {
@@ -133,7 +133,10 @@ export const adminUsersRouter = createTRPCRouter({
         .eq('id', input.workerId)
       if (error) {
         console.error('Failed to update profile data', error)
-        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Unable to update worker profile.' })
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Unable to update worker profile.',
+        })
       }
     }
 

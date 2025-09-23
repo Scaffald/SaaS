@@ -17,7 +17,7 @@ export const StaticDrawer = ({ onNavigate }: { onNavigate?: () => void } = {}) =
       flexShrink={0}
       overflow="hidden"
     >
-      <YStack flex={1} overflow="auto">
+      <YStack flex={1} overflow="scroll">
         <DrawerContent pathname={pathname} onNavigate={() => onNavigate?.()} />
       </YStack>
     </YStack>

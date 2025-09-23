@@ -72,7 +72,10 @@ const getPrimitiveTokenValue = (token: unknown): string | number | undefined => 
   return undefined
 }
 
-const getTokenFromRecord = <T extends Record<string, unknown>>(record: T | undefined, key: string) => {
+const getTokenFromRecord = <T extends Record<string, unknown>>(
+  record: T | undefined,
+  key: string
+) => {
   if (!record) return undefined
   return record[key as keyof T]
 }
@@ -162,7 +165,10 @@ const InputGroupImpl = InputGroupFrame.styleable((props, forwardedRef) => {
   )
 })
 
-export const inputSizeVariant: SizeVariantSpreadFunction<VariantProps> = (val = '$true', extras) => {
+export const inputSizeVariant: SizeVariantSpreadFunction<VariantProps> = (
+  val = '$true',
+  extras
+) => {
   const radiusToken = extras.tokens.radius[val] ?? extras.tokens.radius['$true']
   const paddingHorizontal = getSpace(val, {
     shift: -1,
@@ -171,7 +177,7 @@ export const inputSizeVariant: SizeVariantSpreadFunction<VariantProps> = (val = 
 
   const fontSizeToken = isFontSizeToken(val) ? val : '$true'
   const fontStyle = getFontSized(fontSizeToken, extras as GetFontSizedExtras)
-  const { lineHeight: _lineHeight, ...fontStyleWithoutLineHeight } = fontStyle
+  const { lineHeight: _lineHeight, ...fontStyleWithoutLineHeight } = fontStyle || {}
   const resolvedFontStyle = isWeb ? fontStyle : fontStyleWithoutLineHeight
 
   return {
@@ -334,8 +340,7 @@ export const InputInfo = styled(Text, {
         const fontWeight = getPrimitiveTokenValue(fontWeightToken)
 
         const fontSize = typeof fontSizeValue === 'number' ? fontSizeValue * 0.8 : undefined
-        const lineHeight =
-          typeof lineHeightValue === 'number' ? lineHeightValue * 0.8 : undefined
+        const lineHeight = typeof lineHeightValue === 'number' ? lineHeightValue * 0.8 : undefined
 
         return {
           fontSize,

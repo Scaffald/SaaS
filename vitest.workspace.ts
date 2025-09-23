@@ -1,17 +1,17 @@
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import type { UserConfig } from 'vitest/config';
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import type { UserConfig } from 'vitest/config'
 
-const workspaceRoot = dirname(fileURLToPath(import.meta.url));
+const workspaceRoot = dirname(fileURLToPath(import.meta.url))
 
 export type WorkspaceVitestOptions = {
-  environment?: 'node' | 'jsdom';
-};
+  environment?: 'node' | 'jsdom'
+}
 
 export const createWorkspaceVitestConfig = async (
-  options: WorkspaceVitestOptions = {},
+  options: WorkspaceVitestOptions = {}
 ): Promise<UserConfig> => {
-  const { default: tsconfigPaths } = await import('vite-tsconfig-paths');
+  const { default: tsconfigPaths } = await import('vite-tsconfig-paths')
 
   return {
     plugins: [
@@ -26,7 +26,7 @@ export const createWorkspaceVitestConfig = async (
         reporter: ['text', 'html', 'lcov'],
       },
     },
-  };
-};
+  }
+}
 
-export default createWorkspaceVitestConfig();
+export default createWorkspaceVitestConfig()

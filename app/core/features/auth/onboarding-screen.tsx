@@ -1,9 +1,11 @@
-import { Onboarding, OnboardingStepInfo, StepContent } from '@app/ui'
+import { Onboarding, StepContent } from '@app/ui'
 import { ArrowUp, Rocket, Sparkles } from '@tamagui/lucide-icons'
 import React from 'react'
 import { useRouter } from 'solito/router'
 
-const steps: OnboardingStepInfo[] = [
+type OnboardingSteps = Parameters<typeof Onboarding>[0]['steps']
+
+const steps: OnboardingSteps = [
   {
     theme: 'orange',
     Content: () => (

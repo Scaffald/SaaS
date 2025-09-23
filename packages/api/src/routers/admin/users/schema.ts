@@ -1,6 +1,12 @@
 import { z } from 'zod'
 
-export const verificationStatuses = ['verified', 'revoked', 'pending', 'unverified', 'unknown'] as const
+export const verificationStatuses = [
+  'verified',
+  'revoked',
+  'pending',
+  'unverified',
+  'unknown',
+] as const
 
 export const verificationSubjectTypes = ['profile', 'user', 'user_private'] as const
 
@@ -68,20 +74,20 @@ export const workerProfileUpdateSchema = z
     privateData: workerPrivateUpdateSchema.optional(),
   })
   .strict()
-  .refine((value) => {
-    if (value.publicData || value.privateData) {
-      return true
-    }
+  .refine(
+    (value) => {
+      if (value.publicData || value.privateData) {
+        return true
+      }
 
-    return (
-      value.name !== undefined ||
-      value.about !== undefined ||
-      value.avatarUrl !== undefined
-    )
-  }, {
-    message: 'At least one of name, about, avatarUrl, publicData, or privateData must be provided',
-    path: ['publicData'],
-  })
+      return value.name !== undefined || value.about !== undefined || value.avatarUrl !== undefined
+    },
+    {
+      message:
+        'At least one of name, about, avatarUrl, publicData, or privateData must be provided',
+      path: ['publicData'],
+    }
+  )
 
 export const updateWorkerInputSchema = workerIdentifierSchema
   .extend({
@@ -89,27 +95,30 @@ export const updateWorkerInputSchema = workerIdentifierSchema
     publicData: workerPublicUpdateSchema.optional(),
     privateData: workerPrivateUpdateSchema.optional(),
   })
-  .refine((value) => {
-    if (value.publicData || value.privateData) {
-      return true
-    }
+  .refine(
+    (value) => {
+      if (value.publicData || value.privateData) {
+        return true
+      }
 
-    const profile = value.profileData
-    if (!profile) {
-      return false
-    }
+      const profile = value.profileData
+      if (!profile) {
+        return false
+      }
 
-    return Boolean(
-      profile.publicData ||
-        profile.privateData ||
-        profile.name !== undefined ||
-        profile.about !== undefined ||
-        profile.avatarUrl !== undefined,
-    )
-  }, {
-    message: 'At least one of profileData, publicData, or privateData must be provided',
-    path: ['profileData'],
-  })
+      return Boolean(
+        profile.publicData ||
+          profile.privateData ||
+          profile.name !== undefined ||
+          profile.about !== undefined ||
+          profile.avatarUrl !== undefined
+      )
+    },
+    {
+      message: 'At least one of profileData, publicData, or privateData must be provided',
+      path: ['profileData'],
+    }
+  )
 
 export const verificationFieldSchema = z.string().trim().min(1).max(160)
 

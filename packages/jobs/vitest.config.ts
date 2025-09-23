@@ -1,3 +1,3 @@
-import { createWorkspaceVitestConfig } from '../../vitest.workspace';
+import { createWorkspaceVitestConfig } from '../../vitest.workspace'
 
-export default createWorkspaceVitestConfig({ environment: 'node' });
+export default createWorkspaceVitestConfig({ environment: 'node' })

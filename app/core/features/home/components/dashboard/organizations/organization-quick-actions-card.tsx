@@ -95,7 +95,7 @@ export const OrganizationQuickActionsCard = () => {
               </XStack>
 
               <Paragraph size="$2" color="$gray11">
-                Role: {formatRoleLabel(organization.role_name, organization.is_admin)}
+                Role: {formatRoleLabel(organization.role_name, Boolean(organization.is_admin))}
               </Paragraph>
 
               <XStack gap="$4" fw="wrap">

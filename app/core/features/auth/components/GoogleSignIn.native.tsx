@@ -19,7 +19,7 @@ export function GoogleSignIn() {
       await GoogleSignin.hasPlayServices()
 
       const response = await GoogleSignin.signIn()
-      const token = response?.data?.idToken
+      const token = response?.idToken
 
       if (token) {
         const { error } = await supabase.auth.signInWithIdToken({
@@ -28,22 +28,25 @@ export function GoogleSignIn() {
         })
 
         if (error) {
-          throw new Error('error', error)
+          throw new Error(error.message)
         }
 
         router.replace('/')
       } else {
         throw new Error('no ID token present!')
       }
-    } catch (error) {
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+    } catch (error: unknown) {
+      if (typeof error === 'object' && error && 'code' in error) {
+        const code = (error as { code: string }).code
+        if (code === statusCodes.SIGN_IN_CANCELLED) {
         // user cancelled the login flow
-      } else if (error.code === statusCodes.IN_PROGRESS) {
+        } else if (code === statusCodes.IN_PROGRESS) {
         // operation (e.g. sign in) is in progress already
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        } else if (code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         // play services not available or outdated
-      } else {
-        // some other error happened
+        } else {
+          // some other error happened
+        }
       }
     }
   }

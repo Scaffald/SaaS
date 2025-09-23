@@ -2,14 +2,8 @@ import type { Database, Json } from '@app/supabase/types'
 import type { PostgrestError, SupabaseClient } from '@supabase/supabase-js'
 import { TRPCError } from '@trpc/server'
 
-import {
-  normaliseVerificationStatus,
-  type WorkerVerificationStatus,
-} from './mappers'
-import {
-  verificationSubjectTypes,
-  type VerificationSubjectType,
-} from './schema'
+import { normaliseVerificationStatus, type WorkerVerificationStatus } from './mappers'
+import { verificationSubjectTypes, type VerificationSubjectType } from './schema'
 
 const VERIFY_WORKER_RPC = 'admin_verify_worker' as const
 const REVOKE_WORKER_VERIFICATION_RPC = 'admin_revoke_worker_verification' as const
@@ -17,7 +11,14 @@ const GET_VERIFICATION_STATUS_RPC = 'admin_get_worker_verification_status' as co
 
 type WorkerSummaryBase = Pick<
   Database['public']['Tables']['users']['Row'],
-  'id' | 'display_name' | 'username' | 'slug' | 'headline' | 'open_to_work' | 'created_at' | 'updated_at'
+  | 'id'
+  | 'display_name'
+  | 'username'
+  | 'slug'
+  | 'headline'
+  | 'open_to_work'
+  | 'created_at'
+  | 'updated_at'
 >
 
 export type WorkerSummaryRow = WorkerSummaryBase & {
@@ -138,14 +139,14 @@ export type WorkerDetail = {
 export async function fetchVerificationStatus(
   supabase: SupabaseClient<Database>,
   workerId: string,
-  organizationId: string | null,
+  organizationId: string | null
 ): Promise<WorkerVerificationStatus> {
   const { data, error } = await supabase.rpc(
     GET_VERIFICATION_STATUS_RPC as never,
     {
       worker_id: workerId,
       organization_id: organizationId,
-    } as never,
+    } as never
   )
 
   if (error) {
@@ -159,7 +160,7 @@ export async function fetchVerificationStatus(
 
 export async function loadActiveVerificationFields(
   supabase: SupabaseClient<Database>,
-  workerIds: string[],
+  workerIds: string[]
 ) {
   const map = new Map<string, string[]>()
   if (!workerIds.length) {
@@ -192,7 +193,7 @@ export async function loadActiveVerificationFields(
 
 async function loadVerificationLedger(
   supabase: SupabaseClient<Database>,
-  workerId: string,
+  workerId: string
 ): Promise<WorkerVerificationLedgerEntry[]> {
   const { data, error } = await supabase
     .from('profile_verifications')
@@ -221,7 +222,7 @@ async function loadVerificationLedger(
 export async function loadWorkerDetail(
   supabase: SupabaseClient<Database>,
   workerId: string,
-  organizationId: string | null,
+  organizationId: string | null
 ): Promise<WorkerDetail> {
   const { data, error } = await supabase
     .from('users')
@@ -267,7 +268,7 @@ export async function loadWorkerDetail(
           created_at,
           updated_at
         )
-      `,
+      `
     )
     .eq('id', workerId)
     .maybeSingle<WorkerDetailRow>()
@@ -380,9 +381,12 @@ function toVerificationRpcInput({
 
 export async function verifyWorker(
   supabase: SupabaseClient<Database>,
-  params: VerificationActionInput,
+  params: VerificationActionInput
 ): Promise<WorkerVerificationStatus> {
-  const { error } = await supabase.rpc(VERIFY_WORKER_RPC as never, toVerificationRpcInput(params) as never)
+  const { error } = await supabase.rpc(
+    VERIFY_WORKER_RPC as never,
+    toVerificationRpcInput(params) as never
+  )
 
   if (error) {
     console.error('Failed to verify worker', error)
@@ -394,11 +398,11 @@ export async function verifyWorker(
 
 export async function revokeWorkerVerification(
   supabase: SupabaseClient<Database>,
-  params: VerificationActionInput,
+  params: VerificationActionInput
 ): Promise<WorkerVerificationStatus> {
   const { error } = await supabase.rpc(
     REVOKE_WORKER_VERIFICATION_RPC as never,
-    toVerificationRpcInput(params) as never,
+    toVerificationRpcInput(params) as never
   )
 
   if (error) {

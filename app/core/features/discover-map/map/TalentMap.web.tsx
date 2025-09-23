@@ -126,7 +126,7 @@ export const TalentMap = ({
         'mapbox://styles/mapbox/light-v11',
       center,
       zoom: radiusMeters ? radiusToZoomLevel(radiusMeters) : 7,
-      accessToken: mapboxgl.accessToken,
+      accessToken: mapboxgl.accessToken ?? undefined,
       attributionControl: false,
     })
 

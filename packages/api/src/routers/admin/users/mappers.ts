@@ -132,7 +132,8 @@ export function mergeUpdatePayloads<T extends Record<string, unknown>>(
 export function mapProfileUpdates(input: WorkerProfileUpdateInput | undefined) {
   if (!input) return null
 
-  const payload: Partial<{ name: string | null; about: string | null; avatar_url: string | null }> = {}
+  const payload: Partial<{ name: string | null; about: string | null; avatar_url: string | null }> =
+    {}
 
   if (input.name !== undefined) payload.name = input.name
   if (input.about !== undefined) payload.about = input.about

@@ -11,6 +11,7 @@ export type OnboardingControlsProps = {
   onFinish?: () => void
 }
 
+
 export const OnboardingControls = ({
   currentIdx,
   onChange,

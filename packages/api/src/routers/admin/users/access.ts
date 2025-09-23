@@ -9,11 +9,11 @@ export type AdminAccess = {
 
 export async function applyOrganizationContext(
   supabase: SupabaseClient<Database>,
-  organizationId: string,
+  organizationId: string
 ) {
   const { error } = await supabase.rpc(
     'set_org_context' as never,
-    { p_org_id: organizationId } as never,
+    { p_org_id: organizationId } as never
   )
 
   if (error) {
@@ -29,7 +29,7 @@ export async function ensureAdminAccess(
   supabase: SupabaseClient<Database>,
   userId: string,
   organizationId: string | undefined,
-  { requireOrgContext = false }: { requireOrgContext?: boolean } = {},
+  { requireOrgContext = false }: { requireOrgContext?: boolean } = {}
 ): Promise<AdminAccess> {
   const { data: isSuperAdmin, error: superError } = await supabase.rpc('user_has_role', {
     p_user_id: userId,

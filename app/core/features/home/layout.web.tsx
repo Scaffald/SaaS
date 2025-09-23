@@ -96,7 +96,7 @@ export const HomeLayout = ({
     <XStack f={1} backgroundColor="$color1" minHeight="100vh">
       {media.gtSm && <StaticDrawer />}
       <YStack f={1} minWidth={0} height="100vh" overflow="hidden">
-        <YStack flex={1} overflow="auto" backgroundColor="$color1">
+        <YStack flex={1} overflow="scroll" backgroundColor="$color1">
           <YStack minHeight="100%" backgroundColor="$color1">
             <YStack
               px="$4"
@@ -105,8 +105,7 @@ export const HomeLayout = ({
               borderColor="$color4"
               backgroundColor="$color1"
               gap="$4"
-              position="sticky"
-              top={0}
+              style={{ position: 'sticky', top: 0 }}
               zIndex={10}
             >
               {headerContent}

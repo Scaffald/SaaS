@@ -3,17 +3,20 @@
   "include": [
     "src",
     "../app",
-    "../app/package.json",
     "../api/src",
-    "../api/package.json",
     "../../package.json",
     "../../supabase"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
   ],
   "compilerOptions": {
     "noEmit": true,
     "composite": true,
     "jsx": "react-jsx",
-    "plugins": []
+    "plugins": [],
+    "skipLibCheck": true
   },
   "references": []
 }

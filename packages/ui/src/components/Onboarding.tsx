@@ -1,4 +1,5 @@
-import { useSafeAreaInsets } from '@app/core/utils/useSafeAreaInsets'
+// import { useSafeAreaInsets } from '@app/core/utils/useSafeAreaInsets'
+const useSafeAreaInsets = () => ({ top: 0, bottom: 0, left: 0, right: 0 })
 import React, { useEffect, useState, useCallback } from 'react'
 import { PanResponder } from 'react-native'
 import {
@@ -29,6 +30,7 @@ export type OnboardingProps = {
   autoSwipe?: boolean
   steps: OnboardingStepInfo[]
 }
+
 
 const AUTO_SWIPE_THRESHOLD = 15_000 // ms
 export const Onboarding = ({ onOnboarded, autoSwipe, steps }: OnboardingProps) => {

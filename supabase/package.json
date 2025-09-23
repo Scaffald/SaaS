@@ -1,7 +1,9 @@
 {
   "name": "@app/supabase",
   "version": "0.0.0",
-  "files": ["./types.ts"],
+  "files": [
+    "./types.ts"
+  ],
   "scripts": {
     "_with-env": "dotenv -e ../.env -c -- ",
     "_ensure-env": "[ -f \"../.env\" ] || cp \"../.env.example\" \"../.env\"",

@@ -1,11 +1,12 @@
 // vite cjs compat:
 import * as DropZone from 'react-dropzone'
+import type { DropzoneState } from 'react-dropzone'
 
 import type { DropZoneMediaType, DropZoneOptionsCustom } from './types'
 
 type AcceptRecord = Record<string, string[]>
 
-export function useDropZone(options: DropZoneOptionsCustom) {
+export function useDropZone(options: DropZoneOptionsCustom): DropzoneState {
   const { mediaTypes, onOpen: _onOpen, allowsEditing: _allowsEditing, ...dropzoneOptions } = options
 
   const acceptFromMediaTypes = mediaTypes?.reduce<AcceptRecord>((acc, mediaType) => {

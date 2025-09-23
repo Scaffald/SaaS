@@ -11,7 +11,7 @@ import type {
   NativeFileSelection,
   PickerKind,
 } from '../types'
-import type { UseFilePickerControl } from './useFilePicker'
+import type { DragStatusSnapshot, UseFilePickerControl } from './useFilePicker.types'
 
 type UseFilePickerProps<
   Media extends DropZoneMediaSelection | undefined = DropZoneMediaSelection | undefined,
@@ -34,12 +34,14 @@ export function useFilePicker<
     }
   })
 
-  const { isDragAccept, isDragActive, isDragReject } = useDropZone({
+  const dropZoneResult = useDropZone({
     onOpen: handleNativeSelection,
     mediaTypes,
     noClick: true,
     ...dropzoneOptions,
   })
+  
+  const { isDragAccept = false, isDragActive = false, isDragReject = false } = dropZoneResult
 
   const openNative = async () => {
     if (typeOfPicker === 'image') {
@@ -47,22 +49,24 @@ export function useFilePicker<
         quality: 1,
         allowsMultipleSelection: true,
       })
-      handleNativeSelection(result.assets)
+      handleNativeSelection(result.assets as NativeFileSelection<Kind>)
     } else {
       const result = await DocumentPicker.getDocumentAsync()
-      handleNativeSelection(result.assets)
+      handleNativeSelection(result.assets as NativeFileSelection<Kind>)
     }
   }
 
   const getInputProps = <T extends DropzoneInputProps>(props?: T) => props ?? ({} as T)
   const getRootProps = <T extends DropzoneRootProps>(props?: T) => props ?? ({} as T)
 
+  const dragStatus: DragStatusSnapshot = {
+    isDragAccept: Boolean(isDragAccept),
+    isDragActive: Boolean(isDragActive),
+    isDragReject: Boolean(isDragReject),
+  }
+
   const control: UseFilePickerControl = {
-    dragStatus: {
-      isDragAccept: Boolean(isDragAccept),
-      isDragActive: Boolean(isDragActive),
-      isDragReject: Boolean(isDragReject),
-    },
+    dragStatus,
     getInputProps,
     getRootProps,
     open: openNative,

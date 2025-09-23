@@ -171,19 +171,18 @@ function DatePickerBody() {
 }
 
 type DatePickerExampleProps = {
-  disabled: boolean
+  disabled?: boolean
   placeholderTextColor?: string
-  value: string | undefined
-  onChangeText: (dateValue: string) => void
-  onBlur: () => void
+  value?: string | undefined
+  onChangeText?: (dateValue: string) => void
+  onBlur?: () => void
   placeholder?: string
-  id: string
-  [key: string]: unknown
+  id?: string
 }
 
-export const DatePickerExample = forwardRef<HTMLInputElement, DatePickerExampleProps>(
+export const DatePickerExample = forwardRef<any, DatePickerExampleProps>(
   (
-    { disabled, placeholderTextColor, value, onChangeText, onBlur, placeholder, id, ...restProps },
+    { disabled, placeholderTextColor, value, onChangeText, onBlur, placeholder, id },
     ref
   ) => {
     const [selectedDates, onDatesChange] = useState<Date[]>([])
@@ -203,7 +202,9 @@ export const DatePickerExample = forwardRef<HTMLInputElement, DatePickerExampleP
       selectedDates,
       onDatesChange: (dates) => {
         onDatesChange(dates)
-        onChangeText(dates[0]?.toISOString().split('T')[0] || '')
+        if (onChangeText) {
+          onChangeText(dates[0]?.toISOString().split('T')[0] || '')
+        }
       },
       calendar: {
         startDay: 1,
@@ -223,7 +224,6 @@ export const DatePickerExample = forwardRef<HTMLInputElement, DatePickerExampleP
             onReset={() => onDatesChange([])}
             onButtonPress={() => setOpen(true)}
             ref={ref}
-            {...restProps}
           />
         </DatePicker.Trigger>
         <DatePicker.Content>

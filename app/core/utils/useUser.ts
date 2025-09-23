@@ -1,9 +1,15 @@
+import type { Database } from '@app/supabase/types'
 import { useQuery } from '@tanstack/react-query'
 
 import { isNotFoundPostgrestError, wrapSupabaseError } from './supabase/errors'
 import { useSessionContext } from './supabase/useSessionContext'
 import { useSupabase } from './supabase/useSupabase'
 import { useProfileVerifications } from './useProfileVerifications'
+
+type ProfileRow = Database['public']['Tables']['profiles']['Row'] & {
+  name?: string | null
+  about?: string | null
+}
 
 function useProfile() {
   const { session } = useSessionContext()
@@ -34,7 +40,7 @@ function useProfile() {
         throw wrapSupabaseError(error)
       }
 
-      return data ?? null
+      return (data ?? null) as ProfileRow | null
     },
   })
 
