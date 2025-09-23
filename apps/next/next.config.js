@@ -23,7 +23,7 @@ const plugins = [
     logTimings: true,
     disableExtraction,
     shouldExtract: (path) => {
-      if (path.includes(join('packages', 'app'))) {
+      if (path.includes(join('packages', 'core'))) {
         return true
       }
     },

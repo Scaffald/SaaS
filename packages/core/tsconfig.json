@@ -17,7 +17,6 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@app/*": ["./*", "../*"],
       "@app/supabase": ["../../supabase"],
       "@app/supabase/*": ["../../supabase/*"]
     },
