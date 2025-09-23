@@ -1,13 +1,15 @@
-import { Avatar, Paragraph, Settings, XStack, YStack, getTokens } from '@app/ui'
-import { Box, Cog, Milestone, ShoppingCart, User, Users } from '@tamagui/lucide-icons'
+import { Avatar, Paragraph, Settings, XStack, YStack, getTokens, useTheme } from '@app/ui'
+import { BadgeCheck, Box, Cog, Milestone, ShoppingCart, User, Users } from '@tamagui/lucide-icons'
 import { useUser } from '@app/utils/useUser'
 import { SolitoImage } from 'solito/image'
 import { useLink } from 'solito/link'
 
 export const ProfileLayout = () => {
-  const { profile, avatarUrl } = useUser()
+  const { profile, avatarUrl, verifications } = useUser()
   const tokens = getTokens()
+  const theme = useTheme()
   const name = profile?.name ?? 'No Name'
+  const isNameVerified = verifications.isVerified(['basic.full_name', 'basic.display_name'])
 
   return (
     <YStack f={1} maw={600} mx="auto" w="100%" gap="$5" $sm={{ px: '$3' }} px="$4">
@@ -45,9 +47,10 @@ export const ProfileLayout = () => {
             height={tokens.size['3'].val}
           />
         </Avatar>
-        <Paragraph ta="center" ml="$-1.5">
-          {name}
-        </Paragraph>
+        <XStack ai="center" gap="$2" ml="$-1.5">
+          <Paragraph ta="center">{name}</Paragraph>
+          {isNameVerified ? <BadgeCheck size={16} color={theme.green10.val} aria-label="Verified name" /> : null}
+        </XStack>
       </XStack>
     </YStack>
   )

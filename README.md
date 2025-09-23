@@ -147,6 +147,13 @@ Please reference [Supabase's documentation](https://supabase.com/docs/guides/sel
 
 ## Development
 
+### Admin access controls
+
+- Administrative routes live under `/admin/*` and are guarded by our Next.js middleware.
+- The guard verifies the current session holds either the `super_admin` platform role or a `partner_admin` assignment scoped to the `organizationId` passed in the query string.
+- Requests that fail the check are redirected back to `/`, so workers without elevated permissions continue to see the standard experience.
+- See `apps/next/middleware.ts` for the full logic and update it when introducing new admin surfaces.
+
 ### Development scripts
 
 - Web: `yarn web`

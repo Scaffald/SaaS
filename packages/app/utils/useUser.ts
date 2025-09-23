@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { isNotFoundPostgrestError, wrapSupabaseError } from './supabase/errors'
 import { useSessionContext } from './supabase/useSessionContext'
 import { useSupabase } from './supabase/useSupabase'
+import { useProfileVerifications } from './useProfileVerifications'
 
 function useProfile() {
   const { session } = useSessionContext()
@@ -44,6 +45,7 @@ export const useUser = () => {
   const { session, isLoading: isLoadingSession } = useSessionContext()
   const user = session?.user
   const { data: profile, refetch, isPending: isLoadingProfile } = useProfile()
+  const profileVerifications = useProfileVerifications(user?.id ?? null)
 
   const avatarUrl = (function () {
     if (profile?.avatar_url) return profile.avatar_url
@@ -64,7 +66,15 @@ export const useUser = () => {
     updateProfile: () => refetch(),
     isLoadingSession,
     isLoadingProfile,
-    isLoading: isLoadingSession || isLoadingProfile,
-    isPending: isLoadingSession || isLoadingProfile,
+    isLoadingVerifications: profileVerifications.isPending,
+    verifications: {
+      records: profileVerifications.records,
+      activeFields: profileVerifications.activeFields,
+      activeByField: profileVerifications.activeByField,
+      isVerified: profileVerifications.isVerified,
+      refresh: profileVerifications.refetch,
+    },
+    isLoading: isLoadingSession || isLoadingProfile || profileVerifications.isPending,
+    isPending: isLoadingSession || isLoadingProfile || profileVerifications.isPending,
   }
 }
