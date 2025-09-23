@@ -7,6 +7,8 @@ import {
   type HydrateCompanyParams,
   type HydrateCompanyResult,
 } from '../../adapters/base'
+import type { NormalizedJob } from '../../domain/job'
+import type { NormalizedOrganization } from '../../domain/organization'
 
 class TestAdapter extends JobSourceAdapter {
   constructor(source = 'jooble') {
@@ -39,8 +41,8 @@ describe('syncJobSources', () => {
   it('runs the ingestion service with parsed CLI arguments', async () => {
     const ingestResult = {
       runId: 'run-123',
-      jobs: [] as any,
-      organizations: [] as any,
+      jobs: [] as NormalizedJob[],
+      organizations: [] as NormalizedOrganization[],
       telemetry: { source: 'jooble', requestCount: 2, itemsReceived: 4, warnings: ['window'] },
       summary: { fetched: 4, processed: 3, deduplicated: 1, created: 2, updated: 1, closed: 0 },
     }
@@ -115,22 +117,16 @@ describe('syncJobSources', () => {
       },
     })
     expect(logger.info).toHaveBeenNthCalledWith(1, 'Run ID: run-123')
-    expect(logger.info).toHaveBeenNthCalledWith(
-      2,
-      'Jobs fetched=4, processed=3, deduplicated=1'
-    )
-    expect(logger.info).toHaveBeenNthCalledWith(
-      3,
-      'Persistence: created=2, updated=1, closed=0'
-    )
+    expect(logger.info).toHaveBeenNthCalledWith(2, 'Jobs fetched=4, processed=3, deduplicated=1')
+    expect(logger.info).toHaveBeenNthCalledWith(3, 'Persistence: created=2, updated=1, closed=0')
     expect(logger.info).toHaveBeenNthCalledWith(4, 'Telemetry:', ingestResult.telemetry)
   })
 
   it('uses defaults when no CLI arguments are provided', async () => {
     const ingestResult = {
       runId: 'run-001',
-      jobs: [] as any,
-      organizations: [] as any,
+      jobs: [] as NormalizedJob[],
+      organizations: [] as NormalizedOrganization[],
       telemetry: { source: 'jooble', requestCount: 1, itemsReceived: 0 },
       summary: { fetched: 0, processed: 0, deduplicated: 0, created: 0, updated: 0, closed: 0 },
     }

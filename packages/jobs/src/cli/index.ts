@@ -8,6 +8,7 @@ import type {
   JobIngestionRunnerOptions,
 } from '../services'
 import type { AdapterFetchParams } from '../utils'
+import type { EmploymentType, ExperienceLevel, WorkplaceType } from '../domain/job'
 
 type AdapterFactory = (env: NodeJS.ProcessEnv) => JobSourceAdapter
 
@@ -176,7 +177,8 @@ const parseMetadata = (
       metadata[path] = asNumber
       continue
     }
-    if ((normalized.startsWith('{') && normalized.endsWith('}')) ||
+    if (
+      (normalized.startsWith('{') && normalized.endsWith('}')) ||
       (normalized.startsWith('[') && normalized.endsWith(']'))
     ) {
       try {
@@ -248,41 +250,68 @@ const parseCliArguments = (argv: string[]): ParsedCliArguments => {
     filters.search = search
   }
 
-  const locationValues = getAllValues(args, ['filters.location', 'filters.locations', 'location', 'locations'])
+  const locationValues = getAllValues(args, [
+    'filters.location',
+    'filters.locations',
+    'location',
+    'locations',
+  ])
   if (locationValues.length) {
     filters.locations = locationValues.map((value) => ({ raw: value, formatted: value }))
   }
 
   const employmentTypes = parseList(
-    getAllValues(args, ['filters.employment-types', 'filters.employmenttypes', 'employment-types', 'employmenttypes'])
+    getAllValues(args, [
+      'filters.employment-types',
+      'filters.employmenttypes',
+      'employment-types',
+      'employmenttypes',
+    ])
   )
   if (employmentTypes) {
-    filters.employmentTypes = employmentTypes as any
+    filters.employmentTypes = employmentTypes as EmploymentType[]
   }
 
   const experienceLevels = parseList(
-    getAllValues(args, ['filters.experience-levels', 'filters.experiencelevels', 'experience-levels', 'experiencelevels'])
+    getAllValues(args, [
+      'filters.experience-levels',
+      'filters.experiencelevels',
+      'experience-levels',
+      'experiencelevels',
+    ])
   )
   if (experienceLevels) {
-    filters.experienceLevels = experienceLevels as any
+    filters.experienceLevels = experienceLevels as ExperienceLevel[]
   }
 
   const workplaceTypes = parseList(
-    getAllValues(args, ['filters.workplace-types', 'filters.workplacetypes', 'workplace-types', 'workplacetypes'])
+    getAllValues(args, [
+      'filters.workplace-types',
+      'filters.workplacetypes',
+      'workplace-types',
+      'workplacetypes',
+    ])
   )
   if (workplaceTypes) {
-    filters.workplaceTypes = workplaceTypes as any
+    filters.workplaceTypes = workplaceTypes as WorkplaceType[]
   }
 
-  const remoteOnlyValue = getLastValue(args, ['filters.remote-only', 'filters.remoteonly', 'remote-only', 'remoteonly'])
+  const remoteOnlyValue = getLastValue(args, [
+    'filters.remote-only',
+    'filters.remoteonly',
+    'remote-only',
+    'remoteonly',
+  ])
   if (remoteOnlyValue) {
     filters.remoteOnly = parseBoolean(remoteOnlyValue, 'remote-only')
   }
 
-  const includeClosedValue = getLastValue(
-    args,
-    ['filters.include-closed', 'filters.includeclosed', 'include-closed', 'includeclosed']
-  )
+  const includeClosedValue = getLastValue(args, [
+    'filters.include-closed',
+    'filters.includeclosed',
+    'include-closed',
+    'includeclosed',
+  ])
   if (includeClosedValue) {
     filters.includeClosed = parseBoolean(includeClosedValue, 'include-closed')
   }
@@ -329,7 +358,9 @@ export async function syncJobSources(options: SyncJobSourcesOptions = {}) {
   logger.info(
     `Jobs fetched=${summary.fetched}, processed=${summary.processed}, deduplicated=${summary.deduplicated}`
   )
-  logger.info(`Persistence: created=${summary.created}, updated=${summary.updated}, closed=${summary.closed}`)
+  logger.info(
+    `Persistence: created=${summary.created}, updated=${summary.updated}, closed=${summary.closed}`
+  )
   logger.info('Telemetry:', telemetry)
 
   return result

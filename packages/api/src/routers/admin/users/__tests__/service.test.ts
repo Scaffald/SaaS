@@ -92,7 +92,10 @@ describe('loadActiveVerificationFields', () => {
 
     const supabase = { from: vi.fn().mockReturnValue(chain) }
 
-    const result = await service.loadActiveVerificationFields(supabase as never, ['worker-1', 'worker-2'])
+    const result = await service.loadActiveVerificationFields(supabase as never, [
+      'worker-1',
+      'worker-2',
+    ])
 
     expect(supabase.from).toHaveBeenCalledWith('profile_verifications')
     expect(chain.in).toHaveBeenNthCalledWith(1, 'subject_id', ['worker-1', 'worker-2'])
@@ -127,7 +130,10 @@ describe('loadActiveVerificationFields', () => {
     const result = await service.loadActiveVerificationFields(supabase as never, ['worker-1'])
 
     expect(result.size).toBe(0)
-    expect(consoleWarnSpy).toHaveBeenCalledWith('Failed to load active verification fields', expect.any(Error))
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      'Failed to load active verification fields',
+      expect.any(Error)
+    )
   })
 })
 
@@ -206,9 +212,7 @@ describe('loadWorkerDetail', () => {
       builder.eq.mockReturnValue(builder)
       builder.in.mockReturnValue(builder)
       builder.is.mockResolvedValue({
-        data: [
-          { subject_id: 'worker-1', field: 'email' },
-        ],
+        data: [{ subject_id: 'worker-1', field: 'email' }],
         error: null,
       })
       builder.order.mockResolvedValue({ data: ledgerRows, error: null })
@@ -301,7 +305,9 @@ describe('loadWorkerDetail', () => {
       from: vi.fn(() => userQuery),
     }
 
-    await expect(service.loadWorkerDetail(supabase as never, 'worker-1', 'org-1')).rejects.toMatchObject({
+    await expect(
+      service.loadWorkerDetail(supabase as never, 'worker-1', 'org-1')
+    ).rejects.toMatchObject({
       code: 'INTERNAL_SERVER_ERROR',
       message: 'Unable to fetch worker details.',
     })
@@ -321,7 +327,9 @@ describe('loadWorkerDetail', () => {
       from: vi.fn(() => userQuery),
     }
 
-    await expect(service.loadWorkerDetail(supabase as never, 'worker-1', 'org-1')).rejects.toMatchObject({
+    await expect(
+      service.loadWorkerDetail(supabase as never, 'worker-1', 'org-1')
+    ).rejects.toMatchObject({
       code: 'NOT_FOUND',
       message: 'Worker not found.',
     })
@@ -361,16 +369,13 @@ describe('verifyWorker', () => {
 
     const supabase = { rpc } as never
 
-    const result = await service.verifyWorker(
-      supabase,
-      {
-        workerId: 'worker-1',
-        organizationId: 'org-1',
-        field: 'email',
-        subjectType: 'profile',
-        reason: 'all good',
-      }
-    )
+    const result = await service.verifyWorker(supabase, {
+      workerId: 'worker-1',
+      organizationId: 'org-1',
+      field: 'email',
+      subjectType: 'profile',
+      reason: 'all good',
+    })
 
     expect(rpc).toHaveBeenNthCalledWith(1, 'admin_verify_worker', expect.any(Object))
     expect(rpc).toHaveBeenNthCalledWith(2, 'admin_get_worker_verification_status', {
@@ -440,16 +445,13 @@ describe('revokeWorkerVerification', () => {
 
     const supabase = { rpc } as never
 
-    const result = await service.revokeWorkerVerification(
-      supabase,
-      {
-        workerId: 'worker-1',
-        organizationId: 'org-1',
-        field: 'email',
-        subjectType: 'profile',
-        reason: 'expired',
-      }
-    )
+    const result = await service.revokeWorkerVerification(supabase, {
+      workerId: 'worker-1',
+      organizationId: 'org-1',
+      field: 'email',
+      subjectType: 'profile',
+      reason: 'expired',
+    })
 
     expect(rpc).toHaveBeenNthCalledWith(1, 'admin_revoke_worker_verification', expect.any(Object))
     expect(rpc).toHaveBeenNthCalledWith(2, 'admin_get_worker_verification_status', {
