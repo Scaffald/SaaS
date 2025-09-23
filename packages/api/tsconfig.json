@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.base",
-  "include": ["src", "../app", "../../supabase"],
+  "include": ["src", "../app", "../../supabase", "../../tests/utils"],
   "compilerOptions": {
     "noEmit": true,
     "composite": true,

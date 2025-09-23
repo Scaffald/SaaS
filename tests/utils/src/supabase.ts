@@ -1,34 +1,31 @@
-import type { SupabaseClient } from '@supabase/supabase-js'
-import { vi, type MockInstance } from 'vitest'
+import type { PostgrestError, PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js'
+import { vi, type Mock } from 'vitest'
 
-type SupabaseRpc<TDatabase> = SupabaseClient<TDatabase>['rpc']
-
-type SupabaseRpcReturn<TDatabase> = Awaited<ReturnType<SupabaseRpc<TDatabase>>>
+type SupabaseRpcMethod<TDatabase> = SupabaseClient<TDatabase>['rpc']
+type SupabaseRpcArgs<TDatabase> = Parameters<SupabaseRpcMethod<TDatabase>>
+type SupabaseRpcResult<TDatabase> = Awaited<ReturnType<SupabaseRpcMethod<TDatabase>>>
+type SupabaseRpc<TDatabase> = (...args: SupabaseRpcArgs<TDatabase>) => Promise<SupabaseRpcResult<TDatabase>>
 
 type SupabaseClientOverrides<TDatabase> = {
   [K in keyof SupabaseClient<TDatabase>]?: SupabaseClient<TDatabase>[K]
 }
 
-export type SupabaseRpcMock<TDatabase> = MockInstance<SupabaseRpc<TDatabase>>
+export type SupabaseRpcMock<TDatabase> = Mock<SupabaseRpc<TDatabase>>
 
 export const createSupabaseRpcMock = <TDatabase>(
   implementation?: SupabaseRpc<TDatabase>,
-  defaultValue: SupabaseRpcReturn<TDatabase> = {
+  defaultValue: SupabaseRpcResult<TDatabase> = {
     data: null,
     error: null,
-  } as SupabaseRpcReturn<TDatabase>
+  } as SupabaseRpcResult<TDatabase>
 ): SupabaseRpcMock<TDatabase> => {
   if (implementation) {
-    return vi.fn(implementation) as SupabaseRpcMock<TDatabase>
+    return vi.fn(implementation)
   }
 
-  const mock = vi.fn<Parameters<SupabaseRpc<TDatabase>>, ReturnType<SupabaseRpc<TDatabase>>>(
-    async () => {
-      return defaultValue
-    }
-  ) as SupabaseRpcMock<TDatabase>
-
-  return mock
+  return vi.fn<SupabaseRpc<TDatabase>>(async (..._args: SupabaseRpcArgs<TDatabase>) => {
+    return defaultValue
+  })
 }
 
 export type SupabaseClientStub<TDatabase> = {
@@ -47,11 +44,32 @@ export const createSupabaseClientStub = <TDatabase>(
 
   const client = {
     ...rest,
-    rpc: resolvedRpc as unknown as SupabaseRpc<TDatabase>,
-  } as SupabaseClient<TDatabase>
+    rpc: resolvedRpc as unknown as SupabaseRpcMethod<TDatabase>,
+  } as unknown as SupabaseClient<TDatabase>
 
   return {
     client,
     rpc: resolvedRpc,
   }
 }
+
+export const createPostgrestError = (
+  overrides: Partial<PostgrestError> & Pick<PostgrestError, 'message'>
+): PostgrestError => ({
+  details: '',
+  hint: '',
+  code: 'PGRST_ERROR',
+  name: 'PostgrestError',
+  ...overrides,
+})
+
+export const createPostgrestSingleResponse = <T>(
+  overrides: Partial<PostgrestSingleResponse<T>> = {}
+): PostgrestSingleResponse<T> => ({
+  data: null,
+  error: null,
+  count: null,
+  status: 200,
+  statusText: 'OK',
+  ...overrides,
+} as PostgrestSingleResponse<T>)

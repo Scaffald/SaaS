@@ -1,5 +1,9 @@
 import type { Database } from '@app/supabase/types'
-import { createSupabaseClientStub } from '@app/test-utils'
+import {
+  createPostgrestError,
+  createPostgrestSingleResponse,
+  createSupabaseClientStub,
+} from '@app/test-utils'
 import { TRPCError } from '@trpc/server'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
@@ -172,8 +176,8 @@ describe('ensureAdminAccess', () => {
   it('allows super administrators and applies organization context when provided', async () => {
     const { client: supabase, rpc } = createSupabaseClientStub<Database>()
     rpc
-      .mockResolvedValueOnce({ data: true, error: null })
-      .mockResolvedValueOnce({ data: null, error: null })
+      .mockResolvedValueOnce(createPostgrestSingleResponse({ data: true }))
+      .mockResolvedValueOnce(createPostgrestSingleResponse({ data: null }))
 
     const result = await ensureAdminAccess(supabase, 'user-id', 'org-id')
 
@@ -188,9 +192,9 @@ describe('ensureAdminAccess', () => {
   it('allows partner administrators when they belong to the target organization', async () => {
     const { client: supabase, rpc } = createSupabaseClientStub<Database>()
     rpc
-      .mockResolvedValueOnce({ data: false, error: null })
-      .mockResolvedValueOnce({ data: true, error: null })
-      .mockResolvedValueOnce({ data: null, error: null })
+      .mockResolvedValueOnce(createPostgrestSingleResponse({ data: false }))
+      .mockResolvedValueOnce(createPostgrestSingleResponse({ data: true }))
+      .mockResolvedValueOnce(createPostgrestSingleResponse({ data: null }))
 
     const result = await ensureAdminAccess(supabase, 'user-id', 'org-id')
 
@@ -204,7 +208,7 @@ describe('ensureAdminAccess', () => {
 
   it('rejects partner administrators when no organization is supplied', async () => {
     const { client: supabase, rpc } = createSupabaseClientStub<Database>()
-    rpc.mockResolvedValue({ data: false, error: null })
+    rpc.mockResolvedValue(createPostgrestSingleResponse({ data: false }))
 
     await expect(ensureAdminAccess(supabase, 'user-id', undefined)).rejects.toHaveProperty(
       'code',
@@ -215,7 +219,11 @@ describe('ensureAdminAccess', () => {
   it('propagates RPC errors when verifying administrator roles', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     const { client: supabase, rpc } = createSupabaseClientStub<Database>()
-    rpc.mockResolvedValue({ data: null, error: new Error('boom') })
+    rpc.mockResolvedValue(
+      createPostgrestSingleResponse({
+        error: createPostgrestError({ message: 'boom' }),
+      })
+    )
 
     await expect(ensureAdminAccess(supabase, 'user-id', undefined)).rejects.toBeInstanceOf(
       TRPCError
