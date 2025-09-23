@@ -148,7 +148,7 @@ export const NewsFeedCard = () => {
     let isActive = true
     setIsLoading(true)
     setError(null)
-    
+
     try {
       const endpoint = isWeb
         ? `/api/news?source=${encodeURIComponent(selectedSource.id)}`
@@ -158,7 +158,7 @@ export const NewsFeedCard = () => {
         // Add timeout to prevent hanging requests
         signal: AbortSignal.timeout(10000), // 10 second timeout
       })
-      
+
       if (!response.ok) throw new Error(`Request failed: ${response.status}`)
       const text = await response.text()
       const parsed = parseRssFeed(text).slice(0, ARTICLE_LIMIT)
@@ -179,7 +179,7 @@ export const NewsFeedCard = () => {
   // Lazy load articles after hydration with a small delay
   useEffect(() => {
     if (!isHydrated || hasLoaded) return
-    
+
     const timer = setTimeout(() => {
       loadArticles()
     }, 100) // Small delay to let other critical content load first

@@ -39,10 +39,7 @@ export class DashboardErrorBoundary extends Component<Props, State> {
           <Paragraph size="$2" color="$red10">
             Something went wrong loading this widget.
           </Paragraph>
-          <Button
-            size="$2"
-            onPress={() => this.setState({ hasError: false, error: undefined })}
-          >
+          <Button size="$2" onPress={() => this.setState({ hasError: false, error: undefined })}>
             Try again
           </Button>
         </YStack>
