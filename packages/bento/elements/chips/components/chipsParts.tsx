@@ -122,9 +122,8 @@ const ChipIcon = ChipIconFrame.styleable<ChipIconProps>((props, ref) => {
   const finalSize = size || chipContext.size
 
   const iconSize =
-    (typeof finalSize === 'number'
-      ? finalSize * 0.5
-      : getFontSize(finalSize as FontSizeTokens)) * scaleIcon
+    (typeof finalSize === 'number' ? finalSize * 0.5 : getFontSize(finalSize as FontSizeTokens)) *
+    scaleIcon
 
   const getThemedIcon = useGetThemedIcon({ size: iconSize, color: color as any })
   return (

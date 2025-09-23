@@ -1,4 +1,4 @@
-import type { SizeTokens} from '@tamagui/core';
+import type { SizeTokens } from '@tamagui/core'
 import { View } from '@tamagui/core'
 import { Check, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'

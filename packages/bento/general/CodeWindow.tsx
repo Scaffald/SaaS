@@ -142,11 +142,7 @@ export function CodeWindow({ code, isLoading }: Props) {
               gap="$2"
             >
               <File size={16} color={isActive ? '$gray12' : '$gray10'} />
-              <SizableText
-                color={isActive ? '$gray12' : '$gray10'}
-                size="$3"
-                letterSpacing={1}
-              >
+              <SizableText color={isActive ? '$gray12' : '$gray10'} size="$3" letterSpacing={1}>
                 {tab.name}
               </SizableText>
             </Tabs.Tab>

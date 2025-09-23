@@ -11,14 +11,7 @@ export const useReplaceTokens = (code, mappedTokens) => {
   const mapTokenToAttribute = (_, key1, token1, key2, token2) => {
     const key = key1 || key2
     const token = token1 || token2
-    const sizeAttributes = [
-      'width',
-      'height',
-      'minWidth',
-      'minHeight',
-      'maxWidth',
-      'maxHeight',
-    ]
+    const sizeAttributes = ['width', 'height', 'minWidth', 'minHeight', 'maxWidth', 'maxHeight']
     const zIndexAttributes = ['zIndex']
     const radiusAttributes = [
       'borderRadius',
@@ -64,8 +57,7 @@ export const useReplaceTokens = (code, mappedTokens) => {
       return `${key}="${'$' + token}"`
     }
 
-    const tokenValue =
-      mappedTokens[attributeCategory]?.[token].userMatch.key || '$' + token
+    const tokenValue = mappedTokens[attributeCategory]?.[token].userMatch.key || '$' + token
 
     return `${key}="${tokenValue}"`
   }

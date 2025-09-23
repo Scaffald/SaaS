@@ -1,14 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { SizeTokens, TamaguiElement } from 'tamagui'
-import {
-  Avatar,
-  Paragraph,
-  Tooltip,
-  View,
-  isWeb,
-  styled,
-  withStaticProperties,
-} from 'tamagui'
+import { Avatar, Paragraph, Tooltip, View, isWeb, styled, withStaticProperties } from 'tamagui'
 
 const items = ['Developer', 'User', 'Athlete', 'User', 'Designer']
 
@@ -38,21 +30,10 @@ function Item(props: { item: string; index: number }) {
   })
 
   return (
-    <View
-      marginLeft={index !== 0 ? '$-4' : undefined}
-      zIndex={index}
-      key={item}
-      cursor="pointer"
-    >
+    <View marginLeft={index !== 0 ? '$-4' : undefined} zIndex={index} key={item} cursor="pointer">
       <AvatarTip offset={5} placement="top" delay={0}>
         <AvatarTip.Trigger>
-          <Avatar
-            ref={setInnerRef}
-            borderWidth="$1"
-            borderColor="$color1"
-            circular
-            size="$6"
-          >
+          <Avatar ref={setInnerRef} borderWidth="$1" borderColor="$color1" circular size="$6">
             <Avatar.Image src={`/avatars/300.jpeg`} />
             <Avatar.Fallback backgroundColor="$background" />
           </Avatar>

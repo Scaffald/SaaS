@@ -95,9 +95,7 @@ export function SignUpScreen() {
           </Input.Box>
         </Input>
         <Input size="$4">
-          <Input.Label htmlFor={uniqueId + 'repeat-password'}>
-            Repeat the password
-          </Input.Label>
+          <Input.Label htmlFor={uniqueId + 'repeat-password'}>Repeat the password</Input.Label>
           <Input.Box>
             <Input.Area
               secureTextEntry
@@ -116,11 +114,7 @@ export function SignUpScreen() {
           <Input flex={1} size="$4">
             <Input.Label htmlFor={uniqueId + 'postal'}>Postal code / ZIP</Input.Label>
             <Input.Box>
-              <Input.Area
-                inputMode="decimal"
-                id={uniqueId + 'postal'}
-                placeholder="1005"
-              />
+              <Input.Area inputMode="decimal" id={uniqueId + 'postal'} placeholder="1005" />
             </Input.Box>
           </Input>
         </View>
@@ -271,13 +265,7 @@ export function VerticalCheckboxes() {
         </SizableText>
         <View flexDirection="column">
           {values.map(({ id, label, checked }) => (
-            <Item
-              key={label}
-              id={id}
-              toggleValue={toggleValue}
-              label={label}
-              checked={checked}
-            />
+            <Item key={label} id={id} toggleValue={toggleValue} label={label} checked={checked} />
           ))}
         </View>
       </View>

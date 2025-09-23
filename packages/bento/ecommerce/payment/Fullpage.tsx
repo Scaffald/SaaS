@@ -97,15 +97,13 @@ const calculateCartTotals = (items: Items) => {
     0
   )
   const subtotalPriceWithDiscount = items.reduce(
-    (total, item) =>
-      total + Number.parseFloat(item.price) * item.count * (1 - item.discount),
+    (total, item) => total + Number.parseFloat(item.price) * item.count * (1 - item.discount),
     0
   )
   const subtotalSavings = subtotalPrice - subtotalPriceWithDiscount
   const subtotalSavingsPercentage = (1 - subtotalPriceWithDiscount / subtotalPrice) * 100
   const discountedPriceWithPromoDiscount = subtotalPriceWithDiscount * (1 - promoDiscount)
-  const savingPriceWithPromoDiscount =
-    subtotalPriceWithDiscount - discountedPriceWithPromoDiscount
+  const savingPriceWithPromoDiscount = subtotalPriceWithDiscount - discountedPriceWithPromoDiscount
   const priceAfterTaxes = discountedPriceWithPromoDiscount * (tax + 1)
   const taxesPrice = priceAfterTaxes - discountedPriceWithPromoDiscount
 
@@ -287,12 +285,7 @@ export function Fullpage() {
             </Dialog.Trigger>
 
             <Dialog.Adapt when="maxMd">
-              <Dialog.Sheet
-                animation="medium"
-                zIndex={200000}
-                modal
-                dismissOnSnapToBottom
-              >
+              <Dialog.Sheet animation="medium" zIndex={200000} modal dismissOnSnapToBottom>
                 <Dialog.Sheet.Overlay
                   animation="quick"
                   enterStyle={{ opacity: 0 }}
@@ -313,11 +306,7 @@ export function Fullpage() {
                 enterStyle={{ opacity: 0 }}
                 exitStyle={{ opacity: 0 }}
               />
-              <Dialog.Content
-                borderWidth={2}
-                borderColor="$borderColor"
-                borderRadius={15}
-              >
+              <Dialog.Content borderWidth={2} borderColor="$borderColor" borderRadius={15}>
                 <Dialog.Title>
                   <View
                     $gtMd={{
@@ -341,14 +330,7 @@ export function Fullpage() {
 
                 <Unspaced>
                   <Dialog.Close asChild>
-                    <Button
-                      position="absolute"
-                      top="$3"
-                      right="$3"
-                      size="$2"
-                      circular
-                      icon={X}
-                    />
+                    <Button position="absolute" top="$3" right="$3" size="$2" circular icon={X} />
                   </Dialog.Close>
                 </Unspaced>
               </Dialog.Content>
@@ -410,21 +392,8 @@ const Item = ({ item }: { item: Items[number] }) => {
       }}
       onLayout={onLayout}
     >
-      <View
-        flexGrow={sm ? 1 : 0}
-        flexBasis={125}
-        gap="$4"
-        flexDirection="column"
-        borderRadius="$4"
-      >
-        <View
-          flexDirection="row"
-          gap="$2"
-          position="absolute"
-          zIndex={1000}
-          t="$2"
-          r="$2"
-        >
+      <View flexGrow={sm ? 1 : 0} flexBasis={125} gap="$4" flexDirection="column" borderRadius="$4">
+        <View flexDirection="row" gap="$2" position="absolute" zIndex={1000} t="$2" r="$2">
           <Button
             id="add-wishlist"
             circular
@@ -527,12 +496,7 @@ const Item = ({ item }: { item: Items[number] }) => {
             <Text fontSize="$5" lineHeight="$5">
               ${Math.round(Number(item.price) * Number(1 - item.discount))}
             </Text>
-            <Text
-              textDecorationLine="line-through"
-              color="$color10"
-              fontSize="$5"
-              lineHeight="$5"
-            >
+            <Text textDecorationLine="line-through" color="$color10" fontSize="$5" lineHeight="$5">
               ${Math.round(Number(item.price))}
             </Text>
           </View>
@@ -572,17 +536,11 @@ const Item = ({ item }: { item: Items[number] }) => {
       >
         {gtSm && (
           <View flexDirection="column" alignItems="flex-end">
-            <Text
-              textDecorationLine="line-through"
-              color="$color10"
-              fontSize="$3"
-              lineHeight="$3"
-            >
+            <Text textDecorationLine="line-through" color="$color10" fontSize="$3" lineHeight="$3">
               ${Math.round(Number(item.price) * Number(count))}
             </Text>
             <Text fontSize="$8" lineHeight="$6" fontWeight="bold">
-              $
-              {Math.round(Number(item.price) * Number(count) * Number(1 - item.discount))}
+              ${Math.round(Number(item.price) * Number(count) * Number(1 - item.discount))}
             </Text>
           </View>
         )}
@@ -601,10 +559,7 @@ const Item = ({ item }: { item: Items[number] }) => {
           {sm && (
             <View flexDirection="row" gap="$2">
               <Text fontSize="$4" fontWeight="bold">
-                $
-                {Math.round(
-                  Number(item.price) * Number(count) * Number(1 - item.discount)
-                )}
+                ${Math.round(Number(item.price) * Number(count) * Number(1 - item.discount))}
               </Text>
 
               <Text textDecorationLine="line-through" color="$color10" fontSize="$3">

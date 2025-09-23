@@ -57,12 +57,7 @@ export function RadioCards() {
         gap="$3"
       >
         {packages.map((item) => (
-          <Item
-            item={item}
-            key={item.title}
-            selected={value === item.title}
-            setValue={setValue}
-          />
+          <Item item={item} key={item.title} selected={value === item.title} setValue={setValue} />
         ))}
       </RadioGroup>
     </View>

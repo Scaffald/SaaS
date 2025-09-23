@@ -13,24 +13,11 @@ export const PaginationControl = () => {
     setActiveIndex((prevIndex) => (prevIndex + 1) % pageNum)
   }
 
-  const paginationWidth =
-    (2 * getTokenValue('$2') + (pageNum - 1) * getTokenValue('$0.75')) * 10
+  const paginationWidth = (2 * getTokenValue('$2') + (pageNum - 1) * getTokenValue('$0.75')) * 10
 
   return (
-    <View
-      flex={1}
-      flexDirection="row"
-      alignItems="center"
-      justifyContent="center"
-      gap="$3"
-    >
-      <Button
-        size="$4"
-        circular
-        icon={ArrowLeft}
-        scaleIcon={1.5}
-        onPress={handlePrevClick}
-      />
+    <View flex={1} flexDirection="row" alignItems="center" justifyContent="center" gap="$3">
+      <Button size="$4" circular icon={ArrowLeft} scaleIcon={1.5} onPress={handlePrevClick} />
       <View
         flexDirection="row"
         alignItems="center"
@@ -53,13 +40,7 @@ export const PaginationControl = () => {
           />
         ))}
       </View>
-      <Button
-        size="$4"
-        circular
-        icon={ArrowRight}
-        scaleIcon={1.5}
-        onPress={handleNextClick}
-      />
+      <Button size="$4" circular icon={ArrowRight} scaleIcon={1.5} onPress={handleNextClick} />
     </View>
   )
 }

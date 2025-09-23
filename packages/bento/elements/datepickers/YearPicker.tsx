@@ -2,12 +2,7 @@ import type { DatePickerProviderProps } from '@rehookify/datepicker'
 import { DatePickerProvider } from '@rehookify/datepicker'
 import { useEffect, useState } from 'react'
 import { View } from 'tamagui'
-import {
-  DatePicker,
-  DatePickerInput,
-  YearPicker,
-  YearRangeSlider,
-} from './common/dateParts'
+import { DatePicker, DatePickerInput, YearPicker, YearRangeSlider } from './common/dateParts'
 
 function CalendarHeader() {
   return <YearRangeSlider />

@@ -51,13 +51,7 @@ const Alert = ({ children, ...rest }: AlertProps) => {
   })
 
   return (
-    <AlertProvider
-      open={open}
-      message={message}
-      title={title}
-      buttons={buttons}
-      alert={alert}
-    >
+    <AlertProvider open={open} message={message} title={title} buttons={buttons} alert={alert}>
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialog.Portal>
           <AlertDialog.Overlay
@@ -98,8 +92,7 @@ const Alert = ({ children, ...rest }: AlertProps) => {
             </View>
             <View flexDirection="row" gap="$4" justifyContent="flex-end">
               {buttons.map((button, index) => {
-                const Base =
-                  button.style === 'cancel' ? AlertDialog.Cancel : AlertDialog.Action
+                const Base = button.style === 'cancel' ? AlertDialog.Cancel : AlertDialog.Action
                 const color = button.style === 'destructive' ? '$red10' : '$color'
                 return (
                   <Base key={index} asChild>

@@ -42,8 +42,7 @@ const isCloseToBottom = (
   const paddingToBottom = contentSize.height * onEndReachedThreshold
 
   return (
-    Math.ceil(layoutMeasurement.height + contentOffset.y) >=
-    contentSize.height - paddingToBottom
+    Math.ceil(layoutMeasurement.height + contentOffset.y) >= contentSize.height - paddingToBottom
   )
 }
 
@@ -119,11 +118,7 @@ const MasonryListImpl = forwardRef<ScrollView, Props<any>>((props, ref) => {
             <ListEmptyComponent />
           )
         ) : (
-          <YStack
-            flex={1}
-            flexDirection={horizontal ? 'column' : 'row'}
-            {...(style as any)}
-          >
+          <YStack flex={1} flexDirection={horizontal ? 'column' : 'row'} {...(style as any)}>
             {Array.from(Array(numColumns), (_, num) => {
               return (
                 <YStack

@@ -2,11 +2,7 @@ import { Pressable } from 'react-native'
 import { getToken, Text, View } from 'tamagui'
 import { ScrollView, type ThemeName } from 'tamagui'
 import { useTheme } from './ChatContext'
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated'
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated'
 import { useEffect, useMemo, useRef } from 'react'
 
 const AnimatedView = Animated.createAnimatedComponent(View)

@@ -65,13 +65,7 @@ function SlideIn({
         </View>
 
         <XStack backgroundColor="$background" p="$3.5" themeInverse>
-          <Text
-            flex={1}
-            fontWeight="500"
-            fontSize="$2"
-            fontFamily="$mono"
-            color="$color11"
-          >
+          <Text flex={1} fontWeight="500" fontSize="$2" fontFamily="$mono" color="$color11">
             Nate Wienert
           </Text>
           <Text

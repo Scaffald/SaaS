@@ -142,50 +142,42 @@ type DatePickerInputProps = {
   onButtonPress?: (e: GestureReponderEvent) => void
 }
 
-export const DatePickerInput = Input.Area.styleable<DatePickerInputProps>(
-  (props, ref) => {
-    const { value, onButtonPress, size = '$3', onReset, ...rest } = props
-    return (
-      <View $platform-native={{ minWidth: '100%' }}>
-        <Input cursor="pointer" onPress={onButtonPress} size={size}>
-          <Input.Box>
-            <Input.Section>
-              <Input.Area
-                editable={false}
-                value={value}
-                ref={ref}
-                {...rest}
-                color="$color11"
-              />
-            </Input.Section>
-            <Input.Section>
-              <Input.Button
-                onPress={(e) => {
-                  if (value) {
-                    e.stopPropagation()
-                    onReset()
-                  } else {
-                    onButtonPress?.(e)
-                  }
-                }}
-              >
-                {value ? (
-                  <Input.Icon>
-                    <X />
-                  </Input.Icon>
-                ) : (
-                  <Input.Icon>
-                    <Calendar />
-                  </Input.Icon>
-                )}
-              </Input.Button>
-            </Input.Section>
-          </Input.Box>
-        </Input>
-      </View>
-    )
-  }
-)
+export const DatePickerInput = Input.Area.styleable<DatePickerInputProps>((props, ref) => {
+  const { value, onButtonPress, size = '$3', onReset, ...rest } = props
+  return (
+    <View $platform-native={{ minWidth: '100%' }}>
+      <Input cursor="pointer" onPress={onButtonPress} size={size}>
+        <Input.Box>
+          <Input.Section>
+            <Input.Area editable={false} value={value} ref={ref} {...rest} color="$color11" />
+          </Input.Section>
+          <Input.Section>
+            <Input.Button
+              onPress={(e) => {
+                if (value) {
+                  e.stopPropagation()
+                  onReset()
+                } else {
+                  onButtonPress?.(e)
+                }
+              }}
+            >
+              {value ? (
+                <Input.Icon>
+                  <X />
+                </Input.Icon>
+              ) : (
+                <Input.Icon>
+                  <Calendar />
+                </Input.Icon>
+              )}
+            </Input.Button>
+          </Input.Section>
+        </Input.Box>
+      </Input>
+    </View>
+  )
+})
 
 export function MonthPicker({
   onChange = (_e, _date) => {
@@ -234,9 +226,7 @@ export function MonthPicker({
               })
             )}
           >
-            <Button.Text color={month.active ? '$gray12' : '$gray11'}>
-              {month.month}
-            </Button.Text>
+            <Button.Text color={month.active ? '$gray12' : '$gray11'}>{month.month}</Button.Text>
           </Button>
         ))}
       </View>
@@ -278,9 +268,7 @@ export function YearPicker({
             borderRadius="$true"
             flexBasis="30%"
             flexGrow={1}
-            backgroundColor={
-              year.year === Number(selectedYear) ? '$background' : 'transparent'
-            }
+            backgroundColor={year.year === Number(selectedYear) ? '$background' : 'transparent'}
             key={year.$date.toString()}
             chromeless
             padding={0}
@@ -290,9 +278,7 @@ export function YearPicker({
               })
             )}
           >
-            <Button.Text
-              color={year.year === Number(selectedYear) ? '$gray12' : '$gray11'}
-            >
+            <Button.Text color={year.year === Number(selectedYear) ? '$gray12' : '$gray11'}>
               {year.year}
             </Button.Text>
           </Button>
@@ -308,21 +294,14 @@ export function YearRangeSlider() {
   } = useDatePickerContext()
 
   return (
-    <View
-      flexDirection="row"
-      width="100%"
-      alignItems="center"
-      justifyContent="space-between"
-    >
+    <View flexDirection="row" width="100%" alignItems="center" justifyContent="space-between">
       <Button circular size="$4" {...swapOnClick(previousYearsButton())}>
         <Button.Icon scaleIcon={1.5}>
           <ChevronLeft />
         </Button.Icon>
       </Button>
       <View y={2} flexDirection="column" alignItems="center">
-        <SizableText size="$5">
-          {`${years[0].year} - ${years[years.length - 1].year}`}
-        </SizableText>
+        <SizableText size="$5">{`${years[0].year} - ${years[years.length - 1].year}`}</SizableText>
       </View>
       <Button circular size="$4" {...swapOnClick(nextYearsButton())}>
         <Button.Icon scaleIcon={1.5}>

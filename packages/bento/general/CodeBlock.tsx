@@ -23,15 +23,7 @@ export type CodeBlockProps = PreProps & {
 
 export default React.forwardRef<HTMLPreElement, CodeBlockProps>(
   function CodeBlock(_props, forwardedRef) {
-    const {
-      language,
-      value,
-      line = '0',
-      className = '',
-      mode,
-      showLineNumbers,
-      ...props
-    } = _props
+    const { language, value, line = '0', className = '', mode, showLineNumbers, ...props } = _props
     let result: any = refractor.highlight(value, language)
     result = highlightLine(result, rangeParser(line))
     result = highlightWord(result)
@@ -42,12 +34,7 @@ export default React.forwardRef<HTMLPreElement, CodeBlockProps>(
     // }
 
     return (
-      <Pre
-        ref={forwardedRef}
-        className={classes}
-        data-line-numbers={showLineNumbers}
-        {...props}
-      >
+      <Pre ref={forwardedRef} className={classes} data-line-numbers={showLineNumbers} {...props}>
         <Code className={classes} dangerouslySetInnerHTML={{ __html: result }} />
       </Pre>
     )
@@ -125,8 +112,7 @@ const wrapLines = function wrapLines(ast: any[], linesToHighlight) {
       properties: {
         dataLine: line,
         className: 'highlight-line',
-        dataHighlighted:
-          linesToHighlight.includes(line) || highlightAll ? 'true' : 'false',
+        dataHighlighted: linesToHighlight.includes(line) || highlightAll ? 'true' : 'false',
       },
       children,
       lineNumber: line,
@@ -166,13 +152,8 @@ const CALLOUT = /__(.*?)__/g
 
 const highlightWord = (code) => {
   const html = toHtml(code)
-  const result = html.replace(
-    CALLOUT,
-    (_, text) => `<span class="highlight-word">${text}</span>`
-  )
-  const hast = unified()
-    .use(parse, { emitParseErrors: true, fragment: true })
-    .parse(result)
+  const result = html.replace(CALLOUT, (_, text) => `<span class="highlight-word">${text}</span>`)
+  const hast = unified().use(parse, { emitParseErrors: true, fragment: true }).parse(result)
   return hast['children']
 }
 

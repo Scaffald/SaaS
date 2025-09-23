@@ -63,20 +63,8 @@ export function HorizontalWithDescriptionCheckboxes() {
           rowGap="$2.5"
         >
           {items.map(({ id, label, description }) => (
-            <Checkboxes.FocusGroup.Item
-              flex={1}
-              flexBasis={300}
-              flexShrink={1}
-              value={id}
-              key={id}
-            >
-              <Item
-                key={id}
-                description={description}
-                id={id}
-                label={label}
-                uniqueId={uniqueId}
-              />
+            <Checkboxes.FocusGroup.Item flex={1} flexBasis={300} flexShrink={1} value={id} key={id}>
+              <Item key={id} description={description} id={id} label={label} uniqueId={uniqueId} />
             </Checkboxes.FocusGroup.Item>
           ))}
           {/* a trick to avoid last flex item to be stretch out */}

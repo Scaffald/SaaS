@@ -19,12 +19,7 @@ export function AvatarOutContentAction() {
         </Avatar>
       </Button>
       <View flexDirection="column" flexShrink={1} flexBasis={400} gap="$3">
-        <TextArea
-          size="$3"
-          fontWeight="300"
-          height={180}
-          placeholder="Write your comment"
-        />
+        <TextArea size="$3" fontWeight="300" height={180} placeholder="Write your comment" />
         <Button themeInverse>
           <Button.Text>Post</Button.Text>
         </Button>

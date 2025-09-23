@@ -99,8 +99,7 @@ const ShowcaseView = forwardRef<any, Props>(
       { shouldRetryOnError: false, revalidateOnFocus: false }
     )
 
-    const iDontHaveAccess =
-      error?.status === 403 || error?.status === 401 || error?.status === 500
+    const iDontHaveAccess = error?.status === 403 || error?.status === 401 || error?.status === 500
 
     const minHeight = short ? 300 : 510
 
@@ -117,14 +116,7 @@ const ShowcaseView = forwardRef<any, Props>(
           <XStack ai="center" jc="space-between">
             <XStack alignItems="center" f={1} gap="$3">
               {!approved && <Lock size={16} opacity={0.3} />}
-              <H2
-                size="$7"
-                fontWeight="600"
-                backgroundColor="$background"
-                ff="$mono"
-                t="$0"
-                l="$2"
-              >
+              <H2 size="$7" fontWeight="600" backgroundColor="$background" ff="$mono" t="$0" l="$2">
                 {title}
               </H2>
             </XStack>
@@ -195,14 +187,7 @@ const ShowcaseView = forwardRef<any, Props>(
                     {children}
                   </YStack>
                 </View>
-                <XStack
-                  gap="$2"
-                  position="absolute"
-                  m="$4"
-                  bottom={0}
-                  right={0}
-                  ai="flex-end"
-                >
+                <XStack gap="$2" position="absolute" m="$4" bottom={0} right={0} ai="flex-end">
                   <SizeController />
                   {/* <ThemeButton /> */}
                 </XStack>
@@ -235,11 +220,7 @@ const ShowcaseView = forwardRef<any, Props>(
             ) : data ? (
               <CodeWindow code={data} />
             ) : (
-              <Text
-                textAlign="center"
-                color="$green10"
-                $group-window-sm={{ fontSize: '$2' }}
-              >
+              <Text textAlign="center" color="$green10" $group-window-sm={{ fontSize: '$2' }}>
                 Purchase the Bento package to access the code.
               </Text>
             )}
@@ -283,13 +264,7 @@ const MessagesFrame = (props: {
         gap="$2"
       >
         {['$red10', '$yellow10', '$green10'].map((color, index) => (
-          <View
-            bg={color as any}
-            h={10}
-            w={10}
-            borderRadius={1_000_000_000}
-            key={index}
-          />
+          <View bg={color as any} h={10} w={10} borderRadius={1_000_000_000} key={index} />
         ))}
       </XStack>
 
@@ -457,20 +432,8 @@ const ResizableBox = XStack.styleable<ResizableBoxExtraProps>(
     })
 
     return (
-      <XStack
-        flex={1}
-        ref={ref}
-        alignItems="stretch"
-        userSelect="none"
-        gap="$2"
-        {...rest}
-      >
-        <XStack
-          alignItems="center"
-          group="window"
-          ref={containerRef as any}
-          width={width as any}
-        >
+      <XStack flex={1} ref={ref} alignItems="stretch" userSelect="none" gap="$2" {...rest}>
+        <XStack alignItems="center" group="window" ref={containerRef as any} width={width as any}>
           {children}
           <YStack
             display={hideDragHandle ? 'none' : 'flex'}
@@ -540,15 +503,14 @@ export default ResizableBox
 
 /** ---------- SIZE CONTROLLER ----------- */
 
-export const { Provider: RawSizeProvider, useStyledContext: useSize } =
-  createStyledContext({
-    sizes: [] as SizeTokens[],
-    setSizes: (sizes: SizeTokens[]) => {},
-    size: '$true' as SizeTokens,
-    setSize: (size: SizeTokens) => {},
-    showController: false,
-    setShowController: (val: boolean) => {},
-  })
+export const { Provider: RawSizeProvider, useStyledContext: useSize } = createStyledContext({
+  sizes: [] as SizeTokens[],
+  setSizes: (sizes: SizeTokens[]) => {},
+  size: '$true' as SizeTokens,
+  setSize: (size: SizeTokens) => {},
+  showController: false,
+  setShowController: (val: boolean) => {},
+})
 
 const SizeProvider = ({
   children,

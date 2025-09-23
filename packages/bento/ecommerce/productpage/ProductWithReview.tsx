@@ -153,12 +153,7 @@ export function ProductWithReview() {
                   paddingHorizontal: '$3',
                 }}
               >
-                <RovingFocusGroup
-                  width="100%"
-                  flexDirection="row"
-                  loop
-                  orientation="horizontal"
-                >
+                <RovingFocusGroup width="100%" flexDirection="row" loop orientation="horizontal">
                   <ScrollView
                     horizontal
                     width="100%"
@@ -202,9 +197,7 @@ export function ProductWithReview() {
                             outlineOffset: 4,
                           }}
                           outlineColor={
-                            picture === selectedPicture
-                              ? '$gray10'
-                              : ('transparent' as any)
+                            picture === selectedPicture ? '$gray10' : ('transparent' as any)
                           }
                           overflow="hidden"
                           height={173}
@@ -244,8 +237,7 @@ export function ProductWithReview() {
                               bottom={0}
                               y={15}
                               opacity={0.7}
-                              {...((selectedPicture === picture ||
-                                tempPicture === picture) && {
+                              {...((selectedPicture === picture || tempPicture === picture) && {
                                 y: 10,
                                 opacity: 1,
                               })}
@@ -302,11 +294,7 @@ export function ProductWithReview() {
                           <Star
                             key={index}
                             size={16}
-                            color={
-                              index < Math.floor(product.stars.rate)
-                                ? '$yellow9'
-                                : '$gray9'
-                            }
+                            color={index < Math.floor(product.stars.rate) ? '$yellow9' : '$gray9'}
                           />
                         ))}
                     </View>
@@ -445,9 +433,7 @@ function ColorSelector() {
           outlineWidth={2}
           outlineOffset={2}
           outlineStyle="solid"
-          outlineColor={
-            (selectedColor === color ? '$borderPress' : 'transparent') as ColorTokens
-          }
+          outlineColor={(selectedColor === color ? '$borderPress' : 'transparent') as ColorTokens}
           circular
         />
       ))}
@@ -475,10 +461,7 @@ function SizeSelector() {
           justifyContent="center"
           alignItems="center"
         >
-          <SizableText
-            size="$3"
-            color={(selectedSize === size ? '$text' : '$color9') as any}
-          >
+          <SizableText size="$3" color={(selectedSize === size ? '$text' : '$color9') as any}>
             {size}
           </SizableText>
         </View>
@@ -493,11 +476,7 @@ const ItemCounter = XGroup.styleable((props, ref) => {
   return (
     <XGroup ref={ref} {...props}>
       <XGroup.Item>
-        <Button
-          theme="alt2"
-          size="$3"
-          onPress={() => setCount(count > 1 ? count - 1 : 1)}
-        >
+        <Button theme="alt2" size="$3" onPress={() => setCount(count > 1 ? count - 1 : 1)}>
           <Button.Icon>
             <Minus />
           </Button.Icon>
@@ -516,11 +495,7 @@ const ItemCounter = XGroup.styleable((props, ref) => {
         </View>
       </XGroup.Item>
       <XGroup.Item>
-        <Button
-          theme="alt2"
-          size="$3"
-          onPress={() => setCount(count < 10 ? count + 1 : 10)}
-        >
+        <Button theme="alt2" size="$3" onPress={() => setCount(count < 10 ? count + 1 : 10)}>
           <Button.Icon>
             <Plus />
           </Button.Icon>

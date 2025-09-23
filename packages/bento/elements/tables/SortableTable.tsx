@@ -267,9 +267,7 @@ export function SortableTable() {
 
   return (
     <FooterContainer
-      Footer={() => (
-        <Footer screenWidth={screenWidth} tableWidth={TABLE_WIDTH} table={table} />
-      )}
+      Footer={() => <Footer screenWidth={screenWidth} tableWidth={TABLE_WIDTH} table={table} />}
     >
       <ScrollView horizontal maxWidth="100%">
         <View
@@ -318,8 +316,7 @@ export function SortableTable() {
                     borderBottomRightRadius="$0"
                   >
                     {headerGroup.headers.map((header) => {
-                      const isSortableHeader =
-                        header.id === 'firstName' || header.id === 'age'
+                      const isSortableHeader = header.id === 'firstName' || header.id === 'age'
                       return (
                         <Table.HeaderCell
                           cellLocation={
@@ -335,9 +332,7 @@ export function SortableTable() {
                             flexDirection="row"
                             cursor={header.column.getCanSort() ? 'pointer' : 'none'}
                             onPress={
-                              isSortableHeader
-                                ? header.column.getToggleSortingHandler()
-                                : undefined
+                              isSortableHeader ? header.column.getToggleSortingHandler() : undefined
                             }
                             gap="$2"
                             alignItems="center"
@@ -345,10 +340,7 @@ export function SortableTable() {
                             <Text fontSize="$4" selectable={false}>
                               {header.isPlaceholder
                                 ? null
-                                : flexRender(
-                                    header.column.columnDef.header,
-                                    header.getContext()
-                                  )}
+                                : flexRender(header.column.columnDef.header, header.getContext())}
                             </Text>
                             {{
                               asc: <ChevronUp size="$1" color="$gray10" />,
@@ -408,9 +400,7 @@ export function SortableTable() {
               })}
             </Table.Body>
           </Table>
-          {!sm && (
-            <Footer screenWidth={screenWidth} tableWidth={TABLE_WIDTH} table={table} />
-          )}
+          {!sm && <Footer screenWidth={screenWidth} tableWidth={TABLE_WIDTH} table={table} />}
         </View>
       </ScrollView>
     </FooterContainer>

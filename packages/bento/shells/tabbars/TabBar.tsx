@@ -148,13 +148,7 @@ export function Tabbar() {
   }
 
   return (
-    <View
-      flexDirection="column"
-      width="100%"
-      minHeight={610}
-      height="100%"
-      maxHeight="100%"
-    >
+    <View flexDirection="column" width="100%" minHeight={610} height="100%" maxHeight="100%">
       <View
         flexDirection="column"
         width="100%"

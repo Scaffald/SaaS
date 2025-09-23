@@ -3,15 +3,7 @@ import { Button, View, YStack } from 'tamagui'
 
 /** ------ EXAMPLE ------ */
 export function RoundedButtons() {
-  const colorThemes = [
-    'blue',
-    'red',
-    'green',
-    'purple',
-    'pink',
-    'yellow',
-    'orange',
-  ] as const
+  const colorThemes = ['blue', 'red', 'green', 'purple', 'pink', 'yellow', 'orange'] as const
 
   const variantButtons = [
     { theme: 'active' },

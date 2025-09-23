@@ -42,29 +42,14 @@ export type CodeBlockProps = PreProps & {
   showLineNumbers?: boolean
 }
 
-export default React.forwardRef<any, CodeBlockProps>(
-  function CodeBlock(_props, forwardedRef) {
-    const {
-      language,
-      value,
-      line = '0',
-      className = '',
-      mode,
-      showLineNumbers,
-      ...props
-    } = _props
+export default React.forwardRef<any, CodeBlockProps>(function CodeBlock(_props, forwardedRef) {
+  const { language, value, line = '0', className = '', mode, showLineNumbers, ...props } = _props
 
-    // For React Native, we just display the raw code without syntax highlighting
-    // since the web-only dependencies (rehype-parse, parse5) aren't available
-    return (
-      <Pre
-        ref={forwardedRef}
-        className={className}
-        data-line-numbers={showLineNumbers}
-        {...props}
-      >
-        <Code className={className}>{value}</Code>
-      </Pre>
-    )
-  }
-)
+  // For React Native, we just display the raw code without syntax highlighting
+  // since the web-only dependencies (rehype-parse, parse5) aren't available
+  return (
+    <Pre ref={forwardedRef} className={className} data-line-numbers={showLineNumbers} {...props}>
+      <Code className={className}>{value}</Code>
+    </Pre>
+  )
+})

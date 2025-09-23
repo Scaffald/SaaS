@@ -280,11 +280,7 @@ export function LessRowOnMobile() {
               {headerGroup.headers.map((header) => (
                 <Table.HeaderCell
                   cellLocation={
-                    header.id === 'fullName'
-                      ? 'first'
-                      : header.id === 'role'
-                        ? 'last'
-                        : 'middle'
+                    header.id === 'fullName' ? 'first' : header.id === 'role' ? 'last' : 'middle'
                   }
                   key={header.id}
                   borderWidth={0}

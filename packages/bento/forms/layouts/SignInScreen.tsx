@@ -65,11 +65,7 @@ export function SignInScreen() {
           </View>
           <View flexDirection="column" gap="$1">
             <Input size="$4">
-              <View
-                flexDirection="row"
-                alignItems="center"
-                justifyContent="space-between"
-              >
+              <View flexDirection="row" alignItems="center" justifyContent="space-between">
                 <Input.Label htmlFor={'password'}>Password</Input.Label>
               </View>
               <Input.Box>

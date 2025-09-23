@@ -186,11 +186,7 @@ export function BasicTable() {
               {headerGroup.headers.map((header) => (
                 <Table.HeaderCell
                   cellLocation={
-                    header.id === 'avatar'
-                      ? 'first'
-                      : header.id === 'progress'
-                        ? 'last'
-                        : 'middle'
+                    header.id === 'avatar' ? 'first' : header.id === 'progress' ? 'last' : 'middle'
                   }
                   key={header.id}
                 >

@@ -15,10 +15,7 @@ const useTokenMapper = () => {
     if (bentoTokens && userTamaguiConfig) {
       try {
         const userTokensConfig = JSON.parse(userTamaguiConfig).tamaguiConfig.tokens
-        const mapped = mapBentoTokensToUserTokens(
-          bentoTokens,
-          userTokensConfig
-        ) as MergedToken
+        const mapped = mapBentoTokensToUserTokens(bentoTokens, userTokensConfig) as MergedToken
         setMappedTokens(mapped || null)
       } catch (error) {
         console.error('Failed to parse user tamagui config:', error)
@@ -32,10 +29,7 @@ const useTokenMapper = () => {
         try {
           return JSON.parse(userTamaguiConfig)?.tamaguiConfig?.tokens
         } catch (error) {
-          console.error(
-            'Failed to parse user tamagui config for tokens:',
-            userTamaguiConfig
-          )
+          console.error('Failed to parse user tamagui config for tokens:', userTamaguiConfig)
           return null
         }
       })()

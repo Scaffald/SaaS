@@ -103,14 +103,7 @@ function CalendarView({
         )}
       </View>
       <AnimatePresence key={prevNextAnimationKey}>
-        <View
-          w="100%"
-          jc="center"
-          ai="center"
-          animation="medium"
-          gap="$4"
-          {...prevNextAnimation()}
-        >
+        <View w="100%" jc="center" ai="center" animation="medium" gap="$4" {...prevNextAnimation()}>
           <WeekView weekDays={weekDays} />
           <View flexDirection="column" gap="$2" ai="center" jc="center" w="100%">
             {calendarWeeks.map((days) => {
@@ -132,11 +125,7 @@ function CalendarView({
                     const dayIsFirstOrLastOfMonth =
                       day.$date.getDate() === 1 ||
                       day.$date.getDate() ===
-                        new Date(
-                          day.$date.getFullYear(),
-                          day.$date.getMonth() + 1,
-                          0
-                        ).getDate()
+                        new Date(day.$date.getFullYear(), day.$date.getMonth() + 1, 0).getDate()
 
                     const shouldWrapInGradient =
                       dayIsFirstOrLastOfMonth && day.range && day.range === 'in-range'
@@ -149,9 +138,7 @@ function CalendarView({
                       [key: string]: GetProps<typeof View>
                     } = {
                       'in-range': {
-                        backgroundColor: dayIsFirstOrLastOfMonth
-                          ? 'transprent'
-                          : '$color5',
+                        backgroundColor: dayIsFirstOrLastOfMonth ? 'transprent' : '$color5',
                       },
                       'range-start': {
                         backgroundColor: '$color5',
@@ -217,8 +204,7 @@ function CalendarView({
                     )
 
                     if (shouldWrapInGradient) {
-                      const direction =
-                        day.$date.getDate() === 1 ? 'rightToLeft' : 'leftToRight'
+                      const direction = day.$date.getDate() === 1 ? 'rightToLeft' : 'leftToRight'
 
                       return (
                         <LinearGradient
@@ -236,13 +222,7 @@ function CalendarView({
                     }
 
                     return (
-                      <View
-                        jc="center"
-                        ai="center"
-                        key={day.$date.toString()}
-                        w="100%"
-                        flex={1}
-                      >
+                      <View jc="center" ai="center" key={day.$date.toString()} w="100%" flex={1}>
                         {(day.range === 'in-range' ||
                           day.range === 'range-start' ||
                           day.range === 'range-end') && (
@@ -373,9 +353,7 @@ export function Calendar({ showTabs = true }: { showTabs?: boolean }) {
           shadowOpacity={0.2}
           shadowRadius="$6"
         >
-          {header === 'day' && !fullWidthMode && (
-            <CalendarView order="either" calendarIndex={0} />
-          )}
+          {header === 'day' && !fullWidthMode && <CalendarView order="either" calendarIndex={0} />}
           {header === 'day' && fullWidthMode && (
             <>
               <CalendarView order="first" calendarIndex={1} />

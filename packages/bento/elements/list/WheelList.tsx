@@ -16,9 +16,7 @@ const AnimatedList = styled(Animated.FlatList<CardData>, {
   flex: 1,
 })
 
-export function WheelList({
-  onChange,
-}: { onChange?: (item: CardData, index: number) => void }) {
+export function WheelList({ onChange }: { onChange?: (item: CardData, index: number) => void }) {
   const [index, setIndex] = useState(0)
 
   const scrollY = useSharedValue(0)
@@ -210,10 +208,7 @@ const CardItem = ({
   )
 }
 
-const BackgroundView = ({
-  index,
-  scrollY,
-}: { index: number; scrollY: SharedValue<number> }) => {
+const BackgroundView = ({ index, scrollY }: { index: number; scrollY: SharedValue<number> }) => {
   const inputRange = getInputRange(index)
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -260,19 +255,11 @@ const Slider = ({ scrollY }: { scrollY: SharedValue<number> }) => {
   )
 }
 
-const SliderItem = ({
-  scrollY,
-  index,
-}: { scrollY: SharedValue<number>; index: number }) => {
+const SliderItem = ({ scrollY, index }: { scrollY: SharedValue<number>; index: number }) => {
   const inputRange = getInputRange(index + 1)
 
   const animatedStyle = useAnimatedStyle(() => {
-    const width = interpolate(
-      scrollY.value,
-      inputRange,
-      [8, 16, 24, 16, 8],
-      Extrapolation.CLAMP
-    )
+    const width = interpolate(scrollY.value, inputRange, [8, 16, 24, 16, 8], Extrapolation.CLAMP)
 
     return {
       width: width || 8,

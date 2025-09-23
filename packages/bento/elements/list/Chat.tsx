@@ -1,11 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
-import {
-  Dimensions,
-  FlatList,
-  Keyboard,
-  KeyboardAvoidingView,
-  SafeAreaView,
-} from 'react-native'
+import { Dimensions, FlatList, Keyboard, KeyboardAvoidingView, SafeAreaView } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
   Extrapolation,
@@ -113,12 +107,14 @@ export const Chat = () => {
   return (
     <ChatContext.Provider value={{ theme, setTheme }}>
       <View theme={theme} h="100%" flex={1}>
-        <View bg={themeName.includes('dark') ? 'white' : 'black'} themeInverse flex={1} position="absolute" inset={0} />
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior="padding"
-          keyboardVerticalOffset={0}
-        >
+        <View
+          bg={themeName.includes('dark') ? 'white' : 'black'}
+          themeInverse
+          flex={1}
+          position="absolute"
+          inset={0}
+        />
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={0}>
           <Header offset={offset} />
 
           <GestureView offset={offset} />
@@ -241,12 +237,7 @@ const Header = ({ offset }: { offset: SharedValue<number> }) => {
     transform: [
       {
         translateY: withSpring(
-          interpolate(
-            offset.value,
-            [0, height],
-            [0, -HEADER_HEIGHT * 2],
-            Extrapolation.CLAMP
-          ),
+          interpolate(offset.value, [0, height], [0, -HEADER_HEIGHT * 2], Extrapolation.CLAMP),
           SPRING_CONFIG
         ),
       },
@@ -283,15 +274,7 @@ const Header = ({ offset }: { offset: SharedValue<number> }) => {
             <Button size="$3" circular>
               <PhoneCall size={'$1'} />
             </Button>
-            <Circle
-              zIndex={1}
-              position="absolute"
-              h={10}
-              w={10}
-              top={0}
-              right={0}
-              bg="green"
-            />
+            <Circle zIndex={1} position="absolute" h={10} w={10} top={0} right={0} bg="green" />
           </View>
         </XStack>
       </AnimatedView>
@@ -605,8 +588,7 @@ const data: MessageItem[] = [
   {
     id: '7',
     createdAt: 1714208400,
-    message:
-      'Pretty smooth actually. The docs are well-written and there are good examples.',
+    message: 'Pretty smooth actually. The docs are well-written and there are good examples.',
     user,
   },
   {

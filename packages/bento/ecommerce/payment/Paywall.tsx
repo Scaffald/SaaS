@@ -11,17 +11,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated'
-import {
-  Button,
-  isWeb,
-  styled,
-  Switch,
-  Text,
-  useTheme,
-  useThemeName,
-  View,
-  XStack,
-} from 'tamagui'
+import { Button, isWeb, styled, Switch, Text, useTheme, useThemeName, View, XStack } from 'tamagui'
 import { LinearGradient } from 'tamagui/linear-gradient'
 import {
   Calendar,
@@ -144,10 +134,7 @@ const PlanList = () => {
       if (Math.abs(velocityX) > PLAN_ITEM_WIDTH) {
         const currentIndex = Math.round(-scrollX.value / SIZE_RANGE)
         const direction = velocityX > 0 ? -1 : 1
-        const targetIndex = Math.max(
-          0,
-          Math.min(currentIndex + direction, plans.length - 1)
-        )
+        const targetIndex = Math.max(0, Math.min(currentIndex + direction, plans.length - 1))
         snapToIndex(targetIndex)
       }
     })
@@ -323,11 +310,7 @@ const PlanView = ({
                   <Text>{name}</Text>
                 </XStack>
                 {index !== features.length - 1 && (
-                  <View
-                    key={`${name}-${index}`}
-                    borderTopWidth={1}
-                    borderColor="$borderColor"
-                  />
+                  <View key={`${name}-${index}`} borderTopWidth={1} borderColor="$borderColor" />
                 )}
               </>
             ))}
@@ -373,9 +356,7 @@ const PlanView = ({
                 >
                   <Text
                     fontSize="$5"
-                    {...(!annual
-                      ? { color: '$color', fontWeight: '600' }
-                      : { color: '$black10' })}
+                    {...(!annual ? { color: '$color', fontWeight: '600' } : { color: '$black10' })}
                   >
                     Monthly
                   </Text>
@@ -415,9 +396,7 @@ const PlanView = ({
 
                   <Text
                     fontSize="$5"
-                    {...(annual
-                      ? { color: '$color', fontWeight: '600' }
-                      : { color: '$black10' })}
+                    {...(annual ? { color: '$color', fontWeight: '600' } : { color: '$black10' })}
                   >
                     Annual
                   </Text>
@@ -624,12 +603,7 @@ const RatingView = ({ reviewer }: { reviewer: Reviewer }) => {
           {Array.from({ length: 5 }).map((_, index) => {
             const active = index < reviewer.rating
             return (
-              <Star
-                size="$1"
-                key={index}
-                color="none"
-                fill={active ? '#FFCF50' : color4.val}
-              />
+              <Star size="$1" key={index} color="none" fill={active ? '#FFCF50' : color4.val} />
             )
           })}
         </XStack>
@@ -748,8 +722,7 @@ const reviewers: Reviewer[] = [
     id: 3,
     name: 'Michael Williams',
     rating: 5,
-    review:
-      "Best productivity tool I've used. The premium features are worth every penny.",
+    review: "Best productivity tool I've used. The premium features are worth every penny.",
     date: '2024-03-05',
   },
   {
@@ -763,8 +736,7 @@ const reviewers: Reviewer[] = [
     id: 5,
     name: 'David Miller',
     rating: 5,
-    review:
-      'Excellent app that delivers on all its promises. The support team is fantastic too!',
+    review: 'Excellent app that delivers on all its promises. The support team is fantastic too!',
     date: '2024-02-20',
   },
   {
@@ -793,8 +765,7 @@ const reviewers: Reviewer[] = [
     id: 9,
     name: 'Robert Taylor',
     rating: 5,
-    review:
-      'Phenomenal tool that keeps getting better. The premium features are exceptional.',
+    review: 'Phenomenal tool that keeps getting better. The premium features are exceptional.',
     date: '2024-01-30',
   },
   {

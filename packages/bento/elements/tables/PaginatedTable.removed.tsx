@@ -3,12 +3,7 @@
 //   REMOVED FROM BENTO
 //
 //
-import {
-  ChevronFirst,
-  ChevronLast,
-  ChevronLeft,
-  ChevronRight,
-} from '@tamagui/lucide-icons'
+import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
 import type { GroupingState } from '@tanstack/react-table'
 import { useMedia } from 'tamagui'
 import {
@@ -248,20 +243,14 @@ export function PaginatedTable() {
       >
         <XGroup>
           <XGroup.Item>
-            <Button
-              onPress={() => table.setPageIndex(0)}
-              disabled={!table.getCanPreviousPage()}
-            >
+            <Button onPress={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
               <TButton.Icon>
                 <ChevronFirst />
               </TButton.Icon>
             </Button>
           </XGroup.Item>
           <XGroup.Item>
-            <Button
-              onPress={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
+            <Button onPress={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
               <TButton.Icon>
                 <ChevronLeft />
               </TButton.Icon>
@@ -299,12 +288,7 @@ export function PaginatedTable() {
             {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
           </Text>
         </View>
-        <View
-          flexDirection="row"
-          gap="$4"
-          alignItems="center"
-          className="flex items-center gap-1"
-        >
+        <View flexDirection="row" gap="$4" alignItems="center" className="flex items-center gap-1">
           <Text fontSize="$5" fontWeight="$5" lineHeight="$5">
             Go to page
           </Text>

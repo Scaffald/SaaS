@@ -113,16 +113,9 @@ function Item({
               </Checkboxes.Checkbox.Indicator>
             </Checkboxes.Checkbox>
           </View>
-          <Text
-            numberOfLines={2}
-            fontSize="$3"
-            lineHeight="$3"
-            fontWeight="300"
-            col="$gray9"
-          >
-            Laborum velit velit occaecat eiusmod laboris tempor. Lorem qui quis deserunt
-            culpa. Ad eiusmod magna ad proident exercitation laborum qui quis
-            reprehenderit occaecat.
+          <Text numberOfLines={2} fontSize="$3" lineHeight="$3" fontWeight="300" col="$gray9">
+            Laborum velit velit occaecat eiusmod laboris tempor. Lorem qui quis deserunt culpa. Ad
+            eiusmod magna ad proident exercitation laborum qui quis reprehenderit occaecat.
           </Text>
         </View>
       </Checkboxes.Card>
