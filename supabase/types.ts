@@ -269,6 +269,230 @@ export type Database = {
         }
         Relationships: []
       },
+      job_ingest_runs: {
+        Row: {
+          adapter: string
+          created_at: string
+          created_jobs: number
+          deleted_jobs: number
+          error_payload: Json | null
+          finished_at: string | null
+          id: string
+          parameters: Json
+          provider: Database['public']['Enums']['job_provider'] | null
+          started_at: string
+          status: 'pending' | 'running' | 'succeeded' | 'failed' | 'partial'
+          total_jobs: number
+          updated_at: string
+          updated_jobs: number
+        }
+        Insert: {
+          adapter: string
+          created_at?: string
+          created_jobs?: number
+          deleted_jobs?: number
+          error_payload?: Json | null
+          finished_at?: string | null
+          id?: string
+          parameters?: Json
+          provider?: Database['public']['Enums']['job_provider'] | null
+          started_at?: string
+          status?: 'pending' | 'running' | 'succeeded' | 'failed' | 'partial'
+          total_jobs?: number
+          updated_at?: string
+          updated_jobs?: number
+        }
+        Update: {
+          adapter?: string
+          created_at?: string
+          created_jobs?: number
+          deleted_jobs?: number
+          error_payload?: Json | null
+          finished_at?: string | null
+          id?: string
+          parameters?: Json
+          provider?: Database['public']['Enums']['job_provider'] | null
+          started_at?: string
+          status?: 'pending' | 'running' | 'succeeded' | 'failed' | 'partial'
+          total_jobs?: number
+          updated_at?: string
+          updated_jobs?: number
+        }
+        Relationships: []
+      },
+      job_source_records: {
+        Row: {
+          content_hash: string | null
+          created_at: string
+          external_id: string
+          first_seen_at: string
+          id: string
+          job_id: string
+          last_seen_at: string
+          payload_hash: string | null
+          provider: Database['public']['Enums']['job_provider']
+          updated_at: string
+        }
+        Insert: {
+          content_hash?: string | null
+          created_at?: string
+          external_id: string
+          first_seen_at?: string
+          id?: string
+          job_id: string
+          last_seen_at?: string
+          payload_hash?: string | null
+          provider: Database['public']['Enums']['job_provider']
+          updated_at?: string
+        }
+        Update: {
+          content_hash?: string | null
+          created_at?: string
+          external_id?: string
+          first_seen_at?: string
+          id?: string
+          job_id?: string
+          last_seen_at?: string
+          payload_hash?: string | null
+          provider?: Database['public']['Enums']['job_provider']
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'job_source_records_job_id_fkey'
+            columns: ['job_id']
+            isOneToOne: false
+            referencedRelation: 'jobs'
+            referencedColumns: ['id']
+          },
+        ]
+      },
+      jobs: {
+        Row: {
+          address: Json | null
+          closes_at: string | null
+          compensation: Json | null
+          created_at: string
+          description: string | null
+          employment_type:
+            | 'full_time'
+            | 'part_time'
+            | 'contract'
+            | 'temp'
+            | 'intern'
+            | null
+          external_id: string | null
+          external_url: string | null
+          geo: unknown | null
+          id: string
+          last_seen_at: string | null
+          location: string | null
+          min_reputation: string | null
+          organization_id: string
+          position_level: string | null
+          posted_at: string | null
+          raw_payload: Json | null
+          remote_option: 'on_site' | 'hybrid' | 'remote' | null
+          search_tsv: unknown | null
+          slug: string | null
+          source_posted_at: string | null
+          source_provider: Database['public']['Enums']['job_provider']
+          source_updated_at: string | null
+          status: 'draft' | 'open' | 'paused' | 'closed'
+          team_id: string | null
+          title: string
+          updated_at: string
+          visibility: 'public' | 'members' | null
+        }
+        Insert: {
+          address?: Json | null
+          closes_at?: string | null
+          compensation?: Json | null
+          created_at?: string
+          description?: string | null
+          employment_type?:
+            | 'full_time'
+            | 'part_time'
+            | 'contract'
+            | 'temp'
+            | 'intern'
+            | null
+          external_id?: string | null
+          external_url?: string | null
+          geo?: unknown | null
+          id?: string
+          last_seen_at?: string | null
+          location?: string | null
+          min_reputation?: string | null
+          organization_id: string
+          position_level?: string | null
+          posted_at?: string | null
+          raw_payload?: Json | null
+          remote_option?: 'on_site' | 'hybrid' | 'remote' | null
+          search_tsv?: unknown | null
+          slug?: string | null
+          source_posted_at?: string | null
+          source_provider?: Database['public']['Enums']['job_provider']
+          source_updated_at?: string | null
+          status?: 'draft' | 'open' | 'paused' | 'closed'
+          team_id?: string | null
+          title: string
+          updated_at?: string
+          visibility?: 'public' | 'members' | null
+        }
+        Update: {
+          address?: Json | null
+          closes_at?: string | null
+          compensation?: Json | null
+          created_at?: string
+          description?: string | null
+          employment_type?:
+            | 'full_time'
+            | 'part_time'
+            | 'contract'
+            | 'temp'
+            | 'intern'
+            | null
+          external_id?: string | null
+          external_url?: string | null
+          geo?: unknown | null
+          id?: string
+          last_seen_at?: string | null
+          location?: string | null
+          min_reputation?: string | null
+          organization_id?: string
+          position_level?: string | null
+          posted_at?: string | null
+          raw_payload?: Json | null
+          remote_option?: 'on_site' | 'hybrid' | 'remote' | null
+          search_tsv?: unknown | null
+          slug?: string | null
+          source_posted_at?: string | null
+          source_provider?: Database['public']['Enums']['job_provider']
+          source_updated_at?: string | null
+          status?: 'draft' | 'open' | 'paused' | 'closed'
+          team_id?: string | null
+          title?: string
+          updated_at?: string
+          visibility?: 'public' | 'members' | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'jobs_organization_id_fkey'
+            columns: ['organization_id']
+            isOneToOne: false
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'jobs_team_id_fkey'
+            columns: ['team_id']
+            isOneToOne: false
+            referencedRelation: 'teams'
+            referencedColumns: ['id']
+          },
+        ]
+      },
       organizations: {
         Row: {
           address: Json | null
@@ -334,6 +558,44 @@ export type Database = {
             columns: ['owner_user_id']
             isOneToOne: false
             referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      },
+      organization_sources: {
+        Row: {
+          created_at: string
+          external_organization_id: string
+          id: string
+          metadata: Json | null
+          organization_id: string
+          provider: Database['public']['Enums']['job_provider']
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          external_organization_id: string
+          id?: string
+          metadata?: Json | null
+          organization_id: string
+          provider: Database['public']['Enums']['job_provider']
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          external_organization_id?: string
+          id?: string
+          metadata?: Json | null
+          organization_id?: string
+          provider?: Database['public']['Enums']['job_provider']
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'organization_sources_organization_id_fkey'
+            columns: ['organization_id']
+            isOneToOne: false
+            referencedRelation: 'organizations'
             referencedColumns: ['id']
           },
         ]
@@ -915,6 +1177,55 @@ export type Database = {
         Update: never
         Relationships: []
       }
+      v_job_search: {
+        Row: {
+          address: Json | null
+          closes_at: string | null
+          compensation: Json | null
+          description: string | null
+          employment_type:
+            | 'full_time'
+            | 'part_time'
+            | 'contract'
+            | 'temp'
+            | 'intern'
+            | null
+          external_id: string | null
+          external_url: string | null
+          geo: unknown | null
+          id: string
+          last_seen_at: string | null
+          location: string | null
+          min_reputation: string | null
+          organization_external_id: string | null
+          organization_id: string
+          organization_name: string | null
+          organization_slug: string | null
+          organization_source_metadata: Json | null
+          position_level: string | null
+          posted_at: string | null
+          raw_payload: Json | null
+          remote_option: 'on_site' | 'hybrid' | 'remote' | null
+          search_tsv: unknown | null
+          skills: string[] | null
+          slug: string | null
+          source_content_hash: string | null
+          source_first_seen_at: string | null
+          source_last_seen_at: string | null
+          source_payload_hash: string | null
+          source_posted_at: string | null
+          source_provider: Database['public']['Enums']['job_provider']
+          source_updated_at: string | null
+          status: 'draft' | 'open' | 'paused' | 'closed'
+          team_id: string | null
+          team_name: string | null
+          title: string
+          visibility: 'public' | 'members' | null
+        }
+        Insert: never
+        Update: never
+        Relationships: []
+      }
       v_organization_memberships: {
         Row: {
           address: Json | null
@@ -1001,6 +1312,14 @@ export type Database = {
     }
     Enums: {
       affiliate_type: 'education' | 'certification' | 'training' | 'resource'
+      job_provider:
+        | 'manual'
+        | 'indeed'
+        | 'ziprecruiter'
+        | 'linkedin'
+        | 'greenhouse'
+        | 'workday'
+        | 'other'
       profile_verification_subject: 'profile' | 'user' | 'user_private' | 'project'
     }
     CompositeTypes: {
