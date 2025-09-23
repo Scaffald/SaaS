@@ -55,75 +55,81 @@ export const createAdminUsersHooks =
       mergeOrganizationId<T>(organizationId ?? undefined, input)
 
     type AdminUsersApi = TApi['admin']['users']
-    type UpdateResult = AdminUsersApi['update']['useMutation'] extends (...args: unknown[]) => infer R
+    type UpdateResult = AdminUsersApi['update']['useMutation'] extends (
+      ...args: unknown[]
+    ) => infer R
       ? R extends MutationResultLike
         ? R
         : never
       : never
-    type VerifyResult = AdminUsersApi['verify']['useMutation'] extends (...args: unknown[]) => infer R
+    type VerifyResult = AdminUsersApi['verify']['useMutation'] extends (
+      ...args: unknown[]
+    ) => infer R
       ? R extends MutationResultLike
         ? R
         : never
       : never
-    type RevokeResult = AdminUsersApi['revoke']['useMutation'] extends (...args: unknown[]) => infer R
+    type RevokeResult = AdminUsersApi['revoke']['useMutation'] extends (
+      ...args: unknown[]
+    ) => infer R
       ? R extends MutationResultLike
         ? R
         : never
       : never
 
-  return {
-    useSearch: (
-      input: OptionalOrg<AdminUsersInputs['search']>,
-      options?: Parameters<(typeof api)['admin']['users']['search']['useQuery']>[1]
-    ) => api.admin.users.search.useQuery(applyOrg(input), options),
-    useDetail: (
-      input: OptionalOrg<AdminUsersInputs['detail']>,
-      options?: Parameters<(typeof api)['admin']['users']['detail']['useQuery']>[1]
-    ) => api.admin.users.detail.useQuery(applyOrg(input), options),
-    useUpdate: (options?: Parameters<AdminUsersApi['update']['useMutation']>[0]) => {
-      const mutation = api.admin.users.update.useMutation(options)
-      const result: MutationWithOptionalOrg<UpdateResult, AdminUsersInputs['update']> = {
-        ...mutation,
-        mutate: (
-          input: OptionalOrg<AdminUsersInputs['update']>,
-          opts?: Parameters<UpdateResult['mutate']>[1]
-        ) => mutation.mutate(applyOrg(input), opts),
-        mutateAsync: (
-          input: OptionalOrg<AdminUsersInputs['update']>,
-          opts?: Parameters<UpdateResult['mutateAsync']>[1]
-        ) => mutation.mutateAsync(applyOrg(input), opts),
-      }
-      return result
-    },
-    useVerify: (options?: Parameters<AdminUsersApi['verify']['useMutation']>[0]) => {
-      const mutation = api.admin.users.verify.useMutation(options)
-      const result: MutationWithOptionalOrg<VerifyResult, AdminUsersInputs['verify']> = {
-        ...mutation,
-        mutate: (
-          input: OptionalOrg<AdminUsersInputs['verify']>,
-          opts?: Parameters<VerifyResult['mutate']>[1]
-        ) => mutation.mutate(applyOrg(input), opts),
-        mutateAsync: (
-          input: OptionalOrg<AdminUsersInputs['verify']>,
-          opts?: Parameters<VerifyResult['mutateAsync']>[1]
-        ) => mutation.mutateAsync(applyOrg(input), opts),
-      }
-      return result
-    },
-    useRevoke: (options?: Parameters<AdminUsersApi['revoke']['useMutation']>[0]) => {
-      const mutation = api.admin.users.revoke.useMutation(options)
-      const result: MutationWithOptionalOrg<RevokeResult, AdminUsersInputs['revoke']> = {
-        ...mutation,
-        mutate: (
-          input: OptionalOrg<AdminUsersInputs['revoke']>,
-          opts?: Parameters<RevokeResult['mutate']>[1]
-        ) => mutation.mutate(applyOrg(input), opts),
-        mutateAsync: (
-          input: OptionalOrg<AdminUsersInputs['revoke']>,
-          opts?: Parameters<RevokeResult['mutateAsync']>[1]
-        ) => mutation.mutateAsync(applyOrg(input), opts),
-      }
-      return result
-    },
+    return {
+      useSearch: (
+        input: OptionalOrg<AdminUsersInputs['search']>,
+        options?: Parameters<(typeof api)['admin']['users']['search']['useQuery']>[1]
+      ) => api.admin.users.search.useQuery(applyOrg(input), options),
+      useDetail: (
+        input: OptionalOrg<AdminUsersInputs['detail']>,
+        options?: Parameters<(typeof api)['admin']['users']['detail']['useQuery']>[1]
+      ) => api.admin.users.detail.useQuery(applyOrg(input), options),
+      useUpdate: (options?: Parameters<AdminUsersApi['update']['useMutation']>[0]) => {
+        const mutation = api.admin.users.update.useMutation(options)
+        const result: MutationWithOptionalOrg<UpdateResult, AdminUsersInputs['update']> = {
+          ...mutation,
+          mutate: (
+            input: OptionalOrg<AdminUsersInputs['update']>,
+            opts?: Parameters<UpdateResult['mutate']>[1]
+          ) => mutation.mutate(applyOrg(input), opts),
+          mutateAsync: (
+            input: OptionalOrg<AdminUsersInputs['update']>,
+            opts?: Parameters<UpdateResult['mutateAsync']>[1]
+          ) => mutation.mutateAsync(applyOrg(input), opts),
+        }
+        return result
+      },
+      useVerify: (options?: Parameters<AdminUsersApi['verify']['useMutation']>[0]) => {
+        const mutation = api.admin.users.verify.useMutation(options)
+        const result: MutationWithOptionalOrg<VerifyResult, AdminUsersInputs['verify']> = {
+          ...mutation,
+          mutate: (
+            input: OptionalOrg<AdminUsersInputs['verify']>,
+            opts?: Parameters<VerifyResult['mutate']>[1]
+          ) => mutation.mutate(applyOrg(input), opts),
+          mutateAsync: (
+            input: OptionalOrg<AdminUsersInputs['verify']>,
+            opts?: Parameters<VerifyResult['mutateAsync']>[1]
+          ) => mutation.mutateAsync(applyOrg(input), opts),
+        }
+        return result
+      },
+      useRevoke: (options?: Parameters<AdminUsersApi['revoke']['useMutation']>[0]) => {
+        const mutation = api.admin.users.revoke.useMutation(options)
+        const result: MutationWithOptionalOrg<RevokeResult, AdminUsersInputs['revoke']> = {
+          ...mutation,
+          mutate: (
+            input: OptionalOrg<AdminUsersInputs['revoke']>,
+            opts?: Parameters<RevokeResult['mutate']>[1]
+          ) => mutation.mutate(applyOrg(input), opts),
+          mutateAsync: (
+            input: OptionalOrg<AdminUsersInputs['revoke']>,
+            opts?: Parameters<RevokeResult['mutateAsync']>[1]
+          ) => mutation.mutateAsync(applyOrg(input), opts),
+        }
+        return result
+      },
+    }
   }
-}

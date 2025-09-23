@@ -9,7 +9,7 @@ import { ResultList } from './components/ResultList'
 import { mockTalentProfiles, defaultCenter, defaultRadiusMeters } from './data/mockProfiles'
 import type { ActiveFilter } from './types'
 import type { TalentMarker } from './map/types'
-import { TalentMap } from './map/TalentMap'
+import { TalentMap } from './map'
 
 export const metersToMilesLabel = (meters: number) => {
   const miles = meters / 1609.34

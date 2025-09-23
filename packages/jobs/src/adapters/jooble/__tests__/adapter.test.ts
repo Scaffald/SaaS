@@ -16,14 +16,7 @@ describe('JoobleAdapter', () => {
   beforeAll(() => {
     nock.disableNetConnect()
     env.set({ JOOBLE_API_KEY: 'test-key' })
-    env.clear(
-      'HTTPS_PROXY',
-      'https_proxy',
-      'HTTP_PROXY',
-      'http_proxy',
-      'ALL_PROXY',
-      'all_proxy'
-    )
+    env.clear('HTTPS_PROXY', 'https_proxy', 'HTTP_PROXY', 'http_proxy', 'ALL_PROXY', 'all_proxy')
   })
 
   beforeEach(() => {

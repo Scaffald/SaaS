@@ -2,7 +2,13 @@ import type { AdapterFetchParams } from '../utils'
 import { buildJobFingerprint } from '../utils'
 import type { AdapterTelemetry } from '../adapters/base'
 import type { NormalizedOrganization } from '../domain/organization'
-import type { IngestedJob, JobIngestionRepository, JobIngestionResult, JobIngestionRunnerOptions, JobIngestionSummary } from './types'
+import type {
+  IngestedJob,
+  JobIngestionRepository,
+  JobIngestionResult,
+  JobIngestionRunnerOptions,
+  JobIngestionSummary,
+} from './types'
 
 const dedupeWarnings = (existing: Set<string>, warnings?: string[]) => {
   if (!warnings?.length) return
@@ -38,7 +44,10 @@ const sanitizeValue = (value: unknown): unknown => {
   }
   if (value && typeof value === 'object') {
     return Object.fromEntries(
-      Object.entries(value as Record<string, unknown>).map(([key, entry]) => [key, sanitizeValue(entry)])
+      Object.entries(value as Record<string, unknown>).map(([key, entry]) => [
+        key,
+        sanitizeValue(entry),
+      ])
     )
   }
   return value
@@ -85,9 +94,8 @@ const createPageParams = (
     return undefined
   }
 
-  const pagination = cursor !== undefined
-    ? { ...(baseParams?.pagination ?? {}), cursor }
-    : baseParams?.pagination
+  const pagination =
+    cursor !== undefined ? { ...(baseParams?.pagination ?? {}), cursor } : baseParams?.pagination
 
   if (!baseParams) {
     return pagination ? { pagination } : undefined

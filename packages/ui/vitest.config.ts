@@ -12,10 +12,7 @@ export default defineConfig(async () => {
   return mergeConfig(baseConfig, {
     resolve: {
       alias: {
-        '@tamagui/animations-moti': resolvePath(
-          packageDir,
-          'test/mocks/tamaguiAnimationsMock.ts'
-        ),
+        '@tamagui/animations-moti': resolvePath(packageDir, 'test/mocks/tamaguiAnimationsMock.ts'),
         '@tamagui/animations-react-native': resolvePath(
           packageDir,
           'test/mocks/tamaguiAnimationsMock.ts'

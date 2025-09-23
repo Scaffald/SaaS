@@ -28,16 +28,16 @@ const plugins = [
       }
     },
   }),
-  (nextConfig) => {
+  (_nextConfig) => {
     return {
-      webpack: (webpackConfig, options) => {
+      webpack: (webpackConfig, _options) => {
         webpackConfig.resolve.alias = {
           ...webpackConfig.resolve.alias,
           'react-native-svg': '@tamagui/react-native-svg',
+          'react-native/Libraries/Alert/Alert': false,
+          'react-native/Libraries/Utilities/Platform': 'react-native-web/dist/exports/Platform',
         }
-        if (typeof nextConfig.webpack === 'function') {
-          return nextConfig.webpack(webpackConfig, options)
-        }
+
         return webpackConfig
       },
     }

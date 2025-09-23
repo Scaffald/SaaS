@@ -14,10 +14,7 @@ describe('LoadingOverlay', () => {
   })
 
   test('allows additional props to be passed through', () => {
-    render(
-      <LoadingOverlay aria-hidden="true" data-testid="custom-overlay">
-      </LoadingOverlay>
-    )
+    render(<LoadingOverlay aria-hidden="true" data-testid="custom-overlay"></LoadingOverlay>)
 
     const overlay = screen.getByTestId('custom-overlay')
     expect(overlay).toHaveAttribute('aria-hidden', 'true')

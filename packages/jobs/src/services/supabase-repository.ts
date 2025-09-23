@@ -58,7 +58,10 @@ const prepareJson = (value: unknown): unknown => {
   }
   if (value && typeof value === 'object') {
     return Object.fromEntries(
-      Object.entries(value as Record<string, unknown>).map(([key, entry]) => [key, prepareJson(entry)])
+      Object.entries(value as Record<string, unknown>).map(([key, entry]) => [
+        key,
+        prepareJson(entry),
+      ])
     )
   }
   return value
@@ -160,9 +163,7 @@ const buildJobSourceRecord = (
   timestampIso: string
 ) => {
   const preparedJob = prepareJson(job.job)
-  const payloadHash = createHash('sha256')
-    .update(JSON.stringify(preparedJob))
-    .digest('hex')
+  const payloadHash = createHash('sha256').update(JSON.stringify(preparedJob)).digest('hex')
 
   return {
     job_id: jobId,
@@ -219,9 +220,7 @@ export class SupabaseJobIngestionRepository implements JobIngestionRepository {
     }
   }
 
-  async persistIngestion(
-    params: PersistJobIngestionParams
-  ): Promise<PersistJobIngestionResult> {
+  async persistIngestion(params: PersistJobIngestionParams): Promise<PersistJobIngestionResult> {
     const provider = normalizeProvider(params.provider)
     const timestamp = this.now()
     const timestampIso = toIso(timestamp)

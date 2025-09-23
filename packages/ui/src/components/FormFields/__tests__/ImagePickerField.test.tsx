@@ -59,7 +59,7 @@ describe('ImagePickerField', () => {
       },
       error: {},
       formState: { isSubmitting: false },
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
+      // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
     } as any)
     imagePickerMock.renderSpy.mockClear()
   })
@@ -86,7 +86,7 @@ describe('ImagePickerField', () => {
       },
       error: {},
       formState: { isSubmitting: false },
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
+      // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
     } as any)
 
     render(<ImagePickerField size="$3" />)
@@ -109,7 +109,7 @@ describe('ImagePickerField', () => {
       },
       error: {},
       formState: { isSubmitting: true },
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
+      // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
     } as any)
 
     render(<ImagePickerField size="$3" />)

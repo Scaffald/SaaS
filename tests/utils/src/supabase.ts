@@ -13,15 +13,20 @@ export type SupabaseRpcMock<TDatabase> = MockInstance<SupabaseRpc<TDatabase>>
 
 export const createSupabaseRpcMock = <TDatabase>(
   implementation?: SupabaseRpc<TDatabase>,
-  defaultValue: SupabaseRpcReturn<TDatabase> = { data: null, error: null } as SupabaseRpcReturn<TDatabase>
+  defaultValue: SupabaseRpcReturn<TDatabase> = {
+    data: null,
+    error: null,
+  } as SupabaseRpcReturn<TDatabase>
 ): SupabaseRpcMock<TDatabase> => {
   if (implementation) {
     return vi.fn(implementation) as SupabaseRpcMock<TDatabase>
   }
 
-  const mock = vi.fn<Parameters<SupabaseRpc<TDatabase>>, ReturnType<SupabaseRpc<TDatabase>>>(async () => {
-    return defaultValue
-  }) as SupabaseRpcMock<TDatabase>
+  const mock = vi.fn<Parameters<SupabaseRpc<TDatabase>>, ReturnType<SupabaseRpc<TDatabase>>>(
+    async () => {
+      return defaultValue
+    }
+  ) as SupabaseRpcMock<TDatabase>
 
   return mock
 }

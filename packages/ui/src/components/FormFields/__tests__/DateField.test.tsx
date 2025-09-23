@@ -20,7 +20,13 @@ vi.mock('../../elements/datepicker/DatePicker', async () => {
   // biome-ignore lint/suspicious/noExplicitAny: Test mock component with flexible props
   const DatePickerExample = React.forwardRef<HTMLInputElement, any>((props, ref) => {
     datePickerMock.renderSpy(props)
-    const { onChangeText, onBlur, placeholderTextColor: _placeholderTextColor, size: _size, ...rest } = props
+    const {
+      onChangeText,
+      onBlur,
+      placeholderTextColor: _placeholderTextColor,
+      size: _size,
+      ...rest
+    } = props
     return (
       <input
         data-testid="date-input"
@@ -58,7 +64,7 @@ describe('DateField', () => {
       },
       error: {},
       formState: { isSubmitting: false },
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
+      // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
     } as any)
     datePickerMock.renderSpy.mockClear()
   })
@@ -90,7 +96,7 @@ describe('DateField', () => {
       },
       error: {},
       formState: { isSubmitting: false },
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
+      // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
     } as any)
 
     render(<DateField size="$3" />)
@@ -116,7 +122,7 @@ describe('DateField', () => {
       },
       error: {},
       formState: { isSubmitting: true },
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
+      // biome-ignore lint/suspicious/noExplicitAny: Test mock with flexible types
     } as any)
 
     render(<DateField size="$3" />)

@@ -87,9 +87,7 @@ const createRepository = (
   const completeRun = vi
     .fn<[CompleteJobIngestRunParams], Promise<void>>()
     .mockResolvedValue(undefined)
-  const failRun = vi
-    .fn<[FailJobIngestRunParams], Promise<void>>()
-    .mockResolvedValue(undefined)
+  const failRun = vi.fn<[FailJobIngestRunParams], Promise<void>>().mockResolvedValue(undefined)
 
   return {
     startRun,
@@ -184,7 +182,9 @@ describe('runJobIngestion', () => {
     expect(persistParams.runId).toBe('run-1')
     expect(persistParams.jobs).toHaveLength(3)
     expect(persistParams.organizations).toHaveLength(2)
-    expect(new Set((persistParams.jobs as IngestedJob[]).map((entry) => entry.fingerprint)).size).toBe(3)
+    expect(
+      new Set((persistParams.jobs as IngestedJob[]).map((entry) => entry.fingerprint)).size
+    ).toBe(3)
 
     expect(result.summary).toEqual({
       fetched: 4,
@@ -243,9 +243,9 @@ describe('runJobIngestion', () => {
       telemetry: adapter.createTelemetry({ requestCount: 1, itemsReceived: 1 }),
     })
 
-    await expect(runJobIngestion({ adapter, repository, now: () => new Date('2024-03-01T00:00:00Z') })).rejects.toThrow(
-      'boom'
-    )
+    await expect(
+      runJobIngestion({ adapter, repository, now: () => new Date('2024-03-01T00:00:00Z') })
+    ).rejects.toThrow('boom')
 
     expect(repository.completeRun).not.toHaveBeenCalled()
     expect(repository.failRun).toHaveBeenCalledTimes(1)

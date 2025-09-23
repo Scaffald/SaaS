@@ -19,7 +19,6 @@ import type {
   WorkerPublicUpdateInput,
 } from '../schema'
 
-
 afterEach(() => {
   vi.restoreAllMocks()
 })
