@@ -181,7 +181,7 @@ export function HomeScreen() {
 
   if (isPending)
     return (
-      <View flex={1} height={'80vh' as any} ai="center" jc="center">
+      <View flex={1} height="80vh" ai="center" jc="center">
         <FullscreenSpinner />
       </View>
     )

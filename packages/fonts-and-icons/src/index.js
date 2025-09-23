@@ -11,7 +11,7 @@ import googleFonts from './googleFonts.js'
 import iconify from './iconify.js'
 import icons from './icons.js'
 
-const { copy, ensureDir, readFileSync } = pkg
+const { ensureDir } = pkg
 marked.setOptions({
   headerIds: false,
   mangle: false,

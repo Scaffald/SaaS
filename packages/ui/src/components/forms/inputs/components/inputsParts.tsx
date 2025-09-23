@@ -1,7 +1,7 @@
 import { getFontSized } from '@tamagui/get-font-sized'
 import { getSpace } from '@tamagui/get-token'
 import { User } from '@tamagui/lucide-icons'
-import type { SizeVariantSpreadFunction } from '@tamagui/web'
+import type { FontSizeVariantSpreadFunction, SizeVariantSpreadFunction } from '@tamagui/web'
 import { useState } from 'react'
 import type { ColorTokens, FontSizeTokens } from 'tamagui'
 import {
@@ -32,6 +32,53 @@ export const InputContext = createStyledContext<{
   scaleIcon: number
   color?: ColorTokens | string
 }>(defaultContextValues)
+
+type VariantProps = Record<string, unknown>
+type GetFontSizedExtras = Parameters<typeof getFontSized>[1]
+
+const isFontSizeToken = (value: unknown): value is FontSizeTokens => {
+  if (typeof value === 'number') return true
+  return typeof value === 'string' && value.startsWith('$')
+}
+
+const getFontSizedVariant: FontSizeVariantSpreadFunction<VariantProps> = (value, extras) =>
+  getFontSized(value, extras as GetFontSizedExtras)
+
+type TokenWithOptionalValue = { val?: unknown }
+
+const hasTokenValue = (token: unknown): token is TokenWithOptionalValue =>
+  typeof token === 'object' && token !== null && 'val' in token
+
+const getNumericTokenValue = (token: unknown): number | undefined => {
+  if (typeof token === 'number') {
+    return token
+  }
+  if (hasTokenValue(token) && typeof token.val === 'number') {
+    return token.val
+  }
+  return undefined
+}
+
+const getPrimitiveTokenValue = (token: unknown): string | number | undefined => {
+  if (typeof token === 'string' || typeof token === 'number') {
+    return token
+  }
+  if (hasTokenValue(token)) {
+    const { val } = token
+    if (typeof val === 'string' || typeof val === 'number') {
+      return val
+    }
+  }
+  return undefined
+}
+
+const getTokenFromRecord = <T extends Record<string, unknown>>(record: T | undefined, key: string) => {
+  if (!record) return undefined
+  return record[key as keyof T]
+}
+
+const getFontTokenKey = (value: FontSizeTokens): string =>
+  typeof value === 'number' ? `${value}` : value
 
 export const defaultInputGroupStyles = {
   size: '$true',
@@ -98,7 +145,7 @@ const InputGroupFrame = styled(XGroup, {
 })
 
 const FocusContext = createStyledContext({
-  setFocused: (val: boolean) => {},
+  setFocused: (_val: boolean) => {},
   focused: false,
 })
 
@@ -115,20 +162,20 @@ const InputGroupImpl = InputGroupFrame.styleable((props, forwardedRef) => {
   )
 })
 
-/* biome-ignore lint/suspicious/noExplicitAny: Tamagui typing does not expose generics for variants */
-export const inputSizeVariant: SizeVariantSpreadFunction<any> = (val = '$true', extras) => {
+export const inputSizeVariant: SizeVariantSpreadFunction<VariantProps> = (val = '$true', extras) => {
   const radiusToken = extras.tokens.radius[val] ?? extras.tokens.radius['$true']
   const paddingHorizontal = getSpace(val, {
     shift: -1,
     bounds: [2],
   })
-  const fontStyle = getFontSized(val as any, extras)
-  // lineHeight messes up input on native
-  if (!isWeb && fontStyle) {
-    delete fontStyle['lineHeight']
-  }
+
+  const fontSizeToken = isFontSizeToken(val) ? val : '$true'
+  const fontStyle = getFontSized(fontSizeToken, extras as GetFontSizedExtras)
+  const { lineHeight: _lineHeight, ...fontStyleWithoutLineHeight } = fontStyle
+  const resolvedFontStyle = isWeb ? fontStyle : fontStyleWithoutLineHeight
+
   return {
-    ...fontStyle,
+    ...resolvedFontStyle,
     height: val,
     borderRadius: extras.props.circular ? 100_000 : radiusToken,
     paddingHorizontal,
@@ -264,7 +311,7 @@ export const InputLabel = styled(Label, {
   context: InputContext,
   variants: {
     size: {
-      '...fontSize': getFontSized as any,
+      '...fontSize': getFontSizedVariant,
     },
   } as const,
 })
@@ -277,13 +324,19 @@ export const InputInfo = styled(Text, {
     size: {
       '...fontSize': (val, { font }) => {
         if (!font) return
-        /* biome-ignore lint/suspicious/noExplicitAny: font tokens are loosely typed */
-        const fontSize = (font.size[val] as any).val * 0.8
-        const lineHeight = (font.lineHeight?.[val] as any)?.val * 0.8
-        const fontWeight = font.weight?.['$2'] as any
-        const letterSpacing = font.letterSpacing?.[val]
-        const textTransform = font.transform?.[val]
-        const fontStyle = font.style?.[val]
+        const tokenKey = getFontTokenKey(val)
+        const fontSizeValue = getNumericTokenValue(getTokenFromRecord(font.size, tokenKey))
+        const lineHeightValue = getNumericTokenValue(getTokenFromRecord(font.lineHeight, tokenKey))
+        const fontWeightToken = getTokenFromRecord(font.weight, '$2')
+        const letterSpacing = getTokenFromRecord(font.letterSpacing, tokenKey)
+        const textTransform = getTokenFromRecord(font.transform, tokenKey)
+        const fontStyle = getTokenFromRecord(font.style, tokenKey)
+        const fontWeight = getPrimitiveTokenValue(fontWeightToken)
+
+        const fontSize = typeof fontSizeValue === 'number' ? fontSizeValue * 0.8 : undefined
+        const lineHeight =
+          typeof lineHeightValue === 'number' ? lineHeightValue * 0.8 : undefined
+
         return {
           fontSize,
           lineHeight,
