@@ -62,12 +62,16 @@ describe('JoobleAdapter', () => {
       })
 
     const adapter = createAdapter()
-    const result = await adapter.sync({
-      keywords: ['software', 'engineer'],
-      location: 'Remote',
-      radius: 10,
-      page: 2,
-      pageSize: 5,
+    const result = await adapter.pullListings({
+      metadata: {
+        keywords: ['software', 'engineer'],
+        location: 'Remote',
+        radius: 10,
+      },
+      pagination: {
+        page: 2,
+        pageSize: 5,
+      },
     })
 
     expect(scope.isDone()).toBe(true)
@@ -76,27 +80,33 @@ describe('JoobleAdapter', () => {
 
     const job = result.jobs[0]
     expect(job.id).toBe('jooble-123')
-    expect(job.externalId).toBe('123')
+    expect(job.identifier.externalId).toBe('123')
+    expect(job.identifier.source).toBe('jooble')
     expect(job.title).toBe('Software Engineer')
-    expect(job.organizationId).toBe('acme-corp')
-    expect(job.location?.raw).toBe('Remote, USA')
-    expect(job.salary?.raw).toBe('$120k')
-    expect(job.postedAt).toBe('2024-01-01T00:00:00.000Z')
-    expect(job.updatedAt).toBe('2024-01-02T00:00:00.000Z')
-    expect(job.applyUrl).toBe('https://example.com/jobs/123')
+    expect(job.organization.name).toBe('Acme Corp')
+    expect(job.organization.identifier?.slug).toBe('acme-corp')
+    expect(job.primaryLocation?.raw).toBe('Remote, USA')
+    expect(job.metadata?.rawSalary).toBe('$120k')
+    expect(job.postedAt?.toISOString()).toBe('2024-01-01T00:00:00.000Z')
+    expect(job.updatedAt?.toISOString()).toBe('2024-01-02T00:00:00.000Z')
 
     const organization = result.organizations[0]
-    expect(organization).toEqual({ id: 'acme-corp', name: 'Acme Corp' })
+    expect(organization.name).toBe('Acme Corp')
+    expect(organization.identifier?.slug).toBe('acme-corp')
 
-    expect(result.meta.source).toBe('jooble')
-    expect(result.meta.returnedCount).toBe(1)
-    expect(result.meta.totalCount).toBe(42)
-    expect(result.meta.config.page).toBe(2)
-    expect(result.meta.config.pageSize).toBe(5)
-    expect(result.meta.config.keywords).toEqual(['software', 'engineer'])
-    expect(result.meta.config.location).toBe('Remote')
-    expect(result.meta.durationMs).toBeGreaterThanOrEqual(0)
-    expect(Date.parse(result.meta.requestedAt)).not.toBeNaN()
+    expect(result.nextCursor).toBe('3')
+    expect(result.telemetry.source).toBe('jooble')
+    expect(result.telemetry.itemsReceived).toBe(1)
+    expect(result.telemetry.metadata?.totalCount).toBe(42)
+    expect(result.telemetry.metadata?.config).toEqual(
+      expect.objectContaining({
+        page: 2,
+        pageSize: 5,
+        keywords: ['software', 'engineer'],
+        location: 'Remote',
+      }),
+    )
+    expect(result.telemetry.metadata?.status).toBe(200)
   })
 
   it('handles empty responses gracefully', async () => {
@@ -106,13 +116,13 @@ describe('JoobleAdapter', () => {
     })
 
     const adapter = createAdapter()
-    const result = await adapter.sync()
+    const result = await adapter.pullListings()
 
     expect(scope.isDone()).toBe(true)
     expect(result.jobs).toEqual([])
     expect(result.organizations).toEqual([])
-    expect(result.meta.totalCount).toBe(0)
-    expect(result.meta.returnedCount).toBe(0)
+    expect(result.telemetry.itemsReceived).toBe(0)
+    expect(result.telemetry.metadata?.totalCount).toBe(0)
   })
 
   it('propagates errors from the Jooble API', async () => {
@@ -120,7 +130,7 @@ describe('JoobleAdapter', () => {
 
     const adapter = createAdapter()
 
-    await expect(adapter.sync()).rejects.toThrow('Jooble request failed (500): Internal error')
+    await expect(adapter.pullListings()).rejects.toThrow('Jooble request failed (500): Internal error')
     expect(scope.isDone()).toBe(true)
   })
 })

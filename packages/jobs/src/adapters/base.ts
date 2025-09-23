@@ -1,47 +1,64 @@
-import type { NormalizedJob, NormalizedOrganization } from '../domain/types'
+import type { NormalizedJob } from '../domain/job'
+import type { NormalizedOrganization } from '../domain/organization'
+import type { AdapterFetchParams } from '../utils'
 
-export interface AdapterFilters {
-  keywords?: string[]
-  location?: string
-  radius?: number
+export interface RateLimitTelemetry {
+  limit?: number
+  remaining?: number
+  resetAt?: Date
+  periodSeconds?: number
 }
 
-export interface AdapterPagination {
-  page: number
-  pageSize: number
-}
-
-export interface AdapterConfig extends AdapterFilters {
-  page: number
-  pageSize: number
-}
-
-export interface AdapterMeta<TConfig extends AdapterConfig = AdapterConfig> {
+export interface AdapterTelemetry {
   source: string
-  requestedAt: string
-  durationMs: number
-  returnedCount: number
-  totalCount?: number
-  config: TConfig
+  requestCount: number
+  itemsReceived: number
+  durationMs?: number
+  warnings?: string[]
+  rateLimit?: RateLimitTelemetry
+  metadata?: Record<string, unknown>
 }
 
-export interface AdapterResult<TConfig extends AdapterConfig = AdapterConfig> {
+export interface AdapterPullResult {
   jobs: NormalizedJob[]
   organizations: NormalizedOrganization[]
-  meta: AdapterMeta<TConfig>
-  rawResponse?: unknown
+  nextCursor?: string
+  telemetry: AdapterTelemetry
 }
 
-export interface AdapterRunOptions {
+export interface HydrateCompanyParams {
+  organization: NormalizedOrganization
   signal?: AbortSignal
+  metadata?: Record<string, unknown>
 }
 
-export interface JobSourceAdapter<TConfig extends AdapterConfig = AdapterConfig> {
-  readonly name: string
-  readonly source: string
-  getDefaultConfig(env?: NodeJS.ProcessEnv): TConfig
-  sync(
-    overrides?: Partial<Omit<TConfig, 'page' | 'pageSize'>> & Partial<AdapterPagination>,
-    options?: AdapterRunOptions,
-  ): Promise<AdapterResult<TConfig>>
+export interface HydrateCompanyResult {
+  organization: NormalizedOrganization
+  telemetry: AdapterTelemetry
+}
+
+export abstract class JobSourceAdapter {
+  public readonly source: string
+
+  protected constructor(source: string) {
+    this.source = source
+  }
+
+  abstract pullListings(params: AdapterFetchParams): Promise<AdapterPullResult>
+
+  abstract hydrateCompany(params: HydrateCompanyParams): Promise<HydrateCompanyResult>
+
+  protected createTelemetry(
+    overrides: Partial<Omit<AdapterTelemetry, 'source'>> = {},
+  ): AdapterTelemetry {
+    return {
+      source: this.source,
+      requestCount: overrides.requestCount ?? 0,
+      itemsReceived: overrides.itemsReceived ?? 0,
+      durationMs: overrides.durationMs,
+      warnings: overrides.warnings ?? [],
+      rateLimit: overrides.rateLimit,
+      metadata: overrides.metadata,
+    }
+  }
 }

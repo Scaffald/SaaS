@@ -117,8 +117,24 @@ const workerProfileUpdateSchema = z
     name: z.string().trim().max(120).nullable().optional(),
     about: z.string().nullable().optional(),
     avatarUrl: z.string().url().trim().max(512).nullable().optional(),
+    publicData: workerPublicUpdateSchema.optional(),
+    privateData: workerPrivateUpdateSchema.optional(),
   })
   .strict()
+  .refine((value) => {
+    if (value.publicData || value.privateData) {
+      return true
+    }
+
+    return (
+      value.name !== undefined ||
+      value.about !== undefined ||
+      value.avatarUrl !== undefined
+    )
+  }, {
+    message: 'At least one of name, about, avatarUrl, publicData, or privateData must be provided',
+    path: ['publicData'],
+  })
 
 const updateWorkerInputSchema = workerIdentifierSchema
   .extend({
@@ -126,7 +142,24 @@ const updateWorkerInputSchema = workerIdentifierSchema
     publicData: workerPublicUpdateSchema.optional(),
     privateData: workerPrivateUpdateSchema.optional(),
   })
-  .refine((value) => value.profileData || value.publicData || value.privateData, {
+  .refine((value) => {
+    if (value.publicData || value.privateData) {
+      return true
+    }
+
+    const profile = value.profileData
+    if (!profile) {
+      return false
+    }
+
+    return Boolean(
+      profile.publicData ||
+        profile.privateData ||
+        profile.name !== undefined ||
+        profile.about !== undefined ||
+        profile.avatarUrl !== undefined,
+    )
+  }, {
     message: 'At least one of profileData, publicData, or privateData must be provided',
     path: ['profileData'],
   })
@@ -406,6 +439,23 @@ function mapPrivateUpdates(input: WorkerPrivateUpdateInput | undefined) {
     payload.drivers_license_class = input.driversLicenseClass ?? null
 
   return Object.keys(payload).length ? payload : null
+}
+
+function mergeUpdatePayloads<T extends Record<string, unknown>>(
+  ...payloads: Array<T | null | undefined>
+): T | null {
+  let merged: T | null = null
+
+  for (const payload of payloads) {
+    if (!payload) continue
+    if (merged) {
+      merged = { ...merged, ...payload } as T
+    } else {
+      merged = { ...payload } as T
+    }
+  }
+
+  return merged
 }
 
 function mapProfileUpdates(input: WorkerProfileUpdateInput | undefined) {
@@ -706,8 +756,14 @@ export const adminUsersRouter = createTRPCRouter({
     const { organizationId } = await ensureAdminAccess(supabase, user.id, input.organizationId)
 
     const profilePayload = mapProfileUpdates(input.profileData)
-    const publicPayload = mapPublicUpdates(input.publicData)
-    const privatePayload = mapPrivateUpdates(input.privateData)
+    const publicPayload = mergeUpdatePayloads(
+      mapPublicUpdates(input.profileData?.publicData),
+      mapPublicUpdates(input.publicData),
+    )
+    const privatePayload = mergeUpdatePayloads(
+      mapPrivateUpdates(input.profileData?.privateData),
+      mapPrivateUpdates(input.privateData),
+    )
 
     if (profilePayload) {
       const { error } = await supabase.from('profiles').update(profilePayload).eq('id', input.workerId)
