@@ -5,7 +5,7 @@
     "types.d.ts",
     "../../packages/ui",
     "../../packages/api",
-    "../../packages/app",
+    "../../app/core",
     "../../supabase"
   ],
   "compilerOptions": {

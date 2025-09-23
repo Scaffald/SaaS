@@ -1,4 +1,4 @@
-import { OnboardingScreen } from '@app/features/auth/onboarding-screen'
+import { OnboardingScreen } from '@app/core/features/auth/onboarding-screen'
 import { Stack } from 'expo-router'
 
 export default function Screen() {

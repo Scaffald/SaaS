@@ -1,4 +1,4 @@
-import { EditProfileScreen } from '@app/features/profile/edit-screen'
+import { EditProfileScreen } from '@app/core/features/profile/edit-screen'
 import { Stack } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 

@@ -1,6 +1,6 @@
-import { HomeLayout } from '@app/features/home/layout.web'
-import { ChangeEmailScreen } from '@app/features/settings/change-email-screen'
-import { SettingsLayout } from '@app/features/settings/layout.web'
+import { HomeLayout } from '@app/core/features/home/layout.web'
+import { ChangeEmailScreen } from '@app/core/features/settings/change-email-screen'
+import { SettingsLayout } from '@app/core/features/settings/layout.web'
 import Head from 'next/head'
 import type { NextPageWithLayout } from 'pages/_app'
 

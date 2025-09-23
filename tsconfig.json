@@ -15,7 +15,7 @@
       "path": "apps/next"
     },
     {
-      "path": "packages/app"
+      "path": "app/core"
     },
     {
       "path": "packages/ui"

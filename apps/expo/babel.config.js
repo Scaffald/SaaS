@@ -25,8 +25,8 @@ module.exports = (api) => {
           root: ['../..'],
           alias: {
             // define aliases to shorten the import paths
-            '@app': './packages/app',
-            '@app/*': './packages/app/*',
+            '@app/core': './app/core',
+            '@app/core/*': './app/core/*',
             '@app/ui': './packages/ui',
             '@app/ui/*': './packages/ui/*',
             '@app/api': './packages/api',

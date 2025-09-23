@@ -1,4 +1,4 @@
-import { DrawerMenu } from '@app/features/drawer-menu'
+import { DrawerMenu } from '@app/core/features/drawer-menu'
 import { Button, useTheme } from '@app/ui'
 import { DrawerActions } from '@react-navigation/native'
 import { Map as MapIcon, Menu } from '@tamagui/lucide-icons'

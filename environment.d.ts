@@ -21,6 +21,7 @@ declare global {
       JOOBLE_SEARCH_KEYWORDS?: string
       JOOBLE_SEARCH_LOCATION?: string
       JOOBLE_SEARCH_RADIUS?: string
+      JOOBLE_SEARCH_PAGE_SIZE?: string
     }
   }
 }

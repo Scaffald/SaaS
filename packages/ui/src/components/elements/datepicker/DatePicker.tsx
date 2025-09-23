@@ -11,7 +11,7 @@ import {
   DatePickerInput,
   YearPicker,
   YearRangeSlider,
-  swapOnClick,
+  createDatePickerButtonProps,
   useHeaderType,
   HeaderTypeProvider,
   MonthPicker,
@@ -42,7 +42,9 @@ function CalendarHeader() {
       <Button
         circular
         size="$3"
-        {...(subtractOffset ? swapOnClick(subtractOffset({ months: 1 })) : {})}
+        {...(subtractOffset
+          ? createDatePickerButtonProps(subtractOffset({ months: 1 }))
+          : {})}
       >
         <Button.Icon scaleIcon={1.5}>
           <ChevronLeft />
@@ -79,7 +81,11 @@ function CalendarHeader() {
         </SizableText>
       </YStack>
 
-      <Button circular size="$3" {...swapOnClick(subtractOffset({ months: -1 }))}>
+      <Button
+        circular
+        size="$3"
+        {...createDatePickerButtonProps(subtractOffset({ months: -1 }))}
+      >
         <Button.Icon scaleIcon={1.5}>
           <ChevronRight />
         </Button.Icon>
@@ -134,7 +140,7 @@ function DayPicker() {
                     circular
                     padding={0}
                     width={45}
-                    {...swapOnClick(dayButton(d))}
+                    {...createDatePickerButtonProps(dayButton(d))}
                     backgroundColor={d.selected ? '$background' : 'transparent'}
                     themeInverse={d.selected}
                     disabled={!d.inCurrentMonth}
@@ -170,29 +176,21 @@ function DatePickerBody() {
   )
 }
 
-/** ------ EXAMPLE ------ */
-export const DatePickerExample = forwardRef(
+type DatePickerExampleProps = {
+  disabled: boolean
+  placeholderTextColor?: string
+  value: string | undefined
+  onChangeText: (dateValue: string) => void
+  onBlur: () => void
+  placeholder?: string
+  id: string
+  [key: string]: unknown
+}
+
+export const DatePickerExample = forwardRef<HTMLInputElement, DatePickerExampleProps>(
   (
-    {
-      disabled,
-      placeholderTextColor,
-      value,
-      onChangeText,
-      onBlur,
-      placeholder,
-      id,
-      ...props
-    }: {
-      disabled: boolean
-      placeholderTextColor?: string
-      value: string | undefined
-      onChangeText: (dateValue: string) => void
-      onBlur: () => void
-      placeholder?: string
-      id: string
-      [key: string]: any
-    },
-    ref: React.Ref<HTMLInputElement>
+    { disabled, placeholderTextColor, value, onChangeText, onBlur, placeholder, id, ...props },
+    ref
   ) => {
     const [selectedDates, onDatesChange] = useState<Date[]>([])
     const [open, setOpen] = useState(false)

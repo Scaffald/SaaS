@@ -1,4 +1,4 @@
-import { SettingsScreen } from '@app/features/settings/screen'
+import { SettingsScreen } from '@app/core/features/settings/screen'
 import { Stack } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 

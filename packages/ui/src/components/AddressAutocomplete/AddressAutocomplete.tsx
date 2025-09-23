@@ -1,13 +1,5 @@
 import { forwardRef, useEffect, useMemo, useRef, useState } from 'react'
-import {
-  Input,
-  type InputProps,
-  ListItem,
-  Separator,
-  Spinner,
-  Theme,
-  YStack,
-} from 'tamagui'
+import { Input, type InputProps, ListItem, Separator, Spinner, Theme, YStack } from 'tamagui'
 
 type RawSuggestion = {
   place_id: number
@@ -41,12 +33,7 @@ const mapSuggestion = (suggestion: RawSuggestion): AddressSuggestion => {
   const road = address.road ?? ''
   const streetParts = [houseNumber, road].filter(Boolean)
   const city =
-    address.city ??
-    address.town ??
-    address.village ??
-    address.hamlet ??
-    address.suburb ??
-    undefined
+    address.city ?? address.town ?? address.village ?? address.hamlet ?? address.suburb ?? undefined
 
   return {
     id: String(suggestion.place_id),
@@ -60,7 +47,7 @@ const mapSuggestion = (suggestion: RawSuggestion): AddressSuggestion => {
 
 const fetchAddressSuggestions = async (
   query: string,
-  signal: AbortSignal,
+  signal: AbortSignal
 ): Promise<AddressSuggestion[]> => {
   const url = new URL('https://nominatim.openstreetmap.org/search')
   url.searchParams.set('format', 'json')
@@ -97,7 +84,7 @@ export const AddressAutocompleteInput = forwardRef<Input, AddressAutocompleteInp
       disabled,
       ...inputProps
     },
-    ref,
+    ref
   ) => {
     const [query, setQuery] = useState(value)
     const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([])
@@ -154,7 +141,7 @@ export const AddressAutocompleteInput = forwardRef<Input, AddressAutocompleteInp
           clearTimeout(blurTimeoutRef.current)
         }
       },
-      [],
+      []
     )
 
     const hasResults = suggestions.length > 0
@@ -185,7 +172,7 @@ export const AddressAutocompleteInput = forwardRef<Input, AddressAutocompleteInp
             />
           )
         }),
-      [suggestions],
+      [suggestions]
     )
 
     const handleFocus: InputProps['onFocus'] = (event) => {
@@ -250,11 +237,7 @@ export const AddressAutocompleteInput = forwardRef<Input, AddressAutocompleteInp
                 <>
                   {suggestionItems}
                   <Separator />
-                  <ListItem
-                    disabled
-                    theme="alt2"
-                    title="Powered by OpenStreetMap Nominatim"
-                  />
+                  <ListItem disabled theme="alt2" title="Powered by OpenStreetMap Nominatim" />
                 </>
               )}
             </YStack>
@@ -262,7 +245,7 @@ export const AddressAutocompleteInput = forwardRef<Input, AddressAutocompleteInp
         )}
       </YStack>
     )
-  },
+  }
 )
 
 AddressAutocompleteInput.displayName = 'AddressAutocompleteInput'

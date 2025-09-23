@@ -1,1 +1,0 @@
-export { DiscoverMapScreen } from './screen'

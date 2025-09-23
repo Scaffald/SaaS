@@ -1,4 +1,4 @@
-import { useSafeAreaInsets } from '@app/utils/useSafeAreaInsets'
+import { useSafeAreaInsets } from '@app/core/utils/useSafeAreaInsets'
 import { useRef, useState } from 'react'
 import { ScrollView as RNScrollView } from 'react-native'
 import {
