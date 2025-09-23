@@ -26,7 +26,7 @@ import {
 } from '@tamagui/lucide-icons'
 import type { JSX } from 'react'
 import { useCallback } from 'react'
-import { GestureResponderEvent } from 'react-native'
+import { GestureResponderEvent, ScrollView } from 'react-native'
 import { useLink } from 'solito/link'
 
 import { usePathname } from '@app/core/utils/usePathname'
@@ -296,6 +296,7 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
     onNavigate?.('/profile', event)
   }
 
+
   return (
     <YStack
       width="100%"
@@ -305,92 +306,11 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
       borderColor="$color4"
       px="$4"
       py="$4"
-      gap="$5"
+      flex={1}
+      justifyContent="space-between"
     >
-      <Card
-        width="100%"
-        px="$4"
-        py="$4"
-        gap="$3"
-        borderRadius="$5"
-        borderColor="$purple4"
-        backgroundColor="$purple2"
-        theme="purple"
-      >
-        <ListItem
-          hoverTheme={false}
-          pressTheme={false}
-          size="$4"
-          px="$0"
-          py="$0"
-          bg="transparent"
-          title={!collapsed ? (profile?.name ?? 'Store Name') : undefined}
-          subTitle={!collapsed ? 'Synced moments ago' : undefined}
-          fontWeight="700"
-          color="$color12"
-          icon={({ size }) => (
-            <XStack ai="center" jc="center" w={40} h={40} br="$4" bg="$purple4">
-              <CircleUser size={size ?? 20} color="$purple11" />
-            </XStack>
-          )}
-          iconAfter={
-            !collapsed ? (
-              <Button theme="purple" size="$2" px="$3" onPress={updateProfile}>
-                Refresh
-              </Button>
-            ) : undefined
-          }
-        />
-        {!collapsed ? (
-          <XStack gap="$2" ai="center">
-            <Sparkles size={16} color="$purple11" />
-            <Paragraph size="$2" color="$purple11">
-              Updated moments ago
-            </Paragraph>
-          </XStack>
-        ) : null}
-      </Card>
-
-      <YStack gap="$5" width="100%">
-        {drawerSections.map((section) => (
-          <DrawerSection
-            key={section.key}
-            section={section}
-            pathname={pathname}
-            collapsed={collapsed}
-            onNavigate={onNavigate}
-          />
-        ))}
-      </YStack>
-
+      {/* Top Section - User Profile */}
       <YStack gap="$4" width="100%">
-        {collapsed ? (
-          <YStack gap="$2">
-            {quickLinks.map((item) => (
-              <DrawerLink
-                key={item.key}
-                item={item}
-                pathname={pathname}
-                collapsed
-                onNavigate={onNavigate}
-              />
-            ))}
-          </YStack>
-        ) : (
-          <YGroup
-            bordered
-            size="$4"
-            separator={<Separator borderColor="$color4" />}
-            borderRadius="$5"
-          >
-            {quickLinks.map((item) => (
-              <YGroup.Item key={item.key}>
-                <DrawerLink item={item} pathname={pathname} onNavigate={onNavigate} />
-              </YGroup.Item>
-            ))}
-          </YGroup>
-        )}
-
         <Card
           px="$4"
           py="$3"
@@ -428,6 +348,122 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
             }
           />
         </Card>
+
+        <Card
+          width="100%"
+          px="$4"
+          py="$4"
+          gap="$3"
+          borderRadius="$5"
+          borderColor="$purple4"
+          backgroundColor="$purple2"
+          theme="purple"
+        >
+          <ListItem
+            hoverTheme={false}
+            pressTheme={false}
+            size="$4"
+            px="$0"
+            py="$0"
+            bg="transparent"
+            title={!collapsed ? (profile?.name ?? 'Store Name') : undefined}
+            subTitle={!collapsed ? 'Synced moments ago' : undefined}
+            fontWeight="700"
+            color="$color12"
+            icon={({ size }) => (
+              <XStack ai="center" jc="center" w={40} h={40} br="$4" bg="$purple4">
+                <CircleUser size={size ?? 20} color="$purple11" />
+              </XStack>
+            )}
+            iconAfter={
+              !collapsed ? (
+                <Button theme="purple" size="$2" px="$3" onPress={updateProfile}>
+                  Refresh
+                </Button>
+              ) : undefined
+            }
+          />
+          {!collapsed ? (
+            <XStack gap="$2" ai="center">
+              <Sparkles size={16} color="$purple11" />
+              <Paragraph size="$2" color="$purple11">
+                Updated moments ago
+              </Paragraph>
+            </XStack>
+          ) : null}
+        </Card>
+      </YStack>
+
+      {/* Middle Section - Scrollable Content */}
+      <ScrollView 
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingVertical: 16 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <YStack gap="$5" width="100%">
+          {drawerSections.map((section) => (
+            <DrawerSection
+              key={section.key}
+              section={section}
+              pathname={pathname}
+              collapsed={collapsed}
+              onNavigate={onNavigate}
+            />
+          ))}
+
+          <YStack gap="$4" width="100%">
+            {collapsed ? (
+              <YStack gap="$2">
+                {quickLinks.map((item) => (
+                  <DrawerLink
+                    key={item.key}
+                    item={item}
+                    pathname={pathname}
+                    collapsed
+                    onNavigate={onNavigate}
+                  />
+                ))}
+              </YStack>
+            ) : (
+              <YGroup
+                bordered
+                size="$4"
+                separator={<Separator borderColor="$color4" />}
+                borderRadius="$5"
+              >
+                {quickLinks.map((item) => (
+                  <YGroup.Item key={item.key}>
+                    <DrawerLink item={item} pathname={pathname} onNavigate={onNavigate} />
+                  </YGroup.Item>
+                ))}
+              </YGroup>
+            )}
+          </YStack>
+        </YStack>
+      </ScrollView>
+
+      {/* Bottom Section - Settings */}
+      <YStack gap="$4" width="100%">
+        <YGroup
+          bordered
+          size="$4"
+          separator={<Separator borderColor="$color4" />}
+          borderRadius="$5"
+        >
+          <YGroup.Item>
+            <DrawerLink 
+              item={{
+                key: 'settings',
+                title: 'Settings',
+                href: '/settings',
+                icon: Settings2,
+                theme: 'gray',
+              }} 
+              pathname={pathname} 
+              onNavigate={onNavigate} 
+            />
+          </YGroup.Item>
+        </YGroup>
       </YStack>
     </YStack>
   )
@@ -449,19 +485,14 @@ export const DrawerMenu = (props: DrawerContentComponentProps) => {
   )
 
   return (
-    <DrawerContentScrollView
-      {...props}
-      bounces={false}
-      style={{ backgroundColor: 'white' }}
-      contentContainerStyle={{
-        flexGrow: 1,
-        paddingTop: top + verticalPadding,
-        paddingBottom: bottom + verticalPadding,
-        alignItems: 'center',
-      }}
+    <YStack
+      flex={1}
+      backgroundColor="$color1"
+      paddingTop={top + verticalPadding}
+      paddingBottom={bottom + verticalPadding}
     >
       <DrawerContent pathname={pathname} collapsed={collapsed} onNavigate={handleNavigate} />
-    </DrawerContentScrollView>
+    </YStack>
   )
 }
 
