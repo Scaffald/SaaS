@@ -62,13 +62,14 @@ export default {
           photosPermission: 'The app accesses your photos to let you share them with your friends.',
         },
       ],
-      [
-        '@react-native-google-signin/google-signin',
-        {
-          // https://react-native-google-signin.github.io/docs/setting-up/expo
-          iosUrlScheme: process.env.GOOGLE_IOS_SCHEME || 'com.scaffald.app',
-        },
-      ],
+      // Temporarily disabled Google Sign-in until proper OAuth setup
+      // [
+      //   '@react-native-google-signin/google-signin',
+      //   {
+      //     // https://react-native-google-signin.github.io/docs/setting-up/expo
+      //     iosUrlScheme: process.env.GOOGLE_IOS_SCHEME || 'com.scaffald.app',
+      //   },
+      // ],
       'expo-apple-authentication',
       'expo-router',
       'expo-build-properties',
