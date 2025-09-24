@@ -50,7 +50,6 @@ import {
 } from '@tamagui/lucide-icons'
 import { ThemePicker } from './components/Chat/ThemePicker'
 import { ChatContext } from './components/Chat/ChatContext'
-import { Controller, useForm } from 'react-hook-form'
 
 const AnimatedView = Animated.createAnimatedComponent(View)
 const { height: mobileHeight } = Dimensions.get('window')
@@ -153,73 +152,61 @@ const BottomBar = ({
   offset,
 }: { onSend: (message: string) => void; offset: SharedValue<number> }) => {
   const theme = useThemeName()
+  const [message, setMessage] = useState('')
 
-  const { handleSubmit, control } = useForm({
-    defaultValues: {
-      message: '',
-    },
-  })
+  const submit = useCallback(() => {
+    const trimmed = message.trim()
+    if (!trimmed) {
+      return
+    }
 
-  const onSubmit = (data: { message: string }) => {
-    onSend(data.message)
-  }
+    onSend(trimmed)
+    setMessage('')
+  }, [message, onSend])
 
   return (
     <View>
       <Form>
-        <Controller
-          control={control}
-          name="message"
-          render={({ field: { onChange, value } }) => {
-            const submit = () => {
-              handleSubmit(onSubmit)()
-              onChange('')
-            }
-
-            return (
-              <XStack alignItems="center" gap="$3" px="$4" py="$4">
-                <Button size="$3" circular>
-                  <Plus />
-                </Button>
-                <Input
-                  borderRadius="$10"
-                  placeholder="Typing..."
-                  flex={1}
-                  onSubmitEditing={submit}
-                  value={value}
-                  onChangeText={onChange}
-                  onFocus={() => (offset.value = 0)}
-                />
-                {value.trim().length > 0 ? (
-                  <Theme name={theme.includes('accent') ? 'blue' : theme}>
-                    <Button
-                      animation="200ms"
-                      enterStyle={{ scale: 0.2 }}
-                      exitStyle={{ scale: 0.2 }}
-                      scale={1}
-                      size="$3"
-                      onPress={submit}
-                      circular
-                    >
-                      <Send />
-                    </Button>
-                  </Theme>
-                ) : (
-                  <Button
-                    animation="200ms"
-                    enterStyle={{ scale: 0.2 }}
-                    exitStyle={{ scale: 0.2 }}
-                    scale={1}
-                    size="$3"
-                    circular
-                  >
-                    <Smile />
-                  </Button>
-                )}
-              </XStack>
-            )
-          }}
-        />
+        <XStack alignItems="center" gap="$3" px="$4" py="$4">
+          <Button size="$3" circular>
+            <Plus />
+          </Button>
+          <Input
+            borderRadius="$10"
+            placeholder="Typing..."
+            flex={1}
+            onSubmitEditing={submit}
+            value={message}
+            onChangeText={setMessage}
+            onFocus={() => (offset.value = 0)}
+          />
+          {message.trim().length > 0 ? (
+            <Theme name={theme.includes('accent') ? 'blue' : theme}>
+              <Button
+                animation="200ms"
+                enterStyle={{ scale: 0.2 }}
+                exitStyle={{ scale: 0.2 }}
+                scale={1}
+                size="$3"
+                onPress={submit}
+                circular
+              >
+                <Send />
+              </Button>
+            </Theme>
+          ) : (
+            <Button
+              animation="200ms"
+              enterStyle={{ scale: 0.2 }}
+              exitStyle={{ scale: 0.2 }}
+              scale={1}
+              size="$3"
+              circular
+            >
+              <Smile />
+            </Button>
+          )}
+        </XStack>
       </Form>
 
       <SafeAreaView />
