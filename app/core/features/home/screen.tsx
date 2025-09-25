@@ -1,7 +1,20 @@
 import { Button, FullscreenSpinner, ScrollView, View, XStack, YStack, isWeb } from '@app/ui'
 import { ArrowRight, Handshake, Megaphone } from '@tamagui/lucide-icons'
+import { useEffect, useMemo } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useRouter } from 'solito/router'
 
+import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import { useUser } from '@app/core/utils/useUser'
+import { PROFILE_STEPS } from '../onboarding/data'
+import {
+  buildFormValues,
+  computeScore,
+  determineCompletedSteps,
+  fetchOnboardingProfile,
+  isOnboardingComplete,
+  type OnboardingProfile,
+} from '../onboarding/logic'
 
 import {
   AfterProfileSummaryCard,
@@ -82,13 +95,6 @@ const JOBS_FOR_YOU: OpportunityItem[] = [
     meta: '2 days ago · New posting',
     actions: [{ id: 'view', label: 'View role', intent: 'outline' }],
   },
-]
-
-const PROFILE_CHECKLIST = [
-  { id: 'photo', label: 'Upload your profile photo', completed: true, points: 10 },
-  { id: 'basic-info', label: 'Basic information', completed: true, points: 10 },
-  { id: 'roles', label: 'Roles and skills', completed: true, points: 10 },
-  { id: 'education', label: 'Education and preferences', completed: false, points: 10 },
 ]
 
 const ADVANCED_TASKS = [
@@ -177,9 +183,58 @@ const RESOURCE_FALLBACK: ResourceItem[] = [
 
 export function HomeScreen() {
   const { user, profile, isPending } = useUser()
+  const supabase = useSupabase()
+  const router = useRouter()
   const { data: affiliateOffers = [] } = useAffiliateResources()
+  const { data: onboardingProfile, isPending: isOnboardingPending } =
+    useQuery<OnboardingProfile | null>({
+      queryKey: ['home-onboarding-profile', user?.id],
+      enabled: Boolean(user?.id),
+      queryFn: async () => {
+        if (!user?.id) return { user: null, privateProfile: null }
+        return fetchOnboardingProfile(supabase, user.id)
+      },
+    })
 
-  if (isPending)
+  const formValues = useMemo(
+    () => buildFormValues({ onboardingProfile: onboardingProfile ?? null, profile }),
+    [onboardingProfile, profile]
+  )
+
+  const completedSteps = useMemo(
+    () => determineCompletedSteps(formValues),
+    [formValues]
+  )
+
+  const hasCompletedOnboarding = isOnboardingComplete(completedSteps)
+  const hasSkippedOnboarding = Boolean(
+    onboardingProfile?.privateProfile?.onboarding_skipped_at
+  )
+  const shouldRedirectToOnboarding =
+    Boolean(user) &&
+    !isPending &&
+    !isOnboardingPending &&
+    !hasCompletedOnboarding &&
+    !hasSkippedOnboarding
+
+  useEffect(() => {
+    if (shouldRedirectToOnboarding) {
+      router.replace('/onboarding')
+    }
+  }, [router, shouldRedirectToOnboarding])
+
+  const checklist = useMemo(
+    () =>
+      PROFILE_STEPS.filter((step) => step.id !== 'summary').map((step) => ({
+        id: step.id,
+        label: step.label,
+        points: step.points,
+        completed: completedSteps.includes(step.id),
+      })),
+    [completedSteps]
+  )
+
+  if (isPending || isOnboardingPending || shouldRedirectToOnboarding)
     return (
       <View flex={1} height="80vh" ai="center" jc="center">
         <FullscreenSpinner />
@@ -189,6 +244,7 @@ export function HomeScreen() {
   if (!user) return null
 
   const firstName = extractFirstName(profile?.name, user.email)
+  const score = computeScore(completedSteps, Boolean(profile?.avatar_url))
 
   const affiliateResources: ResourceItem[] = affiliateOffers.map((offer) => ({
     id: offer.id,
@@ -223,7 +279,7 @@ export function HomeScreen() {
     >
       <ScrollView f={1} showsVerticalScrollIndicator contentContainerStyle={{ gap: 24 }}>
         <YStack gap="$5" pb="$8" pr="$2">
-          <DashboardHero name={firstName} score={60} />
+          <DashboardHero name={firstName} score={score} />
 
           <OrganizationQuickActionsCard />
 
@@ -261,7 +317,7 @@ export function HomeScreen() {
             }}
           />
 
-          <ProfileProgressSection checklist={PROFILE_CHECKLIST} advanced={ADVANCED_TASKS} />
+          <ProfileProgressSection checklist={checklist} advanced={ADVANCED_TASKS} />
 
           <AfterProfileSummaryCard steps={AFTER_PROFILE_STEPS} />
 
