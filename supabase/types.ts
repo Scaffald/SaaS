@@ -1381,6 +1381,7 @@ export type Database = {
           hourly_rate_cents: number | null
           location: string | null
           open_to_travel: boolean | null
+          onboarding_skipped_at: string | null
           phone: string | null
           phone_os: string | null
           travel_mileage: number | null
@@ -1403,6 +1404,7 @@ export type Database = {
           hourly_rate_cents?: number | null
           location?: string | null
           open_to_travel?: boolean | null
+          onboarding_skipped_at?: string | null
           phone?: string | null
           phone_os?: string | null
           travel_mileage?: number | null
@@ -1425,6 +1427,7 @@ export type Database = {
           hourly_rate_cents?: number | null
           location?: string | null
           open_to_travel?: boolean | null
+          onboarding_skipped_at?: string | null
           phone?: string | null
           phone_os?: string | null
           travel_mileage?: number | null
