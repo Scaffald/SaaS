@@ -10,6 +10,7 @@ import {
   ConcreteCalculatorCard,
   DashboardErrorBoundary,
   DashboardHero,
+  HireScoreCard,
   NewsFeedCard,
   OpportunitySection,
   OrganizationQuickActionsCard,
@@ -19,6 +20,7 @@ import {
   type ResourceItem,
 } from './components/dashboard'
 import { useAffiliateResources } from './hooks/useAffiliateResources'
+import { useHireScore } from './hooks/useHireScore'
 
 const INQUIRIES: OpportunityItem[] = [
   {
@@ -179,6 +181,7 @@ const RESOURCE_FALLBACK: ResourceItem[] = [
 export function HomeScreen() {
   const { user, profile, isPending } = useUser()
   const { data: affiliateOffers = [] } = useAffiliateResources()
+  const hireScore = useHireScore()
 
   if (isPending)
     return (
@@ -226,7 +229,16 @@ export function HomeScreen() {
     >
       <ScrollView f={1} showsVerticalScrollIndicator contentContainerStyle={{ gap: 24 }}>
         <YStack gap="$5" pb="$8" pr="$2">
-          <DashboardHero name={firstName} score={60} />
+          <DashboardHero name={firstName} score={hireScore.score} />
+
+          <HireScoreCard
+            score={hireScore.score}
+            level={hireScore.level}
+            activities={hireScore.activities}
+            completedCount={hireScore.completedCount}
+            pendingCount={hireScore.pendingCount}
+            isLoading={hireScore.isLoading}
+          />
 
           <OrganizationQuickActionsCard />
 
