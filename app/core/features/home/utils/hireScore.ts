@@ -13,7 +13,7 @@ export type ProfileRow =
 export type HireScoreContext = {
   user: User | null | undefined
   profile: ProfileRow | null | undefined
-  verifications?: Pick<ProfileVerificationState, 'isVerified' | 'activeFields'>
+  verifications?: Pick<ProfileVerificationState, 'isVerified'>
 }
 
 export type HireScoreBreakdownEntry = {
@@ -64,7 +64,7 @@ const SCORE_FACTORS: readonly HireScoreFactor[] = [
     evaluate: ({ profile, verifications }) => {
       const name = profile?.name
       if (isNonEmptyString(name)) return true
-      return verifications?.isVerified('basic.full_name') ?? false
+      return verifications?.isVerified(['basic.full_name', 'basic.display_name']) ?? false
     },
     successTitle: 'Name added to profile',
     successDescription: 'Your preferred full name is visible to hiring teams.',

@@ -56,6 +56,9 @@ export const DashboardHero = ({ name = 'there', score }: DashboardHeroProps) => 
   const trackColor = theme.gray5.val
   const positiveIconColor = theme.green10.val
   const negativeIconColor = theme.red10.val
+  const improvementItems = score.nextSteps.filter(
+    (entry) => !score.activities.some((activity) => activity.id === entry.id)
+  )
 
   return (
     <DashboardCard>
@@ -70,7 +73,7 @@ export const DashboardHero = ({ name = 'there', score }: DashboardHeroProps) => 
           </Paragraph>
         </YStack>
 
-        <XStack gap="$6" $sm={{ fd: 'column', gap: '$5' }}>
+        <XStack gap="$6" $sm={{ fd: 'column', gap: '$5' }} fw="wrap">
           <YStack ai="center" gap="$3" miw={240} $sm={{ miw: 'auto' }}>
             <HireScoreGauge value={score.total} max={score.max} color={gaugeColor} track={trackColor} />
 
@@ -84,7 +87,7 @@ export const DashboardHero = ({ name = 'there', score }: DashboardHeroProps) => 
             </YStack>
           </YStack>
 
-          <YStack f={1} gap="$3">
+          <YStack f={1} gap="$3" miw={240}>
             <YStack gap="$1">
               <SizableText size="$4" fontWeight="600">
                 Score activity
@@ -107,6 +110,29 @@ export const DashboardHero = ({ name = 'there', score }: DashboardHeroProps) => 
               ) : (
                 <Paragraph size="$2" color="$gray11">
                   Complete profile items to start building your Hire Score.
+                </Paragraph>
+              )}
+            </YStack>
+          </YStack>
+
+          <YStack f={1} gap="$3" miw={240}>
+            <YStack gap="$1">
+              <SizableText size="$4" fontWeight="600">
+                Next steps
+              </SizableText>
+              <Paragraph size="$2" color="$gray11">
+                Complete these items to increase your Hire Score.
+              </Paragraph>
+            </YStack>
+
+            <YStack gap="$3">
+              {improvementItems.length > 0 ? (
+                improvementItems.slice(0, 3).map((entry) => (
+                  <HireScoreNextStepRow key={entry.id} entry={entry} negativeColor={negativeIconColor} />
+                ))
+              ) : (
+                <Paragraph size="$2" color="$gray11">
+                  You have completed every Hire Score task — great work!
                 </Paragraph>
               )}
             </YStack>
@@ -219,4 +245,40 @@ const HireScoreActivityRow = ({ entry, positiveColor, negativeColor }: HireScore
   )
 }
 
-const formatImpact = (impact: number) => (impact > 0 ? `+${impact}` : `${impact}`)
+type HireScoreNextStepRowProps = {
+  entry: HireScoreBreakdownEntry
+  negativeColor: string
+}
+
+const HireScoreNextStepRow = ({ entry, negativeColor }: HireScoreNextStepRowProps) => {
+  const availablePoints = Math.abs(entry.impact)
+
+  return (
+    <XStack ai="flex-start" gap="$3">
+      <YStack w={36} h={36} br={9999} ai="center" jc="center" bg="$red4">
+        <AlertTriangle size={18} color={negativeColor} />
+      </YStack>
+
+      <YStack f={1} gap="$1">
+        <XStack ai="center" jc="space-between" gap="$3">
+          <SizableText size="$3" fontWeight="600">
+            {entry.title}
+          </SizableText>
+          <Paragraph size="$2" color="$gray11">
+            +{availablePoints} pts available
+          </Paragraph>
+        </XStack>
+        <Paragraph size="$2" color="$gray11">
+          {entry.description}
+        </Paragraph>
+      </YStack>
+    </XStack>
+  )
+}
+
+const formatImpact = (impact: number) => {
+  const absolute = Math.abs(impact)
+  if (absolute === 0) return '0 pts'
+  const prefix = impact > 0 ? '+' : '-'
+  return `${prefix}${absolute} pts`
+}
