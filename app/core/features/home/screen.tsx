@@ -18,6 +18,7 @@ import {
   type ResourceItem,
 } from './components/dashboard'
 import { useAffiliateResources } from './hooks/useAffiliateResources'
+import { calculateHireScore } from './utils/hireScore'
 
 const INQUIRIES: OpportunityItem[] = [
   {
@@ -176,7 +177,7 @@ const RESOURCE_FALLBACK: ResourceItem[] = [
 ]
 
 export function HomeScreen() {
-  const { user, profile, isPending } = useUser()
+  const { user, profile, isPending, verifications } = useUser()
   const { data: affiliateOffers = [] } = useAffiliateResources()
 
   if (isPending)
@@ -189,6 +190,7 @@ export function HomeScreen() {
   if (!user) return null
 
   const firstName = extractFirstName(profile?.name, user.email)
+  const hireScore = calculateHireScore({ user, profile, verifications })
 
   const affiliateResources: ResourceItem[] = affiliateOffers.map((offer) => ({
     id: offer.id,
@@ -223,7 +225,7 @@ export function HomeScreen() {
     >
       <ScrollView f={1} showsVerticalScrollIndicator contentContainerStyle={{ gap: 24 }}>
         <YStack gap="$5" pb="$8" pr="$2">
-          <DashboardHero name={firstName} score={60} />
+          <DashboardHero name={firstName} score={hireScore} />
 
           <OrganizationQuickActionsCard />
 
