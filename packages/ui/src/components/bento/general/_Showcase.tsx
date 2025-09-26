@@ -104,11 +104,7 @@ const ShowcaseView = forwardRef<any, Props>(
 
     return (
       <SizeProvider defaultSize={defaultSize}>
-        <YStack
-          gap="$3"
-          ref={ref}
-          {...rest}
-        >
+        <YStack gap="$3" ref={ref} {...rest}>
           <XStack ai="center" jc="space-between">
             <XStack alignItems="center" f={1} gap="$3">
               {!approved && <Lock size={16} opacity={0.3} />}
