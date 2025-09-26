@@ -1,17 +1,19 @@
 import { ProfileTravelComplianceScreen } from '@app/core/features/profile/travel-compliance-screen'
+import { ProfileLayout } from '@app/core/features/profile/layout-refactored.native'
 import { Stack } from 'expo-router'
-import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Screen() {
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
+    <>
       <Stack.Screen
         options={{
           title: 'Travel & Compliance',
-          headerShown: true,
+          headerShown: false, // We'll use our custom header
         }}
       />
-      <ProfileTravelComplianceScreen />
-    </SafeAreaView>
+      <ProfileLayout title="Travel & Compliance">
+        <ProfileTravelComplianceScreen />
+      </ProfileLayout>
+    </>
   )
 }
