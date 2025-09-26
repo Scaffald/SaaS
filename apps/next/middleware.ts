@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server'
 // by default, all routes are protected
 
 // put the public routes here - these will be accessed by both guests and users
-const publicRoutes: string[] = []
+const publicRoutes: string[] = ['/profile/']
 // put the authentication routes here - these will only be accessed by guests
 const authRoutes = ['/sign-in', '/sign-up', '/reset-password']
 
