@@ -30,11 +30,7 @@ export const SelectField = ({
   options: SelectItem[]
   placeholder?: string
 } & Pick<SelectProps, 'size' | 'native'>) => {
-  const {
-    field,
-    error,
-    formState: { isSubmitting },
-  } = useTsController<string>()
+  const { field, error } = useTsController<string>()
 
   const { label, isOptional } = useFieldInfo()
   const id = useId()

@@ -156,12 +156,6 @@ const CalendarView = ({ fullWidthMode }: CalendarViewProps) => {
   return <Calendar order="either" calendarIndex={0} />
 }
 
-type ViewContentProps = {
-  header: 'day' | 'month' | 'year'
-  setHeader: (type: 'day' | 'month' | 'year') => void
-  fullWidthMode: boolean
-}
-
 function DatePickerBody({ config }: { config: DatePickerProviderProps['config'] }) {
   const [header, setHeader] = useState<'month' | 'year' | 'day'>('day')
   const { gtSm: fullWidthMode } = useMedia()

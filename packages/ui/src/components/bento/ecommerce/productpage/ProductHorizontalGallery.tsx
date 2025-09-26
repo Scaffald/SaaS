@@ -161,7 +161,7 @@ export function ProductHorizontalGallery() {
                     paddingHorizontal: '$2',
                   }}
                 >
-                  {product.pictures.map(({ picture, meta: { colorName } }, index) => (
+                  {product.pictures.map(({ picture, meta: { colorName } }) => (
                     <RovingFocusGroup.Item
                       key={picture}
                       asChild="except-style"

@@ -46,8 +46,6 @@ const AnimatedHStack = Animated.createAnimatedComponent(
 )
 
 export function Paywall() {
-  const themeName = useThemeName()
-
   const goToTermsOfService = () => {
     //
   }

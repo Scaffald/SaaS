@@ -89,7 +89,7 @@ export function ProductListBestItems() {
         padding: 28,
       }}
     >
-      {products.map((item, index) => (
+      {products.map((item) => (
         <Item key={item.id} item={item} />
       ))}
     </ScrollView>

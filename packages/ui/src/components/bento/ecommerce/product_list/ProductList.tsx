@@ -70,7 +70,7 @@ export function ProductList() {
         paddingHorizontal: '$3',
       }}
     >
-      {products.map((item, index) => (
+      {products.map((item) => (
         <Item key={item.id} item={item} />
       ))}
       {someSpacers}
