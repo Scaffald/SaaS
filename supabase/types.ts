@@ -951,6 +951,67 @@ export type Database = {
           },
         ]
       }
+      review_skill_proficiency_logs: {
+        Row: {
+          aggregated_score: string
+          created_at: string
+          delta: number
+          id: string
+          new_proficiency: number
+          previous_proficiency: number | null
+          rating_score: number
+          review_id: string
+          skill_id: string
+          subject_user_id: string
+        }
+        Insert: {
+          aggregated_score: string
+          created_at?: string
+          delta: number
+          id?: string
+          new_proficiency: number
+          previous_proficiency?: number | null
+          rating_score: number
+          review_id: string
+          skill_id: string
+          subject_user_id: string
+        }
+        Update: {
+          aggregated_score?: string
+          created_at?: string
+          delta?: number
+          id?: string
+          new_proficiency?: number
+          previous_proficiency?: number | null
+          rating_score?: number
+          review_id?: string
+          skill_id?: string
+          subject_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'review_skill_proficiency_logs_review_id_fkey'
+            columns: ['review_id']
+            isOneToOne: false
+            referencedRelation: 'reviews'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'review_skill_proficiency_logs_skill_id_fkey'
+            columns: ['skill_id']
+            isOneToOne: false
+            referencedRelation: 'skills'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'review_skill_proficiency_logs_subject_user_id_fkey'
+            columns: ['subject_user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       review_skill_suggestions: {
         Row: {
           created_at: string
@@ -1035,6 +1096,8 @@ export type Database = {
           metadata: Json | null
           reaction: number | null
           rating: number | null
+          paired_review_id: string | null
+          release_after: string | null
           revealed_at: string | null
           status: Database['public']['Enums']['review_status']
           subject_id: string
@@ -1053,6 +1116,8 @@ export type Database = {
           metadata?: Json | null
           reaction?: number | null
           rating?: number | null
+          paired_review_id?: string | null
+          release_after?: string | null
           revealed_at?: string | null
           status?: Database['public']['Enums']['review_status']
           subject_id: string
@@ -1071,6 +1136,8 @@ export type Database = {
           metadata?: Json | null
           reaction?: number | null
           rating?: number | null
+          paired_review_id?: string | null
+          release_after?: string | null
           revealed_at?: string | null
           status?: Database['public']['Enums']['review_status']
           subject_id?: string
@@ -1842,6 +1909,18 @@ export type Database = {
             referencedColumns: ['id']
           },
         ]
+      }
+      v_user_review_summary: {
+        Row: {
+          areas_to_improve: string[] | null
+          last_revealed_at: string | null
+          last_submitted_at: string | null
+          recommended_skills: string[] | null
+          soft_skills: string[] | null
+          strengths: string[] | null
+          user_id: string | null
+        }
+        Relationships: []
       }
       v_organization_memberships: {
         Row: {
