@@ -1,14 +1,13 @@
 import { ArrowLeft } from '@tamagui/lucide-icons'
-import { router } from 'expo-router'
 import { useCallback } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Button, useMedia, useTheme } from 'tamagui'
 
 export interface FloatingBackButtonProps {
   /**
-   * Custom onPress handler. If not provided, uses router.back()
+   * Custom onPress handler. This is now required since we can't assume expo-router
    */
-  onPress?: () => void
+  onPress: () => void
   /**
    * Whether to show the button. Defaults to true
    */
@@ -41,11 +40,7 @@ export const FloatingBackButton = ({
   const theme = useTheme()
 
   const handlePress = useCallback(() => {
-    if (onPress) {
-      onPress()
-    } else {
-      router.back()
-    }
+    onPress()
   }, [onPress])
 
   // Hide on desktop/tablet where drawer is permanent

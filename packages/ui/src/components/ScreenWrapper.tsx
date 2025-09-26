@@ -14,6 +14,7 @@ export interface ScreenWrapperProps {
   showBackButton?: boolean
   /**
    * Props to pass to the FloatingBackButton component
+   * onPress is required for the back button to work
    */
   backButtonProps?: Omit<FloatingBackButtonProps, 'show'>
 }
@@ -34,7 +35,9 @@ export const ScreenWrapper = ({
   return (
     <View flex={1} position="relative">
       {children}
-      <FloatingBackButton show={showBackButton} {...backButtonProps} />
+      {showBackButton && backButtonProps?.onPress && (
+        <FloatingBackButton show={showBackButton} {...backButtonProps} />
+      )}
     </View>
   )
 }
