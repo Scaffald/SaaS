@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from 'react'
+import { startTransition, useEffect, useMemo, useState } from 'react'
 import { Linking } from 'react-native'
 
 import {
@@ -8,7 +8,6 @@ import {
   Paragraph,
   Select,
   SizableText,
-  Spinner,
   XStack,
   YStack,
   isWeb,
@@ -129,10 +128,9 @@ const openLink = (url?: string) => {
 export const NewsFeedCard = () => {
   const [selectedSourceId, setSelectedSourceId] = useState<string>(DEFAULT_NEWS_SOURCE_ID)
   const [articles, setArticles] = useState<NewsArticle[]>([])
-  const [isLoading, setIsLoading] = useState(false) // Start as false for lazy loading
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [requestVersion, setRequestVersion] = useState(0)
-  const [hasLoaded, setHasLoaded] = useState(false)
+  const [refreshCounter, setRefreshCounter] = useState(0)
   const isHydrated = useDidFinishSSR()
 
   const selectedSource = useMemo<NewsSource | undefined>(
@@ -142,59 +140,66 @@ export const NewsFeedCard = () => {
     [selectedSourceId]
   )
 
-  const loadArticles = useCallback(async () => {
-    if (!selectedSource || hasLoaded) return
+  useEffect(() => {
+    if (!isHydrated || !selectedSource) return
 
     let isActive = true
+    const abortController =
+      typeof AbortController !== 'undefined' ? new AbortController() : null
+    const timeoutId = abortController
+      ? setTimeout(() => {
+          abortController.abort()
+        }, 10000)
+      : null
+
     setIsLoading(true)
     setError(null)
-
-    try {
-      const endpoint = isWeb
-        ? `/api/news?source=${encodeURIComponent(selectedSource.id)}`
-        : selectedSource.feedUrl
-
-      const response = await fetch(endpoint, {
-        // Add timeout to prevent hanging requests
-        signal: AbortSignal.timeout(10000), // 10 second timeout
-      })
-
-      if (!response.ok) throw new Error(`Request failed: ${response.status}`)
-      const text = await response.text()
-      const parsed = parseRssFeed(text).slice(0, ARTICLE_LIMIT)
-
-      if (isActive) {
-        setArticles(parsed)
-        setHasLoaded(true)
-      }
-    } catch (err) {
-      if (!isActive) return
-      console.warn('News feed loading failed:', err)
-      setError('Unable to load news right now. Please try again later.')
-    } finally {
-      if (isActive) setIsLoading(false)
-    }
-  }, [selectedSource, hasLoaded])
-
-  // Lazy load articles after hydration with a small delay
-  useEffect(() => {
-    if (!isHydrated || hasLoaded) return
-
-    const timer = setTimeout(() => {
-      loadArticles()
-    }, 100) // Small delay to let other critical content load first
-
-    return () => clearTimeout(timer)
-  }, [isHydrated, loadArticles, hasLoaded])
-
-  // Reload when source changes
-  useEffect(() => {
-    if (hasLoaded) {
-      setHasLoaded(false)
+    startTransition(() => {
       setArticles([])
-      loadArticles()
+    })
+
+    const loadArticles = async () => {
+      try {
+        const endpoint = isWeb
+          ? `/api/news?source=${encodeURIComponent(selectedSource.id)}`
+          : selectedSource.feedUrl
+
+        const response = await fetch(endpoint, abortController ? { signal: abortController.signal } : undefined)
+
+        if (!response.ok) {
+          throw new Error(`Request failed: ${response.status}`)
+        }
+
+        const text = await response.text()
+        const parsed = parseRssFeed(text).slice(0, ARTICLE_LIMIT)
+
+        if (abortController?.signal.aborted || !isActive) return
+
+        startTransition(() => {
+          setArticles(parsed)
+        })
+      } catch (err) {
+        if (abortController?.signal.aborted || !isActive) return
+
+        console.warn('News feed loading failed:', err)
+        startTransition(() => {
+          setArticles([])
+        })
+        setError('Unable to load news right now. Please try again later.')
+      } finally {
+        if (abortController?.signal.aborted || !isActive) return
+        setIsLoading(false)
+      }
     }
-  }, [selectedSource?.feedUrl, requestVersion])
+
+    void loadArticles()
+
+    return () => {
+      isActive = false
+      if (timeoutId) clearTimeout(timeoutId)
+      abortController?.abort()
+    }
+  }, [selectedSource, isHydrated, refreshCounter])
 
   return (
     <DashboardCard gap="$4">
@@ -253,7 +258,7 @@ export const NewsFeedCard = () => {
           </Select.Content>
         </Select>
 
-        {isLoading ? (
+        {isLoading && articles.length === 0 ? (
           <NewsLoadingSkeleton />
         ) : error ? (
           <YStack gap="$2">
@@ -263,7 +268,7 @@ export const NewsFeedCard = () => {
             <Button
               size="$2"
               onPress={() => {
-                setRequestVersion((value) => value + 1)
+                setRefreshCounter((value) => value + 1)
               }}
             >
               Retry
