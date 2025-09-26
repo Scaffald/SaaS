@@ -53,7 +53,7 @@ export const MagicLinkPending = ({
     const { error } = await supabase.auth.verifyOtp({
       email,
       token: cleanedToken,
-      type: 'email',
+      type: 'magiclink',
     })
 
     if (error) {
