@@ -12,9 +12,15 @@ export type HomeLayoutProps = {
   children?: React.ReactNode
   padded?: boolean
   fullPage?: boolean
+  headerTitle?: string
 }
 
-export const HomeLayout = ({ children, fullPage = false, padded = false }: HomeLayoutProps) => {
+export const HomeLayout = ({
+  children,
+  fullPage = false,
+  padded = false,
+  headerTitle,
+}: HomeLayoutProps) => {
   const media = useMedia()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const pathname = normalizePath(usePathname())
@@ -27,7 +33,7 @@ export const HomeLayout = ({ children, fullPage = false, padded = false }: HomeL
   const activeItem = allNavItems.find(
     (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
   )
-  const headerTitle = activeItem?.title ?? 'Dashboard'
+  const resolvedHeaderTitle = headerTitle ?? activeItem?.title ?? 'Dashboard'
   const isDiscoverPage = pathname === '/discover'
 
   return (
@@ -66,7 +72,7 @@ export const HomeLayout = ({ children, fullPage = false, padded = false }: HomeL
                 </Dialog>
               )}
               <SizableText size="$6" fontWeight="700" flexShrink={1} minWidth={0}>
-                {headerTitle}
+                {resolvedHeaderTitle}
               </SizableText>
             </XStack>
             <XStack ai="center" gap="$3" flexGrow={1} justifyContent="flex-end" minWidth={0}>
