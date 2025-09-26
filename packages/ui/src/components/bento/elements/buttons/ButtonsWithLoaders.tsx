@@ -2,8 +2,6 @@ import { useState } from 'react'
 import type { SizeTokens } from 'tamagui'
 import { AnimatePresence, Button, Spinner, View, YStack } from 'tamagui'
 
-const sizes = ['$4', '$5', '$6'] as const
-
 /** ------ EXAMPLE ------ */
 export function ButtonsWithLoaders() {
   return (

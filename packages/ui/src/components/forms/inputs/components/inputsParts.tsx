@@ -74,7 +74,6 @@ const InputGroupFrame = styled(XGroup, {
       false: defaultInputGroupStyles,
     },
     scaleIcon: {
-      // biome-ignore lint/suspicious/noExplicitAny: Tamagui variant typing requires loose value map
       ':number': {} as any,
     },
     applyFocusStyle: {
@@ -98,7 +97,7 @@ const InputGroupFrame = styled(XGroup, {
 })
 
 const FocusContext = createStyledContext({
-  setFocused: (val: boolean) => {},
+  setFocused: (_val: boolean) => {},
   focused: false,
 })
 
@@ -115,7 +114,6 @@ const InputGroupImpl = InputGroupFrame.styleable((props, forwardedRef) => {
   )
 })
 
-/* biome-ignore lint/suspicious/noExplicitAny: Tamagui typing does not expose generics for variants */
 export const inputSizeVariant: SizeVariantSpreadFunction<any> = (val = '$true', extras) => {
   const radiusToken = extras.tokens.radius[val] ?? extras.tokens.radius['$true']
   const paddingHorizontal = getSpace(val, {
@@ -222,12 +220,10 @@ const InputIcon = InputIconFrame.styleable<{
 
   const theme = useTheme()
   const color = getVariable(
-    // biome-ignore lint/suspicious/noExplicitAny: theme tokens are not strongly typed
     contextColor || theme[contextColor as any]?.get('web') || theme.color10?.get('web')
   )
   const iconSize = getIconSize(size as FontSizeTokens, scaleIcon)
 
-  // biome-ignore lint/suspicious/noExplicitAny: themed icon helper expects any typed token
   const getThemedIcon = useGetThemedIcon({ size: iconSize, color: color as any })
   return (
     <InputIconFrame ref={ref} {...rest}>
@@ -250,7 +246,6 @@ export const InputContainerFrame = styled(View, {
       '...color': () => ({}),
     },
     gapScale: {
-      // biome-ignore lint/suspicious/noExplicitAny: tamagui variant typing requires loose number mapping
       ':number': {} as any,
     },
   } as const,
@@ -277,7 +272,6 @@ export const InputInfo = styled(Text, {
     size: {
       '...fontSize': (val, { font }) => {
         if (!font) return
-        /* biome-ignore lint/suspicious/noExplicitAny: font tokens are loosely typed */
         const fontSize = (font.size[val] as any).val * 0.8
         const lineHeight = (font.lineHeight?.[val] as any)?.val * 0.8
         const fontWeight = font.weight?.['$2'] as any

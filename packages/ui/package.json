@@ -12,6 +12,8 @@
     "watch": "tamagui-build --skip-types --watch",
     "lint": "biome lint ./src",
     "lint:fix": "biome lint --write ./src",
+    "format": "biome format ./src",
+    "format:fix": "biome format --write ./src",
     "generate-theme": "tamagui generate-themes ./src/themes/theme.ts ./src/themes/theme-generated.ts",
     "check:type": "tsc --outDir /tmp",
     "check:type:watch": "yarn check:type -w",
@@ -39,6 +41,7 @@
     "zod": "^3.22.2"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@tamagui/build": "^1.133.1",
     "typescript": "^5.9.2"
   }

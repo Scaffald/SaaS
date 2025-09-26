@@ -127,7 +127,6 @@ const CartTotal = ({ items }: { items: Items }) => {
     subtotalPriceWithDiscount,
     subtotalSavings,
     subtotalSavingsPercentage,
-    discountedPriceWithPromoDiscount,
     savingPriceWithPromoDiscount,
     taxesPrice,
     totalPrice,
@@ -252,12 +251,6 @@ const CartTotal = ({ items }: { items: Items }) => {
 /** ------ EXAMPLE ------ */
 export function Fullpage() {
   const [items, setItems] = useState<Items>([])
-  const [isCheckout, setCheckout] = useState(false)
-
-  const handleCheckout = () => {
-    if (isCheckout) setCheckout(false)
-    else setCheckout(true)
-  }
 
   const { sm } = useMedia()
 
