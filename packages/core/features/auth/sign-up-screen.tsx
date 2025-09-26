@@ -98,7 +98,9 @@ const SignInLink = () => {
   const email = useWatch<z.infer<typeof SignUpSchema>>({ name: 'email' })
 
   return (
-    <Link href={`${ROUTES.SIGN_IN}?${new URLSearchParams(email ? { email } : undefined).toString()}`}>
+    <Link
+      href={`${ROUTES.SIGN_IN}?${new URLSearchParams(email ? { email } : undefined).toString()}`}
+    >
       <Paragraph ta="center" theme="alt1" mt="$2">
         Already signed up? <Text textDecorationLine="underline">Sign in</Text>
       </Paragraph>

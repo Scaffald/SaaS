@@ -17,6 +17,8 @@ export const ROUTES = {
   // Protected routes (dashboard context)
   DASHBOARD: '/dashboard',
   DISCOVER: '/dashboard/discover',
+  COMMUNITY: '/dashboard/community',
+  COMMUNITY_REVIEWS: '/dashboard/community/reviews',
   SETTINGS: '/dashboard/settings',
   SETTINGS_GENERAL: '/dashboard/settings/general',
   SETTINGS_CHANGE_PASSWORD: '/dashboard/settings/change-password',
