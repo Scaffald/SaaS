@@ -130,7 +130,7 @@ export const DiscoverMapScreen = () => {
   }
 
   return (
-    <YStack flex={1} backgroundColor="$backgroundColor" height="100vh" overflow="hidden">
+    <YStack flex={1} backgroundColor="$background" height="100vh" overflow="hidden">
       <YStack padding="$5" gap="$4" flexShrink={0}>
         <FilterBar
           locationQuery={locationQuery}
