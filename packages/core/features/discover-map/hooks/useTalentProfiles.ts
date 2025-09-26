@@ -64,6 +64,7 @@ export const useTalentProfiles = () => {
           locationLabel: 'Location TBD', // TODO: Add location when available
           coordinates: [-72.6734, 41.55], // TODO: Add real coordinates
           organization: 'Worker',
+          avatarUrl: profile.avatar_url,
         }
       })
     },

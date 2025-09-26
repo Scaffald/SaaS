@@ -16,6 +16,7 @@ export type TalentProfile = {
   locationLabel: string
   coordinates: [number, number]
   organization?: string
+  avatarUrl?: string | null
 }
 
 export type ActiveFilter = {
