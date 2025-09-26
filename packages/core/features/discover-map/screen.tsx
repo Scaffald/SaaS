@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { Button, Paragraph, Separator, Sheet, Text, XStack, YStack, useMedia } from '@app/ui'
-import { Filter, MapPin, RefreshCw } from '@tamagui/lucide-icons'
+import { Filter, RefreshCw } from '@tamagui/lucide-icons'
 
 import { FilterBar } from './components/FilterBar'
 import { ResultList } from './components/ResultList'
@@ -10,11 +10,6 @@ import { mockTalentProfiles, defaultCenter, defaultRadiusMeters } from './data/m
 import type { ActiveFilter } from './types'
 import type { TalentMarker } from './map/types'
 import { TalentMap } from './map/TalentMap'
-
-const metersToMilesLabel = (meters: number) => {
-  const miles = meters / 1609.34
-  return `${Math.round(miles)} mi`
-}
 
 const INITIAL_FILTERS: ActiveFilter[] = [
   {
@@ -57,23 +52,9 @@ export const DiscoverMapScreen = () => {
 
   return (
     <YStack flex={1} backgroundColor="$backgroundSoft" padding="$5" gap="$4">
-      <YStack gap="$3">
-        <XStack alignItems="center" gap="$2">
-          <MapPin size={18} color="$color11" />
-          <Text fontWeight="700" fontSize="$5">
-            Discover workers & partners
-          </Text>
-        </XStack>
-        <Paragraph maxWidth={680} color="$color11">
-          Search by location, certifications, and skill focus to see available workers and
-          organizations on the map.
-        </Paragraph>
-      </YStack>
-
       <FilterBar
         locationQuery={locationQuery}
         onLocationChange={setLocationQuery}
-        radiusLabel={metersToMilesLabel(radiusMeters)}
         onAdjustFilters={() => setFiltersOpen(true)}
         filters={activeFilters}
         onRemoveFilter={(filterId) =>

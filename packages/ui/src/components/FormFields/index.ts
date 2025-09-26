@@ -1,4 +1,5 @@
 export * from './AddressField'
+export * from './AddressAutocompleteField'
 export * from './BooleanCheckboxField'
 export * from './BooleanField'
 export * from './BooleanSwitchField'

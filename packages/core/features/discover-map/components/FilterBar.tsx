@@ -7,7 +7,6 @@ import type { ActiveFilter } from '../types'
 type FilterBarProps = {
   locationQuery: string
   onLocationChange: (value: string) => void
-  radiusLabel: string
   onAdjustFilters: () => void
   filters: ActiveFilter[]
   onRemoveFilter: (filterId: string) => void
@@ -17,7 +16,6 @@ type FilterBarProps = {
 export const FilterBar = ({
   locationQuery,
   onLocationChange,
-  radiusLabel,
   onAdjustFilters,
   filters,
   onRemoveFilter,
@@ -30,31 +28,29 @@ export const FilterBar = ({
       <XStack gap="$3" width="100%" flexWrap="wrap" alignItems="center">
         <XStack
           flexGrow={1}
-          minWidth={220}
+          minWidth={200}
           alignItems="center"
           borderWidth={1}
           borderColor="$color5"
           backgroundColor="$color2"
-          borderRadius="$4"
-          paddingHorizontal="$3"
-          paddingVertical="$2"
+          borderRadius="$3"
+          paddingHorizontal="$2"
+          paddingVertical="$1"
           gap="$2"
         >
-          <MapPin size={16} color={theme.color10.val} />
+          <MapPin size={14} color={theme.color10.val} />
           <Input
             flexGrow={1}
             borderWidth={0}
             backgroundColor="transparent"
+            size="$2"
             value={locationQuery}
             onChangeText={onLocationChange}
             placeholder="Search by city or address"
           />
         </XStack>
-        <Button size="$3" icon={SlidersHorizontal} theme="blue" onPress={onAdjustFilters}>
+        <Button size="$2" icon={SlidersHorizontal} theme="blue" onPress={onAdjustFilters}>
           Adjust filters
-        </Button>
-        <Button size="$3" disabled theme="gray">
-          Radius: {radiusLabel}
         </Button>
       </XStack>
 
