@@ -1,10 +1,45 @@
 import { Avatar, Paragraph, Settings, XStack, YStack, getTokens } from '@app/ui'
 import { Box, Cog, LogOut, Milestone, ShoppingCart, User, Users } from '@tamagui/lucide-icons'
+import { type ReactNode } from 'react'
 import { useUser } from '@app/core/utils/useUser'
 import { SolitoImage } from 'solito/image'
 import { useLink } from 'solito/link'
+import type { StackProps } from 'tamagui'
 
-export const ProfileLayout = () => {
+type ProfileLayoutProps = {
+  children?: ReactNode
+}
+
+export const ProfileLayout = ({ children }: ProfileLayoutProps) => {
+  const hasChildren = Boolean(children)
+
+  return (
+    <YStack
+      f={1}
+      w="100%"
+      gap="$5"
+      maw={hasChildren ? 1120 : 600}
+      mx="auto"
+      px="$4"
+      $sm={{ px: '$3' }}
+    >
+      {hasChildren ? (
+        <XStack gap="$6" w="100%" $sm={{ flexDirection: 'column' }} ai="flex-start">
+          <ProfileSidebar flexShrink={0} maw={360} />
+          <YStack f={1} minWidth={0} gap="$5">
+            {children}
+          </YStack>
+        </XStack>
+      ) : (
+        <ProfileSidebar />
+      )}
+    </YStack>
+  )
+}
+
+type ProfileSidebarProps = StackProps
+
+export const ProfileSidebar = ({ maw = 600, ...props }: ProfileSidebarProps) => {
   const { profile, avatarUrl } = useUser()
   const tokens = getTokens()
   const name = profile?.name ?? 'No Name'
@@ -15,7 +50,7 @@ export const ProfileLayout = () => {
   }
 
   return (
-    <YStack f={1} maw={600} mx="auto" w="100%" gap="$5" $sm={{ px: '$3' }} px="$4">
+    <YStack w="100%" gap="$5" maw={maw} px="$4" $sm={{ px: '$3' }} {...props}>
       <Settings>
         <Settings.Items>
           <Settings.Group>
