@@ -20,7 +20,13 @@ const polarToCartesian = (cx: number, cy: number, radius: number, angle: number)
   }
 }
 
-const describeArc = (cx: number, cy: number, radius: number, startAngle: number, endAngle: number) => {
+const describeArc = (
+  cx: number,
+  cy: number,
+  radius: number,
+  startAngle: number,
+  endAngle: number
+) => {
   const start = polarToCartesian(cx, cy, radius, endAngle)
   const end = polarToCartesian(cx, cy, radius, startAngle)
   const largeArcFlag = Math.abs(endAngle - startAngle) > 180 ? 1 : 0
@@ -45,10 +51,10 @@ const TICKS = [0, 25, 50, 75, 100]
 
 export const HireScoreGauge = memo(({ score, level, isLoading }: HireScoreGaugeProps) => {
   const theme = useTheme()
-  const accent = useMemo(() => resolveTokenColor(theme, level.tone, getVariableValue(theme.color12)), [
-    level.tone,
-    theme,
-  ])
+  const accent = useMemo(
+    () => resolveTokenColor(theme, level.tone, getVariableValue(theme.color12)),
+    [level.tone, theme]
+  )
   const trackColor = useMemo(() => getVariableValue(theme.color5), [theme])
   const tickColor = useMemo(() => getVariableValue(theme.color7), [theme])
   const textColor = useMemo(() => getVariableValue(theme.color12), [theme])
@@ -72,7 +78,13 @@ export const HireScoreGauge = memo(({ score, level, isLoading }: HireScoreGaugeP
     <YStack ai="center" gap="$2">
       <View width={VIEWBOX_WIDTH} height={VIEWBOX_HEIGHT} position="relative">
         <Svg width="100%" height="100%" viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}>
-          <Path d={trackPath} stroke={trackColor} strokeWidth={STROKE_WIDTH} fill="none" strokeLinecap="round" />
+          <Path
+            d={trackPath}
+            stroke={trackColor}
+            strokeWidth={STROKE_WIDTH}
+            fill="none"
+            strokeLinecap="round"
+          />
           {progressPath ? (
             <Path
               d={progressPath}
@@ -110,7 +122,16 @@ export const HireScoreGauge = memo(({ score, level, isLoading }: HireScoreGaugeP
             )
           })}
         </Svg>
-        <YStack position="absolute" top={0} left={0} right={0} bottom={0} ai="center" jc="center" gap={6}>
+        <YStack
+          position="absolute"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          ai="center"
+          jc="center"
+          gap={6}
+        >
           <Paragraph size="$2" color={level.tone} fontWeight="600">
             {label}
           </Paragraph>
