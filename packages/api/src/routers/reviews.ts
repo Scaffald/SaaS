@@ -84,6 +84,8 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
 
+const normalizeSkillName = (value: string) => value.trim().toLowerCase()
+
 type ErrorContext = {
   message: string
   error?: PostgrestError | null
@@ -262,25 +264,51 @@ const collectSkillRatings = async (
   reviewId: string,
   draft: Pick<z.infer<typeof reviewDraftSchema>, 'strengths' | 'areasToImprove'>,
 ): Promise<ReviewSkillRatingInsert[]> => {
+  type SkillRatingEntry = { key: string; name: string; score: number }
+
+  const mapSkillEntries = (skills: string[], score: number): SkillRatingEntry[] =>
+    skills
+      .map((skill) => {
+        const trimmed = skill.trim()
+        if (!trimmed) {
+          return null
+        }
+
+        const key = normalizeSkillName(trimmed)
+        if (!key) {
+          return null
+        }
+
+        return { key, name: trimmed, score }
+      })
+      .filter((entry): entry is SkillRatingEntry => Boolean(entry && entry.key))
+
   const entries = [
-    ...draft.strengths.map((skill) => ({ slug: slugify(skill), score: STRENGTH_SCORE })),
-    ...draft.areasToImprove.map((skill) => ({ slug: slugify(skill), score: IMPROVEMENT_SCORE })),
-  ].filter((entry) => Boolean(entry.slug))
+    ...mapSkillEntries(draft.strengths, STRENGTH_SCORE),
+    ...mapSkillEntries(draft.areasToImprove, IMPROVEMENT_SCORE),
+  ]
 
   if (entries.length === 0) {
     return []
   }
 
-  const uniqueSlugs = Array.from(new Set(entries.map((entry) => entry.slug)))
+  const uniqueNames = Array.from(
+    entries.reduce((acc, entry) => {
+      if (!acc.has(entry.key)) {
+        acc.set(entry.key, entry.name)
+      }
+      return acc
+    }, new Map<string, string>()).values(),
+  )
 
-  if (uniqueSlugs.length === 0) {
+  if (uniqueNames.length === 0) {
     return []
   }
 
   const { data, error } = await supabase
     .from('skills')
     .select('id, name')
-    .in('name', uniqueSlugs)
+    .in('name', uniqueNames)
 
   if (error) {
     raiseInternalError({
@@ -289,21 +317,21 @@ const collectSkillRatings = async (
     })
   }
 
-  const slugToId = new Map<string, string>()
+  const normalizedNameToId = new Map<string, string>()
   data?.forEach((row) => {
     if (row?.id && row?.name) {
-      slugToId.set(row.name, row.id)
+      normalizedNameToId.set(normalizeSkillName(row.name), row.id)
     }
   })
 
   const ratingMap = new Map<string, number>()
 
-  entries.forEach(({ slug, score }) => {
-    if (!slug) {
+  entries.forEach(({ key, score }) => {
+    if (!key) {
       return
     }
 
-    const skillId = slugToId.get(slug)
+    const skillId = normalizedNameToId.get(key)
     if (!skillId) {
       return
     }
