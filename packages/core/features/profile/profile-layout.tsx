@@ -42,8 +42,18 @@ export const PROFILE_SECTIONS: ProfileSection[] = [
   { id: 'overview', label: 'Overview', icon: User, accentTheme: 'blue' },
   { id: 'basic-info', label: 'Basic information', icon: FileText, accentTheme: 'green' },
   { id: 'work-skills', label: 'Work & skills', icon: Wrench, accentTheme: 'orange' },
-  { id: 'travel-compliance', label: 'Travel & compliance', icon: ShieldCheck, accentTheme: 'purple' },
-  { id: 'contact-availability', label: 'Contact & availability', icon: PhoneCall, accentTheme: 'pink' },
+  {
+    id: 'travel-compliance',
+    label: 'Travel & compliance',
+    icon: ShieldCheck,
+    accentTheme: 'purple',
+  },
+  {
+    id: 'contact-availability',
+    label: 'Contact & availability',
+    icon: PhoneCall,
+    accentTheme: 'pink',
+  },
 ]
 
 type ProfileLayoutProps = {
@@ -78,7 +88,11 @@ export const ProfileLayout = ({
         avatarUrl={avatarUrl}
         fullName={fullName}
       />
-      {children ? <YStack f={1} gap="$8" flexBasis={0}>{children}</YStack> : null}
+      {children ? (
+        <YStack f={1} gap="$8" flexBasis={0}>
+          {children}
+        </YStack>
+      ) : null}
     </XStack>
   )
 }
@@ -115,7 +129,9 @@ export const ProfileSidebar = ({
     >
       <YStack gap="$3" ai="center">
         <Avatar circular size={120} br="$10" overflow="hidden">
-          {avatarUrl ? <SolitoImage src={avatarUrl} alt="Profile avatar" width={120} height={120} /> : null}
+          {avatarUrl ? (
+            <SolitoImage src={avatarUrl} alt="Profile avatar" width={120} height={120} />
+          ) : null}
         </Avatar>
         <SizableText size="$4" fontWeight="700" ta="center">
           {fullName || 'Your profile'}
@@ -187,7 +203,10 @@ type ProfileProgressCardProps = {
   completionPercentage: number
 }
 
-export const ProfileProgressCard = ({ checklist, completionPercentage }: ProfileProgressCardProps) => {
+export const ProfileProgressCard = ({
+  checklist,
+  completionPercentage,
+}: ProfileProgressCardProps) => {
   return (
     <YStack gap="$4" p="$4" br="$6" borderColor="$color4" borderWidth={1}>
       <YStack gap="$1">

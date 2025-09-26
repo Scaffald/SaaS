@@ -21,7 +21,12 @@ import { FormProvider, useController, useForm, useFormContext } from 'react-hook
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { SolitoImage } from 'solito/image'
-import { ProfileLayout, ProfileSectionContainer, PROFILE_SECTIONS, type ProfileChecklistItem } from './profile-layout'
+import {
+  ProfileLayout,
+  ProfileSectionContainer,
+  PROFILE_SECTIONS,
+  type ProfileChecklistItem,
+} from './profile-layout'
 
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import {
@@ -89,7 +94,9 @@ export const EditProfileScreen = ({ onSuccess }: EditProfileScreenProps = {}) =>
       (entries) => {
         const entry = entries
           .filter((item) => item.isIntersecting)
-          .sort((a, b) => (a.target as HTMLElement).offsetTop - (b.target as HTMLElement).offsetTop)[0]
+          .sort(
+            (a, b) => (a.target as HTMLElement).offsetTop - (b.target as HTMLElement).offsetTop
+          )[0]
         if (entry?.target?.id) {
           setActiveSectionId(entry.target.id)
         }
@@ -225,7 +232,9 @@ export const EditProfileScreen = ({ onSuccess }: EditProfileScreenProps = {}) =>
             checklist={checklist}
             completionPercentage={completionPercentage}
             avatarUrl={avatarUrl}
-            fullName={`${watchedValues.firstName} ${watchedValues.lastName}`.trim() || profile?.name || ''}
+            fullName={
+              `${watchedValues.firstName} ${watchedValues.lastName}`.trim() || profile?.name || ''
+            }
           >
             <ProfileSectionContainer
               id="overview"
@@ -303,7 +312,9 @@ const OverviewSection = ({ avatarUrl, isSaving }: { avatarUrl?: string; isSaving
       <YStack ai="center" gap="$3">
         <UploadAvatar>
           <Avatar circular size={128} br="$10" overflow="hidden">
-            {avatarUrl ? <SolitoImage src={avatarUrl} alt="Profile avatar" width={128} height={128} /> : null}
+            {avatarUrl ? (
+              <SolitoImage src={avatarUrl} alt="Profile avatar" width={128} height={128} />
+            ) : null}
           </Avatar>
         </UploadAvatar>
         {isSaving ? (
@@ -330,10 +341,24 @@ const BasicInformationFields = () => {
         <ControllerInput control={control} name="firstName" label="First name" placeholder="Jane" />
         <ControllerInput control={control} name="lastName" label="Last name" placeholder="Doe" />
       </XStack>
-      <ControllerInput control={control} name="phone" label="Phone number" placeholder="(555) 123-4567" />
-      <ControllerAddress control={control} name="location" label="Location" placeholder="e.g. Denver, CO" />
+      <ControllerInput
+        control={control}
+        name="phone"
+        label="Phone number"
+        placeholder="(555) 123-4567"
+      />
+      <ControllerAddress
+        control={control}
+        name="location"
+        label="Location"
+        placeholder="e.g. Denver, CO"
+      />
       <ControllerCheckbox control={control} name="usResident" label="I am a resident of the U.S." />
-      <ControllerCheckbox control={control} name="usPassport" label="I have a valid U.S. passport" />
+      <ControllerCheckbox
+        control={control}
+        name="usPassport"
+        label="I have a valid U.S. passport"
+      />
       <ControllerCheckbox control={control} name="veteran" label="I am a veteran" />
     </YStack>
   )
@@ -350,7 +375,12 @@ const WorkAndSkillsFields = () => {
         label="Years of experience"
         placeholder="e.g. 5"
       />
-      <ControllerInput control={control} name="jobTitle" label="Headline" placeholder="e.g. Lead Carpenter" />
+      <ControllerInput
+        control={control}
+        name="jobTitle"
+        label="Headline"
+        placeholder="e.g. Lead Carpenter"
+      />
       <YStack gap="$2">
         <Paragraph size="$3" fontWeight="600">
           Primary skills
@@ -411,7 +441,10 @@ const TravelAndComplianceFields = () => {
         control={control}
         name="driversLicense"
         label="Driver’s license class"
-        options={DRIVER_LICENSE_OPTIONS.map((option) => ({ value: option.value, label: option.label }))}
+        options={DRIVER_LICENSE_OPTIONS.map((option) => ({
+          value: option.value,
+          label: option.label,
+        }))}
       />
     </YStack>
   )
@@ -497,7 +530,12 @@ const ControllerTextArea = ({
       <Paragraph size="$3" fontWeight="600">
         {label}
       </Paragraph>
-      <TextArea value={field.value ?? ''} onChangeText={field.onChange} rows={4} placeholder={placeholder} />
+      <TextArea
+        value={field.value ?? ''}
+        onChangeText={field.onChange}
+        rows={4}
+        placeholder={placeholder}
+      />
       {fieldState.error?.message ? (
         <Paragraph size="$2" color="$red10">
           {fieldState.error.message}
@@ -506,19 +544,6 @@ const ControllerTextArea = ({
     </YStack>
   )
 }
-
-  const { params } = useParams()
-  const supabase = useSupabase()
-  const toast = useToastController()
-  const queryClient = useQueryClient()
-  const _apiUtils = api.useUtils()
-  const mutation = useMutation({
-    async mutationFn(data: z.infer<typeof ProfileSchema>) {
-      await supabase
-        .from('profiles')
-        .update({ name: data.name, about: data.about })
-        .eq('id', userId)
-    },
 
 const ControllerAddress = ({
   control,
@@ -575,7 +600,12 @@ const ControllerToggle = ({
 }) => {
   const { field } = useController({ control, name })
   return (
-    <ToggleRow label={label} description={description} checked={Boolean(field.value)} onCheckedChange={field.onChange} />
+    <ToggleRow
+      label={label}
+      description={description}
+      checked={Boolean(field.value)}
+      onCheckedChange={field.onChange}
+    />
   )
 }
 
@@ -722,7 +752,10 @@ const ChoiceChips = ({
   </XStack>
 )
 
-const SkillSelector = ({ selected, onToggle }: { selected: string[]; onToggle: (skill: string) => void }) => (
+const SkillSelector = ({
+  selected,
+  onToggle,
+}: { selected: string[]; onToggle: (skill: string) => void }) => (
   <YStack gap="$3">
     {SKILL_CATEGORIES.map((category) => (
       <YStack key={category.id} gap="$2">
