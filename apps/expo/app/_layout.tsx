@@ -69,15 +69,13 @@ export default function HomeLayout() {
             <Stack.Screen
               name="settings/index"
               options={{
-                headerShown: true,
-                headerBackTitle: 'Back',
+                headerShown: false,
               }}
             />
             <Stack.Screen
               name="profile/index"
               options={{
-                headerShown: true,
-                headerBackTitle: 'Back',
+                headerShown: false,
               }}
             />
           </Stack>
