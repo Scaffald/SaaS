@@ -10,7 +10,9 @@ alter table public.user_private
   add column if not exists last_name text;
 
 -- Refresh the private profile view with the additional columns.
-create or replace view public.v_user_private as
+-- Drop the view first to avoid column name conflicts
+drop view if exists public.v_user_private cascade;
+create view public.v_user_private as
 select
   u.id,
   up.email,

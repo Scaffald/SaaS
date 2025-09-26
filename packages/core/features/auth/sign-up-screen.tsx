@@ -29,10 +29,9 @@ const SignUpSchema = z.object({
   lastName: formFields.text.describe('Last Name // Doe').min(1, 'Last name is required'),
   email: formFields.text.email().describe('Email // your@email.acme'),
   phone: formFields.text.describe('Phone // +1 (555) 555-5555').min(1, 'Phone number is required'),
-  industryId: formFields
-    .select
+  industryId: formFields.select
     .describe('Industry')
-    .min(1, 'Industry is required'),
+    .refine((val) => val && val.length > 0, 'Industry is required'),
   password: formFields.text.min(6).describe('Password // Choose a password'),
 })
 
