@@ -57,11 +57,14 @@ export const SignUpScreen = () => {
         .order('name', { ascending: true })
 
       if (error) {
-        throw new Error(error.message)
+        console.error('Failed to fetch industries:', error.message)
+        throw new Error('Failed to load industries. Please try again.')
       }
 
       return data ?? []
     },
+    retry: 2,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   })
 
   const industryOptions = useMemo(
@@ -133,17 +136,23 @@ export const SignUpScreen = () => {
               options: industryOptions,
               placeholder: industriesQuery.isPending
                 ? 'Loading industries…'
-                : industryOptions.length > 0
-                  ? 'Select an industry'
-                  : 'No industries available',
+                : industriesQuery.isError
+                  ? 'Failed to load industries'
+                  : industryOptions.length > 0
+                    ? 'Select an industry'
+                    : 'No industries available',
             },
           }}
           onSubmit={signUpWithEmail}
           renderAfter={({ submit }) => (
             <>
               <Theme inverse>
-                <SubmitButton onPress={() => submit()} br="$10">
-                  Sign Up
+                <SubmitButton 
+                  onPress={() => submit()} 
+                  br="$10"
+                  disabled={industriesQuery.isPending || industriesQuery.isError}
+                >
+                  {industriesQuery.isPending ? 'Loading...' : 'Sign Up'}
                 </SubmitButton>
               </Theme>
               <SignInLink />

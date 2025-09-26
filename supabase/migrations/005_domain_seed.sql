@@ -12,33 +12,35 @@ begin;
 -- Insert comprehensive skills taxonomy
 with skill_categories as (
   select * from (values
-    -- Construction & Building
+    -- Construction Industry (5 skills)
     ('carpentry', 'construction', null),
-    ('framing', 'construction', 'carpentry'),
-    ('drywall', 'construction', 'carpentry'),
-    ('roofing', 'construction', null),
-    ('concrete', 'construction', null),
-    ('masonry', 'construction', 'concrete'),
-    ('flooring', 'construction', 'carpentry'),
-    ('insulation', 'construction', null),
-    
-    -- Electrical & HVAC
     ('electrical', 'construction', null),
-    ('hvac', 'construction', null),
     ('plumbing', 'construction', null),
-    ('solar-installation', 'construction', 'electrical'),
-    ('electrical-troubleshooting', 'construction', 'electrical'),
+    ('concrete', 'construction', null),
+    ('roofing', 'construction', null),
     
-    -- Manufacturing & Industrial
+    -- Manufacturing Industry (5 skills)
     ('welding', 'manufacturing', null),
     ('machining', 'manufacturing', null),
-    ('cnc-operating', 'manufacturing', 'machining'),
     ('quality-control', 'manufacturing', null),
     ('assembly', 'manufacturing', null),
-    ('fabrication', 'manufacturing', 'welding'),
-    ('tool-and-die', 'manufacturing', 'machining'),
+    ('cnc-operating', 'manufacturing', 'machining'),
     
-    -- Safety & Certifications
+    -- Transportation Industry (5 skills)
+    ('truck-driving', 'transportation', null),
+    ('cdl', 'transportation', 'truck-driving'),
+    ('logistics', 'transportation', null),
+    ('forklift', 'transportation', null),
+    ('warehouse-operations', 'transportation', null),
+    
+    -- Energy Industry (5 skills)
+    ('electrical', 'energy', null),
+    ('solar-installation', 'energy', 'electrical'),
+    ('hvac', 'energy', null),
+    ('power-systems', 'energy', 'electrical'),
+    ('field-services', 'energy', null),
+    
+    -- Safety & Certifications (cross-industry)
     ('osha-30', 'safety', null),
     ('osha-10', 'safety', null),
     ('first-aid', 'safety', null),
@@ -46,15 +48,7 @@ with skill_categories as (
     ('confined-space', 'safety', null),
     ('fall-protection', 'safety', null),
     
-    -- Equipment & Vehicles
-    ('forklift', 'equipment', null),
-    ('crane-operating', 'equipment', null),
-    ('excavator', 'equipment', null),
-    ('backhoe', 'equipment', null),
-    ('truck-driving', 'equipment', null),
-    ('cdl', 'equipment', 'truck-driving'),
-    
-    -- Technical & Design
+    -- Technical & Design (cross-industry)
     ('cad', 'technical', null),
     ('blueprints', 'technical', null),
     ('estimating', 'technical', null),
@@ -63,7 +57,7 @@ with skill_categories as (
     ('solidworks', 'technical', 'cad'),
     ('sketchup', 'technical', 'cad'),
     
-    -- Soft Skills
+    -- Soft Skills (cross-industry)
     ('leadership', 'soft-skills', null),
     ('teamwork', 'soft-skills', null),
     ('communication', 'soft-skills', null),
@@ -85,9 +79,8 @@ skill_inserts as (
     case 
       when sc.category = 'construction' then (select id from industry_lookup where slug = 'construction')
       when sc.category = 'manufacturing' then (select id from industry_lookup where slug = 'manufacturing')
-      when sc.category = 'logistics' then (select id from industry_lookup where slug = 'logistics')
+      when sc.category = 'transportation' then (select id from industry_lookup where slug = 'transportation')
       when sc.category = 'energy' then (select id from industry_lookup where slug = 'energy')
-      when sc.category = 'maintenance' then (select id from industry_lookup where slug = 'maintenance')
       else null
     end,
     ps.id
@@ -107,14 +100,14 @@ with org_data as (
   select * from (values
     ('midland-construction', 'Midland Construction Co.', 'construction', 'Midland', 43.6156, -84.2472),
     ('bay-city-manufacturing', 'Bay City Manufacturing', 'manufacturing', 'Bay City', 43.5945, -83.8889),
-    ('saginaw-logistics', 'Saginaw Logistics Solutions', 'logistics', 'Saginaw', 43.4195, -83.9508),
+    ('saginaw-transportation', 'Saginaw Transportation Solutions', 'transportation', 'Saginaw', 43.4195, -83.9508),
     ('mount-pleasant-energy', 'Mount Pleasant Energy Services', 'energy', 'Mount Pleasant', 43.5972, -84.7675),
-    ('clare-maintenance', 'Clare Maintenance & Repair', 'maintenance', 'Clare', 43.8195, -84.7689),
     ('big-rapids-trades', 'Big Rapids Trades Union', 'construction', 'Big Rapids', 43.6981, -85.4834),
     ('gladwin-industrial', 'Gladwin Industrial Solutions', 'manufacturing', 'Gladwin', 43.9806, -84.4867),
     ('alma-construction', 'Alma Construction Group', 'construction', 'Alma', 43.3789, -84.6597),
-    ('harrison-logistics', 'Harrison Transport', 'logistics', 'Harrison', 44.0192, -84.7992),
-    ('reed-city-energy', 'Reed City Energy Co.', 'energy', 'Reed City', 43.8750, -85.5101)
+    ('harrison-transportation', 'Harrison Transport', 'transportation', 'Harrison', 44.0192, -84.7992),
+    ('reed-city-energy', 'Reed City Energy Co.', 'energy', 'Reed City', 43.8750, -85.5101),
+    ('clare-manufacturing', 'Clare Manufacturing Co.', 'manufacturing', 'Clare', 43.8195, -84.7689)
   ) as t(slug, name, industry_slug, city, lat, lon)
 ),
 industry_lookup as (
