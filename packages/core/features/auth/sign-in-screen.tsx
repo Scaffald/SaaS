@@ -1,6 +1,4 @@
 import {
-  Button,
-  FormWrapper,
   H2,
   LoadingOverlay,
   Paragraph,
@@ -19,9 +17,8 @@ import { createParam } from 'solito'
 import { Link } from 'solito/link'
 import { useRouter } from 'solito/router'
 import { z } from 'zod'
-import { ChevronLeft } from '@tamagui/lucide-icons'
-
 import { SocialLogin } from './components/SocialLogin'
+import { MagicLinkPending } from './components/MagicLinkPending'
 
 const { useParams, useUpdateParams } = createParam<{ email?: string }>()
 
@@ -127,21 +124,11 @@ const CheckYourEmail = () => {
   const { reset } = useFormContext<z.infer<typeof SignInSchema>>()
 
   return (
-    <FormWrapper>
-      <FormWrapper.Body>
-        <YStack gap="$3">
-          <H2>Check your email</H2>
-          <Paragraph theme="alt1">
-            We&apos;ve sent a magic link to {email}. Open it to sign back in.
-          </Paragraph>
-        </YStack>
-      </FormWrapper.Body>
-      <FormWrapper.Footer>
-        <Button themeInverse icon={ChevronLeft} br="$10" onPress={() => reset({ email })}>
-          Back
-        </Button>
-      </FormWrapper.Footer>
-    </FormWrapper>
+    <MagicLinkPending
+      email={email}
+      linkInstruction="Open it to sign back in."
+      onBack={() => reset({ email })}
+    />
   )
 }
 
