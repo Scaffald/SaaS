@@ -220,7 +220,7 @@ const formatSummaryDate = (value: string | null | undefined) => {
 
 const resolveSubjectUserId = async (
   supabase: TypedSupabaseClient,
-  subjectId: string,
+  subjectId: string
 ): Promise<string> => {
   const lookups: Array<keyof Database['public']['Tables']['users']['Row']> = []
 
@@ -258,7 +258,7 @@ const resolveSubjectUserId = async (
 const ensureAuthorReview = async (
   supabase: TypedSupabaseClient,
   reviewId: string,
-  authorId: string,
+  authorId: string
 ) => {
   const { data, error } = await supabase
     .from('reviews')
@@ -283,8 +283,10 @@ const ensureAuthorReview = async (
 
 const buildAspectRows = (
   reviewId: string,
-  input: Pick<z.infer<typeof reviewDraftSchema>,
-    'strengths' | 'areasToImprove' | 'softSkills' | 'recommendedSkills'>,
+  input: Pick<
+    z.infer<typeof reviewDraftSchema>,
+    'strengths' | 'areasToImprove' | 'softSkills' | 'recommendedSkills'
+  >
 ): ReviewAspectInsert[] => {
   const rows: ReviewAspectInsert[] = []
   const usedKeys = new Set<string>()
@@ -324,7 +326,7 @@ const buildAspectRows = (
 const upsertReviewAspects = async (
   supabase: TypedSupabaseClient,
   reviewId: string,
-  draft: z.infer<typeof reviewDraftSchema>,
+  draft: z.infer<typeof reviewDraftSchema>
 ) => {
   const aspectRows = buildAspectRows(reviewId, draft)
 
@@ -359,7 +361,7 @@ const upsertReviewAspects = async (
 const collectSkillRatings = async (
   supabase: TypedSupabaseClient,
   reviewId: string,
-  draft: Pick<z.infer<typeof reviewDraftSchema>, 'strengths' | 'areasToImprove'>,
+  draft: Pick<z.infer<typeof reviewDraftSchema>, 'strengths' | 'areasToImprove'>
 ): Promise<ReviewSkillRatingInsert[]> => {
   type SkillRatingEntry = { key: string; name: string; score: number }
 
@@ -390,22 +392,21 @@ const collectSkillRatings = async (
   }
 
   const uniqueNames = Array.from(
-    entries.reduce((acc, entry) => {
-      if (!acc.has(entry.key)) {
-        acc.set(entry.key, entry.name)
-      }
-      return acc
-    }, new Map<string, string>()).values(),
+    entries
+      .reduce((acc, entry) => {
+        if (!acc.has(entry.key)) {
+          acc.set(entry.key, entry.name)
+        }
+        return acc
+      }, new Map<string, string>())
+      .values()
   )
 
   if (uniqueNames.length === 0) {
     return []
   }
 
-  const { data, error } = await supabase
-    .from('skills')
-    .select('id, name')
-    .in('name', uniqueNames)
+  const { data, error } = await supabase.from('skills').select('id, name').in('name', uniqueNames)
 
   if (error) {
     raiseInternalError({
@@ -447,7 +448,7 @@ const collectSkillRatings = async (
 const upsertReviewSkillRatings = async (
   supabase: TypedSupabaseClient,
   reviewId: string,
-  draft: z.infer<typeof reviewDraftSchema>,
+  draft: z.infer<typeof reviewDraftSchema>
 ) => {
   const rows = await collectSkillRatings(supabase, reviewId, draft)
 
@@ -483,7 +484,7 @@ const persistReviewDraft = async (
   supabase: TypedSupabaseClient,
   authorId: string,
   input: z.infer<typeof reviewDraftSchema>,
-  status: ReviewStatus,
+  status: ReviewStatus
 ) => {
   const subjectUserId = await resolveSubjectUserId(supabase, input.subjectId)
   const review = await ensureAuthorReview(supabase, input.reviewId, authorId)
@@ -555,55 +556,8 @@ const computeSummary = (reviews: ReviewRow[]): ReviewSummary => {
   const summaryValues = submitted.map((review) => {
     const metadata = parseMetadata(review.metadata)
     const reaction = metadata.reaction ?? (review.rating && review.rating >= 3 ? 'up' : 'down')
-  }),
-
-  getSummary: publicProcedure.input(summaryInputSchema).query(({ input, ctx }) => {
-    const publicReviews = mockReviews.filter((review) => review.isPublic)
-    const averageRating =
-      publicReviews.reduce((total, review) => total + review.rating, 0) /
-      (publicReviews.length || 1)
-
-    const viewerDraft = ctx.user
-      ? {
-          reviewId: 'draft-review-001',
-          href: `/reviews/${input.subjectId}/draft-review-001`,
-        }
-      : null
-
     return {
-      subjectId: input.subjectId,
-      averageRating,
-      totalReviews: publicReviews.length,
-      strengths: [
-        'Keeps crews aligned during outages',
-        'Raises safety concerns early',
-        'Communicates clearly in the field',
-      ],
-      improvements: ['Could share pre-shift checklists sooner', 'Occasional delays on material requests'],
-      viewerDraft,
-    }
-  }),
-  
-  list: publicProcedure.input(listInputSchema).query(({ input }) => {
-    const publicReviews = mockReviews.filter((review) => review.isPublic)
-
-    const cursor = input.cursor ?? 0
-    const items = publicReviews.slice(cursor, cursor + input.limit)
-    const nextCursor =
-      cursor + input.limit < publicReviews.length ? cursor + input.limit : null
-
-    return {
-      subjectId: input.subjectId,
-      items,
-      nextCursor
-    }
-  }),
-  
-  saveDraft: protectedProcedure.input(reviewDraftSchema).mutation(async ({ input }) => {
-    // TODO: Persist drafts once backend storage is available.
-    
-    return {
-      rating: review.rating ?? (reaction === 'up' ? STRENGTH_SCORE : IMPROVEMENT_SCORE),
+      rating: review.rating,
       reaction,
       updatedAt: review.updated_at,
     }
@@ -650,7 +604,7 @@ export const reviewsRouter = createTRPCRouter({
 
     return computeSummary(data ?? [])
   }),
-        
+
   list: protectedProcedure.input(subjectInputSchema).query(async ({ ctx, input }) => {
     const subjectUserId = await resolveSubjectUserId(ctx.supabase, input.subjectId)
 
@@ -686,7 +640,7 @@ export const reviewsRouter = createTRPCRouter({
 
     return { reviews }
   }),
-    
+
   react: protectedProcedure.input(reactionInputSchema).mutation(async ({ ctx, input }) => {
     const { supabase, user } = ctx
     const subjectUserId = await resolveSubjectUserId(supabase, input.subjectId)
@@ -771,12 +725,12 @@ export const reviewsRouter = createTRPCRouter({
     const result = await persistReviewDraft(ctx.supabase, ctx.user.id, input, 'draft')
     return { reviewId: result.reviewId }
   }),
-    
+
   submit: protectedProcedure.input(reviewDraftSchema).mutation(async ({ ctx, input }) => {
     const result = await persistReviewDraft(ctx.supabase, ctx.user.id, input, 'submitted')
     return { reviewId: result.reviewId, submittedAt: result.metadata.submittedAt ?? null }
   }),
-    
+
   resume: protectedProcedure.input(resumeInputSchema).query(async ({ ctx, input }) => {
     const review = await ensureAuthorReview(ctx.supabase, input.reviewId, ctx.user.id)
     const metadata = parseMetadata(review.metadata)
