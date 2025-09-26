@@ -277,9 +277,7 @@ export const createOnboardingValuesFromProfile = ({
   }
 }
 
-export const pickBasicInformation = (
-  values: OnboardingFormValues
-): BasicInformationValues => {
+export const pickBasicInformation = (values: OnboardingFormValues): BasicInformationValues => {
   return BASIC_INFORMATION_KEYS.reduce((acc, key) => {
     acc[key] = values[key]
     return acc
@@ -298,41 +296,32 @@ export const persistBasicInformation = async ({
   updateProfile?: () => Promise<unknown> | void
 }) => {
   const about = values.about?.trim() || null
-  const travelMileage = values.openToTravel && values.travelMileage
-    ? Number(values.travelMileage)
-    : null
+  const travelMileage =
+    values.openToTravel && values.travelMileage ? Number(values.travelMileage) : null
   const firstName = values.firstName.trim()
   const lastName = values.lastName.trim()
   const fullName = `${firstName} ${lastName}`.trim() || null
 
   const [{ error: profileError }, { error: userError }, { error: privateError }] =
     await Promise.all([
-      supabase
-        .from('profiles')
-        .update({ about, name: fullName })
-        .eq('id', userId),
-      supabase
-        .from('users')
-        .update({ bio: about, display_name: fullName })
-        .eq('id', userId),
-      supabase
-        .from('user_private')
-        .upsert(
-          {
-            user_id: userId,
-            first_name: firstName,
-            last_name: lastName,
-            phone: values.phone?.trim() || null,
-            location: values.location.trim(),
-            open_to_travel: values.openToTravel,
-            travel_mileage: travelMileage,
-            us_resident: values.usResident,
-            us_passport: values.usPassport,
-            drivers_license_class: values.driversLicense,
-            veteran: values.veteran,
-          },
-          { onConflict: 'user_id' }
-        ),
+      supabase.from('profiles').update({ about, name: fullName }).eq('id', userId),
+      supabase.from('users').update({ bio: about, display_name: fullName }).eq('id', userId),
+      supabase.from('user_private').upsert(
+        {
+          user_id: userId,
+          first_name: firstName,
+          last_name: lastName,
+          phone: values.phone?.trim() || null,
+          location: values.location.trim(),
+          open_to_travel: values.openToTravel,
+          travel_mileage: travelMileage,
+          us_resident: values.usResident,
+          us_passport: values.usPassport,
+          drivers_license_class: values.driversLicense,
+          veteran: values.veteran,
+        },
+        { onConflict: 'user_id' }
+      ),
     ])
 
   if (profileError) throw new Error(profileError.message)
@@ -358,9 +347,7 @@ export const OnboardingFlowScreen = () => {
 
   const watchedValues = form.watch()
 
-  const { data: onboardingProfile, isPending: isProfilePending } = useOnboardingProfile(
-    user?.id
-  )
+  const { data: onboardingProfile, isPending: isProfilePending } = useOnboardingProfile(user?.id)
 
   const computedValues = useMemo(
     () => createOnboardingValuesFromProfile({ onboardingProfile, profile }),

@@ -137,12 +137,7 @@ const CheckYourEmail = () => {
         </YStack>
       </FormWrapper.Body>
       <FormWrapper.Footer>
-        <Button
-          themeInverse
-          icon={ChevronLeft}
-          br="$10"
-          onPress={() => reset({ email })}
-        >
+        <Button themeInverse icon={ChevronLeft} br="$10" onPress={() => reset({ email })}>
           Back
         </Button>
       </FormWrapper.Footer>

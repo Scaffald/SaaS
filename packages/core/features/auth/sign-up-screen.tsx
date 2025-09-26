@@ -83,16 +83,16 @@ export const SignUpScreen = () => {
         >
           {(fields) => (
             <>
-            <YStack gap="$3" mb="$4">
-              <H2 $sm={{ size: '$8' }}>Get started</H2>
-              <Paragraph theme="alt2">
-                Enter your email and we&apos;ll send a one-time sign-in link.
-              </Paragraph>
-            </YStack>
-            {Object.values(fields)}
-            {!isWeb && (
-              <YStack mt="$4">
-                <SocialLogin />
+              <YStack gap="$3" mb="$4">
+                <H2 $sm={{ size: '$8' }}>Get started</H2>
+                <Paragraph theme="alt2">
+                  Enter your email and we&apos;ll send a one-time sign-in link.
+                </Paragraph>
+              </YStack>
+              {Object.values(fields)}
+              {!isWeb && (
+                <YStack mt="$4">
+                  <SocialLogin />
                 </YStack>
               )}
             </>
