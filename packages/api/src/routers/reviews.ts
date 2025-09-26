@@ -126,8 +126,10 @@ export const reviewsRouter = createTRPCRouter({
   }),
 
   getSummary: publicProcedure.input(summaryInputSchema).query(({ input, ctx }) => {
+    const publicReviews = mockReviews.filter((review) => review.isPublic)
     const averageRating =
-      mockReviews.reduce((total, review) => total + review.rating, 0) / mockReviews.length
+      publicReviews.reduce((total, review) => total + review.rating, 0) /
+      (publicReviews.length || 1)
 
     const viewerDraft = ctx.user
       ? {
@@ -139,7 +141,7 @@ export const reviewsRouter = createTRPCRouter({
     return {
       subjectId: input.subjectId,
       averageRating,
-      totalReviews: mockReviews.length,
+      totalReviews: publicReviews.length,
       strengths: [
         'Keeps crews aligned during outages',
         'Raises safety concerns early',
@@ -151,9 +153,12 @@ export const reviewsRouter = createTRPCRouter({
   }),
   
   list: publicProcedure.input(listInputSchema).query(({ input }) => {
+    const publicReviews = mockReviews.filter((review) => review.isPublic)
+
     const cursor = input.cursor ?? 0
-    const items = mockReviews.slice(cursor, cursor + input.limit)
-    const nextCursor = cursor + input.limit < mockReviews.length ? cursor + input.limit : null
+    const items = publicReviews.slice(cursor, cursor + input.limit)
+    const nextCursor =
+      cursor + input.limit < publicReviews.length ? cursor + input.limit : null
 
     return {
       subjectId: input.subjectId,
