@@ -53,12 +53,13 @@ export function GoogleSignIn() {
       onPress={() => signInWithGoogle()}
       icon={IconGoogle}
       // styles to make it look like the native Apple button on AppleSignIn.native.tsx
-      scaleIcon={0.75}
+      scaleIcon={0.6}
       space="$1.5"
-      bg="transparent"
+      bg="white"
       pressStyle={{ bg: 'transparent', o: 0.6, bw: '$0' }}
       animation="200ms"
       chromeless
+      fontWeight="500"
     >
       Sign in with Google
     </Button>

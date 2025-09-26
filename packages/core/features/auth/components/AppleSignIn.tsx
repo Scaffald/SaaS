@@ -22,7 +22,7 @@ export function AppleSignIn() {
   }
 
   return (
-    <Button br="$10" onPress={() => handleOAuthSignIn()} icon={IconApple}>
+    <Button br="$10" f={1} onPress={() => handleOAuthSignIn()} icon={IconApple}>
       Sign in with Apple
     </Button>
   )

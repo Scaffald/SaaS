@@ -49,8 +49,7 @@ import {
 } from './data'
 import { useOnboardingProfile, type OnboardingProfile } from './hooks/useOnboardingProfile'
 
-const SIDEBAR_STEPS: Array<{ id: 'sign-up' | OnboardingStepId; label: string }> = [
-  { id: 'sign-up', label: 'Sign up' },
+const SIDEBAR_STEPS: Array<{ id: OnboardingStepId; label: string }> = [
   ...PROFILE_STEPS.map((step) => ({ id: step.id, label: step.label })),
 ]
 
@@ -84,9 +83,9 @@ export const BasicInformationSchema = z.object({
   travelMileage: numericString('Mileage').optional(),
   usResident: z.boolean(),
   usPassport: z.boolean(),
-  driversLicense: z.enum(
-    DRIVER_LICENSE_OPTIONS.map((option) => option.value) as [string, ...string[]]
-  ).optional(),
+  driversLicense: z
+    .enum(DRIVER_LICENSE_OPTIONS.map((option) => option.value) as [string, ...string[]])
+    .optional(),
   veteran: z.boolean(),
 })
 
@@ -500,8 +499,7 @@ export const OnboardingFlowScreen = () => {
               </YStack>
               <YStack gap="$3">
                 {SIDEBAR_STEPS.map((step) => {
-                  const isCompleted =
-                    step.id === 'sign-up' || completedSteps.includes(step.id as OnboardingStepId)
+                  const isCompleted = completedSteps.includes(step.id as OnboardingStepId)
                   const isActive = step.id === activeStep
                   return (
                     <SidebarStepItem
@@ -510,7 +508,6 @@ export const OnboardingFlowScreen = () => {
                       isCompleted={isCompleted}
                       isActive={isActive}
                       onPress={() => {
-                        if (step.id === 'sign-up') return
                         if (step.id === 'summary' && !completedSteps.includes('education')) return
                         setActiveStep(step.id as OnboardingStepId)
                       }}

@@ -7,6 +7,7 @@ import { FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form
 import { createParam } from 'solito'
 import { Link } from 'solito/link'
 import { z } from 'zod'
+import { ROUTES, buildRoute } from '@app/core/constants/routes'
 
 const { useParams, useUpdateParams } = createParam<{ email?: string }>()
 
@@ -115,7 +116,7 @@ const SignInLink = () => {
   const email = useWatch<z.infer<typeof ResetPasswordSchema>>({ name: 'email' })
 
   return (
-    <Link href={`/sign-in?${new URLSearchParams(email ? { email } : undefined)}`}>
+    <Link href={buildRoute(ROUTES.LOGIN, email ? { email } : undefined)}>
       <Paragraph ta="center" theme="alt1">
         Done resetting? <Text textDecorationLine="underline">Sign in</Text>
       </Paragraph>

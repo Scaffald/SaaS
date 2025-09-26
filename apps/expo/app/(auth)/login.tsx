@@ -1,16 +1,16 @@
-import { SignUpScreen } from 'app/features/auth/sign-up-screen'
+import { LoginScreen } from 'app/features/auth/login-screen'
 import { Stack } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Screen() {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
       <Stack.Screen
         options={{
-          title: 'Sign Up',
+          title: 'Login',
         }}
       />
-      <SignUpScreen />
+      <LoginScreen />
     </SafeAreaView>
   )
 }

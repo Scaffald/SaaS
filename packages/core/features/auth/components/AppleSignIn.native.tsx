@@ -38,9 +38,9 @@ export function AppleSignIn() {
   return (
     <AppleAuthentication.AppleAuthenticationButton
       buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-      buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-      cornerRadius={5}
-      style={{ width: '100%', height: 44 }}
+      buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE}
+      cornerRadius={10}
+      style={{ height: 44 }}
       onPress={signInWithApple}
     />
   )

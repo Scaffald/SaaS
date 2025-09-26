@@ -82,7 +82,6 @@ const EditProfileForm = ({
     async onSuccess() {
       toast.show('Successfully updated!')
       await queryClient.invalidateQueries({ queryKey: ['profile', userId] })
-      await apiUtils.greeting.invalidate()
       onSubmitSuccess()
     },
   })

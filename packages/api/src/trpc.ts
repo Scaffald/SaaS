@@ -68,7 +68,7 @@ export const createTRPCContext = async (opts: FetchCreateContextFnOptions) => {
           Authorization: authorizationHeader,
         },
       },
-    })
+    }) as unknown as typeof supabase
   }
 
   return {

@@ -1,4 +1,4 @@
-import { SignInScreen } from 'app/features/auth/sign-in-screen'
+import { LoginScreen } from 'app/features/auth/login-screen'
 import { Stack } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
@@ -10,7 +10,7 @@ export default function Screen() {
           title: 'Sign In',
         }}
       />
-      <SignInScreen />
+      <LoginScreen />
     </SafeAreaView>
   )
 }
