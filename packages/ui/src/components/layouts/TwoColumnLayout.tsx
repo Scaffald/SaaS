@@ -1,4 +1,4 @@
-import { Separator, XStack, YStack, styled } from '@app/ui'
+import { Separator, XStack, YStack, styled, useMedia } from '@app/ui'
 
 export type TwoColumnLayoutProps = {
   /**
@@ -22,6 +22,26 @@ export type TwoColumnLayoutProps = {
    */
   sidebarSkeleton?: React.ReactNode
   contentSkeleton?: React.ReactNode
+  /**
+   * Sidebar width on desktop
+   */
+  sidebarWidth?: number
+  /**
+   * Sidebar width on large screens
+   */
+  sidebarWidthLg?: number
+  /**
+   * Whether to show separator between columns
+   */
+  showSeparator?: boolean
+  /**
+   * Content padding
+   */
+  contentPadding?: number | string
+  /**
+   * Whether to center content
+   */
+  centerContent?: boolean
 }
 
 export const TwoColumnLayout = ({
@@ -31,9 +51,17 @@ export const TwoColumnLayout = ({
   isLoading = false,
   sidebarSkeleton,
   contentSkeleton,
+  sidebarWidth = 300,
+  sidebarWidthLg = 400,
+  showSeparator = true,
+  contentPadding = '$10',
+  centerContent = true,
 }: TwoColumnLayoutProps) => {
+  const media = useMedia()
+
   return (
-    <XStack separator={<Separator vertical />} f={1}>
+    <XStack separator={showSeparator ? <Separator vertical /> : undefined} f={1}>
+      {/* Sidebar */}
       <YStack
         bg="$color1"
         $sm={{ f: 1, dsp: isHomePage ? 'flex' : 'none' }}
@@ -42,16 +70,25 @@ export const TwoColumnLayout = ({
           transition: '200ms ease width',
         }}
         $gtSm={{
-          w: 300,
+          w: sidebarWidth,
         }}
         $gtLg={{
-          w: 400,
+          w: sidebarWidthLg,
         }}
       >
         {isLoading ? sidebarSkeleton : sidebar}
       </YStack>
-      <YStack my="$10" f={1} ai="center" $sm={{ dsp: isHomePage ? 'none' : 'block' }}>
-        <YStack w="100%">{isLoading ? contentSkeleton : children}</YStack>
+
+      {/* Main Content */}
+      <YStack
+        f={1}
+        p={contentPadding}
+        ai={centerContent ? 'center' : 'flex-start'}
+        $sm={{ dsp: isHomePage ? 'none' : 'flex' }}
+      >
+        <YStack w="100%" maw={centerContent ? 800 : undefined}>
+          {isLoading ? contentSkeleton : children}
+        </YStack>
       </YStack>
     </XStack>
   )

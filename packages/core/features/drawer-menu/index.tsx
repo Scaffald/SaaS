@@ -54,7 +54,7 @@ export type DrawerSectionConfig = {
 export const drawerSections: DrawerSectionConfig[] = [
   {
     key: 'main',
-    title: 'Main',
+    title: '',
     items: [
       {
         key: 'home',
