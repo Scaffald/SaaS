@@ -8,9 +8,8 @@ with industry_rows(slug, name, description) as (
   values
     ('construction', 'Construction', 'Residential and commercial building trades'),
     ('manufacturing', 'Manufacturing', 'Industrial fabrication and assembly'),
-    ('logistics', 'Logistics', 'Transportation, warehousing, and supply chain'),
-    ('energy', 'Energy', 'Utilities, renewables, and field services'),
-    ('maintenance', 'Maintenance', 'Facility and equipment maintenance')
+    ('transportation', 'Transportation', 'Transportation, warehousing, and supply chain'),
+    ('energy', 'Energy', 'Utilities, renewables, and field services')
 ),
 upserted_industries as (
   insert into public.industries (slug, name, description, updated_at)
