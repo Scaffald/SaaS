@@ -81,12 +81,12 @@ export const drawerSections: DrawerSectionConfig[] = [
   },
   {
     key: 'organizations',
-    title: 'Organizations',
+    title: '',
     items: [
       {
-        key: 'create-organization',
-        title: 'Create Organization',
-        href: '/organizations/new',
+        key: 'organizations',
+        title: 'Organizations',
+        href: '/organizations',
         icon: Building2,
         theme: 'orange',
       },

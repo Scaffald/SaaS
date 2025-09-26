@@ -1,6 +1,6 @@
+import { ProfileWorkSkillsScreen } from '@app/core/features/profile/work-skills-screen'
 import { Stack } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { YStack, H2, Paragraph } from '@app/ui'
 
 export default function Screen() {
   return (
@@ -11,10 +11,7 @@ export default function Screen() {
           headerShown: true,
         }}
       />
-      <YStack f={1} p="$4" gap="$4">
-        <H2>Work & Skills</H2>
-        <Paragraph>Work & skills form will go here.</Paragraph>
-      </YStack>
+      <ProfileWorkSkillsScreen />
     </SafeAreaView>
   )
 }
