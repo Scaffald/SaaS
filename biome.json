@@ -11,7 +11,8 @@
       "**/.tamagui/**",
       "**/ios/**",
       "**/android/**",
-      "**/*.test.ts"
+      "**/*.test.ts",
+      "**/*.css"
     ]
   },
   "formatter": {

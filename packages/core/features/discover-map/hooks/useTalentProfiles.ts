@@ -19,7 +19,6 @@ export const useTalentProfiles = () => {
           avatar_url,
           industry_name,
           gamified_score,
-          open_to_work,
           skills_summary
         `)
         .eq('open_to_work', true)
@@ -48,15 +47,6 @@ export const useTalentProfiles = () => {
             label: skill,
             tone: 'success' as const,
           })),
-          ...(profile.open_to_work
-            ? [
-                {
-                  id: 'available',
-                  label: 'Available for work',
-                  tone: 'success' as const,
-                },
-              ]
-            : []),
         ]
 
         return {

@@ -139,7 +139,7 @@ export const TalentMap = ({
       style:
         process.env.NEXT_PUBLIC_MAPBOX_STYLE_URL ??
         process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL ??
-        'mapbox://styles/mapbox/light-v11',
+        'mapbox://styles/mapbox/streets-v12',
       center,
       zoom: radiusMeters ? radiusToZoomLevel(radiusMeters) : 7,
       accessToken: mapboxgl.accessToken,
@@ -151,6 +151,18 @@ export const TalentMap = ({
 
     map.on('load', () => {
       setMapReady(true)
+    })
+
+    // Suppress non-critical Mapbox style warnings
+    map.on('error', (e) => {
+      if (
+        e.error?.message?.includes('featureNamespace') &&
+        e.error?.message?.includes('place-labels')
+      ) {
+        console.warn('Mapbox style warning (non-critical):', e.error.message)
+        return
+      }
+      console.error('Mapbox error:', e.error)
     })
 
     mapRef.current = map

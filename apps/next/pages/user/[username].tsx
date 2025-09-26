@@ -15,9 +15,6 @@ const Page: NextPageWithLayout = () => {
   )
 }
 
-Page.getLayout = (page) => (
-  <HomeLayout headerTitle="Public profile">{page}</HomeLayout>
-)
+Page.getLayout = (page) => <HomeLayout headerTitle="Public profile">{page}</HomeLayout>
 
 export default Page
-

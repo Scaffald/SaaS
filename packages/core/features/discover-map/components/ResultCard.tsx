@@ -1,6 +1,6 @@
 import { memo, forwardRef } from 'react'
-import { Button, Paragraph, SizableText, Text, XStack, YStack } from '@app/ui'
-import { Award, BadgeCheck, Building, Clock3, DollarSign } from '@tamagui/lucide-icons'
+import { Button, Paragraph, SizableText, Text, XStack, YStack, Chip } from '@app/ui'
+import { Award, BadgeCheck, Building, Clock3, DollarSign, Star } from '@tamagui/lucide-icons'
 
 import type { TalentProfile } from '../types'
 
@@ -39,23 +39,14 @@ export const ResultCard = memo(
             {profile.name}
           </SizableText>
           <XStack alignItems="center" gap="$2">
-            <XStack
-              backgroundColor="$blue3"
-              borderRadius="$6"
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              alignItems="center"
-              gap="$1"
-            >
-              <Text fontSize="$2" color="$blue11" fontWeight="700">
-                e {profile.score}
-              </Text>
-              {profile.scoreLabel ? (
-                <Text fontSize="$2" color="$blue11">
-                  {profile.scoreLabel}
-                </Text>
-              ) : null}
-            </XStack>
+            <Chip backgroundColor="$blue3" rounded theme="blue" size="$3">
+              <Chip.Icon color="$blue11">
+                <Star />
+              </Chip.Icon>
+              <Chip.Text color="$blue11" fontWeight="700">
+                {profile.score}
+              </Chip.Text>
+            </Chip>
             {profile.organization === 'Organization' ? (
               <Building size={16} color="$blue11" />
             ) : null}

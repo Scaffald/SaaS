@@ -1,7 +1,17 @@
 import { Fragment } from 'react'
 import { Button, ScrollView, Separator, Text, XStack, YStack, useTheme } from '@app/ui'
-import { Filter, SlidersHorizontal, X as CloseIcon, Compass } from '@tamagui/lucide-icons'
-import { AddressAutocompleteInput } from '@app/ui'
+import {
+  Filter,
+  SlidersHorizontal,
+  X as CloseIcon,
+  Compass,
+  MapPin,
+  Target,
+  Code,
+  Award,
+  Tag,
+} from '@tamagui/lucide-icons'
+import { AddressAutocompleteInput, FilterChip } from '@app/ui'
 
 import type { ActiveFilter } from '../types'
 import type { AddressSuggestion } from '@app/ui/src/utils/mapboxGeocoding'
@@ -38,6 +48,40 @@ export const FilterBar = ({
     // TODO: Update map center to the selected address coordinates
     // This would require passing coordinates back to the parent component
     console.log('Selected address:', suggestion)
+  }
+
+  const getFilterIcon = (category: ActiveFilter['category']) => {
+    switch (category) {
+      case 'location':
+        return <MapPin />
+      case 'radius':
+        return <Target />
+      case 'skill':
+        return <Code />
+      case 'certification':
+        return <Award />
+      case 'other':
+        return <Tag />
+      default:
+        return <Tag />
+    }
+  }
+
+  const getFilterColor = (category: ActiveFilter['category']) => {
+    switch (category) {
+      case 'location':
+        return 'blue'
+      case 'radius':
+        return 'green'
+      case 'skill':
+        return 'purple'
+      case 'certification':
+        return 'orange'
+      case 'other':
+        return 'pink'
+      default:
+        return 'blue'
+    }
   }
 
   return (
@@ -103,16 +147,14 @@ export const FilterBar = ({
           ) : (
             <Fragment>
               {filters.map((filter) => (
-                <Button
+                <FilterChip
                   key={filter.id}
-                  size="$2"
-                  borderRadius="$10"
-                  theme="surface2"
-                  iconAfter={CloseIcon}
-                  onPress={() => onRemoveFilter(filter.id)}
-                >
-                  {filter.label}
-                </Button>
+                  label={filter.label}
+                  icon={getFilterIcon(filter.category)}
+                  color={getFilterColor(filter.category)}
+                  size="$3"
+                  onRemove={() => onRemoveFilter(filter.id)}
+                />
               ))}
               <Separator vertical height="$3" />
               <Button size="$2" theme="gray" onPress={onClearFilters}>

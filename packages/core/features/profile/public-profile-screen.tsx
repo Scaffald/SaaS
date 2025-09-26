@@ -22,7 +22,10 @@ import {
   Users,
 } from '@tamagui/lucide-icons'
 
-import { DashboardCard, SectionHeading } from '@app/core/features/home/components/dashboard/primitives'
+import {
+  DashboardCard,
+  SectionHeading,
+} from '@app/core/features/home/components/dashboard/primitives'
 
 type WorkExperience = {
   company: string
@@ -55,7 +58,12 @@ const profile = {
   ],
   focusAreas: ['Power distribution upgrades', 'Industrial automation', 'Safety-first leadership'],
   skills: {
-    core: ['High-voltage terminations', 'Control panel commissioning', 'Conduit fabrication', 'QA/QC documentation'],
+    core: [
+      'High-voltage terminations',
+      'Control panel commissioning',
+      'Conduit fabrication',
+      'QA/QC documentation',
+    ],
     platforms: ['Allen-Bradley PLC', 'AutoCAD Electrical', 'Bluebeam Revu'],
     leadership: ['Crew scheduling', 'Mentorship programs', 'Client walkdowns'],
   },
@@ -82,14 +90,16 @@ const profile = {
       location: 'Baytown, TX',
       description:
         'Managed electrical scope for $28M power distribution upgrade, coordinating with mechanical and civil leads.',
-      impact: 'Delivered two weeks early with 0 safety incidents and a 15% reduction in rework hours.',
+      impact:
+        'Delivered two weeks early with 0 safety incidents and a 15% reduction in rework hours.',
     },
     {
       name: 'Houston Ship Channel Automation Retrofit',
       location: 'La Porte, TX',
       description:
         'Led night-shift crew reconfiguring control panels and SCADA instrumentation while maintaining live operations.',
-      impact: 'Achieved 98% first-pass inspection rate and kept uptime above 92% throughout cutover.',
+      impact:
+        'Achieved 98% first-pass inspection rate and kept uptime above 92% throughout cutover.',
     },
   ],
   experience: [
@@ -159,14 +169,7 @@ const initialsFromName = (name: string) =>
     .join('')
 
 const InfoChip = ({ label }: { label: string }) => (
-  <YStack
-    px="$3"
-    py="$1"
-    br="$4"
-    backgroundColor="$color3"
-    borderWidth={1}
-    borderColor="$color4"
-  >
+  <YStack px="$3" py="$1" br="$4" backgroundColor="$color3" borderWidth={1} borderColor="$color4">
     <Paragraph size="$2" color="$gray11">
       {label}
     </Paragraph>
@@ -424,12 +427,7 @@ export const PublicProfileScreen = () => {
         </YStack>
       </ScrollView>
 
-      <YStack
-        width={360}
-        gap="$4"
-        flexShrink={0}
-        $md={{ width: '100%' }}
-      >
+      <YStack width={360} gap="$4" flexShrink={0} $md={{ width: '100%' }}>
         <DashboardCard gap="$4">
           <SectionHeading
             title="Similar users"
@@ -477,9 +475,7 @@ export const PublicProfileScreen = () => {
                   </XStack>
                 </YStack>
 
-                {index < similarUsers.length - 1 ? (
-                  <Separator borderColor="$color4" />
-                ) : null}
+                {index < similarUsers.length - 1 ? <Separator borderColor="$color4" /> : null}
               </YStack>
             ))}
           </YStack>
@@ -492,14 +488,10 @@ export const PublicProfileScreen = () => {
             icon={<Phone size={20} color="$blue10" />}
           />
           <Paragraph size="$3">
-            Share scope, schedule, and crew requirements to fast-track introductions. Alicia typically
-            responds within one business day.
+            Share scope, schedule, and crew requirements to fast-track introductions. Alicia
+            typically responds within one business day.
           </Paragraph>
-          <Button
-            size="$3"
-            icon={<Mail size={16} />}
-            iconAfter={<Compass size={16} />}
-          >
+          <Button size="$3" icon={<Mail size={16} />} iconAfter={<Compass size={16} />}>
             Message Alicia
           </Button>
         </DashboardCard>
@@ -507,4 +499,3 @@ export const PublicProfileScreen = () => {
     </XStack>
   )
 }
-

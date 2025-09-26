@@ -1,4 +1,4 @@
-import { ResetPasswordScreen } from '@app/core/features/auth/reset-password-screen'
+import { ResetPasswordScreen } from 'app/features/auth/reset-password-screen'
 import { Stack } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
