@@ -31,9 +31,9 @@ export const HomeLayout = ({ children, fullPage = false, padded = false }: HomeL
   const isDiscoverPage = pathname === '/discover'
 
   return (
-    <XStack f={1} backgroundColor="$color1" minHeight="100vh">
+    <XStack f={1} backgroundColor="$color1" height="100vh">
       {media.gtSm && <StaticDrawer />}
-      <YStack f={1} minWidth={0}>
+      <YStack f={1} minWidth={0} height="100vh">
         {!isDiscoverPage && (
           <XStack
             ai="center"
@@ -44,6 +44,7 @@ export const HomeLayout = ({ children, fullPage = false, padded = false }: HomeL
             backgroundColor="$color1"
             gap="$4"
             jc="space-between"
+            flexShrink={0}
           >
             <XStack ai="center" gap="$3" flexShrink={1} minWidth={0}>
               {!media.gtSm && (
@@ -76,6 +77,7 @@ export const HomeLayout = ({ children, fullPage = false, padded = false }: HomeL
         )}
         <YStack
           f={1}
+          overflow="hidden"
           {...(fullPage && { flex: 1 })}
           {...(padded && {
             maw: 960,
