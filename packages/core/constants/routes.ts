@@ -17,6 +17,11 @@ export const ROUTES = {
   DISCOVER: '/discover',
   SETTINGS: '/settings',
   PROFILE: '/profile',
+  PROFILE_OVERVIEW: '/profile/overview',
+  PROFILE_BASIC_INFO: '/profile/basic-info',
+  PROFILE_WORK_SKILLS: '/profile/work-skills',
+  PROFILE_TRAVEL_COMPLIANCE: '/profile/travel-compliance',
+  PROFILE_CONTACT_AVAILABILITY: '/profile/contact-availability',
   ORGANIZATIONS: '/organizations',
 } as const
 
