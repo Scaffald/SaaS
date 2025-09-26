@@ -1242,32 +1242,32 @@ const CheckboxRow = ({ label, checked, onCheckedChange }: CheckboxRowProps) => {
   )
 }
 
-type ToggleRowProps = {
-  label: string
-  description?: string
-  checked: boolean
-  onCheckedChange: (checked: boolean) => void
-}
+// type ToggleRowProps = {
+//   label: string
+//   description?: string
+//   checked: boolean
+//   onCheckedChange: (checked: boolean) => void
+// }
 
-const ToggleRow = ({ label, description, checked, onCheckedChange }: ToggleRowProps) => {
-  return (
-    <XStack ai="center" jc="space-between" gap="$3" $sm={{ fd: 'column', ai: 'flex-start' }}>
-      <YStack gap={2}>
-        <Paragraph size="$3" fontWeight="600">
-          {label}
-        </Paragraph>
-        {description ? (
-          <Paragraph size="$2" color="$gray11">
-            {description}
-          </Paragraph>
-        ) : null}
-      </YStack>
-      <Switch checked={checked} onCheckedChange={(value) => onCheckedChange(Boolean(value))}>
-        <Switch.Thumb />
-      </Switch>
-    </XStack>
-  )
-}
+// const ToggleRow = ({ label, description, checked, onCheckedChange }: ToggleRowProps) => {
+//   return (
+//     <XStack ai="center" jc="space-between" gap="$3" $sm={{ fd: 'column', ai: 'flex-start' }}>
+//       <YStack gap={2}>
+//         <Paragraph size="$3" fontWeight="600">
+//           {label}
+//         </Paragraph>
+//         {description ? (
+//           <Paragraph size="$2" color="$gray11">
+//             {description}
+//           </Paragraph>
+//         ) : null}
+//       </YStack>
+//       <Switch checked={checked} onCheckedChange={(value) => onCheckedChange(Boolean(value))}>
+//         <Switch.Thumb />
+//       </Switch>
+//     </XStack>
+//   )
+// }
 
 type ChoiceChipsProps = {
   value: string

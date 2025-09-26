@@ -47,11 +47,11 @@ const reactionInputSchema = z.object({
   direction: z.enum(['up', 'down']),
 })
 
-const summaryInputSchema = z.object({
+const _summaryInputSchema = z.object({
   subjectId: z.string().min(1, 'A subject is required to load review insights.'),
 })
 
-const listInputSchema = z.object({
+const _listInputSchema = z.object({
   subjectId: z.string().min(1, 'A subject is required to load reviews.'),
   cursor: z.number().int().nonnegative().nullish(),
   limit: z.number().int().min(1).max(20).default(5),
@@ -69,7 +69,7 @@ type MockReview = {
   }
 }
 
-const mockReviews: MockReview[] = [
+const _mockReviews: MockReview[] = [
   {
     id: 'review-1',
     rating: 5,

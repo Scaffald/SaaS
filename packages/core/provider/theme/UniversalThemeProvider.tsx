@@ -5,4 +5,4 @@ export const UniversalThemeProvider = ({ children }: { children: React.ReactNode
 
 export { useRootTheme, useThemeSetting } from '@tamagui/next-theme'
 
-export const loadThemePromise: Promise<void> = Promise.resolve()
+export const loadThemePromise = new Promise<any>((res) => res({}))

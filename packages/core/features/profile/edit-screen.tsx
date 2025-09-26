@@ -70,7 +70,7 @@ const EditProfileForm = ({
   const supabase = useSupabase()
   const toast = useToastController()
   const queryClient = useQueryClient()
-  const apiUtils = api.useUtils()
+  const _apiUtils = api.useUtils()
   const mutation = useMutation({
     async mutationFn(data: z.infer<typeof ProfileSchema>) {
       await supabase
