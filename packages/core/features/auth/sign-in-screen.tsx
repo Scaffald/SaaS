@@ -1,4 +1,5 @@
 import {
+  Button,
   FormWrapper,
   H2,
   LoadingOverlay,
@@ -13,11 +14,12 @@ import { SchemaForm, formFields } from 'app/utils/SchemaForm'
 import { useSupabase } from 'app/utils/supabase/useSupabase'
 import { useUser } from 'app/utils/useUser'
 import { useEffect } from 'react'
-import { FormProvider, useForm, useWatch } from 'react-hook-form'
+import { FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form'
 import { createParam } from 'solito'
 import { Link } from 'solito/link'
 import { useRouter } from 'solito/router'
 import { z } from 'zod'
+import { ChevronLeft } from '@tamagui/lucide-icons'
 
 import { SocialLogin } from './components/SocialLogin'
 
@@ -25,12 +27,10 @@ const { useParams, useUpdateParams } = createParam<{ email?: string }>()
 
 const SignInSchema = z.object({
   email: formFields.text.email().describe('Email // Enter your email'),
-  password: formFields.text.min(6).describe('Password // Enter your password'),
 })
 
 export const SignInScreen = () => {
   const supabase = useSupabase()
-  const router = useRouter()
   const { params } = useParams()
   const updateParams = useUpdateParams()
   useRedirectAfterSignIn()
@@ -43,49 +43,42 @@ export const SignInScreen = () => {
   }, [params?.email, updateParams])
   const form = useForm<z.infer<typeof SignInSchema>>()
 
-  async function signInWithEmail({ email, password }: z.infer<typeof SignInSchema>) {
-    const { error } = await supabase.auth.signInWithPassword({
+  async function sendMagicLink({ email }: z.infer<typeof SignInSchema>) {
+    const { error } = await supabase.auth.signInWithOtp({
       email,
-      password,
+      options: {
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_URL}`,
+        shouldCreateUser: false,
+      },
     })
 
     if (error) {
       const errorMessage = error?.message.toLowerCase()
       if (errorMessage.includes('email')) {
         form.setError('email', { type: 'custom', message: errorMessage })
-      } else if (errorMessage.includes('password')) {
-        form.setError('password', { type: 'custom', message: errorMessage })
-      } else {
-        form.setError('password', { type: 'custom', message: errorMessage })
       }
-    } else {
-      router.replace('/')
+      throw error
     }
   }
 
   return (
-    <FormWrapper>
-      <FormProvider {...form}>
+    <FormProvider {...form}>
+      {form.formState.isSubmitSuccessful ? (
+        <CheckYourEmail />
+      ) : (
         <SchemaForm
           form={form}
           schema={SignInSchema}
           defaultValues={{
             email: params?.email || '',
-            password: '',
           }}
-          onSubmit={signInWithEmail}
-          props={{
-            password: {
-              afterElement: <ForgotPasswordLink />,
-              secureTextEntry: true,
-            },
-          }}
+          onSubmit={sendMagicLink}
           renderAfter={({ submit }) => {
             return (
               <>
                 <Theme inverse>
                   <SubmitButton onPress={() => submit()} br="$10">
-                    Sign In
+                    Send magic link
                   </SubmitButton>
                 </Theme>
                 <SignUpLink />
@@ -97,8 +90,10 @@ export const SignInScreen = () => {
           {(fields) => (
             <>
               <YStack gap="$3" mb="$4">
-                <H2 $sm={{ size: '$8' }}>Welcome Back</H2>
-                <Paragraph theme="alt1">Sign in to your account</Paragraph>
+                <H2 $sm={{ size: '$8' }}>Welcome back</H2>
+                <Paragraph theme="alt1">
+                  Enter your email and we&apos;ll send a one-time sign-in link.
+                </Paragraph>
               </YStack>
               {Object.values(fields)}
               {!isWeb && (
@@ -109,10 +104,10 @@ export const SignInScreen = () => {
             </>
           )}
         </SchemaForm>
-        {/* this is displayed when the session is being updated - usually when the user is redirected back from an auth provider */}
-        {isLoadingSession && <LoadingOverlay />}
-      </FormProvider>
-    </FormWrapper>
+      )}
+      {/* this is displayed when the session is being updated - usually when the user is redirected back from an auth provider */}
+      {isLoadingSession && <LoadingOverlay />}
+    </FormProvider>
   )
 }
 
@@ -127,15 +122,31 @@ const SignUpLink = () => {
   )
 }
 
-const ForgotPasswordLink = () => {
+const CheckYourEmail = () => {
   const email = useWatch<z.infer<typeof SignInSchema>>({ name: 'email' })
+  const { reset } = useFormContext<z.infer<typeof SignInSchema>>()
 
   return (
-    <Link href={`/reset-password${email ? `?${new URLSearchParams({ email })}` : ''}`}>
-      <Paragraph mt="$1" theme="alt2" textDecorationLine="underline">
-        Forgot your password?
-      </Paragraph>
-    </Link>
+    <FormWrapper>
+      <FormWrapper.Body>
+        <YStack gap="$3">
+          <H2>Check your email</H2>
+          <Paragraph theme="alt1">
+            We&apos;ve sent a magic link to {email}. Open it to sign back in.
+          </Paragraph>
+        </YStack>
+      </FormWrapper.Body>
+      <FormWrapper.Footer>
+        <Button
+          themeInverse
+          icon={ChevronLeft}
+          br="$10"
+          onPress={() => reset({ email })}
+        >
+          Back
+        </Button>
+      </FormWrapper.Footer>
+    </FormWrapper>
   )
 }
 
