@@ -1,5 +1,5 @@
-import { initiateAppleSignIn } from 'app/utils/auth/initiateAppleSignIn'
-import { useSupabase } from 'app/utils/supabase/useSupabase'
+import { initiateAppleSignIn } from '@app/core/utils/auth/initiateAppleSignIn'
+import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import * as AppleAuthentication from 'expo-apple-authentication'
 import { Platform } from 'react-native'
 import { useRouter } from 'solito/router'

@@ -14,9 +14,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import { useUser } from 'app/utils/useUser'
-import { useSupabase } from 'app/utils/supabase/useSupabase'
-import { usePathname } from 'app/utils/usePathname'
+import { useUser } from '@app/core/utils/useUser'
+import { useSupabase } from '@app/core/utils/supabase/useSupabase'
+import { usePathname } from '@app/core/utils/usePathname'
 import { ROUTES } from '@app/core/constants/routes'
 
 import {

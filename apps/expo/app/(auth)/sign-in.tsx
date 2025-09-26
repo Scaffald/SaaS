@@ -1,4 +1,4 @@
-import { LoginScreen } from 'app/features/auth/login-screen'
+import { LoginScreen } from '@app/core/features/auth/login-screen'
 import { Stack } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 

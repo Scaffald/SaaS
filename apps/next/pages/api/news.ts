@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import { NEWS_SOURCE_LOOKUP } from 'app/features/home/components/dashboard/right-rail/news-sources'
+import { NEWS_SOURCE_LOOKUP } from '@app/core/features/home/components/dashboard/right-rail/news-sources'
 
 const CACHE_TTL_SECONDS = 300 // 5 minutes
 const STALE_WHILE_REVALIDATE_SECONDS = 600 // 10 minutes

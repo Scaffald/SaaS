@@ -1,4 +1,4 @@
-import { OnboardingFlowScreen } from 'app/features/onboarding'
+import { OnboardingFlowScreen } from '@app/core/features/onboarding'
 import Head from 'next/head'
 import type { NextPageWithLayout } from './_app'
 
