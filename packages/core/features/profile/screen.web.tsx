@@ -1,10 +1,32 @@
-import { ScrollView, getTokens } from '@app/ui'
+import { ScrollView, getTokens, useMedia } from '@app/ui'
 
+import { EditProfileScreen } from './edit-screen'
 import { ProfileLayout } from './profile-layout'
 
 export function ProfileScreen() {
   const tokens = getTokens()
+  const media = useMedia()
   const verticalPadding = tokens.space['$6'].val
+
+  if (media.gtSm) {
+    return (
+      <ScrollView
+        flex={1}
+        contentContainerStyle={{
+          flexGrow: 1,
+          alignItems: 'center',
+          paddingTop: verticalPadding,
+          paddingBottom: verticalPadding,
+          paddingLeft: 0,
+          paddingRight: 0,
+        }}
+      >
+        <ProfileLayout>
+          <EditProfileScreen onSuccess={() => {}} />
+        </ProfileLayout>
+      </ScrollView>
+    )
+  }
 
   return (
     <ScrollView
