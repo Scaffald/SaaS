@@ -110,7 +110,7 @@ const AdditionalOnboardingSchema = z.object({
   hourlyRate: currencyString,
 })
 
-export const OnboardingSchema = BasicInformationSchema.merge(AdditionalOnboardingSchema)
+export const OnboardingSchema = BasicInformationSchema.and(AdditionalOnboardingSchema)
 
 export type OnboardingFormValues = z.infer<typeof OnboardingSchema>
 export const BASIC_INFORMATION_KEYS = [
