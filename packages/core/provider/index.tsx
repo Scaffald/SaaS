@@ -3,6 +3,7 @@ import { Session } from '@supabase/supabase-js'
 import React from 'react'
 
 import { AuthProvider } from './auth'
+import { RequiredProfileDialog } from '@app/core/features/onboarding/components/RequiredProfileDialog'
 import { CookieConsentProvider } from './cookie-consent'
 import { QueryClientProvider } from './react-query'
 import { SafeAreaProvider } from './safe-area'
@@ -23,7 +24,10 @@ export function Provider({
     // Note: DatePickerProvider Conflicted with Popover so this is just a temporary solution
     <DatePickerProvider config={{ selectedDates: [], onDatesChange: () => {} }}>
       <AuthProvider initialSession={initialSession}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <RequiredProfileDialog />
+          {children}
+        </Providers>
       </AuthProvider>
     </DatePickerProvider>
   )
