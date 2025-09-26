@@ -11,6 +11,7 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { SchemaForm, formFields } from '@app/core/utils/SchemaForm'
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
+import { useCallback } from 'react'
 import { useUser } from '@app/core/utils/useUser'
 import { createParam } from 'solito'
 import { SolitoImage } from 'solito/image'
@@ -21,13 +22,34 @@ import { api } from '../../utils/api'
 import { UploadAvatar } from '../settings/components/upload-avatar'
 
 const { useParams } = createParam<{ edit_name?: '1'; edit_about?: '1' }>()
-export const EditProfileScreen = () => {
+
+type EditProfileScreenProps = {
+  onSuccess?: () => void
+}
+
+export const EditProfileScreen = ({ onSuccess }: EditProfileScreenProps = {}) => {
   const { profile, user } = useUser()
+  const router = useRouter()
+
+  const handleSuccess = useCallback(() => {
+    if (onSuccess) {
+      onSuccess()
+      return
+    }
+
+    router.back()
+  }, [onSuccess, router])
 
   if (!profile || !user?.id) {
     return <FullscreenSpinner />
   }
-  return <EditProfileForm userId={user.id} initial={{ name: profile.name, about: profile.about }} />
+  return (
+    <EditProfileForm
+      userId={user.id}
+      initial={{ name: profile.name, about: profile.about }}
+      onSubmitSuccess={handleSuccess}
+    />
+  )
 }
 
 const ProfileSchema = z.object({
@@ -38,15 +60,16 @@ const ProfileSchema = z.object({
 const EditProfileForm = ({
   initial,
   userId,
+  onSubmitSuccess,
 }: {
   initial: { name: string | null; about: string | null }
   userId: string
+  onSubmitSuccess: () => void
 }) => {
   const { params } = useParams()
   const supabase = useSupabase()
   const toast = useToastController()
   const queryClient = useQueryClient()
-  const router = useRouter()
   const apiUtils = api.useUtils()
   const mutation = useMutation({
     async mutationFn(data: z.infer<typeof ProfileSchema>) {
@@ -60,7 +83,7 @@ const EditProfileForm = ({
       toast.show('Successfully updated!')
       await queryClient.invalidateQueries({ queryKey: ['profile', userId] })
       await apiUtils.greeting.invalidate()
-      router.back()
+      onSubmitSuccess()
     },
   })
 
