@@ -1,7 +1,7 @@
 -- =========================================================
--- 006_affiliates.sql — polymorphic affiliate catalog
--- Introduces a single table for affiliate programs that can be
--- filtered by industry and typed via enum for future expansion.
+-- 005_create_affiliates_table.sql
+-- Creates polymorphic affiliate catalog for education programs
+-- Supports industry-specific affiliate programs with proper typing
 -- =========================================================
 
 begin;

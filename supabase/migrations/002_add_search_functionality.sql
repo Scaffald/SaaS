@@ -1,6 +1,6 @@
 -- =========================================================
--- 003_search_views_rpcs.sql
--- Full-text search, PostGIS helpers, RPCs, seed skills
+-- 002_add_search_functionality.sql
+-- Full-text search, PostGIS helpers, RPCs, and search views
 -- Depends on: users, user_private, industries
 -- =========================================================
 

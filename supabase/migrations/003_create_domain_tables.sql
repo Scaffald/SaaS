@@ -1,7 +1,7 @@
 -- =========================================================
--- 004_missing_domain.sql
--- Creates remaining domain tables using `public.users` as the user principal.
--- Idempotent (CREATE IF NOT EXISTS) and self-contained RLS.
+-- 003_create_domain_tables.sql
+-- Creates remaining domain tables: organizations, teams, skills, jobs, etc.
+-- Uses public.users as the user principal with proper RLS
 -- =========================================================
 
 begin;
