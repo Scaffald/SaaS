@@ -173,7 +173,7 @@ const computeScore = (completed: OnboardingStepId[], hasAvatar: boolean) => {
   return Math.min(100, base + avatarBonus)
 }
 
-const sanitizeCertifications = (value: string) =>
+export const sanitizeCertifications = (value: string) =>
   value
     .split(/[\n,]/)
     .map((entry) => entry.trim())
