@@ -1,7 +1,6 @@
 {
   "name": "storybook-rn-app",
   "version": "1.0.0",
-  "private": true,
   "main": "index.js",
   "scripts": {
     "generate": "sb-rn-get-stories",

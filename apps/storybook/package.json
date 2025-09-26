@@ -2,7 +2,6 @@
   "name": "storybook-app",
   "version": "1.0.0",
   "main": "index.js",
-  "private": true,
   "scripts": {
     "build-storybook": "storybook build -s public -o public-storybook",
     "dev": "storybook dev -p 6006",

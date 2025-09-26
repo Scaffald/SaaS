@@ -3,7 +3,6 @@
   "name": "@app/api",
   "main": "src/index.ts",
   "types": "./src",
-  "private": true,
   "scripts": {
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
@@ -14,17 +13,17 @@
   "devDependencies": {
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/auth-helpers-react": "^0.5.0",
-    "@supabase/supabase-js": "^2.48.1",
+    "@supabase/supabase-js": "^2.58.0",
     "@types/jsonwebtoken": "^9.0.5",
     "typescript": "^5.9.2"
   },
   "dependencies": {
     "@app/supabase": "*",
     "@tanstack/react-query": "^5.90.1",
-    "@trpc/next": "^11.4.3",
-    "@trpc/server": "^11.5.1",
+    "@trpc/next": "^11.6.0",
+    "@trpc/server": "^11.6.0",
     "jose": "^5.2.1",
-    "next": "^15.5.3",
+    "next": "^15.5.4",
     "superjson": "^1.13.1",
     "zod": "^3.22.2"
   }
