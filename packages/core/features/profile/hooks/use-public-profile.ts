@@ -37,6 +37,12 @@ export type PublicProfileReviewSummary = {
   positivePercent: number
   negativePercent: number
   lastUpdated: string
+  strengths?: string[]
+  improvements?: string[]
+  viewerDraft?: {
+    reviewId: string
+    href?: string
+  } | null
 }
 
 export type PublicProfile = {
@@ -158,6 +164,13 @@ const fallbackProfile: PublicProfile = {
     positivePercent: 92,
     negativePercent: 8,
     lastUpdated: 'Updated May 2024',
+    strengths: [
+      'Raises safety issues early',
+      'Keeps crews aligned on shift plans',
+      'Invests in mentoring apprentices',
+    ],
+    improvements: ['Could share material requisitions sooner when schedules change'],
+    viewerDraft: null,
   },
 }
 
