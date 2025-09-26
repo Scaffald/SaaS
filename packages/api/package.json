@@ -5,6 +5,8 @@
   "types": "./src",
   "private": true,
   "scripts": {
+    "format": "biome format .",
+    "format:fix": "biome format --write .",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
     "check:type": "tsc --outDir /tmp",
@@ -12,6 +14,7 @@
     "check-circular-deps": "../../scripts/check-circular-deps.sh ./src/index.ts"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/auth-helpers-react": "^0.5.0",
     "@supabase/supabase-js": "^2.48.1",
