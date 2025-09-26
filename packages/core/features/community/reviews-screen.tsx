@@ -24,8 +24,8 @@ export const CommunityReviewsScreen = () => {
             We&apos;re polishing this experience
           </Text>
           <Paragraph size="$3" color="$gray11">
-            Peer reviews will let you gather trusted testimonials from the teams you work with. Here&apos;s
-            a preview of what&apos;s on the way:
+            Peer reviews will let you gather trusted testimonials from the teams you work with.
+            Here&apos;s a preview of what&apos;s on the way:
           </Paragraph>
           <YStack gap="$2">
             <XStack gap="$3" alignItems="center">
@@ -48,8 +48,8 @@ export const CommunityReviewsScreen = () => {
             </XStack>
           </YStack>
           <Paragraph size="$3" color="$gray11">
-            While we finish building the workflow, start exploring the community to find people you want
-            to recognise—or who can recognise you.
+            While we finish building the workflow, start exploring the community to find people you
+            want to recognise—or who can recognise you.
           </Paragraph>
           <Button size="$3" {...communityLink} alignSelf="flex-start">
             Browse the community

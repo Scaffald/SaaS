@@ -127,7 +127,7 @@ const formatHeader = (value: string) => {
 
 const resolveColumnId = <TData extends Record<string, any>>(
   column: DataTableColumn<TData>,
-  index: number,
+  index: number
 ) => {
   if (column.id) return column.id
   if (column.key) return String(column.key)
@@ -135,7 +135,7 @@ const resolveColumnId = <TData extends Record<string, any>>(
 }
 
 const resolveAccessor = <TData extends Record<string, any>>(
-  column: DataTableColumn<TData>,
+  column: DataTableColumn<TData>
 ): ((row: TData) => unknown) => {
   if (column.accessor) return column.accessor
   if (column.key) {
@@ -336,7 +336,8 @@ export const DataTable = <TData extends Record<string, any>>({
     return columns.map((column, index) => {
       const id = resolveColumnId(column, index)
       const accessor = resolveAccessor(column)
-      const enableSorting = column.sortable !== undefined ? column.sortable : column.key !== undefined
+      const enableSorting =
+        column.sortable !== undefined ? column.sortable : column.key !== undefined
 
       return {
         ...column,
@@ -349,7 +350,7 @@ export const DataTable = <TData extends Record<string, any>>({
 
   const [searchValue, setSearchValue] = useState('')
   const [sorting, setSorting] = useState<SortingState>(
-    defaultSort ? [{ id: defaultSort.key, desc: defaultSort.desc ?? false }] : [],
+    defaultSort ? [{ id: defaultSort.key, desc: defaultSort.desc ?? false }] : []
   )
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize })
 
@@ -380,7 +381,11 @@ export const DataTable = <TData extends Record<string, any>>({
         const raw = column.filterValue ? column.filterValue(row) : column.accessor(row)
 
         if (Array.isArray(raw)) {
-          return raw.some((value) => String(value ?? '').toLowerCase().includes(query))
+          return raw.some((value) =>
+            String(value ?? '')
+              .toLowerCase()
+              .includes(query)
+          )
         }
 
         if (raw === null || raw === undefined) {
@@ -418,7 +423,7 @@ export const DataTable = <TData extends Record<string, any>>({
           wrapWithText: column.renderCell === undefined,
         } satisfies DataTableColumnMeta,
       })),
-    [normalizedColumns],
+    [normalizedColumns]
   )
 
   const table = useReactTable({
@@ -513,13 +518,7 @@ export const DataTable = <TData extends Record<string, any>>({
       )}
     >
       <ScrollView horizontal maxWidth="100%">
-        <YStack
-          flex={1}
-          gap="$5"
-          paddingHorizontal="$4"
-          paddingVertical="$6"
-          minWidth={tableWidth}
-        >
+        <YStack flex={1} gap="$5" paddingHorizontal="$4" paddingVertical="$6" minWidth={tableWidth}>
           {toolbarContent}
           <Table
             alignCells={{ x: 'center', y: 'center' }}
@@ -558,7 +557,9 @@ export const DataTable = <TData extends Record<string, any>>({
                     borderBottomRightRadius="$0"
                   >
                     {headerGroup.headers.map((header, index) => {
-                      const columnMeta = header.column.columnDef.meta as DataTableColumnMeta | undefined
+                      const columnMeta = header.column.columnDef.meta as
+                        | DataTableColumnMeta
+                        | undefined
                       const justifyContent = columnMeta?.align
                         ? alignToJustify[columnMeta.align]
                         : 'flex-start'
@@ -624,7 +625,9 @@ export const DataTable = <TData extends Record<string, any>>({
                     key={`${row.id}-${rowIndex}`}
                   >
                     {row.getVisibleCells().map((cell, cellIndex) => {
-                      const columnMeta = cell.column.columnDef.meta as DataTableColumnMeta | undefined
+                      const columnMeta = cell.column.columnDef.meta as
+                        | DataTableColumnMeta
+                        | undefined
                       const justifyContent = columnMeta?.align
                         ? alignToJustify[columnMeta.align]
                         : 'flex-start'
@@ -651,7 +654,7 @@ export const DataTable = <TData extends Record<string, any>>({
                               {cellContent as string | number}
                             </Text>
                           ) : (
-                            cellContent as ReactNode
+                            (cellContent as ReactNode)
                           )}
                         </Table.Cell>
                       )
@@ -677,4 +680,3 @@ export const DataTable = <TData extends Record<string, any>>({
 }
 
 DataTable.fileName = 'DataTable'
-

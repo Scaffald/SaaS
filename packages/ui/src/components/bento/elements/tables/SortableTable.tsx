@@ -50,9 +50,7 @@ const columns: DataTableColumn<Person>[] = [
     header: 'Status',
     align: 'center',
     width: '$10',
-    renderCell: (value) => (
-      <Text textTransform="capitalize">{String(value ?? '')}</Text>
-    ),
+    renderCell: (value) => <Text textTransform="capitalize">{String(value ?? '')}</Text>,
   },
   {
     key: 'progress',
@@ -95,4 +93,3 @@ export function SortableTable() {
 }
 
 SortableTable.fileName = 'SortableTable'
-
