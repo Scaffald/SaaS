@@ -662,7 +662,7 @@ export const DataTable = <TData extends Record<string, any>>({
             </Table.Body>
           </Table>
           {tableRows.length === 0 ? emptyState : null}
-          {!sm ? (
+          {isWeb || !sm ? (
             <DataTablePagination
               table={table}
               screenWidth={screenWidth}
