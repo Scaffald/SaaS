@@ -1,5 +1,5 @@
 import { Button } from '@app/ui'
-import { useSupabase } from '@app/core/utils/supabase/useSupabase'
+import { useSupabase } from 'app/utils/supabase/useSupabase'
 import { useRouter } from 'solito/router'
 
 import { IconGoogle } from './IconGoogle'

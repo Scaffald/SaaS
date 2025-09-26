@@ -9,9 +9,9 @@ import {
   YStack,
   isWeb,
 } from '@app/ui'
-import { SchemaForm, formFields } from '@app/core/utils/SchemaForm'
-import { useSupabase } from '@app/core/utils/supabase/useSupabase'
-import { useUser } from '@app/core/utils/useUser'
+import { SchemaForm, formFields } from 'app/utils/SchemaForm'
+import { useSupabase } from 'app/utils/supabase/useSupabase'
+import { useUser } from 'app/utils/useUser'
 import { useEffect } from 'react'
 import { FormProvider, useForm, useWatch } from 'react-hook-form'
 import { createParam } from 'solito'

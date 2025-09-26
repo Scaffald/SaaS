@@ -14,7 +14,7 @@ import {
   XStack,
   YStack,
   useToastController,
-} from '@my/ui'
+} from '@app/ui'
 import {
   Check,
   CheckCircle2,
@@ -30,7 +30,7 @@ import { useUser } from 'app/utils/useUser'
 import { useRouter } from 'solito/router'
 import { Controller, useForm } from 'react-hook-form'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Tables } from '@my/supabase/types'
+import { Tables } from '@app/supabase/types'
 import { z } from 'zod'
 
 import {

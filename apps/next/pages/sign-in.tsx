@@ -1,8 +1,8 @@
-import { AuthLayout } from '@app/core/features/auth/layout.web'
-import { SignInScreen } from '@app/core/features/auth/sign-in-screen'
+import { AuthLayout } from 'app/features/auth/layout.web'
+import { SignInScreen } from 'app/features/auth/sign-in-screen'
 import Head from 'next/head'
 
-import type { NextPageWithLayout } from './_app'
+import { NextPageWithLayout } from './_app'
 
 const Page: NextPageWithLayout = () => (
   <>
