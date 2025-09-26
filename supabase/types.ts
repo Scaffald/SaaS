@@ -425,6 +425,8 @@ export type Database = {
           location: string | null
           open_to_travel: boolean | null
           phone: string | null
+          first_name: string | null
+          last_name: string | null
           phone_os: string | null
           drivers_license_class: string | null
           travel_mileage: number | null
@@ -447,6 +449,8 @@ export type Database = {
           location?: string | null
           open_to_travel?: boolean | null
           phone?: string | null
+          first_name?: string | null
+          last_name?: string | null
           phone_os?: string | null
           drivers_license_class?: string | null
           travel_mileage?: number | null
@@ -469,6 +473,8 @@ export type Database = {
           location?: string | null
           open_to_travel?: boolean | null
           phone?: string | null
+          first_name?: string | null
+          last_name?: string | null
           phone_os?: string | null
           drivers_license_class?: string | null
           travel_mileage?: number | null
@@ -872,6 +878,8 @@ export type Database = {
           id: string
           email: string | null
           phone: string | null
+          first_name: string | null
+          last_name: string | null
           address: Json | null
           geo: unknown
           contact_prefs: string[] | null

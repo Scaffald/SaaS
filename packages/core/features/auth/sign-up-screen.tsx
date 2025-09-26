@@ -12,18 +12,27 @@ import {
 import { ChevronLeft } from '@tamagui/lucide-icons'
 import { SchemaForm, formFields } from '@app/core/utils/SchemaForm'
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form'
 import { createParam } from 'solito'
 import { Link } from 'solito/link'
 import { z } from 'zod'
+import { useQuery } from '@tanstack/react-query'
+import type { Database } from '@app/supabase/types'
 
 import { SocialLogin } from './components/SocialLogin'
 
 const { useParams, useUpdateParams } = createParam<{ email?: string }>()
 
 const SignUpSchema = z.object({
+  firstName: formFields.text.describe('First Name // Jane').min(1, 'First name is required'),
+  lastName: formFields.text.describe('Last Name // Doe').min(1, 'Last name is required'),
   email: formFields.text.email().describe('Email // your@email.acme'),
+  phone: formFields.text.describe('Phone // +1 (555) 555-5555').min(1, 'Phone number is required'),
+  industryId: formFields
+    .select
+    .describe('Industry')
+    .min(1, 'Industry is required'),
   password: formFields.text.min(6).describe('Password // Choose a password'),
 })
 
@@ -40,7 +49,39 @@ export const SignUpScreen = () => {
 
   const form = useForm<z.infer<typeof SignUpSchema>>()
 
-  async function signUpWithEmail({ email, password }: z.infer<typeof SignUpSchema>) {
+  const industriesQuery = useQuery<Database['public']['Tables']['industries']['Row'][]>({
+    queryKey: ['industries'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('industries')
+        .select('id, name')
+        .order('name', { ascending: true })
+
+      if (error) {
+        throw new Error(error.message)
+      }
+
+      return data ?? []
+    },
+  })
+
+  const industryOptions = useMemo(
+    () =>
+      industriesQuery.data?.map((industry) => ({
+        value: industry.id,
+        name: industry.name,
+      })) ?? [],
+    [industriesQuery.data]
+  )
+
+  async function signUpWithEmail({
+    firstName,
+    lastName,
+    email,
+    phone,
+    industryId,
+    password,
+  }: z.infer<typeof SignUpSchema>) {
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -48,8 +89,11 @@ export const SignUpScreen = () => {
         emailRedirectTo: `${process.env.NEXT_PUBLIC_URL}`,
         // To take user's name other info
         data: {
-          // first_name: firstName, // coming from state
-          // last_name: lastName,
+          name: `${firstName} ${lastName}`.trim(),
+          first_name: firstName,
+          last_name: lastName,
+          phone,
+          industry_id: industryId,
         },
       },
     })
@@ -75,12 +119,24 @@ export const SignUpScreen = () => {
           form={form}
           schema={SignUpSchema}
           defaultValues={{
+            firstName: '',
+            lastName: '',
             email: params?.email || '',
+            phone: '',
+            industryId: '',
             password: '',
           }}
           props={{
             password: {
               secureTextEntry: true,
+            },
+            industryId: {
+              options: industryOptions,
+              placeholder: industriesQuery.isPending
+                ? 'Loading industries…'
+                : industryOptions.length > 0
+                  ? 'Select an industry'
+                  : 'No industries available',
             },
           }}
           onSubmit={signUpWithEmail}
