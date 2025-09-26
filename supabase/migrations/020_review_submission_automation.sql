@@ -24,6 +24,33 @@ create index if not exists review_skill_proficiency_logs_review_idx
 create index if not exists review_skill_proficiency_logs_subject_skill_idx
   on public.review_skill_proficiency_logs(subject_user_id, skill_id);
 
+alter table public.review_skill_proficiency_logs enable row level security;
+
+create policy "rspl_read"
+  on public.review_skill_proficiency_logs for select
+  to anon, authenticated
+  using (
+    exists (
+      select 1 from public.reviews r
+      where r.id = review_id
+        and (
+          r.status = 'released'
+          or r.author_user_id = auth.uid()
+        )
+    )
+  );
+
+create policy "rspl_insert"
+  on public.review_skill_proficiency_logs for insert
+  to authenticated
+  with check (
+    exists (
+      select 1 from public.reviews r
+      where r.id = review_id
+        and r.author_user_id = auth.uid()
+    )
+  );
+
 -- Columns to coordinate reciprocal releases and automatic reveal windows
 alter table public.reviews
   add column if not exists paired_review_id uuid references public.reviews(id) on delete set null,
