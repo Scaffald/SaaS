@@ -72,6 +72,13 @@ export const LoginScreen = () => {
             email: params?.email || '',
           }}
           onSubmit={sendMagicLink}
+          renderAfter={({ submit }) => (
+            <Theme inverse>
+              <SubmitButton onPress={() => submit()} br="$10" mt="$2" mb="$4">
+                Send magic link
+              </SubmitButton>
+            </Theme>
+          )}
         >
           {(fields) => (
             <>
@@ -82,12 +89,6 @@ export const LoginScreen = () => {
                 </Paragraph>
               </YStack>
               {Object.values(fields)}
-
-              <Theme inverse>
-                <SubmitButton onPress={() => submit()} br="$10" mt="$2" mb="$4">
-                  Send magic link
-                </SubmitButton>
-              </Theme>
 
               <SocialLogin />
             </>
