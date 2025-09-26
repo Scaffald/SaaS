@@ -105,6 +105,7 @@ __metadata:
     solito: "npm:4.3.0"
     superjson: "npm:^1.13.1"
     swr: "npm:^2.0.0"
+    tamagui: "npm:^1.133.1"
     typescript: "npm:^5.9.2"
     unified: "npm:^11.0.0"
     zod: "npm:^3.22.2"

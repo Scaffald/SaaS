@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useSupabase } from 'app/utils/supabase/useSupabase'
+import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import type { Tables } from '@app/supabase/types'
 
 export type OnboardingProfile = {
