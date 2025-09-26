@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import mapboxgl, { type GeoJSONSource } from 'mapbox-gl'
 import type { FeatureCollection } from 'geojson'
 import { View } from '@app/ui'
+import { MapPin, User, Building } from '@tamagui/lucide-icons'
 
 import type { TalentMapProps } from './types'
 import { createRadiusFeature, radiusToZoomLevel } from './geometry'
@@ -25,7 +26,7 @@ const ensureAccessToken = () => {
   }
 }
 
-const createMarkerElement = () => {
+const createMarkerElement = (organization?: string) => {
   const wrapper = document.createElement('div')
   wrapper.style.display = 'flex'
   wrapper.style.flexDirection = 'column'
@@ -42,22 +43,37 @@ const createMarkerElement = () => {
   wrapper.style.transform = 'translate(-50%, -50%)'
   wrapper.style.boxShadow = '0 8px 20px rgba(37, 99, 235, 0.2)'
 
-  const metric = document.createElement('span')
-  metric.style.fontSize = '13px'
-  metric.style.fontWeight = '600'
-  metric.style.color = '#1d4ed8'
-  metric.dataset.role = 'metric'
-  wrapper.appendChild(metric)
+  // Create SVG icon based on organization type
+  const iconSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  iconSvg.setAttribute('width', '20')
+  iconSvg.setAttribute('height', '20')
+  iconSvg.setAttribute('viewBox', '0 0 24 24')
+  iconSvg.setAttribute('fill', 'none')
+  iconSvg.setAttribute('stroke', '#1d4ed8')
+  iconSvg.setAttribute('stroke-width', '2')
+  iconSvg.setAttribute('stroke-linecap', 'round')
+  iconSvg.setAttribute('stroke-linejoin', 'round')
 
-  const label = document.createElement('span')
-  label.style.fontSize = '11px'
-  label.style.color = '#1e293b'
-  label.style.whiteSpace = 'nowrap'
-  label.style.maxWidth = '90px'
-  label.style.textOverflow = 'ellipsis'
-  label.style.overflow = 'hidden'
-  label.dataset.role = 'label'
-  wrapper.appendChild(label)
+  // Choose icon based on organization type
+  if (organization === 'Organization') {
+    // Building icon for organizations
+    iconSvg.innerHTML = `
+      <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/>
+      <path d="M6 12H4a2 2 0 0 0-2 2v8h20v-8a2 2 0 0 0-2-2h-2"/>
+      <path d="M18 9v3"/>
+      <path d="M13 9v3"/>
+      <path d="M9 9v3"/>
+      <path d="M9 18h6"/>
+    `
+  } else {
+    // User icon for workers
+    iconSvg.innerHTML = `
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+      <circle cx="12" cy="7" r="4"/>
+    `
+  }
+
+  wrapper.appendChild(iconSvg)
 
   return wrapper
 }
@@ -227,7 +243,7 @@ export const TalentMap = ({
       const existing = markersRef.current.get(marker.id)
 
       if (!existing) {
-        const element = createMarkerElement()
+        const element = createMarkerElement(marker.organization)
         element.addEventListener('click', () => handleMarkerInteraction(marker.id))
         const instance = new mapboxgl.Marker({
           element,

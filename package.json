@@ -1,7 +1,11 @@
 {
   "name": "scaffald",
   "private": true,
-  "workspaces": ["apps/*", "packages/*", "supabase"],
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "supabase"
+  ],
   "scripts": {
     "_with-env": "dotenv -e .env -c -- ",
     "ios": "cd apps/expo && yarn ios",
@@ -86,6 +90,8 @@
     "ultra-runner": "^3.10.5"
   },
   "manypkg": {
-    "ignoredRules": ["ROOT_HAS_DEV_DEPENDENCIES"]
+    "ignoredRules": [
+      "ROOT_HAS_DEV_DEPENDENCIES"
+    ]
   }
 }

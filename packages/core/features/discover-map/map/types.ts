@@ -4,6 +4,7 @@ export type TalentMarker = {
   title: string
   subtitle?: string
   metric?: string
+  organization?: string
 }
 
 export type TalentMapProps = {
