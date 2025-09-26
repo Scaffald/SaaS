@@ -317,11 +317,11 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
       borderColor="$color4"
       px="$4"
       py="$4"
-      flex={1}
+      height="100vh"
       justifyContent="space-between"
     >
-      {/* Top Section - User Profile */}
-      <YStack gap="$4" width="100%">
+      {/* Top Section - User Profile - Fixed */}
+      <YStack gap="$4" width="100%" flexShrink={0}>
         <Card
           px="$4"
           py="$3"
@@ -374,8 +374,8 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
         </YStack>
       </ScrollView>
 
-      {/* Bottom Section - Logout */}
-      <YStack gap="$4" width="100%">
+      {/* Bottom Section - Logout - Fixed */}
+      <YStack gap="$4" width="100%" flexShrink={0}>
         <YGroup size="$3" borderRadius="$3">
           <YGroup.Item>
             <DrawerLink
