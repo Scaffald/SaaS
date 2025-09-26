@@ -51,6 +51,13 @@ UI component development guidelines:
 - Make components cross-platform and well-documented
 - Refactor components to be clean and modular
 
+### 8. `code-quality.mdc` (Always Applied)
+Code quality and maintenance guidelines:
+- Always run `yarn format:fix` and `yarn lint:fix` when making changes
+- Aim for zero formatting errors and minimal warnings
+- Optionally run `yarn check:type` on modified packages
+- Maintain consistent code quality across the project
+
 ## Usage
 
 These rules are automatically applied based on file patterns and context. They help ensure:
@@ -61,6 +68,7 @@ These rules are automatically applied based on file patterns and context. They h
 4. **Server management** - Assume servers are running
 5. **Platform-specific guidance** - Tailored rules for different technologies
 6. **UI consistency** - Prefer Tamagui/Bento components and create reusable UI components
+7. **Code quality** - Automated formatting, linting, and TypeScript checking
 
 ## Adding New Rules
 
