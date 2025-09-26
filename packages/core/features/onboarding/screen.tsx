@@ -23,12 +23,13 @@ import {
   SkipForward,
   Sparkles,
 } from '@tamagui/lucide-icons'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSupabase } from 'app/utils/supabase/useSupabase'
 import { useUser } from 'app/utils/useUser'
 import { useRouter } from 'solito/router'
 import { Controller, useForm } from 'react-hook-form'
+import type { UseFormReturn } from 'react-hook-form'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Tables } from '@my/supabase/types'
 import { z } from 'zod'
@@ -44,6 +45,7 @@ import {
   SKILL_CATEGORIES,
   SUMMARY_TASKS,
 } from './data'
+import { useOnboardingProfile, type OnboardingProfile } from './hooks/useOnboardingProfile'
 
 const SIDEBAR_STEPS: Array<{ id: 'sign-up' | OnboardingStepId; label: string }> = [
   { id: 'sign-up', label: 'Sign up' },
@@ -61,8 +63,10 @@ const currencyString = z
   .trim()
   .refine((value) => value === '' || /^\d+(\.\d{1,2})?$/.test(value), 'Enter a valid rate')
 
-const OnboardingSchema = z
+export const BasicInformationSchema = z
   .object({
+    firstName: z.string().trim().min(1, 'First name is required'),
+    lastName: z.string().trim().min(1, 'Last name is required'),
     phone: z
       .string()
       .trim()
@@ -70,7 +74,11 @@ const OnboardingSchema = z
       .optional()
       .refine((value) => !value || /^[0-9+()\-\s]+$/.test(value), 'Enter a valid phone number'),
     about: z.string().trim().max(600).optional(),
-    location: z.string().trim().max(120).optional(),
+    location: z
+      .string()
+      .trim()
+      .min(1, 'Location is required')
+      .max(120, 'Location must be shorter than 120 characters'),
     openToTravel: z.boolean(),
     travelMileage: numericString('Mileage'),
     usResident: z.boolean(),
@@ -79,19 +87,6 @@ const OnboardingSchema = z
       DRIVER_LICENSE_OPTIONS.map((option) => option.value) as [string, ...string[]]
     ),
     veteran: z.boolean(),
-    yearsExperience: z
-      .string()
-      .trim()
-      .min(1, 'Enter your years of experience')
-      .refine((value) => /^[0-9]+$/.test(value), 'Enter a whole number'),
-    jobTitle: z.string().trim().min(1, 'Job title is required'),
-    primarySkills: z.array(z.string()).min(1, 'Select at least one skill'),
-    educationLevel: z.string().trim().min(1, 'Select your education level'),
-    certifications: z.string().trim().optional(),
-    contactMethods: z.array(z.string()).min(1, 'Select at least one contact method'),
-    phoneOs: z.string().trim().min(1, 'Select your phone type'),
-    availability: z.array(z.string()),
-    hourlyRate: currencyString,
   })
   .superRefine((values, ctx) => {
     if (values.openToTravel && values.travelMileage.trim() === '') {
@@ -103,27 +98,71 @@ const OnboardingSchema = z
     }
   })
 
-type FormValues = z.infer<typeof OnboardingSchema>
+const AdditionalOnboardingSchema = z.object({
+  yearsExperience: numericString('Years of experience'),
+  jobTitle: z.string().trim(),
+  primarySkills: z.array(z.string()),
+  educationLevel: z.string().trim(),
+  certifications: z.string().trim().optional(),
+  contactMethods: z.array(z.string()),
+  phoneOs: z.string().trim(),
+  availability: z.array(z.string()),
+  hourlyRate: currencyString,
+})
 
-type OnboardingProfile = {
-  user: Tables<'users'> | null
-  privateProfile: Tables<'user_private'> | null
+export const OnboardingSchema = BasicInformationSchema.merge(AdditionalOnboardingSchema)
+
+export type OnboardingFormValues = z.infer<typeof OnboardingSchema>
+export const BASIC_INFORMATION_KEYS = [
+  'firstName',
+  'lastName',
+  'phone',
+  'about',
+  'location',
+  'openToTravel',
+  'travelMileage',
+  'usResident',
+  'usPassport',
+  'driversLicense',
+  'veteran',
+] as const satisfies readonly (keyof OnboardingFormValues)[]
+
+export type BasicInformationValues = Pick<
+  OnboardingFormValues,
+  (typeof BASIC_INFORMATION_KEYS)[number]
+>
+
+export const basicInformationDefaultValues: BasicInformationValues = {
+  firstName: '',
+  lastName: '',
+  phone: '',
+  about: '',
+  location: '',
+  openToTravel: false,
+  travelMileage: '',
+  usResident: false,
+  usPassport: false,
+  driversLicense: DRIVER_LICENSE_OPTIONS[0]?.value ?? 'none',
+  veteran: false,
+}
+
+export const onboardingDefaultValues: OnboardingFormValues = {
+  ...basicInformationDefaultValues,
+  yearsExperience: '',
+  jobTitle: '',
+  primarySkills: [],
+  educationLevel: '',
+  certifications: '',
+  contactMethods: [],
+  phoneOs: '',
+  availability: [],
+  hourlyRate: '',
 }
 
 type UserProfile = ReturnType<typeof useUser>['profile']
 
-const STEP_FIELDS: Record<Exclude<OnboardingStepId, 'summary'>, (keyof FormValues)[]> = {
-  basic: [
-    'phone',
-    'about',
-    'location',
-    'openToTravel',
-    'travelMileage',
-    'usResident',
-    'usPassport',
-    'driversLicense',
-    'veteran',
-  ],
+const STEP_FIELDS: Record<Exclude<OnboardingStepId, 'summary'>, (keyof OnboardingFormValues)[]> = {
+  basic: [...BASIC_INFORMATION_KEYS],
   roles: ['yearsExperience', 'jobTitle', 'primarySkills'],
   education: [
     'educationLevel',
@@ -136,27 +175,6 @@ const STEP_FIELDS: Record<Exclude<OnboardingStepId, 'summary'>, (keyof FormValue
 }
 
 const stepOrder = PROFILE_STEPS.map((step) => step.id)
-
-const defaultValues: FormValues = {
-  phone: '',
-  about: '',
-  location: '',
-  openToTravel: false,
-  travelMileage: '',
-  usResident: false,
-  usPassport: false,
-  driversLicense: DRIVER_LICENSE_OPTIONS[0]?.value ?? 'none',
-  veteran: false,
-  yearsExperience: '',
-  jobTitle: '',
-  primarySkills: [],
-  educationLevel: '',
-  certifications: '',
-  contactMethods: [],
-  phoneOs: '',
-  availability: [],
-  hourlyRate: '',
-}
 
 const computeScore = (completed: OnboardingStepId[], hasAvatar: boolean) => {
   const base = completed.filter((step) => step !== 'summary').length * 10
@@ -184,12 +202,15 @@ const buildSkillsArray = (skillsSummary: Tables<'users'>['skills_summary']) => {
   return []
 }
 
-const determineInitialCompletion = (values: FormValues): OnboardingStepId[] => {
+export const isBasicInformationComplete = (values: OnboardingFormValues) =>
+  Boolean(values.firstName.trim() && values.lastName.trim() && values.location.trim())
+
+const determineInitialCompletion = (values: OnboardingFormValues): OnboardingStepId[] => {
   const complete: OnboardingStepId[] = []
-  if (values.phone || values.about || values.location || values.usResident || values.usPassport) {
+  if (isBasicInformationComplete(values)) {
     complete.push('basic')
   }
-  if (values.yearsExperience && values.jobTitle && values.primarySkills.length > 0) {
+  if (values.yearsExperience || values.jobTitle.trim() || values.primarySkills.length > 0) {
     complete.push('roles')
   }
   if (
@@ -203,6 +224,124 @@ const determineInitialCompletion = (values: FormValues): OnboardingStepId[] => {
   return complete
 }
 
+export const createOnboardingValuesFromProfile = ({
+  onboardingProfile,
+  profile,
+}: {
+  onboardingProfile: OnboardingProfile | undefined
+  profile: UserProfile
+}): OnboardingFormValues => {
+  if (!onboardingProfile) {
+    return onboardingDefaultValues
+  }
+
+  const skills = buildSkillsArray(onboardingProfile.user?.skills_summary ?? null)
+  const certifications = onboardingProfile.privateProfile?.certifications ?? []
+  const hourlyRate = onboardingProfile.privateProfile?.hourly_rate_cents ?? null
+
+  const displayName = onboardingProfile.user?.display_name ?? profile?.name ?? ''
+  const trimmedDisplayName = displayName?.trim() ?? ''
+  const [displayFirstName, ...displayLastParts] = trimmedDisplayName.split(/\s+/)
+  const fallbackFirstName = onboardingProfile.privateProfile?.first_name?.trim()
+  const fallbackLastName = onboardingProfile.privateProfile?.last_name?.trim()
+
+  return {
+    ...onboardingDefaultValues,
+    firstName: fallbackFirstName || displayFirstName || '',
+    lastName: fallbackLastName || displayLastParts.join(' ') || '',
+    phone: onboardingProfile.privateProfile?.phone ?? '',
+    about: profile?.about ?? onboardingProfile.user?.bio ?? '',
+    location: onboardingProfile.privateProfile?.location ?? '',
+    openToTravel: onboardingProfile.privateProfile?.open_to_travel ?? false,
+    travelMileage: onboardingProfile.privateProfile?.travel_mileage?.toString() ?? '',
+    usResident: onboardingProfile.privateProfile?.us_resident ?? false,
+    usPassport: onboardingProfile.privateProfile?.us_passport ?? false,
+    driversLicense:
+      onboardingProfile.privateProfile?.drivers_license_class ??
+      DRIVER_LICENSE_OPTIONS[0]?.value ??
+      'none',
+    veteran: onboardingProfile.privateProfile?.veteran ?? false,
+    yearsExperience:
+      onboardingProfile.user?.years_of_experience != null
+        ? String(onboardingProfile.user.years_of_experience)
+        : '',
+    jobTitle: onboardingProfile.user?.headline ?? '',
+    primarySkills: skills,
+    educationLevel: onboardingProfile.privateProfile?.education_level ?? '',
+    certifications: certifications.join('\n'),
+    contactMethods: onboardingProfile.privateProfile?.contact_prefs ?? [],
+    phoneOs: onboardingProfile.privateProfile?.phone_os ?? '',
+    availability: onboardingProfile.privateProfile?.availability ?? [],
+    hourlyRate:
+      hourlyRate != null ? (hourlyRate / 100).toFixed(hourlyRate % 100 === 0 ? 0 : 2) : '',
+  }
+}
+
+export const pickBasicInformation = (
+  values: OnboardingFormValues
+): BasicInformationValues => {
+  return BASIC_INFORMATION_KEYS.reduce((acc, key) => {
+    acc[key] = values[key]
+    return acc
+  }, {} as BasicInformationValues)
+}
+
+export const persistBasicInformation = async ({
+  supabase,
+  userId,
+  values,
+  updateProfile,
+}: {
+  supabase: ReturnType<typeof useSupabase>
+  userId: string
+  values: BasicInformationValues
+  updateProfile?: () => Promise<unknown> | void
+}) => {
+  const about = values.about?.trim() || null
+  const travelMileage = values.openToTravel && values.travelMileage
+    ? Number(values.travelMileage)
+    : null
+  const firstName = values.firstName.trim()
+  const lastName = values.lastName.trim()
+  const fullName = `${firstName} ${lastName}`.trim() || null
+
+  const [{ error: profileError }, { error: userError }, { error: privateError }] =
+    await Promise.all([
+      supabase
+        .from('profiles')
+        .update({ about, name: fullName })
+        .eq('id', userId),
+      supabase
+        .from('users')
+        .update({ bio: about, display_name: fullName })
+        .eq('id', userId),
+      supabase
+        .from('user_private')
+        .upsert(
+          {
+            user_id: userId,
+            first_name: firstName,
+            last_name: lastName,
+            phone: values.phone?.trim() || null,
+            location: values.location.trim(),
+            open_to_travel: values.openToTravel,
+            travel_mileage: travelMileage,
+            us_resident: values.usResident,
+            us_passport: values.usPassport,
+            drivers_license_class: values.driversLicense,
+            veteran: values.veteran,
+          },
+          { onConflict: 'user_id' }
+        ),
+    ])
+
+  if (profileError) throw new Error(profileError.message)
+  if (userError) throw new Error(userError.message)
+  if (privateError) throw new Error(privateError.message)
+
+  await updateProfile?.()
+}
+
 export const OnboardingFlowScreen = () => {
   const router = useRouter()
   const toast = useToastController()
@@ -211,71 +350,30 @@ export const OnboardingFlowScreen = () => {
   const [activeStep, setActiveStep] = useState<OnboardingStepId>('basic')
   const [completedSteps, setCompletedSteps] = useState<OnboardingStepId[]>([])
 
-  const form = useForm<FormValues>({
+  const form = useForm<OnboardingFormValues>({
     resolver: zodResolver(OnboardingSchema),
-    defaultValues,
+    defaultValues: onboardingDefaultValues,
     mode: 'onBlur',
   })
 
   const watchedValues = form.watch()
 
-  const { data: onboardingProfile, isPending: isProfilePending } = useQuery<OnboardingProfile>({
-    queryKey: ['onboarding-profile', user?.id],
-    enabled: Boolean(user?.id),
-    queryFn: async () => {
-      if (!user?.id) return { user: null, privateProfile: null }
-      const [{ data: userRow, error: userError }, { data: privateRow, error: privateError }] =
-        await Promise.all([
-          supabase.from('users').select('*').eq('id', user.id).maybeSingle(),
-          supabase.from('user_private').select('*').eq('user_id', user.id).maybeSingle(),
-        ])
+  const { data: onboardingProfile, isPending: isProfilePending } = useOnboardingProfile(
+    user?.id
+  )
 
-      if (userError) throw new Error(userError.message)
-      if (privateError) throw new Error(privateError.message)
-
-      return { user: userRow ?? null, privateProfile: privateRow ?? null }
-    },
-  })
+  const computedValues = useMemo(
+    () => createOnboardingValuesFromProfile({ onboardingProfile, profile }),
+    [onboardingProfile, profile]
+  )
 
   useEffect(() => {
     if (!user?.id) return
     if (!onboardingProfile) return
 
-    const skills = buildSkillsArray(onboardingProfile.user?.skills_summary ?? null)
-    const certifications = onboardingProfile.privateProfile?.certifications ?? []
-    const hourlyRate = onboardingProfile.privateProfile?.hourly_rate_cents ?? null
-
-    const nextValues: FormValues = {
-      phone: onboardingProfile.privateProfile?.phone ?? '',
-      about: profile?.about ?? onboardingProfile.user?.bio ?? '',
-      location: onboardingProfile.privateProfile?.location ?? '',
-      openToTravel: onboardingProfile.privateProfile?.open_to_travel ?? false,
-      travelMileage: onboardingProfile.privateProfile?.travel_mileage?.toString() ?? '',
-      usResident: onboardingProfile.privateProfile?.us_resident ?? false,
-      usPassport: onboardingProfile.privateProfile?.us_passport ?? false,
-      driversLicense:
-        onboardingProfile.privateProfile?.drivers_license_class ??
-        DRIVER_LICENSE_OPTIONS[0]?.value ??
-        'none',
-      veteran: onboardingProfile.privateProfile?.veteran ?? false,
-      yearsExperience:
-        onboardingProfile.user?.years_of_experience != null
-          ? String(onboardingProfile.user.years_of_experience)
-          : '',
-      jobTitle: onboardingProfile.user?.headline ?? '',
-      primarySkills: skills,
-      educationLevel: onboardingProfile.privateProfile?.education_level ?? '',
-      certifications: certifications.join('\n'),
-      contactMethods: onboardingProfile.privateProfile?.contact_prefs ?? [],
-      phoneOs: onboardingProfile.privateProfile?.phone_os ?? '',
-      availability: onboardingProfile.privateProfile?.availability ?? [],
-      hourlyRate:
-        hourlyRate != null ? (hourlyRate / 100).toFixed(hourlyRate % 100 === 0 ? 0 : 2) : '',
-    }
-
-    form.reset(nextValues)
-    setCompletedSteps(determineInitialCompletion(nextValues))
-  }, [form, onboardingProfile, profile?.about, user?.id])
+    form.reset(computedValues)
+    setCompletedSteps(determineInitialCompletion(computedValues))
+  }, [computedValues, form, onboardingProfile, user?.id])
 
   const mutation = useMutation({
     mutationFn: async (step: OnboardingStepId) => {
@@ -283,35 +381,12 @@ export const OnboardingFlowScreen = () => {
       const values = form.getValues()
 
       if (step === 'basic') {
-        const about = values.about?.trim() || null
-        const travelMileage =
-          values.openToTravel && values.travelMileage ? Number(values.travelMileage) : null
-
-        const [{ error: profileError }, { error: userError }, { error: privateError }] =
-          await Promise.all([
-            supabase.from('profiles').update({ about }).eq('id', user.id),
-            supabase.from('users').update({ bio: about }).eq('id', user.id),
-            supabase.from('user_private').upsert(
-              {
-                user_id: user.id,
-                phone: values.phone?.trim() || null,
-                location: values.location?.trim() || null,
-                open_to_travel: values.openToTravel,
-                travel_mileage: travelMileage,
-                us_resident: values.usResident,
-                us_passport: values.usPassport,
-                drivers_license_class: values.driversLicense,
-                veteran: values.veteran,
-              },
-              { onConflict: 'user_id' }
-            ),
-          ])
-
-        if (profileError) throw new Error(profileError.message)
-        if (userError) throw new Error(userError.message)
-        if (privateError) throw new Error(privateError.message)
-
-        await updateProfile?.()
+        await persistBasicInformation({
+          supabase,
+          userId: user.id,
+          values: pickBasicInformation(values),
+          updateProfile,
+        })
       }
 
       if (step === 'roles') {
@@ -392,7 +467,14 @@ export const OnboardingFlowScreen = () => {
   }
 
   const handleSkip = () => {
-    router.push('/')
+    if (activeStep === 'basic' || activeStep === 'summary') {
+      router.push('/')
+      return
+    }
+
+    const currentIndex = stepOrder.indexOf(activeStep)
+    const nextStep = stepOrder[currentIndex + 1] ?? 'summary'
+    setActiveStep(nextStep)
   }
 
   const score = computeScore(completedSteps, Boolean(profile?.avatar_url))
@@ -467,7 +549,11 @@ export const OnboardingFlowScreen = () => {
           <YStack f={1} gap="$5">
             <XStack jc="flex-end">
               <Button chromeless iconAfter={SkipForward} onPress={handleSkip} size="$3">
-                Skip for now
+                {activeStep === 'basic'
+                  ? 'Skip for now'
+                  : activeStep === 'summary'
+                    ? 'Finish later'
+                    : 'Skip this step'}
               </Button>
             </XStack>
 
@@ -523,8 +609,8 @@ export const OnboardingFlowScreen = () => {
 
 type StepContentProps = {
   activeStep: OnboardingStepId
-  form: ReturnType<typeof useForm<FormValues>>
-  values: FormValues
+  form: UseFormReturn<OnboardingFormValues>
+  values: OnboardingFormValues
   score: number
   completedSteps: OnboardingStepId[]
   profile: UserProfile
@@ -569,7 +655,7 @@ const StepContent = ({
 }
 
 type BaseStepProps = {
-  form: ReturnType<typeof useForm<FormValues>>
+  form: UseFormReturn<OnboardingFormValues>
 }
 
 const FieldLabel = ({ children }: { children: React.ReactNode }) => (
@@ -584,7 +670,7 @@ const HelperText = ({ children }: { children: React.ReactNode }) => (
   </Paragraph>
 )
 
-const BasicInformationStep = ({ form }: BaseStepProps) => {
+export const BasicInformationStep = ({ form }: BaseStepProps) => {
   const { control, watch } = form
   const openToTravel = watch('openToTravel')
 
@@ -598,6 +684,34 @@ const BasicInformationStep = ({ form }: BaseStepProps) => {
       </YStack>
 
       <YStack gap="$3">
+        <Controller
+          control={control}
+          name="firstName"
+          render={({ field, fieldState }) => (
+            <LabeledInput
+              label="First name"
+              placeholder="e.g. Jane"
+              value={field.value ?? ''}
+              onChangeText={field.onChange}
+              error={fieldState.error?.message}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="lastName"
+          render={({ field, fieldState }) => (
+            <LabeledInput
+              label="Last name"
+              placeholder="e.g. Doe"
+              value={field.value ?? ''}
+              onChangeText={field.onChange}
+              error={fieldState.error?.message}
+            />
+          )}
+        />
+
         <Controller
           control={control}
           name="phone"
@@ -744,7 +858,7 @@ const BasicInformationStep = ({ form }: BaseStepProps) => {
 }
 
 type RolesStepProps = BaseStepProps & {
-  values: FormValues
+  values: OnboardingFormValues
   onToggleSkill: (skill: string) => void
 }
 
@@ -962,7 +1076,7 @@ const EducationPreferencesStep = ({ form }: BaseStepProps) => {
 }
 
 type SummaryStepProps = {
-  values: FormValues
+  values: OnboardingFormValues
   score: number
   completedSteps: OnboardingStepId[]
   profile: UserProfile
@@ -1072,7 +1186,7 @@ const SummaryTaskRow = ({ task, completed, onAction }: SummaryTaskRowProps) => {
 
 const getTaskCompletion = (
   taskId: (typeof SUMMARY_TASKS)[number]['id'],
-  values: FormValues,
+  values: OnboardingFormValues,
   completedSteps: OnboardingStepId[],
   profile: UserProfile,
   onboardingProfile?: OnboardingProfile
