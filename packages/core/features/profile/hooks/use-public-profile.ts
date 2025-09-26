@@ -172,4 +172,3 @@ export const usePublicProfile = (username: string) => {
     enabled: Boolean(username),
   })
 }
-

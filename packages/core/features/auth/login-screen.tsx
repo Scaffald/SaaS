@@ -83,7 +83,7 @@ export const LoginScreen = () => {
                     Send magic link
                   </SubmitButton>
                 </Theme>
-                
+
                 {isWeb && <SocialLogin />}
               </>
             )
