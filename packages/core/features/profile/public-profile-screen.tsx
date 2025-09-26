@@ -1,14 +1,4 @@
-import {
-  Avatar,
-  Button,
-  Paragraph,
-  ScrollView,
-  Separator,
-  SizableText,
-  XStack,
-  YStack,
-  useToastController,
-} from '@app/ui'
+import { Avatar, Button, Paragraph, ScrollView, Separator, SizableText, XStack, YStack } from '@app/ui'
 import {
   Award,
   BadgeCheck,
@@ -19,13 +9,13 @@ import {
   MapPin,
   Phone,
   ShieldCheck,
+  Star,
   Sparkles,
-  ThumbsDown,
-  ThumbsUp,
   Users,
 } from '@tamagui/lucide-icons'
-import { useEffect, useState } from 'react'
-import { Dialog } from 'tamagui'
+import { useState } from 'react'
+import { useLink } from 'solito/link'
+import { Dialog, Spinner } from 'tamagui'
 
 import {
   DashboardCard,
@@ -41,7 +31,8 @@ type SimilarUser = {
   certifications: string[]
 }
 import { PublicProfileReviewSummary, usePublicProfile } from './hooks/use-public-profile'
-import { useReviewReaction } from './hooks/use-review-reaction'
+import { ReviewFeedItem, useReviewFeed } from './hooks/use-review-feed'
+import { ReviewSummaryPayload, useReviewSummary } from './hooks/use-review-summary'
 
 const similarUsers: SimilarUser[] = [
   {
@@ -90,221 +81,317 @@ type PublicProfileScreenProps = {
   username: string
 }
 
-type FeedbackSelection = 'positive' | 'negative'
-
-type ReviewCounts = {
-  positive: number
-  negative: number
+type ProfileReviewSummary = {
+  averageRating: number
+  totalReviews: number
+  strengths: string[]
+  improvements: string[]
+  viewerDraft?: ReviewSummaryPayload['viewerDraft']
 }
 
-const deriveReactionCounts = (summary: PublicProfileReviewSummary): ReviewCounts => {
-  const total = Math.max(summary.totalReviews, 0)
-  if (total === 0) {
-    return { positive: 0, negative: 0 }
+const mapToProfileReviewSummary = (
+  summary?: ReviewSummaryPayload | null,
+  fallback?: PublicProfileReviewSummary | null
+): ProfileReviewSummary | null => {
+  if (summary) {
+    return {
+      averageRating: summary.averageRating,
+      totalReviews: summary.totalReviews,
+      strengths: summary.strengths ?? [],
+      improvements: summary.improvements ?? [],
+      viewerDraft: summary.viewerDraft,
+    }
   }
 
-  let positive = Math.round((summary.positivePercent / 100) * total)
-  let negative = Math.round((summary.negativePercent / 100) * total)
-
-  const difference = total - (positive + negative)
-  if (difference > 0) {
-    positive += difference
-  } else if (difference < 0) {
-    const adjustment = Math.min(positive, Math.abs(difference))
-    positive -= adjustment
+  if (fallback) {
+    return {
+      averageRating: fallback.averageRating,
+      totalReviews: fallback.totalReviews,
+      strengths: fallback.strengths ?? [],
+      improvements: fallback.improvements ?? [],
+      viewerDraft: fallback.viewerDraft,
+    }
   }
 
-  return {
-    positive: Math.max(positive, 0),
-    negative: Math.max(negative, 0),
-  }
+  return null
 }
 
-const applyReactionToSummary = (
-  summary: PublicProfileReviewSummary,
-  nextSelection: FeedbackSelection,
-  previousSelection: FeedbackSelection | null
-) => {
-  const counts = deriveReactionCounts(summary)
-  let positive = counts.positive
-  let negative = counts.negative
-
-  if (previousSelection === 'positive' && positive > 0) {
-    positive -= 1
-  }
-
-  if (previousSelection === 'negative' && negative > 0) {
-    negative -= 1
-  }
-
-  if (nextSelection === 'positive') {
-    positive += 1
-  } else {
-    negative += 1
-  }
-
-  const total = Math.max(positive + negative, 0)
-
-  return {
-    ...summary,
-    totalReviews: total,
-    positivePercent: total === 0 ? 0 : Math.round((positive / total) * 100),
-    negativePercent: total === 0 ? 0 : Math.round((negative / total) * 100),
-    lastUpdated: 'Updated moments ago',
-  }
-}
-
-const ReviewSummaryCard = ({
-  summary,
-  selectedFeedback,
-  onSelectFeedback,
-  disabled = false,
+const ReviewSkeletonBlock = ({
+  width,
+  height = 16,
 }: {
-  summary: PublicProfileReviewSummary
-  selectedFeedback: FeedbackSelection | null
-  onSelectFeedback: (intent: FeedbackSelection) => void
-  disabled?: boolean
+  width: number | string
+  height?: number
+}) => (
+  <YStack
+    w={width}
+    h={height}
+    br="$4"
+    backgroundColor="$color4"
+    opacity={0.4}
+  />
+)
+
+const StarRating = ({ rating }: { rating: number }) => (
+  <XStack gap="$1">
+    {Array.from({ length: 5 }).map((_, index) => {
+      const filled = rating >= index + 1
+      const partial = !filled && rating > index
+      const color = filled || partial ? '$yellow9' : '$gray7'
+      const fill = filled ? '$yellow9' : partial ? '$yellow6' : 'none'
+
+      return <Star key={index} size={18} color={color} fill={fill} />
+    })}
+  </XStack>
+)
+
+const ReviewChipRow = ({
+  label,
+  items,
+  isLoading,
+}: {
+  label: string
+  items: string[]
+  isLoading: boolean
+}) => (
+  <YStack gap="$2">
+    <Paragraph size="$2" color="$gray11">
+      {label}
+    </Paragraph>
+    <XStack gap="$2" flexWrap="wrap">
+      {isLoading && items.length === 0
+        ? Array.from({ length: 3 }).map((_, index) => (
+            <ReviewSkeletonBlock key={`skeleton-${label}-${index}`} width={120} height={28} />
+          ))
+        : items.length > 0
+          ? items.map((item) => <InfoChip key={`${label}-${item}`} label={item} />)
+          : (
+              <Paragraph size="$2" color="$gray10">
+                No feedback recorded yet.
+              </Paragraph>
+            )}
+    </XStack>
+  </YStack>
+)
+
+const ReviewOverviewCard = ({
+  summary,
+  isPending,
+  onGiveReview,
+  profileName,
+}: {
+  summary: ProfileReviewSummary | null
+  isPending: boolean
+  onGiveReview: () => void
+  profileName: string
 }) => {
+  const firstName = profileName.split(' ')[0] ?? profileName
+  const rating = summary?.averageRating ?? 0
+  const totalReviews = summary?.totalReviews ?? 0
+  const strengths = summary?.strengths ?? []
+  const improvements = summary?.improvements ?? []
+
   return (
-    <YStack
-      gap="$3"
-      borderWidth={1}
-      borderColor="$color4"
-      br="$4"
-      px="$4"
-      py="$3"
-      backgroundColor="$color2"
-    >
-      <XStack jc="space-between" ai="center" flexWrap="wrap" gap="$3">
+    <DashboardCard gap="$4">
+      <SectionHeading
+        title="Crew review snapshot"
+        subtitle={`Highlights from people who worked with ${firstName}`}
+        icon={<Star size={20} color="$yellow9" />}
+        action={
+          <Button size="$2" onPress={onGiveReview} disabled={isPending && !summary}>
+            Give review
+          </Button>
+        }
+      />
+
+      {isPending && !summary ? (
+        <YStack ai="center" py="$4">
+          <Spinner size="small" color="$gray10" />
+        </YStack>
+      ) : (
+        <YStack gap="$4">
+          <YStack gap="$1">
+            <SizableText size="$7" fontWeight="700">
+              {rating.toFixed(1)} / 5
+            </SizableText>
+            <StarRating rating={rating} />
+            <Paragraph size="$2" color="$gray11">
+              Based on {totalReviews} crew reviews
+            </Paragraph>
+          </YStack>
+
+          <ReviewChipRow label="Top strengths" items={strengths} isLoading={isPending} />
+          <ReviewChipRow
+            label="Opportunities teammates noted"
+            items={improvements}
+            isLoading={isPending}
+          />
+        </YStack>
+      )}
+    </DashboardCard>
+  )
+}
+
+const partiallyRedactComment = (comment: string) => {
+  const trimmed = comment.trim()
+
+  if (!trimmed) {
+    return 'Feedback is available to crew members only.'
+  }
+
+  const words = trimmed.split(/\s+/)
+  if (words.length <= 4) {
+    return '•••'
+  }
+
+  const visible = Math.min(words.length - 1, Math.max(3, Math.round(words.length * 0.4)))
+  return `${words.slice(0, visible).join(' ')} •••`
+}
+
+const ReviewListItemSkeleton = () => (
+  <YStack gap="$3">
+    <XStack gap="$3" ai="center">
+      <ReviewSkeletonBlock width={120} />
+      <ReviewSkeletonBlock width={80} />
+    </XStack>
+    <ReviewSkeletonBlock width="100%" height={48} />
+  </YStack>
+)
+
+const ReviewListItem = ({
+  review,
+  showDivider,
+}: {
+  review: ReviewFeedItem
+  showDivider: boolean
+}) => {
+  const formattedDate = new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(new Date(review.createdAt))
+
+  const displayComment = review.isPublic ? review.comment : partiallyRedactComment(review.comment)
+
+  return (
+    <YStack gap="$2">
+      <XStack
+        jc="space-between"
+        ai="flex-start"
+        gap="$3"
+        $sm={{ flexDirection: 'column', gap: '$2' }}
+      >
         <YStack gap="$1">
-          <Paragraph size="$2" color="$gray11">
-            Crew feedback snapshot
-          </Paragraph>
-          <SizableText size="$6" fontWeight="600">
-            {summary.averageRating.toFixed(1)} / 5
+          <SizableText size="$4" fontWeight="600">
+            {review.reviewer.name}
           </SizableText>
           <Paragraph size="$2" color="$gray11">
-            Based on {summary.totalReviews} reviews
+            {review.reviewer.role}
           </Paragraph>
         </YStack>
-
-        <YStack gap="$2" ai="flex-end">
-          <XStack gap="$4">
-            <YStack gap="$1" ai="flex-end">
-              <Paragraph size="$2" color="$gray11">
-                Positive
-              </Paragraph>
-              <SizableText size="$5" fontWeight="600">
-                {summary.positivePercent}%
-              </SizableText>
-            </YStack>
-            <YStack gap="$1" ai="flex-end">
-              <Paragraph size="$2" color="$gray11">
-                Needs improvement
-              </Paragraph>
-              <SizableText size="$5" fontWeight="600">
-                {summary.negativePercent}%
-              </SizableText>
-            </YStack>
-          </XStack>
-          <Paragraph size="$1" color="$gray10">
-            {summary.lastUpdated}
+        <YStack ai="flex-end" gap="$1" $sm={{ ai: 'flex-start' }}>
+          <StarRating rating={review.rating} />
+          <Paragraph size="$2" color="$gray11">
+            {formattedDate}
           </Paragraph>
         </YStack>
       </XStack>
 
-      <Separator borderColor="$color4" />
+      <Paragraph size="$3">{displayComment}</Paragraph>
+      {!review.isPublic ? (
+        <Paragraph size="$2" color="$gray11">
+          Private feedback — details hidden for public viewers.
+        </Paragraph>
+      ) : null}
 
-      <XStack gap="$3" flexWrap="wrap">
-        <Button
-          size="$3"
-          icon={<ThumbsUp size={16} />}
-          backgroundColor={selectedFeedback === 'positive' ? '$green5' : '$color2'}
-          color={selectedFeedback === 'positive' ? '$green11' : '$gray12'}
-          borderColor={selectedFeedback === 'positive' ? '$green6' : '$color5'}
-          borderWidth={1}
-          onPress={() => onSelectFeedback('positive')}
-          disabled={disabled}
-          aria-pressed={selectedFeedback === 'positive'}
-        >
-          Looks like a good fit
-        </Button>
-        <Button
-          size="$3"
-          icon={<ThumbsDown size={16} />}
-          backgroundColor={selectedFeedback === 'negative' ? '$red5' : '$color2'}
-          color={selectedFeedback === 'negative' ? '$red11' : '$gray12'}
-          borderColor={selectedFeedback === 'negative' ? '$red6' : '$color5'}
-          borderWidth={1}
-          onPress={() => onSelectFeedback('negative')}
-          disabled={disabled}
-          aria-pressed={selectedFeedback === 'negative'}
-        >
-          Need to learn more
-        </Button>
-      </XStack>
+      {showDivider ? <Separator borderColor="$color4" /> : null}
     </YStack>
   )
 }
 
+type ReviewFeedCardProps = {
+  query: ReturnType<typeof useReviewFeed>
+  viewerDraftHref: string | null
+  profileName: string
+}
+
+const ReviewFeedCard = ({ query, viewerDraftHref, profileName }: ReviewFeedCardProps) => {
+  const firstName = profileName.split(' ')[0] ?? profileName
+  const { data, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } = query
+  const reviews = data?.pages.flatMap((page) => page.items) ?? []
+
+  const continueHref = viewerDraftHref ?? '#'
+  const continueLink = useLink({ href: continueHref })
+
+  return (
+    <DashboardCard gap="$4">
+      <SectionHeading
+        title="Crew reviews"
+        subtitle={`Stories from people who have worked with ${firstName}`}
+        icon={<Users size={20} color="$purple10" />}
+        action={
+          viewerDraftHref ? (
+            <Button size="$2" chromeless {...continueLink}>
+              Continue your review
+            </Button>
+          ) : undefined
+        }
+      />
+
+      {isPending && reviews.length === 0 ? (
+        <YStack gap="$4">
+          {Array.from({ length: 2 }).map((_, index) => (
+            <ReviewListItemSkeleton key={`review-skeleton-${index}`} />
+          ))}
+        </YStack>
+      ) : reviews.length === 0 ? (
+        <Paragraph size="$2" color="$gray11">
+          No reviews yet. Be the first to share feedback.
+        </Paragraph>
+      ) : (
+        <YStack gap="$4">
+          {reviews.map((review, index) => (
+            <ReviewListItem
+              key={review.id}
+              review={review}
+              showDivider={index < reviews.length - 1}
+            />
+          ))}
+
+          {hasNextPage ? (
+            <Button
+              size="$3"
+              onPress={() => fetchNextPage()}
+              disabled={isFetchingNextPage}
+            >
+              {isFetchingNextPage ? 'Loading more…' : 'Load more reviews'}
+            </Button>
+          ) : null}
+        </YStack>
+      )}
+    </DashboardCard>
+  )
+}
+
 export const PublicProfileScreen = ({ username }: PublicProfileScreenProps) => {
-  const toast = useToastController()
-  const reviewReaction = useReviewReaction()
-  const [selectedFeedback, setSelectedFeedback] = useState<FeedbackSelection | null>(null)
-  const [reviewSummary, setReviewSummary] = useState<PublicProfileReviewSummary | null>(null)
   const [isReviewModalOpen, setReviewModalOpen] = useState(false)
   const { data: profile } = usePublicProfile(username)
-
-  useEffect(() => {
-    if (profile?.reviewSummary) {
-      setReviewSummary(profile.reviewSummary)
-    }
-  }, [profile])
+  const reviewSummaryQuery = useReviewSummary(username)
+  const reviewFeedQuery = useReviewFeed(username)
 
   if (!profile) {
     return null
   }
 
-  const summary = reviewSummary ?? profile.reviewSummary
+  const combinedSummary = mapToProfileReviewSummary(
+    reviewSummaryQuery.data,
+    profile.reviewSummary
+  )
 
-  const handleSelectFeedback = (intent: FeedbackSelection) => {
-    if (reviewReaction.isPending) return
-
-    const currentSummary = summary
-    const previousSelection = selectedFeedback
-
-    if (!currentSummary) return
-
-    const isSameSelection = previousSelection === intent
-
-    if (!isSameSelection) {
-      const optimisticSummary = applyReactionToSummary(currentSummary, intent, previousSelection)
-      setReviewSummary(optimisticSummary)
-    }
-
-    setSelectedFeedback(intent)
-
-    const direction = intent === 'positive' ? 'up' : 'down'
-
-    const run = async () => {
-      try {
-        await reviewReaction.react({ subjectId: username, direction })
-        setReviewModalOpen(true)
-      } catch (error) {
-        if (!isSameSelection) {
-          setReviewSummary(currentSummary)
-          setSelectedFeedback(previousSelection)
-        }
-
-        console.error('Failed to record review reaction', error)
-        toast.show('Unable to record your feedback', {
-          message: error instanceof Error ? error.message : 'Please try again.',
-        })
-      }
-    }
-
-    void run()
-  }
+  const viewerDraft = combinedSummary?.viewerDraft ?? null
+  const viewerDraftHref = viewerDraft
+    ? viewerDraft.href ?? `/reviews/${viewerDraft.reviewId}`
+    : null
 
   return (
     <>
@@ -397,14 +484,20 @@ export const PublicProfileScreen = ({ username }: PublicProfileScreenProps) => {
                   </YStack>
                 ))}
               </XStack>
-
-              <ReviewSummaryCard
-                summary={summary}
-                selectedFeedback={selectedFeedback}
-                onSelectFeedback={handleSelectFeedback}
-                disabled={reviewReaction.isPending}
-              />
             </DashboardCard>
+
+            <ReviewOverviewCard
+              summary={combinedSummary}
+              isPending={reviewSummaryQuery.isPending}
+              onGiveReview={() => setReviewModalOpen(true)}
+              profileName={profile.name}
+            />
+
+            <ReviewFeedCard
+              query={reviewFeedQuery}
+              viewerDraftHref={viewerDraftHref}
+              profileName={profile.name}
+            />
 
             <DashboardCard gap="$4">
               <SectionHeading
