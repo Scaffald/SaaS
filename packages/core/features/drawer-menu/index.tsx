@@ -317,10 +317,9 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
       borderColor="$color4"
       px="$4"
       py="$4"
-      height="100vh"
-      justifyContent="space-between"
+      flex={1}
     >
-      {/* Top Section - User Profile - Fixed */}
+      {/* Top Section - User Profile - Sticky */}
       <YStack gap="$4" width="100%" flexShrink={0}>
         <Card
           px="$4"
@@ -355,7 +354,7 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
         </Card>
       </YStack>
 
-      {/* Middle Section - Scrollable Content */}
+      {/* Scrollable Content */}
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingVertical: 16 }}
@@ -373,25 +372,6 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
           ))}
         </YStack>
       </ScrollView>
-
-      {/* Bottom Section - Logout - Fixed */}
-      <YStack gap="$4" width="100%" flexShrink={0}>
-        <YGroup size="$3" borderRadius="$3">
-          <YGroup.Item>
-            <DrawerLink
-              item={{
-                key: 'logout',
-                title: 'Logout',
-                href: '/logout',
-                icon: LogOut,
-                theme: 'red',
-              }}
-              pathname={pathname}
-              onNavigate={onNavigate}
-            />
-          </YGroup.Item>
-        </YGroup>
-      </YStack>
     </YStack>
   )
 }
