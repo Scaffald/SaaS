@@ -104,6 +104,17 @@ const mockReviews: MockReview[] = [
   },
 ]
 
+const reviewDraftSchema = z.object({
+  reviewId: z.string().uuid('A valid review id is required.'),
+  subjectId: z.string().min(1, 'A subject id is required.'),
+  strengths: z.array(z.string()).default([]),
+  areasToImprove: z.array(z.string()).default([]),
+  softSkills: z.array(z.string()).default([]),
+  recommendedSkills: z.array(z.string()).default([]),
+  comment: z.string().min(1, 'A comment helps readers understand your feedback.'),
+  isPublic: z.boolean(),
+})
+
 export const reviewsRouter = createTRPCRouter({
   react: protectedProcedure.input(reactionInputSchema).mutation(async ({ input }) => {
     // TODO: Integrate with persistence once backend is ready.
@@ -113,6 +124,7 @@ export const reviewsRouter = createTRPCRouter({
       success: true,
     }
   }),
+
   getSummary: publicProcedure.input(summaryInputSchema).query(({ input, ctx }) => {
     const averageRating =
       mockReviews.reduce((total, review) => total + review.rating, 0) / mockReviews.length
@@ -137,6 +149,7 @@ export const reviewsRouter = createTRPCRouter({
       viewerDraft,
     }
   }),
+  
   list: publicProcedure.input(listInputSchema).query(({ input }) => {
     const cursor = input.cursor ?? 0
     const items = mockReviews.slice(cursor, cursor + input.limit)
@@ -145,7 +158,23 @@ export const reviewsRouter = createTRPCRouter({
     return {
       subjectId: input.subjectId,
       items,
-      nextCursor,
+      nextCursor
+    }
+  }),
+  
+  saveDraft: protectedProcedure.input(reviewDraftSchema).mutation(async ({ input }) => {
+    // TODO: Persist drafts once backend storage is available.
+    return {
+      success: true,
+      draft: input,
+    }
+  }),
+  
+  submit: protectedProcedure.input(reviewDraftSchema).mutation(async ({ input }) => {
+    // TODO: Persist submitted reviews once backend storage is available.
+    return {
+      success: true,
+      reviewId: input.reviewId,
     }
   }),
 })
