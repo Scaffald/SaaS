@@ -21,8 +21,6 @@ import {
   Building2,
   Map,
   Settings2,
-  MessageCircle,
-  Headphones,
   LogOut,
 } from '@tamagui/lucide-icons'
 import type { JSX } from 'react'
@@ -96,27 +94,13 @@ export const drawerSections: DrawerSectionConfig[] = [
   },
   {
     key: 'settings',
-    title: 'Settings',
+    title: '',
     items: [
       {
-        key: 'settings-general',
-        title: 'General',
+        key: 'settings',
+        title: 'Settings',
         href: '/settings',
         icon: Settings2,
-        theme: 'gray',
-      },
-      {
-        key: 'settings-email',
-        title: 'Change Email',
-        href: '/settings/change-email',
-        icon: MessageCircle,
-        theme: 'gray',
-      },
-      {
-        key: 'settings-password',
-        title: 'Change Password',
-        href: '/settings/change-password',
-        icon: Headphones,
         theme: 'gray',
       },
     ],
