@@ -3,6 +3,7 @@
 import { useMemo, useState, useRef, useCallback, useEffect } from 'react'
 import { Button, Paragraph, Separator, Sheet, Text, XStack, YStack, useMedia } from '@app/ui'
 import { Filter, RefreshCw, MapPin } from '@tamagui/lucide-icons'
+import { reverseGeocodeAsync } from 'expo-location'
 
 import { FilterBar } from './components/FilterBar'
 import { RadiusSlider } from './components/RadiusSlider'
@@ -74,9 +75,23 @@ export const DiscoverMapScreen = () => {
   // Update location query when user location changes
   const updateLocationQuery = useCallback(async (lat: number, lng: number) => {
     try {
-      // For web, we can use a simple approach or integrate with a geocoding service
-      // For now, we'll use a basic format
-      setLocationQuery(`Current Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`)
+      // For native, we can use Expo Location's reverse geocoding
+      const addresses = await reverseGeocodeAsync({ latitude: lat, longitude: lng })
+      
+      if (addresses.length > 0) {
+        const address = addresses[0]
+        const city = address.city || address.subregion
+        const state = address.region
+        const country = address.country
+        
+        if (city && state) {
+          setLocationQuery(`${city}, ${state}, ${country}`)
+        } else {
+          setLocationQuery(`Current Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`)
+        }
+      } else {
+        setLocationQuery(`Current Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`)
+      }
     } catch (error) {
       console.error('Failed to update location query:', error)
       setLocationQuery(`Current Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`)
@@ -116,6 +131,12 @@ export const DiscoverMapScreen = () => {
 
   const handleMarkerPress = (profileId: string) => {
     setSelectedProfileId(profileId)
+    
+    // Add haptic feedback on native
+    if (Platform.OS !== 'web') {
+      // Note: You would need to import Haptics from expo-haptics for this to work
+      // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    }
     
     // Scroll to card with slight delay for better UX
     setTimeout(() => {

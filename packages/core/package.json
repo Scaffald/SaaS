@@ -3,7 +3,9 @@
   "name": "app",
   "main": "index.ts",
   "types": "./index.ts",
-  "sideEffects": ["*.css"],
+  "sideEffects": [
+    "*.css"
+  ],
   "scripts": {
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
@@ -40,6 +42,7 @@
     "expo-document-picker": "~13.1.5",
     "expo-image-picker": "~16.1.4",
     "expo-linking": "~7.1.5",
+    "expo-location": "~18.1.0",
     "expo-secure-store": "~14.2.3",
     "hast-util-to-html": "^9.0.0",
     "mapbox-gl": "^3.3.0",

@@ -31,7 +31,7 @@ export interface AddressAutocompleteInputProps extends Omit<InputProps, 'onChang
   showSuggestions?: boolean
   maxSuggestions?: number
   autocompleteOptions?: UseAddressAutocompleteOptions
-  variant?: 'default' | 'compact' | 'expanded'
+  variant?: 'default' | 'compact' | 'expanded' | 'clean'
   showFullAddress?: boolean
 }
 
@@ -124,18 +124,28 @@ export const AddressAutocompleteInput = forwardRef<HTMLInputElement, AddressAuto
             container: { gap: '$2' },
             input: { size: '$3', height: '$3' },
             suggestions: { maxHeight: 200 },
+            showIcon: true,
           }
         case 'expanded':
           return {
             container: { gap: '$3' },
             input: { size: '$5', height: '$5' },
             suggestions: { maxHeight: 300 },
+            showIcon: true,
+          }
+        case 'clean':
+          return {
+            container: { gap: 0 },
+            input: { size: '$3', height: '100%', paddingHorizontal: '$3' },
+            suggestions: { maxHeight: 240 },
+            showIcon: false,
           }
         default:
           return {
             container: { gap: '$2' },
             input: { size: '$4', height: '$4' },
             suggestions: { maxHeight: 250 },
+            showIcon: true,
           }
       }
     }
@@ -167,9 +177,11 @@ export const AddressAutocompleteInput = forwardRef<HTMLInputElement, AddressAuto
                 {...inputProps}
               />
 
-              <View position="absolute" right="$3" pointerEvents="none">
-                <MapPin size="$1" color="$color10" />
-              </View>
+              {variantStyles.showIcon && (
+                <View position="absolute" right="$3" pointerEvents="none">
+                  <MapPin size="$1" color="$color10" />
+                </View>
+              )}
             </XStack>
 
             {showSuggestions && isOpen && (
@@ -183,12 +195,13 @@ export const AddressAutocompleteInput = forwardRef<HTMLInputElement, AddressAuto
                   backgroundColor="$background"
                   borderRadius="$4"
                   borderWidth={1}
-                  borderColor="$borderColor"
+                  borderColor="$color5"
                   shadowColor="$shadowColor"
-                  shadowOffset={{ width: 0, height: 2 }}
-                  shadowOpacity={0.1}
-                  shadowRadius={8}
-                  mt="$1"
+                  shadowOffset={{ width: 0, height: 6 }}
+                  shadowOpacity={0.2}
+                  shadowRadius={16}
+                  mt="$2"
+                  overflow="hidden"
                 >
                   <ScrollView maxHeight={variantStyles.suggestions.maxHeight}>
                     {displaySuggestions.length > 0 ? (
@@ -197,38 +210,42 @@ export const AddressAutocompleteInput = forwardRef<HTMLInputElement, AddressAuto
                           key={suggestion.id}
                           justifyContent="flex-start"
                           alignItems="flex-start"
-                          padding="$3"
+                          padding="$4"
                           borderBottomWidth={index < displaySuggestions.length - 1 ? 1 : 0}
-                          borderBottomColor="$borderColor"
+                          borderBottomColor="$color4"
+                          backgroundColor="transparent"
+                          minHeight="$5"
                           onPress={() => handleSuggestionPress(suggestion)}
                           hoverStyle={{ backgroundColor: '$color2' }}
                           pressStyle={{ backgroundColor: '$color3' }}
                         >
-                          <XStack gap="$2" alignItems="flex-start" width="100%">
-                            <MapPin size="$1" color="$color10" marginTop="$1" />
-                            <YStack flex={1} gap="$1">
-                              <Text fontSize="$3" fontWeight="600" color="$color12">
+                          <XStack gap="$3" alignItems="flex-start" width="100%">
+                            {variantStyles.showIcon && (
+                              <MapPin size="$1.5" color="$color10" marginTop="$0.5" />
+                            )}
+                            <YStack flex={1} gap="$1.5">
+                              <Text fontSize="$3" fontWeight="600" color="$color12" lineHeight="$4">
                                 {suggestion.displayName}
                               </Text>
-                              {showFullAddress &&
-                                suggestion.fullAddress !== suggestion.displayName && (
-                                  <Text fontSize="$2" color="$color10">
-                                    {suggestion.fullAddress}
-                                  </Text>
-                                )}
                               {suggestion.street && suggestion.city && (
-                                <Text fontSize="$2" color="$color10">
+                                <Text fontSize="$2.5" color="$color10" lineHeight="$3">
                                   {suggestion.street}, {suggestion.city}
                                   {suggestion.state && `, ${suggestion.state}`}
                                   {suggestion.zipCode && ` ${suggestion.zipCode}`}
                                 </Text>
                               )}
+                              {showFullAddress &&
+                                suggestion.fullAddress !== suggestion.displayName && (
+                                  <Text fontSize="$2.5" color="$color10" lineHeight="$3">
+                                    {suggestion.fullAddress}
+                                  </Text>
+                                )}
                             </YStack>
                           </XStack>
                         </Button>
                       ))
                     ) : inputValue.length >= 2 && !isLoading ? (
-                      <View padding="$3">
+                      <View padding="$4">
                         <Text fontSize="$3" color="$color10" textAlign="center">
                           No addresses found
                         </Text>

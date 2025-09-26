@@ -10933,6 +10933,7 @@ __metadata:
     expo-document-picker: "npm:~13.1.5"
     expo-image-picker: "npm:~16.1.4"
     expo-linking: "npm:~7.1.5"
+    expo-location: "npm:~18.1.0"
     expo-secure-store: "npm:~14.2.3"
     hast-util-to-html: "npm:^9.0.0"
     mapbox-gl: "npm:^3.3.0"
@@ -15441,6 +15442,15 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10/6fb186b35e9fdbe0f316e17e35b5e238bc844d9ac6b88da12fbea9ba0d834b565d219d39b21fd0fd2f4038b28faa73fb75a33a446b7286b7204c94711b322016
+  languageName: node
+  linkType: hard
+
+"expo-location@npm:~18.1.0":
+  version: 18.1.6
+  resolution: "expo-location@npm:18.1.6"
+  peerDependencies:
+    expo: "*"
+  checksum: 10/3c99899df8312c4926d8fcd88b7f873a92045c5cf9f4e5088be61070fbe76f011add211aa24e7f485526f135ebaee3888759aae111a317fb1a498b32002362b1
   languageName: node
   linkType: hard
 

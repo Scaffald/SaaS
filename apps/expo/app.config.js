@@ -33,6 +33,16 @@ export default {
       supportsTablet: true,
       bundleIdentifier: 'com.scaffald.app',
       buildNumber: '6',
+      infoPlist: {
+        UIBackgroundModes: [
+          "location",
+          "fetch",
+          "remote-notification"
+        ],
+        NSLocationWhenInUseUsageDescription: "This app requires access to your location when open.",
+        NSLocationAlwaysAndWhenInUseUsageDescription: "This app requires access to your location even when closed.",
+        NSLocationAlwaysUsageDescription:  "This app requires access to your location when open."
+      }
     },
     android: {
       softwareKeyboardLayoutMode: 'pan',
@@ -62,14 +72,23 @@ export default {
           photosPermission: 'The app accesses your photos to let you share them with your friends.',
         },
       ],
-      // Temporarily disabled Google Sign-in until proper OAuth setup
-      // [
-      //   '@react-native-google-signin/google-signin',
-      //   {
-      //     // https://react-native-google-signin.github.io/docs/setting-up/expo
-      //     iosUrlScheme: process.env.GOOGLE_IOS_SCHEME || 'com.scaffald.app',
-      //   },
-      // ],
+      [
+        "expo-location",
+        {
+          locationAlwaysAndWhenInUsePermission: "Allow $(PRODUCT_NAME) to use your location.",
+          locationAlwaysPermission: "Allow $(PRODUCT_NAME) to use your location.",
+          locationWhenInUsePermission: "Allow $(PRODUCT_NAME) to use your location.",
+          isIosBackgroundLocationEnabled: true,
+          isAndroidBackgroundLocationEnabled: true
+        }
+      ],
+      [
+        '@react-native-google-signin/google-signin',
+        {
+          // https://react-native-google-signin.github.io/docs/setting-up/expo
+          iosUrlScheme: process.env.GOOGLE_IOS_SCHEME || 'com.scaffald.app',
+        },
+      ],
       'expo-apple-authentication',
       'expo-router',
       'expo-build-properties',

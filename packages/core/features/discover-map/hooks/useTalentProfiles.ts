@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import type { TalentProfile } from '../types'
+import { mockTalentProfiles } from '../data/mockProfiles'
 
 export const useTalentProfiles = () => {
   const supabase = useSupabase()
@@ -27,7 +28,14 @@ export const useTalentProfiles = () => {
 
       if (error) {
         console.error('Error fetching talent profiles:', error)
-        return []
+        console.log('Falling back to mock data')
+        return mockTalentProfiles
+      }
+
+      // If no data returned, fallback to mock data
+      if (!data || data.length === 0) {
+        console.log('No data returned, falling back to mock data')
+        return mockTalentProfiles
       }
 
       // Transform database data to TalentProfile format

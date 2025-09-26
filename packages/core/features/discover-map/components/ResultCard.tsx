@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, forwardRef } from 'react'
 import { Button, Paragraph, SizableText, Text, XStack, YStack } from '@app/ui'
 import { Award, BadgeCheck, Building, Clock3, DollarSign } from '@tamagui/lucide-icons'
 
@@ -6,23 +6,34 @@ import type { TalentProfile } from '../types'
 
 type ResultCardProps = {
   profile: TalentProfile
-  isSelected: boolean
+  isSelected?: boolean
   onSelect: (profileId: string) => void
 }
 
-export const ResultCard = memo(({ profile, isSelected, onSelect }: ResultCardProps) => {
-  return (
-    <YStack
-      borderWidth={1}
-      borderColor={isSelected ? '$blue7' : '$color5'}
-      borderRadius="$3"
-      padding="$3"
-      backgroundColor={isSelected ? '$blue2' : '$background'}
-      gap="$2"
-      pressStyle={{ scale: 0.98 }}
-      hoverStyle={{ backgroundColor: '$color2' }}
-      onPress={() => onSelect(profile.id)}
-    >
+export const ResultCard = memo(forwardRef<unknown, ResultCardProps>(
+  ({ profile, isSelected, onSelect }, ref) => {
+    return (
+      <YStack
+        ref={ref}
+        borderWidth={1}
+        borderColor={isSelected ? '$blue7' : '$color5'}
+        borderRadius="$3"
+        padding="$3"
+        backgroundColor={isSelected ? '$blue2' : '$background'}
+        gap="$2"
+        pressStyle={{ scale: 0.98 }}
+        hoverStyle={{ backgroundColor: '$color2' }}
+        onPress={() => onSelect(profile.id)}
+        // Add animation for selection highlight
+        animation={isSelected ? 'bouncy' : undefined}
+        animateOnly={['backgroundColor', 'borderColor']}
+        // Add subtle shadow when selected
+        shadowColor={isSelected ? '$blue7' : undefined}
+        shadowOffset={isSelected ? { width: 0, height: 2 } : undefined}
+        shadowOpacity={isSelected ? 0.1 : undefined}
+        shadowRadius={isSelected ? 4 : undefined}
+        elevation={isSelected ? 2 : undefined}
+      >
       <XStack justifyContent="space-between" alignItems="center">
         <SizableText size="$5" fontWeight="700">
           {profile.name}
@@ -134,8 +145,9 @@ export const ResultCard = memo(({ profile, isSelected, onSelect }: ResultCardPro
           </Text>
         )}
       </XStack>
-    </YStack>
-  )
-})
+      </YStack>
+    )
+  }
+))
 
 ResultCard.displayName = 'ResultCard'
