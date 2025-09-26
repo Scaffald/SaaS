@@ -128,13 +128,6 @@ export const RequiredProfileDialog = ({ disabled }: RequiredProfileDialogProps) 
             <FormWrapper>
               <FormWrapper.Body>
                 <YStack gap="$4">
-                  <YStack gap="$2">
-                    <H2>Finish setting up your profile</H2>
-                    <Paragraph theme="alt1">
-                      Tell us who you are and where you&apos;re based so companies can reach out.
-                    </Paragraph>
-                  </YStack>
-
                   <BasicInformationStep form={form} />
                 </YStack>
               </FormWrapper.Body>
