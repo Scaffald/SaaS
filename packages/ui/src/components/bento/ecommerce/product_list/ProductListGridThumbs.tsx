@@ -63,7 +63,7 @@ export function ProductListGridThumbs() {
   }, [])
   return (
     <XStack maxWidth="100%" backgroundColor="$color1" flexWrap="wrap">
-      {products.map((item, index) => (
+      {products.map((item) => (
         <Item key={item.id} item={item} />
       ))}
       {someSpacers}

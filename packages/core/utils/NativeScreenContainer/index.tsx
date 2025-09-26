@@ -1,15 +1,11 @@
 import { ScrollView } from '@app/ui'
 import { useScrollToTop } from '@react-navigation/native'
 import { Stack } from 'expo-router'
-import { useRef } from 'react'
+import { useRef, type ComponentProps } from 'react'
 
-const ScrollToTopTabBarContainer = ({
-  children,
-  ...props
-}: {
-  children: React.ReactNode
-  style?: any
-}) => {
+type ScrollToTopTabBarContainerProps = ComponentProps<typeof ScrollView>
+
+const ScrollToTopTabBarContainer = ({ children, ...props }: ScrollToTopTabBarContainerProps) => {
   const ref = useRef(null)
   useScrollToTop(ref)
 

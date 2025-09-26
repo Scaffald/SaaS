@@ -209,7 +209,6 @@ const DrawerImpl = ({
     defaultProp: false,
     onChange: onOpenChange,
   })
-  // biome-ignore lint/complexity/noUselessFragments: necessary for AnimatedPresence
   const content = open && <>{children}</>
   return (
     <DrawerContext.Provider open={_open} setOpen={setOpen}>

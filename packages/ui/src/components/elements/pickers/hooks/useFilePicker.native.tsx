@@ -60,14 +60,13 @@ export function useFilePicker<MT extends MediaTypeOptions>(props?: UseFilePicker
     }
   })
 
-  const { open, getInputProps, getRootProps, isDragAccept, isDragActive, isDragReject } =
-    useDropZone({
-      onOpen: _onOpenNative,
-      // @ts-ignore
-      mediaTypes,
-      noClick: true,
-      ...rest,
-    })
+  useDropZone({
+    onOpen: _onOpenNative,
+    // @ts-ignore
+    mediaTypes,
+    noClick: true,
+    ...rest,
+  })
 
   const _handleOpenNative = async () => {
     // No permissions request is necessary for launching the image or document library
@@ -85,9 +84,9 @@ export function useFilePicker<MT extends MediaTypeOptions>(props?: UseFilePicker
 
   const control = {
     dragStatus: {
-      isDragAccept,
-      isDragActive,
-      isDragReject,
+      isDragAccept: false,
+      isDragActive: false,
+      isDragReject: false,
     },
     getInputProps: () => null,
     getRootProps: () => null,
