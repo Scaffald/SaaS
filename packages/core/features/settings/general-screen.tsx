@@ -1,14 +1,4 @@
-import {
-  FormWrapper,
-  H2,
-  H4,
-  KVTable,
-  Separator,
-  SizableText,
-  YStack,
-  isWeb,
-  styled,
-} from '@app/ui'
+import { ContentWrapper, ContentSection, KVTable, SizableText } from '@app/ui'
 import { useUser } from '@app/core/utils/useUser'
 import { Link } from 'solito/link'
 
@@ -16,69 +6,43 @@ export const GeneralSettingsScreen = () => {
   const { user, profile } = useUser()
 
   return (
-    <FormWrapper>
-      {isWeb && (
-        <YStack px="$4" py="$4" pb="$2">
-          <H2>General</H2>
-        </YStack>
-      )}
-      <FormWrapper.Body mt="$2" gap="$10">
-        <Section>
-          <KVTable>
-            <YStack gap="$4">
-              <H4>Profile Data</H4>
-              <Separator />
-            </YStack>
-            <KVTable.Row>
-              <KVTable.Key>
-                <SizableText fow="900">Name</SizableText>
-              </KVTable.Key>
-              <KVTable.Value gap="$4">
-                <SizableText>{profile?.name}</SizableText>
-                <Link href="/profile/edit">
-                  <SizableText textDecorationLine="underline">Change</SizableText>
-                </Link>
-              </KVTable.Value>
-            </KVTable.Row>
-          </KVTable>
-        </Section>
+    <ContentWrapper title="General">
+      <ContentSection title="Profile Data">
+        <KVTable.Row>
+          <KVTable.Key>
+            <SizableText fow="900">Name</SizableText>
+          </KVTable.Key>
+          <KVTable.Value gap="$4">
+            <SizableText>{profile?.name}</SizableText>
+            <Link href="/profile/edit">
+              <SizableText textDecorationLine="underline">Change</SizableText>
+            </Link>
+          </KVTable.Value>
+        </KVTable.Row>
+      </ContentSection>
 
-        <Section>
-          <KVTable>
-            <YStack gap="$4">
-              <H4>Account Data</H4>
-              <Separator />
-            </YStack>
-            <KVTable.Row>
-              <KVTable.Key>
-                <SizableText fow="900">Email</SizableText>
-              </KVTable.Key>
-              <KVTable.Value gap="$4">
-                <SizableText>{user?.email}</SizableText>
-                <Link href="/settings/change-email">
-                  <SizableText textDecorationLine="underline">Change</SizableText>
-                </Link>
-              </KVTable.Value>
-            </KVTable.Row>
+      <ContentSection title="Account Data">
+        <KVTable.Row>
+          <KVTable.Key>
+            <SizableText fow="900">Email</SizableText>
+          </KVTable.Key>
+          <KVTable.Value gap="$4">
+            <SizableText>{user?.email}</SizableText>
+            <Link href="/settings/change-email">
+              <SizableText textDecorationLine="underline">Change</SizableText>
+            </Link>
+          </KVTable.Value>
+        </KVTable.Row>
 
-            <KVTable.Row>
-              <KVTable.Key>
-                <SizableText fow="900">User ID</SizableText>
-              </KVTable.Key>
-              <KVTable.Value>
-                <SizableText>{user?.id}</SizableText>
-              </KVTable.Value>
-            </KVTable.Row>
-          </KVTable>
-        </Section>
-      </FormWrapper.Body>
-    </FormWrapper>
+        <KVTable.Row>
+          <KVTable.Key>
+            <SizableText fow="900">User ID</SizableText>
+          </KVTable.Key>
+          <KVTable.Value>
+            <SizableText>{user?.id}</SizableText>
+          </KVTable.Value>
+        </KVTable.Row>
+      </ContentSection>
+    </ContentWrapper>
   )
 }
-
-const Section = styled(YStack, {
-  boc: '$borderColor',
-  bw: 1,
-  p: '$4',
-  br: '$4',
-})

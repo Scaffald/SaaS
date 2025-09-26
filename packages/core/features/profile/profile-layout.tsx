@@ -1,12 +1,4 @@
-import {
-  Avatar,
-  Paragraph,
-  Settings,
-  SizableText,
-  XStack,
-  YStack,
-  useToastController,
-} from '@app/ui'
+import { SidebarMenu, type MenuItem, useToastController } from '@app/ui'
 import {
   CheckCircle2,
   Circle,
@@ -78,7 +70,7 @@ export const ProfileLayout = ({
   children,
 }: ProfileLayoutProps) => {
   return (
-    <XStack gap="$6" ai="flex-start" $md={{ fd: 'column' }}>
+    <XStack gap="$6" ai="flex-start" $sm={{ fd: 'column' }}>
       <ProfileSidebar
         sections={sections}
         activeSectionId={activeSectionId}
@@ -89,7 +81,19 @@ export const ProfileLayout = ({
         fullName={fullName}
       />
       {children ? (
-        <YStack f={1} gap="$8" flexBasis={0}>
+        <YStack
+          f={1}
+          gap="$8"
+          flexBasis={0}
+          $gtSm={{
+            w: '100%',
+            maw: 800,
+            als: 'center',
+          }}
+          $gtLg={{
+            maw: 900,
+          }}
+        >
           {children}
         </YStack>
       ) : null}
@@ -107,43 +111,9 @@ type ProfileSidebarProps = {
   fullName?: string
 }
 
-export const ProfileSidebar = ({
-  sections,
-  activeSectionId,
-  onNavigate,
-  checklist,
-  completionPercentage,
-  avatarUrl,
-  fullName,
-}: ProfileSidebarProps) => {
+export const ProfileSidebar = ({ sections, activeSectionId, onNavigate }: ProfileSidebarProps) => {
   return (
-    <YStack
-      w={300}
-      gap="$6"
-      p="$4"
-      br="$6"
-      bg="$color1"
-      borderColor="$color4"
-      borderWidth={1}
-      $md={{ w: '100%' }}
-    >
-      <YStack gap="$3" ai="center">
-        <Avatar circular size={120} br="$10" overflow="hidden">
-          {avatarUrl ? (
-            <SolitoImage src={avatarUrl} alt="Profile avatar" width={120} height={120} />
-          ) : null}
-        </Avatar>
-        <SizableText size="$4" fontWeight="700" ta="center">
-          {fullName || 'Your profile'}
-        </SizableText>
-      </YStack>
-
-      <SettingsMenu sections={sections} activeSectionId={activeSectionId} onNavigate={onNavigate} />
-
-      {checklist && completionPercentage != null ? (
-        <ProfileProgressCard checklist={checklist} completionPercentage={completionPercentage} />
-      ) : null}
-    </YStack>
+    <SettingsMenu sections={sections} activeSectionId={activeSectionId} onNavigate={onNavigate} />
   )
 }
 
@@ -158,44 +128,39 @@ export const SettingsMenu = ({ sections, activeSectionId, onNavigate }: Settings
   const settingsLink = useLink({ href: '/settings' })
   const toast = useToastController()
 
-  return (
-    <Settings>
-      <Settings.Items>
-        <Settings.Group>
-          {sections.map((section) => (
-            <Settings.Item
-              key={section.id}
-              icon={section.icon}
-              isActive={section.id === activeSectionId}
-              accentTheme={section.accentTheme}
-              onPress={() => onNavigate?.(section.id)}
-            >
-              {section.label}
-            </Settings.Item>
-          ))}
-        </Settings.Group>
-        <Settings.Group>
-          <Settings.Item icon={Cog} {...settingsLink}>
-            Account settings
-          </Settings.Item>
-          <Settings.Item
-            icon={LogOut}
-            accentTheme="red"
-            onPress={async () => {
-              const { error } = await supabase.auth.signOut()
-              if (error) {
-                toast.show('Unable to sign out', {
-                  message: error.message,
-                })
-              }
-            }}
-          >
-            Sign out
-          </Settings.Item>
-        </Settings.Group>
-      </Settings.Items>
-    </Settings>
-  )
+  const menuItems: MenuItem[] = [
+    ...sections.map((section) => ({
+      id: section.id,
+      label: section.label,
+      icon: section.icon,
+      accentTheme: section.accentTheme,
+      isActive: section.id === activeSectionId,
+      onPress: () => onNavigate?.(section.id),
+    })),
+    {
+      id: 'account-settings',
+      label: 'Account settings',
+      icon: Cog,
+      href: settingsLink.href,
+      showSeparator: true,
+    },
+    {
+      id: 'sign-out',
+      label: 'Sign out',
+      icon: LogOut,
+      accentTheme: 'red',
+      onPress: async () => {
+        const { error } = await supabase.auth.signOut()
+        if (error) {
+          toast.show('Unable to sign out', {
+            message: error.message,
+          })
+        }
+      },
+    },
+  ]
+
+  return <SidebarMenu items={menuItems} />
 }
 
 type ProfileProgressCardProps = {
