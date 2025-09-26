@@ -77,41 +77,6 @@ export const EditProfileScreen = ({ onSuccess }: EditProfileScreenProps = {}) =>
     form.reset(formValues)
   }, [form, formValues, user?.id])
 
-  const sectionRefs = useRef<Record<string, HTMLElement | null>>({})
-  const [activeSectionId, setActiveSectionId] = useState<string>(PROFILE_SECTIONS[0]?.id ?? '')
-
-  const handleNavigateToSection = useCallback((sectionId: string) => {
-    const target = sectionRefs.current[sectionId]
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      setActiveSectionId(sectionId)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries
-          .filter((item) => item.isIntersecting)
-          .sort(
-            (a, b) => (a.target as HTMLElement).offsetTop - (b.target as HTMLElement).offsetTop
-          )[0]
-        if (entry?.target?.id) {
-          setActiveSectionId(entry.target.id)
-        }
-      },
-      { rootMargin: '-45% 0px -45% 0px', threshold: 0.1 }
-    )
-
-    PROFILE_SECTIONS.forEach((section) => {
-      const node = sectionRefs.current[section.id]
-      if (node) observer.observe(node)
-    })
-
-    return () => observer.disconnect()
-  }, [formValues])
-
   const mutation = useMutation({
     mutationFn: async (values: OnboardingFormValues) => {
       if (!user?.id) {
@@ -209,7 +174,7 @@ export const EditProfileScreen = ({ onSuccess }: EditProfileScreenProps = {}) =>
   }, [profile?.avatar_url, watchedValues])
 
   const completedCount = checklist.filter((item) => item.isCompleted).length
-  const completionPercentage = Math.round((completedCount / checklist.length) * 100)
+  const _completionPercentage = Math.round((completedCount / checklist.length) * 100)
 
   const isSaving = isProfilePending || mutation.isPending
 
@@ -225,72 +190,45 @@ export const EditProfileScreen = ({ onSuccess }: EditProfileScreenProps = {}) =>
     <FormProvider {...form}>
       <FormWrapper>
         <FormWrapper.Body gap="$8" px="$6" py="$6" $sm={{ px: '$3' }}>
-          <ProfileLayout
-            sections={PROFILE_SECTIONS}
-            activeSectionId={activeSectionId}
-            onNavigate={handleNavigateToSection}
-            checklist={checklist}
-            completionPercentage={completionPercentage}
-            avatarUrl={avatarUrl}
-            fullName={
-              `${watchedValues.firstName} ${watchedValues.lastName}`.trim() || profile?.name || ''
-            }
+          <ProfileSectionContainer
+            id="overview"
+            title="Profile overview"
+            description="Keep your public-facing details polished. Upload a photo and ensure your story reflects your craft."
           >
-            <ProfileSectionContainer
-              id="overview"
-              title="Profile overview"
-              description="Keep your public-facing details polished. Upload a photo and ensure your story reflects your craft."
-              registerRef={(node) => {
-                sectionRefs.current.overview = node
-              }}
-            >
-              <OverviewSection avatarUrl={avatarUrl} isSaving={isSaving} />
-            </ProfileSectionContainer>
+            <OverviewSection avatarUrl={avatarUrl} isSaving={isSaving} />
+          </ProfileSectionContainer>
 
-            <ProfileSectionContainer
-              id="basic-info"
-              title="Basic information"
-              description="Update your contact details and residency information so hiring teams know how to reach you."
-              registerRef={(node) => {
-                sectionRefs.current['basic-info'] = node
-              }}
-            >
-              <BasicInformationFields />
-            </ProfileSectionContainer>
+          <ProfileSectionContainer
+            id="basic-info"
+            title="Basic information"
+            description="Update your contact details and residency information so hiring teams know how to reach you."
+          >
+            <BasicInformationFields />
+          </ProfileSectionContainer>
 
-            <ProfileSectionContainer
-              id="work-skills"
-              title="Work & skills"
-              description="Share your experience, headline, and credentials to stand out for the right projects."
-              registerRef={(node) => {
-                sectionRefs.current['work-skills'] = node
-              }}
-            >
-              <WorkAndSkillsFields />
-            </ProfileSectionContainer>
+          <ProfileSectionContainer
+            id="work-skills"
+            title="Work & skills"
+            description="Share your experience, headline, and credentials to stand out for the right projects."
+          >
+            <WorkAndSkillsFields />
+          </ProfileSectionContainer>
 
-            <ProfileSectionContainer
-              id="travel-compliance"
-              title="Travel & compliance"
-              description="Let us know how far you’re willing to travel and which licenses you hold."
-              registerRef={(node) => {
-                sectionRefs.current['travel-compliance'] = node
-              }}
-            >
-              <TravelAndComplianceFields />
-            </ProfileSectionContainer>
+          <ProfileSectionContainer
+            id="travel-compliance"
+            title="Travel & compliance"
+            description="Let us know how far you're willing to travel and which licenses you hold."
+          >
+            <TravelAndComplianceFields />
+          </ProfileSectionContainer>
 
-            <ProfileSectionContainer
-              id="contact-availability"
-              title="Contact & availability"
-              description="Set how you prefer to communicate, when you’re available, and your desired rate."
-              registerRef={(node) => {
-                sectionRefs.current['contact-availability'] = node
-              }}
-            >
-              <ContactAndAvailabilityFields />
-            </ProfileSectionContainer>
-          </ProfileLayout>
+          <ProfileSectionContainer
+            id="contact-availability"
+            title="Contact & availability"
+            description="Set how you prefer to communicate, when you're available, and your desired rate."
+          >
+            <ContactAndAvailabilityFields />
+          </ProfileSectionContainer>
         </FormWrapper.Body>
 
         <FormWrapper.Footer>
