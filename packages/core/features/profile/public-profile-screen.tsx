@@ -19,20 +19,16 @@ import {
   Phone,
   ShieldCheck,
   Sparkles,
+  ThumbsDown,
+  ThumbsUp,
   Users,
 } from '@tamagui/lucide-icons'
+import { useState } from 'react'
 
 import {
   DashboardCard,
   SectionHeading,
 } from '@app/core/features/home/components/dashboard/primitives'
-
-type WorkExperience = {
-  company: string
-  role: string
-  period: string
-  highlights: string[]
-}
 
 type SimilarUser = {
   name: string
@@ -42,96 +38,7 @@ type SimilarUser = {
   skills: string[]
   certifications: string[]
 }
-
-const profile = {
-  name: 'Alicia Ramirez',
-  headline: 'Senior Electrical Foreman',
-  location: 'Houston, Texas',
-  summary:
-    'Licensed foreman with 12 years coordinating electrical crews across petrochemical and large-scale commercial projects. Specializes in fast-track turnarounds, power distribution upgrades, and mentoring apprentices transitioning into leadership roles.',
-  availability: 'Open to long-term contract leadership roles starting in July 2024',
-  travelRadius: 'Willing to travel up to 100 miles for priority projects',
-  stats: [
-    { label: 'Experience', value: '12 years' },
-    { label: 'Crew size managed', value: '8-24 tradespeople' },
-    { label: 'Notable projects', value: '17 delivered' },
-  ],
-  focusAreas: ['Power distribution upgrades', 'Industrial automation', 'Safety-first leadership'],
-  skills: {
-    core: [
-      'High-voltage terminations',
-      'Control panel commissioning',
-      'Conduit fabrication',
-      'QA/QC documentation',
-    ],
-    platforms: ['Allen-Bradley PLC', 'AutoCAD Electrical', 'Bluebeam Revu'],
-    leadership: ['Crew scheduling', 'Mentorship programs', 'Client walkdowns'],
-  },
-  certifications: [
-    {
-      name: 'OSHA 30-Hour Construction Safety',
-      issuer: 'Occupational Safety and Health Administration',
-      status: 'Active · Expires Sep 2026',
-    },
-    { name: 'NCCER Electrical Level 4', issuer: 'NCCER', status: 'Active · Verified 2024' },
-    { name: 'NFPA 70E Arc Flash Qualified', issuer: 'NFPA', status: 'Completed 2023' },
-    { name: 'TWIC Credential', issuer: 'Transportation Security Administration', status: 'Active' },
-  ],
-  safetyHighlights: [
-    'Zero recordable incidents across 6 consecutive turnarounds',
-    'Leads weekly safety stand-downs with bilingual materials',
-    'Implements lockout/tagout refreshers before each shift',
-  ],
-  languages: ['English', 'Spanish'],
-  affiliations: 'IBEW Local 716 · NCCER Certified Instructor',
-  projectHighlights: [
-    {
-      name: 'Baytown Petrochem Expansion',
-      location: 'Baytown, TX',
-      description:
-        'Managed electrical scope for $28M power distribution upgrade, coordinating with mechanical and civil leads.',
-      impact:
-        'Delivered two weeks early with 0 safety incidents and a 15% reduction in rework hours.',
-    },
-    {
-      name: 'Houston Ship Channel Automation Retrofit',
-      location: 'La Porte, TX',
-      description:
-        'Led night-shift crew reconfiguring control panels and SCADA instrumentation while maintaining live operations.',
-      impact:
-        'Achieved 98% first-pass inspection rate and kept uptime above 92% throughout cutover.',
-    },
-  ],
-  experience: [
-    {
-      company: 'Nexus Infrastructure',
-      role: 'Senior Electrical Foreman',
-      period: '2020 — Present',
-      highlights: [
-        'Supervise multi-discipline crews across petrochemical outages and brownfield upgrades.',
-        'Introduced digital job hazard analyses that decreased incident reports by 22%.',
-      ],
-    },
-    {
-      company: 'Gridworks Construction',
-      role: 'Electrical Foreman',
-      period: '2016 — 2020',
-      highlights: [
-        'Oversaw installation of switchgear and MCCs for two 500,000 sq ft logistics centers.',
-        'Developed bilingual onboarding playbook adopted across three regional offices.',
-      ],
-    },
-    {
-      company: 'Lighthouse Industrial Services',
-      role: 'Journeyman Electrician',
-      period: '2012 — 2016',
-      highlights: [
-        'Performed terminations and testing on MV cable pulls ranging from 5kV to 15kV.',
-        'Supported QA/QC walkdowns and redlined drawings for engineering updates.',
-      ],
-    },
-  ] satisfies WorkExperience[],
-}
+import { PublicProfileReviewSummary, usePublicProfile } from './hooks/use-public-profile'
 
 const similarUsers: SimilarUser[] = [
   {
@@ -176,7 +83,109 @@ const InfoChip = ({ label }: { label: string }) => (
   </YStack>
 )
 
-export const PublicProfileScreen = () => {
+type PublicProfileScreenProps = {
+  username: string
+}
+
+type FeedbackSelection = 'positive' | 'negative'
+
+const ReviewSummaryCard = ({
+  summary,
+  selectedFeedback,
+  onSelectFeedback,
+}: {
+  summary: PublicProfileReviewSummary
+  selectedFeedback: FeedbackSelection | null
+  onSelectFeedback: (intent: FeedbackSelection) => void
+}) => {
+  return (
+    <YStack
+      gap="$3"
+      borderWidth={1}
+      borderColor="$color4"
+      br="$4"
+      px="$4"
+      py="$3"
+      backgroundColor="$color2"
+    >
+      <XStack jc="space-between" ai="center" flexWrap="wrap" gap="$3">
+        <YStack gap="$1">
+          <Paragraph size="$2" color="$gray11">
+            Crew feedback snapshot
+          </Paragraph>
+          <SizableText size="$6" fontWeight="600">
+            {summary.averageRating.toFixed(1)} / 5
+          </SizableText>
+          <Paragraph size="$2" color="$gray11">
+            Based on {summary.totalReviews} reviews
+          </Paragraph>
+        </YStack>
+
+        <YStack gap="$2" ai="flex-end">
+          <XStack gap="$4">
+            <YStack gap="$1" ai="flex-end">
+              <Paragraph size="$2" color="$gray11">
+                Positive
+              </Paragraph>
+              <SizableText size="$5" fontWeight="600">
+                {summary.positivePercent}%
+              </SizableText>
+            </YStack>
+            <YStack gap="$1" ai="flex-end">
+              <Paragraph size="$2" color="$gray11">
+                Needs improvement
+              </Paragraph>
+              <SizableText size="$5" fontWeight="600">
+                {summary.negativePercent}%
+              </SizableText>
+            </YStack>
+          </XStack>
+          <Paragraph size="$1" color="$gray10">
+            {summary.lastUpdated}
+          </Paragraph>
+        </YStack>
+      </XStack>
+
+      <Separator borderColor="$color4" />
+
+      <XStack gap="$3" flexWrap="wrap">
+        <Button
+          size="$3"
+          icon={<ThumbsUp size={16} />}
+          backgroundColor={selectedFeedback === 'positive' ? '$green5' : '$color2'}
+          color={selectedFeedback === 'positive' ? '$green11' : '$gray12'}
+          borderColor={selectedFeedback === 'positive' ? '$green6' : '$color5'}
+          borderWidth={1}
+          onPress={() => onSelectFeedback('positive')}
+          aria-pressed={selectedFeedback === 'positive'}
+        >
+          Looks like a good fit
+        </Button>
+        <Button
+          size="$3"
+          icon={<ThumbsDown size={16} />}
+          backgroundColor={selectedFeedback === 'negative' ? '$red5' : '$color2'}
+          color={selectedFeedback === 'negative' ? '$red11' : '$gray12'}
+          borderColor={selectedFeedback === 'negative' ? '$red6' : '$color5'}
+          borderWidth={1}
+          onPress={() => onSelectFeedback('negative')}
+          aria-pressed={selectedFeedback === 'negative'}
+        >
+          Need to learn more
+        </Button>
+      </XStack>
+    </YStack>
+  )
+}
+
+export const PublicProfileScreen = ({ username }: PublicProfileScreenProps) => {
+  const [selectedFeedback, setSelectedFeedback] = useState<FeedbackSelection | null>(null)
+  const { data: profile } = usePublicProfile(username)
+
+  if (!profile) {
+    return null
+  }
+
   return (
     <XStack
       w="100%"
@@ -239,7 +248,7 @@ export const PublicProfileScreen = () => {
 
                 <XStack gap="$3" flexWrap="wrap">
                   <Button size="$3" icon={<Phone size={16} />} chromeless>
-                    (832) 555-0198
+                    {profile.contact.phone}
                   </Button>
                   <Button size="$3" icon={<Briefcase size={16} />} chromeless>
                     Refer Alicia to a project
@@ -262,6 +271,12 @@ export const PublicProfileScreen = () => {
                 </YStack>
               ))}
             </XStack>
+
+            <ReviewSummaryCard
+              summary={profile.reviewSummary}
+              selectedFeedback={selectedFeedback}
+              onSelectFeedback={setSelectedFeedback}
+            />
           </DashboardCard>
 
           <DashboardCard gap="$4">
