@@ -7,16 +7,16 @@ export type NewsSource = {
 
 export const NEWS_SOURCES: NewsSource[] = [
   {
+    id: '1',
+    label: 'Global News (ENR National)',
+    feedUrl: 'https://www.enr.com/rss/1',
+    siteUrl: 'https://www.enr.com/',
+  },
+  {
     id: 'articles',
     label: 'Top Stories',
     feedUrl: 'https://www.enr.com/rss/articles',
     siteUrl: 'https://www.enr.com/articles',
-  },
-  {
-    id: '1',
-    label: 'ENR National',
-    feedUrl: 'https://www.enr.com/rss/1',
-    siteUrl: 'https://www.enr.com/',
   },
   {
     id: '2',
@@ -80,7 +80,7 @@ export const NEWS_SOURCES: NewsSource[] = [
   },
 ]
 
-export const DEFAULT_NEWS_SOURCE_ID = NEWS_SOURCES[0]?.id ?? ''
+export const DEFAULT_NEWS_SOURCE_ID = '1'
 
 export const NEWS_SOURCE_LOOKUP = NEWS_SOURCES.reduce<Record<string, NewsSource>>(
   (accumulator, source) => {
