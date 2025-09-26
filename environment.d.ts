@@ -16,6 +16,9 @@ declare global {
 
       EXPO_PUBLIC_SUPABASE_ANON_KEY: string
       NEXT_PUBLIC_SUPABASE_ANON_KEY: string
+
+      EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN: string
+      NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: string
     }
   }
 }

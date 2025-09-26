@@ -1,6 +1,8 @@
 import {
   AddressField,
   AddressSchema,
+  AddressAutocompleteField,
+  AddressAutocompleteSchema,
   BooleanCheckboxField,
   BooleanField,
   BooleanSwitchField,
@@ -51,6 +53,10 @@ export const formFields = {
    * example of how to handle more complex fields
    */
   address: createUniqueFieldSchema(AddressSchema, 'address'),
+  /**
+   * address field with autocomplete functionality
+   */
+  addressAutocomplete: createUniqueFieldSchema(AddressAutocompleteSchema, 'addressAutocomplete'),
   date: createUniqueFieldSchema(DateSchema, 'date'),
   image: createUniqueFieldSchema(ImagePickerSchema, 'image'),
 }
@@ -68,6 +74,7 @@ const mapping = [
   [formFields.boolean_checkbox, BooleanCheckboxField] as const,
   [formFields.select, SelectField] as const,
   [formFields.address, AddressField] as const,
+  [formFields.addressAutocomplete, AddressAutocompleteField] as const,
   [formFields.date, DateField] as const,
   [formFields.image, ImagePickerField] as const,
 ] as const

@@ -28,49 +28,52 @@ export const HomeLayout = ({ children, fullPage = false, padded = false }: HomeL
     (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
   )
   const headerTitle = activeItem?.title ?? 'Dashboard'
+  const isDiscoverPage = pathname === '/discover'
 
   return (
     <XStack f={1} backgroundColor="$color1" minHeight="100vh">
       {media.gtSm && <StaticDrawer />}
       <YStack f={1} minWidth={0}>
-        <XStack
-          ai="center"
-          px="$4"
-          py="$3"
-          borderBottomWidth={1}
-          borderColor="$color4"
-          backgroundColor="$color1"
-          gap="$4"
-          jc="space-between"
-        >
-          <XStack ai="center" gap="$3" flexShrink={1} minWidth={0}>
-            {!media.gtSm && (
-              <Dialog open={drawerOpen} onOpenChange={setDrawerOpen} modal>
-                <Dialog.Trigger asChild>
-                  <Button
-                    size="$4"
-                    chromeless
-                    icon={<Menu size={28} />}
-                    onPress={() => setDrawerOpen(true)}
-                  />
-                </Dialog.Trigger>
-                <Dialog.Portal>
-                  <Dialog.Overlay backgroundColor="rgba(0,0,0,0.4)" />
-                  <Dialog.Content width={320} maxWidth="90%" animation="quick" gap="$0">
-                    <StaticDrawer onNavigate={() => setDrawerOpen(false)} />
-                  </Dialog.Content>
-                </Dialog.Portal>
-              </Dialog>
-            )}
-            <SizableText size="$6" fontWeight="700" flexShrink={1} minWidth={0}>
-              {headerTitle}
-            </SizableText>
+        {!isDiscoverPage && (
+          <XStack
+            ai="center"
+            px="$4"
+            py="$3"
+            borderBottomWidth={1}
+            borderColor="$color4"
+            backgroundColor="$color1"
+            gap="$4"
+            jc="space-between"
+          >
+            <XStack ai="center" gap="$3" flexShrink={1} minWidth={0}>
+              {!media.gtSm && (
+                <Dialog open={drawerOpen} onOpenChange={setDrawerOpen} modal>
+                  <Dialog.Trigger asChild>
+                    <Button
+                      size="$4"
+                      chromeless
+                      icon={<Menu size={28} />}
+                      onPress={() => setDrawerOpen(true)}
+                    />
+                  </Dialog.Trigger>
+                  <Dialog.Portal>
+                    <Dialog.Overlay backgroundColor="rgba(0,0,0,0.4)" />
+                    <Dialog.Content width={320} maxWidth="90%" animation="quick" gap="$0">
+                      <StaticDrawer onNavigate={() => setDrawerOpen(false)} />
+                    </Dialog.Content>
+                  </Dialog.Portal>
+                </Dialog>
+              )}
+              <SizableText size="$6" fontWeight="700" flexShrink={1} minWidth={0}>
+                {headerTitle}
+              </SizableText>
+            </XStack>
+            <XStack ai="center" gap="$3" flexGrow={1} justifyContent="flex-end" minWidth={0}>
+              <HeaderSearch />
+              <NotificationButton />
+            </XStack>
           </XStack>
-          <XStack ai="center" gap="$3" flexGrow={1} justifyContent="flex-end" minWidth={0}>
-            <HeaderSearch />
-            <NotificationButton />
-          </XStack>
-        </XStack>
+        )}
         <YStack
           f={1}
           {...(fullPage && { flex: 1 })}

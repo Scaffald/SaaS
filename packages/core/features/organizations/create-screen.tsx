@@ -42,14 +42,14 @@ const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 const OrganizationSchema = z
   .object({
-    name: formFields.text.describe('Organization name // Copperworks').min(2, 'Name is required'),
-    slug: formFields.text.describe('Organization slug // copperworks').min(1, 'Slug is required'),
+    name: formFields.text.describe('Organization name // Acme Corp').min(2, 'Name is required'),
+    slug: formFields.text.describe('Organization slug // acme-corp').min(1, 'Slug is required'),
     description: formFields.textarea.describe('About the organization').optional(),
     websiteUrl: formFields.text.describe('Website URL // https://www.example.com').optional(),
     industryId: formFields.select.describe('Industry').optional(),
     employeeCountRange: formFields.select.describe('Number of employees').optional(),
     annualRevenueRange: formFields.select.describe('Annual revenue').optional(),
-    location: formFields.address.describe('Headquarters location').optional(),
+    location: formFields.addressAutocomplete.describe('Headquarters location').optional(),
   })
   .superRefine((value, ctx) => {
     if (value.slug && !slugRegex.test(value.slug)) {
@@ -188,6 +188,11 @@ const CreateOrganizationForm = ({ userId }: OrganizationFormProps) => {
           ? {
               street: values.location.street.trim(),
               zipCode: values.location.zipCode.trim(),
+              city: values.location.city?.trim() || null,
+              state: values.location.state?.trim() || null,
+              country: values.location.country?.trim() || null,
+              fullAddress: values.location.fullAddress?.trim() || null,
+              coordinates: values.location.coordinates || null,
             }
           : null,
         p_visibility: 'public' as const,
