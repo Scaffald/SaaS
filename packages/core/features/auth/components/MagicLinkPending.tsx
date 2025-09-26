@@ -1,7 +1,7 @@
 import { Button, H2, Paragraph, SubmitButton, Theme, YStack } from '@app/ui'
 import { ChevronLeft } from '@tamagui/lucide-icons'
-import { SchemaForm, formFields } from 'app/utils/SchemaForm'
-import { useSupabase } from 'app/utils/supabase/useSupabase'
+import { SchemaForm, formFields } from '@app/core/utils/SchemaForm'
+import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 

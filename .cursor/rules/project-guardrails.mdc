@@ -1,0 +1,66 @@
+---
+description: "SCF-Neue Project Guard Rails - Essential development practices and tooling guidelines"
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# SCF-Neue Project Guard Rails
+
+## Package Manager & Tooling
+- **ALWAYS use `yarn` instead of `npm`** - This is a yarn workspace monorepo
+- **ALWAYS use `yarn supabase` or `yarn supa`** instead of global supabase CLI
+- **NEVER run `npm run dev`** - Use specific workspace commands instead
+
+## Server Management
+- **ASSUME servers are already running** on default ports:
+  - Next.js web app: `http://localhost:3000` (via `yarn web`)
+  - Expo dev server: `http://localhost:8081` (via `yarn native`)
+  - Supabase local: `http://localhost:54321` (via `yarn supa start`)
+- **DO NOT start development servers** unless explicitly requested - they may run as background processes
+- **DO NOT run `next dev` or `expo start`** directly - use workspace commands
+
+## Testing & Validation
+- **ALWAYS prompt user to test** in the actual client application
+- **Suggest using browser extensions** (like REST Client, Postman, or Thunder Client) for API testing
+- **Recommend curl commands** for quick API validation
+- **Encourage testing in both web and mobile** environments when applicable
+
+## Git Context & Debugging
+- **ALWAYS check git log and history** when addressing bug fixes or errors
+- **Use `git log --oneline -10`** to understand recent changes
+- **Check `git diff`** to see what changed recently
+- **Look at commit messages** for context about recent modifications
+- **Use `git blame`** to understand who made specific changes
+
+## Workspace Commands Reference
+- Web development: `yarn web` (Next.js on port 3000)
+- Mobile development: `yarn native` (Expo on port 8081)
+- Supabase operations: `yarn supa` (local Supabase)
+- Storybook web: `yarn storybook:web`
+- Storybook native: `yarn storybook:native`
+- Type checking: `yarn typecheck`
+- Linting: `yarn lint`
+- Building: `yarn build`
+
+## File Structure Awareness
+- This is a **monorepo** with workspaces in `apps/` and `packages/`
+- Core features are in `packages/core/features/`
+- UI components are in `packages/ui/` (cross-platform, reusable components)
+- Supabase config is in `supabase/` directory
+- Each app has its own `package.json` and dependencies
+
+## UI Development Standards
+- **ALWAYS prefer Tamagui vanilla components** when creating/updating UI
+- **ALWAYS prefer Bento components** for complex UI patterns
+- **CREATE reusable components** in `packages/ui/` directory
+- **MAKE components cross-platform** and well-documented
+- **REFACTOR components** to be clean and modular
+
+## Development Workflow
+1. **Check if servers are running** before suggesting to start them
+2. **Use workspace-specific commands** for each app
+3. **Test changes in actual clients** rather than assuming they work
+4. **Check git history** for context on bugs or issues
+5. **Use yarn workspace commands** for package-specific operations
+6. **Run code quality checks** (`yarn format:fix`, `yarn lint:fix`) when making changes
+7. **Aim for zero formatting errors** and minimal linting warnings

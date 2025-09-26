@@ -507,6 +507,19 @@ const ControllerTextArea = ({
   )
 }
 
+  const { params } = useParams()
+  const supabase = useSupabase()
+  const toast = useToastController()
+  const queryClient = useQueryClient()
+  const _apiUtils = api.useUtils()
+  const mutation = useMutation({
+    async mutationFn(data: z.infer<typeof ProfileSchema>) {
+      await supabase
+        .from('profiles')
+        .update({ name: data.name, about: data.about })
+        .eq('id', userId)
+    },
+
 const ControllerAddress = ({
   control,
   name,

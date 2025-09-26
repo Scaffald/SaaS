@@ -1,0 +1,36 @@
+---
+description: "React Native and Expo development guidelines"
+globs: ["apps/expo/**/*", "**/*.native.*", "**/*.ios.*", "**/*.android.*"]
+alwaysApply: false
+---
+
+# React Native & Expo Development Rules
+
+## Command Usage
+- **ALWAYS use `yarn native`** instead of `expo start` directly
+- **ALWAYS use `yarn ios`** for iOS development
+- **ALWAYS use `yarn android`** for Android development
+- **NEVER run `expo start`** directly - use workspace commands
+
+## Server Assumptions
+- **ASSUME Expo dev server** is running on `http://localhost:8081`
+- **ASSUME Metro bundler** is running and watching for changes
+- **DO NOT start Expo servers** unless explicitly requested
+
+## Development Workflow
+- **Test on actual devices** when possible
+- **Use Expo Go app** for quick testing
+- **Test on both iOS and Android** when making platform-specific changes
+- **Use `yarn storybook:native`** for component development
+
+## Platform-Specific Files
+- `.native.tsx` - React Native specific implementations
+- `.ios.tsx` - iOS specific implementations  
+- `.android.tsx` - Android specific implementations
+- `.web.tsx` - Web specific implementations
+
+## Testing Approach
+- **Prompt user to test** on actual device or simulator
+- **Suggest using Expo Go** for quick testing
+- **Recommend testing on both platforms** for cross-platform features
+- **Use Storybook native** for isolated component testing
