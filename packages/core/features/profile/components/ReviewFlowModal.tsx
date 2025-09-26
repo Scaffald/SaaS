@@ -86,7 +86,9 @@ export const ReviewFlowModal = ({
     const unique = new Set<string>(
       [...subjectSkills, ...SOFT_SKILL_OPTIONS].map((skill) => skill.trim())
     )
-    return Array.from(unique).filter(Boolean).sort((a, b) => a.localeCompare(b))
+    return Array.from(unique)
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b))
   }, [subjectSkills])
 
   const initialState = useMemo(() => createInitialState(allSkills), [allSkills])
@@ -189,9 +191,7 @@ export const ReviewFlowModal = ({
       return
     }
     if (
-      draftState.recommendedSkills.some(
-        (skill) => skill.toLowerCase() === trimmed.toLowerCase()
-      )
+      draftState.recommendedSkills.some((skill) => skill.toLowerCase() === trimmed.toLowerCase())
     ) {
       setValidationError('That skill is already recommended.')
       return
@@ -292,12 +292,7 @@ export const ReviewFlowModal = ({
   ])
 
   const stepTitles = useMemo(
-    () => [
-      'Skill ratings',
-      'Soft-skill evaluation',
-      'Skill recommendations',
-      'Summary & submit',
-    ],
+    () => ['Skill ratings', 'Soft-skill evaluation', 'Skill recommendations', 'Summary & submit'],
     []
   )
 
@@ -408,7 +403,11 @@ export const ReviewFlowModal = ({
           </Paragraph>
           <XStack gap="$2" flexWrap="wrap">
             {draftState.recommendedSkills.map((skill) => (
-              <FilterChip key={skill} label={skill} onRemove={() => handleRemoveRecommendation(skill)} />
+              <FilterChip
+                key={skill}
+                label={skill}
+                onRemove={() => handleRemoveRecommendation(skill)}
+              />
             ))}
           </XStack>
         </YStack>
@@ -519,7 +518,8 @@ export const ReviewFlowModal = ({
                 Review {subjectName}
               </SizableText>
               <Paragraph size="$3" color="$gray11">
-                Step {draftState.currentStep + 1} of {totalSteps}: {stepTitles[draftState.currentStep]}
+                Step {draftState.currentStep + 1} of {totalSteps}:{' '}
+                {stepTitles[draftState.currentStep]}
               </Paragraph>
             </YStack>
             <Dialog.Close asChild>
@@ -584,4 +584,3 @@ const SummarySection = ({ title, items, emptyLabel }: SummarySectionProps) => (
     )}
   </YStack>
 )
-

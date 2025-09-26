@@ -1,0 +1,32 @@
+---
+description: "Supabase-specific development guidelines and commands"
+globs: ["supabase/**/*", "**/*supabase*", "**/*.sql"]
+alwaysApply: false
+---
+
+# Supabase Development Rules
+
+## Command Usage
+- **ALWAYS use `yarn supa` or `yarn workspace @app/supabase`** instead of global supabase CLI
+- **NEVER use `supabase` directly** - always go through yarn workspace
+
+## Common Supabase Commands
+- Start local Supabase: `yarn supa start`
+- Stop local Supabase: `yarn supa stop`
+- Generate types: `yarn supa generate` (local) or `yarn supa generate:remote`
+- Create migration: `yarn supa migration:new <name>`
+- Apply migrations: `yarn supa migration:up`
+- Reset database: `yarn supa reset`
+- Check status: `yarn supa status`
+
+## Development Workflow
+- **ASSUME Supabase is running** on `http://localhost:54321` unless told otherwise
+- **Check `yarn supa status`** before suggesting database operations
+- **Use local types generation** (`yarn supa generate`) for development
+- **Test API endpoints** using browser extensions or curl, not by starting servers
+
+## File Locations
+- Supabase config: `supabase/config.toml`
+- Migrations: `supabase/migrations/`
+- Types: `supabase/types.ts`
+- Seed data: `supabase/seed.sql`

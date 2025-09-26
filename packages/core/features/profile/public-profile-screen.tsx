@@ -1,4 +1,13 @@
-import { Avatar, Button, Paragraph, ScrollView, Separator, SizableText, XStack, YStack } from '@app/ui'
+import {
+  Avatar,
+  Button,
+  Paragraph,
+  ScrollView,
+  Separator,
+  SizableText,
+  XStack,
+  YStack,
+} from '@app/ui'
 import {
   Award,
   BadgeCheck,
@@ -122,15 +131,7 @@ const ReviewSkeletonBlock = ({
 }: {
   width: number | string
   height?: number
-}) => (
-  <YStack
-    w={width}
-    h={height}
-    br="$4"
-    backgroundColor="$color4"
-    opacity={0.4}
-  />
-)
+}) => <YStack w={width} h={height} br="$4" backgroundColor="$color4" opacity={0.4} />
 
 const StarRating = ({ rating }: { rating: number }) => (
   <XStack gap="$1">
@@ -159,17 +160,17 @@ const ReviewChipRow = ({
       {label}
     </Paragraph>
     <XStack gap="$2" flexWrap="wrap">
-      {isLoading && items.length === 0
-        ? Array.from({ length: 3 }).map((_, index) => (
-            <ReviewSkeletonBlock key={`skeleton-${label}-${index}`} width={120} height={28} />
-          ))
-        : items.length > 0
-          ? items.map((item) => <InfoChip key={`${label}-${item}`} label={item} />)
-          : (
-              <Paragraph size="$2" color="$gray10">
-                No feedback recorded yet.
-              </Paragraph>
-            )}
+      {isLoading && items.length === 0 ? (
+        Array.from({ length: 3 }).map((_, index) => (
+          <ReviewSkeletonBlock key={`skeleton-${label}-${index}`} width={120} height={28} />
+        ))
+      ) : items.length > 0 ? (
+        items.map((item) => <InfoChip key={`${label}-${item}`} label={item} />)
+      ) : (
+        <Paragraph size="$2" color="$gray10">
+          No feedback recorded yet.
+        </Paragraph>
+      )}
     </XStack>
   </YStack>
 )
@@ -359,11 +360,7 @@ const ReviewFeedCard = ({ query, viewerDraftHref, profileName }: ReviewFeedCardP
           ))}
 
           {hasNextPage ? (
-            <Button
-              size="$3"
-              onPress={() => fetchNextPage()}
-              disabled={isFetchingNextPage}
-            >
+            <Button size="$3" onPress={() => fetchNextPage()} disabled={isFetchingNextPage}>
               {isFetchingNextPage ? 'Loading more…' : 'Load more reviews'}
             </Button>
           ) : null}
@@ -383,14 +380,11 @@ export const PublicProfileScreen = ({ username }: PublicProfileScreenProps) => {
     return null
   }
 
-  const combinedSummary = mapToProfileReviewSummary(
-    reviewSummaryQuery.data,
-    profile.reviewSummary
-  )
+  const combinedSummary = mapToProfileReviewSummary(reviewSummaryQuery.data, profile.reviewSummary)
 
   const viewerDraft = combinedSummary?.viewerDraft ?? null
   const viewerDraftHref = viewerDraft
-    ? viewerDraft.href ?? `/reviews/${viewerDraft.reviewId}`
+    ? (viewerDraft.href ?? `/reviews/${viewerDraft.reviewId}`)
     : null
 
   return (

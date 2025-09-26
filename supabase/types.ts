@@ -951,6 +951,78 @@ export type Database = {
           },
         ]
       }
+      review_skill_suggestions: {
+        Row: {
+          created_at: string
+          id: string
+          review_id: string
+          suggested_label: string | null
+          suggested_skill_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          review_id: string
+          suggested_label?: string | null
+          suggested_skill_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          review_id?: string
+          suggested_label?: string | null
+          suggested_skill_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'review_skill_suggestions_review_id_fkey'
+            columns: ['review_id']
+            isOneToOne: false
+            referencedRelation: 'reviews'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'review_skill_suggestions_suggested_skill_id_fkey'
+            columns: ['suggested_skill_id']
+            isOneToOne: false
+            referencedRelation: 'skills'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      review_soft_skill_votes: {
+        Row: {
+          created_at: string
+          review_id: string
+          skill_id: string
+        }
+        Insert: {
+          created_at?: string
+          review_id: string
+          skill_id: string
+        }
+        Update: {
+          created_at?: string
+          review_id?: string
+          skill_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'review_soft_skill_votes_review_id_fkey'
+            columns: ['review_id']
+            isOneToOne: false
+            referencedRelation: 'reviews'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'review_soft_skill_votes_skill_id_fkey'
+            columns: ['skill_id']
+            isOneToOne: false
+            referencedRelation: 'skills'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       reviews: {
         Row: {
           author_user_id: string
@@ -958,11 +1030,16 @@ export type Database = {
           created_at: string
           headline: string | null
           id: string
+          is_comment_public: boolean
           kind: string
           metadata: Json | null
+          reaction: number | null
           rating: number | null
+          revealed_at: string | null
+          status: Database['public']['Enums']['review_status']
           subject_id: string
           subject_type: string
+          submitted_at: string | null
           updated_at: string
         }
         Insert: {
@@ -971,11 +1048,16 @@ export type Database = {
           created_at?: string
           headline?: string | null
           id?: string
+          is_comment_public?: boolean
           kind?: string
           metadata?: Json | null
+          reaction?: number | null
           rating?: number | null
+          revealed_at?: string | null
+          status?: Database['public']['Enums']['review_status']
           subject_id: string
           subject_type: string
+          submitted_at?: string | null
           updated_at?: string
         }
         Update: {
@@ -984,11 +1066,16 @@ export type Database = {
           created_at?: string
           headline?: string | null
           id?: string
+          is_comment_public?: boolean
           kind?: string
           metadata?: Json | null
+          reaction?: number | null
           rating?: number | null
+          revealed_at?: string | null
+          status?: Database['public']['Enums']['review_status']
           subject_id?: string
           subject_type?: string
+          submitted_at?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -3934,6 +4021,7 @@ export type Database = {
     }
     Enums: {
       affiliate_type: 'education' | 'certification' | 'training' | 'resource'
+      review_status: 'draft' | 'submitted' | 'released'
       profile_verification_subject: 'profile' | 'user' | 'user_private' | 'project'
     }
     CompositeTypes: {

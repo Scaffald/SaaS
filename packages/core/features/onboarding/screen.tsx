@@ -27,8 +27,8 @@ import {
 } from '@tamagui/lucide-icons'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useSupabase } from 'app/utils/supabase/useSupabase'
-import { useUser } from 'app/utils/useUser'
+import { useSupabase } from '@app/core/utils/supabase/useSupabase'
+import { useUser } from '@app/core/utils/useUser'
 import { useRouter } from 'solito/router'
 import { Controller, useForm } from 'react-hook-form'
 import type { UseFormReturn } from 'react-hook-form'
@@ -1242,32 +1242,32 @@ const CheckboxRow = ({ label, checked, onCheckedChange }: CheckboxRowProps) => {
   )
 }
 
-type ToggleRowProps = {
-  label: string
-  description?: string
-  checked: boolean
-  onCheckedChange: (checked: boolean) => void
-}
+// type ToggleRowProps = {
+//   label: string
+//   description?: string
+//   checked: boolean
+//   onCheckedChange: (checked: boolean) => void
+// }
 
-const ToggleRow = ({ label, description, checked, onCheckedChange }: ToggleRowProps) => {
-  return (
-    <XStack ai="center" jc="space-between" gap="$3" $sm={{ fd: 'column', ai: 'flex-start' }}>
-      <YStack gap={2}>
-        <Paragraph size="$3" fontWeight="600">
-          {label}
-        </Paragraph>
-        {description ? (
-          <Paragraph size="$2" color="$gray11">
-            {description}
-          </Paragraph>
-        ) : null}
-      </YStack>
-      <Switch checked={checked} onCheckedChange={(value) => onCheckedChange(Boolean(value))}>
-        <Switch.Thumb />
-      </Switch>
-    </XStack>
-  )
-}
+// const ToggleRow = ({ label, description, checked, onCheckedChange }: ToggleRowProps) => {
+//   return (
+//     <XStack ai="center" jc="space-between" gap="$3" $sm={{ fd: 'column', ai: 'flex-start' }}>
+//       <YStack gap={2}>
+//         <Paragraph size="$3" fontWeight="600">
+//           {label}
+//         </Paragraph>
+//         {description ? (
+//           <Paragraph size="$2" color="$gray11">
+//             {description}
+//           </Paragraph>
+//         ) : null}
+//       </YStack>
+//       <Switch checked={checked} onCheckedChange={(value) => onCheckedChange(Boolean(value))}>
+//         <Switch.Thumb />
+//       </Switch>
+//     </XStack>
+//   )
+// }
 
 type ChoiceChipsProps = {
   value: string
