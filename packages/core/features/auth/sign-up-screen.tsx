@@ -10,8 +10,8 @@ import {
   isWeb,
 } from '@app/ui'
 import { ChevronLeft } from '@tamagui/lucide-icons'
-import { SchemaForm, formFields } from 'app/utils/SchemaForm'
-import { useSupabase } from 'app/utils/supabase/useSupabase'
+import { SchemaForm, formFields } from '@app/core/utils/SchemaForm'
+import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import { useEffect } from 'react'
 import { FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form'
 import { createParam } from 'solito'
@@ -24,7 +24,6 @@ const { useParams, useUpdateParams } = createParam<{ email?: string }>()
 
 const SignUpSchema = z.object({
   email: formFields.text.email().describe('Email // your@email.acme'),
-  password: formFields.text.min(6).describe('Password // Choose a password'),
 })
 
 export const SignUpScreen = () => {
@@ -40,17 +39,12 @@ export const SignUpScreen = () => {
 
   const form = useForm<z.infer<typeof SignUpSchema>>()
 
-  async function signUpWithEmail({ email, password }: z.infer<typeof SignUpSchema>) {
-    const { error } = await supabase.auth.signUp({
+  async function sendMagicLink({ email }: z.infer<typeof SignUpSchema>) {
+    const { error } = await supabase.auth.signInWithOtp({
       email,
-      password,
       options: {
         emailRedirectTo: `${process.env.NEXT_PUBLIC_URL}`,
-        // To take user's name other info
-        data: {
-          // first_name: firstName, // coming from state
-          // last_name: lastName,
-        },
+        shouldCreateUser: true,
       },
     })
 
@@ -58,11 +52,8 @@ export const SignUpScreen = () => {
       const errorMessage = error?.message.toLowerCase()
       if (errorMessage.includes('email')) {
         form.setError('email', { type: 'custom', message: errorMessage })
-      } else if (errorMessage.includes('password')) {
-        form.setError('password', { type: 'custom', message: errorMessage })
-      } else {
-        form.setError('password', { type: 'custom', message: errorMessage })
       }
+      throw error
     }
   }
 
@@ -76,19 +67,13 @@ export const SignUpScreen = () => {
           schema={SignUpSchema}
           defaultValues={{
             email: params?.email || '',
-            password: '',
           }}
-          props={{
-            password: {
-              secureTextEntry: true,
-            },
-          }}
-          onSubmit={signUpWithEmail}
+          onSubmit={sendMagicLink}
           renderAfter={({ submit }) => (
             <>
               <Theme inverse>
                 <SubmitButton onPress={() => submit()} br="$10">
-                  Sign Up
+                  Send magic link
                 </SubmitButton>
               </Theme>
               <SignInLink />
@@ -98,14 +83,16 @@ export const SignUpScreen = () => {
         >
           {(fields) => (
             <>
-              <YStack gap="$3" mb="$4">
-                <H2 $sm={{ size: '$8' }}>Get Started</H2>
-                <Paragraph theme="alt2">Create a new account</Paragraph>
-              </YStack>
-              {Object.values(fields)}
-              {!isWeb && (
-                <YStack mt="$4">
-                  <SocialLogin />
+            <YStack gap="$3" mb="$4">
+              <H2 $sm={{ size: '$8' }}>Get started</H2>
+              <Paragraph theme="alt2">
+                Enter your email and we&apos;ll send a one-time sign-in link.
+              </Paragraph>
+            </YStack>
+            {Object.values(fields)}
+            {!isWeb && (
+              <YStack mt="$4">
+                <SocialLogin />
                 </YStack>
               )}
             </>
@@ -136,10 +123,9 @@ const CheckYourEmail = () => {
     <FormWrapper>
       <FormWrapper.Body>
         <YStack gap="$3">
-          <H2>Check Your Email</H2>
+          <H2>Check your email</H2>
           <Paragraph theme="alt1">
-            We&apos;ve sent you a confirmation link. Please check your email ({email}) and confirm
-            it.
+            We&apos;ve sent a magic link to {email}. Open it to finish signing up.
           </Paragraph>
         </YStack>
       </FormWrapper.Body>

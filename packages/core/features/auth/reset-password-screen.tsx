@@ -26,8 +26,14 @@ export const ResetPasswordScreen = () => {
 
   const form = useForm<z.infer<typeof ResetPasswordSchema>>()
 
-  async function resetPassword({ email }: z.infer<typeof ResetPasswordSchema>) {
-    const { error } = await supabase.auth.resetPasswordForEmail(email)
+  async function sendMagicLink({ email }: z.infer<typeof ResetPasswordSchema>) {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_URL}`,
+        shouldCreateUser: false,
+      },
+    })
 
     if (error) {
       const errorMessage = error?.message.toLowerCase()
@@ -36,6 +42,7 @@ export const ResetPasswordScreen = () => {
       } else {
         form.setError('email', { type: 'custom', message: errorMessage })
       }
+      throw error
     }
   }
 
@@ -50,13 +57,13 @@ export const ResetPasswordScreen = () => {
           defaultValues={{
             email: params?.email || '',
           }}
-          onSubmit={resetPassword}
+          onSubmit={sendMagicLink}
           renderAfter={({ submit }) => {
             return (
               <>
                 <Theme inverse>
                   <SubmitButton onPress={() => submit()} br="$10">
-                    Send Link
+                    Send magic link
                   </SubmitButton>
                 </Theme>
                 <SignInLink />
@@ -67,9 +74,9 @@ export const ResetPasswordScreen = () => {
           {(fields) => (
             <>
               <YStack gap="$3" mb="$4">
-                <H2 $sm={{ size: '$8' }}>Reset your password</H2>
+                <H2 $sm={{ size: '$8' }}>Email me a link</H2>
                 <Paragraph theme="alt1">
-                  Type in your email and we&apos;ll send you a link to reset your password
+                  Enter your email and we&apos;ll send you a one-time sign-in link.
                 </Paragraph>
               </YStack>
               {Object.values(fields)}
@@ -89,9 +96,9 @@ const CheckYourEmail = () => {
     <FormWrapper>
       <FormWrapper.Body>
         <YStack gap="$3">
-          <H2>Check Your Email</H2>
+          <H2>Check your email</H2>
           <Paragraph theme="alt1">
-            We&apos;ve sent you a reset link. Please check your email ({email}) and confirm it.
+            We&apos;ve sent a magic link to {email}. Open it to get back into your account.
           </Paragraph>
         </YStack>
       </FormWrapper.Body>
