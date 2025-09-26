@@ -15,7 +15,7 @@ import { useLink } from 'solito/link'
 
 export const OrganizationsScreen = () => {
   const media = useMedia()
-  const pathname = usePathname()
+  const _pathname = usePathname()
   const createLink = useLink({ href: '/organizations/new' })
 
   const menuItems: MenuItem[] = [

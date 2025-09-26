@@ -18,11 +18,6 @@ export type ContentWrapperProps = {
 export const ContentWrapper = ({ title, children, footer }: ContentWrapperProps) => {
   return (
     <FormWrapper>
-      {isWeb && title && (
-        <YStack px="$4" py="$4" pb="$2">
-          <H2>{title}</H2>
-        </YStack>
-      )}
       <FormWrapper.Body mt="$2" gap="$10">
         {children}
       </FormWrapper.Body>
