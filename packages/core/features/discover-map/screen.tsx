@@ -5,6 +5,7 @@ import { Button, Paragraph, Separator, Sheet, Text, XStack, YStack, useMedia } f
 import { Filter, RefreshCw } from '@tamagui/lucide-icons'
 
 import { FilterBar } from './components/FilterBar'
+import { RadiusSlider } from './components/RadiusSlider'
 import { ResultList } from './components/ResultList'
 import { defaultCenter, defaultRadiusMeters } from './data/mockProfiles'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
@@ -12,13 +13,20 @@ import type { ActiveFilter } from './types'
 import type { TalentMarker } from './map/types'
 import { TalentMap } from './map/TalentMap'
 
+const formatRadius = (meters: number): string => {
+  const miles = meters / 1609.34
+  if (miles < 1) {
+    return `${Math.round(miles * 10) / 10} mi`
+  }
+  return `${Math.round(miles)} mi`
+}
+
 const INITIAL_FILTERS: ActiveFilter[] = [
   {
     id: 'location:marlborough',
     label: 'Marlborough, Connecticut, United States',
     category: 'location',
   },
-  { id: 'radius:<50', label: 'Radius: < 50 mi', category: 'radius' },
   { id: 'score:40', label: 'Elevate score: > 40', category: 'other' },
   { id: 'skills:hardwood', label: 'Skills: Hardwood, Exterior, Interior', category: 'skill' },
   {
@@ -33,12 +41,25 @@ export const DiscoverMapScreen = () => {
   const isSmallScreen = media.sm && !media.gtSm
 
   const [locationQuery, setLocationQuery] = useState('Marlborough, Connecticut, United States')
-  const [radiusMeters] = useState(defaultRadiusMeters)
+  const [radiusMeters, setRadiusMeters] = useState(defaultRadiusMeters)
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>(INITIAL_FILTERS)
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [radiusAdjustmentOpen, setRadiusAdjustmentOpen] = useState(false)
 
   const { data: talentProfiles = [], isLoading } = useTalentProfiles()
+
+  // Create radius filter dynamically
+  const radiusFilter: ActiveFilter = {
+    id: 'radius:custom',
+    label: `Radius: ${formatRadius(radiusMeters)}`,
+    category: 'radius',
+  }
+
+  // Combine radius filter with other filters
+  const allFilters = useMemo(() => {
+    return [radiusFilter, ...activeFilters]
+  }, [radiusFilter, activeFilters])
 
   const markers: TalentMarker[] = useMemo(
     () =>
@@ -58,10 +79,14 @@ export const DiscoverMapScreen = () => {
           locationQuery={locationQuery}
           onLocationChange={setLocationQuery}
           onAdjustFilters={() => setFiltersOpen(true)}
-          filters={activeFilters}
-          onRemoveFilter={(filterId) =>
+          filters={allFilters}
+          onRemoveFilter={(filterId) => {
+            if (filterId === 'radius:custom') {
+              // Don't allow removing radius filter
+              return
+            }
             setActiveFilters((current) => current.filter((filter) => filter.id !== filterId))
-          }
+          }}
           onClearFilters={() => setActiveFilters([])}
         />
       </YStack>
@@ -133,7 +158,7 @@ export const DiscoverMapScreen = () => {
           </Paragraph>
           <Separator />
           <YStack gap="$3">
-            {activeFilters.map((filter) => (
+            {allFilters.map((filter) => (
               <XStack
                 key={filter.id}
                 justifyContent="space-between"
@@ -148,19 +173,56 @@ export const DiscoverMapScreen = () => {
                   size="$2"
                   theme="surface2"
                   icon={Filter}
-                  onPress={() => setFiltersOpen(false)}
+                  onPress={() => {
+                    if (filter.id === 'radius:custom') {
+                      setRadiusAdjustmentOpen(true)
+                      setFiltersOpen(false)
+                    } else {
+                      setFiltersOpen(false)
+                    }
+                  }}
                 >
                   Adjust
                 </Button>
               </XStack>
             ))}
-            {activeFilters.length === 0 ? (
+            {allFilters.length === 0 ? (
               <XStack alignItems="center" gap="$2">
                 <Filter size={16} color="$color10" />
                 <Text color="$color10">No filters applied</Text>
               </XStack>
             ) : null}
           </YStack>
+        </Sheet.Frame>
+      </Sheet>
+
+      <Sheet modal open={radiusAdjustmentOpen} onOpenChange={setRadiusAdjustmentOpen} snapPoints={[50]}>
+        <Sheet.Overlay />
+        <Sheet.Handle />
+        <Sheet.Frame padding="$5" gap="$4">
+          <XStack justifyContent="space-between" alignItems="center">
+            <Text fontSize="$5" fontWeight="700">
+              Adjust Search Radius
+            </Text>
+            <Button
+              size="$2"
+              theme="gray"
+              onPress={() => setRadiusAdjustmentOpen(false)}
+            >
+              Done
+            </Button>
+          </XStack>
+          <Paragraph color="$color11">
+            Drag the slider to adjust your search radius. The map will update in real-time.
+          </Paragraph>
+          <Separator />
+          <RadiusSlider
+            value={radiusMeters}
+            onValueChange={setRadiusMeters}
+            min={1000}
+            max={100000}
+            step={1000}
+          />
         </Sheet.Frame>
       </Sheet>
     </YStack>
