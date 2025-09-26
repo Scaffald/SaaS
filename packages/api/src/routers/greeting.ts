@@ -2,29 +2,41 @@ import { TRPCError } from '@trpc/server'
 
 import { createTRPCRouter, protectedProcedure } from '../trpc'
 
-function getTimeOfDay() {
-  const today = new Date()
-  const curHr = today.getHours()
-  if (curHr < 4) {
+type TimeOfDay = 'morning' | 'afternoon' | 'night'
+
+const getTimeOfDay = (date: Date = new Date()): TimeOfDay => {
+  const hour = date.getHours()
+
+  if (hour < 4 || hour >= 18) {
     return 'night'
   }
-  if (curHr < 12) {
+
+  if (hour < 12) {
     return 'morning'
   }
-  if (curHr < 18) {
-    return 'afternoon'
-  }
-  return 'night'
+
+  return 'afternoon'
 }
 
 export const greetingRouter = createTRPCRouter({
   greet: protectedProcedure.query(async ({ ctx: { supabase, user } }) => {
-    const profile = await supabase.from('profiles').select('*').eq('id', user.id).single()
-    if (profile.error) {
-      console.error(profile.error)
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' })
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('name')
+      .eq('id', user.id)
+      .single()
+
+    if (profileError) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Unable to load profile for greeting.',
+        cause: profileError,
+      })
     }
-    const name = profile.data.name
-    return `Good ${getTimeOfDay()}${name ? `, ${name}!` : '!'}`
+
+    const name = profile?.name?.trim()
+    const timeOfDay = getTimeOfDay()
+
+    return `Good ${timeOfDay}${name ? `, ${name}!` : '!'}`
   }),
 })
