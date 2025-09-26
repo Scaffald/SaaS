@@ -44,7 +44,13 @@ export const DiscoverMapScreen = () => {
   const resultListRef = useRef<ResultListRef>(null)
 
   // Location functionality
-  const { location, isLoading: isLocationLoading, error: _locationError, requestLocation, permissionStatus } = useUserLocation()
+  const {
+    location,
+    isLoading: isLocationLoading,
+    error: _locationError,
+    requestLocation,
+    permissionStatus,
+  } = useUserLocation()
 
   const [locationQuery, setLocationQuery] = useState('Marlborough, Connecticut, United States')
   const [radiusMeters, setRadiusMeters] = useState(defaultRadiusMeters)
@@ -77,13 +83,13 @@ export const DiscoverMapScreen = () => {
     try {
       // For native, we can use Expo Location's reverse geocoding
       const addresses = await reverseGeocodeAsync({ latitude: lat, longitude: lng })
-      
+
       if (addresses.length > 0) {
         const address = addresses[0]
         const city = address.city || address.subregion
         const state = address.region
         const country = address.country
-        
+
         if (city && state) {
           setLocationQuery(`${city}, ${state}, ${country}`)
         } else {
@@ -131,13 +137,13 @@ export const DiscoverMapScreen = () => {
 
   const handleMarkerPress = (profileId: string) => {
     setSelectedProfileId(profileId)
-    
+
     // Add haptic feedback on native
     if (Platform.OS !== 'web') {
       // Note: You would need to import Haptics from expo-haptics for this to work
       // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     }
-    
+
     // Scroll to card with slight delay for better UX
     setTimeout(() => {
       resultListRef.current?.scrollToCard(profileId)

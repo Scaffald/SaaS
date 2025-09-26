@@ -43,7 +43,13 @@ export const DiscoverMapScreen = () => {
   const resultListRef = useRef<ResultListRef>(null)
 
   // Location functionality
-  const { location, isLoading: isLocationLoading, error: _locationError, requestLocation, permissionStatus } = useUserLocation()
+  const {
+    location,
+    isLoading: isLocationLoading,
+    error: _locationError,
+    requestLocation,
+    permissionStatus,
+  } = useUserLocation()
 
   const [locationQuery, setLocationQuery] = useState('Marlborough, Connecticut, United States')
   const [radiusMeters, setRadiusMeters] = useState(defaultRadiusMeters)
@@ -116,7 +122,7 @@ export const DiscoverMapScreen = () => {
 
   const handleMarkerPress = (profileId: string) => {
     setSelectedProfileId(profileId)
-    
+
     // Scroll to card with slight delay for better UX
     setTimeout(() => {
       resultListRef.current?.scrollToCard(profileId)

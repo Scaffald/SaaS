@@ -19,19 +19,27 @@ export const useScrollToCard = () => {
       element.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
-        inline: 'nearest'
+        inline: 'nearest',
       })
     } else {
       // Native implementation using measureLayout and scrollTo
-      const nativeCardRef = cardRef as { measureLayout: (container: unknown, onSuccess: (x: number, y: number, width: number, height: number) => void, onFail: () => void) => void }
-      const nativeScrollView = scrollViewRef.current as { scrollTo: (options: { y: number; animated: boolean }) => void }
-      
+      const nativeCardRef = cardRef as {
+        measureLayout: (
+          container: unknown,
+          onSuccess: (x: number, y: number, width: number, height: number) => void,
+          onFail: () => void
+        ) => void
+      }
+      const nativeScrollView = scrollViewRef.current as {
+        scrollTo: (options: { y: number; animated: boolean }) => void
+      }
+
       nativeCardRef.measureLayout(
         scrollViewRef.current,
         (_x: number, y: number, _width: number, _height: number) => {
           nativeScrollView.scrollTo({
             y: y - 100, // Offset to center the card
-            animated: true
+            animated: true,
           })
         },
         () => {} // Error callback
@@ -42,6 +50,6 @@ export const useScrollToCard = () => {
   return {
     scrollViewRef,
     registerCardRef,
-    scrollToCard
+    scrollToCard,
   }
 }

@@ -144,8 +144,7 @@ export const NewsFeedCard = () => {
     if (!isHydrated || !selectedSource) return
 
     let isActive = true
-    const abortController =
-      typeof AbortController !== 'undefined' ? new AbortController() : null
+    const abortController = typeof AbortController !== 'undefined' ? new AbortController() : null
     const timeoutId = abortController
       ? setTimeout(() => {
           abortController.abort()
@@ -164,7 +163,10 @@ export const NewsFeedCard = () => {
           ? `/api/news?source=${encodeURIComponent(selectedSource.id)}`
           : selectedSource.feedUrl
 
-        const response = await fetch(endpoint, abortController ? { signal: abortController.signal } : undefined)
+        const response = await fetch(
+          endpoint,
+          abortController ? { signal: abortController.signal } : undefined
+        )
 
         if (!response.ok) {
           throw new Error(`Request failed: ${response.status}`)
