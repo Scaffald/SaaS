@@ -84,5 +84,8 @@
     "turbo": "^2.5.3",
     "typescript": "^5.9.2",
     "ultra-runner": "^3.10.5"
+  },
+  "manypkg": {
+    "ignoredRules": ["ROOT_HAS_DEV_DEPENDENCIES"]
   }
 }
