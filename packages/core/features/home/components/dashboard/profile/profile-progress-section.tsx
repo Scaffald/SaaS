@@ -1,5 +1,6 @@
 import { ArrowRight, CheckCircle2, CircleDashed, ShieldAlert } from '@tamagui/lucide-icons'
 import { Button, Paragraph, SizableText, Separator, XStack, YStack } from '@app/ui'
+import { useLink } from 'solito/link'
 
 import { DashboardCard, SectionHeading } from '../primitives'
 
@@ -17,6 +18,7 @@ export type AdvancedTask = {
   points?: number
   paid?: boolean
   ctaLabel: string
+  ctaRoute?: string
 }
 
 export type ProfileProgressSectionProps = {
@@ -70,6 +72,8 @@ const ChecklistRow = ({ item }: { item: ChecklistItem }) => {
 }
 
 const AdvancedTaskRow = ({ task }: { task: AdvancedTask }) => {
+  const link = useLink({ href: task.ctaRoute ?? '#' })
+
   return (
     <YStack gap="$2">
       <XStack
@@ -94,7 +98,12 @@ const AdvancedTaskRow = ({ task }: { task: AdvancedTask }) => {
             {task.description}
           </Paragraph>
         </YStack>
-        <Button size="$2" iconAfter={ArrowRight}>
+        <Button
+          size="$2"
+          iconAfter={ArrowRight}
+          {...(task.ctaRoute ? link : {})}
+          disabled={!task.ctaRoute}
+        >
           {task.ctaLabel}
         </Button>
       </XStack>
