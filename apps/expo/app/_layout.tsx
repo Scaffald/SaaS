@@ -69,13 +69,17 @@ export default function HomeLayout() {
             <Stack.Screen
               name="settings/index"
               options={{
-                headerShown: false,
+                headerShown: true,
+                title: 'Settings',
+                headerBackVisible: false, // Hide default back button since we use floating back button
               }}
             />
             <Stack.Screen
               name="profile/index"
               options={{
-                headerShown: false,
+                headerShown: true,
+                title: 'Profile',
+                headerBackVisible: false, // Hide default back button since we use floating back button
               }}
             />
           </Stack>

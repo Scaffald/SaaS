@@ -1,6 +1,6 @@
 import { EditProfileScreen } from '@app/core/features/profile/edit-screen'
 import { ScreenWrapper } from '@app/ui'
-import { Stack } from 'expo-router'
+import { router, Stack } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Screen() {
@@ -8,12 +8,17 @@ export default function Screen() {
     <>
       <Stack.Screen
         options={{
-          headerShown: false,
+          headerShown: true,
           title: 'Edit Profile',
+          headerBackVisible: false, // Hide default back button since we use floating back button
         }}
       />
-      <SafeAreaView style={{ flex: 1 }} edges={['top', 'left', 'right']}>
-        <ScreenWrapper>
+      <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
+        <ScreenWrapper
+          backButtonProps={{
+            onPress: () => router.back(),
+          }}
+        >
           <EditProfileScreen />
         </ScreenWrapper>
       </SafeAreaView>

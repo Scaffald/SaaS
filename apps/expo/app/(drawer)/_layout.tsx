@@ -66,6 +66,7 @@ export default function Layout() {
     >
       <Drawer.Screen name="index" options={{ title: 'Home' }} />
       <Drawer.Screen name="discover" options={{ title: 'Discover' }} />
+      <Drawer.Screen name="organizations/new" options={{ title: 'Create Organization' }} />
     </Drawer>
   )
 }

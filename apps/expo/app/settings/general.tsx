@@ -1,18 +1,23 @@
 import { GeneralSettingsScreen } from '@app/core/features/settings/general-screen'
 import { ScreenWrapper } from '@app/ui'
-import { Stack } from 'expo-router'
+import { router, Stack } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Screen() {
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
       <Stack.Screen
         options={{
           title: 'General',
-          headerShown: false,
+          headerShown: true,
+          headerBackVisible: false, // Hide default back button since we use floating back button
         }}
       />
-      <ScreenWrapper>
+      <ScreenWrapper
+        backButtonProps={{
+          onPress: () => router.back(),
+        }}
+      >
         <GeneralSettingsScreen />
       </ScreenWrapper>
     </SafeAreaView>
