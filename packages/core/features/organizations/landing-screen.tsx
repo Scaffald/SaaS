@@ -6,8 +6,7 @@ const landingCards = [
   {
     id: 'search',
     title: 'Search the directory',
-    description:
-      'Find organizations by name, industry, or region to start a new collaboration.',
+    description: 'Find organizations by name, industry, or region to start a new collaboration.',
     icon: Search,
     href: '/organizations/search',
   },

@@ -7,6 +7,7 @@ import { StaticDrawer } from '@app/core/features/drawer-menu/StaticDrawer.web'
 import { drawerSections, normalizePath } from '@app/core/features/drawer-menu'
 import { usePathname } from '@app/core/utils/usePathname'
 import { useState } from 'react'
+import { ROUTES } from '@app/core/constants/routes'
 
 export type HomeLayoutProps = {
   children?: React.ReactNode
@@ -34,7 +35,7 @@ export const HomeLayout = ({
     (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
   )
   const resolvedHeaderTitle = headerTitle ?? activeItem?.title ?? 'Dashboard'
-  const isDiscoverPage = pathname === '/discover'
+  const isDiscoverPage = pathname === ROUTES.DISCOVER
 
   return (
     <XStack f={1} backgroundColor="$color1" height="100vh">

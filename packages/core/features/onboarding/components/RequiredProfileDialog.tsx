@@ -159,8 +159,8 @@ export const RequiredProfileDialog = ({ disabled }: RequiredProfileDialogProps) 
   const isAuthRoute =
     normalizedPath.includes(ROUTES.LOGIN) ||
     normalizedPath.includes(ROUTES.RESET_PASSWORD) ||
-    normalizedPath.includes('/onboarding') ||
-    normalizedPath.includes('/(auth)/')
+    normalizedPath.includes(ROUTES.ONBOARDING) ||
+    normalizedPath.includes('/auth/')
 
   if (disabled) return null
   if (!user) return null

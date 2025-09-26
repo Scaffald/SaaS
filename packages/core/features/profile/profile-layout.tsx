@@ -14,6 +14,7 @@ import type { IconProps } from '@tamagui/helpers-icon'
 import type { ThemeName } from 'tamagui'
 import { SolitoImage } from 'solito/image'
 import { useLink } from 'solito/link'
+import { ROUTES } from '@app/core/constants/routes'
 
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 
@@ -125,7 +126,7 @@ type SettingsMenuProps = {
 
 export const SettingsMenu = ({ sections, activeSectionId, onNavigate }: SettingsMenuProps) => {
   const supabase = useSupabase()
-  const settingsLink = useLink({ href: '/settings' })
+  const settingsLink = useLink({ href: ROUTES.SETTINGS })
   const toast = useToastController()
 
   const menuItems: MenuItem[] = [

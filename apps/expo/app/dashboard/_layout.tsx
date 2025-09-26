@@ -5,6 +5,7 @@ import { Map as MapIcon, Menu } from '@tamagui/lucide-icons'
 import { router } from 'expo-router'
 import { Drawer } from 'expo-router/drawer'
 import { useMedia } from 'tamagui'
+import { ROUTES } from '@app/core/constants/routes'
 
 export default function Layout() {
   const media = useMedia()
@@ -41,7 +42,7 @@ export default function Layout() {
             marginRight="$-1"
             backgroundColor="transparent"
             onPress={() => {
-              router.navigate('/discover')
+              router.navigate(ROUTES.DISCOVER)
             }}
           >
             <MapIcon size={24} />
@@ -66,7 +67,10 @@ export default function Layout() {
     >
       <Drawer.Screen name="index" options={{ title: 'Home' }} />
       <Drawer.Screen name="discover" options={{ title: 'Discover' }} />
+      <Drawer.Screen name="organizations/index" options={{ title: 'Organizations' }} />
       <Drawer.Screen name="organizations/new" options={{ title: 'Create Organization' }} />
+      <Drawer.Screen name="profile/index" options={{ title: 'Profile' }} />
+      <Drawer.Screen name="settings/index" options={{ title: 'Settings' }} />
     </Drawer>
   )
 }
