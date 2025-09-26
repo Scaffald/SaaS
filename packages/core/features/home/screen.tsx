@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Button, FullscreenSpinner, ScrollView, View, XStack, YStack, isWeb } from '@app/ui'
 import { ArrowRight, Handshake, Megaphone } from '@tamagui/lucide-icons'
 
@@ -17,6 +18,7 @@ import {
   type OpportunityItem,
 } from './components/dashboard'
 import { useHireScore } from './hooks/useHireScore'
+import { useProgressiveProfilePrompt } from './hooks/useProgressiveProfilePrompt'
 
 const INQUIRIES: OpportunityItem[] = [
   {
@@ -83,46 +85,6 @@ const JOBS_FOR_YOU: OpportunityItem[] = [
   },
 ]
 
-const PROFILE_CHECKLIST = [
-  { id: 'photo', label: 'Upload your profile photo', completed: true, points: 10 },
-  { id: 'basic-info', label: 'Basic information', completed: true, points: 10 },
-  { id: 'roles', label: 'Roles and skills', completed: true, points: 10 },
-  { id: 'education', label: 'Education and preferences', completed: false, points: 10 },
-]
-
-const ADVANCED_TASKS = [
-  {
-    id: 'projects',
-    label: 'Projects & Teams',
-    description: 'Describe the teams, roles, and responsibilities that highlight your strengths.',
-    points: 10,
-    ctaLabel: 'Add projects',
-  },
-  {
-    id: 'certifications',
-    label: 'Certifications',
-    description: 'Add OSHA, ACI, or other certificates you have earned throughout your career.',
-    points: 10,
-    ctaLabel: 'Add certificate',
-  },
-  {
-    id: 'identity',
-    label: 'Identity verification',
-    description: 'Verify your identity with a government-issued ID to build trust with employers.',
-    points: 5,
-    paid: true,
-    ctaLabel: 'Verify identity',
-  },
-  {
-    id: 'background',
-    label: 'Background check',
-    description: 'Run a background check to confirm your record and qualify for premium postings.',
-    points: 10,
-    paid: true,
-    ctaLabel: 'Perform check',
-  },
-]
-
 const AFTER_PROFILE_STEPS = [
   {
     id: 'visibility',
@@ -158,6 +120,35 @@ const CERTIFICATIONS = [
 export function HomeScreen() {
   const { user, profile, isPending } = useUser()
   const hireScore = useHireScore()
+  const inlinePrompts = useProgressiveProfilePrompt({ surface: 'inline-card' })
+
+  const checklist = useMemo(
+    () =>
+      inlinePrompts.prompts
+        .filter((prompt) => Boolean(prompt.factorId))
+        .map((prompt) => ({
+          id: prompt.id,
+          label: prompt.title,
+          completed: prompt.completed,
+          points: prompt.points ?? prompt.factor?.points,
+        })),
+    [inlinePrompts.prompts]
+  )
+
+  const advancedTasks = useMemo(
+    () =>
+      inlinePrompts.prompts
+        .filter((prompt) => !prompt.factorId && !prompt.completed)
+        .map((prompt) => ({
+          id: prompt.id,
+          label: prompt.title,
+          description: prompt.description,
+          points: prompt.points,
+          ctaLabel: prompt.ctaLabel ?? 'View task',
+          ctaRoute: prompt.ctaRoute,
+        })),
+    [inlinePrompts.prompts]
+  )
 
   if (isPending)
     return (
@@ -238,7 +229,7 @@ export function HomeScreen() {
             }}
           />
 
-          <ProfileProgressSection checklist={PROFILE_CHECKLIST} advanced={ADVANCED_TASKS} />
+          <ProfileProgressSection checklist={checklist} advanced={advancedTasks} />
 
           <AfterProfileSummaryCard steps={AFTER_PROFILE_STEPS} />
 

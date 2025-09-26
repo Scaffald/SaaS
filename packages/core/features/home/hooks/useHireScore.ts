@@ -9,14 +9,14 @@ type ProfileRow = Database['public']['Tables']['profiles']['Row']
 type UserRow = Database['public']['Tables']['users']['Row']
 type PrivateProfileRow = Database['public']['Tables']['user_private']['Row']
 
-type HireScoreContext = {
+export type HireScoreContext = {
   sessionUser: ReturnType<typeof useUser>['user']
   profile: ProfileRow | null
   userRow: UserRow | null
   privateProfile: PrivateProfileRow | null
 }
 
-type HireScoreFactorDefinition = {
+export type HireScoreFactorDefinition = {
   id: string
   title: string
   points: number
@@ -25,7 +25,7 @@ type HireScoreFactorDefinition = {
   evaluate: (context: HireScoreContext) => number
 }
 
-type HireScoreFactorResult = {
+export type HireScoreFactorResult = {
   id: string
   title: string
   points: number
@@ -79,7 +79,7 @@ const hasSkills = (summary: UserRow['skills_summary']) => {
   return false
 }
 
-const HIRE_SCORE_FACTORS: HireScoreFactorDefinition[] = [
+export const HIRE_SCORE_FACTORS: HireScoreFactorDefinition[] = [
   {
     id: 'profile-basics',
     title: 'Profile basics',
