@@ -196,7 +196,12 @@ export const DiscoverMapScreen = () => {
         </Sheet.Frame>
       </Sheet>
 
-      <Sheet modal open={radiusAdjustmentOpen} onOpenChange={setRadiusAdjustmentOpen} snapPoints={[50]}>
+      <Sheet
+        modal
+        open={radiusAdjustmentOpen}
+        onOpenChange={setRadiusAdjustmentOpen}
+        snapPoints={[50]}
+      >
         <Sheet.Overlay />
         <Sheet.Handle />
         <Sheet.Frame padding="$5" gap="$4">
@@ -204,11 +209,7 @@ export const DiscoverMapScreen = () => {
             <Text fontSize="$5" fontWeight="700">
               Adjust Search Radius
             </Text>
-            <Button
-              size="$2"
-              theme="gray"
-              onPress={() => setRadiusAdjustmentOpen(false)}
-            >
+            <Button size="$2" theme="gray" onPress={() => setRadiusAdjustmentOpen(false)}>
               Done
             </Button>
           </XStack>

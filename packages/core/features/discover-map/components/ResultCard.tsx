@@ -56,17 +56,23 @@ export const ResultCard = memo(({ profile, isSelected, onSelect }: ResultCardPro
       <XStack flexWrap="wrap" gap="$2">
         <XStack alignItems="center" gap="$1">
           <Clock3 size={14} color="$color10" />
-          <Text color="$color11" fontSize="$2">{profile.experienceYears} years</Text>
+          <Text color="$color11" fontSize="$2">
+            {profile.experienceYears} years
+          </Text>
         </XStack>
         {profile.hourlyRate ? (
           <XStack alignItems="center" gap="$1">
             <DollarSign size={14} color="$color10" />
-            <Text color="$color11" fontSize="$2">${profile.hourlyRate}/hr</Text>
+            <Text color="$color11" fontSize="$2">
+              ${profile.hourlyRate}/hr
+            </Text>
           </XStack>
         ) : null}
         <XStack alignItems="center" gap="$1">
           <Award size={14} color="$color10" />
-          <Text color="$color11" fontSize="$2">{profile.locationLabel}</Text>
+          <Text color="$color11" fontSize="$2">
+            {profile.locationLabel}
+          </Text>
         </XStack>
       </XStack>
 

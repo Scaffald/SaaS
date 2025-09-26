@@ -8,7 +8,10 @@
       "**/build/**",
       "packages/ui/src/themes/theme-generated.ts",
       "**/.vscode/**",
-      "**/.tamagui/**"
+      "**/.tamagui/**",
+      "**/ios/**",
+      "**/android/**",
+      "**/*.test.ts"
     ]
   },
   "formatter": {

@@ -3,7 +3,6 @@
   "name": "app",
   "main": "index.ts",
   "types": "./index.ts",
-  "private": true,
   "sideEffects": ["*.css"],
   "scripts": {
     "lint": "biome lint .",
@@ -21,7 +20,7 @@
     "@rnmapbox/maps": "^10.1.44",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/auth-helpers-react": "^0.5.0",
-    "@supabase/supabase-js": "^2.48.1",
+    "@supabase/supabase-js": "^2.58.0",
     "@tamagui/animations-react-native": "^1.133.1",
     "@tamagui/colors": "^1.133.1",
     "@tamagui/font-inter": "^1.133.1",

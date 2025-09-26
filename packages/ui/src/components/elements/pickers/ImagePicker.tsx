@@ -32,13 +32,7 @@ export const ImagePicker = forwardRef<
   }
 >(
   (
-    {
-      disabled,
-      value,
-      onChangeText,
-      onBlur,
-      placeholder = 'Drag cover image into this area'
-    },
+    { disabled, value, onChangeText, onBlur, placeholder = 'Drag cover image into this area' },
     ref
   ) => {
     const id = useId()

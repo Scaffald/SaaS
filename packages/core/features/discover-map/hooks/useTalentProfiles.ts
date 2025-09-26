@@ -35,16 +35,20 @@ export const useTalentProfiles = () => {
         const skills = profile.skills_summary?.primary || []
         const certifications: string[] = [] // TODO: Add certifications when available
         const badges = [
-          ...skills.map(skill => ({
+          ...skills.map((skill) => ({
             id: skill.toLowerCase().replace(/\s+/g, '-'),
             label: skill,
-            tone: 'success' as const
+            tone: 'success' as const,
           })),
-          ...(profile.open_to_work ? [{
-            id: 'available',
-            label: 'Available for work',
-            tone: 'success' as const
-          }] : [])
+          ...(profile.open_to_work
+            ? [
+                {
+                  id: 'available',
+                  label: 'Available for work',
+                  tone: 'success' as const,
+                },
+              ]
+            : []),
         ]
 
         return {
@@ -54,13 +58,14 @@ export const useTalentProfiles = () => {
           experienceYears: profile.years_of_experience || 0,
           hourlyRate: 0, // TODO: Add hourly rate when available
           score: Math.min(profile.gamified_score || 0, 100),
-          scoreLabel: profile.gamified_score && profile.gamified_score > 80 ? 'Best match' : undefined,
+          scoreLabel:
+            profile.gamified_score && profile.gamified_score > 80 ? 'Best match' : undefined,
           badges,
           certifications,
           skills,
           locationLabel: 'Location TBD', // TODO: Add location when available
           coordinates: [-72.6734, 41.55], // TODO: Add real coordinates
-          organization: 'Worker'
+          organization: 'Worker',
         }
       })
     },

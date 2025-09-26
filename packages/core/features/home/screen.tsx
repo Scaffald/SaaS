@@ -7,7 +7,6 @@ import {
   AfterProfileSummaryCard,
   CareerInsightCard,
   CertificationSpotlightCard,
-  ConcreteCalculatorCard,
   DashboardErrorBoundary,
   DashboardHero,
   HireScoreCard,
@@ -15,11 +14,8 @@ import {
   OpportunitySection,
   OrganizationQuickActionsCard,
   ProfileProgressSection,
-  ResourceListCard,
   type OpportunityItem,
-  type ResourceItem,
 } from './components/dashboard'
-import { useAffiliateResources } from './hooks/useAffiliateResources'
 import { useHireScore } from './hooks/useHireScore'
 
 const INQUIRIES: OpportunityItem[] = [
@@ -159,28 +155,8 @@ const CERTIFICATIONS = [
   },
 ]
 
-const RESOURCE_FALLBACK: ResourceItem[] = [
-  {
-    id: 'resource-1',
-    title: 'How To Get Into The Construction Industry',
-    description:
-      'Practical steps to prepare for your first job on site and stand out in interviews.',
-  },
-  {
-    id: 'resource-2',
-    title: 'Entry-Level Jobs That Require No Experience',
-    description: 'Discover companies willing to train motivated candidates from day one.',
-  },
-  {
-    id: 'resource-3',
-    title: 'Skills You Need and Where to Start',
-    description: 'Build a learning plan to gain high-demand skills across craft and safety roles.',
-  },
-]
-
 export function HomeScreen() {
   const { user, profile, isPending } = useUser()
-  const { data: affiliateOffers = [] } = useAffiliateResources()
   const hireScore = useHireScore()
 
   if (isPending)
@@ -194,25 +170,11 @@ export function HomeScreen() {
 
   const firstName = extractFirstName(profile?.name, user.email)
 
-  const affiliateResources: ResourceItem[] = affiliateOffers.map((offer) => ({
-    id: offer.id,
-    title: offer.name,
-    description: offer.description ?? '',
-    href: offer.affiliate_url,
-    ctaLabel: offer.cta_label ?? undefined,
-  }))
-
   const rightRail = (
     <YStack gap="$5">
       <DashboardErrorBoundary>
         <NewsFeedCard />
       </DashboardErrorBoundary>
-      <ConcreteCalculatorCard />
-      <ResourceListCard
-        title="New to construction?"
-        subtitle="Start building experience with curated resources."
-        resources={affiliateResources.length > 0 ? affiliateResources : RESOURCE_FALLBACK}
-      />
     </YStack>
   )
 
