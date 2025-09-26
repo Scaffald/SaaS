@@ -1,14 +1,13 @@
 import { config } from '@app/ui'
 import NextDocument, {
-  type DocumentContext,
-  type DocumentInitialProps,
+  DocumentContext,
+  DocumentInitialProps,
   Head,
   Html,
   Main,
   NextScript,
 } from 'next/document'
 import { Children } from 'react'
-import type { ReactElement } from 'react'
 import { AppRegistry } from 'react-native'
 
 export default class Document extends NextDocument {
@@ -16,9 +15,9 @@ export default class Document extends NextDocument {
     AppRegistry.registerComponent('Main', () => Main)
     const page = await ctx.renderPage()
 
-    const { getStyleElement } = AppRegistry.getApplication('Main') as unknown as {
-      getStyleElement: () => ReactElement
-    }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const { getStyleElement } = AppRegistry.getApplication('Main')
 
     /**
      * Note: be sure to keep tamagui styles after react-native-web styles like it is here!
@@ -42,6 +41,7 @@ export default class Document extends NextDocument {
       <Html>
         <Head>
           <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+          <link rel="stylesheet" href="/tamagui.css" />
         </Head>
         <body>
           <Main />
