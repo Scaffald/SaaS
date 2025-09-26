@@ -1,0 +1,74 @@
+---
+description: "UI component development guidelines using Tamagui/Bento and cross-platform design"
+globs: ["packages/ui/**/*", "**/*.tsx", "**/*.ts"]
+alwaysApply: false
+---
+
+# UI Component Development Rules
+
+## Component Library Philosophy
+- **ALWAYS prefer vanilla Tamagui components** when creating/updating UI
+- **ALWAYS prefer Bento components** for complex UI patterns
+- **TREAT packages/ui as a cross-platform, portable package**
+- **MAKE components reusable, well-documented, and refactored**
+
+## Tamagui Component Usage
+- **Use Tamagui primitives** (`Button`, `Text`, `View`, `Stack`, `XStack`, `YStack`, etc.)
+- **Prefer Tamagui styling** over custom CSS/styling
+- **Use Tamagui themes** and design tokens
+- **Leverage Tamagui's responsive design** capabilities
+
+## Bento Component Usage
+- **Use Bento components** for complex UI patterns (forms, layouts, etc.)
+- **Prefer Bento over custom implementations** when available
+- **Extend Bento components** rather than recreating functionality
+
+## packages/ui Development Standards
+- **CREATE clean, reusable components** in `packages/ui/src/`
+- **MAKE components cross-platform** (web, iOS, Android)
+- **DOCUMENT components thoroughly** with JSDoc comments
+- **REFACTOR components** to be modular and composable
+- **USE TypeScript** for all component definitions
+- **EXPORT components** from appropriate index files
+
+## Component Structure
+```tsx
+/**
+ * Component description
+ * @param props - Component props
+ * @returns JSX element
+ */
+export const ComponentName = ({ prop1, prop2 }: ComponentProps) => {
+  // Implementation
+  return (
+    <TamaguiComponent>
+      {/* Content */}
+    </TamaguiComponent>
+  )
+}
+```
+
+## Cross-Platform Considerations
+- **USE platform-specific files** when needed (`.native.tsx`, `.web.tsx`)
+- **TEST on all platforms** (web, iOS, Android)
+- **USE responsive design** patterns
+- **CONSIDER accessibility** across platforms
+
+## Documentation Requirements
+- **JSDoc comments** for all exported components
+- **Prop type definitions** with descriptions
+- **Usage examples** in comments
+- **Platform-specific notes** when applicable
+
+## Refactoring Guidelines
+- **BREAK DOWN large components** into smaller, focused ones
+- **EXTRACT reusable logic** into custom hooks
+- **CREATE composable components** that can be combined
+- **MAINTAIN consistent API** across similar components
+- **USE proper TypeScript** types and interfaces
+
+## Testing Approach
+- **TEST components in Storybook** (`yarn storybook:web`, `yarn storybook:native`)
+- **TEST on actual devices** when possible
+- **TEST cross-platform compatibility**
+- **PROVIDE visual regression testing** when appropriate
