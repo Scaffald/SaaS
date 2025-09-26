@@ -13,29 +13,39 @@ export const createTRPCContext = async (opts: FetchCreateContextFnOptions) => {
   // if there's auth cookie it'll be authenticated by this helper
   const cookiesStore = (await cookies()) as unknown as UnsafeUnwrappedCookies
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  if (!supabaseUrl) {
+    throw new Error('the `NEXT_PUBLIC_SUPABASE_URL` env variable is not set.')
+  }
+
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  if (!supabaseAnonKey) {
+    throw new Error('the `NEXT_PUBLIC_SUPABASE_ANON_KEY` env variable is not set.')
+  }
+
+  if (!jwtSecret) {
+    throw new Error('the `SUPABASE_AUTH_JWT_SECRET` env variable is not set.')
+  }
+
   let supabase = createRouteHandlerClient<Database>({
     cookies: () => cookiesStore as never,
   })
   let userId = (await supabase.auth.getUser()).data.user?.id
 
-  if (!jwtSecret) {
-    throw new Error('the `SUPABASE_AUTH_JWT_SECRET` env variable is not set.')
-  }
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-    throw new Error('the `NEXT_PUBLIC_SUPABASE_URL` env variable is not set.')
-  }
-  if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    throw new Error('the `NEXT_PUBLIC_SUPABASE_ANON_KEY` env variable is not set.')
-  }
+  const authorizationHeader = opts.req.headers.get('authorization')
 
   // Native clients pass an access token in the authorization header
-  if (opts.req.headers.has('authorization')) {
-    const accessToken = opts.req.headers.get('authorization')!.split('Bearer ').pop()
+  if (authorizationHeader) {
+    const bearerTokenMatch = authorizationHeader.match(/^Bearer\s+(.+)$/i)
+    const accessToken = bearerTokenMatch?.[1]
 
     if (accessToken) {
       try {
-        const { payload } = await jose.jwtVerify(accessToken, new TextEncoder().encode(jwtSecret))
-        userId = payload.sub
+        const encoder = new TextEncoder()
+        const { payload } = await jose.jwtVerify(accessToken, encoder.encode(jwtSecret))
+        if (typeof payload.sub === 'string') {
+          userId = payload.sub
+        }
       } catch (error) {
         // Leaves userId undefined, which will eventually fail the enforceUserIsAuthed check
         // Might want to log this out for debugging, etc.
@@ -45,24 +55,20 @@ export const createTRPCContext = async (opts: FetchCreateContextFnOptions) => {
       }
     }
 
-    supabase = createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      {
-        //TODO: remove this options from takout starter
-        // auth: {
-        // autoRefreshToken: false,
-        // detectSessionInUrl: false,
-        // persistSession: false,
-        // },
-        global: {
-          headers: {
-            // pass the authorization header through to Supabase
-            Authorization: opts.req.headers.get('authorization')!,
-          },
+    supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+      // TODO: remove these options from takeout starter
+      // auth: {
+      //   autoRefreshToken: false,
+      //   detectSessionInUrl: false,
+      //   persistSession: false,
+      // },
+      global: {
+        headers: {
+          // pass the authorization header through to Supabase
+          Authorization: authorizationHeader,
         },
-      }
-    )
+      },
+    })
   }
 
   return {
@@ -72,7 +78,7 @@ export const createTRPCContext = async (opts: FetchCreateContextFnOptions) => {
      * The Supabase user
      * More claims from the JWT or Session can be added here if needed inside tRPC procedures
      */
-    user: userId && { id: userId },
+    user: userId ? { id: userId } : undefined,
 
     /**
      * The Supabase instance with the authenticated session on it (RLS works)
