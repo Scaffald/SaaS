@@ -15,7 +15,7 @@ export const ProfileScreen = () => {
       label: 'Overview',
       icon: User,
       accentTheme: 'blue',
-      isActive: pathname === '/profile',
+      isActive: pathname === '/profile' || pathname === '/profile/overview',
       href: '/profile',
     },
     {

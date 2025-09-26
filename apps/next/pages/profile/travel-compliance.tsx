@@ -1,24 +1,23 @@
 import { HomeLayout } from '@app/core/features/home/layout.web'
-import { ProfileOverviewScreen } from '@app/core/features/profile/overview-screen'
+import { ProfileTravelComplianceScreen } from '@app/core/features/profile/travel-compliance-screen'
 import { ProfileLayoutSimple } from '@app/core/features/profile/layout-simple.web'
 import Head from 'next/head'
-
-import type { NextPageWithLayout } from '../_app'
+import type { NextPageWithLayout } from 'pages/_app'
 
 const Page: NextPageWithLayout = () => {
   return (
     <>
       <Head>
-        <title>Profile</title>
+        <title>Travel & Compliance</title>
       </Head>
-      <ProfileOverviewScreen />
+      <ProfileTravelComplianceScreen />
     </>
   )
 }
 
 Page.getLayout = (page) => (
   <HomeLayout fullPage>
-    <ProfileLayoutSimple isProfileHome>{page}</ProfileLayoutSimple>
+    <ProfileLayoutSimple>{page}</ProfileLayoutSimple>
   </HomeLayout>
 )
 
