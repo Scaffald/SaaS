@@ -1,4 +1,12 @@
-import { H2, SubmitButton, Theme, YStack, isWeb, useToastController, FormWrapper } from '@app/ui'
+import {
+  H2,
+  AnimatedSubmitButton,
+  Theme,
+  YStack,
+  isWeb,
+  useToastController,
+  FormWrapper,
+} from '@app/ui'
 import { SchemaForm, formFields } from '@app/core/utils/SchemaForm'
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import { useRouter } from 'solito/router'
@@ -61,9 +69,7 @@ export const ChangePasswordScreen = () => {
           )
         }
         renderAfter={({ submit }) => (
-          <Theme inverse>
-            <SubmitButton onPress={() => submit()}>Update Password</SubmitButton>
-          </Theme>
+          <AnimatedSubmitButton onPress={() => submit()}>Update Password</AnimatedSubmitButton>
         )}
       />
     </FormWrapper>
