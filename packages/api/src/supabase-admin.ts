@@ -1,12 +1,15 @@
-import { Database } from '@app/supabase/types'
+import type { Database } from '@app/supabase/types'
 import { createClient } from '@supabase/supabase-js'
 
-if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+if (!supabaseUrl) {
   throw new Error(
     'NEXT_PUBLIC_SUPABASE_URL is not set. Please update the root .env.local and restart the server.'
   )
 }
-if (!process.env.SUPABASE_SERVICE_ROLE) {
+
+const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE
+if (!supabaseServiceRole) {
   throw new Error(
     'SUPABASE_SERVICE_ROLE is not set. Please update the root .env.local and restart the server.'
   )
@@ -15,7 +18,4 @@ if (!process.env.SUPABASE_SERVICE_ROLE) {
 /**
  * only meant to be used on the server side.
  */
-export const supabaseAdmin = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE!
-)
+export const supabaseAdmin = createClient<Database>(supabaseUrl, supabaseServiceRole)
