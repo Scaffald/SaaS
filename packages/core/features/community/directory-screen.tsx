@@ -86,7 +86,10 @@ export const CommunityDirectoryScreen = () => {
         renderCell: (_value, row) => (
           <XStack alignItems="center" gap="$3">
             <Avatar circular size="$4">
-              <Avatar.Image accessibilityLabel={`${row.name} avatar`} src={row.avatarUrl || undefined} />
+              <Avatar.Image
+                accessibilityLabel={`${row.name} avatar`}
+                src={row.avatarUrl || undefined}
+              />
               <Avatar.Fallback backgroundColor="$gray5" />
             </Avatar>
             <YStack gap="$1" flex={1} minWidth={0}>
@@ -126,7 +129,11 @@ export const CommunityDirectoryScreen = () => {
         align: 'center',
         width: '$9',
         renderCell: (value, _row) => (
-          <Chip size="$2" theme={getScoreTheme(typeof value === 'number' ? value : 0)} backgroundColor="$color4">
+          <Chip
+            size="$2"
+            theme={getScoreTheme(typeof value === 'number' ? value : 0)}
+            backgroundColor="$color4"
+          >
             <Chip.Text fontWeight="$6">{value as number}</Chip.Text>
           </Chip>
         ),
@@ -160,7 +167,7 @@ export const CommunityDirectoryScreen = () => {
         sortable: false,
       },
     ],
-    [],
+    []
   )
 
   const filteredProfiles = useMemo(() => {
@@ -297,9 +304,7 @@ export const CommunityDirectoryScreen = () => {
         renderEmptyState={({ totalItems }) => (
           <YStack alignItems="center" gap="$2" padding="$6">
             <Text fontWeight="$7" fontSize="$6">
-              {totalItems === 0
-                ? 'No community members yet'
-                : 'No profiles match your filters'}
+              {totalItems === 0 ? 'No community members yet' : 'No profiles match your filters'}
             </Text>
             <Paragraph size="$3" color="$gray11" textAlign="center" maxWidth={420}>
               {totalItems === 0
