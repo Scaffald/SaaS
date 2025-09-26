@@ -130,9 +130,7 @@ const HIRE_SCORE_FACTORS: HireScoreFactorDefinition[] = [
     successMessage: 'Experience added to your profile',
     actionMessage: 'Share how many years of experience you have',
     evaluate: ({ userRow }) =>
-      typeof userRow?.years_of_experience === 'number' && userRow.years_of_experience > 0
-        ? 1
-        : 0,
+      typeof userRow?.years_of_experience === 'number' && userRow.years_of_experience > 0 ? 1 : 0,
   },
   {
     id: 'skills',
@@ -215,7 +213,9 @@ const SCORE_LEVELS: HireScoreLevel[] = [
 
 export const resolveHireScoreLevel = (score: number): HireScoreLevel => {
   const normalized = clamp(Math.round(score), 0, 100)
-  return SCORE_LEVELS.find((level) => normalized >= level.min) ?? SCORE_LEVELS[SCORE_LEVELS.length - 1]
+  return (
+    SCORE_LEVELS.find((level) => normalized >= level.min) ?? SCORE_LEVELS[SCORE_LEVELS.length - 1]
+  )
 }
 
 export const useHireScore = () => {

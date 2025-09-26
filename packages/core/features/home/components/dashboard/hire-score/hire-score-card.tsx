@@ -52,7 +52,8 @@ export const HireScoreCard = ({
 
   const summary = (() => {
     if (isLoading) return 'Checking your profile details…'
-    if (pendingCount === 0) return 'All essentials are complete. Keep engaging to maintain momentum.'
+    if (pendingCount === 0)
+      return 'All essentials are complete. Keep engaging to maintain momentum.'
     return `You have completed ${completedCount} of ${totalEssentials} essentials.`
   })()
 
