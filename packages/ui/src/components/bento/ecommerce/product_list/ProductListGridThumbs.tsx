@@ -30,7 +30,7 @@ function Item({ item }: { item: Product }) {
     >
       <View paddingBottom="$2" gap="$2" tag="article" role="article">
         <Stack overflow="hidden" width="100%" height={100}>
-          <Image source={{ uri: item.image }} height="100%" width="100%" resizeMode="cover" />
+          <Image source={{ uri: item.image }} height="100%" width="100%" objectFit="cover" />
         </Stack>
         <View>
           <H2 size="$1">{item.name}</H2>

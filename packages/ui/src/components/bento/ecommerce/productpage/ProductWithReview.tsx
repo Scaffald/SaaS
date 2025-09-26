@@ -219,7 +219,7 @@ export function ProductWithReview() {
                               width="100%"
                               height={'100%'}
                               aspectRatio={1}
-                              resizeMode="center"
+                              objectFit="contain"
                               backgroundColor="$color2"
                               borderRadius="$2"
                             />
@@ -581,7 +581,7 @@ const Review = View.styleable<ReviewProps>(({ review, ...rest }, forwardRef) => 
     >
       <View flexDirection="row" alignItems="center" gap="$3">
         <Avatar circular size="$3">
-          <Avatar.Image resizeMode="contain" source={{ uri: review.avatar }} />
+          <Avatar.Image objectFit="contain" source={{ uri: review.avatar }} />
           <Avatar.Fallback />
         </Avatar>
         <View flexDirection="column" gap="$1">

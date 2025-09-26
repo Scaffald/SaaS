@@ -134,7 +134,7 @@ export function ProductHorizontalGallery() {
                   width="100%"
                   borderRadius="$2"
                   aspectRatio={1 / 1}
-                  resizeMode="cover"
+                  objectFit="cover"
                   backgroundColor="$color2"
                   source={{ uri: tempPicture || selectedPicture }}
                   $group-window-sm={{
@@ -215,7 +215,7 @@ export function ProductHorizontalGallery() {
                             width="100%"
                             height={'100%'}
                             aspectRatio={1}
-                            resizeMode="center"
+                            objectFit="cover"
                             backgroundColor="$color2"
                             borderRadius="$2"
                           />

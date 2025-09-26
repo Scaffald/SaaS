@@ -114,7 +114,7 @@ function ChatItem({ item, index }: { item: Message; index: number }) {
           >
             <View flexDirection="row">
               <Avatar circular size="$5">
-                <Avatar.Image resizeMode="cover" source={{ uri: avatar }} />
+                <Avatar.Image objectFit="cover" source={{ uri: avatar }} />
                 <Avatar.Fallback backgroundColor="$background" />
               </Avatar>
             </View>
