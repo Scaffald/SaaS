@@ -84,8 +84,8 @@ export function useProtectedRoute(user: User | null) {
       !user &&
       !inAuthGroup
     ) {
-      // Redirect to the sign-in page.
-      replaceRoute(ROUTES.ONBOARDING)
+      // Redirect to the welcome page.
+      replaceRoute(ROUTES.WELCOME)
     } else if (user && inAuthGroup) {
       // Redirect away from the sign-in page.
       replaceRoute('/')

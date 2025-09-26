@@ -48,7 +48,7 @@ export const HomeLayout = ({
     (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
   )
   const resolvedHeaderTitle = headerTitle ?? activeItem?.title ?? 'Dashboard'
-  const isDiscoverPage = pathname === ROUTES.DISCOVER
+  const isDiscoverPage = pathname === ROUTES.WORKERS_MAP
 
   // For discover pages, hide header completely
   if (isDiscoverPage) {

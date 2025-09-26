@@ -42,7 +42,7 @@ export default function Layout() {
             marginRight="$-1"
             backgroundColor="transparent"
             onPress={() => {
-              router.navigate(ROUTES.DISCOVER)
+              router.navigate(ROUTES.WORKERS_MAP)
             }}
           >
             <MapIcon size={24} />
@@ -66,7 +66,7 @@ export default function Layout() {
       drawerContent={(props) => <DrawerMenu {...props} />}
     >
       <Drawer.Screen name="index" options={{ title: 'Home' }} />
-      <Drawer.Screen name="discover" options={{ title: 'Discover' }} />
+      <Drawer.Screen name="workers/map" options={{ title: 'Workers Map' }} />
       <Drawer.Screen name="organizations/index" options={{ title: 'Organizations' }} />
       <Drawer.Screen name="organizations/new" options={{ title: 'Create Organization' }} />
       <Drawer.Screen name="profile/index" options={{ title: 'Profile' }} />

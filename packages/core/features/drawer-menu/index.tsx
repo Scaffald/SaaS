@@ -68,7 +68,7 @@ export const drawerSections: DrawerSectionConfig[] = [
       {
         key: 'discover',
         title: 'Discover',
-        href: ROUTES.DISCOVER,
+        href: ROUTES.WORKERS_MAP,
         icon: Map,
         theme: 'green',
       },

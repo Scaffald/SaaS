@@ -106,7 +106,7 @@ const SignInLink = () => {
   const email = useWatch<z.infer<typeof ResetPasswordSchema>>({ name: 'email' })
 
   return (
-    <Link href={buildRoute(ROUTES.LOGIN, email ? { email } : undefined)}>
+    <Link href={buildRoute(ROUTES.AUTH, email ? { email } : undefined)}>
       <Paragraph ta="center" theme="alt1">
         Done resetting? <Text textDecorationLine="underline">Sign in</Text>
       </Paragraph>
