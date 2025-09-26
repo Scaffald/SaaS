@@ -21,6 +21,12 @@ alter table public.reviews
   add column if not exists submitted_at timestamptz,
   add column if not exists revealed_at timestamptz;
 
+-- Ensure existing reviews remain readable after introducing workflow gating
+update public.reviews
+  set status = 'released',
+      revealed_at = coalesce(revealed_at, updated_at)
+  where status = 'draft';
+
 create index if not exists reviews_released_subject_idx
   on public.reviews(subject_type, subject_id)
   where status = 'released';
