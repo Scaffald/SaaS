@@ -15,6 +15,8 @@ export const ROUTES = {
   // Protected routes
   ONBOARDING: '/onboarding',
   DISCOVER: '/discover',
+  COMMUNITY: '/community',
+  COMMUNITY_REVIEWS: '/community/reviews',
   SETTINGS: '/settings',
   PROFILE: '/profile',
   PROFILE_OVERVIEW: '/profile/overview',
