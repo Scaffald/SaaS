@@ -1,7 +1,7 @@
 -- =========================================================
--- 007_affiliates_seed.sql — sample affiliate programs
--- Seeds OSHA/NCCER-style partners so the UI can surface
--- industry-aware continuing education recommendations.
+-- 006_seed_affiliates.sql
+-- Sample affiliate programs for development
+-- Seeds OSHA/NCCER-style partners for industry-aware education recommendations
 -- =========================================================
 
 begin;

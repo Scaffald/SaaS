@@ -1,5 +1,6 @@
 -- =========================================================
--- 005_domain_seed.sql — Seed domain tables with realistic data
+-- 004_seed_domain_data.sql
+-- Seed domain tables with realistic data for development
 -- Populates organizations, teams, skills, jobs, connections, etc.
 -- =========================================================
 
