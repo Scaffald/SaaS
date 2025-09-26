@@ -14,6 +14,7 @@ import {
 import type { ThemeName } from '@app/ui'
 import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import { DrawerContentScrollView } from '@react-navigation/drawer'
+import { ROUTES } from '@app/core/constants/routes'
 import {
   BarChart3,
   ChevronRight,
@@ -59,21 +60,21 @@ export const drawerSections: DrawerSectionConfig[] = [
       {
         key: 'home',
         title: 'Home',
-        href: '/',
+        href: ROUTES.DASHBOARD,
         icon: BarChart3,
         theme: 'blue',
       },
       {
         key: 'discover',
         title: 'Discover',
-        href: '/discover',
+        href: ROUTES.DISCOVER,
         icon: Map,
         theme: 'green',
       },
       {
         key: 'profile',
         title: 'Profile',
-        href: '/profile',
+        href: ROUTES.PROFILE,
         icon: CircleUser,
         theme: 'purple',
       },
@@ -86,7 +87,7 @@ export const drawerSections: DrawerSectionConfig[] = [
       {
         key: 'organizations',
         title: 'Organizations',
-        href: '/organizations',
+        href: ROUTES.ORGANIZATIONS,
         icon: Building2,
         theme: 'orange',
       },
@@ -99,7 +100,7 @@ export const drawerSections: DrawerSectionConfig[] = [
       {
         key: 'settings',
         title: 'Settings',
-        href: '/settings',
+        href: ROUTES.SETTINGS,
         icon: Settings2,
         theme: 'gray',
       },
@@ -110,7 +111,7 @@ export const drawerSections: DrawerSectionConfig[] = [
 export const normalizePath = (value: string) => {
   if (!value) return '/'
   const withoutQuery = value.split('?')[0]
-  const cleaned = withoutQuery.replace(/\/(\(drawer|tabs\))/g, '')
+  const cleaned = withoutQuery.replace(/\/\(tabs\)/g, '')
   const normalized = cleaned.replace(/\/+/g, '/')
   if (normalized === '' || normalized === '/') return '/'
   return normalized.endsWith('/') ? normalized.slice(0, -1) : normalized
@@ -284,12 +285,12 @@ type DrawerContentProps = {
 export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: DrawerContentProps) => {
   const { profile, avatarUrl } = useUser()
   const tokens = getTokens()
-  const manageLink = useLink({ href: '/profile' })
+  const manageLink = useLink({ href: ROUTES.PROFILE })
   const avatarSize = tokens.size['3'].val
 
   const handleManagePress = (event: GestureResponderEvent) => {
     manageLink.onPress?.(event)
-    onNavigate?.('/profile', event)
+    onNavigate?.(ROUTES.PROFILE, event)
   }
 
   return (

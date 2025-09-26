@@ -61,25 +61,15 @@ export default function HomeLayout() {
         <Provider initialSession={initialSession}>
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen
-              name="(drawer)"
+              name="auth"
               options={{
                 headerShown: false,
               }}
             />
             <Stack.Screen
-              name="settings/index"
+              name="dashboard"
               options={{
-                headerShown: true,
-                title: 'Settings',
-                headerBackVisible: false, // Hide default back button since we use floating back button
-              }}
-            />
-            <Stack.Screen
-              name="profile/index"
-              options={{
-                headerShown: true,
-                title: 'Profile',
-                headerBackVisible: false, // Hide default back button since we use floating back button
+                headerShown: false,
               }}
             />
           </Stack>

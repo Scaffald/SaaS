@@ -1,6 +1,7 @@
 import { Button, Card, Paragraph, SizableText, XStack, YStack } from '@app/ui'
 import { Building2 } from '@tamagui/lucide-icons'
 import { useLink } from 'solito/link'
+import { ROUTES } from '@app/core/constants/routes'
 
 const organizations = [
   {
@@ -22,7 +23,7 @@ const organizations = [
 ]
 
 export const OrganizationsDirectoryScreen = () => {
-  const createLink = useLink({ href: '/organizations/new' })
+  const createLink = useLink({ href: ROUTES.ORGANIZATIONS_NEW })
 
   return (
     <YStack gap="$5" px="$4" py="$6" w="100%" $gtSm={{ maw: 840, als: 'center' }}>

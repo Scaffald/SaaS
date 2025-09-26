@@ -8,7 +8,8 @@ export default function Screen() {
       <Stack.Screen
         options={{
           title: 'Basic Information',
-          headerShown: false, // We'll use our custom header
+          headerShown: true,
+          headerBackVisible: false, // Hide default back button since we use floating back button
         }}
       />
       <ProfileLayout title="Basic Information">

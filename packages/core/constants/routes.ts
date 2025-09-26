@@ -5,30 +5,39 @@
 
 export const ROUTES = {
   // Authentication routes
-  LOGIN: '/login',
-  RESET_PASSWORD: '/reset-password',
+  LOGIN: '/auth/login',
+  SIGN_IN: '/auth/sign-in',
+  ONBOARDING: '/auth/onboarding',
+  RESET_PASSWORD: '/auth/reset-password',
 
   // Public routes
   HOME: '/',
   USER_PROFILE: '/user',
 
-  // Protected routes
-  ONBOARDING: '/onboarding',
-  DISCOVER: '/discover',
-  SETTINGS: '/settings',
-  PROFILE: '/profile',
-  PROFILE_OVERVIEW: '/profile/overview',
-  PROFILE_BASIC_INFO: '/profile/basic-info',
-  PROFILE_WORK_SKILLS: '/profile/work-skills',
-  PROFILE_TRAVEL_COMPLIANCE: '/profile/travel-compliance',
-  PROFILE_CONTACT_AVAILABILITY: '/profile/contact-availability',
-  ORGANIZATIONS: '/organizations',
+  // Protected routes (dashboard context)
+  DASHBOARD: '/dashboard',
+  DISCOVER: '/dashboard/discover',
+  SETTINGS: '/dashboard/settings',
+  SETTINGS_GENERAL: '/dashboard/settings/general',
+  SETTINGS_CHANGE_PASSWORD: '/dashboard/settings/change-password',
+  SETTINGS_CHANGE_EMAIL: '/dashboard/settings/change-email',
+  PROFILE: '/dashboard/profile',
+  PROFILE_OVERVIEW: '/dashboard/profile/overview',
+  PROFILE_BASIC_INFO: '/dashboard/profile/basic-info',
+  PROFILE_WORK_SKILLS: '/dashboard/profile/work-skills',
+  PROFILE_TRAVEL_COMPLIANCE: '/dashboard/profile/travel-compliance',
+  PROFILE_CONTACT_AVAILABILITY: '/dashboard/profile/contact-availability',
+  ORGANIZATIONS: '/dashboard/organizations',
+  ORGANIZATIONS_NEW: '/dashboard/organizations/new',
 } as const
 
 // Legacy route mappings for backward compatibility during migration
 export const LEGACY_ROUTES = {
-  SIGN_IN: '/sign-in',
-  SIGN_UP: '/sign-up',
+  // Old auth routes without prefix
+  OLD_LOGIN: '/login',
+  OLD_SIGN_IN: '/sign-in',
+  OLD_ONBOARDING: '/onboarding',
+  OLD_RESET_PASSWORD: '/reset-password',
 } as const
 
 // Route type for TypeScript safety

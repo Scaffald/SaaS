@@ -9,6 +9,7 @@ import { z } from 'zod'
 
 import { SocialLogin } from './components/SocialLogin'
 import { MagicLinkPending } from './components/MagicLinkPending'
+import { ROUTES } from '@app/core/constants/routes'
 
 const { useParams, useUpdateParams } = createParam<{ email?: string }>()
 
@@ -97,7 +98,7 @@ const SignInLink = () => {
   const email = useWatch<z.infer<typeof SignUpSchema>>({ name: 'email' })
 
   return (
-    <Link href={`/sign-in?${new URLSearchParams(email ? { email } : undefined).toString()}`}>
+    <Link href={`${ROUTES.SIGN_IN}?${new URLSearchParams(email ? { email } : undefined).toString()}`}>
       <Paragraph ta="center" theme="alt1" mt="$2">
         Already signed up? <Text textDecorationLine="underline">Sign in</Text>
       </Paragraph>

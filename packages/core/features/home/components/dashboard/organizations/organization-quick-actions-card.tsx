@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import { useLink } from 'solito/link'
 
 import { useOrganizations } from '@app/core/utils/useOrganizations'
+import { ROUTES } from '@app/core/constants/routes'
 
 import { DashboardCard } from '../primitives'
 
@@ -43,7 +44,7 @@ const formatRevenueRange = (value: string | null) => {
 
 export const OrganizationQuickActionsCard = () => {
   const { data: organizations, isPending, error } = useOrganizations()
-  const createLink = useLink({ href: '/organizations/new' })
+  const createLink = useLink({ href: ROUTES.ORGANIZATIONS_NEW })
 
   const content = useMemo(() => {
     if (error) {

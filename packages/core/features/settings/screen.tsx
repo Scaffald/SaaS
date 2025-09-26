@@ -4,6 +4,7 @@ import { useThemeSetting } from '@app/core/provider/theme'
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import { usePathname } from '@app/core/utils/usePathname'
 import { useLink } from 'solito/link'
+import { ROUTES } from '@app/core/constants/routes'
 
 import rootPackageJson from '../../../../package.json'
 import packageJson from '../../package.json'
@@ -21,24 +22,24 @@ export const SettingsScreen = () => {
       label: 'General',
       icon: Cog,
       accentTheme: 'green',
-      isActive: pathname === 'settings/general',
-      href: media.sm ? '/settings/general' : '/settings',
+      isActive: pathname === ROUTES.SETTINGS_GENERAL,
+      href: media.sm ? ROUTES.SETTINGS_GENERAL : ROUTES.SETTINGS,
     },
     {
       id: 'change-password',
       label: 'Change Password',
       icon: Lock,
       accentTheme: 'green',
-      isActive: pathname === '/settings/change-password',
-      href: '/settings/change-password',
+      isActive: pathname === ROUTES.SETTINGS_CHANGE_PASSWORD,
+      href: ROUTES.SETTINGS_CHANGE_PASSWORD,
     },
     {
       id: 'change-email',
       label: 'Change Email',
       icon: Mail,
       accentTheme: 'green',
-      isActive: pathname === '/settings/change-email',
-      href: '/settings/change-email',
+      isActive: pathname === ROUTES.SETTINGS_CHANGE_EMAIL,
+      href: ROUTES.SETTINGS_CHANGE_EMAIL,
     },
     {
       id: 'manage-cookies',

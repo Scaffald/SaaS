@@ -1,6 +1,8 @@
-import { SidebarMenu, type MenuItem } from '@app/ui'
+import { SidebarMenu, type MenuItem, useMedia } from '@app/ui'
 import { Building2, Plus, Search } from '@tamagui/lucide-icons'
 import { usePathname } from '@app/core/utils/usePathname'
+import { useLink } from 'solito/link'
+import { ROUTES } from '@app/core/constants/routes'
 
 const ORGANIZATION_SEARCH_PATH = '/organizations/search'
 const ORGANIZATION_CREATE_PATH = '/organizations/new'
@@ -23,7 +25,7 @@ export const OrganizationsScreen = () => {
   const pathname = usePathname()
   const media = useMedia()
   const _pathname = usePathname()
-  const createLink = useLink({ href: '/organizations/new' })
+  const createLink = useLink({ href: ROUTES.ORGANIZATIONS_NEW })
 
   const menuItems: MenuItem[] = [
     {

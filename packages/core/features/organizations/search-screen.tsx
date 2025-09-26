@@ -28,16 +28,7 @@ export const OrganizationsSearchScreen = () => {
 
       <Card p="$4" gap="$3" br="$6" bw="$0.5" boc="$color4">
         <XStack gap="$3" ai="center" fw="wrap">
-          <XStack
-            ai="center"
-            gap="$2"
-            px="$3"
-            py="$2"
-            br="$6"
-            bg="$color2"
-            f={1}
-            minWidth={220}
-          >
+          <XStack ai="center" gap="$2" px="$3" py="$2" br="$6" bg="$color2" f={1} minWidth={220}>
             <Search size={18} color="$gray11" />
             <Input
               flex={1}
