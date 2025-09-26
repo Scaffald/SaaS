@@ -81,15 +81,14 @@ export const TalentMap = ({
                   backgroundColor={isSelected ? '$color9' : '$color6'}
                   borderWidth={1}
                   borderColor={isSelected ? '$color10' : '$color7'}
+                  alignItems="center"
                 >
-                  <YStack alignItems="center">
-                    <Text fontSize="$2" fontWeight="700" color="$color12">
-                      {marker.metric ?? ''}
-                    </Text>
-                    <Text fontSize="$1" color="$color11">
-                      {marker.title}
-                    </Text>
-                  </YStack>
+                  <Text fontSize="$2" fontWeight="700" color="$color12">
+                    {marker.metric ?? ''}
+                  </Text>
+                  <Text fontSize="$1" color="$color11">
+                    {marker.title}
+                  </Text>
                 </YStack>
               </Theme>
             </MapboxGL.PointAnnotation>

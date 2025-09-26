@@ -152,7 +152,7 @@ export function TopNavBarWithUnderLineTabs() {
             borderRadius={1000_000}
           >
             <Image
-              resizeMode="contain"
+              objectFit="contain"
               width={25}
               height={25}
               $group-window-sm={{ width: 15, height: 15 }}
@@ -426,7 +426,7 @@ function SideBarContent({ onOpenChange, open }: { onOpenChange: () => void; open
                 marginTop="$2"
               >
                 <Image
-                  resizeMode="contain"
+                  objectFit="contain"
                   width={30}
                   height={30}
                   $group-window-sm={{ width: 15, height: 15 }}

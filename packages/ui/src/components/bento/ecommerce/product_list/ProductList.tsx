@@ -25,7 +25,7 @@ function Item({ item }: { item: Product }) {
         role="article"
       >
         <Stack overflow="hidden" width="100%" height={300}>
-          <Image source={{ uri: item.image }} height="100%" width="100%" resizeMode="cover" />
+          <Image source={{ uri: item.image }} height="100%" width="100%" objectFit="cover" />
         </Stack>
         <YStack>
           <H2 size="$4">{item.name}</H2>

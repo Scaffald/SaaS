@@ -47,7 +47,7 @@ function Item({ item, index }: { item: Product; index: number }) {
               source={{ uri: item.image }}
               height="100%"
               width="100%"
-              resizeMode="cover"
+              objectFit="cover"
             />
           </Stack>
         </Stack>

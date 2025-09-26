@@ -24,7 +24,6 @@ import {
 } from 'tamagui'
 import { useMedia } from 'tamagui'
 import { useCurrentRouteParams } from '../provider/CurrentRouteProvider'
-import { CodeWindow } from './CodeWindow'
 // import { ThemeButton } from './ThemeButton'
 import { type ShowcaseTheme, ShowcaseProvider } from './ShowcaseProvider'
 import { useBentoShowcase } from './BentoProvider'
@@ -106,9 +105,6 @@ const ShowcaseView = forwardRef<any, Props>(
     return (
       <SizeProvider defaultSize={defaultSize}>
         <YStack
-          {...(theme !== 'default' && {
-            theme: theme as ThemeName,
-          })}
           gap="$3"
           ref={ref}
           {...rest}
@@ -217,8 +213,6 @@ const ShowcaseView = forwardRef<any, Props>(
                   <Button.Text>Upgrade to Pro</Button.Text>
                 </Button>
               </YStack>
-            ) : data ? (
-              <CodeWindow code={data} />
             ) : (
               <Text textAlign="center" color="$green10" $group-window-sm={{ fontSize: '$2' }}>
                 Purchase the Bento package to access the code.
@@ -290,7 +284,7 @@ const PHONE_SCALE = 0.75
 const PhoneFrame = (props: any) => {
   return (
     <YStack
-      group="window"
+      group
       focusable
       className="ms300 all ease-out"
       borderRadius={43}
@@ -433,7 +427,7 @@ const ResizableBox = XStack.styleable<ResizableBoxExtraProps>(
 
     return (
       <XStack flex={1} ref={ref} alignItems="stretch" userSelect="none" gap="$2" {...rest}>
-        <XStack alignItems="center" group="window" ref={containerRef as any} width={width as any}>
+        <XStack alignItems="center" group ref={containerRef as any} width={width as any}>
           {children}
           <YStack
             display={hideDragHandle ? 'none' : 'flex'}
