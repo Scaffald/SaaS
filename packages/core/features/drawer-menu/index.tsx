@@ -23,6 +23,7 @@ import {
   Map,
   Settings2,
   LogOut,
+  Users,
 } from '@tamagui/lucide-icons'
 import type { JSX } from 'react'
 import { useCallback } from 'react'
@@ -70,6 +71,13 @@ export const drawerSections: DrawerSectionConfig[] = [
         href: ROUTES.DISCOVER,
         icon: Map,
         theme: 'green',
+      },
+      {
+        key: 'community',
+        title: 'Community',
+        href: '/community',
+        icon: Users,
+        theme: 'pink',
       },
       {
         key: 'profile',
