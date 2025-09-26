@@ -1,4 +1,4 @@
-import { OnboardingScreen } from '@app/core/features/auth/onboarding-screen'
+import { WelcomeScreen } from '@app/core/features/auth/welcome-screen'
 import { Stack } from 'expo-router'
 
 export default function Screen() {
@@ -7,10 +7,10 @@ export default function Screen() {
       <Stack.Screen
         options={{
           headerShown: false,
-          title: 'Onboarding',
+          title: 'Welcome',
         }}
       />
-      <OnboardingScreen />
+      <WelcomeScreen />
     </>
   )
 }

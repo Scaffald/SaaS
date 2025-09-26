@@ -7,7 +7,7 @@ export default function Screen() {
     <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
       <Stack.Screen
         options={{
-          title: 'Reset Password',
+          title: 'Confirm Email',
         }}
       />
       <ResetPasswordScreen />

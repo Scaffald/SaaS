@@ -23,9 +23,7 @@ const isMyOrganizationsPath = (pathname: string) => {
 
 export const OrganizationsScreen = () => {
   const pathname = usePathname()
-  const media = useMedia()
   const _pathname = usePathname()
-  const createLink = useLink({ href: ROUTES.ORGANIZATIONS_NEW })
 
   const menuItems: MenuItem[] = [
     {

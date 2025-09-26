@@ -35,7 +35,7 @@ export const HomeLayout = ({
     (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
   )
   const resolvedHeaderTitle = headerTitle ?? activeItem?.title ?? 'Dashboard'
-  const isDiscoverPage = pathname === ROUTES.DISCOVER
+  const isDiscoverPage = pathname === ROUTES.WORKERS_MAP
 
   return (
     <XStack f={1} backgroundColor="$color1" height="100vh">

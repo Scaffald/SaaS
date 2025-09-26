@@ -1,6 +1,6 @@
 import { XStack, YStack } from '@app/ui'
 
-import { OnboardingScreen } from './onboarding-screen'
+import { WelcomeScreen } from './welcome-screen'
 
 export type AuthLayoutProps = {
   children?: React.ReactNode
@@ -14,7 +14,7 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
       </YStack>
 
       <YStack $md={{ dsp: 'none' }} f={3} fb={0}>
-        <OnboardingScreen />
+        <WelcomeScreen />
       </YStack>
     </XStack>
   )

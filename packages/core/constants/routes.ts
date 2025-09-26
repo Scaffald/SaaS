@@ -5,10 +5,9 @@
 
 export const ROUTES = {
   // Authentication routes
-  LOGIN: '/auth/login',
-  SIGN_IN: '/auth/sign-in',
-  ONBOARDING: '/auth/onboarding',
-  RESET_PASSWORD: '/auth/reset-password',
+  AUTH: '/auth',
+  WELCOME: '/auth/welcome',
+  CONFIRM: '/auth/confirm',
 
   // Public routes
   HOME: '/',
@@ -16,19 +15,19 @@ export const ROUTES = {
 
   // Protected routes (dashboard context)
   DASHBOARD: '/dashboard',
-  DISCOVER: '/dashboard/discover',
+  WORKERS_MAP: '/dashboard/workers/map',
   COMMUNITY: '/dashboard/community',
   COMMUNITY_REVIEWS: '/dashboard/community/reviews',
   SETTINGS: '/dashboard/settings',
   SETTINGS_GENERAL: '/dashboard/settings/general',
-  SETTINGS_CHANGE_PASSWORD: '/dashboard/settings/change-password',
-  SETTINGS_CHANGE_EMAIL: '/dashboard/settings/change-email',
+  SETTINGS_SECURITY: '/dashboard/settings/security',
+  SETTINGS_AUTHENTICATION: '/dashboard/settings/authentication',
   PROFILE: '/dashboard/profile',
   PROFILE_OVERVIEW: '/dashboard/profile/overview',
-  PROFILE_BASIC_INFO: '/dashboard/profile/basic-info',
-  PROFILE_WORK_SKILLS: '/dashboard/profile/work-skills',
-  PROFILE_TRAVEL_COMPLIANCE: '/dashboard/profile/travel-compliance',
-  PROFILE_CONTACT_AVAILABILITY: '/dashboard/profile/contact-availability',
+  PROFILE_GENERAL: '/dashboard/profile/general',
+  PROFILE_SKILLS: '/dashboard/profile/skills',
+  PROFILE_PREFERENCES: '/dashboard/profile/preferences',
+  PROFILE_CONTACT: '/dashboard/profile/contact',
   ORGANIZATIONS: '/dashboard/organizations',
   ORGANIZATIONS_NEW: '/dashboard/organizations/new',
 } as const
@@ -40,6 +39,25 @@ export const LEGACY_ROUTES = {
   OLD_SIGN_IN: '/sign-in',
   OLD_ONBOARDING: '/onboarding',
   OLD_RESET_PASSWORD: '/reset-password',
+
+  // Previous auth routes (before consolidation)
+  OLD_AUTH_LOGIN: '/auth/login',
+  OLD_AUTH_SIGN_IN: '/auth/sign-in',
+  OLD_AUTH_ONBOARDING: '/auth/onboarding',
+  OLD_AUTH_RESET_PASSWORD: '/auth/reset-password',
+
+  // Old profile routes with previous naming
+  OLD_PROFILE_BASIC_INFO: '/dashboard/profile/basic-info',
+  OLD_PROFILE_WORK_SKILLS: '/dashboard/profile/work-skills',
+  OLD_PROFILE_TRAVEL_COMPLIANCE: '/dashboard/profile/travel-compliance',
+  OLD_PROFILE_CONTACT_AVAILABILITY: '/dashboard/profile/contact-availability',
+
+  // Old settings routes with previous naming
+  OLD_SETTINGS_CHANGE_PASSWORD: '/dashboard/settings/change-password',
+  OLD_SETTINGS_CHANGE_EMAIL: '/dashboard/settings/change-email',
+
+  // Old discover route
+  OLD_DISCOVER: '/dashboard/discover',
 } as const
 
 // Route type for TypeScript safety
