@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "yarn@4.1.1",
   "scripts": {
-    "dev": "yarn with-env next dev --turbopack",
+    "dev": "yarn with-env next dev",
     "build": "cd ../.. && yarn build && cd apps/next && yarn next:build",
     "next:build": "yarn with-env next build",
     "start": "yarn with-env next start",
