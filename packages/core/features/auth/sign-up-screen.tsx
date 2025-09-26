@@ -147,8 +147,8 @@ export const SignUpScreen = () => {
           renderAfter={({ submit }) => (
             <>
               <Theme inverse>
-                <SubmitButton 
-                  onPress={() => submit()} 
+                <SubmitButton
+                  onPress={() => submit()}
                   br="$10"
                   disabled={industriesQuery.isPending || industriesQuery.isError}
                 >
