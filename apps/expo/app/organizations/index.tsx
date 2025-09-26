@@ -1,4 +1,4 @@
-import { OrganizationsScreen } from '@app/core/features/organizations'
+import { OrganizationsDirectoryScreen } from '@app/core/features/organizations'
 import { ScreenWrapper } from '@app/ui'
 import { router } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -11,7 +11,7 @@ export default function Screen() {
           onPress: () => router.back(),
         }}
       >
-        <OrganizationsScreen />
+        <OrganizationsDirectoryScreen />
       </ScreenWrapper>
     </SafeAreaView>
   )

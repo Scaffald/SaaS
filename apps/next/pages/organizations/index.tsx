@@ -1,5 +1,5 @@
-import { CreateOrganizationScreen } from '@app/core/features/organizations'
 import { HomeLayout } from '@app/core/features/home/layout.web'
+import { OrganizationsLandingScreen } from '@app/core/features/organizations'
 import { OrganizationsLayout } from '@app/core/features/organizations/layout.web'
 import Head from 'next/head'
 
@@ -9,16 +9,16 @@ const Page: NextPageWithLayout = () => {
   return (
     <>
       <Head>
-        <title>Create organization</title>
+        <title>Organizations</title>
       </Head>
-      <CreateOrganizationScreen />
+      <OrganizationsLandingScreen />
     </>
   )
 }
 
 Page.getLayout = (page) => (
   <HomeLayout fullPage>
-    <OrganizationsLayout>{page}</OrganizationsLayout>
+    <OrganizationsLayout isOrganizationsHome>{page}</OrganizationsLayout>
   </HomeLayout>
 )
 
