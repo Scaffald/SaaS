@@ -15,7 +15,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { useUser } from 'app/utils/useUser'
 import { useSupabase } from 'app/utils/supabase/useSupabase'
-import { usePathname } from '@app/core/utils/usePathname'
+import { usePathname } from 'app/utils/usePathname'
+import { ROUTES } from '@app/core/constants/routes'
 
 import {
   BasicInformationStep,
@@ -91,9 +92,8 @@ export const RequiredProfileDialog = ({ disabled }: RequiredProfileDialogProps) 
   const isLoading = isUserPending || isProfilePending
   const normalizedPath = pathname?.toLowerCase() ?? ''
   const isAuthRoute =
-    normalizedPath.includes('/sign-in') ||
-    normalizedPath.includes('/sign-up') ||
-    normalizedPath.includes('/reset-password') ||
+    normalizedPath.includes(ROUTES.LOGIN) ||
+    normalizedPath.includes(ROUTES.RESET_PASSWORD) ||
     normalizedPath.includes('/onboarding') ||
     normalizedPath.includes('/(auth)/')
 

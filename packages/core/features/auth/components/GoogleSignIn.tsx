@@ -22,7 +22,7 @@ export function GoogleSignIn() {
   }
 
   return (
-    <Button br="$10" onPress={() => handleOAuthSignIn()} icon={IconGoogle}>
+    <Button br="$10" f={1} onPress={() => handleOAuthSignIn()} icon={IconGoogle}>
       Sign in with Google
     </Button>
   )
