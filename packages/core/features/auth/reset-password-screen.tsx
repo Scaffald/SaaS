@@ -1,5 +1,4 @@
-import { Button, FormWrapper, H2, Paragraph, SubmitButton, Text, Theme, YStack } from '@app/ui'
-import { ChevronLeft } from '@tamagui/lucide-icons'
+import { H2, Paragraph, SubmitButton, Text, Theme, YStack } from '@app/ui'
 import { SchemaForm, formFields } from 'app/utils/SchemaForm'
 import { useSupabase } from 'app/utils/supabase/useSupabase'
 import { useEffect } from 'react'
@@ -8,6 +7,7 @@ import { createParam } from 'solito'
 import { Link } from 'solito/link'
 import { z } from 'zod'
 import { ROUTES, buildRoute } from '@app/core/constants/routes'
+import { MagicLinkPending } from './components/MagicLinkPending'
 
 const { useParams, useUpdateParams } = createParam<{ email?: string }>()
 
@@ -94,21 +94,11 @@ const CheckYourEmail = () => {
   const { reset } = useFormContext()
 
   return (
-    <FormWrapper>
-      <FormWrapper.Body>
-        <YStack gap="$3">
-          <H2>Check your email</H2>
-          <Paragraph theme="alt1">
-            We&apos;ve sent a magic link to {email}. Open it to get back into your account.
-          </Paragraph>
-        </YStack>
-      </FormWrapper.Body>
-      <FormWrapper.Footer>
-        <Button themeInverse icon={ChevronLeft} br="$10" onPress={() => reset()}>
-          Back
-        </Button>
-      </FormWrapper.Footer>
-    </FormWrapper>
+    <MagicLinkPending
+      email={email}
+      linkInstruction="Open it to get back into your account."
+      onBack={() => reset()}
+    />
   )
 }
 
