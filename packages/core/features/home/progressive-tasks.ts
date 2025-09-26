@@ -22,21 +22,19 @@ export type ProgressivePromptDefinition = {
 
 const PROFILE_EDIT_ROUTE = '/profile'
 
-const profilePrompts: ProgressivePromptDefinition[] = HIRE_SCORE_FACTORS.map(
-  (factor, index) => ({
-    id: factor.id,
-    factorId: factor.id,
-    title: factor.title,
-    description: factor.actionMessage,
-    priority: 100 - index,
-    cooldownDays: 7,
-    surfaces: ['dialog', 'inline-card'],
-    ctaLabel: 'Update profile',
-    ctaRoute: PROFILE_EDIT_ROUTE,
-    points: factor.points,
-    tags: ['profile'],
-  })
-)
+const profilePrompts: ProgressivePromptDefinition[] = HIRE_SCORE_FACTORS.map((factor, index) => ({
+  id: factor.id,
+  factorId: factor.id,
+  title: factor.title,
+  description: factor.actionMessage,
+  priority: 100 - index,
+  cooldownDays: 7,
+  surfaces: ['dialog', 'inline-card'],
+  ctaLabel: 'Update profile',
+  ctaRoute: PROFILE_EDIT_ROUTE,
+  points: factor.points,
+  tags: ['profile'],
+}))
 
 export const PROGRESSIVE_PROMPT_REGISTRY: ProgressivePromptDefinition[] = [
   ...profilePrompts,

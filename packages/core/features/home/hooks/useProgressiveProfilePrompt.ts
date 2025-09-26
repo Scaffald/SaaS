@@ -64,9 +64,7 @@ const isCoolingDown = (entry: PromptStorageEntry | undefined, cooldownDays: numb
   return now - lastShown < cooldownDays * ONE_DAY_MS
 }
 
-export const useProgressiveProfilePrompt = (
-  options: UseProgressiveProfilePromptOptions = {}
-) => {
+export const useProgressiveProfilePrompt = (options: UseProgressiveProfilePromptOptions = {}) => {
   const hireScore = useHireScore()
   const [storage, setStorage] = useState<PromptStorage>({})
   const seenPromptRef = useRef<string | null>(null)
@@ -78,9 +76,7 @@ export const useProgressiveProfilePrompt = (
 
   const definitions = useMemo(() => {
     if (!surface) return PROGRESSIVE_PROMPT_REGISTRY
-    return PROGRESSIVE_PROMPT_REGISTRY.filter((definition) =>
-      definition.surfaces.includes(surface)
-    )
+    return PROGRESSIVE_PROMPT_REGISTRY.filter((definition) => definition.surfaces.includes(surface))
   }, [surface])
 
   const prompts: PromptStatus[] = useMemo(() => {

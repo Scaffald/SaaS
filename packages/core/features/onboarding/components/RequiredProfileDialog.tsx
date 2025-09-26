@@ -39,7 +39,10 @@ type PromptComponentProps = {
   onComplete: () => void
 }
 
-const CTA_COMPONENTS: Record<NonNullable<ProgressivePrompt['componentId']>, (props: PromptComponentProps) => JSX.Element> = {
+const CTA_COMPONENTS: Record<
+  NonNullable<ProgressivePrompt['componentId']>,
+  (props: PromptComponentProps) => JSX.Element
+> = {
   'review-peer': ({ prompt, onComplete }) => {
     const link = useLink({ href: prompt.ctaRoute ?? '/community/reviews' })
 
@@ -75,8 +78,11 @@ export const RequiredProfileDialog = ({ disabled }: RequiredProfileDialogProps) 
   const toast = useToastController()
   const queryClient = useQueryClient()
   const pathname = usePathname()
-  const { prompt, isLoading: isPromptLoading, markPromptCompleted } =
-    useProgressiveProfilePrompt({ surface: 'dialog' })
+  const {
+    prompt,
+    isLoading: isPromptLoading,
+    markPromptCompleted,
+  } = useProgressiveProfilePrompt({ surface: 'dialog' })
   const promptIdRef = useRef<string | null>(null)
 
   useEffect(() => {
