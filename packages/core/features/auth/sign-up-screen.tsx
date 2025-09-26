@@ -1,12 +1,4 @@
-import {
-  H2,
-  Paragraph,
-  SubmitButton,
-  Text,
-  Theme,
-  YStack,
-  isWeb,
-} from '@app/ui'
+import { H2, Paragraph, SubmitButton, Text, Theme, YStack, isWeb } from '@app/ui'
 import { SchemaForm, formFields } from '@app/core/utils/SchemaForm'
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import { useEffect } from 'react'

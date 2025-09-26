@@ -1,13 +1,4 @@
-import {
-  H2,
-  LoadingOverlay,
-  Paragraph,
-  SubmitButton,
-  Text,
-  Theme,
-  YStack,
-  isWeb,
-} from '@app/ui'
+import { H2, LoadingOverlay, Paragraph, SubmitButton, Text, Theme, YStack, isWeb } from '@app/ui'
 import { SchemaForm, formFields } from 'app/utils/SchemaForm'
 import { useSupabase } from 'app/utils/supabase/useSupabase'
 import { useUser } from 'app/utils/useUser'
