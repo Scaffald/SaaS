@@ -1,9 +1,11 @@
 import {
+  AddressAutocompleteInput,
   Button,
   Checkbox,
   FormWrapper,
   FullscreenSpinner,
   H2,
+  H3,
   H4,
   Input,
   Paragraph,
@@ -63,40 +65,30 @@ const currencyString = z
   .trim()
   .refine((value) => value === '' || /^\d+(\.\d{1,2})?$/.test(value), 'Enter a valid rate')
 
-export const BasicInformationSchema = z
-  .object({
-    firstName: z.string().trim().min(1, 'First name is required'),
-    lastName: z.string().trim().min(1, 'Last name is required'),
-    phone: z
-      .string()
-      .trim()
-      .max(32)
-      .optional()
-      .refine((value) => !value || /^[0-9+()\-\s]+$/.test(value), 'Enter a valid phone number'),
-    about: z.string().trim().max(600).optional(),
-    location: z
-      .string()
-      .trim()
-      .min(1, 'Location is required')
-      .max(120, 'Location must be shorter than 120 characters'),
-    openToTravel: z.boolean(),
-    travelMileage: numericString('Mileage'),
-    usResident: z.boolean(),
-    usPassport: z.boolean(),
-    driversLicense: z.enum(
-      DRIVER_LICENSE_OPTIONS.map((option) => option.value) as [string, ...string[]]
-    ),
-    veteran: z.boolean(),
-  })
-  .superRefine((values, ctx) => {
-    if (values.openToTravel && values.travelMileage.trim() === '') {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Enter how many miles you are willing to travel',
-        path: ['travelMileage'],
-      })
-    }
-  })
+export const BasicInformationSchema = z.object({
+  firstName: z.string().trim().min(1, 'First name is required'),
+  lastName: z.string().trim().min(1, 'Last name is required'),
+  phone: z
+    .string()
+    .trim()
+    .max(32)
+    .optional()
+    .refine((value) => !value || /^[0-9+()\-\s]+$/.test(value), 'Enter a valid phone number'),
+  about: z.string().trim().max(600).optional(),
+  location: z
+    .string()
+    .trim()
+    .min(1, 'Location is required')
+    .max(120, 'Location must be shorter than 120 characters'),
+  openToTravel: z.boolean().optional(),
+  travelMileage: numericString('Mileage').optional(),
+  usResident: z.boolean(),
+  usPassport: z.boolean(),
+  driversLicense: z.enum(
+    DRIVER_LICENSE_OPTIONS.map((option) => option.value) as [string, ...string[]]
+  ).optional(),
+  veteran: z.boolean(),
+})
 
 const AdditionalOnboardingSchema = z.object({
   yearsExperience: numericString('Years of experience'),
@@ -313,11 +305,11 @@ export const persistBasicInformation = async ({
           last_name: lastName,
           phone: values.phone?.trim() || null,
           location: values.location.trim(),
-          open_to_travel: values.openToTravel,
+          open_to_travel: values.openToTravel ?? false,
           travel_mileage: travelMileage,
           us_resident: values.usResident,
           us_passport: values.usPassport,
-          drivers_license_class: values.driversLicense,
+          drivers_license_class: values.driversLicense || null,
           veteran: values.veteran,
         },
         { onConflict: 'user_id' }
@@ -658,13 +650,12 @@ const HelperText = ({ children }: { children: React.ReactNode }) => (
 )
 
 export const BasicInformationStep = ({ form }: BaseStepProps) => {
-  const { control, watch } = form
-  const openToTravel = watch('openToTravel')
+  const { control } = form
 
   return (
     <YStack gap="$5">
       <YStack gap="$2">
-        <H2>Basic information</H2>
+        <H3>Basic information</H3>
         <Paragraph size="$3" color="$gray11">
           Share a brief introduction so companies know how to reach you and where you are based.
         </Paragraph>
@@ -715,31 +706,9 @@ export const BasicInformationStep = ({ form }: BaseStepProps) => {
 
         <Controller
           control={control}
-          name="about"
-          render={({ field, fieldState }) => (
-            <YStack gap="$2">
-              <FieldLabel>About</FieldLabel>
-              <TextArea
-                value={field.value ?? ''}
-                onChangeText={field.onChange}
-                size="$4"
-                rows={4}
-                placeholder="Try to explain your experience in a few short sentences"
-              />
-              {fieldState.error?.message ? (
-                <Paragraph size="$2" color="$red10">
-                  {fieldState.error.message}
-                </Paragraph>
-              ) : null}
-            </YStack>
-          )}
-        />
-
-        <Controller
-          control={control}
           name="location"
           render={({ field, fieldState }) => (
-            <LabeledInput
+            <AddressAutocompleteInput
               label="Location"
               placeholder="e.g. San Francisco, CA"
               value={field.value ?? ''}
@@ -748,35 +717,6 @@ export const BasicInformationStep = ({ form }: BaseStepProps) => {
             />
           )}
         />
-
-        <Controller
-          control={control}
-          name="openToTravel"
-          render={({ field }) => (
-            <ToggleRow
-              label="Open to travel"
-              description="Let companies know if you are willing to travel for work."
-              checked={field.value}
-              onCheckedChange={field.onChange}
-            />
-          )}
-        />
-
-        {openToTravel ? (
-          <Controller
-            control={control}
-            name="travelMileage"
-            render={({ field, fieldState }) => (
-              <LabeledInput
-                label="Supplemental miles you are willing to travel"
-                placeholder="e.g. 50"
-                value={field.value}
-                onChangeText={field.onChange}
-                error={fieldState.error?.message}
-              />
-            )}
-          />
-        ) : null}
 
         <Controller
           control={control}
@@ -799,32 +739,6 @@ export const BasicInformationStep = ({ form }: BaseStepProps) => {
               checked={field.value}
               onCheckedChange={field.onChange}
             />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="driversLicense"
-          render={({ field, fieldState }) => (
-            <YStack gap="$2">
-              <FieldLabel>Driver’s license</FieldLabel>
-              <Paragraph size="$2" color="$gray11">
-                Let us know the highest license class you currently hold.
-              </Paragraph>
-              <ChoiceChips
-                value={field.value}
-                onSelect={field.onChange}
-                options={DRIVER_LICENSE_OPTIONS.map((option) => ({
-                  value: option.value,
-                  label: option.label,
-                }))}
-              />
-              {fieldState.error?.message ? (
-                <Paragraph size="$2" color="$red10">
-                  {fieldState.error.message}
-                </Paragraph>
-              ) : null}
-            </YStack>
           )}
         />
 
