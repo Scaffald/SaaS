@@ -58,5 +58,20 @@
         "noDangerouslySetInnerHtml": "off"
       }
     }
-  }
+  },
+  "overrides": [
+    {
+      "include": ["packages/ui/**"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedVariables": "off"
+          },
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    }
+  ]
 }
