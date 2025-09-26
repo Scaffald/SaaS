@@ -32,24 +32,32 @@ export const ResultList = forwardRef<ResultListRef, ResultListProps>(
           element.scrollIntoView({
             behavior: 'smooth',
             block: 'center',
-            inline: 'nearest'
+            inline: 'nearest',
           })
         } else {
-          const nativeCardRef = cardRef as { measureLayout: (container: unknown, onSuccess: (x: number, y: number, width: number, height: number) => void, onFail: () => void) => void }
-          const nativeScrollView = scrollViewRef.current as { scrollTo: (options: { y: number; animated: boolean }) => void }
-          
+          const nativeCardRef = cardRef as {
+            measureLayout: (
+              container: unknown,
+              onSuccess: (x: number, y: number, width: number, height: number) => void,
+              onFail: () => void
+            ) => void
+          }
+          const nativeScrollView = scrollViewRef.current as {
+            scrollTo: (options: { y: number; animated: boolean }) => void
+          }
+
           nativeCardRef.measureLayout(
             scrollViewRef.current,
             (_x: number, y: number, _width: number, _height: number) => {
               nativeScrollView.scrollTo({
                 y: y - 100,
-                animated: true
+                animated: true,
               })
             },
             () => {}
           )
         }
-      }
+      },
     }))
 
     const registerCardRef = (profileId: string, ref: unknown) => {
@@ -75,10 +83,10 @@ export const ResultList = forwardRef<ResultListRef, ResultListProps>(
             Worker · Organization legend
           </Text>
         </XStack>
-        <ScrollView 
+        <ScrollView
           ref={scrollViewRef}
-          flex={1} 
-          showsVerticalScrollIndicator 
+          flex={1}
+          showsVerticalScrollIndicator
           renderToHardwareTextureAndroid
         >
           <YStack gap="$2" paddingBottom="$6">

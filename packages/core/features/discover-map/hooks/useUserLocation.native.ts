@@ -1,5 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
-import { requestForegroundPermissionsAsync, getCurrentPositionAsync, getForegroundPermissionsAsync } from 'expo-location'
+import {
+  requestForegroundPermissionsAsync,
+  getCurrentPositionAsync,
+  getForegroundPermissionsAsync,
+} from 'expo-location'
 
 export interface UserLocation {
   latitude: number
@@ -23,14 +27,14 @@ export const useUserLocation = () => {
   })
 
   const requestLocation = useCallback(async () => {
-    setState(prev => ({ ...prev, isLoading: true, error: null }))
+    setState((prev) => ({ ...prev, isLoading: true, error: null }))
 
     try {
       // Request permission first
       const { status } = await requestForegroundPermissionsAsync()
-      
+
       if (status !== 'granted') {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           isLoading: false,
           error: 'Location permission denied',
@@ -61,8 +65,8 @@ export const useUserLocation = () => {
       return location
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to get location'
-      
-      setState(prev => ({
+
+      setState((prev) => ({
         ...prev,
         isLoading: false,
         error: errorMessage,
@@ -76,13 +80,13 @@ export const useUserLocation = () => {
   const checkPermissionStatus = useCallback(async () => {
     try {
       const { status } = await getForegroundPermissionsAsync()
-      
-      setState(prev => ({
+
+      setState((prev) => ({
         ...prev,
         permissionStatus: status === 'granted' ? 'granted' : 'denied',
       }))
     } catch (_error) {
-      setState(prev => ({ ...prev, permissionStatus: 'unknown' }))
+      setState((prev) => ({ ...prev, permissionStatus: 'unknown' }))
     }
   }, [])
 

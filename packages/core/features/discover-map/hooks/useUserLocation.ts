@@ -22,22 +22,18 @@ export const useUserLocation = () => {
   })
 
   const requestLocation = useCallback(async () => {
-    setState(prev => ({ ...prev, isLoading: true, error: null }))
+    setState((prev) => ({ ...prev, isLoading: true, error: null }))
     try {
       if (!navigator.geolocation) {
         throw new Error('Geolocation is not supported by this browser')
       }
 
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(
-          resolve,
-          reject,
-          {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 300000, // 5 minutes
-          }
-        )
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 300000, // 5 minutes
+        })
       })
 
       const location: UserLocation = {
@@ -56,8 +52,8 @@ export const useUserLocation = () => {
       return location
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to get location'
-      
-      setState(prev => ({
+
+      setState((prev) => ({
         ...prev,
         isLoading: false,
         error: errorMessage,
@@ -73,15 +69,11 @@ export const useUserLocation = () => {
     // We'll try to get the position with a very short timeout to check
     try {
       await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(
-          resolve,
-          reject,
-          { timeout: 1 }
-        )
+        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 1 })
       })
-      setState(prev => ({ ...prev, permissionStatus: 'granted' }))
+      setState((prev) => ({ ...prev, permissionStatus: 'granted' }))
     } catch (_error) {
-      setState(prev => ({ ...prev, permissionStatus: 'denied' }))
+      setState((prev) => ({ ...prev, permissionStatus: 'denied' }))
     }
   }, [])
 

@@ -34,7 +34,7 @@ export const FilterBar = ({
   const handleAddressSelect = (suggestion: AddressSuggestion) => {
     // Update the location query with the selected address
     onLocationChange(suggestion.fullAddress)
-    
+
     // TODO: Update map center to the selected address coordinates
     // This would require passing coordinates back to the parent component
     console.log('Selected address:', suggestion)
@@ -71,10 +71,10 @@ export const FilterBar = ({
                 country: 'US',
                 types: ['address', 'place'],
                 limit: 5,
-                language: 'en'
+                language: 'en',
               },
               debounceMs: 300,
-              minQueryLength: 2
+              minQueryLength: 2,
             }}
           />
           <Button
