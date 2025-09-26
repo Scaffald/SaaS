@@ -8,7 +8,7 @@ import {
   Theme,
   YStack,
   useToastController,
-} from '@my/ui'
+} from '@app/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -40,9 +40,7 @@ export const RequiredProfileDialog = ({ disabled }: RequiredProfileDialogProps) 
   const toast = useToastController()
   const queryClient = useQueryClient()
   const pathname = usePathname()
-  const { data: onboardingProfile, isPending: isProfilePending } = useOnboardingProfile(
-    user?.id
-  )
+  const { data: onboardingProfile, isPending: isProfilePending } = useOnboardingProfile(user?.id)
 
   const form = useForm<OnboardingFormValues>({
     resolver: zodResolver(OnboardingSchema),
