@@ -1,6 +1,4 @@
 import {
-  Button,
-  FormWrapper,
   H2,
   Paragraph,
   SubmitButton,
@@ -9,7 +7,6 @@ import {
   YStack,
   isWeb,
 } from '@app/ui'
-import { ChevronLeft } from '@tamagui/lucide-icons'
 import { SchemaForm, formFields } from '@app/core/utils/SchemaForm'
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import { useEffect } from 'react'
@@ -19,6 +16,7 @@ import { Link } from 'solito/link'
 import { z } from 'zod'
 
 import { SocialLogin } from './components/SocialLogin'
+import { MagicLinkPending } from './components/MagicLinkPending'
 
 const { useParams, useUpdateParams } = createParam<{ email?: string }>()
 
@@ -120,20 +118,10 @@ const CheckYourEmail = () => {
   const { reset } = useFormContext()
 
   return (
-    <FormWrapper>
-      <FormWrapper.Body>
-        <YStack gap="$3">
-          <H2>Check your email</H2>
-          <Paragraph theme="alt1">
-            We&apos;ve sent a magic link to {email}. Open it to finish signing up.
-          </Paragraph>
-        </YStack>
-      </FormWrapper.Body>
-      <FormWrapper.Footer>
-        <Button themeInverse icon={ChevronLeft} br="$10" onPress={() => reset()}>
-          Back
-        </Button>
-      </FormWrapper.Footer>
-    </FormWrapper>
+    <MagicLinkPending
+      email={email}
+      linkInstruction="Open it to finish signing up."
+      onBack={() => reset()}
+    />
   )
 }
