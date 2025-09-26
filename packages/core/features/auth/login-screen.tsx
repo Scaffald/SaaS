@@ -76,26 +76,29 @@ export const LoginScreen = () => {
           }}
           onSubmit={sendMagicLink}
           renderAfter={({ submit }) => {
-            return <></>
+            return (
+              <>
+                <Theme inverse>
+                  <SubmitButton onPress={() => submit()} br="$10">
+                    Send magic link
+                  </SubmitButton>
+                </Theme>
+                
+                {isWeb && <SocialLogin />}
+              </>
+            )
           }}
         >
           {(fields) => (
             <>
-              <YStack gap="$3" mb="$4">
+              <YStack gap="$3" mb="$3">
                 <H2 $sm={{ size: '$8' }}>Get started</H2>
                 <Paragraph theme="alt2">
                   Enter your email and we&apos;ll send a one-time sign-in link.
                 </Paragraph>
               </YStack>
               {Object.values(fields)}
-
-              <Theme inverse>
-                <SubmitButton onPress={() => submit()} br="$10" mt="$2" mb="$4">
-                  Send magic link
-                </SubmitButton>
-              </Theme>
-
-              <SocialLogin />
+              {!isWeb && <SocialLogin />}
             </>
           )}
         </SchemaForm>
