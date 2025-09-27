@@ -1,4 +1,4 @@
-import { DrawerMenu } from '@app/core/features/drawer-menu'
+import { DrawerMenu } from '@app/core/features/drawer'
 import { Button, useTheme } from '@app/ui'
 import { DrawerActions } from '@react-navigation/native'
 import { Map as MapIcon, Menu } from '@tamagui/lucide-icons'
@@ -71,8 +71,6 @@ export default function Layout() {
     >
       <Drawer.Screen name="index" options={{ title: 'Dashboard' }} />
       <Drawer.Screen name="workers/index" options={{ title: 'Workers' }} />
-      <Drawer.Screen name="organizations/index" options={{ title: 'Organizations' }} />
-      <Drawer.Screen name="organizations/new" options={{ title: 'Create Organization' }} />
       <Drawer.Screen name="profile/index" options={{ title: 'Profile' }} />
       <Drawer.Screen name="settings/index" options={{ title: 'Settings' }} />
     </Drawer>

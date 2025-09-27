@@ -36,8 +36,6 @@ alwaysApply: true
 - Web development: `yarn web` (Next.js on port 3000)
 - Mobile development: `yarn native` (Expo on port 8081)
 - Supabase operations: `yarn supa` (local Supabase)
-- Storybook web: `yarn storybook:web`
-- Storybook native: `yarn storybook:native`
 - Type checking: `yarn typecheck`
 - Linting: `yarn lint`
 - Building: `yarn build`

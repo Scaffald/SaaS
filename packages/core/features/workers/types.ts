@@ -15,7 +15,6 @@ export type TalentProfile = {
   skills: string[]
   locationLabel: string
   coordinates: [number, number]
-  organization?: string
   avatarUrl?: string | null
 }
 

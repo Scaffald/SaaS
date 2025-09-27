@@ -1,7 +1,7 @@
 import { YStack, XStack, Button, useMedia, useTheme } from '@app/ui'
 import { Menu, X } from '@tamagui/lucide-icons'
 import { useState, useEffect } from 'react'
-import { DrawerMenu } from '@app/core/features/drawer-menu'
+import { DrawerMenu } from '@app/core/features/drawer'
 import { DrawerContentComponentProps } from '@react-navigation/drawer'
 
 export type HamburgerMenuProps = {

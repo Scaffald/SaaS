@@ -113,9 +113,7 @@ export const WorkersIndexScreen = () => {
       talentProfiles.map((profile) => ({
         id: profile.id,
         coordinate: profile.coordinates,
-        title: profile.organization ?? 'Worker',
         metric: `e ${profile.score}`,
-        organization: profile.organization,
       })),
     [talentProfiles]
   )

@@ -1,7 +1,11 @@
 {
   "name": "scaffald",
   "private": true,
-  "workspaces": ["apps/*", "packages/*", "supabase"],
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "supabase"
+  ],
   "scripts": {
     "_with-env": "dotenv -e .env -c -- ",
     "ios": "cd apps/expo && yarn ios",
@@ -20,15 +24,8 @@
     "web:prod:serve": "yarn workspace next-app serve",
     "fix": "manypkg fix",
     "postinstall": "patch-package && yarn check-deps && yarn build",
-    "build": "yarn workspaces foreach --all --exclude next-app --exclude storybook-app run build",
+    "build": "yarn workspaces foreach --all --exclude next-app run build",
     "build:ci": "yarn workspace next-app run build",
-    "storybook": "yarn storybook:web",
-    "sb": "yarn storybook:web",
-    "storybook:web": "yarn build && cd apps/storybook && yarn dev",
-    "storybook:native": "yarn build && cd apps/storybook-rn && yarn storybook",
-    "storybook:ios": "yarn build && cd apps/storybook-rn && yarn ios",
-    "storybook:android": "yarn build && cd apps/storybook-rn && yarn android",
-    "chromatic": "yarn build && cd apps/storybook && yarn chromatic",
     "upgrade:tamagui": "yarn up '*tamagui*' '@tamagui/*'",
     "upgrade:tamagui:canary": "yarn up '*tamagui*'@canary '@tamagui/*'@canary",
     "check-deps": "check-dependency-version-consistency .",
@@ -43,8 +40,8 @@
     "lint-sherif": "npx --yes sherif@latest",
     "generate": "turbo gen",
     "gen": "yarn generate",
-    "add:font": "yarn workspace tamagui-fonts-and-icons run add:font",
-    "add:icon": "yarn workspace tamagui-fonts-and-icons run add:icon",
+    "add:font": "yarn workspace @app/fonts run add:font",
+    "add:icon": "yarn workspace @app/fonts run add:icon",
     "get-local-ip-mac": "ifconfig | grep 'inet ' | grep -v '127.0.0.1' | awk '{ print $2 }'"
   },
   "resolutions": {
@@ -86,6 +83,8 @@
     "ultra-runner": "^3.10.5"
   },
   "manypkg": {
-    "ignoredRules": ["ROOT_HAS_DEV_DEPENDENCIES"]
+    "ignoredRules": [
+      "ROOT_HAS_DEV_DEPENDENCIES"
+    ]
   }
 }

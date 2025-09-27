@@ -21,7 +21,6 @@ alwaysApply: false
 - **Test on actual devices** when possible
 - **Use Expo Go app** for quick testing
 - **Test on both iOS and Android** when making platform-specific changes
-- **Use `yarn storybook:native`** for component development
 
 ## Platform-Specific Files
 - `.native.tsx` - React Native specific implementations
@@ -33,4 +32,3 @@ alwaysApply: false
 - **Prompt user to test** on actual device or simulator
 - **Suggest using Expo Go** for quick testing
 - **Recommend testing on both platforms** for cross-platform features
-- **Use Storybook native** for isolated component testing

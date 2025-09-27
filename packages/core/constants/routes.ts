@@ -177,22 +177,6 @@ const routeConfig: Record<string, RouteConfig> = {
         title: 'Dashboard Home',
       },
 
-      // Dashboard Organizations routes
-      organizations: {
-        path: '/dashboard/organizations',
-        title: 'Organizations',
-        children: {
-          index: {
-            path: '/dashboard/organizations',
-            title: 'Organizations',
-          },
-          new: {
-            path: '/dashboard/organizations/new',
-            title: 'Create Organization',
-          },
-        },
-      },
-
       // Dashboard Profile routes
       profile: {
         path: '/dashboard/profile',
@@ -253,57 +237,6 @@ const routeConfig: Record<string, RouteConfig> = {
         },
       },
 
-      // Dashboard Styleguide routes
-      styleguide: {
-        path: '/dashboard/styleguide',
-        title: 'Styleguide',
-        children: {
-          index: {
-            path: '/dashboard/styleguide',
-            title: 'Styleguide',
-          },
-          typography: {
-            path: '/dashboard/styleguide/typography',
-            title: 'Typography',
-          },
-          buttons: {
-            path: '/dashboard/styleguide/buttons',
-            title: 'Buttons',
-          },
-          forms: {
-            path: '/dashboard/styleguide/forms',
-            title: 'Forms',
-          },
-          dataDisplay: {
-            path: '/dashboard/styleguide/data-display',
-            title: 'Data Display',
-          },
-          interactive: {
-            path: '/dashboard/styleguide/interactive',
-            title: 'Interactive',
-          },
-          layout: {
-            path: '/dashboard/styleguide/layout',
-            title: 'Layout',
-          },
-        },
-      },
-
-      // Dashboard Community routes
-      community: {
-        path: '/dashboard/community',
-        title: 'Community',
-        children: {
-          index: {
-            path: '/dashboard/community',
-            title: 'Community',
-          },
-          reviews: {
-            path: '/dashboard/community/reviews',
-            title: 'Reviews',
-          },
-        },
-      },
 
       // Dashboard Workers routes
       workers: {
@@ -317,12 +250,6 @@ const routeConfig: Record<string, RouteConfig> = {
         },
       },
     },
-  },
-
-  // Root styleguide route (matches Expo app)
-  styleguide: {
-    path: '/styleguide',
-    title: 'Styleguide',
   },
 }
 
@@ -342,9 +269,6 @@ export const DASHBOARD_ROUTES = {
   INDEX: ROUTES.dashboard,
   PROFILE: ROUTES.dashboard.childrenArray?.find((r) => r.path === '/dashboard/profile'),
   SETTINGS: ROUTES.dashboard.childrenArray?.find((r) => r.path === '/dashboard/settings'),
-  ORGANIZATIONS: ROUTES.dashboard.childrenArray?.find((r) => r.path === '/dashboard/organizations'),
-  STYLEGUIDE: ROUTES.dashboard.childrenArray?.find((r) => r.path === '/dashboard/styleguide'),
-  COMMUNITY: ROUTES.dashboard.childrenArray?.find((r) => r.path === '/dashboard/community'),
   WORKERS: ROUTES.dashboard.childrenArray?.find((r) => r.path === '/dashboard/workers'),
 }
 

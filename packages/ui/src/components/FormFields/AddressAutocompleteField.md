@@ -211,6 +211,3 @@ Mapbox's Geocoding API has the following pricing (as of 2024):
 
 For development, the free tier should be sufficient for testing and small applications.
 
-## Examples
-
-See the Storybook stories for comprehensive examples of all features and variants.

@@ -1,6 +1,7 @@
 import { YStack } from '@app/ui'
+import { DashboardErrorBoundary } from './components/dashboard/error-boundary'
+import { NewsFeedCard } from './components/dashboard/right-rail'
 
-import { DashboardErrorBoundary, NewsFeedCard } from './components/dashboard'
 
 export function DashboardIndexRight() {
   return (

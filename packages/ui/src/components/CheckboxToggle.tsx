@@ -29,7 +29,7 @@ import {
  * Enhanced CheckboxToggle Component
  *
  * A unified component that can render as either a checkbox or toggle/switch
- * with bento-inspired patterns including:
+ * with new patterns including:
  * - Multiple visual variants (checkbox, toggle, card, minimal)
  * - Enhanced animations and focus states
  * - Custom icons and theming
@@ -537,7 +537,6 @@ export const CheckboxToggle = forwardRef<any, CheckboxToggleProps>((props, ref) 
               checked={checked}
               onCheckedChange={onCheckedChange}
               disabled={disabled}
-              error={error}
               animationPreset={animationPreset}
               native={!isWeb}
             >
@@ -607,7 +606,11 @@ export const CheckboxToggle = forwardRef<any, CheckboxToggleProps>((props, ref) 
             <YStack flex={1} gap="$1">
               {LabelComponent}
               {description && (
-                <Text size="$3" color={error ? '$red10' : '$color10'} opacity={disabled ? 0.7 : 1}>
+                <Text
+                  fontSize="$3"
+                  color={error ? '$red10' : '$color10'}
+                  opacity={disabled ? 0.7 : 1}
+                >
                   {description}
                 </Text>
               )}

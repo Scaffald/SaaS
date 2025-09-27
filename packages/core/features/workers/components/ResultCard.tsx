@@ -47,9 +47,6 @@ export const ResultCard = memo(
                 {profile.score}
               </Chip.Text>
             </Chip>
-            {profile.organization === 'Organization' ? (
-              <Building size={16} color="$blue11" />
-            ) : null}
           </XStack>
         </XStack>
 

@@ -4,19 +4,14 @@ import { ArrowRight, Handshake, Megaphone } from '@tamagui/lucide-icons'
 
 import { useUser } from '@app/core/utils/useUser'
 
-import {
-  AfterProfileSummaryCard,
-  CareerInsightCard,
-  CertificationSpotlightCard,
-  DashboardHero,
-  HireScoreCard,
-  OpportunitySection,
-  OrganizationQuickActionsCard,
-  ProfileProgressSection,
-  type OpportunityItem,
-} from './components/dashboard'
 import { useHireScore } from './hooks/useHireScore'
 import { useProgressiveProfilePrompt } from './hooks/useProgressiveProfilePrompt'
+import { CertificationSpotlightCard } from './components/dashboard/certifications'
+import { DashboardHero } from './components/dashboard/hero/dashboard-hero'
+import { HireScoreCard } from './components/dashboard/hire-score'
+import { CareerInsightCard, AfterProfileSummaryCard } from './components/dashboard/insights'
+import { OpportunityItem, OpportunitySection } from './components/dashboard/opportunities'
+import { ProfileProgressSection } from './components/dashboard/profile'
 
 const INQUIRIES: OpportunityItem[] = [
   {
@@ -150,7 +145,7 @@ export function DashboardIndexLeft() {
 
   if (!user) return null
 
-  const firstName = extractFirstName((profile as any)?.name, user.email)
+  const firstName = extractFirstName(profile?.name, user.email)
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -165,8 +160,6 @@ export function DashboardIndexLeft() {
           pendingCount={hireScore.pendingCount}
           isLoading={hireScore.isLoading}
         />
-
-        <OrganizationQuickActionsCard />
 
         <OpportunitySection
           title="Inquiries"

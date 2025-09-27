@@ -211,13 +211,6 @@ In the `apps/expo` folder you can use EAS and a few helpful scripts:
 
 Add `--local` to build locally.
 
-### Storybook scripts
-
-- Storybook Web: `yarn storybook:web`
-- Storybook iOS: `yarn storybook:ios`
-- Storybook Android: `yarn storybook:android`
-- Publish to Chromatic: `yarn chromatic` (Need to set your token first in `apps/storybook/package.json -> scripts -> chromatic`)
-
 ### Code generation script
 
 - Component: `yarn gen component`
@@ -243,8 +236,6 @@ The main apps are:
 - `apps`
   - `expo` (Native)
   - `next` (Web)
-  - `storybook` (Web Storybook)
-  - `storybook-rn` (Native Storybook)
 - `packages` Shared packages across apps
   - `ui` Includes your custom UI kit that will be optimized by Tamagui
   - `app` You'll be importing most files from `app/`
@@ -404,7 +395,7 @@ Place configuration files in the `config/` folder:
 ### Benefits
 
 1. **Visual Clarity** - Easy to identify file types and purposes
-2. **Consistent Structure** - Predictable file organization
+2. **Consistent Structure** - Predictable file structure
 3. **Scalable** - Easy to add new routes following the same pattern
 4. **Maintainable** - Clear separation of concerns
 5. **Type Safety** - Consistent component naming for better TypeScript support

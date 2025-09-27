@@ -79,9 +79,6 @@ export const ResultList = forwardRef<ResultListRef, ResultListProps>(
           <Text fontWeight="700" fontSize="$5">
             {profiles.length} results
           </Text>
-          <Text color="$color10" fontSize="$3">
-            Worker · Organization legend
-          </Text>
         </XStack>
         <ScrollView
           ref={scrollViewRef}

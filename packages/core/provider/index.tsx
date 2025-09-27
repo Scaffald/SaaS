@@ -3,7 +3,6 @@ import { Session } from '@supabase/supabase-js'
 import React from 'react'
 
 import { AuthProvider } from './auth'
-import { RequiredProfileDialog } from '@app/core/features/onboarding/components/RequiredProfileDialog'
 import { CookieConsentProvider } from './cookie-consent'
 import { QueryClientProvider } from './react-query'
 import { TamaguiProvider } from './tamagui'
@@ -24,7 +23,6 @@ export function Provider({
     <DatePickerProvider config={{ selectedDates: [], onDatesChange: () => {} }}>
       <AuthProvider initialSession={initialSession}>
         <Providers>
-          <RequiredProfileDialog />
           {children}
         </Providers>
       </AuthProvider>
