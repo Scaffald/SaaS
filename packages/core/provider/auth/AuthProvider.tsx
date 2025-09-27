@@ -1,6 +1,7 @@
 import { Database } from '@app/supabase/types'
 import { Session, createPagesBrowserClient } from '@supabase/auth-helpers-nextjs'
 import { SessionContextProvider } from '@supabase/auth-helpers-react'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { useState } from 'react'
 
 import { AuthStateChangeHandler } from './AuthStateChangeHandler'
@@ -15,7 +16,10 @@ export const AuthProvider = ({ initialSession, children }: AuthProviderProps) =>
   const [supabaseClient] = useState(() => createPagesBrowserClient<Database>())
 
   return (
-    <SessionContextProvider supabaseClient={supabaseClient as any} initialSession={initialSession}>
+    <SessionContextProvider
+      supabaseClient={supabaseClient as SupabaseClient<Database>}
+      initialSession={initialSession}
+    >
       <AuthStateChangeHandler />
       {children}
     </SessionContextProvider>
