@@ -155,10 +155,6 @@ const routeConfig: Record<string, RouteConfig> = {
         path: '/auth',
         title: 'Sign In',
       },
-      welcome: {
-        path: '/auth/welcome',
-        title: 'Welcome',
-      },
       confirm: {
         path: '/auth/confirm',
         title: 'Confirm Account',
@@ -260,7 +256,6 @@ export const ROUTES = Object.fromEntries(
 // Convenience accessors for common routes
 export const AUTH_ROUTES = {
   INDEX: ROUTES.auth.childrenArray?.find((r) => r.path === '/auth'),
-  WELCOME: ROUTES.auth.childrenArray?.find((r) => r.path === '/auth/welcome'),
   CONFIRM: ROUTES.auth.childrenArray?.find((r) => r.path === '/auth/confirm'),
 }
 

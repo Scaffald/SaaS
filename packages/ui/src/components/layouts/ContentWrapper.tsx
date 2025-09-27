@@ -1,4 +1,4 @@
-import { YStack, H2, Paragraph } from '@app/ui'
+import { YStack, H2, Paragraph } from 'tamagui'
 
 export type ContentWrapperProps = {
   title?: string

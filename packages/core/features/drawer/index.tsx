@@ -1,4 +1,4 @@
-import { YStack, getTokens } from '@app/ui'
+import { YStack, getTokens } from 'tamagui'
 import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import { useCallback, useState } from 'react'
 import { GestureResponderEvent } from 'react-native'

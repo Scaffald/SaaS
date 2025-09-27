@@ -13,6 +13,6 @@ export default function RootIndex() {
   if (user) {
     return <Redirect href="/dashboard" />
   } else {
-    return <Redirect href="/auth/onboarding" />
+    return <Redirect href="/auth" />
   }
 }

@@ -1,4 +1,4 @@
-import { Button, Input, SizableText, XStack, YStack, useMedia, useTheme } from '@app/ui'
+import { Button, Input, SizableText, XStack, YStack, useMedia, useTheme } from 'tamagui'
 import { Dialog } from 'tamagui'
 import { Bell, Search } from '@tamagui/lucide-icons'
 import { useState } from 'react'

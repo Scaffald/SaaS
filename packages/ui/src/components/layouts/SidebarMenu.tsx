@@ -1,4 +1,4 @@
-import { Paragraph, ScrollView, Separator, XStack, YStack, isWeb } from '@app/ui'
+import { Paragraph, ScrollView, Separator, XStack, YStack, isWeb } from 'tamagui'
 import type { IconProps } from '@tamagui/helpers-icon'
 import type { ThemeName } from 'tamagui'
 import { useLink } from 'solito/link'

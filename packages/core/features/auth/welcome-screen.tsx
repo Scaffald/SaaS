@@ -1,8 +1,7 @@
 import { Onboarding, OnboardingStepInfo, StepContent } from '@app/ui'
 import { ArrowUp, Rocket, Sparkles } from '@tamagui/lucide-icons'
-import React from 'react'
 import { useRouter } from 'solito/router'
-import { ROUTES, AUTH_ROUTES } from '@app/core/constants/routes'
+import { AUTH_ROUTES } from '@app/core/constants/routes'
 
 const steps: OnboardingStepInfo[] = [
   {

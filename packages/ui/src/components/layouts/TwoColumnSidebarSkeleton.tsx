@@ -1,4 +1,5 @@
-import { YStack, Skeleton } from '@app/ui'
+import { YStack } from 'tamagui'
+import { Skeleton } from '../Skeleton'
 
 // Simple skeleton component for sidebar loading state
 export const TwoColumnSidebarSkeleton = () => (

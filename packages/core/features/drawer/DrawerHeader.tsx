@@ -1,4 +1,4 @@
-import { Avatar, Card, ListItem, XStack, YStack, getTokens } from '@app/ui'
+import { Avatar, Card, ListItem, XStack, YStack, getTokens } from 'tamagui'
 import { ChevronRight } from '@tamagui/lucide-icons'
 import { GestureResponderEvent } from 'react-native'
 import { useLink } from 'solito/link'

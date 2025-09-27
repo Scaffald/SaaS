@@ -1,7 +1,6 @@
-import { YStack, XStack, Button, useMedia, useTheme } from '@app/ui'
+import { YStack, XStack, Button, useMedia, useTheme } from 'tamagui'
 import { Menu, X } from '@tamagui/lucide-icons'
 import { useState, useEffect } from 'react'
-import { DrawerMenu } from '@app/core/features/drawer'
 import { DrawerContentComponentProps } from '@react-navigation/drawer'
 
 export type HamburgerMenuProps = {
@@ -75,41 +74,6 @@ export const HamburgerMenu = ({
     }
   }, [isOpen])
 
-  // Mock navigation object for DrawerMenu
-  const mockNavigation = {
-    closeDrawer: handleClose,
-    navigate: () => {},
-    goBack: () => {},
-    canGoBack: () => false,
-    isFocused: () => true,
-    addListener: () => () => {},
-    removeListener: () => {},
-    dispatch: () => {},
-    setParams: () => {},
-    setOptions: () => {},
-    reset: () => {},
-    getParent: () => undefined,
-    getState: () => ({ routes: [], index: 0 }),
-    getId: () => 'hamburger-menu',
-    getCurrentRoute: () => undefined,
-  }
-
-  const combinedDrawerProps: DrawerContentComponentProps = {
-    navigation: mockNavigation as any,
-    state: {
-      routes: [],
-      index: 0,
-      history: [],
-      type: 'drawer',
-      stale: false,
-      key: 'hamburger-menu',
-      routeNames: [],
-      preloadedRouteKeys: [],
-    } as any,
-    descriptors: {},
-    ...drawerProps,
-  }
-
   return (
     <>
       {/* Hamburger Button */}
@@ -176,9 +140,19 @@ export const HamburgerMenu = ({
               />
             </XStack>
 
-            {/* Drawer Content */}
-            <YStack flex={1}>
-              <DrawerMenu {...combinedDrawerProps} />
+            {/* Drawer Content - Placeholder for now to avoid circular dependency */}
+            <YStack flex={1} ai="center" jc="center" p="$4">
+              <YStack gap="$3" ai="center">
+                <Button size="$4" width="100%" onPress={handleClose}>
+                  Dashboard
+                </Button>
+                <Button size="$4" width="100%" onPress={handleClose}>
+                  Profile
+                </Button>
+                <Button size="$4" width="100%" onPress={handleClose}>
+                  Settings
+                </Button>
+              </YStack>
             </YStack>
           </YStack>
         </>

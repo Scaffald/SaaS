@@ -1,4 +1,4 @@
-import { ScrollView, YStack } from '@app/ui'
+import { ScrollView, YStack } from 'tamagui'
 
 export type ColumnWrapperProps = {
   children: React.ReactNode
