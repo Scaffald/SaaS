@@ -44,8 +44,8 @@ export default function Layout() {
             onPress={() => {
               router.navigate(
                 DASHBOARD_ROUTES.WORKERS?.childrenArray?.find(
-                  (r) => r.path === '/dashboard/workers/map'
-                )?.fullPath || '/dashboard/workers/map'
+                  (r) => r.path === '/dashboard/workers'
+                )?.fullPath || '/dashboard/workers'
               )
             }}
           >

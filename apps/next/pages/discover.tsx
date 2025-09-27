@@ -7,8 +7,8 @@ export default function DiscoverRedirect() {
 
   useEffect(() => {
     router.replace(
-      DASHBOARD_ROUTES.WORKERS?.childrenArray?.find((r) => r.path === '/dashboard/workers/map')
-        ?.fullPath || '/dashboard/workers/map'
+      DASHBOARD_ROUTES.WORKERS?.childrenArray?.find((r) => r.path === '/dashboard/workers')
+        ?.fullPath || '/dashboard/workers'
     )
   }, [router])
 
