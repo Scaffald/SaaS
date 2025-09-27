@@ -11341,6 +11341,7 @@ __metadata:
     expo-image-picker: "npm:~16.1.4"
     expo-linear-gradient: "npm:~14.1.4"
     expo-linking: "npm:~7.1.5"
+    expo-location: "npm:~18.1.0"
     expo-notifications: "npm:~0.31.1"
     expo-router: "npm:~4.0.15"
     expo-secure-store: "npm:~14.2.3"

@@ -83,7 +83,9 @@ export default {
         '@react-native-google-signin/google-signin',
         {
           // https://react-native-google-signin.github.io/docs/setting-up/expo
-          iosUrlScheme: process.env.GOOGLE_IOS_SCHEME || 'com.scaffald.app',
+          iosUrlScheme:
+            process.env.GOOGLE_IOS_SCHEME ||
+            'com.googleusercontent.apps.163454683152-e4357cqnub2rg3vadkktap71i4nqea88',
         },
       ],
       'expo-apple-authentication',

@@ -1,5 +1,5 @@
-import { WorkersScreen } from '@app/core/features/workers'
+import { WorkersIndexScreen } from '@app/core/features/workers/workers-index-screen'
 
 export default function WorkersRoute() {
-  return <WorkersScreen />
+  return <WorkersIndexScreen />
 }

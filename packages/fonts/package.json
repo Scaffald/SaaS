@@ -6,12 +6,7 @@
   "module": "dist/esm",
   "type": "module",
   "bin": "./dist/esm/index.mjs",
-  "files": [
-    "types",
-    "dist",
-    "css",
-    "fonts"
-  ],
+  "files": ["types", "dist", "css", "fonts"],
   "scripts": {
     "add:icon": "node dist/esm/index.mjs icon",
     "add:font": "node dist/esm/index.mjs font",
