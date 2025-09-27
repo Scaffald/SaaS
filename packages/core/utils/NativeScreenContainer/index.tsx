@@ -7,7 +7,9 @@ type ScrollToTopTabBarContainerProps = ComponentProps<typeof ScrollView>
 
 const ScrollToTopTabBarContainer = ({ children, ...props }: ScrollToTopTabBarContainerProps) => {
   const ref = useRef<ScrollView>(null)
-  useScrollToTop(ref)
+  useScrollToTop(
+    ref as React.RefObject<{ scrollTo: (options: { y: number; animated: boolean }) => void }>
+  )
 
   return (
     <ScrollView {...props} ref={ref}>

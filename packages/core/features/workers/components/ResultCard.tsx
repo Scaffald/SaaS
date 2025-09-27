@@ -1,4 +1,5 @@
-import { memo, forwardRef } from 'react'
+import { memo, forwardRef, Ref } from 'react'
+import { TamaguiElement } from 'tamagui'
 import { Button, Paragraph, SizableText, Text, XStack, YStack, Chip } from '@app/ui'
 import { Award, BadgeCheck, Building, Clock3, DollarSign, Star } from '@tamagui/lucide-icons'
 
@@ -11,17 +12,7 @@ type ResultCardProps = {
 }
 
 export const ResultCard = memo(
-  forwardRef<
-    | HTMLDivElement
-    | {
-        measureLayout: (
-          container: unknown,
-          onSuccess: (x: number, y: number, width: number, height: number) => void,
-          onFail: () => void
-        ) => void
-      },
-    ResultCardProps
-  >(({ profile, isSelected, onSelect }, ref) => {
+  forwardRef<TamaguiElement, ResultCardProps>(({ profile, isSelected, onSelect }, ref) => {
     return (
       <YStack
         ref={ref}

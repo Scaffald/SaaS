@@ -73,7 +73,20 @@ export const ResultList = forwardRef<ResultListRef, ResultListProps>(
     }))
 
     const registerCardRef = (profileId: string, ref: unknown) => {
-      cardRefs.current.set(profileId, ref)
+      if (ref) {
+        cardRefs.current.set(
+          profileId,
+          ref as
+            | HTMLElement
+            | {
+                measureLayout: (
+                  container: unknown,
+                  onSuccess: (x: number, y: number, width: number, height: number) => void,
+                  onFail: () => void
+                ) => void
+              }
+        )
+      }
     }
 
     if (isLoading) {
