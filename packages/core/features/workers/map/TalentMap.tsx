@@ -142,7 +142,7 @@ export const TalentMap = ({
         'mapbox://styles/mapbox/streets-v12',
       center,
       zoom: radiusMeters ? radiusToZoomLevel(radiusMeters) : 7,
-      accessToken: mapboxgl.accessToken,
+      accessToken: mapboxgl.accessToken || '',
       attributionControl: false,
     })
 

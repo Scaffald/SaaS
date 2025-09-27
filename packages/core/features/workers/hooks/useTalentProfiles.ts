@@ -3,6 +3,20 @@ import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import type { TalentProfile } from '../types'
 import { mockTalentProfiles } from '../data/mockProfiles'
 
+// Define the database row type for the profile search view
+type ProfileSearchRow = {
+  id: string
+  name: string | null
+  headline: string | null
+  years_of_experience: number | null
+  avatar_url: string | null
+  industry_name: string | null
+  gamified_score: number | null
+  skills_summary: {
+    primary?: string[]
+  } | null
+}
+
 export const useTalentProfiles = () => {
   const supabase = useSupabase()
 
@@ -38,7 +52,7 @@ export const useTalentProfiles = () => {
       }
 
       // Transform database data to TalentProfile format
-      return data.map((profile): TalentProfile => {
+      return (data as ProfileSearchRow[]).map((profile): TalentProfile => {
         const skills = profile.skills_summary?.primary || []
         const certifications: string[] = [] // TODO: Add certifications when available
         const badges = [
@@ -63,7 +77,6 @@ export const useTalentProfiles = () => {
           skills,
           locationLabel: 'Location TBD', // TODO: Add location when available
           coordinates: [-72.6734, 41.55], // TODO: Add real coordinates
-          organization: 'Worker',
           avatarUrl: profile.avatar_url,
         }
       })

@@ -537,7 +537,6 @@ export const CheckboxToggle = forwardRef<any, CheckboxToggleProps>((props, ref) 
               checked={checked}
               onCheckedChange={onCheckedChange}
               disabled={disabled}
-              animationPreset={animationPreset}
               native={!isWeb}
             >
               {uncheckedIcon && <SwitchIcon placement="left">{uncheckedIcon}</SwitchIcon>}

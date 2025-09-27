@@ -138,7 +138,7 @@ export const HIRE_SCORE_FACTORS: HireScoreFactorDefinition[] = [
     points: 12,
     successMessage: 'Skills help match you with jobs',
     actionMessage: 'List the skills you want to be found for',
-    evaluate: ({ userRow }) => (hasSkills(userRow?.skills_summary) ? 1 : 0),
+    evaluate: ({ userRow }) => (hasSkills(userRow?.skills_summary || null) ? 1 : 0),
   },
   {
     id: 'location',
