@@ -3,12 +3,14 @@ import { User, FileText, Wrench, ShieldCheck, PhoneCall, Cog, LogOut } from '@ta
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import { usePathname } from '@app/core/utils/usePathname'
 import { useLink } from 'solito/link'
-import { ROUTES } from '@app/core/constants/routes'
+import { ROUTES, DASHBOARD_ROUTES } from '@app/core/constants/routes'
 
 export const ProfileScreen = () => {
   const pathname = usePathname()
   const supabase = useSupabase()
-  const settingsLink = useLink({ href: ROUTES.SETTINGS })
+  const settingsLink = useLink({
+    href: DASHBOARD_ROUTES.SETTINGS?.fullPath || '/dashboard/settings',
+  })
 
   const menuItems: MenuItem[] = [
     {
@@ -16,40 +18,68 @@ export const ProfileScreen = () => {
       label: 'Overview',
       icon: User,
       accentTheme: 'blue',
-      isActive: pathname === ROUTES.PROFILE || pathname === ROUTES.PROFILE_OVERVIEW,
-      href: ROUTES.PROFILE,
+      isActive:
+        pathname === DASHBOARD_ROUTES.PROFILE?.fullPath ||
+        pathname ===
+          DASHBOARD_ROUTES.PROFILE?.childrenArray?.find(
+            (r) => r.path === '/dashboard/profile/overview'
+          )?.fullPath,
+      href: DASHBOARD_ROUTES.PROFILE?.fullPath || '/dashboard/profile',
     },
     {
       id: 'basic-info',
       label: 'Basic Information',
       icon: FileText,
       accentTheme: 'green',
-      isActive: pathname === ROUTES.PROFILE_GENERAL,
-      href: ROUTES.PROFILE_GENERAL,
+      isActive:
+        pathname ===
+        DASHBOARD_ROUTES.PROFILE?.childrenArray?.find(
+          (r) => r.path === '/dashboard/profile/general'
+        )?.fullPath,
+      href: DASHBOARD_ROUTES.PROFILE?.childrenArray?.find(
+        (r) => r.path === '/dashboard/profile/general'
+      )?.fullPath,
     },
     {
       id: 'work-skills',
       label: 'Work & Skills',
       icon: Wrench,
       accentTheme: 'orange',
-      isActive: pathname === ROUTES.PROFILE_SKILLS,
-      href: ROUTES.PROFILE_SKILLS,
+      isActive:
+        pathname ===
+        DASHBOARD_ROUTES.PROFILE?.childrenArray?.find((r) => r.path === '/dashboard/profile/skills')
+          ?.fullPath,
+      href: DASHBOARD_ROUTES.PROFILE?.childrenArray?.find(
+        (r) => r.path === '/dashboard/profile/skills'
+      )?.fullPath,
     },
     {
       id: 'travel-compliance',
       label: 'Travel & Compliance',
       icon: ShieldCheck,
       accentTheme: 'purple',
-      isActive: pathname === ROUTES.PROFILE_PREFERENCES,
-      href: ROUTES.PROFILE_PREFERENCES,
+      isActive:
+        pathname ===
+        DASHBOARD_ROUTES.PROFILE?.childrenArray?.find(
+          (r) => r.path === '/dashboard/profile/preferences'
+        )?.fullPath,
+      href: DASHBOARD_ROUTES.PROFILE?.childrenArray?.find(
+        (r) => r.path === '/dashboard/profile/preferences'
+      )?.fullPath,
     },
     {
       id: 'contact-availability',
       label: 'Contact & Availability',
       icon: PhoneCall,
       accentTheme: 'pink',
-      isActive: pathname === ROUTES.PROFILE_CONTACT,
-      href: ROUTES.PROFILE_CONTACT,
+      isActive:
+        pathname ===
+        DASHBOARD_ROUTES.PROFILE?.childrenArray?.find(
+          (r) => r.path === '/dashboard/profile/contact'
+        )?.fullPath,
+      href: DASHBOARD_ROUTES.PROFILE?.childrenArray?.find(
+        (r) => r.path === '/dashboard/profile/contact'
+      )?.fullPath,
     },
     {
       id: 'account-settings',

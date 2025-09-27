@@ -4,7 +4,7 @@ import { useThemeSetting } from '@app/core/provider/theme'
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import { usePathname } from '@app/core/utils/usePathname'
 import { useLink } from 'solito/link'
-import { ROUTES } from '@app/core/constants/routes'
+import { ROUTES, DASHBOARD_ROUTES } from '@app/core/constants/routes'
 
 import rootPackageJson from '../../../../package.json'
 import packageJson from '../../package.json'
@@ -22,24 +22,44 @@ export const SettingsScreen = () => {
       label: 'General',
       icon: Cog,
       accentTheme: 'green',
-      isActive: pathname === ROUTES.SETTINGS_GENERAL,
-      href: media.sm ? ROUTES.SETTINGS_GENERAL : ROUTES.SETTINGS,
+      isActive:
+        pathname ===
+        DASHBOARD_ROUTES.SETTINGS?.childrenArray?.find(
+          (r) => r.path === '/dashboard/settings/general'
+        )?.fullPath,
+      href: media.sm
+        ? DASHBOARD_ROUTES.SETTINGS?.childrenArray?.find(
+            (r) => r.path === '/dashboard/settings/general'
+          )?.fullPath
+        : DASHBOARD_ROUTES.SETTINGS?.fullPath,
     },
     {
       id: 'change-password',
       label: 'Change Password',
       icon: Lock,
       accentTheme: 'green',
-      isActive: pathname === ROUTES.SETTINGS_SECURITY,
-      href: ROUTES.SETTINGS_SECURITY,
+      isActive:
+        pathname ===
+        DASHBOARD_ROUTES.SETTINGS?.childrenArray?.find(
+          (r) => r.path === '/dashboard/settings/security'
+        )?.fullPath,
+      href: DASHBOARD_ROUTES.SETTINGS?.childrenArray?.find(
+        (r) => r.path === '/dashboard/settings/security'
+      )?.fullPath,
     },
     {
       id: 'change-email',
       label: 'Change Email',
       icon: Mail,
       accentTheme: 'green',
-      isActive: pathname === ROUTES.SETTINGS_AUTHENTICATION,
-      href: ROUTES.SETTINGS_AUTHENTICATION,
+      isActive:
+        pathname ===
+        DASHBOARD_ROUTES.SETTINGS?.childrenArray?.find(
+          (r) => r.path === '/dashboard/settings/authentication'
+        )?.fullPath,
+      href: DASHBOARD_ROUTES.SETTINGS?.childrenArray?.find(
+        (r) => r.path === '/dashboard/settings/authentication'
+      )?.fullPath,
     },
     {
       id: 'manage-cookies',

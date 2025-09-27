@@ -1,6 +1,6 @@
 import type { HireScoreFactorDefinition } from './hooks/useHireScore'
 import { HIRE_SCORE_FACTORS } from './hooks/useHireScore'
-import { ROUTES } from '@app/core/constants/routes'
+import { ROUTES, DASHBOARD_ROUTES } from '@app/core/constants/routes'
 
 export type ProgressivePromptSurface = 'dialog' | 'inline-card' | 'banner'
 
@@ -21,7 +21,7 @@ export type ProgressivePromptDefinition = {
   tags?: string[]
 }
 
-const PROFILE_EDIT_ROUTE = ROUTES.PROFILE
+const PROFILE_EDIT_ROUTE = DASHBOARD_ROUTES.PROFILE?.fullPath || '/dashboard/profile'
 
 const profilePrompts: ProgressivePromptDefinition[] = HIRE_SCORE_FACTORS.map((factor, index) => ({
   id: factor.id,

@@ -2,7 +2,7 @@ import { Onboarding, OnboardingStepInfo, StepContent } from '@app/ui'
 import { ArrowUp, Rocket, Sparkles } from '@tamagui/lucide-icons'
 import React from 'react'
 import { useRouter } from 'solito/router'
-import { ROUTES } from '@app/core/constants/routes'
+import { ROUTES, AUTH_ROUTES } from '@app/core/constants/routes'
 
 const steps: OnboardingStepInfo[] = [
   {
@@ -42,5 +42,11 @@ const steps: OnboardingStepInfo[] = [
  */
 export const WelcomeScreen = () => {
   const router = useRouter()
-  return <Onboarding autoSwipe onOnboarded={() => router.push(ROUTES.AUTH)} steps={steps} />
+  return (
+    <Onboarding
+      autoSwipe
+      onOnboarded={() => router.push(AUTH_ROUTES.INDEX?.fullPath || '/auth')}
+      steps={steps}
+    />
+  )
 }
