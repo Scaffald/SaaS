@@ -114,7 +114,8 @@ export const CookiePreferencesDialog = () => {
           <Dialog.Title>Manage Cookies</Dialog.Title>
 
           <Paragraph size="$4">
-            Choose which categories of cookies to allow. Required cookies stay active because they keep critical features running safely.
+            Choose which categories of cookies to allow. Required cookies stay active because they
+            keep critical features running safely.
           </Paragraph>
 
           <ScrollView maxHeight={360} showsVerticalScrollIndicator={false}>

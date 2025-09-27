@@ -12,7 +12,8 @@
       "**/ios/**",
       "**/android/**",
       "**/*.test.ts",
-      "**/*.css"
+      "**/*.css",
+      "packages/fonts/types/index.d.ts"
     ]
   },
   "formatter": {
