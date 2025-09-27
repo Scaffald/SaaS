@@ -1,4 +1,4 @@
-import { ResetPasswordScreen } from '@app/core/features/auth/reset-password-screen'
+import { ConfirmScreen } from '@app/core/features/auth/confirm-screen'
 import { Stack } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
@@ -10,7 +10,7 @@ export default function Screen() {
           title: 'Confirm Email',
         }}
       />
-      <ResetPasswordScreen />
+      <ConfirmScreen />
     </SafeAreaView>
   )
 }

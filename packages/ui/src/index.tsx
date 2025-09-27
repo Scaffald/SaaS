@@ -6,7 +6,7 @@ export { config } from './tamagui.config'
 
 // Individual component exports to avoid circular dependencies
 export { AchievementCard } from './components/AchievementCard'
-export { AnimatedButton } from './components/AnimatedButton'
+export { AnimatedButton, EnhancedAnimatedButton } from './components/AnimatedButton'
 export { CheckboxToggle } from './components/CheckboxToggle'
 export { EnhancedTextField } from './components/EnhancedTextField'
 export { Banner } from './components/Banner'

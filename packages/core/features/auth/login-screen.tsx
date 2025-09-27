@@ -1,4 +1,14 @@
-import { H2, LoadingOverlay, Paragraph, SubmitButton, Text, Theme, YStack, isWeb } from '@app/ui'
+import {
+  EnhancedAnimatedButton,
+  H2,
+  LoadingOverlay,
+  Paragraph,
+  Text,
+  Theme,
+  YStack,
+  isWeb,
+} from '@app/ui'
+import { ButtonLoading } from '@app/ui/components/buttons/ButtonLoading'
 import { SchemaForm, formFields } from '@app/core/utils/SchemaForm'
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import { useUser } from '@app/core/utils/useUser'
@@ -34,8 +44,14 @@ export const LoginScreen = () => {
   const form = useForm<z.infer<typeof LoginSchema>>()
 
   async function sendMagicLink({ email }: z.infer<typeof LoginSchema>) {
+    // Additional validation to ensure email is present
+    if (!email || email.trim() === '') {
+      form.setError('email', { type: 'custom', message: 'Email is required' })
+      throw new Error('Email is required')
+    }
+
     const { error } = await supabase.auth.signInWithOtp({
-      email,
+      email: email.trim(),
       options: {
         emailRedirectTo: `${process.env.NEXT_PUBLIC_URL}`,
         shouldCreateUser: true, // Allow both sign-in and sign-up
@@ -67,9 +83,11 @@ export const LoginScreen = () => {
             return (
               <>
                 <Theme inverse>
-                  <SubmitButton onPress={() => submit()} br="$10">
-                    Send magic link
-                  </SubmitButton>
+                  <ButtonLoading
+                    text="Send Magic Link"
+                    loading={form.formState.isSubmitting}
+                    onPress={submit}
+                  />
                 </Theme>
 
                 {isWeb && <SocialLogin />}
