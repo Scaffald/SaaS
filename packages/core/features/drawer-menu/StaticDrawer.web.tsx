@@ -3,7 +3,8 @@
 import { YStack } from '@app/ui'
 import { useCallback, useState } from 'react'
 
-import { DrawerContent, normalizePath } from './index'
+import { DrawerContent } from './DrawerContent'
+import { normalizePath } from './utils'
 import { usePathname } from '@app/core/utils/usePathname'
 
 export const StaticDrawer = ({ onNavigate }: { onNavigate?: () => void } = {}) => {
