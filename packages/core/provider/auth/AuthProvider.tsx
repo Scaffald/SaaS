@@ -17,7 +17,7 @@ export const AuthProvider = ({ initialSession, children }: AuthProviderProps) =>
 
   return (
     <SessionContextProvider
-      supabaseClient={supabaseClient as SupabaseClient<Database>}
+      supabaseClient={supabaseClient as unknown as SupabaseClient<Database>}
       initialSession={initialSession}
     >
       <AuthStateChangeHandler />
