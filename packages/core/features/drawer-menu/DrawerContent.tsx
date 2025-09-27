@@ -1,5 +1,5 @@
 import { YStack } from '@app/ui'
-import { ScrollView } from 'react-native'
+import { DrawerContentScrollView } from '@react-navigation/drawer'
 import { drawerSections } from './config'
 import { DrawerHeader } from './DrawerHeader'
 import { DrawerSection } from './DrawerSection'
@@ -8,6 +8,7 @@ import type { DrawerContentProps } from './types'
 /**
  * DrawerContent component renders the main content area of the drawer
  * Includes the user header and scrollable navigation sections
+ * Uses DrawerContentScrollView for proper gesture handling
  */
 export const DrawerContent = ({
   pathname,
@@ -15,6 +16,7 @@ export const DrawerContent = ({
   onNavigate,
   expandedItems,
   onToggleExpanded,
+  drawerProps,
 }: DrawerContentProps) => {
   return (
     <YStack
@@ -30,8 +32,9 @@ export const DrawerContent = ({
       {/* Top Section - User Profile - Sticky */}
       <DrawerHeader collapsed={collapsed} onNavigate={onNavigate} />
 
-      {/* Scrollable Content */}
-      <ScrollView
+      {/* Scrollable Content - Using DrawerContentScrollView for proper gesture handling */}
+      <DrawerContentScrollView
+        {...drawerProps}
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingVertical: 16 }}
         showsVerticalScrollIndicator={false}
@@ -49,7 +52,7 @@ export const DrawerContent = ({
             />
           ))}
         </YStack>
-      </ScrollView>
+      </DrawerContentScrollView>
     </YStack>
   )
 }

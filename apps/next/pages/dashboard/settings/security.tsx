@@ -1,4 +1,4 @@
-import { HomeLayout } from '@app/core/features/home/layout.web'
+import { DashboardLayout } from '@app/core/features/dashboard/layout.web'
 import { ChangeEmailScreen } from '@app/core/features/settings/change-email-screen'
 import { SettingsLayout } from '@app/core/features/settings/layout.web'
 import Head from 'next/head'
@@ -16,9 +16,9 @@ const Page: NextPageWithLayout = () => {
 }
 
 Page.getLayout = (page) => (
-  <HomeLayout fullPage>
+  <DashboardLayout fullPage>
     <SettingsLayout>{page}</SettingsLayout>
-  </HomeLayout>
+  </DashboardLayout>
 )
 
 export default Page

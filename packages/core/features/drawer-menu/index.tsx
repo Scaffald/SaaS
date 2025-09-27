@@ -8,8 +8,10 @@ import { useSafeAreaInsets } from '@app/core/utils/useSafeAreaInsets'
 import { DrawerContent } from './DrawerContent'
 import { normalizePath } from './utils'
 
-// Re-export types for backward compatibility
+// Re-export types and functions for backward compatibility
 export type { DrawerItemConfig, DrawerSectionConfig, DrawerContentProps } from './types'
+export { drawerSections } from './config'
+export { normalizePath } from './utils'
 
 export const DrawerMenu = (props: DrawerContentComponentProps) => {
   const { navigation } = props
@@ -54,6 +56,7 @@ export const DrawerMenu = (props: DrawerContentComponentProps) => {
         onNavigate={handleNavigate}
         expandedItems={expandedItems}
         onToggleExpanded={toggleExpanded}
+        drawerProps={props}
       />
     </YStack>
   )

@@ -1,4 +1,4 @@
-import { HomeLayout } from '@app/core/features/home/layout-refactored.web'
+import { DashboardLayout } from '@app/core/features/dashboard/layout-refactored.web'
 import { SettingsScreen } from './screen'
 
 export type SettingsLayoutProps = {
@@ -14,13 +14,13 @@ export type SettingsLayoutProps = {
 
 export const SettingsLayout = ({ children, isSettingsHome = false }: SettingsLayoutProps) => {
   return (
-    <HomeLayout
+    <DashboardLayout
       useTwoColumn={true}
       sidebar={<SettingsScreen />}
       isHomePage={isSettingsHome}
       fullPage={true}
     >
       {children}
-    </HomeLayout>
+    </DashboardLayout>
   )
 }

@@ -1,7 +1,3 @@
-// noop
-export const useSafeAreaInsets = () => ({
-  top: 0,
-  left: 0,
-  bottom: 0,
-  right: 0,
-})
+import { useSafeAreaInsets as useSafeAreaInsetsFromProvider } from '@app/core/provider/safe-area/SafeAreaProvider'
+
+export const useSafeAreaInsets = useSafeAreaInsetsFromProvider

@@ -6,9 +6,6 @@ import { usePathname } from '@app/core/utils/usePathname'
 import { useLink } from 'solito/link'
 import { ROUTES, DASHBOARD_ROUTES } from '@app/core/constants/routes'
 
-import rootPackageJson from '../../../../package.json'
-import packageJson from '../../package.json'
-
 export const SettingsScreen = () => {
   const media = useMedia()
   const pathname = usePathname()

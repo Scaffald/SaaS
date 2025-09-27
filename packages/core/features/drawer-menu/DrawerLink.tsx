@@ -98,7 +98,7 @@ export const DrawerLink = ({
 
   if (collapsed) {
     return (
-      <Link href={item.href} aria-label={item.title} w="100%">
+      <Link href={item.href} aria-label={item.title}>
         <XStack
           ai="center"
           jc="center"
@@ -117,17 +117,16 @@ export const DrawerLink = ({
   // For sub-items (depth > 0), render as link with different styling
   if (depth > 0) {
     return (
-      <Link href={item.href} w="100%">
+      <Link href={item.href}>
         <XStack
           ai="center"
           gap="$3"
           px="$3"
           py="$2"
-          ml="$4" // Indent sub-items
-          pressStyle={{ bg: '$color3' }} // Add press feedback
+          ml="$4"
+          pressStyle={{ bg: '$color3' }}
           cursor="pointer"
         >
-          {/* Title with active state styling */}
           <Paragraph size="$2" fow="400" color={active ? '$blue9' : '$color11'}>
             {item.title}
           </Paragraph>
@@ -138,7 +137,7 @@ export const DrawerLink = ({
 
   // For main items - render as link
   return (
-    <Link href={item.href} w="100%">
+    <Link href={item.href}>
       <XStack
         ai="center"
         jc="space-between"
@@ -150,7 +149,6 @@ export const DrawerLink = ({
         cursor="pointer"
       >
         <XStack ai="center" gap="$3" my="$1">
-          {/* Icon with circular background - only show if icon exists */}
           {Icon && (
             <XStack
               ai="center"
@@ -164,16 +162,12 @@ export const DrawerLink = ({
               <Icon size={20} color={active ? '$blue9' : '$blue9'} />
             </XStack>
           )}
-
-          {/* Title */}
-          <Paragraph size="$3" fow="500" color={active ? '$color1' : '$color11'}>
+          <Paragraph size="$3" fow="500" color={active ? '$color12' : '$color11'}>
             {item.title}
           </Paragraph>
         </XStack>
 
-        {/* Right side elements */}
         <XStack ai="center" gap="$2">
-          {/* Badge */}
           {item.badge && (
             <XStack px="$2" py="$1" br="$10" bg="$red9" minWidth={20} ai="center">
               <Paragraph size="$1" color="$color12" fow="600">
@@ -181,9 +175,7 @@ export const DrawerLink = ({
               </Paragraph>
             </XStack>
           )}
-
-          {/* Chevron for regular items */}
-          {item.hasChevron && !item.isExpandable && <ChevronRight size={16} color="$color12" />}
+          {item.hasChevron && <ChevronRight size={16} color="$color10" />}
         </XStack>
       </XStack>
     </Link>

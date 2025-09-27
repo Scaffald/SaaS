@@ -1,4 +1,4 @@
-import { HomeLayout } from '@app/core/features/home/layout.web'
+import { DashboardLayout } from '@app/core/features/dashboard/layout.web'
 import { PublicProfileScreen } from '@app/core/features/profile/public-profile-screen'
 import type { GetServerSideProps } from 'next'
 import Head from 'next/head'
@@ -20,7 +20,7 @@ const Page: NextPageWithLayout<PageProps> = ({ username }) => {
   )
 }
 
-Page.getLayout = (page) => <HomeLayout headerTitle="Public profile">{page}</HomeLayout>
+Page.getLayout = (page) => <DashboardLayout headerTitle="Public profile">{page}</DashboardLayout>
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async ({ params }) => {
   const username = params?.username

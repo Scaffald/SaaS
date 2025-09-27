@@ -30,8 +30,8 @@ import {
   type OnboardingFormValues,
 } from '../screen'
 import { useOnboardingProfile } from '../hooks/useOnboardingProfile'
-import { useProgressiveProfilePrompt } from '../../home/hooks/useProgressiveProfilePrompt'
-import type { ProgressivePrompt } from '../../home/hooks/useProgressiveProfilePrompt'
+import { useProgressiveProfilePrompt } from '../../dashboard/hooks/useProgressiveProfilePrompt'
+import type { ProgressivePrompt } from '../../dashboard/hooks/useProgressiveProfilePrompt'
 import { useLink } from 'solito/link'
 
 type PromptComponentProps = {

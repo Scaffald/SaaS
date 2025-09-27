@@ -7,7 +7,7 @@ import { usePathname } from '@app/core/utils/usePathname'
 import { useState } from 'react'
 import { ROUTES, DASHBOARD_ROUTES } from '@app/core/constants/routes'
 
-export type HomeLayoutProps = {
+export type DashboardLayoutProps = {
   children?: React.ReactNode
   padded?: boolean
   fullPage?: boolean
@@ -26,7 +26,7 @@ export type HomeLayoutProps = {
   isHomePage?: boolean
 }
 
-export const HomeLayout = ({
+export const DashboardLayout = ({
   children,
   fullPage = false,
   padded = false,
@@ -34,7 +34,7 @@ export const HomeLayout = ({
   useTwoColumn = false,
   sidebar,
   isHomePage = false,
-}: HomeLayoutProps) => {
+}: DashboardLayoutProps) => {
   const media = useMedia()
   const [_drawerOpen, setDrawerOpen] = useState(false)
   const pathname = normalizePath(usePathname())
