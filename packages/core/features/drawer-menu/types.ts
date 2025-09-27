@@ -24,7 +24,6 @@ export type DrawerItemConfig = {
 export type DrawerLinkProps = {
   item: DrawerItemConfig
   pathname: string
-  collapsed?: boolean
   depth?: number
   expandedItems?: Set<string>
   onToggleExpanded?: (key: string) => void
