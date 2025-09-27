@@ -1,5 +1,5 @@
 import { AuthLayout } from '@app/core/features/auth/layout.web'
-import { ResetPasswordScreen } from '@app/core/features/auth/reset-password-screen'
+import { ConfirmScreen } from '@app/core/features/auth/confirm-screen'
 import Head from 'next/head'
 
 import { NextPageWithLayout } from '../_app'
@@ -9,7 +9,7 @@ const Page: NextPageWithLayout = () => (
     <Head>
       <title>Confirm Email</title>
     </Head>
-    <ResetPasswordScreen />
+    <ConfirmScreen />
   </>
 )
 

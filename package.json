@@ -74,7 +74,7 @@
     "postinstall-postinstall": "^2.1.0",
     "promise-throttle-all": "^1.1.1",
     "supabase": "2.45.5",
-    "turbo": "^2.5.3",
+    "turbo": "^2.5.8",
     "typescript": "^5.9.2",
     "ultra-runner": "^3.10.5"
   },

@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base",
   "include": [
     "src",
+    "./components",
     "../core",
     "../core/package.json",
     "../api/src",

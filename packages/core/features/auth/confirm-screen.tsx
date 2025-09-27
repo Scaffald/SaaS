@@ -1,4 +1,4 @@
-import { H2, Paragraph, SubmitButton, Text, Theme, YStack } from '@app/ui'
+import { EnhancedAnimatedButton, H2, Paragraph, Text, Theme, YStack } from '@app/ui'
 import { SchemaForm, formFields } from '@app/core/utils/SchemaForm'
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import { useEffect } from 'react'
@@ -15,7 +15,7 @@ const ResetPasswordSchema = z.object({
   email: formFields.text.email().describe('Email // your@email.acme'),
 })
 
-export const ResetPasswordScreen = () => {
+export const ConfirmScreen = () => {
   const supabase = useSupabase()
   const { params } = useParams()
   const updateParams = useUpdateParams()
@@ -63,9 +63,15 @@ export const ResetPasswordScreen = () => {
             return (
               <>
                 <Theme inverse>
-                  <SubmitButton onPress={() => submit()} br="$10">
+                  <EnhancedAnimatedButton
+                    variant="primary"
+                    animationPreset="bouncy"
+                    onPress={() => submit()}
+                    br="$10"
+                    loadingText="Sending magic link..."
+                  >
                     Send magic link
-                  </SubmitButton>
+                  </EnhancedAnimatedButton>
                 </Theme>
                 <SignInLink />
               </>

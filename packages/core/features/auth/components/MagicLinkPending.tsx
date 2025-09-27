@@ -1,4 +1,4 @@
-import { Button, H2, Paragraph, SubmitButton, Theme, YStack } from '@app/ui'
+import { Button, EnhancedAnimatedButton, H2, Paragraph, Theme, YStack } from '@app/ui'
 import { ChevronLeft } from '@tamagui/lucide-icons'
 import { SchemaForm, formFields } from '@app/core/utils/SchemaForm'
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
@@ -65,9 +65,15 @@ export const MagicLinkPending = ({
       renderAfter={({ submit }) => (
         <>
           <Theme inverse>
-            <SubmitButton onPress={() => submit()} br="$10">
+            <EnhancedAnimatedButton
+              variant="primary"
+              animationPreset="bouncy"
+              onPress={() => submit()}
+              br="$10"
+              loadingText="Verifying code..."
+            >
               {submitLabel}
-            </SubmitButton>
+            </EnhancedAnimatedButton>
           </Theme>
           <Button themeInverse icon={ChevronLeft} br="$10" onPress={onBack}>
             {backLabel}
