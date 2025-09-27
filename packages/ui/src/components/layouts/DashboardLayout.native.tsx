@@ -1,11 +1,12 @@
 import { YStack } from '@app/ui'
 import { AppHeader, AppHeaderProps } from './AppHeader.native'
+import { ColumnWrapper } from './ColumnWrapper'
 
 export type DashboardLayoutProps = {
   /**
-   * Header configuration
+   * Header configuration - if not provided, shows default header with hamburger menu
    */
-  header?: AppHeaderProps
+  header?: AppHeaderProps | null
   /**
    * Main content
    */
@@ -14,45 +15,23 @@ export type DashboardLayoutProps = {
    * Whether to hide the header completely
    */
   hideHeader?: boolean
-  /**
-   * Whether to use full page layout (no padding constraints)
-   */
-  fullPage?: boolean
-  /**
-   * Whether to add padding constraints for content
-   */
-  padded?: boolean
-  /**
-   * Content padding
-   */
-  contentPadding?: number | string
 }
 
-export const DashboardLayout = ({
-  header,
-  children,
-  hideHeader = false,
-  fullPage = false,
-  padded = false,
-  contentPadding = '$4',
-}: DashboardLayoutProps) => {
+export const DashboardLayout = ({ header, children, hideHeader = false }: DashboardLayoutProps) => {
+  // Default header with hamburger menu
+  const defaultHeader: AppHeaderProps = {
+    title: 'Dashboard',
+    showMenuButton: true,
+    showNotifications: true,
+  }
+
   return (
     <YStack f={1} backgroundColor="$color1">
       {/* Header */}
-      <AppHeader {...header} hidden={hideHeader} />
+      {!hideHeader && <AppHeader {...(header === null ? {} : { ...defaultHeader, ...header })} />}
 
       {/* Content */}
-      <YStack
-        f={1}
-        p={contentPadding}
-        {...(padded && {
-          maw: 960,
-          mx: 'auto',
-          w: '100%',
-        })}
-      >
-        {children}
-      </YStack>
+      <ColumnWrapper>{children}</ColumnWrapper>
     </YStack>
   )
 }

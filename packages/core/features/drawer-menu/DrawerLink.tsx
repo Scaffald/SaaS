@@ -69,13 +69,7 @@ export const DrawerLink = ({
     if (!Icon) return null
 
     return (
-      <XStack
-        ai="center"
-        jc="center"
-        w={25}
-        h={20}
-        br="$6"
-      >
+      <XStack ai="center" jc="center" w={25} h={20} br="$6">
         <Icon size={20} color={active ? '$color12' : '$blue9'} />
       </XStack>
     )
@@ -124,7 +118,9 @@ export const DrawerLink = ({
     br: '$4' as const,
     my: '$1' as const,
     bg: active ? '$blue9' : ('transparent' as const),
-    boxShadow: active ? 'inset -1px -1px 2px rgba(0, 0, 0, 0.2), inset 1px 1px 0 rgba(255, 255, 255, 0.2)' : 'unset',
+    boxShadow: active
+      ? 'inset -1px -1px 2px rgba(0, 0, 0, 0.2), inset 1px 1px 0 rgba(255, 255, 255, 0.2)'
+      : 'unset',
     hoverStyle: { bg: active ? '$blue9' : '$color3' },
     pressStyle: { bg: active ? '$blue9' : '$color3' },
     cursor: 'pointer' as const,

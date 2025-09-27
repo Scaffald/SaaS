@@ -1,6 +1,7 @@
 import { Button, SizableText, XStack, YStack, useTheme } from '@app/ui'
-import { ArrowLeft, Bell, Menu, Search } from '@tamagui/lucide-icons'
+import { ArrowLeft, Bell, Search } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
+import { HamburgerMenu } from './HamburgerMenu.native'
 
 export type AppHeaderProps = {
   /**
@@ -114,18 +115,10 @@ export const AppHeader = ({
               </Button>
             )}
             {showMenuButton && (
-              <Button
-                size="$3"
-                circular
-                borderWidth={1}
-                borderColor="$color4"
-                backgroundColor="$color2"
-                onPress={onMenuPress}
-                accessibilityLabel="Open menu"
-                flexShrink={0}
-              >
-                <Menu size={18} color={theme.color10.val} />
-              </Button>
+              <HamburgerMenu
+                showButton={true}
+                navigation={onMenuPress ? { dispatch: onMenuPress } : undefined}
+              />
             )}
             {title && (
               <SizableText size="$6" fontWeight="700" flexShrink={1} minWidth={0} numberOfLines={1}>

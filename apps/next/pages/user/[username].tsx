@@ -1,4 +1,4 @@
-import { DashboardLayout } from '@app/core/features/dashboard/layout.web'
+import { DashboardLayout } from '@app/ui'
 import { PublicProfileScreen } from '@app/core/features/profile/public-profile-screen'
 import type { GetServerSideProps } from 'next'
 import Head from 'next/head'

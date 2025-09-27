@@ -1,4 +1,4 @@
-import { DashboardLayout } from '@app/core/features/dashboard/layout.web'
+import { DashboardLayout } from '@app/ui'
 import { GeneralSettingsScreen } from '@app/core/features/settings/general-screen'
 import { SettingsLayout } from '@app/core/features/settings/layout.web'
 import Head from 'next/head'

@@ -1,0 +1,118 @@
+# Route Naming Convention
+
+## Dashboard Route Structure
+
+Every dashboard route follows a consistent naming convention for maintainability and clarity.
+
+### File Structure Pattern
+
+For every route in `app/dashboard/<parent>/<child>`:
+
+```
+packages/core/features/<parent>/
+├── <parent>-<child>-left.tsx     # Left column content
+├── <parent>-<child>-right.tsx    # Right column content  
+├── <parent>-<child>-screen.tsx   # Main screen component
+└── config/                       # Configuration files
+```
+
+### Component Naming Pattern
+
+```tsx
+// Left column component
+export function ParentChildLeft() {
+  return <div>Left content</div>
+}
+
+// Right column component  
+export function ParentChildRight() {
+  return <div>Right content</div>
+}
+
+// Main screen component
+export function ParentChildScreen() {
+  return (
+    <>
+      <ParentChildLeft />
+      <ParentChildRight />
+    </>
+  )
+}
+```
+
+### Examples
+
+**Dashboard Index (`/dashboard/index`):**
+- `packages/core/features/dashboard/dashboard-index-left.tsx`
+- `packages/core/features/dashboard/dashboard-index-right.tsx`
+- `packages/core/features/dashboard/dashboard-index-screen.tsx`
+- Components: `DashboardIndexLeft`, `DashboardIndexRight`, `DashboardIndexScreen`
+
+**Profile Overview (`/dashboard/profile/overview`):**
+- `packages/core/features/profile/profile-overview-left.tsx`
+- `packages/core/features/profile/profile-overview-right.tsx`
+- `packages/core/features/profile/profile-overview-screen.tsx`
+- Components: `ProfileOverviewLeft`, `ProfileOverviewRight`, `ProfileOverviewScreen`
+
+**Settings General (`/dashboard/settings/general`):**
+- `packages/core/features/settings/settings-general-left.tsx`
+- `packages/core/features/settings/settings-general-right.tsx`
+- `packages/core/features/settings/settings-general-screen.tsx`
+- Components: `SettingsGeneralLeft`, `SettingsGeneralRight`, `SettingsGeneralScreen`
+
+### App Integration
+
+**Next.js Pages:**
+```tsx
+import { ParentChildScreen } from '@app/core/features/parent/parent-child-screen'
+
+export const Page: NextPageWithLayout = () => {
+  return <ParentChildScreen />
+}
+
+Page.getLayout = (page) => (
+  <DashboardLayout
+    header={{ title: 'Page Title' }}
+    rightContent={page}
+  />
+)
+```
+
+**Expo Routes:**
+```tsx
+import { ParentChildScreen } from '@app/core/features/parent/parent-child-screen'
+
+export default function Screen() {
+  return (
+    <DashboardLayout
+      header={{ title: 'Page Title' }}
+      rightContent={<ParentChildScreen />}
+    />
+  )
+}
+```
+
+### Configuration Files
+
+Place configuration files in the `config/` folder:
+- `config/constants.ts` - Route-specific constants
+- `config/types.ts` - TypeScript type definitions
+- `config/data.ts` - Static data and mock data
+
+### Benefits
+
+1. **Visual Clarity** - Easy to identify file types and purposes
+2. **Consistent Structure** - Predictable file organization
+3. **Scalable** - Easy to add new routes following the same pattern
+4. **Maintainable** - Clear separation of concerns
+5. **Type Safety** - Consistent component naming for better TypeScript support
+
+### Turbo Generator
+
+Use the `route` generator to quickly create new routes:
+
+```bash
+yarn turbo gen route --name="profile-overview"
+```
+
+This will create all necessary files following the naming convention.

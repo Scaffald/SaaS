@@ -1,4 +1,4 @@
-import { DashboardLayout } from '@app/core/features/dashboard/layout.web'
+import { DashboardLayout } from '@app/ui'
 import { ProfileWorkSkillsScreen } from '@app/core/features/profile/work-skills-screen'
 import { ProfileLayoutSimple } from '@app/core/features/profile/layout-simple.web'
 import Head from 'next/head'

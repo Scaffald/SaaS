@@ -1,4 +1,4 @@
-import { DashboardLayout } from '@app/core/features/dashboard/layout-refactored.web'
+import { DashboardLayout } from '@app/ui'
 import { SettingsScreen } from './screen'
 
 export type SettingsLayoutProps = {

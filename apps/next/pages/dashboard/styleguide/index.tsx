@@ -1,4 +1,4 @@
-import { DashboardLayout } from '@app/core/features/dashboard/layout.web'
+import { DashboardLayout } from '@app/ui'
 import { StyleguideLayout } from '@app/core/features/styleguide'
 import { TypographyScreen } from '@app/core/features/styleguide'
 import Head from 'next/head'

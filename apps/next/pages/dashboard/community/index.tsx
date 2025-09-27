@@ -1,7 +1,7 @@
 import Head from 'next/head'
 
 import { CommunityDirectoryScreen } from '@app/core/features/community'
-import { DashboardLayout } from '@app/core/features/dashboard/layout.web'
+import { DashboardLayout } from '@app/ui'
 
 import type { NextPageWithLayout } from '../../_app'
 

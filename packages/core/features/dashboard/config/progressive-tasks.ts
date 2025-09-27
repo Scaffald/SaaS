@@ -1,5 +1,5 @@
-import type { HireScoreFactorDefinition } from './hooks/useHireScore'
-import { HIRE_SCORE_FACTORS } from './hooks/useHireScore'
+import type { HireScoreFactorDefinition } from '../hooks/useHireScore'
+import { HIRE_SCORE_FACTORS } from '../hooks/useHireScore'
 import { ROUTES, DASHBOARD_ROUTES } from '@app/core/constants/routes'
 
 export type ProgressivePromptSurface = 'dialog' | 'inline-card' | 'banner'

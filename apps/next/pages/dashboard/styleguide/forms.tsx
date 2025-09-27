@@ -1,4 +1,4 @@
-import { DashboardLayout } from '@app/core/features/dashboard/layout.web'
+import { DashboardLayout } from '@app/ui'
 import { StyleguideLayout, FormsScreen } from '@app/core/features/styleguide'
 import Head from 'next/head'
 import type { NextPageWithLayout } from '../../_app'

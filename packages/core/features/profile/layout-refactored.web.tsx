@@ -1,4 +1,4 @@
-import { DashboardLayout } from '@app/core/features/dashboard/layout-refactored.web'
+import { DashboardLayout } from '@app/ui'
 import { ProfileScreen } from './screen'
 
 export type ProfileLayoutSimpleProps = {

@@ -223,6 +223,7 @@ Add `--local` to build locally.
 - Component: `yarn gen component`
 - Screen: `yarn gen screen`
 - tRPC Router: `yarn gen router`
+- **Route: `yarn gen route`** (New! See Route Naming Convention below)
 
 ### Signup Flow
 
@@ -253,17 +254,182 @@ The main apps are:
 
 Note that the main entry point for the Expo app is at `apps/expo/app/(drawer)/index.tsx`. This is because folders in parenthesis are flattened and Expo Router finds the first index.tsx file. For more on how Expo Router works, [check out their docs](https://docs.expo.dev/router/create-pages/).
 
+## Route Naming Convention
+
+We follow a consistent naming convention for dashboard routes to maintain clarity and scalability.
+
+### File Structure Pattern
+
+For every route in `app/dashboard/<parent>/<child>`:
+
+```
+packages/core/features/<parent>/
+├── <parent>-<child>-left.tsx     # Left column content
+├── <parent>-<child>-right.tsx    # Right column content  
+├── <parent>-<child>-screen.tsx   # Main screen component
+└── config/                       # Configuration files
+```
+
+### Component Naming Pattern
+
+```tsx
+// Left column component
+export function ParentChildLeft() {
+  return <div>Left content</div>
+}
+
+// Right column component  
+export function ParentChildRight() {
+  return <div>Right content</div>
+}
+
+// Main screen component
+export function ParentChildScreen() {
+  return (
+    <>
+      <ParentChildLeft />
+      <ParentChildRight />
+    </>
+  )
+}
+```
+
+### Examples
+
+**Dashboard Index (`/dashboard/index`):**
+- `packages/core/features/dashboard/dashboard-index-left.tsx`
+- `packages/core/features/dashboard/dashboard-index-right.tsx`
+- `packages/core/features/dashboard/dashboard-index-screen.tsx`
+- Components: `DashboardIndexLeft`, `DashboardIndexRight`, `DashboardIndexScreen`
+
+**Profile Overview (`/dashboard/profile/overview`):**
+- `packages/core/features/profile/profile-overview-left.tsx`
+- `packages/core/features/profile/profile-overview-right.tsx`
+- `packages/core/features/profile/profile-overview-screen.tsx`
+- Components: `ProfileOverviewLeft`, `ProfileOverviewRight`, `ProfileOverviewScreen`
+
+### Using the Route Generator
+
+The fastest way to create new routes is using the turbo generator:
+
+```bash
+yarn gen route
+# Enter: profile/overview
+```
+
+This creates all necessary files:
+- Left/right/screen components in the correct location
+- Next.js and Expo page files
+- Proper imports and component structure
+
+### Manual Implementation
+
+If you prefer to create routes manually:
+
+**1. Create the feature components:**
+```tsx
+// packages/core/features/profile/profile-overview-left.tsx
+export function ProfileOverviewLeft() {
+  return <div>Profile navigation</div>
+}
+
+// packages/core/features/profile/profile-overview-right.tsx
+export function ProfileOverviewRight() {
+  return <div>Profile content</div>
+}
+
+// packages/core/features/profile/profile-overview-screen.tsx
+export function ProfileOverviewScreen() {
+  return (
+    <>
+      <ProfileOverviewLeft />
+      <ProfileOverviewRight />
+    </>
+  )
+}
+```
+
+**2. Create the app pages:**
+
+**Next.js (`apps/next/pages/dashboard/profile/overview/index.tsx`):**
+```tsx
+import { DashboardLayout } from '@app/ui'
+import { ProfileOverviewScreen } from '@app/core/features/profile/profile-overview-screen'
+import Head from 'next/head'
+import type { NextPageWithLayout } from '../_app'
+
+export const Page: NextPageWithLayout = () => {
+  return (
+    <>
+      <Head>
+        <title>Profile Overview</title>
+      </Head>
+      <ProfileOverviewScreen />
+    </>
+  )
+}
+
+Page.getLayout = (page) => (
+  <DashboardLayout
+    header={{ title: 'Profile Overview' }}
+    rightContent={page}
+  />
+)
+
+export default Page
+```
+
+**Expo (`apps/expo/app/dashboard/profile/overview/index.tsx`):**
+```tsx
+import { DashboardLayout } from '@app/ui'
+import { ProfileOverviewScreen } from '@app/core/features/profile/profile-overview-screen'
+
+export default function Screen() {
+  return (
+    <DashboardLayout
+      header={{ title: 'Profile Overview' }}
+      rightContent={<ProfileOverviewScreen />}
+    />
+  )
+}
+```
+
+### Configuration Files
+
+Place configuration files in the `config/` folder:
+- `config/constants.ts` - Route-specific constants
+- `config/types.ts` - TypeScript type definitions
+- `config/data.ts` - Static data and mock data
+
+### Benefits
+
+1. **Visual Clarity** - Easy to identify file types and purposes
+2. **Consistent Structure** - Predictable file organization
+3. **Scalable** - Easy to add new routes following the same pattern
+4. **Maintainable** - Clear separation of concerns
+5. **Type Safety** - Consistent component naming for better TypeScript support
+6. **Fast Development** - Turbo generator for quick setup
+
 ## Layouts
+
+### Dashboard Layout System
+
+We use a unified `DashboardLayout` component for all dashboard pages that provides:
+
+- **Consistent 2-column layout** across all dashboard pages
+- **Default header** with hamburger menu, search, and notifications
+- **Full header override** support for special cases (like worker/map route)
+- **Responsive behavior** for mobile and desktop
+- **Independent scrolling** for each column
 
 ### Web
 
 We've decided not to move to app dir just yet, but since layouts are crucial to most apps, we use [per-page layouts](https://nextjs.org/docs/pages/building-your-application/routing/pages-and-layouts#per-page-layouts).
 
-You can define these layouts anywhere but we've been keeping them in `layout.web.tsx` files in the `features` directory as needed. You can then use them like so:
-
+**Standard Dashboard Page:**
 ```tsx
-import { MyPageScreen } from '@app/core/features/myfeat/screen'
-import { MyLayout } from '@app/core/features/myfeat/layout.web'
+import { DashboardLayout } from '@app/ui'
+import { MyPageScreen } from '@app/core/features/myfeat/my-page-screen'
 import Head from 'next/head'
 import { NextPageWithLayout } from './_app'
 
@@ -278,13 +444,54 @@ export const Page: NextPageWithLayout = () => {
   )
 }
 
-// add the layout
-Page.getLayout = (page) => <MyLayout>{page}</MyLayout>
+Page.getLayout = (page) => (
+  <DashboardLayout
+    header={{ title: 'My Page' }}
+    rightContent={page}
+  />
+)
 
 export default Page
 ```
 
+**Two-Column Dashboard Page:**
+```tsx
+Page.getLayout = (page) => (
+  <DashboardLayout
+    header={{ title: 'Profile' }}
+    leftContent={<ProfileNavigation />}
+    rightContent={page}
+    leftWidth={280}
+  />
+)
+```
+
+**Custom Header Override:**
+```tsx
+Page.getLayout = (page) => (
+  <DashboardLayout
+    header={null} // Complete override
+    rightContent={<CustomMapWithFilters />}
+  />
+)
+```
+
 ### Native
+
+**Expo Dashboard Page:**
+```tsx
+import { DashboardLayout } from '@app/ui'
+import { MyPageScreen } from '@app/core/features/myfeat/my-page-screen'
+
+export default function Screen() {
+  return (
+    <DashboardLayout
+      header={{ title: 'My Page' }}
+      rightContent={<MyPageScreen />}
+    />
+  )
+}
+```
 
 #### React Native Setup Expo
 
@@ -416,6 +623,34 @@ Note we're following the [design systems guide](https://tamagui.dev/docs/guides/
 
 See `packages/ui` named `@app/ui` for how this works.
 
+### Layout Components
+
+The UI package includes several layout components:
+
+- **`DashboardLayout`** - Main dashboard layout with 2-column support
+- **`ColumnWrapper`** - Scrollable column wrapper for independent scrolling
+- **`AppHeader`** - Header component with hamburger menu, search, and notifications
+
+### Component Development
+
+When creating new UI components:
+
+1. **Use Tamagui primitives** (`Button`, `Text`, `View`, `Stack`, etc.)
+2. **Follow the design system** patterns established in the UI package
+3. **Make components cross-platform** (web, iOS, Android)
+4. **Document components** with JSDoc comments
+5. **Export from index files** for easy importing
+
+### Code Quality
+
+Always run these commands after making changes:
+
+```bash
+yarn format:fix    # Fix formatting issues
+yarn lint:fix      # Fix linting issues
+yarn check:type    # Check TypeScript types (optional)
+```
+
 ## Adding new dependencies
 
 ### Pure JS dependencies
@@ -473,6 +708,45 @@ This error is likely caused my not having Supabase setup correctly and running i
 - Where is the initial page that gets rendered on the Expo app?
 
 We recommend you familiarize yourself with how Expo Router handles routing on [their docs](https://docs.expo.dev/router/introduction/). In a fresh project, the initial page would be on `apps/expo/app/(drawer)/index.tsx`.
+
+## Cursor Rules
+
+This project includes cursor rules to help maintain code quality and consistency. The rules are located in `.cursor/rules/` and include:
+
+- **`route-naming-convention.mdc`** - Guidelines for dashboard route structure
+- **`ui-development.mdc`** - UI component development standards
+- **`nextjs.mdc`** - Next.js specific guidelines
+- **`react-native.mdc`** - React Native development guidelines
+- **`code-quality.mdc`** - Code quality and maintenance rules
+
+### Using Generators
+
+We provide several turbo generators to speed up development:
+
+```bash
+# Create a new component
+yarn gen component
+
+# Create a new screen
+yarn gen screen
+
+# Create a new tRPC router
+yarn gen router
+
+# Create a new dashboard route (recommended)
+yarn gen route
+```
+
+### Generator Best Practices
+
+1. **Use the route generator** for dashboard pages - it creates all necessary files
+2. **Follow naming conventions** - generators enforce consistent patterns
+3. **Review generated code** - customize as needed for your specific use case
+4. **Run quality checks** after generation:
+   ```bash
+   yarn format:fix
+   yarn lint:fix
+   ```
 
 ## Troubleshooting
 
