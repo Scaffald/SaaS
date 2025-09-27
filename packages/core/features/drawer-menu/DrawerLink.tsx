@@ -1,4 +1,4 @@
-import { ChevronRight, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
+import { ChevronRight, ChevronDown, ChevronUp, ChevronLeft } from '@tamagui/lucide-icons'
 import { GestureResponderEvent } from 'react-native'
 import { XStack, Paragraph, YStack } from '@app/ui'
 import { useLink } from 'solito/link'
@@ -106,9 +106,9 @@ export const DrawerLink = ({
       {/* Chevron logic */}
       {item.isExpandable ? (
         isExpanded ? (
-          <ChevronUp size={16} color={active ? '$color12' : '$color10'} />
-        ) : (
           <ChevronDown size={16} color={active ? '$color12' : '$color10'} />
+        ) : (
+          <ChevronLeft size={16} color={active ? '$color12' : '$color10'} />
         )
       ) : (
         item.hasChevron && <ChevronRight size={16} color="$color10" />
