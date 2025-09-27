@@ -25,6 +25,8 @@ export const DrawerContent = ({
       backgroundColor="$color2"
       borderRightWidth={1}
       // borderColor="$color4"
+      px="$4"
+      py="$4"
       flex={1}
       bw={0}
     >
@@ -35,7 +37,6 @@ export const DrawerContent = ({
       <DrawerContentScrollView
         {...drawerProps}
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingVertical: 16, paddingHorizontal: 16 }}
         showsVerticalScrollIndicator={false}
       >
         <YStack gap="$1" width="100%">
