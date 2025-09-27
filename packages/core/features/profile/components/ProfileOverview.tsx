@@ -1,6 +1,4 @@
 import {
-  ContentWrapper,
-  ContentSection,
   KVTable,
   SizableText,
   YStack,
@@ -12,26 +10,32 @@ import {
   Progress,
   Theme,
 } from '@app/ui'
-import { useProfileOverview } from './hooks'
+import { useProfileOverview } from '../hooks'
 import { Link } from 'solito/link'
 
-export const ProfileOverviewScreen = () => {
+export const ProfileOverview = () => {
   const { user, data, isPending } = useProfileOverview()
 
   if (isPending) {
     return (
-      <ContentWrapper title="Profile Overview">
-        <ContentSection title="Loading">
+      <YStack gap="$4" p="$4">
+        <H3>Profile Overview</H3>
+        <YStack gap="$2" p="$4" br="$6" borderColor="$color4" borderWidth={1}>
           <Paragraph>Loading profile data...</Paragraph>
-        </ContentSection>
-      </ContentWrapper>
+        </YStack>
+      </YStack>
     )
   }
 
   return (
-    <ContentWrapper title="Profile Overview">
+    <YStack gap="$4" p="$4">
+      <H3>Profile Overview</H3>
+
       {/* Profile Completion */}
-      <ContentSection title="Profile Completion">
+      <YStack gap="$2" p="$4" br="$6" borderColor="$color4" borderWidth={1}>
+        <SizableText fow="700" size="$4">
+          Profile Completion
+        </SizableText>
         <YStack gap="$3">
           <XStack ai="center" gap="$3">
             <Progress value={data.completionPercentage} max={100} size="$4" f={1}>
@@ -45,10 +49,13 @@ export const ProfileOverviewScreen = () => {
             Complete your profile to increase your visibility to employers
           </Paragraph>
         </YStack>
-      </ContentSection>
+      </YStack>
 
       {/* Profile Summary */}
-      <ContentSection title="Profile Summary">
+      <YStack gap="$2" p="$4" br="$6" borderColor="$color4" borderWidth={1}>
+        <SizableText fow="700" size="$4">
+          Profile Summary
+        </SizableText>
         <XStack gap="$4" ai="flex-start">
           <Avatar circular size="$8">
             <Avatar.Image src={data.avatarUrl || undefined} />
@@ -78,26 +85,29 @@ export const ProfileOverviewScreen = () => {
             )}
           </YStack>
         </XStack>
-      </ContentSection>
+      </YStack>
 
       {/* Quick Actions */}
-      <ContentSection title="Quick Actions">
+      <YStack gap="$2" p="$4" br="$6" borderColor="$color4" borderWidth={1}>
+        <SizableText fow="700" size="$4">
+          Quick Actions
+        </SizableText>
         <YStack gap="$3">
-          <Link href="/profile/basic-info">
+          <Link href="/profile/general">
             <Button theme="blue" size="$3" w="100%">
-              Edit Basic Information
+              Edit General Information
             </Button>
           </Link>
 
-          <Link href="/profile/work-skills">
+          <Link href="/profile/skills">
             <Button theme="green" size="$3" w="100%">
-              Update Work & Skills
+              Update Skills
             </Button>
           </Link>
 
-          <Link href="/profile/travel-compliance">
+          <Link href="/profile/background">
             <Button theme="purple" size="$3" w="100%">
-              Manage Travel & Compliance
+              Manage Background
             </Button>
           </Link>
 
@@ -107,16 +117,19 @@ export const ProfileOverviewScreen = () => {
             </Button>
           </Link>
         </YStack>
-      </ContentSection>
+      </YStack>
 
       {/* Profile Status */}
-      <ContentSection title="Status">
+      <YStack gap="$2" p="$4" br="$6" borderColor="$color4" borderWidth={1}>
+        <SizableText fow="700" size="$4">
+          Status
+        </SizableText>
         <KVTable.Row>
           <KVTable.Key>
             <SizableText fow="900">Open to Work</SizableText>
           </KVTable.Key>
           <KVTable.Value>
-            <Theme inverse={data.openToWork}>
+            <Theme inverse={data.openToWork || false}>
               <SizableText color={data.openToWork ? '$green11' : '$color11'} fow="600">
                 {data.openToWork ? 'Yes' : 'No'}
               </SizableText>
@@ -132,7 +145,7 @@ export const ProfileOverviewScreen = () => {
             <SizableText>{data.completionPercentage}% complete</SizableText>
           </KVTable.Value>
         </KVTable.Row>
-      </ContentSection>
-    </ContentWrapper>
+      </YStack>
+    </YStack>
   )
 }

@@ -7,7 +7,7 @@ const numericString = (label: string) =>
     .trim()
     .refine((value) => value === '' || /^[0-9]+$/.test(value), `${label} must be a whole number`)
 
-export const WorkSkillsSchema = z.object({
+export const SkillsSchema = z.object({
   yearsExperience: numericString('Years of experience').describe('Years of Experience // e.g. 5'),
 
   headline: formFields.text
@@ -33,4 +33,4 @@ export const WorkSkillsSchema = z.object({
     .describe('Professional Bio // Tell us about your experience and expertise'),
 })
 
-export type WorkSkillsFormValues = z.infer<typeof WorkSkillsSchema>
+export type SkillsFormValues = z.infer<typeof SkillsSchema>

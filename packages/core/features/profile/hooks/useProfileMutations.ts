@@ -9,9 +9,9 @@ import {
   persistTravelCompliance,
   persistContactAvailability,
 } from '../mutations/profile-mutations'
-import type { BasicInfoFormValues } from '../schemas/basic-info-schema'
-import type { WorkSkillsFormValues } from '../schemas/work-skills-schema'
-import type { TravelComplianceFormValues } from '../schemas/travel-compliance-schema'
+import type { GeneralFormValues } from '../schemas/general-schema'
+import type { SkillsFormValues } from '../schemas/skills-schema'
+import type { BackgroundFormValues } from '../schemas/background-schema'
 import type { ContactAvailabilityFormValues } from '../schemas/contact-availability-schema'
 
 type UseMutationOptions = {
@@ -19,83 +19,86 @@ type UseMutationOptions = {
   updateProfile?: () => Promise<unknown> | void
 }
 
-export const useBasicInfoMutation = ({ onSuccess, updateProfile }: UseMutationOptions = {}) => {
+export const useGeneralMutation = ({ onSuccess, updateProfile }: UseMutationOptions = {}) => {
   const supabase = useSupabase()
   const toast = useToastController()
   const router = useRouter()
 
   return useMutation({
-    mutationFn: async ({ userId, values }: { userId: string; values: BasicInfoFormValues }) => {
+    mutationFn: async ({ userId, values }: { userId: string; values: GeneralFormValues }) => {
       await persistBasicInfo({ supabase, userId, values, updateProfile })
     },
     onSuccess: () => {
-      toast.show('Basic information updated successfully!')
+      toast.show('General information updated successfully!')
       if (!isWeb) {
         router.back()
       }
       onSuccess?.()
     },
     onError: (error: Error) => {
-      toast.show('Failed to update basic information', {
+      toast.show('Failed to update general information', {
         message: error.message,
       })
     },
   })
 }
 
-export const useWorkSkillsMutation = ({ onSuccess, updateProfile }: UseMutationOptions = {}) => {
+// Backward compatibility
+export const useBasicInfoMutation = useGeneralMutation
+
+export const useSkillsMutation = ({ onSuccess, updateProfile }: UseMutationOptions = {}) => {
   const supabase = useSupabase()
   const toast = useToastController()
   const router = useRouter()
 
   return useMutation({
-    mutationFn: async ({ userId, values }: { userId: string; values: WorkSkillsFormValues }) => {
+    mutationFn: async ({ userId, values }: { userId: string; values: SkillsFormValues }) => {
       await persistWorkSkills({ supabase, userId, values, updateProfile })
     },
     onSuccess: () => {
-      toast.show('Work & skills updated successfully!')
+      toast.show('Skills updated successfully!')
       if (!isWeb) {
         router.back()
       }
       onSuccess?.()
     },
     onError: (error: Error) => {
-      toast.show('Failed to update work & skills', {
+      toast.show('Failed to update skills', {
         message: error.message,
       })
     },
   })
 }
 
-export const useTravelComplianceMutation = ({
-  onSuccess,
-  updateProfile,
-}: UseMutationOptions = {}) => {
+// Backward compatibility
+export const useWorkSkillsMutation = useSkillsMutation
+
+export const useBackgroundMutation = ({ onSuccess, updateProfile }: UseMutationOptions = {}) => {
   const supabase = useSupabase()
   const toast = useToastController()
   const router = useRouter()
 
   return useMutation({
-    mutationFn: async ({
-      userId,
-      values,
-    }: { userId: string; values: TravelComplianceFormValues }) => {
+    mutationFn: async ({ userId, values }: { userId: string; values: BackgroundFormValues }) => {
       await persistTravelCompliance({ supabase, userId, values, updateProfile })
     },
     onSuccess: () => {
-      toast.show('Travel & compliance updated successfully!')
+      toast.show('Background updated successfully!')
       if (!isWeb) {
         router.back()
       }
       onSuccess?.()
     },
     onError: (error: Error) => {
-      toast.show('Failed to update travel & compliance', {
+      toast.show('Failed to update background', {
         message: error.message,
       })
     },
   })
 }
+
+// Backward compatibility
+export const useTravelComplianceMutation = useBackgroundMutation
 
 export const useContactAvailabilityMutation = ({
   onSuccess,

@@ -1,4 +1,4 @@
-import { EditProfileScreen } from '@app/core/features/profile/edit-screen'
+import { EditProfileForm } from '@app/core/features/profile/components/EditProfileForm'
 import { Stack } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
@@ -12,7 +12,7 @@ export default function Screen() {
         }}
       />
       <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
-        <EditProfileScreen />
+        <EditProfileForm />
       </SafeAreaView>
     </>
   )

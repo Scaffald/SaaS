@@ -1,6 +1,6 @@
-import { ProfileContactAvailabilityScreen } from '@app/core/features/profile/contact-availability-screen'
-import { ProfileLayout } from '@app/core/features/profile/layout-refactored.native'
+import { ProfileContactAvailabilityScreen } from '@app/core/features/profile/profile-contact-availability-screen'
 import { Stack } from 'expo-router'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Screen() {
   return (
@@ -11,9 +11,9 @@ export default function Screen() {
           headerShown: true,
         }}
       />
-      <ProfileLayout title="Contact & Availability">
+      <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
         <ProfileContactAvailabilityScreen />
-      </ProfileLayout>
+      </SafeAreaView>
     </>
   )
 }

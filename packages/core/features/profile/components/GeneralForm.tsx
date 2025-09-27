@@ -1,16 +1,13 @@
 import { H2, SubmitButton, Theme, YStack, isWeb, FormWrapper } from '@app/ui'
 import { SchemaForm } from '@app/core/utils/SchemaForm'
-import {
-  ContactAvailabilitySchema,
-  type ContactAvailabilityFormValues,
-} from './schemas/contact-availability-schema'
-import { useContactAvailability, useContactAvailabilityMutation } from './hooks'
+import { GeneralSchema, type GeneralFormValues } from '../schemas/general-schema'
+import { useGeneral, useGeneralMutation } from '../hooks'
 
-export const ProfileContactAvailabilityScreen = () => {
-  const { user, defaultValues, updateProfile, isPending } = useContactAvailability()
-  const mutation = useContactAvailabilityMutation({ updateProfile })
+export const GeneralForm = () => {
+  const { user, defaultValues, updateProfile, isPending } = useGeneral()
+  const mutation = useGeneralMutation({ updateProfile })
 
-  const handleSubmit = async (values: ContactAvailabilityFormValues) => {
+  const handleSubmit = async (values: GeneralFormValues) => {
     if (!user?.id) {
       throw new Error('You need to be signed in to update your profile.')
     }
@@ -32,19 +29,19 @@ export const ProfileContactAvailabilityScreen = () => {
     <FormWrapper>
       <SchemaForm
         onSubmit={handleSubmit}
-        schema={ContactAvailabilitySchema}
+        schema={GeneralSchema}
         defaultValues={defaultValues}
         renderBefore={() =>
           isWeb && (
             <YStack px="$4" py="$4" pb="$2">
-              <H2>Contact & Availability</H2>
+              <H2>General Information</H2>
             </YStack>
           )
         }
         renderAfter={({ submit }) => (
           <Theme inverse>
             <SubmitButton onPress={() => submit()} disabled={mutation.isPending}>
-              {mutation.isPending ? 'Updating...' : 'Update Contact & Availability'}
+              {mutation.isPending ? 'Updating...' : 'Update General Information'}
             </SubmitButton>
           </Theme>
         )}

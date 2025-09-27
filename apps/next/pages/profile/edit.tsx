@@ -1,12 +1,5 @@
-import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { EditProfileForm } from '@app/core/features/profile/components/EditProfileForm'
 
-export default function ProfileEditRedirect() {
-  const router = useRouter()
-
-  useEffect(() => {
-    router.replace('/dashboard/profile/edit')
-  }, [router])
-
-  return null
+export default function ProfileEditPage() {
+  return <EditProfileForm />
 }

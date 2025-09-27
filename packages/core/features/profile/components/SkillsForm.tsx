@@ -1,13 +1,13 @@
 import { H2, SubmitButton, Theme, YStack, isWeb, FormWrapper } from '@app/ui'
 import { SchemaForm } from '@app/core/utils/SchemaForm'
-import { WorkSkillsSchema, type WorkSkillsFormValues } from './schemas/work-skills-schema'
-import { useWorkSkills, useWorkSkillsMutation } from './hooks'
+import { SkillsSchema, type SkillsFormValues } from '../schemas/skills-schema'
+import { useSkills, useSkillsMutation } from '../hooks'
 
-export const ProfileWorkSkillsScreen = () => {
-  const { user, defaultValues, updateProfile, isPending } = useWorkSkills()
-  const mutation = useWorkSkillsMutation({ updateProfile })
+export const SkillsForm = () => {
+  const { user, defaultValues, updateProfile, isPending } = useSkills()
+  const mutation = useSkillsMutation({ updateProfile })
 
-  const handleSubmit = async (values: WorkSkillsFormValues) => {
+  const handleSubmit = async (values: SkillsFormValues) => {
     if (!user?.id) {
       throw new Error('You need to be signed in to update your profile.')
     }
@@ -29,19 +29,19 @@ export const ProfileWorkSkillsScreen = () => {
     <FormWrapper>
       <SchemaForm
         onSubmit={handleSubmit}
-        schema={WorkSkillsSchema}
+        schema={SkillsSchema}
         defaultValues={defaultValues}
         renderBefore={() =>
           isWeb && (
             <YStack px="$4" py="$4" pb="$2">
-              <H2>Work & Skills</H2>
+              <H2>Skills</H2>
             </YStack>
           )
         }
         renderAfter={({ submit }) => (
           <Theme inverse>
             <SubmitButton onPress={() => submit()} disabled={mutation.isPending}>
-              {mutation.isPending ? 'Updating...' : 'Update Work & Skills'}
+              {mutation.isPending ? 'Updating...' : 'Update Skills'}
             </SubmitButton>
           </Theme>
         )}
