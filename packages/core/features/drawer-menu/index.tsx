@@ -23,14 +23,11 @@ import {
   Building2,
   Map,
   Settings2,
-  LogOut,
+  Cog,
+  User,
   Users,
   Palette,
-  Mail,
-  Rocket,
-  User,
-  Fingerprint,
-  Star,
+  LogOut,
   FileText,
   Clock,
   CheckCircle,
@@ -67,99 +64,89 @@ export type DrawerSectionConfig = {
   items: DrawerItemConfig[]
 }
 
+// Generate drawer items dynamically from dashboard routes
+const generateDashboardDrawerItems = (): DrawerItemConfig[] => {
+  const items: DrawerItemConfig[] = []
+
+  // Main dashboard item
+  items.push({
+    key: 'dashboard',
+    title: 'Dashboard',
+    href: DASHBOARD_ROUTES.INDEX?.fullPath || '/dashboard',
+    icon: BarChart3,
+  })
+
+  // Workers/Discover route
+  const workersMapRoute = DASHBOARD_ROUTES.WORKERS?.childrenArray?.find(
+    (r) => r.path === '/dashboard/workers/map'
+  )
+  if (workersMapRoute) {
+    items.push({
+      key: 'discover',
+      title: 'Discover',
+      href: workersMapRoute.fullPath,
+      icon: Map,
+    })
+  }
+
+  // Community route
+  if (DASHBOARD_ROUTES.COMMUNITY) {
+    items.push({
+      key: 'community',
+      title: 'Community',
+      href: DASHBOARD_ROUTES.COMMUNITY.fullPath,
+      icon: Users,
+    })
+  }
+
+  // Organizations route
+  if (DASHBOARD_ROUTES.ORGANIZATIONS) {
+    items.push({
+      key: 'organizations',
+      title: 'Organizations',
+      href: DASHBOARD_ROUTES.ORGANIZATIONS.fullPath,
+      icon: Building2,
+    })
+  }
+
+  // Profile route
+  if (DASHBOARD_ROUTES.PROFILE) {
+    items.push({
+      key: 'profile',
+      title: 'Profile',
+      href: DASHBOARD_ROUTES.PROFILE.fullPath,
+      icon: User,
+    })
+  }
+
+  // Settings route
+  if (DASHBOARD_ROUTES.SETTINGS) {
+    items.push({
+      key: 'settings',
+      title: 'Settings',
+      href: DASHBOARD_ROUTES.SETTINGS.fullPath,
+      icon: Cog,
+    })
+  }
+
+  // Styleguide route (for development)
+  if (DASHBOARD_ROUTES.STYLEGUIDE) {
+    items.push({
+      key: 'styleguide',
+      title: 'Styleguide',
+      href: DASHBOARD_ROUTES.STYLEGUIDE.fullPath,
+      icon: Palette,
+    })
+  }
+
+  return items
+}
+
 export const drawerSections: DrawerSectionConfig[] = [
   {
     key: 'main',
     title: '',
-    items: [
-      {
-        key: 'dashboard',
-        title: 'Dashboard',
-        href: ROUTES.dashboard.fullPath,
-        icon: BarChart3,
-      },
-      {
-        key: 'inboxes',
-        title: 'Inboxes',
-        href: '/inboxes',
-        icon: Mail,
-        hasChevron: true,
-      },
-      {
-        key: 'performances',
-        title: 'Performances',
-        href: '/performances',
-        icon: Rocket,
-        hasChevron: true,
-      },
-      {
-        key: 'employee-task',
-        title: 'Employee Task',
-        href: '/employee-task',
-        icon: User,
-        hasChevron: true,
-      },
-      {
-        key: 'absence',
-        title: 'Absence',
-        href: '/absence',
-        icon: Fingerprint,
-        hasChevron: true,
-      },
-      {
-        key: 'analytics',
-        title: 'Analytics',
-        href: '/analytics',
-        icon: Star,
-        hasChevron: true,
-      },
-      {
-        key: 'projects',
-        title: 'Projects',
-        href: '/projects',
-        icon: FileText,
-        isExpandable: true,
-        subItems: [
-          {
-            key: 'active-project',
-            title: 'Active Project',
-            href: '/projects/active',
-            icon: Clock,
-          },
-          {
-            key: 'project-done',
-            title: 'Project Done',
-            href: '/projects/done',
-            icon: CheckCircle,
-          },
-          {
-            key: 'project-on-hold',
-            title: 'Project On Hold',
-            href: '/projects/on-hold',
-            icon: Pause,
-          },
-        ],
-      },
-      {
-        key: 'client-list',
-        title: 'Client List',
-        href: '/client-list',
-        icon: Users,
-      },
-      {
-        key: 'help-center',
-        title: 'Help Center',
-        href: '/help-center',
-        icon: HelpCircle,
-      },
-      {
-        key: 'notification',
-        title: 'Notification',
-        href: '/notifications',
-        icon: Bell,
-        badge: '4',
-      },
-    ],
+    items: generateDashboardDrawerItems(),
   },
 ]
 

@@ -289,6 +289,22 @@ const routeConfig: Record<string, RouteConfig> = {
         },
       },
 
+      // Dashboard Community routes
+      community: {
+        path: '/dashboard/community',
+        title: 'Community',
+        children: {
+          index: {
+            path: '/dashboard/community',
+            title: 'Community',
+          },
+          reviews: {
+            path: '/dashboard/community/reviews',
+            title: 'Reviews',
+          },
+        },
+      },
+
       // Dashboard Workers routes
       workers: {
         path: '/dashboard/workers',
@@ -328,6 +344,7 @@ export const DASHBOARD_ROUTES = {
   SETTINGS: ROUTES.dashboard.childrenArray?.find((r) => r.path === '/dashboard/settings'),
   ORGANIZATIONS: ROUTES.dashboard.childrenArray?.find((r) => r.path === '/dashboard/organizations'),
   STYLEGUIDE: ROUTES.dashboard.childrenArray?.find((r) => r.path === '/dashboard/styleguide'),
+  COMMUNITY: ROUTES.dashboard.childrenArray?.find((r) => r.path === '/dashboard/community'),
   WORKERS: ROUTES.dashboard.childrenArray?.find((r) => r.path === '/dashboard/workers'),
 }
 
