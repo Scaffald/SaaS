@@ -1,8 +1,8 @@
-import { WorkersScreen } from '@app/core/features/workers'
-import { DashboardLayout } from '@app/ui'
 import Head from 'next/head'
 
+import { WorkersIndexScreen } from '@app/core/features/workers/workers-index-screen'
 import type { NextPageWithLayout } from '../../_app'
+import { DashboardLayout } from '@app/ui/src/components/layouts/DashboardLayout'
 
 const Page: NextPageWithLayout = () => {
   return (
@@ -10,11 +10,19 @@ const Page: NextPageWithLayout = () => {
       <Head>
         <title>Workers Map</title>
       </Head>
-      <WorkersScreen />
+      <WorkersIndexScreen />
     </>
   )
 }
 
-Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>
+Page.getLayout = (page) => (
+  <DashboardLayout
+    header={{ title: 'Dashboard' }}
+    leftContent={null}
+    rightContent={page}
+    leftWidth="61.8%"
+    isHomePage={true}
+  />
+)
 
 export default Page

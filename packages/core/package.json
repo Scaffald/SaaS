@@ -3,9 +3,7 @@
   "name": "@app/core",
   "main": "index.ts",
   "types": "./index.ts",
-  "sideEffects": [
-    "*.css"
-  ],
+  "sideEffects": ["*.css"],
   "scripts": {
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",

@@ -22,9 +22,7 @@ export function Provider({
     // Note: DatePickerProvider Conflicted with Popover so this is just a temporary solution
     <DatePickerProvider config={{ selectedDates: [], onDatesChange: () => {} }}>
       <AuthProvider initialSession={initialSession}>
-        <Providers>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
       </AuthProvider>
     </DatePickerProvider>
   )

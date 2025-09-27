@@ -237,7 +237,6 @@ const routeConfig: Record<string, RouteConfig> = {
         },
       },
 
-
       // Dashboard Workers routes
       workers: {
         path: '/dashboard/workers',
