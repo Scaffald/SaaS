@@ -4,6 +4,7 @@ import '@tamagui/font-inter/css/400.css'
 import '@tamagui/font-inter/css/700.css'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { NextThemeProvider } from '@tamagui/next-theme'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { Provider } from '@app/core/provider'
 import { AuthProviderProps } from '@app/core/provider/auth'
 import { api } from '@app/core/utils/api'
@@ -29,9 +30,11 @@ function AppWithTheme({
   const getLayout = Component.getLayout || ((page) => page)
 
   return (
-    <Provider initialSession={pageProps.initialSession}>
-      {getLayout(<Component {...pageProps} />)}
-    </Provider>
+    <SafeAreaProvider>
+      <Provider initialSession={pageProps.initialSession}>
+        {getLayout(<Component {...pageProps} />)}
+      </Provider>
+    </SafeAreaProvider>
   )
 }
 

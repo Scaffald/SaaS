@@ -2,9 +2,9 @@ import { YStack, getTokens } from '@app/ui'
 import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import { useCallback, useState } from 'react'
 import { GestureResponderEvent } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { usePathname } from '@app/core/utils/usePathname'
-import { useSafeAreaInsets } from '@app/core/utils/useSafeAreaInsets'
 import { DrawerContent } from './DrawerContent'
 import { normalizePath } from './utils'
 
