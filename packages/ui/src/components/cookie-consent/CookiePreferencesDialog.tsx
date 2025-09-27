@@ -16,33 +16,14 @@ import {
 import { useCookieConsent } from './CookieConsentProvider'
 import { CookieConsentCategory, CookieConsentSelections } from './types'
 
-export interface CookiePreferencesDialogProps {
-  title?: string
-  description?: ReactNode
-  cancelLabel?: string
-  saveLabel?: string
-  rejectAllLabel?: string
-  showRejectAll?: boolean
-  alwaysOnLabel?: string
-}
-
-const defaultDescription = (
-  <Paragraph size="$4" color="$color11">
-    Choose which categories of cookies to allow. Required cookies stay active because they keep
-    critical features running safely.
-  </Paragraph>
-)
-
 const CategoryRow = ({
   category,
   value,
   onChange,
-  alwaysOnLabel,
 }: {
   category: CookieConsentCategory
   value: boolean
   onChange: (next: boolean) => void
-  alwaysOnLabel?: string
 }) => {
   const disabled = category.required
   return (
@@ -52,7 +33,9 @@ const CategoryRow = ({
           {category.label}
         </SizableText>
         <Switch
+          size="$2"
           native
+          theme="green"
           checked={value}
           disabled={disabled}
           onCheckedChange={(checked) => onChange(Boolean(checked))}
@@ -60,27 +43,14 @@ const CategoryRow = ({
           <Switch.Thumb animation="100ms" />
         </Switch>
       </XStack>
-      <Paragraph size="$3" color="$color10">
+      <Paragraph size="$3" color="$color11">
         {category.description}
       </Paragraph>
-      {disabled && (
-        <Paragraph size="$2" color="$color9">
-          {alwaysOnLabel || 'Always on'}
-        </Paragraph>
-      )}
     </YStack>
   )
 }
 
-export const CookiePreferencesDialog = ({
-  title = 'Manage cookies',
-  description = defaultDescription,
-  cancelLabel = 'Cancel',
-  saveLabel = 'Save and close',
-  rejectAllLabel = 'Reject all',
-  showRejectAll = true,
-  alwaysOnLabel = 'Always on',
-}: CookiePreferencesDialogProps) => {
+export const CookiePreferencesDialog = () => {
   const { categories, selections, isPreferencesOpen, closePreferences, saveSelections, rejectAll } =
     useCookieConsent()
 
@@ -141,8 +111,13 @@ export const CookiePreferencesDialog = ({
           maxWidth={520}
           maxHeight={600}
         >
-          <Dialog.Title>{title}</Dialog.Title>
-          {description}
+          <Dialog.Title>Manage Cookies</Dialog.Title>
+
+          <Paragraph size="$4">
+            Choose which categories of cookies to allow. Required cookies stay active because they
+            keep critical features running safely.
+          </Paragraph>
+
           <ScrollView maxHeight={360} showsVerticalScrollIndicator={false}>
             <YStack gap="$3">
               {categories.map((category) => (
@@ -151,34 +126,31 @@ export const CookiePreferencesDialog = ({
                   category={category}
                   value={Boolean(draft[category.id])}
                   onChange={(next) => handleToggle(category.id, next)}
-                  alwaysOnLabel={alwaysOnLabel}
                 />
               ))}
             </YStack>
           </ScrollView>
           <Separator />
           <XStack gap="$3" jc="flex-end" ai="center" flexWrap="wrap">
-            <Unspaced>
-              <Dialog.Close asChild>
-                <Button
-                  size="$3"
-                  variant="outlined"
-                  disabled={isSubmitting}
-                  onPress={() => {
-                    setDraft(initialDraft)
-                  }}
-                >
-                  {cancelLabel}
-                </Button>
-              </Dialog.Close>
-            </Unspaced>
-            {showRejectAll && (
-              <Button size="$3" theme="alt2" disabled={isSubmitting} onPress={handleRejectAll}>
-                {rejectAllLabel}
-              </Button>
-            )}
             <Button size="$3" disabled={isSubmitting} onPress={handleSave}>
-              {saveLabel}
+              Save
+            </Button>
+
+            <Dialog.Close asChild>
+              <Button
+                size="$3"
+                variant="outlined"
+                disabled={isSubmitting}
+                onPress={() => {
+                  setDraft(initialDraft)
+                }}
+              >
+                Cancel
+              </Button>
+            </Dialog.Close>
+
+            <Button size="$3" theme="alt2" disabled={isSubmitting} onPress={handleRejectAll}>
+              Reject All
             </Button>
           </XStack>
 
