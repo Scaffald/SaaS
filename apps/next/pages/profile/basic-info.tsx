@@ -1,24 +1,12 @@
-import { HomeLayout } from '@app/core/features/home/layout.web'
-import { ProfileBasicInfoScreen } from '@app/core/features/profile/basic-info-screen'
-import { ProfileLayoutSimple } from '@app/core/features/profile/layout-simple.web'
-import Head from 'next/head'
-import type { NextPageWithLayout } from 'pages/_app'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 
-const Page: NextPageWithLayout = () => {
-  return (
-    <>
-      <Head>
-        <title>Basic Information</title>
-      </Head>
-      <ProfileBasicInfoScreen />
-    </>
-  )
+export default function ProfileBasicInfoRedirect() {
+  const router = useRouter()
+
+  useEffect(() => {
+    router.replace('/dashboard/profile/general')
+  }, [router])
+
+  return null
 }
-
-Page.getLayout = (page) => (
-  <HomeLayout fullPage>
-    <ProfileLayoutSimple>{page}</ProfileLayoutSimple>
-  </HomeLayout>
-)
-
-export default Page

@@ -1,20 +1,13 @@
-import Head from 'next/head'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
+import { ROUTES } from '@app/core/constants/routes'
 
-import { DiscoverMapScreen } from '@app/core/features/discover-map'
-import { HomeLayout } from '@app/core/features/home/layout.web'
-import type { NextPageWithLayout } from './_app'
+export default function DiscoverRedirect() {
+  const router = useRouter()
 
-export const Page: NextPageWithLayout = () => {
-  return (
-    <>
-      <Head>
-        <title>Discover | Scaffald</title>
-      </Head>
-      <DiscoverMapScreen />
-    </>
-  )
+  useEffect(() => {
+    router.replace(ROUTES.WORKERS_MAP)
+  }, [router])
+
+  return null
 }
-
-Page.getLayout = (page) => <HomeLayout fullPage>{page}</HomeLayout>
-
-export default Page

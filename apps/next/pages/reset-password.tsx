@@ -1,18 +1,13 @@
-import { AuthLayout } from '@app/core/features/auth/layout.web'
-import { ResetPasswordScreen } from '@app/core/features/auth/reset-password-screen'
-import Head from 'next/head'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
+import { ROUTES } from '@app/core/constants/routes'
 
-import { NextPageWithLayout } from './_app'
+export default function ResetPasswordRedirect() {
+  const router = useRouter()
 
-const Page: NextPageWithLayout = () => (
-  <>
-    <Head>
-      <title>Reset Password</title>
-    </Head>
-    <ResetPasswordScreen />
-  </>
-)
+  useEffect(() => {
+    router.replace(ROUTES.CONFIRM)
+  }, [router])
 
-Page.getLayout = (children) => <AuthLayout>{children}</AuthLayout>
-
-export default Page
+  return null
+}

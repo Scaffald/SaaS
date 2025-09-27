@@ -1,18 +1,13 @@
-import { AuthLayout } from '@app/core/features/auth/layout.web'
-import { LoginScreen } from '@app/core/features/auth/login-screen'
-import Head from 'next/head'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
+import { ROUTES } from '@app/core/constants/routes'
 
-import { NextPageWithLayout } from './_app'
+export default function LoginRedirect() {
+  const router = useRouter()
 
-const Page: NextPageWithLayout = () => (
-  <>
-    <Head>
-      <title>Login</title>
-    </Head>
-    <LoginScreen />
-  </>
-)
+  useEffect(() => {
+    router.replace(ROUTES.AUTH)
+  }, [router])
 
-Page.getLayout = (children) => <AuthLayout>{children}</AuthLayout>
-
-export default Page
+  return null
+}

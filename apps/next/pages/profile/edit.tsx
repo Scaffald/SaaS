@@ -1,20 +1,12 @@
-import { HomeLayout } from '@app/core/features/home/layout.web'
-import { EditProfileScreen } from '@app/core/features/profile/edit-screen'
-import Head from 'next/head'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 
-import type { NextPageWithLayout } from '../_app'
+export default function ProfileEditRedirect() {
+  const router = useRouter()
 
-const Page: NextPageWithLayout = () => {
-  return (
-    <>
-      <Head>
-        <title>Edit Profile</title>
-      </Head>
-      <EditProfileScreen />
-    </>
-  )
+  useEffect(() => {
+    router.replace('/dashboard/profile/edit')
+  }, [router])
+
+  return null
 }
-
-Page.getLayout = (page) => <HomeLayout>{page}</HomeLayout>
-
-export default Page

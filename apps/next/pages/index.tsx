@@ -1,20 +1,25 @@
-import { HomeLayout } from '@app/core/features/home/layout.web'
-import { HomeScreen } from '@app/core/features/home/screen'
-import Head from 'next/head'
+import { useUser } from '@app/core/utils/useUser'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
+import { ROUTES } from '@app/core/constants/routes'
 
-import type { NextPageWithLayout } from './_app'
+export default function RootIndex() {
+  const { user, isPending } = useUser()
+  const router = useRouter()
 
-export const Page: NextPageWithLayout = () => {
-  return (
-    <>
-      <Head>
-        <title>Home</title>
-      </Head>
-      <HomeScreen />
-    </>
-  )
+  useEffect(() => {
+    if (isPending) {
+      return // Still loading
+    }
+
+    // Redirect based on authentication status
+    if (user) {
+      router.replace(ROUTES.DASHBOARD)
+    } else {
+      router.replace(ROUTES.AUTH)
+    }
+  }, [user, isPending, router])
+
+  // Show loading state while redirecting
+  return null
 }
-
-Page.getLayout = (page) => <HomeLayout>{page}</HomeLayout>
-
-export default Page

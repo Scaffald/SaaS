@@ -1,18 +1,13 @@
-import { OnboardingFlowScreen } from '@app/core/features/onboarding'
-import Head from 'next/head'
-import type { NextPageWithLayout } from './_app'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
+import { ROUTES } from '@app/core/constants/routes'
 
-const Page: NextPageWithLayout = () => {
-  return (
-    <>
-      <Head>
-        <title>Complete your profile</title>
-      </Head>
-      <OnboardingFlowScreen />
-    </>
-  )
+export default function OnboardingRedirect() {
+  const router = useRouter()
+
+  useEffect(() => {
+    router.replace(ROUTES.WELCOME)
+  }, [router])
+
+  return null
 }
-
-Page.getLayout = (page) => page
-
-export default Page
