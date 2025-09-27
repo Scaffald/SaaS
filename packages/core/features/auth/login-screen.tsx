@@ -83,9 +83,7 @@ export const LoginScreen = () => {
             return (
               <>
                 <Theme inverse>
-                  <Button
-                    onPress={submit}
-                  >Send Magic Link</Button>
+                  <Button onPress={submit}>Send Magic Link</Button>
                 </Theme>
 
                 {isWeb && <SocialLogin />}
@@ -117,13 +115,7 @@ const CheckYourEmail = () => {
   const email = useWatch<z.infer<typeof LoginSchema>>({ name: 'email' })
   const { reset } = useFormContext<z.infer<typeof LoginSchema>>()
 
-  return (
-    <MagicLinkPending
-      email={email}
-      linkInstruction="Open it to sign in."
-      onBack={() => reset({ email })}
-    />
-  )
+  return <MagicLinkPending email={email} onBack={() => reset({ email })} />
 }
 
 // we use this hook here because this is the page we redirect unauthenticated users to
