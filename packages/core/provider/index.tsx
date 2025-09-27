@@ -6,7 +6,6 @@ import { AuthProvider } from './auth'
 import { RequiredProfileDialog } from '@app/core/features/onboarding/components/RequiredProfileDialog'
 import { CookieConsentProvider } from './cookie-consent'
 import { QueryClientProvider } from './react-query'
-import { SafeAreaProvider } from './safe-area'
 import { TamaguiProvider } from './tamagui'
 import { UniversalThemeProvider } from './theme'
 import { ToastProvider } from './toast'
@@ -47,7 +46,6 @@ const compose = (providers: React.FC<{ children: React.ReactNode }>[]) =>
 
 const Providers = compose([
   UniversalThemeProvider,
-  SafeAreaProvider,
   TamaguiProvider,
   CookieConsentProvider,
   ToastProvider,
