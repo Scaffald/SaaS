@@ -1,4 +1,4 @@
-import { YStack } from '@app/ui'
+import { YStack } from 'tamagui'
 import { DrawerContentScrollView } from '@react-navigation/drawer'
 import { drawerSections } from './config'
 import { DrawerHeader } from './DrawerHeader'

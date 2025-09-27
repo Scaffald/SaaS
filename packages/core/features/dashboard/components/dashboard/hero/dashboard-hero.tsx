@@ -31,7 +31,7 @@ export const DashboardHero = ({ name = 'there', score }: DashboardHeroProps) => 
       <YStack gap="$5">
         <YStack gap="$1">
           <SizableText size="$8" fontWeight="700">
-            Welcome, {name}
+            Hi there, {name}
           </SizableText>
           <XStack ai="center" gap="$2">
             <SizableText size="$4" color="$gray12" fontWeight="600">

@@ -1,4 +1,4 @@
-import { XStack, YStack, useMedia } from '@app/ui'
+import { XStack, YStack, useMedia } from 'tamagui'
 import { AppHeader, AppHeaderProps } from './AppHeader'
 import { ColumnWrapper } from './ColumnWrapper'
 

@@ -84,8 +84,8 @@ export function useProtectedRoute(user: User | null) {
       !user &&
       !inAuthGroup
     ) {
-      // Redirect to the welcome page.
-      replaceRoute(AUTH_ROUTES.WELCOME?.fullPath || '/auth/welcome')
+      // Redirect to the auth page.
+      replaceRoute(AUTH_ROUTES.INDEX?.fullPath || '/auth')
     } else if (user && inAuthGroup) {
       // Redirect away from the sign-in page.
       replaceRoute('/')

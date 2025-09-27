@@ -1,0 +1,60 @@
+---
+description: "Guidelines for avoiding barrel files to optimize build performance"
+alwaysApply: false
+---
+
+# Avoid Barrel Files for Build Performance
+
+## Barrel File Definition
+- **Barrel files** are index files that re-export multiple modules from a directory
+- **Common pattern**: `index.ts` files that export multiple components/modules
+- **Example**: `export { ComponentA } from './ComponentA'; export { ComponentB } from './ComponentB';`
+
+## Performance Impact
+- **SLOWS DOWN builds** because compilers must parse barrel files to check for side effects
+- **INCREASES bundle size** due to unnecessary module resolution overhead
+- **IMPACTS tree-shaking** effectiveness in production builds
+- **DELAYS hot reload** in development environments
+
+## Guidelines
+
+### Avoid Barrel Files
+- **DO NOT create** barrel files (`index.ts`/`index.js`) that re-export multiple modules
+- **DO NOT use** barrel file imports like `import { ComponentA, ComponentB } from './components'`
+- **PREFER direct imports** from specific files instead
+
+### Preferred Import Patterns
+```typescript
+// ❌ AVOID - Barrel file import
+import { ComponentA, ComponentB, ComponentC } from './components'
+
+// ✅ PREFER - Direct imports
+import { ComponentA } from './components/ComponentA'
+import { ComponentB } from './components/ComponentB'
+import { ComponentC } from './components/ComponentC'
+```
+
+### When Barrel Files Are Acceptable
+- **Single module exports** - Only export one main component/function per barrel file
+- **Public API boundaries** - At package boundaries where you need to control what's exported
+- **Legacy compatibility** - When migrating existing codebases gradually
+
+### Refactoring Existing Barrel Files
+- **IDENTIFY barrel files** in the codebase using pattern: `**/index.{ts,tsx,js,jsx}`
+- **REPLACE barrel imports** with direct imports
+- **REMOVE unused barrel files** after refactoring
+- **UPDATE import statements** throughout the codebase
+
+## Implementation Strategy
+1. **AUDIT existing barrel files** in the project
+2. **REFACTOR imports** to use direct file paths
+3. **REMOVE unnecessary barrel files**
+4. **UPDATE build configurations** to optimize for direct imports
+5. **DOCUMENT preferred import patterns** for the team
+
+## Build Optimization Benefits
+- **FASTER compilation** times
+- **BETTER tree-shaking** in production builds
+- **IMPROVED hot reload** performance
+- **REDUCED bundle size** through better dead code elimination
+- **ENHANCED IDE performance** with faster module resolution
