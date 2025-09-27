@@ -80,5 +80,8 @@
   },
   "manypkg": {
     "ignoredRules": ["ROOT_HAS_DEV_DEPENDENCIES"]
+  },
+  "dependencies": {
+    "fast-xml-parser": "^5.2.5"
   }
 }

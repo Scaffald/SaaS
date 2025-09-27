@@ -60,5 +60,5 @@ alwaysApply: true
 3. **Test changes in actual clients** rather than assuming they work
 4. **Check git history** for context on bugs or issues
 5. **Use yarn workspace commands** for package-specific operations
-6. **Run code quality checks** (`yarn format:fix`, `yarn lint:fix`) when making changes
+6. **Run code quality checks** (`yarn check`) when making changes
 7. **Aim for zero formatting errors** and minimal linting warnings
