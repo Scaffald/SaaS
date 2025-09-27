@@ -1,8 +1,7 @@
 import { YStack } from '@app/ui'
 import { AppHeader, AppHeaderProps } from './AppHeader.native'
-import { FloatingBackButton } from '../FloatingBackButton'
 
-export type PageLayoutWrapperProps = {
+export type DashboardLayoutProps = {
   /**
    * Header configuration
    */
@@ -15,10 +14,6 @@ export type PageLayoutWrapperProps = {
    * Whether to hide the header completely
    */
   hideHeader?: boolean
-  /**
-   * Whether to show the floating back button
-   */
-  showFloatingBackButton?: boolean
   /**
    * Whether to use full page layout (no padding constraints)
    */
@@ -33,15 +28,14 @@ export type PageLayoutWrapperProps = {
   contentPadding?: number | string
 }
 
-export const PageLayoutWrapper = ({
+export const DashboardLayout = ({
   header,
   children,
   hideHeader = false,
-  showFloatingBackButton = true,
   fullPage = false,
   padded = false,
   contentPadding = '$4',
-}: PageLayoutWrapperProps) => {
+}: DashboardLayoutProps) => {
   return (
     <YStack f={1} backgroundColor="$color1">
       {/* Header */}
@@ -59,9 +53,6 @@ export const PageLayoutWrapper = ({
       >
         {children}
       </YStack>
-
-      {/* Floating Back Button */}
-      {showFloatingBackButton && !hideHeader && <FloatingBackButton />}
     </YStack>
   )
 }

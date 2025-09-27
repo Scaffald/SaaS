@@ -9,7 +9,6 @@ export default function Screen() {
         options={{
           title: 'Basic Information',
           headerShown: true,
-          headerBackVisible: false, // Hide default back button since we use floating back button
         }}
       />
       <ProfileLayout title="Basic Information">

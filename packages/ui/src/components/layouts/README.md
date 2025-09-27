@@ -29,7 +29,7 @@ import { AppHeader } from '@app/ui'
 />
 ```
 
-### PageLayoutWrapper
+### DashboardLayout
 A comprehensive layout wrapper that combines header and content areas.
 
 **Features:**
@@ -40,19 +40,19 @@ A comprehensive layout wrapper that combines header and content areas.
 
 **Usage:**
 ```tsx
-import { PageLayoutWrapper } from '@app/ui'
+import { DashboardLayout } from '@app/ui'
 
 // Single column layout
-<PageLayoutWrapper
+<DashboardLayout
   header={{ title: "Dashboard" }}
   layout="single-column"
   padded={true}
 >
   <DashboardContent />
-</PageLayoutWrapper>
+</DashboardLayout>
 
 // Two column layout
-<PageLayoutWrapper
+<DashboardLayout
   header={{ title: "Settings" }}
   layout="two-column"
   twoColumnProps={{
@@ -61,7 +61,7 @@ import { PageLayoutWrapper } from '@app/ui'
   }}
 >
   <SettingsContent />
-</PageLayoutWrapper>
+</DashboardLayout>
 ```
 
 ### TwoColumnLayout
@@ -113,23 +113,23 @@ import { SingleColumnLayout } from '@app/ui'
 ## Layout Patterns
 
 ### Dashboard Root Pages
-Use `PageLayoutWrapper` with `layout="single-column"` and `padded={true}`:
+Use `DashboardLayout` with `layout="single-column"` and `padded={true}`:
 
 ```tsx
-<PageLayoutWrapper
+<DashboardLayout
   header={{ title: "Dashboard" }}
   layout="single-column"
   padded={true}
 >
   <DashboardContent />
-</PageLayoutWrapper>
+</DashboardLayout>
 ```
 
 ### Settings/Profile Pages
-Use `PageLayoutWrapper` with `layout="two-column"`:
+Use `DashboardLayout` with `layout="two-column"`:
 
 ```tsx
-<PageLayoutWrapper
+<DashboardLayout
   header={{ title: "Settings" }}
   layout="two-column"
   twoColumnProps={{
@@ -138,25 +138,25 @@ Use `PageLayoutWrapper` with `layout="two-column"`:
   }}
 >
   <SettingsContent />
-</PageLayoutWrapper>
+</DashboardLayout>
 ```
 
 ### Discover Pages
-Use `PageLayoutWrapper` with `hideHeader={true}`:
+Use `DashboardLayout` with `hideHeader={true}`:
 
 ```tsx
-<PageLayoutWrapper
+<DashboardLayout
   hideHeader={true}
   fullPage={true}
 >
   <DiscoverMap />
-</PageLayoutWrapper>
+</DashboardLayout>
 ```
 
 ## Migration Guide
 
 ### From Old DashboardLayout
-Replace the old `DashboardLayout` with the new `PageLayoutWrapper`:
+Replace the old `DashboardLayout` with the new `DashboardLayout`:
 
 **Before:**
 ```tsx
@@ -167,14 +167,14 @@ Replace the old `DashboardLayout` with the new `PageLayoutWrapper`:
 
 **After:**
 ```tsx
-<PageLayoutWrapper
+<DashboardLayout
   header={{ title: "Settings" }}
   layout="single-column"
   fullPage={true}
   padded={true}
 >
   <SettingsContent />
-</PageLayoutWrapper>
+</DashboardLayout>
 ```
 
 ### From Old TwoColumnLayout Usage
@@ -203,7 +203,7 @@ The new `TwoColumnLayout` is more flexible:
 ## Best Practices
 
 1. **Consistent Headers**: Always use `AppHeader` for consistent header design
-2. **Responsive Design**: Use `PageLayoutWrapper` for automatic responsive behavior
+2. **Responsive Design**: Use `DashboardLayout` for automatic responsive behavior
 3. **Two-Column Pages**: Use `layout="two-column"` for settings, profile, and similar pages
 4. **Single-Column Pages**: Use `layout="single-column"` for dashboard and content pages
 5. **Discover Pages**: Use `hideHeader={true}` for full-screen experiences

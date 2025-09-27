@@ -1,4 +1,4 @@
-import { PageLayoutWrapper } from '@app/ui'
+import { DashboardLayout } from '@app/ui'
 import { ProfileScreen } from './screen'
 
 export type ProfileLayoutProps = {
@@ -14,20 +14,15 @@ export type ProfileLayoutProps = {
    * Main content
    */
   children?: React.ReactNode
-  /**
-   * Whether to show the floating back button
-   */
-  showFloatingBackButton?: boolean
 }
 
 export const ProfileLayout = ({
   title = 'Profile',
   isProfileHome = false,
   children,
-  showFloatingBackButton = true,
 }: ProfileLayoutProps) => {
   return (
-    <PageLayoutWrapper
+    <DashboardLayout
       header={{
         title,
         showBackButton: !isProfileHome,
@@ -35,10 +30,9 @@ export const ProfileLayout = ({
         showSearch: false,
         showNotifications: true,
       }}
-      showFloatingBackButton={showFloatingBackButton}
       fullPage={true}
     >
       {children}
-    </PageLayoutWrapper>
+    </DashboardLayout>
   )
 }

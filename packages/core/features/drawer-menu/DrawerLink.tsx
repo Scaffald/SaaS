@@ -50,7 +50,7 @@ export const DrawerLink = ({
         gap="$3"
         px="$3"
         py="$3"
-        pl="$10"
+        pl="$9"
         pressStyle={{ bg: '$color1' }}
         hoverStyle={{ bg: '$color3' }}
         cursor="pointer"
@@ -67,17 +67,16 @@ export const DrawerLink = ({
   // Common icon rendering logic
   const renderIcon = () => {
     if (!Icon) return null
+
     return (
       <XStack
         ai="center"
         jc="center"
-        w={36}
-        h={36}
+        w={25}
+        h={20}
         br="$6"
-        bg={active ? 'rgba(255, 255, 255, 0.9)' : '$color3'}
-        boxShadow={active ? '1px 1px 2px rgba(0, 0, 0, 0.3), -1px -1px 0 white' : 'unset'}
       >
-        <Icon size={20} color={active ? '$blue9' : '$blue9'} />
+        <Icon size={20} color={active ? '$color12' : '$blue9'} />
       </XStack>
     )
   }
@@ -121,9 +120,12 @@ export const DrawerLink = ({
     ai: 'center' as const,
     jc: 'space-between' as const,
     px: '$3' as const,
-    py: '$2' as const,
+    py: '$3' as const,
     br: '$4' as const,
+    my: '$1' as const,
     bg: active ? '$blue9' : ('transparent' as const),
+    boxShadow: active ? 'inset -1px -1px 2px rgba(0, 0, 0, 0.2), inset 1px 1px 0 rgba(255, 255, 255, 0.2)' : 'unset',
+    hoverStyle: { bg: active ? '$blue9' : '$color3' },
     pressStyle: { bg: active ? '$blue9' : '$color3' },
     cursor: 'pointer' as const,
     width: '100%' as const,
