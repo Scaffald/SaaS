@@ -6,6 +6,7 @@ import { AUTH_ROUTES } from '@app/core/constants/routes'
 const steps: OnboardingStepInfo[] = [
   {
     theme: 'orange',
+    backgroundImage: 'https://images.pexels.com/photos/271667/pexels-photo-271667.jpeg',
     Content: () => (
       <StepContent
         title="Kickstart"
@@ -16,6 +17,7 @@ const steps: OnboardingStepInfo[] = [
   },
   {
     theme: 'green',
+    backgroundImage: 'https://images.pexels.com/photos/574073/pexels-photo-574073.jpeg',
     Content: () => (
       <StepContent
         title="Updates"
@@ -26,6 +28,8 @@ const steps: OnboardingStepInfo[] = [
   },
   {
     theme: 'blue',
+    backgroundImage:
+      'https://images.pexels.com/photos/40568/medical-appointment-doctor-healthcare-40568.jpeg',
     Content: () => (
       <StepContent
         title="Deploy"
