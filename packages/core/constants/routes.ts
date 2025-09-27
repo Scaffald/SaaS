@@ -12,6 +12,7 @@ export const ROUTES = {
   // Public routes
   HOME: '/',
   USER_PROFILE: '/user',
+  STYLEGUIDE: '/styleguide',
 
   // Protected routes (dashboard context)
   DASHBOARD: '/dashboard',
