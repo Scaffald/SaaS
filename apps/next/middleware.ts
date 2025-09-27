@@ -1,14 +1,14 @@
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { ROUTES } from '@app/core/constants/routes'
+import { ROUTES, getAuthRoutes, isAuthPath, isProtectedPath } from '@app/core/constants/routes'
 
 // by default, all routes are protected
 
 // put the public routes here - these will be accessed by both guests and users
-const publicRoutes: string[] = [ROUTES.USER_PROFILE + '/']
+const publicRoutes: string[] = ['/styleguide'] // Only styleguide is public now
 // put the authentication routes here - these will only be accessed by guests
-const authRoutes = [ROUTES.AUTH]
+const authRoutes = getAuthRoutes().map((route) => route.fullPath)
 
 export async function middleware(req: NextRequest) {
   // we need to create a response and hand it to the supabase client to be able to modify the response headers.
@@ -27,7 +27,7 @@ export async function middleware(req: NextRequest) {
   // redirect if a logged in user is accessing an auth route (e.g. /auth/*)
   if (user && isAuthRoute) {
     const redirectUrl = req.nextUrl.clone()
-    redirectUrl.pathname = ROUTES.DASHBOARD
+    redirectUrl.pathname = ROUTES.dashboard.fullPath
     return NextResponse.redirect(redirectUrl)
   }
   // show auth routes for guests
@@ -38,7 +38,7 @@ export async function middleware(req: NextRequest) {
   if (!user) {
     console.log(`User not logged in. Attempted to access: ${req.nextUrl.pathname}`)
     const redirectUrl = req.nextUrl.clone()
-    redirectUrl.pathname = ROUTES.AUTH
+    redirectUrl.pathname = ROUTES.auth.fullPath
     // redirectUrl.searchParams.set(`redirected_from`, req.nextUrl.pathname)
     return NextResponse.redirect(redirectUrl)
   }

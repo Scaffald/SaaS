@@ -17,7 +17,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useUser } from '@app/core/utils/useUser'
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import { usePathname } from '@app/core/utils/usePathname'
-import { ROUTES } from '@app/core/constants/routes'
+import { ROUTES, AUTH_ROUTES } from '@app/core/constants/routes'
 
 import {
   BasicInformationStep,
@@ -157,9 +157,9 @@ export const RequiredProfileDialog = ({ disabled }: RequiredProfileDialogProps) 
 
   const normalizedPath = pathname?.toLowerCase() ?? ''
   const isAuthRoute =
-    normalizedPath.includes(ROUTES.AUTH) ||
-    normalizedPath.includes(ROUTES.CONFIRM) ||
-    normalizedPath.includes(ROUTES.WELCOME) ||
+    normalizedPath.includes(AUTH_ROUTES.INDEX?.fullPath || '/auth') ||
+    normalizedPath.includes(AUTH_ROUTES.CONFIRM?.fullPath || '/auth/confirm') ||
+    normalizedPath.includes(AUTH_ROUTES.WELCOME?.fullPath || '/auth/welcome') ||
     normalizedPath.includes('/auth/')
 
   if (disabled) return null

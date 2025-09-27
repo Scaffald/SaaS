@@ -1,12 +1,15 @@
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
-import { ROUTES } from '@app/core/constants/routes'
+import { ROUTES, DASHBOARD_ROUTES } from '@app/core/constants/routes'
 
 export default function DiscoverRedirect() {
   const router = useRouter()
 
   useEffect(() => {
-    router.replace(ROUTES.WORKERS_MAP)
+    router.replace(
+      DASHBOARD_ROUTES.WORKERS?.childrenArray?.find((r) => r.path === '/dashboard/workers/map')
+        ?.fullPath || '/dashboard/workers/map'
+    )
   }, [router])
 
   return null

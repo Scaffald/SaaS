@@ -5,7 +5,7 @@ import { StaticDrawer } from '@app/core/features/drawer-menu/StaticDrawer.web'
 import { drawerSections, normalizePath } from '@app/core/features/drawer-menu'
 import { usePathname } from '@app/core/utils/usePathname'
 import { useState } from 'react'
-import { ROUTES } from '@app/core/constants/routes'
+import { ROUTES, DASHBOARD_ROUTES } from '@app/core/constants/routes'
 
 export type HomeLayoutProps = {
   children?: React.ReactNode
@@ -48,7 +48,10 @@ export const HomeLayout = ({
     (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
   )
   const resolvedHeaderTitle = headerTitle ?? activeItem?.title ?? 'Dashboard'
-  const isDiscoverPage = pathname === ROUTES.WORKERS_MAP
+  const isDiscoverPage =
+    pathname ===
+    DASHBOARD_ROUTES.WORKERS?.childrenArray?.find((r) => r.path === '/dashboard/workers/map')
+      ?.fullPath
 
   // For discover pages, hide header completely
   if (isDiscoverPage) {

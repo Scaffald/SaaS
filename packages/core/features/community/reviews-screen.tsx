@@ -2,10 +2,12 @@ import { Button, Card, Paragraph, Text, XStack, YStack } from '@app/ui'
 import { MessageCircleHeart, Star, Users } from '@tamagui/lucide-icons'
 import { useLink } from 'solito/link'
 
-import { ROUTES } from '@app/core/constants/routes'
+import { ROUTES, DASHBOARD_ROUTES } from '@app/core/constants/routes'
 
 export const CommunityReviewsScreen = () => {
-  const communityLink = useLink({ href: ROUTES.COMMUNITY })
+  const communityLink = useLink({
+    href: DASHBOARD_ROUTES.COMMUNITY?.fullPath || '/dashboard/community',
+  })
 
   return (
     <YStack gap="$5" width="100%" paddingBottom="$4">

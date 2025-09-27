@@ -5,7 +5,7 @@ import { Map as MapIcon, Menu } from '@tamagui/lucide-icons'
 import { router } from 'expo-router'
 import { Drawer } from 'expo-router/drawer'
 import { useMedia } from 'tamagui'
-import { ROUTES } from '@app/core/constants/routes'
+import { ROUTES, DASHBOARD_ROUTES } from '@app/core/constants/routes'
 
 export default function Layout() {
   const media = useMedia()
@@ -42,7 +42,11 @@ export default function Layout() {
             marginRight="$-1"
             backgroundColor="transparent"
             onPress={() => {
-              router.navigate(ROUTES.WORKERS_MAP)
+              router.navigate(
+                DASHBOARD_ROUTES.WORKERS?.childrenArray?.find(
+                  (r) => r.path === '/dashboard/workers/map'
+                )?.fullPath || '/dashboard/workers/map'
+              )
             }}
           >
             <MapIcon size={24} />

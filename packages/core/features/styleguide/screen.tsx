@@ -1,7 +1,7 @@
 import { SidebarMenu, type MenuItem, useMedia } from '@app/ui'
 import { Type, MousePointer, FormInput, BarChart3, Zap, Layout } from '@tamagui/lucide-icons'
 import { usePathname } from '@app/core/utils/usePathname'
-import { ROUTES } from '@app/core/constants/routes'
+import { ROUTES, DASHBOARD_ROUTES } from '@app/core/constants/routes'
 
 export const StyleguideScreen = () => {
   const media = useMedia()
@@ -13,48 +13,86 @@ export const StyleguideScreen = () => {
       label: 'Typography',
       icon: Type,
       accentTheme: 'blue',
-      isActive: pathname === ROUTES.STYLEGUIDE_TYPOGRAPHY,
-      href: media.sm ? ROUTES.STYLEGUIDE_TYPOGRAPHY : ROUTES.STYLEGUIDE,
+      isActive:
+        pathname ===
+        DASHBOARD_ROUTES.STYLEGUIDE?.childrenArray?.find(
+          (r) => r.path === '/dashboard/styleguide/typography'
+        )?.fullPath,
+      href: media.sm
+        ? DASHBOARD_ROUTES.STYLEGUIDE?.childrenArray?.find(
+            (r) => r.path === '/dashboard/styleguide/typography'
+          )?.fullPath
+        : ROUTES.styleguide.fullPath,
     },
     {
       id: 'buttons',
       label: 'Buttons',
       icon: MousePointer,
       accentTheme: 'green',
-      isActive: pathname === ROUTES.STYLEGUIDE_BUTTONS,
-      href: ROUTES.STYLEGUIDE_BUTTONS,
+      isActive:
+        pathname ===
+        DASHBOARD_ROUTES.STYLEGUIDE?.childrenArray?.find(
+          (r) => r.path === '/dashboard/styleguide/buttons'
+        )?.fullPath,
+      href: DASHBOARD_ROUTES.STYLEGUIDE?.childrenArray?.find(
+        (r) => r.path === '/dashboard/styleguide/buttons'
+      )?.fullPath,
     },
     {
       id: 'forms',
       label: 'Form Controls',
       icon: FormInput,
       accentTheme: 'purple',
-      isActive: pathname === ROUTES.STYLEGUIDE_FORMS,
-      href: ROUTES.STYLEGUIDE_FORMS,
+      isActive:
+        pathname ===
+        DASHBOARD_ROUTES.STYLEGUIDE?.childrenArray?.find(
+          (r) => r.path === '/dashboard/styleguide/forms'
+        )?.fullPath,
+      href: DASHBOARD_ROUTES.STYLEGUIDE?.childrenArray?.find(
+        (r) => r.path === '/dashboard/styleguide/forms'
+      )?.fullPath,
     },
     {
       id: 'data-display',
       label: 'Data Display',
       icon: BarChart3,
       accentTheme: 'orange',
-      isActive: pathname === ROUTES.STYLEGUIDE_DATA_DISPLAY,
-      href: ROUTES.STYLEGUIDE_DATA_DISPLAY,
+      isActive:
+        pathname ===
+        DASHBOARD_ROUTES.STYLEGUIDE?.childrenArray?.find(
+          (r) => r.path === '/dashboard/styleguide/data-display'
+        )?.fullPath,
+      href: DASHBOARD_ROUTES.STYLEGUIDE?.childrenArray?.find(
+        (r) => r.path === '/dashboard/styleguide/data-display'
+      )?.fullPath,
     },
     {
       id: 'interactive',
       label: 'Interactive',
       icon: Zap,
       accentTheme: 'pink',
-      isActive: pathname === ROUTES.STYLEGUIDE_INTERACTIVE,
-      href: ROUTES.STYLEGUIDE_INTERACTIVE,
+      isActive:
+        pathname ===
+        DASHBOARD_ROUTES.STYLEGUIDE?.childrenArray?.find(
+          (r) => r.path === '/dashboard/styleguide/interactive'
+        )?.fullPath,
+      href: DASHBOARD_ROUTES.STYLEGUIDE?.childrenArray?.find(
+        (r) => r.path === '/dashboard/styleguide/interactive'
+      )?.fullPath,
     },
     {
       id: 'layout',
       label: 'Layout',
       icon: Layout,
       accentTheme: 'gray',
-      isActive: pathname === ROUTES.STYLEGUIDE_LAYOUT,
-      href: ROUTES.STYLEGUIDE_LAYOUT,
+      isActive:
+        pathname ===
+        DASHBOARD_ROUTES.STYLEGUIDE?.childrenArray?.find(
+          (r) => r.path === '/dashboard/styleguide/layout'
+        )?.fullPath,
+      href: DASHBOARD_ROUTES.STYLEGUIDE?.childrenArray?.find(
+        (r) => r.path === '/dashboard/styleguide/layout'
+      )?.fullPath,
     },
   ]
 

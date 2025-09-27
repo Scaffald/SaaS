@@ -7,7 +7,7 @@ import { Platform } from 'react-native'
 
 import type { AuthProviderProps } from './AuthProvider'
 import { AuthStateChangeHandler } from './AuthStateChangeHandler'
-import { ROUTES } from '@app/core/constants/routes'
+import { ROUTES, AUTH_ROUTES } from '@app/core/constants/routes'
 
 export const SessionContext = createContext<SessionContextHelper>({
   session: null,
@@ -85,7 +85,7 @@ export function useProtectedRoute(user: User | null) {
       !inAuthGroup
     ) {
       // Redirect to the welcome page.
-      replaceRoute(ROUTES.WELCOME)
+      replaceRoute(AUTH_ROUTES.WELCOME?.fullPath || '/auth/welcome')
     } else if (user && inAuthGroup) {
       // Redirect away from the sign-in page.
       replaceRoute('/')
