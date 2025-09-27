@@ -1,89 +1,90 @@
 import { XStack, YStack, useMedia } from '@app/ui'
 import { AppHeader, AppHeaderProps } from './AppHeader'
-import { TwoColumnLayout, TwoColumnLayoutProps } from './TwoColumnLayout'
+import { ColumnWrapper } from './ColumnWrapper'
 
 export type DashboardLayoutProps = {
   /**
-   * Header configuration
+   * Header configuration - if not provided, shows default header with hamburger menu
    */
-  header?: AppHeaderProps
+  header?: AppHeaderProps | null
   /**
-   * Layout type - determines the main content structure
+   * Left column content
    */
-  layout?: 'single-column' | 'two-column'
+  leftContent?: React.ReactNode
   /**
-   * Two-column layout props (only used when layout is 'two-column')
+   * Right column content
    */
-  twoColumnProps?: Omit<TwoColumnLayoutProps, 'children'>
+  rightContent?: React.ReactNode
   /**
-   * Main content
+   * Left column width
    */
-  children: React.ReactNode
+  leftWidth?: number
   /**
    * Whether to hide the header completely
    */
   hideHeader?: boolean
   /**
-   * Whether to use full page layout (no padding constraints)
+   * Whether this is a home page (affects mobile layout)
    */
-  fullPage?: boolean
-  /**
-   * Whether to add padding constraints for content
-   */
-  padded?: boolean
+  isHomePage?: boolean
 }
 
 export const DashboardLayout = ({
   header,
-  layout = 'single-column',
-  twoColumnProps,
-  children,
+  leftContent,
+  rightContent,
+  leftWidth = 300,
   hideHeader = false,
-  fullPage = false,
-  padded = false,
+  isHomePage = false,
 }: DashboardLayoutProps) => {
   const media = useMedia()
 
+  // Default header with hamburger menu
+  const defaultHeader: AppHeaderProps = {
+    title: 'Dashboard',
+    showMenuButton: true,
+    showSearch: true,
+    showNotifications: true,
+  }
+
   return (
-    <XStack f={1} backgroundColor="$color1" height="100vh">
-      {/* Desktop Sidebar - only show for two-column layout */}
-      {layout === 'two-column' && media.gtSm && twoColumnProps?.sidebar && (
-        <YStack bg="$color1" w={300} $gtLg={{ w: 400 }} style={{ transition: '200ms ease width' }}>
-          {twoColumnProps.sidebar}
-        </YStack>
-      )}
+    <YStack f={1} backgroundColor="$color1" height="100vh">
+      {/* Header */}
+      {!hideHeader && <AppHeader {...(header === null ? {} : { ...defaultHeader, ...header })} />}
 
       {/* Main Content Area */}
-      <YStack f={1} minWidth={0} height="100vh">
-        {/* Header */}
-        <AppHeader
-          {...header}
-          hidden={hideHeader}
-          onMenuPress={() => {
-            // This would typically open a mobile drawer
-            // Implementation depends on the specific navigation system
-          }}
-        />
+      <YStack f={1}>
+        {/* Mobile Layout: Stack vertically */}
+        {!media.gtSm && (
+          <YStack f={1}>
+            {/* Mobile: Show left content on home pages, right content otherwise */}
+            {isHomePage && leftContent ? (
+              <ColumnWrapper>{leftContent}</ColumnWrapper>
+            ) : (
+              rightContent && <ColumnWrapper>{rightContent}</ColumnWrapper>
+            )}
+          </YStack>
+        )}
 
-        {/* Content */}
-        <YStack
-          f={1}
-          overflow="hidden"
-          {...(fullPage && { flex: 1 })}
-          {...(padded && {
-            maw: 960,
-            mx: 'auto',
-            px: '$4',
-            w: '100%',
-          })}
-        >
-          {layout === 'two-column' ? (
-            <TwoColumnLayout {...twoColumnProps}>{children}</TwoColumnLayout>
-          ) : (
-            children
-          )}
-        </YStack>
+        {/* Desktop Layout: Two columns side by side */}
+        {media.gtSm && (
+          <XStack f={1}>
+            {/* Left Column */}
+            {leftContent && (
+              <YStack w={leftWidth} height="100%">
+                <ColumnWrapper>{leftContent}</ColumnWrapper>
+              </YStack>
+            )}
+
+            {/* Right Column */}
+            {rightContent && (
+              <YStack f={1} height="100%">
+                <ColumnWrapper>{rightContent}</ColumnWrapper>
+              </YStack>
+            )}
+          </XStack>
+        )}
       </YStack>
-    </XStack>
+    </YStack>
   )
 }

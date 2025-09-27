@@ -183,4 +183,70 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
       return actions
     },
   })
+  plop.setGenerator('route', {
+    description:
+      'Generates a dashboard route with left/right/screen components following naming convention',
+    prompts: async (inquirer) => {
+      const { routePath } = await inquirer.prompt({
+        type: 'input',
+        name: 'routePath',
+        message: "What's the route path? (e.g. profile/overview, settings/general)",
+        validate: (input: string) => {
+          if (input.includes(' ')) {
+            return 'route path cannot include spaces'
+          }
+          if (!input) {
+            return 'route path is required'
+          }
+          if (!input.includes('/')) {
+            return 'route path must include parent/child (e.g. profile/overview)'
+          }
+          return true
+        },
+      })
+
+      const [parentName, childName] = routePath.split('/')
+
+      return {
+        parentName,
+        childName,
+        routePath,
+      }
+    },
+    actions: (_prompts) => {
+      const actions: PlopTypes.ActionType[] = [
+        // Create left component
+        {
+          type: 'add',
+          path: '{{ turbo.paths.root }}/packages/core/features/{{ dashCase parentName }}/{{ dashCase parentName }}-{{ dashCase childName }}-left.tsx',
+          templateFile: 'templates/route-left.hbs',
+        },
+        // Create right component
+        {
+          type: 'add',
+          path: '{{ turbo.paths.root }}/packages/core/features/{{ dashCase parentName }}/{{ dashCase parentName }}-{{ dashCase childName }}-right.tsx',
+          templateFile: 'templates/route-right.hbs',
+        },
+        // Create screen component
+        {
+          type: 'add',
+          path: '{{ turbo.paths.root }}/packages/core/features/{{ dashCase parentName }}/{{ dashCase parentName }}-{{ dashCase childName }}-screen.tsx',
+          templateFile: 'templates/route-screen.hbs',
+        },
+        // Create Next.js page
+        {
+          type: 'add',
+          path: '{{ turbo.paths.root }}/apps/next/pages/dashboard/{{ routePath }}/index.tsx',
+          templateFile: 'templates/route-nextjs-page.hbs',
+        },
+        // Create Expo page
+        {
+          type: 'add',
+          path: '{{ turbo.paths.root }}/apps/expo/app/dashboard/{{ routePath }}/index.tsx',
+          templateFile: 'templates/route-expo-page.hbs',
+        },
+      ]
+      return actions
+    },
+  })
 }

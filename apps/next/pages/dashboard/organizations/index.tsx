@@ -1,4 +1,4 @@
-import { DashboardLayout } from '@app/core/features/dashboard/layout.web'
+import { DashboardLayout } from '@app/ui'
 import { OrganizationsDirectoryScreen } from '@app/core/features/organizations'
 import Head from 'next/head'
 

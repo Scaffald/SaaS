@@ -5,7 +5,7 @@ import {
   PROGRESSIVE_PROMPT_REGISTRY,
   type ProgressivePromptDefinition,
   type ProgressivePromptSurface,
-} from '../progressive-tasks'
+} from '../config/progressive-tasks'
 
 const STORAGE_KEY = 'progressive-profile-prompts'
 const ONE_DAY_MS = 24 * 60 * 60 * 1000

@@ -1,4 +1,4 @@
-import { TwoColumnLayout, TwoColumnSidebarSkeleton, TwoColumnContentSkeleton } from '@app/ui'
+import { DashboardLayout } from '@app/ui'
 import { StyleguideScreen } from './screen'
 
 export type StyleguideLayoutProps = {
@@ -14,14 +14,10 @@ export type StyleguideLayoutProps = {
 
 export const StyleguideLayout = ({ children, isStyleguideHome = false }: StyleguideLayoutProps) => {
   return (
-    <TwoColumnLayout
-      sidebar={<StyleguideScreen />}
+    <DashboardLayout
+      leftContent={<StyleguideScreen />}
+      rightContent={children}
       isHomePage={isStyleguideHome}
-      isLoading={false}
-      sidebarSkeleton={<TwoColumnSidebarSkeleton />}
-      contentSkeleton={<TwoColumnContentSkeleton />}
-    >
-      {children}
-    </TwoColumnLayout>
+    />
   )
 }

@@ -4,7 +4,7 @@ import { useUser } from '@app/core/utils/useUser'
 import { DashboardIndexLeft } from './dashboard-index-left'
 import { DashboardIndexRight } from './dashboard-index-right'
 
-export function DashboardScreen() {
+export function DashboardIndexScreen() {
   const { isPending } = useUser()
 
   if (isPending) {

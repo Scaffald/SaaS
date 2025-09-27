@@ -1,7 +1,8 @@
 import { Button, Input, SizableText, XStack, YStack, useMedia, useTheme } from '@app/ui'
 import { Dialog } from 'tamagui'
-import { Bell, Menu, Search } from '@tamagui/lucide-icons'
+import { Bell, Search } from '@tamagui/lucide-icons'
 import { useState } from 'react'
+import { HamburgerMenu } from './HamburgerMenu'
 
 export type AppHeaderProps = {
   /**
@@ -87,13 +88,10 @@ export const AppHeader = ({
       <XStack ai="center" gap="$3" flexShrink={1} minWidth={0}>
         {leftContent || (
           <>
-            {showMenuButton && !media.gtSm && (
-              <Button
-                size="$4"
-                chromeless
-                icon={<Menu size={28} />}
-                onPress={onMenuPress}
-                accessibilityLabel="Open menu"
+            {showMenuButton && (
+              <HamburgerMenu
+                showButton={true}
+                onToggle={onMenuPress ? () => onMenuPress() : undefined}
               />
             )}
             {title && (
