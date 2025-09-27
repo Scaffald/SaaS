@@ -1,4 +1,5 @@
 import type { NewsSource } from './news-sources'
+import { XMLParser } from 'fast-xml-parser'
 
 export type NewsArticle = {
   id: string
@@ -9,58 +10,72 @@ export type NewsArticle = {
   publishedAt?: string
 }
 
-const CDATA_REGEX = /<!\[CDATA\[|\]\]>/g
-const HTML_TAG_REGEX = /<[^>]+>/g
-const WHITESPACE_REGEX = /\s+/g
+const parser = new XMLParser({
+  ignoreAttributes: false,
+  attributeNamePrefix: '',
+  textNodeName: '#text',
+})
 
-const decodeEntities = (value: string) =>
-  value
-    .replace(/&amp;/gi, '&')
-    .replace(/&lt;/gi, '<')
-    .replace(/&gt;/gi, '>')
-    .replace(/&quot;/gi, '"')
-    .replace(/&#39;|&apos;/gi, "'")
+const decodeHtmlEntities = (text: string): string => {
+  const entities: Record<string, string> = {
+    '&': '&',
+    '<': '<',
+    '>': '>',
+    '"': '"',
+    '&#39;': "'",
+    '&apos;': "'",
+    '&nbsp;': ' ',
+  }
 
-const stripCdata = (input: string) => input.replace(CDATA_REGEX, '')
-
-const stripHtml = (input: string) =>
-  decodeEntities(input.replace(HTML_TAG_REGEX, ' ')).replace(WHITESPACE_REGEX, ' ').trim()
-
-const extractTag = (source: string, tag: string) => {
-  const regex = new RegExp(`<${tag}>([\s\S]*?)</${tag}>`, 'i')
-  const match = source.match(regex)
-  return match ? stripCdata(match[1]).trim() : ''
+  return text.replace(/&[a-zA-Z0-9#]+;/g, (entity) => entities[entity] || entity)
 }
 
-const extractAttribute = (source: string, tag: string, attribute: string) => {
-  const regex = new RegExp(`<${tag}[^>]*${attribute}="([^"]+)"[^>]*>`, 'i')
-  const match = source.match(regex)
-  return match ? match[1] : ''
+const stripHtmlTags = (html: string): string => {
+  return html
+    .replace(/<[^>]*>/g, ' ') // Remove HTML tags
+    .replace(/\s+/g, ' ') // Normalize whitespace
+    .trim()
 }
 
-export const parseRssFeed = (xml: string): NewsArticle[] =>
-  xml
-    .split('<item>')
-    .slice(1)
-    .map((chunk) => chunk.split('</item>')[0])
-    .map((item) => {
-      const title = decodeEntities(stripCdata(extractTag(item, 'title')))
-      const link = extractTag(item, 'link')
-      const guid = extractTag(item, 'guid')
-      const description = extractTag(item, 'description')
-      const imageUrl = extractAttribute(item, 'enclosure', 'url')
-      const publishedAt = extractTag(item, 'pubDate')
+export const parseRssFeed = (xml: string): NewsArticle[] => {
+  try {
+    const result = parser.parse(xml)
 
-      return {
-        id: guid || link || title,
-        title,
-        link,
-        excerpt: stripHtml(description),
-        imageUrl: imageUrl || undefined,
-        publishedAt: publishedAt || undefined,
-      }
-    })
-    .filter((article) => article.title && article.link)
+    if (!result.rss?.channel?.item) {
+      console.warn('RSS feed does not have expected structure')
+      return []
+    }
+
+    const items = Array.isArray(result.rss.channel.item)
+      ? result.rss.channel.item
+      : [result.rss.channel.item]
+
+    return items
+      .filter((item) => item && item.title && item.link)
+      .map((item): NewsArticle => {
+        // Handle CDATA in description
+        const description =
+          typeof item.description === 'string'
+            ? item.description
+            : item.description?.['#text'] || item.description?.['#cdata'] || ''
+
+        // Extract image from enclosure
+        const imageUrl = item.enclosure?.url || item.enclosure?.['@_url']
+
+        return {
+          id: item.guid?.['#text'] || item.guid || item.link || item.title,
+          title: decodeHtmlEntities(String(item.title || '')),
+          link: String(item.link || ''),
+          excerpt: stripHtmlTags(decodeHtmlEntities(description)),
+          imageUrl: imageUrl ? String(imageUrl) : undefined,
+          publishedAt: item.pubDate ? String(item.pubDate) : undefined,
+        }
+      })
+  } catch (error) {
+    console.error('Failed to parse RSS feed:', error)
+    return []
+  }
+}
 
 export const createFallbackArticles = (source?: NewsSource): NewsArticle[] => {
   const now = new Date()

@@ -3,6 +3,7 @@ import { DrawerContentScrollView } from '@react-navigation/drawer'
 import { drawerSections } from './config'
 import { DrawerHeader } from './DrawerHeader'
 import { DrawerSection } from './DrawerSection'
+import { DrawerFooter } from './DrawerFooter'
 import type { DrawerContentProps } from './types'
 
 /**
@@ -24,8 +25,6 @@ export const DrawerContent = ({
       backgroundColor="$color2"
       borderRightWidth={1}
       // borderColor="$color4"
-      px="$4"
-      py="$4"
       flex={1}
       bw={0}
     >
@@ -36,7 +35,7 @@ export const DrawerContent = ({
       <DrawerContentScrollView
         {...drawerProps}
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingVertical: 16 }}
+        contentContainerStyle={{ paddingVertical: 16, paddingHorizontal: 16 }}
         showsVerticalScrollIndicator={false}
       >
         <YStack gap="$1" width="100%">
@@ -52,6 +51,9 @@ export const DrawerContent = ({
           ))}
         </YStack>
       </DrawerContentScrollView>
+
+      {/* Bottom Section - Fixed Action Buttons */}
+      <DrawerFooter />
     </YStack>
   )
 }

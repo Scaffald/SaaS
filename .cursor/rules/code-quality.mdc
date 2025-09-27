@@ -6,27 +6,17 @@ alwaysApply: true
 
 # Code Quality & Maintenance Rules
 
-## Automated Formatting & Linting
-- **ALWAYS run `yarn format:fix`** at project root when making changes
-- **ALWAYS run `yarn lint:fix`** at project root when making changes
+## Automated Code Quality
+- **ALWAYS run `yarn check`** at project root when making changes
 - **AIM for zero formatting errors** and minimal warnings
 - **RESOLVE linting issues** before committing changes
-
-## TypeScript Type Checking
-- **OPTIONALLY run `yarn check:type`** on packages/apps that are modified
-- **AIM to keep TypeScript errors low** and resolve when possible
-- **CHECK specific workspaces** when making targeted changes:
-  - `yarn workspace @app/core check:type` for core package changes
-  - `yarn workspace next-app check:type` for Next.js app changes
-  - `yarn workspace expo-app check:type` for Expo app changes
+- **MAINTAIN TypeScript type safety** across the entire project
 
 ## Pre-Commit Workflow
 1. **Make code changes**
-2. **Run `yarn format:fix`** to fix formatting issues
-3. **Run `yarn lint:fix`** to fix linting issues
-4. **Run `yarn check:type`** for TypeScript validation (optional but recommended)
-5. **Review and resolve** any remaining warnings/errors
-6. **Commit changes** only when code quality checks pass
+2. **Run `yarn check`** to fix formatting, linting, and type checking
+3. **Review and resolve** any remaining warnings/errors
+4. **Commit changes** only when code quality checks pass
 
 ## Code Quality Standards
 - **ZERO formatting errors** - all code must be properly formatted
@@ -34,14 +24,17 @@ alwaysApply: true
 - **LOW TypeScript errors** - resolve type issues when feasible
 - **CONSISTENT code style** across the entire project
 
-## Workspace-Specific Commands
+## Code Quality Commands
 ```bash
-# Root level commands
-yarn format:fix          # Fix formatting for entire project
-yarn lint:fix            # Fix linting for entire project
-yarn check:type          # Type check entire project
+# Main command - runs all quality checks
+yarn check              # Format, lint, and type check entire project
 
-# Workspace-specific commands
+# Individual commands (if needed)
+yarn format:fix         # Fix formatting for entire project
+yarn lint:fix           # Fix linting for entire project
+yarn typecheck          # Type check entire project
+
+# Workspace-specific commands (if needed)
 yarn workspace @app/core check:type
 yarn workspace next-app check:type
 yarn workspace expo-app check:type
@@ -49,7 +42,7 @@ yarn workspace @app/ui check:type
 ```
 
 ## Quality Gates
-- **Before committing**: Run formatting and linting fixes
-- **Before pushing**: Ensure no critical TypeScript errors
-- **During development**: Regularly check type issues in modified packages
+- **Before committing**: Run `yarn check` to ensure all quality standards
+- **Before pushing**: Ensure no critical formatting, linting, or TypeScript errors
+- **During development**: Run `yarn check` regularly to maintain code quality
 - **Code review**: Verify all quality checks have been run

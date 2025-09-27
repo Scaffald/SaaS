@@ -53,9 +53,9 @@ UI component development guidelines:
 
 ### 8. `code-quality.mdc` (Always Applied)
 Code quality and maintenance guidelines:
-- Always run `yarn format:fix` and `yarn lint:fix` when making changes
+- Always run `yarn check` when making changes
 - Aim for zero formatting errors and minimal warnings
-- Optionally run `yarn check:type` on modified packages
+- Maintain TypeScript type safety across the entire project
 - Maintain consistent code quality across the project
 
 ## Usage

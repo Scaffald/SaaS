@@ -13,6 +13,7 @@ import { normalizePath } from './utils'
 export type { DrawerItemConfig, DrawerSectionConfig, DrawerContentProps } from './types'
 export { drawerSections } from './config'
 export { normalizePath } from './utils'
+export { DrawerFooter } from './DrawerFooter'
 
 export type UnifiedDrawerProps = {
   /**
