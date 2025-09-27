@@ -102,7 +102,7 @@ Place configuration files in the `config/` folder:
 ### Benefits
 
 1. **Visual Clarity** - Easy to identify file types and purposes
-2. **Consistent Structure** - Predictable file organization
+2. **Consistent Structure** - Predictable file structure
 3. **Scalable** - Easy to add new routes following the same pattern
 4. **Maintainable** - Clear separation of concerns
 5. **Type Safety** - Consistent component naming for better TypeScript support

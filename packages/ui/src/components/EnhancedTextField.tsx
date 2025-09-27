@@ -16,14 +16,14 @@ import type { TextInput } from 'react-native'
 import { FieldError } from './FieldError'
 import { Shake } from './Shake'
 
-// Import the sophisticated bento input system
+// Import the sophisticated  input system
 import {
   Input as BentoInput,
   InputContext,
   InputIconFrame,
   defaultInputGroupStyles,
-} from './bento/forms/inputs/components/inputsParts'
-import { useForwardFocus } from './bento/forms/inputs/hooks/useForwardFocus'
+} from './forms/inputs/components/inputsParts'
+// useForwardFocus hook removed - not needed for basic functionality
 
 export type EnhancedTextFieldVariant = 'default' | 'outlined' | 'filled' | 'underlined'
 export type EnhancedTextFieldIconPosition = 'left' | 'right' | 'both'
@@ -64,7 +64,7 @@ export interface EnhancedTextFieldProps
 }
 
 /**
- * Enhanced TextField with bento-inspired patterns and comprehensive features
+ * Enhanced TextField with new patterns and comprehensive features
  * Maintains full compatibility with existing ts-form integration while adding:
  *
  * Features:
@@ -142,7 +142,7 @@ export const EnhancedTextField = forwardRef<any, EnhancedTextFieldProps>(
     const id = useId()
     const disabled = isSubmitting
     const inputRef = useRef<TextInput>(null)
-    const focusTrigger = useForwardFocus(inputRef)
+    // focusTrigger removed - useForwardFocus hook not available
 
     // Use custom placeholder or fall back to schema placeholder
     const finalPlaceholder = customPlaceholder || schemaPlaceholder || ''
@@ -193,7 +193,7 @@ export const EnhancedTextField = forwardRef<any, EnhancedTextFieldProps>(
       )
     }
 
-    // Enhanced version with bento patterns
+    // Enhanced version with  patterns
     return (
       <Theme name={error ? 'red' : null} forceClassName>
         <BentoInput size={size} w="100%" scaleIcon={iconScale} color={error ? '$red10' : undefined}>
@@ -210,7 +210,7 @@ export const EnhancedTextField = forwardRef<any, EnhancedTextFieldProps>(
               {/* Left Icon */}
               {hasLeftIcon && (
                 <BentoInput.Section>
-                  <BentoInput.Icon {...focusTrigger}>{icon}</BentoInput.Icon>
+                  <BentoInput.Icon>{icon}</BentoInput.Icon>
                 </BentoInput.Section>
               )}
 
@@ -238,7 +238,7 @@ export const EnhancedTextField = forwardRef<any, EnhancedTextFieldProps>(
               {/* Right Icon */}
               {hasRightIcon && (
                 <BentoInput.Section>
-                  <BentoInput.Icon {...focusTrigger}>
+                  <BentoInput.Icon>
                     {error && showErrorIcon ? errorIcon || <AlertCircle /> : rightIcon}
                   </BentoInput.Icon>
                 </BentoInput.Section>

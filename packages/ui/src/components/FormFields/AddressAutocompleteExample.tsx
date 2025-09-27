@@ -20,8 +20,8 @@ export function SimpleAddressExample() {
         value={address}
         onChangeText={setAddress}
         onAddressSelect={setSelectedAddress}
-        placeholder="Enter your organization address..."
-        label="Organization Address"
+        placeholder="Enter your company address..."
+        label="Company Address"
         // accessToken will be automatically loaded from environment variables
         autocompleteOptions={{
           geocodingOptions: {

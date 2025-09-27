@@ -68,7 +68,6 @@ export const ComponentName = ({ prop1, prop2 }: ComponentProps) => {
 - **USE proper TypeScript** types and interfaces
 
 ## Testing Approach
-- **TEST components in Storybook** (`yarn storybook:web`, `yarn storybook:native`)
 - **TEST on actual devices** when possible
 - **TEST cross-platform compatibility**
 - **PROVIDE visual regression testing** when appropriate

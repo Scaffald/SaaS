@@ -6,7 +6,7 @@ import { ROUTES, getAuthRoutes, isAuthPath, isProtectedPath } from '@app/core/co
 // by default, all routes are protected
 
 // put the public routes here - these will be accessed by both guests and users
-const publicRoutes: string[] = ['/styleguide'] // Only styleguide is public now
+const publicRoutes: string[] = []
 // put the authentication routes here - these will only be accessed by guests
 const authRoutes = getAuthRoutes().map((route) => route.fullPath)
 

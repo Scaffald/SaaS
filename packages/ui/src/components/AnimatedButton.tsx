@@ -8,7 +8,6 @@ import {
   styled,
   View,
   type ThemeName,
-  type AnimationProp,
 } from 'tamagui'
 
 // hack to prevent it from breaking on the server
@@ -52,7 +51,7 @@ export interface AnimatedButtonProps extends Omit<ButtonProps, 'variant'> {
 /**
  * Enhanced animated button with multiple animation presets and loading states
  * Combines smooth press animations, loading spinners, and success animations
- * Supports all Tamagui themes and custom animation patterns from bento
+ * Supports all Tamagui themes and custom animation patterns from
  *
  * Features:
  * - Multiple animation variants (pulse, bouncy, lazy, bump)
@@ -186,7 +185,7 @@ export const AnimatedButton = styled(Button, {
 
 /**
  * Enhanced button component with loading, success, and animation capabilities
- * Combines the best patterns from bento animation components
+ * Combines the best patterns from  animation components
  */
 export const EnhancedAnimatedButton = forwardRef<any, AnimatedButtonProps>(
   (
@@ -325,7 +324,7 @@ export const AnimatedSubmitButton = (
 }
 
 /**
- * Loading button with smooth animations inspired by bento ButtonLoading
+ * Loading button with smooth animations inspired by  ButtonLoading
  * Provides a clean API for loading states with customizable text and animations
  */
 export const LoadingButton = forwardRef<any, AnimatedButtonProps>(
@@ -341,7 +340,7 @@ export const LoadingButton = forwardRef<any, AnimatedButtonProps>(
 LoadingButton.displayName = 'LoadingButton'
 
 /**
- * Success button with icon centering animation inspired by bento IconCenterButton
+ * Success button with icon centering animation inspired by  IconCenterButton
  * Shows success state with smooth icon transition to center
  */
 export const SuccessButton = forwardRef<

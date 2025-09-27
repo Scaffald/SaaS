@@ -1,1 +1,1 @@
-export { WorkersScreen } from './workers-screen'
+export { WorkersIndexScreen } from './workers-index-screen'

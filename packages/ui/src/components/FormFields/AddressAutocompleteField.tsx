@@ -25,10 +25,7 @@ export const AddressAutocompleteSchema = z.object({
 })
 
 export interface AddressAutocompleteFieldProps
-  extends Omit<
-    AddressAutocompleteInputProps,
-    'value' | 'onChangeText' | 'onAddressSelect' | 'error'
-  > {
+  extends Omit<AddressAutocompleteInputProps, 'error'> {
   variant?: 'default' | 'compact' | 'expanded'
   showFullAddress?: boolean
 }

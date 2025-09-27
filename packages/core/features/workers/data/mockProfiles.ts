@@ -20,7 +20,6 @@ export const mockTalentProfiles: TalentProfile[] = [
     skills: ['Hardwood', 'Interior', 'Exterior'],
     locationLabel: 'Hartford, CT',
     coordinates: [-72.6734, 41.7658],
-    organization: 'Worker',
   },
   {
     id: 'talent-2',
@@ -40,7 +39,6 @@ export const mockTalentProfiles: TalentProfile[] = [
     skills: ['Hardwood', 'Interior', 'Exterior'],
     locationLabel: 'New Haven, CT',
     coordinates: [-72.9279, 41.3083],
-    organization: 'Worker',
   },
   {
     id: 'talent-3',
@@ -60,7 +58,6 @@ export const mockTalentProfiles: TalentProfile[] = [
     skills: ['Hardwood', 'Interior', 'Exterior'],
     locationLabel: 'Bridgeport, CT',
     coordinates: [-73.195, 41.1792],
-    organization: 'Worker',
   },
   {
     id: 'talent-4',
@@ -80,7 +77,6 @@ export const mockTalentProfiles: TalentProfile[] = [
     skills: ['Hardwood', 'Interior', 'Exterior'],
     locationLabel: 'Waterbury, CT',
     coordinates: [-73.0436, 41.5582],
-    organization: 'Worker',
   },
   {
     id: 'talent-5',
@@ -95,7 +91,6 @@ export const mockTalentProfiles: TalentProfile[] = [
     skills: ['Program management', 'Quality assurance'],
     locationLabel: 'Middletown, CT',
     coordinates: [-72.6506, 41.5623],
-    organization: 'Organization',
   },
 ]
 
