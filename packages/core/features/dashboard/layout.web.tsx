@@ -4,24 +4,25 @@ import { Button, Input, SizableText, XStack, YStack, useMedia, useTheme } from '
 import { Dialog } from 'tamagui'
 import { Bell, Menu, Search } from '@tamagui/lucide-icons'
 import { StaticDrawer } from '@app/core/features/drawer-menu/StaticDrawer.web'
-import { drawerSections, normalizePath } from '@app/core/features/drawer-menu'
 import { usePathname } from '@app/core/utils/usePathname'
 import { useState } from 'react'
 import { ROUTES, DASHBOARD_ROUTES } from '@app/core/constants/routes'
+import { drawerSections } from '../drawer-menu/config'
+import { normalizePath } from '../drawer-menu/utils'
 
-export type HomeLayoutProps = {
+export type DashboardLayoutProps = {
   children?: React.ReactNode
   padded?: boolean
   fullPage?: boolean
   headerTitle?: string
 }
 
-export const HomeLayout = ({
+export const DashboardLayout = ({
   children,
   fullPage = false,
   padded = false,
   headerTitle,
-}: HomeLayoutProps) => {
+}: DashboardLayoutProps) => {
   const media = useMedia()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const pathname = normalizePath(usePathname())

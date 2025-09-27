@@ -17,7 +17,7 @@ LogBox.ignoreLogs([
   'Require cycle',
 ])
 
-export default function HomeLayout() {
+export default function DashboardLayout() {
   const [fontLoaded] = useFonts({
     Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
     InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),

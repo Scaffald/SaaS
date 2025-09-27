@@ -10,7 +10,7 @@ export const ProfileOverviewScreen = () => {
       <ContentSection title="Profile Overview">
         <KVTable.Row>
           <KVTable.Key>
-            <SizableText fow="900">Profile Photo</SizableText>
+            <SizableText fow="900">Profile Photo Test</SizableText>
           </KVTable.Key>
           <KVTable.Value gap="$4">
             <SizableText>Upload a profile photo to personalize your account</SizableText>

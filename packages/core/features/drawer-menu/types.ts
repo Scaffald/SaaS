@@ -1,5 +1,6 @@
 import type { JSX } from 'react'
 import type { GestureResponderEvent } from 'react-native'
+import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 
 /**
  * Configuration for individual drawer menu items
@@ -61,4 +62,5 @@ export type DrawerContentProps = {
   onNavigate?: (href: string, event: GestureResponderEvent) => void
   expandedItems?: Set<string>
   onToggleExpanded?: (key: string) => void
+  drawerProps?: DrawerContentComponentProps
 }

@@ -1,4 +1,4 @@
-import { HomeLayout } from '@app/core/features/home/layout-refactored.web'
+import { DashboardLayout } from '@app/core/features/dashboard/layout-refactored.web'
 import { ProfileScreen } from './screen'
 
 export type ProfileLayoutSimpleProps = {
@@ -17,13 +17,13 @@ export const ProfileLayoutSimple = ({
   isProfileHome = false,
 }: ProfileLayoutSimpleProps) => {
   return (
-    <HomeLayout
+    <DashboardLayout
       useTwoColumn={true}
       sidebar={<ProfileScreen />}
       isHomePage={isProfileHome}
       fullPage={true}
     >
       {children}
-    </HomeLayout>
+    </DashboardLayout>
   )
 }

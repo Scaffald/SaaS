@@ -29,7 +29,7 @@ import { Dialog, Spinner } from 'tamagui'
 import {
   DashboardCard,
   SectionHeading,
-} from '@app/core/features/home/components/dashboard/primitives'
+} from '@app/core/features/dashboard/components/dashboard/primitives'
 
 type SimilarUser = {
   name: string

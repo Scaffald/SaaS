@@ -1,4 +1,4 @@
-import { HomeLayout } from '@app/core/features/home/layout.web'
+import { DashboardLayout } from '@app/core/features/dashboard/layout.web'
 import { ProfileContactAvailabilityScreen } from '@app/core/features/profile/contact-availability-screen'
 import { ProfileLayoutSimple } from '@app/core/features/profile/layout-simple.web'
 import Head from 'next/head'
@@ -16,9 +16,9 @@ const Page: NextPageWithLayout = () => {
 }
 
 Page.getLayout = (page) => (
-  <HomeLayout fullPage>
+  <DashboardLayout fullPage>
     <ProfileLayoutSimple>{page}</ProfileLayoutSimple>
-  </HomeLayout>
+  </DashboardLayout>
 )
 
 export default Page

@@ -155,14 +155,14 @@ Use `PageLayoutWrapper` with `hideHeader={true}`:
 
 ## Migration Guide
 
-### From Old HomeLayout
-Replace the old `HomeLayout` with the new `PageLayoutWrapper`:
+### From Old DashboardLayout
+Replace the old `DashboardLayout` with the new `PageLayoutWrapper`:
 
 **Before:**
 ```tsx
-<HomeLayout fullPage padded headerTitle="Settings">
+<DashboardLayout fullPage padded headerTitle="Settings">
   <SettingsContent />
-</HomeLayout>
+</DashboardLayout>
 ```
 
 **After:**

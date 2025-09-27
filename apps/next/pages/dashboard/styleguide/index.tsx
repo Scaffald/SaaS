@@ -1,4 +1,4 @@
-import { HomeLayout } from '@app/core/features/home/layout.web'
+import { DashboardLayout } from '@app/core/features/dashboard/layout.web'
 import { StyleguideLayout } from '@app/core/features/styleguide'
 import { TypographyScreen } from '@app/core/features/styleguide'
 import Head from 'next/head'
@@ -21,6 +21,6 @@ const Page: NextPageWithLayout = () => {
   )
 }
 
-Page.getLayout = (page) => <HomeLayout>{page}</HomeLayout>
+Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>
 
 export default Page

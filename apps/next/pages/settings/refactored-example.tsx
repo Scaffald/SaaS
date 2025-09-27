@@ -1,4 +1,4 @@
-import { HomeLayout } from '@app/core/features/home/layout-refactored.web'
+import { DashboardLayout } from '@app/core/features/dashboard/layout-refactored.web'
 import { GeneralSettingsScreen } from '@app/core/features/settings/general-screen'
 import { SettingsLayout } from '@app/core/features/settings/layout-refactored.web'
 import Head from 'next/head'
@@ -16,9 +16,9 @@ const Page: NextPageWithLayout = () => {
 }
 
 Page.getLayout = (page) => (
-  <HomeLayout fullPage>
+  <DashboardLayout fullPage>
     <SettingsLayout isSettingsHome>{page}</SettingsLayout>
-  </HomeLayout>
+  </DashboardLayout>
 )
 
 export default Page

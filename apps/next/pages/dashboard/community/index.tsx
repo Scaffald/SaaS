@@ -1,7 +1,7 @@
 import Head from 'next/head'
 
 import { CommunityDirectoryScreen } from '@app/core/features/community'
-import { HomeLayout } from '@app/core/features/home/layout.web'
+import { DashboardLayout } from '@app/core/features/dashboard/layout.web'
 
 import type { NextPageWithLayout } from '../../_app'
 
@@ -16,6 +16,6 @@ export const Page: NextPageWithLayout = () => {
   )
 }
 
-Page.getLayout = (page) => <HomeLayout>{page}</HomeLayout>
+Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>
 
 export default Page

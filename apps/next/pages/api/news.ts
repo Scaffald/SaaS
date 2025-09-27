@@ -4,8 +4,8 @@ import {
   createFallbackArticles,
   parseRssFeed,
   type NewsArticle,
-} from '@app/core/features/home/components/dashboard/right-rail/news-parser'
-import { NEWS_SOURCE_LOOKUP } from '@app/core/features/home/components/dashboard/right-rail/news-sources'
+} from '@app/core/features/dashboard/components/dashboard/right-rail/news-parser'
+import { NEWS_SOURCE_LOOKUP } from '@app/core/features/dashboard/components/dashboard/right-rail/news-sources'
 
 const ARTICLE_LIMIT = 8
 
