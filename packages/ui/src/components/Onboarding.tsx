@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
   AnimatePresence,
   Circle,
+  Image,
   Theme,
   ThemeName,
   XStack,
@@ -16,6 +17,7 @@ import { OnboardingControls } from './OnboardingControls'
 export type OnboardingStepInfo = {
   theme: ThemeName
   Content: React.FC
+  backgroundImage?: string
 }
 
 export type OnboardingProps = {
@@ -92,7 +94,7 @@ export const Onboarding = ({ onOnboarded, autoSwipe, steps }: OnboardingProps) =
         pl={safeAreaInsets.left}
       >
         <AnimatePresence>
-          <Background key={key} />
+          <Background key={key} backgroundImage={currentStep.backgroundImage} />
         </AnimatePresence>
 
         <YStack f={1} {...panResponder.panHandlers}>
@@ -130,8 +132,29 @@ const Point = ({ active, onPress }: { active: boolean; onPress: () => void }) =>
   )
 }
 
-export const Background = () => {
+export const Background = ({ backgroundImage }: { backgroundImage?: string }) => {
   const { height } = useWindowDimensions()
+
+  if (backgroundImage) {
+    return (
+      <YStack fullscreen>
+        <Image
+          source={{ uri: backgroundImage }}
+          width="100%"
+          height="100%"
+          resizeMode="cover"
+          position="absolute"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+        />
+        {/* Overlay for better text readability */}
+        <YStack fullscreen bg="rgba(0, 0, 0, 0.3)" position="absolute" />
+      </YStack>
+    )
+  }
+
   return (
     <YStack fullscreen jc="center" ai="center">
       <Circle
