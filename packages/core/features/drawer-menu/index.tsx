@@ -24,6 +24,7 @@ import {
   Settings2,
   LogOut,
   Users,
+  Palette,
 } from '@tamagui/lucide-icons'
 import type { JSX } from 'react'
 import { useCallback } from 'react'
@@ -85,6 +86,13 @@ export const drawerSections: DrawerSectionConfig[] = [
         href: ROUTES.PROFILE,
         icon: CircleUser,
         theme: 'purple',
+      },
+      {
+        key: 'styleguide',
+        title: 'Styleguide',
+        href: ROUTES.STYLEGUIDE,
+        icon: Palette,
+        theme: 'gray',
       },
     ],
   },
@@ -330,7 +338,7 @@ export const DrawerContent = ({ pathname, collapsed = false, onNavigate }: Drawe
             py="$0"
             bg="transparent"
             onPress={handleManagePress}
-            title={!collapsed ? (profile?.name ?? 'Rajeev Ranjan') : undefined}
+            title={!collapsed ? (profile as any)?.name || 'Rajeev Ranjan' : undefined}
             subTitle={!collapsed ? 'Partner ID: 304404' : undefined}
             icon={() => (
               <Avatar circular size="$3">
