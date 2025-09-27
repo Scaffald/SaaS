@@ -324,7 +324,7 @@ export const AnimatedSubmitButton = (
 }
 
 /**
- * Loading button with smooth animations inspired by  ButtonLoading
+ * Loading button with smooth animations
  * Provides a clean API for loading states with customizable text and animations
  */
 export const LoadingButton = forwardRef<any, AnimatedButtonProps>(
