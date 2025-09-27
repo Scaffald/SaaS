@@ -8,7 +8,7 @@ export default function Screen() {
       <Stack.Screen
         options={{
           title: 'Work & Skills',
-          headerShown: false, // We'll use our custom header
+          headerShown: true,
         }}
       />
       <ProfileLayout title="Work & Skills">

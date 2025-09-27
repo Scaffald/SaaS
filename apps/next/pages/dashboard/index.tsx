@@ -1,5 +1,5 @@
 import { DashboardLayout } from '@app/core/features/dashboard/layout.web'
-import { HomeScreen } from '@app/core/features/dashboard/screen'
+import { DashboardScreen } from '@app/core/features/dashboard/screen'
 import Head from 'next/head'
 
 import type { NextPageWithLayout } from '../_app'
@@ -10,7 +10,7 @@ export const Page: NextPageWithLayout = () => {
       <Head>
         <title>Dashboard</title>
       </Head>
-      <HomeScreen />
+      <DashboardScreen />
     </>
   )
 }

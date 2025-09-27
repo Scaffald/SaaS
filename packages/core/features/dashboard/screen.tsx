@@ -117,7 +117,7 @@ const CERTIFICATIONS = [
   },
 ]
 
-export function HomeScreen() {
+export function DashboardScreen() {
   const { user, profile, isPending } = useUser()
   const hireScore = useHireScore()
   const inlinePrompts = useProgressiveProfilePrompt({ surface: 'inline-card' })

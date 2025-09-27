@@ -2,7 +2,7 @@ import { XStack, YStack, useMedia } from '@app/ui'
 import { AppHeader, AppHeaderProps } from './AppHeader'
 import { TwoColumnLayout, TwoColumnLayoutProps } from './TwoColumnLayout'
 
-export type PageLayoutWrapperProps = {
+export type DashboardLayoutProps = {
   /**
    * Header configuration
    */
@@ -33,7 +33,7 @@ export type PageLayoutWrapperProps = {
   padded?: boolean
 }
 
-export const PageLayoutWrapper = ({
+export const DashboardLayout = ({
   header,
   layout = 'single-column',
   twoColumnProps,
@@ -41,7 +41,7 @@ export const PageLayoutWrapper = ({
   hideHeader = false,
   fullPage = false,
   padded = false,
-}: PageLayoutWrapperProps) => {
+}: DashboardLayoutProps) => {
   const media = useMedia()
 
   return (

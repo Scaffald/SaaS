@@ -1,6 +1,6 @@
 'use client'
 
-import { PageLayoutWrapper, SingleColumnLayout, useMedia } from '@app/ui'
+import { DashboardLayout, SingleColumnLayout, useMedia } from '@app/ui'
 import { StaticDrawer } from '@app/core/features/drawer-menu/StaticDrawer.web'
 import { drawerSections, normalizePath } from '@app/core/features/drawer-menu'
 import { usePathname } from '@app/core/utils/usePathname'
@@ -56,16 +56,16 @@ export const DashboardLayout = ({
   // For discover pages, hide header completely
   if (isDiscoverPage) {
     return (
-      <PageLayoutWrapper hideHeader={true} fullPage={fullPage} padded={padded}>
+      <DashboardLayout hideHeader={true} fullPage={fullPage} padded={padded}>
         {children}
-      </PageLayoutWrapper>
+      </DashboardLayout>
     )
   }
 
   // For two-column layouts (settings, profile)
   if (useTwoColumn && sidebar) {
     return (
-      <PageLayoutWrapper
+      <DashboardLayout
         header={{
           title: resolvedHeaderTitle,
           showMenuButton: !media.gtSm,
@@ -82,13 +82,13 @@ export const DashboardLayout = ({
         padded={padded}
       >
         {children}
-      </PageLayoutWrapper>
+      </DashboardLayout>
     )
   }
 
   // For single-column layouts (dashboard, most pages)
   return (
-    <PageLayoutWrapper
+    <DashboardLayout
       header={{
         title: resolvedHeaderTitle,
         showMenuButton: !media.gtSm,
@@ -105,7 +105,7 @@ export const DashboardLayout = ({
       >
         {children}
       </SingleColumnLayout>
-    </PageLayoutWrapper>
+    </DashboardLayout>
   )
 }
 

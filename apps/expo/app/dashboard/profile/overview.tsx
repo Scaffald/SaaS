@@ -8,7 +8,7 @@ export default function Screen() {
       <Stack.Screen
         options={{
           title: 'Profile Overview',
-          headerShown: false, // We'll use our custom header
+          headerShown: true,
         }}
       />
       <ProfileLayout title="Profile Overview" isProfileHome={true}>

@@ -51,23 +51,47 @@ export const generateDashboardDrawerItems = (): DrawerItemConfig[] => {
     })
   }
 
-  // Profile route
+  // Profile route - Make expandable with children
   if (DASHBOARD_ROUTES.PROFILE) {
+    // Filter out the index route to avoid duplication with parent
+    const profileChildren = (DASHBOARD_ROUTES.PROFILE.childrenArray || []).filter(
+      (route) => route.path !== DASHBOARD_ROUTES.PROFILE?.path
+    )
+
     items.push({
       key: 'profile',
       title: 'Profile',
-      href: DASHBOARD_ROUTES.PROFILE.fullPath,
+      href: DASHBOARD_ROUTES.PROFILE.fullPath, // Keep href for direct navigation if needed
       icon: User,
+      isExpandable: true,
+      subItems: profileChildren.map((childRoute) => ({
+        key: `profile-${childRoute.path.split('/').pop()}`,
+        title: childRoute.title || 'Untitled',
+        href: childRoute.fullPath,
+        // No icon for child items
+      })),
     })
   }
 
-  // Settings route
+  // Settings route - Make expandable with children
   if (DASHBOARD_ROUTES.SETTINGS) {
+    // Filter out the index route to avoid duplication with parent
+    const settingsChildren = (DASHBOARD_ROUTES.SETTINGS.childrenArray || []).filter(
+      (route) => route.path !== DASHBOARD_ROUTES.SETTINGS?.path
+    )
+
     items.push({
       key: 'settings',
       title: 'Settings',
-      href: DASHBOARD_ROUTES.SETTINGS.fullPath,
+      href: DASHBOARD_ROUTES.SETTINGS.fullPath, // Keep href for direct navigation if needed
       icon: Cog,
+      isExpandable: true,
+      subItems: settingsChildren.map((childRoute) => ({
+        key: `settings-${childRoute.path.split('/').pop()}`,
+        title: childRoute.title || 'Untitled',
+        href: childRoute.fullPath,
+        // No icon for child items
+      })),
     })
   }
 
