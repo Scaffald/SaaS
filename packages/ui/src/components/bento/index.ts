@@ -1,9 +1,9 @@
 export * as Inputs from './forms/inputs'
 export * as Preferences from './user/preferences'
 export * as Layouts from './forms/layouts'
-export * as Checkboxes from './forms/checkboxes'
+// export * as Checkboxes from './forms/checkboxes' // DEPRECATED: Elevated to core CheckboxToggle
 export * as Radiogroups from './forms/radiogroups'
-export * as Switches from './forms/switches'
+// export * as Switches from './forms/switches' // DEPRECATED: Elevated to core CheckboxToggle
 export * as Textareas from './forms/textareas'
 export * as Pickers from './elements/pickers'
 export * as List from './elements/list'

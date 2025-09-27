@@ -17,7 +17,7 @@ import {
   View,
   debounce,
 } from 'tamagui'
-import { Checkboxes } from '../checkboxes/common/checkboxParts'
+import { CheckboxToggle } from '../../../CheckboxToggle'
 
 const notifications = [
   {
@@ -182,56 +182,25 @@ export function SignUpTwoSideScreen() {
                 </Input.Box>
               </Input>
             </View>
-            <Checkboxes
-              values={values}
-              onValuesChange={(values) => toggleValues(values)}
-              flexDirection="column"
-              marginTop="$3"
-              gap="$2.5"
-            >
-              <Input.Label htmlFor={uniqueId + 'single'}>Receive notifications</Input.Label>
-              <Checkboxes.FocusGroup>
-                <Checkboxes.Group>
-                  {notifications.map((item) => {
-                    const { title, desc } = item
-                    return (
-                      <Checkboxes.FocusGroup.Item value={title} key={title}>
-                        <Checkboxes.Group.Item>
-                          <Checkboxes.Card
-                            flexDirection="column"
-                            key={title}
-                            justifyContent="space-between"
-                            paddingBottom="$3"
-                            paddingTop="$-3"
-                            marginBottom={-1}
-                            borderBottomWidth={1}
-                            borderBottomColor="$gray5"
-                          >
-                            <View
-                              flexDirection="row"
-                              alignItems="center"
-                              justifyContent="space-between"
-                            >
-                              <Label htmlFor={title} lineHeight={'unset'}>
-                                {title}
-                              </Label>
-                              <Checkboxes.Checkbox id={title}>
-                                <Checkboxes.Checkbox.Indicator>
-                                  <Check />
-                                </Checkboxes.Checkbox.Indicator>
-                              </Checkboxes.Checkbox>
-                            </View>
-                            <Text fontSize="$4" theme="alt1">
-                              {desc}
-                            </Text>
-                          </Checkboxes.Card>
-                        </Checkboxes.Group.Item>
-                      </Checkboxes.FocusGroup.Item>
-                    )
-                  })}
-                </Checkboxes.Group>
-              </Checkboxes.FocusGroup>
-            </Checkboxes>
+            <View flexDirection="column" marginTop="$3" gap="$2.5">
+              <Label htmlFor={uniqueId + 'single'}>Receive notifications</Label>
+              {notifications.map((item) => {
+                const { title, desc } = item
+                return (
+                  <CheckboxToggle
+                    key={title}
+                    variant="card"
+                    label={title}
+                    description={desc}
+                    checked={values[title] || false}
+                    onCheckedChange={(checked) => toggleValues({ [title]: checked })}
+                    borderBottomWidth={1}
+                    borderBottomColor="$gray5"
+                    marginBottom={-1}
+                  />
+                )
+              })}
+            </View>
             <Button
               themeInverse
               alignSelf="flex-end"
