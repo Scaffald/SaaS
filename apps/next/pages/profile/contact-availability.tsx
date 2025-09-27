@@ -1,12 +1,5 @@
-import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { ProfileContactAvailabilityScreen } from '@app/core/features/profile/profile-contact-availability-screen'
 
-export default function ProfileContactAvailabilityRedirect() {
-  const router = useRouter()
-
-  useEffect(() => {
-    router.replace('/dashboard/profile/contact')
-  }, [router])
-
-  return null
+export default function ProfileContactAvailabilityPage() {
+  return <ProfileContactAvailabilityScreen />
 }

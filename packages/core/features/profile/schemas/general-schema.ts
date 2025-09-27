@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { formFields } from '@app/core/utils/SchemaForm'
 
-export const BasicInfoSchema = z.object({
+export const GeneralSchema = z.object({
   firstName: formFields.text
     .min(1, 'First name is required')
     .describe('First Name // Your first name'),
@@ -26,4 +26,4 @@ export const BasicInfoSchema = z.object({
   veteran: z.boolean().describe('Veteran Status // I am a veteran'),
 })
 
-export type BasicInfoFormValues = z.infer<typeof BasicInfoSchema>
+export type GeneralFormValues = z.infer<typeof GeneralSchema>

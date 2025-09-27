@@ -13,8 +13,8 @@ import {
 } from '@app/ui'
 import { Building2, Filter, Users } from '@tamagui/lucide-icons'
 
-import { useTalentProfiles } from '../discover-map/hooks/useTalentProfiles'
-import type { TalentProfile } from '../discover-map/types'
+import { useTalentProfiles } from '../workers/hooks/useTalentProfiles'
+import type { TalentProfile } from '../workers/types'
 import type { DataTableColumn } from '@app/ui'
 
 const { DataTable } = Bento.Tables

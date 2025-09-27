@@ -1,16 +1,16 @@
 import { H2, SubmitButton, Theme, YStack, isWeb, FormWrapper } from '@app/ui'
 import { SchemaForm } from '@app/core/utils/SchemaForm'
 import {
-  TravelComplianceSchema,
-  type TravelComplianceFormValues,
-} from './schemas/travel-compliance-schema'
-import { useTravelCompliance, useTravelComplianceMutation } from './hooks'
+  ContactAvailabilitySchema,
+  type ContactAvailabilityFormValues,
+} from '../schemas/contact-availability-schema'
+import { useContactAvailability, useContactAvailabilityMutation } from '../hooks'
 
-export const ProfileTravelComplianceScreen = () => {
-  const { user, defaultValues, updateProfile, isPending } = useTravelCompliance()
-  const mutation = useTravelComplianceMutation({ updateProfile })
+export const ContactAvailabilityForm = () => {
+  const { user, defaultValues, updateProfile, isPending } = useContactAvailability()
+  const mutation = useContactAvailabilityMutation({ updateProfile })
 
-  const handleSubmit = async (values: TravelComplianceFormValues) => {
+  const handleSubmit = async (values: ContactAvailabilityFormValues) => {
     if (!user?.id) {
       throw new Error('You need to be signed in to update your profile.')
     }
@@ -32,19 +32,19 @@ export const ProfileTravelComplianceScreen = () => {
     <FormWrapper>
       <SchemaForm
         onSubmit={handleSubmit}
-        schema={TravelComplianceSchema}
+        schema={ContactAvailabilitySchema}
         defaultValues={defaultValues}
         renderBefore={() =>
           isWeb && (
             <YStack px="$4" py="$4" pb="$2">
-              <H2>Travel & Compliance</H2>
+              <H2>Contact & Availability</H2>
             </YStack>
           )
         }
         renderAfter={({ submit }) => (
           <Theme inverse>
             <SubmitButton onPress={() => submit()} disabled={mutation.isPending}>
-              {mutation.isPending ? 'Updating...' : 'Update Travel & Compliance'}
+              {mutation.isPending ? 'Updating...' : 'Update Contact & Availability'}
             </SubmitButton>
           </Theme>
         )}

@@ -53,7 +53,7 @@ type EditProfileScreenProps = {
   onSuccess?: () => void
 }
 
-export const EditProfileScreen = ({ onSuccess }: EditProfileScreenProps = {}) => {
+export const EditProfileForm = ({ onSuccess }: EditProfileScreenProps = {}) => {
   const toast = useToastController()
   const supabase = useSupabase()
   const queryClient = useQueryClient()

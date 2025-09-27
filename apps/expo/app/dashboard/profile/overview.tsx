@@ -1,6 +1,6 @@
-import { ProfileOverviewScreen } from '@app/core/features/profile/overview-screen'
-import { ProfileLayout } from '@app/core/features/profile/layout-refactored.native'
+import { ProfileOverviewScreen } from '@app/core/features/profile/profile-overview-screen'
 import { Stack } from 'expo-router'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Screen() {
   return (
@@ -11,9 +11,9 @@ export default function Screen() {
           headerShown: true,
         }}
       />
-      <ProfileLayout title="Profile Overview" isProfileHome={true}>
+      <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
         <ProfileOverviewScreen />
-      </ProfileLayout>
+      </SafeAreaView>
     </>
   )
 }

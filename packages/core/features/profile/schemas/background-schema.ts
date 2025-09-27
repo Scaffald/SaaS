@@ -8,7 +8,7 @@ const numericString = (label: string) =>
     .trim()
     .refine((value) => value === '' || /^[0-9]+$/.test(value), `${label} must be a whole number`)
 
-export const TravelComplianceSchema = z.object({
+export const BackgroundSchema = z.object({
   openToTravel: z.boolean().describe('Open to Travel // I am willing to travel for work'),
 
   travelMileage: numericString('Travel mileage')
@@ -30,4 +30,4 @@ export const TravelComplianceSchema = z.object({
     .describe('Education Level // Select your highest education level'),
 })
 
-export type TravelComplianceFormValues = z.infer<typeof TravelComplianceSchema>
+export type BackgroundFormValues = z.infer<typeof BackgroundSchema>
