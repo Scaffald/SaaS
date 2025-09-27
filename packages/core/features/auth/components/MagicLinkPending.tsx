@@ -1,4 +1,4 @@
-import { Button, EnhancedAnimatedButton, H2, Paragraph, Theme, YStack } from '@app/ui'
+import { Button, EnhancedAnimatedButton, H2, Paragraph, Theme, XStack, YStack } from '@app/ui'
 import { ChevronLeft } from '@tamagui/lucide-icons'
 import { SchemaForm, formFields } from '@app/core/utils/SchemaForm'
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
@@ -26,8 +26,6 @@ export const MagicLinkPending = ({
   email,
   linkInstruction,
   onBack,
-  backLabel = 'Back',
-  submitLabel = 'Submit code',
 }: MagicLinkPendingProps) => {
   const supabase = useSupabase()
   const form = useForm<VerifyCodeInput>({
@@ -63,22 +61,17 @@ export const MagicLinkPending = ({
       schema={VerifyCodeSchema}
       onSubmit={submitCode}
       renderAfter={({ submit }) => (
-        <>
-          <Theme inverse>
-            <EnhancedAnimatedButton
-              variant="primary"
-              animationPreset="bouncy"
-              onPress={() => submit()}
-              br="$10"
-              loadingText="Verifying code..."
-            >
-              {submitLabel}
-            </EnhancedAnimatedButton>
-          </Theme>
-          <Button themeInverse icon={ChevronLeft} br="$10" onPress={onBack}>
-            {backLabel}
+        <XStack>
+          <Button
+            theme="blue"
+            onPress={submit}
+          >
+            Submit
           </Button>
-        </>
+          <Button icon={ChevronLeft} br="$10" onPress={onBack}>
+            Cancel
+          </Button>
+        </XStack>
       )}
     >
       {(fields) => (

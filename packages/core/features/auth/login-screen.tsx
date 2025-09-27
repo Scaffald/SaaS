@@ -1,4 +1,5 @@
 import {
+  Button,
   EnhancedAnimatedButton,
   H2,
   LoadingOverlay,
@@ -8,7 +9,6 @@ import {
   YStack,
   isWeb,
 } from '@app/ui'
-import { ButtonLoading } from '@app/ui/components/buttons/ButtonLoading'
 import { SchemaForm, formFields } from '@app/core/utils/SchemaForm'
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import { useUser } from '@app/core/utils/useUser'
@@ -83,11 +83,9 @@ export const LoginScreen = () => {
             return (
               <>
                 <Theme inverse>
-                  <ButtonLoading
-                    text="Send Magic Link"
-                    loading={form.formState.isSubmitting}
+                  <Button
                     onPress={submit}
-                  />
+                  >Send Magic Link</Button>
                 </Theme>
 
                 {isWeb && <SocialLogin />}
