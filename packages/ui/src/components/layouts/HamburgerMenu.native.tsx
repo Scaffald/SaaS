@@ -30,7 +30,7 @@ export const HamburgerMenu = ({ showButton = true, navigation }: HamburgerMenuPr
       chromeless
       icon={<Menu size={24} />}
       onPress={handleToggle}
-      accessibilityLabel="Open menu"
+      aria-label="Open menu"
       flexShrink={0}
     />
   )

@@ -69,8 +69,8 @@ export default function Layout() {
       })}
       drawerContent={(props) => <DrawerMenu {...props} />}
     >
-      <Drawer.Screen name="index" options={{ title: 'Home' }} />
-      <Drawer.Screen name="workers/map" options={{ title: 'Workers Map' }} />
+      <Drawer.Screen name="index" options={{ title: 'Dashboard' }} />
+      <Drawer.Screen name="workers/index" options={{ title: 'Workers' }} />
       <Drawer.Screen name="organizations/index" options={{ title: 'Organizations' }} />
       <Drawer.Screen name="organizations/new" options={{ title: 'Create Organization' }} />
       <Drawer.Screen name="profile/index" options={{ title: 'Profile' }} />
