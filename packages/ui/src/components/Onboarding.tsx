@@ -1,6 +1,6 @@
-import { useSafeAreaInsets } from '@app/core/utils/useSafeAreaInsets'
 import React, { useEffect, useState, useCallback } from 'react'
 import { PanResponder } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
   AnimatePresence,
   Circle,

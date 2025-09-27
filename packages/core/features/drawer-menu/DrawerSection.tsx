@@ -28,7 +28,6 @@ export const DrawerSection = ({
             key={`${section.key}-${item.key}-${depth}`}
             item={item}
             pathname={pathname}
-            collapsed
             depth={depth}
             onNavigate={onNavigate}
             expandedItems={expandedItems}
