@@ -171,28 +171,22 @@ function DatePickerBody() {
 }
 
 /** ------ EXAMPLE ------ */
-export const DatePickerExample = forwardRef(
+export const DatePickerExample = forwardRef<
+  HTMLInputElement,
+  {
+    disabled: boolean
+    placeholderTextColor?: string
+    value: string | undefined
+    onChangeText: (dateValue: string) => void
+    onBlur: () => void
+    placeholder?: string
+    id: string
+    [key: string]: any
+  }
+>(
   (
-    {
-      disabled,
-      placeholderTextColor,
-      value,
-      onChangeText,
-      onBlur,
-      placeholder,
-      id,
-      ...props
-    }: {
-      disabled: boolean
-      placeholderTextColor?: string
-      value: string | undefined
-      onChangeText: (dateValue: string) => void
-      onBlur: () => void
-      placeholder?: string
-      id: string
-      [key: string]: any
-    },
-    ref: React.Ref<HTMLInputElement>
+    { disabled, placeholderTextColor, value, onChangeText, onBlur, placeholder, id, ...props },
+    ref
   ) => {
     const [selectedDates, onDatesChange] = useState<Date[]>([])
     const [open, setOpen] = useState(false)

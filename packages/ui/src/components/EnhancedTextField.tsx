@@ -196,7 +196,7 @@ export const EnhancedTextField = forwardRef<any, EnhancedTextFieldProps>(
     // Enhanced version with  patterns
     return (
       <Theme name={error ? 'red' : null} forceClassName>
-        <BentoInput size={size} w="100%" scaleIcon={iconScale} color={error ? '$red10' : undefined}>
+        <BentoInput size={size} w="100%" color={error ? '$red10' : undefined}>
           {/* Label */}
           {!!label && (
             <BentoInput.Label htmlFor={id} theme="alt1">

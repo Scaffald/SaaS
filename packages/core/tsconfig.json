@@ -4,6 +4,7 @@
     "features",
     "provider",
     "utils",
+    "constants",
     "index.ts",
     "types.d.ts",
     "package.json",

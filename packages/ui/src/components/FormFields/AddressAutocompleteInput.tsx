@@ -35,7 +35,7 @@ export interface AddressAutocompleteInputProps extends Omit<InputProps, 'onChang
   showFullAddress?: boolean
 }
 
-export const AddressAutocompleteInput = forwardRef<HTMLInputElement, AddressAutocompleteInputProps>(
+export const AddressAutocompleteInput = forwardRef<any, AddressAutocompleteInputProps>(
   (
     {
       value = '',

@@ -15,7 +15,7 @@ export const AuthProvider = ({ initialSession, children }: AuthProviderProps) =>
   const [supabaseClient] = useState(() => createPagesBrowserClient<Database>())
 
   return (
-    <SessionContextProvider supabaseClient={supabaseClient} initialSession={initialSession}>
+    <SessionContextProvider supabaseClient={supabaseClient as any} initialSession={initialSession}>
       <AuthStateChangeHandler />
       {children}
     </SessionContextProvider>

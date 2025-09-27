@@ -11,7 +11,7 @@ type ResultCardProps = {
 }
 
 export const ResultCard = memo(
-  forwardRef<unknown, ResultCardProps>(({ profile, isSelected, onSelect }, ref) => {
+  forwardRef<any, ResultCardProps>(({ profile, isSelected, onSelect }, ref) => {
     return (
       <YStack
         ref={ref}

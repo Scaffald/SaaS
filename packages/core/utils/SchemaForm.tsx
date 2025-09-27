@@ -104,12 +104,16 @@ export const SchemaForm: typeof _SchemaForm = ({ ...props }) => {
 
   return (
     <_SchemaForm {...props} renderAfter={renderAfter}>
-      {(fields, context) => {
+      {(fields, _context) => {
         const childRenderer = props.children as SchemaFormChildRenderer | undefined
 
         return (
           <FormWrapper.Body minWidth="100%" $platform-native={{ miw: '100%' }}>
-            {childRenderer ? childRenderer(fields, context) : Object.values(fields)}
+            {childRenderer
+              ? typeof childRenderer === 'function'
+                ? childRenderer(fields)
+                : childRenderer
+              : Object.values(fields)}
           </FormWrapper.Body>
         )
       }}

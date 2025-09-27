@@ -18,8 +18,8 @@ export interface ResultListRef {
 
 export const ResultList = forwardRef<ResultListRef, ResultListProps>(
   ({ profiles, selectedId, onSelect, isLoading }, ref) => {
-    const scrollViewRef = useRef<unknown>(null)
-    const cardRefs = useRef<Map<string, unknown>>(new Map())
+    const scrollViewRef = useRef<any>(null)
+    const cardRefs = useRef<Map<string, any>>(new Map())
 
     // Expose scroll functionality to parent
     useImperativeHandle(ref, () => ({

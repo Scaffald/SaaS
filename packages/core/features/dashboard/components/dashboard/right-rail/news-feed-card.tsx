@@ -261,7 +261,7 @@ export const NewsFeedCard = () => {
                   {article.imageUrl ? (
                     <Image
                       source={{ uri: article.imageUrl }}
-                      contentFit="cover"
+                      resizeMode="cover"
                       style={{ width: '100%', height: 160 }}
                     />
                   ) : null}
