@@ -310,9 +310,9 @@ const routeConfig: Record<string, RouteConfig> = {
         path: '/dashboard/workers',
         title: 'Workers',
         children: {
-          map: {
-            path: '/dashboard/workers/map',
-            title: 'Workers Map',
+          index: {
+            path: '/dashboard/workers',
+            title: 'Workers',
           },
         },
       },
