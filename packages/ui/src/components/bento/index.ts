@@ -15,7 +15,7 @@ export * as Chips from './elements/chips'
 export * as Dialogs from './elements/dialogs'
 export * as Navbars from './shells/navbars'
 export * as Tabbars from './shells/tabbars'
-export * as AnimationButtons from './animation/buttons'
+// export * as AnimationButtons from './animation/buttons' // DEPRECATED: Elevated to core AnimatedButton
 export * as Microinteractions from './animation/microinteractions'
 export * as Slide from './animation/slide'
 export * as AnimationAvatars from './animation/avatars'

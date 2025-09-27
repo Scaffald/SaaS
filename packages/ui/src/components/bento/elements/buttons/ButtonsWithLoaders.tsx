@@ -1,210 +1,121 @@
 import { useState } from 'react'
 import type { SizeTokens } from 'tamagui'
 import { AnimatePresence, Button, Spinner, View, YStack } from 'tamagui'
+import { LoadingButton } from '../../../AnimatedButton'
 
 /** ------ EXAMPLE ------ */
 export function ButtonsWithLoaders() {
   return (
     <YStack gap="$3.5" $group-window-gtSm={{ flexDirection: 'row' }}>
       <View gap="$2">
-        <Button theme="blue">
-          <Spinner
-            animation="bouncy"
-            enterStyle={{
-              scale: 0,
-            }}
-            exitStyle={{
-              scale: 0,
-            }}
-          />
-          <Button.Text>Themed</Button.Text>
-        </Button>
+        <LoadingButton
+          theme="blue"
+          loading={true}
+          loadingText="Loading..."
+          animationPreset="bouncy"
+        >
+          Themed
+        </LoadingButton>
 
-        <Button theme="red">
-          <Spinner
-            animation="bouncy"
-            enterStyle={{
-              scale: 0,
-            }}
-            exitStyle={{
-              scale: 0,
-            }}
-          />
-          <Button.Text>Themed</Button.Text>
-        </Button>
+        <LoadingButton theme="red" loading={true} loadingText="Loading..." animationPreset="bouncy">
+          Themed
+        </LoadingButton>
 
-        <Button theme="green">
-          <Spinner
-            animation="bouncy"
-            enterStyle={{
-              scale: 0,
-            }}
-            exitStyle={{
-              scale: 0,
-            }}
-          />
-          <Button.Text>Themed</Button.Text>
-        </Button>
+        <LoadingButton
+          theme="green"
+          loading={true}
+          loadingText="Loading..."
+          animationPreset="bouncy"
+        >
+          Themed
+        </LoadingButton>
 
-        <Button theme="purple">
-          <Spinner
-            animation="bouncy"
-            enterStyle={{
-              scale: 0,
-            }}
-            exitStyle={{
-              scale: 0,
-            }}
-          />
-          <Button.Text>Themed</Button.Text>
-        </Button>
+        <LoadingButton
+          theme="purple"
+          loading={true}
+          loadingText="Loading..."
+          animationPreset="bouncy"
+        >
+          Themed
+        </LoadingButton>
 
-        <Button theme="pink">
-          <Spinner
-            animation="bouncy"
-            enterStyle={{
-              scale: 0,
-            }}
-            exitStyle={{
-              scale: 0,
-            }}
-          />
-          <Button.Text>Themed</Button.Text>{' '}
-        </Button>
+        <LoadingButton
+          theme="pink"
+          loading={true}
+          loadingText="Loading..."
+          animationPreset="bouncy"
+        >
+          Themed
+        </LoadingButton>
 
-        <Button theme="yellow">
-          <Spinner
-            animation="bouncy"
-            enterStyle={{
-              scale: 0,
-            }}
-            exitStyle={{
-              scale: 0,
-            }}
-          />
-          <Button.Text>Themed</Button.Text>
-        </Button>
+        <LoadingButton
+          theme="yellow"
+          loading={true}
+          loadingText="Loading..."
+          animationPreset="bouncy"
+        >
+          Themed
+        </LoadingButton>
 
-        <Button theme="orange">
-          <Spinner
-            animation="bouncy"
-            enterStyle={{
-              scale: 0,
-            }}
-            exitStyle={{
-              scale: 0,
-            }}
-          />
-          <Button.Text>Themed</Button.Text>
-        </Button>
+        <LoadingButton
+          theme="orange"
+          loading={true}
+          loadingText="Loading..."
+          animationPreset="bouncy"
+        >
+          Themed
+        </LoadingButton>
       </View>
 
       <View gap="$2">
-        <Button theme="active">
-          <Spinner
-            animation="bouncy"
-            enterStyle={{
-              scale: 0,
-            }}
-            exitStyle={{
-              scale: 0,
-            }}
-          />
-          <Button.Text>Active</Button.Text>
-        </Button>
+        <LoadingButton
+          theme="active"
+          loading={true}
+          loadingText="Loading..."
+          animationPreset="bouncy"
+        >
+          Active
+        </LoadingButton>
 
-        <Button disabled opacity={0.5}>
-          <Spinner
-            animation="bouncy"
-            enterStyle={{
-              scale: 0,
-            }}
-            exitStyle={{
-              scale: 0,
-            }}
-          />
-          <Button.Text>Disabled</Button.Text>
-        </Button>
+        <LoadingButton disabled loading={true} loadingText="Loading..." animationPreset="bouncy">
+          Disabled
+        </LoadingButton>
 
-        <Button themeInverse>
-          <Spinner
-            animation="bouncy"
-            enterStyle={{
-              scale: 0,
-            }}
-            exitStyle={{
-              scale: 0,
-            }}
-          />
-          <Button.Text>Theme inverse</Button.Text>
-        </Button>
+        <LoadingButton
+          themeInverse
+          loading={true}
+          loadingText="Loading..."
+          animationPreset="bouncy"
+        >
+          Theme inverse
+        </LoadingButton>
 
-        <Button variant="outlined">
-          <Spinner
-            animation="bouncy"
-            enterStyle={{
-              scale: 0,
-            }}
-            exitStyle={{
-              scale: 0,
-            }}
-          />
-          <Button.Text>Outlined</Button.Text>
-        </Button>
+        <LoadingButton
+          variant="outlined"
+          loading={true}
+          loadingText="Loading..."
+          animationPreset="bouncy"
+        >
+          Outlined
+        </LoadingButton>
 
-        <Button chromeless>
-          <Spinner
-            animation="bouncy"
-            enterStyle={{
-              scale: 0,
-            }}
-            exitStyle={{
-              scale: 0,
-            }}
-          />
-          <Button.Text>Chromeless</Button.Text>{' '}
-        </Button>
+        <LoadingButton chromeless loading={true} loadingText="Loading..." animationPreset="bouncy">
+          Chromeless
+        </LoadingButton>
       </View>
 
       <View gap="$2">
-        <Button size={'$3'}>
-          <Spinner
-            animation="bouncy"
-            enterStyle={{
-              scale: 0,
-            }}
-            exitStyle={{
-              scale: 0,
-            }}
-          />
-          <Button.Text>Small</Button.Text>{' '}
-        </Button>
+        <LoadingButton size="$3" loading={true} loadingText="Loading..." animationPreset="bouncy">
+          Small
+        </LoadingButton>
 
-        <Button>
-          <Spinner
-            animation="bouncy"
-            enterStyle={{
-              scale: 0,
-            }}
-            exitStyle={{
-              scale: 0,
-            }}
-          />
-          <Button.Text>Normal</Button.Text>
-        </Button>
+        <LoadingButton loading={true} loadingText="Loading..." animationPreset="bouncy">
+          Normal
+        </LoadingButton>
 
-        <Button size={'$6'}>
-          <Spinner
-            animation="bouncy"
-            enterStyle={{
-              scale: 0,
-            }}
-            exitStyle={{
-              scale: 0,
-            }}
-          />
-          <Button.Text>Big</Button.Text>
-        </Button>
+        <LoadingButton size="$6" loading={true} loadingText="Loading..." animationPreset="bouncy">
+          Big
+        </LoadingButton>
       </View>
     </YStack>
   )
@@ -215,23 +126,14 @@ ButtonsWithLoaders.fileName = 'ButtonsWithLoaders'
 function EachButton({ size }: { size: SizeTokens }) {
   const [loading, setLoading] = useState(true)
   return (
-    <Button space={loading ? '$2' : 0} onPress={() => setLoading(!loading)} size={size}>
-      <AnimatePresence>
-        {loading && (
-          <Button.Icon>
-            <Spinner
-              animation="bouncy"
-              enterStyle={{
-                scale: 0,
-              }}
-              exitStyle={{
-                scale: 0,
-              }}
-            />
-          </Button.Icon>
-        )}
-      </AnimatePresence>
-      <Button.Text>Click</Button.Text>
-    </Button>
+    <LoadingButton
+      size={size}
+      loading={loading}
+      loadingText="Loading..."
+      animationPreset="bouncy"
+      onPress={() => setLoading(!loading)}
+    >
+      Click
+    </LoadingButton>
   )
 }

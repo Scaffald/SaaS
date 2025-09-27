@@ -26,6 +26,7 @@ import {
   Popover,
   Sheet,
   View,
+  Theme,
 } from '@app/ui'
 
 // Import custom components
@@ -35,6 +36,7 @@ import {
   LoadingButton,
   SuccessButton,
 } from '@app/ui/src/components/AnimatedButton'
+import { CheckboxToggle } from '@app/ui/src/components/CheckboxToggle'
 
 // Import icons
 import {
@@ -60,6 +62,7 @@ import {
   Check,
   Save,
   Send,
+  X,
 } from '@tamagui/lucide-icons'
 
 /**
@@ -74,13 +77,51 @@ export function StyleguideScreen() {
   const [sliderValue, setSliderValue] = React.useState([50])
   const [progressValue] = React.useState(75)
 
-  // Enhanced button states
+  // Enhanced button states for comprehensive UAT
   const [isLoading1, setIsLoading1] = React.useState(false)
   const [isLoading2, setIsLoading2] = React.useState(false)
   const [isLoading3, setIsLoading3] = React.useState(false)
   const [showSuccess1, setShowSuccess1] = React.useState(false)
   const [showSuccess2, setShowSuccess2] = React.useState(false)
   const [showSuccess3, setShowSuccess3] = React.useState(false)
+
+  // UAT testing states
+  const [uatLoadingStates, setUatLoadingStates] = React.useState<Record<string, boolean>>({})
+  const [uatSuccessStates, setUatSuccessStates] = React.useState<Record<string, boolean>>({})
+
+  // CheckboxToggle UAT states
+  const [checkboxToggleStates, setCheckboxToggleStates] = React.useState<Record<string, boolean>>({
+    'checkbox-basic': false,
+    'checkbox-required': false,
+    'checkbox-optional': false,
+    'checkbox-error': false,
+    'toggle-basic': false,
+    'toggle-icons': true,
+    'toggle-error': false,
+    'card-basic': false,
+    'card-with-desc': false,
+    'card-error': false,
+    'minimal-basic': false,
+    'minimal-required': false,
+  })
+
+  const toggleUATLoading = (key: string) => {
+    setUatLoadingStates((prev) => ({ ...prev, [key]: !prev[key] }))
+    setTimeout(() => {
+      setUatLoadingStates((prev) => ({ ...prev, [key]: false }))
+    }, 2000)
+  }
+
+  const toggleUATSuccess = (key: string) => {
+    setUatSuccessStates((prev) => ({ ...prev, [key]: !prev[key] }))
+    setTimeout(() => {
+      setUatSuccessStates((prev) => ({ ...prev, [key]: false }))
+    }, 2000)
+  }
+
+  const toggleCheckboxToggle = (key: string) => {
+    setCheckboxToggleStates((prev) => ({ ...prev, [key]: !prev[key] }))
+  }
 
   return (
     <ScrollView>
@@ -331,49 +372,351 @@ export function StyleguideScreen() {
           </YStack>
         </Card>
 
-        {/* Bento Button Components - To be deprecated */}
-        <Card p="$4" gap="$4" borderColor="$orange7" borderWidth={2}>
+        {/* Comprehensive UAT Testing Section */}
+        <Card p="$4" gap="$6" borderColor="$blue7" borderWidth={2}>
+          <YStack gap="$3">
+            <H2 color="$blue11">🧪 Comprehensive UAT Testing</H2>
+            <Paragraph size="$3" color="$blue11">
+              Complete testing matrix for all button variants, states, sizes, and features. Click
+              any button to test its functionality.
+            </Paragraph>
+          </YStack>
+
+          {/* All Variants Row */}
+          <YStack gap="$3">
+            <H3>All Animation Variants</H3>
+            <XStack gap="$2" flexWrap="wrap" ai="center">
+              <EnhancedAnimatedButton variant="primary" size="$4">
+                Primary
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="secondary" size="$4">
+                Secondary
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="pulse" size="$4">
+                Pulse
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="bouncy" size="$4">
+                Bouncy
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="lazy" size="$4">
+                Lazy
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="bump" size="$4">
+                Bump
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="success" size="$4">
+                Success
+              </EnhancedAnimatedButton>
+            </XStack>
+          </YStack>
+
+          {/* Size Testing */}
+          <YStack gap="$3">
+            <H3>Size Variations</H3>
+            <XStack gap="$2" flexWrap="wrap" ai="center">
+              <EnhancedAnimatedButton variant="primary" size="$2">
+                XS
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="primary" size="$3">
+                Small
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="primary" size="$4">
+                Medium
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="primary" size="$5">
+                Large
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="primary" size="$6">
+                XL
+              </EnhancedAnimatedButton>
+            </XStack>
+          </YStack>
+
+          {/* Loading States Testing */}
+          <YStack gap="$3">
+            <H3>Loading States (Click to Test)</H3>
+            <XStack gap="$2" flexWrap="wrap" ai="center">
+              <LoadingButton
+                variant="primary"
+                loading={uatLoadingStates['loading-primary']}
+                loadingText="Saving..."
+                onPress={() => toggleUATLoading('loading-primary')}
+              >
+                Primary Loading
+              </LoadingButton>
+              <LoadingButton
+                variant="secondary"
+                loading={uatLoadingStates['loading-secondary']}
+                loadingText="Processing..."
+                onPress={() => toggleUATLoading('loading-secondary')}
+              >
+                Secondary Loading
+              </LoadingButton>
+              <LoadingButton
+                variant="pulse"
+                loading={uatLoadingStates['loading-pulse']}
+                loadingText="Uploading..."
+                onPress={() => toggleUATLoading('loading-pulse')}
+              >
+                Pulse Loading
+              </LoadingButton>
+              <LoadingButton
+                variant="bouncy"
+                loading={uatLoadingStates['loading-bouncy']}
+                loadingText="Syncing..."
+                onPress={() => toggleUATLoading('loading-bouncy')}
+              >
+                Bouncy Loading
+              </LoadingButton>
+            </XStack>
+          </YStack>
+
+          {/* Success States Testing */}
+          <YStack gap="$3">
+            <H3>Success States (Click to Test)</H3>
+            <XStack gap="$2" flexWrap="wrap" ai="center">
+              <SuccessButton
+                variant="primary"
+                showSuccess={uatSuccessStates['success-primary']}
+                successIcon={<Check />}
+                onPress={() => toggleUATSuccess('success-primary')}
+              >
+                Accept Terms
+              </SuccessButton>
+              <SuccessButton
+                variant="secondary"
+                showSuccess={uatSuccessStates['success-secondary']}
+                successIcon={<Save />}
+                onPress={() => toggleUATSuccess('success-secondary')}
+              >
+                Save Draft
+              </SuccessButton>
+              <SuccessButton
+                variant="bouncy"
+                showSuccess={uatSuccessStates['success-bouncy']}
+                successIcon={<Heart />}
+                onPress={() => toggleUATSuccess('success-bouncy')}
+              >
+                Add Favorite
+              </SuccessButton>
+              <SuccessButton
+                variant="bump"
+                showSuccess={uatSuccessStates['success-bump']}
+                successIcon={<Star />}
+                onPress={() => toggleUATSuccess('success-bump')}
+              >
+                Rate Item
+              </SuccessButton>
+            </XStack>
+          </YStack>
+
+          {/* Buttons with Icons */}
+          <YStack gap="$3">
+            <H3>Buttons with Icons</H3>
+            <XStack gap="$2" flexWrap="wrap" ai="center">
+              <EnhancedAnimatedButton variant="primary">
+                <Download size={16} />
+                Download
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="secondary">
+                <Upload size={16} />
+                Upload
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="pulse">
+                <Send size={16} />
+                Send
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="bouncy">
+                <Save size={16} />
+                Save
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="success">
+                <Check size={16} />
+                Complete
+              </EnhancedAnimatedButton>
+            </XStack>
+          </YStack>
+
+          {/* Theme Integration */}
+          <YStack gap="$3">
+            <H3>Theme Integration</H3>
+            <XStack gap="$2" flexWrap="wrap" ai="center">
+              <EnhancedAnimatedButton variant="primary" theme="blue">
+                Blue Theme
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="primary" theme="green">
+                Green Theme
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="primary" theme="red">
+                Red Theme
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="primary" theme="purple">
+                Purple Theme
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="primary" theme="orange">
+                Orange Theme
+              </EnhancedAnimatedButton>
+            </XStack>
+          </YStack>
+
+          {/* Animation Presets */}
+          <YStack gap="$3">
+            <H3>Animation Presets</H3>
+            <XStack gap="$2" flexWrap="wrap" ai="center">
+              <EnhancedAnimatedButton variant="primary" animationPreset="quick">
+                Quick
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="primary" animationPreset="medium">
+                Medium
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="primary" animationPreset="slow">
+                Slow
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="primary" animationPreset="bouncy">
+                Bouncy
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="primary" animationPreset="100ms">
+                100ms
+              </EnhancedAnimatedButton>
+            </XStack>
+          </YStack>
+
+          {/* Disabled States */}
+          <YStack gap="$3">
+            <H3>Disabled States</H3>
+            <XStack gap="$2" flexWrap="wrap" ai="center">
+              <EnhancedAnimatedButton variant="primary" disabled>
+                Disabled Primary
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="secondary" disabled>
+                Disabled Secondary
+              </EnhancedAnimatedButton>
+              <EnhancedAnimatedButton variant="pulse" disabled>
+                Disabled Pulse
+              </EnhancedAnimatedButton>
+              <LoadingButton loading disabled>
+                Disabled Loading
+              </LoadingButton>
+            </XStack>
+          </YStack>
+
+          {/* Complex Combinations */}
+          <YStack gap="$3">
+            <H3>Complex Combinations</H3>
+            <XStack gap="$2" flexWrap="wrap" ai="center">
+              <LoadingButton
+                variant="bouncy"
+                size="$5"
+                theme="green"
+                loading={uatLoadingStates['complex-1']}
+                loadingText="Processing..."
+                onPress={() => toggleUATLoading('complex-1')}
+              >
+                <Save size={20} />
+                Large Green Bouncy
+              </LoadingButton>
+
+              <SuccessButton
+                variant="bump"
+                size="$3"
+                theme="purple"
+                animationPreset="slow"
+                showSuccess={uatSuccessStates['complex-2']}
+                successIcon={<Heart />}
+                onPress={() => toggleUATSuccess('complex-2')}
+              >
+                <Heart size={14} />
+                Small Purple Bump
+              </SuccessButton>
+
+              <EnhancedAnimatedButton
+                variant="lazy"
+                size="$6"
+                theme="orange"
+                animationPreset="medium"
+              >
+                <Star size={24} />
+                XL Orange Lazy
+              </EnhancedAnimatedButton>
+            </XStack>
+          </YStack>
+
+          {/* UAT Checklist */}
+          <YStack gap="$2" p="$4" backgroundColor="$green2" borderRadius="$6">
+            <Text fontWeight="700" size="$4" color="$green11">
+              ✅ UAT Testing Checklist
+            </Text>
+            <YStack gap="$1">
+              <Text size="$3" color="$green11">
+                <Text fontWeight="600">Visual:</Text> All variants display correctly, consistent
+                spacing, proper theming
+              </Text>
+              <Text size="$3" color="$green11">
+                <Text fontWeight="600">Interactions:</Text> Press animations feel responsive, hover
+                states work on web
+              </Text>
+              <Text size="$3" color="$green11">
+                <Text fontWeight="600">Loading:</Text> Spinners appear/disappear smoothly, text
+                changes appropriately
+              </Text>
+              <Text size="$3" color="$green11">
+                <Text fontWeight="600">Success:</Text> Icons center properly, text fades out,
+                animations complete
+              </Text>
+              <Text size="$3" color="$green11">
+                <Text fontWeight="600">Cross-platform:</Text> Consistent behavior on web and mobile
+              </Text>
+              <Text size="$3" color="$green11">
+                <Text fontWeight="600">Performance:</Text> No stuttering, smooth 60fps animations
+              </Text>
+              <Text size="$3" color="$green11">
+                <Text fontWeight="600">Accessibility:</Text> Focus states, screen reader
+                compatibility
+              </Text>
+            </YStack>
+          </YStack>
+        </Card>
+
+        {/* Cleanup Complete */}
+        <Card p="$4" gap="$4" borderColor="$green7" borderWidth={2}>
           <YStack gap="$2">
-            <H2 color="$orange11">⚠️ Bento Button Collections (Pending Deprecation)</H2>
-            <Paragraph size="$3" color="$orange11">
-              These components are scheduled for removal after UAT approval of enhanced buttons
-              above. They are currently located in
-              packages/ui/src/components/bento/animation/buttons/
+            <H2 color="$green11">✅ Button Component Elevation Complete</H2>
+            <Paragraph size="$3" color="$green11">
+              Successfully elevated bento button patterns to core AnimatedButton components.
+              Deprecated components have been cleaned up.
             </Paragraph>
           </YStack>
 
           <YStack gap="$4">
-            <YStack gap="$2" opacity={0.6}>
-              <H3>🔄 ButtonLoading.tsx</H3>
+            <YStack gap="$2">
+              <H3>🗑️ Cleaned Up Components</H3>
               <Text color="$gray11" size="$2">
-                Legacy loading button demo - replaced by LoadingButton component above
+                ✅ ButtonLoading.tsx - Replaced by LoadingButton{'\n'}✅ ButtonPulse.tsx -
+                Integrated into EnhancedAnimatedButton variants{'\n'}✅ IconCenterButton.tsx -
+                Replaced by SuccessButton
               </Text>
             </YStack>
 
-            <YStack gap="$2" opacity={0.6}>
-              <H3>🎯 ButtonPulse.tsx</H3>
+            <YStack gap="$2">
+              <H3>📦 New Core Components</H3>
               <Text color="$gray11" size="$2">
-                Legacy pulse animation demo - integrated into EnhancedAnimatedButton variants
-              </Text>
-            </YStack>
-
-            <YStack gap="$2" opacity={0.6}>
-              <H3>✅ IconCenterButton.tsx</H3>
-              <Text color="$gray11" size="$2">
-                Legacy icon centering demo - replaced by SuccessButton component above
+                • EnhancedAnimatedButton - Main component with all animation variants{'\n'}•
+                LoadingButton - Clean API for loading states{'\n'}• SuccessButton - Icon centering
+                success animations{'\n'}• AnimatedButton - Legacy component (preserved for
+                compatibility)
               </Text>
             </YStack>
           </YStack>
 
-          <YStack gap="$2" p="$3" backgroundColor="$yellow2" borderRadius="$4">
-            <Text fontWeight="600" size="$3" color="$yellow11">
-              📋 Manual Testing Checklist
+          <YStack gap="$2" p="$3" backgroundColor="$green2" borderRadius="$4">
+            <Text fontWeight="600" size="$3" color="$green11">
+              🎯 Next Component Candidates
             </Text>
-            <Text size="$2" color="$yellow11">
-              • Test all animation variants on both web and mobile{'\n'}• Verify loading states work
-              correctly{'\n'}• Check success animations and icon centering{'\n'}• Test
-              cross-platform compatibility{'\n'}• Validate theme consistency{'\n'}• Ensure
-              accessibility standards are met
+            <Text size="$2" color="$green11">
+              • Form Inputs (bento/forms/inputs) - High priority{'\n'}• Data Tables
+              (bento/elements/tables) - Complex, high value{'\n'}• Avatar Components
+              (bento/elements/avatars) - Medium priority{'\n'}• Navigation Components (bento/shells)
+              - Layout improvements
             </Text>
           </YStack>
         </Card>
@@ -442,6 +785,453 @@ export function StyleguideScreen() {
                   </Progress>
                 </YStack>
               </YStack>
+            </YStack>
+          </YStack>
+        </Card>
+
+        {/* Enhanced CheckboxToggle Component UAT Testing */}
+        <Card p="$4" gap="$6" borderColor="$purple7" borderWidth={2}>
+          <YStack gap="$3">
+            <H2 color="$purple11">🧪 CheckboxToggle Component - Comprehensive UAT Testing</H2>
+            <Paragraph size="$3" color="$purple11">
+              Unified checkbox and toggle component with multiple variants, enhanced animations, and
+              bento-inspired patterns. Test all combinations of variants, states, sizes, and
+              features.
+            </Paragraph>
+          </YStack>
+
+          {/* Checkbox Variant Testing */}
+          <YStack gap="$4">
+            <H3>Checkbox Variant</H3>
+
+            <YStack gap="$3">
+              <Text fontWeight="600" size="$3">
+                Basic Checkbox States
+              </Text>
+              <YStack gap="$3" p="$3" backgroundColor="$color2" borderRadius="$4">
+                <CheckboxToggle
+                  variant="checkbox"
+                  label="Basic Checkbox"
+                  checked={checkboxToggleStates['checkbox-basic']}
+                  onCheckedChange={() => toggleCheckboxToggle('checkbox-basic')}
+                />
+                <CheckboxToggle
+                  variant="checkbox"
+                  label="Required Field"
+                  required
+                  checked={checkboxToggleStates['checkbox-required']}
+                  onCheckedChange={() => toggleCheckboxToggle('checkbox-required')}
+                />
+                <CheckboxToggle
+                  variant="checkbox"
+                  label="Optional Field"
+                  optional
+                  checked={checkboxToggleStates['checkbox-optional']}
+                  onCheckedChange={() => toggleCheckboxToggle('checkbox-optional')}
+                />
+                <CheckboxToggle
+                  variant="checkbox"
+                  label="Error State"
+                  error
+                  checked={checkboxToggleStates['checkbox-error']}
+                  onCheckedChange={() => toggleCheckboxToggle('checkbox-error')}
+                />
+                <CheckboxToggle variant="checkbox" label="Disabled State" disabled checked={true} />
+              </YStack>
+            </YStack>
+
+            <YStack gap="$3">
+              <Text fontWeight="600" size="$3">
+                Checkbox Sizes & Animation Presets
+              </Text>
+              <XStack gap="$3" flexWrap="wrap" p="$3" backgroundColor="$color2" borderRadius="$4">
+                <CheckboxToggle
+                  variant="checkbox"
+                  size="$2"
+                  label="Small"
+                  animationPreset="quick"
+                  checked={checkboxToggleStates['checkbox-small'] || false}
+                  onCheckedChange={() => toggleCheckboxToggle('checkbox-small')}
+                />
+                <CheckboxToggle
+                  variant="checkbox"
+                  size="$4"
+                  label="Medium"
+                  animationPreset="medium"
+                  checked={checkboxToggleStates['checkbox-medium'] || false}
+                  onCheckedChange={() => toggleCheckboxToggle('checkbox-medium')}
+                />
+                <CheckboxToggle
+                  variant="checkbox"
+                  size="$6"
+                  label="Large"
+                  animationPreset="bouncy"
+                  checked={checkboxToggleStates['checkbox-large'] || false}
+                  onCheckedChange={() => toggleCheckboxToggle('checkbox-large')}
+                />
+              </XStack>
+            </YStack>
+
+            <YStack gap="$3">
+              <Text fontWeight="600" size="$3">
+                Custom Icons
+              </Text>
+              <XStack gap="$4" flexWrap="wrap" p="$3" backgroundColor="$color2" borderRadius="$4">
+                <CheckboxToggle
+                  variant="checkbox"
+                  label="Heart Icon"
+                  checkedIcon={<Heart size={16} />}
+                  checked={checkboxToggleStates['checkbox-heart'] || false}
+                  onCheckedChange={() => toggleCheckboxToggle('checkbox-heart')}
+                />
+                <CheckboxToggle
+                  variant="checkbox"
+                  label="Star Icon"
+                  checkedIcon={<Star size={16} />}
+                  checked={checkboxToggleStates['checkbox-star'] || false}
+                  onCheckedChange={() => toggleCheckboxToggle('checkbox-star')}
+                />
+              </XStack>
+            </YStack>
+          </YStack>
+
+          {/* Toggle Variant Testing */}
+          <YStack gap="$4">
+            <H3>Toggle/Switch Variant</H3>
+
+            <YStack gap="$3">
+              <Text fontWeight="600" size="$3">
+                Basic Toggle States
+              </Text>
+              <YStack gap="$3" p="$3" backgroundColor="$color2" borderRadius="$4">
+                <CheckboxToggle
+                  variant="toggle"
+                  label="Basic Toggle"
+                  checked={checkboxToggleStates['toggle-basic']}
+                  onCheckedChange={() => toggleCheckboxToggle('toggle-basic')}
+                />
+                <CheckboxToggle
+                  variant="toggle"
+                  label="Toggle with Icons"
+                  checkedIcon={<Check size={10} />}
+                  uncheckedIcon={<X size={10} />}
+                  checked={checkboxToggleStates['toggle-icons']}
+                  onCheckedChange={() => toggleCheckboxToggle('toggle-icons')}
+                />
+                <CheckboxToggle
+                  variant="toggle"
+                  label="Error State"
+                  error
+                  checked={checkboxToggleStates['toggle-error']}
+                  onCheckedChange={() => toggleCheckboxToggle('toggle-error')}
+                />
+                <CheckboxToggle variant="toggle" label="Disabled State" disabled checked={true} />
+              </YStack>
+            </YStack>
+
+            <YStack gap="$3">
+              <Text fontWeight="600" size="$3">
+                Switch with Icons Examples
+              </Text>
+              <YStack gap="$3" p="$3" backgroundColor="$color2" borderRadius="$4">
+                <CheckboxToggle
+                  variant="toggle"
+                  label="On/Off Switch"
+                  checkedIcon={<Check size={10} />}
+                  uncheckedIcon={<X size={10} />}
+                  checked={checkboxToggleStates['toggle-onoff'] || false}
+                  onCheckedChange={() => toggleCheckboxToggle('toggle-onoff')}
+                />
+                <CheckboxToggle
+                  variant="toggle"
+                  label="Notifications"
+                  checkedIcon={<Bell size={10} />}
+                  uncheckedIcon={<Bell size={10} />}
+                  checked={checkboxToggleStates['toggle-notifications'] || false}
+                  onCheckedChange={() => toggleCheckboxToggle('toggle-notifications')}
+                />
+                <CheckboxToggle
+                  variant="toggle"
+                  label="Dark Mode"
+                  checkedIcon={<Star size={10} />}
+                  uncheckedIcon={<Star size={10} />}
+                  checked={checkboxToggleStates['toggle-darkmode'] || false}
+                  onCheckedChange={() => toggleCheckboxToggle('toggle-darkmode')}
+                />
+                <CheckboxToggle
+                  variant="toggle"
+                  label="Heart/Star Toggle"
+                  checkedIcon={<Heart size={10} />}
+                  uncheckedIcon={<Star size={10} />}
+                  checked={checkboxToggleStates['toggle-hearstar'] || false}
+                  onCheckedChange={() => toggleCheckboxToggle('toggle-hearstar')}
+                />
+              </YStack>
+            </YStack>
+
+            <YStack gap="$3">
+              <Text fontWeight="600" size="$3">
+                Toggle Sizes & Animations
+              </Text>
+              <XStack
+                gap="$4"
+                flexWrap="wrap"
+                ai="center"
+                p="$3"
+                backgroundColor="$color2"
+                borderRadius="$4"
+              >
+                <CheckboxToggle
+                  variant="toggle"
+                  size="$2"
+                  label="Small"
+                  animationPreset="quick"
+                  checked={checkboxToggleStates['toggle-small'] || false}
+                  onCheckedChange={() => toggleCheckboxToggle('toggle-small')}
+                />
+                <CheckboxToggle
+                  variant="toggle"
+                  size="$4"
+                  label="Medium"
+                  animationPreset="bouncy"
+                  checked={checkboxToggleStates['toggle-medium'] || false}
+                  onCheckedChange={() => toggleCheckboxToggle('toggle-medium')}
+                />
+                <CheckboxToggle
+                  variant="toggle"
+                  size="$6"
+                  label="Large"
+                  animationPreset="slow"
+                  checked={checkboxToggleStates['toggle-large'] || false}
+                  onCheckedChange={() => toggleCheckboxToggle('toggle-large')}
+                />
+              </XStack>
+            </YStack>
+          </YStack>
+
+          {/* Card Variant Testing */}
+          <YStack gap="$4">
+            <H3>Card Variant</H3>
+
+            <YStack gap="$3">
+              <Text fontWeight="600" size="$3">
+                Card Layouts
+              </Text>
+              <XStack gap="$3" flexWrap="wrap">
+                <CheckboxToggle
+                  variant="card"
+                  label="Basic Card"
+                  description="Click anywhere on this card to toggle"
+                  checked={checkboxToggleStates['card-basic']}
+                  onCheckedChange={() => toggleCheckboxToggle('card-basic')}
+                  width={200}
+                />
+                <CheckboxToggle
+                  variant="card"
+                  label="Detailed Card"
+                  description="This card has more detailed description text to test text wrapping and layout"
+                  checked={checkboxToggleStates['card-with-desc']}
+                  onCheckedChange={() => toggleCheckboxToggle('card-with-desc')}
+                  width={220}
+                />
+                <CheckboxToggle
+                  variant="card"
+                  label="Error Card"
+                  description="This card shows error styling"
+                  error
+                  checked={checkboxToggleStates['card-error']}
+                  onCheckedChange={() => toggleCheckboxToggle('card-error')}
+                  width={200}
+                />
+              </XStack>
+            </YStack>
+
+            <YStack gap="$3">
+              <Text fontWeight="600" size="$3">
+                Card Sizes
+              </Text>
+              <XStack gap="$3" flexWrap="wrap">
+                <CheckboxToggle
+                  variant="card"
+                  size="$2"
+                  label="Small Card"
+                  description="Compact card layout"
+                  checked={checkboxToggleStates['card-small'] || false}
+                  onCheckedChange={() => toggleCheckboxToggle('card-small')}
+                  width={180}
+                />
+                <CheckboxToggle
+                  variant="card"
+                  size="$6"
+                  label="Large Card"
+                  description="Spacious card layout with more padding"
+                  checked={checkboxToggleStates['card-large'] || false}
+                  onCheckedChange={() => toggleCheckboxToggle('card-large')}
+                  width={240}
+                />
+              </XStack>
+            </YStack>
+          </YStack>
+
+          {/* Minimal Variant Testing */}
+          <YStack gap="$4">
+            <H3>Minimal Variant</H3>
+
+            <YStack gap="$3">
+              <Text fontWeight="600" size="$3">
+                Minimal Layouts
+              </Text>
+              <YStack gap="$3" p="$3" backgroundColor="$color2" borderRadius="$4">
+                <CheckboxToggle
+                  variant="minimal"
+                  label="Minimal Checkbox"
+                  checked={checkboxToggleStates['minimal-basic']}
+                  onCheckedChange={() => toggleCheckboxToggle('minimal-basic')}
+                />
+                <CheckboxToggle
+                  variant="minimal"
+                  label="Required Field"
+                  required
+                  checked={checkboxToggleStates['minimal-required']}
+                  onCheckedChange={() => toggleCheckboxToggle('minimal-required')}
+                />
+                <CheckboxToggle
+                  variant="minimal"
+                  label="Custom Icon"
+                  checkedIcon={<Star size={12} />}
+                  checked={checkboxToggleStates['minimal-star'] || false}
+                  onCheckedChange={() => toggleCheckboxToggle('minimal-star')}
+                />
+                <CheckboxToggle variant="minimal" label="Disabled State" disabled checked={true} />
+              </YStack>
+            </YStack>
+          </YStack>
+
+          {/* Theme Integration Testing */}
+          <YStack gap="$4">
+            <H3>Theme Integration</H3>
+            <XStack gap="$3" flexWrap="wrap">
+              <Theme name="blue">
+                <CheckboxToggle
+                  variant="checkbox"
+                  label="Blue Theme"
+                  checked={checkboxToggleStates['theme-blue'] || false}
+                  onCheckedChange={() => toggleCheckboxToggle('theme-blue')}
+                />
+              </Theme>
+              <Theme name="green">
+                <CheckboxToggle
+                  variant="toggle"
+                  label="Green Theme"
+                  checked={checkboxToggleStates['theme-green'] || false}
+                  onCheckedChange={() => toggleCheckboxToggle('theme-green')}
+                />
+              </Theme>
+              <Theme name="red">
+                <CheckboxToggle
+                  variant="card"
+                  label="Red Theme"
+                  description="Themed card variant"
+                  checked={checkboxToggleStates['theme-red'] || false}
+                  onCheckedChange={() => toggleCheckboxToggle('theme-red')}
+                  width={180}
+                />
+              </Theme>
+              <Theme name="purple">
+                <CheckboxToggle
+                  variant="minimal"
+                  label="Purple Theme"
+                  checked={checkboxToggleStates['theme-purple'] || false}
+                  onCheckedChange={() => toggleCheckboxToggle('theme-purple')}
+                />
+              </Theme>
+            </XStack>
+          </YStack>
+
+          {/* Animation Showcase */}
+          <YStack gap="$4">
+            <H3>Animation Presets Showcase</H3>
+            <XStack gap="$3" flexWrap="wrap" ai="center">
+              <CheckboxToggle
+                variant="checkbox"
+                label="Quick"
+                animationPreset="quick"
+                checked={checkboxToggleStates['anim-quick'] || false}
+                onCheckedChange={() => toggleCheckboxToggle('anim-quick')}
+              />
+              <CheckboxToggle
+                variant="toggle"
+                label="Medium"
+                animationPreset="medium"
+                checked={checkboxToggleStates['anim-medium'] || false}
+                onCheckedChange={() => toggleCheckboxToggle('anim-medium')}
+              />
+              <CheckboxToggle
+                variant="checkbox"
+                label="Slow"
+                animationPreset="slow"
+                checked={checkboxToggleStates['anim-slow'] || false}
+                onCheckedChange={() => toggleCheckboxToggle('anim-slow')}
+              />
+              <CheckboxToggle
+                variant="toggle"
+                label="Bouncy"
+                animationPreset="bouncy"
+                checked={checkboxToggleStates['anim-bouncy'] || false}
+                onCheckedChange={() => toggleCheckboxToggle('anim-bouncy')}
+              />
+              <CheckboxToggle
+                variant="minimal"
+                label="100ms"
+                animationPreset="100ms"
+                checked={checkboxToggleStates['anim-100ms'] || false}
+                onCheckedChange={() => toggleCheckboxToggle('anim-100ms')}
+              />
+            </XStack>
+          </YStack>
+
+          {/* UAT Checklist */}
+          <YStack gap="$2" p="$4" backgroundColor="$purple2" borderRadius="$6">
+            <Text fontWeight="700" size="$4" color="$purple11">
+              ✅ CheckboxToggle UAT Testing Checklist
+            </Text>
+            <YStack gap="$1">
+              <Text size="$3" color="$purple11">
+                <Text fontWeight="600">Visual:</Text> All variants render correctly, consistent
+                spacing, proper theming
+              </Text>
+              <Text size="$3" color="$purple11">
+                <Text fontWeight="600">Interactions:</Text> Click/tap to toggle works, keyboard
+                navigation (Tab, Space, Enter)
+              </Text>
+              <Text size="$3" color="$purple11">
+                <Text fontWeight="600">States:</Text> Checked/unchecked, disabled, error,
+                required/optional indicators
+              </Text>
+              <Text size="$3" color="$purple11">
+                <Text fontWeight="600">Animations:</Text> Smooth transitions, different presets work
+                properly
+              </Text>
+              <Text size="$3" color="$purple11">
+                <Text fontWeight="600">Variants:</Text> Checkbox, toggle, card, minimal all function
+                correctly
+              </Text>
+              <Text size="$3" color="$purple11">
+                <Text fontWeight="600">Sizes:</Text> Small, medium, large sizes scale appropriately
+              </Text>
+              <Text size="$3" color="$purple11">
+                <Text fontWeight="600">Icons:</Text> Custom icons display correctly, proper sizing
+              </Text>
+              <Text size="$3" color="$purple11">
+                <Text fontWeight="600">Themes:</Text> Color themes apply correctly across variants
+              </Text>
+              <Text size="$3" color="$purple11">
+                <Text fontWeight="600">Cross-platform:</Text> Consistent behavior on web and mobile
+              </Text>
+              <Text size="$3" color="$purple11">
+                <Text fontWeight="600">Accessibility:</Text> Focus states, ARIA attributes, screen
+                reader support
+              </Text>
             </YStack>
           </YStack>
         </Card>

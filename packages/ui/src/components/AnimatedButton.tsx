@@ -69,6 +69,7 @@ export const AnimatedButton = styled(Button, {
   name: 'AnimatedButton',
   elevation: '$4',
   borderRadius: '$4',
+  fontFamily: '$body',
   fontWeight: '600',
   animation: '100ms',
 
@@ -248,7 +249,7 @@ export const EnhancedAnimatedButton = forwardRef<any, AnimatedButtonProps>(
                 opacity={1}
               />
             </Button.Icon>
-            <Button.Text>{loadingText || 'Loading...'}</Button.Text>
+            <Button.Text fontFamily="$body">{loadingText || 'Loading...'}</Button.Text>
           </View>
         )}
 
@@ -264,6 +265,7 @@ export const EnhancedAnimatedButton = forwardRef<any, AnimatedButtonProps>(
               <Button.Icon>{successIcon}</Button.Icon>
             </View>
             <Button.Text
+              fontFamily="$body"
               animation={disableAnimations ? undefined : 'medium'}
               x={buttonWidth}
               opacity={0}
@@ -274,26 +276,7 @@ export const EnhancedAnimatedButton = forwardRef<any, AnimatedButtonProps>(
         )}
 
         {/* Normal state */}
-        {!loading && !isSuccess && (
-          <AnimatePresence>
-            <View
-              key="button-content"
-              animation={disableAnimations ? undefined : 'quick'}
-              opacity={1}
-              scale={1}
-              enterStyle={{
-                opacity: 0,
-                scale: 0.9,
-              }}
-              exitStyle={{
-                opacity: 0,
-                scale: 0.9,
-              }}
-            >
-              {children}
-            </View>
-          </AnimatePresence>
-        )}
+        {!loading && !isSuccess && children}
       </AnimatedButton>
     )
   }

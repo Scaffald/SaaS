@@ -27,7 +27,7 @@ import {
   styled,
 } from 'tamagui'
 import { useMedia } from 'tamagui'
-import { IconCenterButton } from '../../animation/buttons/IconCenterButton'
+import { SuccessButton } from '../../../AnimatedButton'
 import { Input } from '../../forms/inputs/components/inputsParts'
 
 const bagImages = ['bag1.jpg', 'bag2.jpg', 'bag3.webp', 'bag4.webp']
@@ -163,7 +163,16 @@ const CartTotal = ({ items }: { items: Items }) => {
                 />
               </Input.Section>
               <Input.Section>
-                <IconCenterButton />
+                <SuccessButton
+                  variant="primary"
+                  size="$3"
+                  successIcon={<Ticket />}
+                  onPress={() => {
+                    // Apply promo code logic would go here
+                  }}
+                >
+                  Apply
+                </SuccessButton>
               </Input.Section>
             </Input.Box>
           </Input>
