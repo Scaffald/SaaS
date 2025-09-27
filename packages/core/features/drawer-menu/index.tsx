@@ -41,13 +41,7 @@ export const DrawerMenu = (props: DrawerContentComponentProps) => {
   )
 
   return (
-    <YStack
-      flex={1}
-      bg="$color2"
-      pt={top}
-      pb={bottom}
-      boxShadow="0 0 30px 0 rgba(0, 0, 0, 0.15)"
-    >
+    <YStack flex={1} bg="$color2" pt={top} pb={bottom} boxShadow="0 0 30px 0 rgba(0, 0, 0, 0.15)">
       <DrawerContent
         pathname={pathname}
         onNavigate={handleNavigate}

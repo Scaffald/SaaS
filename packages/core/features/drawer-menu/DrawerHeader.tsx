@@ -43,10 +43,7 @@ export const DrawerHeader = ({ onNavigate }: DrawerHeaderProps) => {
           py="$0"
           bg="transparent"
           onPress={handleManagePress}
-          title={
-              (profile as unknown as { name?: string })?.name || 'Rajeev Ranjan'
-              
-          }
+          title={(profile as unknown as { name?: string })?.name || 'Rajeev Ranjan'}
           subTitle={'Partner ID: 304404'}
           icon={() => (
             <Avatar circular size="$3">
