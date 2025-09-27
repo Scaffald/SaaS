@@ -12,13 +12,6 @@ export const ROUTES = {
   // Public routes
   HOME: '/',
   USER_PROFILE: '/user',
-  STYLEGUIDE: '/styleguide',
-  STYLEGUIDE_TYPOGRAPHY: '/styleguide/typography',
-  STYLEGUIDE_BUTTONS: '/styleguide/buttons',
-  STYLEGUIDE_FORMS: '/styleguide/forms',
-  STYLEGUIDE_DATA_DISPLAY: '/styleguide/data-display',
-  STYLEGUIDE_INTERACTIVE: '/styleguide/interactive',
-  STYLEGUIDE_LAYOUT: '/styleguide/layout',
 
   // Protected routes (dashboard context)
   DASHBOARD: '/dashboard',
@@ -37,6 +30,13 @@ export const ROUTES = {
   PROFILE_CONTACT: '/dashboard/profile/contact',
   ORGANIZATIONS: '/dashboard/organizations',
   ORGANIZATIONS_NEW: '/dashboard/organizations/new',
+  STYLEGUIDE: '/dashboard/styleguide',
+  STYLEGUIDE_TYPOGRAPHY: '/dashboard/styleguide/typography',
+  STYLEGUIDE_BUTTONS: '/dashboard/styleguide/buttons',
+  STYLEGUIDE_FORMS: '/dashboard/styleguide/forms',
+  STYLEGUIDE_DATA_DISPLAY: '/dashboard/styleguide/data-display',
+  STYLEGUIDE_INTERACTIVE: '/dashboard/styleguide/interactive',
+  STYLEGUIDE_LAYOUT: '/dashboard/styleguide/layout',
 } as const
 
 // Legacy route mappings for backward compatibility during migration
