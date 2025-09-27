@@ -1,17 +1,13 @@
-import { StyleguideScreen } from '@app/core/features/styleguide/screen'
-import Head from 'next/head'
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 
 export default function StyleguidePage() {
-  return (
-    <>
-      <Head>
-        <title>Component Styleguide - SCF Neue</title>
-        <meta
-          name="description"
-          content="A comprehensive showcase of all UI components used throughout the SCF Neue application."
-        />
-      </Head>
-      <StyleguideScreen />
-    </>
-  )
+  const router = useRouter()
+
+  useEffect(() => {
+    // Redirect to the new styleguide structure
+    router.replace('/styleguide/typography')
+  }, [router])
+
+  return null
 }

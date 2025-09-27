@@ -13,6 +13,12 @@ export const ROUTES = {
   HOME: '/',
   USER_PROFILE: '/user',
   STYLEGUIDE: '/styleguide',
+  STYLEGUIDE_TYPOGRAPHY: '/styleguide/typography',
+  STYLEGUIDE_BUTTONS: '/styleguide/buttons',
+  STYLEGUIDE_FORMS: '/styleguide/forms',
+  STYLEGUIDE_DATA_DISPLAY: '/styleguide/data-display',
+  STYLEGUIDE_INTERACTIVE: '/styleguide/interactive',
+  STYLEGUIDE_LAYOUT: '/styleguide/layout',
 
   // Protected routes (dashboard context)
   DASHBOARD: '/dashboard',
