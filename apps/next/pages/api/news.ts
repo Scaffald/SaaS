@@ -1,11 +1,27 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+import {
+  createFallbackArticles,
+  parseRssFeed,
+  type NewsArticle,
+} from '@app/core/features/home/components/dashboard/right-rail/news-parser'
 import { NEWS_SOURCE_LOOKUP } from '@app/core/features/home/components/dashboard/right-rail/news-sources'
+
+const ARTICLE_LIMIT = 8
 
 const CACHE_TTL_SECONDS = 300 // 5 minutes
 const STALE_WHILE_REVALIDATE_SECONDS = 600 // 10 minutes
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+type NewsResponse = {
+  articles: NewsArticle[]
+}
+
+const isProd = process.env.NODE_ENV === 'production'
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<NewsResponse | { error: string }>
+) {
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET')
     res.status(405).end('Method Not Allowed')
@@ -40,16 +56,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const xml = await response.text()
+    const articles = parseRssFeed(xml).slice(0, ARTICLE_LIMIT)
 
-    res.setHeader('Content-Type', 'application/xml; charset=utf-8')
+    res.setHeader('Content-Type', 'application/json; charset=utf-8')
     res.setHeader(
       'Cache-Control',
       `s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${STALE_WHILE_REVALIDATE_SECONDS}`
     )
     res.setHeader('Vary', 'Accept-Encoding')
-    res.status(200).send(xml)
+    res.status(200).json({ articles })
   } catch (error) {
     console.warn('News API error:', error)
+    if (!isProd) {
+      const fallbackArticles = createFallbackArticles(newsSource)
+      res.status(200).json({ articles: fallbackArticles })
+      return
+    }
+
     res.status(502).json({ error: 'Unable to reach RSS source' })
   }
 }
