@@ -8,16 +8,40 @@ export type DashboardLayoutProps = {
    */
   header?: AppHeaderProps | null
   /**
-   * Main content
+   * Left column content
    */
-  children: React.ReactNode
+  leftContent?: React.ReactNode
+  /**
+   * Right column content
+   */
+  rightContent?: React.ReactNode
+  /**
+   * Left column width (can be number for pixels or string for percentage)
+   */
+  leftWidth?: number | string
   /**
    * Whether to hide the header completely
    */
   hideHeader?: boolean
+  /**
+   * Whether this is a home page (affects mobile layout)
+   */
+  isHomePage?: boolean
+  /**
+   * Main content (for backward compatibility)
+   */
+  children?: React.ReactNode
 }
 
-export const DashboardLayout = ({ header, children, hideHeader = false }: DashboardLayoutProps) => {
+export const DashboardLayout = ({
+  header,
+  leftContent,
+  rightContent,
+  leftWidth = 300,
+  hideHeader = false,
+  isHomePage = false,
+  children,
+}: DashboardLayoutProps) => {
   // Default header with hamburger menu
   const defaultHeader: AppHeaderProps = {
     title: 'Dashboard',
@@ -25,13 +49,17 @@ export const DashboardLayout = ({ header, children, hideHeader = false }: Dashbo
     showNotifications: true,
   }
 
+  // For mobile, prioritize leftContent on home pages, otherwise rightContent
+  const mobileContent =
+    isHomePage && leftContent ? leftContent : rightContent || leftContent || children
+
   return (
     <YStack f={1} backgroundColor="$color1">
       {/* Header */}
       {!hideHeader && <AppHeader {...(header === null ? {} : { ...defaultHeader, ...header })} />}
 
       {/* Content */}
-      <ColumnWrapper>{children}</ColumnWrapper>
+      <ColumnWrapper>{mobileContent}</ColumnWrapper>
     </YStack>
   )
 }

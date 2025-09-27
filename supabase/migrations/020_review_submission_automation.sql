@@ -206,7 +206,6 @@ drop trigger if exists trg_reviews_process_submission on public.reviews;
 create trigger trg_reviews_process_submission
   after insert or update of status on public.reviews
   for each row
-  when (new.status = 'submitted' and (TG_OP = 'INSERT' or (TG_OP = 'UPDATE' and old.status is distinct from new.status)))
   execute function public.tg_reviews_after_submission();
 
 -- View summarizing review highlights per user
@@ -352,7 +351,7 @@ begin
       select 1 from cron.job
       where jobname = 'release_pending_reviews'
     ) then
-      perform cron.schedule('release_pending_reviews', '*/15 * * * *', $$select public.release_pending_reviews();$$);
+      perform cron.schedule('release_pending_reviews', '*/15 * * * *', 'select public.release_pending_reviews();');
     end if;
   end if;
 end;
