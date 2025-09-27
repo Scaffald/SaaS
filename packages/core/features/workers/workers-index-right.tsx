@@ -3,7 +3,6 @@
 import { useMemo, useState, useRef, useCallback, useEffect } from 'react'
 import { Button, Paragraph, Separator, Sheet, Text, XStack, YStack, useMedia } from '@app/ui'
 import { Filter, RefreshCw, MapPin } from '@tamagui/lucide-icons'
-import { reverseGeocodeAsync } from 'expo-location'
 
 import { FilterBar } from './components/FilterBar'
 import { RadiusSlider } from './components/RadiusSlider'
@@ -38,9 +37,8 @@ const INITIAL_FILTERS: ActiveFilter[] = [
   },
 ]
 
-export const DiscoverMapScreen = () => {
-  const media = useMedia()
-  const isSmallScreen = media.sm && !media.gtSm
+export const WorkersIndexRight = () => {
+  const _media = useMedia()
   const resultListRef = useRef<ResultListRef>(null)
 
   // Location functionality
@@ -81,23 +79,9 @@ export const DiscoverMapScreen = () => {
   // Update location query when user location changes
   const updateLocationQuery = useCallback(async (lat: number, lng: number) => {
     try {
-      // For native, we can use Expo Location's reverse geocoding
-      const addresses = await reverseGeocodeAsync({ latitude: lat, longitude: lng })
-
-      if (addresses.length > 0) {
-        const address = addresses[0]
-        const city = address.city || address.subregion
-        const state = address.region
-        const country = address.country
-
-        if (city && state) {
-          setLocationQuery(`${city}, ${state}, ${country}`)
-        } else {
-          setLocationQuery(`Current Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`)
-        }
-      } else {
-        setLocationQuery(`Current Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`)
-      }
+      // For web, we can use a simple approach or integrate with a geocoding service
+      // For now, we'll use a basic format
+      setLocationQuery(`Current Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`)
     } catch (error) {
       console.error('Failed to update location query:', error)
       setLocationQuery(`Current Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`)
@@ -138,12 +122,6 @@ export const DiscoverMapScreen = () => {
   const handleMarkerPress = (profileId: string) => {
     setSelectedProfileId(profileId)
 
-    // Add haptic feedback on native
-    if (Platform.OS !== 'web') {
-      // Note: You would need to import Haptics from expo-haptics for this to work
-      // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-    }
-
     // Scroll to card with slight delay for better UX
     setTimeout(() => {
       resultListRef.current?.scrollToCard(profileId)
@@ -151,7 +129,7 @@ export const DiscoverMapScreen = () => {
   }
 
   return (
-    <YStack flex={1} backgroundColor="$backgroundColor" height="100vh" overflow="hidden">
+    <YStack flex={1} backgroundColor="$background" height="100vh" overflow="hidden">
       <YStack padding="$5" gap="$4" flexShrink={0}>
         <FilterBar
           locationQuery={locationQuery}
@@ -173,49 +151,26 @@ export const DiscoverMapScreen = () => {
       </YStack>
 
       <YStack flex={1} paddingHorizontal="$5" paddingBottom="$5" overflow="hidden">
-        {isSmallScreen ? (
-          <YStack gap="$4" flex={1} overflow="hidden">
-            <YStack height={320} flexShrink={0}>
-              <TalentMap
-                center={mapCenter}
-                markers={markers}
-                radiusMeters={radiusMeters}
-                selectedMarkerId={selectedProfileId}
-                onMarkerPress={handleMarkerPress}
-              />
-            </YStack>
-            <YStack flex={1} overflow="hidden">
-              <ResultList
-                ref={resultListRef}
-                profiles={talentProfiles}
-                selectedId={selectedProfileId}
-                onSelect={setSelectedProfileId}
-                isLoading={isLoading}
-              />
-            </YStack>
+        <XStack flex={1} gap="$4" overflow="hidden">
+          <YStack flexBasis={380} maxWidth={420} gap="$3" overflow="hidden">
+            <ResultList
+              ref={resultListRef}
+              profiles={talentProfiles}
+              selectedId={selectedProfileId}
+              onSelect={setSelectedProfileId}
+              isLoading={isLoading}
+            />
           </YStack>
-        ) : (
-          <XStack flex={1} gap="$4" overflow="hidden">
-            <YStack flexBasis={380} maxWidth={420} gap="$3" overflow="hidden">
-              <ResultList
-                ref={resultListRef}
-                profiles={talentProfiles}
-                selectedId={selectedProfileId}
-                onSelect={setSelectedProfileId}
-                isLoading={isLoading}
-              />
-            </YStack>
-            <YStack flex={1} overflow="hidden">
-              <TalentMap
-                center={mapCenter}
-                markers={markers}
-                radiusMeters={radiusMeters}
-                selectedMarkerId={selectedProfileId}
-                onMarkerPress={handleMarkerPress}
-              />
-            </YStack>
-          </XStack>
-        )}
+          <YStack flex={1} overflow="hidden">
+            <TalentMap
+              center={mapCenter}
+              markers={markers}
+              radiusMeters={radiusMeters}
+              selectedMarkerId={selectedProfileId}
+              onMarkerPress={handleMarkerPress}
+            />
+          </YStack>
+        </XStack>
       </YStack>
 
       <Sheet modal open={filtersOpen} onOpenChange={setFiltersOpen} snapPoints={[70]}>
@@ -313,4 +268,4 @@ export const DiscoverMapScreen = () => {
   )
 }
 
-export default DiscoverMapScreen
+export default WorkersIndexRight

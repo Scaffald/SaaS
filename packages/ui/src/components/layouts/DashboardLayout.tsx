@@ -16,9 +16,9 @@ export type DashboardLayoutProps = {
    */
   rightContent?: React.ReactNode
   /**
-   * Left column width
+   * Left column width (can be number for pixels or string for percentage)
    */
-  leftWidth?: number
+  leftWidth?: number | string
   /**
    * Whether to hide the header completely
    */

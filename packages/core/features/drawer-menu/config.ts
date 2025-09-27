@@ -24,8 +24,8 @@ export const generateDashboardDrawerItems = (): DrawerItemConfig[] => {
   )
   if (workersMapRoute) {
     items.push({
-      key: 'discover',
-      title: 'Discover',
+      key: 'workers',
+      title: 'Workers',
       href: workersMapRoute.fullPath,
       icon: Map,
     })

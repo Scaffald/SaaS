@@ -104,7 +104,7 @@ export const HamburgerMenu = ({
       stale: false,
       key: 'hamburger-menu',
       routeNames: [],
-      preloadedRouteKeys: []
+      preloadedRouteKeys: [],
     } as any,
     descriptors: {},
     ...drawerProps,
