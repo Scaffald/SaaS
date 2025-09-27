@@ -12,7 +12,6 @@ import type { DrawerContentProps } from './types'
  */
 export const DrawerContent = ({
   pathname,
-  collapsed = false,
   onNavigate,
   expandedItems,
   onToggleExpanded,
@@ -24,13 +23,14 @@ export const DrawerContent = ({
       maxWidth={320}
       backgroundColor="$color2"
       borderRightWidth={1}
-      borderColor="$color4"
+      // borderColor="$color4"
       px="$4"
       py="$4"
       flex={1}
+      bw={0}
     >
       {/* Top Section - User Profile - Sticky */}
-      <DrawerHeader collapsed={collapsed} onNavigate={onNavigate} />
+      <DrawerHeader onNavigate={onNavigate} />
 
       {/* Scrollable Content - Using DrawerContentScrollView for proper gesture handling */}
       <DrawerContentScrollView
@@ -45,7 +45,6 @@ export const DrawerContent = ({
               key={section.key}
               section={section}
               pathname={pathname}
-              collapsed={collapsed}
               onNavigate={onNavigate}
               expandedItems={expandedItems}
               onToggleExpanded={onToggleExpanded}

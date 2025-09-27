@@ -7,7 +7,6 @@ import { useUser } from '@app/core/utils/useUser'
 import { SolitoImage } from 'solito/image'
 
 type DrawerHeaderProps = {
-  collapsed?: boolean
   onNavigate?: (href: string, event: GestureResponderEvent) => void
 }
 
@@ -15,7 +14,7 @@ type DrawerHeaderProps = {
  * DrawerHeader component renders the user profile section at the top of the drawer
  * Displays user avatar, name, and partner ID with navigation to profile page
  */
-export const DrawerHeader = ({ collapsed = false, onNavigate }: DrawerHeaderProps) => {
+export const DrawerHeader = ({ onNavigate }: DrawerHeaderProps) => {
   const { profile, avatarUrl } = useUser()
   const tokens = getTokens()
   const manageLink = useLink({ href: DASHBOARD_ROUTES.PROFILE?.fullPath || '/dashboard/profile' })
@@ -45,11 +44,10 @@ export const DrawerHeader = ({ collapsed = false, onNavigate }: DrawerHeaderProp
           bg="transparent"
           onPress={handleManagePress}
           title={
-            !collapsed
-              ? (profile as unknown as { name?: string })?.name || 'Rajeev Ranjan'
-              : undefined
+              (profile as unknown as { name?: string })?.name || 'Rajeev Ranjan'
+              
           }
-          subTitle={!collapsed ? 'Partner ID: 304404' : undefined}
+          subTitle={'Partner ID: 304404'}
           icon={() => (
             <Avatar circular size="$3">
               <SolitoImage
@@ -60,7 +58,6 @@ export const DrawerHeader = ({ collapsed = false, onNavigate }: DrawerHeaderProp
               />
             </Avatar>
           )}
-          iconAfter={!collapsed ? <ChevronRight size={16} color="$color10" /> : undefined}
         />
       </Card>
     </YStack>

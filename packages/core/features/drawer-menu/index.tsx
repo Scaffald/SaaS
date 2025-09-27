@@ -16,10 +16,7 @@ export { normalizePath } from './utils'
 export const DrawerMenu = (props: DrawerContentComponentProps) => {
   const { navigation } = props
   const { top, bottom } = useSafeAreaInsets()
-  const tokens = getTokens()
   const pathname = normalizePath(usePathname())
-  const collapsed = false
-  const verticalPadding = tokens.space['$5'].val
 
   // State for managing expanded items
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
@@ -46,13 +43,13 @@ export const DrawerMenu = (props: DrawerContentComponentProps) => {
   return (
     <YStack
       flex={1}
-      backgroundColor="$color2"
-      paddingTop={top + verticalPadding}
-      paddingBottom={bottom + verticalPadding}
+      bg="$color2"
+      pt={top}
+      pb={bottom}
+      boxShadow="0 0 30px 0 rgba(0, 0, 0, 0.15)"
     >
       <DrawerContent
         pathname={pathname}
-        collapsed={collapsed}
         onNavigate={handleNavigate}
         expandedItems={expandedItems}
         onToggleExpanded={toggleExpanded}
