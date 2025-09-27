@@ -1,4 +1,4 @@
-import { DiscoverMapScreen } from '@app/core/features/discover-map'
+import { WorkersScreen } from '@app/core/features/workers'
 import { DashboardLayout } from '@app/ui'
 import Head from 'next/head'
 
@@ -10,7 +10,7 @@ const Page: NextPageWithLayout = () => {
       <Head>
         <title>Workers Map</title>
       </Head>
-      <DiscoverMapScreen />
+      <WorkersScreen />
     </>
   )
 }

@@ -37,7 +37,7 @@ const INITIAL_FILTERS: ActiveFilter[] = [
   },
 ]
 
-export const DiscoverMapScreen = () => {
+export const WorkersScreen = () => {
   const media = useMedia()
   const isSmallScreen = media.sm && !media.gtSm
   const resultListRef = useRef<ResultListRef>(null)
@@ -292,4 +292,4 @@ export const DiscoverMapScreen = () => {
   )
 }
 
-export default DiscoverMapScreen
+export default WorkersScreen
