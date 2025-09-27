@@ -2,6 +2,7 @@ import { YStack, XStack, Button, useMedia, useTheme } from 'tamagui'
 import { Menu, X } from '@tamagui/lucide-icons'
 import { useState, useEffect } from 'react'
 import { DrawerContentComponentProps } from '@react-navigation/drawer'
+import { UnifiedDrawer } from '@app/core/features/drawer'
 
 export type HamburgerMenuProps = {
   /**
@@ -83,7 +84,7 @@ export const HamburgerMenu = ({
           chromeless
           icon={<Menu size={24} />}
           onPress={handleToggle}
-          accessibilityLabel="Open menu"
+          aria-label="Open menu"
           flexShrink={0}
         />
       )}
@@ -140,20 +141,13 @@ export const HamburgerMenu = ({
               />
             </XStack>
 
-            {/* Drawer Content - Placeholder for now to avoid circular dependency */}
-            <YStack flex={1} ai="center" jc="center" p="$4">
-              <YStack gap="$3" ai="center">
-                <Button size="$4" width="100%" onPress={handleClose}>
-                  Dashboard
-                </Button>
-                <Button size="$4" width="100%" onPress={handleClose}>
-                  Profile
-                </Button>
-                <Button size="$4" width="100%" onPress={handleClose}>
-                  Settings
-                </Button>
-              </YStack>
-            </YStack>
+            {/* Drawer Content */}
+            <UnifiedDrawer
+              onNavigate={handleClose}
+              showSafeArea={false}
+              showBoxShadow={false}
+              backgroundColor="transparent"
+            />
           </YStack>
         </>
       )}
