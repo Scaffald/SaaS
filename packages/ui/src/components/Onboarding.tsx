@@ -9,6 +9,7 @@ import {
   ThemeName,
   XStack,
   YStack,
+  useTheme,
   useWindowDimensions,
 } from 'tamagui'
 
@@ -134,6 +135,13 @@ const Point = ({ active, onPress }: { active: boolean; onPress: () => void }) =>
 
 export const Background = ({ backgroundImage }: { backgroundImage?: string }) => {
   const { height } = useWindowDimensions()
+  const theme = useTheme()
+
+  // Determine if theme is dark based on background color
+  const isDarkTheme =
+    theme.color1?.val?.includes('hsl(0, 0%, 10%)') ||
+    theme.color1?.val?.includes('hsl(0, 0%, 20%)') ||
+    theme.color1?.val?.includes('hsl(0, 0%, 30%)')
 
   if (backgroundImage) {
     return (
@@ -149,8 +157,16 @@ export const Background = ({ backgroundImage }: { backgroundImage?: string }) =>
           right={0}
           bottom={0}
         />
-        {/* Overlay for better text readability */}
-        <YStack fullscreen bg="rgba(0, 0, 0, 0.3)" position="absolute" />
+        {/* Theme-sensitive overlay with blur for better text readability */}
+        <YStack
+          fullscreen
+          bg={isDarkTheme ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)'}
+          position="absolute"
+          style={{
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+          }}
+        />
       </YStack>
     )
   }
