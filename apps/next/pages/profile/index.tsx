@@ -1,25 +1,13 @@
-import { HomeLayout } from '@app/core/features/home/layout.web'
-import { ProfileOverviewScreen } from '@app/core/features/profile/overview-screen'
-import { ProfileLayoutSimple } from '@app/core/features/profile/layout-simple.web'
-import Head from 'next/head'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
+import { ROUTES } from '@app/core/constants/routes'
 
-import type { NextPageWithLayout } from '../_app'
+export default function ProfileRedirect() {
+  const router = useRouter()
 
-const Page: NextPageWithLayout = () => {
-  return (
-    <>
-      <Head>
-        <title>Profile</title>
-      </Head>
-      <ProfileOverviewScreen />
-    </>
-  )
+  useEffect(() => {
+    router.replace(ROUTES.PROFILE)
+  }, [router])
+
+  return null
 }
-
-Page.getLayout = (page) => (
-  <HomeLayout fullPage>
-    <ProfileLayoutSimple isProfileHome>{page}</ProfileLayoutSimple>
-  </HomeLayout>
-)
-
-export default Page

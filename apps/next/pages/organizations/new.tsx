@@ -1,25 +1,13 @@
-import { CreateOrganizationScreen } from '@app/core/features/organizations'
-import { HomeLayout } from '@app/core/features/home/layout.web'
-import { OrganizationsLayout } from '@app/core/features/organizations/layout.web'
-import Head from 'next/head'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
+import { ROUTES } from '@app/core/constants/routes'
 
-import type { NextPageWithLayout } from '../_app'
+export default function CreateOrganizationRedirect() {
+  const router = useRouter()
 
-const Page: NextPageWithLayout = () => {
-  return (
-    <>
-      <Head>
-        <title>Create organization</title>
-      </Head>
-      <CreateOrganizationScreen />
-    </>
-  )
+  useEffect(() => {
+    router.replace(ROUTES.ORGANIZATIONS_NEW)
+  }, [router])
+
+  return null
 }
-
-Page.getLayout = (page) => (
-  <HomeLayout fullPage>
-    <OrganizationsLayout>{page}</OrganizationsLayout>
-  </HomeLayout>
-)
-
-export default Page

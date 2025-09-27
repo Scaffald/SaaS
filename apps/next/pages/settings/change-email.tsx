@@ -1,24 +1,12 @@
-import { HomeLayout } from '@app/core/features/home/layout.web'
-import { ChangeEmailScreen } from '@app/core/features/settings/change-email-screen'
-import { SettingsLayout } from '@app/core/features/settings/layout.web'
-import Head from 'next/head'
-import type { NextPageWithLayout } from 'pages/_app'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 
-const Page: NextPageWithLayout = () => {
-  return (
-    <>
-      <Head>
-        <title>Change Email</title>
-      </Head>
-      <ChangeEmailScreen />
-    </>
-  )
+export default function ChangeEmailRedirect() {
+  const router = useRouter()
+
+  useEffect(() => {
+    router.replace('/dashboard/settings/security')
+  }, [router])
+
+  return null
 }
-
-Page.getLayout = (page) => (
-  <HomeLayout fullPage>
-    <SettingsLayout>{page}</SettingsLayout>
-  </HomeLayout>
-)
-
-export default Page

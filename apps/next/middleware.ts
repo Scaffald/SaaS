@@ -8,7 +8,7 @@ import { ROUTES } from '@app/core/constants/routes'
 // put the public routes here - these will be accessed by both guests and users
 const publicRoutes: string[] = [ROUTES.USER_PROFILE + '/']
 // put the authentication routes here - these will only be accessed by guests
-const authRoutes = [ROUTES.LOGIN, ROUTES.RESET_PASSWORD]
+const authRoutes = [ROUTES.AUTH]
 
 export async function middleware(req: NextRequest) {
   // we need to create a response and hand it to the supabase client to be able to modify the response headers.
@@ -24,10 +24,10 @@ export async function middleware(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
   const isAuthRoute = authRoutes.some((route) => req.nextUrl.pathname.startsWith(route))
-  // redirect if a logged in user is accessing an auth route (e.g. /login)
+  // redirect if a logged in user is accessing an auth route (e.g. /auth/*)
   if (user && isAuthRoute) {
     const redirectUrl = req.nextUrl.clone()
-    redirectUrl.pathname = ROUTES.HOME
+    redirectUrl.pathname = ROUTES.DASHBOARD
     return NextResponse.redirect(redirectUrl)
   }
   // show auth routes for guests
@@ -38,7 +38,7 @@ export async function middleware(req: NextRequest) {
   if (!user) {
     console.log(`User not logged in. Attempted to access: ${req.nextUrl.pathname}`)
     const redirectUrl = req.nextUrl.clone()
-    redirectUrl.pathname = ROUTES.LOGIN
+    redirectUrl.pathname = ROUTES.AUTH
     // redirectUrl.searchParams.set(`redirected_from`, req.nextUrl.pathname)
     return NextResponse.redirect(redirectUrl)
   }

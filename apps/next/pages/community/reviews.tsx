@@ -1,21 +1,13 @@
-import Head from 'next/head'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
+import { ROUTES } from '@app/core/constants/routes'
 
-import { CommunityReviewsScreen } from '@app/core/features/community'
-import { HomeLayout } from '@app/core/features/home/layout.web'
+export default function CommunityReviewsRedirect() {
+  const router = useRouter()
 
-import type { NextPageWithLayout } from '../_app'
+  useEffect(() => {
+    router.replace(ROUTES.COMMUNITY_REVIEWS)
+  }, [router])
 
-export const Page: NextPageWithLayout = () => {
-  return (
-    <>
-      <Head>
-        <title>Peer Reviews | Scaffald</title>
-      </Head>
-      <CommunityReviewsScreen />
-    </>
-  )
+  return null
 }
-
-Page.getLayout = (page) => <HomeLayout>{page}</HomeLayout>
-
-export default Page

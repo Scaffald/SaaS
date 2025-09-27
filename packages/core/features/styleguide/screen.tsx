@@ -29,7 +29,12 @@ import {
 } from '@app/ui'
 
 // Import custom components
-import { AnimatedButton } from '@app/ui/src/components/AnimatedButton'
+import {
+  AnimatedButton,
+  EnhancedAnimatedButton,
+  LoadingButton,
+  SuccessButton,
+} from '@app/ui/src/components/AnimatedButton'
 
 // Import icons
 import {
@@ -52,6 +57,9 @@ import {
   Filter,
   Bell,
   Menu,
+  Check,
+  Save,
+  Send,
 } from '@tamagui/lucide-icons'
 
 /**
@@ -65,6 +73,14 @@ export function StyleguideScreen() {
   const [radioValue, setRadioValue] = React.useState('option1')
   const [sliderValue, setSliderValue] = React.useState([50])
   const [progressValue] = React.useState(75)
+
+  // Enhanced button states
+  const [isLoading1, setIsLoading1] = React.useState(false)
+  const [isLoading2, setIsLoading2] = React.useState(false)
+  const [isLoading3, setIsLoading3] = React.useState(false)
+  const [showSuccess1, setShowSuccess1] = React.useState(false)
+  const [showSuccess2, setShowSuccess2] = React.useState(false)
+  const [showSuccess3, setShowSuccess3] = React.useState(false)
 
   return (
     <ScrollView>
@@ -180,39 +196,185 @@ export function StyleguideScreen() {
             </YStack>
 
             <YStack gap="$3">
-              <H3>Custom Animated Buttons</H3>
-              <XStack gap="$3" flexWrap="wrap">
-                <AnimatedButton variant="primary">Animated Primary</AnimatedButton>
-                <AnimatedButton variant="secondary">Animated Secondary</AnimatedButton>
-                <Button theme="blue" size="$4">
-                  Submit Button
-                </Button>
-              </XStack>
+              <H3>Enhanced Animated Buttons</H3>
+              <Paragraph size="$2" color="$gray11">
+                Our upgraded AnimatedButton with bento-inspired patterns. Test all animation
+                variants and loading states.
+              </Paragraph>
+
+              <YStack gap="$4">
+                {/* Animation Variants */}
+                <YStack gap="$2">
+                  <Text fontWeight="600" size="$3">
+                    Animation Variants
+                  </Text>
+                  <XStack gap="$3" flexWrap="wrap">
+                    <EnhancedAnimatedButton variant="primary">Primary</EnhancedAnimatedButton>
+                    <EnhancedAnimatedButton variant="secondary">Secondary</EnhancedAnimatedButton>
+                    <EnhancedAnimatedButton variant="pulse" animationPreset="100ms">
+                      Pulse
+                    </EnhancedAnimatedButton>
+                    <EnhancedAnimatedButton variant="bouncy" animationPreset="bouncy">
+                      Bouncy
+                    </EnhancedAnimatedButton>
+                    <EnhancedAnimatedButton variant="lazy" animationPreset="medium">
+                      Lazy
+                    </EnhancedAnimatedButton>
+                    <EnhancedAnimatedButton variant="bump" animationPreset="bouncy">
+                      Bump
+                    </EnhancedAnimatedButton>
+                  </XStack>
+                </YStack>
+
+                {/* Loading States */}
+                <YStack gap="$2">
+                  <Text fontWeight="600" size="$3">
+                    Loading States
+                  </Text>
+                  <XStack gap="$3" flexWrap="wrap">
+                    <LoadingButton
+                      loading={isLoading1}
+                      loadingText="Saving..."
+                      onPress={() => {
+                        setIsLoading1(true)
+                        setTimeout(() => setIsLoading1(false), 2000)
+                      }}
+                    >
+                      Save Changes
+                    </LoadingButton>
+
+                    <LoadingButton
+                      variant="secondary"
+                      loading={isLoading2}
+                      loadingText="Processing..."
+                      onPress={() => {
+                        setIsLoading2(true)
+                        setTimeout(() => setIsLoading2(false), 3000)
+                      }}
+                    >
+                      Process Data
+                    </LoadingButton>
+
+                    <EnhancedAnimatedButton
+                      variant="pulse"
+                      loading={isLoading3}
+                      loadingText="Uploading..."
+                      onPress={() => {
+                        setIsLoading3(true)
+                        setTimeout(() => setIsLoading3(false), 2500)
+                      }}
+                    >
+                      <Send size={16} />
+                      Upload File
+                    </EnhancedAnimatedButton>
+                  </XStack>
+                </YStack>
+
+                {/* Success States */}
+                <YStack gap="$2">
+                  <Text fontWeight="600" size="$3">
+                    Success States
+                  </Text>
+                  <XStack gap="$3" flexWrap="wrap">
+                    <SuccessButton
+                      showSuccess={showSuccess1}
+                      successIcon={<Check />}
+                      onPress={() => {
+                        setShowSuccess1(true)
+                        setTimeout(() => setShowSuccess1(false), 2000)
+                      }}
+                    >
+                      Accept Terms
+                    </SuccessButton>
+
+                    <SuccessButton
+                      variant="secondary"
+                      showSuccess={showSuccess2}
+                      successIcon={<Save />}
+                      onPress={() => {
+                        setShowSuccess2(true)
+                        setTimeout(() => setShowSuccess2(false), 2000)
+                      }}
+                    >
+                      Save Draft
+                    </SuccessButton>
+
+                    <SuccessButton
+                      variant="bouncy"
+                      animationPreset="bouncy"
+                      showSuccess={showSuccess3}
+                      successIcon={<Heart />}
+                      onPress={() => {
+                        setShowSuccess3(true)
+                        setTimeout(() => setShowSuccess3(false), 2000)
+                      }}
+                    >
+                      Add to Favorites
+                    </SuccessButton>
+                  </XStack>
+                </YStack>
+
+                {/* Legacy Comparison */}
+                <YStack gap="$2">
+                  <Text fontWeight="600" size="$3">
+                    Legacy vs Enhanced
+                  </Text>
+                  <XStack gap="$3" flexWrap="wrap">
+                    <AnimatedButton variant="primary">Legacy AnimatedButton</AnimatedButton>
+                    <EnhancedAnimatedButton variant="primary">
+                      Enhanced AnimatedButton
+                    </EnhancedAnimatedButton>
+                  </XStack>
+                </YStack>
+              </YStack>
             </YStack>
           </YStack>
         </Card>
 
-        {/* Bento Button Components */}
-        <Card p="$4" gap="$4">
-          <H2>Bento Button Collections</H2>
+        {/* Bento Button Components - To be deprecated */}
+        <Card p="$4" gap="$4" borderColor="$orange7" borderWidth={2}>
+          <YStack gap="$2">
+            <H2 color="$orange11">⚠️ Bento Button Collections (Pending Deprecation)</H2>
+            <Paragraph size="$3" color="$orange11">
+              These components are scheduled for removal after UAT approval of enhanced buttons
+              above. They are currently located in
+              packages/ui/src/components/bento/animation/buttons/
+            </Paragraph>
+          </YStack>
 
-          <YStack gap="$6">
-            <YStack gap="$3">
-              <H3>Buttons with Left Icons</H3>
-              <Text color="$gray11">Interactive button components with icon variations</Text>
-            </YStack>
-
-            <YStack gap="$3">
-              <H3>Buttons with Loaders</H3>
-              <Text color="$gray11">Button components with loading states and animations</Text>
-            </YStack>
-
-            <YStack gap="$3">
-              <H3>Rounded Buttons</H3>
-              <Text color="$gray11">
-                Additional button variations available in Bento components
+          <YStack gap="$4">
+            <YStack gap="$2" opacity={0.6}>
+              <H3>🔄 ButtonLoading.tsx</H3>
+              <Text color="$gray11" size="$2">
+                Legacy loading button demo - replaced by LoadingButton component above
               </Text>
             </YStack>
+
+            <YStack gap="$2" opacity={0.6}>
+              <H3>🎯 ButtonPulse.tsx</H3>
+              <Text color="$gray11" size="$2">
+                Legacy pulse animation demo - integrated into EnhancedAnimatedButton variants
+              </Text>
+            </YStack>
+
+            <YStack gap="$2" opacity={0.6}>
+              <H3>✅ IconCenterButton.tsx</H3>
+              <Text color="$gray11" size="$2">
+                Legacy icon centering demo - replaced by SuccessButton component above
+              </Text>
+            </YStack>
+          </YStack>
+
+          <YStack gap="$2" p="$3" backgroundColor="$yellow2" borderRadius="$4">
+            <Text fontWeight="600" size="$3" color="$yellow11">
+              📋 Manual Testing Checklist
+            </Text>
+            <Text size="$2" color="$yellow11">
+              • Test all animation variants on both web and mobile{'\n'}• Verify loading states work
+              correctly{'\n'}• Check success animations and icon centering{'\n'}• Test
+              cross-platform compatibility{'\n'}• Validate theme consistency{'\n'}• Ensure
+              accessibility standards are met
+            </Text>
           </YStack>
         </Card>
 
