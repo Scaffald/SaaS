@@ -1,7 +1,9 @@
+import { HomeLayout } from '@app/core/features/home/layout.web'
 import { StyleguideLayout, TypographyScreen } from '@app/core/features/styleguide'
 import Head from 'next/head'
+import type { NextPageWithLayout } from '../../_app'
 
-export default function TypographyPage() {
+const Page: NextPageWithLayout = () => {
   return (
     <>
       <Head>
@@ -17,3 +19,7 @@ export default function TypographyPage() {
     </>
   )
 }
+
+Page.getLayout = (page) => <HomeLayout>{page}</HomeLayout>
+
+export default Page

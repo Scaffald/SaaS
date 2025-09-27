@@ -24,9 +24,7 @@ const decodeEntities = (value: string) =>
 const stripCdata = (input: string) => input.replace(CDATA_REGEX, '')
 
 const stripHtml = (input: string) =>
-  decodeEntities(input.replace(HTML_TAG_REGEX, ' '))
-    .replace(WHITESPACE_REGEX, ' ')
-    .trim()
+  decodeEntities(input.replace(HTML_TAG_REGEX, ' ')).replace(WHITESPACE_REGEX, ' ').trim()
 
 const extractTag = (source: string, tag: string) => {
   const regex = new RegExp(`<${tag}>([\s\S]*?)</${tag}>`, 'i')
@@ -72,7 +70,9 @@ export const createFallbackArticles = (source?: NewsSource): NewsArticle[] => {
   return [
     {
       id: `${source?.id ?? 'fallback'}-1`,
-      title: source?.label ? `${source.label} headlines coming soon` : 'Industry headlines coming soon',
+      title: source?.label
+        ? `${source.label} headlines coming soon`
+        : 'Industry headlines coming soon',
       excerpt:
         'We will load the latest construction industry headlines as soon as the RSS feed becomes available. In the meantime, visit the ENR newsroom to stay up to date.',
       link: siteUrl,

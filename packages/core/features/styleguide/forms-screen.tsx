@@ -28,6 +28,9 @@ import {
   CountingTextField,
 } from '@app/ui/src/components/EnhancedTextField'
 import { CheckboxToggle } from '@app/ui/src/components/CheckboxToggle'
+import { TextField } from '@app/ui/src/components/FormFields/TextField'
+import { createTsForm, createUniqueFieldSchema } from '@ts-react/form'
+import { z } from 'zod'
 
 // Import icons
 import {
@@ -85,6 +88,20 @@ export function FormsScreen() {
   const updateTextInput = (key: string, value: string) => {
     setTextInputStates((prev) => ({ ...prev, [key]: value }))
   }
+
+  // Create a simple ts-form for testing
+  const TestFormSchema = z.object({
+    testField: createUniqueFieldSchema(z.string(), 'testField'),
+    enhancedTestField: createUniqueFieldSchema(z.string(), 'enhancedTestField'),
+  })
+
+  const TestForm = createTsForm([[z.string(), TextField]], {
+    FormComponent: ({ children, onSubmit }) => (
+      <YStack gap="$4" onSubmit={onSubmit}>
+        {children}
+      </YStack>
+    ),
+  })
 
   return (
     <ScrollView>
@@ -281,6 +298,33 @@ export function FormsScreen() {
                 disabled
                 value={textInputStates['standalone-disabled']}
                 onChangeText={(text) => updateTextInput('standalone-disabled', text)}
+              />
+            </YStack>
+          </YStack>
+
+          {/* ts-form Testing */}
+          <YStack gap="$3">
+            <H3>ts-form Text Inputs (Form Context)</H3>
+            <YStack gap="$3" p="$3" backgroundColor="$color2" borderRadius="$4">
+              <Text size="$3" color="$orange10">
+                Testing ts-form inputs to see if they work with our fix:
+              </Text>
+              <TestForm
+                schema={TestFormSchema}
+                onSubmit={(data) => {
+                  console.log('Form submitted:', data)
+                }}
+                renderAfter={() => (
+                  <Text size="$2" color="$gray10">
+                    Try typing in the fields above. If they work, the ts-form integration is fixed.
+                  </Text>
+                )}
+                props={{
+                  testField: {
+                    label: 'Basic ts-form Field',
+                    placeholder: 'Type in this ts-form field...',
+                  },
+                }}
               />
             </YStack>
           </YStack>
