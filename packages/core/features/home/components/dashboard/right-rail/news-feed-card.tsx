@@ -25,7 +25,7 @@ import {
 } from './news-sources'
 import { createFallbackArticles, type NewsArticle, parseRssFeed } from './news-parser'
 
-const ARTICLE_LIMIT = 5
+const ARTICLE_LIMIT = 3
 
 // Loading skeleton component
 const NewsLoadingSkeleton = () => (
@@ -190,7 +190,7 @@ export const NewsFeedCard = () => {
         }
       />
 
-      <YStack gap="$3">
+      <YStack gap="$4">
         <Select value={selectedSourceId} onValueChange={setSelectedSourceId}>
           <Select.Trigger minWidth="100%" iconAfter={ChevronDown}>
             <Select.Value placeholder="Choose a news source" />
@@ -242,42 +242,74 @@ export const NewsFeedCard = () => {
             </Button>
           </YStack>
         ) : articles.length > 0 ? (
-          <YStack gap="$3">
+          <YStack gap="$4">
             {articles.map((article) => {
               const formattedDate = formatPublishDate(article.publishedAt)
               return (
-                <YStack key={article.id} gap="$2">
+                <YStack
+                  key={article.id}
+                  borderWidth={1}
+                  borderColor="$gray6"
+                  bg="$gray2"
+                  br="$6"
+                  overflow="hidden"
+                  shadowColor="rgba(15, 23, 42, 0.08)"
+                  shadowOffset={{ width: 0, height: 12 }}
+                  shadowOpacity={1}
+                  shadowRadius={24}
+                >
                   {article.imageUrl ? (
                     <Image
                       source={{ uri: article.imageUrl }}
                       contentFit="cover"
-                      style={{ width: '100%', height: 120, borderRadius: 12 }}
+                      style={{ width: '100%', height: 160 }}
                     />
                   ) : null}
-                  <YStack gap="$1">
-                    <XStack ai="center" justifyContent="space-between">
-                      <SizableText size="$3" fontWeight="600" flex={1}>
+                  <YStack gap="$3" p="$4">
+                    {selectedSource?.label ? (
+                      <Paragraph
+                        size="$1"
+                        textTransform="uppercase"
+                        letterSpacing={1}
+                        color="$gray12"
+                        bg="$gray4"
+                        px="$3"
+                        py="$1"
+                        br="$5"
+                        alignSelf="flex-start"
+                      >
+                        {selectedSource.label}
+                      </Paragraph>
+                    ) : null}
+                    <YStack gap="$2">
+                      <SizableText size="$5" fontWeight="700" lineHeight={24}>
                         {article.title}
                       </SizableText>
+                      {article.excerpt ? (
+                        <Paragraph size="$2" color="$gray11" numberOfLines={3}>
+                          {article.excerpt}
+                        </Paragraph>
+                      ) : null}
+                    </YStack>
+                    <XStack ai="center" jc="space-between">
+                      <YStack gap="$1">
+                        <SizableText size="$2" color="$gray11" fontWeight="600">
+                          {selectedSource?.label ?? 'Top Story'}
+                        </SizableText>
+                        {formattedDate ? (
+                          <Paragraph size="$1" color="$gray10">
+                            {formattedDate}
+                          </Paragraph>
+                        ) : null}
+                      </YStack>
                       <Button
                         size="$2"
-                        chromeless
                         iconAfter={ArrowRight}
                         onPress={() => openLink(article.link)}
                       >
                         Read
                       </Button>
                     </XStack>
-                    {article.excerpt ? (
-                      <Paragraph size="$2" color="$gray11">
-                        {article.excerpt}
-                      </Paragraph>
-                    ) : null}
-                    {formattedDate ? (
-                      <Paragraph size="$1" color="$gray10">
-                        {formattedDate}
-                      </Paragraph>
-                    ) : null}
                   </YStack>
                 </YStack>
               )
