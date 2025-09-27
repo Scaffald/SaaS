@@ -11,7 +11,17 @@ type ResultCardProps = {
 }
 
 export const ResultCard = memo(
-  forwardRef<any, ResultCardProps>(({ profile, isSelected, onSelect }, ref) => {
+  forwardRef<
+    | HTMLDivElement
+    | {
+        measureLayout: (
+          container: unknown,
+          onSuccess: (x: number, y: number, width: number, height: number) => void,
+          onFail: () => void
+        ) => void
+      },
+    ResultCardProps
+  >(({ profile, isSelected, onSelect }, ref) => {
     return (
       <YStack
         ref={ref}

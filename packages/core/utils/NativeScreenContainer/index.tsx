@@ -6,7 +6,7 @@ import { useRef, type ComponentProps } from 'react'
 type ScrollToTopTabBarContainerProps = ComponentProps<typeof ScrollView>
 
 const ScrollToTopTabBarContainer = ({ children, ...props }: ScrollToTopTabBarContainerProps) => {
-  const ref = useRef<any>(null)
+  const ref = useRef<ScrollView>(null)
   useScrollToTop(ref)
 
   return (
