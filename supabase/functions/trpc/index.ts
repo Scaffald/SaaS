@@ -20,9 +20,11 @@ const createTRPCContext = async (opts: { req: Request }) => {
   })
 
   let userId: string | undefined
+  let userToken: string | undefined
 
   if (authorizationHeader) {
     const token = authorizationHeader.replace('Bearer ', '')
+    userToken = token
     console.log('Token extracted:', !!token)
 
     try {
@@ -50,6 +52,7 @@ const createTRPCContext = async (opts: { req: Request }) => {
   console.log('Final user context:', userId ? { id: userId } : 'undefined')
   return {
     user: userId ? { id: userId } : undefined,
+    userToken,
     supabase,
   }
 }
@@ -65,6 +68,8 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   return next({
     ctx: {
       user: { ...ctx.user },
+      userToken: ctx.userToken,
+      supabase: ctx.supabase,
     },
   })
 })
@@ -86,10 +91,14 @@ const generalProfileSchema = z
 // Profile router
 const profileRouter = t.router({
   getGeneral: protectedProcedure.query(async ({ ctx }) => {
-    const { supabase, user } = ctx
+    const { supabase, user, userToken } = ctx
 
-    // Get auth user data for email
-    const { data: authUser } = await supabase.auth.getUser()
+    // Get auth user data for email using the token explicitly
+    const { data: authUser, error: authError } = await supabase.auth.getUser(userToken)
+
+    if (authError) {
+      console.error('Error fetching auth user:', authError.message)
+    }
 
     // Get profile data from profiles table
     const { data: profile, error: profileError } = await supabase
@@ -119,11 +128,13 @@ const profileRouter = t.router({
       })
     }
 
+    console.log('Auth user email:', authUser?.user?.email)
+
     return {
       first_name: profile?.first_name || '',
       last_name: profile?.last_name || '',
       avatar_url: profile?.avatar_url || '',
-      email: authUser.user?.email || '',
+      email: authUser?.user?.email || '',
       phone: privateData?.phone || '',
       about: privateData?.about || '',
     }
