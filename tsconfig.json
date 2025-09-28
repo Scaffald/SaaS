@@ -17,9 +17,6 @@
     },
     {
       "path": "packages/ui"
-    },
-    {
-      "path": "packages/api"
     }
   ],
   "extends": "expo/tsconfig.base"

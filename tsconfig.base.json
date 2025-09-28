@@ -7,8 +7,6 @@
       "@app/core/*": ["packages/core/*"],
       "@app/ui": ["packages/ui"],
       "@app/ui/*": ["packages/ui/*"],
-      "@app/api": ["packages/api"],
-      "@app/api/*": ["packages/api/*"],
       "@app/supabase": ["supabase"],
       "@app/supabase/*": ["supabase/*"]
     },

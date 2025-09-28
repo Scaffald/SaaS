@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
   YStack,
   XStack,
@@ -14,9 +14,12 @@ import {
 import { useToastController } from '@tamagui/toast'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { generalProfileSchema, type GeneralProfileFormData, generalProfileDefaults } from './config'
-import { supabase } from '@app/core/utils/supabase/client'
-import { useUser } from '@app/core/utils/useUser'
+import {
+  generalProfileSchema,
+  type GeneralProfileFormData,
+  generalProfileDefaults,
+} from './config/general-schema'
+import { api } from '@app/core/utils/api'
 
 /**
  * Profile General Right Component
@@ -24,9 +27,28 @@ import { useUser } from '@app/core/utils/useUser'
  */
 export function ProfileGeneralRight() {
   const [isLoading, setIsLoading] = useState(false)
-  const [isLoadingProfile, setIsLoadingProfile] = useState(true)
-  const user = useUser()
   const toast = useToastController()
+
+  // Use tRPC to fetch and update profile data
+  const {
+    data: profileData,
+    isLoading: isLoadingProfile,
+    refetch,
+  } = api.profile.getGeneral.useQuery()
+  const updateProfileMutation = api.profile.updateGeneral.useMutation({
+    onSuccess: () => {
+      toast.show('Profile Updated', {
+        message: 'Your profile has been saved successfully!',
+      })
+      refetch()
+    },
+    onError: (error) => {
+      console.error('Error saving profile:', error)
+      toast.show('Error', {
+        message: error.message || 'Failed to save profile. Please try again.',
+      })
+    },
+  })
 
   const {
     control,
@@ -42,102 +64,17 @@ export function ProfileGeneralRight() {
 
   const avatarUrl = watch('avatar_url')
 
-  // Load profile data on mount
-  useEffect(() => {
-    const loadProfileData = async () => {
-      if (!user?.user?.id) return
-
-      try {
-        setIsLoadingProfile(true)
-
-        // Get auth user data for email
-        const { data: authUser } = await supabase.auth.getUser()
-
-        // Get profile data from profiles table
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('first_name, last_name, avatar_url')
-          .eq('id', user.user.id)
-          .single()
-
-        if (profileError && profileError.code !== 'PGRST116') {
-          console.error('Error fetching profile:', profileError)
-        }
-
-        // Get additional data from user_private table
-        const { data: privateData, error: privateError } = await supabase
-          .from('user_private')
-          .select('phone, about')
-          .eq('user_id', user.user.id)
-          .single()
-
-        if (privateError && privateError.code !== 'PGRST116') {
-          console.error('Error fetching private data:', privateError)
-        }
-
-        // Reset form with loaded data
-        const profileData = {
-          first_name: profile?.first_name || '',
-          last_name: profile?.last_name || '',
-          avatar_url: profile?.avatar_url || '',
-          email: authUser.user?.email || '',
-          phone: privateData?.phone || '',
-          about: privateData?.about || '',
-        }
-
-        reset(profileData)
-      } catch (error) {
-        console.error('Error loading profile:', error)
-      } finally {
-        setIsLoadingProfile(false)
-      }
+  // Reset form when profile data is loaded
+  React.useEffect(() => {
+    if (profileData) {
+      reset(profileData)
     }
-
-    loadProfileData()
-  }, [user?.user?.id, reset])
+  }, [profileData, reset])
 
   const onSubmit = async (data: GeneralProfileFormData) => {
-    if (!user?.user?.id) return
-
     setIsLoading(true)
     try {
-      // Update profiles table
-      const { error: profileError } = await supabase.from('profiles').upsert({
-        id: user.user.id,
-        first_name: data.first_name,
-        last_name: data.last_name,
-        avatar_url: data.avatar_url,
-        updated_at: new Date().toISOString(),
-      })
-
-      if (profileError) {
-        throw new Error(`Failed to update profile: ${profileError.message}`)
-      }
-
-      // Update user_private table - use update instead of upsert to avoid RLS issues
-      const { error: privateError } = await supabase
-        .from('user_private')
-        .update({
-          phone: data.phone,
-          about: data.about,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('user_id', user.user.id)
-
-      if (privateError) {
-        throw new Error(`Failed to update private data: ${privateError.message}`)
-      }
-
-      // Show success toast
-      toast.show('Profile Updated', {
-        message: 'Your profile has been saved successfully!',
-      })
-    } catch (error) {
-      console.error('Error saving profile:', error)
-      // Show error toast
-      toast.show('Error', {
-        message: 'Failed to save profile. Please try again.',
-      })
+      await updateProfileMutation.mutateAsync(data)
     } finally {
       setIsLoading(false)
     }
@@ -146,6 +83,7 @@ export function ProfileGeneralRight() {
   if (isLoadingProfile) {
     return (
       <YStack space="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
+        <Spinner size="large" />
         <Text>Loading profile...</Text>
       </YStack>
     )
@@ -154,6 +92,34 @@ export function ProfileGeneralRight() {
   return (
     <YStack space="$4" padding="$4" flex={1}>
       <H4>Edit General Information</H4>
+
+      {/* Profile Stats Information */}
+      <YStack
+        space="$3"
+        padding="$4"
+        backgroundColor="$blue2"
+        borderRadius="$4"
+        borderWidth={1}
+        borderColor="$blue6"
+      >
+        <Text fontWeight="600" color="$blue11" fontSize="$4">
+          📊 Profile Completion Benefits
+        </Text>
+        <YStack space="$2">
+          <Text color="$blue10" fontSize="$3">
+            • Accurate and complete profile data leads to faster onboarding
+          </Text>
+          <Text color="$blue10" fontSize="$3">
+            • Complete profiles receive 3x more opportunities
+          </Text>
+          <Text color="$blue10" fontSize="$3">
+            • Verified information builds trust with potential partners
+          </Text>
+          <Text color="$blue10" fontSize="$3">
+            • Professional profiles are prioritized in search results
+          </Text>
+        </YStack>
+      </YStack>
 
       <YStack space="$4" tag="form">
         {/* Avatar Section */}
