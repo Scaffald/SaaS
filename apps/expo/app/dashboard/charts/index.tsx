@@ -474,8 +474,10 @@ export default function ChartsTestPage() {
         <Text fontSize="$3" color="#B0B0B0" textAlign="center">
           Dark theme radar chart with overlapping datasets and gradient fills
         </Text>
+
+        {/* Try single dataset first to debug */}
         <RadarChart
-          datasets={styledRadarData}
+          data={styledRadarData[0].data}
           height={300}
           radius={120}
           backgroundColor="#1A202C"
@@ -487,6 +489,12 @@ export default function ChartsTestPage() {
           isAnimated={true}
           animationDuration={1200}
         />
+
+        {/* Debug info */}
+        <Text fontSize="$2" color="#B0B0B0" textAlign="center">
+          Debug: Using single dataset for now
+        </Text>
+
         {/* Legend */}
         <XStack gap="$4" justifyContent="center">
           {styledRadarData.map((dataset, index) => (
