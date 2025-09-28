@@ -399,9 +399,6 @@ export default function ChartsTestPage() {
                   <Text fontSize="$8" fontWeight="bold" color="$gray12">
                     38
                   </Text>
-                  <Text fontSize="$3" color="$gray10">
-                    Total Project
-                  </Text>
                 </YStack>
               )}
             />

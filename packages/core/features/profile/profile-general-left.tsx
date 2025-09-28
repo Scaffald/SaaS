@@ -21,7 +21,7 @@ import {
   generalProfileDefaults,
 } from './config/general-schema'
 import { api } from '@app/core/utils/api'
-import { DashboardWidget } from '@app/ui'
+import { DashboardWidget, AvatarImagePicker } from '@app/ui'
 
 /**
  * Profile General Left Component
@@ -52,12 +52,30 @@ export function ProfileGeneralLeft() {
     },
   })
 
+  const uploadAvatarMutation = api.profile.uploadAvatar.useMutation({
+    onSuccess: (data) => {
+      toast.show('Avatar Uploaded', {
+        message: 'Your avatar has been uploaded successfully!',
+      })
+      // Update the form with the new avatar URL
+      setValue('avatar_url', data.avatarUrl)
+      refetch()
+    },
+    onError: (error) => {
+      console.error('Error uploading avatar:', error)
+      toast.show('Upload Error', {
+        message: error.message || 'Failed to upload avatar. Please try again.',
+      })
+    },
+  })
+
   const {
     control,
     handleSubmit,
     formState: { errors, isDirty },
     watch,
     reset,
+    setValue,
   } = useForm<GeneralProfileFormData>({
     resolver: zodResolver(generalProfileSchema),
     defaultValues: generalProfileDefaults,
@@ -98,33 +116,46 @@ export function ProfileGeneralLeft() {
 
         <YStack gap="$4" tag="form">
           {/* Avatar Section */}
-          <YStack gap="$3">
+          <YStack gap="$3" alignItems="center">
             <Text fontWeight="600">Profile Photo</Text>
-            <XStack gap="$3" alignItems="center">
-              <Avatar circular size="$8">
-                <Avatar.Image src={avatarUrl || undefined} />
-                <Avatar.Fallback backgroundColor="$gray5" />
-              </Avatar>
-              <YStack gap="$2" flex={1}>
-                <Controller
-                  name="avatar_url"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      placeholder="Profile photo URL"
-                      value={field.value || ''}
-                      onChangeText={field.onChange}
-                      borderColor={errors.avatar_url ? '$red8' : '$borderColor'}
-                    />
-                  )}
-                />
-                {errors.avatar_url && (
-                  <Text color="$red10" fontSize="$2">
-                    {errors.avatar_url.message}
-                  </Text>
-                )}
-              </YStack>
-            </XStack>
+            <AvatarImagePicker
+              value={avatarUrl || ''}
+              onImageSelect={async (imageUri) => {
+                if (imageUri) {
+                  // Convert image to base64 for upload
+                  try {
+                    const response = await fetch(imageUri)
+                    const blob = await response.blob()
+                    const reader = new FileReader()
+                    reader.onloadend = () => {
+                      const base64data = reader.result as string
+                      uploadAvatarMutation.mutate({
+                        file: base64data,
+                        fileName: `avatar-${Date.now()}.jpg`,
+                        contentType: blob.type || 'image/jpeg',
+                      })
+                    }
+                    reader.readAsDataURL(blob)
+                  } catch (error) {
+                    console.error('Error processing image:', error)
+                    toast.show('Error', {
+                      message: 'Failed to process image. Please try again.',
+                    })
+                  }
+                } else {
+                  // Clear avatar
+                  setValue('avatar_url', '')
+                }
+              }}
+              size={120}
+              disabled={uploadAvatarMutation.isLoading}
+              placeholder="Upload Avatar"
+            />
+            {uploadAvatarMutation.isLoading && (
+              <Text fontSize="$2" color="$gray10">
+                Uploading avatar...
+              </Text>
+            )}
           </YStack>
 
           {/* Name Fields */}
