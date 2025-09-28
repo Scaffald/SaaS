@@ -5,7 +5,6 @@ import { DashboardLayout } from '@app/ui/src/components/layouts/DashboardLayout'
 export default function ProfileCertificationsPage() {
   return (
     <DashboardLayout
-      header={{ title: 'Certifications Profile' }}
       leftContent={<ProfileCertificationsLeft />}
       rightContent={<ProfileCertificationsRight />}
     />

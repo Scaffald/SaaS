@@ -60,24 +60,6 @@ export function ParentChildScreen() {
 - `packages/core/features/settings/settings-general-screen.tsx`
 - Components: `SettingsGeneralLeft`, `SettingsGeneralRight`, `SettingsGeneralScreen`
 
-### App Integration
-
-**Next.js Pages:**
-```tsx
-import { ParentChildScreen } from '@app/core/features/parent/parent-child-screen'
-
-export const Page: NextPageWithLayout = () => {
-  return <ParentChildScreen />
-}
-
-Page.getLayout = (page) => (
-  <DashboardLayout
-    header={{ title: 'Page Title' }}
-    rightContent={page}
-  />
-)
-```
-
 **Expo Routes:**
 ```tsx
 import { ParentChildScreen } from '@app/core/features/parent/parent-child-screen'
@@ -85,8 +67,8 @@ import { ParentChildScreen } from '@app/core/features/parent/parent-child-screen
 export default function Screen() {
   return (
     <DashboardLayout
-      header={{ title: 'Page Title' }}
-      rightContent={<ParentChildScreen />}
+      leftContent={<ParentChildLeft />}
+      rightContent={<ParentChildRight />}
     />
   )
 }
