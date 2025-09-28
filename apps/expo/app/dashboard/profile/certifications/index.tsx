@@ -1,11 +1,13 @@
-import { ProfileCertificationsScreen } from '@app/core/features/profile/profile-certifications-screen'
+import { ProfileCertificationsLeft } from '@app/core/features/profile/profile-certifications-left'
+import { ProfileCertificationsRight } from '@app/core/features/profile/profile-certifications-right'
 import { DashboardLayout } from '@app/ui/src/components/layouts/DashboardLayout'
 
 export default function ProfileCertificationsPage() {
   return (
     <DashboardLayout
       header={{ title: 'Certifications Profile' }}
-      rightContent={<ProfileCertificationsScreen />}
+      leftContent={<ProfileCertificationsLeft />}
+      rightContent={<ProfileCertificationsRight />}
     />
   )
 }

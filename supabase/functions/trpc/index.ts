@@ -2,45 +2,52 @@ import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
 import { initTRPC, TRPCError } from '@trpc/server'
 import { createClient } from '@supabase/supabase-js'
 import { z } from 'zod'
-import * as jose from 'jose'
 
 // Environment variables
 const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
 const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
-const jwtSecret = Deno.env.get('SUPABASE_AUTH_JWT_SECRET') ?? ''
 
 // Create tRPC context
 const createTRPCContext = async (opts: { req: Request }) => {
-  let supabase = createClient(supabaseUrl, supabaseAnonKey)
+  const authorizationHeader = opts.req.headers.get('authorization')
+  console.log('Auth header present:', !!authorizationHeader)
+
+  // Create Supabase client with auth context
+  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    global: {
+      headers: authorizationHeader ? { Authorization: authorizationHeader } : {},
+    },
+  })
+
   let userId: string | undefined
 
-  const authorizationHeader = opts.req.headers.get('authorization')
-
   if (authorizationHeader) {
-    const bearerTokenMatch = authorizationHeader.match(/^Bearer\s+(.+)$/i)
-    const accessToken = bearerTokenMatch?.[1]
+    const token = authorizationHeader.replace('Bearer ', '')
+    console.log('Token extracted:', !!token)
 
-    if (accessToken) {
-      try {
-        const encoder = new TextEncoder()
-        const { payload } = await jose.jwtVerify(accessToken, encoder.encode(jwtSecret))
-        if (typeof payload.sub === 'string') {
-          userId = payload.sub
-        }
-      } catch (error) {
-        console.error('Error parsing JWT', error)
+    try {
+      // Use Supabase's built-in user verification
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser(token)
+
+      if (error) {
+        console.error('Auth error:', error.message)
+      } else if (user) {
+        userId = user.id
+        console.log('User authenticated:', user.id)
+      } else {
+        console.log('No user found')
       }
+    } catch (error) {
+      console.error('Error getting user:', error.message)
     }
-
-    supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      global: {
-        headers: {
-          Authorization: authorizationHeader,
-        },
-      },
-    })
+  } else {
+    console.log('No authorization header found')
   }
 
+  console.log('Final user context:', userId ? { id: userId } : 'undefined')
   return {
     user: userId ? { id: userId } : undefined,
     supabase,
