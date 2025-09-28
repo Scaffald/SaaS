@@ -17,3 +17,9 @@ export {
   type PopulationPyramidProps,
   type PopulationPyramidData,
 } from './PopulationPyramid'
+export {
+  SkillsChart,
+  type SkillsChartProps,
+  type SkillsChartDataset,
+  type SkillsChartDataItem,
+} from './SkillsChart'
