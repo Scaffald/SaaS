@@ -60,9 +60,7 @@ export const CardStack = ({
       overflow="hidden"
       enterStyle={disableSlideIn ? { opacity: 1 } : { opacity: 0, [axis.axis]: axis.value }}
     >
-      <View width={width}>
-        {children}
-      </View>
+      <View width={width}>{children}</View>
     </View>
   )
 }
@@ -97,8 +95,6 @@ export const DirectionSlide = ({ direction, setDirection }: DirectionSlideProps)
               key={dir}
               flex={1}
               backgroundColor={active ? '$color12' : '$color4'}
-              borderRadius="$4"
-              p="$2"
               cursor="pointer"
               pressStyle={{ opacity: 0.7 }}
               onPress={() => setDirection(dir)}
@@ -231,7 +227,6 @@ export const StackedCards = ({
             <CardStack
               {...card}
               width={typeof width === 'number' ? width - stackIndex * 8 : width}
-              showInverseSection={card.showInverseSection !== false}
               direction="top" // Always use top direction to avoid slide-in animation
               disableSlideIn={true} // Disable slide-in animation for stacked cards
             />
