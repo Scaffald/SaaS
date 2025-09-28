@@ -12,6 +12,7 @@ import {
   type PieChartData,
   type StackedBarChartData,
   type RadarChartData,
+  type RadarChartDataset,
   type PopulationPyramidData,
 } from '@app/ui'
 
@@ -26,6 +27,7 @@ export default function ChartsTestPage() {
     | 'project'
     | 'gradient-bar'
     | 'gradient-pie'
+    | 'styled-radar'
     | 'all'
   >('all')
 
@@ -118,6 +120,45 @@ export default function ChartsTestPage() {
     { value: 30, color: '#4FC3F7', text: 'Web', gradientCenterColor: '#A8E6CF' },
     { value: 25, color: '#A8E6CF', text: 'Desktop', gradientCenterColor: '#FFD93D' },
     { value: 10, color: '#FFD93D', text: 'Tablet', gradientCenterColor: '#FF6B6B' },
+  ]
+
+  const styledRadarData: RadarChartDataset[] = [
+    {
+      data: [
+        { value: 85, label: 'Intensity' },
+        { value: 70, label: 'Flavour' },
+        { value: 60, label: 'Chill' },
+        { value: 45, label: 'Excitement' },
+        { value: 65, label: 'Good mood' },
+        { value: 30, label: 'Anxiety' },
+        { value: 25, label: 'Hunger' },
+        { value: 80, label: 'Lasting' },
+        { value: 75, label: 'Effect' },
+      ],
+      fillColor: '#F0B2E0',
+      strokeColor: '#C0A0D0',
+      strokeWidth: 2,
+      fillOpacity: 0.6,
+      label: 'Dataset 1',
+    },
+    {
+      data: [
+        { value: 60, label: 'Intensity' },
+        { value: 85, label: 'Flavour' },
+        { value: 90, label: 'Chill' },
+        { value: 70, label: 'Excitement' },
+        { value: 75, label: 'Good mood' },
+        { value: 55, label: 'Anxiety' },
+        { value: 65, label: 'Hunger' },
+        { value: 60, label: 'Lasting' },
+        { value: 65, label: 'Effect' },
+      ],
+      fillColor: '#A0C0E0',
+      strokeColor: '#B0B0C0',
+      strokeWidth: 2,
+      fillOpacity: 0.6,
+      label: 'Dataset 2',
+    },
   ]
 
   const renderBarChart = () => (
@@ -426,6 +467,47 @@ export default function ChartsTestPage() {
     </Card>
   )
 
+  const renderStyledRadarChart = () => (
+    <Card padding="$4" margin="$2" backgroundColor="#1A202C">
+      <YStack gap="$4" alignItems="center">
+        <H3 color="#E0E0E0">Styled Radar Chart Example</H3>
+        <Text fontSize="$3" color="#B0B0B0" textAlign="center">
+          Dark theme radar chart with overlapping datasets and gradient fills
+        </Text>
+        <RadarChart
+          datasets={styledRadarData}
+          height={300}
+          radius={120}
+          backgroundColor="#1A202C"
+          gridColor="#E0E0E0"
+          labelColor="#E0E0E0"
+          labelTextSize={14}
+          maxValue={100}
+          noOfSections={5}
+          isAnimated={true}
+          animationDuration={1200}
+        />
+        {/* Legend */}
+        <XStack gap="$4" justifyContent="center">
+          {styledRadarData.map((dataset, index) => (
+            <XStack key={index} gap="$2" alignItems="center">
+              <View
+                width={16}
+                height={16}
+                borderRadius={8}
+                backgroundColor={dataset.fillColor}
+                opacity={dataset.fillOpacity}
+              />
+              <Text fontSize="$3" color="#E0E0E0">
+                {dataset.label}
+              </Text>
+            </XStack>
+          ))}
+        </XStack>
+      </YStack>
+    </Card>
+  )
+
   const renderAllCharts = () => (
     <YStack gap="$4">
       {renderProjectOverview()}
@@ -439,6 +521,7 @@ export default function ChartsTestPage() {
       {renderGradientDonutChart()}
       {renderStackedBarChart()}
       {renderRadarChart()}
+      {renderStyledRadarChart()}
       {renderPopulationPyramid()}
     </YStack>
   )
