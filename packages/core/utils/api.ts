@@ -1,4 +1,3 @@
-import type { AppRouter } from '@app/api'
 import { httpBatchLink } from '@trpc/client'
 import { createTRPCReact } from '@trpc/react-query'
 import SuperJSON from 'superjson'
@@ -7,7 +6,9 @@ import { Platform } from 'react-native'
 import { getBaseUrl } from './getBaseUrl'
 import { supabase } from './supabase/client'
 
-export const api = createTRPCReact<AppRouter>()
+// Create tRPC React client without strict typing for now
+// The actual router is defined in supabase/functions/trpc/index.ts
+export const api = createTRPCReact<any>()
 
 export const createTrpcClient = () =>
   api.createClient({
@@ -34,4 +35,27 @@ export const createTrpcClient = () =>
     ],
   })
 
-export { type RouterInputs, type RouterOutputs } from '@app/api'
+// Type definitions for inputs and outputs (can be improved later with proper type generation)
+export type RouterInputs = {
+  'profile.getGeneral': void
+  'profile.updateGeneral': {
+    first_name: string
+    last_name: string
+    avatar_url?: string
+    email: string
+    phone?: string
+    about?: string
+  }
+}
+
+export type RouterOutputs = {
+  'profile.getGeneral': {
+    first_name: string
+    last_name: string
+    avatar_url: string
+    email: string
+    phone: string
+    about: string
+  }
+  'profile.updateGeneral': { success: boolean }
+}

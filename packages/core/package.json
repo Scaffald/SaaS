@@ -11,7 +11,6 @@
     "check:type:watch": "yarn check:type -w"
   },
   "dependencies": {
-    "@app/api": "*",
     "@app/supabase": "*",
     "@app/ui": "*",
     "@ngneat/falso": "^7.2.0",

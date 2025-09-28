@@ -1,9 +1,8 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import { fetchRequestHandler } from 'https://esm.sh/@trpc/server@10.45.0/adapters/fetch'
-import { initTRPC, TRPCError } from 'https://esm.sh/@trpc/server@10.45.0'
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4'
-import { z } from 'https://esm.sh/zod@3.22.4'
-import * as jose from 'https://esm.sh/jose@5.1.3'
+import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
+import { initTRPC, TRPCError } from '@trpc/server'
+import { createClient } from '@supabase/supabase-js'
+import { z } from 'zod'
+import * as jose from 'jose'
 
 // Environment variables
 const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
@@ -140,7 +139,7 @@ const profileRouter = t.router({
       })
     }
 
-    // Update user_private table
+    // Update user_private table - use upsert to handle both insert and update
     const { error: privateError } = await supabase.from('user_private').upsert({
       user_id: user.id,
       phone: input.phone,
@@ -164,13 +163,32 @@ const appRouter = t.router({
   profile: profileRouter,
 })
 
-// Handler
-const handler = (req: Request) =>
-  fetchRequestHandler({
-    endpoint: '/trpc',
-    req,
-    router: appRouter,
-    createContext: createTRPCContext,
-  })
+// Use Deno.serve() as recommended by Supabase best practices
+Deno.serve(async (req: Request) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+        'Access-Control-Allow-Headers':
+          'authorization, x-client-info, apikey, content-type, x-trpc-source',
+      },
+    })
+  }
 
-serve(handler)
+  try {
+    return await fetchRequestHandler({
+      endpoint: '/trpc',
+      req,
+      router: appRouter,
+      createContext: createTRPCContext,
+    })
+  } catch (error) {
+    console.error('tRPC handler error:', error)
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+})
