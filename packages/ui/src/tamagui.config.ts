@@ -11,6 +11,7 @@ import { radius } from './themes/token-radius'
 import { size } from './themes/token-size'
 import { space } from './themes/token-space'
 import { zIndex } from './themes/token-z-index'
+import { themes as earthThemes } from './themes/earth-theme'
 
 // Hold down Option for a second to see some helpful visuals
 setupDev({
@@ -20,13 +21,9 @@ setupDev({
 /**
  * This avoids shipping themes as JS. Instead, Tamagui will hydrate them from CSS.
  */
-
 export const config = createTamagui({
   ...defaultConfig,
-  themes: {
-    ...themesIn,
-    // ...themesInCustom,
-  },
+  themes: earthThemes,
   defaultFont: 'body',
   animations,
   shouldAddPrefersColorThemes: true,

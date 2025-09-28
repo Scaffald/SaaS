@@ -149,7 +149,7 @@ export function DashboardIndexLeft() {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <YStack gap="$5" pb="$8">
+      <YStack py="$4" $sm={{ padding: '0' }}>
         <DashboardHero name={firstName} score={hireScore.score} />
 
         <HireScoreCard

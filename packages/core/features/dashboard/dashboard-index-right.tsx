@@ -4,7 +4,7 @@ import { NewsFeedCard } from './components/dashboard/right-rail'
 
 export function DashboardIndexRight() {
   return (
-    <YStack gap="$5">
+    <YStack py="$4">
       <DashboardErrorBoundary>
         <NewsFeedCard />
       </DashboardErrorBoundary>

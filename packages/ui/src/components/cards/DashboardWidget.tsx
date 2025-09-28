@@ -35,14 +35,19 @@ export const DashboardWidget = ({
 } & Omit<CardProps, 'children'>) => {
   return (
     <Card
-      elevate
+      boxShadow="inset 1px 1px .5px #fff8, inset 2px 5px 25px #0000000f, inset -1px -1px 0 .5px #ddd2, 2px 2px 25px #0001"
       size="$4"
       padding="$5"
       gap={gap}
-      borderRadius="$6"
-      borderWidth={1}
-      borderColor="$borderColor"
+      borderRadius="$7"
       backgroundColor="$color1"
+      mx="$6"
+      my="$3"
+      $sm={{
+        mx: '0',
+        boxShadow:
+          'inset 1px 1px .5px #fff8, inset 2px 5px 25px #0000000f, inset -1px -1px 0 .5px #ddd2',
+      }}
       {...props}
     >
       {children}

@@ -22,7 +22,7 @@ export const DrawerContent = ({
     <YStack
       width="100%"
       maxWidth={320}
-      backgroundColor="$color2"
+      backgroundColor="$color1"
       borderRightWidth={1}
       // borderColor="$color4"
       px="$4"
