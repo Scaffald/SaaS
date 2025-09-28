@@ -114,13 +114,15 @@ export function ProfileGeneralRight() {
         throw new Error(`Failed to update profile: ${profileError.message}`)
       }
 
-      // Update user_private table
-      const { error: privateError } = await supabase.from('user_private').upsert({
-        user_id: user.user.id,
-        phone: data.phone,
-        about: data.about,
-        updated_at: new Date().toISOString(),
-      })
+      // Update user_private table - use update instead of upsert to avoid RLS issues
+      const { error: privateError } = await supabase
+        .from('user_private')
+        .update({
+          phone: data.phone,
+          about: data.about,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', user.user.id)
 
       if (privateError) {
         throw new Error(`Failed to update private data: ${privateError.message}`)
