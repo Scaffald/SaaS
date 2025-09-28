@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ScrollView, YStack, XStack, Text, Button, Card, H2, H3 } from '@app/ui'
+import { ScrollView, YStack, XStack, Text, Button, Card, H2, H3, View } from '@app/ui'
 import {
   BarChart,
   LineChart,
@@ -17,7 +17,7 @@ import {
 
 export default function ChartsTestPage() {
   const [activeChart, setActiveChart] = useState<
-    'bar' | 'line' | 'pie' | 'stacked' | 'radar' | 'pyramid' | 'all'
+    'bar' | 'line' | 'pie' | 'stacked' | 'radar' | 'pyramid' | 'project' | 'all'
   >('all')
 
   // Sample data for different chart types
@@ -87,6 +87,28 @@ export default function ChartsTestPage() {
     { left: 5, right: 6, label: '15-19' },
     { left: 4, right: 5, label: '20-24' },
     { left: 3, right: 4, label: '25-29' },
+  ]
+
+  const projectOverviewData: PieChartData[] = [
+    { value: 50, color: '#1B6B93', text: 'Done' },
+    { value: 40, color: '#4FC3F7', text: 'Ongoing' },
+    { value: 10, color: '#A8E6CF', text: 'Canceled' },
+  ]
+
+  const gradientBarData: BarChartData[] = [
+    { value: 50, label: 'Jan', frontColor: '#1B6B93', gradientColor: '#4FC3F7' },
+    { value: 80, label: 'Feb', frontColor: '#4FC3F7', gradientColor: '#A8E6CF' },
+    { value: 90, label: 'Mar', frontColor: '#A8E6CF', gradientColor: '#FFD93D' },
+    { value: 70, label: 'Apr', frontColor: '#FFD93D', gradientColor: '#FF6B6B' },
+    { value: 60, label: 'May', frontColor: '#FF6B6B', gradientColor: '#4ECDC4' },
+    { value: 85, label: 'Jun', frontColor: '#4ECDC4', gradientColor: '#1B6B93' },
+  ]
+
+  const gradientPieData: PieChartData[] = [
+    { value: 35, color: '#1B6B93', text: 'Mobile', gradientCenterColor: '#4FC3F7' },
+    { value: 30, color: '#4FC3F7', text: 'Web', gradientCenterColor: '#A8E6CF' },
+    { value: 25, color: '#A8E6CF', text: 'Desktop', gradientCenterColor: '#FFD93D' },
+    { value: 10, color: '#FFD93D', text: 'Tablet', gradientCenterColor: '#FF6B6B' },
   ]
 
   const renderBarChart = () => (
@@ -262,8 +284,142 @@ export default function ChartsTestPage() {
     </Card>
   )
 
+  const renderProjectOverview = () => (
+    <Card padding="$4" margin="$2">
+      <YStack gap="$4">
+        {/* Header */}
+        <XStack justifyContent="space-between" alignItems="flex-start">
+          <YStack gap="$1">
+            <H3>Project Overview</H3>
+            <Text fontSize="$3" color="$gray10">
+              12 May - 17 May 2023
+            </Text>
+          </YStack>
+          <Button variant="outline" size="$2">
+            <Text fontSize="$2" color="$blue10">
+              See Details
+            </Text>
+          </Button>
+        </XStack>
+
+        {/* Chart and Legend */}
+        <XStack gap="$4" alignItems="center">
+          {/* Donut Chart */}
+          <YStack alignItems="center" flex={1}>
+            <PieChart
+              data={projectOverviewData}
+              radius={80}
+              donut={true}
+              showText={false}
+              showTextBackground={false}
+              centerLabelComponent={() => (
+                <YStack alignItems="center">
+                  <Text fontSize="$8" fontWeight="bold" color="$gray12">
+                    38
+                  </Text>
+                  <Text fontSize="$3" color="$gray10">
+                    Total Project
+                  </Text>
+                </YStack>
+              )}
+            />
+          </YStack>
+
+          {/* Legend */}
+          <YStack gap="$3" flex={1}>
+            {projectOverviewData.map((item, index) => (
+              <XStack key={index} gap="$2" alignItems="center">
+                <View width={12} height={12} borderRadius={6} backgroundColor={item.color} />
+                <YStack>
+                  <Text fontSize="$4" fontWeight="600" color="$gray12">
+                    {item.value}%
+                  </Text>
+                  <Text fontSize="$3" color="$gray10">
+                    {item.text}
+                  </Text>
+                </YStack>
+              </XStack>
+            ))}
+          </YStack>
+        </XStack>
+      </YStack>
+    </Card>
+  )
+
+  const renderGradientBarChart = () => (
+    <Card padding="$4" margin="$2">
+      <YStack gap="$3">
+        <H3>Gradient Bar Chart Example</H3>
+        <Text fontSize="$3" color="$gray10">
+          Monthly sales data with beautiful gradient effects
+        </Text>
+        <BarChart
+          data={gradientBarData}
+          height={250}
+          isAnimated={true}
+          animationDuration={1000}
+          showGradient={true}
+          onPress={(item, index) => {
+            console.log('Gradient bar pressed:', item, index)
+          }}
+        />
+      </YStack>
+    </Card>
+  )
+
+  const renderGradientPieChart = () => (
+    <Card padding="$4" margin="$2">
+      <YStack gap="$3" alignItems="center">
+        <H3>Gradient Pie Chart Example</H3>
+        <Text fontSize="$3" color="$gray10">
+          Platform distribution with gradient effects
+        </Text>
+        <PieChart
+          data={gradientPieData}
+          radius={100}
+          showText={true}
+          showTextBackground={false}
+          showGradient={true}
+          onPress={(item, index) => {
+            console.log('Gradient pie segment pressed:', item, index)
+          }}
+        />
+      </YStack>
+    </Card>
+  )
+
+  const renderGradientDonutChart = () => (
+    <Card padding="$4" margin="$2">
+      <YStack gap="$3" alignItems="center">
+        <H3>Gradient Donut Chart Example</H3>
+        <Text fontSize="$3" color="$gray10">
+          Same data with gradient donut and center label
+        </Text>
+        <PieChart
+          data={gradientPieData}
+          radius={100}
+          donut={true}
+          showText={true}
+          showTextBackground={false}
+          showGradient={true}
+          centerLabelComponent={() => (
+            <YStack alignItems="center">
+              <Text fontSize="$6" fontWeight="bold" color="$gray12">
+                Total
+              </Text>
+              <Text fontSize="$4" color="$gray10">
+                100%
+              </Text>
+            </YStack>
+          )}
+        />
+      </YStack>
+    </Card>
+  )
+
   const renderAllCharts = () => (
     <YStack gap="$4">
+      {renderProjectOverview()}
       {renderBarChart()}
       {renderLineChart()}
       {renderAreaChart()}
@@ -341,6 +497,13 @@ export default function ChartsTestPage() {
               >
                 Population Pyramid
               </Button>
+              <Button
+                size="$3"
+                variant={activeChart === 'project' ? 'outlined' : 'outline'}
+                onPress={() => setActiveChart('project')}
+              >
+                Project Overview
+              </Button>
             </XStack>
           </YStack>
         </Card>
@@ -363,6 +526,7 @@ export default function ChartsTestPage() {
         {activeChart === 'stacked' && renderStackedBarChart()}
         {activeChart === 'radar' && renderRadarChart()}
         {activeChart === 'pyramid' && renderPopulationPyramid()}
+        {activeChart === 'project' && renderProjectOverview()}
       </YStack>
     </ScrollView>
   )

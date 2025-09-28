@@ -1873,6 +1873,7 @@ export type Database = {
       }
       user_private: {
         Row: {
+          about: string | null
           address: Json | null
           availability: string[] | null
           certifications: string[] | null
@@ -1901,6 +1902,7 @@ export type Database = {
           veteran: boolean | null
         }
         Insert: {
+          about?: string | null
           address?: Json | null
           availability?: string[] | null
           certifications?: string[] | null
@@ -1929,6 +1931,7 @@ export type Database = {
           veteran?: boolean | null
         }
         Update: {
+          about?: string | null
           address?: Json | null
           availability?: string[] | null
           certifications?: string[] | null
