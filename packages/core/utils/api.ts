@@ -46,6 +46,40 @@ export type RouterInputs = {
     phone?: string
     about?: string
   }
+  'profile.getEmployment': void
+  'profile.updateEmployment': {
+    address?: {
+      street?: string
+      city?: string
+      state?: string
+      zip?: string
+      country?: string
+    }
+    preferred_work_locations?: string[]
+    willing_to_travel?: boolean
+    travel_distance_miles?: number
+    us_resident?: boolean
+    residency_countries?: string[]
+    us_passport?: boolean
+    drivers_license_classes?: string[]
+    military_status?: string[]
+    availability?: string[]
+    hourly_rate?: number
+  }
+  'profile.getSkills': void
+  'profile.updateSkills': {
+    skills?: {
+      skill_id: string
+      skill_name: string
+      proficiency: number
+      years_experience?: number
+      is_primary: boolean
+      endorsed_count?: number
+    }[]
+    primary_industry_id?: string
+    secondary_industries?: string[]
+    skill_categories?: string[]
+  }
 }
 
 export type RouterOutputs = {
@@ -58,4 +92,38 @@ export type RouterOutputs = {
     about: string
   }
   'profile.updateGeneral': { success: boolean }
+  'profile.getEmployment': {
+    address: {
+      street: string
+      city: string
+      state: string
+      zip: string
+      country: string
+    } | null
+    preferred_work_locations: string[]
+    willing_to_travel: boolean
+    travel_distance_miles: number
+    us_resident: boolean
+    residency_countries: string[]
+    us_passport: boolean
+    drivers_license_classes: string[]
+    military_status: string[]
+    availability: string[]
+    hourly_rate: number | null
+  }
+  'profile.updateEmployment': { success: boolean }
+  'profile.getSkills': {
+    skills: {
+      skill_id: string
+      skill_name: string
+      proficiency: number
+      years_experience: number | null
+      is_primary: boolean
+      endorsed_count: number
+    }[]
+    primary_industry_id: string | null
+    secondary_industries: string[]
+    skill_categories: string[]
+  }
+  'profile.updateSkills': { success: boolean }
 }
