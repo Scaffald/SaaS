@@ -10,6 +10,7 @@ import {
   H4,
   Spinner,
   AnimatePresence,
+  ScrollView,
 } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { useForm, Controller } from 'react-hook-form'
@@ -91,182 +92,184 @@ export function ProfileGeneralLeft() {
   }
 
   return (
-    <DashboardWidget>
-      <H4>Edit General Information</H4>
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <DashboardWidget>
+        <H4>Edit General Information</H4>
 
-      <YStack gap="$4" tag="form">
-        {/* Avatar Section */}
-        <YStack gap="$3">
-          <Text fontWeight="600">Profile Photo</Text>
-          <XStack gap="$3" alignItems="center">
-            <Avatar circular size="$8">
-              <Avatar.Image src={avatarUrl || undefined} />
-              <Avatar.Fallback backgroundColor="$gray5" />
-            </Avatar>
+        <YStack gap="$4" tag="form">
+          {/* Avatar Section */}
+          <YStack gap="$3">
+            <Text fontWeight="600">Profile Photo</Text>
+            <XStack gap="$3" alignItems="center">
+              <Avatar circular size="$8">
+                <Avatar.Image src={avatarUrl || undefined} />
+                <Avatar.Fallback backgroundColor="$gray5" />
+              </Avatar>
+              <YStack gap="$2" flex={1}>
+                <Controller
+                  name="avatar_url"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      placeholder="Profile photo URL"
+                      value={field.value || ''}
+                      onChangeText={field.onChange}
+                      borderColor={errors.avatar_url ? '$red8' : '$borderColor'}
+                    />
+                  )}
+                />
+                {errors.avatar_url && (
+                  <Text color="$red10" fontSize="$2">
+                    {errors.avatar_url.message}
+                  </Text>
+                )}
+              </YStack>
+            </XStack>
+          </YStack>
+
+          {/* Name Fields */}
+          <XStack gap="$3">
             <YStack gap="$2" flex={1}>
+              <Text fontWeight="600">First Name *</Text>
               <Controller
-                name="avatar_url"
+                name="first_name"
                 control={control}
                 render={({ field }) => (
                   <Input
-                    placeholder="Profile photo URL"
-                    value={field.value || ''}
+                    placeholder="First name"
+                    value={field.value}
                     onChangeText={field.onChange}
-                    borderColor={errors.avatar_url ? '$red8' : '$borderColor'}
+                    borderColor={errors.first_name ? '$red8' : '$borderColor'}
                   />
                 )}
               />
-              {errors.avatar_url && (
+              {errors.first_name && (
                 <Text color="$red10" fontSize="$2">
-                  {errors.avatar_url.message}
+                  {errors.first_name.message}
+                </Text>
+              )}
+            </YStack>
+
+            <YStack gap="$2" flex={1}>
+              <Text fontWeight="600">Last Name *</Text>
+              <Controller
+                name="last_name"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    placeholder="Last name"
+                    value={field.value}
+                    onChangeText={field.onChange}
+                    borderColor={errors.last_name ? '$red8' : '$borderColor'}
+                  />
+                )}
+              />
+              {errors.last_name && (
+                <Text color="$red10" fontSize="$2">
+                  {errors.last_name.message}
                 </Text>
               )}
             </YStack>
           </XStack>
-        </YStack>
 
-        {/* Name Fields */}
-        <XStack gap="$3">
-          <YStack gap="$2" flex={1}>
-            <Text fontWeight="600">First Name *</Text>
+          {/* About Section */}
+          <YStack gap="$2">
+            <Text fontWeight="600">About</Text>
             <Controller
-              name="first_name"
+              name="about"
               control={control}
               render={({ field }) => (
-                <Input
-                  placeholder="First name"
-                  value={field.value}
+                <TextArea
+                  placeholder="Tell us about yourself..."
+                  value={field.value || ''}
                   onChangeText={field.onChange}
-                  borderColor={errors.first_name ? '$red8' : '$borderColor'}
+                  minHeight={100}
+                  borderColor={errors.about ? '$red8' : '$borderColor'}
                 />
               )}
             />
-            {errors.first_name && (
+            {errors.about && (
               <Text color="$red10" fontSize="$2">
-                {errors.first_name.message}
+                {errors.about.message}
               </Text>
             )}
           </YStack>
 
-          <YStack gap="$2" flex={1}>
-            <Text fontWeight="600">Last Name *</Text>
+          {/* Contact Information */}
+          <YStack gap="$2">
+            <Text fontWeight="600">Phone</Text>
             <Controller
-              name="last_name"
+              name="phone"
               control={control}
               render={({ field }) => (
                 <Input
-                  placeholder="Last name"
-                  value={field.value}
+                  placeholder="Phone number"
+                  value={field.value || ''}
                   onChangeText={field.onChange}
-                  borderColor={errors.last_name ? '$red8' : '$borderColor'}
+                  keyboardType="phone-pad"
+                  borderColor={errors.phone ? '$red8' : '$borderColor'}
                 />
               )}
             />
-            {errors.last_name && (
+            {errors.phone && (
               <Text color="$red10" fontSize="$2">
-                {errors.last_name.message}
+                {errors.phone.message}
               </Text>
             )}
           </YStack>
-        </XStack>
 
-        {/* About Section */}
-        <YStack gap="$2">
-          <Text fontWeight="600">About</Text>
-          <Controller
-            name="about"
-            control={control}
-            render={({ field }) => (
-              <TextArea
-                placeholder="Tell us about yourself..."
-                value={field.value || ''}
-                onChangeText={field.onChange}
-                minHeight={100}
-                borderColor={errors.about ? '$red8' : '$borderColor'}
-              />
-            )}
-          />
-          {errors.about && (
-            <Text color="$red10" fontSize="$2">
-              {errors.about.message}
-            </Text>
-          )}
-        </YStack>
-
-        {/* Contact Information */}
-        <YStack gap="$2">
-          <Text fontWeight="600">Phone</Text>
-          <Controller
-            name="phone"
-            control={control}
-            render={({ field }) => (
-              <Input
-                placeholder="Phone number"
-                value={field.value || ''}
-                onChangeText={field.onChange}
-                keyboardType="phone-pad"
-                borderColor={errors.phone ? '$red8' : '$borderColor'}
-              />
-            )}
-          />
-          {errors.phone && (
-            <Text color="$red10" fontSize="$2">
-              {errors.phone.message}
-            </Text>
-          )}
-        </YStack>
-
-        <YStack gap="$2">
-          <Text fontWeight="600">Email (Read-only)</Text>
-          <Controller
-            name="email"
-            control={control}
-            render={({ field }) => (
-              <Input
-                placeholder="Email address"
-                value={field.value}
-                onChangeText={() => {}} // Make read-only
-                keyboardType="email-address"
-                autoCapitalize="none"
-                editable={false}
-                opacity={0.7}
-                backgroundColor="$gray2"
-                borderColor="$gray6"
-              />
-            )}
-          />
-          <Text color="$gray10" fontSize="$2">
-            Email changes must be made through account settings
-          </Text>
-        </YStack>
-
-        {/* Save Button */}
-        <XStack justifyContent="flex-end" paddingTop="$4">
-          <Button
-            onPress={handleSubmit(onSubmit)}
-            disabled={!isDirty || isLoading}
-            opacity={!isDirty || isLoading ? 0.5 : 1}
-            space={isLoading ? '$2' : 0}
-          >
-            <AnimatePresence>
-              {isLoading && (
-                <Button.Icon>
-                  <Spinner
-                    animation="bouncy"
-                    enterStyle={{
-                      scale: 0,
-                    }}
-                    exitStyle={{
-                      scale: 0,
-                    }}
-                  />
-                </Button.Icon>
+          <YStack gap="$2">
+            <Text fontWeight="600">Email (Read-only)</Text>
+            <Controller
+              name="email"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  placeholder="Email address"
+                  value={field.value}
+                  onChangeText={() => {}} // Make read-only
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  editable={false}
+                  opacity={0.7}
+                  backgroundColor="$gray2"
+                  borderColor="$gray6"
+                />
               )}
-            </AnimatePresence>
-            <Button.Text>{isLoading ? 'Saving...' : 'Save Changes'}</Button.Text>
-          </Button>
-        </XStack>
-      </YStack>
-    </DashboardWidget>
+            />
+            <Text color="$gray10" fontSize="$2">
+              Email changes must be made through account settings
+            </Text>
+          </YStack>
+
+          {/* Save Button */}
+          <XStack justifyContent="flex-end" paddingTop="$4">
+            <Button
+              onPress={handleSubmit(onSubmit)}
+              disabled={!isDirty || isLoading}
+              opacity={!isDirty || isLoading ? 0.5 : 1}
+              space={isLoading ? '$2' : 0}
+            >
+              <AnimatePresence>
+                {isLoading && (
+                  <Button.Icon>
+                    <Spinner
+                      animation="bouncy"
+                      enterStyle={{
+                        scale: 0,
+                      }}
+                      exitStyle={{
+                        scale: 0,
+                      }}
+                    />
+                  </Button.Icon>
+                )}
+              </AnimatePresence>
+              <Button.Text>{isLoading ? 'Saving...' : 'Save Changes'}</Button.Text>
+            </Button>
+          </XStack>
+        </YStack>
+      </DashboardWidget>
+    </ScrollView>
   )
 }

@@ -1,4 +1,4 @@
-import { YStack, Text, H3, H4 } from 'tamagui'
+import { YStack, Text, H3, H4, ScrollView } from 'tamagui'
 import { DashboardWidget, StackedCards } from '@app/ui'
 
 /**
@@ -57,22 +57,24 @@ export function ProfileGeneralRight() {
   ]
 
   return (
-    <YStack gap="$4">
-      <DashboardWidget>
-        <H3>General Information</H3>
-        <Text color="$gray11" fontSize="$3">
-          Update your basic profile information including your name, photo, and contact details.
-        </Text>
-      </DashboardWidget>
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <YStack gap="$4">
+        <DashboardWidget>
+          <H3>General Information</H3>
+          <Text color="$gray11" fontSize="$3">
+            Update your basic profile information including your name, photo, and contact details.
+          </Text>
+        </DashboardWidget>
 
-      <StackedCards
-        cards={profileTipCards}
-        interval={8000}
-        autoPlay={true}
-        width="100%"
-        maxStackSize={2}
-        wrapperComponent={DashboardWidget}
-      />
-    </YStack>
+        <StackedCards
+          cards={profileTipCards}
+          interval={8000}
+          autoPlay={true}
+          width="100%"
+          maxStackSize={2}
+          wrapperComponent={DashboardWidget}
+        />
+      </YStack>
+    </ScrollView>
   )
 }
