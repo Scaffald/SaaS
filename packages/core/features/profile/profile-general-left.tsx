@@ -217,7 +217,7 @@ export function ProfileGeneralLeft() {
         </YStack>
 
         <YStack space="$2">
-          <Text fontWeight="600">Email *</Text>
+          <Text fontWeight="600">Email (Read-only)</Text>
           <Controller
             name="email"
             control={control}
@@ -225,18 +225,19 @@ export function ProfileGeneralLeft() {
               <Input
                 placeholder="Email address"
                 value={field.value}
-                onChangeText={field.onChange}
+                onChangeText={() => {}} // Make read-only
                 keyboardType="email-address"
                 autoCapitalize="none"
-                borderColor={errors.email ? '$red8' : '$borderColor'}
+                editable={false}
+                opacity={0.7}
+                backgroundColor="$gray2"
+                borderColor="$gray6"
               />
             )}
           />
-          {errors.email && (
-            <Text color="$red10" fontSize="$2">
-              {errors.email.message}
-            </Text>
-          )}
+          <Text color="$gray10" fontSize="$2">
+            Email changes must be made through account settings
+          </Text>
         </YStack>
 
         {/* Save Button */}

@@ -4,26 +4,28 @@ import { z } from 'zod'
  * General Profile Form Schema
  * Fields: Avatar, First/Last Name, About, Phone, Email
  */
-export const generalProfileSchema = z.object({
-  // Avatar
-  avatar_url: z.string().url().optional().or(z.literal('')),
+export const generalProfileSchema = z
+  .object({
+    // Avatar
+    avatar_url: z.union([z.string().url(), z.literal('')]).optional(),
 
-  // Name fields
-  first_name: z.string().min(1, 'First name is required').max(50, 'First name too long'),
-  last_name: z.string().min(1, 'Last name is required').max(50, 'Last name too long'),
+    // Name fields
+    first_name: z
+      .string()
+      .min(1, 'First name is required')
+      .max(50, 'First name too long')
+      .optional(),
+    last_name: z.string().min(1, 'Last name is required').max(50, 'Last name too long').optional(),
 
-  // About section
-  about: z.string().max(500, 'About section must be 500 characters or less').optional(),
+    // About section
+    about: z.string().max(500, 'About section must be 500 characters or less').optional(),
 
-  // Contact information
-  phone: z
-    .string()
-    .regex(/^[\+]?[1-9][\d]{0,15}$/, 'Please enter a valid phone number')
-    .optional()
-    .or(z.literal('')),
+    // Contact information
+    phone: z.string().optional(),
 
-  email: z.string().email('Please enter a valid email address'),
-})
+    email: z.string().email('Please enter a valid email address').optional(),
+  })
+  .partial()
 
 export type GeneralProfileFormData = z.infer<typeof generalProfileSchema>
 

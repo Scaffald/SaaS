@@ -71,15 +71,17 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 
 const protectedProcedure = t.procedure.use(enforceUserIsAuthed)
 
-// General profile schema
-const generalProfileSchema = z.object({
-  first_name: z.string().min(1, 'First name is required'),
-  last_name: z.string().min(1, 'Last name is required'),
-  avatar_url: z.string().url().optional().or(z.literal('')),
-  email: z.string().email(),
-  phone: z.string().optional(),
-  about: z.string().max(500).optional(),
-})
+// General profile schema - allow partial updates
+const generalProfileSchema = z
+  .object({
+    first_name: z.string().min(1).optional(),
+    last_name: z.string().min(1).optional(),
+    avatar_url: z.union([z.string().url(), z.literal('')]).optional(),
+    email: z.string().email().optional(),
+    phone: z.string().optional(),
+    about: z.string().max(500).optional(),
+  })
+  .partial()
 
 // Profile router
 const profileRouter = t.router({
@@ -130,35 +132,52 @@ const profileRouter = t.router({
   updateGeneral: protectedProcedure.input(generalProfileSchema).mutation(async ({ ctx, input }) => {
     const { supabase, user } = ctx
 
-    // Update profiles table
-    const { error: profileError } = await supabase.from('profiles').upsert({
-      id: user.id,
-      first_name: input.first_name,
-      last_name: input.last_name,
-      avatar_url: input.avatar_url,
-      updated_at: new Date().toISOString(),
-    })
+    // Note: Email updates are not supported to avoid authentication issues
+    // The email field is read-only and comes from the auth system
 
-    if (profileError) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: `Failed to update profile: ${profileError.message}`,
-      })
+    // Build profile update object with only provided fields
+    const profileUpdate: any = {
+      id: user.id,
+      updated_at: new Date().toISOString(),
     }
 
-    // Update user_private table - use upsert to handle both insert and update
-    const { error: privateError } = await supabase.from('user_private').upsert({
-      user_id: user.id,
-      phone: input.phone,
-      about: input.about,
-      updated_at: new Date().toISOString(),
-    })
+    if (input.first_name !== undefined) profileUpdate.first_name = input.first_name
+    if (input.last_name !== undefined) profileUpdate.last_name = input.last_name
+    if (input.avatar_url !== undefined) profileUpdate.avatar_url = input.avatar_url
 
-    if (privateError) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: `Failed to update private data: ${privateError.message}`,
-      })
+    // Update profiles table only if there are fields to update
+    if (Object.keys(profileUpdate).length > 2) {
+      // More than just id and updated_at
+      const { error: profileError } = await supabase.from('profiles').upsert(profileUpdate)
+
+      if (profileError) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to update profile: ${profileError.message}`,
+        })
+      }
+    }
+
+    // Build user_private update object with only provided fields
+    const privateUpdate: any = {
+      user_id: user.id,
+      updated_at: new Date().toISOString(),
+    }
+
+    if (input.phone !== undefined) privateUpdate.phone = input.phone
+    if (input.about !== undefined) privateUpdate.about = input.about
+
+    // Update user_private table only if there are fields to update
+    if (Object.keys(privateUpdate).length > 2) {
+      // More than just user_id and updated_at
+      const { error: privateError } = await supabase.from('user_private').upsert(privateUpdate)
+
+      if (privateError) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to update private data: ${privateError.message}`,
+        })
+      }
     }
 
     return { success: true }
@@ -190,6 +209,9 @@ Deno.serve(async (req: Request) => {
       req,
       router: appRouter,
       createContext: createTRPCContext,
+      batching: {
+        enabled: true,
+      },
     })
   } catch (error) {
     console.error('tRPC handler error:', error)
