@@ -75,9 +75,9 @@ types/
 
   writeFileSync(
     join(packDir, 'README.md'),
-    `## Usage with Next.js
+    `## Usage with Expo/React Native
           
-Add this to next.config.js:
+Add this to your babel config:
     
 \`\`\`ts
 modularizeImports: {

@@ -1,44 +1,46 @@
-import 'react-native-url-polyfill/auto'
-import { default as AsyncStorage } from '@react-native-async-storage/async-storage'
 import { Database } from '@app/supabase/types'
 import { createClient } from '@supabase/supabase-js'
+import { Platform } from 'react-native'
 
-// Get environment variables with fallbacks for different platforms
-const getSupabaseUrl = () => {
-  // Use EXPO_PUBLIC for all environments
-  return process.env.EXPO_PUBLIC_SUPABASE_URL
+// Platform-specific imports
+let storage: typeof import('@react-native-async-storage/async-storage').default | undefined
+
+if (Platform.OS === 'web') {
+  // Web: Use localStorage (default browser storage)
+  storage = undefined // Supabase will use localStorage by default
+} else {
+  // Native: Use AsyncStorage
+  import('react-native-url-polyfill/auto') // Required for React Native
+  const AsyncStorage = require('@react-native-async-storage/async-storage').default
+  storage = AsyncStorage
 }
 
-const getSupabaseAnonKey = () => {
-  // Use EXPO_PUBLIC for all environments
-  return process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
-}
-
-const supabaseUrl = getSupabaseUrl()
-const supabaseAnonKey = getSupabaseAnonKey()
-
-if (!supabaseUrl) {
+// Environment variables validation
+if (!process.env.EXPO_PUBLIC_SUPABASE_URL) {
   throw new Error(
-    `Supabase URL is not set. Please update the root .env with EXPO_PUBLIC_SUPABASE_URL and restart the server.`
+    `EXPO_PUBLIC_SUPABASE_URL is not set. Please update the root .env with EXPO_PUBLIC_SUPABASE_URL and restart the server.`
   )
 }
 
-if (!supabaseAnonKey) {
+if (!process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY) {
   throw new Error(
-    `Supabase Anon Key is not set. Please update the root .env with EXPO_PUBLIC_SUPABASE_ANON_KEY and restart the server.`
+    `EXPO_PUBLIC_SUPABASE_ANON_KEY is not set. Please update the root .env with EXPO_PUBLIC_SUPABASE_ANON_KEY and restart the server.`
   )
 }
 
-// Debug: Log the URL being used
-console.log('Supabase URL being used:', supabaseUrl)
-console.log('Supabase Anon Key being used:', supabaseAnonKey ? 'Present' : 'Missing')
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
 
-// Configure Supabase client according to Expo documentation
+// Debug logging
+console.log(`[${Platform.OS}] Supabase URL:`, supabaseUrl)
+console.log(`[${Platform.OS}] Supabase Key:`, supabaseAnonKey ? 'Present' : 'Missing')
+
+// Create unified Supabase client with platform-specific storage
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
-    storage: AsyncStorage,
+    storage: storage,
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false,
+    detectSessionInUrl: Platform.OS === 'web', // Only detect URL sessions on web
   },
 })

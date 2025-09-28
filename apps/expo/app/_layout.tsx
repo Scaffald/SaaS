@@ -1,6 +1,6 @@
 import type { Session } from '@supabase/supabase-js'
 import { Provider, loadThemePromise } from '@app/core/provider'
-import { supabase } from '@app/core/utils/supabase/client.unified'
+import { supabase } from '@app/core/utils/supabase/client'
 import { useFonts } from 'expo-font'
 import { SplashScreen, Stack } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'

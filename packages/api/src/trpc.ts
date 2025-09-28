@@ -3,14 +3,21 @@ import { createClient } from '@supabase/supabase-js'
 import { TRPCError, initTRPC } from '@trpc/server'
 import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch'
 import * as jose from 'jose'
-import { cookies, type UnsafeUnwrappedCookies } from 'next/headers'
+// Handle cookies manually for Edge Functions
 import superJson from 'superjson'
 
 const jwtSecret = process.env.SUPABASE_AUTH_JWT_SECRET
 
 export const createTRPCContext = async (opts: FetchCreateContextFnOptions) => {
-  // if there's auth cookie it'll be authenticated by this helper
-  const cookiesStore = (await cookies()) as unknown as UnsafeUnwrappedCookies
+  // Parse cookies manually for Edge Functions
+  const cookieHeader = opts.req.headers.get('cookie') || ''
+  const cookies: Record<string, string> = {}
+  cookieHeader.split(';').forEach((cookie) => {
+    const [name, value] = cookie.trim().split('=')
+    if (name && value) {
+      cookies[name] = value
+    }
+  })
 
   const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL
   if (!supabaseUrl) {

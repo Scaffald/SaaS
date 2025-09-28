@@ -5,7 +5,7 @@ import {
   focusManager,
   onlineManager,
 } from '@tanstack/react-query'
-import { api, createTrpcClient } from '@app/core/utils/api.native'
+import { api, createTrpcClient } from '@app/core/utils/api'
 import { useEffect, useState } from 'react'
 import type { AppStateStatus } from 'react-native'
 import { AppState, Platform } from 'react-native'

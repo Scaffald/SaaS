@@ -22,7 +22,8 @@
     "_deploy": "yarn link-project && npx supabase db push",
     "deploy": "yarn _with-env yarn _deploy",
     "seed:init": "npx @snaplet/seed init",
-    "seed:post": "npx tsx seed.ts > seed.sql"
+    "seed:post": "npx tsx seed.ts > seed.sql",
+    "check:type": "tsc --noEmit --skipLibCheck"
   },
   "devDependencies": {
     "@snaplet/copycat": "^5.0.0",

@@ -1,10 +1,10 @@
-import { useSupabase } from '@app/core/utils/supabase/useSupabase.unified'
+import { supabase } from '@app/core/utils/supabase/client'
 import { useEffect } from 'react'
 import { useRouter } from 'expo-router'
 import { ROUTES, AUTH_ROUTES } from '@app/core/constants/routes'
 
 const useRedirectAfterSignOut = () => {
-  const supabase = useSupabase()
+  // Using supabase directly from import
   const router = useRouter()
   useEffect(() => {
     const signOutListener = supabase.auth.onAuthStateChange((event) => {

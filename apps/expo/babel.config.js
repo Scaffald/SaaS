@@ -1,5 +1,5 @@
 // temp: ignore bundle error
-process.env.TAMAGUI_IGNORE_BUNDLE_ERRORS = 'solito/link,moti'
+process.env.TAMAGUI_IGNORE_BUNDLE_ERRORS = 'moti'
 
 module.exports = (api) => {
   api.cache(false)

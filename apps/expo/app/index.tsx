@@ -1,12 +1,12 @@
 import { useUser } from '@app/core/utils/useUser'
-import { useSupabase } from '@app/core/utils/supabase/useSupabase.unified'
+import { supabase } from '@app/core/utils/supabase/client'
 import { Redirect, useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { View, Text } from 'react-native'
 
 export default function RootIndex() {
   const { user, isPending } = useUser()
-  const supabase = useSupabase()
+  // Using supabase directly from import
   const params = useLocalSearchParams<{
     token?: string
     type?: string
@@ -26,7 +26,7 @@ export default function RootIndex() {
         try {
           const { data, error } = await supabase.auth.verifyOtp({
             token_hash: params.token,
-            type: params.type as any,
+            type: params.type as unknown as 'email',
           })
 
           if (error) {

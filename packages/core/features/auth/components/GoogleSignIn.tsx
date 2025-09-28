@@ -1,12 +1,10 @@
 import { Button } from '@app/ui'
-import { useSupabase } from '@app/core/utils/supabase/useSupabase'
-import { useRouter } from 'expo-router'
+import { supabase } from '@app/core/utils/supabase/client'
 
 import { IconGoogle } from './IconGoogle'
 
 export function GoogleSignIn() {
-  const router = useRouter()
-  const supabase = useSupabase()
+  // Using supabase directly from import
   const handleOAuthSignIn = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',

@@ -1,5 +1,9 @@
 import { useIsomorphicLayoutEffect } from '@app/ui'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
+import { StatusBar } from 'expo-status-bar'
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { Appearance, Platform, useColorScheme } from 'react-native'
 
 type ThemeProviderProps = {
   themes: string[]
@@ -13,46 +17,65 @@ export const ThemeContext = createContext<ThemeContextValue>(null)
 
 type ThemeName = 'light' | 'dark' | 'system'
 
-// Web-compatible theme storage using localStorage
-const getStoredTheme = (): ThemeName | null => {
-  if (typeof window === 'undefined') return null
-  try {
-    return localStorage.getItem('@preferred_theme') as ThemeName | null
-  } catch {
-    return null
+// Platform-specific theme storage
+const getStoredTheme = async (): Promise<ThemeName | null> => {
+  if (Platform.OS === 'web') {
+    if (typeof window === 'undefined') return null
+    try {
+      return localStorage.getItem('@preferred_theme') as ThemeName | null
+    } catch {
+      return null
+    }
+  } else {
+    try {
+      return (await AsyncStorage.getItem('@preferred_theme')) as ThemeName | null
+    } catch {
+      return null
+    }
   }
 }
 
 const setStoredTheme = (theme: ThemeName) => {
-  if (typeof window === 'undefined') return
-  try {
-    localStorage.setItem('@preferred_theme', theme)
-  } catch {
-    // Ignore storage errors
+  if (Platform.OS === 'web') {
+    if (typeof window === 'undefined') return
+    try {
+      localStorage.setItem('@preferred_theme', theme)
+    } catch {
+      // Ignore storage errors
+    }
+  } else {
+    AsyncStorage.setItem('@preferred_theme', theme).catch(() => {
+      // Ignore storage errors
+    })
   }
 }
 
-// Web-compatible system theme detection
+// Platform-specific system theme detection
 const getSystemTheme = (): 'light' | 'dark' => {
-  if (typeof window === 'undefined') return 'light'
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  if (Platform.OS === 'web') {
+    if (typeof window === 'undefined') return 'light'
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  } else {
+    const colorScheme = useColorScheme()
+    return colorScheme === 'dark' ? 'dark' : 'light'
+  }
 }
 
-// start early
+// Start early theme loading
 let persistedTheme: ThemeName | null = null
-export const loadThemePromise = Promise.resolve(getStoredTheme())
+export const loadThemePromise = getStoredTheme()
 loadThemePromise.then((val) => {
   persistedTheme = val
 })
 
 export const UniversalThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [current, setCurrent] = useState<ThemeName | null>(null) // Start with null
-  const systemTheme = getSystemTheme()
+  const [current, setCurrent] = useState<ThemeName | null>(null)
+  const systemTheme = Platform.OS === 'web' ? getSystemTheme() : useColorScheme() || 'light'
 
   useIsomorphicLayoutEffect(() => {
     async function main() {
       await loadThemePromise
-      setCurrent(persistedTheme ?? 'system') // Set theme after loading
+      setCurrent(persistedTheme ?? 'system')
     }
     main()
   }, [])
@@ -69,8 +92,8 @@ export const UniversalThemeProvider = ({ children }: { children: React.ReactNode
       onChangeTheme: (next: string) => {
         setCurrent(next as ThemeName)
       },
-      current: current ?? 'system', // Default to 'system' if current is null
-      systemTheme,
+      current: current ?? 'system',
+      systemTheme: systemTheme as 'light' | 'dark',
     } satisfies ThemeContextValue
   }, [current, systemTheme])
 
@@ -88,14 +111,33 @@ export const UniversalThemeProvider = ({ children }: { children: React.ReactNode
 const InnerProvider = ({ children }: { children: React.ReactNode }) => {
   const { resolvedTheme } = useThemeSetting()
 
-  // Web-compatible theme application
+  // Platform-specific theme application
   useEffect(() => {
-    if (typeof document !== 'undefined') {
-      document.documentElement.setAttribute('data-theme', resolvedTheme)
+    if (Platform.OS === 'web') {
+      if (typeof document !== 'undefined') {
+        document.documentElement.setAttribute('data-theme', resolvedTheme)
+      }
+    } else {
+      // Native: ensure we set color scheme as soon as possible
+      if (resolvedTheme !== Appearance.getColorScheme()) {
+        if (resolvedTheme === 'light' || resolvedTheme === 'dark') {
+          Appearance.setColorScheme(resolvedTheme)
+        }
+      }
     }
   }, [resolvedTheme])
 
-  return <>{children}</>
+  if (Platform.OS === 'web') {
+    return <>{children}</>
+  }
+
+  // Native: wrap with React Navigation theme provider and status bar
+  return (
+    <ThemeProvider value={resolvedTheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <StatusBar style={resolvedTheme === 'dark' ? 'light' : 'dark'} />
+      {children}
+    </ThemeProvider>
+  )
 }
 
 export const useThemeSetting = () => {

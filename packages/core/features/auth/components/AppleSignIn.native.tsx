@@ -1,11 +1,11 @@
 import { initiateAppleSignIn } from '@app/core/utils/auth/initiateAppleSignIn'
-import { useSupabase } from '@app/core/utils/supabase/useSupabase'
+import { supabase } from '@app/core/utils/supabase/client'
 import * as AppleAuthentication from 'expo-apple-authentication'
 import { Platform } from 'react-native'
-import { useRouter } from 'solito/router'
+import { useRouter } from 'expo-router'
 
 export function AppleSignIn() {
-  const supabase = useSupabase()
+  // Using supabase directly from import
   const router = useRouter()
   async function signInWithApple() {
     try {

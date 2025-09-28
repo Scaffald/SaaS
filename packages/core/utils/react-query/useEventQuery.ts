@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { useSupabase } from '../supabase/useSupabase'
+import { supabase } from '../supabase/client'
 import { useUser } from '../useUser'
 
 const getEvents = async (supabase, userId) => {
@@ -13,7 +13,7 @@ const getEvents = async (supabase, userId) => {
 }
 
 function useEventsQuery() {
-  const supabase = useSupabase()
+  // Using supabase directly from import
   const { user } = useUser()
 
   const queryFn = async () => {

@@ -2,11 +2,13 @@ import type { AppRouter } from '@app/api'
 import { httpBatchLink } from '@trpc/client'
 import { createTRPCReact } from '@trpc/react-query'
 import SuperJSON from 'superjson'
+import { Platform } from 'react-native'
 
 import { getBaseUrl } from './getBaseUrl'
-import { supabase } from './supabase/client.web'
+import { supabase } from './supabase/client'
 
 export const api = createTRPCReact<AppRouter>()
+
 export const createTrpcClient = () =>
   api.createClient({
     links: [
@@ -15,14 +17,17 @@ export const createTrpcClient = () =>
         transformer: SuperJSON,
         async headers() {
           const headers = new Map<string, string>()
-          headers.set('x-trpc-source', 'expo-web')
+
+          // Set platform-specific source header
+          headers.set('x-trpc-source', Platform.OS === 'web' ? 'expo-web' : 'expo-react')
+
           const session = (await supabase.auth.getSession()).data.session
 
-          // Manually add the auth name as the backend uses cookies to authenticate users
-          // This allows web to authenticate via Supabase
+          // Add auth header for Supabase authentication
           if (session?.access_token) {
             headers.set('Authorization', `Bearer ${session.access_token}`)
           }
+
           return Object.fromEntries(headers)
         },
       }),

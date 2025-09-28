@@ -7,6 +7,7 @@
     "skipLibCheck": true,
     "noEmit": true
   },
+  "exclude": ["supabase/**/*"],
   "references": [
     {
       "path": "apps/expo"

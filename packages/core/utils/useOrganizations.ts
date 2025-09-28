@@ -2,14 +2,14 @@ import { useQuery } from '@tanstack/react-query'
 
 import { Database } from '@app/supabase/types'
 
-import { useSupabase } from './supabase/useSupabase'
+import { supabase } from './supabase/client'
 import { useUser } from './useUser'
 
 export type OrganizationMembership =
   Database['public']['Views']['v_organization_memberships']['Row']
 
 export const useOrganizations = () => {
-  const supabase = useSupabase()
+  // Using supabase directly from import
   const { user } = useUser()
 
   return useQuery({

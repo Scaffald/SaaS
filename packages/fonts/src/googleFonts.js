@@ -244,12 +244,13 @@ Get the font's script (\`<link>\` or \`@import\`) and add it to \`<head>\` from 
       .join('+')})
 
 
-## Next.js Font (next/font/google)
+## Expo Font Usage
 
-Import the font from \`next/font/google\` and give it a variable name in your \`_app.tsx\` like so:
+Import the font using Expo's font system:
 
 \`\`\`ts
-import { ${pascalCase(family)} } from 'next/font/google' // the casing might differ
+import { useFonts } from 'expo-font'
+import { ${pascalCase(family)} } from '@app/fonts'
 
 const font = ${pascalCase(family)}({
   variable: '--my-font',

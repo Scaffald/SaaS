@@ -2,7 +2,7 @@ import { DatePickerProvider } from '@rehookify/datepicker'
 import { Session } from '@supabase/supabase-js'
 import React from 'react'
 
-import { AuthProvider } from './auth/AuthProvider.unified'
+import { AuthProvider } from './auth/AuthProvider'
 import { CookieConsentProvider } from './cookie-consent'
 import { QueryClientProvider } from './react-query'
 import { TamaguiProvider } from './tamagui'

@@ -1,7 +1,7 @@
 import { ChevronRight, ChevronDown, ChevronUp, ChevronLeft } from '@tamagui/lucide-icons'
 import { GestureResponderEvent } from 'react-native'
 import { XStack, Paragraph, YStack } from '@app/ui'
-import { useLink } from 'solito/link'
+import { Link } from 'expo-router'
 import type { DrawerItemConfig, DrawerLinkProps } from './types'
 import { isActivePath } from './utils'
 
@@ -16,17 +16,11 @@ export const DrawerLink = ({
   const active = isActivePath(pathname, item.href)
   const Icon = item.icon
   const isExpanded = expandedItems?.has(item.key) || false
-  const link = useLink({ href: item.href })
-
   const handleToggle = (event: GestureResponderEvent) => {
     event.preventDefault()
     if (item.isExpandable && onToggleExpanded) {
       onToggleExpanded(item.key)
     }
-  }
-
-  const handleNavigation = () => {
-    link.onPress()
   }
 
   // If item is disabled, render as non-interactive element
@@ -44,23 +38,24 @@ export const DrawerLink = ({
   // For sub-items (depth > 0), render as simple link
   if (depth > 0) {
     return (
-      <XStack
-        ai="center"
-        br="$4"
-        gap="$3"
-        px="$3"
-        py="$3"
-        pl="$9"
-        pressStyle={{ bg: '$color1' }}
-        hoverStyle={{ bg: '$color3' }}
-        cursor="pointer"
-        width="100%"
-        onPress={handleNavigation}
-      >
-        <Paragraph size="$2" fow="600" color={active ? '$blue9' : '$color11'}>
-          {item.title}
-        </Paragraph>
-      </XStack>
+      <Link href={item.href} asChild>
+        <XStack
+          ai="center"
+          br="$4"
+          gap="$3"
+          px="$3"
+          py="$3"
+          pl="$9"
+          pressStyle={{ bg: '$color1' }}
+          hoverStyle={{ bg: '$color3' }}
+          cursor="pointer"
+          width="100%"
+        >
+          <Paragraph size="$2" fow="600" color={active ? '$blue9' : '$color11'}>
+            {item.title}
+          </Paragraph>
+        </XStack>
+      </Link>
     )
   }
 
@@ -153,9 +148,11 @@ export const DrawerLink = ({
 
   // For regular main items, render with proper touch handling
   return (
-    <XStack {...containerProps} onPress={handleNavigation}>
-      {renderContent()}
-      {renderRightSide()}
-    </XStack>
+    <Link href={item.href} asChild>
+      <XStack {...containerProps}>
+        {renderContent()}
+        {renderRightSide()}
+      </XStack>
+    </Link>
   )
 }

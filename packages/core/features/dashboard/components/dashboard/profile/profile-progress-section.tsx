@@ -1,6 +1,6 @@
 import { ArrowRight, CheckCircle2, CircleDashed, ShieldAlert } from '@tamagui/lucide-icons'
 import { Button, Paragraph, SizableText, Separator, XStack, YStack } from '@app/ui'
-import { useLink } from 'solito/link'
+import { Link } from 'expo-router'
 
 import { DashboardCard, SectionHeading } from '../primitives'
 
@@ -72,8 +72,6 @@ const ChecklistRow = ({ item }: { item: ChecklistItem }) => {
 }
 
 const AdvancedTaskRow = ({ task }: { task: AdvancedTask }) => {
-  const link = useLink({ href: task.ctaRoute ?? '#' })
-
   return (
     <YStack gap="$2">
       <XStack
@@ -98,14 +96,17 @@ const AdvancedTaskRow = ({ task }: { task: AdvancedTask }) => {
             {task.description}
           </Paragraph>
         </YStack>
-        <Button
-          size="$2"
-          iconAfter={ArrowRight}
-          {...(task.ctaRoute ? link : {})}
-          disabled={!task.ctaRoute}
-        >
-          {task.ctaLabel}
-        </Button>
+        {task.ctaRoute ? (
+          <Link href={task.ctaRoute} asChild>
+            <Button size="$2" iconAfter={ArrowRight}>
+              {task.ctaLabel}
+            </Button>
+          </Link>
+        ) : (
+          <Button size="$2" iconAfter={ArrowRight} disabled>
+            {task.ctaLabel}
+          </Button>
+        )}
       </XStack>
     </YStack>
   )

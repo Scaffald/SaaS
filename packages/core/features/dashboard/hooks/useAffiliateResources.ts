@@ -1,14 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
 
 import type { Database } from '@app/supabase/types'
-import { useSupabase } from '@app/core/utils/supabase/useSupabase'
+import { supabase } from '@app/core/utils/supabase/client'
 import { useUser } from '@app/core/utils/useUser'
 
 type AffiliateRow = Database['public']['Tables']['affiliates']['Row']
 type ViewerIndustry = Pick<Database['public']['Tables']['users']['Row'], 'industry_id'>
 
 export const useAffiliateResources = () => {
-  const supabase = useSupabase()
+  // Using supabase directly from import
   const { user } = useUser()
 
   return useQuery<AffiliateRow[]>({

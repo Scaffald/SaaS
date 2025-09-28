@@ -1,6 +1,6 @@
 import { Button, XStack, useTheme } from 'tamagui'
 import { Moon, Sun, LogOut } from '@tamagui/lucide-icons'
-import { useSupabase } from '@app/core/utils/supabase/useSupabase'
+import { supabase } from '@app/core/utils/supabase/client'
 import { useThemeSetting } from '@app/core/provider/theme/UniversalThemeProvider'
 import { GestureResponderEvent } from 'react-native'
 
@@ -10,7 +10,7 @@ import { GestureResponderEvent } from 'react-native'
  */
 export const DrawerFooter = () => {
   const { accentColor } = useTheme()
-  const supabase = useSupabase()
+  // Using supabase directly from import
   const { resolvedTheme, toggle } = useThemeSetting()
 
   const handleLogout = async (event?: GestureResponderEvent) => {
