@@ -1,7 +1,7 @@
 import { CalendarClock } from '@tamagui/lucide-icons'
 import { Paragraph, SizableText, XStack, YStack } from '@app/ui'
 
-import { DashboardCard, SectionHeading } from '../primitives'
+import { DashboardWidget, SectionHeading } from '../primitives'
 
 export type Certification = {
   id: string
@@ -16,7 +16,7 @@ export type CertificationSpotlightCardProps = {
 
 export const CertificationSpotlightCard = ({ certifications }: CertificationSpotlightCardProps) => {
   return (
-    <DashboardCard gap="$4">
+    <DashboardWidget>
       <SectionHeading
         title="Get Certified"
         subtitle="Stand out to employers with verified training credentials."
@@ -48,6 +48,6 @@ export const CertificationSpotlightCard = ({ certifications }: CertificationSpot
           </YStack>
         ))}
       </XStack>
-    </DashboardCard>
+    </DashboardWidget>
   )
 }
