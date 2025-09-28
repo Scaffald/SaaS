@@ -1,48 +1,54 @@
 ---
-description: "Code quality and maintenance guidelines with automated formatting and linting"
+description: "Code quality standards with CI/CD alignment"
 globs: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"]
 alwaysApply: true
 ---
 
-# Code Quality & Maintenance Rules
-
-## Automated Code Quality
-- **ALWAYS run `yarn check`** at project root when making changes
-- **AIM for zero formatting errors** and minimal warnings
-- **RESOLVE linting issues** before committing changes
-- **MAINTAIN TypeScript type safety** across the entire project
+# Code Quality Standards
 
 ## Pre-Commit Workflow
-1. **Make code changes**
-2. **Run `yarn check`** to fix formatting, linting, and type checking
-3. **Review and resolve** any remaining warnings/errors
-4. **Commit changes** only when code quality checks pass
+- **ALWAYS run `yarn check`** before committing changes
+- **RESOLVE all formatting and linting issues** 
+- **BUILD verification** with `yarn build` for significant changes
+- **MAINTAIN TypeScript type safety** across the project
 
-## Code Quality Standards
-- **ZERO formatting errors** - all code must be properly formatted
-- **MINIMAL linting warnings** - aim to resolve all warnings
-- **LOW TypeScript errors** - resolve type issues when feasible
-- **CONSISTENT code style** across the entire project
+## CI/CD Alignment
+Run the same checks locally that run in GitHub Actions:
 
-## Code Quality Commands
+### Code Quality Checks
 ```bash
-# Main command - runs all quality checks
-yarn check              # Format, lint, and type check entire project
+yarn check              # Format, lint, and type check (same as CI)
+yarn build              # Verify all packages build (same as CI)
+```
 
-# Individual commands (if needed)
-yarn format:fix         # Fix formatting for entire project
-yarn lint:fix           # Fix linting for entire project
-yarn typecheck          # Type check entire project
+### Monorepo Integrity Checks
+```bash
+yarn check-deps         # Dependency version consistency
+yarn lint-sherif        # Advanced monorepo linting
+yarn check-circular-deps # Circular import detection
+yarn dedupe --check     # Duplicate dependency check
+yarn constraints        # Yarn workspace constraints
+```
 
-# Workspace-specific commands (if needed)
-yarn workspace @app/core check:type
-yarn workspace next-app check:type
-yarn workspace expo-app check:type
-yarn workspace @app/ui check:type
+## Quality Standards
+- **ZERO formatting errors** - auto-fixed by `yarn check`
+- **MINIMAL linting warnings** - resolve when feasible
+- **SUCCESSFUL builds** - all packages must build
+- **CONSISTENT dependencies** - no version conflicts across workspaces
+
+## Development Commands
+```bash
+# Primary workflow (matches CI exactly)
+yarn check && yarn build
+
+# Individual checks (if needed)
+yarn format:fix         # Biome formatting
+yarn lint:fix           # Biome linting  
+yarn typecheck          # TypeScript checking
 ```
 
 ## Quality Gates
-- **Before committing**: Run `yarn check` to ensure all quality standards
-- **Before pushing**: Ensure no critical formatting, linting, or TypeScript errors
-- **During development**: Run `yarn check` regularly to maintain code quality
-- **Code review**: Verify all quality checks have been run
+- **Before committing**: `yarn check` passes
+- **Before pushing**: `yarn check && yarn build` passes
+- **During development**: Run checks regularly
+- **Code review**: Verify CI checks pass
