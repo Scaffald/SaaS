@@ -613,6 +613,13 @@ export default function ChartsTestPage() {
               >
                 Gradient Pie
               </Button>
+              <Button
+                size="$3"
+                variant={activeChart === 'styled-radar' ? 'outlined' : undefined}
+                onPress={() => setActiveChart('styled-radar')}
+              >
+                Styled Radar
+              </Button>
             </XStack>
           </YStack>
         </Card>
@@ -632,6 +639,7 @@ export default function ChartsTestPage() {
             {renderDonutChart()}
           </YStack>
         )}
+        {activeChart === 'styled-radar' && renderStyledRadarChart()}
         {activeChart === 'stacked' && renderStackedBarChart()}
         {activeChart === 'radar' && renderRadarChart()}
         {activeChart === 'pyramid' && renderPopulationPyramid()}

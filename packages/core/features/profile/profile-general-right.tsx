@@ -3,7 +3,8 @@ import { YStack, XStack, Text, Button, Input, TextArea, Avatar, H4 } from 'tamag
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { generalProfileSchema, type GeneralProfileFormData, generalProfileDefaults } from './config'
-import { api } from '@app/core/utils/api'
+import { supabase } from '@app/core/utils/supabase/client'
+import { useUser } from '@app/core/utils/useUser'
 
 /**
  * Profile General Right Component
@@ -11,19 +12,8 @@ import { api } from '@app/core/utils/api'
  */
 export function ProfileGeneralRight() {
   const [isLoading, setIsLoading] = useState(false)
-
-  // Fetch profile data
-  const { data: profileData, isLoading: isLoadingProfile } = api.profile.getGeneral.useQuery()
-
-  // Update profile mutation
-  const updateProfile = api.profile.updateGeneral.useMutation({
-    onSuccess: () => {
-      console.log('Profile updated successfully')
-    },
-    onError: (error) => {
-      console.error('Error updating profile:', error)
-    },
-  })
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true)
+  const user = useUser()
 
   const {
     control,
@@ -39,17 +29,91 @@ export function ProfileGeneralRight() {
 
   const avatarUrl = watch('avatar_url')
 
-  // Load profile data when it's available
+  // Load profile data on mount
   useEffect(() => {
-    if (profileData) {
-      reset(profileData)
+    const loadProfileData = async () => {
+      if (!user?.user?.id) return
+
+      try {
+        setIsLoadingProfile(true)
+
+        // Get auth user data for email
+        const { data: authUser } = await supabase.auth.getUser()
+
+        // Get profile data from profiles table
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('first_name, last_name, avatar_url')
+          .eq('id', user.user.id)
+          .single()
+
+        if (profileError && profileError.code !== 'PGRST116') {
+          console.error('Error fetching profile:', profileError)
+        }
+
+        // Get additional data from user_private table
+        const { data: privateData, error: privateError } = await supabase
+          .from('user_private')
+          .select('phone, about')
+          .eq('user_id', user.user.id)
+          .single()
+
+        if (privateError && privateError.code !== 'PGRST116') {
+          console.error('Error fetching private data:', privateError)
+        }
+
+        // Reset form with loaded data
+        const profileData = {
+          first_name: profile?.first_name || '',
+          last_name: profile?.last_name || '',
+          avatar_url: profile?.avatar_url || '',
+          email: authUser.user?.email || '',
+          phone: privateData?.phone || '',
+          about: privateData?.about || '',
+        }
+
+        reset(profileData)
+      } catch (error) {
+        console.error('Error loading profile:', error)
+      } finally {
+        setIsLoadingProfile(false)
+      }
     }
-  }, [profileData, reset])
+
+    loadProfileData()
+  }, [user?.user?.id, reset])
 
   const onSubmit = async (data: GeneralProfileFormData) => {
+    if (!user?.user?.id) return
+
     setIsLoading(true)
     try {
-      await updateProfile.mutateAsync(data)
+      // Update profiles table
+      const { error: profileError } = await supabase.from('profiles').upsert({
+        id: user.user.id,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        avatar_url: data.avatar_url,
+        updated_at: new Date().toISOString(),
+      })
+
+      if (profileError) {
+        throw new Error(`Failed to update profile: ${profileError.message}`)
+      }
+
+      // Update user_private table
+      const { error: privateError } = await supabase.from('user_private').upsert({
+        user_id: user.user.id,
+        phone: data.phone,
+        about: data.about,
+        updated_at: new Date().toISOString(),
+      })
+
+      if (privateError) {
+        throw new Error(`Failed to update private data: ${privateError.message}`)
+      }
+
+      console.log('Profile updated successfully')
     } catch (error) {
       console.error('Error saving profile:', error)
     } finally {

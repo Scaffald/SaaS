@@ -6,7 +6,12 @@ export {
   type StackedBarChartProps,
   type StackedBarChartData,
 } from './StackedBarChart'
-export { RadarChart, type RadarChartProps, type RadarChartData, type RadarChartDataset } from './RadarChart'
+export {
+  RadarChart,
+  type RadarChartProps,
+  type RadarChartData,
+  type RadarChartDataset,
+} from './RadarChart'
 export {
   PopulationPyramid,
   type PopulationPyramidProps,
