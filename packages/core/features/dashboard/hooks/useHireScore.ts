@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 
 import type { Database } from '@app/supabase/types'
-import { useSupabase } from '@app/core/utils/supabase/useSupabase'
+import { supabase } from '@app/core/utils/supabase/client'
 import { useUser } from '@app/core/utils/useUser'
 
 type ProfileRow = Database['public']['Tables']['profiles']['Row']
@@ -220,7 +220,7 @@ export const resolveHireScoreLevel = (score: number): HireScoreLevel => {
 
 export const useHireScore = () => {
   const { user, profile, isPending: isUserPending } = useUser()
-  const supabase = useSupabase()
+  // Using supabase directly from import
 
   const { data: viewer, isPending: isViewerPending } = useQuery<HireScoreViewer>({
     queryKey: ['hire-score', user?.id],

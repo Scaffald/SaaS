@@ -1,5 +1,10 @@
 import 'dotenv/config'
 
+// Load production environment variables if in production mode
+if (process.env.NODE_ENV === 'production') {
+  require('dotenv').config({ path: '.env.production' })
+}
+
 export default {
   expo: {
     name: 'scaffald',
@@ -45,6 +50,27 @@ export default {
     web: {
       favicon: './assets/favicon.png',
       bundler: 'metro',
+      name: 'SCF Neue',
+      shortName: 'SCF Neue',
+      description: 'SCF Neue - Modern construction management platform',
+      startUrl: '/',
+      display: 'standalone',
+      orientation: 'portrait',
+      themeColor: '#ffffff',
+      backgroundColor: '#ffffff',
+      lang: 'en',
+      dir: 'ltr',
+      meta: {
+        viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no',
+        'theme-color': '#ffffff',
+        'apple-mobile-web-app-capable': 'yes',
+        'apple-mobile-web-app-status-bar-style': 'default',
+        'apple-mobile-web-app-title': 'SCF Neue',
+        'format-detection': 'telephone=no',
+        'mobile-web-app-capable': 'yes',
+        'msapplication-TileColor': '#ffffff',
+        'msapplication-tap-highlight': 'no',
+      },
     },
     plugins: [
       [

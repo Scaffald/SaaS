@@ -26,7 +26,7 @@ import {
   RefreshCcw,
   Smartphone,
 } from '@tamagui/lucide-icons'
-import { useSupabase } from '@app/core/utils/supabase/useSupabase.unified'
+import { supabase } from '@app/core/utils/supabase/client'
 
 type MagicLinkPendingProps = {
   email?: string
@@ -327,12 +327,11 @@ const ResendTimer = ({
 }
 
 export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
-  const supabase = useSupabase()
+  // Using supabase directly from import
   const [code, setCode] = useState<number>()
   const [codeEntered, setCodeEntered] = useState(false)
   const [verified, setVerified] = useState(false)
-  const [_isResendEnabled, setIsResendEnabled] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [_isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const handleEnter = useCallback(
@@ -389,7 +388,7 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
   )
 
   const handleResendComplete = useCallback(() => {
-    setIsResendEnabled(true)
+    // Resend completed
   }, [])
 
   const handleResendClick = useCallback(async () => {

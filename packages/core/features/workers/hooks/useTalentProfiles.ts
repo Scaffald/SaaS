@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useSupabase } from '@app/core/utils/supabase/useSupabase'
+import { supabase } from '@app/core/utils/supabase/client'
 import type { TalentProfile } from '../types'
 import { mockTalentProfiles } from '../data/mockProfiles'
 
@@ -18,7 +18,7 @@ type ProfileSearchRow = {
 }
 
 export const useTalentProfiles = () => {
-  const supabase = useSupabase()
+  // Using supabase directly from import
 
   return useQuery({
     queryKey: ['talent-profiles'],

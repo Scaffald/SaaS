@@ -1,10 +1,10 @@
 import { Avatar, Card, ListItem, XStack, YStack, getTokens } from 'tamagui'
 import { ChevronRight } from '@tamagui/lucide-icons'
 import { GestureResponderEvent } from 'react-native'
-import { useLink } from 'solito/link'
+import { Link } from 'expo-router'
 import { DASHBOARD_ROUTES } from '@app/core/constants/routes'
 import { useUser } from '@app/core/utils/useUser'
-import { SolitoImage } from 'solito/image'
+import { Image } from 'expo-image'
 
 type DrawerHeaderProps = {
   onNavigate?: (href: string, event: GestureResponderEvent) => void
@@ -17,12 +17,11 @@ type DrawerHeaderProps = {
 export const DrawerHeader = ({ onNavigate }: DrawerHeaderProps) => {
   const { profile, avatarUrl } = useUser()
   const tokens = getTokens()
-  const manageLink = useLink({ href: DASHBOARD_ROUTES.PROFILE?.fullPath || '/dashboard/profile' })
+  const profileHref = DASHBOARD_ROUTES.PROFILE?.fullPath || '/dashboard/profile'
   const avatarSize = tokens.size['3'].val
 
   const handleManagePress = (event: GestureResponderEvent) => {
-    manageLink.onPress?.(event)
-    onNavigate?.(DASHBOARD_ROUTES.PROFILE?.fullPath || '/dashboard/profile', event)
+    onNavigate?.(profileHref, event)
   }
 
   return (
@@ -35,27 +34,28 @@ export const DrawerHeader = ({ onNavigate }: DrawerHeaderProps) => {
         borderColor="$color4"
         backgroundColor="$color3"
       >
-        <ListItem
-          hoverTheme
-          pressTheme
-          size="$4"
-          px="$0"
-          py="$0"
-          bg="transparent"
-          onPress={handleManagePress}
-          title={(profile as unknown as { name?: string })?.name || 'Rajeev Ranjan'}
-          subTitle={'Partner ID: 304404'}
-          icon={() => (
-            <Avatar circular size="$3">
-              <SolitoImage
-                src={avatarUrl}
-                alt="Profile avatar"
-                width={avatarSize}
-                height={avatarSize}
-              />
-            </Avatar>
-          )}
-        />
+        <Link href={profileHref} asChild>
+          <ListItem
+            hoverTheme
+            pressTheme
+            size="$4"
+            px="$0"
+            py="$0"
+            bg="transparent"
+            onPress={handleManagePress}
+            title={(profile as unknown as { name?: string })?.name || 'Rajeev Ranjan'}
+            subTitle={'Partner ID: 304404'}
+            icon={() => (
+              <Avatar circular size="$3">
+                <Image
+                  source={{ uri: avatarUrl }}
+                  style={{ width: avatarSize, height: avatarSize }}
+                  contentFit="cover"
+                />
+              </Avatar>
+            )}
+          />
+        </Link>
       </Card>
     </YStack>
   )

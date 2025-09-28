@@ -1,12 +1,12 @@
 import { Button } from '@app/ui'
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin'
-import { useSupabase } from '@app/core/utils/supabase/useSupabase'
-import { useRouter } from 'solito/router'
+import { supabase } from '@app/core/utils/supabase/client'
+import { useRouter } from 'expo-router'
 
 import { IconGoogle } from './IconGoogle'
 
 export function GoogleSignIn() {
-  const supabase = useSupabase()
+  // Using supabase directly from import
   const router = useRouter()
 
   async function signInWithGoogle() {

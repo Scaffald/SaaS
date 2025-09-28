@@ -8,6 +8,7 @@
     "../../packages/core",
     "../../supabase"
   ],
+  "exclude": ["../../supabase/functions/**/*"],
   "compilerOptions": {
     "noEmit": true,
     "composite": true,

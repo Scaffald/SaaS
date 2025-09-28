@@ -549,7 +549,7 @@ We use middlewares to protect routes on the web. See `apps/next/middleware.ts`.
 
 ### Protecting Screens on Native
 
-We use a hook to check for auth and then redirect the user to auth pages, and also not let the authenticated users see auth pages. See `apps/expo/app/provider/auth/AuthProvider.native.ts`.
+We use a hook to check for auth and then redirect the user to auth pages, and also not let the authenticated users see auth pages. See `apps/expo/app/provider/auth/AuthProvider.ts`.
 
 ### Apple Sign In
 

@@ -5,7 +5,14 @@ import { useFormContext } from 'react-hook-form'
 import { z } from 'zod'
 
 // Create a basic TextField component
-const TextField = ({ value, onChangeText, placeholder, ...props }: any) => {
+interface TextFieldProps {
+  value: string
+  onChangeText: (text: string) => void
+  placeholder?: string
+  [key: string]: unknown
+}
+
+const TextField = ({ value, onChangeText, placeholder, ...props }: TextFieldProps) => {
   return <Input value={value} onChangeText={onChangeText} placeholder={placeholder} {...props} />
 }
 

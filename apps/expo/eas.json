@@ -92,6 +92,17 @@
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY"
       },
       "channel": "production"
+    },
+    "production-web": {
+      "platform": "web",
+      "env": {
+        "APP_ENV": "production",
+        "NODE_ENV": "production",
+        "EXPO_PUBLIC_URL": "https://unistack-next-delta.vercel.app",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY"
+      },
+      "channel": "production"
     }
   },
   "submit": {

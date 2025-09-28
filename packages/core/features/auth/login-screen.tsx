@@ -10,7 +10,7 @@ import {
   Input,
   Form,
 } from '@app/ui'
-import { useSupabase } from '@app/core/utils/supabase/useSupabase.unified'
+import { supabase } from '@app/core/utils/supabase/client'
 import { useUser } from '@app/core/utils/useUser'
 import { useEffect, useState } from 'react'
 import { FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form'
@@ -28,7 +28,7 @@ const LoginSchema = z.object({
 })
 
 export const LoginScreen = () => {
-  const supabase = useSupabase()
+  // Using supabase directly from import
   const params = useLocalSearchParams<{ email?: string }>()
   const router = useRouter()
   useRedirectAfterSignIn()
@@ -150,7 +150,7 @@ const CheckYourEmail = () => {
 // we use this hook here because this is the page we redirect unauthenticated users to
 // if they authenticate on this page, this will redirect them to the home page
 function useRedirectAfterSignIn() {
-  const supabase = useSupabase()
+  // Using supabase directly from import
   const router = useRouter()
   useEffect(() => {
     const signOutListener = supabase.auth.onAuthStateChange((event) => {

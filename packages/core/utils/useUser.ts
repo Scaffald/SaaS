@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { useSessionContext } from './supabase/useSessionContext.unified'
-import { useSupabase } from './supabase/useSupabase.unified'
+import { useSessionContext } from './supabase/useSessionContext'
+import { supabase } from './supabase/client'
 
 // Define the profile type based on the database schema
 type Profile = {
@@ -15,7 +15,7 @@ type Profile = {
 function useProfile() {
   const { session } = useSessionContext()
   const user = session?.user
-  const supabase = useSupabase()
+  // Using supabase directly from import
   const { data, isPending, refetch } = useQuery({
     queryKey: ['profile', user?.id],
     queryFn: async (): Promise<Profile | null> => {
@@ -48,7 +48,7 @@ export const useUser = () => {
     const params = new URLSearchParams()
     const name = profile?.name || user?.email || ''
     params.append('name', name)
-    params.append('size', '256') // will be resized again by NextImage/SolitoImage
+    params.append('size', '256') // will be resized again by Expo Image
     return `https://ui-avatars.com/api.jpg?${params.toString()}`
   })()
 
