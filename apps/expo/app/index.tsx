@@ -2,7 +2,8 @@ import { useUser } from '@app/core/utils/useUser'
 import { supabase } from '@app/core/utils/supabase/client'
 import { useLocalSearchParams, useRouter, useSegments } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, Platform } from 'react-native'
+import { AUTH_ROUTES } from '@app/core/constants/routes'
 
 export default function RootIndex() {
   const { user, isPending } = useUser()
@@ -18,6 +19,32 @@ export default function RootIndex() {
   const [isVerifying, setIsVerifying] = useState(false)
   const [verificationError, setVerificationError] = useState<string | null>(null)
   const [hasNavigated, setHasNavigated] = useState(false)
+  const [isRouterReady, setIsRouterReady] = useState(false)
+
+  // Check if router is ready
+  useEffect(() => {
+    // On web, router is ready immediately
+    if (Platform.OS === 'web') {
+      setIsRouterReady(true)
+      return
+    }
+
+    // On native, wait for segments to be available or use a timeout
+    const checkRouter = () => {
+      if (segments.length > 0 || router) {
+        setIsRouterReady(true)
+      }
+    }
+
+    checkRouter()
+
+    // Fallback timeout to ensure we don't wait forever
+    const timeout = setTimeout(() => {
+      setIsRouterReady(true)
+    }, 100)
+
+    return () => clearTimeout(timeout)
+  }, [segments, router])
 
   // Handle magic link verification
   useEffect(() => {
@@ -50,53 +77,41 @@ export default function RootIndex() {
     }
 
     handleMagicLinkVerification()
-  }, [params.token, params.type, supabase])
+  }, [params.token, params.type])
 
-  // Handle navigation after router is ready
+  // Handle navigation after everything is ready
   useEffect(() => {
-    // Don't navigate if we're still loading, verifying, or have already navigated
-    if (isPending || isVerifying || hasNavigated || verificationError) {
+    // Don't navigate if we're still loading, verifying, router isn't ready, or have already navigated
+    if (isPending || isVerifying || !isRouterReady || hasNavigated || verificationError) {
       return
     }
 
-    // Ensure router is ready by checking if we have segments or if we're on the root
-    const isRouterReady = segments.length > 0 || typeof window !== 'undefined'
-
-    if (!isRouterReady) {
-      return
-    }
-
-    // Use setTimeout to ensure navigation happens after the current render cycle
-    const timeoutId = setTimeout(() => {
+    const performNavigation = () => {
       try {
         if (user) {
           console.log('Navigating to dashboard for authenticated user')
           router.replace('/dashboard')
         } else {
           console.log('Navigating to auth for unauthenticated user')
-          router.replace('/auth')
+          router.replace(AUTH_ROUTES.INDEX?.fullPath || '/auth')
         }
         setHasNavigated(true)
       } catch (error) {
         console.error('Navigation error:', error)
-        // Fallback: try again after a short delay
-        setTimeout(() => {
-          try {
-            if (user) {
-              router.replace('/dashboard')
-            } else {
-              router.replace('/auth')
-            }
-            setHasNavigated(true)
-          } catch (fallbackError) {
-            console.error('Fallback navigation error:', fallbackError)
-          }
-        }, 100)
+        // Don't retry automatically to avoid infinite loops
       }
-    }, 0)
+    }
 
-    return () => clearTimeout(timeoutId)
-  }, [user, isPending, isVerifying, hasNavigated, verificationError, segments, router])
+    // Use different timing strategies based on platform
+    if (Platform.OS === 'web') {
+      // On web, navigate immediately
+      performNavigation()
+    } else {
+      // On native, use a small delay to ensure the router is fully ready
+      const timeoutId = setTimeout(performNavigation, 50)
+      return () => clearTimeout(timeoutId)
+    }
+  }, [user, isPending, isVerifying, isRouterReady, hasNavigated, verificationError, router])
 
   // Show loading state while verifying magic link
   if (isVerifying) {
@@ -120,7 +135,7 @@ export default function RootIndex() {
   }
 
   // Show loading state while checking auth or waiting for navigation
-  if (isPending || !hasNavigated) {
+  if (isPending || !isRouterReady || !hasNavigated) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Text>Loading...</Text>

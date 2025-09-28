@@ -1,15 +1,27 @@
 import { DrawerMenu } from '@app/core/features/drawer'
 import { Button, useTheme, NotificationsActionSheet } from '@app/ui'
+import { useProtectedRoute } from '@app/core/utils/auth/useProtectedRoute'
 import { DrawerActions } from '@react-navigation/native'
 import { Bell, Menu } from '@tamagui/lucide-icons'
 import { Drawer } from 'expo-router/drawer'
 import { useMedia } from 'tamagui'
 import { useState } from 'react'
+import { View, Text } from 'react-native'
 
 export default function Layout() {
+  const { isLoading } = useProtectedRoute()
   const media = useMedia()
   const { accentColor } = useTheme()
   const [notificationsOpen, setNotificationsOpen] = useState(false)
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Loading...</Text>
+      </View>
+    )
+  }
 
   const drawerWidth = media.gtSm ? 320 : 300
   const isDesktop = media.gtSm
