@@ -1,4 +1,4 @@
-import { YStack, Text, H3 } from 'tamagui'
+import { YStack, Text, H3, ScrollView } from 'tamagui'
 
 /**
  * Profile Skills Left Component
@@ -6,12 +6,14 @@ import { YStack, Text, H3 } from 'tamagui'
  */
 export function ProfileSkillsLeft() {
   return (
-    <YStack gap="$4" padding="$4">
-      <H3>Skills & Expertise</H3>
-      <Text color="$gray11" fontSize="$3">
-        Showcase your skills and expertise with proficiency levels. Add endorsements and highlight
-        your strongest areas.
-      </Text>
-    </YStack>
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <YStack gap="$4" padding="$4">
+        <H3>Skills & Expertise</H3>
+        <Text color="$gray11" fontSize="$3">
+          Showcase your skills and expertise with proficiency levels. Add endorsements and highlight
+          your strongest areas.
+        </Text>
+      </YStack>
+    </ScrollView>
   )
 }
