@@ -23,7 +23,7 @@ export const DashboardLayout = ({
   isHomePage,
 }: DashboardLayoutProps) => {
   return (
-    <YStack flex={1} backgroundColor="$background">
+    <YStack flex={1} backgroundColor="$background" p="$4">
       {header?.title && (
         <XStack padding="$4" borderBottomWidth={1} borderBottomColor="$borderColor">
           <YStack>
@@ -34,17 +34,9 @@ export const DashboardLayout = ({
         </XStack>
       )}
       <XStack flex={1}>
-        {leftContent && (
-          <View width={leftWidth} borderRightWidth={1} borderRightColor="$borderColor">
-            {leftContent}
-          </View>
-        )}
+        {leftContent && <View width={leftWidth}>{leftContent}</View>}
         <View flex={1}>{children}</View>
-        {rightContent && (
-          <View width={300} borderLeftWidth={1} borderLeftColor="$borderColor">
-            {rightContent}
-          </View>
-        )}
+        {rightContent && <View width={300}>{rightContent}</View>}
       </XStack>
     </YStack>
   )

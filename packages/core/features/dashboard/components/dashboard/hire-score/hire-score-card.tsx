@@ -1,7 +1,7 @@
 import { AlertTriangle, CheckCircle2, CircleDashed } from '@tamagui/lucide-icons'
 import { Paragraph, SizableText, Separator, XStack, YStack } from '@app/ui'
 
-import { DashboardCard } from '../primitives'
+import { DashboardWidget } from '../primitives'
 import type { HireScoreActivity, HireScoreLevel } from '../../../hooks/useHireScore'
 import { HireScoreGauge } from './hire-score-gauge'
 
@@ -58,7 +58,7 @@ export const HireScoreCard = ({
   })()
 
   return (
-    <DashboardCard>
+    <DashboardWidget>
       <YStack gap="$4">
         <YStack gap="$2">
           <SizableText size="$5" fontWeight="700">
@@ -107,7 +107,7 @@ export const HireScoreCard = ({
           </YStack>
         </YStack>
       </YStack>
-    </DashboardCard>
+    </DashboardWidget>
   )
 }
 

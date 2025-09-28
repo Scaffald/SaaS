@@ -1,7 +1,7 @@
 import { Info } from '@tamagui/lucide-icons'
 import { Paragraph, SizableText, XStack, YStack } from '@app/ui'
 
-import { DashboardCard } from '../primitives'
+import { DashboardWidget } from '../primitives'
 import { resolveHireScoreLevel } from '../../../hooks/useHireScore'
 
 export type DashboardHeroProps = {
@@ -27,7 +27,7 @@ export const DashboardHero = ({ name = 'there', score }: DashboardHeroProps) => 
   const scoreLevel = resolveHireScoreLevel(score)
 
   return (
-    <DashboardCard>
+    <DashboardWidget>
       <YStack gap="$5">
         <YStack gap="$1">
           <SizableText size="$8" fontWeight="700">
@@ -66,7 +66,7 @@ export const DashboardHero = ({ name = 'there', score }: DashboardHeroProps) => 
           </YStack>
         </XStack>
       </YStack>
-    </DashboardCard>
+    </DashboardWidget>
   )
 }
 

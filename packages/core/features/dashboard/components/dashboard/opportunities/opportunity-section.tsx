@@ -2,7 +2,7 @@ import { ArrowRight } from '@tamagui/lucide-icons'
 import { Button, Paragraph, SizableText, Separator, YStack } from '@app/ui'
 import type { ReactNode } from 'react'
 
-import { DashboardCard, SectionHeading } from '../primitives'
+import { DashboardWidget, SectionHeading } from '../primitives'
 import { OpportunityCard, type OpportunityItem } from './opportunity-card'
 
 export type OpportunitySectionProps = {
@@ -33,7 +33,7 @@ export const OpportunitySection = ({
   const hasItems = items.length > 0
 
   return (
-    <DashboardCard gap="$4">
+    <DashboardWidget>
       <SectionHeading title={title} subtitle={subtitle} action={headerAction} />
 
       {hasItems ? (
@@ -60,7 +60,7 @@ export const OpportunitySection = ({
           {footerAction.label}
         </Button>
       ) : null}
-    </DashboardCard>
+    </DashboardWidget>
   )
 }
 

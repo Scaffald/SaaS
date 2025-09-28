@@ -90,20 +90,22 @@ yarn deploy:web
 yarn deploy:preview
 ```
 
-### Manual EAS Commands
+### Manual Export Commands
 
-If you need to run EAS commands directly:
+If you need to run export commands directly:
 
 ```bash
 # From the apps/expo directory
 cd apps/expo
 
 # Build for web production
-eas build --platform web --profile production-web
+NODE_ENV=production yarn web:build
 
 # Build for web preview
-eas build --platform web --profile preview
+yarn web:build
 ```
+
+**Note**: Web deployments use `expo export` instead of `eas build` because the current EAS CLI version doesn't support `--platform=web`. The exported files are generated in the `dist/` directory and can be uploaded to any static hosting provider.
 
 ## Build Output
 

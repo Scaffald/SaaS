@@ -2,7 +2,7 @@ import { ArrowRight, CheckCircle2, CircleDashed, ShieldAlert } from '@tamagui/lu
 import { Button, Paragraph, SizableText, Separator, XStack, YStack } from '@app/ui'
 import { Link } from 'expo-router'
 
-import { DashboardCard, SectionHeading } from '../primitives'
+import { DashboardWidget, SectionHeading } from '../primitives'
 
 export type ChecklistItem = {
   id: string
@@ -28,7 +28,7 @@ export type ProfileProgressSectionProps = {
 
 export const ProfileProgressSection = ({ checklist, advanced }: ProfileProgressSectionProps) => {
   return (
-    <DashboardCard gap="$5">
+    <DashboardWidget gap="$5">
       <SectionHeading
         title="Complete your profile"
         subtitle="Each task helps recruiters understand your experience."
@@ -47,7 +47,7 @@ export const ProfileProgressSection = ({ checklist, advanced }: ProfileProgressS
           <AdvancedTaskRow key={task.id} task={task} />
         ))}
       </YStack>
-    </DashboardCard>
+    </DashboardWidget>
   )
 }
 

@@ -2,7 +2,7 @@ import { ArrowRight } from '@tamagui/lucide-icons'
 import { Button, Paragraph, SizableText, XStack, YStack } from '@app/ui'
 import type { ReactNode } from 'react'
 
-import { DashboardCard, SectionHeading } from '../primitives'
+import { DashboardWidget, SectionHeading } from '../primitives'
 
 export type Insight = {
   id: string
@@ -18,7 +18,7 @@ export type CareerInsightCardProps = {
 
 export const CareerInsightCard = ({ insight }: CareerInsightCardProps) => {
   return (
-    <DashboardCard gap="$3">
+    <DashboardWidget gap="$3">
       <YStack gap="$3">
         <SizableText size="$5" fontWeight="600">
           {insight.title}
@@ -38,7 +38,7 @@ export const CareerInsightCard = ({ insight }: CareerInsightCardProps) => {
           </Button>
         ) : null}
       </YStack>
-    </DashboardCard>
+    </DashboardWidget>
   )
 }
 
@@ -55,7 +55,7 @@ export type AfterProfileSummaryCardProps = {
 
 export const AfterProfileSummaryCard = ({ steps }: AfterProfileSummaryCardProps) => {
   return (
-    <DashboardCard gap="$4">
+    <DashboardWidget>
       <SectionHeading
         title="After filling out your profile"
         subtitle="Here is what happens once your profile is complete."
@@ -75,6 +75,6 @@ export const AfterProfileSummaryCard = ({ steps }: AfterProfileSummaryCardProps)
           </XStack>
         ))}
       </YStack>
-    </DashboardCard>
+    </DashboardWidget>
   )
 }

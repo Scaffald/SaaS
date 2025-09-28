@@ -83,17 +83,27 @@ fi
 echo "✅ Local build successful"
 echo ""
 
-# Deploy using EAS
+# Deploy using Expo Export for Web
 echo "🚀 Deploying to Expo hosting..."
 echo "   This may take several minutes..."
 echo ""
 
 cd apps/expo
 
+# For web deployments, we use expo export instead of eas build
 if [ "$ENVIRONMENT" = "production" ]; then
-    NODE_ENV=production eas build --platform web --profile $PROFILE --non-interactive
+    NODE_ENV=production yarn web:build
 else
-    eas build --platform web --profile $PROFILE --non-interactive
+    yarn web:build
+fi
+
+# Note: After export, you would typically upload the dist/ folder to your hosting provider
+# For now, we'll just confirm the build was successful
+if [ -d "dist" ]; then
+    echo "✅ Web build exported successfully to dist/ directory"
+else
+    echo "❌ Web build failed - dist/ directory not found"
+    exit 1
 fi
 
 if [ $? -eq 0 ]; then

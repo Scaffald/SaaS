@@ -16,7 +16,7 @@ import {
 import { ArrowRight, Check, ChevronDown } from '@tamagui/lucide-icons'
 import { Sheet } from 'tamagui'
 
-import { DashboardCard, SectionHeading } from '../primitives'
+import { DashboardWidget, SectionHeading } from '../primitives'
 import {
   DEFAULT_NEWS_SOURCE_ID,
   NEWS_SOURCES,
@@ -169,7 +169,7 @@ export const NewsFeedCard = () => {
   }, [selectedSource, isHydrated, refreshCounter])
 
   return (
-    <DashboardCard gap="$4">
+    <DashboardWidget>
       <SectionHeading
         title="News"
         action={
@@ -319,6 +319,6 @@ export const NewsFeedCard = () => {
           <NewsLoadingSkeleton />
         )}
       </YStack>
-    </DashboardCard>
+    </DashboardWidget>
   )
 }
