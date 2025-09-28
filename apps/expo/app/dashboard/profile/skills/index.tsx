@@ -4,10 +4,6 @@ import { DashboardLayout } from '@app/ui/src/components/layouts/DashboardLayout'
 
 export default function ProfileSkillsPage() {
   return (
-    <DashboardLayout
-      header={{ title: 'Skills Profile' }}
-      leftContent={<ProfileSkillsLeft />}
-      rightContent={<ProfileSkillsRight />}
-    />
+    <DashboardLayout leftContent={<ProfileSkillsLeft />} rightContent={<ProfileSkillsRight />} />
   )
 }

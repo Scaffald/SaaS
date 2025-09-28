@@ -272,13 +272,13 @@ export function ParentChildRight() {
   return <div>Right content</div>
 }
 
-// Main screen component
+// Main page
 export function ParentChildScreen() {
   return (
-    <>
-      <ParentChildLeft />
-      <ParentChildRight />
-    </>
+    <DashboardLayout
+      leftContent={<ProfileEmploymentLeft />}
+      rightContent={<ProfileEmploymentRight />}
+    />
   )
 }
 ```
@@ -288,99 +288,12 @@ export function ParentChildScreen() {
 **Dashboard Index (`/dashboard/index`):**
 - `packages/core/features/dashboard/dashboard-index-left.tsx`
 - `packages/core/features/dashboard/dashboard-index-right.tsx`
-- `packages/core/features/dashboard/dashboard-index-screen.tsx`
 - Components: `DashboardIndexLeft`, `DashboardIndexRight`, `DashboardIndexScreen`
 
 **Profile Overview (`/dashboard/profile/overview`):**
 - `packages/core/features/profile/profile-overview-left.tsx`
 - `packages/core/features/profile/profile-overview-right.tsx`
-- `packages/core/features/profile/profile-overview-screen.tsx`
 - Components: `ProfileOverviewLeft`, `ProfileOverviewRight`, `ProfileOverviewScreen`
-
-### Using the Route Generator
-
-The fastest way to create new routes is using the turbo generator:
-
-```bash
-yarn gen route
-# Enter: profile/overview
-```
-
-This creates all necessary files:
-- Left/right/screen components in the correct location
-- Proper imports and component structure
-
-### Manual Implementation
-
-If you prefer to create routes manually:
-
-**1. Create the feature components:**
-```tsx
-// packages/core/features/profile/profile-overview-left.tsx
-export function ProfileOverviewLeft() {
-  return <div>Profile navigation</div>
-}
-
-// packages/core/features/profile/profile-overview-right.tsx
-export function ProfileOverviewRight() {
-  return <div>Profile content</div>
-}
-
-// packages/core/features/profile/profile-overview-screen.tsx
-export function ProfileOverviewScreen() {
-  return (
-    <>
-      <ProfileOverviewLeft />
-      <ProfileOverviewRight />
-    </>
-  )
-}
-```
-
-**2. Create the app pages:**
-
-**Next.js (`apps/next/pages/dashboard/profile/overview/index.tsx`):**
-```tsx
-import { DashboardLayout } from '@app/ui'
-import { ProfileOverviewScreen } from '@app/core/features/profile/profile-overview-screen'
-import Head from 'next/head'
-import type { NextPageWithLayout } from '../_app'
-
-export const Page: NextPageWithLayout = () => {
-  return (
-    <>
-      <Head>
-        <title>Profile Overview</title>
-      </Head>
-      <ProfileOverviewScreen />
-    </>
-  )
-}
-
-Page.getLayout = (page) => (
-  <DashboardLayout
-    header={{ title: 'Profile Overview' }}
-    rightContent={page}
-  />
-)
-
-export default Page
-```
-
-**Expo (`apps/expo/app/dashboard/profile/overview/index.tsx`):**
-```tsx
-import { DashboardLayout } from '@app/ui'
-import { ProfileOverviewScreen } from '@app/core/features/profile/profile-overview-screen'
-
-export default function Screen() {
-  return (
-    <DashboardLayout
-      header={{ title: 'Profile Overview' }}
-      rightContent={<ProfileOverviewScreen />}
-    />
-  )
-}
-```
 
 ### Configuration Files
 
@@ -406,79 +319,30 @@ We use a unified `DashboardLayout` component for all dashboard pages that provid
 
 - **Consistent 2-column layout** across all dashboard pages
 - **Default header** with hamburger menu, search, and notifications
-- **Full header override** support for special cases (like worker/map route)
+- **Sub header** support for special cases
 - **Responsive behavior** for mobile and desktop
 - **Independent scrolling** for each column
 
-### Web
-
-We've decided not to move to app dir just yet, but since layouts are crucial to most apps, we use [per-page layouts](https://nextjs.org/docs/pages/building-your-application/routing/pages-and-layouts#per-page-layouts).
-
-**Standard Dashboard Page:**
-```tsx
-import { DashboardLayout } from '@app/ui'
-import { MyPageScreen } from '@app/core/features/myfeat/my-page-screen'
-import Head from 'next/head'
-import { NextPageWithLayout } from './_app'
-
-export const Page: NextPageWithLayout = () => {
-  return (
-    <>
-      <Head>
-        <title>My Page</title>
-      </Head>
-      <MyPageScreen />
-    </>
-  )
-}
-
-Page.getLayout = (page) => (
-  <DashboardLayout
-    header={{ title: 'My Page' }}
-    rightContent={page}
-  />
-)
-
-export default Page
-```
-
-**Two-Column Dashboard Page:**
-```tsx
-Page.getLayout = (page) => (
-  <DashboardLayout
-    header={{ title: 'Profile' }}
-    leftContent={<ProfileNavigation />}
-    rightContent={page}
-    leftWidth={280}
-  />
-)
-```
-
-**Custom Header Override:**
-```tsx
-Page.getLayout = (page) => (
-  <DashboardLayout
-    header={null} // Complete override
-    rightContent={<CustomMapWithFilters />}
-  />
-)
-```
-
-### Native
+### Dashboard
 
 **Expo Dashboard Page:**
 ```tsx
-import { DashboardLayout } from '@app/ui'
-import { MyPageScreen } from '@app/core/features/myfeat/my-page-screen'
+import React from 'react'
+import { ProfileEmploymentLeft } from '@app/core/features/profile/profile-employment-left'
+import { ProfileEmploymentRight } from '@app/core/features/profile/profile-employment-right'
+import { DashboardLayout } from '@app/ui/src/components/layouts/DashboardLayout'
+import { NextPageWithLayout } from '../../_app'
 
-export default function Screen() {
+const Page: NextPageWithLayout = () => {
   return (
     <DashboardLayout
-      header={{ title: 'My Page' }}
-      rightContent={<MyPageScreen />}
+      leftContent={<ProfileEmploymentLeft />}
+      rightContent={<ProfileEmploymentRight />}
     />
   )
 }
+
+export default Page
 ```
 
 #### React Native Setup Expo

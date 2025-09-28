@@ -5,7 +5,6 @@ import { DashboardLayout } from '@app/ui/src/components/layouts/DashboardLayout'
 export default function ProfileExperiencePage() {
   return (
     <DashboardLayout
-      header={{ title: 'Experience Profile' }}
       leftContent={<ProfileExperienceLeft />}
       rightContent={<ProfileExperienceRight />}
     />
