@@ -20,26 +20,12 @@ const axises = {
 export interface CardStackProps {
   /** Direction for the slide animation */
   direction?: 'left' | 'right' | 'top' | 'bottom'
-  /** Card title */
-  title?: string
-  /** Card subtitle */
-  subtitle?: string
-  /** Card number (for credit card style) */
-  cardNumber?: string
-  /** Cardholder name */
-  cardholderName?: string
-  /** Expiry date */
-  expiryDate?: string
-  /** Avatar image source */
-  avatarSrc?: string
   /** Custom width for the card */
-  width?: number
-  /** Whether to show the inverse theme section */
-  showInverseSection?: boolean
-  /** Custom children content */
-  children?: React.ReactNode
+  width?: number | string
   /** Whether to disable the slide-in animation */
   disableSlideIn?: boolean
+  /** Custom children content */
+  children?: React.ReactNode
 }
 
 /**
@@ -54,15 +40,9 @@ export interface CardStackProps {
  */
 export const CardStack = ({
   direction = 'left',
-  title = 'Tamagui Debit',
-  subtitle = '···· ···· ···· 0225',
-  cardholderName = 'Nate Wienert',
-  expiryDate = '03/26',
-  avatarSrc = '/avatar_pro.png',
   width = 312,
-  showInverseSection = true,
-  children,
   disableSlideIn = false,
+  children,
 }: CardStackProps) => {
   const axis = axises[direction]
 
@@ -71,59 +51,17 @@ export const CardStack = ({
       gap="$2"
       tag="article"
       role="banner"
-      backgroundColor="$background"
-      shadowColor="$shadowColor"
-      shadowOffset={{
-        width: 0,
-        height: -6,
-      }}
-      shadowRadius={'$5'}
-      shadowOpacity={0.1}
       animation={{
         opacity: {
           type: 'bouncy',
           overshootClamping: true,
         },
       }}
-      borderRadius="$8"
       overflow="hidden"
       enterStyle={disableSlideIn ? { opacity: 1 } : { opacity: 0, [axis.axis]: axis.value }}
-      borderWidth={2}
-      borderColor="$color4"
     >
-      <View width={width} gap="$6">
-        <View p="$3.5" position="relative">
-          <XStack alignItems="center" justifyContent="space-between">
-            <Text fontWeight="500" fontSize="$3" fontFamily="$mono" color="$color10">
-              {title}
-            </Text>
-
-            {avatarSrc && <Image src={avatarSrc} width={32} height={32} />}
-          </XStack>
-
-          <Text pt="$4" fontWeight="600" fontSize="$8" fontFamily="$mono" color="$color">
-            {subtitle}
-          </Text>
-        </View>
-
-        {showInverseSection && (
-          <XStack backgroundColor="$background" p="$3.5" themeInverse>
-            <Text flex={1} fontWeight="500" fontSize="$2" fontFamily="$mono" color="$color11">
-              {cardholderName}
-            </Text>
-            <Text
-              textAlign="right"
-              fontWeight="500"
-              fontSize="$2"
-              fontFamily="$mono"
-              color="$color12"
-            >
-              {expiryDate}
-            </Text>
-          </XStack>
-        )}
-
-        {children && <View p="$3.5">{children}</View>}
+      <View width={width}>
+        {children}
       </View>
     </View>
   )
@@ -201,18 +139,21 @@ export interface StackedCardsProps {
   interval?: number
   /** Whether to auto-play the carousel */
   autoPlay?: boolean
-  /** Custom width for the cards */
-  width?: number
+  /** Custom width for the cards (default: '100%' for responsive) */
+  width?: number | string
   /** Maximum number of cards to show in stack */
   maxStackSize?: number
+  /** Component to wrap each card with */
+  wrapperComponent?: React.ComponentType<{ children: React.ReactNode }>
 }
 
 export const StackedCards = ({
   cards,
   interval = 3000,
   autoPlay = true,
-  width = 312,
+  width = '100%',
   maxStackSize = 3,
+  wrapperComponent: WrapperComponent,
 }: StackedCardsProps) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -236,7 +177,7 @@ export const StackedCards = ({
   if (cards.length === 0) return null
 
   // Get visible cards (current + next ones in stack)
-  const visibleCards = []
+  const visibleCards: (CardStackProps & { index: number; isTop: boolean })[] = []
   for (let i = 0; i < Math.min(maxStackSize, cards.length); i++) {
     const cardIndex = (currentIndex + i) % cards.length
     visibleCards.push({
@@ -266,24 +207,35 @@ export const StackedCards = ({
           ]}
           animation={{
             opacity: {
-              type: 'spring',
+              type: 'bouncy',
               damping: 20,
               stiffness: 300,
             },
             transform: {
-              type: 'spring',
+              type: 'bouncy',
               damping: 20,
               stiffness: 300,
             },
           }}
         >
-          <CardStack
-            {...card}
-            width={width - stackIndex * 8}
-            showInverseSection={card.showInverseSection !== false}
-            direction="top" // Always use top direction to avoid slide-in animation
-            disableSlideIn={true} // Disable slide-in animation for stacked cards
-          />
+          {WrapperComponent ? (
+            <WrapperComponent>
+              <CardStack
+                {...card}
+                width={typeof width === 'number' ? width - stackIndex * 8 : width}
+                direction="top" // Always use top direction to avoid slide-in animation
+                disableSlideIn={true} // Disable slide-in animation for stacked cards
+              />
+            </WrapperComponent>
+          ) : (
+            <CardStack
+              {...card}
+              width={typeof width === 'number' ? width - stackIndex * 8 : width}
+              showInverseSection={card.showInverseSection !== false}
+              direction="top" // Always use top direction to avoid slide-in animation
+              disableSlideIn={true} // Disable slide-in animation for stacked cards
+            />
+          )}
         </View>
       ))}
     </View>

@@ -1,0 +1,19 @@
+{
+  "name": "@app/supabase",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./functions/_shared/schemas": "./functions/_shared/schemas/index.ts",
+    "./functions/_shared/types": "./functions/_shared/types.ts",
+    "./functions/_shared/client-types": "./functions/_shared/client-types.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
+    "@trpc/server": "^10.45.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.2"
+  }
+}

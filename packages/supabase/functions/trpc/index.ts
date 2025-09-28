@@ -1,7 +1,12 @@
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
 import { initTRPC, TRPCError } from '@trpc/server'
 import { createClient } from '@supabase/supabase-js'
-import { z } from 'zod'
+import {
+  profileGeneralSchema,
+  profileUpdateSchema,
+  userPrivateUpdateSchema,
+} from '../_shared/schemas/profile.ts'
+import type { ProfileUpdate, UserPrivateUpdate } from '../_shared/types.ts'
 
 // Environment variables
 const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
@@ -76,18 +81,6 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 
 const protectedProcedure = t.procedure.use(enforceUserIsAuthed)
 
-// General profile schema - allow partial updates
-const generalProfileSchema = z
-  .object({
-    first_name: z.string().min(1).optional(),
-    last_name: z.string().min(1).optional(),
-    avatar_url: z.union([z.string().url(), z.literal('')]).optional(),
-    email: z.string().email().optional(),
-    phone: z.string().optional(),
-    about: z.string().max(500).optional(),
-  })
-  .partial()
-
 // Profile router
 const profileRouter = t.router({
   getGeneral: protectedProcedure.query(async ({ ctx }) => {
@@ -140,14 +133,14 @@ const profileRouter = t.router({
     }
   }),
 
-  updateGeneral: protectedProcedure.input(generalProfileSchema).mutation(async ({ ctx, input }) => {
+  updateGeneral: protectedProcedure.input(profileGeneralSchema).mutation(async ({ ctx, input }) => {
     const { supabase, user } = ctx
 
     // Note: Email updates are not supported to avoid authentication issues
     // The email field is read-only and comes from the auth system
 
     // Build profile update object with only provided fields
-    const profileUpdate: any = {
+    const profileUpdate: ProfileUpdate = {
       id: user.id,
       updated_at: new Date().toISOString(),
     }
@@ -170,7 +163,7 @@ const profileRouter = t.router({
     }
 
     // Build user_private update object with only provided fields
-    const privateUpdate: any = {
+    const privateUpdate: UserPrivateUpdate = {
       user_id: user.id,
       updated_at: new Date().toISOString(),
     }

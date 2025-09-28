@@ -1,7 +1,7 @@
 {
   "name": "scaffald",
   "private": true,
-  "workspaces": ["apps/expo", "packages/*", "supabase"],
+  "workspaces": ["apps/expo", "packages/*"],
   "scripts": {
     "_with-env": "dotenv -e .env -c -- ",
     "dev": "cd apps/expo && yarn start",
