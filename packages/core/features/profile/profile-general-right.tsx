@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { YStack, XStack, Text, Button, Input, TextArea, Avatar, H4 } from 'tamagui'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { generalProfileSchema, type GeneralProfileFormData, generalProfileDefaults } from './config'
+import { api } from '@app/core/utils/api'
 
 /**
  * Profile General Right Component
@@ -11,11 +12,25 @@ import { generalProfileSchema, type GeneralProfileFormData, generalProfileDefaul
 export function ProfileGeneralRight() {
   const [isLoading, setIsLoading] = useState(false)
 
+  // Fetch profile data
+  const { data: profileData, isLoading: isLoadingProfile } = api.profile.getGeneral.useQuery()
+
+  // Update profile mutation
+  const updateProfile = api.profile.updateGeneral.useMutation({
+    onSuccess: () => {
+      console.log('Profile updated successfully')
+    },
+    onError: (error) => {
+      console.error('Error updating profile:', error)
+    },
+  })
+
   const {
     control,
     handleSubmit,
     formState: { errors, isDirty },
     watch,
+    reset,
   } = useForm<GeneralProfileFormData>({
     resolver: zodResolver(generalProfileSchema),
     defaultValues: generalProfileDefaults,
@@ -24,17 +39,30 @@ export function ProfileGeneralRight() {
 
   const avatarUrl = watch('avatar_url')
 
+  // Load profile data when it's available
+  useEffect(() => {
+    if (profileData) {
+      reset(profileData)
+    }
+  }, [profileData, reset])
+
   const onSubmit = async (data: GeneralProfileFormData) => {
     setIsLoading(true)
     try {
-      // TODO: Implement API call to save profile data
-      console.log('Saving profile data:', data)
-      await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate API call
+      await updateProfile.mutateAsync(data)
     } catch (error) {
       console.error('Error saving profile:', error)
     } finally {
       setIsLoading(false)
     }
+  }
+
+  if (isLoadingProfile) {
+    return (
+      <YStack space="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
+        <Text>Loading profile...</Text>
+      </YStack>
+    )
   }
 
   return (
