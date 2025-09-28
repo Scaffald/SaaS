@@ -3,7 +3,7 @@ import { SessionContextProvider } from '@supabase/auth-helpers-react'
 import type { SupabaseClient, Session } from '@supabase/supabase-js'
 import { useState } from 'react'
 
-import { supabase } from '@app/core/utils/supabase/client'
+import { supabase } from '@app/core/utils/supabase/client.unified'
 import { AuthStateChangeHandler } from './AuthStateChangeHandler'
 
 export type AuthProviderProps = {

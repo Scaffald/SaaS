@@ -1,5 +1,5 @@
 import { useUser } from '@app/core/utils/useUser'
-import { useSupabase } from '@app/core/utils/supabase/useSupabase'
+import { useSupabase } from '@app/core/utils/supabase/useSupabase.unified'
 import { Redirect, useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { View, Text } from 'react-native'

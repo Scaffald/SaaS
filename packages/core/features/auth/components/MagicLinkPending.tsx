@@ -26,7 +26,7 @@ import {
   RefreshCcw,
   Smartphone,
 } from '@tamagui/lucide-icons'
-import { useSupabase } from '@app/core/utils/supabase/useSupabase'
+import { useSupabase } from '@app/core/utils/supabase/useSupabase.unified'
 
 type MagicLinkPendingProps = {
   email?: string
