@@ -21,6 +21,7 @@ import {
   generalProfileDefaults,
 } from './config/general-schema'
 import { api } from '@app/core/utils/api'
+import { getAvatarUrl } from '@app/core/utils/supabase/storage'
 import { DashboardWidget, AvatarImagePicker } from '@app/ui'
 
 /**
@@ -57,8 +58,8 @@ export function ProfileGeneralLeft() {
       toast.show('Avatar Uploaded', {
         message: 'Your avatar has been uploaded successfully!',
       })
-      // Update the form with the new avatar URL
-      setValue('avatar_url', data.avatarUrl)
+      // Update the form with the new avatar path
+      setValue('avatar_url', data.avatarPath)
       refetch()
     },
     onError: (error) => {
@@ -119,7 +120,7 @@ export function ProfileGeneralLeft() {
           <YStack gap="$3" alignItems="center">
             <Text fontWeight="600">Profile Photo</Text>
             <AvatarImagePicker
-              value={avatarUrl || ''}
+              value={getAvatarUrl(avatarUrl) || ''}
               onImageSelect={async (imageUri) => {
                 if (imageUri) {
                   // Convert image to base64 for upload
