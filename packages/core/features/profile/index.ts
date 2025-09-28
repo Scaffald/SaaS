@@ -25,3 +25,13 @@ export { ProfileSkillsScreen } from './profile-skills-screen'
 export { ProfileCertificationsLeft } from './profile-certifications-left'
 export { ProfileCertificationsRight } from './profile-certifications-right'
 export { ProfileCertificationsScreen } from './profile-certifications-screen'
+
+// Education Profile Components
+export { ProfileEducationLeft } from './profile-education-left'
+export { ProfileEducationRight } from './profile-education-right'
+export { ProfileEducationScreen } from './profile-education-screen'
+
+// Experience Profile Components
+export { ProfileExperienceLeft } from './profile-experience-left'
+export { ProfileExperienceRight } from './profile-experience-right'
+export { ProfileExperienceScreen } from './profile-experience-screen'

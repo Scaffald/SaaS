@@ -864,7 +864,9 @@ export type Database = {
           about: string | null
           avatar_url: string | null
           created_at: string
+          first_name: string | null
           id: string
+          last_name: string | null
           name: string | null
           updated_at: string
         }
@@ -872,7 +874,9 @@ export type Database = {
           about?: string | null
           avatar_url?: string | null
           created_at?: string
+          first_name?: string | null
           id: string
+          last_name?: string | null
           name?: string | null
           updated_at?: string
         }
@@ -880,7 +884,9 @@ export type Database = {
           about?: string | null
           avatar_url?: string | null
           created_at?: string
+          first_name?: string | null
           id?: string
+          last_name?: string | null
           name?: string | null
           updated_at?: string
         }
@@ -911,6 +917,95 @@ export type Database = {
             columns: ['review_id']
             isOneToOne: false
             referencedRelation: 'reviews'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      review_skill_proficiency_logs: {
+        Row: {
+          aggregated_score: number
+          created_at: string
+          delta: number
+          id: string
+          new_proficiency: number
+          previous_proficiency: number | null
+          rating_score: number
+          review_id: string
+          skill_id: string
+          subject_user_id: string
+        }
+        Insert: {
+          aggregated_score: number
+          created_at?: string
+          delta: number
+          id?: string
+          new_proficiency: number
+          previous_proficiency?: number | null
+          rating_score: number
+          review_id: string
+          skill_id: string
+          subject_user_id: string
+        }
+        Update: {
+          aggregated_score?: number
+          created_at?: string
+          delta?: number
+          id?: string
+          new_proficiency?: number
+          previous_proficiency?: number | null
+          rating_score?: number
+          review_id?: string
+          skill_id?: string
+          subject_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'review_skill_proficiency_logs_review_id_fkey'
+            columns: ['review_id']
+            isOneToOne: false
+            referencedRelation: 'reviews'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'review_skill_proficiency_logs_skill_id_fkey'
+            columns: ['skill_id']
+            isOneToOne: false
+            referencedRelation: 'skills'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'review_skill_proficiency_logs_subject_user_id_fkey'
+            columns: ['subject_user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'review_skill_proficiency_logs_subject_user_id_fkey'
+            columns: ['subject_user_id']
+            isOneToOne: false
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'review_skill_proficiency_logs_subject_user_id_fkey'
+            columns: ['subject_user_id']
+            isOneToOne: false
+            referencedRelation: 'v_user_directory'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'review_skill_proficiency_logs_subject_user_id_fkey'
+            columns: ['subject_user_id']
+            isOneToOne: false
+            referencedRelation: 'v_user_private'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'review_skill_proficiency_logs_subject_user_id_fkey'
+            columns: ['subject_user_id']
+            isOneToOne: false
+            referencedRelation: 'v_user_search'
             referencedColumns: ['id']
           },
         ]
@@ -947,67 +1042,6 @@ export type Database = {
             columns: ['skill_id']
             isOneToOne: false
             referencedRelation: 'skills'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      review_skill_proficiency_logs: {
-        Row: {
-          aggregated_score: string
-          created_at: string
-          delta: number
-          id: string
-          new_proficiency: number
-          previous_proficiency: number | null
-          rating_score: number
-          review_id: string
-          skill_id: string
-          subject_user_id: string
-        }
-        Insert: {
-          aggregated_score: string
-          created_at?: string
-          delta: number
-          id?: string
-          new_proficiency: number
-          previous_proficiency?: number | null
-          rating_score: number
-          review_id: string
-          skill_id: string
-          subject_user_id: string
-        }
-        Update: {
-          aggregated_score?: string
-          created_at?: string
-          delta?: number
-          id?: string
-          new_proficiency?: number
-          previous_proficiency?: number | null
-          rating_score?: number
-          review_id?: string
-          skill_id?: string
-          subject_user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'review_skill_proficiency_logs_review_id_fkey'
-            columns: ['review_id']
-            isOneToOne: false
-            referencedRelation: 'reviews'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'review_skill_proficiency_logs_skill_id_fkey'
-            columns: ['skill_id']
-            isOneToOne: false
-            referencedRelation: 'skills'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'review_skill_proficiency_logs_subject_user_id_fkey'
-            columns: ['subject_user_id']
-            isOneToOne: false
-            referencedRelation: 'users'
             referencedColumns: ['id']
           },
         ]
@@ -1094,10 +1128,10 @@ export type Database = {
           is_comment_public: boolean
           kind: string
           metadata: Json | null
-          reaction: number | null
-          rating: number | null
           paired_review_id: string | null
-          release_after: string | null
+          rating: number | null
+          reaction: number | null
+          release_after: unknown | null
           revealed_at: string | null
           status: Database['public']['Enums']['review_status']
           subject_id: string
@@ -1114,10 +1148,10 @@ export type Database = {
           is_comment_public?: boolean
           kind?: string
           metadata?: Json | null
-          reaction?: number | null
-          rating?: number | null
           paired_review_id?: string | null
-          release_after?: string | null
+          rating?: number | null
+          reaction?: number | null
+          release_after?: unknown | null
           revealed_at?: string | null
           status?: Database['public']['Enums']['review_status']
           subject_id: string
@@ -1134,10 +1168,10 @@ export type Database = {
           is_comment_public?: boolean
           kind?: string
           metadata?: Json | null
-          reaction?: number | null
-          rating?: number | null
           paired_review_id?: string | null
-          release_after?: string | null
+          rating?: number | null
+          reaction?: number | null
+          release_after?: unknown | null
           revealed_at?: string | null
           status?: Database['public']['Enums']['review_status']
           subject_id?: string
@@ -1179,6 +1213,13 @@ export type Database = {
             columns: ['author_user_id']
             isOneToOne: false
             referencedRelation: 'v_user_search'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'reviews_paired_review_id_fkey'
+            columns: ['paired_review_id']
+            isOneToOne: false
+            referencedRelation: 'reviews'
             referencedColumns: ['id']
           },
         ]
@@ -1548,6 +1589,288 @@ export type Database = {
           },
         ]
       }
+      user_certifications: {
+        Row: {
+          created_at: string | null
+          credential_id: string | null
+          credential_url: string | null
+          description: string | null
+          expiration_date: string | null
+          id: string
+          is_active: boolean | null
+          issue_date: string | null
+          issuing_organization: string
+          name: string
+          skills_gained: string[] | null
+          updated_at: string | null
+          user_id: string
+          verification_status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          credential_id?: string | null
+          credential_url?: string | null
+          description?: string | null
+          expiration_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          issue_date?: string | null
+          issuing_organization: string
+          name: string
+          skills_gained?: string[] | null
+          updated_at?: string | null
+          user_id: string
+          verification_status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          credential_id?: string | null
+          credential_url?: string | null
+          description?: string | null
+          expiration_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          issue_date?: string | null
+          issuing_organization?: string
+          name?: string
+          skills_gained?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+          verification_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'user_certifications_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_certifications_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_certifications_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'v_user_directory'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_certifications_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'v_user_private'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_certifications_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'v_user_search'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      user_education: {
+        Row: {
+          activities: string | null
+          created_at: string | null
+          degree_type: string | null
+          description: string | null
+          end_date: string | null
+          field_of_study: string | null
+          gpa: number | null
+          honors: string[] | null
+          id: string
+          institution_name: string
+          is_current: boolean | null
+          is_verified: boolean | null
+          location: string | null
+          start_date: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          activities?: string | null
+          created_at?: string | null
+          degree_type?: string | null
+          description?: string | null
+          end_date?: string | null
+          field_of_study?: string | null
+          gpa?: number | null
+          honors?: string[] | null
+          id?: string
+          institution_name: string
+          is_current?: boolean | null
+          is_verified?: boolean | null
+          location?: string | null
+          start_date?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          activities?: string | null
+          created_at?: string | null
+          degree_type?: string | null
+          description?: string | null
+          end_date?: string | null
+          field_of_study?: string | null
+          gpa?: number | null
+          honors?: string[] | null
+          id?: string
+          institution_name?: string
+          is_current?: boolean | null
+          is_verified?: boolean | null
+          location?: string | null
+          start_date?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'user_education_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_education_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_education_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'v_user_directory'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_education_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'v_user_private'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_education_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'v_user_search'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      user_experience: {
+        Row: {
+          company_name: string
+          company_size: string | null
+          created_at: string | null
+          description: string | null
+          employment_type: string | null
+          end_date: string | null
+          id: string
+          industry: string | null
+          is_current: boolean | null
+          is_remote: boolean | null
+          is_verified: boolean | null
+          job_title: string
+          key_achievements: string[] | null
+          location: string | null
+          salary_range: string | null
+          skills_used: string[] | null
+          start_date: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          company_name: string
+          company_size?: string | null
+          created_at?: string | null
+          description?: string | null
+          employment_type?: string | null
+          end_date?: string | null
+          id?: string
+          industry?: string | null
+          is_current?: boolean | null
+          is_remote?: boolean | null
+          is_verified?: boolean | null
+          job_title: string
+          key_achievements?: string[] | null
+          location?: string | null
+          salary_range?: string | null
+          skills_used?: string[] | null
+          start_date?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          company_name?: string
+          company_size?: string | null
+          created_at?: string | null
+          description?: string | null
+          employment_type?: string | null
+          end_date?: string | null
+          id?: string
+          industry?: string | null
+          is_current?: boolean | null
+          is_remote?: boolean | null
+          is_verified?: boolean | null
+          job_title?: string
+          key_achievements?: string[] | null
+          location?: string | null
+          salary_range?: string | null
+          skills_used?: string[] | null
+          start_date?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'user_experience_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_experience_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_experience_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'v_user_directory'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_experience_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'v_user_private'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'user_experience_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'v_user_search'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       user_private: {
         Row: {
           address: Json | null
@@ -1556,6 +1879,7 @@ export type Database = {
           contact_prefs: string[] | null
           created_at: string
           drivers_license_class: string | null
+          drivers_license_classes: string[] | null
           education_level: string | null
           email: string | null
           first_name: string | null
@@ -1563,9 +1887,12 @@ export type Database = {
           hourly_rate_cents: number | null
           last_name: string | null
           location: string | null
+          military_status: string[] | null
           open_to_travel: boolean | null
           phone: string | null
           phone_os: string | null
+          preferred_work_locations: string[] | null
+          residency_countries: string[] | null
           travel_mileage: number | null
           updated_at: string
           us_passport: boolean | null
@@ -1580,6 +1907,7 @@ export type Database = {
           contact_prefs?: string[] | null
           created_at?: string
           drivers_license_class?: string | null
+          drivers_license_classes?: string[] | null
           education_level?: string | null
           email?: string | null
           first_name?: string | null
@@ -1587,9 +1915,12 @@ export type Database = {
           hourly_rate_cents?: number | null
           last_name?: string | null
           location?: string | null
+          military_status?: string[] | null
           open_to_travel?: boolean | null
           phone?: string | null
           phone_os?: string | null
+          preferred_work_locations?: string[] | null
+          residency_countries?: string[] | null
           travel_mileage?: number | null
           updated_at?: string
           us_passport?: boolean | null
@@ -1604,6 +1935,7 @@ export type Database = {
           contact_prefs?: string[] | null
           created_at?: string
           drivers_license_class?: string | null
+          drivers_license_classes?: string[] | null
           education_level?: string | null
           email?: string | null
           first_name?: string | null
@@ -1611,9 +1943,12 @@ export type Database = {
           hourly_rate_cents?: number | null
           last_name?: string | null
           location?: string | null
+          military_status?: string[] | null
           open_to_travel?: boolean | null
           phone?: string | null
           phone_os?: string | null
+          preferred_work_locations?: string[] | null
+          residency_countries?: string[] | null
           travel_mileage?: number | null
           updated_at?: string
           us_passport?: boolean | null
@@ -1910,18 +2245,6 @@ export type Database = {
           },
         ]
       }
-      v_user_review_summary: {
-        Row: {
-          areas_to_improve: string[] | null
-          last_revealed_at: string | null
-          last_submitted_at: string | null
-          recommended_skills: string[] | null
-          soft_skills: string[] | null
-          strengths: string[] | null
-          user_id: string | null
-        }
-        Relationships: []
-      }
       v_organization_memberships: {
         Row: {
           address: Json | null
@@ -2102,6 +2425,18 @@ export type Database = {
           us_passport: boolean | null
           us_resident: boolean | null
           veteran: boolean | null
+        }
+        Relationships: []
+      }
+      v_user_review_summary: {
+        Row: {
+          areas_to_improve: string[] | null
+          last_revealed_at: string | null
+          last_submitted_at: string | null
+          recommended_skills: string[] | null
+          soft_skills: string[] | null
+          strengths: string[] | null
+          user_id: string | null
         }
         Relationships: []
       }
@@ -2937,6 +3272,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      process_review_submission: {
+        Args: { p_review_id: string }
+        Returns: undefined
+      }
       profile_verifications_revoke_fields: {
         Args: {
           p_fields: string[]
@@ -2946,6 +3285,10 @@ export type Database = {
           p_subject_type: Database['public']['Enums']['profile_verification_subject']
         }
         Returns: undefined
+      }
+      release_pending_reviews: {
+        Args: Record<PropertyKey, never>
+        Returns: number
       }
       revoke_profile_field: {
         Args: {
@@ -4100,8 +4443,8 @@ export type Database = {
     }
     Enums: {
       affiliate_type: 'education' | 'certification' | 'training' | 'resource'
-      review_status: 'draft' | 'submitted' | 'released'
       profile_verification_subject: 'profile' | 'user' | 'user_private' | 'project'
+      review_status: 'draft' | 'submitted' | 'released'
     }
     CompositeTypes: {
       geometry_dump: {
@@ -4113,422 +4456,6 @@ export type Database = {
         reason: string | null
         location: unknown | null
       }
-    }
-  }
-  storage: {
-    Tables: {
-      buckets: {
-        Row: {
-          allowed_mime_types: string[] | null
-          avif_autodetection: boolean | null
-          created_at: string | null
-          file_size_limit: number | null
-          id: string
-          name: string
-          owner: string | null
-          owner_id: string | null
-          public: boolean | null
-          updated_at: string | null
-        }
-        Insert: {
-          allowed_mime_types?: string[] | null
-          avif_autodetection?: boolean | null
-          created_at?: string | null
-          file_size_limit?: number | null
-          id: string
-          name: string
-          owner?: string | null
-          owner_id?: string | null
-          public?: boolean | null
-          updated_at?: string | null
-        }
-        Update: {
-          allowed_mime_types?: string[] | null
-          avif_autodetection?: boolean | null
-          created_at?: string | null
-          file_size_limit?: number | null
-          id?: string
-          name?: string
-          owner?: string | null
-          owner_id?: string | null
-          public?: boolean | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      migrations: {
-        Row: {
-          executed_at: string | null
-          hash: string
-          id: number
-          name: string
-        }
-        Insert: {
-          executed_at?: string | null
-          hash: string
-          id: number
-          name: string
-        }
-        Update: {
-          executed_at?: string | null
-          hash?: string
-          id?: number
-          name?: string
-        }
-        Relationships: []
-      }
-      objects: {
-        Row: {
-          bucket_id: string | null
-          created_at: string | null
-          id: string
-          last_accessed_at: string | null
-          level: number | null
-          metadata: Json | null
-          name: string | null
-          owner: string | null
-          owner_id: string | null
-          path_tokens: string[] | null
-          updated_at: string | null
-          user_metadata: Json | null
-          version: string | null
-        }
-        Insert: {
-          bucket_id?: string | null
-          created_at?: string | null
-          id?: string
-          last_accessed_at?: string | null
-          level?: number | null
-          metadata?: Json | null
-          name?: string | null
-          owner?: string | null
-          owner_id?: string | null
-          path_tokens?: string[] | null
-          updated_at?: string | null
-          user_metadata?: Json | null
-          version?: string | null
-        }
-        Update: {
-          bucket_id?: string | null
-          created_at?: string | null
-          id?: string
-          last_accessed_at?: string | null
-          level?: number | null
-          metadata?: Json | null
-          name?: string | null
-          owner?: string | null
-          owner_id?: string | null
-          path_tokens?: string[] | null
-          updated_at?: string | null
-          user_metadata?: Json | null
-          version?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'objects_bucketId_fkey'
-            columns: ['bucket_id']
-            isOneToOne: false
-            referencedRelation: 'buckets'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      prefixes: {
-        Row: {
-          bucket_id: string
-          created_at: string | null
-          level: number
-          name: string
-          updated_at: string | null
-        }
-        Insert: {
-          bucket_id: string
-          created_at?: string | null
-          level?: number
-          name: string
-          updated_at?: string | null
-        }
-        Update: {
-          bucket_id?: string
-          created_at?: string | null
-          level?: number
-          name?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'prefixes_bucketId_fkey'
-            columns: ['bucket_id']
-            isOneToOne: false
-            referencedRelation: 'buckets'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      s3_multipart_uploads: {
-        Row: {
-          bucket_id: string
-          created_at: string
-          id: string
-          in_progress_size: number
-          key: string
-          owner_id: string | null
-          upload_signature: string
-          user_metadata: Json | null
-          version: string
-        }
-        Insert: {
-          bucket_id: string
-          created_at?: string
-          id: string
-          in_progress_size?: number
-          key: string
-          owner_id?: string | null
-          upload_signature: string
-          user_metadata?: Json | null
-          version: string
-        }
-        Update: {
-          bucket_id?: string
-          created_at?: string
-          id?: string
-          in_progress_size?: number
-          key?: string
-          owner_id?: string | null
-          upload_signature?: string
-          user_metadata?: Json | null
-          version?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: 's3_multipart_uploads_bucket_id_fkey'
-            columns: ['bucket_id']
-            isOneToOne: false
-            referencedRelation: 'buckets'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      s3_multipart_uploads_parts: {
-        Row: {
-          bucket_id: string
-          created_at: string
-          etag: string
-          id: string
-          key: string
-          owner_id: string | null
-          part_number: number
-          size: number
-          upload_id: string
-          version: string
-        }
-        Insert: {
-          bucket_id: string
-          created_at?: string
-          etag: string
-          id?: string
-          key: string
-          owner_id?: string | null
-          part_number: number
-          size?: number
-          upload_id: string
-          version: string
-        }
-        Update: {
-          bucket_id?: string
-          created_at?: string
-          etag?: string
-          id?: string
-          key?: string
-          owner_id?: string | null
-          part_number?: number
-          size?: number
-          upload_id?: string
-          version?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: 's3_multipart_uploads_parts_bucket_id_fkey'
-            columns: ['bucket_id']
-            isOneToOne: false
-            referencedRelation: 'buckets'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 's3_multipart_uploads_parts_upload_id_fkey'
-            columns: ['upload_id']
-            isOneToOne: false
-            referencedRelation: 's3_multipart_uploads'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      add_prefixes: {
-        Args: { _bucket_id: string; _name: string }
-        Returns: undefined
-      }
-      can_insert_object: {
-        Args: { bucketid: string; metadata: Json; name: string; owner: string }
-        Returns: undefined
-      }
-      delete_prefix: {
-        Args: { _bucket_id: string; _name: string }
-        Returns: boolean
-      }
-      extension: {
-        Args: { name: string }
-        Returns: string
-      }
-      filename: {
-        Args: { name: string }
-        Returns: string
-      }
-      foldername: {
-        Args: { name: string }
-        Returns: string[]
-      }
-      get_level: {
-        Args: { name: string }
-        Returns: number
-      }
-      get_prefix: {
-        Args: { name: string }
-        Returns: string
-      }
-      get_prefixes: {
-        Args: { name: string }
-        Returns: string[]
-      }
-      get_size_by_bucket: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          bucket_id: string
-          size: number
-        }[]
-      }
-      list_multipart_uploads_with_delimiter: {
-        Args: {
-          bucket_id: string
-          delimiter_param: string
-          max_keys?: number
-          next_key_token?: string
-          next_upload_token?: string
-          prefix_param: string
-        }
-        Returns: {
-          created_at: string
-          id: string
-          key: string
-        }[]
-      }
-      list_objects_with_delimiter: {
-        Args: {
-          bucket_id: string
-          delimiter_param: string
-          max_keys?: number
-          next_token?: string
-          prefix_param: string
-          start_after?: string
-        }
-        Returns: {
-          id: string
-          metadata: Json
-          name: string
-          updated_at: string
-        }[]
-      }
-      operation: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      search: {
-        Args: {
-          bucketname: string
-          levels?: number
-          limits?: number
-          offsets?: number
-          prefix: string
-          search?: string
-          sortcolumn?: string
-          sortorder?: string
-        }
-        Returns: {
-          created_at: string
-          id: string
-          last_accessed_at: string
-          metadata: Json
-          name: string
-          updated_at: string
-        }[]
-      }
-      search_legacy_v1: {
-        Args: {
-          bucketname: string
-          levels?: number
-          limits?: number
-          offsets?: number
-          prefix: string
-          search?: string
-          sortcolumn?: string
-          sortorder?: string
-        }
-        Returns: {
-          created_at: string
-          id: string
-          last_accessed_at: string
-          metadata: Json
-          name: string
-          updated_at: string
-        }[]
-      }
-      search_v1_optimised: {
-        Args: {
-          bucketname: string
-          levels?: number
-          limits?: number
-          offsets?: number
-          prefix: string
-          search?: string
-          sortcolumn?: string
-          sortorder?: string
-        }
-        Returns: {
-          created_at: string
-          id: string
-          last_accessed_at: string
-          metadata: Json
-          name: string
-          updated_at: string
-        }[]
-      }
-      search_v2: {
-        Args: {
-          bucket_name: string
-          levels?: number
-          limits?: number
-          prefix: string
-          start_after?: string
-        }
-        Returns: {
-          created_at: string
-          id: string
-          key: string
-          metadata: Json
-          name: string
-          updated_at: string
-        }[]
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
     }
   }
 }
@@ -4653,9 +4580,7 @@ export const Constants = {
     Enums: {
       affiliate_type: ['education', 'certification', 'training', 'resource'],
       profile_verification_subject: ['profile', 'user', 'user_private', 'project'],
+      review_status: ['draft', 'submitted', 'released'],
     },
-  },
-  storage: {
-    Enums: {},
   },
 } as const
