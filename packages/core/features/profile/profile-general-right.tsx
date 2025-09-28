@@ -1,4 +1,4 @@
-import { YStack, Text, H3 } from 'tamagui'
+import { YStack, Text, H3, H4 } from 'tamagui'
 import { DashboardWidget, StackedCards } from '@app/ui'
 
 /**
@@ -6,45 +6,52 @@ import { DashboardWidget, StackedCards } from '@app/ui'
  * Navigation and overview for general profile settings with animated tips
  */
 export function ProfileGeneralRight() {
-  // Profile improvement tip cards
+  // Profile improvement tip cards with marked-up children
   const profileTipCards = [
     {
-      title: '📸 Add a Profile Photo',
-      subtitle: 'Did you know that profiles with a photo are dramatically more visible?',
-      cardholderName:
-        'Members with a profile picture receive up to 21× more profile views and as many as 36× more messages. A simple upload could make the difference between getting passed over or getting noticed.',
-      expiryDate: 'The Social Feeds – LinkedIn Profile Picture Stats',
-      showInverseSection: false,
       children: (
-        <Text fontSize="$2" color="$color10" textAlign="center" fontStyle="italic">
-          Boost your visibility with a professional photo
-        </Text>
+        <YStack gap="$3">
+          <H4 color="$color">📸 Add a Profile Photo</H4>
+          <Text fontSize="$3" color="$color10" fontWeight="500" fontStyle="italic" lineHeight="$4">
+            Did you know that profiles with a photo are dramatically more visible?
+          </Text>
+          <Text fontSize="$3" color="$color8" lineHeight="$4">
+            Members with a profile picture receive up to 21× more profile views and as many as 36×
+            more messages. A simple upload could make the difference between getting passed over or
+            getting noticed.
+          </Text>
+        </YStack>
       ),
     },
     {
-      title: '⏱ First Impressions',
-      subtitle: 'Make Every Second Count',
-      cardholderName:
-        "Recruiters skim profiles and resumes quickly — often giving just 6 seconds in an initial scan. Having your basic details like name, email, and phone filled out ensures they don't miss something important about you in those crucial first moments.",
-      expiryDate: 'Great Resumes Fast – Recruiter Eye-Tracking Study',
-      showInverseSection: false,
       children: (
-        <Text fontSize="$2" color="$color10" textAlign="center" fontStyle="italic">
-          Complete your basic information for maximum impact
-        </Text>
+        <YStack gap="$3">
+          <H4 color="$color">⏱ First Impressions</H4>
+          <Text fontSize="$3" color="$color10" fontWeight="500" fontStyle="italic" lineHeight="$4">
+            Make Every Second Count
+          </Text>
+          <Text fontSize="$3" color="$color8" lineHeight="$4">
+            Recruiters skim profiles and resumes quickly — often giving just 6 seconds in an initial
+            scan. Having your basic details like name, email, and phone filled out ensures they
+            don't miss something important about you in those crucial first moments.
+          </Text>
+        </YStack>
       ),
     },
     {
-      title: '🎖 Verified Credentials',
-      subtitle: 'Verified Details Build Trust',
-      cardholderName:
-        "Sharing verified information builds credibility with employers. In one large-scale study, workers who displayed credentials publicly increased their likelihood of gaining new employment by about 6 percentage points compared to those who didn't. Trust really does make a measurable difference.",
-      expiryDate: 'arXiv – The Signaling Value of Credentials in Online Labor Markets (2024)',
-      showInverseSection: false,
       children: (
-        <Text fontSize="$2" color="$color10" textAlign="center" fontStyle="italic">
-          Build trust through verified information
-        </Text>
+        <YStack gap="$3">
+          <H4 color="$color">🎖 Verified Credentials</H4>
+          <Text fontSize="$3" color="$color10" fontWeight="500" fontStyle="italic" lineHeight="$4">
+            Verified Details Build Trust
+          </Text>
+          <Text fontSize="$3" color="$color8" lineHeight="$4">
+            Sharing verified information builds credibility with employers. In one large-scale
+            study, workers who displayed credentials publicly increased their likelihood of gaining
+            new employment by about 6 percentage points compared to those who didn't. Trust really
+            does make a measurable difference.
+          </Text>
+        </YStack>
       ),
     },
   ]
@@ -60,7 +67,7 @@ export function ProfileGeneralRight() {
 
       <StackedCards
         cards={profileTipCards}
-        interval={4000}
+        interval={8000}
         autoPlay={true}
         width="100%"
         maxStackSize={2}
