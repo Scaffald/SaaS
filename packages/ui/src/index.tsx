@@ -15,6 +15,7 @@ export { LoadingOverlay } from './components/LoadingOverlay'
 export * from './components/Onboarding'
 export { OnboardingControls } from './components/OnboardingControls'
 export { StepContent } from './components/OnboardingStepContent'
+export { NotificationsActionSheet } from './components/NotificationsActionSheet'
 
 // Layout components
 export { DashboardLayout } from './components/layouts/DashboardLayout'
