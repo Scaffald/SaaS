@@ -23,3 +23,6 @@ export { DashboardLayout } from './components/layouts/DashboardLayout'
 
 // Other components
 export * from './components/chips'
+
+// CardStack component
+export * from './CardStack'
