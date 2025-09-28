@@ -10,7 +10,7 @@ import {
   Input,
   Form,
 } from '@app/ui'
-import { useSupabase } from '@app/core/utils/supabase/useSupabase'
+import { useSupabase } from '@app/core/utils/supabase/useSupabase.unified'
 import { useUser } from '@app/core/utils/useUser'
 import { useEffect, useState } from 'react'
 import { FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form'

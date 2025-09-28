@@ -1,4 +1,4 @@
-import { useSupabase } from '@app/core/utils/supabase/useSupabase'
+import { useSupabase } from '@app/core/utils/supabase/useSupabase.unified'
 import { useEffect } from 'react'
 import { useRouter } from 'expo-router'
 import { ROUTES, AUTH_ROUTES } from '@app/core/constants/routes'
