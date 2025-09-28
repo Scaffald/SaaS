@@ -29,7 +29,7 @@ export const DashboardLayout = ({
       const headerConfig = header as HeaderConfig
       return (
         <XStack padding="$4" alignItems="center">
-          <YStack space="$1">
+          <YStack gap="$1">
             {headerConfig.title && <H3>{headerConfig.title}</H3>}
             {headerConfig.subtitle && (
               <Text color="$gray11" fontSize="$3">

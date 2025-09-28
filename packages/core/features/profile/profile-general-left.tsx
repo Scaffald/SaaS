@@ -83,7 +83,7 @@ export function ProfileGeneralLeft() {
 
   if (isLoadingProfile) {
     return (
-      <YStack space="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
+      <YStack gap="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
         <Spinner size="large" />
         <Text>Loading profile...</Text>
       </YStack>
@@ -94,16 +94,16 @@ export function ProfileGeneralLeft() {
     <DashboardWidget>
       <H4>Edit General Information</H4>
 
-      <YStack space="$4" tag="form">
+      <YStack gap="$4" tag="form">
         {/* Avatar Section */}
-        <YStack space="$3">
+        <YStack gap="$3">
           <Text fontWeight="600">Profile Photo</Text>
-          <XStack space="$3" alignItems="center">
+          <XStack gap="$3" alignItems="center">
             <Avatar circular size="$8">
               <Avatar.Image src={avatarUrl || undefined} />
               <Avatar.Fallback backgroundColor="$gray5" />
             </Avatar>
-            <YStack space="$2" flex={1}>
+            <YStack gap="$2" flex={1}>
               <Controller
                 name="avatar_url"
                 control={control}
@@ -126,8 +126,8 @@ export function ProfileGeneralLeft() {
         </YStack>
 
         {/* Name Fields */}
-        <XStack space="$3">
-          <YStack space="$2" flex={1}>
+        <XStack gap="$3">
+          <YStack gap="$2" flex={1}>
             <Text fontWeight="600">First Name *</Text>
             <Controller
               name="first_name"
@@ -148,7 +148,7 @@ export function ProfileGeneralLeft() {
             )}
           </YStack>
 
-          <YStack space="$2" flex={1}>
+          <YStack gap="$2" flex={1}>
             <Text fontWeight="600">Last Name *</Text>
             <Controller
               name="last_name"
@@ -171,7 +171,7 @@ export function ProfileGeneralLeft() {
         </XStack>
 
         {/* About Section */}
-        <YStack space="$2">
+        <YStack gap="$2">
           <Text fontWeight="600">About</Text>
           <Controller
             name="about"
@@ -194,7 +194,7 @@ export function ProfileGeneralLeft() {
         </YStack>
 
         {/* Contact Information */}
-        <YStack space="$2">
+        <YStack gap="$2">
           <Text fontWeight="600">Phone</Text>
           <Controller
             name="phone"
@@ -216,7 +216,7 @@ export function ProfileGeneralLeft() {
           )}
         </YStack>
 
-        <YStack space="$2">
+        <YStack gap="$2">
           <Text fontWeight="600">Email (Read-only)</Text>
           <Controller
             name="email"

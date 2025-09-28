@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { YStack, XStack, Text, ScrollView, Button } from 'tamagui'
-import { Sheet, Card } from '@app/ui'
+import { YStack, XStack, Text, ScrollView, Button, Sheet, Card } from 'tamagui'
 import { Bell, CheckCircle, AlertCircle, Info, X } from '@tamagui/lucide-icons'
 
 export interface NotificationItem {

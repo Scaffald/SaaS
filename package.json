@@ -64,7 +64,7 @@
     "@svgr/plugin-svgo": "^8.1.0",
     "@tamagui/cli": "^1.133.1",
     "@tamagui/config": "^1.133.1",
-    "@turbo/gen": "^2.5.3",
+    "@turbo/gen": "^2.5.8",
     "@types/fs-extra": "^11",
     "axios": "^1.7.2",
     "check-dependency-version-consistency": "^3.0.3",

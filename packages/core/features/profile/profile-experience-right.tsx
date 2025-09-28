@@ -49,12 +49,12 @@ export function ProfileExperienceRight() {
   }
 
   return (
-    <YStack space="$4" padding="$4" flex={1}>
+    <YStack gap="$4" padding="$4" flex={1}>
       <H4>Work Experience</H4>
 
-      <YStack space="$4">
+      <YStack gap="$4">
         {/* Experience Entries */}
-        <YStack space="$3">
+        <YStack gap="$3">
           <XStack justifyContent="space-between" alignItems="center">
             <Text fontWeight="600">Your Work Experience</Text>
             <Button size="$3" onPress={addExperienceEntry} icon={Plus}>
@@ -65,7 +65,7 @@ export function ProfileExperienceRight() {
           {fields.map((field, index) => (
             <YStack
               key={field.id}
-              space="$3"
+              gap="$3"
               padding="$3"
               borderWidth={1}
               borderColor="$borderColor"
@@ -79,8 +79,8 @@ export function ProfileExperienceRight() {
               </XStack>
 
               {/* Job Title and Company */}
-              <XStack space="$3">
-                <YStack space="$2" flex={1}>
+              <XStack gap="$3">
+                <YStack gap="$2" flex={1}>
                   <Text>Job Title *</Text>
                   <Controller
                     name={`experience_entries.${index}.job_title`}
@@ -103,7 +103,7 @@ export function ProfileExperienceRight() {
                   )}
                 </YStack>
 
-                <YStack space="$2" flex={1}>
+                <YStack gap="$2" flex={1}>
                   <Text>Company *</Text>
                   <Controller
                     name={`experience_entries.${index}.company_name`}
@@ -130,8 +130,8 @@ export function ProfileExperienceRight() {
               </XStack>
 
               {/* Location and Employment Type */}
-              <XStack space="$3">
-                <YStack space="$2" flex={1}>
+              <XStack gap="$3">
+                <YStack gap="$2" flex={1}>
                   <Text>Location</Text>
                   <Controller
                     name={`experience_entries.${index}.location`}
@@ -146,7 +146,7 @@ export function ProfileExperienceRight() {
                   />
                 </YStack>
 
-                <YStack space="$2" flex={1}>
+                <YStack gap="$2" flex={1}>
                   <Text>Employment Type</Text>
                   <Controller
                     name={`experience_entries.${index}.employment_type`}
@@ -163,8 +163,8 @@ export function ProfileExperienceRight() {
               </XStack>
 
               {/* Start and End Dates */}
-              <XStack space="$3">
-                <YStack space="$2" flex={1}>
+              <XStack gap="$3">
+                <YStack gap="$2" flex={1}>
                   <Text>Start Date</Text>
                   <Controller
                     name={`experience_entries.${index}.start_date`}
@@ -178,7 +178,7 @@ export function ProfileExperienceRight() {
                     )}
                   />
                 </YStack>
-                <YStack space="$2" flex={1}>
+                <YStack gap="$2" flex={1}>
                   <Text>End Date</Text>
                   <Controller
                     name={`experience_entries.${index}.end_date`}
@@ -195,7 +195,7 @@ export function ProfileExperienceRight() {
               </XStack>
 
               {/* Current Job Toggle */}
-              <XStack space="$3" alignItems="center">
+              <XStack gap="$3" alignItems="center">
                 <Text>Currently working here</Text>
                 <Controller
                   name={`experience_entries.${index}.is_current`}
@@ -207,7 +207,7 @@ export function ProfileExperienceRight() {
               </XStack>
 
               {/* Description */}
-              <YStack space="$2">
+              <YStack gap="$2">
                 <Text>Job Description</Text>
                 <Controller
                   name={`experience_entries.${index}.description`}
@@ -224,7 +224,7 @@ export function ProfileExperienceRight() {
               </YStack>
 
               {/* Skills Used */}
-              <YStack space="$2">
+              <YStack gap="$2">
                 <Text>Skills Used</Text>
                 <Controller
                   name={`experience_entries.${index}.skills_used`}
@@ -244,7 +244,7 @@ export function ProfileExperienceRight() {
               </YStack>
 
               {/* Achievements */}
-              <YStack space="$2">
+              <YStack gap="$2">
                 <Text>Key Achievements</Text>
                 <Controller
                   name={`experience_entries.${index}.key_achievements`}
@@ -267,7 +267,7 @@ export function ProfileExperienceRight() {
           ))}
 
           {fields.length === 0 && (
-            <YStack padding="$4" alignItems="center" space="$2">
+            <YStack padding="$4" alignItems="center" gap="$2">
               <Text color="$gray11">No work experience added yet</Text>
               <Button onPress={addExperienceEntry} icon={Plus}>
                 Add Your First Job

@@ -56,12 +56,12 @@ export function ProfileSkillsRight() {
   }
 
   return (
-    <YStack space="$4" padding="$4" flex={1}>
+    <YStack gap="$4" padding="$4" flex={1}>
       <H4>Skills & Expertise</H4>
 
-      <YStack space="$4">
+      <YStack gap="$4">
         {/* Skills List */}
-        <YStack space="$3">
+        <YStack gap="$3">
           <XStack justifyContent="space-between" alignItems="center">
             <Text fontWeight="600">Your Skills</Text>
             <Button size="$3" onPress={addSkill} icon={Plus}>
@@ -72,7 +72,7 @@ export function ProfileSkillsRight() {
           {fields.map((field, index) => (
             <YStack
               key={field.id}
-              space="$3"
+              gap="$3"
               padding="$3"
               borderWidth={1}
               borderColor="$borderColor"
@@ -86,7 +86,7 @@ export function ProfileSkillsRight() {
               </XStack>
 
               {/* Skill Name */}
-              <YStack space="$2">
+              <YStack gap="$2">
                 <Text>Skill Name *</Text>
                 <Controller
                   name={`skills.${index}.skill_name`}
@@ -108,13 +108,13 @@ export function ProfileSkillsRight() {
               </YStack>
 
               {/* Proficiency Level */}
-              <YStack space="$2">
+              <YStack gap="$2">
                 <Text>Proficiency Level</Text>
                 <Controller
                   name={`skills.${index}.proficiency`}
                   control={control}
                   render={({ field }) => (
-                    <YStack space="$2">
+                    <YStack gap="$2">
                       <Slider
                         value={[field.value]}
                         onValueChange={(value) => field.onChange(value[0])}
@@ -142,7 +142,7 @@ export function ProfileSkillsRight() {
               </YStack>
 
               {/* Years of Experience */}
-              <YStack space="$2">
+              <YStack gap="$2">
                 <Text>Years of Experience</Text>
                 <Controller
                   name={`skills.${index}.years_experience`}
@@ -161,7 +161,7 @@ export function ProfileSkillsRight() {
           ))}
 
           {fields.length === 0 && (
-            <YStack padding="$4" alignItems="center" space="$2">
+            <YStack padding="$4" alignItems="center" gap="$2">
               <Text color="$gray11">No skills added yet</Text>
               <Button onPress={addSkill} icon={Plus}>
                 Add Your First Skill

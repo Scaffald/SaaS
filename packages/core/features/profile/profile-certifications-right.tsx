@@ -49,12 +49,12 @@ export function ProfileCertificationsRight() {
   }
 
   return (
-    <YStack space="$4" padding="$4" flex={1}>
+    <YStack gap="$4" padding="$4" flex={1}>
       <H4>Certifications & Credentials</H4>
 
-      <YStack space="$4">
+      <YStack gap="$4">
         {/* Certifications List */}
-        <YStack space="$3">
+        <YStack gap="$3">
           <XStack justifyContent="space-between" alignItems="center">
             <Text fontWeight="600">Your Certifications</Text>
             <Button size="$3" onPress={addCertification} icon={Plus}>
@@ -65,7 +65,7 @@ export function ProfileCertificationsRight() {
           {fields.map((field, index) => (
             <YStack
               key={field.id}
-              space="$3"
+              gap="$3"
               padding="$3"
               borderWidth={1}
               borderColor="$borderColor"
@@ -79,7 +79,7 @@ export function ProfileCertificationsRight() {
               </XStack>
 
               {/* Certification Name */}
-              <YStack space="$2">
+              <YStack gap="$2">
                 <Text>Certification Name *</Text>
                 <Controller
                   name={`certifications.${index}.name`}
@@ -101,7 +101,7 @@ export function ProfileCertificationsRight() {
               </YStack>
 
               {/* Issuing Organization */}
-              <YStack space="$2">
+              <YStack gap="$2">
                 <Text>Issuing Organization *</Text>
                 <Controller
                   name={`certifications.${index}.issuing_organization`}
@@ -127,8 +127,8 @@ export function ProfileCertificationsRight() {
               </YStack>
 
               {/* Issue and Expiration Dates */}
-              <XStack space="$3">
-                <YStack space="$2" flex={1}>
+              <XStack gap="$3">
+                <YStack gap="$2" flex={1}>
                   <Text>Issue Date</Text>
                   <Controller
                     name={`certifications.${index}.issue_date`}
@@ -142,7 +142,7 @@ export function ProfileCertificationsRight() {
                     )}
                   />
                 </YStack>
-                <YStack space="$2" flex={1}>
+                <YStack gap="$2" flex={1}>
                   <Text>Expiration Date</Text>
                   <Controller
                     name={`certifications.${index}.expiration_date`}
@@ -159,8 +159,8 @@ export function ProfileCertificationsRight() {
               </XStack>
 
               {/* Credential ID and URL */}
-              <XStack space="$3">
-                <YStack space="$2" flex={1}>
+              <XStack gap="$3">
+                <YStack gap="$2" flex={1}>
                   <Text>Credential ID</Text>
                   <Controller
                     name={`certifications.${index}.credential_id`}
@@ -174,7 +174,7 @@ export function ProfileCertificationsRight() {
                     )}
                   />
                 </YStack>
-                <YStack space="$2" flex={1}>
+                <YStack gap="$2" flex={1}>
                   <Text>Credential URL</Text>
                   <Controller
                     name={`certifications.${index}.credential_url`}
@@ -199,7 +199,7 @@ export function ProfileCertificationsRight() {
               </XStack>
 
               {/* Description */}
-              <YStack space="$2">
+              <YStack gap="$2">
                 <Text>Description</Text>
                 <Controller
                   name={`certifications.${index}.description`}
@@ -218,7 +218,7 @@ export function ProfileCertificationsRight() {
           ))}
 
           {fields.length === 0 && (
-            <YStack padding="$4" alignItems="center" space="$2">
+            <YStack padding="$4" alignItems="center" gap="$2">
               <Text color="$gray11">No certifications added yet</Text>
               <Button onPress={addCertification} icon={Plus}>
                 Add Your First Certification
