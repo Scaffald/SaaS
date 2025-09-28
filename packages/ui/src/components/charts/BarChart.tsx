@@ -28,6 +28,7 @@ export interface BarChartProps {
   isThreeD?: boolean
   isAnimated?: boolean
   animationDuration?: number
+  showGradient?: boolean
   onPress?: (item: BarChartData, index: number) => void
 }
 
@@ -89,6 +90,7 @@ export const BarChart = ({
   isThreeD = false,
   isAnimated = true,
   animationDuration = 800,
+  showGradient = false,
   onPress,
   ...props
 }: BarChartProps) => {
@@ -113,6 +115,7 @@ export const BarChart = ({
         isThreeD={isThreeD}
         isAnimated={isAnimated}
         animationDuration={animationDuration}
+        showGradient={showGradient}
         onPress={onPress}
         {...props}
       />

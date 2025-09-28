@@ -13,7 +13,7 @@ export const createTrpcClient = () =>
   api.createClient({
     links: [
       httpBatchLink({
-        url: `${getBaseUrl()}/functions/v1/trpc`,
+        url: `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/trpc`,
         transformer: SuperJSON,
         async headers() {
           const headers = new Map<string, string>()

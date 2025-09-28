@@ -17,7 +17,16 @@ import {
 
 export default function ChartsTestPage() {
   const [activeChart, setActiveChart] = useState<
-    'bar' | 'line' | 'pie' | 'stacked' | 'radar' | 'pyramid' | 'project' | 'all'
+    | 'bar'
+    | 'line'
+    | 'pie'
+    | 'stacked'
+    | 'radar'
+    | 'pyramid'
+    | 'project'
+    | 'gradient-bar'
+    | 'gradient-pie'
+    | 'all'
   >('all')
 
   // Sample data for different chart types
@@ -295,7 +304,7 @@ export default function ChartsTestPage() {
               12 May - 17 May 2023
             </Text>
           </YStack>
-          <Button variant="outline" size="$2">
+          <Button variant="outlined" size="$2">
             <Text fontSize="$2" color="$blue10">
               See Details
             </Text>
@@ -421,10 +430,13 @@ export default function ChartsTestPage() {
     <YStack gap="$4">
       {renderProjectOverview()}
       {renderBarChart()}
+      {renderGradientBarChart()}
       {renderLineChart()}
       {renderAreaChart()}
       {renderPieChart()}
+      {renderGradientPieChart()}
       {renderDonutChart()}
+      {renderGradientDonutChart()}
       {renderStackedBarChart()}
       {renderRadarChart()}
       {renderPopulationPyramid()}
@@ -450,59 +462,73 @@ export default function ChartsTestPage() {
             <XStack gap="$2" flexWrap="wrap">
               <Button
                 size="$3"
-                variant={activeChart === 'all' ? 'outlined' : 'outline'}
+                variant={activeChart === 'all' ? 'outlined' : undefined}
                 onPress={() => setActiveChart('all')}
               >
                 All Charts
               </Button>
               <Button
                 size="$3"
-                variant={activeChart === 'bar' ? 'outlined' : 'outline'}
+                variant={activeChart === 'bar' ? 'outlined' : undefined}
                 onPress={() => setActiveChart('bar')}
               >
                 Bar Chart
               </Button>
               <Button
                 size="$3"
-                variant={activeChart === 'line' ? 'outlined' : 'outline'}
+                variant={activeChart === 'line' ? 'outlined' : undefined}
                 onPress={() => setActiveChart('line')}
               >
                 Line Chart
               </Button>
               <Button
                 size="$3"
-                variant={activeChart === 'pie' ? 'outlined' : 'outline'}
+                variant={activeChart === 'pie' ? 'outlined' : undefined}
                 onPress={() => setActiveChart('pie')}
               >
                 Pie Chart
               </Button>
               <Button
                 size="$3"
-                variant={activeChart === 'stacked' ? 'outlined' : 'outline'}
+                variant={activeChart === 'stacked' ? 'outlined' : undefined}
                 onPress={() => setActiveChart('stacked')}
               >
                 Stacked Bar
               </Button>
               <Button
                 size="$3"
-                variant={activeChart === 'radar' ? 'outlined' : 'outline'}
+                variant={activeChart === 'radar' ? 'outlined' : undefined}
                 onPress={() => setActiveChart('radar')}
               >
                 Radar Chart
               </Button>
               <Button
                 size="$3"
-                variant={activeChart === 'pyramid' ? 'outlined' : 'outline'}
+                variant={activeChart === 'pyramid' ? 'outlined' : undefined}
                 onPress={() => setActiveChart('pyramid')}
               >
                 Population Pyramid
               </Button>
               <Button
                 size="$3"
-                variant={activeChart === 'project' ? 'outlined' : 'outline'}
+                variant={activeChart === 'project' ? 'outlined' : undefined}
                 onPress={() => setActiveChart('project')}
               >
                 Project Overview
+              </Button>
+              <Button
+                size="$3"
+                variant={activeChart === 'gradient-bar' ? 'outlined' : undefined}
+                onPress={() => setActiveChart('gradient-bar')}
+              >
+                Gradient Bar
+              </Button>
+              <Button
+                size="$3"
+                variant={activeChart === 'gradient-pie' ? 'outlined' : undefined}
+                onPress={() => setActiveChart('gradient-pie')}
+              >
+                Gradient Pie
               </Button>
             </XStack>
           </YStack>
@@ -527,6 +553,13 @@ export default function ChartsTestPage() {
         {activeChart === 'radar' && renderRadarChart()}
         {activeChart === 'pyramid' && renderPopulationPyramid()}
         {activeChart === 'project' && renderProjectOverview()}
+        {activeChart === 'gradient-bar' && renderGradientBarChart()}
+        {activeChart === 'gradient-pie' && (
+          <YStack gap="$4">
+            {renderGradientPieChart()}
+            {renderGradientDonutChart()}
+          </YStack>
+        )}
       </YStack>
     </ScrollView>
   )
