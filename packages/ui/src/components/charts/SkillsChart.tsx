@@ -69,7 +69,9 @@ const RadarPolygon: React.FC<RadarPolygonProps> = ({ dimensions, fill, stroke, d
     animatedValue.value = withSpring(1)
   }, [])
 
-  return <AnimatedPolygon animatedProps={animatedProps} fill={fill} stroke={stroke} strokeWidth="2" />
+  return (
+    <AnimatedPolygon animatedProps={animatedProps} fill={fill} stroke={stroke} strokeWidth="2" />
+  )
 }
 
 /**
@@ -179,8 +181,21 @@ export const SkillsChart: React.FC<SkillsChartProps> = ({
         if (x > calculated.centerX) left += 20
 
         return (
-          <View key={i} position="absolute" left={left} top={top} alignItems="center" justifyContent="center">
-            <Text fontSize={labelTextSize} fontWeight="bold" color={labelColor} textAlign="center" numberOfLines={2}>
+          <View
+            key={i}
+            position="absolute"
+            left={left}
+            top={top}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Text
+              fontSize={labelTextSize}
+              fontWeight="bold"
+              color={labelColor}
+              textAlign="center"
+              numberOfLines={2}
+            >
               {label}
             </Text>
           </View>
@@ -190,7 +205,13 @@ export const SkillsChart: React.FC<SkillsChartProps> = ({
   )
 
   return (
-    <View alignItems="center" justifyContent="center" minHeight={chartHeight} width="100%" backgroundColor={backgroundColor}>
+    <View
+      alignItems="center"
+      justifyContent="center"
+      minHeight={chartHeight}
+      width="100%"
+      backgroundColor={backgroundColor}
+    >
       <View position="absolute" height="100%" width="100%">
         <Svg height="100%" width="100%">
           <Defs>
