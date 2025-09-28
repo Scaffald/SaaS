@@ -1,15 +1,37 @@
-name: 'Monorepo Integrity'
+name: "Monorepo Integrity & Code Quality"
 
 on:
   pull_request:
     branches:
-      - '**'
+      - "**"
   push:
     branches:
       - main
 
 jobs:
+  code-quality:
+    name: "Code Quality Checks"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Install
+        uses: ./.github/actions/install
+
+      - name: Format, Lint & Type Check (yarn check)
+        run: yarn check
+
+      - name: Build all packages
+        run: yarn build
+
   monorepo-integrity:
+    name: "Monorepo Integrity Checks"
     runs-on: ubuntu-latest
     defaults:
       run:
