@@ -15,7 +15,7 @@ export const createTrpcClient = () =>
     links: [
       httpBatchLink({
         url: `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/trpc`,
-        transformer: SuperJSON,
+        // Remove SuperJSON transformer since server doesn't use it
         async headers() {
           const headers = new Map<string, string>()
 
