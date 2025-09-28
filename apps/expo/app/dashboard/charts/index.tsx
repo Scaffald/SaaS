@@ -7,6 +7,7 @@ import {
   StackedBarChart,
   RadarChart,
   PopulationPyramid,
+  SkillsChart,
   type BarChartData,
   type LineChartData,
   type PieChartData,
@@ -14,6 +15,7 @@ import {
   type RadarChartData,
   type RadarChartDataset,
   type PopulationPyramidData,
+  type SkillsChartDataset,
 } from '@app/ui'
 
 export default function ChartsTestPage() {
@@ -28,6 +30,7 @@ export default function ChartsTestPage() {
     | 'gradient-bar'
     | 'gradient-pie'
     | 'styled-radar'
+    | 'skills'
     | 'all'
   >('all')
 
@@ -158,6 +161,35 @@ export default function ChartsTestPage() {
       strokeWidth: 2,
       fillOpacity: 0.6,
       label: 'Dataset 2',
+    },
+  ]
+
+  const skillsData: SkillsChartDataset[] = [
+    {
+      label: "Hard Skills",
+      data: [
+        { label: "Wood Framing", value: 72 },
+        { label: "Form Work", value: 94 },
+        { label: "Metal Framing", value: 41 },
+        { label: "Load Bearing", value: 64 },
+        { label: "Floor Systems", value: 24 },
+      ],
+      fillColor: '#4FC3F7',
+      strokeColor: '#29B6F6',
+      fillOpacity: 0.6,
+    },
+    {
+      label: "Soft Skills", 
+      data: [
+        { label: "Communication", value: 12 },
+        { label: "Punctuality", value: 54 },
+        { label: "Reliability", value: 99 },
+        { label: "Work Ethic", value: 74 },
+        { label: "Management", value: 35 },
+      ],
+      fillColor: '#A8E6CF',
+      strokeColor: '#81C784',
+      fillOpacity: 0.6,
     },
   ]
 
