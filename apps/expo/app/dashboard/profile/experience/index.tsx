@@ -1,11 +1,13 @@
-import { ProfileExperienceScreen } from '@app/core/features/profile/profile-experience-screen'
+import { ProfileExperienceLeft } from '@app/core/features/profile/profile-experience-left'
+import { ProfileExperienceRight } from '@app/core/features/profile/profile-experience-right'
 import { DashboardLayout } from '@app/ui/src/components/layouts/DashboardLayout'
 
 export default function ProfileExperiencePage() {
   return (
     <DashboardLayout
       header={{ title: 'Experience Profile' }}
-      rightContent={<ProfileExperienceScreen />}
+      leftContent={<ProfileExperienceLeft />}
+      rightContent={<ProfileExperienceRight />}
     />
   )
 }

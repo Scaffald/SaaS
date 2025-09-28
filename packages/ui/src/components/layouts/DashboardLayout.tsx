@@ -1,12 +1,8 @@
 import { ReactNode } from 'react'
 import { YStack, XStack, View, Text } from 'tamagui'
 
-export type AppHeaderProps = {
-  title?: string
-}
-
 type DashboardLayoutProps = {
-  header?: AppHeaderProps | null
+  header?: ReactNode
   rightContent?: ReactNode
   leftContent?: ReactNode
   leftWidth?: string
@@ -22,15 +18,7 @@ export const DashboardLayout = ({
 }: DashboardLayoutProps) => {
   return (
     <YStack flex={1} backgroundColor="$color2" p="0" flexWrap="wrap">
-      {header?.title && (
-        <XStack padding="$4">
-          <YStack>
-            <Text fontSize="$6" fontWeight="bold">
-              {header.title}
-            </Text>
-          </YStack>
-        </XStack>
-      )}
+      {header ? <XStack padding="$4">{header}</XStack> : null}
       <XStack flex={1}>
         {leftContent && (
           <View minWidth="300" $sm={{ width: '100%' }} width={leftWidth}>
