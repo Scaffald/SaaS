@@ -51,12 +51,12 @@ export function ProfileEducationRight() {
   }
 
   return (
-    <YStack space="$4" padding="$4" flex={1}>
+    <YStack gap="$4" padding="$4" flex={1}>
       <H4>Education Background</H4>
 
-      <YStack space="$4">
+      <YStack gap="$4">
         {/* Education Level */}
-        <YStack space="$2">
+        <YStack gap="$2">
           <Text fontWeight="600">Highest Education Level</Text>
           <Controller
             name="education_level"
@@ -83,7 +83,7 @@ export function ProfileEducationRight() {
         </YStack>
 
         {/* Education Entries */}
-        <YStack space="$3">
+        <YStack gap="$3">
           <XStack justifyContent="space-between" alignItems="center">
             <Text fontWeight="600">Education History</Text>
             <Button size="$3" onPress={addEducationEntry} icon={Plus}>
@@ -94,7 +94,7 @@ export function ProfileEducationRight() {
           {fields.map((field, index) => (
             <YStack
               key={field.id}
-              space="$3"
+              gap="$3"
               padding="$3"
               borderWidth={1}
               borderColor="$borderColor"
@@ -108,8 +108,8 @@ export function ProfileEducationRight() {
               </XStack>
 
               {/* Institution and Degree */}
-              <XStack space="$3">
-                <YStack space="$2" flex={1}>
+              <XStack gap="$3">
+                <YStack gap="$2" flex={1}>
                   <Text>Institution *</Text>
                   <Controller
                     name={`education_entries.${index}.institution_name`}
@@ -134,7 +134,7 @@ export function ProfileEducationRight() {
                   )}
                 </YStack>
 
-                <YStack space="$2" flex={1}>
+                <YStack gap="$2" flex={1}>
                   <Text>Degree Type</Text>
                   <Controller
                     name={`education_entries.${index}.degree_type`}
@@ -162,7 +162,7 @@ export function ProfileEducationRight() {
               </XStack>
 
               {/* Field of Study */}
-              <YStack space="$2">
+              <YStack gap="$2">
                 <Text>Field of Study</Text>
                 <Controller
                   name={`education_entries.${index}.field_of_study`}
@@ -178,8 +178,8 @@ export function ProfileEducationRight() {
               </YStack>
 
               {/* Start and End Dates */}
-              <XStack space="$3">
-                <YStack space="$2" flex={1}>
+              <XStack gap="$3">
+                <YStack gap="$2" flex={1}>
                   <Text>Start Date</Text>
                   <Controller
                     name={`education_entries.${index}.start_date`}
@@ -193,7 +193,7 @@ export function ProfileEducationRight() {
                     )}
                   />
                 </YStack>
-                <YStack space="$2" flex={1}>
+                <YStack gap="$2" flex={1}>
                   <Text>End Date</Text>
                   <Controller
                     name={`education_entries.${index}.end_date`}
@@ -210,8 +210,8 @@ export function ProfileEducationRight() {
               </XStack>
 
               {/* GPA and Honors */}
-              <XStack space="$3">
-                <YStack space="$2" flex={1}>
+              <XStack gap="$3">
+                <YStack gap="$2" flex={1}>
                   <Text>GPA</Text>
                   <Controller
                     name={`education_entries.${index}.gpa`}
@@ -226,7 +226,7 @@ export function ProfileEducationRight() {
                     )}
                   />
                 </YStack>
-                <YStack space="$2" flex={1}>
+                <YStack gap="$2" flex={1}>
                   <Text>Honors</Text>
                   <Controller
                     name={`education_entries.${index}.honors`}
@@ -245,7 +245,7 @@ export function ProfileEducationRight() {
               </XStack>
 
               {/* Activities and Description */}
-              <YStack space="$2">
+              <YStack gap="$2">
                 <Text>Activities & Societies</Text>
                 <Controller
                   name={`education_entries.${index}.activities`}
@@ -260,7 +260,7 @@ export function ProfileEducationRight() {
                 />
               </YStack>
 
-              <YStack space="$2">
+              <YStack gap="$2">
                 <Text>Description</Text>
                 <Controller
                   name={`education_entries.${index}.description`}
@@ -279,7 +279,7 @@ export function ProfileEducationRight() {
           ))}
 
           {fields.length === 0 && (
-            <YStack padding="$4" alignItems="center" space="$2">
+            <YStack padding="$4" alignItems="center" gap="$2">
               <Text color="$gray11">No education entries added yet</Text>
               <Button onPress={addEducationEntry} icon={Plus}>
                 Add Your First Education Entry

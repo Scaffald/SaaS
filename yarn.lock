@@ -77,7 +77,7 @@ __metadata:
     tamagui: "npm:^1.133.1"
     typescript: "npm:^5.9.2"
     unified: "npm:^11.0.0"
-    zod: "npm:^3.22.2"
+    zod: "npm:^3.23.8"
     zustand: "npm:5.0.2"
   languageName: unknown
   linkType: soft
@@ -113,9 +113,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@app/supabase@workspace:packages/supabase"
   dependencies:
-    "@supabase/supabase-js": "npm:^2.45.4"
-    "@trpc/server": "npm:^10.45.2"
-    typescript: "npm:^5.6.2"
+    "@supabase/supabase-js": "npm:^2.58.0"
+    "@trpc/server": "npm:^11.6.0"
+    typescript: "npm:^5.9.2"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -145,7 +145,7 @@ __metadata:
     react-hook-form: "npm:^7.63.0"
     tamagui: "npm:^1.133.1"
     typescript: "npm:^5.9.2"
-    zod: "npm:^3.22.2"
+    zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
 
@@ -3365,7 +3365,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@supabase/supabase-js@npm:^2.45.4, @supabase/supabase-js@npm:^2.58.0":
+"@supabase/supabase-js@npm:^2.58.0":
   version: 2.58.0
   resolution: "@supabase/supabase-js@npm:2.58.0"
   dependencies:
@@ -5408,13 +5408,6 @@ __metadata:
     react-dom: ">=18.2.0"
     typescript: ">=5.7.2"
   checksum: 10/66cbcfad86bdaceae9a4fceb1025ceec01b959aa9d259a01bf9493dfcf40cf4df4be79a4be736f1f90884aafd9cc0376835991198d4e416ad97a37fc9e0364d4
-  languageName: node
-  linkType: hard
-
-"@trpc/server@npm:^10.45.2":
-  version: 10.45.2
-  resolution: "@trpc/server@npm:10.45.2"
-  checksum: 10/0f3fdb5cd505c9f6947e00d67d61663cf87c51c9a591e5f3443f62b37b7d78e1f729cc6784090ec46e4a3c38e73277170590be8eeb8c4ee3dffcc80a3557c1a4
   languageName: node
   linkType: hard
 
@@ -16932,7 +16925,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.6.2, typescript@npm:^5.8.2, typescript@npm:^5.9.2":
+"typescript@npm:^5.8.2, typescript@npm:^5.9.2":
   version: 5.9.2
   resolution: "typescript@npm:5.9.2"
   bin:
@@ -16942,7 +16935,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^5.6.2#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.8.2#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.9.2#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A^5.8.2#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.9.2#optional!builtin<compat/typescript>":
   version: 5.9.2
   resolution: "typescript@patch:typescript@npm%3A5.9.2#optional!builtin<compat/typescript>::version=5.9.2&hash=d69c25"
   bin:
@@ -17884,13 +17877,6 @@ __metadata:
   version: 0.1.0
   resolution: "yocto-queue@npm:0.1.0"
   checksum: 10/f77b3d8d00310def622123df93d4ee654fc6a0096182af8bd60679ddcdfb3474c56c6c7190817c84a2785648cdee9d721c0154eb45698c62176c322fb46fc700
-  languageName: node
-  linkType: hard
-
-"zod@npm:^3.22.2":
-  version: 3.23.8
-  resolution: "zod@npm:3.23.8"
-  checksum: 10/846fd73e1af0def79c19d510ea9e4a795544a67d5b34b7e1c4d0425bf6bfd1c719446d94cdfa1721c1987d891321d61f779e8236fde517dc0e524aa851a6eff1
   languageName: node
   linkType: hard
 

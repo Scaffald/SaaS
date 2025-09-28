@@ -6,7 +6,7 @@ import { YStack, Text, H3 } from 'tamagui'
  */
 export function ProfileSkillsLeft() {
   return (
-    <YStack space="$4" padding="$4">
+    <YStack gap="$4" padding="$4">
       <H3>Skills & Expertise</H3>
       <Text color="$gray11" fontSize="$3">
         Showcase your skills and expertise with proficiency levels. Add endorsements and highlight

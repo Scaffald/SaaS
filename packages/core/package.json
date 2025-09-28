@@ -3,7 +3,9 @@
   "name": "@app/core",
   "main": "index.ts",
   "types": "./index.ts",
-  "sideEffects": ["*.css"],
+  "sideEffects": [
+    "*.css"
+  ],
   "scripts": {
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
@@ -53,7 +55,7 @@
     "swr": "^2.0.0",
     "tamagui": "^1.133.1",
     "unified": "^11.0.0",
-    "zod": "^3.22.2",
+    "zod": "^3.23.8",
     "zustand": "5.0.2"
   },
   "devDependencies": {
