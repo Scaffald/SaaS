@@ -7,8 +7,19 @@ export interface RadarChartData {
   color?: string
 }
 
-export interface RadarChartProps {
+export interface RadarChartDataset {
   data: RadarChartData[]
+  color?: string
+  fillColor?: string
+  strokeColor?: string
+  strokeWidth?: number
+  fillOpacity?: number
+  label?: string
+}
+
+export interface RadarChartProps {
+  data?: RadarChartData[]
+  datasets?: RadarChartDataset[]
   height?: number
   width?: number
   radius?: number
@@ -22,6 +33,10 @@ export interface RadarChartProps {
   stripHeight?: number
   color?: string
   strokeWidth?: number
+  backgroundColor?: string
+  gridColor?: string
+  labelColor?: string
+  labelTextSize?: number
   isAnimated?: boolean
   animationDuration?: number
   onPress?: (item: RadarChartData, index: number) => void
@@ -66,6 +81,7 @@ export interface RadarChartProps {
  */
 export const RadarChart = ({
   data,
+  datasets,
   height = 200,
   width,
   radius = 80,
@@ -79,19 +95,27 @@ export const RadarChart = ({
   stripHeight = 80,
   color = '#1B6B93',
   strokeWidth = 3,
+  backgroundColor = 'transparent',
+  gridColor = '#E0E0E0',
+  labelColor = '#E0E0E0',
+  labelTextSize = 12,
   isAnimated = true,
   animationDuration = 800,
   onPress,
   ...props
 }: RadarChartProps) => {
+  // Use datasets if provided, otherwise fall back to single data array
+  const chartData = datasets ? datasets[0]?.data : data
+  if (!chartData) return null
+
   // Convert data format from objects to numbers array for the library
-  const chartData = data.map((item) => item.value)
-  const labels = data.map((item) => item.label || '')
+  const chartDataValues = chartData.map((item) => item.value)
+  const labels = chartData.map((item) => item.label || '')
 
   return (
-    <View alignItems="center">
+    <View alignItems="center" backgroundColor={backgroundColor} borderRadius="$4" padding="$4">
       <GiftedRadarChart
-        data={chartData}
+        data={chartDataValues}
         labels={labels}
         height={height}
         width={width}
@@ -100,6 +124,10 @@ export const RadarChart = ({
         noOfSections={noOfSections}
         isAnimated={isAnimated}
         animationDuration={animationDuration}
+        backgroundColor={backgroundColor}
+        gridColor={gridColor}
+        labelColor={labelColor}
+        labelTextSize={labelTextSize}
         {...props}
       />
     </View>
