@@ -19,7 +19,7 @@ You can also run these scripts from the root by adding `supa` after yarn. So `ya
 
 #### Link Project
 
-Links your remote Supabase project. Set `NEXT_PUBLIC_SUPABASE_PROJECT_ID` in your `.env` to your Supabase's instance before running.
+Links your remote Supabase project. Set `EXPO_PUBLIC_SUPABASE_PROJECT_ID` in your `.env` to your Supabase's instance before running.
 
 ```shell
 yarn link-project

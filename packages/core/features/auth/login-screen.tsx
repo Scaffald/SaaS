@@ -1,6 +1,5 @@
 import {
   Button,
-  EnhancedAnimatedButton,
   H2,
   LoadingOverlay,
   Paragraph,
@@ -8,102 +7,132 @@ import {
   Theme,
   YStack,
   isWeb,
+  Input,
+  Form,
 } from '@app/ui'
-import { SchemaForm, formFields } from '@app/core/utils/SchemaForm'
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import { useUser } from '@app/core/utils/useUser'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form'
-import { createParam } from 'solito'
-import { Link } from 'solito/link'
-import { useRouter } from 'solito/router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { Link } from 'expo-router'
 import { z } from 'zod'
 import { SocialLogin } from './components/SocialLogin'
 import { MagicLinkPending } from './components/MagicLinkPending'
 
-const { useParams, useUpdateParams } = createParam<{ email?: string }>()
-
 const LoginSchema = z.object({
-  email: formFields.text.email().describe('Email // your@email.acme'),
+  email: z
+    .string()
+    .email('Please enter a valid email address')
+    .describe('Email // your@email.acme'),
 })
 
 export const LoginScreen = () => {
   const supabase = useSupabase()
-  const { params } = useParams()
-  const updateParams = useUpdateParams()
+  const params = useLocalSearchParams<{ email?: string }>()
+  const router = useRouter()
   useRedirectAfterSignIn()
   const { isLoadingSession } = useUser()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitSuccess, setSubmitSuccess] = useState(false)
 
   useEffect(() => {
     // remove the persisted email from the url, mostly to not leak user's email in case they share it
     if (params?.email) {
-      updateParams({ email: undefined }, { web: { replace: true } })
+      router.replace('/auth')
     }
-  }, [params?.email, updateParams])
+  }, [params?.email, router])
 
-  const form = useForm<z.infer<typeof LoginSchema>>()
+  const form = useForm<z.infer<typeof LoginSchema>>({
+    defaultValues: {
+      email: params?.email || '',
+    },
+  })
 
-  async function sendMagicLink({ email }: z.infer<typeof LoginSchema>) {
-    // Additional validation to ensure email is present
-    if (!email || email.trim() === '') {
-      form.setError('email', { type: 'custom', message: 'Email is required' })
-      throw new Error('Email is required')
-    }
+  async function sendMagicLink(data: z.infer<typeof LoginSchema>) {
+    console.log('Sending magic link for:', data.email)
+    setIsSubmitting(true)
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_URL}`,
-        shouldCreateUser: true, // Allow both sign-in and sign-up
-      },
-    })
-
-    if (error) {
-      const errorMessage = error?.message.toLowerCase()
-      if (errorMessage.includes('email')) {
-        form.setError('email', { type: 'custom', message: errorMessage })
+    try {
+      // Additional validation to ensure email is present
+      if (!data.email || data.email.trim() === '') {
+        form.setError('email', { type: 'custom', message: 'Email is required' })
+        return
       }
-      throw error
+
+      const { error } = await supabase.auth.signInWithOtp({
+        email: data.email.trim(),
+        options: {
+          emailRedirectTo: `${process.env.EXPO_PUBLIC_URL}`,
+          shouldCreateUser: true, // Allow both sign-in and sign-up
+        },
+      })
+
+      if (error) {
+        console.error('Magic link error:', error)
+        const errorMessage = error?.message.toLowerCase()
+        if (errorMessage.includes('email')) {
+          form.setError('email', { type: 'custom', message: errorMessage })
+        }
+        throw error
+      }
+
+      console.log('Magic link sent successfully!')
+      setSubmitSuccess(true)
+    } catch (error) {
+      console.error('Error sending magic link:', error)
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
+  const handleSubmit = form.handleSubmit(sendMagicLink)
+
   return (
     <FormProvider {...form}>
-      {form.formState.isSubmitSuccessful ? (
+      {submitSuccess ? (
         <CheckYourEmail />
       ) : (
-        <SchemaForm
-          form={form}
-          schema={LoginSchema}
-          defaultValues={{
-            email: params?.email || '',
-          }}
-          onSubmit={sendMagicLink}
-          renderAfter={({ submit }) => {
-            return (
-              <>
-                <Theme inverse>
-                  <Button onPress={submit}>Send Magic Link</Button>
-                </Theme>
+        <YStack gap="$4" padding="$4" maxWidth={400} width="100%">
+          <YStack gap="$3" mb="$3">
+            <H2 $sm={{ size: '$8' }}>Get started</H2>
+            <Paragraph theme="alt2">
+              Enter your email and we&apos;ll send a one-time sign-in link.
+            </Paragraph>
+          </YStack>
 
-                {isWeb && <SocialLogin />}
-              </>
-            )
-          }}
-        >
-          {(fields) => (
-            <>
-              <YStack gap="$3" mb="$3">
-                <H2 $sm={{ size: '$8' }}>Get started</H2>
-                <Paragraph theme="alt2">
-                  Enter your email and we&apos;ll send a one-time sign-in link.
-                </Paragraph>
-              </YStack>
-              {Object.values(fields)}
+          <Form onSubmit={handleSubmit}>
+            <YStack gap="$4">
+              <Input
+                placeholder="your@email.acme"
+                value={form.watch('email')}
+                onChangeText={(text) => form.setValue('email', text)}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+              />
+
+              {form.formState.errors.email && (
+                <Text color="$red10" fontSize="$2">
+                  {form.formState.errors.email.message}
+                </Text>
+              )}
+
+              <Theme inverse>
+                <Button
+                  onPress={handleSubmit}
+                  disabled={isSubmitting}
+                  opacity={isSubmitting ? 0.5 : 1}
+                >
+                  {isSubmitting ? 'Sending...' : 'Send Magic Link'}
+                </Button>
+              </Theme>
+
+              {isWeb && <SocialLogin />}
               {!isWeb && <SocialLogin />}
-            </>
-          )}
-        </SchemaForm>
+            </YStack>
+          </Form>
+        </YStack>
       )}
       {/* this is displayed when the session is being updated - usually when the user is redirected back from an auth provider */}
       {isLoadingSession && <LoadingOverlay />}

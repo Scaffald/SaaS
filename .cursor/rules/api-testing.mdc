@@ -17,21 +17,8 @@ alwaysApply: false
 - **DO NOT assume APIs work** without testing
 
 ## Server Assumptions
-- **ASSUME Next.js API routes** are running on `http://localhost:3000/api/*`
 - **ASSUME Supabase APIs** are available at `http://localhost:54321/*`
 - **DO NOT start servers** unless explicitly requested
-
-## Testing Commands
-```bash
-# Test API endpoint
-curl -X GET http://localhost:3000/api/endpoint
-
-# Test with authentication
-curl -X POST http://localhost:3000/api/endpoint \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <token>" \
-  -d '{"key": "value"}'
-```
 
 ## Development Workflow
 1. **Make API changes**

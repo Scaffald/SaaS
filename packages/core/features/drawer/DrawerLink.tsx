@@ -118,9 +118,6 @@ export const DrawerLink = ({
     br: '$4' as const,
     my: '$1' as const,
     bg: active ? '$blue9' : ('transparent' as const),
-    boxShadow: active
-      ? 'inset -1px -1px 2px rgba(0, 0, 0, 0.2), inset 1px 1px 0 rgba(255, 255, 255, 0.2)'
-      : 'unset',
     hoverStyle: { bg: active ? '$blue9' : '$color3' },
     pressStyle: { bg: active ? '$blue9' : '$color3' },
     cursor: 'pointer' as const,

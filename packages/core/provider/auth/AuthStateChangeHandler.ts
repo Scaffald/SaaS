@@ -1,6 +1,6 @@
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
 import { useEffect } from 'react'
-import { useRouter } from 'solito/router'
+import { useRouter } from 'expo-router'
 import { ROUTES, AUTH_ROUTES } from '@app/core/constants/routes'
 
 const useRedirectAfterSignOut = () => {

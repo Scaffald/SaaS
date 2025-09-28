@@ -34,22 +34,19 @@ module.exports = (api) => {
         },
       ],
       'react-native-reanimated/plugin',
-      ...(process.env.EAS_BUILD_PLATFORM === 'android'
-        ? []
-        : [
-            [
-              '@tamagui/babel-plugin',
-              {
-                components: ['@app/ui', 'tamagui'],
-                config: '../../packages/ui/src/tamagui.config.ts',
-                disable: true,
-              },
-            ],
-          ]),
+      [
+        '@tamagui/babel-plugin',
+        {
+          components: ['@app/ui', 'tamagui'],
+          config: '../../packages/ui/src/tamagui.config.ts',
+          logTimings: true,
+          disableExtraction: false,
+        },
+      ],
       [
         'transform-inline-environment-variables',
         {
-          include: ['EXPO_OS'],
+          include: ['EXPO_OS', 'EXPO_PUBLIC_SUPABASE_URL', 'EXPO_PUBLIC_SUPABASE_ANON_KEY'],
         },
       ],
     ],

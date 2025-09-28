@@ -1,65 +1,51 @@
-import { YStack } from '@app/ui'
-import { AppHeader, AppHeaderProps } from './AppHeader.native'
-import { ColumnWrapper } from './ColumnWrapper'
+import { ReactNode } from 'react'
+import { YStack, XStack, View, Text } from 'tamagui'
 
-export type DashboardLayoutProps = {
-  /**
-   * Header configuration - if not provided, shows default header with hamburger menu
-   */
+export type AppHeaderProps = {
+  title?: string
+}
+
+type DashboardLayoutProps = {
+  children?: ReactNode
   header?: AppHeaderProps | null
-  /**
-   * Left column content
-   */
-  leftContent?: React.ReactNode
-  /**
-   * Right column content
-   */
-  rightContent?: React.ReactNode
-  /**
-   * Left column width (can be number for pixels or string for percentage)
-   */
-  leftWidth?: number | string
-  /**
-   * Whether to hide the header completely
-   */
-  hideHeader?: boolean
-  /**
-   * Whether this is a home page (affects mobile layout)
-   */
+  rightContent?: ReactNode
+  leftContent?: ReactNode
+  leftWidth?: string
   isHomePage?: boolean
-  /**
-   * Main content (for backward compatibility)
-   */
-  children?: React.ReactNode
 }
 
 export const DashboardLayout = ({
-  header,
-  leftContent,
-  rightContent,
-  leftWidth = 300,
-  hideHeader = false,
-  isHomePage = false,
   children,
+  header,
+  rightContent,
+  leftContent,
+  leftWidth = '300',
+  isHomePage,
 }: DashboardLayoutProps) => {
-  // Default header with hamburger menu
-  const defaultHeader: AppHeaderProps = {
-    title: 'Dashboard',
-    showMenuButton: true,
-    showNotifications: true,
-  }
-
-  // For mobile, prioritize leftContent on home pages, otherwise rightContent
-  const mobileContent =
-    isHomePage && leftContent ? leftContent : rightContent || leftContent || children
-
   return (
-    <YStack f={1} backgroundColor="$color1">
-      {/* Header */}
-      {!hideHeader && <AppHeader {...(header === null ? {} : { ...defaultHeader, ...header })} />}
-
-      {/* Content */}
-      <ColumnWrapper>{mobileContent}</ColumnWrapper>
+    <YStack flex={1} backgroundColor="$background">
+      {header?.title && (
+        <XStack padding="$4" borderBottomWidth={1} borderBottomColor="$borderColor">
+          <YStack>
+            <Text fontSize="$6" fontWeight="bold">
+              {header.title}
+            </Text>
+          </YStack>
+        </XStack>
+      )}
+      <YStack flex={1}>
+        {leftContent && (
+          <View borderBottomWidth={1} borderBottomColor="$borderColor" padding="$4">
+            {leftContent}
+          </View>
+        )}
+        <View flex={1}>{children}</View>
+        {rightContent && (
+          <View borderTopWidth={1} borderTopColor="$borderColor" padding="$4">
+            {rightContent}
+          </View>
+        )}
+      </YStack>
     </YStack>
   )
 }

@@ -1,82 +1,35 @@
-import {
-  AddressField,
-  AddressSchema,
-  AddressAutocompleteField,
-  AddressAutocompleteSchema,
-  BooleanCheckboxField,
-  BooleanField,
-  BooleanSwitchField,
-  FieldError,
-  Form,
-  type FormProps,
-  FormWrapper,
-  NumberField,
-  SelectField,
-  TextAreaField,
-  TextField,
-  Theme,
-} from '@app/ui'
-import { DateField, DateSchema } from '@app/ui/src/components/FormFields/DateField'
-import {
-  ImagePickerField,
-  ImagePickerSchema,
-} from '@app/ui/src/components/FormFields/ImagePickerField'
+import { FieldError, Form, type FormProps, FormWrapper, Theme, Input } from '@app/ui'
 import { createTsForm, createUniqueFieldSchema } from '@ts-react/form'
 import type { ComponentProps } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { z } from 'zod'
 
-export const formFields = {
-  text: z.string(),
-  textarea: createUniqueFieldSchema(z.string(), 'textarea'),
-  /**
-   * input that takes number
-   */
-  number: z.number(),
-  /**
-   * adapts to native switch on native, and native checkbox on web
-   */
-  boolean: z.boolean(),
-  /**
-   * switch field on all platforms
-   */
-  boolean_switch: createUniqueFieldSchema(z.boolean(), 'boolean_switch'),
-  /**
-   * checkbox field on all platforms
-   */
-  boolean_checkbox: createUniqueFieldSchema(z.boolean(), 'boolean_checkbox'),
-  /**
-   * make sure to pass options={} to props for this
-   */
-  select: createUniqueFieldSchema(z.string(), 'select'),
-  /**
-   * example of how to handle more complex fields
-   */
-  address: createUniqueFieldSchema(AddressSchema, 'address'),
-  /**
-   * address field with autocomplete functionality
-   */
-  addressAutocomplete: createUniqueFieldSchema(AddressAutocompleteSchema, 'addressAutocomplete'),
-  date: createUniqueFieldSchema(DateSchema, 'date'),
-  image: createUniqueFieldSchema(ImagePickerSchema, 'image'),
+// Create a basic TextField component
+const TextField = ({ value, onChangeText, placeholder, ...props }: any) => {
+  return <Input value={value} onChangeText={onChangeText} placeholder={placeholder} {...props} />
 }
 
-// function createFormSchema<T extends ZodRawShape>(getData: (fields: typeof formFields) => T) {
-//   return z.object(getData(formFields))
-// }
+// Create unique field schemas that match what's used in the login screen
+const EmailFieldSchema = createUniqueFieldSchema(
+  z.string().email('Please enter a valid email address'),
+  'email'
+)
+const TextFieldSchema = createUniqueFieldSchema(z.string(), 'text')
 
+// Basic form fields using Tamagui Input
+export const formFields = {
+  text: {
+    email: () => EmailFieldSchema,
+    default: () => TextFieldSchema,
+  },
+}
+
+// Mapping for the form - include both email and string types
 const mapping = [
-  [formFields.text, TextField] as const,
-  [formFields.textarea, TextAreaField] as const,
-  [formFields.number, NumberField] as const,
-  [formFields.boolean, BooleanField] as const,
-  [formFields.boolean_switch, BooleanSwitchField] as const,
-  [formFields.boolean_checkbox, BooleanCheckboxField] as const,
-  [formFields.select, SelectField] as const,
-  [formFields.address, AddressField] as const,
-  [formFields.addressAutocomplete, AddressAutocompleteField] as const,
-  [formFields.date, DateField] as const,
-  [formFields.image, ImagePickerField] as const,
+  [z.string().email(), TextField] as const,
+  [z.string(), TextField] as const,
+  [EmailFieldSchema, TextField] as const,
+  [TextFieldSchema, TextField] as const,
 ] as const
 
 const FormComponent = (props: FormProps) => {

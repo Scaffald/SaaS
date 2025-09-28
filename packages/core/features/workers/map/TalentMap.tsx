@@ -22,7 +22,7 @@ const EMPTY_GEOJSON: FeatureCollection = {
 const ensureAccessToken = () => {
   if (!mapboxgl.accessToken) {
     mapboxgl.accessToken =
-      process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? process.env.MAPBOX_PUBLIC_TOKEN ?? ''
+      process.env.EXPO_PUBLIC_MAPBOX_TOKEN ?? process.env.MAPBOX_PUBLIC_TOKEN ?? ''
   }
 }
 
@@ -136,10 +136,7 @@ export const TalentMap = ({
 
     const map = new mapboxgl.Map({
       container: containerRef.current,
-      style:
-        process.env.NEXT_PUBLIC_MAPBOX_STYLE_URL ??
-        process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL ??
-        'mapbox://styles/mapbox/streets-v12',
+      style: process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL ?? 'mapbox://styles/mapbox/streets-v12',
       center,
       zoom: radiusMeters ? radiusToZoomLevel(radiusMeters) : 7,
       accessToken: mapboxgl.accessToken || '',

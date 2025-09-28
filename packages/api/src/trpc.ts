@@ -1,5 +1,4 @@
 import type { Database } from '@app/supabase/types'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { createClient } from '@supabase/supabase-js'
 import { TRPCError, initTRPC } from '@trpc/server'
 import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch'
@@ -13,23 +12,21 @@ export const createTRPCContext = async (opts: FetchCreateContextFnOptions) => {
   // if there's auth cookie it'll be authenticated by this helper
   const cookiesStore = (await cookies()) as unknown as UnsafeUnwrappedCookies
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL
   if (!supabaseUrl) {
-    throw new Error('the `NEXT_PUBLIC_SUPABASE_URL` env variable is not set.')
+    throw new Error('the `EXPO_PUBLIC_SUPABASE_URL` env variable is not set.')
   }
 
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
   if (!supabaseAnonKey) {
-    throw new Error('the `NEXT_PUBLIC_SUPABASE_ANON_KEY` env variable is not set.')
+    throw new Error('the `EXPO_PUBLIC_SUPABASE_ANON_KEY` env variable is not set.')
   }
 
   if (!jwtSecret) {
     throw new Error('the `SUPABASE_AUTH_JWT_SECRET` env variable is not set.')
   }
 
-  let supabase = createRouteHandlerClient<Database>({
-    cookies: () => cookiesStore as never,
-  })
+  let supabase = createClient<Database>(supabaseUrl, supabaseAnonKey)
   let userId = (await supabase.auth.getUser()).data.user?.id
 
   const authorizationHeader = opts.req.headers.get('authorization')

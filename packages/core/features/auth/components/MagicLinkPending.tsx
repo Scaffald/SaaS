@@ -349,17 +349,38 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
         const { error } = await supabase.auth.verifyOtp({
           email,
           token: code.toString(),
-          type: 'magiclink',
+          type: 'email',
         })
 
         if (error) {
-          throw error
+          console.error('OTP verification error:', error)
+
+          // Provide user-friendly error messages
+          let userMessage = error.message
+          if (
+            error.message.includes('otp_expired') ||
+            error.message.includes('Token has expired')
+          ) {
+            userMessage = 'The verification code has expired. Please request a new one.'
+          } else if (error.message.includes('invalid') || error.message.includes('otp_not_found')) {
+            userMessage = 'Invalid verification code. Please check and try again.'
+          } else if (error.message.includes('too_many_requests')) {
+            userMessage = 'Too many attempts. Please wait before trying again.'
+          }
+
+          throw new Error(userMessage)
         }
 
+        console.log('OTP verification successful')
         setVerified(true)
         setCodeEntered(true)
       } catch (err) {
+        console.error('Error during OTP verification:', err)
         setError(err instanceof Error ? err.message : 'An error occurred')
+        // Reset the code and UI state on error
+        setCode(undefined)
+        setCodeEntered(false)
+        setVerified(false)
       } finally {
         setIsSubmitting(false)
       }
@@ -389,17 +410,6 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
       setError(err instanceof Error ? err.message : 'Failed to resend code')
     }
   }, [email, supabase])
-
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>
-    if (code !== undefined && !isSubmitting) {
-      timer = setTimeout(() => {
-        setCodeEntered(true)
-      }, 2500)
-    }
-
-    return () => clearTimeout(timer)
-  }, [code, isSubmitting])
 
   const displayEmail = email ?? 'your email address'
 

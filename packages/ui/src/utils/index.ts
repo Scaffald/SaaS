@@ -1,2 +1,2 @@
-export * from './mapboxGeocoding'
-export * from './mapboxConfig'
+// Empty utils index - all mapbox utilities have been removed
+export {}

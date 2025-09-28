@@ -104,6 +104,7 @@ export const color = {
   black10: '#626262',
   black11: '#a5a5a5',
   black12: '#fff',
+  backgroundColor: 'transparent',
   ...postfixObjKeys(lightColors, 'Light'),
   ...postfixObjKeys(darkColors, 'Dark'),
 }

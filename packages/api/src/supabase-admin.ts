@@ -1,10 +1,10 @@
 import type { Database } from '@app/supabase/types'
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL
 if (!supabaseUrl) {
   throw new Error(
-    'NEXT_PUBLIC_SUPABASE_URL is not set. Please update the root .env.local and restart the server.'
+    'EXPO_PUBLIC_SUPABASE_URL is not set. Please update the root .env.local and restart the server.'
   )
 }
 
