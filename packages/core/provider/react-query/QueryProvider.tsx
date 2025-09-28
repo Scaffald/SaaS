@@ -1,7 +1,19 @@
-import { QueryClient, QueryClientProvider as ClientProvider } from '@tanstack/react-query'
-
-const queryClient = new QueryClient()
+import { QueryClient, QueryClientProvider as QueryClientProviderOG } from '@tanstack/react-query'
+import { api, createTrpcClient } from '@app/core/utils/api'
+import { useState } from 'react'
 
 export const QueryClientProvider = ({ children }: { children: React.ReactNode }) => {
-  return <ClientProvider client={queryClient}>{children}</ClientProvider>
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        // web query config
+      })
+  )
+  const [trpcClient] = useState(() => createTrpcClient())
+
+  return (
+    <api.Provider client={trpcClient} queryClient={queryClient}>
+      <QueryClientProviderOG client={queryClient}>{children}</QueryClientProviderOG>
+    </api.Provider>
+  )
 }

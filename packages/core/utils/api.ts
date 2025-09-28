@@ -1,38 +1,32 @@
 import type { AppRouter } from '@app/api'
 import { httpBatchLink } from '@trpc/client'
-import { createTRPCNext } from '@trpc/next'
+import { createTRPCReact } from '@trpc/react-query'
 import SuperJSON from 'superjson'
 
 import { getBaseUrl } from './getBaseUrl'
+import { supabase } from './supabase/client.web'
 
-export const api = createTRPCNext<AppRouter>({
-  /**
-   * @link https://trpc.io/docs/ssr
-   **/
-  ssr: false,
-  transformer: SuperJSON,
-  config() {
-    return {
-      queryClientConfig: {
-        // web query config
-      },
-      links: [
-        httpBatchLink({
-          transformer: SuperJSON,
-          /**
-           * If you want to use SSR, you need to use the server's full URL
-           * @link https://trpc.io/docs/ssr
-           **/
-          url: `${getBaseUrl()}/api/trpc`,
+export const api = createTRPCReact<AppRouter>()
+export const createTrpcClient = () =>
+  api.createClient({
+    links: [
+      httpBatchLink({
+        url: `${getBaseUrl()}/functions/v1/trpc`,
+        transformer: SuperJSON,
+        async headers() {
+          const headers = new Map<string, string>()
+          headers.set('x-trpc-source', 'expo-web')
+          const session = (await supabase.auth.getSession()).data.session
 
-          // You can pass any HTTP headers you wish here
-          async headers() {
-            return {}
-          },
-        }),
-      ],
-    }
-  },
-})
+          // Manually add the auth name as the backend uses cookies to authenticate users
+          // This allows web to authenticate via Supabase
+          if (session?.access_token) {
+            headers.set('Authorization', `Bearer ${session.access_token}`)
+          }
+          return Object.fromEntries(headers)
+        },
+      }),
+    ],
+  })
 
 export { type RouterInputs, type RouterOutputs } from '@app/api'
