@@ -100,7 +100,7 @@ export const NewsFeedCard = () => {
     const loadArticles = async () => {
       try {
         const endpoint = isWeb
-          ? `/api/news?source=${encodeURIComponent(selectedSource.id)}`
+          ? `/functions/v1/news?source=${encodeURIComponent(selectedSource.id)}`
           : selectedSource.feedUrl
 
         const response = await fetch(

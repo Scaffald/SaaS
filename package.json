@@ -19,7 +19,7 @@
     "format:fix": "biome format --write",
     "fix": "manypkg fix",
     "postinstall": "patch-package && yarn check-deps && yarn build",
-    "build": "yarn workspaces foreach --all --exclude next-app run build",
+    "build": "yarn workspaces foreach --all run build",
     "upgrade:tamagui": "yarn up '*tamagui*' '@tamagui/*'",
     "upgrade:tamagui:canary": "yarn up '*tamagui*'@canary '@tamagui/*'@canary",
     "check": "yarn format:fix && yarn lint:fix && yarn typecheck",

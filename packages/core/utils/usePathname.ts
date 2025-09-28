@@ -1,5 +1,3 @@
-import { useRouter } from 'next/router'
+import { usePathname as expoUsePathname } from 'expo-router'
 
-export const usePathname = () => {
-  return useRouter().pathname
-}
+export const usePathname = expoUsePathname

@@ -1,4 +1,5 @@
 {
   "extends": "../tsconfig.base",
-  "include": []
+  "include": [],
+  "exclude": ["functions/**/*", "functions.deno/**/*"]
 }

@@ -12,9 +12,6 @@
       "path": "apps/expo"
     },
     {
-      "path": "apps/next"
-    },
-    {
       "path": "packages/core"
     },
     {
