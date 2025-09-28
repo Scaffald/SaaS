@@ -81,6 +81,19 @@
           }
         }
       }
+    },
+    {
+      "include": [
+        "packages/core/features/profile/profile-skills-left.tsx",
+        "packages/supabase/functions/_shared/client-types.ts"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
     }
   ]
 }

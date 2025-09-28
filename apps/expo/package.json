@@ -37,7 +37,7 @@
     "lint:fix": "biome lint --write ./app",
     "check:type": "tsc --outDir /tmp",
     "check:type:watch": "yarn check:type -w",
-    "adb:reverse": "adb reverse tcp:3000 tcp:3000",
+    "adb:reverse": "adb reverse tcp:8081 tcp:8081",
     "remove-xcode-env-local-file": "rm ios/.xcode.env.local"
   },
   "dependencies": {

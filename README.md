@@ -151,6 +151,21 @@ Please reference [Supabase's documentation](https://supabase.com/docs/guides/sel
 - iOS: `yarn ios`
 - Android: `yarn android`
 
+### Supabase Development Commands
+
+- Start Supabase: `yarn supa:start` (with environment variables loaded)
+- Stop Supabase: `yarn supa:stop`
+- Restart Supabase: `yarn supa:restart`
+- Check status: `yarn supa:status`
+- Reset database: `yarn supa:reset`
+- Generate types: `yarn supa:generate` (local) or `yarn supa:generate:remote`
+- Create migration: `yarn supa:migration:new <name>`
+- Apply migrations: `yarn supa:migration:up`
+- Open Studio: `yarn supa:studio` (opens http://127.0.0.1:54323)
+- Open Mailpit: `yarn supa:mailpit` (opens http://127.0.0.1:54324)
+
+**Important:** Always use `yarn supa:start` instead of direct supabase commands to ensure environment variables are properly loaded.
+
 NOTE: When using tRPC, even if you just want to develop on native, you need to have the web server running to be able to make tRPC requests.
 
 The iOS simulator will not make requests to localhost

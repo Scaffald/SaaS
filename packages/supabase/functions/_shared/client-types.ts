@@ -1,4 +1,7 @@
-// Client-safe types that don't import server dependencies
+// Client-safe types that mirror the actual tRPC router structure
+// This provides proper type inference for tRPC client usage
+
+// Input/Output types for profile endpoints
 export type ProfileGeneralInput = {
   first_name?: string
   last_name?: string
@@ -85,6 +88,17 @@ export type ProfileSkillsOutput = {
   skill_categories: string[]
 }
 
+export type UploadAvatarInput = {
+  file: string
+  fileName: string
+  contentType: string
+}
+
+export type UploadAvatarOutput = {
+  success: boolean
+  avatarUrl: string
+}
+
 // tRPC router types for client consumption
 export type AppRouter = {
   profile: {
@@ -111,6 +125,10 @@ export type AppRouter = {
     updateSkills: {
       input: ProfileSkillsInput
       output: { success: boolean }
+    }
+    uploadAvatar: {
+      input: UploadAvatarInput
+      output: UploadAvatarOutput
     }
   }
 }

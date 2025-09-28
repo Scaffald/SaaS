@@ -322,10 +322,9 @@ const profileRouter = t.router({
       return { success: true }
     }),
 
-  getSkills: protectedProcedure.query(async ({ ctx }) => {
-    const { supabase, user } = ctx
-
+  getSkills: protectedProcedure.query(async () => {
     // For now, we'll return mock data since we don't have a skills table yet
+    // TODO: Implement actual skills table query using ctx.supabase and ctx.user
     // In a real implementation, you'd query from a user_skills table
     return {
       skills: [],
@@ -335,11 +334,9 @@ const profileRouter = t.router({
     }
   }),
 
-  updateSkills: protectedProcedure.input(profileSkillsSchema).mutation(async ({ ctx, input }) => {
-    const { supabase, user } = ctx
-
+  updateSkills: protectedProcedure.input(profileSkillsSchema).mutation(async ({ input }) => {
     // For now, we'll just return success since we don't have a skills table yet
-    // In a real implementation, you'd update the user_skills table
+    // TODO: In a real implementation, you'd update the user_skills table using ctx.supabase and ctx.user
     console.log('Skills data to save:', input)
 
     return { success: true }
@@ -370,7 +367,7 @@ const profileRouter = t.router({
         const uniqueFileName = `${user.id}/avatar-${Date.now()}.${fileExtension}`
 
         // Upload to Supabase Storage
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from('avatars')
           .upload(uniqueFileName, bytes, {
             contentType: input.contentType,
@@ -419,6 +416,9 @@ const profileRouter = t.router({
 const appRouter = t.router({
   profile: profileRouter,
 })
+
+// Export the router type for client-side usage
+export type AppRouter = typeof appRouter
 
 // Use Deno.serve() as recommended by Supabase best practices
 Deno.serve(async (req: Request) => {
