@@ -84,6 +84,7 @@
     "ignoredRules": ["ROOT_HAS_DEV_DEPENDENCIES"]
   },
   "dependencies": {
-    "fast-xml-parser": "^5.2.5"
+    "fast-xml-parser": "^5.2.5",
+    "react-native-gifted-charts": "^1.4.64"
   }
 }

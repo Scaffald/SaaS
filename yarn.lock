@@ -10945,6 +10945,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"gifted-charts-core@npm:0.1.66":
+  version: 0.1.66
+  resolution: "gifted-charts-core@npm:0.1.66"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-svg: "*"
+  checksum: 10/25bb0a6a58dd7a383fc02500d3f271f657925d550a1496a3fdc638760da439f2b9138e3a10b8c6aa6505a6086bdd481f1573f0f66b6b66df979babfdc648560f
+  languageName: node
+  linkType: hard
+
 "giget@npm:^1.2.3":
   version: 1.2.3
   resolution: "giget@npm:1.2.3"
@@ -15954,6 +15965,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-gifted-charts@npm:^1.4.64":
+  version: 1.4.64
+  resolution: "react-native-gifted-charts@npm:1.4.64"
+  dependencies:
+    gifted-charts-core: "npm:0.1.66"
+  peerDependencies:
+    expo-linear-gradient: "*"
+    react: "*"
+    react-native: "*"
+    react-native-linear-gradient: "*"
+    react-native-svg: "*"
+  peerDependenciesMeta:
+    expo-linear-gradient:
+      optional: true
+    react-native-linear-gradient:
+      optional: true
+  checksum: 10/144ce419a7e38231ddd3f68104b0ccebd3fe8261175db0673f76c6e1ec8eddfdb6236d0a8e4fcac81a0e1a429bc62d2146d1eb6f3098d131237c155dbdd81f08
+  languageName: node
+  linkType: hard
+
 "react-native-helmet-async@npm:2.0.4":
   version: 2.0.4
   resolution: "react-native-helmet-async@npm:2.0.4"
@@ -16690,6 +16721,7 @@ __metadata:
     patch-package: "npm:^8.0.0"
     postinstall-postinstall: "npm:^2.1.0"
     promise-throttle-all: "npm:^1.1.1"
+    react-native-gifted-charts: "npm:^1.4.64"
     supabase: "npm:2.45.5"
     turbo: "npm:^2.5.8"
     typescript: "npm:^5.9.2"
