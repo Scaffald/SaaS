@@ -29,13 +29,17 @@
     "formatter": {
       "quoteStyle": "single",
       "trailingCommas": "es5",
-      "semicolons": "asNeeded"
+      "semicolons": "asNeeded",
+      "bracketSameLine": false
     }
   },
   "json": {
     "parser": {
       "allowComments": true,
       "allowTrailingCommas": true
+    },
+    "formatter": {
+      "trailingCommas": "none"
     }
   },
   "linter": {
