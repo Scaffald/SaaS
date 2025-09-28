@@ -166,26 +166,26 @@ export default function ChartsTestPage() {
 
   const skillsData: SkillsChartDataset[] = [
     {
-      label: "Hard Skills",
+      label: 'Hard Skills',
       data: [
-        { label: "Wood Framing", value: 72 },
-        { label: "Form Work", value: 94 },
-        { label: "Metal Framing", value: 41 },
-        { label: "Load Bearing", value: 64 },
-        { label: "Floor Systems", value: 24 },
+        { label: 'Wood Framing', value: 72 },
+        { label: 'Form Work', value: 94 },
+        { label: 'Metal Framing', value: 41 },
+        { label: 'Load Bearing', value: 64 },
+        { label: 'Floor Systems', value: 24 },
       ],
       fillColor: '#4FC3F7',
       strokeColor: '#29B6F6',
       fillOpacity: 0.6,
     },
     {
-      label: "Soft Skills", 
+      label: 'Soft Skills',
       data: [
-        { label: "Communication", value: 12 },
-        { label: "Punctuality", value: 54 },
-        { label: "Reliability", value: 99 },
-        { label: "Work Ethic", value: 74 },
-        { label: "Management", value: 35 },
+        { label: 'Communication', value: 12 },
+        { label: 'Punctuality', value: 54 },
+        { label: 'Reliability', value: 99 },
+        { label: 'Work Ethic', value: 74 },
+        { label: 'Management', value: 35 },
       ],
       fillColor: '#A8E6CF',
       strokeColor: '#81C784',
@@ -548,6 +548,47 @@ export default function ChartsTestPage() {
     </Card>
   )
 
+  const renderSkillsChart = () => (
+    <Card padding="$4" margin="$2" backgroundColor="#1A202C">
+      <YStack gap="$4" alignItems="center">
+        <H3 color="#E0E0E0">Skills Chart Example</H3>
+        <Text fontSize="$3" color="#B0B0B0" textAlign="center">
+          Custom radar chart with animated polygons and gradient fills
+        </Text>
+        <SkillsChart
+          datasets={skillsData}
+          showSets={[0, 1]}
+          height={300}
+          radius={120}
+          backgroundColor="#1A202C"
+          gridColor="#E0E0E0"
+          labelColor="#E0E0E0"
+          labelTextSize={14}
+          maxValue={100}
+          isAnimated={true}
+        />
+
+        {/* Legend */}
+        <XStack gap="$4" justifyContent="center">
+          {skillsData.map((dataset, index) => (
+            <XStack key={index} gap="$2" alignItems="center">
+              <View
+                width={16}
+                height={16}
+                borderRadius={8}
+                backgroundColor={dataset.fillColor}
+                opacity={dataset.fillOpacity}
+              />
+              <Text fontSize="$3" color="#E0E0E0">
+                {dataset.label}
+              </Text>
+            </XStack>
+          ))}
+        </XStack>
+      </YStack>
+    </Card>
+  )
+
   const renderAllCharts = () => (
     <YStack gap="$4">
       {renderProjectOverview()}
@@ -562,6 +603,7 @@ export default function ChartsTestPage() {
       {renderStackedBarChart()}
       {renderRadarChart()}
       {renderStyledRadarChart()}
+      {renderSkillsChart()}
       {renderPopulationPyramid()}
     </YStack>
   )
@@ -660,6 +702,13 @@ export default function ChartsTestPage() {
               >
                 Styled Radar
               </Button>
+              <Button
+                size="$3"
+                variant={activeChart === 'skills' ? 'outlined' : undefined}
+                onPress={() => setActiveChart('skills')}
+              >
+                Skills
+              </Button>
             </XStack>
           </YStack>
         </Card>
@@ -680,6 +729,7 @@ export default function ChartsTestPage() {
           </YStack>
         )}
         {activeChart === 'styled-radar' && renderStyledRadarChart()}
+        {activeChart === 'skills' && renderSkillsChart()}
         {activeChart === 'stacked' && renderStackedBarChart()}
         {activeChart === 'radar' && renderRadarChart()}
         {activeChart === 'pyramid' && renderPopulationPyramid()}
