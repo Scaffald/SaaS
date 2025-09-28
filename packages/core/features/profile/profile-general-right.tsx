@@ -1,5 +1,17 @@
 import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Button, Input, TextArea, Avatar, H4 } from 'tamagui'
+import {
+  YStack,
+  XStack,
+  Text,
+  Button,
+  Input,
+  TextArea,
+  Avatar,
+  H4,
+  Spinner,
+  AnimatePresence,
+} from 'tamagui'
+import { useToastController } from '@tamagui/toast'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { generalProfileSchema, type GeneralProfileFormData, generalProfileDefaults } from './config'
@@ -14,6 +26,7 @@ export function ProfileGeneralRight() {
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingProfile, setIsLoadingProfile] = useState(true)
   const user = useUser()
+  const toast = useToastController()
 
   const {
     control,
@@ -113,9 +126,16 @@ export function ProfileGeneralRight() {
         throw new Error(`Failed to update private data: ${privateError.message}`)
       }
 
-      console.log('Profile updated successfully')
+      // Show success toast
+      toast.show('Profile Updated', {
+        message: 'Your profile has been saved successfully!',
+      })
     } catch (error) {
       console.error('Error saving profile:', error)
+      // Show error toast
+      toast.show('Error', {
+        message: 'Failed to save profile. Please try again.',
+      })
     } finally {
       setIsLoading(false)
     }
@@ -284,8 +304,24 @@ export function ProfileGeneralRight() {
             onPress={handleSubmit(onSubmit)}
             disabled={!isDirty || isLoading}
             opacity={!isDirty || isLoading ? 0.5 : 1}
+            space={isLoading ? '$2' : 0}
           >
-            {isLoading ? 'Saving...' : 'Save Changes'}
+            <AnimatePresence>
+              {isLoading && (
+                <Button.Icon>
+                  <Spinner
+                    animation="bouncy"
+                    enterStyle={{
+                      scale: 0,
+                    }}
+                    exitStyle={{
+                      scale: 0,
+                    }}
+                  />
+                </Button.Icon>
+              )}
+            </AnimatePresence>
+            <Button.Text>{isLoading ? 'Saving...' : 'Save Changes'}</Button.Text>
           </Button>
         </XStack>
       </YStack>

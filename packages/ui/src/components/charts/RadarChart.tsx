@@ -104,13 +104,58 @@ export const RadarChart = ({
   onPress,
   ...props
 }: RadarChartProps) => {
-  // Use datasets if provided, otherwise fall back to single data array
-  const chartData = datasets ? datasets[0]?.data : data
-  if (!chartData) return null
+  // Debug logging
+  console.log('RadarChart props:', { data, datasets, height, radius, maxValue })
 
-  // Convert data format from objects to numbers array for the library
-  const chartDataValues = chartData.map((item) => item.value)
-  const labels = chartData.map((item) => item.label || '')
+  // Handle multiple datasets or single data array
+  if (datasets && datasets.length > 0) {
+    console.log('Using datasets:', datasets)
+    // For multiple datasets, use dataPoints prop
+    const dataPoints = datasets.map((dataset) => ({
+      data: dataset.data.map((item) => item.value),
+      color: dataset.color || dataset.strokeColor || '#1B6B93',
+      fillColor: dataset.fillColor,
+      strokeColor: dataset.strokeColor,
+      strokeWidth: dataset.strokeWidth || 2,
+      fillOpacity: dataset.fillOpacity || 0.6,
+    }))
+
+    const labels = datasets[0].data.map((item) => item.label || '')
+    console.log('DataPoints:', dataPoints)
+    console.log('Labels:', labels)
+
+    return (
+      <View alignItems="center" backgroundColor={backgroundColor} borderRadius="$4" padding="$4">
+        <GiftedRadarChart
+          dataPoints={dataPoints}
+          labels={labels}
+          height={height}
+          width={width}
+          chartSize={radius * 2}
+          maxValue={maxValue}
+          noOfSections={noOfSections}
+          isAnimated={isAnimated}
+          animationDuration={animationDuration}
+          backgroundColor={backgroundColor}
+          gridColor={gridColor}
+          labelColor={labelColor}
+          labelTextSize={labelTextSize}
+          {...props}
+        />
+      </View>
+    )
+  }
+
+  // Single dataset fallback
+  if (!data) {
+    console.log('No data provided to RadarChart')
+    return null
+  }
+
+  const chartDataValues = data.map((item) => item.value)
+  const labels = data.map((item) => item.label || '')
+  console.log('Single dataset - Values:', chartDataValues)
+  console.log('Single dataset - Labels:', labels)
 
   return (
     <View alignItems="center" backgroundColor={backgroundColor} borderRadius="$4" padding="$4">
