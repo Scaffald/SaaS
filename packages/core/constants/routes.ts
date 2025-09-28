@@ -180,31 +180,31 @@ const routeConfig: Record<string, RouteConfig> = {
         children: {
           index: {
             path: '/dashboard/profile',
-            title: 'Profile',
-          },
-          overview: {
-            path: '/dashboard/profile/overview',
             title: 'Profile Overview',
           },
           general: {
             path: '/dashboard/profile/general',
-            title: 'General Settings',
+            title: 'General',
+          },
+          employment: {
+            path: '/dashboard/profile/employment',
+            title: 'Employment',
           },
           skills: {
             path: '/dashboard/profile/skills',
             title: 'Skills',
           },
-          preferences: {
-            path: '/dashboard/profile/preferences',
-            title: 'Preferences',
+          certifications: {
+            path: '/dashboard/profile/certifications',
+            title: 'Certifications',
           },
-          contact: {
-            path: '/dashboard/profile/contact',
-            title: 'Contact Info',
+          education: {
+            path: '/dashboard/profile/education',
+            title: 'Education',
           },
-          edit: {
-            path: '/dashboard/profile/edit',
-            title: 'Edit Profile',
+          experience: {
+            path: '/dashboard/profile/experience',
+            title: 'Experience',
           },
         },
       },

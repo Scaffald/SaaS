@@ -47,10 +47,10 @@ export default function DashboardLayout() {
   }, [])
 
   const onLayoutRootView = useCallback(async () => {
-    if (fontLoaded && sessionLoadAttempted) {
+    if (fontLoaded && sessionLoadAttempted && themeLoaded) {
       await SplashScreen.hideAsync()
     }
-  }, [fontLoaded, sessionLoadAttempted])
+  }, [fontLoaded, sessionLoadAttempted, themeLoaded])
 
   if (!themeLoaded || !fontLoaded || !sessionLoadAttempted) {
     return null

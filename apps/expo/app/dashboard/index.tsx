@@ -8,8 +8,6 @@ export default function Screen() {
       header={null}
       leftContent={<DashboardIndexLeft />}
       rightContent={<DashboardIndexRight />}
-      leftWidth="61.8%"
-      isHomePage={true}
     />
   )
 }

@@ -61,7 +61,6 @@ APPLE_SECRET=your-apple-secret
 
 # Mapbox Configuration
 EXPO_PUBLIC_MAPBOX_TOKEN=your-production-mapbox-token
-MAPBOX_DOWNLOADS_TOKEN=your-production-mapbox-downloads-token
 ```
 
 ## Deployment Commands
