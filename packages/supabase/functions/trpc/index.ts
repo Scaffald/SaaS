@@ -381,26 +381,24 @@ const profileRouter = t.router({
           })
         }
 
-        // Get public URL
-        const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(uniqueFileName)
-
-        // Update profile with new avatar URL
+        // Store only the file path, not the full URL
+        // Client will construct the full URL using their environment variables
         const { error: updateError } = await supabase.from('profiles').upsert({
           id: user.id,
-          avatar_url: urlData.publicUrl,
+          avatar_url: uniqueFileName, // Store just the file path
           updated_at: new Date().toISOString(),
         })
 
         if (updateError) {
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
-            message: `Failed to update profile with avatar URL: ${updateError.message}`,
+            message: `Failed to update profile with avatar path: ${updateError.message}`,
           })
         }
 
         return {
           success: true,
-          avatarUrl: urlData.publicUrl,
+          avatarPath: uniqueFileName, // Return the file path
         }
       } catch (error) {
         console.error('Avatar upload error:', error)
