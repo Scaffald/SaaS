@@ -11,8 +11,8 @@ export const TamaguiProvider = ({ children }: { children: React.ReactNode }) => 
   return (
     <TamaguiProviderOG
       config={config}
-      disableInjectCSS
-      disableRootThemeClass
+      disableInjectCSS={false}
+      disableRootThemeClass={false}
       defaultTheme={defaultTheme}
     >
       {children}

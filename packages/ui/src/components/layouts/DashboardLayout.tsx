@@ -1,90 +1,51 @@
-import { XStack, YStack, useMedia } from 'tamagui'
-import { AppHeader, AppHeaderProps } from './AppHeader'
-import { ColumnWrapper } from './ColumnWrapper'
+import { ReactNode } from 'react'
+import { YStack, XStack, View, Text } from 'tamagui'
 
-export type DashboardLayoutProps = {
-  /**
-   * Header configuration - if not provided, shows default header with hamburger menu
-   */
+export type AppHeaderProps = {
+  title?: string
+}
+
+type DashboardLayoutProps = {
+  children?: ReactNode
   header?: AppHeaderProps | null
-  /**
-   * Left column content
-   */
-  leftContent?: React.ReactNode
-  /**
-   * Right column content
-   */
-  rightContent?: React.ReactNode
-  /**
-   * Left column width (can be number for pixels or string for percentage)
-   */
-  leftWidth?: number | string
-  /**
-   * Whether to hide the header completely
-   */
-  hideHeader?: boolean
-  /**
-   * Whether this is a home page (affects mobile layout)
-   */
+  rightContent?: ReactNode
+  leftContent?: ReactNode
+  leftWidth?: string
   isHomePage?: boolean
 }
 
 export const DashboardLayout = ({
+  children,
   header,
-  leftContent,
   rightContent,
-  leftWidth = 300,
-  hideHeader = false,
-  isHomePage = false,
+  leftContent,
+  leftWidth = '300',
+  isHomePage,
 }: DashboardLayoutProps) => {
-  const media = useMedia()
-
-  // Default header with hamburger menu
-  const defaultHeader: AppHeaderProps = {
-    title: 'Dashboard',
-    showMenuButton: true,
-    showSearch: true,
-    showNotifications: true,
-  }
-
   return (
-    <YStack f={1} backgroundColor="$color1" height="100vh">
-      {/* Header */}
-      {!hideHeader && <AppHeader {...(header === null ? {} : { ...defaultHeader, ...header })} />}
-
-      {/* Main Content Area */}
-      <YStack f={1}>
-        {/* Mobile Layout: Stack vertically */}
-        {!media.gtSm && (
-          <YStack f={1}>
-            {/* Mobile: Show left content on home pages, right content otherwise */}
-            {isHomePage && leftContent ? (
-              <ColumnWrapper>{leftContent}</ColumnWrapper>
-            ) : (
-              rightContent && <ColumnWrapper>{rightContent}</ColumnWrapper>
-            )}
+    <YStack flex={1} backgroundColor="$background">
+      {header?.title && (
+        <XStack padding="$4" borderBottomWidth={1} borderBottomColor="$borderColor">
+          <YStack>
+            <Text fontSize="$6" fontWeight="bold">
+              {header.title}
+            </Text>
           </YStack>
+        </XStack>
+      )}
+      <XStack flex={1}>
+        {leftContent && (
+          <View width={leftWidth} borderRightWidth={1} borderRightColor="$borderColor">
+            {leftContent}
+          </View>
         )}
-
-        {/* Desktop Layout: Two columns side by side */}
-        {media.gtSm && (
-          <XStack f={1}>
-            {/* Left Column */}
-            {leftContent && (
-              <YStack w={leftWidth} height="100%">
-                <ColumnWrapper>{leftContent}</ColumnWrapper>
-              </YStack>
-            )}
-
-            {/* Right Column */}
-            {rightContent && (
-              <YStack f={1} height="100%">
-                <ColumnWrapper>{rightContent}</ColumnWrapper>
-              </YStack>
-            )}
-          </XStack>
+        <View flex={1}>{children}</View>
+        {rightContent && (
+          <View width={300} borderLeftWidth={1} borderLeftColor="$borderColor">
+            {rightContent}
+          </View>
         )}
-      </YStack>
+      </XStack>
     </YStack>
   )
 }

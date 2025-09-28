@@ -1,14 +1,5 @@
 import 'dotenv/config'
 
-const {
-  MAPBOX_DOWNLOADS_TOKEN = '',
-  MAPBOX_PUBLIC_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ??
-    process.env.EXPO_PUBLIC_MAPBOX_TOKEN ??
-    '',
-  NEXT_PUBLIC_MAPBOX_STYLE_URL = process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL ?? '',
-  NEXT_PUBLIC_MAPBOX_API_URL = process.env.EXPO_PUBLIC_MAPBOX_API_URL ?? 'https://api.mapbox.com',
-} = process.env
-
 export default {
   expo: {
     name: 'scaffald',
@@ -84,7 +75,7 @@ export default {
         {
           // https://react-native-google-signin.github.io/docs/setting-up/expo
           iosUrlScheme:
-            process.env.GOOGLE_IOS_SCHEME ||
+            process.env.EXPO_PUBLIC_GOOGLE_IOS_SCHEME ||
             'com.googleusercontent.apps.163454683152-e4357cqnub2rg3vadkktap71i4nqea88',
         },
       ],
@@ -95,7 +86,7 @@ export default {
       [
         '@rnmapbox/maps',
         {
-          RNMapboxMapsDownloadToken: MAPBOX_DOWNLOADS_TOKEN,
+          RNMapboxMapsDownloadToken: process.env.EXPO_PUBLIC_MAPBOX_TOKEN,
         },
       ],
     ],
@@ -107,9 +98,9 @@ export default {
         projectId: 'b5f02af2-6475-4d9e-81b3-664f89564580',
       },
       mapbox: {
-        accessToken: MAPBOX_PUBLIC_TOKEN,
-        styleURL: NEXT_PUBLIC_MAPBOX_STYLE_URL,
-        apiBaseUrl: NEXT_PUBLIC_MAPBOX_API_URL,
+        accessToken: process.env.EXPO_PUBLIC_MAPBOX_TOKEN,
+        styleURL: process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL,
+        apiBaseUrl: process.env.EXPO_PUBLIC_MAPBOX_API_URL,
       },
     },
     runtimeVersion: {

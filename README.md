@@ -18,7 +18,6 @@ The following are the tested and supported versions of packages:
 - TypeScript: 5.3.3
 
 - React Native: 0.76.5
-- Next.js: 14.2.23
 - Expo SDK: 52.0.23
 
 - Xcode: 16.2
@@ -66,7 +65,6 @@ You may need to run `yarn ios` once to have it generate the env file, and then r
 - [Tamagui](https://tamagui.dev)
 - [solito](https://solito.dev)
 - [Expo SDK](https://expo.dev)
-- [Next.js](https://nextjs.org)
 - [Expo Router](https://docs.expo.dev/router/introduction/)
 - [Supabase](https://supabase.com)
 
@@ -155,7 +153,7 @@ Please reference [Supabase's documentation](https://supabase.com/docs/guides/sel
 
 NOTE: When using tRPC, even if you just want to develop on native, you need to have the web server running to be able to make tRPC requests.
 
-The iOS simulator will not make requests to localhost, you will need to run the next.js server based on your local IP address.
+The iOS simulator will not make requests to localhost
 
 ```bash
 yarn web -H $(yarn get-local-ip-mac | head -n 1)
@@ -310,7 +308,6 @@ yarn gen route
 
 This creates all necessary files:
 - Left/right/screen components in the correct location
-- Next.js and Expo page files
 - Proper imports and component structure
 
 ### Manual Implementation
@@ -568,7 +565,7 @@ In [`env.example`](.env.example) I am putting the gcloud keys so you can test as
 In fact, use your Google Cloud.
 
 ```
-GOOGLE_IOS_SCHEME=YOUR_IOS_SCHEME
+EXPO_PUBLIC_GOOGLE_IOS_SCHEMEGOOGLE_IOS_SCHEME=YOUR_IOS_SCHEME
 GOOGLE_IOS_CLIENT_ID=YOUR_IOS_CLIENT_ID
 GOOGLE_WEB_CLIENT_ID=YOUR_WEB_CLIENT_ID #Note: This is the web client ID for Android
 GOOGLE_SECRET=YOUR_SECRET

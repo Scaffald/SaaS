@@ -1,6 +1,6 @@
 import { X } from '@tamagui/lucide-icons'
+import { Button, XStack, Text } from 'tamagui'
 import type { SizeTokens, ThemeName } from 'tamagui'
-import { Chip } from './components/chipsParts'
 
 type FilterChipProps = {
   label: string
@@ -20,20 +20,26 @@ export function FilterChip({
   removable = true,
 }: FilterChipProps) {
   return (
-    <Chip rounded size={size} theme={color as ThemeName} backgroundColor="$color4">
-      {icon && (
-        <Chip.Icon y={-1} scaleIcon={1.1} color="$color9">
-          {icon}
-        </Chip.Icon>
-      )}
-      <Chip.Text color="$color9">{label}</Chip.Text>
+    <XStack
+      alignItems="center"
+      backgroundColor="$background"
+      borderColor="$borderColor"
+      borderWidth={1}
+      borderRadius="$4"
+      paddingHorizontal="$3"
+      paddingVertical="$2"
+      gap="$2"
+      theme={color as ThemeName}
+    >
+      {icon && icon}
+      <Text fontSize={size} color="$color">
+        {label}
+      </Text>
       {removable && onRemove && (
-        <Chip.Button alignRight onPress={onRemove}>
-          <Chip.Icon>
-            <X color="$color9" />
-          </Chip.Icon>
-        </Chip.Button>
+        <Button size="$2" circular backgroundColor="transparent" onPress={onRemove} padding="$1">
+          <X size={12} color="$color" />
+        </Button>
       )}
-    </Chip>
+    </XStack>
   )
 }

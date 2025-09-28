@@ -1,6 +1,6 @@
 import { Button } from '@app/ui'
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
-import { useRouter } from 'solito/router'
+import { useRouter } from 'expo-router'
 
 import { IconGoogle } from './IconGoogle'
 
@@ -11,18 +11,25 @@ export function GoogleSignIn() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        // your options
-        redirectTo: process.env.NEXT_PUBLIC_URL,
+        redirectTo: process.env.EXPO_PUBLIC_URL,
       },
     })
     if (error) {
-      // handle error
+      console.error('Google Sign-In Error:', error)
+      // TODO: Add proper error handling/toast notification
     }
-    router.replace('/')
   }
 
   return (
-    <Button br="$10" f={1} onPress={() => handleOAuthSignIn()} icon={IconGoogle}>
+    <Button
+      borderRadius="$10"
+      flex={1}
+      backgroundColor="$color1"
+      color="$color12"
+      borderColor="$borderColor"
+      onPress={() => handleOAuthSignIn()}
+      icon={IconGoogle}
+    >
       Sign in with Google
     </Button>
   )

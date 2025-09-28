@@ -40,14 +40,19 @@ export const ResultCard = memo(
             {profile.name}
           </SizableText>
           <XStack alignItems="center" gap="$2">
-            <Chip backgroundColor="$blue3" rounded theme="blue" size="$3">
-              <Chip.Icon color="$blue11">
-                <Star />
-              </Chip.Icon>
-              <Chip.Text color="$blue11" fontWeight="700">
+            <XStack
+              alignItems="center"
+              gap="$1"
+              backgroundColor="$blue3"
+              borderRadius="$4"
+              paddingHorizontal="$2"
+              paddingVertical="$1"
+            >
+              <Star size={12} color="$blue11" />
+              <Text color="$blue11" fontWeight="700" fontSize="$2">
                 {profile.score}
-              </Chip.Text>
-            </Chip>
+              </Text>
+            </XStack>
           </XStack>
         </XStack>
 

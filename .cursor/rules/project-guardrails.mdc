@@ -13,8 +13,7 @@ alwaysApply: true
 
 ## Server Management
 - **ASSUME servers are already running** on default ports:
-  - Next.js web app: `http://localhost:3000` (via `yarn web`)
-  - Expo dev server: `http://localhost:8081` (via `yarn native`)
+  - Expo dev server: `http://localhost:8081` (via `yarn dev`)
   - Supabase local: `http://localhost:54321` (via `yarn supa start`)
 - **DO NOT start development servers** unless explicitly requested - they may run as background processes
 - **DO NOT run `next dev` or `expo start`** directly - use workspace commands

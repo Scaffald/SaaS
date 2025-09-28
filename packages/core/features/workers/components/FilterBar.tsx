@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { Button, ScrollView, Separator, Text, XStack, YStack, useTheme } from '@app/ui'
+import { Button, Input, ScrollView, Separator, Text, XStack, YStack, useTheme } from '@app/ui'
 import {
   Filter,
   SlidersHorizontal,
@@ -11,10 +11,9 @@ import {
   Award,
   Tag,
 } from '@tamagui/lucide-icons'
-import { AddressAutocompleteInput, FilterChip } from '@app/ui'
+import { FilterChip } from '@app/ui'
 
 import type { ActiveFilter } from '../types'
-import type { AddressSuggestion } from '@app/ui/src/utils/mapboxGeocoding'
 
 type FilterBarProps = {
   locationQuery: string
@@ -40,15 +39,6 @@ export const FilterBar = ({
   locationPermissionStatus = 'unknown',
 }: FilterBarProps) => {
   const theme = useTheme()
-
-  const handleAddressSelect = (suggestion: AddressSuggestion) => {
-    // Update the location query with the selected address
-    onLocationChange(suggestion.fullAddress)
-
-    // TODO: Update map center to the selected address coordinates
-    // This would require passing coordinates back to the parent component
-    console.log('Selected address:', suggestion)
-  }
 
   const getFilterIcon = (category: ActiveFilter['category']) => {
     switch (category) {
@@ -99,27 +89,14 @@ export const FilterBar = ({
           paddingVertical="$1"
           gap="$2"
         >
-          <AddressAutocompleteInput
+          <Input
             flexGrow={1}
             borderWidth={0}
             backgroundColor="transparent"
             size="$3"
             value={locationQuery}
             onChangeText={onLocationChange}
-            onAddressSelect={handleAddressSelect}
             placeholder="Search by city or address"
-            variant="clean"
-            maxSuggestions={5}
-            autocompleteOptions={{
-              geocodingOptions: {
-                country: 'US',
-                types: ['address', 'place'],
-                limit: 5,
-                language: 'en',
-              },
-              debounceMs: 300,
-              minQueryLength: 2,
-            }}
           />
           <Button
             size="$2"

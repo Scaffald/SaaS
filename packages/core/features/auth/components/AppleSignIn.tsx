@@ -1,6 +1,6 @@
 import { Button } from '@app/ui'
 import { useSupabase } from '@app/core/utils/supabase/useSupabase'
-import { useRouter } from 'solito/router'
+import { useRouter } from 'expo-router'
 
 import { IconApple } from './IconApple'
 
@@ -11,18 +11,26 @@ export function AppleSignIn() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'apple',
       options: {
-        // your options
+        redirectTo: process.env.EXPO_PUBLIC_URL,
       },
     })
     if (error) {
-      // handle error
+      console.error('Apple Sign-In Error:', error)
+      // TODO: Add proper error handling/toast notification
       return
     }
-    router.replace('/')
   }
 
   return (
-    <Button br="$10" f={1} onPress={() => handleOAuthSignIn()} icon={IconApple}>
+    <Button
+      borderRadius="$10"
+      flex={1}
+      backgroundColor="$color12"
+      color="$color1"
+      borderColor="$borderColor"
+      onPress={() => handleOAuthSignIn()}
+      icon={IconApple}
+    >
       Sign in with Apple
     </Button>
   )

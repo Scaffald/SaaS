@@ -37,12 +37,6 @@ React Native and Expo development:
 - Assume Expo dev server is running
 - Test on actual devices when possible
 
-### 6. `nextjs.mdc` (Auto-attached to Next.js files)
-Next.js web development:
-- Use `yarn web` instead of `next dev`
-- Assume Next.js is running on localhost:3000
-- Test in actual browser with dev tools
-
 ### 7. `ui-development.mdc` (Auto-attached to UI files)
 UI component development guidelines:
 - Prefer Tamagui vanilla components
