@@ -47,6 +47,7 @@
     "@react-native-community/netinfo": "11.4.1",
     "@react-native-google-signin/google-signin": "^13.1.0",
     "@rnmapbox/maps": "^10.1.44",
+    "@trpc/server": "^11.6.0",
     "babel-plugin-module-resolver": "^4.1.0",
     "burnt": "^0.12.1",
     "expo": "53.0.9",

@@ -2,13 +2,13 @@ import { httpBatchLink } from '@trpc/client'
 import { createTRPCReact } from '@trpc/react-query'
 import SuperJSON from 'superjson'
 import { Platform } from 'react-native'
+import type { AppRouter } from '@app/supabase/functions/_shared/client-types'
 
 import { getBaseUrl } from './getBaseUrl'
 import { supabase } from './supabase/client'
 
-// Create tRPC React client without strict typing for now
-// The actual router is defined in supabase/functions/trpc/index.ts
-export const api = createTRPCReact<any>()
+// Create tRPC React client with proper typing from shared supabase package
+export const api = createTRPCReact<AppRouter>()
 
 export const createTrpcClient = () =>
   api.createClient({
