@@ -5,7 +5,7 @@ import { useEvent } from 'tamagui'
 import type { MediaTypeOptionsString, UseFilePickerControl, UseFilePickerProps } from '../types'
 import { useDropZone } from './useDropZone'
 
-type NativeFiles<MT extends MediaTypeOptionsString[]> = MT[number] extends 'Images'
+type _NativeFiles<MT extends MediaTypeOptionsString[]> = MT[number] extends 'Images'
   ? ImagePicker.ImagePickerResult['assets']
   : DocumentPicker.DocumentPickerResult[]
 
@@ -20,14 +20,13 @@ export function useFilePicker<MT extends MediaTypeOptionsString>(
     }
   })
 
-  const { open, getInputProps, getRootProps, isDragAccept, isDragActive, isDragReject } =
-    useDropZone({
-      onOpen: _onOpenNative,
-      // @ts-ignore
-      mediaTypes,
-      noClick: true,
-      ...rest,
-    })
+  const { isDragAccept, isDragActive, isDragReject } = useDropZone({
+    onOpen: _onOpenNative,
+    // @ts-ignore
+    mediaTypes,
+    noClick: true,
+    ...rest,
+  })
 
   const _handleOpenNative = async () => {
     // No permissions request is necessary for launching the image or document library

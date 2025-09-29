@@ -115,5 +115,7 @@ export function postfixObjKeys<A extends { [key: string]: string }, B extends st
 ): {
   [Key in `${keyof A extends string ? keyof A : never}${B}`]: string
 } {
-  return Object.fromEntries(Object.entries(obj).map(([k, v]) => [`${k}${postfix}`, v])) as any
+  return Object.fromEntries(Object.entries(obj).map(([k, v]) => [`${k}${postfix}`, v])) as {
+    [Key in `${keyof A extends string ? keyof A : never}${B}`]: string
+  }
 }

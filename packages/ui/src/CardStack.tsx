@@ -83,7 +83,6 @@ export interface DirectionSlideProps {
 
 export const DirectionSlide = ({ direction, setDirection }: DirectionSlideProps) => {
   const directions = ['left', 'right', 'top', 'bottom'] as const
-  type Direction = (typeof directions)[number]
 
   return (
     <View flexDirection="row" gap="$2">

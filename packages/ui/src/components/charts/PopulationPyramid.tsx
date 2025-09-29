@@ -1,5 +1,6 @@
 import { PopulationPyramid as GiftedPopulationPyramid } from 'react-native-gifted-charts'
 import { View } from 'tamagui'
+import type { TextStyle } from 'react-native'
 
 export interface PopulationPyramidData {
   left: number
@@ -15,8 +16,8 @@ export interface PopulationPyramidProps {
   showXAxisIndices?: boolean
   yAxisColor?: string
   xAxisColor?: string
-  yAxisTextStyle?: any
-  xAxisLabelTextStyle?: any
+  yAxisTextStyle?: TextStyle
+  xAxisLabelTextStyle?: TextStyle
   leftBarColor?: string
   rightBarColor?: string
   leftBarBorderColor?: string
@@ -27,8 +28,8 @@ export interface PopulationPyramidProps {
   rightBarBorderRadius?: number
   leftBarLabelColor?: string
   rightBarLabelColor?: string
-  leftBarLabelTextStyle?: any
-  rightBarLabelTextStyle?: any
+  leftBarLabelTextStyle?: TextStyle
+  rightBarLabelTextStyle?: TextStyle
   showValuesAsLabels?: boolean
   isAnimated?: boolean
   animationDuration?: number

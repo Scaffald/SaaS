@@ -48,8 +48,8 @@ export type UseFilePickerProps<MT extends MediaTypeOptionsString> = {
 
 export type UseFilePickerControl = {
   open: () => void
-  getInputProps: (props?: any) => any
-  getRootProps: (props?: any) => any
+  getInputProps: (props?: Record<string, unknown>) => Record<string, unknown>
+  getRootProps: (props?: Record<string, unknown>) => Record<string, unknown>
   dragStatus?: {
     isDragAccept: boolean
     isDragActive: boolean
