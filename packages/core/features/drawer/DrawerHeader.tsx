@@ -15,7 +15,7 @@ type DrawerHeaderProps = {
 type ExtendedProfile = {
   id: string
   name: string | null
-  avatar_url: string | null
+  avatar_path: string | null
   created_at: string
   updated_at: string
   first_name?: string
@@ -42,7 +42,7 @@ export const DrawerHeader = ({ onNavigate }: DrawerHeaderProps) => {
   })()
 
   // Get avatar URL using the same logic as profile-general-left
-  const avatarUrl = getAvatarUrl((profile as ExtendedProfile | null)?.avatar_url || '')
+  const avatarUrl = getAvatarUrl((profile as ExtendedProfile | null)?.avatar_path || '')
 
   const handleManagePress = (event: GestureResponderEvent) => {
     onNavigate?.(profileHref, event)

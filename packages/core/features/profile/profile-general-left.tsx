@@ -15,11 +15,7 @@ import {
 import { useToastController } from '@tamagui/toast'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  generalProfileSchema,
-  type GeneralProfileFormData,
-  generalProfileDefaults,
-} from './config/general-schema'
+import { generalProfileSchema, type GeneralProfileFormData, generalProfileDefaults } from './config'
 import { PhoneNumberInput } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
@@ -60,7 +56,7 @@ export function ProfileGeneralLeft() {
         message: 'Your avatar has been uploaded successfully!',
       })
       // Update the form with the new avatar path
-      setValue('avatar_url', data.avatarPath)
+      setValue('avatar_path', data.avatarPath)
       refetch()
     },
     onError: (error) => {
@@ -74,7 +70,7 @@ export function ProfileGeneralLeft() {
   const {
     control,
     handleSubmit,
-    formState: { errors, isDirty },
+    formState: { errors, isDirty, isValid },
     watch,
     reset,
     setValue,
@@ -84,7 +80,7 @@ export function ProfileGeneralLeft() {
     mode: 'onChange', // Real-time validation
   })
 
-  const avatarUrl = watch('avatar_url')
+  const avatarPath = watch('avatar_path')
 
   // Reset form when profile data is loaded
   React.useEffect(() => {
@@ -116,12 +112,12 @@ export function ProfileGeneralLeft() {
       <DashboardWidget>
         <H4>Edit General Information</H4>
 
-        <YStack gap="$4" tag="form">
+        <YStack gap="$4">
           {/* Avatar Section */}
           <YStack gap="$3" alignItems="center">
             <Text fontWeight="600">Profile Photo</Text>
             <AvatarImagePicker
-              value={getAvatarUrl(avatarUrl) || ''}
+              value={getAvatarUrl(avatarPath) || ''}
               onImageSelect={async (imageUri) => {
                 if (imageUri) {
                   // Convert image to base64 for upload
@@ -146,14 +142,14 @@ export function ProfileGeneralLeft() {
                   }
                 } else {
                   // Clear avatar
-                  setValue('avatar_url', '')
+                  setValue('avatar_path', '')
                 }
               }}
               size={120}
-              disabled={uploadAvatarMutation.isLoading}
+              disabled={uploadAvatarMutation.isPending}
               placeholder="Upload Avatar"
             />
-            {uploadAvatarMutation.isLoading && (
+            {uploadAvatarMutation.isPending && (
               <Text fontSize="$2" color="$gray10">
                 Uploading avatar...
               </Text>
@@ -240,7 +236,7 @@ export function ProfileGeneralLeft() {
                   onChange={field.onChange}
                   error={errors.phone?.message}
                   defaultCountry="US"
-                  storeFormatted={false}
+                  storeFormatted={true}
                 />
               )}
             />

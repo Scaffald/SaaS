@@ -96,7 +96,7 @@ export type UploadAvatarInput = {
 
 export type UploadAvatarOutput = {
   success: boolean
-  avatarUrl: string
+  avatarPath: string
 }
 
 // tRPC router types for client consumption

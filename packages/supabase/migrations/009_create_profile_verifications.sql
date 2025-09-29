@@ -462,7 +462,7 @@ begin
     v_fields := array_append(v_fields, 'basic.about');
   end if;
 
-  if coalesce(new.avatar_url, '') is distinct from coalesce(old.avatar_url, '') then
+  if coalesce(new.avatar_path, '') is distinct from coalesce(old.avatar_path, '') then
     v_fields := array_append(v_fields, 'basic.avatar');
   end if;
 

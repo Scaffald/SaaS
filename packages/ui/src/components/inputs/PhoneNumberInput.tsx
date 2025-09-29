@@ -58,32 +58,85 @@ export const PhoneNumberInput = ({
   storeFormatted = false,
   countries = COUNTRIES,
 }: PhoneNumberInputProps) => {
+  // Helper function to format phone number for display
+  const formatPhoneForDisplay = useCallback((phoneValue: string, countryCode: string) => {
+    if (!phoneValue) return phoneValue
+
+    // If the value is already formatted (contains parentheses or spaces), return as-is
+    if (
+      /\+1\s*\(\d{3}\)\s*\d{3}-\d{4}/.test(phoneValue) ||
+      /\+1\s+\d{3}\s+\d{3}\s+\d{4}/.test(phoneValue)
+    ) {
+      return phoneValue
+    }
+
+    try {
+      // First try to parse as-is
+      let phone = new PhoneNumber(phoneValue)
+
+      // If that fails and it's a US number without country code, try adding +1
+      if (!phone.isValid() && countryCode === 'US' && /^\d{10}$/.test(phoneValue)) {
+        phone = new PhoneNumber(`+1${phoneValue}`)
+      }
+
+      // If it's a 10-digit number for US, assume it's US
+      if (!phone.isValid() && countryCode === 'US' && /^\d{10}$/.test(phoneValue)) {
+        phone = new PhoneNumber(phoneValue, 'US')
+      }
+
+      if (phone.isValid()) {
+        if (countryCode === 'US') {
+          const national = phone.getNumber('national')
+          return `+1 ${national}`
+        } else {
+          return phone.getNumber('international')
+        }
+      }
+    } catch {
+      // If parsing fails, return original value
+    }
+    return phoneValue
+  }, [])
+
   const [selectedCountry, setSelectedCountry] = useState<Country>(
     findCountryByCode(defaultCountry) || getDefaultCountry()
   )
-  const [phoneNumber, setPhoneNumber] = useState(value)
+  const [phoneNumber, setPhoneNumber] = useState(() => formatPhoneForDisplay(value, defaultCountry))
 
   // Update internal state when external value changes
   useEffect(() => {
     if (value !== phoneNumber) {
-      setPhoneNumber(value)
-
-      // Try to detect country from the phone number
+      // Try to detect country from the phone number and format it properly
       if (value) {
         try {
-          const phone = new PhoneNumber(value)
-          if (phone.isValid()) {
-            const detectedCountry = findCountryByCode(phone.getRegionCode())
-            if (detectedCountry) {
-              setSelectedCountry(detectedCountry)
-            }
+          let phone = new PhoneNumber(value)
+          let detectedCountry: Country | undefined = undefined
+
+          // If parsing fails and it's a 10-digit number, assume it's US
+          if (!phone.isValid() && /^\d{10}$/.test(value)) {
+            phone = new PhoneNumber(value, 'US')
+            detectedCountry = findCountryByCode('US')
+          } else if (phone.isValid()) {
+            detectedCountry = findCountryByCode(phone.getRegionCode())
+          }
+
+          if (detectedCountry) {
+            setSelectedCountry(detectedCountry)
+            setPhoneNumber(formatPhoneForDisplay(value, detectedCountry.code))
+          } else if (phone.isValid()) {
+            setPhoneNumber(formatPhoneForDisplay(value, selectedCountry.code))
+          } else {
+            setPhoneNumber(value)
           }
         } catch {
-          // Ignore parsing errors
+          // If parsing fails, just use the raw value
+          setPhoneNumber(value)
         }
+      } else {
+        setPhoneNumber(value)
       }
     }
-  }, [value, phoneNumber])
+  }, [value, phoneNumber, formatPhoneForDisplay, selectedCountry.code])
 
   const handleCountryChange = useCallback(
     (countryCode: string) => {
@@ -105,10 +158,10 @@ export const PhoneNumberInput = ({
 
       try {
         // Try to format the phone number using awesome-phonenumber
-        const phone = new PhoneNumber(cleaned, selectedCountry.code)
+        let phone = new PhoneNumber(cleaned, selectedCountry.code)
 
         if (phone.isValid()) {
-          const formatted = phone.getNumber('international')
+          const formatted = formatPhoneForDisplay(cleaned, selectedCountry.code)
           setPhoneNumber(formatted)
           onChange?.(storeFormatted ? formatted : phone.getNumber('e164'))
         } else {
@@ -122,7 +175,7 @@ export const PhoneNumberInput = ({
         onChange?.(cleaned)
       }
     },
-    [selectedCountry.code, onChange, storeFormatted]
+    [selectedCountry.code, onChange, storeFormatted, formatPhoneForDisplay]
   )
 
   return (
@@ -150,7 +203,7 @@ export const PhoneNumberInput = ({
           width={78}
           height="calc(100% - 2px)"
           backgroundColor="transparent"
-          pointerEvents={disabled ? 'none' : 'auto'}
+          style={{ pointerEvents: disabled ? 'none' : 'auto' }}
         >
           <Select value={selectedCountry.code} onValueChange={handleCountryChange} size="$4">
             <Select.Trigger

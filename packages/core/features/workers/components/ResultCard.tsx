@@ -29,11 +29,7 @@ export const ResultCard = memo(
         animation={isSelected ? 'bouncy' : undefined}
         animateOnly={['backgroundColor', 'borderColor']}
         // Add subtle shadow when selected
-        shadowColor={isSelected ? '$blue7' : undefined}
-        shadowOffset={isSelected ? { width: 0, height: 2 } : undefined}
-        shadowOpacity={isSelected ? 0.1 : undefined}
-        shadowRadius={isSelected ? 4 : undefined}
-        elevation={isSelected ? 2 : undefined}
+        style={isSelected ? { boxShadow: '0 2px 4px rgba(59, 130, 246, 0.1)' } : undefined}
       >
         <XStack justifyContent="space-between" alignItems="center">
           <SizableText size="$5" fontWeight="700">

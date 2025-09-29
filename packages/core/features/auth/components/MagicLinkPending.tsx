@@ -456,7 +456,7 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
           animation="200ms"
           w="100%"
           opacity={codeEntered ? 0 : 1}
-          pointerEvents={codeEntered ? 'none' : 'auto'}
+          style={{ pointerEvents: codeEntered ? 'none' : 'auto' }}
           transform={[{ translateX: codeEntered ? -150 : 0 }]}
         >
           <YStack
@@ -545,7 +545,7 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
           $gtMd={{ w: '100%', p: '$5' }}
           animation={'200ms'}
           opacity={!codeEntered ? 0 : 1}
-          pointerEvents={!codeEntered ? 'none' : 'auto'}
+          style={{ pointerEvents: !codeEntered ? 'none' : 'auto' }}
           transform={[{ translateX: !codeEntered ? 150 : 0 }]}
         >
           <AnimatePresence>

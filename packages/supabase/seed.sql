@@ -454,7 +454,7 @@ profiles_upsert as (
     id,
     name,
     about,
-    avatar_url,
+    avatar_path,
     created_at,
     updated_at
   )
