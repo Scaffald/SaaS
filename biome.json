@@ -70,19 +70,6 @@
   },
   "overrides": [
     {
-      "include": ["packages/ui/**"],
-      "linter": {
-        "rules": {
-          "correctness": {
-            "noUnusedVariables": "off"
-          },
-          "suspicious": {
-            "noExplicitAny": "off"
-          }
-        }
-      }
-    },
-    {
       "include": [
         "packages/core/features/profile/profile-skills-left.tsx",
         "packages/supabase/functions/_shared/client-types.ts"

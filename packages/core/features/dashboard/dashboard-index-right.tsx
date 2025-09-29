@@ -1,16 +1,17 @@
 import { Text, YStack } from 'tamagui'
+import { ProfileCompletionWidget } from '@app/core/features/dashboard/completion'
+import { useRouter } from 'expo-router'
 
-/**
- * Dashboard Index Right Component
- * Simplified placeholder for future dashboard content
- */
 export function DashboardIndexRight() {
+  const router = useRouter()
+
+  const handleNavigate = (route: string) => {
+    router.push(route)
+  }
+
   return (
-    <YStack padding="$4" gap="$2">
-      <Text fontSize="$6" fontWeight="600">
-        Dashboard Right Content
-      </Text>
-      <Text color="$gray10">Dashboard components will be rebuilt here later.</Text>
+    <YStack gap="$4">
+      <ProfileCompletionWidget onNavigate={handleNavigate} />
     </YStack>
   )
 }
