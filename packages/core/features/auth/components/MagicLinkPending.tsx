@@ -27,6 +27,7 @@ import {
   Smartphone,
 } from '@tamagui/lucide-icons'
 import { supabase } from '@app/core/utils/supabase/client'
+import { ScaffaldLogo } from '@app/core/assets'
 
 type MagicLinkPendingProps = {
   email?: string
@@ -469,7 +470,8 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
             opacity={code ? 0 : 1}
             h="auto"
           >
-            <View alignItems="center" gap="$2">
+            <View alignItems="center" gap="$3">
+              <ScaffaldLogo width={160} height={26} />
               <H2 fontWeight="700" fontSize="$6" $gtMd={{ fontSize: '$8' }} color="$color12">
                 Check your email
               </H2>
