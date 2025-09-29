@@ -22,7 +22,7 @@ export function DashboardIndexRight() {
       {/* News Section */}
       <YStack gap="$3">
         <Text fontSize="$6" fontWeight="600" paddingHorizontal="$6" pt="$6">
-          Latest News
+          Industry News
         </Text>
 
         <NewsCard

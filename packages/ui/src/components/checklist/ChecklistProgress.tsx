@@ -13,15 +13,13 @@ export const ChecklistProgress = ({ completionPercentage }: ChecklistProgressPro
     <YStack gap="$2">
       <XStack alignItems="center" justifyContent="space-between">
         <Text fontSize="$5" fontWeight="600" color="$gray12">
-          {Math.round(completionPercentage)}%
+          {Math.round(completionPercentage)}% Complete
         </Text>
       </XStack>
       <Progress
         value={completionPercentage}
         max={100}
         backgroundColor="$gray4"
-        borderColor="$gray6"
-        borderWidth={1}
         borderRadius="$2"
         height={8}
       >
