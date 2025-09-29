@@ -126,7 +126,14 @@ export const NewsCard = ({
       />
 
       {/* Content Overlay */}
-      <YStack flex={1} height="100%" justifyContent="space-between" padding="$5" position="relative" zIndex={1}>
+      <YStack
+        flex={1}
+        height="100%"
+        justifyContent="space-between"
+        padding="$5"
+        position="relative"
+        zIndex={1}
+      >
         {/* Header Section */}
         {header && (
           <XStack justifyContent="flex-start" alignItems="flex-start">
@@ -137,24 +144,13 @@ export const NewsCard = ({
         {/* Bottom Content Section */}
         <YStack gap="$3" justifyContent="flex-end">
           {/* Title */}
-          <Text
-            fontSize="$6"
-            fontWeight="700"
-            color="$color12"
-            lineHeight="$7"
-            numberOfLines={2}
-          >
+          <Text fontSize="$6" fontWeight="700" color="$color12" lineHeight="$7" numberOfLines={2}>
             {title}
           </Text>
 
           {/* Description */}
           {description && (
-            <Text
-              fontSize="$4"
-              color="$color11"
-              lineHeight="$5"
-              numberOfLines={3}
-            >
+            <Text fontSize="$4" color="$color11" lineHeight="$5" numberOfLines={3}>
               {description}
             </Text>
           )}
