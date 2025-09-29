@@ -20,6 +20,7 @@ import {
   type GeneralProfileFormData,
   generalProfileDefaults,
 } from './config/general-schema'
+import { PhoneNumberInput } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
 import { DashboardWidget, AvatarImagePicker } from '@app/ui'
@@ -234,20 +235,15 @@ export function ProfileGeneralLeft() {
               name="phone"
               control={control}
               render={({ field }) => (
-                <Input
-                  placeholder="Phone number"
+                <PhoneNumberInput
                   value={field.value || ''}
-                  onChangeText={field.onChange}
-                  keyboardType="phone-pad"
-                  borderColor={errors.phone ? '$red8' : '$borderColor'}
+                  onChange={field.onChange}
+                  error={errors.phone?.message}
+                  defaultCountry="US"
+                  storeFormatted={false}
                 />
               )}
             />
-            {errors.phone && (
-              <Text color="$red10" fontSize="$2">
-                {errors.phone.message}
-              </Text>
-            )}
           </YStack>
 
           <YStack gap="$2">
