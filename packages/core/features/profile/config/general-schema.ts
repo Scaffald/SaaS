@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { phoneNumberSchema } from '@app/ui'
 
 /**
  * General Profile Form Schema
@@ -21,7 +22,7 @@ export const generalProfileSchema = z
     about: z.string().max(500, 'About section must be 500 characters or less').optional(),
 
     // Contact information
-    phone: z.string().optional(),
+    phone: phoneNumberSchema,
 
     email: z.string().email('Please enter a valid email address').optional(),
   })

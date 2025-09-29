@@ -39,7 +39,7 @@ export default function Layout() {
                   borderStyle="unset"
                   borderWidth={0}
                   backgroundColor="transparent"
-                  marginLeft="$-1"
+                  marginLeft="$3"
                   paddingHorizontal="$4"
                   onPress={() => {
                     navigation.dispatch(DrawerActions.toggleDrawer())
@@ -52,7 +52,7 @@ export default function Layout() {
             <Button
               borderStyle="unset"
               borderWidth={0}
-              marginRight="$-1"
+              marginRight="$3"
               backgroundColor="transparent"
               onPress={() => setNotificationsOpen(true)}
             >

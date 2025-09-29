@@ -24,6 +24,11 @@ export { DashboardLayout } from './components/layouts/DashboardLayout'
 // Other components
 export * from './components/chips'
 export * from './components/image-picker'
+export * from './components/inputs'
+
+// Configuration and utilities
+export * from './config/countries'
+export * from './utils/phoneValidation'
 
 // CardStack component
 export * from './CardStack'

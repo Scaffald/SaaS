@@ -1,36 +1,39 @@
 import { createThemes, defaultComponentThemes } from '@tamagui/theme-builder'
 import * as Colors from '@tamagui/colors'
 
-export const lightTransparent = 'rgba(255, 255, 255, 0)'
-export const darkTransparent = 'rgba(0, 0, 0, 0)'
+export const lightTransparent = 'hsla(23, 5%, 99%, 0)'
+export const darkTransparent = 'hsla(23, 5%, 9%, 0)'
 
+export const lightColor = 'hsl(207, 22%, 9%)'
+const lightPalette = [
+  lightTransparent,
+  'hsla(23, 7%, 93%, 1)',
+  'hsla(23, 10%, 67%, 1)',
+  'hsla(23, 12%, 58%, 1)',
+  'hsla(23, 14%, 48%, 1)',
+  'hsla(23, 15%, 39%, 1)',
+  'hsla(23, 17%, 29%, 1)',
+  'hsla(23, 18%, 20%, 1)',
+  'hsla(23, 20%, 15%, 1)',
+  'hsla(23, 20%, 5%, 1)',
+  lightColor,
+  darkTransparent,
+]
+
+export const darkColor = 'hsl(23, 20%, 99.0%)'
 const darkPalette = [
-  'hsla(30, 2%, 27%, 1)',
+  darkTransparent,
   'hsla(30, 4%, 33%, 1)',
-  'hsla(30, 6%, 39%, 1)',
   'hsla(29, 8%, 45%, 1)',
   'hsla(29, 10%, 51%, 1)',
   'hsla(29, 12%, 56%, 1)',
-  'hsla(29, 14%, 62%, 1)',
   'hsla(29, 16%, 68%, 1)',
   'hsla(29, 18%, 74%, 1)',
   'hsla(28, 20%, 80%, 1)',
   'hsla(23, 20%, 75%, 1)',
   'hsla(23, 20%, 90%, 1)',
-]
-const lightPalette = [
-  'hsla(23, 5%, 99%, 1)',
-  'hsla(23, 7%, 93%, 1)',
-  'hsla(24, 9%, 77%, 1)',
-  'hsla(24, 10%, 67%, 1)',
-  'hsla(25, 12%, 58%, 1)',
-  'hsla(26, 14%, 48%, 1)',
-  'hsla(26, 15%, 39%, 1)',
-  'hsla(27, 17%, 29%, 1)',
-  'hsla(28, 18%, 20%, 1)',
-  'hsla(28, 20%, 10%, 1)',
-  'hsla(23, 20%, 15%, 1)',
-  'hsla(23, 20%, 5%, 1)',
+  darkColor,
+  lightTransparent,
 ]
 
 const lightShadows = {
