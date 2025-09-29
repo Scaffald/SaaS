@@ -12,6 +12,7 @@ import {
 } from '@app/ui'
 import { supabase } from '@app/core/utils/supabase/client'
 import { useUser } from '@app/core/utils/useUser'
+import { ScaffaldLogo } from '@app/core/assets'
 import { useEffect, useState } from 'react'
 import { FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -94,11 +95,14 @@ export const LoginScreen = () => {
         <CheckYourEmail />
       ) : (
         <YStack gap="$4" padding="$4" maxWidth={400} width="100%">
-          <YStack gap="$3" mb="$3">
-            <H2 $sm={{ size: '$8' }}>Get started</H2>
-            <Paragraph theme="alt2">
-              Enter your email and we&apos;ll send a one-time sign-in link.
-            </Paragraph>
+          <YStack gap="$4" mb="$3" alignItems="center">
+            <ScaffaldLogo width={200} height={33} />
+            <YStack gap="$2" alignItems="center">
+              <H2 $sm={{ size: '$8' }}>Get started</H2>
+              <Paragraph theme="alt2" textAlign="center">
+                Enter your email and we&apos;ll send a one-time sign-in link.
+              </Paragraph>
+            </YStack>
           </YStack>
 
           <Form onSubmit={handleSubmit}>

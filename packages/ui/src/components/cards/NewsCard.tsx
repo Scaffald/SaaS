@@ -111,21 +111,22 @@ export const NewsCard = ({
 
       {/* Overlay with theme-aware gradient */}
       <View
+        backgroundColor="$color1"
+        opacity={0.8}
         position="absolute"
         top={0}
         left={0}
         right={0}
         bottom={0}
-        backgroundColor="$backgroundTransparent"
+        // backgroundColor="$backgroundTransparent"
         style={{
-          background: 'linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0.9))',
           backdropFilter: 'blur(2px)',
           WebkitBackdropFilter: 'blur(2px)',
         }}
       />
 
       {/* Content Overlay */}
-      <YStack flex={1} justifyContent="space-between" padding="$5" position="relative" zIndex={1}>
+      <YStack flex={1} height="100%" justifyContent="space-between" padding="$5" position="relative" zIndex={1}>
         {/* Header Section */}
         {header && (
           <XStack justifyContent="flex-start" alignItems="flex-start">
@@ -140,10 +141,8 @@ export const NewsCard = ({
             fontSize="$6"
             fontWeight="700"
             color="$color12"
-            lineHeight="$2"
+            lineHeight="$7"
             numberOfLines={2}
-            $theme-light={{ color: '$gray12' }}
-            $theme-dark={{ color: '$white12' }}
           >
             {title}
           </Text>
@@ -153,10 +152,8 @@ export const NewsCard = ({
             <Text
               fontSize="$4"
               color="$color11"
-              lineHeight="$3"
+              lineHeight="$5"
               numberOfLines={3}
-              $theme-light={{ color: '$gray11' }}
-              $theme-dark={{ color: '$white11' }}
             >
               {description}
             </Text>
