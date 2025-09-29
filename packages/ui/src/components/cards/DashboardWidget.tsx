@@ -44,7 +44,7 @@ export const DashboardWidget = ({
       mx="$6"
       my="$3"
       $sm={{
-        mx: '0',
+        mx: '$4',
         boxShadow:
           'inset 1px 1px .5px #fff8, inset 2px 5px 25px #0000000f, inset -1px -1px 0 .5px #ddd2',
       }}
