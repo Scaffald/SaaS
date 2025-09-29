@@ -1,0 +1,46 @@
+import React from 'react'
+import { YStack, Spinner, Text } from 'tamagui'
+import { ChecklistHeader } from './ChecklistHeader'
+import { ChecklistProgress } from './ChecklistProgress'
+import { ChecklistList } from './ChecklistList'
+import type { ChecklistProps } from './types'
+
+/**
+ * Checklist - Generic checklist component for tracking completion
+ *
+ * Features:
+ * - Progress bar showing completion percentage
+ * - Clean list of clickable items
+ * - Status indicators (checkmarks for complete items)
+ * - Navigation arrows for incomplete items
+ * - Responsive design for all platforms
+ *
+ * @param props - Component props
+ * @returns JSX element
+ */
+export const Checklist = ({
+  title,
+  subtitle,
+  items,
+  completionPercentage,
+  onItemPress,
+  isLoading = false,
+  showProgress = true,
+}: ChecklistProps) => {
+  if (isLoading) {
+    return (
+      <YStack gap="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
+        <Spinner size="large" />
+        <Text color="$gray10">Loading...</Text>
+      </YStack>
+    )
+  }
+
+  return (
+    <YStack gap="$4" padding="$4">
+      {(title || subtitle) && <ChecklistHeader title={title} subtitle={subtitle} />}
+      {showProgress && <ChecklistProgress completionPercentage={completionPercentage} />}
+      <ChecklistList items={items} onItemPress={onItemPress} />
+    </YStack>
+  )
+}
