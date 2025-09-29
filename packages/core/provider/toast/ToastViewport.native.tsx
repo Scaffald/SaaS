@@ -10,7 +10,7 @@ export const ToastViewport = ({ noSafeArea }: ToastViewportProps) => {
       top={noSafeArea ? 0 : top + 5}
       left={noSafeArea ? 0 : left + 5}
       right={noSafeArea ? 0 : right + 5}
-      pointerEvents="none"
+      style={{ pointerEvents: 'none' }}
     />
   )
 }

@@ -43,7 +43,7 @@
     "hast-util-to-html": "^9.0.0",
     "mapbox-gl": "^3.3.0",
     "parse-numeric-range": "^1.0.0",
-    "react-dropzone": "^14.2.3",
+    "react-dropzone": "^14.3.8",
     "react-hook-form": "^7.63.0",
     "react-native": "0.79.2",
     "react-native-safe-area-context": "5.4.0",

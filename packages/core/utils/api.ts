@@ -2,7 +2,7 @@ import { httpBatchLink } from '@trpc/client'
 import { createTRPCReact } from '@trpc/react-query'
 import SuperJSON from 'superjson'
 import { Platform } from 'react-native'
-import type { AppRouter } from '@app/supabase/functions/_shared/client-types'
+import type { AppRouter } from '@app/supabase/functions/trpc'
 
 import { getBaseUrl } from './getBaseUrl'
 import { supabase } from './supabase/client'

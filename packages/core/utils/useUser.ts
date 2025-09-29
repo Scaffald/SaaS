@@ -7,7 +7,8 @@ import { supabase } from './supabase/client'
 type Profile = {
   id: string
   name: string | null
-  avatar_url: string | null
+  about: string | null
+  avatar_path: string | null
   created_at: string
   updated_at: string
 }
@@ -20,7 +21,11 @@ function useProfile() {
     queryKey: ['profile', user?.id],
     queryFn: async (): Promise<Profile | null> => {
       if (!user?.id) return null
-      const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, name, about, avatar_path, created_at, updated_at')
+        .eq('id', user.id)
+        .single()
       if (error) {
         // no rows - edge case of user being deleted
         if (error.code === 'PGRST116') {
@@ -42,7 +47,7 @@ export const useUser = () => {
   const { data: profile, refetch, isPending: isLoadingProfile } = useProfile()
 
   const avatarUrl = (function () {
-    if (profile?.avatar_url) return profile.avatar_url
+    if (profile?.avatar_path) return profile.avatar_path
     if (typeof user?.user_metadata.avatar_url === 'string') return user.user_metadata.avatar_url
 
     const params = new URLSearchParams()

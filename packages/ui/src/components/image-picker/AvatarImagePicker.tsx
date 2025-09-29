@@ -1,4 +1,4 @@
-import { Camera, User } from '@tamagui/lucide-icons'
+import { Camera, User, Delete } from '@tamagui/lucide-icons'
 import { useId, useState } from 'react'
 import { Button, Circle, Image, Label, Text, View, XStack, YStack } from 'tamagui'
 
@@ -58,12 +58,18 @@ export function AvatarImagePicker({
       {/* Avatar Circle */}
       <View
         // @ts-ignore reason: getRootProps() which is web specific return some react-native incompatible props, but it's fine
-        {...getRootProps()}
+        {...(getRootProps ? getRootProps() : {})}
         position="relative"
       >
         {/* Hidden input for web */}
         {/* @ts-ignore */}
-        <View id={id} tag="input" width={0} height={0} {...getInputProps()} />
+        <View
+          id={id}
+          tag="input"
+          width={0}
+          height={0}
+          {...(getInputProps ? getInputProps() : {})}
+        />
 
         <Circle
           size={size}
@@ -105,7 +111,7 @@ export function AvatarImagePicker({
             left={0}
             right={0}
             bottom={0}
-            backgroundColor="$blackA8"
+            backgroundColor="$color9"
             borderRadius={size / 2}
             alignItems="center"
             justifyContent="center"
@@ -113,7 +119,7 @@ export function AvatarImagePicker({
             hoverStyle={{
               opacity: disabled ? 0 : 1,
             }}
-            pointerEvents="none"
+            style={{ pointerEvents: 'none' }}
           >
             <Camera size={size * 0.25} color="white" />
           </View>
@@ -129,20 +135,23 @@ export function AvatarImagePicker({
           disabled={disabled || isLoading}
           icon={Camera}
         >
-          {isLoading ? 'Loading...' : value ? 'Change Photo' : 'Select Photo'}
+          <Button.Text>
+            {isLoading ? 'Loading...' : value ? 'Change Photo' : 'Select Photo'}
+          </Button.Text>
         </Button>
 
-        {value && (
+        {value ? (
           <Button
             size="$3"
             variant="outlined"
             color="$red10"
             onPress={() => onImageSelect('')}
             disabled={disabled || isLoading}
+            icon={Delete}
           >
-            Remove
+            <Button.Text>Remove</Button.Text>
           </Button>
-        )}
+        ) : null}
       </XStack>
 
       {/* Web-only drag instruction */}
@@ -155,7 +164,7 @@ export function AvatarImagePicker({
         textAlign="center"
         display={disabled ? 'none' : 'flex'}
       >
-        Drag & drop an image or click to select
+        <Text>Drag & drop an image or click to select</Text>
       </Label>
     </YStack>
   )

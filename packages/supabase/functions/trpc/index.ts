@@ -104,7 +104,7 @@ const profileRouter = t.router({
     // Get profile data from profiles table
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('first_name, last_name, avatar_url')
+      .select('first_name, last_name, avatar_path')
       .eq('id', user.id)
       .single()
 
@@ -134,7 +134,7 @@ const profileRouter = t.router({
     return {
       first_name: profile?.first_name || '',
       last_name: profile?.last_name || '',
-      avatar_url: profile?.avatar_url || '',
+      avatar_path: profile?.avatar_path || '',
       email: authUser?.user?.email || '',
       phone: privateData?.phone || '',
       about: privateData?.about || '',
@@ -155,7 +155,7 @@ const profileRouter = t.router({
 
     if (input.first_name !== undefined) profileUpdate.first_name = input.first_name
     if (input.last_name !== undefined) profileUpdate.last_name = input.last_name
-    if (input.avatar_url !== undefined) profileUpdate.avatar_url = input.avatar_url
+    if (input.avatar_path !== undefined) profileUpdate.avatar_path = input.avatar_path
 
     // Update profiles table only if there are fields to update
     if (Object.keys(profileUpdate).length > 2) {
@@ -385,7 +385,7 @@ const profileRouter = t.router({
         // Client will construct the full URL using their environment variables
         const { error: updateError } = await supabase.from('profiles').upsert({
           id: user.id,
-          avatar_url: uniqueFileName, // Store just the file path
+          avatar_path: uniqueFileName, // Store just the file path
           updated_at: new Date().toISOString(),
         })
 

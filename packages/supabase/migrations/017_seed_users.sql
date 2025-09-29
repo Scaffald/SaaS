@@ -210,7 +210,7 @@ insert into public.users (
 -- Create corresponding profiles table entries
 -- =========================================================
 
-insert into public.profiles (id, name, about, avatar_url, created_at, updated_at)
+insert into public.profiles (id, name, about, avatar_path, created_at, updated_at)
 select 
   u.id,
   u.display_name,

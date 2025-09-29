@@ -1,16 +1,16 @@
-import { YStack } from '@app/ui'
-import { DashboardErrorBoundary } from './components/dashboard/error-boundary'
-import { NewsFeedCard, ProjectOverviewWidget } from './components/dashboard/right-rail'
+import { Text, YStack } from 'tamagui'
 
+/**
+ * Dashboard Index Right Component
+ * Simplified placeholder for future dashboard content
+ */
 export function DashboardIndexRight() {
   return (
-    <YStack py="$4" gap="$4">
-      <DashboardErrorBoundary>
-        <ProjectOverviewWidget />
-      </DashboardErrorBoundary>
-      <DashboardErrorBoundary>
-        <NewsFeedCard />
-      </DashboardErrorBoundary>
+    <YStack padding="$4" gap="$2">
+      <Text fontSize="$6" fontWeight="600">
+        Dashboard Right Content
+      </Text>
+      <Text color="$gray10">Dashboard components will be rebuilt here later.</Text>
     </YStack>
   )
 }
