@@ -179,5 +179,5 @@ export type Themes = typeof builtThemes
 // but if not you can just export builtThemes directly as themes:
 export const themes: Themes =
   process.env.TAMAGUI_ENVIRONMENT === 'client' && process.env.NODE_ENV === 'production'
-    ? ({} as any)
-    : (builtThemes as any)
+    ? ({} as Themes)
+    : (builtThemes as Themes)

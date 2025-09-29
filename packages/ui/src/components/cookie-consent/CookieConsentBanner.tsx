@@ -23,7 +23,6 @@ export interface CookieConsentBannerProps extends CardProps {
 export const CookieConsentBanner = ({ containerProps, ...cardProps }: CookieConsentBannerProps) => {
   const { shouldShowBanner, acceptAll, rejectAll, openPreferences, isReady } = useCookieConsent()
   const [pendingAction, setPendingAction] = useState<'accept' | 'reject' | null>(null)
-  const isWeb = Platform.OS === 'web'
 
   if (!isReady) {
     return null

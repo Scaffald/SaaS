@@ -18,7 +18,7 @@ export type EntriesType = [PropertyKey, unknown][] | readonly (readonly [Propert
 
 export type DeepWritable<OBJ_T> = { -readonly [P in keyof OBJ_T]: DeepWritable<OBJ_T[P]> }
 export type UnionToIntersection<UNION_T> = // From https://stackoverflow.com/a/50375286
-  (UNION_T extends any ? (k: UNION_T) => void : never) extends (k: infer I) => void ? I : never
+  (UNION_T extends unknown ? (k: UNION_T) => void : never) extends (k: infer I) => void ? I : never
 
 export type UnionObjectFromArrayOfPairs<ARR_T extends EntriesType> =
   DeepWritable<ARR_T> extends (infer R)[]

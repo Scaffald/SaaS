@@ -1,6 +1,7 @@
 import { LineChart as GiftedLineChart } from 'react-native-gifted-charts'
 import { View } from 'tamagui'
 import { Platform } from 'react-native'
+import type { TextStyle } from 'react-native'
 
 export interface LineChartData {
   value: number
@@ -23,8 +24,8 @@ export interface LineChartProps {
   showXAxisIndices?: boolean
   yAxisColor?: string
   xAxisColor?: string
-  yAxisTextStyle?: any
-  xAxisLabelTextStyle?: any
+  yAxisTextStyle?: TextStyle
+  xAxisLabelTextStyle?: TextStyle
   areaChart?: boolean
   startFillColor?: string
   endFillColor?: string

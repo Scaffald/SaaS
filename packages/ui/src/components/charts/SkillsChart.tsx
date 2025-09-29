@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Platform, useWindowDimensions } from 'react-native'
+import { useWindowDimensions } from 'react-native'
 import { View, Text } from 'tamagui'
 import { Svg, G, Defs, LinearGradient, Stop, Rect, Circle, Polygon } from 'react-native-svg'
 import Animated, { useSharedValue, useAnimatedProps, withSpring } from 'react-native-reanimated'
@@ -122,7 +122,6 @@ export const SkillsChart: React.FC<SkillsChartProps> = ({
   gridColor = '#E0E0E0',
   labelColor = '#E0E0E0',
   labelTextSize = 12,
-  isAnimated = true,
 }) => {
   const { width: screenWidth } = useWindowDimensions()
   const chartWidth = width || screenWidth

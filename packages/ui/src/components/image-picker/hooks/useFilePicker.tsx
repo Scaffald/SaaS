@@ -10,7 +10,7 @@ import type {
 } from '../types'
 import { useDropZone } from './useDropZone'
 
-type NativeFiles<MT extends MediaTypeOptionsString[]> = MT[number] extends 'Images'
+type _NativeFiles<MT extends MediaTypeOptionsString[]> = MT[number] extends 'Images'
   ? ImagePicker.ImagePickerResult['assets']
   : DocumentPicker.DocumentPickerResult[]
 

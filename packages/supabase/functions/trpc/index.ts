@@ -450,7 +450,7 @@ const profileRouter = t.router({
       }
 
       // Get skills data - handle permission errors gracefully
-      let skillsData: any[] = []
+      let skillsData: unknown[] = []
       try {
         const { data, error: skillsError } = await supabase
           .from('user_skills')
@@ -467,7 +467,7 @@ const profileRouter = t.router({
       }
 
       // Get certifications data - handle permission errors gracefully
-      let certificationsData: any[] = []
+      let certificationsData: unknown[] = []
       try {
         const { data, error: certificationsError } = await supabase
           .from('user_certifications')
@@ -484,7 +484,7 @@ const profileRouter = t.router({
       }
 
       // Get education data - handle permission errors gracefully
-      let educationData: any[] = []
+      let educationData: unknown[] = []
       try {
         const { data, error: educationError } = await supabase
           .from('user_education')
@@ -501,7 +501,7 @@ const profileRouter = t.router({
       }
 
       // Get experience data - handle permission errors gracefully
-      let experienceData: any[] = []
+      let experienceData: unknown[] = []
       try {
         const { data, error: experienceError } = await supabase
           .from('user_experience')

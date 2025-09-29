@@ -1,5 +1,6 @@
 import { BarChart as GiftedBarChart } from 'react-native-gifted-charts'
 import { View } from 'tamagui'
+import type { TextStyle } from 'react-native'
 
 export interface StackedBarChartData {
   stacks: Array<{
@@ -18,8 +19,8 @@ export interface StackedBarChartProps {
   showXAxisIndices?: boolean
   yAxisColor?: string
   xAxisColor?: string
-  yAxisTextStyle?: any
-  xAxisLabelTextStyle?: any
+  yAxisTextStyle?: TextStyle
+  xAxisLabelTextStyle?: TextStyle
   barWidth?: number
   noOfSections?: number
   maxValue?: number
