@@ -1,6 +1,6 @@
 # Features Documentation
 
-This directory contains detailed documentation for Scaffald's major features and planned implementations.
+This directory contains detailed documentation for Scaffald's major features and implementations.
 
 ## Current Features
 
@@ -17,6 +17,40 @@ This directory contains detailed documentation for Scaffald's major features and
   - Clean, left-aligned UI design
   - Responsive across all platforms
 
+### CSI MasterFormat Integration
+- **Status**: ✅ Implemented
+- **Documentation**: [csi-seed.md](./csi-seed.md)
+- **Description**: Standardized construction industry skills taxonomy based on CSI MasterFormat
+- **Key Features**:
+  - Hierarchical skills structure with CSI codes
+  - Automated seeding from Excel files
+  - Industry-specific skill organization
+  - Database schema with CSI-specific fields
+- **Implementation**: Complete with seeding script and database schema
+
+### News Feed System
+- **Status**: ✅ Implemented
+- **Description**: RSS-based news feed system for industry-specific content
+- **Key Features**:
+  - Multiple RSS feed support
+  - Industry-specific content filtering
+  - Real-time feed updates
+  - Cross-platform news widgets
+- **Components**: 
+  - RSS parser (`packages/core/features/news/utils/rss-parser.ts`)
+  - News hooks (`packages/core/features/news/hooks/useNewsFeed.tsx`)
+  - News widgets (`packages/core/features/news/`)
+
+### Job Management System
+- **Status**: ✅ Implemented (Core Schema)
+- **Description**: Complete job posting, application, and management system
+- **Key Features**:
+  - Job postings with skills requirements
+  - Application tracking and status management
+  - Organization and team-based job management
+  - Geographic and remote work support
+- **Database**: Full schema implemented in `packages/supabase/migrations/003_create_domain_tables.sql`
+
 ## Planned Features
 
 ### RSS Job Feeds Integration
@@ -29,15 +63,16 @@ This directory contains detailed documentation for Scaffald's major features and
   - Real-time job updates
   - Enhanced user value proposition
 - **Implementation**: 8-week phased approach across 4 phases
+- **Note**: Core job system is implemented; this adds external job feed integration
 
 ## Documentation Standards
 
 Each feature documentation should include:
 
 1. **Overview** - High-level description and business value
-2. **Current State Analysis** - What exists vs. what's needed
+2. **Implementation Status** - Current state and completion status
 3. **Technical Architecture** - Database schema, API design, service layer
-4. **Implementation Plan** - Phased approach with clear milestones
+4. **Implementation Plan** - Phased approach with clear milestones (for planned features)
 5. **Testing Strategy** - Unit, integration, and E2E test plans
 6. **Security Considerations** - Data protection and access control
 7. **Monitoring & Metrics** - Key performance indicators
@@ -55,6 +90,7 @@ When adding new feature documentation:
 
 ## Quick Links
 
+- [CSI MasterFormat Integration](./csi-seed.md) - Construction industry skills taxonomy
 - [RSS Job Feeds Integration](./rss-job-feeds.md) - External job feed system
 - [Architecture Documentation](../architecture/) - System design patterns
 - [Deployment Guides](../deployment/) - Production deployment
