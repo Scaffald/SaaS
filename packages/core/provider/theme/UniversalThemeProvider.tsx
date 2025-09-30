@@ -2,7 +2,7 @@ import { useIsomorphicLayoutEffect } from '@app/ui'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { StatusBar } from 'expo-status-bar'
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from 'react'
 import { Appearance, Platform, useColorScheme } from 'react-native'
 
 type ThemeProviderProps = {
@@ -68,7 +68,7 @@ loadThemePromise.then((val) => {
   persistedTheme = val
 })
 
-export const UniversalThemeProvider = ({ children }: { children: React.ReactNode }) => {
+export const UniversalThemeProvider = ({ children }: { children: ReactNode }) => {
   const [current, setCurrent] = useState<ThemeName | null>(null)
   const systemTheme = Platform.OS === 'web' ? getSystemTheme() : useColorScheme() || 'light'
 
@@ -108,7 +108,7 @@ export const UniversalThemeProvider = ({ children }: { children: React.ReactNode
   )
 }
 
-const InnerProvider = ({ children }: { children: React.ReactNode }) => {
+const InnerProvider = ({ children }: { children: ReactNode }) => {
   const { resolvedTheme } = useThemeSetting()
 
   // Platform-specific theme application

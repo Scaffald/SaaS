@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, FC } from 'react'
 import { useWindowDimensions } from 'react-native'
 import { View, Text } from 'tamagui'
 import { Svg, G, Defs, LinearGradient, Stop, Rect, Circle, Polygon } from 'react-native-svg'
@@ -49,7 +49,7 @@ interface RadarPolygonProps {
   data: SkillsChartDataItem[]
 }
 
-const RadarPolygon: React.FC<RadarPolygonProps> = ({ dimensions, fill, stroke, data }) => {
+const RadarPolygon: FC<RadarPolygonProps> = ({ dimensions, fill, stroke, data }) => {
   const animatedValue = useSharedValue(0)
 
   const animatedProps = useAnimatedProps(() => {
@@ -111,7 +111,7 @@ const RadarPolygon: React.FC<RadarPolygonProps> = ({ dimensions, fill, stroke, d
  * <SkillsChart datasets={skillsData} height={300} />
  * ```
  */
-export const SkillsChart: React.FC<SkillsChartProps> = ({
+export const SkillsChart: FC<SkillsChartProps> = ({
   datasets,
   showSets = [0, 1],
   height = 300,

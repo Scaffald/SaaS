@@ -1,4 +1,13 @@
-import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react'
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  memo,
+  Fragment,
+  KeyboardEvent,
+} from 'react'
 import {
   YStack,
   XStack,
@@ -127,7 +136,7 @@ export function AddressAutocomplete({
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLInputElement>) => {
+    (event: KeyboardEvent<HTMLInputElement>) => {
       if (!showResults || results.length === 0) return
 
       switch (event.key) {
@@ -183,7 +192,7 @@ export function AddressAutocomplete({
   }, [onChange, clearResults])
 
   // Result item component
-  const ResultItem = React.memo(({ address, index }: { address: AddressResult; index: number }) => (
+  const ResultItem = memo(({ address, index }: { address: AddressResult; index: number }) => (
     <Button
       key={address.id}
       variant="outlined"
@@ -286,10 +295,10 @@ export function AddressAutocomplete({
               <ScrollView ref={resultsRef} showsVerticalScrollIndicator={false}>
                 {hasResults ? (
                   results.map((address, index) => (
-                    <React.Fragment key={address.id}>
+                    <Fragment key={address.id}>
                       <ResultItem address={address} index={index} />
                       {index < results.length - 1 && <Separator backgroundColor="$borderColor" />}
-                    </React.Fragment>
+                    </Fragment>
                   ))
                 ) : loading ? (
                   <YStack padding="$4" alignItems="center">

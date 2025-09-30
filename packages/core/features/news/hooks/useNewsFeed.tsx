@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Platform } from 'react-native'
 import { useQuery } from '@tanstack/react-query'
 import { parseRSSFeed, calculateReadingTime } from '../utils/rss-parser'
@@ -133,7 +133,7 @@ export function useMultipleNewsFeeds(feedUrls: string[], maxItemsPerFeed = 3) {
 export function useAggregatedNews(feedUrls: string[], maxTotalItems = 10) {
   const multipleFeeds = useMultipleNewsFeeds(feedUrls)
 
-  const aggregatedItems: NewsItem[] = React.useMemo(() => {
+  const aggregatedItems: NewsItem[] = useMemo(() => {
     if (!multipleFeeds.data) return []
 
     const allItems: NewsItem[] = []

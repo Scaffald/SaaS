@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, CSSProperties } from 'react'
 import mapboxgl, { type GeoJSONSource } from 'mapbox-gl'
 import type { FeatureCollection } from 'geojson'
 import { View } from '@app/ui'
@@ -9,7 +9,7 @@ import { MapPin, User, Building } from '@tamagui/lucide-icons'
 import type { TalentMapProps } from './types'
 import { createRadiusFeature, radiusToZoomLevel } from './geometry'
 
-const MAP_CONTAINER_STYLE: React.CSSProperties = {
+const MAP_CONTAINER_STYLE: CSSProperties = {
   position: 'absolute',
   inset: 0,
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   YStack,
   XStack,
@@ -83,7 +83,7 @@ export function ProfileGeneralLeft() {
   const avatarPath = watch('avatar_path')
 
   // Reset form when profile data is loaded
-  React.useEffect(() => {
+  useEffect(() => {
     if (profileData) {
       reset(profileData)
     }

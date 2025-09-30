@@ -1,5 +1,6 @@
 import { PieChart as GiftedPieChart } from 'react-native-gifted-charts'
 import { View } from 'tamagui'
+import { ReactNode } from 'react'
 
 export interface PieChartData {
   value: number
@@ -28,7 +29,7 @@ export interface PieChartProps {
   showGradient?: boolean
   gradientCenterColor?: string
   onPress?: (item: PieChartData, index: number) => void
-  centerLabelComponent?: () => React.ReactNode
+  centerLabelComponent?: () => ReactNode
   focusOnPress?: boolean
   toggleFocusOnPress?: boolean
 }

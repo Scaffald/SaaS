@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, DependencyList } from 'react'
 
 /**
  * Debounce hook that delays updating a value until after a specified delay
@@ -44,7 +44,7 @@ export function useAddressDebounce<T>(value: T, delay: number): T {
 export function useAddressDebouncedCallback<T extends (...args: unknown[]) => unknown>(
   callback: T,
   delay: number,
-  deps: React.DependencyList
+  deps: DependencyList
 ): T {
   const timeoutRef = useRef<NodeJS.Timeout | number | null>(null)
   const callbackRef = useRef(callback)

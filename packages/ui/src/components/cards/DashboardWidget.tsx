@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import { ReactNode, ComponentProps } from 'react'
 import { Card, type CardProps } from 'tamagui'
 
 /**
@@ -55,4 +55,4 @@ export const DashboardWidget = ({
   )
 }
 
-export type DashboardWidgetProps = React.ComponentProps<typeof DashboardWidget>
+export type DashboardWidgetProps = ComponentProps<typeof DashboardWidget>

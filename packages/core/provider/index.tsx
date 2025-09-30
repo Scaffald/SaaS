@@ -1,6 +1,6 @@
 import { DatePickerProvider } from '@rehookify/datepicker'
 import { Session } from '@supabase/supabase-js'
-import React from 'react'
+import React, { ReactNode, FC } from 'react'
 
 import { AuthProvider } from './auth/AuthProvider'
 import { CookieConsentProvider } from './cookie-consent'
@@ -16,7 +16,7 @@ export function Provider({
   children,
 }: {
   initialSession?: Session | null
-  children: React.ReactNode
+  children: ReactNode
 }) {
   return (
     // Note: DatePickerProvider Conflicted with Popover so this is just a temporary solution
@@ -28,7 +28,7 @@ export function Provider({
   )
 }
 
-const compose = (providers: React.FC<{ children: React.ReactNode }>[]) =>
+const compose = (providers: FC<{ children: ReactNode }>[]) =>
   providers.reduce((Prev, Curr) => ({ children }) => {
     const Provider = Prev ? (
       <Prev>

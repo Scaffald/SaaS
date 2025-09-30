@@ -1,11 +1,12 @@
 import { CustomToast, ToastProvider as ToastProviderOG } from '@app/ui'
+import { ReactNode } from 'react'
 
 import { ToastViewport, ToastViewportProps } from './ToastViewport'
 
 export const ToastProvider = ({
   children,
   ...viewportProps
-}: { children: React.ReactNode } & ToastViewportProps) => {
+}: { children: ReactNode } & ToastViewportProps) => {
   return (
     <ToastProviderOG
       swipeDirection="up"

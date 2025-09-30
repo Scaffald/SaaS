@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, ReactNode, ComponentType } from 'react'
 import { Image, Text, View, XStack, YStack } from 'tamagui'
 
 const axises = {
@@ -25,7 +25,7 @@ export interface CardStackProps {
   /** Whether to disable the slide-in animation */
   disableSlideIn?: boolean
   /** Custom children content */
-  children?: React.ReactNode
+  children?: ReactNode
 }
 
 /**
@@ -139,7 +139,7 @@ export interface StackedCardsProps {
   /** Maximum number of cards to show in stack */
   maxStackSize?: number
   /** Component to wrap each card with */
-  wrapperComponent?: React.ComponentType<{ children: React.ReactNode }>
+  wrapperComponent?: ComponentType<{ children: ReactNode }>
 }
 
 export const StackedCards = ({

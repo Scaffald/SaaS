@@ -1,4 +1,6 @@
-const ScrollToTopTabBarContainer = ({ children }: { children: React.ReactNode }) => {
+import { ReactNode } from 'react'
+
+const ScrollToTopTabBarContainer = ({ children }: { children: ReactNode }) => {
   return <>{children}</>
 }
 
