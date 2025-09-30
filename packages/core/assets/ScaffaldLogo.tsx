@@ -1,5 +1,5 @@
-import React from 'react'
 import { Svg, Path, Defs, LinearGradient, Stop } from 'react-native-svg'
+import type { ViewStyle } from 'react-native'
 
 export interface ScaffaldLogoProps {
   width?: number
@@ -8,8 +8,7 @@ export interface ScaffaldLogoProps {
   secondaryColor?: string
   gradientStart?: string
   gradientEnd?: string
-  className?: string
-  style?: any
+  style?: ViewStyle
 }
 
 /**
@@ -27,7 +26,6 @@ export interface ScaffaldLogoProps {
  * @param secondaryColor - Secondary brand color (default: #2A7F8E)
  * @param gradientStart - Gradient start color (default: #76EAFF)
  * @param gradientEnd - Gradient end color (default: #239CB2)
- * @param className - CSS class name for web
  * @param style - Additional styles
  */
 export const ScaffaldLogo = ({
@@ -37,13 +35,12 @@ export const ScaffaldLogo = ({
   secondaryColor = '#2A7F8E',
   gradientStart = '#76EAFF',
   gradientEnd = '#239CB2',
-  className,
   style,
 }: ScaffaldLogoProps) => {
   const viewBox = '0 0 609 99'
 
   return (
-    <Svg width={width} height={height} viewBox={viewBox} className={className} style={style}>
+    <Svg width={width} height={height} viewBox={viewBox} style={style}>
       <Defs>
         <LinearGradient
           id="paint0_linear_6_54"
