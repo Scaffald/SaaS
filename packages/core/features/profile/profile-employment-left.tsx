@@ -75,7 +75,13 @@ export function ProfileEmploymentLeft() {
   // Reset form when employment data is loaded
   React.useEffect(() => {
     if (employmentData) {
-      reset(employmentData)
+      // Transform the data to match the form schema
+      const transformedData = {
+        ...employmentData,
+        // Ensure address is properly typed (convert null to undefined)
+        address: employmentData.address || undefined,
+      }
+      reset(transformedData)
     }
   }, [employmentData, reset])
 
@@ -106,27 +112,30 @@ export function ProfileEmploymentLeft() {
           <YStack gap="$4">
             {/* Home Address with Smart Autocomplete */}
             <YStack gap="$3">
+              <Text fontWeight="600">Home Address</Text>
               <AddressForm
                 mode="hybrid"
                 placeholder="Search for your home address..."
-                formMethods={{
-                  setValue: setValue as <T>(name: string, value: T) => void,
-                  trigger: trigger as (name: string) => Promise<boolean>,
-                }}
-                fieldMapping={{
-                  street: 'address.street',
-                  city: 'address.city',
-                  state: 'address.state',
-                  zip: 'address.zip',
-                  country: 'address.country',
-                }}
                 error={errors.address?.street?.message || errors.address?.city?.message}
                 provider="mapbox"
                 apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
-                zoomLevel="street"
-                searchOptions={{
-                  types: ['place'], // Mapbox type for addresses
-                  country: 'US',
+                onAddressSelect={(address) => {
+                  console.log('Selected address:', address)
+                  // Update form fields with selected address
+                  setValue('address.street', address.streetAddress || '')
+                  setValue('address.city', address.locality || '')
+                  setValue(
+                    'address.state',
+                    address.stateAbbreviation || address.administrativeAreaLevel1 || ''
+                  )
+                  setValue('address.zip', address.postalCode || '')
+                  setValue('address.country', address.country || 'United States')
+
+                  // Trigger validation for updated fields
+                  trigger('address.street')
+                  trigger('address.city')
+                  trigger('address.state')
+                  trigger('address.zip')
                 }}
               />
             </YStack>

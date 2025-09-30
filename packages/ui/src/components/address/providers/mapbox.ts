@@ -287,13 +287,28 @@ export class MapboxProvider extends BaseGeocodingProvider {
           if (!components.locality) components.locality = text
           break
         case 'district':
-        case 'region':
+          // Districts are typically counties or sub-regions, not states
           if (!components.administrativeAreaLevel1) {
             components.administrativeAreaLevel1 = text
           }
-          // Extract state abbreviation from short_code
-          if (shortCode && shortCode.length === 2) {
-            components.stateAbbreviation = shortCode.toUpperCase()
+          break
+        case 'region':
+          // Regions are typically states or provinces - prioritize for state abbreviation
+          if (!components.administrativeAreaLevel1) {
+            components.administrativeAreaLevel1 = text
+          }
+          // Extract state abbreviation from short_code (format: US-MI)
+          if (shortCode) {
+            if (shortCode.includes('-') && shortCode.length > 2) {
+              // Handle format like "US-MI" - extract the part after the dash
+              const parts = shortCode.split('-')
+              if (parts.length === 2 && parts[1].length === 2) {
+                components.stateAbbreviation = parts[1].toUpperCase()
+              }
+            } else if (shortCode.length === 2) {
+              // Handle direct abbreviation like "MI"
+              components.stateAbbreviation = shortCode.toUpperCase()
+            }
           }
           break
         case 'country':
