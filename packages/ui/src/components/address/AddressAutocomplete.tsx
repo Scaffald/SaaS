@@ -7,8 +7,6 @@ import {
   ScrollView,
   Button,
   Spinner,
-  Adapt,
-  Sheet,
   Separator,
   Popover,
 } from 'tamagui'
@@ -213,91 +211,9 @@ export function AddressAutocomplete({
 
   return (
     <YStack gap="$2">
-      {/* Popover for Desktop Results */}
-      <Adapt when="sm" platform="web">
-        <Popover placement="bottom-start" open={showDropdown} onOpenChange={setShowResults}>
-          <Popover.Trigger asChild>
-            <XStack
-              borderWidth={1}
-              borderColor={displayError ? '$red8' : '$borderColor'}
-              borderRadius="$4"
-              backgroundColor="$background"
-              paddingRight="$2"
-              alignItems="center"
-              focusStyle={{
-                borderColor: '$color8',
-              }}
-            >
-              <Input
-                ref={inputRef}
-                placeholder={placeholder}
-                value={inputValue}
-                onChangeText={handleInputChange}
-                onFocus={handleInputFocus}
-                onBlur={handleInputBlur}
-                onKeyPress={handleKeyDown}
-                disabled={disabled}
-                borderWidth={0}
-                backgroundColor="transparent"
-                flex={1}
-                fontSize="$4"
-                paddingHorizontal="$3"
-                paddingVertical="$3"
-              />
-
-              {/* Loading indicator */}
-              {loading ? <Spinner size="small" color="$color10" marginRight="$2" /> : null}
-
-              {/* Clear button */}
-              {inputValue && !loading ? (
-                <Button
-                  variant="outlined"
-                  size="$2"
-                  borderWidth={0}
-                  onPress={handleClear}
-                  disabled={disabled}
-                  circular
-                  marginRight="$1"
-                >
-                  <Button.Text fontSize="$3" color="$color10">
-                    ✕
-                  </Button.Text>
-                </Button>
-              ) : null}
-            </XStack>
-          </Popover.Trigger>
-
-          <Popover.Content
-            borderRadius="$4"
-            padding={0}
-            maxHeight={300}
-            minWidth="$20"
-            elevate
-            borderWidth={1}
-            borderColor="$borderColor"
-            backgroundColor="$background"
-          >
-            <ScrollView ref={resultsRef} showsVerticalScrollIndicator={false}>
-              {hasResults ? (
-                results.map((address, index) => (
-                  <Fragment key={address.id}>
-                    <ResultItem address={address} index={index} />
-                    {index < results.length - 1 && <Separator backgroundColor="$borderColor" />}
-                  </Fragment>
-                ))
-              ) : loading ? (
-                <YStack padding="$4" alignItems="center">
-                  <Text color="$color11">Searching...</Text>
-                </YStack>
-              ) : null}
-            </ScrollView>
-          </Popover.Content>
-        </Popover>
-      </Adapt>
-
-      {/* Mobile fallback - non-Popover input with Sheet */}
-      <Adapt when="sm" platform="touch">
-        <YStack>
+      {/* Universal Popover for all platforms */}
+      <Popover placement="bottom-start" open={showDropdown} onOpenChange={setShowResults}>
+        <Popover.Trigger asChild>
           <XStack
             borderWidth={1}
             borderColor={displayError ? '$red8' : '$borderColor'}
@@ -346,36 +262,40 @@ export function AddressAutocomplete({
               </Button>
             ) : null}
           </XStack>
+        </Popover.Trigger>
 
-          {/* Mobile Results Sheet */}
-          {showDropdown && (
-            <Sheet modal open={showDropdown} onOpenChange={setShowResults}>
-              <Sheet.Overlay />
-              <Sheet.Frame padding="$4" space="$4">
-                <Sheet.Handle />
-                <YStack gap="$2">
-                  <Text fontSize="$5" fontWeight="600">
-                    Address Suggestions
-                  </Text>
-                  <ScrollView maxHeight={400} showsVerticalScrollIndicator={false}>
-                    {hasResults ? (
-                      <YStack gap="$2">
-                        {results.map((address, index) => (
-                          <ResultItem key={address.id} address={address} index={index} />
-                        ))}
-                      </YStack>
-                    ) : loading ? (
-                      <YStack padding="$4" alignItems="center">
-                        <Text color="$color11">Searching...</Text>
-                      </YStack>
-                    ) : null}
-                  </ScrollView>
-                </YStack>
-              </Sheet.Frame>
-            </Sheet>
-          )}
-        </YStack>
-      </Adapt>
+        <Popover.Content
+          borderRadius="$4"
+          padding={0}
+          maxHeight={300}
+          minWidth="$20"
+          elevate
+          borderWidth={1}
+          borderColor="$borderColor"
+          backgroundColor="$background"
+          // Mobile-optimized sizing
+          $sm={{
+            minWidth: '90%',
+            maxWidth: '95%',
+            maxHeight: 250,
+          }}
+        >
+          <ScrollView ref={resultsRef} showsVerticalScrollIndicator={false}>
+            {hasResults ? (
+              results.map((address, index) => (
+                <Fragment key={address.id}>
+                  <ResultItem address={address} index={index} />
+                  {index < results.length - 1 && <Separator backgroundColor="$borderColor" />}
+                </Fragment>
+              ))
+            ) : loading ? (
+              <YStack padding="$4" alignItems="center">
+                <Text color="$color11">Searching...</Text>
+              </YStack>
+            ) : null}
+          </ScrollView>
+        </Popover.Content>
+      </Popover>
 
       {/* Error Message */}
       <FieldError message={displayError || undefined} />
