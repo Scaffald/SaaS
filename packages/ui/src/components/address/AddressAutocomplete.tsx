@@ -202,11 +202,6 @@ export function AddressAutocomplete({
         <Text fontSize="$3" color="$color12" numberOfLines={1}>
           {address.formattedAddress}
         </Text>
-        {address.types.length > 0 && (
-          <Text fontSize="$2" color="$color11" opacity={0.7}>
-            {address.types[0].replace(/_/g, ' ')}
-          </Text>
-        )}
       </YStack>
     </Button>
   ))
@@ -216,7 +211,7 @@ export function AddressAutocomplete({
   const showDropdown = showResults && (hasResults || loading)
 
   return (
-    <YStack gap="$2">
+    <YStack gap="$2" position="relative" zIndex={999}>
       {/* Input Container */}
       <YStack position="relative">
         <XStack
@@ -248,10 +243,10 @@ export function AddressAutocomplete({
           />
 
           {/* Loading indicator */}
-          {loading && <Spinner size="small" color="$color10" marginRight="$2" />}
+          {loading ? <Spinner size="small" color="$color10" marginRight="$2" /> : null}
 
           {/* Clear button */}
-          {inputValue && !loading && (
+          {inputValue && !loading ? (
             <Button
               variant="outlined"
               size="$2"
@@ -265,7 +260,7 @@ export function AddressAutocomplete({
                 ✕
               </Button.Text>
             </Button>
-          )}
+          ) : null}
         </XStack>
 
         {/* Desktop Results Dropdown */}
@@ -283,12 +278,10 @@ export function AddressAutocomplete({
               borderBottomLeftRadius="$4"
               borderBottomRightRadius="$4"
               maxHeight={300}
-              zIndex={999999}
-              shadowColor="$shadowColor"
-              shadowOffset={{ width: 0, height: 2 }}
-              shadowOpacity={0.1}
-              shadowRadius={8}
+              zIndex={999999999}
+              boxShadow="0px 2px 8px rgba(0,0,0,0.1)"
               elevation={5}
+              style={{ zIndex: 999999999 }}
             >
               <ScrollView ref={resultsRef} showsVerticalScrollIndicator={false}>
                 {hasResults ? (
