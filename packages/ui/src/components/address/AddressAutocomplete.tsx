@@ -283,7 +283,7 @@ export function AddressAutocomplete({
               borderBottomLeftRadius="$4"
               borderBottomRightRadius="$4"
               maxHeight={300}
-              zIndex={1000}
+              zIndex={9999}
               shadowColor="$shadowColor"
               shadowOffset={{ width: 0, height: 2 }}
               shadowOpacity={0.1}
