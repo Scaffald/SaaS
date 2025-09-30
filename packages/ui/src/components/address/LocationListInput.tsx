@@ -44,12 +44,25 @@ export function LocationListInput({
   apiKey,
   disabled = false,
 }: LocationListInputProps) {
-  // Ensure we always show at least one input
-  const displayLocations = value.length === 0 ? [''] : [...value]
+  // Track how many input fields to show (always at least 1)
+  const [fieldCount, setFieldCount] = useState(Math.max(1, value.length))
+
+  // Update field count when value changes from outside
+  React.useEffect(() => {
+    if (value.length > 0) {
+      setFieldCount((prev) => Math.max(value.length, prev))
+    }
+  }, [value.length])
 
   // Handle location change at specific index
   const handleLocationChange = (index: number, location: string) => {
-    const updated = [...displayLocations]
+    const updated = [...value]
+
+    // Ensure array is long enough
+    while (updated.length <= index) {
+      updated.push('')
+    }
+
     updated[index] = location
 
     // Filter out empty strings when sending to parent
@@ -64,18 +77,20 @@ export function LocationListInput({
 
   // Add new location input
   const handleAddLocation = () => {
-    if (displayLocations.length < maxLocations) {
-      const updated = [...displayLocations, '']
-      onChange(value) // Don't add empty string to actual value yet
+    if (fieldCount < maxLocations) {
+      setFieldCount(fieldCount + 1)
     }
   }
 
   // Remove location at index
   const handleRemoveLocation = (index: number) => {
-    if (displayLocations.length > 1) {
-      const updated = displayLocations.filter((_, i) => i !== index)
-      const filtered = updated.filter(Boolean)
-      onChange(filtered)
+    if (fieldCount > 1) {
+      // Remove the value at this index
+      const updated = value.filter((_, i) => i !== index)
+      onChange(updated)
+
+      // Decrease field count
+      setFieldCount(fieldCount - 1)
     }
   }
 
@@ -87,14 +102,14 @@ export function LocationListInput({
   }
 
   return (
-    <YStack gap="$3">
+    <YStack gap="$3" position="relative" zIndex={999}>
       {/* Location Inputs */}
       <YStack gap="$2">
-        {displayLocations.map((location, index) => (
+        {Array.from({ length: fieldCount }, (_, index) => (
           <XStack key={index} gap="$2" alignItems="flex-start">
             <YStack flex={1}>
               <AddressAutocomplete
-                value={location}
+                value={value[index] || ''}
                 onChange={(text) => handleLocationChange(index, text)}
                 onAddressSelect={(address) => handleAddressSelect(index, address)}
                 placeholder={index === 0 ? placeholder : `Location ${index + 1}`}
@@ -131,7 +146,7 @@ export function LocationListInput({
       </YStack>
 
       {/* Add Location Button */}
-      {displayLocations.length < maxLocations && (
+      {fieldCount < maxLocations && (
         <Button
           variant="outlined"
           size="$3"
@@ -145,7 +160,7 @@ export function LocationListInput({
             <Plus size={16} color="$color11" />
           </Button.Icon>
           <Button.Text color="$color11">
-            Add Location ({displayLocations.length}/{maxLocations})
+            Add Location ({fieldCount}/{maxLocations})
           </Button.Text>
         </Button>
       )}
