@@ -25,9 +25,25 @@ export abstract class BaseGeocodingProvider implements GeocodingProvider {
   /**
    * Handle API errors consistently across providers
    */
-  protected handleError(error: any, context: string): never {
+  protected handleError(error: unknown, context: string): never {
     if (error instanceof GeocodingError) {
       throw error
+    }
+
+    // Type guard for error objects
+    const isErrorWithProperties = (
+      err: unknown
+    ): err is { name?: string; code?: string; status?: number; message?: string } => {
+      return typeof err === 'object' && err !== null
+    }
+
+    if (!isErrorWithProperties(error)) {
+      throw new GeocodingError(
+        `${context} failed: Unknown error`,
+        'UNKNOWN_ERROR',
+        this.config.provider,
+        error
+      )
     }
 
     // Network errors
@@ -77,7 +93,7 @@ export abstract class BaseGeocodingProvider implements GeocodingProvider {
   /**
    * Make HTTP request with error handling
    */
-  protected async fetchWithErrorHandling(url: string, options?: RequestInit): Promise<any> {
+  protected async fetchWithErrorHandling(url: string, options?: RequestInit): Promise<Response> {
     try {
       const response = await fetch(url, {
         ...options,
@@ -210,7 +226,7 @@ export class AddressUtils {
   /**
    * Clean and normalize address component
    */
-  static normalizeComponent(value: any): string {
+  static normalizeComponent(value: unknown): string {
     if (!value) return ''
     return String(value).trim()
   }

@@ -1,4 +1,4 @@
-import type { GeocodingProvider, ProviderConfig } from '../types'
+import type { GeocodingProvider, ProviderConfig, SearchOptions, AddressResult } from '../types'
 import { GeocodingError } from '../types'
 import { MapboxProvider } from './mapbox'
 
@@ -69,7 +69,7 @@ export class GeocodingProviderFactory {
     try {
       this.createProvider(config)
       return true
-    } catch (error) {
+    } catch {
       return false
     }
   }
@@ -100,7 +100,7 @@ export class GeocodingService {
   /**
    * Search with automatic fallback
    */
-  async search(query: string, options?: any): Promise<any[]> {
+  async search(query: string, options?: SearchOptions): Promise<AddressResult[]> {
     try {
       return await this.primaryProvider.search(query, options)
     } catch (error) {
@@ -119,7 +119,7 @@ export class GeocodingService {
   /**
    * Geocode with automatic fallback
    */
-  async geocode(address: string, options?: any): Promise<any> {
+  async geocode(address: string, options?: SearchOptions): Promise<AddressResult | null> {
     try {
       return await this.primaryProvider.geocode(address, options)
     } catch (error) {
@@ -138,7 +138,11 @@ export class GeocodingService {
   /**
    * Reverse geocode with automatic fallback
    */
-  async reverseGeocode(lat: number, lng: number, options?: any): Promise<any> {
+  async reverseGeocode(
+    lat: number,
+    lng: number,
+    options?: SearchOptions
+  ): Promise<AddressResult | null> {
     try {
       return await this.primaryProvider.reverseGeocode(lat, lng, options)
     } catch (error) {

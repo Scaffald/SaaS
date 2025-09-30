@@ -42,7 +42,6 @@ export function useAddressAutocomplete(
     debounceMs = 300,
     minLength = 2,
     maxResults = 5,
-    autoClear = true,
   } = options
 
   // State
@@ -104,14 +103,18 @@ export function useAddressAutocomplete(
 
         setResults(searchResults)
         setError(null)
-      } catch (err: any) {
+      } catch (err: unknown) {
         // Don't show error for aborted requests
-        if (err.name === 'AbortError' || abortControllerRef.current?.signal.aborted) {
+        if (
+          err instanceof Error &&
+          (err.name === 'AbortError' || abortControllerRef.current?.signal.aborted)
+        ) {
           return
         }
 
         console.error('Address search failed:', err)
-        setError(err.message || 'Search failed')
+        const errorMessage = err instanceof Error ? err.message : 'Search failed'
+        setError(errorMessage)
         setResults([])
       } finally {
         setLoading(false)

@@ -70,7 +70,7 @@ export interface ProviderConfig {
   defaultCountry?: string
   language?: string
   region?: string
-  options?: Record<string, any>
+  options?: Record<string, string | number | boolean>
 }
 
 // Base provider interface
@@ -137,8 +137,8 @@ export interface AddressFormProps
   }
   /** React hook form methods for direct integration */
   formMethods?: {
-    setValue: (name: string, value: any) => void
-    trigger?: (name: string) => void
+    setValue: <T>(name: string, value: T) => void
+    trigger?: (name: string) => Promise<boolean>
   }
 }
 
@@ -154,7 +154,7 @@ export class GeocodingError extends Error {
     message: string,
     public code: string,
     public provider: string,
-    public originalError?: any
+    public originalError?: Error | unknown
   ) {
     super(message)
     this.name = 'GeocodingError'
