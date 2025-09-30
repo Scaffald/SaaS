@@ -36,18 +36,12 @@ export const DashboardWidget = ({
   return (
     <Card
       boxShadow="inset 1px 1px .5px #fff8, inset 2px 5px 25px #0000000f, inset -1px -1px 0 .5px #ddd2, 2px 2px 25px #0001"
-      size="$4"
-      p="$5"
+      p="$1"
       gap={gap}
       rounded="$7"
       bg="$color1"
-      mx="$6"
-      my="$3"
       $sm={{
-        mx: '$2',
-        p: '$2',
-        boxShadow:
-          'inset 1px 1px .5px #fff8, inset 2px 5px 25px #0000000f, inset -1px -1px 0 .5px #ddd2',
+        p: '$5',
       }}
       {...props}
     >

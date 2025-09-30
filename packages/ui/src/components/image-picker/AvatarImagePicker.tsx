@@ -85,7 +85,7 @@ export function AvatarImagePicker({
           }}
           hoverStyle={{
             borderColor: disabled ? '$color6' : '$blue8',
-            backgroundColor: disabled ? '$color3' : '$blue2',
+            bg: disabled ? '$color3' : '$blue2',
           }}
         >
           {value ? (

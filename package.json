@@ -8,6 +8,7 @@
     "android": "pnpm --filter expo-app android",
     "web": "pnpm --filter expo-app web",
     "web:build": "pnpm --filter expo-app web:build",
+    "prebuild": "pnpm --filter expo-app prebuild",
     "deploy": "./scripts/deploy.sh",
     "watch": "turbo watch",
     "format": "turbo format",

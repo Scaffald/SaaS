@@ -1,36 +1,33 @@
 import { ReactNode } from 'react'
-import { YStack, XStack, View, Text, H3 } from 'tamagui'
+import { YStack, XStack, View, ScrollView, useMedia } from 'tamagui'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 type DashboardLayoutProps = {
-  header?: ReactNode
   rightContent?: ReactNode
   leftContent?: ReactNode
-  leftWidth?: number
-  rightWidth?: number
 }
 
-export const DashboardLayout = ({
-  header,
-  rightContent,
-  leftContent,
-  leftWidth = 2,
-  rightWidth = 1,
-}: DashboardLayoutProps) => {
+export const DashboardLayout = ({ rightContent, leftContent }: DashboardLayoutProps) => {
   return (
-    <YStack flex={1} bg="$color2" py="$3" flexWrap="wrap">
-      {header && <XStack p="$4">{header}</XStack>}
-      <XStack flex={1}>
+    <ScrollView flex={1} bg="$color2" pt="$3" pb="$5" showsVerticalScrollIndicator={false}>
+      <XStack
+        height="100vh"
+        gap="$3"
+        flexDirection="column"
+        p="$3"
+        $md={{ flexDirection: 'row', gap: '$8', p: '$7' }}
+      >
         {leftContent && (
-          <YStack minW={300} $sm={{ flex: 1 }} flex={leftWidth}>
+          <YStack minW={300} flex={2}>
             {leftContent}
           </YStack>
         )}
         {rightContent && (
-          <YStack minW={300} $sm={{ flex: 1 }} flex={rightWidth}>
+          <YStack minW={300} flex={1}>
             {rightContent}
           </YStack>
         )}
       </XStack>
-    </YStack>
+    </ScrollView>
   )
 }

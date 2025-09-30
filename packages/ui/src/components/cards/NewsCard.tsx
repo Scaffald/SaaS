@@ -81,8 +81,6 @@ export const NewsCard = ({
       p="$0"
       rounded="$7"
       bg="$color1"
-      mx="$6"
-      my="$3"
       minH={minHeight}
       overflow="hidden"
       position="relative"
@@ -91,7 +89,6 @@ export const NewsCard = ({
       pressStyle={fullCardClickable && isInteractive ? { scale: 0.98 } : undefined}
       hoverStyle={fullCardClickable && isInteractive ? { scale: 1.02 } : undefined}
       $sm={{
-        mx: '$4',
         boxShadow:
           'inset 1px 1px .5px #fff8, inset 2px 5px 25px #0000000f, inset -1px -1px 0 .5px #ddd2',
       }}
