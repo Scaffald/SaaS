@@ -11,7 +11,13 @@
     "../../package.json",
     "../ui/src",
     "../api/src",
-    "../../supabase"
+    "../../supabase/types.ts",
+    "../../supabase/helpers.ts"
+  ],
+  "exclude": [
+    "../../supabase/functions/**/*",
+    "../../supabase/migrations/**/*",
+    "../../supabase/scripts/**/*"
   ],
   "compilerOptions": {
     "noEmit": true,

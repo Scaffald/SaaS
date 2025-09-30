@@ -105,7 +105,7 @@ export function ProfileSkillsLeft() {
 
   if (isLoadingSkills) {
     return (
-      <YStack gap="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
+      <YStack gap="$4" p="$4" flex={1} justify="center" items="center">
         <Spinner size="large" />
         <Text>Loading skills...</Text>
       </YStack>
@@ -126,13 +126,13 @@ export function ProfileSkillsLeft() {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <DashboardWidget>
-        <YStack gap="$4" padding="$4" flex={1}>
+        <YStack gap="$4" p="$4" flex={1}>
           <H4>Skills & Expertise</H4>
 
           <YStack gap="$4">
             {/* Skills List */}
             <YStack gap="$3">
-              <XStack justifyContent="space-between" alignItems="center">
+              <XStack justify="space-between" items="center">
                 <Text fontWeight="600">Your Skills</Text>
                 <Button size="$3" onPress={addSkill} icon={Plus}>
                   Add Skill
@@ -143,12 +143,12 @@ export function ProfileSkillsLeft() {
                 <YStack
                   key={field.id}
                   gap="$3"
-                  padding="$3"
+                  p="$3"
                   borderWidth={1}
                   borderColor="$borderColor"
-                  borderRadius="$4"
+                  rounded="$4"
                 >
-                  <XStack justifyContent="space-between" alignItems="center">
+                  <XStack justify="space-between" items="center">
                     <Text fontWeight="600">Skill {index + 1}</Text>
                     <Button size="$2" variant="outlined" onPress={() => remove(index)} icon={X}>
                       Remove
@@ -199,12 +199,12 @@ export function ProfileSkillsLeft() {
                             </Slider.Track>
                             <Slider.Thumb index={0} />
                           </Slider>
-                          <XStack justifyContent="space-between">
-                            <Text fontSize="$2" color="$gray11">
+                          <XStack justify="space-between">
+                            <Text fontSize="$2" color="$color11">
                               {PROFICIENCY_LEVELS.find((level) => level.value === field.value)
                                 ?.label || 'Intermediate'}
                             </Text>
-                            <Text fontSize="$2" color="$gray11">
+                            <Text fontSize="$2" color="$color11">
                               {field.value}/5
                             </Text>
                           </XStack>
@@ -223,7 +223,7 @@ export function ProfileSkillsLeft() {
                         <Input
                           placeholder="Years of experience"
                           value={field.value?.toString() || ''}
-                          onChangeText={(text) => field.onChange(text ? parseInt(text) : 0)}
+                          onChangeText={(text) => field.onChange(text ? Number.parseInt(text) : 0)}
                           keyboardType="numeric"
                         />
                       )}
@@ -233,8 +233,8 @@ export function ProfileSkillsLeft() {
               ))}
 
               {fields.length === 0 && (
-                <YStack padding="$4" alignItems="center" gap="$2">
-                  <Text color="$gray11">No skills added yet</Text>
+                <YStack p="$4" items="center" gap="$2">
+                  <Text color="$color11">No skills added yet</Text>
                   <Button onPress={addSkill} icon={Plus}>
                     Add Your First Skill
                   </Button>
@@ -243,7 +243,7 @@ export function ProfileSkillsLeft() {
             </YStack>
 
             {/* Save Button */}
-            <XStack justifyContent="flex-end" paddingTop="$4">
+            <XStack justify="flex-end" paddingTop="$4">
               <Button
                 onPress={handleSubmit(onSubmit)}
                 disabled={!isDirty || isLoading}

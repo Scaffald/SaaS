@@ -77,7 +77,7 @@ export default function CardsPage() {
 
   return (
     <ScrollView flex={1} backgroundColor="$background">
-      <YStack padding="$4" gap="$6" alignItems="center">
+      <YStack p="$4" gap="$6" alignItems="center">
         <Text fontSize="$8" fontWeight="600" color="$color">
           CardStack Component Demo
         </Text>

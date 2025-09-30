@@ -7,9 +7,9 @@ import { YStack, Text, H3, ScrollView } from 'tamagui'
 export function ProfileCertificationsLeft() {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <YStack gap="$4" padding="$4">
+      <YStack gap="$4" p="$4">
         <H3>Certifications</H3>
-        <Text color="$gray11" fontSize="$3">
+        <Text color="$color11" fontSize="$3">
           Add your professional certifications, licenses, and credentials. Include verification
           details and expiration dates.
         </Text>

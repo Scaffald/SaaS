@@ -22,13 +22,13 @@ export function FilterChip({
 }: FilterChipProps) {
   return (
     <XStack
-      alignItems="center"
-      backgroundColor="$background"
+      items="center"
+      bg="$background"
       borderColor="$borderColor"
       borderWidth={1}
-      borderRadius="$4"
-      paddingHorizontal="$3"
-      paddingVertical="$2"
+      rounded="$4"
+      px="$3"
+      py="$2"
       gap="$2"
       theme={color as ThemeName}
     >
@@ -37,7 +37,7 @@ export function FilterChip({
         {label}
       </Text>
       {removable && onRemove && (
-        <Button size="$2" circular backgroundColor="transparent" onPress={onRemove} padding="$1">
+        <Button size="$2" circular bg="transparent" onPress={onRemove} p="$1">
           <X size={12} color="$color" />
         </Button>
       )}

@@ -7,20 +7,20 @@ import { ScaffaldLogo, ScaffaldIcon, BRAND_COLORS } from './index'
  */
 export const ScaffaldLogoDemo = () => {
   return (
-    <YStack gap="$6" padding="$4">
-      <Text fontSize="$8" fontWeight="bold" color="$gray12">
+    <YStack gap="$6" p="$4">
+      <Text fontSize="$8" fontWeight="bold" color="$color12">
         Scaffald Brand Assets Demo
       </Text>
 
       {/* Full Logo Examples */}
       <YStack gap="$4">
-        <Text fontSize="$6" fontWeight="600" color="$gray11">
+        <Text fontSize="$6" fontWeight="600" color="$color11">
           Full Logo Variations
         </Text>
 
         {/* Default Logo */}
         <YStack gap="$2">
-          <Text fontSize="$4" color="$gray10">
+          <Text fontSize="$4" color="$color10">
             Default Logo
           </Text>
           <ScaffaldLogo />
@@ -28,7 +28,7 @@ export const ScaffaldLogoDemo = () => {
 
         {/* Small Logo */}
         <YStack gap="$2">
-          <Text fontSize="$4" color="$gray10">
+          <Text fontSize="$4" color="$color10">
             Small Logo (200px)
           </Text>
           <ScaffaldLogo width={200} height={33} />
@@ -36,7 +36,7 @@ export const ScaffaldLogoDemo = () => {
 
         {/* Custom Colors */}
         <YStack gap="$2">
-          <Text fontSize="$4" color="$gray10">
+          <Text fontSize="$4" color="$color10">
             Custom Colors
           </Text>
           <ScaffaldLogo
@@ -52,30 +52,30 @@ export const ScaffaldLogoDemo = () => {
 
       {/* Icon Examples */}
       <YStack gap="$4">
-        <Text fontSize="$6" fontWeight="600" color="$gray11">
+        <Text fontSize="$6" fontWeight="600" color="$color11">
           Icon Variations
         </Text>
 
-        <XStack gap="$4" alignItems="center">
+        <XStack gap="$4" items="center">
           {/* Small Icon */}
-          <YStack gap="$2" alignItems="center">
-            <Text fontSize="$3" color="$gray10">
+          <YStack gap="$2" items="center">
+            <Text fontSize="$3" color="$color10">
               Small (24px)
             </Text>
             <ScaffaldIcon size={24} />
           </YStack>
 
           {/* Medium Icon */}
-          <YStack gap="$2" alignItems="center">
-            <Text fontSize="$3" color="$gray10">
+          <YStack gap="$2" items="center">
+            <Text fontSize="$3" color="$color10">
               Medium (48px)
             </Text>
             <ScaffaldIcon size={48} />
           </YStack>
 
           {/* Large Icon */}
-          <YStack gap="$2" alignItems="center">
-            <Text fontSize="$3" color="$gray10">
+          <YStack gap="$2" items="center">
+            <Text fontSize="$3" color="$color10">
               Large (72px)
             </Text>
             <ScaffaldIcon size={72} />
@@ -84,10 +84,10 @@ export const ScaffaldLogoDemo = () => {
 
         {/* Custom Icon Colors */}
         <YStack gap="$2">
-          <Text fontSize="$4" color="$gray10">
+          <Text fontSize="$4" color="$color10">
             Custom Icon Colors
           </Text>
-          <XStack gap="$4" alignItems="center">
+          <XStack gap="$4" items="center">
             <ScaffaldIcon
               size={48}
               primaryColor={BRAND_COLORS.success}
@@ -108,59 +108,41 @@ export const ScaffaldLogoDemo = () => {
 
       {/* Usage Examples */}
       <YStack gap="$4">
-        <Text fontSize="$6" fontWeight="600" color="$gray11">
+        <Text fontSize="$6" fontWeight="600" color="$color11">
           Usage Examples
         </Text>
 
         <YStack gap="$2">
-          <Text fontSize="$4" color="$gray10">
+          <Text fontSize="$4" color="$color10">
             Header Logo
           </Text>
-          <XStack
-            alignItems="center"
-            gap="$3"
-            padding="$3"
-            backgroundColor="$gray2"
-            borderRadius="$4"
-          >
+          <XStack items="center" gap="$3" p="$3" bg="$color2" rounded="$4">
             <ScaffaldLogo width={120} height={20} />
-            <Text fontSize="$4" color="$gray11">
+            <Text fontSize="$4" color="$color11">
               Navigation Menu
             </Text>
           </XStack>
         </YStack>
 
         <YStack gap="$2">
-          <Text fontSize="$4" color="$gray10">
+          <Text fontSize="$4" color="$color10">
             App Icon
           </Text>
-          <XStack
-            alignItems="center"
-            gap="$3"
-            padding="$3"
-            backgroundColor="$gray2"
-            borderRadius="$4"
-          >
+          <XStack items="center" gap="$3" p="$3" bg="$color2" rounded="$4">
             <ScaffaldIcon size={32} />
-            <Text fontSize="$4" color="$gray11">
+            <Text fontSize="$4" color="$color11">
               App Title
             </Text>
           </XStack>
         </YStack>
 
         <YStack gap="$2">
-          <Text fontSize="$4" color="$gray10">
+          <Text fontSize="$4" color="$color10">
             Loading State
           </Text>
-          <XStack
-            alignItems="center"
-            gap="$3"
-            padding="$3"
-            backgroundColor="$gray2"
-            borderRadius="$4"
-          >
+          <XStack items="center" gap="$3" p="$3" bg="$color2" rounded="$4">
             <ScaffaldIcon size={24} />
-            <Text fontSize="$4" color="$gray11">
+            <Text fontSize="$4" color="$color11">
               Loading...
             </Text>
           </XStack>

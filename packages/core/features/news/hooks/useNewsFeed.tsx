@@ -111,11 +111,11 @@ export function useMultipleNewsFeeds(feedUrls: string[], maxItemsPerFeed = 3) {
       const results = await Promise.allSettled(feedPromises)
       const feedResults: { [feedUrl: string]: NewsItem[] } = {}
 
-      results.forEach((result) => {
+      for (const result of results) {
         if (result.status === 'fulfilled') {
           feedResults[result.value.feedUrl] = result.value.items
         }
-      })
+      }
 
       return feedResults
     },
@@ -138,9 +138,9 @@ export function useAggregatedNews(feedUrls: string[], maxTotalItems = 10) {
 
     const allItems: NewsItem[] = []
 
-    Object.values(multipleFeeds.data).forEach((items) => {
+    for (const items of Object.values(multipleFeeds.data)) {
       allItems.push(...items)
-    })
+    }
 
     // Sort by publication date (newest first) and limit
     return allItems

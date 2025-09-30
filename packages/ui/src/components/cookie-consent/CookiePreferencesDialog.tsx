@@ -108,8 +108,8 @@ export const CookiePreferencesDialog = () => {
           size="$5"
           gap="$4"
           w="100%"
-          maxWidth={520}
-          maxHeight={600}
+          maxW={520}
+          maxH={600}
         >
           <Dialog.Title>Manage Cookies</Dialog.Title>
 
@@ -118,7 +118,7 @@ export const CookiePreferencesDialog = () => {
             keep critical features running safely.
           </Paragraph>
 
-          <ScrollView maxHeight={360} showsVerticalScrollIndicator={false}>
+          <ScrollView maxH={360} showsVerticalScrollIndicator={false}>
             <YStack gap="$3">
               {categories.map((category) => (
                 <CategoryRow

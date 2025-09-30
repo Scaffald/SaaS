@@ -96,8 +96,8 @@ export const FilterBar = ({
 
   return (
     <YStack gap="$3" width="100%">
-      <XStack gap="$3" width="100%" flexWrap="wrap" alignItems="center">
-        <XStack flexGrow={1} minWidth={200} alignItems="center" position="relative">
+      <XStack gap="$3" width="100%" flexWrap="wrap" items="center">
+        <XStack flexGrow={1} minW={200} items="center" position="relative">
           <AddressAutocomplete
             value={locationQuery}
             onChange={onLocationChange}
@@ -121,7 +121,7 @@ export const FilterBar = ({
             onPress={onLocationRequest}
             disabled={isLocationLoading}
             opacity={locationPermissionStatus === 'denied' ? 0.5 : 1}
-            backgroundColor={isLocationLoading ? '$color3' : 'transparent'}
+            bg={isLocationLoading ? '$color3' : 'transparent'}
             position="absolute"
             right="$2"
             zIndex={10}
@@ -132,10 +132,10 @@ export const FilterBar = ({
         </Button>
       </XStack>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} paddingVertical="$1">
-        <XStack gap="$2" alignItems="center">
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} py="$1">
+        <XStack gap="$2" items="center">
           {filters.length === 0 ? (
-            <XStack alignItems="center" gap="$2">
+            <XStack items="center" gap="$2">
               <Filter size={16} color={theme.color10.val} />
               <Text color="$color11">Add filters to narrow results</Text>
             </XStack>

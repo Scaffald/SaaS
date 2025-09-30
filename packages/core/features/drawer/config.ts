@@ -1,6 +1,14 @@
 import type { JSX } from 'react'
 import { ROUTES, DASHBOARD_ROUTES } from '@app/core/constants/routes'
-import { BarChart3, Map, Users, Building2, User, Cog, Palette } from '@tamagui/lucide-icons'
+import {
+  BarChart3,
+  Map as MapIcon,
+  Users,
+  Building2,
+  User,
+  Cog,
+  Palette,
+} from '@tamagui/lucide-icons'
 import type { DrawerItemConfig, DrawerSectionConfig } from './types'
 
 /**
@@ -27,7 +35,7 @@ export const generateDashboardDrawerItems = (): DrawerItemConfig[] => {
       key: 'workers',
       title: 'Workers',
       href: workersIndexRoute.fullPath,
-      icon: Map,
+      icon: MapIcon,
     })
   }
 

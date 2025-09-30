@@ -18,9 +18,9 @@ export const ResultCard = memo(
         ref={ref}
         borderWidth={1}
         borderColor={isSelected ? '$blue7' : '$color5'}
-        borderRadius="$3"
-        padding="$3"
-        backgroundColor={isSelected ? '$blue2' : '$background'}
+        rounded="$3"
+        p="$3"
+        bg={isSelected ? '$blue2' : '$background'}
         gap="$2"
         pressStyle={{ scale: 0.98 }}
         hoverStyle={{ backgroundColor: '$color2' }}
@@ -31,19 +31,12 @@ export const ResultCard = memo(
         // Add subtle shadow when selected
         style={isSelected ? { boxShadow: '0 2px 4px rgba(59, 130, 246, 0.1)' } : undefined}
       >
-        <XStack justifyContent="space-between" alignItems="center">
+        <XStack justify="space-between" items="center">
           <SizableText size="$5" fontWeight="700">
             {profile.name}
           </SizableText>
-          <XStack alignItems="center" gap="$2">
-            <XStack
-              alignItems="center"
-              gap="$1"
-              backgroundColor="$blue3"
-              borderRadius="$4"
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-            >
+          <XStack items="center" gap="$2">
+            <XStack items="center" gap="$1" bg="$blue3" rounded="$4" px="$2" py="$1">
               <Star size={12} color="$blue11" />
               <Text color="$blue11" fontWeight="700" fontSize="$2">
                 {profile.score}
@@ -57,21 +50,21 @@ export const ResultCard = memo(
         </Paragraph>
 
         <XStack flexWrap="wrap" gap="$2">
-          <XStack alignItems="center" gap="$1">
+          <XStack items="center" gap="$1">
             <Clock3 size={14} color="$color10" />
             <Text color="$color11" fontSize="$2">
               {profile.experienceYears} years
             </Text>
           </XStack>
           {profile.hourlyRate ? (
-            <XStack alignItems="center" gap="$1">
+            <XStack items="center" gap="$1">
               <DollarSign size={14} color="$color10" />
               <Text color="$color11" fontSize="$2">
                 ${profile.hourlyRate}/hr
               </Text>
             </XStack>
           ) : null}
-          <XStack alignItems="center" gap="$1">
+          <XStack items="center" gap="$1">
             <Award size={14} color="$color10" />
             <Text color="$color11" fontSize="$2">
               {profile.locationLabel}
@@ -83,12 +76,12 @@ export const ResultCard = memo(
           {profile.badges.slice(0, 3).map((badge) => (
             <XStack
               key={badge.id}
-              alignItems="center"
+              items="center"
               gap="$1"
-              paddingHorizontal="$1"
-              paddingVertical="$0.5"
-              borderRadius="$8"
-              backgroundColor={
+              px="$1"
+              py="$0.5"
+              rounded="$8"
+              bg={
                 badge.tone === 'success'
                   ? '$green3'
                   : badge.tone === 'warning'
@@ -126,12 +119,12 @@ export const ResultCard = memo(
 
         <XStack gap="$1" flexWrap="wrap">
           {profile.certifications.slice(0, 2).map((certification) => (
-            <Button key={certification} size="$1" theme="surface2" borderRadius="$8">
+            <Button key={certification} size="$1" theme="surface2" rounded="$8">
               {certification}
             </Button>
           ))}
           {profile.skills.slice(0, 3).map((skill) => (
-            <Button key={skill} size="$1" theme="gray" borderRadius="$8">
+            <Button key={skill} size="$1" theme="gray" rounded="$8">
               {skill}
             </Button>
           ))}

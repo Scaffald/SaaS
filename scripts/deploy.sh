@@ -16,7 +16,7 @@ fi
 
 # Check if required tools are installed
 if ! command -v eas &> /dev/null; then
-    echo "❌ Error: EAS CLI is not installed. Install with: yarn global add eas-cli"
+    echo "❌ Error: EAS CLI is not installed. Install with: pnpm global add eas-cli"
     exit 1
 fi
 
@@ -65,18 +65,18 @@ if [ "$ENVIRONMENT" = "production" ] && [ ! -f ".env.production" ]; then
     echo ""
 fi
 
-# Run code quality checks
-echo "🔍 Running code quality checks..."
-if ! yarn check; then
-    echo "❌ Code quality checks failed. Please fix issues before deploying."
+# Run migration validation and code quality checks
+echo "🔍 Running migration validation and code quality checks..."
+if ! pnpm validate:migration; then
+    echo "❌ Migration validation failed. Please fix issues before deploying."
     exit 1
 fi
-echo "✅ Code quality checks passed"
+echo "✅ Migration validation passed"
 echo ""
 
 # Build locally first to catch any issues
 echo "🏗️  Building web application locally..."
-if ! yarn build:web; then
+if ! pnpm web:build; then
     echo "❌ Local build failed. Please fix build issues before deploying."
     exit 1
 fi
@@ -92,9 +92,9 @@ cd apps/expo
 
 # For web deployments, we use expo export instead of eas build
 if [ "$ENVIRONMENT" = "production" ]; then
-    NODE_ENV=production yarn web:build
+    NODE_ENV=production pnpm web:build
 else
-    yarn web:build
+    pnpm web:build
 fi
 
 # Note: After export, you would typically upload the dist/ folder to your hosting provider

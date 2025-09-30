@@ -41,7 +41,7 @@ const mapping = [
 
 const FormComponent = (props: FormProps) => {
   return (
-    <Form asChild {...props} minWidth="100%">
+    <Form asChild {...props} minW="100%">
       <FormWrapper tag="form">{props.children}</FormWrapper>
     </Form>
   )
@@ -68,7 +68,7 @@ export const SchemaForm: typeof _SchemaForm = ({ ...props }) => {
         const childRenderer = props.children as SchemaFormChildRenderer | undefined
 
         return (
-          <FormWrapper.Body minWidth="100%" $platform-native={{ miw: '100%' }}>
+          <FormWrapper.Body minW="100%" $platform-native={{ miw: '100%' }}>
             {childRenderer
               ? typeof childRenderer === 'function'
                 ? childRenderer(fields)

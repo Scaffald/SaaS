@@ -94,12 +94,12 @@ export const LoginScreen = () => {
       {submitSuccess ? (
         <CheckYourEmail />
       ) : (
-        <YStack gap="$4" padding="$4" maxWidth={400} width="100%">
-          <YStack gap="$4" mb="$3" alignItems="center">
+        <YStack gap="$4" p="$4" maxW={400} width="100%">
+          <YStack gap="$4" mb="$3" items="center">
             <ScaffaldLogo width={200} height={33} />
-            <YStack gap="$2" alignItems="center">
+            <YStack gap="$2" items="center">
               <H2 $sm={{ size: '$8' }}>Get started</H2>
-              <Paragraph theme="alt2" textAlign="center">
+              <Paragraph theme="alt2" text="center">
                 Enter your email and we&apos;ll send a one-time sign-in link.
               </Paragraph>
             </YStack>

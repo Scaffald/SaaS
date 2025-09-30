@@ -50,14 +50,7 @@ export const DrawerHeader = ({ onNavigate }: DrawerHeaderProps) => {
 
   return (
     <YStack gap="$4" width="100%" flexShrink={0}>
-      <Card
-        px="$4"
-        py="$3"
-        gap="$3"
-        borderRadius="$5"
-        borderColor="$color4"
-        backgroundColor="$color3"
-      >
+      <Card px="$4" py="$3" gap="$3" rounded="$5" borderColor="$color4" bg="$color3">
         <Link href={profileHref} asChild>
           <ListItem
             hoverTheme

@@ -24,11 +24,11 @@ jobs:
       - name: Install
         uses: ./.github/actions/install
 
-      - name: Format, Lint & Type Check (yarn check)
-        run: yarn check
+      - name: Format, Lint & Type Check (pnpm check)
+        run: pnpm check
 
       - name: Build all packages
-        run: yarn build
+        run: pnpm build
 
   monorepo-integrity:
     name: "Monorepo Integrity Checks"
@@ -45,19 +45,19 @@ jobs:
       - name: Install
         uses: ./.github/actions/install
 
-      - name: Check for duplicate dependencies in lock file (run `yarn dedupe` to fix)
-        run: yarn dedupe --check
+      - name: Check for duplicate dependencies in lock file (run `pnpm dedupe` to fix)
+        run: pnpm dedupe --check
 
-      - name: Check for yarn constraints
-        run: yarn constraints
+      - name: Check for pnpm constraints
+        run: pnpm constraints
 
       - name: Check for conflicting dependency versions across the monorepo
-        run: yarn check-deps
+        run: pnpm check-deps
 
       - name: Check for circular imports across the monorepo
         run: |
           chmod +x ./scripts/check-circular-deps.sh 
-          yarn check-circular-deps
+          pnpm check-circular-deps
 
       - name: Check the linting using `sherif`
-        run: yarn lint-sherif
+        run: pnpm lint-sherif

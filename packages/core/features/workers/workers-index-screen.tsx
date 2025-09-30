@@ -141,7 +141,7 @@ export const WorkersIndexScreen = () => {
 
   return (
     <YStack flex={1} height="100vh" overflow="hidden">
-      <YStack padding="$5" gap="$4" flexShrink={0}>
+      <YStack p="$5" gap="$4" flexShrink={0}>
         <FilterBar
           locationQuery={locationQuery}
           onLocationChange={setLocationQuery}
@@ -162,7 +162,7 @@ export const WorkersIndexScreen = () => {
         />
       </YStack>
 
-      <YStack flex={1} paddingHorizontal="$5" paddingBottom="$5" overflow="hidden">
+      <YStack flex={1} px="$5" paddingBottom="$5" overflow="hidden">
         {isSmallScreen ? (
           <YStack gap="$4" flex={1} overflow="hidden">
             <YStack height={320} flexShrink={0}>
@@ -186,7 +186,7 @@ export const WorkersIndexScreen = () => {
           </YStack>
         ) : (
           <XStack flex={1} gap="$4" overflow="hidden">
-            <YStack flexBasis={380} maxWidth={420} gap="$3" overflow="hidden">
+            <YStack flexBasis={380} maxW={420} gap="$3" overflow="hidden">
               <ResultList
                 ref={resultListRef}
                 profiles={talentProfiles}
@@ -211,8 +211,8 @@ export const WorkersIndexScreen = () => {
       <Sheet modal open={filtersOpen} onOpenChange={setFiltersOpen} snapPoints={[70]}>
         <Sheet.Overlay />
         <Sheet.Handle />
-        <Sheet.Frame padding="$5" gap="$4">
-          <XStack justifyContent="space-between" alignItems="center">
+        <Sheet.Frame p="$5" gap="$4">
+          <XStack justify="space-between" items="center">
             <Text fontSize="$5" fontWeight="700">
               Filters
             </Text>
@@ -234,12 +234,12 @@ export const WorkersIndexScreen = () => {
             {allFilters.map((filter) => (
               <XStack
                 key={filter.id}
-                justifyContent="space-between"
-                alignItems="center"
+                justify="space-between"
+                items="center"
                 borderWidth={1}
                 borderColor="$color5"
-                borderRadius="$3"
-                padding="$3"
+                rounded="$3"
+                p="$3"
               >
                 <Text fontWeight="600">{filter.label}</Text>
                 <Button
@@ -260,7 +260,7 @@ export const WorkersIndexScreen = () => {
               </XStack>
             ))}
             {allFilters.length === 0 ? (
-              <XStack alignItems="center" gap="$2">
+              <XStack items="center" gap="$2">
                 <Filter size={16} color="$color10" />
                 <Text color="$color10">No filters applied</Text>
               </XStack>
@@ -277,8 +277,8 @@ export const WorkersIndexScreen = () => {
       >
         <Sheet.Overlay />
         <Sheet.Handle />
-        <Sheet.Frame padding="$5" gap="$4">
-          <XStack justifyContent="space-between" alignItems="center">
+        <Sheet.Frame p="$5" gap="$4">
+          <XStack justify="space-between" items="center">
             <Text fontSize="$5" fontWeight="700">
               Adjust Search Radius
             </Text>

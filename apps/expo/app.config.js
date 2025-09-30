@@ -1,14 +1,19 @@
 import 'dotenv/config'
 
+// Load environment-specific variables
+const IS_DEV = process.env.APP_ENV === 'development'
+const IS_STAGING = process.env.APP_ENV === 'staging'
+const IS_PRODUCTION = process.env.APP_ENV === 'production'
+
 // Load production environment variables if in production mode
-if (process.env.NODE_ENV === 'production') {
+if (IS_PRODUCTION) {
   require('dotenv').config({ path: '.env.production' })
 }
 
 export default {
   expo: {
-    name: 'scaffald',
-    slug: 'scaffald',
+    name: IS_PRODUCTION ? 'SCF-Neue' : `SCF-Neue (${process.env.APP_ENV || 'dev'})`,
+    slug: 'scf-neue',
     jsEngine: 'hermes',
     scheme: 'myapp',
     version: '1.0.0',
@@ -131,6 +136,9 @@ export default {
     },
     runtimeVersion: {
       policy: 'appVersion',
+    },
+    experiments: {
+      autolinkingModuleResolution: true,
     },
     owner: 'Unicorn',
   },

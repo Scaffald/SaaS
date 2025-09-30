@@ -50,13 +50,13 @@ export function ProfileExperienceRight() {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <YStack gap="$4" padding="$4" flex={1}>
+      <YStack gap="$4" p="$4" flex={1}>
         <H4>Work Experience</H4>
 
         <YStack gap="$4">
           {/* Experience Entries */}
           <YStack gap="$3">
-            <XStack justifyContent="space-between" alignItems="center">
+            <XStack justify="space-between" items="center">
               <Text fontWeight="600">Your Work Experience</Text>
               <Button size="$3" onPress={addExperienceEntry} icon={Plus}>
                 Add Experience
@@ -67,12 +67,12 @@ export function ProfileExperienceRight() {
               <YStack
                 key={field.id}
                 gap="$3"
-                padding="$3"
+                p="$3"
                 borderWidth={1}
                 borderColor="$borderColor"
-                borderRadius="$4"
+                rounded="$4"
               >
-                <XStack justifyContent="space-between" alignItems="center">
+                <XStack justify="space-between" items="center">
                   <Text fontWeight="600">Experience {index + 1}</Text>
                   <Button size="$2" variant="outlined" onPress={() => remove(index)} icon={X}>
                     Remove
@@ -196,7 +196,7 @@ export function ProfileExperienceRight() {
                 </XStack>
 
                 {/* Current Job Toggle */}
-                <XStack gap="$3" alignItems="center">
+                <XStack gap="$3" items="center">
                   <Text>Currently working here</Text>
                   <Controller
                     name={`experience_entries.${index}.is_current`}
@@ -218,7 +218,7 @@ export function ProfileExperienceRight() {
                         placeholder="Describe your role, responsibilities, and key achievements..."
                         value={field.value || ''}
                         onChangeText={field.onChange}
-                        minHeight={100}
+                        minH={100}
                       />
                     )}
                   />
@@ -259,7 +259,7 @@ export function ProfileExperienceRight() {
                         onChangeText={(text) =>
                           field.onChange(text ? text.split('\n').filter((a) => a.trim()) : [])
                         }
-                        minHeight={80}
+                        minH={80}
                       />
                     )}
                   />
@@ -268,8 +268,8 @@ export function ProfileExperienceRight() {
             ))}
 
             {fields.length === 0 && (
-              <YStack padding="$4" alignItems="center" gap="$2">
-                <Text color="$gray11">No work experience added yet</Text>
+              <YStack p="$4" items="center" gap="$2">
+                <Text color="$color11">No work experience added yet</Text>
                 <Button onPress={addExperienceEntry} icon={Plus}>
                   Add Your First Job
                 </Button>
@@ -278,7 +278,7 @@ export function ProfileExperienceRight() {
           </YStack>
 
           {/* Save Button */}
-          <XStack justifyContent="flex-end" paddingTop="$4">
+          <XStack justify="flex-end" paddingTop="$4">
             <Button
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}

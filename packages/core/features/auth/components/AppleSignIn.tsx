@@ -21,9 +21,9 @@ export function AppleSignIn() {
 
   return (
     <Button
-      borderRadius="$10"
+      rounded="$10"
       flex={1}
-      backgroundColor="$color12"
+      bg="$color12"
       color="$color1"
       borderColor="$borderColor"
       onPress={() => handleOAuthSignIn()}

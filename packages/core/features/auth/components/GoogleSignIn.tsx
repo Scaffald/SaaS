@@ -20,9 +20,9 @@ export function GoogleSignIn() {
 
   return (
     <Button
-      borderRadius="$10"
+      rounded="$10"
       flex={1}
-      backgroundColor="$color1"
+      bg="$color1"
       color="$color12"
       borderColor="$borderColor"
       onPress={() => handleOAuthSignIn()}

@@ -1,54 +1,26 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "rootDir": ".",
-    "paths": {
-      "@app/core": ["packages/core"],
-      "@app/core/*": ["packages/core/*"],
-      "@app/ui": ["packages/ui"],
-      "@app/ui/*": ["packages/ui/*"],
-      "@app/supabase": ["supabase"],
-      "@app/supabase/*": ["supabase/*"]
-    },
-    "importHelpers": true,
-    "allowJs": false,
+    "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "downlevelIteration": true,
     "esModuleInterop": true,
-    "preserveSymlinks": true,
-    "incremental": true,
-    "module": "ESNext",
-    "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
-    "noEmitOnError": false,
-    "noImplicitAny": false,
-    "noImplicitReturns": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "experimentalDecorators": true,
-    "useUnknownInCatchVariables": false,
-    "preserveConstEnums": true,
-    // DONT DO THIS so jsdoc will remain
-    "removeComments": false,
-    "strict": true,
-    "skipLibCheck": true,
-    "typeRoots": ["node_modules/@types", "environment.d.ts"],
-    "sourceMap": false,
-    "target": "ESNext",
-    "types": ["node"],
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
     "resolveJsonModule": true,
-    "plugins": [
-      {
-        // docs: https://github.com/nderscore/tamagui-typescript-plugin#readme
-        "name": "@nderscore/tamagui-typescript-plugin",
-        "pathToApp": "apps/next"
-      }
-    ]
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "es2022",
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@app/core": ["./packages/core"],
+      "@app/ui": ["./packages/ui"],
+      "@app/supabase": ["./packages/supabase"]
+    }
   },
-  "exclude": ["_"],
-  "typeAcquisition": {
-    "enable": true
-  }
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
+  "exclude": ["node_modules", "**/node_modules/**", "**/.turbo/**"]
 }

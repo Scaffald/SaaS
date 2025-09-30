@@ -134,9 +134,9 @@ export function AddressForm({
 
         // Trigger validation if available
         if (trigger) {
-          Object.values(fieldMapping).forEach((fieldName) => {
+          for (const fieldName of Object.values(fieldMapping)) {
             if (fieldName) trigger(fieldName)
-          })
+          }
         }
       }
     },
@@ -273,7 +273,6 @@ export function AddressForm({
         </YStack>
       )
 
-    case 'hybrid':
     default:
       return (
         <YStack gap="$3" position="relative" zIndex={999}>
@@ -300,13 +299,13 @@ export function AddressForm({
             size="$3"
             onPress={() => setIsExpanded(!isExpanded)}
             disabled={disabled}
-            alignSelf="flex-start"
-            backgroundColor="transparent"
+            self="flex-start"
+            bg="transparent"
             borderWidth={0}
-            paddingHorizontal="$2"
-            paddingVertical="$1"
+            px="$2"
+            py="$1"
           >
-            <XStack alignItems="center" gap="$2">
+            <XStack items="center" gap="$2">
               {isExpanded ? (
                 <ChevronDown size={16} color="$color11" />
               ) : (
@@ -333,7 +332,7 @@ export function AddressForm({
                 onChangeText={(text) => handleFieldChange('streetAddress', text)}
                 disabled={disabled}
                 borderColor={currentAddress.streetAddress ? '$borderColor' : '$color6'}
-                backgroundColor={currentAddress.streetAddress ? '$background' : '$color2'}
+                bg={currentAddress.streetAddress ? '$background' : '$color2'}
               />
 
               {/* City and State */}
@@ -345,7 +344,7 @@ export function AddressForm({
                   disabled={disabled}
                   flex={1}
                   borderColor={currentAddress.locality ? '$borderColor' : '$color6'}
-                  backgroundColor={currentAddress.locality ? '$background' : '$color2'}
+                  bg={currentAddress.locality ? '$background' : '$color2'}
                 />
                 <Input
                   placeholder="State"
@@ -362,7 +361,7 @@ export function AddressForm({
                       ? '$borderColor'
                       : '$color6'
                   }
-                  backgroundColor={
+                  bg={
                     currentAddress.stateAbbreviation || currentAddress.administrativeAreaLevel1
                       ? '$background'
                       : '$color2'
@@ -379,7 +378,7 @@ export function AddressForm({
                   disabled={disabled}
                   flex={1}
                   borderColor={currentAddress.postalCode ? '$borderColor' : '$color6'}
-                  backgroundColor={currentAddress.postalCode ? '$background' : '$color2'}
+                  bg={currentAddress.postalCode ? '$background' : '$color2'}
                 />
                 <Input
                   placeholder="Country"
@@ -388,7 +387,7 @@ export function AddressForm({
                   disabled={disabled}
                   flex={2}
                   borderColor={currentAddress.country ? '$borderColor' : '$color6'}
-                  backgroundColor={currentAddress.country ? '$background' : '$color2'}
+                  bg={currentAddress.country ? '$background' : '$color2'}
                 />
               </XStack>
 
@@ -399,7 +398,7 @@ export function AddressForm({
                 <Button
                   variant="outlined"
                   size="$3"
-                  alignSelf="flex-start"
+                  self="flex-start"
                   onPress={() => {
                     const emptyAddress = {
                       streetNumber: '',

@@ -7,9 +7,9 @@ import { YStack, Text, H3, ScrollView } from 'tamagui'
 export function ProfileSkillsRight() {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <YStack gap="$4" padding="$4">
+      <YStack gap="$4" p="$4">
         <H3>Skills & Expertise</H3>
-        <Text color="$gray11" fontSize="$3">
+        <Text color="$color11" fontSize="$3">
           Showcase your skills and expertise with proficiency levels. Add endorsements and highlight
           your strongest areas.
         </Text>

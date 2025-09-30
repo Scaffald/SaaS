@@ -129,9 +129,9 @@ const parseRssFeed = (xml: string): NewsArticle[] => {
     // Simple XML parsing for RSS feeds
     const items: NewsArticle[] = []
     const itemRegex = /<item[^>]*>([\s\S]*?)<\/item>/g
-    let match
+    let match: RegExpExecArray | null = itemRegex.exec(xml)
 
-    while ((match = itemRegex.exec(xml)) !== null) {
+    while (match !== null) {
       const itemXml = match[1]
 
       const titleMatch = itemXml.match(/<title[^>]*>([\s\S]*?)<\/title>/)
@@ -155,6 +155,7 @@ const parseRssFeed = (xml: string): NewsArticle[] => {
           publishedAt: pubDate,
         })
       }
+      match = itemRegex.exec(xml)
     }
 
     return items

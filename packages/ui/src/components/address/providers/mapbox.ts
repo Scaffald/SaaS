@@ -1,4 +1,10 @@
-import { BaseGeocodingProvider, AddressUtils } from './base'
+import {
+  BaseGeocodingProvider,
+  getStateAbbreviation,
+  normalizeComponent,
+  generateId,
+  isValidCoordinates,
+} from './base'
 import type { AddressResult, SearchOptions, ProviderConfig } from '../types'
 import { GeocodingError } from '../types'
 
@@ -64,10 +70,6 @@ interface AddressComponents {
 export class MapboxProvider extends BaseGeocodingProvider {
   private readonly baseUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places'
 
-  constructor(config: ProviderConfig) {
-    super(config)
-  }
-
   /**
    * Search for addresses using Mapbox Places
    */
@@ -113,7 +115,7 @@ export class MapboxProvider extends BaseGeocodingProvider {
     lng: number,
     options: SearchOptions = {}
   ): Promise<AddressResult | null> {
-    if (!AddressUtils.isValidCoordinates(lat, lng)) {
+    if (!isValidCoordinates(lat, lng)) {
       throw new GeocodingError('Invalid coordinates provided', 'INVALID_COORDINATES', 'mapbox')
     }
 
@@ -212,7 +214,7 @@ export class MapboxProvider extends BaseGeocodingProvider {
     const streetAddress = [components.streetNumber, components.route].filter(Boolean).join(' ')
 
     return {
-      id: AddressUtils.generateId(formattedAddress, coordinates),
+      id: generateId(formattedAddress, coordinates),
       formattedAddress,
       streetNumber: components.streetNumber,
       route: components.route,
@@ -220,8 +222,7 @@ export class MapboxProvider extends BaseGeocodingProvider {
       locality: components.locality,
       administrativeAreaLevel1: components.administrativeAreaLevel1,
       stateAbbreviation:
-        components.stateAbbreviation ||
-        AddressUtils.getStateAbbreviation(components.administrativeAreaLevel1),
+        components.stateAbbreviation || getStateAbbreviation(components.administrativeAreaLevel1),
       postalCode: components.postalCode,
       country: components.country,
       countryCode: components.countryCode,
@@ -251,7 +252,7 @@ export class MapboxProvider extends BaseGeocodingProvider {
 
     // Extract from feature properties
     if (properties.address) {
-      components.streetNumber = AddressUtils.normalizeComponent(properties.address)
+      components.streetNumber = normalizeComponent(properties.address)
     }
 
     // Extract street name from place name or text
@@ -269,14 +270,14 @@ export class MapboxProvider extends BaseGeocodingProvider {
         }
       }
     } else {
-      components.route = AddressUtils.normalizeComponent(feature.text)
+      components.route = normalizeComponent(feature.text)
     }
 
     // Extract from context hierarchy
     for (const item of context) {
       const itemType = item.id?.split('.')[0]
-      const text = AddressUtils.normalizeComponent(item.text)
-      const shortCode = AddressUtils.normalizeComponent(item.short_code)
+      const text = normalizeComponent(item.text)
+      const shortCode = normalizeComponent(item.short_code)
 
       switch (itemType) {
         case 'postcode':
@@ -348,7 +349,7 @@ export class MapboxProvider extends BaseGeocodingProvider {
   ): string {
     // Use Mapbox's place_name if available as it's well formatted
     if (feature.place_name) {
-      return AddressUtils.normalizeComponent(feature.place_name)
+      return normalizeComponent(feature.place_name)
     }
 
     // Fallback: construct from components

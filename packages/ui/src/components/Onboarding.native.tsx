@@ -75,18 +75,24 @@ export const Onboarding = ({ onOnboarded, steps }: OnboardingProps) => {
               const isActive = idx === stepIdx
               return (
                 <YStack
-                  key={idx}
+                  key={`onboarding-step-${step.theme}-${idx}`}
                   w={dimensions.width - (safeAreaInsets.left + safeAreaInsets.right)}
                 >
-                  {isActive && <step.Content key={idx} />}
+                  {isActive && <step.Content key={`onboarding-content-${step.theme}-${idx}`} />}
                 </YStack>
               )
             })}
           </ScrollView>
           <XStack gap={10} jc="center" my="$4">
-            {Array.from(Array(stepsCount)).map((_, idx) => {
+            {Array.from({ length: stepsCount }, (_, idx) => {
               const isActive = idx === stepIdx
-              return <Point key={idx} active={isActive} onPress={() => setStepIdx(idx)} />
+              return (
+                <Point
+                  key={`point-${idx}-${stepsCount}`}
+                  active={isActive}
+                  onPress={() => setStepIdx(idx)}
+                />
+              )
             })}
           </XStack>
         </YStack>

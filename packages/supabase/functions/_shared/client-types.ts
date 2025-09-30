@@ -103,7 +103,7 @@ export type UploadAvatarOutput = {
 export type AppRouter = {
   profile: {
     getGeneral: {
-      input: void
+      input: undefined
       output: ProfileGeneralOutput
     }
     updateGeneral: {
@@ -111,7 +111,7 @@ export type AppRouter = {
       output: { success: boolean }
     }
     getEmployment: {
-      input: void
+      input: undefined
       output: ProfileEmploymentOutput
     }
     updateEmployment: {
@@ -119,7 +119,7 @@ export type AppRouter = {
       output: { success: boolean }
     }
     getSkills: {
-      input: void
+      input: undefined
       output: ProfileSkillsOutput
     }
     updateSkills: {

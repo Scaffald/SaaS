@@ -85,7 +85,7 @@ export const DirectionSlide = ({ direction, setDirection }: DirectionSlideProps)
   const directions = ['left', 'right', 'top', 'bottom'] as const
 
   return (
-    <View flexDirection="row" gap="$2">
+    <View flex="row" gap="$2">
       <XStack gap="$2" width="100%">
         {directions.map((dir) => {
           const active = dir === direction
@@ -93,12 +93,12 @@ export const DirectionSlide = ({ direction, setDirection }: DirectionSlideProps)
             <View
               key={dir}
               flex={1}
-              backgroundColor={active ? '$color12' : '$color4'}
+              bg={active ? '$color12' : '$color4'}
               cursor="pointer"
               pressStyle={{ opacity: 0.7 }}
               onPress={() => setDirection(dir)}
-              alignItems="center"
-              justifyContent="center"
+              items="center"
+              justify="center"
             >
               <Text
                 color={active ? '$color1' : '$color10'}
@@ -186,7 +186,7 @@ export const StackedCards = ({
     <View position="relative" width={width} height={200}>
       {visibleCards.map((card, stackIndex) => (
         <View
-          key={`${currentIndex}-${stackIndex}`}
+          key={`card-${currentIndex}-${stackIndex}-${card.id || card.title || stackIndex}`}
           position="absolute"
           top={stackIndex * 8}
           left={stackIndex * 4}
@@ -248,7 +248,7 @@ export const CardStackDemo = () => {
   const [direction, setDirection] = useState<'left' | 'right' | 'top' | 'bottom'>('left')
 
   return (
-    <YStack maxWidth="100%" gap="$6" alignItems="center">
+    <YStack maxW="100%" gap="$6" items="center">
       <CardStack key={direction} direction={direction} />
       <DirectionSlide direction={direction} setDirection={setDirection} />
     </YStack>

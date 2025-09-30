@@ -141,14 +141,14 @@ const sanitiseSelections = (
 ) => {
   const defaults = buildSelections(categories)
   const next: CookieConsentSelections = {}
-  categories.forEach((category) => {
+  for (const category of categories) {
     const existing = selections[category.id]
     next[category.id] = category.required
       ? true
       : typeof existing === 'boolean'
         ? existing
         : defaults[category.id]
-  })
+  }
   return next
 }
 

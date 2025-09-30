@@ -84,7 +84,7 @@ export const DrawerLink = ({
   const renderRightSide = () => (
     <XStack ai="center" gap="$2">
       {item.badge && (
-        <XStack px="$2" py="$1" br="$10" bg="$red9" minWidth={20} ai="center">
+        <XStack px="$2" py="$1" br="$10" bg="$red9" minW={20} ai="center">
           <Paragraph size="$1" color="$color12" fow="600">
             {item.badge}
           </Paragraph>

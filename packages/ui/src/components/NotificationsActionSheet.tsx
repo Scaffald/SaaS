@@ -72,7 +72,6 @@ export const NotificationsActionSheet = ({ open, onOpenChange }: NotificationsAc
         return CheckCircle
       case 'warning':
         return AlertCircle
-      case 'info':
       default:
         return Info
     }
@@ -84,7 +83,6 @@ export const NotificationsActionSheet = ({ open, onOpenChange }: NotificationsAc
         return '$green10'
       case 'warning':
         return '$orange10'
-      case 'info':
       default:
         return '$blue10'
     }
@@ -96,23 +94,16 @@ export const NotificationsActionSheet = ({ open, onOpenChange }: NotificationsAc
     <Sheet modal open={open} onOpenChange={onOpenChange} snapPoints={[85]} dismissOnSnapToBottom>
       <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
       <Sheet.Handle />
-      <Sheet.Frame padding="$4" gap="$4">
+      <Sheet.Frame p="$4" gap="$4">
         {/* Header */}
-        <XStack justifyContent="space-between" alignItems="center">
-          <XStack alignItems="center" gap="$3">
+        <XStack justify="space-between" items="center">
+          <XStack items="center" gap="$3">
             <Bell size={20} color="$color11" />
             <Text fontSize="$5" fontWeight="700" color="$color12">
               Notifications
             </Text>
             {unreadCount > 0 && (
-              <YStack
-                backgroundColor="$red9"
-                borderRadius="$10"
-                paddingHorizontal="$2"
-                paddingVertical="$1"
-                minWidth={20}
-                alignItems="center"
-              >
+              <YStack bg="$red9" rounded="$10" px="$2" py="$1" minW={20} items="center">
                 <Text fontSize="$2" fontWeight="600" color="white">
                   {unreadCount}
                 </Text>
@@ -124,7 +115,7 @@ export const NotificationsActionSheet = ({ open, onOpenChange }: NotificationsAc
             circular
             icon={X}
             onPress={() => onOpenChange(false)}
-            backgroundColor="transparent"
+            bg="transparent"
             borderWidth={0}
           />
         </XStack>
@@ -138,17 +129,17 @@ export const NotificationsActionSheet = ({ open, onOpenChange }: NotificationsAc
               return (
                 <Card
                   key={notification.id}
-                  padding="$3"
-                  backgroundColor={notification.read ? '$color2' : '$color3'}
+                  p="$3"
+                  bg={notification.read ? '$color2' : '$color3'}
                   borderWidth={notification.read ? 0 : 1}
                   borderColor="$color5"
-                  borderRadius="$3"
+                  rounded="$3"
                   opacity={notification.read ? 0.7 : 1}
                 >
-                  <XStack gap="$3" alignItems="flex-start">
+                  <XStack gap="$3" items="flex-start">
                     <IconComponent size={18} color={iconColor} />
                     <YStack flex={1} gap="$2">
-                      <XStack justifyContent="space-between" alignItems="flex-start">
+                      <XStack justify="space-between" items="flex-start">
                         <Text
                           fontSize="$3"
                           fontWeight={notification.read ? 'normal' : '600'}
@@ -158,18 +149,13 @@ export const NotificationsActionSheet = ({ open, onOpenChange }: NotificationsAc
                           {notification.title}
                         </Text>
                         {!notification.read && (
-                          <YStack
-                            width={6}
-                            height={6}
-                            backgroundColor="$blue9"
-                            borderRadius="$10"
-                          />
+                          <YStack width={6} height={6} bg="$blue9" rounded="$10" />
                         )}
                       </XStack>
                       <Text fontSize="$2" color="$color11" lineHeight="$3">
                         {notification.message}
                       </Text>
-                      <Text fontSize="$1" color="$color10" marginTop="$1">
+                      <Text fontSize="$1" color="$color10" mt="$1">
                         {notification.timestamp}
                       </Text>
                     </YStack>

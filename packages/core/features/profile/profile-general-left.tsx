@@ -100,7 +100,7 @@ export function ProfileGeneralLeft() {
 
   if (isLoadingProfile) {
     return (
-      <YStack gap="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
+      <YStack gap="$4" p="$4" flex={1} justify="center" items="center">
         <Spinner size="large" />
         <Text>Loading profile...</Text>
       </YStack>
@@ -114,7 +114,7 @@ export function ProfileGeneralLeft() {
 
         <YStack gap="$4">
           {/* Avatar Section */}
-          <YStack gap="$3" alignItems="center">
+          <YStack gap="$3" items="center">
             <Text fontWeight="600">Profile Photo</Text>
             <AvatarImagePicker
               value={getAvatarUrl(avatarPath) || ''}
@@ -150,7 +150,7 @@ export function ProfileGeneralLeft() {
               placeholder="Upload Avatar"
             />
             {uploadAvatarMutation.isPending && (
-              <Text fontSize="$2" color="$gray10">
+              <Text fontSize="$2" color="$color10">
                 Uploading avatar...
               </Text>
             )}
@@ -212,7 +212,7 @@ export function ProfileGeneralLeft() {
                   placeholder="Tell us about yourself..."
                   value={field.value || ''}
                   onChangeText={field.onChange}
-                  minHeight={100}
+                  minH={100}
                   borderColor={errors.about ? '$red8' : '$borderColor'}
                 />
               )}
@@ -256,18 +256,18 @@ export function ProfileGeneralLeft() {
                   autoCapitalize="none"
                   editable={false}
                   opacity={0.7}
-                  backgroundColor="$gray2"
-                  borderColor="$gray6"
+                  bg="$color2"
+                  borderColor="$color6"
                 />
               )}
             />
-            <Text color="$gray10" fontSize="$2">
+            <Text color="$color10" fontSize="$2">
               Email changes must be made through account settings
             </Text>
           </YStack>
 
           {/* Save Button */}
-          <XStack justifyContent="flex-end" paddingTop="$4">
+          <XStack justify="flex-end" paddingTop="$4">
             <Button
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}

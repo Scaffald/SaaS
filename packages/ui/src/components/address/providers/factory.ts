@@ -3,83 +3,82 @@ import { GeocodingError } from '../types'
 import { MapboxProvider } from './mapbox'
 
 /**
- * Factory class for creating geocoding providers
+ * Factory functions for creating geocoding providers
  */
-export class GeocodingProviderFactory {
-  /**
-   * Create a provider instance based on configuration
-   */
-  static createProvider(config: ProviderConfig): GeocodingProvider {
-    switch (config.provider) {
-      case 'mapbox':
-        return new MapboxProvider(config)
-      default:
-        throw new GeocodingError(
-          `Unsupported geocoding provider: ${config.provider}. Only 'mapbox' is supported.`,
-          'UNSUPPORTED_PROVIDER',
-          config.provider || 'unknown'
-        )
-    }
-  }
 
-  /**
-   * Create provider from environment variables
-   */
-  static createFromEnvironment(): GeocodingProvider {
-    const provider = (process.env.GEOCODING_PROVIDER || 'mapbox') as 'mapbox'
-    const apiKey = this.getApiKeyFromEnvironment(provider)
-
-    if (!apiKey) {
+/**
+ * Create a provider instance based on configuration
+ */
+export function createProvider(config: ProviderConfig): GeocodingProvider {
+  switch (config.provider) {
+    case 'mapbox':
+      return new MapboxProvider(config)
+    default:
       throw new GeocodingError(
-        `API key not found for ${provider} provider. Set EXPO_PUBLIC_MAPBOX_TOKEN`,
-        'MISSING_API_KEY',
-        provider
+        `Unsupported geocoding provider: ${config.provider}. Only 'mapbox' is supported.`,
+        'UNSUPPORTED_PROVIDER',
+        config.provider || 'unknown'
       )
-    }
+  }
+}
 
-    const config: ProviderConfig = {
-      provider,
-      apiKey,
-      defaultCountry: process.env.GEOCODING_DEFAULT_COUNTRY || 'US',
-      language: process.env.GEOCODING_LANGUAGE || 'en',
-    }
+/**
+ * Create provider from environment variables
+ */
+export function createFromEnvironment(): GeocodingProvider {
+  const provider = (process.env.GEOCODING_PROVIDER || 'mapbox') as 'mapbox'
+  const apiKey = getApiKeyFromEnvironment(provider)
 
-    return this.createProvider(config)
+  if (!apiKey) {
+    throw new GeocodingError(
+      `API key not found for ${provider} provider. Set EXPO_PUBLIC_MAPBOX_TOKEN`,
+      'MISSING_API_KEY',
+      provider
+    )
   }
 
-  /**
-   * Get API key from environment variables
-   */
-  private static getApiKeyFromEnvironment(_provider: string): string {
-    // Check provider-specific key first
-    const providerKey = process.env.EXPO_PUBLIC_MAPBOX_TOKEN
-    if (providerKey) return providerKey
-
-    // Fallback to generic key
-    const genericKey = process.env.EXPO_PUBLIC_MAPBOX_TOKEN
-    if (genericKey) return genericKey
-
-    return ''
+  const config: ProviderConfig = {
+    provider,
+    apiKey,
+    defaultCountry: process.env.GEOCODING_DEFAULT_COUNTRY || 'US',
+    language: process.env.GEOCODING_LANGUAGE || 'en',
   }
 
-  /**
-   * Validate provider configuration
-   */
-  static validateConfig(config: ProviderConfig): boolean {
-    try {
-      this.createProvider(config)
-      return true
-    } catch {
-      return false
-    }
-  }
+  return createProvider(config)
+}
 
-  /**
-   * Get supported providers
-   */
-  static getSupportedProviders(): Array<'mapbox'> {
-    return ['mapbox']
+/**
+ * Get API key from environment variables
+ */
+export function getApiKeyFromEnvironment(_provider: string): string {
+  // Check provider-specific key first
+  const providerKey = process.env.EXPO_PUBLIC_MAPBOX_TOKEN
+  if (providerKey) return providerKey
+
+  // Fallback to generic key
+  const genericKey = process.env.EXPO_PUBLIC_MAPBOX_TOKEN
+  if (genericKey) return genericKey
+
+  return ''
+}
+
+/**
+ * Validate provider configuration
+ */
+export function validateConfig(config: ProviderConfig): boolean {
+  try {
+    createProvider(config)
+    return true
+  } catch {
+    return false
   }
+}
+
+/**
+ * Get supported providers
+ */
+export function getSupportedProviders(): Array<'mapbox'> {
+  return ['mapbox']
 }
 
 /**
@@ -90,10 +89,10 @@ export class GeocodingService {
   private fallbackProvider?: GeocodingProvider
 
   constructor(primaryConfig: ProviderConfig, fallbackConfig?: ProviderConfig) {
-    this.primaryProvider = GeocodingProviderFactory.createProvider(primaryConfig)
+    this.primaryProvider = createProvider(primaryConfig)
 
     if (fallbackConfig) {
-      this.fallbackProvider = GeocodingProviderFactory.createProvider(fallbackConfig)
+      this.fallbackProvider = createProvider(fallbackConfig)
     }
   }
 

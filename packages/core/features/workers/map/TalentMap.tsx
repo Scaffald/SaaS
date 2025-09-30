@@ -167,7 +167,9 @@ export const TalentMap = ({
     return () => {
       map.remove()
       mapRef.current = null
-      markersRef.current.forEach(({ instance }) => instance.remove())
+      for (const { instance } of markersRef.current.values()) {
+        instance.remove()
+      }
       markersRef.current.clear()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -241,14 +243,14 @@ export const TalentMap = ({
 
     const nextIds = new Set(markers.map((marker) => marker.id))
 
-    markersRef.current.forEach((entry, id) => {
+    for (const [id, entry] of markersRef.current.entries()) {
       if (!nextIds.has(id)) {
         entry.instance.remove()
         markersRef.current.delete(id)
       }
-    })
+    }
 
-    markers.forEach((marker) => {
+    for (const marker of markers) {
       const existing = markersRef.current.get(marker.id)
 
       if (!existing) {
@@ -272,11 +274,11 @@ export const TalentMap = ({
           marker.id === selectedMarkerId
         )
       }
-    })
+    }
   }, [handleMarkerInteraction, isMapReady, markers, selectedMarkerId])
 
   return (
-    <View flex={1} position="relative" borderRadius="$5" overflow="hidden">
+    <View flex={1} position="relative" rounded="$5" overflow="hidden">
       <div ref={containerRef} style={MAP_CONTAINER_STYLE} />
     </View>
   )

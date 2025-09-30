@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import type { GeocodingProvider, ProviderConfig, UseGeocodingProviderReturn } from '../types'
-import { GeocodingProviderFactory } from '../providers'
+import { createProvider, createFromEnvironment } from '../providers'
 
 /**
  * Hook to create and manage a geocoding provider instance
@@ -11,7 +11,7 @@ import { GeocodingProviderFactory } from '../providers'
 export function useGeocodingProvider(config: ProviderConfig): UseGeocodingProviderReturn {
   const provider = useMemo(() => {
     try {
-      return GeocodingProviderFactory.createProvider(config)
+      return createProvider(config)
     } catch (error) {
       console.error('Failed to create geocoding provider:', error)
       return null
@@ -33,7 +33,7 @@ export function useGeocodingProvider(config: ProviderConfig): UseGeocodingProvid
 export function useGeocodingProviderFromEnv(): UseGeocodingProviderReturn {
   const provider = useMemo(() => {
     try {
-      return GeocodingProviderFactory.createFromEnvironment()
+      return createFromEnvironment()
     } catch (error) {
       console.error('Failed to create geocoding provider from environment:', error)
       return null

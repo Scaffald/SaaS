@@ -52,7 +52,7 @@ export function ProfileEducationRight() {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <YStack gap="$4" padding="$4" flex={1}>
+      <YStack gap="$4" p="$4" flex={1}>
         <H4>Education Background</H4>
 
         <YStack gap="$4">
@@ -85,7 +85,7 @@ export function ProfileEducationRight() {
 
           {/* Education Entries */}
           <YStack gap="$3">
-            <XStack justifyContent="space-between" alignItems="center">
+            <XStack justify="space-between" items="center">
               <Text fontWeight="600">Education History</Text>
               <Button size="$3" onPress={addEducationEntry} icon={Plus}>
                 Add Education
@@ -96,12 +96,12 @@ export function ProfileEducationRight() {
               <YStack
                 key={field.id}
                 gap="$3"
-                padding="$3"
+                p="$3"
                 borderWidth={1}
                 borderColor="$borderColor"
-                borderRadius="$4"
+                rounded="$4"
               >
-                <XStack justifyContent="space-between" alignItems="center">
+                <XStack justify="space-between" items="center">
                   <Text fontWeight="600">Education {index + 1}</Text>
                   <Button size="$2" variant="outlined" onPress={() => remove(index)} icon={X}>
                     Remove
@@ -222,7 +222,7 @@ export function ProfileEducationRight() {
                           placeholder="e.g. 3.8"
                           value={field.value?.toString() || ''}
                           onChangeText={(text) =>
-                            field.onChange(text ? parseFloat(text) : undefined)
+                            field.onChange(text ? Number.parseFloat(text) : undefined)
                           }
                           keyboardType="numeric"
                         />
@@ -273,7 +273,7 @@ export function ProfileEducationRight() {
                         placeholder="Describe your education experience, achievements, relevant coursework..."
                         value={field.value || ''}
                         onChangeText={field.onChange}
-                        minHeight={80}
+                        minH={80}
                       />
                     )}
                   />
@@ -282,8 +282,8 @@ export function ProfileEducationRight() {
             ))}
 
             {fields.length === 0 && (
-              <YStack padding="$4" alignItems="center" gap="$2">
-                <Text color="$gray11">No education entries added yet</Text>
+              <YStack p="$4" items="center" gap="$2">
+                <Text color="$color11">No education entries added yet</Text>
                 <Button onPress={addEducationEntry} icon={Plus}>
                   Add Your First Education Entry
                 </Button>
@@ -292,7 +292,7 @@ export function ProfileEducationRight() {
           </YStack>
 
           {/* Save Button */}
-          <XStack justifyContent="flex-end" paddingTop="$4">
+          <XStack justify="flex-end" paddingTop="$4">
             <Button
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}

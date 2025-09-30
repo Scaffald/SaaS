@@ -10,7 +10,7 @@ export function AvatarImagePickerExample() {
   const [avatarUri, setAvatarUri] = useState<string>('')
 
   return (
-    <YStack padding="$4" gap="$4" alignItems="center">
+    <YStack p="$4" gap="$4" items="center">
       <Text fontSize="$6" fontWeight="bold">
         Avatar Image Picker Example
       </Text>
@@ -23,11 +23,11 @@ export function AvatarImagePickerExample() {
       />
 
       {avatarUri && (
-        <YStack gap="$2" alignItems="center">
+        <YStack gap="$2" items="center">
           <Text fontSize="$4" fontWeight="600">
             Selected Image URI:
           </Text>
-          <Text fontSize="$3" color="$gray10" textAlign="center">
+          <Text fontSize="$3" color="$color10" text="center">
             {avatarUri}
           </Text>
         </YStack>
