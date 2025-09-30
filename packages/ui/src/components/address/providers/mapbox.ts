@@ -219,7 +219,9 @@ export class MapboxProvider extends BaseGeocodingProvider {
       streetAddress,
       locality: components.locality,
       administrativeAreaLevel1: components.administrativeAreaLevel1,
-      stateAbbreviation: AddressUtils.getStateAbbreviation(components.administrativeAreaLevel1),
+      stateAbbreviation:
+        components.stateAbbreviation ||
+        AddressUtils.getStateAbbreviation(components.administrativeAreaLevel1),
       postalCode: components.postalCode,
       country: components.country,
       countryCode: components.countryCode,
@@ -238,6 +240,7 @@ export class MapboxProvider extends BaseGeocodingProvider {
       route: '',
       locality: '',
       administrativeAreaLevel1: '',
+      stateAbbreviation: '',
       postalCode: '',
       country: '',
       countryCode: '',
@@ -287,6 +290,10 @@ export class MapboxProvider extends BaseGeocodingProvider {
         case 'region':
           if (!components.administrativeAreaLevel1) {
             components.administrativeAreaLevel1 = text
+          }
+          // Extract state abbreviation from short_code
+          if (shortCode && shortCode.length === 2) {
+            components.stateAbbreviation = shortCode.toUpperCase()
           }
           break
         case 'country':
