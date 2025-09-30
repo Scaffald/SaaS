@@ -19,311 +19,6 @@ import {
   FieldError,
 } from '@app/ui'
 
-// Demo component interfaces
-interface MockAddressResult {
-  id: string
-  formattedAddress: string
-  streetNumber: string
-  route: string
-  streetAddress: string
-  locality: string
-  administrativeAreaLevel1: string
-  stateAbbreviation: string
-  postalCode: string
-  country: string
-  countryCode: string
-  coordinates: { lat: number; lng: number }
-}
-
-interface MockAddressAutocompleteProps {
-  value?: string
-  onChange?: (value: string) => void
-  onAddressSelect?: (address: MockAddressResult) => void
-  placeholder?: string
-  error?: string
-  disabled?: boolean
-}
-
-interface MockAddressFormProps {
-  mode?: string
-  placeholder?: string
-  error?: string
-  disabled?: boolean
-  onAddressSelect?: (address: MockAddressResult) => void
-}
-
-// Mock address data for demo purposes
-const MOCK_ADDRESSES: MockAddressResult[] = [
-  {
-    id: '1',
-    formattedAddress: '1600 Amphitheatre Parkway, Mountain View, CA 94043, USA',
-    streetNumber: '1600',
-    route: 'Amphitheatre Parkway',
-    streetAddress: '1600 Amphitheatre Parkway',
-    locality: 'Mountain View',
-    administrativeAreaLevel1: 'California',
-    stateAbbreviation: 'CA',
-    postalCode: '94043',
-    country: 'United States',
-    countryCode: 'US',
-    coordinates: { lat: 37.4219999, lng: -122.0840575 },
-  },
-  {
-    id: '2',
-    formattedAddress: '1 Apple Park Way, Cupertino, CA 95014, USA',
-    streetNumber: '1',
-    route: 'Apple Park Way',
-    streetAddress: '1 Apple Park Way',
-    locality: 'Cupertino',
-    administrativeAreaLevel1: 'California',
-    stateAbbreviation: 'CA',
-    postalCode: '95014',
-    country: 'United States',
-    countryCode: 'US',
-    coordinates: { lat: 37.3349, lng: -122.009 },
-  },
-  {
-    id: '3',
-    formattedAddress: '410 Terry Ave N, Seattle, WA 98109, USA',
-    streetNumber: '410',
-    route: 'Terry Ave N',
-    streetAddress: '410 Terry Ave N',
-    locality: 'Seattle',
-    administrativeAreaLevel1: 'Washington',
-    stateAbbreviation: 'WA',
-    postalCode: '98109',
-    country: 'United States',
-    countryCode: 'US',
-    coordinates: { lat: 47.6219653, lng: -122.3359976 },
-  },
-  {
-    id: '4',
-    formattedAddress: '350 5th Ave, New York, NY 10118, USA',
-    streetNumber: '350',
-    route: '5th Ave',
-    streetAddress: '350 5th Ave',
-    locality: 'New York',
-    administrativeAreaLevel1: 'New York',
-    stateAbbreviation: 'NY',
-    postalCode: '10118',
-    country: 'United States',
-    countryCode: 'US',
-    coordinates: { lat: 40.7484405, lng: -73.9878584 },
-  },
-  {
-    id: '5',
-    formattedAddress: '1 Hacker Way, Menlo Park, CA 94025, USA',
-    streetNumber: '1',
-    route: 'Hacker Way',
-    streetAddress: '1 Hacker Way',
-    locality: 'Menlo Park',
-    administrativeAreaLevel1: 'California',
-    stateAbbreviation: 'CA',
-    postalCode: '94025',
-    country: 'United States',
-    countryCode: 'US',
-    coordinates: { lat: 37.4845, lng: -122.1477 },
-  },
-]
-
-// Custom mock AddressAutocomplete for demo
-const MockAddressAutocomplete = ({
-  value,
-  onChange,
-  onAddressSelect,
-  placeholder,
-  error,
-  disabled,
-}: MockAddressAutocompleteProps) => {
-  const [inputValue, setInputValue] = useState(value || '')
-  const [showResults, setShowResults] = useState(false)
-  const [filteredAddresses, setFilteredAddresses] = useState<MockAddressResult[]>([])
-
-  const handleInputChange = useCallback(
-    (text: string) => {
-      setInputValue(text)
-      onChange?.(text)
-
-      if (text.trim().length >= 2) {
-        const filtered = MOCK_ADDRESSES.filter((addr) =>
-          addr.formattedAddress.toLowerCase().includes(text.toLowerCase())
-        ).slice(0, 3)
-        setFilteredAddresses(filtered)
-        setShowResults(true)
-      } else {
-        setShowResults(false)
-        setFilteredAddresses([])
-      }
-    },
-    [onChange]
-  )
-
-  const handleAddressSelect = useCallback(
-    (address: MockAddressResult) => {
-      setInputValue(address.formattedAddress)
-      setShowResults(false)
-      onAddressSelect?.(address)
-      onChange?.(address.formattedAddress)
-    },
-    [onAddressSelect, onChange]
-  )
-
-  return (
-    <YStack gap="$2" position="relative">
-      <YStack position="relative">
-        <Input
-          placeholder={placeholder}
-          value={inputValue}
-          onChangeText={handleInputChange}
-          onFocus={() => filteredAddresses.length > 0 && setShowResults(true)}
-          onBlur={() => setTimeout(() => setShowResults(false), 200)}
-          disabled={disabled}
-          borderColor={error ? '$red8' : '$borderColor'}
-        />
-
-        {showResults && filteredAddresses.length > 0 && (
-          <YStack
-            position="absolute"
-            top="100%"
-            left={0}
-            right={0}
-            backgroundColor="$background"
-            borderWidth={1}
-            borderColor="$borderColor"
-            borderTopWidth={0}
-            borderBottomLeftRadius="$4"
-            borderBottomRightRadius="$4"
-            maxHeight={200}
-            zIndex={999999}
-            boxShadow="0px 2px 8px rgba(0,0,0,0.1)"
-          >
-            {filteredAddresses.map((address) => (
-              <Button
-                key={address.id}
-                backgroundColor="transparent"
-                borderWidth={0}
-                borderRadius={0}
-                paddingHorizontal="$3"
-                paddingVertical="$2"
-                justifyContent="flex-start"
-                onPress={() => handleAddressSelect(address)}
-                hoverStyle={{ backgroundColor: '$color5' }}
-              >
-                <Text fontSize="$3" numberOfLines={1}>
-                  {address.formattedAddress}
-                </Text>
-              </Button>
-            ))}
-          </YStack>
-        )}
-      </YStack>
-      <FieldError message={error} />
-    </YStack>
-  )
-}
-
-// Custom mock AddressForm for demo
-const MockAddressForm = ({
-  mode,
-  placeholder,
-  error,
-  disabled,
-  onAddressSelect,
-}: MockAddressFormProps) => {
-  const [address, setAddress] = useState({
-    streetAddress: '',
-    locality: '',
-    stateAbbreviation: '',
-    postalCode: '',
-    country: '',
-  })
-
-  const handleAutocompleteSelect = useCallback(
-    (selectedAddress: MockAddressResult) => {
-      setAddress({
-        streetAddress: selectedAddress.streetAddress || '',
-        locality: selectedAddress.locality || '',
-        stateAbbreviation: selectedAddress.stateAbbreviation || '',
-        postalCode: selectedAddress.postalCode || '',
-        country: selectedAddress.country || '',
-      })
-      onAddressSelect?.(selectedAddress)
-    },
-    [onAddressSelect]
-  )
-
-  if (mode === 'autocomplete-only') {
-    return (
-      <MockAddressAutocomplete
-        placeholder={placeholder}
-        error={error}
-        disabled={disabled}
-        onAddressSelect={handleAutocompleteSelect}
-      />
-    )
-  }
-
-  return (
-    <YStack gap="$3">
-      {mode === 'hybrid' && (
-        <>
-          <MockAddressAutocomplete
-            placeholder={placeholder}
-            error={error}
-            disabled={disabled}
-            onAddressSelect={handleAutocompleteSelect}
-          />
-        </>
-      )}
-
-      <YStack gap="$2">
-        <Input
-          placeholder="Street address"
-          value={address.streetAddress}
-          onChangeText={(text) => setAddress((prev) => ({ ...prev, streetAddress: text }))}
-          disabled={disabled}
-        />
-
-        <XStack gap="$2">
-          <Input
-            placeholder="City"
-            value={address.locality}
-            onChangeText={(text) => setAddress((prev) => ({ ...prev, locality: text }))}
-            disabled={disabled}
-            flex={1}
-          />
-          <Input
-            placeholder="State"
-            value={address.stateAbbreviation}
-            onChangeText={(text) => setAddress((prev) => ({ ...prev, stateAbbreviation: text }))}
-            disabled={disabled}
-            flex={1}
-          />
-        </XStack>
-
-        <XStack gap="$2">
-          <Input
-            placeholder="ZIP Code"
-            value={address.postalCode}
-            onChangeText={(text) => setAddress((prev) => ({ ...prev, postalCode: text }))}
-            disabled={disabled}
-            flex={1}
-          />
-          <Input
-            placeholder="Country"
-            value={address.country}
-            onChangeText={(text) => setAddress((prev) => ({ ...prev, country: text }))}
-            disabled={disabled}
-            flex={2}
-          />
-        </XStack>
-      </YStack>
-
-      {error && <FieldError message={error} />}
-    </YStack>
-  )
-}
-
 export default function FormsPage() {
   // State for basic inputs
   const [basicInput, setBasicInput] = useState('')
@@ -642,46 +337,21 @@ export default function FormsPage() {
             </Button>
           </XStack>
 
-          {/* Address Component Example */}
+          {/* Address Component Examples */}
           <YStack gap="$6" width="100%">
-            {/* Demo Version */}
+            {/* AddressAutocomplete with Mapbox API */}
             <YStack gap="$3">
               <YStack gap="$2">
                 <Text fontSize="$4" fontWeight="500" color="$color">
-                  AddressAutocomplete (Demo Mode)
-                </Text>
-                <Text fontSize="$2" color="$color9">
-                  Try typing: "1600", "Apple", "Seattle", "New York", or "Menlo"
-                </Text>
-              </YStack>
-              <MockAddressAutocomplete
-                value={addressSearch}
-                onChange={setAddressSearch}
-                onAddressSelect={(address: MockAddressResult) => {
-                  setAddressSearch(address.formattedAddress)
-                  console.log('Selected address:', address)
-                }}
-                placeholder="Search for an address..."
-                error={addressError}
-                disabled={addressDisabled}
-              />
-            </YStack>
-
-            <Separator backgroundColor="$color6" />
-
-            {/* Production Version with Mapbox API */}
-            <YStack gap="$3">
-              <YStack gap="$2">
-                <Text fontSize="$4" fontWeight="500" color="$color">
-                  AddressAutocomplete (Production - Mapbox API)
+                  AddressAutocomplete (Mapbox API)
                 </Text>
                 <Text fontSize="$2" color="$color9">
                   Real Mapbox Places API integration - try any address
                 </Text>
               </YStack>
               <AddressAutocomplete
-                value=""
-                onChange={() => {}}
+                value={addressSearch}
+                onChange={setAddressSearch}
                 onAddressSelect={(address) => {
                   console.log('Selected real address:', address)
                 }}
@@ -695,11 +365,11 @@ export default function FormsPage() {
 
             <Separator backgroundColor="$color6" />
 
-            {/* Address Form Examples */}
+            {/* AddressForm with Mapbox API */}
             <YStack gap="$3">
               <YStack gap="$2">
                 <Text fontSize="$4" fontWeight="500" color="$color">
-                  AddressForm ({addressMode}) - Demo Mode
+                  AddressForm ({addressMode}) - Mapbox API
                 </Text>
                 <Text fontSize="$2" color="$color9">
                   {addressMode === 'hybrid'
@@ -707,29 +377,6 @@ export default function FormsPage() {
                     : addressMode === 'autocomplete-only'
                       ? 'Search only - no manual input fields'
                       : 'Manual input fields only'}
-                </Text>
-              </YStack>
-              <MockAddressForm
-                mode={addressMode}
-                placeholder="Search for your address..."
-                error={addressError}
-                disabled={addressDisabled}
-                onAddressSelect={(address: MockAddressResult) => {
-                  console.log('Selected address from form:', address)
-                }}
-              />
-            </YStack>
-
-            <Separator backgroundColor="$color6" />
-
-            {/* Production Address Form */}
-            <YStack gap="$3">
-              <YStack gap="$2">
-                <Text fontSize="$4" fontWeight="500" color="$color">
-                  AddressForm ({addressMode}) - Production (Mapbox)
-                </Text>
-                <Text fontSize="$2" color="$color9">
-                  Real address form with Mapbox Places API integration
                 </Text>
               </YStack>
               <AddressForm
@@ -827,7 +474,12 @@ export default function FormsPage() {
 
             <PhoneNumberInput placeholder="Phone Number" defaultCountry="US" />
 
-            <MockAddressForm mode="hybrid" placeholder="Enter your address..." />
+            <AddressForm
+              mode="hybrid"
+              placeholder="Enter your address..."
+              provider="mapbox"
+              apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
+            />
 
             <XStack gap="$3" justifyContent="flex-end">
               <Button size="$4">
