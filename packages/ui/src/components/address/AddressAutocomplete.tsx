@@ -1,13 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  memo,
-  Fragment,
-  KeyboardEvent,
-} from 'react'
+import React, { useState, useRef, useCallback, useEffect, useMemo, memo, Fragment } from 'react'
 import {
   YStack,
   XStack,
@@ -60,7 +51,7 @@ export function AddressAutocomplete({
   const [inputValue, setInputValue] = useState(value)
   const [showResults, setShowResults] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<any>(null)
   const resultsRef = useRef<ScrollView>(null)
 
   // Memoize config to prevent recreation on every render
@@ -136,7 +127,7 @@ export function AddressAutocomplete({
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback(
-    (event: KeyboardEvent<HTMLInputElement>) => {
+    (event: any) => {
       if (!showResults || results.length === 0) return
 
       switch (event.key) {
@@ -201,6 +192,8 @@ export function AddressAutocomplete({
       borderRadius={0}
       paddingHorizontal="$3"
       paddingVertical="$3"
+      position="relative"
+      zIndex={999}
       justifyContent="flex-start"
       onPress={() => handleAddressSelect(address)}
       pressStyle={{ backgroundColor: '$color6' }}
@@ -222,7 +215,7 @@ export function AddressAutocomplete({
   return (
     <YStack gap="$2" position="relative" zIndex={999}>
       {/* Input Container */}
-      <YStack position="relative">
+      <YStack>
         <XStack
           borderWidth={1}
           borderColor={displayError ? '$red8' : '$borderColor'}
@@ -287,10 +280,10 @@ export function AddressAutocomplete({
               borderBottomLeftRadius="$4"
               borderBottomRightRadius="$4"
               maxHeight={300}
-              zIndex={999999999}
+              zIndex={999}
               boxShadow="0px 2px 8px rgba(0,0,0,0.1)"
               elevation={5}
-              style={{ zIndex: 999999999 }}
+              style={{ zIndex: 999 }}
             >
               <ScrollView ref={resultsRef} showsVerticalScrollIndicator={false}>
                 {hasResults ? (
