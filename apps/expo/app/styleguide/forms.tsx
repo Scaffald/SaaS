@@ -168,10 +168,10 @@ export default function FormsPage() {
     const id = `switch-${props.size.toString().slice(1)}-${props.defaultChecked ?? ''}`
     return (
       <XStack width={200} items="center" gap="$4">
-        <Label minWidth={90} justify="flex-end" size={props.size} htmlFor={id}>
-          Accept
+        <Label minW={90} justify="flex-end" size={props.size} htmlFor={id}>
+          {label}
         </Label>
-        <Separator minHeight={20} vertical />
+        <Separator height={20} vertical />
         <Switch id={id} size={props.size} defaultChecked={props.defaultChecked}>
           <Switch.Thumb animation="quick" />
         </Switch>
@@ -707,16 +707,15 @@ export default function FormsPage() {
                 onCheckedChange={setCompanyVehicle}
                 disabled={toggleCardsDisabled}
                 flex={1}
-                theme="surface2"
               />
             </YStack>
           </YStack>
         </YStack>
 
-        <Separator width="80%" backgroundColor="$borderColor" />
+        <Separator width="80%" bg="$borderColor" />
 
         {/* Slider Section */}
-        <YStack gap="$4" flex={1} maxWidth={500} items="center">
+        <YStack gap="$4" flex={1} maxW={500} items="center">
           <Text fontSize="$6" fontWeight="600" color="$color">
             Slider Components
           </Text>
