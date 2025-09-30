@@ -3,8 +3,8 @@ import { Spinner, YStack, YStackProps } from 'tamagui'
 export const LoadingOverlay = (props: YStackProps) => {
   return (
     <YStack
-      bc="$background05"
-      pos="absolute"
+      borderColor="$color12"
+      position="absolute"
       fullscreen
       flex={1}
       justify="center"

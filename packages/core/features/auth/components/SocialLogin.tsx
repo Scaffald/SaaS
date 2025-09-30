@@ -20,12 +20,12 @@ export function SocialLogin() {
 function OrSeparator() {
   return (
     <YStack>
-      <YStack pos="absolute" fullscreen items="center" justify="center">
-        <Separator flex={1} w="100%" />
+      <YStack position="absolute" fullscreen items="center" justify="center">
+        <Separator flex={1} />
       </YStack>
       <YStack items="center" justify="center">
-        <YStack bc={isWeb ? '$color1' : 'transparent'} px="$3">
-          <SizableText theme="alt1" size="$2" tt="uppercase" ta="center">
+        <YStack borderColor={isWeb ? '$color1' : 'transparent'} px="$3">
+          <SizableText size="$2" textTransform="uppercase" text="center">
             Or
           </SizableText>
         </YStack>
