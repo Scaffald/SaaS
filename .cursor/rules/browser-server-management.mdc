@@ -1,0 +1,70 @@
+# Browser and Web Server Management
+
+## Browser Testing Protocol
+- **ALWAYS prompt user before launching browsers** for testing
+- **ALWAYS ask permission before running web servers** (Next.js, Expo web, etc.)
+- **NEVER assume user wants automated browser testing**
+- **PROVIDE clear options** for testing approach
+
+## Testing Options
+When browser testing is needed, present these choices:
+
+### Option 1: Agent Browser Testing
+- Agent can use browser automation tools (Playwright, etc.)
+- Agent will perform automated testing and validation
+- User can observe results and screenshots
+
+### Option 2: Manual User Testing  
+- User will manually test in their own browser
+- Agent will provide specific testing instructions
+- Agent will wait for user feedback on results
+
+### Option 3: Hybrid Approach
+- Agent provides detailed testing steps
+- User performs initial testing
+- Agent assists with debugging if issues found
+
+## Web Server Management
+- **ALWAYS ask before starting development servers**:
+  - Next.js (`yarn web` or `next dev`)
+  - Expo web (`yarn native` or `expo start --web`)
+  - Any other web servers
+- **CHECK if servers are already running** before suggesting to start new ones
+- **PROVIDE server status information** when relevant
+
+## Prompt Template
+When browser/server testing is needed:
+
+```
+🔍 Testing Required
+
+I need to test this in a browser/web environment. How would you like to proceed?
+
+1. 🤖 **Agent Testing**: I can use browser automation to test automatically
+2. 👤 **Manual Testing**: I'll provide instructions for you to test manually  
+3. 🔄 **Hybrid**: I'll guide you through testing step-by-step
+
+Would you like me to:
+- Start the web server (if not already running)?
+- Test in browser automatically?
+- Or would you prefer to test manually?
+```
+
+## Server Status Checks
+Before suggesting server starts:
+- Check if development servers are already running
+- Verify ports are available
+- Provide current server status to user
+
+## Testing Instructions
+When providing manual testing instructions:
+- Include specific URLs to visit
+- List exact steps to reproduce functionality
+- Mention what to look for/verify
+- Provide troubleshooting steps if needed
+
+## Exception Cases
+Only bypass this protocol when:
+- User explicitly requests browser automation
+- User specifically asks to start servers
+- User is already in a testing context and confirms continuation

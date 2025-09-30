@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import type { SliderProps, SizeTokens } from 'tamagui'
 import {
   ScrollView,
   YStack,
@@ -10,6 +11,9 @@ import {
   Adapt,
   Sheet,
   Separator,
+  Slider,
+  Switch,
+  Label,
 } from 'tamagui'
 import {
   PhoneNumberInput,
@@ -17,7 +21,9 @@ import {
   AddressForm,
   AvatarImagePicker,
   FieldError,
+  ToggleCard,
 } from '@app/ui'
+import { Flag, MapPin, Shield, Car, Wifi, Bell } from '@tamagui/lucide-icons'
 
 export default function FormsPage() {
   // State for basic inputs
@@ -47,6 +53,29 @@ export default function FormsPage() {
   const [selectValue, setSelectValue] = useState('')
   const [selectError, setSelectError] = useState('')
   const [selectDisabled, setSelectDisabled] = useState(false)
+
+  // State for toggle cards
+  const [usResident, setUsResident] = useState(false)
+  const [usPassport, setUsPassport] = useState(true)
+  const [securityEnabled, setSecurityEnabled] = useState(false)
+  const [autoConnectWifi, setAutoConnectWifi] = useState(true)
+  const [pushNotifications, setPushNotifications] = useState(false)
+  const [companyVehicle, setCompanyVehicle] = useState(false)
+  const [toggleCardsDisabled, setToggleCardsDisabled] = useState(false)
+
+  // State for sliders
+  const [sliderValue, setSliderValue] = useState([50])
+  const [sliderDisabled, setSliderDisabled] = useState(false)
+  const [sliderMin, setSliderMin] = useState(0)
+  const [sliderMax, setSliderMax] = useState(100)
+  const [sliderStep, setSliderStep] = useState(1)
+
+  // State for switches
+  const [switchDisabled, setSwitchDisabled] = useState(false)
+  const [switchSize, setSwitchSize] = useState<SizeTokens>('$3')
+  const [basicSwitch, setBasicSwitch] = useState(false)
+  const [notificationsSwitch, setNotificationsSwitch] = useState(true)
+  const [darkModeSwitch, setDarkModeSwitch] = useState(false)
 
   // Demo options
   const sizeOptions = [
@@ -91,6 +120,69 @@ export default function FormsPage() {
 
   const toggleSelectError = () => {
     setSelectError(selectError ? '' : 'Please make a selection')
+  }
+
+  // Slider Demo Component
+  function SliderDemo() {
+    return (
+      <XStack height={200} alignItems="center" gap="$8">
+        <SimpleSlider height={200} orientation="vertical" />
+        <SimpleSlider width={200} />
+      </XStack>
+    )
+  }
+
+  function SimpleSlider({ children, ...props }: SliderProps) {
+    return (
+      <Slider defaultValue={[50]} max={100} step={1} {...props}>
+        <Slider.Track>
+          <Slider.TrackActive />
+        </Slider.Track>
+        <Slider.Thumb size="$2" index={0} circular />
+        {children}
+      </Slider>
+    )
+  }
+
+  // Switch Demo Components
+  function SwitchDemo() {
+    return (
+      <YStack width={200} alignItems="center" gap="$3">
+        <XStack gap="$3" $xs={{ flexDirection: 'column' }}>
+          <SwitchWithLabel size="$2" />
+          <SwitchWithLabel size="$2" defaultChecked />
+        </XStack>
+        <XStack gap="$3" $xs={{ flexDirection: 'column' }}>
+          <SwitchWithLabel size="$3" />
+          <SwitchWithLabel size="$3" defaultChecked />
+        </XStack>
+        <XStack gap="$3" $xs={{ flexDirection: 'column' }}>
+          <SwitchWithLabel size="$4" />
+          <SwitchWithLabel size="$4" defaultChecked />
+        </XStack>
+      </YStack>
+    )
+  }
+
+  function SwitchWithLabel(props: { size: SizeTokens; defaultChecked?: boolean }) {
+    const id = `switch-${props.size.toString().slice(1)}-${props.defaultChecked ?? ''}`
+    return (
+      <XStack width={200} alignItems="center" gap="$4">
+        <Label
+          paddingRight="$0"
+          minWidth={90}
+          justifyContent="flex-end"
+          size={props.size}
+          htmlFor={id}
+        >
+          Accept
+        </Label>
+        <Separator minHeight={20} vertical />
+        <Switch id={id} size={props.size} defaultChecked={props.defaultChecked}>
+          <Switch.Thumb animation="quick" />
+        </Switch>
+      </XStack>
+    )
   }
 
   return (
@@ -448,6 +540,492 @@ export default function FormsPage() {
             disabled={avatarDisabled}
             placeholder="Add Photo"
           />
+        </YStack>
+
+        <Separator width="80%" backgroundColor="$borderColor" />
+
+        {/* Toggle Card Section */}
+        <YStack gap="$4" width="100%" maxWidth={500} alignItems="center">
+          <Text fontSize="$6" fontWeight="600" color="$color">
+            Toggle Cards
+          </Text>
+
+          <YStack gap="$2" alignItems="center">
+            <Text fontSize="$4" color="$color10" textAlign="center">
+              Fat-finger friendly toggle components with icons and descriptions
+            </Text>
+            <Text fontSize="$3" color="$color9" textAlign="center">
+              Entire card is clickable • Optional expandable content • Cross-platform animations
+            </Text>
+          </YStack>
+
+          {/* Toggle Card Controls */}
+          <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+            <Button
+              variant={toggleCardsDisabled ? 'outlined' : undefined}
+              onPress={() => setToggleCardsDisabled(!toggleCardsDisabled)}
+              size="$3"
+            >
+              <Text fontSize="$2">Disabled</Text>
+            </Button>
+          </XStack>
+
+          {/* Toggle Card Examples */}
+          <YStack gap="$4" width="100%">
+            {/* Basic Toggle Cards */}
+            <YStack gap="$3">
+              <Text fontSize="$4" fontWeight="500" color="$color">
+                Basic Toggle Cards
+              </Text>
+              <Text fontSize="$2" color="$color9">
+                Simple on/off toggles with icon, title, and description
+              </Text>
+
+              <ToggleCard
+                icon={<Flag size="$2" color="$color11" />}
+                title="US Resident"
+                description="I am a permanent resident of the United States"
+                checked={usResident}
+                onCheckedChange={setUsResident}
+                disabled={toggleCardsDisabled}
+                width="100%"
+              />
+
+              <ToggleCard
+                icon={<MapPin size="$2" color="$color11" />}
+                title="US Passport"
+                description="I have a valid United States passport"
+                checked={usPassport}
+                onCheckedChange={setUsPassport}
+                disabled={toggleCardsDisabled}
+                width="100%"
+              />
+            </YStack>
+
+            <Separator backgroundColor="$color6" />
+
+            {/* Toggle Cards with Expanded Content */}
+            <YStack gap="$3">
+              <Text fontSize="$4" fontWeight="500" color="$color">
+                Toggle Cards with Expanded Content
+              </Text>
+              <Text fontSize="$2" color="$color9">
+                Shows additional fields when toggled on
+              </Text>
+
+              <ToggleCard
+                icon={<Shield size="$2" color="$color11" />}
+                title="Two-Factor Authentication"
+                description="Add an extra layer of security to your account"
+                checked={securityEnabled}
+                onCheckedChange={setSecurityEnabled}
+                disabled={toggleCardsDisabled}
+                width="100%"
+                expandedContent={
+                  <YStack gap="$3" paddingTop="$2">
+                    <Text fontSize="$3" fontWeight="500" color="$color11">
+                      Authentication Method
+                    </Text>
+                    <YStack gap="$2">
+                      <Button size="$3" variant="outlined">
+                        <Text fontSize="$3">📱 SMS Text Message</Text>
+                      </Button>
+                      <Button size="$3" variant="outlined">
+                        <Text fontSize="$3">📧 Email Verification</Text>
+                      </Button>
+                      <Button size="$3" variant="outlined">
+                        <Text fontSize="$3">🔑 Authenticator App</Text>
+                      </Button>
+                    </YStack>
+                  </YStack>
+                }
+              />
+
+              <ToggleCard
+                icon={<Wifi size="$2" color="$color11" />}
+                title="Auto-Connect to WiFi"
+                description="Automatically connect to known wireless networks"
+                checked={autoConnectWifi}
+                onCheckedChange={setAutoConnectWifi}
+                disabled={toggleCardsDisabled}
+                width="100%"
+                expandedContent={
+                  <YStack gap="$3" paddingTop="$2">
+                    <Text fontSize="$3" fontWeight="500" color="$color11">
+                      Network Preferences
+                    </Text>
+                    <Input placeholder="Preferred Network Name" size="$3" />
+                    <Input placeholder="Network Password" secureTextEntry size="$3" />
+                    <XStack gap="$2" justifyContent="flex-end">
+                      <Button size="$3">
+                        <Text fontSize="$2">Save Network</Text>
+                      </Button>
+                    </XStack>
+                  </YStack>
+                }
+              />
+            </YStack>
+
+            <Separator backgroundColor="$color6" />
+
+            {/* Additional Examples */}
+            <YStack gap="$3">
+              <Text fontSize="$4" fontWeight="500" color="$color">
+                Additional Examples
+              </Text>
+              <Text fontSize="$2" color="$color9">
+                Various use cases and styling options
+              </Text>
+
+              <ToggleCard
+                icon={<Bell size="$2" color="$color11" />}
+                title="Push Notifications"
+                description="Receive notifications on this device"
+                checked={pushNotifications}
+                onCheckedChange={setPushNotifications}
+                disabled={toggleCardsDisabled}
+                width="100%"
+                expandedContent={
+                  <YStack gap="$3" paddingTop="$2">
+                    <Text fontSize="$3" fontWeight="500" color="$color11">
+                      Notification Types
+                    </Text>
+                    <YStack gap="$2">
+                      <XStack gap="$2" alignItems="center">
+                        <Text fontSize="$3">📬 New Messages</Text>
+                      </XStack>
+                      <XStack gap="$2" alignItems="center">
+                        <Text fontSize="$3">🎯 Job Matches</Text>
+                      </XStack>
+                      <XStack gap="$2" alignItems="center">
+                        <Text fontSize="$3">📊 Weekly Reports</Text>
+                      </XStack>
+                    </YStack>
+                  </YStack>
+                }
+              />
+
+              <ToggleCard
+                icon={<Car size="$2" color="$color11" />}
+                title="Company Vehicle Available"
+                description="I have access to a company vehicle for work"
+                checked={companyVehicle}
+                onCheckedChange={setCompanyVehicle}
+                disabled={toggleCardsDisabled}
+                width="100%"
+                theme="surface2"
+              />
+            </YStack>
+          </YStack>
+        </YStack>
+
+        <Separator width="80%" backgroundColor="$borderColor" />
+
+        {/* Slider Section */}
+        <YStack gap="$4" width="100%" maxWidth={500} alignItems="center">
+          <Text fontSize="$6" fontWeight="600" color="$color">
+            Slider Components
+          </Text>
+
+          <YStack gap="$2" alignItems="center">
+            <Text fontSize="$4" color="$color10" textAlign="center">
+              Interactive sliders for numeric input and range selection
+            </Text>
+            <Text fontSize="$3" color="$color9" textAlign="center">
+              Horizontal and vertical orientations • Customizable min/max/step • Cross-platform
+            </Text>
+          </YStack>
+
+          {/* Slider Controls */}
+          <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+            <Button
+              variant={sliderDisabled ? 'outlined' : undefined}
+              onPress={() => setSliderDisabled(!sliderDisabled)}
+              size="$3"
+            >
+              <Text fontSize="$2">Disabled</Text>
+            </Button>
+            <Button onPress={() => setSliderMin(sliderMin === 0 ? -50 : 0)} size="$3">
+              <Text fontSize="$2">Min: {sliderMin}</Text>
+            </Button>
+            <Button onPress={() => setSliderMax(sliderMax === 100 ? 200 : 100)} size="$3">
+              <Text fontSize="$2">Max: {sliderMax}</Text>
+            </Button>
+            <Button onPress={() => setSliderStep(sliderStep === 1 ? 5 : 1)} size="$3">
+              <Text fontSize="$2">Step: {sliderStep}</Text>
+            </Button>
+          </XStack>
+
+          {/* Slider Examples */}
+          <YStack gap="$6" width="100%">
+            {/* Basic Slider */}
+            <YStack gap="$3">
+              <Text fontSize="$4" fontWeight="500" color="$color">
+                Basic Slider
+              </Text>
+              <Text fontSize="$2" color="$color9">
+                Current value: {sliderValue[0]}
+              </Text>
+
+              <Slider
+                value={sliderValue}
+                onValueChange={setSliderValue}
+                max={sliderMax}
+                min={sliderMin}
+                step={sliderStep}
+                disabled={sliderDisabled}
+                width="100%"
+              >
+                <Slider.Track>
+                  <Slider.TrackActive />
+                </Slider.Track>
+                <Slider.Thumb size="$2" index={0} circular />
+              </Slider>
+            </YStack>
+
+            <Separator backgroundColor="$color6" />
+
+            {/* Horizontal vs Vertical Sliders */}
+            <YStack gap="$3">
+              <Text fontSize="$4" fontWeight="500" color="$color">
+                Horizontal vs Vertical Sliders
+              </Text>
+              <Text fontSize="$2" color="$color9">
+                Demonstration of different orientations
+              </Text>
+
+              <SliderDemo />
+            </YStack>
+
+            <Separator backgroundColor="$color6" />
+
+            {/* Range Slider */}
+            <YStack gap="$3">
+              <Text fontSize="$4" fontWeight="500" color="$color">
+                Range Slider (Dual Thumbs)
+              </Text>
+              <Text fontSize="$2" color="$color9">
+                Select a range with two thumbs
+              </Text>
+
+              <Slider
+                defaultValue={[25, 75]}
+                max={100}
+                step={1}
+                disabled={sliderDisabled}
+                width="100%"
+              >
+                <Slider.Track>
+                  <Slider.TrackActive />
+                </Slider.Track>
+                <Slider.Thumb size="$2" index={0} circular />
+                <Slider.Thumb size="$2" index={1} circular />
+              </Slider>
+            </YStack>
+
+            <Separator backgroundColor="$color6" />
+
+            {/* Custom Styled Slider */}
+            <YStack gap="$3">
+              <Text fontSize="$4" fontWeight="500" color="$color">
+                Custom Styled Slider
+              </Text>
+              <Text fontSize="$2" color="$color9">
+                Larger thumb and custom colors
+              </Text>
+
+              <Slider defaultValue={[60]} max={100} step={1} disabled={sliderDisabled} width="100%">
+                <Slider.Track backgroundColor="$color6" height={8}>
+                  <Slider.TrackActive backgroundColor="$blue8" />
+                </Slider.Track>
+                <Slider.Thumb size="$3" index={0} circular backgroundColor="$blue9" />
+              </Slider>
+            </YStack>
+          </YStack>
+        </YStack>
+
+        <Separator width="80%" backgroundColor="$borderColor" />
+
+        {/* Switch Section */}
+        <YStack gap="$4" width="100%" maxWidth={500} alignItems="center">
+          <Text fontSize="$6" fontWeight="600" color="$color">
+            Switch Components
+          </Text>
+
+          <YStack gap="$2" alignItems="center">
+            <Text fontSize="$4" color="$color10" textAlign="center">
+              Toggle switches for on/off states and settings
+            </Text>
+            <Text fontSize="$3" color="$color9" textAlign="center">
+              Multiple sizes • Animated transitions • Accessible labels • Cross-platform
+            </Text>
+          </YStack>
+
+          {/* Switch Controls */}
+          <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+            <Button
+              variant={switchDisabled ? 'outlined' : undefined}
+              onPress={() => setSwitchDisabled(!switchDisabled)}
+              size="$3"
+            >
+              <Text fontSize="$2">Disabled</Text>
+            </Button>
+            <Button
+              variant={switchSize === '$2' ? 'outlined' : undefined}
+              onPress={() => setSwitchSize('$2')}
+              size="$3"
+            >
+              <Text fontSize="$2">Small</Text>
+            </Button>
+            <Button
+              variant={switchSize === '$3' ? 'outlined' : undefined}
+              onPress={() => setSwitchSize('$3')}
+              size="$3"
+            >
+              <Text fontSize="$2">Medium</Text>
+            </Button>
+            <Button
+              variant={switchSize === '$4' ? 'outlined' : undefined}
+              onPress={() => setSwitchSize('$4')}
+              size="$3"
+            >
+              <Text fontSize="$2">Large</Text>
+            </Button>
+          </XStack>
+
+          {/* Switch Examples */}
+          <YStack gap="$6" width="100%">
+            {/* Basic Switches */}
+            <YStack gap="$3">
+              <Text fontSize="$4" fontWeight="500" color="$color">
+                Basic Switches
+              </Text>
+              <Text fontSize="$2" color="$color9">
+                Simple on/off toggles with labels
+              </Text>
+
+              <XStack gap="$4" alignItems="center" justifyContent="space-between">
+                <Label htmlFor="basic-switch" size="$4">
+                  Basic Switch
+                </Label>
+                <Switch
+                  id="basic-switch"
+                  checked={basicSwitch}
+                  onCheckedChange={setBasicSwitch}
+                  disabled={switchDisabled}
+                  size={switchSize}
+                >
+                  <Switch.Thumb animation="quick" />
+                </Switch>
+              </XStack>
+
+              <XStack gap="$4" alignItems="center" justifyContent="space-between">
+                <Label htmlFor="notifications-switch" size="$4">
+                  Push Notifications
+                </Label>
+                <Switch
+                  id="notifications-switch"
+                  checked={notificationsSwitch}
+                  onCheckedChange={setNotificationsSwitch}
+                  disabled={switchDisabled}
+                  size={switchSize}
+                >
+                  <Switch.Thumb animation="quick" />
+                </Switch>
+              </XStack>
+
+              <XStack gap="$4" alignItems="center" justifyContent="space-between">
+                <Label htmlFor="dark-mode-switch" size="$4">
+                  Dark Mode
+                </Label>
+                <Switch
+                  id="dark-mode-switch"
+                  checked={darkModeSwitch}
+                  onCheckedChange={setDarkModeSwitch}
+                  disabled={switchDisabled}
+                  size={switchSize}
+                >
+                  <Switch.Thumb animation="quick" />
+                </Switch>
+              </XStack>
+            </YStack>
+
+            <Separator backgroundColor="$color6" />
+
+            {/* Size Comparison */}
+            <YStack gap="$3">
+              <Text fontSize="$4" fontWeight="500" color="$color">
+                Size Comparison
+              </Text>
+              <Text fontSize="$2" color="$color9">
+                Different sizes with consistent styling
+              </Text>
+
+              <SwitchDemo />
+            </YStack>
+
+            <Separator backgroundColor="$color6" />
+
+            {/* Custom Styled Switches */}
+            <YStack gap="$3">
+              <Text fontSize="$4" fontWeight="500" color="$color">
+                Custom Styled Switches
+              </Text>
+              <Text fontSize="$2" color="$color9">
+                Switches with custom colors and animations
+              </Text>
+
+              <XStack gap="$4" alignItems="center" justifyContent="space-between">
+                <Label htmlFor="custom-switch-1" size="$4">
+                  Custom Blue
+                </Label>
+                <Switch
+                  id="custom-switch-1"
+                  disabled={switchDisabled}
+                  size={switchSize}
+                  backgroundColor="$blue8"
+                >
+                  <Switch.Thumb animation="quick" backgroundColor="$blue11" borderColor="$blue9" />
+                </Switch>
+              </XStack>
+
+              <XStack gap="$4" alignItems="center" justifyContent="space-between">
+                <Label htmlFor="custom-switch-2" size="$4">
+                  Custom Green
+                </Label>
+                <Switch
+                  id="custom-switch-2"
+                  disabled={switchDisabled}
+                  size={switchSize}
+                  backgroundColor="$green8"
+                >
+                  <Switch.Thumb
+                    animation="quick"
+                    backgroundColor="$green11"
+                    borderColor="$green9"
+                  />
+                </Switch>
+              </XStack>
+
+              <XStack gap="$4" alignItems="center" justifyContent="space-between">
+                <Label htmlFor="custom-switch-3" size="$4">
+                  Custom Purple
+                </Label>
+                <Switch
+                  id="custom-switch-3"
+                  disabled={switchDisabled}
+                  size={switchSize}
+                  backgroundColor="$purple8"
+                >
+                  <Switch.Thumb
+                    animation="quick"
+                    backgroundColor="$purple11"
+                    borderColor="$purple9"
+                  />
+                </Switch>
+              </XStack>
+            </YStack>
+          </YStack>
         </YStack>
 
         <Separator width="80%" backgroundColor="$borderColor" />

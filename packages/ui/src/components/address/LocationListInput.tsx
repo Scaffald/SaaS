@@ -19,7 +19,8 @@ interface LocationListInputProps {
  * Location List Input Component
  *
  * Allows users to add multiple locations using autocomplete.
- * Shows one input initially with + button to add up to maxLocations total.
+ * Shows an "Add Location" button by default when no locations are set.
+ * All locations can be deleted, including the first one.
  * Configured for broader location searches (city, county, state level).
  *
  * @example
@@ -44,13 +45,16 @@ export function LocationListInput({
   apiKey,
   disabled = false,
 }: LocationListInputProps) {
-  // Track how many input fields to show (always at least 1)
-  const [fieldCount, setFieldCount] = useState(Math.max(1, value.length))
+  // Track how many input fields to show
+  const [fieldCount, setFieldCount] = useState(value.length)
 
   // Update field count when value changes from outside
   React.useEffect(() => {
     if (value.length > 0) {
       setFieldCount((prev) => Math.max(value.length, prev))
+    } else {
+      // Reset field count when all locations are removed
+      setFieldCount(0)
     }
   }, [value.length])
 
@@ -78,19 +82,22 @@ export function LocationListInput({
   // Add new location input
   const handleAddLocation = () => {
     if (fieldCount < maxLocations) {
+      // Add an empty string to the value array to trigger the input field
+      const updated = [...value, '']
+      onChange(updated)
       setFieldCount(fieldCount + 1)
     }
   }
 
   // Remove location at index
   const handleRemoveLocation = (index: number) => {
-    if (fieldCount > 1) {
+    if (value.length > 0) {
       // Remove the value at this index
       const updated = value.filter((_, i) => i !== index)
       onChange(updated)
 
       // Decrease field count
-      setFieldCount(fieldCount - 1)
+      setFieldCount(Math.max(0, fieldCount - 1))
     }
   }
 
@@ -103,50 +110,75 @@ export function LocationListInput({
 
   return (
     <YStack gap="$3" position="relative" zIndex={999}>
+      {/* Help Text */}
+      {helpText && (
+        <Text fontSize="$3" color="$color11" lineHeight="$1">
+          {helpText}
+        </Text>
+      )}
+
       {/* Location Inputs */}
       <YStack gap="$2">
-        {Array.from({ length: fieldCount }, (_, index) => (
-          <XStack key={index} gap="$2" alignItems="flex-start">
-            <YStack flex={1}>
-              <AddressAutocomplete
-                value={value[index] || ''}
-                onChange={(text) => handleLocationChange(index, text)}
-                onAddressSelect={(address) => handleAddressSelect(index, address)}
-                placeholder={index === 0 ? placeholder : `Location ${index + 1}`}
-                provider={provider}
-                apiKey={apiKey}
-                searchOptions={searchOptions}
-                zoomLevel="city"
-                disabled={disabled}
-                debounceMs={300}
-                minLength={2}
-                maxResults={8}
-              />
-            </YStack>
+        {value.length > 0 ? (
+          Array.from({ length: fieldCount }, (_, index) => (
+            <XStack key={index} gap="$2" alignItems="flex-start">
+              <YStack flex={1}>
+                <AddressAutocomplete
+                  value={value[index] || ''}
+                  onChange={(text) => handleLocationChange(index, text)}
+                  onAddressSelect={(address) => handleAddressSelect(index, address)}
+                  placeholder={index === 0 ? placeholder : `Location ${index + 1}`}
+                  provider={provider}
+                  apiKey={apiKey}
+                  searchOptions={searchOptions}
+                  zoomLevel="city"
+                  disabled={disabled}
+                  debounceMs={300}
+                  minLength={2}
+                  maxResults={8}
+                />
+              </YStack>
 
-            {/* Remove button (only show for second location onwards) */}
-            {index > 0 && (
-              <Button
-                variant="outlined"
-                size="$3"
-                onPress={() => handleRemoveLocation(index)}
-                disabled={disabled}
-                circular
-                backgroundColor="transparent"
-                borderColor="$color8"
-                marginTop="$1"
-              >
-                <Button.Icon>
-                  <X size={16} color="$color11" />
-                </Button.Icon>
-              </Button>
-            )}
-          </XStack>
-        ))}
+              {/* Remove button (show for all locations when there are locations) */}
+              {value.length > 0 && (
+                <Button
+                  variant="outlined"
+                  size="$3"
+                  onPress={() => handleRemoveLocation(index)}
+                  disabled={disabled}
+                  circular
+                  backgroundColor="transparent"
+                  borderColor="$color8"
+                  marginTop="$1"
+                >
+                  <Button.Icon>
+                    <X size={16} color="$color11" />
+                  </Button.Icon>
+                </Button>
+              )}
+            </XStack>
+          ))
+        ) : (
+          /* Empty state - show Add Location button */
+          <Button
+            variant="outlined"
+            size="$3"
+            onPress={handleAddLocation}
+            disabled={disabled}
+            alignSelf="flex-start"
+            backgroundColor="transparent"
+            borderColor="$color8"
+          >
+            <Button.Icon>
+              <Plus size={16} color="$color11" />
+            </Button.Icon>
+            <Button.Text color="$color11">Add Preferred Work Location</Button.Text>
+          </Button>
+        )}
       </YStack>
 
-      {/* Add Location Button */}
-      {fieldCount < maxLocations && (
+      {/* Add Location Button (only show when there are existing locations) */}
+      {value.length > 0 && fieldCount < maxLocations && (
         <Button
           variant="outlined"
           size="$3"
@@ -163,13 +195,6 @@ export function LocationListInput({
             Add Location ({fieldCount}/{maxLocations})
           </Button.Text>
         </Button>
-      )}
-
-      {/* Help Text */}
-      {helpText && (
-        <Text fontSize="$3" color="$color11" lineHeight="$1">
-          {helpText}
-        </Text>
       )}
     </YStack>
   )
