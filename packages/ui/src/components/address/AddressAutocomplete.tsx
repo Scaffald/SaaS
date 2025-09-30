@@ -50,7 +50,7 @@ export function AddressAutocomplete({
   const [inputValue, setInputValue] = useState(value)
   const [showResults, setShowResults] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
-  const inputRef = useRef<any>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const resultsRef = useRef<ScrollView>(null)
 
   // Memoize config to prevent recreation on every render
@@ -126,7 +126,7 @@ export function AddressAutocomplete({
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback(
-    (event: any) => {
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (!showResults || results.length === 0) return
 
       switch (event.key) {

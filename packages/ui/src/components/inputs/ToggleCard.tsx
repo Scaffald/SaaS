@@ -91,7 +91,7 @@ export function ToggleCard({
   testID,
 }: ToggleCardProps) {
   const uniqueId = useId()
-  const tokens = getTokens()
+  const _tokens = getTokens()
 
   const handlePress = () => {
     if (!disabled) {

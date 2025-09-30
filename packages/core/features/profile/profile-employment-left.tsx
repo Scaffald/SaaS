@@ -71,7 +71,7 @@ export function ProfileEmploymentLeft() {
     mode: 'onChange', // Real-time validation
   })
 
-  const willingToTravel = watch('willing_to_travel')
+  const _willingToTravel = watch('willing_to_travel')
 
   // Reset form when employment data is loaded
   useEffect(() => {
