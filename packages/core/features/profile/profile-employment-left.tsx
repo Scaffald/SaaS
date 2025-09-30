@@ -125,7 +125,7 @@ export function ProfileEmploymentLeft() {
                 apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
                 zoomLevel="street"
                 searchOptions={{
-                  types: ['address'],
+                  types: ['place'], // Mapbox type for addresses
                   country: 'US',
                 }}
               />
