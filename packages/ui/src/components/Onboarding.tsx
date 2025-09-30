@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, ReactNode, FC, useMemo } from 'react'
 import { PanResponder } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
@@ -17,7 +17,7 @@ import { OnboardingControls } from './OnboardingControls'
 
 export type OnboardingStepInfo = {
   theme: ThemeName
-  Content: React.FC
+  Content: FC
   backgroundImage?: string
 }
 
@@ -65,7 +65,7 @@ export const Onboarding = ({ onOnboarded, autoSwipe, steps }: OnboardingProps) =
     }
   }, [stepIdx, autoSwipe, stepsCount, setStepIdx])
 
-  const panResponder = React.useMemo(() => {
+  const panResponder = useMemo(() => {
     return PanResponder.create({
       onMoveShouldSetPanResponderCapture: (_event, gesture) => {
         const THRESHOLD = 100

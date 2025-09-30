@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   YStack,
   XStack,
@@ -25,7 +25,7 @@ import {
   AVAILABILITY_OPTIONS,
 } from './config'
 import { api } from '@app/core/utils/api'
-import { DashboardWidget, AddressForm } from '@app/ui'
+import { DashboardWidget, AddressForm, LocationListInput } from '@app/ui'
 
 /**
  * Profile Employment Left Component
@@ -73,7 +73,7 @@ export function ProfileEmploymentLeft() {
   const willingToTravel = watch('willing_to_travel')
 
   // Reset form when employment data is loaded
-  React.useEffect(() => {
+  useEffect(() => {
     if (employmentData) {
       // Transform the data to match the form schema
       const transformedData = {
@@ -119,6 +119,21 @@ export function ProfileEmploymentLeft() {
                 error={errors.address?.street?.message || errors.address?.city?.message}
                 provider="mapbox"
                 apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
+                addressValue={{
+                  streetAddress: watch('address.street') || '',
+                  locality: watch('address.city') || '',
+                  stateAbbreviation: watch('address.state') || '',
+                  postalCode: watch('address.zip') || '',
+                  country: watch('address.country') || '',
+                  formattedAddress: [
+                    watch('address.street'),
+                    watch('address.city'),
+                    watch('address.state'),
+                    watch('address.zip'),
+                  ]
+                    .filter(Boolean)
+                    .join(', '),
+                }}
                 onAddressSelect={(address) => {
                   console.log('Selected address:', address)
                   // Update form fields with selected address
@@ -142,30 +157,20 @@ export function ProfileEmploymentLeft() {
 
             {/* Preferred Work Locations */}
             <YStack gap="$3">
-              <Text fontWeight="600">Preferred Work Locations (up to 3)</Text>
+              <Text fontWeight="600">Preferred Work Locations</Text>
               <Controller
                 name="preferred_work_locations"
                 control={control}
                 render={({ field }) => (
-                  <YStack gap="$2">
-                    {[0, 1, 2].map((index) => (
-                      <Input
-                        key={index}
-                        placeholder={`Work location ${index + 1}`}
-                        value={field.value?.[index] || ''}
-                        onChangeText={(text) => {
-                          const current = field.value || []
-                          const updated = [...current]
-                          if (text) {
-                            updated[index] = text
-                          } else {
-                            updated.splice(index, 1)
-                          }
-                          field.onChange(updated.filter(Boolean))
-                        }}
-                      />
-                    ))}
-                  </YStack>
+                  <LocationListInput
+                    value={field.value || []}
+                    onChange={field.onChange}
+                    maxLocations={3}
+                    helpText="You can add up to three locations. This can be as broad as in a state or county, or specific to a city."
+                    placeholder="Search for a work location..."
+                    provider="mapbox"
+                    apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
+                  />
                 )}
               />
             </YStack>

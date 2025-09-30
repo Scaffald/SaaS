@@ -2,7 +2,7 @@ import { config, isWeb, TamaguiProvider as TamaguiProviderOG, useDidFinishSSR } 
 
 import { useRootTheme, useThemeSetting } from '../theme/UniversalThemeProvider'
 
-export const TamaguiProvider = ({ children }: { children: React.ReactNode }) => {
+export const TamaguiProvider = ({ children }: { children: ReactNode }) => {
   const [rootTheme] = useRootTheme()
   const themeSetting = useThemeSetting()
   const isHydrated = useDidFinishSSR()

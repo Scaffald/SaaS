@@ -1,10 +1,11 @@
 import { X } from '@tamagui/lucide-icons'
 import { Button, XStack, Text } from 'tamagui'
 import type { SizeTokens, ThemeName } from 'tamagui'
+import { ReactNode } from 'react'
 
 type FilterChipProps = {
   label: string
-  icon?: React.ReactNode
+  icon?: ReactNode
   color?: string
   size?: SizeTokens
   onRemove?: () => void

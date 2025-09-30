@@ -6,7 +6,7 @@ import {
   onlineManager,
 } from '@tanstack/react-query'
 import { api, createTrpcClient } from '@app/core/utils/api'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, ReactNode } from 'react'
 import type { AppStateStatus } from 'react-native'
 import { AppState, Platform } from 'react-native'
 
@@ -22,7 +22,7 @@ function onAppStateChange(status: AppStateStatus) {
   }
 }
 
-export const QueryClientProvider = ({ children }: { children: React.ReactNode }) => {
+export const QueryClientProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const subscription = AppState.addEventListener('change', onAppStateChange)
 

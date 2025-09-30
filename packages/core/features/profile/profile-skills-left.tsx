@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   YStack,
   XStack,
@@ -83,7 +83,7 @@ export function ProfileSkillsLeft() {
   })
 
   // Reset form when skills data is loaded
-  React.useEffect(() => {
+  useEffect(() => {
     if (skillsData) {
       reset(skillsData)
     }

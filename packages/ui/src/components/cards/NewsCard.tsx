@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react'
+import { ReactNode, useState, ElementRef } from 'react'
 import { Card, Image, View, Text, YStack, XStack, Button, Anchor, type CardProps } from 'tamagui'
 
 /**
@@ -246,4 +246,4 @@ export interface NewsCardProps extends Omit<CardProps, 'children'> {
   minHeight?: number
 }
 
-export type NewsCardRef = React.ElementRef<typeof Card>
+export type NewsCardRef = ElementRef<typeof Card>

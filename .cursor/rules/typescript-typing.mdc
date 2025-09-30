@@ -13,6 +13,26 @@ alwaysApply: false
 - **USE proper interface/type definitions** for complex objects and data structures
 - **LEVERAGE TypeScript's type inference** but be explicit when unclear
 
+## React Import Standards
+- **PREFER direct imports** from React instead of namespace imports
+- **USE destructured imports** for React hooks and components
+- **AVOID namespace imports** when individual imports are available
+
+```typescript
+// ✅ Good - direct imports
+import { useEffect, useState, useCallback } from 'react';
+import { Button, Text, View } from 'react-native';
+
+// ❌ Bad - namespace imports
+import React from 'react';
+React.useEffect(() => {});
+React.useState();
+
+// ✅ Good - mixed approach when needed
+import React, { useEffect, useState } from 'react';
+// Use React.Component when extending, but prefer hooks directly
+```
+
 ## Function and Method Typing
 ```typescript
 // ✅ Good - explicit parameter and return types
@@ -168,3 +188,4 @@ type AppAction =
 - [ ] Type guards are used for runtime validation
 - [ ] Generic types are used for reusable code
 - [ ] Error types are specific and well-defined
+- [ ] React imports use direct destructuring (not namespace imports)

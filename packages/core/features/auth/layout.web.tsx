@@ -1,8 +1,9 @@
 import { XStack, YStack } from '@app/ui'
 import { WelcomeScreen } from './welcome-screen'
+import { ReactNode } from 'react'
 
 export type AuthLayoutProps = {
-  children?: React.ReactNode
+  children?: ReactNode
 }
 
 export const AuthLayout = ({ children }: AuthLayoutProps) => {

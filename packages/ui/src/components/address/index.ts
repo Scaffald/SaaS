@@ -14,6 +14,7 @@ export { GeocodingError } from './types'
 // Components
 export { AddressAutocomplete } from './AddressAutocomplete'
 export { AddressForm } from './AddressForm'
+export { LocationListInput } from './LocationListInput'
 
 // Hooks
 export {

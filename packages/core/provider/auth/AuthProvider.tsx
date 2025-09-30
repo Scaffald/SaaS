@@ -1,13 +1,13 @@
 import type { Session, SessionContext as SessionContextHelper } from '@supabase/auth-helpers-react'
 import { AuthError, type User } from '@supabase/supabase-js'
 import { supabase } from '@app/core/utils/supabase/client'
-import { createContext, useEffect, useState } from 'react'
+import { createContext, useEffect, useState, ReactNode } from 'react'
 
 import { AuthStateChangeHandler } from './AuthStateChangeHandler'
 
 export type AuthProviderProps = {
   initialSession?: Session | null
-  children?: React.ReactNode
+  children?: ReactNode
 }
 
 export const SessionContext = createContext<SessionContextHelper>({
