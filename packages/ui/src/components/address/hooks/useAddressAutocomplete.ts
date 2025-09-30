@@ -130,12 +130,11 @@ export function useAddressAutocomplete(
 
   // Trigger search when debounced query changes
   useEffect(() => {
-    if (debouncedQuery !== query) {
-      // Only search if the debounced query is different from current query
-      return
+    // Only search when we have a debounced query
+    if (debouncedQuery.trim()) {
+      debouncedSearch(debouncedQuery)
     }
-    debouncedSearch(debouncedQuery)
-  }, [debouncedQuery, debouncedSearch, query])
+  }, [debouncedQuery, debouncedSearch])
 
   // Manual search function
   const search = useCallback((searchQuery: string) => {

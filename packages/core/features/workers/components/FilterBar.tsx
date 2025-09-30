@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, useMemo } from 'react'
 import {
   Button,
   ScrollView,
@@ -51,6 +51,15 @@ export const FilterBar = ({
 }: FilterBarProps) => {
   const theme = useTheme()
 
+  // Memoize search options to prevent recreation on every render
+  const searchOptions = useMemo(
+    () => ({
+      types: ['(cities)'],
+      country: 'US',
+    }),
+    []
+  )
+
   const getFilterIcon = (category: ActiveFilter['category']) => {
     switch (category) {
       case 'location':
@@ -100,10 +109,7 @@ export const FilterBar = ({
             provider="google"
             apiKey={process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY}
             zoomLevel="city"
-            searchOptions={{
-              types: ['(cities)'],
-              country: 'US',
-            }}
+            searchOptions={searchOptions}
             maxResults={5}
             debounceMs={300}
           />

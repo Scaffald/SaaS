@@ -47,6 +47,18 @@ export function useAddressDebouncedCallback<T extends (...args: any[]) => any>(
   deps: React.DependencyList
 ): T {
   const timeoutRef = useRef<NodeJS.Timeout | number | null>(null)
+  const callbackRef = useRef(callback)
+  const depsRef = useRef(deps)
+
+  // Update callback ref when callback changes
+  useEffect(() => {
+    callbackRef.current = callback
+  }, [callback])
+
+  // Update deps ref when deps change
+  useEffect(() => {
+    depsRef.current = deps
+  }, deps)
 
   const debouncedCallback = useRef(((...args: Parameters<T>) => {
     // Clear existing timeout
@@ -56,22 +68,9 @@ export function useAddressDebouncedCallback<T extends (...args: any[]) => any>(
 
     // Set new timeout
     timeoutRef.current = setTimeout(() => {
-      callback(...args)
+      callbackRef.current(...args)
     }, delay)
   }) as T)
-
-  // Update callback ref when dependencies change
-  useEffect(() => {
-    debouncedCallback.current = ((...args: Parameters<T>) => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-
-      timeoutRef.current = setTimeout(() => {
-        callback(...args)
-      }, delay)
-    }) as T
-  }, [callback, delay, ...deps])
 
   // Cleanup on unmount
   useEffect(() => {
