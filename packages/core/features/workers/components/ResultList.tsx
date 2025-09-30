@@ -106,7 +106,7 @@ export const ResultList = forwardRef<ResultListRef, ResultListProps>(
           </Text>
         </XStack>
         <ScrollView
-          reflex={scrollViewRef}
+          ref={scrollViewRef}
           flex={1}
           showsVerticalScrollIndicator
           renderToHardwareTextureAndroid
@@ -115,7 +115,7 @@ export const ResultList = forwardRef<ResultListRef, ResultListProps>(
             {profiles.map((profile, index) => (
               <YStack key={profile.id} gap="$2">
                 <ResultCard
-                  reflex={(ref) => registerCardRef(profile.id, ref)}
+                  ref={(ref) => registerCardRef(profile.id, ref)}
                   profile={profile}
                   isSelected={profile.id === selectedId}
                   onSelect={onSelect}

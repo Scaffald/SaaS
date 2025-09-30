@@ -15,7 +15,7 @@ export const ResultCard = memo(
   forwardRef<TamaguiElement, ResultCardProps>(({ profile, isSelected, onSelect }, ref) => {
     return (
       <YStack
-        reflex={ref}
+        ref={ref}
         borderWidth={1}
         borderColor={isSelected ? '$blue7' : '$color5'}
         rounded="$3"
@@ -23,7 +23,7 @@ export const ResultCard = memo(
         bg={isSelected ? '$blue2' : '$background'}
         gap="$2"
         pressStyle={{ scale: 0.98 }}
-        hoverStyle={{ backgroundColor: '$color2' }}
+        hoverStyle={{ bg: '$color2' }}
         onPress={() => onSelect(profile.id)}
         // Add animation for selection highlight
         animation={isSelected ? 'bouncy' : undefined}
@@ -119,12 +119,12 @@ export const ResultCard = memo(
 
         <XStack gap="$1" flexWrap="wrap">
           {profile.certifications.slice(0, 2).map((certification) => (
-            <Button key={certification} size="$1" theme="surface2" rounded="$8">
+            <Button key={certification} size="$1" rounded="$8">
               {certification}
             </Button>
           ))}
           {profile.skills.slice(0, 3).map((skill) => (
-            <Button key={skill} size="$1" theme="gray" rounded="$8">
+            <Button key={skill} size="$1" rounded="$8">
               {skill}
             </Button>
           ))}

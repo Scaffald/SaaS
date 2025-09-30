@@ -168,7 +168,7 @@ affiliate_rows as (
     'Online cohort' as program_type,
     'Prepare for NIMS credentialing with instructor feedback and practice assessments.' as description,
     'Reserve a seat' as cta_label,
-    'https://skillslab.manufacturing.test/cnc-operator?reflex=scf' as affiliate_url,
+    'https://skillslab.manufacturing.test/cnc-operator?ref=scf' as affiliate_url,
     null::text as affiliate_code,
     'Commission: 8% per enrolled candidate' as commission_terms,
     jsonb_build_object('duration_weeks', 6, 'format', 'Live virtual', 'provider', 'SkillsLab Manufacturing') as metadata,

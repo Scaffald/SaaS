@@ -99,7 +99,7 @@ export const LoginScreen = () => {
             <ScaffaldLogo width={200} height={33} />
             <YStack gap="$2" items="center">
               <H2 $sm={{ size: '$8' }}>Get started</H2>
-              <Paragraph theme="alt2" text="center">
+              <Paragraph text="center">
                 Enter your email and we&apos;ll send a one-time sign-in link.
               </Paragraph>
             </YStack>

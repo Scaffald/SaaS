@@ -123,8 +123,8 @@ export const FilterBar = ({
             opacity={locationPermissionStatus === 'denied' ? 0.5 : 1}
             bg={isLocationLoading ? '$color3' : 'transparent'}
             position="absolute"
-            right="$2"
-            zIndex={10}
+            r="$2"
+            z={10}
           />
         </XStack>
         <Button size="$2" icon={SlidersHorizontal} theme="blue" onPress={onAdjustFilters}>
@@ -136,7 +136,7 @@ export const FilterBar = ({
         <XStack gap="$2" items="center">
           {filters.length === 0 ? (
             <XStack items="center" gap="$2">
-              <Filter size={16} color={theme.color10.val} />
+              <Filter size={16} color="$color10" />
               <Text color="$color11">Add filters to narrow results</Text>
             </XStack>
           ) : (
@@ -152,7 +152,7 @@ export const FilterBar = ({
                 />
               ))}
               <Separator vertical height="$3" />
-              <Button size="$2" theme="gray" onPress={onClearFilters}>
+              <Button size="$2" onPress={onClearFilters}>
                 <Button.Text>Clear all</Button.Text>
               </Button>
             </Fragment>

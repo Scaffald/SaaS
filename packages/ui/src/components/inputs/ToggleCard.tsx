@@ -87,7 +87,7 @@ export function ToggleCard({
   expandedContent,
   disabled = false,
   width = 400,
-  theme = 'surface1',
+  theme,
   testID,
 }: ToggleCardProps) {
   const uniqueId = useId()
@@ -99,7 +99,7 @@ export function ToggleCard({
   }
 
   return (
-    <YStack w={width} testID={testID}>
+    <YStack width={width} testID={testID}>
       <Button
         flexDirection="row"
         borderColor="$borderColor"
@@ -166,18 +166,17 @@ export function ToggleCard({
               key="expanded-content"
               open={checked}
               borderColor="$borderColor"
-              borderWidth="0 1px 1px 1px"
-              rounded="$0 $0 $3 $3"
+              rounded="$3"
               px="$4"
               py="$3"
               bg="$background"
               enterStyle={{
                 opacity: 0,
-                maxHeight: 0,
+                maxH: 0,
               }}
               exitStyle={{
                 opacity: 0,
-                maxHeight: 0,
+                maxH: 0,
               }}
             >
               {expandedContent}

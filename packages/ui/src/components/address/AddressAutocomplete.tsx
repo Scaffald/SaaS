@@ -235,7 +235,7 @@ export function AddressAutocomplete({
             }}
           >
             <Input
-              reflex={inputRef}
+              ref={inputRef}
               placeholder={placeholder}
               value={inputValue}
               onChangeText={handleInputChange}
@@ -289,7 +289,7 @@ export function AddressAutocomplete({
             maxHeight: 250,
           }}
         >
-          <ScrollView reflex={resultsRef} showsVerticalScrollIndicator={false}>
+          <ScrollView ref={resultsRef} showsVerticalScrollIndicator={false}>
             {hasResults ? (
               results.map((address, index) => (
                 <Fragment key={address.id}>
