@@ -215,7 +215,7 @@ async function upsertSkills(client: Client, rows: Row[]) {
   const batchSize = 1000
   for (let i = 0; i < rows.length; i += batchSize) {
     const slice = rows.slice(i, i + batchSize).map(toInsertable)
-    const values: any[] = []
+    const values: (string | boolean | [string, string, string, string])[] = []
     const tuples: string[] = []
     slice.forEach((r, idx) => {
       const o = idx * 6

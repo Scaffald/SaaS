@@ -2,6 +2,62 @@ import { BaseGeocodingProvider, AddressUtils } from './base'
 import type { AddressResult, SearchOptions, ProviderConfig } from '../types'
 import { GeocodingError } from '../types'
 
+// Mapbox API response interfaces
+interface MapboxGeometry {
+  type: string
+  coordinates: [number, number] // [lng, lat]
+}
+
+interface MapboxProperties {
+  accuracy?: string
+  address?: string
+  category?: string
+  maki?: string
+  wikidata?: string
+  short_code?: string
+}
+
+interface MapboxContext {
+  id: string
+  mapbox_id: string
+  wikidata?: string
+  text: string
+  short_code?: string
+}
+
+interface MapboxFeature {
+  id: string
+  type: string
+  place_type: string[]
+  relevance: number
+  properties: MapboxProperties
+  text: string
+  place_name: string
+  bbox?: [number, number, number, number]
+  center: [number, number] // [lng, lat]
+  geometry: MapboxGeometry
+  context?: MapboxContext[]
+  address?: string
+}
+
+interface MapboxResponse {
+  type: string
+  query: string[]
+  features: MapboxFeature[]
+  attribution: string
+}
+
+interface AddressComponents {
+  streetNumber: string
+  route: string
+  locality: string
+  administrativeAreaLevel1: string
+  stateAbbreviation: string
+  postalCode: string
+  country: string
+  countryCode: string
+}
+
 /**
  * Mapbox Geocoding API provider implementation
  */
@@ -20,10 +76,12 @@ export class MapboxProvider extends BaseGeocodingProvider {
 
     try {
       const url = this.buildSearchUrl(query, options)
-      const response = await this.fetchWithErrorHandling(url)
+      const response = (await this.fetchWithErrorHandling(url)) as MapboxResponse
 
       if (response.features && Array.isArray(response.features)) {
-        const results = response.features.map((feature: any) => this.normalizeMapboxResult(feature))
+        const results = response.features.map((feature: MapboxFeature) =>
+          this.normalizeMapboxResult(feature)
+        )
         return this.filterByZoomLevel(results, options.zoomLevel)
       }
 
@@ -137,8 +195,7 @@ export class MapboxProvider extends BaseGeocodingProvider {
   /**
    * Normalize Mapbox result to our standard format
    */
-  private normalizeMapboxResult(feature: any): AddressResult {
-    const properties = feature.properties || {}
+  private normalizeMapboxResult(feature: MapboxFeature): AddressResult {
     const context = feature.context || []
     const coordinates = {
       lng: feature.geometry?.coordinates?.[0] || 0,
@@ -175,7 +232,7 @@ export class MapboxProvider extends BaseGeocodingProvider {
   /**
    * Extract address components from Mapbox feature and context
    */
-  private extractAddressComponents(feature: any, context: any[]) {
+  private extractAddressComponents(feature: MapboxFeature, context: MapboxContext[]) {
     const components = {
       streetNumber: '',
       route: '',
@@ -247,7 +304,7 @@ export class MapboxProvider extends BaseGeocodingProvider {
   /**
    * Determine place type from Mapbox feature
    */
-  private getPlaceType(feature: any): string {
+  private getPlaceType(feature: MapboxFeature): string {
     const placeTypes = feature.place_type || []
 
     if (placeTypes.includes('address')) return 'address'
@@ -262,7 +319,11 @@ export class MapboxProvider extends BaseGeocodingProvider {
   /**
    * Build formatted address string
    */
-  private buildFormattedAddress(feature: any, components: any, placeType: string): string {
+  private buildFormattedAddress(
+    feature: MapboxFeature,
+    components: AddressComponents,
+    _placeType: string
+  ): string {
     // Use Mapbox's place_name if available as it's well formatted
     if (feature.place_name) {
       return AddressUtils.normalizeComponent(feature.place_name)
@@ -304,7 +365,7 @@ export class MapboxProvider extends BaseGeocodingProvider {
   /**
    * Map custom types to Mapbox place types
    */
-  private mapTypesToMapbox(types: string[], zoomLevel?: string): string[] {
+  private mapTypesToMapbox(types: string[], _zoomLevel?: string): string[] {
     return types.map((type) => {
       switch (type) {
         case 'street_address':
@@ -355,13 +416,18 @@ export class MapboxProvider extends BaseGeocodingProvider {
   /**
    * Handle Mapbox-specific errors
    */
-  protected handleError(error: any, context: string): never {
+  protected handleError(error: unknown, context: string): never {
+    // Type guard for error objects
+    const isErrorWithMessage = (err: unknown): err is { message?: string } => {
+      return typeof err === 'object' && err !== null && 'message' in err
+    }
+
     // Handle Mapbox-specific error responses
-    if (error.message?.includes('Invalid access token')) {
+    if (isErrorWithMessage(error) && error.message?.includes('Invalid access token')) {
       throw new GeocodingError('Invalid Mapbox access token', 'INVALID_API_KEY', 'mapbox', error)
     }
 
-    if (error.message?.includes('rate limit')) {
+    if (isErrorWithMessage(error) && error.message?.includes('rate limit')) {
       throw new GeocodingError('Mapbox rate limit exceeded', 'RATE_LIMIT_EXCEEDED', 'mapbox', error)
     }
 
