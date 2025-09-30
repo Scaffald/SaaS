@@ -19,14 +19,14 @@ export const FieldError = ({ message }: FieldErrorProps) => {
           enterStyle={{
             y: -4,
             scaleY: 0.2,
-            o: 0,
+            opacity: 0,
           }}
           exitStyle={{
             y: -4,
-            o: 0,
+            opacity: 0,
             scaleY: 0,
           }}
-          o={1}
+          opacity={1}
           y={0}
           scaleY={1}
         >

@@ -31,7 +31,7 @@ export default function DashboardLayout() {
   useEffect(() => {
     supabase.auth
       .getSession()
-      .then(({ data }) => {
+      .then(({ data }: { data: { session: Session | null } }) => {
         if (data) {
           setInitialSession(data.session)
         }

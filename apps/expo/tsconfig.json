@@ -6,13 +6,22 @@
     "../../packages/ui",
     "../../packages/api",
     "../../packages/core",
-    "../../supabase"
+    "../../packages/supabase"
   ],
   "exclude": ["../../supabase/functions/**/*"],
   "compilerOptions": {
     "noEmit": true,
     "composite": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": "../../",
+    "paths": {
+      "@app/core": ["packages/core"],
+      "@app/core/*": ["packages/core/*"],
+      "@app/ui": ["packages/ui"],
+      "@app/ui/*": ["packages/ui/*"],
+      "@app/supabase": ["packages/supabase"],
+      "@app/supabase/*": ["packages/supabase/*"]
+    }
   },
   "references": []
 }

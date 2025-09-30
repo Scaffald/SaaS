@@ -13,10 +13,10 @@ export const CustomToast = () => {
       key={currentToast.id}
       duration={currentToast.duration}
       viewportName={currentToast.viewportName}
-      enterStyle={{ o: 0, scale: 0.5, y: -25 }}
-      exitStyle={{ o: 0, scale: 1, y: -20 }}
+      enterStyle={{ opacity: 0, scale: 0.5, y: -25 }}
+      exitStyle={{ opacity: 0, scale: 1, y: -20 }}
       y={0}
-      o={1}
+      opacity={1}
       scale={1}
       animation="100ms"
       themeInverse

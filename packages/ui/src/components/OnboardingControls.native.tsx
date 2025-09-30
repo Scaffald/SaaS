@@ -31,23 +31,23 @@ export const OnboardingControls = ({
         rounded="$10"
         onPress={() => handleSkip()}
       >
-        <Button.Text col="$color">Skip</Button.Text>
+        <Button.Text color="$color">Skip</Button.Text>
       </Button>
 
       <Button
         pressStyle={{
           bg: '$color6',
-          boc: '$color6',
+          borderColor: '$color6',
         }}
         chromeless
         bordered
-        boc="$color"
+        borderColor="$color"
         flex={1}
         rounded="$10"
         onPress={() => handleGoNext()}
         iconAfter={ChevronRight}
       >
-        <Button.Text col="$color">Continue</Button.Text>
+        <Button.Text color="$color">Continue</Button.Text>
       </Button>
     </XStack>
   )

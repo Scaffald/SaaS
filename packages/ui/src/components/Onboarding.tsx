@@ -184,7 +184,7 @@ export const Background = ({ backgroundImage }: { backgroundImage?: string }) =>
         animation="lazy"
         x={0}
         y={0}
-        o={1}
+        opacity={1}
         scale={1}
         bg="$color3"
         enterStyle={{
@@ -192,7 +192,7 @@ export const Background = ({ backgroundImage }: { backgroundImage?: string }) =>
         }}
         exitStyle={{
           scale: 10,
-          o: 0,
+          opacity: 0,
         }}
         width={height * 3}
         height={height * 3}
