@@ -72,7 +72,8 @@ export const Onboarding = ({ onOnboarded, autoSwipe, steps }: OnboardingProps) =
         if (gesture.dx > THRESHOLD) {
           setStepIdx(Math.max(0, stepIdx - 1))
           return true
-        } else if (gesture.dx < -THRESHOLD) {
+        }
+        if (gesture.dx < -THRESHOLD) {
           setStepIdx(Math.min(stepsCount - 1, stepIdx + 1))
           return true
         }
@@ -105,9 +106,15 @@ export const Onboarding = ({ onOnboarded, autoSwipe, steps }: OnboardingProps) =
         </YStack>
 
         <XStack gap={10} jc="center" my="$4">
-          {Array.from(Array(stepsCount)).map((_, idx) => {
+          {Array.from({ length: stepsCount }, (_, idx) => {
             const isActive = idx === stepIdx
-            return <Point key={idx} active={isActive} onPress={() => setStepIdx(idx)} />
+            return (
+              <Point
+                key={`point-${idx}-${stepsCount}`}
+                active={isActive}
+                onPress={() => setStepIdx(idx)}
+              />
+            )
           })}
         </XStack>
         <OnboardingControls

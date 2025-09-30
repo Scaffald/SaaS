@@ -87,7 +87,7 @@ export function NewsWidget({
       case 'equipment':
         return '$yellow8'
       default:
-        return '$gray8'
+        return '$color8'
     }
   }
 
@@ -99,12 +99,12 @@ export function NewsWidget({
   return (
     <YStack gap="$4">
       {/* Header with title and controls */}
-      <XStack justifyContent="space-between" alignItems="center" paddingHorizontal="$6" pt="$6">
+      <XStack justify="space-between" items="center" px="$6" pt="$6">
         <Text fontSize="$6" fontWeight="600">
           News
         </Text>
 
-        <XStack gap="$2" alignItems="center">
+        <XStack gap="$2" items="center">
           {/* Feed Selector */}
           {showFeedSelector && (
             <Select value={selectedFeedIds[0] || ''} onValueChange={handleFeedChange} size="$3">
@@ -114,8 +114,8 @@ export function NewsWidget({
 
               <Select.Content zIndex={200000}>
                 <Select.ScrollUpButton
-                  alignItems="center"
-                  justifyContent="center"
+                  items="center"
+                  justify="center"
                   position="relative"
                   width="100%"
                   height="$3"
@@ -125,7 +125,7 @@ export function NewsWidget({
                   </YStack>
                 </Select.ScrollUpButton>
 
-                <Select.Viewport minWidth={200}>
+                <Select.Viewport minW={200}>
                   {/* National Feeds */}
                   <Select.Group>
                     <Select.Label>National</Select.Label>
@@ -174,8 +174,8 @@ export function NewsWidget({
                 </Select.Viewport>
 
                 <Select.ScrollDownButton
-                  alignItems="center"
-                  justifyContent="center"
+                  items="center"
+                  justify="center"
                   position="relative"
                   width="100%"
                   height="$3"
@@ -203,7 +203,7 @@ export function NewsWidget({
       <YStack gap="$3">
         {/* Loading State */}
         {isLoading && newsItems.length === 0 && (
-          <YStack alignItems="center" padding="$6" gap="$3">
+          <YStack items="center" p="$6" gap="$3">
             <Spinner size="large" />
             <Text color="$color11" fontSize="$4">
               Loading news...
@@ -213,12 +213,12 @@ export function NewsWidget({
 
         {/* Error State */}
         {isError && (
-          <YStack alignItems="center" padding="$6" gap="$3">
+          <YStack items="center" p="$6" gap="$3">
             <AlertCircle size={24} color="$red10" />
-            <Text color="$red11" fontSize="$4" textAlign="center">
+            <Text color="$red11" fontSize="$4" text="center">
               Failed to load news feed
             </Text>
-            <Text color="$color11" fontSize="$3" textAlign="center">
+            <Text color="$color11" fontSize="$3" text="center">
               {error?.message || 'Please check your internet connection'}
             </Text>
             <Button onPress={handleRefresh} size="$3">
@@ -228,68 +228,65 @@ export function NewsWidget({
         )}
 
         {/* News Items */}
-        {newsItems.length > 0 && (
-          <>
-            {newsItems.map((item) => (
-              <NewsCard
-                key={item.id}
-                title={item.title}
-                description={item.description}
-                image={item.image}
-                onPress={() => handleNewsClick(item)}
-                fullCardClickable
-                minHeight={200}
-                header={
-                  item.category ? (
-                    <Button
-                      size="$2"
-                      backgroundColor={getCategoryColor(item.category)}
-                      color="white"
-                      borderRadius="$10"
-                    >
-                      {getCategoryName(item.category)}
-                    </Button>
-                  ) : undefined
-                }
-                footer={
-                  <XStack gap="$3" alignItems="center">
-                    <Text fontSize="$2" color="$color11">
-                      {formatTimeAgo(item.pubDate)}
-                    </Text>
-                    {item.readTime && (
-                      <>
-                        <Text fontSize="$2" color="$color11">
-                          •
-                        </Text>
-                        <Text fontSize="$2" color="$color11">
-                          {item.readTime}
-                        </Text>
-                      </>
-                    )}
-                    {item.author && (
-                      <>
-                        <Text fontSize="$2" color="$color11">
-                          •
-                        </Text>
-                        <Text fontSize="$2" color="$color11">
-                          {item.author}
-                        </Text>
-                      </>
-                    )}
-                  </XStack>
-                }
-              />
-            ))}
-          </>
-        )}
+        {newsItems.length > 0 &&
+          newsItems.map((item) => (
+            <NewsCard
+              key={item.id}
+              title={item.title}
+              description={item.description}
+              image={item.image}
+              onPress={() => handleNewsClick(item)}
+              fullCardClickable
+              minH={200}
+              header={
+                item.category ? (
+                  <Button
+                    size="$2"
+                    bg={getCategoryColor(item.category)}
+                    color="white"
+                    rounded="$10"
+                  >
+                    {getCategoryName(item.category)}
+                  </Button>
+                ) : undefined
+              }
+              footer={
+                <XStack gap="$3" items="center">
+                  <Text fontSize="$2" color="$color11">
+                    {formatTimeAgo(item.pubDate)}
+                  </Text>
+                  {item.readTime && (
+                    <>
+                      <Text fontSize="$2" color="$color11">
+                        •
+                      </Text>
+                      <Text fontSize="$2" color="$color11">
+                        {item.readTime}
+                      </Text>
+                    </>
+                  )}
+                  {item.author && (
+                    <>
+                      <Text fontSize="$2" color="$color11">
+                        •
+                      </Text>
+                      <Text fontSize="$2" color="$color11">
+                        {item.author}
+                      </Text>
+                    </>
+                  )}
+                </XStack>
+              }
+            />
+          ))}
 
         {/* Empty State */}
         {!isLoading && !isError && newsItems.length === 0 && (
-          <YStack alignItems="center" padding="$6" gap="$3">
+          <YStack items="center" p="$6" gap="$3">
             <Text color="$color11" fontSize="$4">
               No news available
             </Text>
-            <Text color="$color10" fontSize="$3" textAlign="center">
+            <Text color="$color10" fontSize="$3" text="center">
               Try selecting a different feed or check back later
             </Text>
           </YStack>

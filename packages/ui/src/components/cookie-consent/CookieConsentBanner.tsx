@@ -39,13 +39,13 @@ export const CookieConsentBanner = ({ containerProps, ...cardProps }: CookieCons
           position="absolute"
           bottom="$6"
           left="50%"
-          maxWidth={500}
+          maxW={500}
           width="100%"
           zIndex={1000}
           transform={[{ translateX: '-50%' }]}
           {...containerProps}
         >
-          <Card elevate size="$4" padding="$5" gap="$3" {...cardProps}>
+          <Card elevate size="$4" p="$5" gap="$3" {...cardProps}>
             <XStack gap="$4" ai="flex-start" flexWrap="wrap" $gtSm={{ ai: 'center' }}>
               <YStack f={1} gap="$2" miw={220}>
                 <SizableText size="$6" fontWeight="700">

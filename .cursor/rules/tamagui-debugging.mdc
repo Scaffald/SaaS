@@ -1,0 +1,94 @@
+---
+description: "Tamagui debugging and optimization guidelines for development and troubleshooting"
+alwaysApply: false
+globs: ["**/*.tsx", "**/*.ts", "packages/ui/**/*", "packages/core/**/*"]
+---
+
+# Tamagui Debugging and Optimization Rules
+
+## Debug Comments for Build-Time Analysis
+- **ADD `// debug` to the top of any file** to see what's being extracted, why, and every step along the optimization pipeline
+- **ADD `// debug-verbose`** for even more detailed information, including granular timings
+- **USE debug comments** when investigating build issues, performance problems, or optimization concerns
+
+```tsx
+// debug
+// debug-verbose
+import { Button } from 'tamagui'
+
+export const MyComponent = () => {
+  return <Button>Hello</Button>
+}
+```
+
+## Runtime Component Debugging
+- **ADD `debug` prop to Tamagui components** to output runtime information about props, styles, and processing
+- **USE `debug="break"`** to break at the beginning of rendering for debugging
+- **USE `debug="verbose"`** for more detailed debug information
+- **APPLY debug props** when troubleshooting component behavior, styling issues, or performance problems
+
+```tsx
+// Basic debug output
+<Button debug>Hello world</Button>
+
+// Break at render start
+<Button debug="break">Debug me</Button>
+
+// Verbose debug information
+<Button debug="verbose">Detailed info</Button>
+```
+
+## Environment-Based Debugging
+- **SET `DEBUG=tamagui`** before build commands to get full debug output across all files
+- **USE environment debugging** for diagnosing production issues and understanding build-time optimizations
+- **COMBINE with build commands** to see comprehensive debugging information
+
+```bash
+# Full debug output during build
+DEBUG=tamagui yarn build
+
+# Debug during development
+DEBUG=tamagui yarn dev
+```
+
+## Component Inspection Techniques
+- **ACCESS `staticConfig` property** on any styled() component for detailed configuration information
+- **USE staticConfig** to understand component structure, theme usage, and optimization details
+- **INSPECT staticConfig** when debugging styling issues or understanding component behavior
+
+```tsx
+import { styled } from 'tamagui'
+
+const Circle = styled(View, {
+  borderRadius: 1000,
+})
+
+// Inspect component configuration
+console.log(Circle.staticConfig) // Detailed component information
+```
+
+## Debugging Workflow
+1. **START with `// debug` comments** in files experiencing issues
+2. **ADD `debug` props** to specific components showing problems
+3. **USE `DEBUG=tamagui` environment** for comprehensive build analysis
+4. **INSPECT `staticConfig`** for component-specific debugging
+5. **COMBINE techniques** for thorough troubleshooting
+
+## When to Use Each Debug Method
+- **File-level issues**: Use `// debug` or `// debug-verbose` comments
+- **Component-specific problems**: Use `debug`, `debug="break"`, or `debug="verbose"` props
+- **Build optimization issues**: Use `DEBUG=tamagui` environment variable
+- **Component configuration questions**: Use `staticConfig` inspection
+- **Production debugging**: Combine environment debugging with component debugging
+
+## Performance Considerations
+- **REMOVE debug props** from production builds
+- **USE debug comments sparingly** in production code
+- **CLEAN UP debug statements** after resolving issues
+- **MONITOR performance impact** when using verbose debugging
+
+## Integration with Development Workflow
+- **ENABLE debugging** when investigating Tamagui-related issues
+- **DOCUMENT debugging steps** in pull requests for complex fixes
+- **SHARE debug output** when seeking help with Tamagui problems
+- **USE debugging** to understand Tamagui's optimization pipeline

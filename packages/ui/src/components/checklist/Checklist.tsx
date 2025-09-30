@@ -29,15 +29,15 @@ export const Checklist = ({
 }: ChecklistProps) => {
   if (isLoading) {
     return (
-      <YStack gap="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
+      <YStack gap="$4" p="$4" flex={1} justify="center" items="center">
         <Spinner size="large" />
-        <Text color="$gray10">Loading...</Text>
+        <Text color="$color10">Loading...</Text>
       </YStack>
     )
   }
 
   return (
-    <YStack gap="$4" padding="$4">
+    <YStack gap="$4" p="$4">
       {(title || subtitle) && <ChecklistHeader title={title} subtitle={subtitle} />}
       {showProgress && <ChecklistProgress completionPercentage={completionPercentage} />}
       <ChecklistList items={items} onItemPress={onItemPress} />

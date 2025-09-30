@@ -129,7 +129,7 @@ export const SkillsChart: FC<SkillsChartProps> = ({
 
   if (showSets.some((index) => index >= datasets.length)) {
     return (
-      <View alignItems="center" justifyContent="center" minHeight={chartHeight}>
+      <View items="center" justify="center" minH={chartHeight}>
         <Text color="$red10">Cannot Display Data</Text>
       </View>
     )
@@ -147,7 +147,7 @@ export const SkillsChart: FC<SkillsChartProps> = ({
 
   const renderAxis = (data: SkillsChartDataItem[]) =>
     data.map((_, i) => (
-      <G key={i}>
+      <G key={`axis-circle-${i}-${radius}`}>
         <Circle
           cx={calculated.centerX}
           cy={calculated.centerY}
@@ -181,18 +181,18 @@ export const SkillsChart: FC<SkillsChartProps> = ({
 
         return (
           <View
-            key={i}
+            key={`label-${label}-${set}`}
             position="absolute"
             left={left}
             top={top}
-            alignItems="center"
-            justifyContent="center"
+            items="center"
+            justify="center"
           >
             <Text
               fontSize={labelTextSize}
               fontWeight="bold"
               color={labelColor}
-              textAlign="center"
+              text="center"
               numberOfLines={2}
             >
               {label}
@@ -204,13 +204,7 @@ export const SkillsChart: FC<SkillsChartProps> = ({
   )
 
   return (
-    <View
-      alignItems="center"
-      justifyContent="center"
-      minHeight={chartHeight}
-      width="100%"
-      backgroundColor={backgroundColor}
-    >
+    <View items="center" justify="center" minH={chartHeight} width="100%" bg={backgroundColor}>
       <View position="absolute" height="100%" width="100%">
         <Svg height="100%" width="100%">
           <Defs>

@@ -102,17 +102,17 @@ export function ToggleCard({
   return (
     <YStack width={width} testID={testID}>
       <Button
-        flexDirection="row"
-        maxWidth="100%"
+        flex="row"
+        maxW="100%"
         borderColor="$borderColor"
         borderWidth={1}
-        paddingHorizontal="$4"
-        paddingVertical="$3"
+        px="$4"
+        py="$3"
         $sm={{ marginHorizontal: '$0' }}
-        borderRadius={expandedContent && checked ? '$3 $3 $0 $0' : '$3'}
+        rounded={expandedContent && checked ? '$3 $3 $0 $0' : '$3'}
         width="100%"
         height="auto"
-        alignItems="center"
+        items="center"
         gap="$2.5"
         theme={theme}
         animation="medium"
@@ -123,47 +123,40 @@ export function ToggleCard({
         // Hover and press states
         hoverStyle={{
           borderColor: '$borderColorHover',
-          backgroundColor: '$backgroundHover',
+          bg: '$backgroundHover',
         }}
         pressStyle={{
-          backgroundColor: '$backgroundPress',
+          bg: '$backgroundPress',
         }}
       >
         {/* Icon */}
         {icon && <View flexShrink={0}>{icon}</View>}
 
         {/* Title and Description */}
-        <View flexDirection="column" flex={1}>
-          <Label size="$4" htmlFor={uniqueId + 'switch'} fontWeight="600" color="$color12">
+        <View flex={1}>
+          <Label size="$4" htmlFor={`${uniqueId}switch`} fontWeight="600" color="$color12">
             {title}
           </Label>
           {description && (
-            <Text
-              theme="alt1"
-              color="$color11"
-              lineHeight="$1"
-              marginTop="$1"
-              fontSize="$3"
-              textAlign="left"
-            >
+            <Text theme="alt1" color="$color11" lineHeight="$1" mt="$1" fontSize="$3" text="left">
               {description}
             </Text>
           )}
         </View>
 
         {/* Switch */}
-        <View alignSelf="center" marginLeft="auto">
+        <View self="center" ml="auto">
           <Switch
-            id={uniqueId + 'switch'}
+            id={`${uniqueId}switch`}
             checked={checked}
             onCheckedChange={onCheckedChange}
             disabled={disabled}
             size="$2"
-            backgroundColor={checked ? '$color10' : '$color5'}
+            bg={checked ? '$color10' : '$color5'}
             borderColor={checked ? '$color10' : '$color6'}
             animation="200ms"
           >
-            <Switch.Thumb borderColor="$white" animation="200ms" backgroundColor="$color1" />
+            <Switch.Thumb borderColor="white" animation="200ms" bg="$color1" />
           </Switch>
         </View>
       </Button>
@@ -177,10 +170,10 @@ export function ToggleCard({
               open={checked}
               borderColor="$borderColor"
               borderWidth="0 1px 1px 1px"
-              borderRadius="$0 $0 $3 $3"
-              paddingHorizontal="$4"
-              paddingVertical="$3"
-              backgroundColor="$background"
+              rounded="$0 $0 $3 $3"
+              px="$4"
+              py="$3"
+              bg="$background"
               enterStyle={{
                 opacity: 0,
                 maxHeight: 0,

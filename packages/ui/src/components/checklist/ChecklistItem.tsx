@@ -13,37 +13,37 @@ export const ChecklistItem = ({ item, onPress }: ChecklistItemProps) => {
   return (
     <Button
       onPress={onPress}
-      backgroundColor="$color1"
-      borderColor="$gray6"
+      bg="$color1"
+      borderColor="$color6"
       borderWidth={1}
-      borderRadius="$4"
-      paddingVertical="$4"
-      paddingHorizontal="$3"
+      rounded="$4"
+      py="$4"
+      px="$3"
       height="auto"
       pressStyle={{
-        backgroundColor: '$gray2',
-        borderColor: '$gray7',
+        backgroundColor: '$color2',
+        borderColor: '$color7',
       }}
       hoverStyle={{
-        backgroundColor: '$gray2',
-        borderColor: '$gray7',
+        backgroundColor: '$color2',
+        borderColor: '$color7',
       }}
-      justifyContent="flex-start"
-      alignItems="flex-start"
+      justify="flex-start"
+      items="flex-start"
       disabled={!onPress}
     >
-      <XStack alignItems="flex-start" gap="$3" flex={1}>
+      <XStack items="flex-start" gap="$3" flex={1}>
         {/* Status Indicator */}
         <View
           width={24}
           height={24}
-          backgroundColor={item.complete ? '$green9' : '$gray6'}
-          borderColor={item.complete ? '$green9' : '$gray6'}
+          bg={item.complete ? '$green9' : '$color6'}
+          borderColor={item.complete ? '$green9' : '$color6'}
           borderWidth={1}
-          borderRadius="$10"
-          alignItems="center"
-          justifyContent="center"
-          marginTop="$1"
+          rounded="$10"
+          items="center"
+          justify="center"
+          mt="$1"
         >
           {item.complete && (
             <Text fontSize="$1" color="white" fontWeight="bold">
@@ -57,12 +57,12 @@ export const ChecklistItem = ({ item, onPress }: ChecklistItemProps) => {
           <Text
             fontSize="$4"
             fontWeight="500"
-            color={item.complete ? '$gray10' : '$gray12'}
-            textAlign="left"
+            color={item.complete ? '$color10' : '$color12'}
+            text="left"
           >
             {item.title}
           </Text>
-          <Text fontSize="$2" color="$gray9" lineHeight="$1" textAlign="left">
+          <Text fontSize="$2" color="$color9" lineHeight="$1" text="left">
             {item.description}
           </Text>
         </YStack>

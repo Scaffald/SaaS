@@ -17,18 +17,18 @@ export const DashboardLayout = ({
   rightWidth = '38%',
 }: DashboardLayoutProps) => {
   return (
-    <YStack flex={1} backgroundColor="$color2" py="$3" flexWrap="wrap">
-      {header && <XStack padding="$4">{header}</XStack>}
+    <YStack flex={1} bg="$color2" py="$3" flexWrap="wrap">
+      {header && <XStack p="$4">{header}</XStack>}
       <XStack flex={1}>
         {leftContent && (
-          <View minWidth="300" $sm={{ width: '100%' }} width={leftWidth}>
+          <YStack minW={300} $sm={{ width: '100%' }} width={leftWidth}>
             {leftContent}
-          </View>
+          </YStack>
         )}
         {rightContent && (
-          <View minWidth="300" $sm={{ width: '100%' }} width={rightWidth}>
+          <YStack minW={300} $sm={{ width: '100%' }} width={rightWidth}>
             {rightContent}
-          </View>
+          </YStack>
         )}
       </XStack>
     </YStack>

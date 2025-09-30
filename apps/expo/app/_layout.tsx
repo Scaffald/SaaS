@@ -1,3 +1,4 @@
+import '../tamagui-web.css'
 import type { Session } from '@supabase/supabase-js'
 import { Provider, loadThemePromise } from '@app/core/provider'
 import { supabase } from '@app/core/utils/supabase/client'

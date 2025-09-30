@@ -50,7 +50,7 @@ export const TalentMap = ({
   )
 
   return (
-    <View flex={1} position="relative" overflow="hidden" borderRadius="$5">
+    <View flex={1} position="relative" overflow="hidden" rounded="$5">
       <MapboxGL.MapView styleURL={config.styleURL} style={StyleSheet.absoluteFill}>
         <MapboxGL.Camera centerCoordinate={center} zoomLevel={zoomLevel} animationMode="flyTo" />
         {circleFeature ? (
@@ -76,12 +76,12 @@ export const TalentMap = ({
             >
               <Theme name={isSelected ? 'blue' : 'light'}>
                 <YStack
-                  padding="$2"
-                  borderRadius="$10"
-                  backgroundColor={isSelected ? '$color9' : '$color6'}
+                  p="$2"
+                  rounded="$10"
+                  bg={isSelected ? '$color9' : '$color6'}
                   borderWidth={1}
                   borderColor={isSelected ? '$color10' : '$color7'}
-                  alignItems="center"
+                  items="center"
                 >
                   <Text fontSize="$2" fontWeight="700" color="$color12">
                     {marker.metric ?? ''}

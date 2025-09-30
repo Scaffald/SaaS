@@ -88,9 +88,8 @@ export const PhoneNumberInput = ({
         if (countryCode === 'US') {
           const national = phone.getNumber('national')
           return `+1 ${national}`
-        } else {
-          return phone.getNumber('international')
         }
+        return phone.getNumber('international')
       }
     } catch {
       // If parsing fails, return original value
@@ -158,7 +157,7 @@ export const PhoneNumberInput = ({
 
       try {
         // Try to format the phone number using awesome-phonenumber
-        let phone = new PhoneNumber(cleaned, selectedCountry.code)
+        const phone = new PhoneNumber(cleaned, selectedCountry.code)
 
         if (phone.isValid()) {
           const formatted = formatPhoneForDisplay(cleaned, selectedCountry.code)
@@ -191,27 +190,27 @@ export const PhoneNumberInput = ({
           borderColor={error ? '$red8' : '$borderColor'}
           disabled={disabled}
           inputMode="tel"
-          paddingLeft={50} // Make space for country selector
-          paddingRight="$3"
-          paddingVertical="$3"
+          pl={50} // Make space for country selector
+          pr="$3"
+          py="$3"
         />
 
         {/* Country Selector - absolutely positioned */}
         <YStack
-          left={4}
+          l={4}
           position="absolute"
           width={78}
           height="calc(100% - 2px)"
-          backgroundColor="transparent"
+          bg="transparent"
           style={{ pointerEvents: disabled ? 'none' : 'auto' }}
         >
           <Select value={selectedCountry.code} onValueChange={handleCountryChange} size="$4">
             <Select.Trigger
               borderWidth="0"
-              backgroundColor="transparent"
+              bg="transparent"
               hoverStyle={{ backgroundColor: 'transparent', transform: 'scale(1.5)' }}
-              paddingHorizontal="$3"
-              paddingVertical="$2"
+              px="$3"
+              py="$2"
               opacity={disabled ? 0.5 : 1}
               width={40}
             >
@@ -236,7 +235,7 @@ export const PhoneNumberInput = ({
               <Select.Viewport>
                 {countries.map((country, index) => (
                   <Select.Item key={country.code} value={country.code} index={index}>
-                    <XStack alignItems="center" gap="$2">
+                    <XStack items="center" gap="$2">
                       <Text fontSize="$3">{country.flag}</Text>
                       <Text fontSize="$3">{country.dialCode}</Text>
                       <Text fontSize="$3">{country.name}</Text>

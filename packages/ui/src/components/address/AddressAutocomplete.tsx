@@ -1,4 +1,13 @@
-import React, { useState, useRef, useCallback, useEffect, useMemo, memo, Fragment } from 'react'
+import {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  memo,
+  Fragment,
+  KeyboardEvent,
+} from 'react'
 import {
   YStack,
   XStack,
@@ -126,7 +135,7 @@ export function AddressAutocomplete({
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLInputElement>) => {
+    (event: KeyboardEvent<HTMLInputElement>) => {
       if (!showResults || results.length === 0) return
 
       switch (event.key) {
@@ -186,18 +195,18 @@ export function AddressAutocomplete({
     <Button
       key={address.id}
       variant="outlined"
-      backgroundColor={selectedIndex === index ? '$color5' : 'transparent'}
+      bg={selectedIndex === index ? '$color5' : 'transparent'}
       borderWidth={0}
-      borderRadius={0}
-      paddingHorizontal="$3"
-      paddingVertical="$3"
-      justifyContent="flex-start"
+      rounded={0}
+      px="$3"
+      py="$3"
+      justify="flex-start"
       onPress={() => handleAddressSelect(address)}
-      pressStyle={{ backgroundColor: '$color6' }}
-      hoverStyle={{ backgroundColor: '$color5' }}
+      pressStyle={{ bg: '$color6' }}
+      hoverStyle={{ bg: '$color5' }}
       unstyled
     >
-      <YStack alignItems="flex-start" gap="$1">
+      <YStack items="flex-start" gap="$1">
         <Text fontSize="$3" color="$color12" numberOfLines={1}>
           {address.formattedAddress}
         </Text>
@@ -217,10 +226,10 @@ export function AddressAutocomplete({
           <XStack
             borderWidth={1}
             borderColor={displayError ? '$red8' : '$borderColor'}
-            borderRadius="$4"
-            backgroundColor="$background"
-            paddingRight="$2"
-            alignItems="center"
+            rounded="$4"
+            bg="$background"
+            pr="$2"
+            items="center"
             focusStyle={{
               borderColor: '$color8',
             }}
@@ -235,15 +244,15 @@ export function AddressAutocomplete({
               onKeyPress={handleKeyDown}
               disabled={disabled}
               borderWidth={0}
-              backgroundColor="transparent"
+              bg="transparent"
               flex={1}
               fontSize="$4"
-              paddingHorizontal="$3"
-              paddingVertical="$3"
+              px="$3"
+              py="$3"
             />
 
             {/* Loading indicator */}
-            {loading ? <Spinner size="small" color="$color10" marginRight="$2" /> : null}
+            {loading ? <Spinner size="small" color="$color10" mr="$2" /> : null}
 
             {/* Clear button */}
             {inputValue && !loading ? (
@@ -254,7 +263,7 @@ export function AddressAutocomplete({
                 onPress={handleClear}
                 disabled={disabled}
                 circular
-                marginRight="$1"
+                mr="$1"
               >
                 <Button.Text fontSize="$3" color="$color10">
                   ✕
@@ -265,14 +274,14 @@ export function AddressAutocomplete({
         </Popover.Trigger>
 
         <Popover.Content
-          borderRadius="$4"
+          rounded="$4"
           padding={0}
-          maxHeight={300}
-          minWidth="$20"
+          maxH={300}
+          minW="$20"
           elevate
           borderWidth={1}
           borderColor="$borderColor"
-          backgroundColor="$background"
+          bg="$background"
           // Mobile-optimized sizing
           $sm={{
             minWidth: '90%',
@@ -285,11 +294,11 @@ export function AddressAutocomplete({
               results.map((address, index) => (
                 <Fragment key={address.id}>
                   <ResultItem address={address} index={index} />
-                  {index < results.length - 1 && <Separator backgroundColor="$borderColor" />}
+                  {index < results.length - 1 && <Separator bg="$borderColor" />}
                 </Fragment>
               ))
             ) : loading ? (
-              <YStack padding="$4" alignItems="center">
+              <YStack p="$4" items="center">
                 <Text color="$color11">Searching...</Text>
               </YStack>
             ) : null}

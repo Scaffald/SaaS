@@ -55,10 +55,9 @@ const getSystemTheme = (): 'light' | 'dark' => {
   if (Platform.OS === 'web') {
     if (typeof window === 'undefined') return 'light'
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  } else {
-    const colorScheme = useColorScheme()
-    return colorScheme === 'dark' ? 'dark' : 'light'
   }
+  const colorScheme = useColorScheme()
+  return colorScheme === 'dark' ? 'dark' : 'light'
 }
 
 // Start early theme loading

@@ -89,7 +89,19 @@ export async function parseRSSFeed(xmlString: string): Promise<ParsedRSSFeed> {
  */
 function sanitizeXML(xmlString: string): string {
   return xmlString
-    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // Remove invalid control characters
+    .split('') // Split into characters
+    .filter((char) => {
+      const code = char.charCodeAt(0)
+      // Remove control characters (keep tab, newline, carriage return)
+      return !(
+        code <= 8 ||
+        code === 11 ||
+        code === 12 ||
+        (code >= 14 && code <= 31) ||
+        code === 127
+      )
+    })
+    .join('')
     .replace(/&(?!amp;|lt;|gt;|quot;|apos;|#)/g, '&amp;') // Fix unescaped ampersands
     .trim()
 }
@@ -267,7 +279,7 @@ function parseDate(dateString: Date | string): Date | null {
 
   try {
     const date = new Date(dateStr)
-    return isNaN(date.getTime()) ? null : date
+    return Number.isNaN(date.getTime()) ? null : date
   } catch {
     return null
   }
@@ -287,7 +299,7 @@ function decodeHtmlEntities(text: string): string {
     .replace(/&#39;/g, "'")
     .replace(/&apos;/g, "'")
     .replace(/&#(\d+);/g, (_match, dec) => String.fromCharCode(dec))
-    .replace(/&#x([0-9a-f]+);/gi, (_match, hex) => String.fromCharCode(parseInt(hex, 16)))
+    .replace(/&#x([0-9a-f]+);/gi, (_match, hex) => String.fromCharCode(Number.parseInt(hex, 16)))
 }
 
 /**

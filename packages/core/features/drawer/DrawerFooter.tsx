@@ -31,18 +31,18 @@ export const DrawerFooter = () => {
 
   return (
     <XStack
-      paddingHorizontal="$4"
-      paddingVertical="$3"
+      px="$4"
+      py="$3"
       borderTopWidth={1}
       borderTopColor="$color4"
-      justifyContent="space-between"
-      alignItems="center"
+      justify="space-between"
+      items="center"
     >
       {/* Theme Toggle Button */}
       <Button
         size="$3"
         circular
-        backgroundColor="$color3"
+        bg="$color3"
         borderColor="$color4"
         borderWidth={1}
         hoverStyle={{
@@ -67,7 +67,7 @@ export const DrawerFooter = () => {
       <Button
         size="$3"
         circular
-        backgroundColor="$color3"
+        bg="$color3"
         borderColor="$color4"
         borderWidth={1}
         hoverStyle={{

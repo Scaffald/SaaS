@@ -54,7 +54,7 @@ export function AvatarImagePicker({
   const { isDragActive } = dragStatus || {}
 
   return (
-    <YStack alignItems="center" gap="$3">
+    <YStack items="center" gap="$3">
       {/* Avatar Circle */}
       <View
         // @ts-ignore reason: getRootProps() which is web specific return some react-native incompatible props, but it's fine
@@ -73,8 +73,8 @@ export function AvatarImagePicker({
 
         <Circle
           size={size}
-          backgroundColor={isDragActive ? '$blue3' : '$gray3'}
-          borderColor={isDragActive ? '$blue8' : '$gray6'}
+          bg={isDragActive ? '$blue3' : '$color3'}
+          borderColor={isDragActive ? '$blue8' : '$color6'}
           borderWidth={2}
           borderStyle={isDragActive ? 'solid' : 'dashed'}
           overflow="hidden"
@@ -84,19 +84,19 @@ export function AvatarImagePicker({
             scale: disabled ? 1 : 0.98,
           }}
           hoverStyle={{
-            borderColor: disabled ? '$gray6' : '$blue8',
-            backgroundColor: disabled ? '$gray3' : '$blue2',
+            borderColor: disabled ? '$color6' : '$blue8',
+            backgroundColor: disabled ? '$color3' : '$blue2',
           }}
         >
           {value ? (
-            <Image source={{ uri: value }} width={size} height={size} borderRadius={size / 2} />
+            <Image source={{ uri: value }} width={size} height={size} rounded={size / 2} />
           ) : (
-            <YStack alignItems="center" justifyContent="center" flex={1} gap="$2">
-              <User size={size * 0.3} color="$gray9" />
+            <YStack items="center" justify="center" flex={1} gap="$2">
+              <User size={size * 0.3} color="$color9" />
               <Text
                 fontSize="$2"
-                color="$gray9"
-                textAlign="center"
+                color="$color9"
+                text="center"
                 display={size < 80 ? 'none' : 'flex'}
               >
                 {isDragActive ? 'Drop here' : placeholder}
@@ -111,10 +111,10 @@ export function AvatarImagePicker({
             left={0}
             right={0}
             bottom={0}
-            backgroundColor="$color9"
-            borderRadius={size / 2}
-            alignItems="center"
-            justifyContent="center"
+            bg="$color9"
+            rounded={size / 2}
+            items="center"
+            justify="center"
             opacity={0}
             hoverStyle={{
               opacity: disabled ? 0 : 1,
@@ -127,7 +127,7 @@ export function AvatarImagePicker({
       </View>
 
       {/* Action Buttons */}
-      <XStack gap="$2" alignItems="center">
+      <XStack gap="$2" items="center">
         <Button
           size="$3"
           variant="outlined"
@@ -160,8 +160,8 @@ export function AvatarImagePicker({
           display: 'none',
         }}
         size="$2"
-        color="$gray9"
-        textAlign="center"
+        color="$color9"
+        text="center"
         display={disabled ? 'none' : 'flex'}
       >
         <Text>Drag & drop an image or click to select</Text>

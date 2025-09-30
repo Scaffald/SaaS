@@ -15,12 +15,12 @@ export const ChecklistHeader = ({ title, subtitle }: ChecklistHeaderProps) => {
   return (
     <YStack gap="$2">
       {title && (
-        <Text fontSize="$6" fontWeight="600" color="$gray12">
+        <Text fontSize="$6" fontWeight="600" color="$color12">
           {title}
         </Text>
       )}
       {subtitle && (
-        <Text fontSize="$3" color="$gray10" lineHeight="$1">
+        <Text fontSize="$3" color="$color10" lineHeight="$1">
           {subtitle}
         </Text>
       )}

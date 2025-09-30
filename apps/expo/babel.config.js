@@ -1,8 +1,6 @@
-// temp: ignore bundle error
-process.env.TAMAGUI_IGNORE_BUNDLE_ERRORS = 'moti'
-
 module.exports = (api) => {
-  api.cache(false)
+  api.cache(true)
+
   return {
     presets: [['babel-preset-expo', { jsxRuntime: 'automatic' }]],
     plugins: [
@@ -24,11 +22,9 @@ module.exports = (api) => {
         {
           root: ['../..'],
           alias: {
-            // define aliases to shorten the import paths
             '@app/core': '../../packages/core',
             '@app/ui': '../../packages/ui',
-            '@app/api': '../../packages/api',
-            '@app/supabase': '../../supabase',
+            '@app/supabase': '../../packages/supabase',
           },
           extensions: ['.js', '.jsx', '.tsx', '.ios.js', '.android.js'],
         },
@@ -40,13 +36,7 @@ module.exports = (api) => {
           components: ['@app/ui', 'tamagui'],
           config: '../../packages/ui/src/tamagui.config.ts',
           logTimings: true,
-          disableExtraction: false,
-        },
-      ],
-      [
-        'transform-inline-environment-variables',
-        {
-          include: ['EXPO_OS', 'EXPO_PUBLIC_SUPABASE_URL', 'EXPO_PUBLIC_SUPABASE_ANON_KEY'],
+          disableExtraction: process.env.NODE_ENV === 'development',
         },
       ],
     ],

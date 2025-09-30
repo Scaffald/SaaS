@@ -6,11 +6,11 @@ import { Text, YStack } from 'tamagui'
  */
 export function DashboardIndexLeft() {
   return (
-    <YStack padding="$4" gap="$2">
+    <YStack p="$4" gap="$2">
       <Text fontSize="$6" fontWeight="600">
         Dashboard Left Content
       </Text>
-      <Text color="$gray10">Dashboard components will be rebuilt here later.</Text>
+      <Text color="$color10">Dashboard components will be rebuilt here later.</Text>
     </YStack>
   )
 }

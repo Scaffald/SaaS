@@ -31,7 +31,7 @@ export function useFilePicker<MT extends MediaTypeOptionsString>(
   const _handleOpenNative = async () => {
     // No permissions request is necessary for launching the image or document library
     if (typeOfPicker === 'image') {
-      let result = await ImagePicker.launchImageLibraryAsync({
+      const result = await ImagePicker.launchImageLibraryAsync({
         quality: 1,
         allowsMultipleSelection: props?.multiple || false,
       })
@@ -39,7 +39,7 @@ export function useFilePicker<MT extends MediaTypeOptionsString>(
         _onOpenNative(result.assets)
       }
     } else {
-      let result = await DocumentPicker.getDocumentAsync({
+      const result = await DocumentPicker.getDocumentAsync({
         multiple: props?.multiple || false,
       })
       if (!result.canceled && result.assets) {

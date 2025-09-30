@@ -91,7 +91,7 @@ export const ResultList = forwardRef<ResultListRef, ResultListProps>(
 
     if (isLoading) {
       return (
-        <YStack flex={1} gap="$3" alignItems="center" justifyContent="center">
+        <YStack flex={1} gap="$3" items="center" justify="center">
           <Spinner size="large" />
           <Text color="$color10">Loading talent profiles...</Text>
         </YStack>
@@ -100,7 +100,7 @@ export const ResultList = forwardRef<ResultListRef, ResultListProps>(
 
     return (
       <YStack flex={1} gap="$3" overflow="hidden">
-        <XStack justifyContent="space-between" alignItems="center" flexShrink={0}>
+        <XStack justify="space-between" items="center" flexShrink={0}>
           <Text fontWeight="700" fontSize="$5">
             {profiles.length} results
           </Text>

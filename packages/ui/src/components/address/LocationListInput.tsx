@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { YStack, XStack, Text, Button } from 'tamagui'
 import { Plus, X } from '@tamagui/lucide-icons'
 import { AddressAutocomplete } from './AddressAutocomplete'
@@ -49,7 +49,7 @@ export function LocationListInput({
   const [fieldCount, setFieldCount] = useState(value.length)
 
   // Update field count when value changes from outside
-  React.useEffect(() => {
+  useEffect(() => {
     if (value.length > 0) {
       setFieldCount((prev) => Math.max(value.length, prev))
     } else {
@@ -121,7 +121,11 @@ export function LocationListInput({
       <YStack gap="$2">
         {value.length > 0 ? (
           Array.from({ length: fieldCount }, (_, index) => (
-            <XStack key={index} gap="$2" alignItems="flex-start">
+            <XStack
+              key={`location-field-${index}-${value[index] || 'empty'}`}
+              gap="$2"
+              items="flex-start"
+            >
               <YStack flex={1}>
                 <AddressAutocomplete
                   value={value[index] || ''}
@@ -147,9 +151,9 @@ export function LocationListInput({
                   onPress={() => handleRemoveLocation(index)}
                   disabled={disabled}
                   circular
-                  backgroundColor="transparent"
+                  bg="transparent"
                   borderColor="$color8"
-                  marginTop="$1"
+                  mt="$1"
                 >
                   <Button.Icon>
                     <X size={16} color="$color11" />
@@ -165,8 +169,8 @@ export function LocationListInput({
             size="$3"
             onPress={handleAddLocation}
             disabled={disabled}
-            alignSelf="flex-start"
-            backgroundColor="transparent"
+            self="flex-start"
+            bg="transparent"
             borderColor="$color8"
           >
             <Button.Icon>
@@ -184,8 +188,8 @@ export function LocationListInput({
           size="$3"
           onPress={handleAddLocation}
           disabled={disabled}
-          alignSelf="flex-start"
-          backgroundColor="transparent"
+          self="flex-start"
+          bg="transparent"
           borderColor="$color8"
         >
           <Button.Icon>

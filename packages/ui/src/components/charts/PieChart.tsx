@@ -90,7 +90,7 @@ export const PieChart = ({
   ...props
 }: PieChartProps) => {
   return (
-    <View alignItems="center">
+    <View items="center">
       <GiftedPieChart
         data={data}
         radius={radius}

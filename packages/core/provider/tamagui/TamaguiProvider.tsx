@@ -1,3 +1,4 @@
+import { ReactNode } from 'react'
 import { config, isWeb, TamaguiProvider as TamaguiProviderOG, useDidFinishSSR } from '@app/ui'
 
 import { useRootTheme, useThemeSetting } from '../theme/UniversalThemeProvider'
@@ -14,12 +15,7 @@ export const TamaguiProvider = ({ children }: { children: ReactNode }) => {
         : 'light'
 
   return (
-    <TamaguiProviderOG
-      config={config}
-      disableInjectCSS={false}
-      disableRootThemeClass={false}
-      defaultTheme={defaultTheme}
-    >
+    <TamaguiProviderOG config={config} disableInjectCSS={false} defaultTheme={defaultTheme}>
       {children}
     </TamaguiProviderOG>
   )

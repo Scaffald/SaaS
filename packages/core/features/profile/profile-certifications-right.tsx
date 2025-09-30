@@ -50,13 +50,13 @@ export function ProfileCertificationsRight() {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <YStack gap="$4" padding="$4" flex={1}>
+      <YStack gap="$4" p="$4" flex={1}>
         <H4>Certifications & Credentials</H4>
 
         <YStack gap="$4">
           {/* Certifications List */}
           <YStack gap="$3">
-            <XStack justifyContent="space-between" alignItems="center">
+            <XStack justify="space-between" items="center">
               <Text fontWeight="600">Your Certifications</Text>
               <Button size="$3" onPress={addCertification} icon={Plus}>
                 Add Certification
@@ -67,12 +67,12 @@ export function ProfileCertificationsRight() {
               <YStack
                 key={field.id}
                 gap="$3"
-                padding="$3"
+                p="$3"
                 borderWidth={1}
                 borderColor="$borderColor"
-                borderRadius="$4"
+                rounded="$4"
               >
-                <XStack justifyContent="space-between" alignItems="center">
+                <XStack justify="space-between" items="center">
                   <Text fontWeight="600">Certification {index + 1}</Text>
                   <Button size="$2" variant="outlined" onPress={() => remove(index)} icon={X}>
                     Remove
@@ -214,7 +214,7 @@ export function ProfileCertificationsRight() {
                         placeholder="Describe what this certification covers..."
                         value={field.value || ''}
                         onChangeText={field.onChange}
-                        minHeight={80}
+                        minH={80}
                       />
                     )}
                   />
@@ -223,8 +223,8 @@ export function ProfileCertificationsRight() {
             ))}
 
             {fields.length === 0 && (
-              <YStack padding="$4" alignItems="center" gap="$2">
-                <Text color="$gray11">No certifications added yet</Text>
+              <YStack p="$4" items="center" gap="$2">
+                <Text color="$color11">No certifications added yet</Text>
                 <Button onPress={addCertification} icon={Plus}>
                   Add Your First Certification
                 </Button>
@@ -233,7 +233,7 @@ export function ProfileCertificationsRight() {
           </YStack>
 
           {/* Save Button */}
-          <XStack justifyContent="flex-end" paddingTop="$4">
+          <XStack justify="flex-end" paddingTop="$4">
             <Button
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}

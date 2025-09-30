@@ -168,13 +168,7 @@ export default function FormsPage() {
     const id = `switch-${props.size.toString().slice(1)}-${props.defaultChecked ?? ''}`
     return (
       <XStack width={200} alignItems="center" gap="$4">
-        <Label
-          paddingRight="$0"
-          minWidth={90}
-          justifyContent="flex-end"
-          size={props.size}
-          htmlFor={id}
-        >
+        <Label minWidth={90} justifyContent="flex-end" size={props.size} htmlFor={id}>
           Accept
         </Label>
         <Separator minHeight={20} vertical />
@@ -187,7 +181,7 @@ export default function FormsPage() {
 
   return (
     <ScrollView flex={1} backgroundColor="$background">
-      <YStack padding="$4" gap="$8" alignItems="center">
+      <YStack p="$4" gap="$8" alignItems="center">
         <Text fontSize="$8" fontWeight="600" color="$color">
           Form Components Demo
         </Text>
@@ -1041,7 +1035,7 @@ export default function FormsPage() {
           </Text>
 
           {/* Sample Contact Form */}
-          <YStack gap="$3" width="100%" padding="$4" backgroundColor="$color2" borderRadius="$4">
+          <YStack gap="$3" width="100%" p="$4" backgroundColor="$color2" borderRadius="$4">
             <Text fontSize="$5" fontWeight="500" color="$color">
               Contact Information Form
             </Text>

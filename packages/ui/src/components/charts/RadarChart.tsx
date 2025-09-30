@@ -125,7 +125,7 @@ export const RadarChart = ({
     console.log('Labels:', labels)
 
     return (
-      <View alignItems="center" backgroundColor={backgroundColor} borderRadius="$4" padding="$4">
+      <View items="center" bg={backgroundColor} rounded="$4" p="$4">
         <GiftedRadarChart
           dataPoints={dataPoints}
           labels={labels}
@@ -136,7 +136,7 @@ export const RadarChart = ({
           noOfSections={noOfSections}
           isAnimated={isAnimated}
           animationDuration={animationDuration}
-          backgroundColor={backgroundColor}
+          bg={backgroundColor}
           gridColor={gridColor}
           labelColor={labelColor}
           labelTextSize={labelTextSize}
@@ -158,7 +158,7 @@ export const RadarChart = ({
   console.log('Single dataset - Labels:', labels)
 
   return (
-    <View alignItems="center" backgroundColor={backgroundColor} borderRadius="$4" padding="$4">
+    <View items="center" bg={backgroundColor} rounded="$4" p="$4">
       <GiftedRadarChart
         data={chartDataValues}
         labels={labels}
@@ -169,7 +169,7 @@ export const RadarChart = ({
         noOfSections={noOfSections}
         isAnimated={isAnimated}
         animationDuration={animationDuration}
-        backgroundColor={backgroundColor}
+        bg={backgroundColor}
         gridColor={gridColor}
         labelColor={labelColor}
         labelTextSize={labelTextSize}

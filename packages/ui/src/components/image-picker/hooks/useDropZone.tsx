@@ -6,7 +6,13 @@ import type { DropZoneOptionsCustom } from '../types'
 export function useDropZone(options: DropZoneOptionsCustom) {
   const accept = options.mediaTypes
     ?.map((mediaType) => mimTypes[mediaType])
-    .reduce((a, b) => ({ ...a, ...b }))
+    .reduce(
+      (a, b) => {
+        Object.assign(a, b)
+        return a
+      },
+      {} as Record<string, string[]>
+    )
 
   return DropZone.useDropzone({ ...options, accept: accept || { '*/*': [] } })
 }

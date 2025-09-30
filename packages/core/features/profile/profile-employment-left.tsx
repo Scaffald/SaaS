@@ -97,7 +97,7 @@ export function ProfileEmploymentLeft() {
 
   if (isLoadingEmployment) {
     return (
-      <YStack gap="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
+      <YStack gap="$4" p="$4" flex={1} justify="center" items="center">
         <Spinner size="large" />
         <Text>Loading employment preferences...</Text>
       </YStack>
@@ -107,7 +107,7 @@ export function ProfileEmploymentLeft() {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <DashboardWidget>
-        <YStack gap="$4" padding="$4" flex={1}>
+        <YStack gap="$4" p="$4" flex={1}>
           <H4>Employment Preferences</H4>
 
           <YStack gap="$4">
@@ -212,7 +212,7 @@ export function ProfileEmploymentLeft() {
                                 </Slider.Track>
                                 <Slider.Thumb index={0} />
                               </Slider>
-                              <XStack justifyContent="space-between" alignItems="center">
+                              <XStack justify="space-between" items="center">
                                 <Text fontSize="$2" color="$color9">
                                   5 miles
                                 </Text>
@@ -305,7 +305,7 @@ export function ProfileEmploymentLeft() {
                 render={({ field }) => (
                   <YStack gap="$2">
                     {DRIVERS_LICENSE_OPTIONS.map((license) => (
-                      <XStack key={license} gap="$2" alignItems="center">
+                      <XStack key={license} gap="$2" items="center">
                         <Checkbox
                           checked={field.value?.includes(license) || false}
                           onCheckedChange={(checked) => {
@@ -334,7 +334,7 @@ export function ProfileEmploymentLeft() {
                 render={({ field }) => (
                   <YStack gap="$2">
                     {MILITARY_STATUS_OPTIONS.map((status) => (
-                      <XStack key={status} gap="$2" alignItems="center">
+                      <XStack key={status} gap="$2" items="center">
                         <Checkbox
                           checked={field.value?.includes(status) || false}
                           onCheckedChange={(checked) => {
@@ -363,7 +363,7 @@ export function ProfileEmploymentLeft() {
                 render={({ field }) => (
                   <YStack gap="$2">
                     {AVAILABILITY_OPTIONS.map((option) => (
-                      <XStack key={option} gap="$2" alignItems="center">
+                      <XStack key={option} gap="$2" items="center">
                         <Checkbox
                           checked={field.value?.includes(option) || false}
                           onCheckedChange={(checked) => {
@@ -393,7 +393,9 @@ export function ProfileEmploymentLeft() {
                   <Input
                     placeholder="Hourly rate"
                     value={field.value?.toString() || ''}
-                    onChangeText={(text) => field.onChange(text ? parseFloat(text) : undefined)}
+                    onChangeText={(text) =>
+                      field.onChange(text ? Number.parseFloat(text) : undefined)
+                    }
                     keyboardType="numeric"
                     borderColor={errors.hourly_rate ? '$red8' : '$borderColor'}
                   />
@@ -407,7 +409,7 @@ export function ProfileEmploymentLeft() {
             </YStack>
 
             {/* Save Button */}
-            <XStack justifyContent="flex-end" paddingTop="$4">
+            <XStack justify="flex-end" paddingTop="$4">
               <Button
                 onPress={handleSubmit(onSubmit)}
                 disabled={!isDirty || isLoading}

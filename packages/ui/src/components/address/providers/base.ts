@@ -152,107 +152,109 @@ export abstract class BaseGeocodingProvider implements GeocodingProvider {
 /**
  * Common utilities for address parsing
  */
-export class AddressUtils {
-  /**
-   * Extract state abbreviation from full state name
-   */
-  static getStateAbbreviation(stateName: string): string {
-    const stateMap: Record<string, string> = {
-      Alabama: 'AL',
-      Alaska: 'AK',
-      Arizona: 'AZ',
-      Arkansas: 'AR',
-      California: 'CA',
-      Colorado: 'CO',
-      Connecticut: 'CT',
-      Delaware: 'DE',
-      Florida: 'FL',
-      Georgia: 'GA',
-      Hawaii: 'HI',
-      Idaho: 'ID',
-      Illinois: 'IL',
-      Indiana: 'IN',
-      Iowa: 'IA',
-      Kansas: 'KS',
-      Kentucky: 'KY',
-      Louisiana: 'LA',
-      Maine: 'ME',
-      Maryland: 'MD',
-      Massachusetts: 'MA',
-      Michigan: 'MI',
-      Minnesota: 'MN',
-      Mississippi: 'MS',
-      Missouri: 'MO',
-      Montana: 'MT',
-      Nebraska: 'NE',
-      Nevada: 'NV',
-      'New Hampshire': 'NH',
-      'New Jersey': 'NJ',
-      'New Mexico': 'NM',
-      'New York': 'NY',
-      'North Carolina': 'NC',
-      'North Dakota': 'ND',
-      Ohio: 'OH',
-      Oklahoma: 'OK',
-      Oregon: 'OR',
-      Pennsylvania: 'PA',
-      'Rhode Island': 'RI',
-      'South Carolina': 'SC',
-      'South Dakota': 'SD',
-      Tennessee: 'TN',
-      Texas: 'TX',
-      Utah: 'UT',
-      Vermont: 'VT',
-      Virginia: 'VA',
-      Washington: 'WA',
-      'West Virginia': 'WV',
-      Wisconsin: 'WI',
-      Wyoming: 'WY',
-    }
 
-    // Return abbreviation if full name matches
-    const abbrev = stateMap[stateName]
-    if (abbrev) return abbrev
-
-    // If already an abbreviation, return as is
-    if (stateName.length === 2 && /^[A-Z]{2}$/.test(stateName)) {
-      return stateName
-    }
-
-    // Fallback: return first 2 characters uppercased
-    return stateName.substring(0, 2).toUpperCase()
+/**
+ * Extract state abbreviation from full state name
+ */
+export function getStateAbbreviation(stateName: string): string {
+  const stateMap: Record<string, string> = {
+    Alabama: 'AL',
+    Alaska: 'AK',
+    Arizona: 'AZ',
+    Arkansas: 'AR',
+    California: 'CA',
+    Colorado: 'CO',
+    Connecticut: 'CT',
+    Delaware: 'DE',
+    Florida: 'FL',
+    Georgia: 'GA',
+    Hawaii: 'HI',
+    Idaho: 'ID',
+    Illinois: 'IL',
+    Indiana: 'IN',
+    Iowa: 'IA',
+    Kansas: 'KS',
+    Kentucky: 'KY',
+    Louisiana: 'LA',
+    Maine: 'ME',
+    Maryland: 'MD',
+    Massachusetts: 'MA',
+    Michigan: 'MI',
+    Minnesota: 'MN',
+    Mississippi: 'MS',
+    Missouri: 'MO',
+    Montana: 'MT',
+    Nebraska: 'NE',
+    Nevada: 'NV',
+    'New Hampshire': 'NH',
+    'New Jersey': 'NJ',
+    'New Mexico': 'NM',
+    'New York': 'NY',
+    'North Carolina': 'NC',
+    'North Dakota': 'ND',
+    Ohio: 'OH',
+    Oklahoma: 'OK',
+    Oregon: 'OR',
+    Pennsylvania: 'PA',
+    'Rhode Island': 'RI',
+    'South Carolina': 'SC',
+    'South Dakota': 'SD',
+    Tennessee: 'TN',
+    Texas: 'TX',
+    Utah: 'UT',
+    Vermont: 'VT',
+    Virginia: 'VA',
+    Washington: 'WA',
+    'West Virginia': 'WV',
+    Wisconsin: 'WI',
+    Wyoming: 'WY',
   }
 
-  /**
-   * Clean and normalize address component
-   */
-  static normalizeComponent(value: unknown): string {
-    if (!value) return ''
-    return String(value).trim()
+  // Return abbreviation if full name matches
+  const abbrev = stateMap[stateName]
+  if (abbrev) return abbrev
+
+  // If already an abbreviation, return as is
+  if (stateName.length === 2 && /^[A-Z]{2}$/.test(stateName)) {
+    return stateName
   }
 
-  /**
-   * Generate consistent ID for address result
-   */
-  static generateId(formattedAddress: string, coordinates?: { lat: number; lng: number }): string {
-    const base = formattedAddress.toLowerCase().replace(/[^a-z0-9]/g, '-')
-    const coords = coordinates ? `${coordinates.lat.toFixed(6)}-${coordinates.lng.toFixed(6)}` : ''
-    return `${base}-${coords}`.replace(/-+/g, '-').replace(/^-|-$/g, '')
-  }
+  // Fallback: return first 2 characters uppercased
+  return stateName.substring(0, 2).toUpperCase()
+}
 
-  /**
-   * Validate coordinates
-   */
-  static isValidCoordinates(lat: number, lng: number): boolean {
-    return (
-      typeof lat === 'number' &&
-      typeof lng === 'number' &&
-      lat >= -90 &&
-      lat <= 90 &&
-      lng >= -180 &&
-      lng <= 180 &&
-      !isNaN(lat) &&
-      !isNaN(lng)
-    )
-  }
+/**
+ * Clean and normalize address component
+ */
+export function normalizeComponent(value: unknown): string {
+  if (!value) return ''
+  return String(value).trim()
+}
+
+/**
+ * Generate consistent ID for address result
+ */
+export function generateId(
+  formattedAddress: string,
+  coordinates?: { lat: number; lng: number }
+): string {
+  const base = formattedAddress.toLowerCase().replace(/[^a-z0-9]/g, '-')
+  const coords = coordinates ? `${coordinates.lat.toFixed(6)}-${coordinates.lng.toFixed(6)}` : ''
+  return `${base}-${coords}`.replace(/-+/g, '-').replace(/^-|-$/g, '')
+}
+
+/**
+ * Validate coordinates
+ */
+export function isValidCoordinates(lat: number, lng: number): boolean {
+  return (
+    typeof lat === 'number' &&
+    typeof lng === 'number' &&
+    lat >= -90 &&
+    lat <= 90 &&
+    lng >= -180 &&
+    lng <= 180 &&
+    !Number.isNaN(lat) &&
+    !Number.isNaN(lng)
+  )
 }

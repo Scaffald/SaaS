@@ -3,19 +3,35 @@
   "globalDependencies": ["**/.env.*local"],
   "tasks": {
     "build": {
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "outputs": ["tsconfig.tsbuildinfo"]
     },
-    "dev": {
+    "watch": {
       "cache": false,
       "persistent": true
     },
-    "lint": {},
-    "//#check:type": {},
-    "lint:fix": {},
-    "clean": {
-      "cache": false
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "outputs": ["tsconfig.tsbuildinfo"]
     },
-    "check-circular-deps": {}
+    "format": {
+      "outputs": []
+    },
+    "format:fix": {
+      "outputs": []
+    },
+    "lint": {
+      "outputs": []
+    },
+    "lint:fix": {
+      "outputs": []
+    },
+    "check": {
+      "dependsOn": ["format:fix", "lint:fix", "typecheck"],
+      "outputs": []
+    },
+    "check-circular-deps": {
+      "cache": false
+    }
   }
 }

@@ -49,9 +49,9 @@ const buildDynamicRoute = (template: string, params: RouteParams = {}): string =
   let result = template
 
   // Replace parameter placeholders
-  Object.entries(params).forEach(([key, value]) => {
+  for (const [key, value] of Object.entries(params)) {
     result = result.replace(`:${key}`, String(value))
-  })
+  }
 
   // Remove any remaining unused parameters
   result = result.replace(/\/:[^/]+/g, '')
@@ -73,18 +73,18 @@ const createRouteNode = (config: RouteConfig, fullPath: string, parent?: RouteNo
     // Convenience methods
     map: <T>(fn: (route: RouteNode) => T): T[] => {
       const results: T[] = [fn(node)]
-      node.childrenArray?.forEach((child) => {
+      for (const child of node.childrenArray || []) {
         results.push(...child.map(fn))
-      })
+      }
       return results
     },
 
     filter: (fn: (route: RouteNode) => boolean): RouteNode[] => {
       const results: RouteNode[] = []
       if (fn(node)) results.push(node)
-      node.childrenArray?.forEach((child) => {
+      for (const child of node.childrenArray || []) {
         results.push(...child.filter(fn))
-      })
+      }
       return results
     },
 
@@ -119,7 +119,7 @@ const createRouteNode = (config: RouteConfig, fullPath: string, parent?: RouteNo
     },
 
     isParentOf: (path: string): boolean => {
-      return path.startsWith(fullPath + '/')
+      return path.startsWith(`${fullPath}/`)
     },
   }
 

@@ -8,8 +8,8 @@ import { NewsCard } from './NewsCard'
  */
 export const NewsCardDemo = () => {
   return (
-    <YStack gap="$4" padding="$4" backgroundColor="$color2">
-      <Text fontSize="$8" fontWeight="bold" textAlign="center" marginBottom="$4">
+    <YStack gap="$4" p="$4" bg="$color2">
+      <Text fontSize="$8" fontWeight="bold" text="center" mb="$4">
         NewsCard Component Demo
       </Text>
 
@@ -35,13 +35,13 @@ export const NewsCardDemo = () => {
             description="Scientists make breakthrough discovery in artificial intelligence that could revolutionize computing."
             header={
               <XStack>
-                <Button size="$2" backgroundColor="$blue8" color="white" borderRadius="$10">
+                <Button size="$2" bg="$blue8" color="white" rounded="$10">
                   Technology
                 </Button>
               </XStack>
             }
             footer={
-              <XStack gap="$3" alignItems="center">
+              <XStack gap="$3" items="center">
                 <Text fontSize="$2" color="$color11">
                   2 hours ago
                 </Text>
@@ -67,7 +67,7 @@ export const NewsCardDemo = () => {
             fullCardClickable
             onPress={() => alert('Full card clicked!')}
             header={
-              <Button size="$2" backgroundColor="$green8" color="white" borderRadius="$10">
+              <Button size="$2" bg="$green8" color="white" rounded="$10">
                 Environment
               </Button>
             }
@@ -90,12 +90,12 @@ export const NewsCardDemo = () => {
             showReadMore
             onPress={() => alert('Read more clicked!')}
             header={
-              <Button size="$2" backgroundColor="$purple8" color="white" borderRadius="$10">
+              <Button size="$2" bg="$purple8" color="white" rounded="$10">
                 Science
               </Button>
             }
             footer={
-              <XStack gap="$3" alignItems="center">
+              <XStack gap="$3" items="center">
                 <Text fontSize="$2" color="$color11">
                   1 day ago
                 </Text>
@@ -123,12 +123,12 @@ export const NewsCardDemo = () => {
             readMoreText="View Analysis"
             onPress={() => alert('Card interaction detected!')}
             header={
-              <Button size="$2" backgroundColor="$orange8" color="white" borderRadius="$10">
+              <Button size="$2" bg="$orange8" color="white" rounded="$10">
                 Finance
               </Button>
             }
             footer={
-              <XStack gap="$3" alignItems="center">
+              <XStack gap="$3" items="center">
                 <Text fontSize="$2" color="$color11">
                   3 hours ago
                 </Text>
@@ -156,12 +156,12 @@ export const NewsCardDemo = () => {
             readMoreText="Plan Trip"
             onPress={() => alert('Planning trip!')}
             header={
-              <Button size="$2" backgroundColor="$blue8" color="white" borderRadius="$10">
+              <Button size="$2" bg="$blue8" color="white" rounded="$10">
                 Travel
               </Button>
             }
             footer={
-              <XStack gap="$3" alignItems="center">
+              <XStack gap="$3" items="center">
                 <Text fontSize="$2" color="$color11">
                   6 hours ago
                 </Text>
@@ -188,7 +188,7 @@ export const NewsCardDemo = () => {
             showReadMore
             fullCardClickable
             header={
-              <Button size="$2" backgroundColor="$gray8" color="white" borderRadius="$10">
+              <Button size="$2" bg="$color8" color="white" rounded="$10">
                 Archived
               </Button>
             }

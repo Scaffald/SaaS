@@ -61,7 +61,7 @@ export function ProfileGeneralRight() {
       <YStack gap="$4">
         <DashboardWidget>
           <H3>General Information</H3>
-          <Text color="$gray11" fontSize="$3">
+          <Text color="$color11" fontSize="$3">
             Update your basic profile information including your name, photo, and contact details.
           </Text>
         </DashboardWidget>

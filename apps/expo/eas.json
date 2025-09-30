@@ -1,40 +1,67 @@
 {
+  "$schema": "https://json.schemastore.org/eas.json",
   "cli": {
-    "version": ">= 3.14.0"
+    "version": ">= 10.2.3"
   },
   "build": {
-    "development:simulator": {
-      "distribution": "internal",
-      "developmentClient": true,
-      "channel": "development",
+    "production": {
+      "releaseChannel": "production",
+      "distribution": "store",
       "env": {
-        "APP_ENV": "development",
+        "APP_ENV": "production",
+        "NODE_ENV": "production",
         "EXPO_PUBLIC_URL": "https://unistack-next-delta.vercel.app",
         "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY"
       },
       "ios": {
-        "simulator": true,
-        "image": "latest"
+        "buildConfiguration": "Release",
+        "cache": {
+          "disabled": false,
+          "key": "production-ios",
+          "customPaths": ["node_modules"]
+        }
+      },
+      "android": {
+        "buildType": "apk",
+        "gradleCommand": ":app:bundleRelease",
+        "cache": {
+          "disabled": false,
+          "key": "production-android", 
+          "customPaths": ["node_modules"]
+        }
       }
     },
-    "development:device": {
+    "staging": {
+      "releaseChannel": "staging",
       "distribution": "internal",
-      "developmentClient": true,
-      "channel": "development",
       "env": {
-        "APP_ENV": "development",
+        "APP_ENV": "staging",
+        "NODE_ENV": "staging",
         "EXPO_PUBLIC_URL": "https://unistack-next-delta.vercel.app",
         "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY"
       },
       "ios": {
-        "image": "latest"
+        "buildConfiguration": "Release",
+        "simulator": false,
+        "cache": {
+          "disabled": false,
+          "key": "staging-ios"
+        }
+      },
+      "android": {
+        "buildType": "apk",
+        "cache": {
+          "disabled": false,
+          "key": "staging-android"
+        }
       }
     },
     "development": {
-      "distribution": "internal",
-      "channel": "development",
+      "releaseChannel": "development",
+      "distribution": "internal", 
+      "developmentClient": true,
       "env": {
         "APP_ENV": "development",
         "NODE_ENV": "development",
@@ -42,59 +69,37 @@
         "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY"
       },
-      "android": {
-        "buildType": "apk"
-      },
       "ios": {
-        "image": "latest"
+        "buildConfiguration": "Debug",
+        "simulator": true,
+        "cache": {
+          "disabled": false,
+          "key": "development-ios"
+        }
+      },
+      "android": {
+        "buildType": "apk",
+        "cache": {
+          "disabled": false,
+          "key": "development-android"
+        }
       }
     },
-    "staging": {
-      "distribution": "store",
-      "channel": "staging",
-      "android": {
-        "buildType": "apk"
-      },
-      "env": {
-        "APP_ENV": "staging",
-        "EXPO_PUBLIC_URL": "https://unistack-next-delta.vercel.app",
-        "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY"
-      },
+    "development:device": {
+      "extends": "development",
       "ios": {
-        "image": "latest"
-      },
-      "autoIncrement": true
+        "simulator": false
+      }
     },
-    "staging:device": {
-      "distribution": "internal",
-      "channel": "staging",
-      "android": {
-        "buildType": "apk"
-      },
-      "env": {
-        "APP_ENV": "production",
-        "EXPO_PUBLIC_URL": "https://unistack-next-delta.vercel.app",
-        "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY"
-      },
+    "development:simulator": {
+      "extends": "development", 
       "ios": {
-        "image": "latest"
-      },
-      "autoIncrement": true
-    },
-    "production": {
-      "env": {
-        "APP_ENV": "production",
-        "NODE_ENV": "production",
-        "EXPO_PUBLIC_URL": "https://unistack-next-delta.vercel.app",
-        "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY"
-      },
-      "channel": "production"
+        "simulator": true
+      }
     },
     "production-web": {
       "platform": "web",
+      "output": "static",
       "env": {
         "APP_ENV": "production",
         "NODE_ENV": "production",
@@ -102,11 +107,49 @@
         "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY"
       },
-      "channel": "production"
+      "cache": {
+        "disabled": false,
+        "key": "production-web"
+      }
+    },
+    "preview": {
+      "platform": "web",
+      "output": "static",
+      "env": {
+        "APP_ENV": "staging",
+        "NODE_ENV": "staging",
+        "EXPO_PUBLIC_URL": "https://unistack-next-delta.vercel.app",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY"
+      },
+      "cache": {
+        "disabled": false,
+        "key": "preview-web"
+      }
     }
   },
   "submit": {
-    "production": {},
-    "staging": {}
+    "production": {
+      "ios": {
+        "appleId": "your-apple-id@example.com",
+        "ascAppId": "1234567890",
+        "appleTeamId": "ABCD123456"
+      },
+      "android": {
+        "serviceAccountKeyPath": "../path/to/service-account-key.json",
+        "track": "production"
+      }
+    },
+    "staging": {
+      "ios": {
+        "appleId": "your-apple-id@example.com",
+        "ascAppId": "1234567890", 
+        "appleTeamId": "ABCD123456"
+      },
+      "android": {
+        "serviceAccountKeyPath": "../path/to/service-account-key.json",
+        "track": "beta"
+      }
+    }
   }
 }

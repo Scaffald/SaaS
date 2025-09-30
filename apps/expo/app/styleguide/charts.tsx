@@ -194,10 +194,10 @@ export default function ChartsTestPage() {
   ]
 
   const renderBarChart = () => (
-    <Card padding="$4" margin="$2">
+    <Card p="$4" margin="$2">
       <YStack gap="$3">
         <H3>Bar Chart Example</H3>
-        <Text fontSize="$3" color="$gray10">
+        <Text fontSize="$3" color="$color10">
           Monthly sales data with custom colors and animations
         </Text>
         <BarChart
@@ -214,10 +214,10 @@ export default function ChartsTestPage() {
   )
 
   const renderLineChart = () => (
-    <Card padding="$4" margin="$2">
+    <Card p="$4" margin="$2">
       <YStack gap="$3">
         <H3>Line Chart Example</H3>
-        <Text fontSize="$3" color="$gray10">
+        <Text fontSize="$3" color="$color10">
           Trend data with curved lines and area fill
         </Text>
         <LineChart
@@ -235,10 +235,10 @@ export default function ChartsTestPage() {
   )
 
   const renderAreaChart = () => (
-    <Card padding="$4" margin="$2">
+    <Card p="$4" margin="$2">
       <YStack gap="$3">
         <H3>Area Chart Example</H3>
-        <Text fontSize="$3" color="$gray10">
+        <Text fontSize="$3" color="$color10">
           Same data with area fill and gradient
         </Text>
         <LineChart
@@ -258,10 +258,10 @@ export default function ChartsTestPage() {
   )
 
   const renderPieChart = () => (
-    <Card padding="$4" margin="$2">
+    <Card p="$4" margin="$2">
       <YStack gap="$3" alignItems="center">
         <H3>Pie Chart Example</H3>
-        <Text fontSize="$3" color="$gray10">
+        <Text fontSize="$3" color="$color10">
           Platform distribution with transparent labels
         </Text>
         <PieChart
@@ -278,10 +278,10 @@ export default function ChartsTestPage() {
   )
 
   const renderDonutChart = () => (
-    <Card padding="$4" margin="$2">
+    <Card p="$4" margin="$2">
       <YStack gap="$3" alignItems="center">
         <H3>Donut Chart Example</H3>
-        <Text fontSize="$3" color="$gray10">
+        <Text fontSize="$3" color="$color10">
           Same data as donut with center label
         </Text>
         <PieChart
@@ -292,10 +292,10 @@ export default function ChartsTestPage() {
           showTextBackground={false}
           centerLabelComponent={() => (
             <YStack alignItems="center">
-              <Text fontSize="$6" fontWeight="bold" color="$gray12">
+              <Text fontSize="$6" fontWeight="bold" color="$color12">
                 Total
               </Text>
-              <Text fontSize="$4" color="$gray10">
+              <Text fontSize="$4" color="$color10">
                 100%
               </Text>
             </YStack>
@@ -306,10 +306,10 @@ export default function ChartsTestPage() {
   )
 
   const renderStackedBarChart = () => (
-    <Card padding="$4" margin="$2">
+    <Card p="$4" margin="$2">
       <YStack gap="$3">
         <H3>Stacked Bar Chart Example</H3>
-        <Text fontSize="$3" color="$gray10">
+        <Text fontSize="$3" color="$color10">
           Quarterly sales breakdown by product
         </Text>
         <StackedBarChart
@@ -326,10 +326,10 @@ export default function ChartsTestPage() {
   )
 
   const renderRadarChart = () => (
-    <Card padding="$4" margin="$2">
+    <Card p="$4" margin="$2">
       <YStack gap="$3" alignItems="center">
         <H3>Radar Chart Example</H3>
-        <Text fontSize="$3" color="$gray10">
+        <Text fontSize="$3" color="$color10">
           Performance metrics across different skills
         </Text>
         <RadarChart
@@ -347,10 +347,10 @@ export default function ChartsTestPage() {
   )
 
   const renderPopulationPyramid = () => (
-    <Card padding="$4" margin="$2">
+    <Card p="$4" margin="$2">
       <YStack gap="$3">
         <H3>Population Pyramid Example</H3>
-        <Text fontSize="$3" color="$gray10">
+        <Text fontSize="$3" color="$color10">
           Age distribution comparison (Male vs Female)
         </Text>
         <PopulationPyramid
@@ -367,13 +367,13 @@ export default function ChartsTestPage() {
   )
 
   const renderProjectOverview = () => (
-    <Card padding="$4" margin="$2">
+    <Card p="$4" margin="$2">
       <YStack gap="$4">
         {/* Header */}
         <XStack justifyContent="space-between" alignItems="flex-start">
           <YStack gap="$1">
             <H3>Project Overview</H3>
-            <Text fontSize="$3" color="$gray10">
+            <Text fontSize="$3" color="$color10">
               12 May - 17 May 2023
             </Text>
           </YStack>
@@ -396,7 +396,7 @@ export default function ChartsTestPage() {
               showTextBackground={false}
               centerLabelComponent={() => (
                 <YStack alignItems="center">
-                  <Text fontSize="$8" fontWeight="bold" color="$gray12">
+                  <Text fontSize="$8" fontWeight="bold" color="$color12">
                     38
                   </Text>
                 </YStack>
@@ -406,14 +406,14 @@ export default function ChartsTestPage() {
 
           {/* Legend */}
           <YStack gap="$3" flex={1}>
-            {projectOverviewData.map((item, index) => (
-              <XStack key={index} gap="$2" alignItems="center">
+            {projectOverviewData.map((item) => (
+              <XStack key={item.text} gap="$2" alignItems="center">
                 <View width={12} height={12} borderRadius={6} backgroundColor={item.color} />
                 <YStack>
-                  <Text fontSize="$4" fontWeight="600" color="$gray12">
+                  <Text fontSize="$4" fontWeight="600" color="$color12">
                     {item.value}%
                   </Text>
-                  <Text fontSize="$3" color="$gray10">
+                  <Text fontSize="$3" color="$color10">
                     {item.text}
                   </Text>
                 </YStack>
@@ -426,10 +426,10 @@ export default function ChartsTestPage() {
   )
 
   const renderGradientBarChart = () => (
-    <Card padding="$4" margin="$2">
+    <Card p="$4" margin="$2">
       <YStack gap="$3">
         <H3>Gradient Bar Chart Example</H3>
-        <Text fontSize="$3" color="$gray10">
+        <Text fontSize="$3" color="$color10">
           Monthly sales data with beautiful gradient effects
         </Text>
         <BarChart
@@ -447,10 +447,10 @@ export default function ChartsTestPage() {
   )
 
   const renderGradientPieChart = () => (
-    <Card padding="$4" margin="$2">
+    <Card p="$4" margin="$2">
       <YStack gap="$3" alignItems="center">
         <H3>Gradient Pie Chart Example</H3>
-        <Text fontSize="$3" color="$gray10">
+        <Text fontSize="$3" color="$color10">
           Platform distribution with gradient effects
         </Text>
         <PieChart
@@ -468,10 +468,10 @@ export default function ChartsTestPage() {
   )
 
   const renderGradientDonutChart = () => (
-    <Card padding="$4" margin="$2">
+    <Card p="$4" margin="$2">
       <YStack gap="$3" alignItems="center">
         <H3>Gradient Donut Chart Example</H3>
-        <Text fontSize="$3" color="$gray10">
+        <Text fontSize="$3" color="$color10">
           Same data with gradient donut and center label
         </Text>
         <PieChart
@@ -483,10 +483,10 @@ export default function ChartsTestPage() {
           showGradient={true}
           centerLabelComponent={() => (
             <YStack alignItems="center">
-              <Text fontSize="$6" fontWeight="bold" color="$gray12">
+              <Text fontSize="$6" fontWeight="bold" color="$color12">
                 Total
               </Text>
-              <Text fontSize="$4" color="$gray10">
+              <Text fontSize="$4" color="$color10">
                 100%
               </Text>
             </YStack>
@@ -497,7 +497,7 @@ export default function ChartsTestPage() {
   )
 
   const renderStyledRadarChart = () => (
-    <Card padding="$4" margin="$2" backgroundColor="#1A202C">
+    <Card p="$4" margin="$2" backgroundColor="#1A202C">
       <YStack gap="$4" alignItems="center">
         <H3 color="#E0E0E0">Styled Radar Chart Example</H3>
         <Text fontSize="$3" color="#B0B0B0" textAlign="center">
@@ -526,8 +526,8 @@ export default function ChartsTestPage() {
 
         {/* Legend */}
         <XStack gap="$4" justifyContent="center">
-          {styledRadarData.map((dataset, index) => (
-            <XStack key={index} gap="$2" alignItems="center">
+          {styledRadarData.map((dataset) => (
+            <XStack key={dataset.label} gap="$2" alignItems="center">
               <View
                 width={16}
                 height={16}
@@ -546,7 +546,7 @@ export default function ChartsTestPage() {
   )
 
   const renderSkillsChart = () => (
-    <Card padding="$4" margin="$2" backgroundColor="#1A202C">
+    <Card p="$4" margin="$2" backgroundColor="#1A202C">
       <YStack gap="$4" alignItems="center">
         <H3 color="#E0E0E0">Skills Chart Example</H3>
         <Text fontSize="$3" color="#B0B0B0" textAlign="center">
@@ -567,8 +567,8 @@ export default function ChartsTestPage() {
 
         {/* Legend */}
         <XStack gap="$4" justifyContent="center">
-          {skillsData.map((dataset, index) => (
-            <XStack key={index} gap="$2" alignItems="center">
+          {skillsData.map((dataset) => (
+            <XStack key={dataset.label} gap="$2" alignItems="center">
               <View
                 width={16}
                 height={16}
@@ -607,16 +607,16 @@ export default function ChartsTestPage() {
 
   return (
     <ScrollView flex={1} backgroundColor="$background">
-      <YStack padding="$4" gap="$4">
+      <YStack p="$4" gap="$4">
         <YStack gap="$2">
           <H2>Charts Test Page</H2>
-          <Text fontSize="$4" color="$gray11">
+          <Text fontSize="$4" color="$color11">
             Testing react-native-gifted-charts integration with Tamagui styling
           </Text>
         </YStack>
 
         {/* Chart Type Selector */}
-        <Card padding="$3">
+        <Card p="$3">
           <YStack gap="$3">
             <Text fontSize="$4" fontWeight="600">
               Chart Types

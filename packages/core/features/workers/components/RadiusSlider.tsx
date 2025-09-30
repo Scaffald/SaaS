@@ -25,7 +25,7 @@ export const RadiusSlider = ({
 }: RadiusSliderProps) => {
   return (
     <YStack gap="$2" width="100%">
-      <XStack justifyContent="space-between" alignItems="center">
+      <XStack justify="space-between" items="center">
         <Text fontSize="$3" fontWeight="600" color="$color11">
           Search Radius
         </Text>
@@ -45,25 +45,25 @@ export const RadiusSlider = ({
         step={step}
         width="100%"
         height={20}
-        backgroundColor="$color3"
-        borderRadius="$2"
+        bg="$color3"
+        rounded="$2"
       >
         <Slider.Track>
-          <Slider.TrackActive backgroundColor="$blue9" />
+          <Slider.TrackActive bg="$blue9" />
         </Slider.Track>
         <Slider.Thumb
           index={0}
-          backgroundColor="$blue10"
+          bg="$blue10"
           borderWidth={2}
           borderColor="$blue11"
-          borderRadius="$10"
+          rounded="$10"
           width={20}
           height={20}
           style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
         />
       </Slider>
 
-      <XStack justifyContent="space-between" alignItems="center">
+      <XStack justify="space-between" items="center">
         <Text fontSize="$2" color="$color10">
           {formatRadius(min)}
         </Text>
