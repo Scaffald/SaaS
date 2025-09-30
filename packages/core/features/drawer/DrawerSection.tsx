@@ -40,7 +40,7 @@ export const DrawerSection = ({
 
   // For expanded mode, show items with expandable functionality
   return (
-    <YStack gap="$1" width="100%">
+    <YStack gap="$1" flex={1}>
       {section.items.map((item) => (
         <DrawerLink
           key={`${section.key}-${item.key}`}

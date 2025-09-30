@@ -259,7 +259,7 @@ export default function ChartsTestPage() {
 
   const renderPieChart = () => (
     <Card p="$4" margin="$2">
-      <YStack gap="$3" alignItems="center">
+      <YStack gap="$3" items="center">
         <H3>Pie Chart Example</H3>
         <Text fontSize="$3" color="$color10">
           Platform distribution with transparent labels
@@ -279,7 +279,7 @@ export default function ChartsTestPage() {
 
   const renderDonutChart = () => (
     <Card p="$4" margin="$2">
-      <YStack gap="$3" alignItems="center">
+      <YStack gap="$3" items="center">
         <H3>Donut Chart Example</H3>
         <Text fontSize="$3" color="$color10">
           Same data as donut with center label
@@ -291,7 +291,7 @@ export default function ChartsTestPage() {
           showText={true}
           showTextBackground={false}
           centerLabelComponent={() => (
-            <YStack alignItems="center">
+            <YStack items="center">
               <Text fontSize="$6" fontWeight="bold" color="$color12">
                 Total
               </Text>
@@ -327,7 +327,7 @@ export default function ChartsTestPage() {
 
   const renderRadarChart = () => (
     <Card p="$4" margin="$2">
-      <YStack gap="$3" alignItems="center">
+      <YStack gap="$3" items="center">
         <H3>Radar Chart Example</H3>
         <Text fontSize="$3" color="$color10">
           Performance metrics across different skills
@@ -370,7 +370,7 @@ export default function ChartsTestPage() {
     <Card p="$4" margin="$2">
       <YStack gap="$4">
         {/* Header */}
-        <XStack justifyContent="space-between" alignItems="flex-start">
+        <XStack justify="space-between" items="flex-start">
           <YStack gap="$1">
             <H3>Project Overview</H3>
             <Text fontSize="$3" color="$color10">
@@ -385,9 +385,9 @@ export default function ChartsTestPage() {
         </XStack>
 
         {/* Chart and Legend */}
-        <XStack gap="$4" alignItems="center">
+        <XStack gap="$4" items="center">
           {/* Donut Chart */}
-          <YStack alignItems="center" flex={1}>
+          <YStack items="center" flex={1}>
             <PieChart
               data={projectOverviewData}
               radius={80}
@@ -395,7 +395,7 @@ export default function ChartsTestPage() {
               showText={false}
               showTextBackground={false}
               centerLabelComponent={() => (
-                <YStack alignItems="center">
+                <YStack items="center">
                   <Text fontSize="$8" fontWeight="bold" color="$color12">
                     38
                   </Text>
@@ -407,8 +407,8 @@ export default function ChartsTestPage() {
           {/* Legend */}
           <YStack gap="$3" flex={1}>
             {projectOverviewData.map((item) => (
-              <XStack key={item.text} gap="$2" alignItems="center">
-                <View width={12} height={12} borderRadius={6} backgroundColor={item.color} />
+              <XStack key={item.text} gap="$2" items="center">
+                <View width={12} height={12} rounded={6} bg={item.color} />
                 <YStack>
                   <Text fontSize="$4" fontWeight="600" color="$color12">
                     {item.value}%
@@ -448,7 +448,7 @@ export default function ChartsTestPage() {
 
   const renderGradientPieChart = () => (
     <Card p="$4" margin="$2">
-      <YStack gap="$3" alignItems="center">
+      <YStack gap="$3" items="center">
         <H3>Gradient Pie Chart Example</H3>
         <Text fontSize="$3" color="$color10">
           Platform distribution with gradient effects
@@ -469,7 +469,7 @@ export default function ChartsTestPage() {
 
   const renderGradientDonutChart = () => (
     <Card p="$4" margin="$2">
-      <YStack gap="$3" alignItems="center">
+      <YStack gap="$3" items="center">
         <H3>Gradient Donut Chart Example</H3>
         <Text fontSize="$3" color="$color10">
           Same data with gradient donut and center label
@@ -482,7 +482,7 @@ export default function ChartsTestPage() {
           showTextBackground={false}
           showGradient={true}
           centerLabelComponent={() => (
-            <YStack alignItems="center">
+            <YStack items="center">
               <Text fontSize="$6" fontWeight="bold" color="$color12">
                 Total
               </Text>
@@ -497,10 +497,10 @@ export default function ChartsTestPage() {
   )
 
   const renderStyledRadarChart = () => (
-    <Card p="$4" margin="$2" backgroundColor="#1A202C">
-      <YStack gap="$4" alignItems="center">
-        <H3 color="#E0E0E0">Styled Radar Chart Example</H3>
-        <Text fontSize="$3" color="#B0B0B0" textAlign="center">
+    <Card p="$4" margin="$2" bg="$red10">
+      <YStack gap="$4" items="center">
+        <H3>Styled Radar Chart Example</H3>
+        <Text fontSize="$3" text="center">
           Dark theme radar chart with overlapping datasets and gradient fills
         </Text>
 
@@ -520,24 +520,22 @@ export default function ChartsTestPage() {
         />
 
         {/* Debug info */}
-        <Text fontSize="$2" color="#B0B0B0" textAlign="center">
+        <Text fontSize="$2" text="center">
           Debug: Using single dataset for now
         </Text>
 
         {/* Legend */}
-        <XStack gap="$4" justifyContent="center">
+        <XStack gap="$4" justify="center">
           {styledRadarData.map((dataset) => (
-            <XStack key={dataset.label} gap="$2" alignItems="center">
+            <XStack key={dataset.label} gap="$2" items="center">
               <View
                 width={16}
                 height={16}
-                borderRadius={8}
-                backgroundColor={dataset.fillColor}
+                rounded={8}
+                bg={dataset.fillColor}
                 opacity={dataset.fillOpacity}
               />
-              <Text fontSize="$3" color="#E0E0E0">
-                {dataset.label}
-              </Text>
+              <Text fontSize="$3">{dataset.label}</Text>
             </XStack>
           ))}
         </XStack>
@@ -546,10 +544,10 @@ export default function ChartsTestPage() {
   )
 
   const renderSkillsChart = () => (
-    <Card p="$4" margin="$2" backgroundColor="#1A202C">
-      <YStack gap="$4" alignItems="center">
-        <H3 color="#E0E0E0">Skills Chart Example</H3>
-        <Text fontSize="$3" color="#B0B0B0" textAlign="center">
+    <Card p="$4" margin="$2">
+      <YStack gap="$4" items="center">
+        <H3>Skills Chart Example</H3>
+        <Text fontSize="$3" text="center">
           Custom radar chart with animated polygons and gradient fills
         </Text>
         <SkillsChart
@@ -566,19 +564,17 @@ export default function ChartsTestPage() {
         />
 
         {/* Legend */}
-        <XStack gap="$4" justifyContent="center">
+        <XStack gap="$4" justify="center">
           {skillsData.map((dataset) => (
-            <XStack key={dataset.label} gap="$2" alignItems="center">
+            <XStack key={dataset.label} gap="$2" items="center">
               <View
                 width={16}
                 height={16}
-                borderRadius={8}
-                backgroundColor={dataset.fillColor}
+                rounded={8}
+                bg={dataset.fillColor}
                 opacity={dataset.fillOpacity}
               />
-              <Text fontSize="$3" color="#E0E0E0">
-                {dataset.label}
-              </Text>
+              <Text fontSize="$3">{dataset.label}</Text>
             </XStack>
           ))}
         </XStack>

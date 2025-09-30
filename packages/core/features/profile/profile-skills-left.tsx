@@ -37,7 +37,7 @@ export function ProfileSkillsLeft() {
     isLoading: isLoadingSkills,
     refetch,
     error: skillsError,
-  } = (api as any).profile.getSkills.useQuery(undefined, {
+  } = api.profile.getSkills.useQuery(undefined, {
     onError: (error) => {
       console.error('getSkills query error:', error)
     },
@@ -50,7 +50,7 @@ export function ProfileSkillsLeft() {
   console.log('Skills loading:', isLoadingSkills)
   console.log('Skills error:', skillsError)
 
-  const updateSkillsMutation = (api as any).profile.updateSkills.useMutation({
+  const updateSkillsMutation = api.profile.updateSkills.useMutation({
     onSuccess: (data) => {
       console.log('updateSkills mutation success:', data)
       toast.show('Skills Updated', {

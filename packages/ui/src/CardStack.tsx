@@ -86,7 +86,7 @@ export const DirectionSlide = ({ direction, setDirection }: DirectionSlideProps)
 
   return (
     <View flex="row" gap="$2">
-      <XStack gap="$2" width="100%">
+      <XStack gap="$2" flex={1}>
         {directions.map((dir) => {
           const active = dir === direction
           return (

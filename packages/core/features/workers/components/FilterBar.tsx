@@ -95,8 +95,8 @@ export const FilterBar = ({
   }
 
   return (
-    <YStack gap="$3" width="100%">
-      <XStack gap="$3" width="100%" flexWrap="wrap" items="center">
+    <YStack gap="$3" flex={1}>
+      <XStack gap="$3" flex={1} flexWrap="wrap" items="center">
         <XStack flexGrow={1} minW={200} items="center" position="relative">
           <AddressAutocomplete
             value={locationQuery}

@@ -4,7 +4,6 @@
     "ignore": [
       "**/node_modules/**",
       "**/build/**",
-      "packages/ui/src/themes/theme-generated.ts",
       "**/.vscode/**",
       "**/.tamagui/**",
       "**/ios/**",

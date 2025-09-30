@@ -82,7 +82,7 @@ export const NotificationsActionSheet = ({ open, onOpenChange }: NotificationsAc
       case 'success':
         return '$green10'
       case 'warning':
-        return '$orange10'
+        return '$red10'
       default:
         return '$blue10'
     }

@@ -91,7 +91,6 @@ export function ToggleCard({
   testID,
 }: ToggleCardProps) {
   const uniqueId = useId()
-  const _tokens = getTokens()
 
   const handlePress = () => {
     if (!disabled) {
@@ -100,18 +99,16 @@ export function ToggleCard({
   }
 
   return (
-    <YStack width={width} testID={testID}>
+    <YStack w={width} testID={testID}>
       <Button
-        flex="row"
-        maxW="100%"
+        flexDirection="row"
         borderColor="$borderColor"
         borderWidth={1}
         px="$4"
         py="$3"
-        $sm={{ marginHorizontal: '$0' }}
-        rounded={expandedContent && checked ? '$3 $3 $0 $0' : '$3'}
-        width="100%"
-        height="auto"
+        $sm={{ mx: '$0' }}
+        rounded="$3"
+        flex={1}
         items="center"
         gap="$2.5"
         theme={theme}
@@ -130,7 +127,7 @@ export function ToggleCard({
         }}
       >
         {/* Icon */}
-        {icon && <View flexShrink={0}>{icon}</View>}
+        {icon && <View shrink={0}>{icon}</View>}
 
         {/* Title and Description */}
         <View flex={1}>
@@ -138,14 +135,14 @@ export function ToggleCard({
             {title}
           </Label>
           {description && (
-            <Text theme="alt1" color="$color11" lineHeight="$1" mt="$1" fontSize="$3" text="left">
+            <Text color="$color11" lineHeight="$1" mt="$1" fontSize="$3" text="left">
               {description}
             </Text>
           )}
         </View>
 
         {/* Switch */}
-        <View self="center" ml="auto">
+        <View self="center">
           <Switch
             id={`${uniqueId}switch`}
             checked={checked}

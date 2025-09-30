@@ -2,7 +2,7 @@ import { Spinner, SpinnerProps, YStack } from 'tamagui'
 
 export const FullscreenSpinner = (props: SpinnerProps) => {
   return (
-    <YStack f={1} jc="center" ai="center">
+    <YStack flex={1} justify="center" items="center">
       <Spinner {...props} />
     </YStack>
   )

@@ -45,7 +45,7 @@ export const DashboardWidget = ({
       my="$3"
       $sm={{
         mx: '$2',
-        padding: '$2',
+        p: '$2',
         boxShadow:
           'inset 1px 1px .5px #fff8, inset 2px 5px 25px #0000000f, inset -1px -1px 0 .5px #ddd2',
       }}

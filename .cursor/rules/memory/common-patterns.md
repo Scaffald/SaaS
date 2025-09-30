@@ -90,7 +90,7 @@ export function ExampleComponent() {
       <Text fontSize="$6" fontWeight="bold">
         Title
       </Text>
-      <XStack space="$2" alignItems="center">
+      <XStack space="$2" items="center">
         <Button theme="blue" onPress={handlePress}>
           Action
         </Button>
@@ -272,7 +272,7 @@ export function DataComponent() {
   
   if (error) {
     return (
-      <YStack space="$2" alignItems="center">
+      <YStack space="$2" items="center">
         <Text color="$red10">Failed to load data</Text>
         <Button onPress={() => refetch()}>
           Retry

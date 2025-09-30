@@ -3,26 +3,26 @@ import { SessionContext, SessionContextHelper } from './AuthProvider'
 
 /**
  * Modern useAuth hook for consuming authentication state
- * 
+ *
  * Features:
  * - Type-safe access to session, user, and auth methods
  * - Built-in error handling
  * - Loading state management
  * - Enhanced utility methods
- * 
+ *
  * @returns SessionContextHelper with auth state and methods
  * @throws Error if used outside AuthProvider
  */
 export const useAuth = (): SessionContextHelper => {
   const context = useContext(SessionContext)
-  
+
   if (!context) {
     throw new Error(
       'useAuth must be used within an AuthProvider. ' +
-      'Make sure to wrap your component tree with <AuthProvider>.'
+        'Make sure to wrap your component tree with <AuthProvider>.'
     )
   }
-  
+
   return context
 }
 
@@ -41,7 +41,7 @@ export const useUser = () => {
  */
 export const useAuthStatus = () => {
   const { session, isLoading } = useAuth()
-  
+
   return {
     isAuthenticated: !!session,
     isLoading,
@@ -55,16 +55,16 @@ export const useAuthStatus = () => {
  */
 export const useAuthAdvanced = () => {
   const authContext = useAuth()
-  const { session, error, isLoading, signOut, refreshSession, supabaseClient } = authContext
-  
+  const { session, signOut, refreshSession } = authContext
+
   return {
     ...authContext,
-    
+
     // Utility getters
     user: session?.user || null,
     isAuthenticated: !!session,
     isAnonymous: !session,
-    
+
     // Enhanced methods
     signOutAsync: async () => {
       try {
@@ -75,7 +75,7 @@ export const useAuthAdvanced = () => {
         return { success: false, error: err }
       }
     },
-    
+
     refreshSessionAsync: async () => {
       try {
         await refreshSession()
@@ -85,12 +85,12 @@ export const useAuthAdvanced = () => {
         return { success: false, error: err }
       }
     },
-    
+
     // User profile helpers
     getUserId: () => session?.user?.id || null,
     getUserEmail: () => session?.user?.email || null,
     getUserMetadata: () => session?.user?.user_metadata || {},
-    
+
     // Session helpers
     getAccessToken: () => session?.access_token || null,
     isSessionExpired: () => {

@@ -1,10 +1,10 @@
 import { supabase } from '@app/core/utils/supabase/client'
 import { createContext, useEffect, useState, ReactNode, useCallback } from 'react'
+import type { Session } from '@supabase/supabase-js'
 
 import { AuthStateChangeHandler } from './AuthStateChangeHandler'
 
 // Modern Supabase types with fallbacks for compatibility
-type Session = any // Will be properly typed when Supabase types are available
 type SupabaseAuthError = {
   message: string
   status?: number
@@ -78,7 +78,7 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
         setIsLoading(true)
         setError(null)
         const { data, error } = await supabase.auth.getSession()
-        
+
         if (mounted) {
           if (error) {
             console.error('Get session error:', error)

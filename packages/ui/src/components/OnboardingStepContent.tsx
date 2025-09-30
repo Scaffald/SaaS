@@ -13,11 +13,11 @@ export const StepContent = ({
 }) => {
   return (
     <YStack
-      ai="center"
+      items="center"
       p="$8"
       fullscreen
       mx="auto"
-      jc="center"
+      justify="center"
       animation="100ms"
       exitStyle={{ o: 0 }}
       o={1}

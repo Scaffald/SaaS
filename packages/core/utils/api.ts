@@ -1,8 +1,7 @@
 import { httpBatchLink } from '@trpc/client'
 import { createTRPCReact } from '@trpc/react-query'
-import SuperJSON from 'superjson'
 import { Platform } from 'react-native'
-import type { AppRouter } from '@app/supabase/functions/trpc'
+import type { AppRouter } from '@app/supabase/functions/_shared/client-types'
 
 import { getBaseUrl } from './getBaseUrl'
 import { supabase } from './supabase/client'
@@ -15,7 +14,6 @@ export const createTrpcClient = () =>
     links: [
       httpBatchLink({
         url: `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/trpc`,
-        // Remove SuperJSON transformer since server doesn't use it
         async headers() {
           const headers = new Map<string, string>()
 
@@ -45,4 +43,14 @@ export type {
   ProfileSkillsOutput,
   UploadAvatarInput,
   UploadAvatarOutput,
+  EmploymentProfileFormData,
+} from '@app/supabase/functions/_shared/client-types'
+
+// Export constants and schemas for form usage
+export {
+  DRIVERS_LICENSE_OPTIONS,
+  MILITARY_STATUS_OPTIONS,
+  AVAILABILITY_OPTIONS,
+  profileEmploymentDefaults,
+  profileEmploymentInputSchema,
 } from '@app/supabase/functions/_shared/client-types'

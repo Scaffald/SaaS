@@ -1,5 +1,5 @@
 import { RadarChart as GiftedRadarChart } from 'react-native-gifted-charts'
-import { View } from 'tamagui'
+import { type GetThemeValueForKey, View } from 'tamagui'
 
 export interface RadarChartData {
   value: number
@@ -10,8 +10,8 @@ export interface RadarChartData {
 export interface RadarChartDataset {
   data: RadarChartData[]
   color?: string
-  fillColor?: string
-  strokeColor?: string
+  fillColor?: GetThemeValueForKey<'backgroundColor'>
+  strokeColor?: GetThemeValueForKey<'backgroundColor'>
   strokeWidth?: number
   fillOpacity?: number
   label?: string

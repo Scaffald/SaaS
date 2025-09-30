@@ -27,8 +27,8 @@ const CategoryRow = ({
 }) => {
   const disabled = category.required
   return (
-    <YStack gap="$2" p="$3" br="$4" bg="$color2">
-      <XStack ai="center" jc="space-between" gap="$3">
+    <YStack gap="$2" p="$3" rounded="$4" bg="$color2">
+      <XStack items="center" justify="space-between" gap="$3">
         <SizableText size="$5" fontWeight="600">
           {category.label}
         </SizableText>
@@ -131,7 +131,7 @@ export const CookiePreferencesDialog = () => {
             </YStack>
           </ScrollView>
           <Separator />
-          <XStack gap="$3" jc="flex-end" ai="center" flexWrap="wrap">
+          <XStack gap="$3" justify="flex-end" items="center" flexWrap="wrap">
             <Button size="$3" disabled={isSubmitting} onPress={handleSave}>
               Save
             </Button>

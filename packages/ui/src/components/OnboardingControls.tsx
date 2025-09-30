@@ -35,8 +35,8 @@ export const OnboardingControls = ({
   return (
     <>
       <XStack
-        jc="space-between"
-        ai="center"
+        justify="space-between"
+        items="center"
         p="$5"
         gap="$5"
         pos="absolute"
@@ -47,8 +47,8 @@ export const OnboardingControls = ({
       >
         <Button
           chromeless
-          f={1}
-          br="$10"
+          flex={1}
+          rounded="$10"
           circular
           onPress={() => handleGoPrev()}
           iconAfter={ChevronLeft}
@@ -56,8 +56,8 @@ export const OnboardingControls = ({
 
         <Button
           chromeless
-          f={1}
-          br="$10"
+          flex={1}
+          rounded="$10"
           circular
           onPress={() => handleGoNext()}
           iconAfter={ChevronRight}
