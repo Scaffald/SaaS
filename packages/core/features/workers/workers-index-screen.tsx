@@ -176,7 +176,7 @@ export const WorkersIndexScreen = () => {
             </YStack>
             <YStack flex={1} overflow="hidden">
               <ResultList
-                ref={resultListRef}
+                reflex={resultListRef}
                 profiles={talentProfiles}
                 selectedId={selectedProfileId}
                 onSelect={setSelectedProfileId}
@@ -188,7 +188,7 @@ export const WorkersIndexScreen = () => {
           <XStack flex={1} gap="$4" overflow="hidden">
             <YStack flexBasis={380} maxW={420} gap="$3" overflow="hidden">
               <ResultList
-                ref={resultListRef}
+                reflex={resultListRef}
                 profiles={talentProfiles}
                 selectedId={selectedProfileId}
                 onSelect={setSelectedProfileId}

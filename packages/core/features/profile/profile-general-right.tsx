@@ -70,7 +70,7 @@ export function ProfileGeneralRight() {
           cards={profileTipCards}
           interval={8000}
           autoPlay={true}
-          width="100%"
+          flex={1}
           maxStackSize={2}
           wrapperComponent={DashboardWidget}
         />

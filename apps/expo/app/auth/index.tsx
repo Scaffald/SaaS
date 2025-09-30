@@ -13,14 +13,14 @@ export default function Screen() {
         }}
       />
 
-      <XStack f={1}>
-        <YStack f={2} fb={0} jc="center">
+      <XStack flex={1}>
+        <YStack flex={2} fb={0} justify="center">
           <YStack px="$4">
             <LoginScreen />
           </YStack>
         </YStack>
 
-        <YStack $md={{ dsp: 'none' }} f={3} fb={0}>
+        <YStack $md={{ dsp: 'none' }} flex={3} fb={0}>
           <WelcomeScreen />
         </YStack>
       </XStack>

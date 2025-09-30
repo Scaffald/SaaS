@@ -13,17 +13,17 @@ import {
 const Wrapper = forwardRef<TamaguiElement, YStackProps>(function Wrapper(props, ref) {
   return (
     <YStack
-      ref={ref}
+      reflex={ref}
       gap="$4"
-      f={1}
-      jc="center"
+      flex={1}
+      justify="center"
       $gtSm={{
         w: '100%',
         maw: 600,
         als: 'center',
       }}
       // $gtSm={{ width: 500, mx: 'auto' }}
-      $sm={{ jc: 'space-between' }}
+      $sm={{ justify: 'space-between' }}
       {...props}
     />
   )
@@ -32,13 +32,13 @@ const Wrapper = forwardRef<TamaguiElement, YStackProps>(function Wrapper(props, 
 const Body = forwardRef<TamaguiElement, YStackProps>(function Body(props, ref) {
   return (
     <ScrollView>
-      <YStack p="$4" ref={ref} gap="$2" pb="$8" {...props} />
+      <YStack p="$4" reflex={ref} gap="$2" pb="$8" {...props} />
     </ScrollView>
   )
 })
 
 const Footer = forwardRef<TamaguiElement, YStackProps>(function Footer(props, ref) {
-  return <YStack ref={ref} pb="$4" px="$4" gap="$4" {...props} />
+  return <YStack reflex={ref} pb="$4" px="$4" gap="$4" {...props} />
 })
 
 export const FormWrapper = withStaticProperties(Wrapper, {

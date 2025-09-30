@@ -41,7 +41,7 @@ export default function Layout() {
                 <Button
                   borderStyle="unset"
                   borderWidth={0}
-                  backgroundColor="transparent"
+                  bg="transparent"
                   marginLeft="$3"
                   paddingHorizontal="$4"
                   onPress={() => {
@@ -56,7 +56,7 @@ export default function Layout() {
               borderStyle="unset"
               borderWidth={0}
               marginRight="$3"
-              backgroundColor="transparent"
+              bg="transparent"
               onPress={() => setNotificationsOpen(true)}
             >
               <Bell size={24} />

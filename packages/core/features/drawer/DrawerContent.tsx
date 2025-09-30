@@ -20,15 +20,14 @@ export const DrawerContent = ({
 }: DrawerContentProps) => {
   return (
     <YStack
-      width="100%"
+      flex={1}
       maxW={320}
       bg="$color1"
       borderRightWidth={1}
       // borderColor="$color4"
       px="$4"
       py="$4"
-      flex={1}
-      bw={0}
+      borderWidth={0}
     >
       {/* Top Section - User Profile - Sticky */}
       <DrawerHeader onNavigate={onNavigate} />
@@ -39,7 +38,7 @@ export const DrawerContent = ({
         style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
       >
-        <YStack gap="$1" width="100%">
+        <YStack gap="$1" flex={1}>
           {drawerSections.map((section) => (
             <DrawerSection
               key={section.key}

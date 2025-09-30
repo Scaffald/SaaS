@@ -117,7 +117,7 @@ export function NewsWidget({
                   items="center"
                   justify="center"
                   position="relative"
-                  width="100%"
+                  flex={1}
                   height="$3"
                 >
                   <YStack zIndex={10}>
@@ -177,7 +177,7 @@ export function NewsWidget({
                   items="center"
                   justify="center"
                   position="relative"
-                  width="100%"
+                  flex={1}
                   height="$3"
                 >
                   <YStack zIndex={10}>

@@ -125,7 +125,7 @@ export default function FormsPage() {
   // Slider Demo Component
   function SliderDemo() {
     return (
-      <XStack height={200} alignItems="center" gap="$8">
+      <XStack height={200} items="center" gap="$8">
         <SimpleSlider height={200} orientation="vertical" />
         <SimpleSlider width={200} />
       </XStack>
@@ -147,7 +147,7 @@ export default function FormsPage() {
   // Switch Demo Components
   function SwitchDemo() {
     return (
-      <YStack width={200} alignItems="center" gap="$3">
+      <YStack width={200} items="center" gap="$3">
         <XStack gap="$3" $xs={{ flexDirection: 'column' }}>
           <SwitchWithLabel size="$2" />
           <SwitchWithLabel size="$2" defaultChecked />
@@ -167,8 +167,8 @@ export default function FormsPage() {
   function SwitchWithLabel(props: { size: SizeTokens; defaultChecked?: boolean }) {
     const id = `switch-${props.size.toString().slice(1)}-${props.defaultChecked ?? ''}`
     return (
-      <XStack width={200} alignItems="center" gap="$4">
-        <Label minWidth={90} justifyContent="flex-end" size={props.size} htmlFor={id}>
+      <XStack width={200} items="center" gap="$4">
+        <Label minWidth={90} justify="flex-end" size={props.size} htmlFor={id}>
           Accept
         </Label>
         <Separator minHeight={20} vertical />
@@ -181,23 +181,23 @@ export default function FormsPage() {
 
   return (
     <ScrollView flex={1} backgroundColor="$background">
-      <YStack p="$4" gap="$8" alignItems="center">
+      <YStack p="$4" gap="$8" items="center">
         <Text fontSize="$8" fontWeight="600" color="$color">
           Form Components Demo
         </Text>
 
-        <Text fontSize="$4" color="$color10" textAlign="center" maxWidth={400}>
+        <Text fontSize="$4" color="$color10" text="center" maxWidth={400}>
           Interactive examples of all form components with different states and configurations
         </Text>
 
         {/* Basic Input Section */}
-        <YStack gap="$4" width="100%" maxWidth={500} alignItems="center">
+        <YStack gap="$4" flex={1} maxWidth={500} items="center">
           <Text fontSize="$6" fontWeight="600" color="$color">
             Basic Input Fields
           </Text>
 
           {/* Input Size Selector */}
-          <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+          <XStack gap="$2" flexWrap="wrap" justify="center">
             {sizeOptions.map((option) => (
               <Button
                 key={option.value}
@@ -211,7 +211,7 @@ export default function FormsPage() {
           </XStack>
 
           {/* Input Controls */}
-          <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+          <XStack gap="$2" flexWrap="wrap" justify="center">
             <Button
               variant={basicInputDisabled ? 'outlined' : undefined}
               onPress={() => setBasicInputDisabled(!basicInputDisabled)}
@@ -229,7 +229,7 @@ export default function FormsPage() {
           </XStack>
 
           {/* Input Examples */}
-          <YStack gap="$3" width="100%">
+          <YStack gap="$3" flex={1}>
             <Input
               placeholder="Standard text input"
               value={basicInput}
@@ -266,13 +266,13 @@ export default function FormsPage() {
         <Separator width="80%" backgroundColor="$borderColor" />
 
         {/* Select Component Section */}
-        <YStack gap="$4" width="100%" maxWidth={500} alignItems="center">
+        <YStack gap="$4" flex={1} maxWidth={500} items="center">
           <Text fontSize="$6" fontWeight="600" color="$color">
             Select Component
           </Text>
 
           {/* Select Controls */}
-          <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+          <XStack gap="$2" flexWrap="wrap" justify="center">
             <Button
               variant={selectDisabled ? 'outlined' : undefined}
               onPress={() => setSelectDisabled(!selectDisabled)}
@@ -290,7 +290,7 @@ export default function FormsPage() {
           </XStack>
 
           {/* Select Example */}
-          <YStack gap="$3" width="100%">
+          <YStack gap="$3" flex={1}>
             <Select value={selectValue} onValueChange={setSelectValue} size={inputSize}>
               <Select.Trigger borderColor={selectError ? '$red8' : '$borderColor'}>
                 <Select.Value placeholder="Choose an option..." />
@@ -333,13 +333,13 @@ export default function FormsPage() {
         <Separator width="80%" backgroundColor="$borderColor" />
 
         {/* Phone Number Input Section */}
-        <YStack gap="$4" width="100%" maxWidth={500} alignItems="center">
+        <YStack gap="$4" flex={1} maxWidth={500} items="center">
           <Text fontSize="$6" fontWeight="600" color="$color">
             Phone Number Input
           </Text>
 
           {/* Phone Country Selector */}
-          <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+          <XStack gap="$2" flexWrap="wrap" justify="center">
             {countryOptions.map((option) => (
               <Button
                 key={option.value}
@@ -353,7 +353,7 @@ export default function FormsPage() {
           </XStack>
 
           {/* Phone Controls */}
-          <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+          <XStack gap="$2" flexWrap="wrap" justify="center">
             <Button
               variant={phoneDisabled ? 'outlined' : undefined}
               onPress={() => setPhoneDisabled(!phoneDisabled)}
@@ -384,13 +384,13 @@ export default function FormsPage() {
         <Separator width="80%" backgroundColor="$borderColor" />
 
         {/* Address Components Section */}
-        <YStack gap="$4" width="100%" maxWidth={500} alignItems="center">
+        <YStack gap="$4" flex={1} maxWidth={500} items="center">
           <Text fontSize="$6" fontWeight="600" color="$color">
             Address Components
           </Text>
 
           {/* Address Mode Selector */}
-          <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+          <XStack gap="$2" flexWrap="wrap" justify="center">
             {addressModeOptions.map((option) => (
               <Button
                 key={option.value}
@@ -406,7 +406,7 @@ export default function FormsPage() {
           </XStack>
 
           {/* Address Controls */}
-          <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+          <XStack gap="$2" flexWrap="wrap" justify="center">
             <Button
               variant={addressDisabled ? 'outlined' : undefined}
               onPress={() => setAddressDisabled(!addressDisabled)}
@@ -424,7 +424,7 @@ export default function FormsPage() {
           </XStack>
 
           {/* Address Component Examples */}
-          <YStack gap="$6" width="100%">
+          <YStack gap="$6" flex={1}>
             {/* AddressAutocomplete with Mapbox API */}
             <YStack gap="$3">
               <YStack gap="$2">
@@ -483,13 +483,13 @@ export default function FormsPage() {
         <Separator width="80%" backgroundColor="$borderColor" />
 
         {/* Avatar Image Picker Section */}
-        <YStack gap="$4" width="100%" maxWidth={500} alignItems="center">
+        <YStack gap="$4" flex={1} maxWidth={500} items="center">
           <Text fontSize="$6" fontWeight="600" color="$color">
             Avatar Image Picker
           </Text>
 
           {/* Avatar Size Selector */}
-          <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+          <XStack gap="$2" flexWrap="wrap" justify="center">
             {avatarSizeOptions.map((option) => (
               <Button
                 key={option.value}
@@ -503,7 +503,7 @@ export default function FormsPage() {
           </XStack>
 
           {/* Avatar Controls */}
-          <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+          <XStack gap="$2" flexWrap="wrap" justify="center">
             <Button
               variant={avatarDisabled ? 'outlined' : undefined}
               onPress={() => setAvatarDisabled(!avatarDisabled)}
@@ -539,22 +539,22 @@ export default function FormsPage() {
         <Separator width="80%" backgroundColor="$borderColor" />
 
         {/* Toggle Card Section */}
-        <YStack gap="$4" width="100%" maxWidth={500} alignItems="center">
+        <YStack gap="$4" flex={1} maxWidth={500} items="center">
           <Text fontSize="$6" fontWeight="600" color="$color">
             Toggle Cards
           </Text>
 
-          <YStack gap="$2" alignItems="center">
-            <Text fontSize="$4" color="$color10" textAlign="center">
+          <YStack gap="$2" items="center">
+            <Text fontSize="$4" color="$color10" text="center">
               Fat-finger friendly toggle components with icons and descriptions
             </Text>
-            <Text fontSize="$3" color="$color9" textAlign="center">
+            <Text fontSize="$3" color="$color9" text="center">
               Entire card is clickable • Optional expandable content • Cross-platform animations
             </Text>
           </YStack>
 
           {/* Toggle Card Controls */}
-          <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+          <XStack gap="$2" flexWrap="wrap" justify="center">
             <Button
               variant={toggleCardsDisabled ? 'outlined' : undefined}
               onPress={() => setToggleCardsDisabled(!toggleCardsDisabled)}
@@ -565,7 +565,7 @@ export default function FormsPage() {
           </XStack>
 
           {/* Toggle Card Examples */}
-          <YStack gap="$4" width="100%">
+          <YStack gap="$4" flex={1}>
             {/* Basic Toggle Cards */}
             <YStack gap="$3">
               <Text fontSize="$4" fontWeight="500" color="$color">
@@ -582,7 +582,7 @@ export default function FormsPage() {
                 checked={usResident}
                 onCheckedChange={setUsResident}
                 disabled={toggleCardsDisabled}
-                width="100%"
+                flex={1}
               />
 
               <ToggleCard
@@ -592,7 +592,7 @@ export default function FormsPage() {
                 checked={usPassport}
                 onCheckedChange={setUsPassport}
                 disabled={toggleCardsDisabled}
-                width="100%"
+                flex={1}
               />
             </YStack>
 
@@ -614,7 +614,7 @@ export default function FormsPage() {
                 checked={securityEnabled}
                 onCheckedChange={setSecurityEnabled}
                 disabled={toggleCardsDisabled}
-                width="100%"
+                flex={1}
                 expandedContent={
                   <YStack gap="$3" paddingTop="$2">
                     <Text fontSize="$3" fontWeight="500" color="$color11">
@@ -642,7 +642,7 @@ export default function FormsPage() {
                 checked={autoConnectWifi}
                 onCheckedChange={setAutoConnectWifi}
                 disabled={toggleCardsDisabled}
-                width="100%"
+                flex={1}
                 expandedContent={
                   <YStack gap="$3" paddingTop="$2">
                     <Text fontSize="$3" fontWeight="500" color="$color11">
@@ -650,7 +650,7 @@ export default function FormsPage() {
                     </Text>
                     <Input placeholder="Preferred Network Name" size="$3" />
                     <Input placeholder="Network Password" secureTextEntry size="$3" />
-                    <XStack gap="$2" justifyContent="flex-end">
+                    <XStack gap="$2" justify="flex-end">
                       <Button size="$3">
                         <Text fontSize="$2">Save Network</Text>
                       </Button>
@@ -678,20 +678,20 @@ export default function FormsPage() {
                 checked={pushNotifications}
                 onCheckedChange={setPushNotifications}
                 disabled={toggleCardsDisabled}
-                width="100%"
+                flex={1}
                 expandedContent={
                   <YStack gap="$3" paddingTop="$2">
                     <Text fontSize="$3" fontWeight="500" color="$color11">
                       Notification Types
                     </Text>
                     <YStack gap="$2">
-                      <XStack gap="$2" alignItems="center">
+                      <XStack gap="$2" items="center">
                         <Text fontSize="$3">📬 New Messages</Text>
                       </XStack>
-                      <XStack gap="$2" alignItems="center">
+                      <XStack gap="$2" items="center">
                         <Text fontSize="$3">🎯 Job Matches</Text>
                       </XStack>
-                      <XStack gap="$2" alignItems="center">
+                      <XStack gap="$2" items="center">
                         <Text fontSize="$3">📊 Weekly Reports</Text>
                       </XStack>
                     </YStack>
@@ -706,7 +706,7 @@ export default function FormsPage() {
                 checked={companyVehicle}
                 onCheckedChange={setCompanyVehicle}
                 disabled={toggleCardsDisabled}
-                width="100%"
+                flex={1}
                 theme="surface2"
               />
             </YStack>
@@ -716,22 +716,22 @@ export default function FormsPage() {
         <Separator width="80%" backgroundColor="$borderColor" />
 
         {/* Slider Section */}
-        <YStack gap="$4" width="100%" maxWidth={500} alignItems="center">
+        <YStack gap="$4" flex={1} maxWidth={500} items="center">
           <Text fontSize="$6" fontWeight="600" color="$color">
             Slider Components
           </Text>
 
-          <YStack gap="$2" alignItems="center">
-            <Text fontSize="$4" color="$color10" textAlign="center">
+          <YStack gap="$2" items="center">
+            <Text fontSize="$4" color="$color10" text="center">
               Interactive sliders for numeric input and range selection
             </Text>
-            <Text fontSize="$3" color="$color9" textAlign="center">
+            <Text fontSize="$3" color="$color9" text="center">
               Horizontal and vertical orientations • Customizable min/max/step • Cross-platform
             </Text>
           </YStack>
 
           {/* Slider Controls */}
-          <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+          <XStack gap="$2" flexWrap="wrap" justify="center">
             <Button
               variant={sliderDisabled ? 'outlined' : undefined}
               onPress={() => setSliderDisabled(!sliderDisabled)}
@@ -751,7 +751,7 @@ export default function FormsPage() {
           </XStack>
 
           {/* Slider Examples */}
-          <YStack gap="$6" width="100%">
+          <YStack gap="$6" flex={1}>
             {/* Basic Slider */}
             <YStack gap="$3">
               <Text fontSize="$4" fontWeight="500" color="$color">
@@ -768,7 +768,7 @@ export default function FormsPage() {
                 min={sliderMin}
                 step={sliderStep}
                 disabled={sliderDisabled}
-                width="100%"
+                flex={1}
               >
                 <Slider.Track>
                   <Slider.TrackActive />
@@ -802,13 +802,7 @@ export default function FormsPage() {
                 Select a range with two thumbs
               </Text>
 
-              <Slider
-                defaultValue={[25, 75]}
-                max={100}
-                step={1}
-                disabled={sliderDisabled}
-                width="100%"
-              >
+              <Slider defaultValue={[25, 75]} max={100} step={1} disabled={sliderDisabled} flex={1}>
                 <Slider.Track>
                   <Slider.TrackActive />
                 </Slider.Track>
@@ -828,7 +822,7 @@ export default function FormsPage() {
                 Larger thumb and custom colors
               </Text>
 
-              <Slider defaultValue={[60]} max={100} step={1} disabled={sliderDisabled} width="100%">
+              <Slider defaultValue={[60]} max={100} step={1} disabled={sliderDisabled} flex={1}>
                 <Slider.Track backgroundColor="$color6" height={8}>
                   <Slider.TrackActive backgroundColor="$blue8" />
                 </Slider.Track>
@@ -841,22 +835,22 @@ export default function FormsPage() {
         <Separator width="80%" backgroundColor="$borderColor" />
 
         {/* Switch Section */}
-        <YStack gap="$4" width="100%" maxWidth={500} alignItems="center">
+        <YStack gap="$4" flex={1} maxWidth={500} items="center">
           <Text fontSize="$6" fontWeight="600" color="$color">
             Switch Components
           </Text>
 
-          <YStack gap="$2" alignItems="center">
-            <Text fontSize="$4" color="$color10" textAlign="center">
+          <YStack gap="$2" items="center">
+            <Text fontSize="$4" color="$color10" text="center">
               Toggle switches for on/off states and settings
             </Text>
-            <Text fontSize="$3" color="$color9" textAlign="center">
+            <Text fontSize="$3" color="$color9" text="center">
               Multiple sizes • Animated transitions • Accessible labels • Cross-platform
             </Text>
           </YStack>
 
           {/* Switch Controls */}
-          <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+          <XStack gap="$2" flexWrap="wrap" justify="center">
             <Button
               variant={switchDisabled ? 'outlined' : undefined}
               onPress={() => setSwitchDisabled(!switchDisabled)}
@@ -888,7 +882,7 @@ export default function FormsPage() {
           </XStack>
 
           {/* Switch Examples */}
-          <YStack gap="$6" width="100%">
+          <YStack gap="$6" flex={1}>
             {/* Basic Switches */}
             <YStack gap="$3">
               <Text fontSize="$4" fontWeight="500" color="$color">
@@ -898,7 +892,7 @@ export default function FormsPage() {
                 Simple on/off toggles with labels
               </Text>
 
-              <XStack gap="$4" alignItems="center" justifyContent="space-between">
+              <XStack gap="$4" items="center" justify="space-between">
                 <Label htmlFor="basic-switch" size="$4">
                   Basic Switch
                 </Label>
@@ -913,7 +907,7 @@ export default function FormsPage() {
                 </Switch>
               </XStack>
 
-              <XStack gap="$4" alignItems="center" justifyContent="space-between">
+              <XStack gap="$4" items="center" justify="space-between">
                 <Label htmlFor="notifications-switch" size="$4">
                   Push Notifications
                 </Label>
@@ -928,7 +922,7 @@ export default function FormsPage() {
                 </Switch>
               </XStack>
 
-              <XStack gap="$4" alignItems="center" justifyContent="space-between">
+              <XStack gap="$4" items="center" justify="space-between">
                 <Label htmlFor="dark-mode-switch" size="$4">
                   Dark Mode
                 </Label>
@@ -969,7 +963,7 @@ export default function FormsPage() {
                 Switches with custom colors and animations
               </Text>
 
-              <XStack gap="$4" alignItems="center" justifyContent="space-between">
+              <XStack gap="$4" items="center" justify="space-between">
                 <Label htmlFor="custom-switch-1" size="$4">
                   Custom Blue
                 </Label>
@@ -983,7 +977,7 @@ export default function FormsPage() {
                 </Switch>
               </XStack>
 
-              <XStack gap="$4" alignItems="center" justifyContent="space-between">
+              <XStack gap="$4" items="center" justify="space-between">
                 <Label htmlFor="custom-switch-2" size="$4">
                   Custom Green
                 </Label>
@@ -1001,7 +995,7 @@ export default function FormsPage() {
                 </Switch>
               </XStack>
 
-              <XStack gap="$4" alignItems="center" justifyContent="space-between">
+              <XStack gap="$4" items="center" justify="space-between">
                 <Label htmlFor="custom-switch-3" size="$4">
                   Custom Purple
                 </Label>
@@ -1025,17 +1019,17 @@ export default function FormsPage() {
         <Separator width="80%" backgroundColor="$borderColor" />
 
         {/* Form Patterns Section */}
-        <YStack gap="$4" width="100%" maxWidth={500} alignItems="center">
+        <YStack gap="$4" flex={1} maxWidth={500} items="center">
           <Text fontSize="$6" fontWeight="600" color="$color">
             Form Patterns
           </Text>
 
-          <Text fontSize="$4" color="$color10" textAlign="center">
+          <Text fontSize="$4" color="$color10" text="center">
             Complete form examples combining multiple components
           </Text>
 
           {/* Sample Contact Form */}
-          <YStack gap="$3" width="100%" p="$4" backgroundColor="$color2" borderRadius="$4">
+          <YStack gap="$3" flex={1} p="$4" backgroundColor="$color2" rounded="$4">
             <Text fontSize="$5" fontWeight="500" color="$color">
               Contact Information Form
             </Text>
@@ -1053,7 +1047,7 @@ export default function FormsPage() {
               apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
             />
 
-            <XStack gap="$3" justifyContent="flex-end">
+            <XStack gap="$3" justify="flex-end">
               <Button size="$4">
                 <Text>Cancel</Text>
               </Button>
@@ -1065,11 +1059,11 @@ export default function FormsPage() {
         </YStack>
 
         {/* Footer */}
-        <YStack gap="$2" alignItems="center" paddingTop="$6" paddingBottom="$4">
-          <Text fontSize="$3" color="$color9" textAlign="center">
+        <YStack gap="$2" items="center" paddingTop="$6" paddingBottom="$4">
+          <Text fontSize="$3" color="$color9" text="center">
             All form components are cross-platform compatible
           </Text>
-          <Text fontSize="$2" color="$color8" textAlign="center">
+          <Text fontSize="$2" color="$color8" text="center">
             Test on web, iOS, and Android for consistent behavior
           </Text>
         </YStack>

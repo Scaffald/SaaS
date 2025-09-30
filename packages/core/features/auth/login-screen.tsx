@@ -94,7 +94,7 @@ export const LoginScreen = () => {
       {submitSuccess ? (
         <CheckYourEmail />
       ) : (
-        <YStack gap="$4" p="$4" maxW={400} width="100%">
+        <YStack gap="$4" p="$4" maxW={400} flex={1}>
           <YStack gap="$4" mb="$3" items="center">
             <ScaffaldLogo width={200} height={33} />
             <YStack gap="$2" items="center">

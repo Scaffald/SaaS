@@ -17,14 +17,14 @@ import { useToastController } from '@tamagui/toast'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
-  employmentProfileSchema,
+  api,
   type EmploymentProfileFormData,
-  employmentProfileDefaults,
   DRIVERS_LICENSE_OPTIONS,
   MILITARY_STATUS_OPTIONS,
   AVAILABILITY_OPTIONS,
-} from './config'
-import { api } from '@app/core/utils/api'
+  profileEmploymentDefaults,
+  profileEmploymentInputSchema,
+} from '@app/core/utils/api'
 import { DashboardWidget, AddressForm, LocationListInput, ToggleCard } from '@app/ui'
 import { Flag, MapPin, Plane } from '@tamagui/lucide-icons'
 
@@ -49,7 +49,7 @@ export function ProfileEmploymentLeft() {
       })
       refetch()
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error('Error saving employment:', error)
       toast.show('Error', {
         message: error.message || 'Failed to save employment preferences. Please try again.',
@@ -66,8 +66,8 @@ export function ProfileEmploymentLeft() {
     setValue,
     trigger,
   } = useForm<EmploymentProfileFormData>({
-    resolver: zodResolver(employmentProfileSchema),
-    defaultValues: employmentProfileDefaults,
+    resolver: zodResolver(profileEmploymentInputSchema),
+    defaultValues: profileEmploymentDefaults,
     mode: 'onChange', // Real-time validation
   })
 
@@ -189,7 +189,7 @@ export function ProfileEmploymentLeft() {
                     description="I am available for work assignments that require travel"
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    width="100%"
+                    flex={1}
                     expandedContent={
                       <YStack gap="$3" paddingTop="$2">
                         <Text fontSize="$3" fontWeight="500" color="$color11">
@@ -246,7 +246,7 @@ export function ProfileEmploymentLeft() {
                     description="I am a permanent resident of the United States"
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    width="100%"
+                    flex={1}
                   />
                 )}
               />
@@ -260,7 +260,7 @@ export function ProfileEmploymentLeft() {
                     description="I have a valid United States passport"
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    width="100%"
+                    flex={1}
                   />
                 )}
               />

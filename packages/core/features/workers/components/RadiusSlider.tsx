@@ -24,7 +24,7 @@ export const RadiusSlider = ({
   step = 1000,
 }: RadiusSliderProps) => {
   return (
-    <YStack gap="$2" width="100%">
+    <YStack gap="$2" flex={1}>
       <XStack justify="space-between" items="center">
         <Text fontSize="$3" fontWeight="600" color="$color11">
           Search Radius
@@ -43,7 +43,7 @@ export const RadiusSlider = ({
         min={min}
         max={max}
         step={step}
-        width="100%"
+        flex={1}
         height={20}
         bg="$color3"
         rounded="$2"

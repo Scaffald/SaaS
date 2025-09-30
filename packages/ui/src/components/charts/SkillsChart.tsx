@@ -1,6 +1,6 @@
 import React, { useEffect, FC } from 'react'
 import { useWindowDimensions } from 'react-native'
-import { View, Text } from 'tamagui'
+import { View, Text, type GetThemeValueForKey } from 'tamagui'
 import { Svg, G, Defs, LinearGradient, Stop, Rect, Circle, Polygon } from 'react-native-svg'
 import Animated, { useSharedValue, useAnimatedProps, withSpring } from 'react-native-reanimated'
 
@@ -13,7 +13,7 @@ export interface SkillsChartDataItem {
 export interface SkillsChartDataset {
   label: string
   data: SkillsChartDataItem[]
-  fillColor?: string
+  fillColor?: GetThemeValueForKey<'backgroundColor'>
   strokeColor?: string
   strokeWidth?: number
   fillOpacity?: number
@@ -166,7 +166,7 @@ export const SkillsChart: FC<SkillsChartProps> = ({
     ))
 
   const renderLabels = (data: SkillsChartDataItem[], set: number, index: number) => (
-    <View key={set} position="absolute" height="100%" width="100%">
+    <View key={set} position="absolute" height="100%" flex={1}>
       {data.map(({ label }, i) => {
         const x = calculated.centerX + radius * Math.cos(calculated.angle * i - Math.PI / 2)
         const y = calculated.centerY + radius * Math.sin(calculated.angle * i - Math.PI / 2)
@@ -204,9 +204,9 @@ export const SkillsChart: FC<SkillsChartProps> = ({
   )
 
   return (
-    <View items="center" justify="center" minH={chartHeight} width="100%" bg={backgroundColor}>
-      <View position="absolute" height="100%" width="100%">
-        <Svg height="100%" width="100%">
+    <View items="center" justify="center" minH={chartHeight} flex={1} bg={backgroundColor}>
+      <View position="absolute" height="100%" flex={1}>
+        <Svg height="100%" flex={1}>
           <Defs>
             <LinearGradient id="gradient" gradientTransform="rotate(90)">
               <Stop offset="0%" stopColor={gridColor} />

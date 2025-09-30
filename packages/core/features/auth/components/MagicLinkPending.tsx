@@ -122,15 +122,12 @@ function CodeConfirmationInput({
           text="center"
           fontSize="$8"
           rounded="$5"
-          theme="active"
-          aspectRatio={1}
-          w="100%"
-          h="100%"
           flex={1}
+          aspectRatio={1}
           bg={invalid ? '$red7' : value ? '$color1' : '$color5'}
           hoverStyle={{ outlineWidth: 0 }}
           focusStyle={{
-            backgroundColor: invalid ? '$red8' : '$color1',
+            bg: invalid ? '$red8' : '$color1',
             outlineWidth: 0,
           }}
         />
@@ -208,13 +205,12 @@ function CodeConfirmation({ size, codeSize, secureText, onEnter }: CodeConfirmat
     <Form
       gap="$2"
       items="center"
-      minW="100%"
+      flex={1}
       justify="center"
       x={translateX}
       animation="bouncy"
-      w="100%"
       mt="$2"
-      flex="row"
+      flexDirection="row"
       onSubmit={onSubmit}
       mb="$0"
       pb="$0"
@@ -298,7 +294,7 @@ const ResendTimer = ({
     return (
       <XStack
         items="center"
-        self="flex-end"
+        alignSelf="flex-end"
         justify="flex-end"
         gap="$2"
         className="flex"
@@ -316,7 +312,7 @@ const ResendTimer = ({
   return (
     <XStack
       items="center"
-      self="flex-end"
+      alignSelf="flex-end"
       justify="flex-end"
       gap="$2"
       className="flex"
@@ -420,8 +416,8 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
     <View items="center" justify="center" gap="$4">
       <View
         minW={300}
-        ai="center"
-        jc="center"
+        items="center"
+        justify="center"
         rounded="$8"
         overflow="hidden"
         p="$5"
@@ -475,7 +471,7 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
           >
             <View items="center" gap="$3">
               <ScaffaldLogo width={160} height={26} />
-              <H2 fontWeight="700" fontSize="$6" $gtMd={{ fontSize: '$8' }} color="$color12">
+              <H2 fontWeight="700" fontSize="$6" $md={{ fontSize: '$8' }} color="$color12">
                 Check your email
               </H2>
 
@@ -491,7 +487,7 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
               </Paragraph>
             </View>
 
-            <View px="$4" $gtMd={{ px: 0 }}>
+            <View px="$4" $md={{ px: 0 }}>
               <YStack gap="$2">
                 <CodeConfirmation size="$5" codeSize={6} secureText={false} onEnter={handleEnter} />
 
@@ -509,8 +505,8 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
               borderColor="$transparent"
               onPress={onBack}
               gap="$2"
-              ai="center"
-              jc="center"
+              items="center"
+              justify="center"
               cursor="pointer"
             >
               <ChevronLeft size={16} color="$color10" />
@@ -525,7 +521,7 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
               h="100%"
               items="center"
               justify="center"
-              bg="$backgroundColor"
+              bg="$background"
             >
               <Spinner color="$color10" />
             </View>
@@ -536,12 +532,12 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
           position="absolute"
           enterStyle={{ opacity: 0, x: 350 }}
           exitStyle={{ opacity: 0, x: 0 }}
-          bg="$backgroundColor"
-          ai="center"
-          jc="center"
+          bg="$background"
+          items="center"
+          justify="center"
           w="full"
           h="100%"
-          $gtMd={{ w: '100%', p: '$5' }}
+          $md={{ w: '100%', p: '$5' }}
           animation={'200ms'}
           opacity={!codeEntered ? 0 : 1}
           style={{ pointerEvents: !codeEntered ? 'none' : 'auto' }}
@@ -549,7 +545,7 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
         >
           <AnimatePresence>
             {codeEntered && (
-              <View w="100%" h="100%" justify="space-between" items="center" gap="$4" pt="$6">
+              <View flex={1} h="auto" justify="space-between" items="center" gap="$4" pt="$6">
                 <YStack flexGrow={1} justify="center" items="center" w="100%" gap="$2">
                   <Text fontWeight="bold" fontSize="$6">
                     Code Verified
@@ -560,7 +556,7 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
                   </Paragraph>
                 </YStack>
 
-                <Button minW="100%" themeInverse>
+                <Button flex={1} themeInverse>
                   Continue
                 </Button>
               </View>

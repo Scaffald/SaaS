@@ -40,14 +40,14 @@ export const CookieConsentBanner = ({ containerProps, ...cardProps }: CookieCons
           bottom="$6"
           left="50%"
           maxW={500}
-          width="100%"
+          flex={1}
           zIndex={1000}
           transform={[{ translateX: '-50%' }]}
           {...containerProps}
         >
           <Card elevate size="$4" p="$5" gap="$3" {...cardProps}>
-            <XStack gap="$4" ai="flex-start" flexWrap="wrap" $gtSm={{ ai: 'center' }}>
-              <YStack f={1} gap="$2" miw={220}>
+            <XStack gap="$4" items="flex-start" flexWrap="wrap" $gtSm={{ items: 'center' }}>
+              <YStack flex={1} gap="$2" miw={220}>
                 <SizableText size="$6" fontWeight="700">
                   This site uses cookies
                 </SizableText>
@@ -63,7 +63,7 @@ export const CookieConsentBanner = ({ containerProps, ...cardProps }: CookieCons
                   to learn more.
                 </Paragraph>
               </YStack>
-              <XStack gap="$2" w="100%" jc="space-between">
+              <XStack gap="$2" w="100%" justify="space-between">
                 <Button size="$3" onPress={openPreferences} borderColor="$color6">
                   Manage
                 </Button>
@@ -80,7 +80,7 @@ export const CookieConsentBanner = ({ containerProps, ...cardProps }: CookieCons
                     }
                   }}
                   disabled={pendingAction !== null}
-                  f={1}
+                  flex={1}
                 >
                   Accept
                 </Button>
@@ -96,7 +96,7 @@ export const CookieConsentBanner = ({ containerProps, ...cardProps }: CookieCons
                     }
                   }}
                   disabled={pendingAction !== null}
-                  f={1}
+                  flex={1}
                 >
                   Reject
                 </Button>

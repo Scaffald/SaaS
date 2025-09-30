@@ -87,7 +87,7 @@ export const Onboarding = ({ onOnboarded, autoSwipe, steps }: OnboardingProps) =
   return (
     <Theme name={currentStep.theme as ThemeName}>
       <YStack
-        f={1}
+        flex={1}
         bg="$color3"
         ov="hidden"
         pb={safeAreaInsets.bottom}
@@ -99,13 +99,13 @@ export const Onboarding = ({ onOnboarded, autoSwipe, steps }: OnboardingProps) =
           <Background key={key} backgroundImage={currentStep.backgroundImage} />
         </AnimatePresence>
 
-        <YStack f={1} {...panResponder.panHandlers}>
+        <YStack flex={1} {...panResponder.panHandlers}>
           <AnimatePresence>
             <currentStep.Content key={key} />
           </AnimatePresence>
         </YStack>
 
-        <XStack gap={10} jc="center" my="$4">
+        <XStack gap={10} justify="center" my="$4">
           {Array.from({ length: stepsCount }, (_, idx) => {
             const isActive = idx === stepIdx
             return (
@@ -131,9 +131,9 @@ export const Onboarding = ({ onOnboarded, autoSwipe, steps }: OnboardingProps) =
 const Point = ({ active, onPress }: { active: boolean; onPress: () => void }) => {
   return (
     <YStack
-      br="$10"
-      w={active ? 30 : 10}
-      h={10}
+      rounded="$10"
+      width={active ? 30 : 10}
+      height={10}
       onPress={onPress}
       bg={active ? '$color7' : '$color6'}
     />
@@ -155,7 +155,7 @@ export const Background = ({ backgroundImage }: { backgroundImage?: string }) =>
       <YStack fullscreen>
         <Image
           source={{ uri: backgroundImage }}
-          width="100%"
+          flex={1}
           height="100%"
           resizeMode="cover"
           position="absolute"
@@ -179,7 +179,7 @@ export const Background = ({ backgroundImage }: { backgroundImage?: string }) =>
   }
 
   return (
-    <YStack fullscreen jc="center" ai="center">
+    <YStack fullscreen justify="center" items="center">
       <Circle
         animation="lazy"
         x={0}
@@ -194,8 +194,8 @@ export const Background = ({ backgroundImage }: { backgroundImage?: string }) =>
           scale: 10,
           o: 0,
         }}
-        w={height * 3}
-        h={height * 3}
+        width={height * 3}
+        height={height * 3}
       />
     </YStack>
   )

@@ -15,7 +15,7 @@ export const ResultCard = memo(
   forwardRef<TamaguiElement, ResultCardProps>(({ profile, isSelected, onSelect }, ref) => {
     return (
       <YStack
-        ref={ref}
+        reflex={ref}
         borderWidth={1}
         borderColor={isSelected ? '$blue7' : '$color5'}
         rounded="$3"

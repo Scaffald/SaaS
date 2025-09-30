@@ -5,28 +5,28 @@ type DashboardLayoutProps = {
   header?: ReactNode
   rightContent?: ReactNode
   leftContent?: ReactNode
-  leftWidth?: string
-  rightWidth?: string
+  leftWidth?: number
+  rightWidth?: number
 }
 
 export const DashboardLayout = ({
   header,
   rightContent,
   leftContent,
-  leftWidth = '62%',
-  rightWidth = '38%',
+  leftWidth = 2,
+  rightWidth = 1,
 }: DashboardLayoutProps) => {
   return (
     <YStack flex={1} bg="$color2" py="$3" flexWrap="wrap">
       {header && <XStack p="$4">{header}</XStack>}
       <XStack flex={1}>
         {leftContent && (
-          <YStack minW={300} $sm={{ width: '100%' }} width={leftWidth}>
+          <YStack minW={300} $sm={{ flex: 1 }} flex={leftWidth}>
             {leftContent}
           </YStack>
         )}
         {rightContent && (
-          <YStack minW={300} $sm={{ width: '100%' }} width={rightWidth}>
+          <YStack minW={300} $sm={{ flex: 1 }} flex={rightWidth}>
             {rightContent}
           </YStack>
         )}

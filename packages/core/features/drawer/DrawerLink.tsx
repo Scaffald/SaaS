@@ -26,9 +26,9 @@ export const DrawerLink = ({
   // If item is disabled, render as non-interactive element
   if (item.disabled) {
     return (
-      <XStack ai="center" gap="$3" px="$3" py="$2" opacity={0.5} cursor="not-allowed" width="100%">
+      <XStack items="center" gap="$3" px="$3" py="$2" opacity={0.5} cursor="not-allowed" flex={1}>
         {Icon && <Icon size={18} color="$color11" />}
-        <Paragraph size="$3" fow="500" color="$color11">
+        <Paragraph size="$3" fontWeight="500" color="$color11">
           {item.title}
         </Paragraph>
       </XStack>
@@ -40,8 +40,8 @@ export const DrawerLink = ({
     return (
       <Link href={item.href} asChild>
         <XStack
-          ai="center"
-          br="$4"
+          items="center"
+          rounded="$4"
           gap="$3"
           px="$3"
           py="$3"
@@ -49,9 +49,9 @@ export const DrawerLink = ({
           pressStyle={{ bg: '$color1' }}
           hoverStyle={{ bg: '$color3' }}
           cursor="pointer"
-          width="100%"
+          flex={1}
         >
-          <Paragraph size="$2" fow="600" color={active ? '$blue9' : '$color11'}>
+          <Paragraph size="$2" fontWeight="600" color={active ? '$blue9' : '$color11'}>
             {item.title}
           </Paragraph>
         </XStack>
@@ -64,7 +64,7 @@ export const DrawerLink = ({
     if (!Icon) return null
 
     return (
-      <XStack ai="center" jc="center" w={25} h={20} br="$6">
+      <XStack items="center" justify="center" width={25} height={20} rounded="$6">
         <Icon size={20} color={active ? '$color12' : '$blue9'} />
       </XStack>
     )
@@ -72,9 +72,9 @@ export const DrawerLink = ({
 
   // Common content rendering logic
   const renderContent = () => (
-    <XStack ai="center" gap="$3" my="$1">
+    <XStack items="center" gap="$3" my="$1">
       {renderIcon()}
-      <Paragraph size="$3" fow="500" color={active ? '$color12' : '$color11'}>
+      <Paragraph size="$3" fontWeight="500" color={active ? '$color12' : '$color11'}>
         {item.title}
       </Paragraph>
     </XStack>
@@ -82,10 +82,10 @@ export const DrawerLink = ({
 
   // Common right side elements (badge, chevron)
   const renderRightSide = () => (
-    <XStack ai="center" gap="$2">
+    <XStack items="center" gap="$2">
       {item.badge && (
-        <XStack px="$2" py="$1" br="$10" bg="$red9" minW={20} ai="center">
-          <Paragraph size="$1" color="$color12" fow="600">
+        <XStack px="$2" py="$1" rounded="$10" bg="$red9" minW={20} items="center">
+          <Paragraph size="$1" color="$color12" fontWeight="600">
             {item.badge}
           </Paragraph>
         </XStack>
@@ -106,29 +106,28 @@ export const DrawerLink = ({
 
   // Common container props
   const containerProps = {
-    ai: 'center' as const,
-    jc: 'space-between' as const,
+    items: 'center' as const,
+    justify: 'space-between' as const,
     px: '$3' as const,
     py: '$3' as const,
     br: '$4' as const,
     my: '$1' as const,
-    bg: active ? '$blue9' : ('transparent' as const),
+    bg: active ? '$blue9' : '$transparent',
     hoverStyle: { bg: active ? '$blue9' : '$color3' },
     pressStyle: { bg: active ? '$blue9' : '$color3' },
     cursor: 'pointer' as const,
-    width: '100%' as const,
   }
 
   // If item is expandable, render with toggle functionality and sub-items
   if (item.isExpandable) {
     return (
-      <YStack width="100%">
+      <YStack flex={1}>
         <XStack {...containerProps} onPress={handleToggle}>
           {renderContent()}
           {renderRightSide()}
         </XStack>
         {isExpanded && item.subItems && (
-          <YStack br="$4" my="$2" gap="$2" width="100%">
+          <YStack rounded="$4" my="$2" gap="$2" flex={1}>
             {item.subItems.map((subItem) => (
               <DrawerLink
                 key={subItem.key}

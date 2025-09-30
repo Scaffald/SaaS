@@ -1,10 +1,10 @@
 import { PieChart as GiftedPieChart } from 'react-native-gifted-charts'
-import { View } from 'tamagui'
+import { type GetThemeValueForKey, View } from 'tamagui'
 import { ReactNode } from 'react'
 
 export interface PieChartData {
   value: number
-  color?: string
+  color?: GetThemeValueForKey<'backgroundColor'>
   text?: string
   textColor?: string
   textSize?: number
