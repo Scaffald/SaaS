@@ -454,7 +454,7 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
         <View
           key="code"
           animation="200ms"
-          w="100%"
+          flex={1}
           opacity={codeEntered ? 0 : 1}
           style={{ pointerEvents: codeEntered ? 'none' : 'auto' }}
           transform={[{ translateX: codeEntered ? -150 : 0 }]}
@@ -465,9 +465,8 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
             exitStyle={{ opacity: 0 }}
             justify="space-between"
             gap="$4"
-            w="100%"
+            flex={1}
             opacity={code ? 0 : 1}
-            h="auto"
           >
             <View items="center" gap="$3">
               <ScaffaldLogo width={160} height={26} />

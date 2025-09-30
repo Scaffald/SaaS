@@ -169,7 +169,7 @@ export default function FormsPage() {
     return (
       <XStack width={200} items="center" gap="$4">
         <Label minW={90} justify="flex-end" size={props.size} htmlFor={id}>
-          {label}
+          Switch
         </Label>
         <Separator height={20} vertical />
         <Switch id={id} size={props.size} defaultChecked={props.defaultChecked}>
@@ -180,18 +180,18 @@ export default function FormsPage() {
   }
 
   return (
-    <ScrollView flex={1} backgroundColor="$background">
+    <ScrollView flex={1} bg="$background">
       <YStack p="$4" gap="$8" items="center">
         <Text fontSize="$8" fontWeight="600" color="$color">
           Form Components Demo
         </Text>
 
-        <Text fontSize="$4" color="$color10" text="center" maxWidth={400}>
+        <Text fontSize="$4" color="$color10" ta="center" maxW={400}>
           Interactive examples of all form components with different states and configurations
         </Text>
 
         {/* Basic Input Section */}
-        <YStack gap="$4" flex={1} maxWidth={500} items="center">
+        <YStack gap="$4" flex={1} maxW={500} items="center">
           <Text fontSize="$6" fontWeight="600" color="$color">
             Basic Input Fields
           </Text>
@@ -263,7 +263,7 @@ export default function FormsPage() {
           </YStack>
         </YStack>
 
-        <Separator width="80%" backgroundColor="$borderColor" />
+        <Separator width="80%" bg="$borderColor" />
 
         {/* Select Component Section */}
         <YStack gap="$4" flex={1} maxWidth={500} items="center">
@@ -330,7 +330,7 @@ export default function FormsPage() {
           </YStack>
         </YStack>
 
-        <Separator width="80%" backgroundColor="$borderColor" />
+        <Separator width="80%" bg="$borderColor" />
 
         {/* Phone Number Input Section */}
         <YStack gap="$4" flex={1} maxWidth={500} items="center">
@@ -381,7 +381,7 @@ export default function FormsPage() {
           />
         </YStack>
 
-        <Separator width="80%" backgroundColor="$borderColor" />
+        <Separator width="80%" bg="$borderColor" />
 
         {/* Address Components Section */}
         <YStack gap="$4" flex={1} maxWidth={500} items="center">
@@ -449,7 +449,7 @@ export default function FormsPage() {
               />
             </YStack>
 
-            <Separator backgroundColor="$color6" />
+            <Separator bg="$color6" />
 
             {/* AddressForm with Mapbox API */}
             <YStack gap="$3">
@@ -970,9 +970,9 @@ export default function FormsPage() {
                   id="custom-switch-1"
                   disabled={switchDisabled}
                   size={switchSize}
-                  backgroundColor="$blue8"
+                  bg="$blue8"
                 >
-                  <Switch.Thumb animation="quick" backgroundColor="$blue11" borderColor="$blue9" />
+                  <Switch.Thumb animation="quick" bg="$blue11" borderColor="$blue9" />
                 </Switch>
               </XStack>
 
@@ -984,13 +984,9 @@ export default function FormsPage() {
                   id="custom-switch-2"
                   disabled={switchDisabled}
                   size={switchSize}
-                  backgroundColor="$green8"
+                  bg="$green8"
                 >
-                  <Switch.Thumb
-                    animation="quick"
-                    backgroundColor="$green11"
-                    borderColor="$green9"
-                  />
+                  <Switch.Thumb animation="quick" bg="$green11" borderColor="$green9" />
                 </Switch>
               </XStack>
 
@@ -1002,13 +998,9 @@ export default function FormsPage() {
                   id="custom-switch-3"
                   disabled={switchDisabled}
                   size={switchSize}
-                  backgroundColor="$purple8"
+                  bg="$purple8"
                 >
-                  <Switch.Thumb
-                    animation="quick"
-                    backgroundColor="$purple11"
-                    borderColor="$purple9"
-                  />
+                  <Switch.Thumb animation="quick" bg="$purple11" borderColor="$purple9" />
                 </Switch>
               </XStack>
             </YStack>

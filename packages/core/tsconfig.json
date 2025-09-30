@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.base",
   "include": [
+    "assets",
     "features",
     "provider",
     "utils",

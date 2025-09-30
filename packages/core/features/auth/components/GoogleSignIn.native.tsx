@@ -56,7 +56,7 @@ export function GoogleSignIn() {
       scaleIcon={0.6}
       gap="$1.5"
       bg="white"
-      pressStyle={{ bg: 'transparent', o: 0.6, bw: '$0' }}
+      pressStyle={{ bg: 'transparent', opacity: 0.6, bw: '$0' }}
       animation="200ms"
       chromeless
       fontWeight="500"
