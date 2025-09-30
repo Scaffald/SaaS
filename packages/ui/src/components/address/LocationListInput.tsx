@@ -109,7 +109,7 @@ export function LocationListInput({
   }
 
   return (
-    <YStack gap="$3" position="relative" zIndex={999}>
+    <YStack gap="$3" position="relative" z={999}>
       {/* Help Text */}
       {helpText && (
         <Text fontSize="$3" color="$color11" lineHeight="$1">

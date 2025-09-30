@@ -107,10 +107,10 @@ export function AvatarImagePicker({
           {/* Camera overlay when hovering */}
           <View
             position="absolute"
-            top={0}
-            left={0}
-            right={0}
-            bottom={0}
+            t={0}
+            l={0}
+            r={0}
+            b={0}
             bg="$color9"
             rounded={size / 2}
             items="center"

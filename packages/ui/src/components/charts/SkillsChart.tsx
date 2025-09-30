@@ -183,8 +183,8 @@ export const SkillsChart: FC<SkillsChartProps> = ({
           <View
             key={`label-${label}-${set}`}
             position="absolute"
-            left={left}
-            top={top}
+            l={left}
+            t={top}
             items="center"
             justify="center"
           >
@@ -206,7 +206,7 @@ export const SkillsChart: FC<SkillsChartProps> = ({
   return (
     <View items="center" justify="center" minH={chartHeight} flex={1} bg={backgroundColor}>
       <View position="absolute" height="100%" flex={1}>
-        <Svg height="100%" flex={1}>
+        <Svg height="100%" width="100%">
           <Defs>
             <LinearGradient id="gradient" gradientTransform="rotate(90)">
               <Stop offset="0%" stopColor={gridColor} />
@@ -220,7 +220,7 @@ export const SkillsChart: FC<SkillsChartProps> = ({
             <RadarPolygon
               key={s}
               dimensions={calculated}
-              fill={datasets[s].fillColor || '#1B6B93'}
+              fill={(datasets[s].fillColor as string) || '#1B6B93'}
               stroke={datasets[s].strokeColor || '#4FC3F7'}
               data={datasets[s].data}
             />

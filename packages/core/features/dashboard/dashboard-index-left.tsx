@@ -1,16 +1,21 @@
-import { Text, YStack } from 'tamagui'
+import { ScrollView, Text, YStack } from 'tamagui'
+import { ProfileCompletionWidget } from './completion'
+import { useRouter } from 'expo-router'
 
 /**
  * Dashboard Index Left Component
  * Simplified placeholder for future dashboard content
  */
 export function DashboardIndexLeft() {
+  const router = useRouter()
+
+  const handleNavigate = (route: string) => {
+    router.push(route)
+  }
+
   return (
-    <YStack p="$4" gap="$2">
-      <Text fontSize="$6" fontWeight="600">
-        Dashboard Left Content
-      </Text>
-      <Text color="$color10">Dashboard components will be rebuilt here later.</Text>
-    </YStack>
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <ProfileCompletionWidget onNavigate={handleNavigate} />
+    </ScrollView>
   )
 }

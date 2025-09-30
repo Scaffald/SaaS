@@ -101,10 +101,10 @@ export const NewsCard = ({
       <Image
         source={{ uri: imageSource }}
         position="absolute"
-        top={0}
-        left={0}
-        right={0}
-        bottom={0}
+        t={0}
+        l={0}
+        r={0}
+        b={0}
         objectFit="cover"
         onError={() => setImageError(true)}
       />
@@ -114,10 +114,10 @@ export const NewsCard = ({
         bg="$color1"
         opacity={0.8}
         position="absolute"
-        top={0}
-        left={0}
-        right={0}
-        bottom={0}
+        t={0}
+        l={0}
+        r={0}
+        b={0}
         // bg="$backgroundTransparent"
         style={{
           backdropFilter: 'blur(2px)',
@@ -126,7 +126,7 @@ export const NewsCard = ({
       />
 
       {/* Content Overlay */}
-      <YStack flex={1} height="100%" justify="space-between" p="$5" position="relative" zIndex={1}>
+      <YStack flex={1} height="100%" justify="space-between" p="$5" position="relative" z={1}>
         {/* Header Section */}
         {header && (
           <XStack justify="flex-start" items="flex-start">
@@ -165,14 +165,12 @@ export const NewsCard = ({
                     <Button
                       size="$3"
                       variant="outlined"
-                      theme="alt2"
-                      bg="$backgroundTransparent"
                       borderColor="$color8"
                       color="$color12"
                       fontWeight="600"
                       pressStyle={{ scale: 0.95 }}
                       hoverStyle={{
-                        backgroundColor: '$color3',
+                        bg: '$color3',
                         borderColor: '$color9',
                       }}
                     >
@@ -183,8 +181,6 @@ export const NewsCard = ({
                   <Button
                     size="$3"
                     variant="outlined"
-                    theme="alt2"
-                    bg="$backgroundTransparent"
                     borderColor="$color8"
                     color="$color12"
                     fontWeight="600"
@@ -192,7 +188,7 @@ export const NewsCard = ({
                     disabled={disabled}
                     pressStyle={{ scale: 0.95 }}
                     hoverStyle={{
-                      backgroundColor: '$color3',
+                      bg: '$color3',
                       borderColor: '$color9',
                     }}
                   >

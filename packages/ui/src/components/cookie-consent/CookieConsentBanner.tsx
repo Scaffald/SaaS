@@ -37,17 +37,17 @@ export const CookieConsentBanner = ({ containerProps, ...cardProps }: CookieCons
           enterStyle={{ opacity: 0, y: 16 }}
           exitStyle={{ opacity: 0, y: 16 }}
           position="absolute"
-          bottom="$6"
-          left="50%"
+          b="$6"
+          l="50%"
           maxW={500}
           flex={1}
-          zIndex={1000}
+          z={1000}
           transform={[{ translateX: '-50%' }]}
           {...containerProps}
         >
           <Card elevate size="$4" p="$5" gap="$3" {...cardProps}>
-            <XStack gap="$4" items="flex-start" flexWrap="wrap" $gtSm={{ items: 'center' }}>
-              <YStack flex={1} gap="$2" miw={220}>
+            <XStack gap="$4" items="flex-start" flexWrap="wrap" $sm={{ items: 'center' }}>
+              <YStack flex={1} gap="$2" minW={220}>
                 <SizableText size="$6" fontWeight="700">
                   This site uses cookies
                 </SizableText>
@@ -63,7 +63,7 @@ export const CookieConsentBanner = ({ containerProps, ...cardProps }: CookieCons
                   to learn more.
                 </Paragraph>
               </YStack>
-              <XStack gap="$2" w="100%" justify="space-between">
+              <XStack gap="$2" width="100%" justify="space-between">
                 <Button size="$3" onPress={openPreferences} borderColor="$color6">
                   Manage
                 </Button>

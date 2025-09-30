@@ -28,9 +28,8 @@ type ExtendedProfile = {
  */
 export const DrawerHeader = ({ onNavigate }: DrawerHeaderProps) => {
   const { profile } = useUser()
-  const tokens = getTokens()
   const profileHref = DASHBOARD_ROUTES.PROFILE?.fullPath || '/dashboard/profile'
-  const avatarSize = tokens.size['3'].val
+  const avatarSize = '$3'
 
   // Construct display name from first_name and last_name, fallback to "Update Profile"
   const displayName = (() => {
@@ -49,7 +48,7 @@ export const DrawerHeader = ({ onNavigate }: DrawerHeaderProps) => {
   }
 
   return (
-    <YStack gap="$4" flex={1} flexShrink={0}>
+    <YStack gap="$4" flex={1} shrink={0}>
       <Card px="$4" py="$3" gap="$3" rounded="$5" borderColor="$color4" bg="$color3">
         <Link href={profileHref} asChild>
           <ListItem

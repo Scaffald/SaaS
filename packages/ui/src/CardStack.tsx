@@ -188,9 +188,9 @@ export const StackedCards = ({
         <View
           key={`card-${currentIndex}-${stackIndex}-${card.id || card.title || stackIndex}`}
           position="absolute"
-          top={stackIndex * 8}
-          left={stackIndex * 4}
-          zIndex={maxStackSize - stackIndex}
+          t={stackIndex * 8}
+          l={stackIndex * 4}
+          z={maxStackSize - stackIndex}
           opacity={stackIndex === 0 && isAnimating ? 0 : 1}
           transform={[
             {

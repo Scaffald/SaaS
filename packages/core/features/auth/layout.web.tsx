@@ -9,11 +9,11 @@ export type AuthLayoutProps = {
 export const AuthLayout = ({ children }: AuthLayoutProps) => {
   return (
     <XStack flex={1}>
-      <YStack flex={2} fb={0} justify="center">
+      <YStack flex={2} flexBasis={0} justify="center">
         <YStack px="$4">{children}</YStack>
       </YStack>
 
-      <YStack $md={{ dsp: 'none' }} flex={3} fb={0}>
+      <YStack $md={{ display: 'none' }} flex={3} flexBasis={0}>
         <WelcomeScreen />
       </YStack>
     </XStack>

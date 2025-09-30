@@ -220,7 +220,7 @@ export function AddressForm({
 
     case 'full':
       return (
-        <YStack gap="$3" position="relative" zIndex={999}>
+        <YStack gap="$3" position="relative" z={999}>
           <Text fontWeight="600">Address</Text>
           <YStack gap="$2">
             {/* Street Address */}
@@ -275,7 +275,7 @@ export function AddressForm({
 
     default:
       return (
-        <YStack gap="$3" position="relative" zIndex={999}>
+        <YStack gap="$3" position="relative" z={999}>
           {/* Autocomplete Search */}
           <AddressAutocomplete
             value={value || currentAddress.formattedAddress}

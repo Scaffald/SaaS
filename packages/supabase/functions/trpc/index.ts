@@ -13,7 +13,7 @@ import {
   type ProfileUpdate,
   type UserPrivateUpdate,
   type UserPrivateEmploymentUpdate,
-} from '../_shared/schemas/consolidated'
+} from '../_shared/schemas/consolidated.ts'
 
 // Environment variables
 const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
@@ -55,7 +55,8 @@ const createTRPCContext = async (opts: { req: Request }) => {
         console.log('No user found')
       }
     } catch (error) {
-      console.error('Error getting user:', error.message)
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      console.error('Error getting user:', errorMessage)
     }
   } else {
     console.log('No authorization header found')
@@ -396,10 +397,11 @@ const profileRouter = t.router({
           avatarPath: uniqueFileName, // Return the file path
         }
       } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error)
         console.error('Avatar upload error:', error)
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: `Avatar upload failed: ${error.message}`,
+          message: `Avatar upload failed: ${errorMessage}`,
         })
       }
     }),
@@ -458,7 +460,8 @@ const profileRouter = t.router({
           skillsData = data || []
         }
       } catch (error) {
-        console.warn('Skills table access failed:', error.message)
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        console.warn('Skills table access failed:', errorMessage)
       }
 
       // Get certifications data - handle permission errors gracefully
@@ -475,7 +478,8 @@ const profileRouter = t.router({
           certificationsData = data || []
         }
       } catch (error) {
-        console.warn('Certifications table access failed:', error.message)
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        console.warn('Certifications table access failed:', errorMessage)
       }
 
       // Get education data - handle permission errors gracefully
@@ -492,7 +496,8 @@ const profileRouter = t.router({
           educationData = data || []
         }
       } catch (error) {
-        console.warn('Education table access failed:', error.message)
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        console.warn('Education table access failed:', errorMessage)
       }
 
       // Get experience data - handle permission errors gracefully
@@ -509,7 +514,8 @@ const profileRouter = t.router({
           experienceData = data || []
         }
       } catch (error) {
-        console.warn('Experience table access failed:', error.message)
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        console.warn('Experience table access failed:', errorMessage)
       }
 
       return {
@@ -523,10 +529,11 @@ const profileRouter = t.router({
         user_experience: experienceData,
       }
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
       console.error('Completion status error:', error)
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: `Failed to fetch completion status: ${error.message}`,
+        message: `Failed to fetch completion status: ${errorMessage}`,
       })
     }
   }),

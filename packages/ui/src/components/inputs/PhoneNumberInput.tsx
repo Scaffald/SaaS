@@ -7,7 +7,7 @@ import {
   findCountryByCode,
   getDefaultCountry,
 } from '../../config/countries'
-import PhoneNumber from 'awesome-phonenumber'
+import { parsePhoneNumber } from 'awesome-phonenumber'
 
 export interface PhoneNumberInputProps {
   /** Current phone number value */
@@ -72,24 +72,24 @@ export const PhoneNumberInput = ({
 
     try {
       // First try to parse as-is
-      let phone = new PhoneNumber(phoneValue)
+      let phone = parsePhoneNumber(phoneValue)
 
       // If that fails and it's a US number without country code, try adding +1
-      if (!phone.isValid() && countryCode === 'US' && /^\d{10}$/.test(phoneValue)) {
-        phone = new PhoneNumber(`+1${phoneValue}`)
+      if (!phone.valid && countryCode === 'US' && /^\d{10}$/.test(phoneValue)) {
+        phone = parsePhoneNumber(`+1${phoneValue}`)
       }
 
       // If it's a 10-digit number for US, assume it's US
-      if (!phone.isValid() && countryCode === 'US' && /^\d{10}$/.test(phoneValue)) {
-        phone = new PhoneNumber(phoneValue, 'US')
+      if (!phone.valid && countryCode === 'US' && /^\d{10}$/.test(phoneValue)) {
+        phone = parsePhoneNumber(phoneValue, { regionCode: 'US' })
       }
 
-      if (phone.isValid()) {
+      if (phone.valid) {
         if (countryCode === 'US') {
-          const national = phone.getNumber('national')
+          const national = phone.number?.national || phoneValue
           return `+1 ${national}`
         }
-        return phone.getNumber('international')
+        return phone.number?.international || phoneValue
       }
     } catch {
       // If parsing fails, return original value
@@ -108,21 +108,21 @@ export const PhoneNumberInput = ({
       // Try to detect country from the phone number and format it properly
       if (value) {
         try {
-          let phone = new PhoneNumber(value)
+          let phone = parsePhoneNumber(value)
           let detectedCountry: Country | undefined = undefined
 
           // If parsing fails and it's a 10-digit number, assume it's US
-          if (!phone.isValid() && /^\d{10}$/.test(value)) {
-            phone = new PhoneNumber(value, 'US')
+          if (!phone.valid && /^\d{10}$/.test(value)) {
+            phone = parsePhoneNumber(value, { regionCode: 'US' })
             detectedCountry = findCountryByCode('US')
-          } else if (phone.isValid()) {
-            detectedCountry = findCountryByCode(phone.getRegionCode())
+          } else if (phone.valid) {
+            detectedCountry = findCountryByCode(phone.regionCode)
           }
 
           if (detectedCountry) {
             setSelectedCountry(detectedCountry)
             setPhoneNumber(formatPhoneForDisplay(value, detectedCountry.code))
-          } else if (phone.isValid()) {
+          } else if (phone.valid) {
             setPhoneNumber(formatPhoneForDisplay(value, selectedCountry.code))
           } else {
             setPhoneNumber(value)
@@ -157,12 +157,12 @@ export const PhoneNumberInput = ({
 
       try {
         // Try to format the phone number using awesome-phonenumber
-        const phone = new PhoneNumber(cleaned, selectedCountry.code)
+        const phone = parsePhoneNumber(cleaned, { regionCode: selectedCountry.code })
 
-        if (phone.isValid()) {
+        if (phone.valid) {
           const formatted = formatPhoneForDisplay(cleaned, selectedCountry.code)
           setPhoneNumber(formatted)
-          onChange?.(storeFormatted ? formatted : phone.getNumber('e164'))
+          onChange?.(storeFormatted ? formatted : phone.number?.e164 || cleaned)
         } else {
           // If not valid yet, still allow typing
           setPhoneNumber(cleaned)
@@ -206,7 +206,7 @@ export const PhoneNumberInput = ({
         >
           <Select value={selectedCountry.code} onValueChange={handleCountryChange} size="$4">
             <Select.Trigger
-              borderWidth="0"
+              borderWidth={0}
               bg="transparent"
               hoverStyle={{ backgroundColor: 'transparent', transform: 'scale(1.5)' }}
               px="$3"

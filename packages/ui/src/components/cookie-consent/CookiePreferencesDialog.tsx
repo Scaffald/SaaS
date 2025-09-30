@@ -149,14 +149,14 @@ export const CookiePreferencesDialog = () => {
               </Button>
             </Dialog.Close>
 
-            <Button size="$3" theme="alt2" disabled={isSubmitting} onPress={handleRejectAll}>
+            <Button size="$3" disabled={isSubmitting} onPress={handleRejectAll}>
               Reject All
             </Button>
           </XStack>
 
           <Unspaced>
             <Dialog.Close asChild>
-              <Button position="absolute" top="$3" right="$3" size="$2" circular icon={X} />
+              <Button position="absolute" t="$3" r="$3" size="$2" circular icon={X} />
             </Dialog.Close>
           </Unspaced>
         </Dialog.Content>

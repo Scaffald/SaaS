@@ -78,6 +78,20 @@
           }
         }
       }
+    },
+    {
+      "include": ["packages/supabase/functions/**/*.ts", "packages/supabase/functions/**/*.tsx"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useImportType": "off",
+            "useNodejsImportProtocol": "off"
+          },
+          "correctness": {
+            "noUndeclaredVariables": "off"
+          }
+        }
+      }
     }
   ]
 }

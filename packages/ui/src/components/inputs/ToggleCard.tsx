@@ -28,7 +28,7 @@ export interface ToggleCardProps {
   /** Whether the card is disabled */
   disabled?: boolean
   /** Width of the card */
-  width?: number | string
+  width?: number
   /** Theme variant to apply */
   theme?: ThemeName
   /** Optional test ID for testing */

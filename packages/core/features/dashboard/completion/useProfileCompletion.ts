@@ -1,6 +1,14 @@
 import { useMemo } from 'react'
 import { api } from '@app/core/utils/api'
-import type { ChecklistItem } from '@app/ui'
+
+interface ChecklistItem {
+  id: string
+  title: string
+  description: string
+  complete: boolean
+  actionRoute?: string
+  actionLabel?: string
+}
 
 export interface ProfileCompletionData {
   items: ChecklistItem[]
@@ -58,7 +66,15 @@ export const useProfileCompletion = () => {
         description: 'Add professional certifications and licenses',
         complete: !!(
           profileData.user_certifications?.length > 0 &&
-          profileData.user_certifications.some((cert) => cert.name && cert.issuing_organization)
+          profileData.user_certifications.some(
+            (cert) =>
+              cert &&
+              typeof cert === 'object' &&
+              'name' in cert &&
+              'issuing_organization' in cert &&
+              cert.name &&
+              cert.issuing_organization
+          )
         ),
         actionRoute: '/dashboard/profile/certifications',
       },
@@ -68,7 +84,15 @@ export const useProfileCompletion = () => {
         description: 'Add your work history and experience',
         complete: !!(
           profileData.user_experience?.length > 0 &&
-          profileData.user_experience.some((exp) => exp.job_title && exp.company_name)
+          profileData.user_experience.some(
+            (exp) =>
+              exp &&
+              typeof exp === 'object' &&
+              'job_title' in exp &&
+              'company_name' in exp &&
+              exp.job_title &&
+              exp.company_name
+          )
         ),
         actionRoute: '/dashboard/profile/experience',
       },
