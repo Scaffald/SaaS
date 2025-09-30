@@ -11,7 +11,7 @@ import { View, Text } from 'react-native'
 export default function Layout() {
   const { isLoading } = useProtectedRoute()
   const media = useMedia()
-  const { accentColor } = useTheme()
+  const { color2 } = useTheme()
   const [notificationsOpen, setNotificationsOpen] = useState(false)
 
   // Show loading state while checking authentication
@@ -31,7 +31,10 @@ export default function Layout() {
       <Drawer
         screenOptions={({ navigation }) => ({
           headerShown: true,
-          headerTintColor: accentColor.val,
+          headerStyle: {
+            backgroundColor: color2.val,
+            borderWidth: 0,
+          },
           headerLeft: isDesktop
             ? undefined
             : () => (

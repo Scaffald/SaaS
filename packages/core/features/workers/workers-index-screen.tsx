@@ -140,7 +140,7 @@ export const WorkersIndexScreen = () => {
   }
 
   return (
-    <YStack flex={1} backgroundColor="$background" height="100vh" overflow="hidden">
+    <YStack flex={1} height="100vh" overflow="hidden">
       <YStack padding="$5" gap="$4" flexShrink={0}>
         <FilterBar
           locationQuery={locationQuery}
