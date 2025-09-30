@@ -58,14 +58,23 @@ This directory contains streamlined Cursor rules that establish guard rails and 
 - Components named `ParentChildLeft`, `ParentChildRight`, `ParentChildScreen`
 - Configuration files in `config/` folders
 
+### 9. `typescript-typing.mdc`
+**TypeScript typing standards** - Auto-attached to TypeScript files:
+- Never use `any` type - prefer `unknown` or proper typing
+- Always define explicit types for functions and components
+- Use proper interfaces and type definitions
+- Validate external data with type guards
+- Use generic types for reusable code
+
 ## Key Benefits
 
 1. **CI/CD Alignment** - Local development matches GitHub Actions exactly
 2. **Consistent Tooling** - Always use yarn workspace commands
 3. **Quality Enforcement** - Automated formatting, linting, and type checking
-4. **Context Awareness** - Git history checking for debugging
-5. **Performance Optimization** - Avoid patterns that slow builds
-6. **Cross-Platform Standards** - Consistent UI development practices
+4. **Type Safety** - Strong TypeScript typing standards, no `any` types
+5. **Context Awareness** - Git history checking for debugging
+6. **Performance Optimization** - Avoid patterns that slow builds
+7. **Cross-Platform Standards** - Consistent UI development practices
 
 ## Development Workflow
 

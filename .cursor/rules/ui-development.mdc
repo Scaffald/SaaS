@@ -29,16 +29,24 @@ alwaysApply: false
 - **DOCUMENT components thoroughly** with JSDoc comments
 - **REFACTOR components** to be modular and composable
 - **USE TypeScript** for all component definitions
+- **AVOID `any` types** - use proper interfaces and type definitions
+- **DEFINE strict prop types** for all component interfaces
 - **EXPORT components** from appropriate index files
 
 ## Component Structure
 ```tsx
+interface ComponentProps {
+  prop1: string;
+  prop2: number;
+  optionalProp?: boolean;
+}
+
 /**
  * Component description
  * @param props - Component props
  * @returns JSX element
  */
-export const ComponentName = ({ prop1, prop2 }: ComponentProps) => {
+export const ComponentName = ({ prop1, prop2, optionalProp }: ComponentProps) => {
   // Implementation
   return (
     <TamaguiComponent>
@@ -66,6 +74,8 @@ export const ComponentName = ({ prop1, prop2 }: ComponentProps) => {
 - **CREATE composable components** that can be combined
 - **MAINTAIN consistent API** across similar components
 - **USE proper TypeScript** types and interfaces
+- **NEVER use `any`** - define specific types for all props and state
+- **USE generic types** for reusable components when appropriate
 
 ## Testing Approach
 - **TEST on actual devices** when possible
