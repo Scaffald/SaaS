@@ -187,6 +187,7 @@ export function AddressAutocomplete({
       onPress={() => handleAddressSelect(address)}
       pressStyle={{ backgroundColor: '$color6' }}
       hoverStyle={{ backgroundColor: '$color5' }}
+      unstyled
     >
       <YStack alignItems="flex-start" gap="$1">
         <Text fontSize="$3" color="$color12" numberOfLines={1}>
@@ -251,9 +252,9 @@ export function AddressAutocomplete({
               circular
               marginRight="$1"
             >
-              <Text fontSize="$3" color="$color10">
+              <Button.Text fontSize="$3" color="$color10">
                 ✕
-              </Text>
+              </Button.Text>
             </Button>
           )}
         </XStack>

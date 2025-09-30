@@ -122,7 +122,7 @@ export const FilterBar = ({
           />
         </XStack>
         <Button size="$2" icon={SlidersHorizontal} theme="blue" onPress={onAdjustFilters}>
-          Adjust filters
+          <Button.Text>Adjust filters</Button.Text>
         </Button>
       </XStack>
 
@@ -147,7 +147,7 @@ export const FilterBar = ({
               ))}
               <Separator vertical height="$3" />
               <Button size="$2" theme="gray" onPress={onClearFilters}>
-                Clear all
+                <Button.Text>Clear all</Button.Text>
               </Button>
             </Fragment>
           )}
