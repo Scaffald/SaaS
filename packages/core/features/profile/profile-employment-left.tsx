@@ -121,7 +121,8 @@ export function ProfileEmploymentLeft() {
                   country: 'address.country',
                 }}
                 error={errors.address?.street?.message || errors.address?.city?.message}
-                provider="google"
+                provider="mapbox"
+                apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
                 zoomLevel="street"
                 searchOptions={{
                   types: ['address'],

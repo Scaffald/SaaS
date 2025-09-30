@@ -1,6 +1,5 @@
 import type { GeocodingProvider, ProviderConfig } from '../types'
 import { GeocodingError } from '../types'
-import { GooglePlacesProvider } from './google-places'
 import { MapboxProvider } from './mapbox'
 
 /**
@@ -12,13 +11,11 @@ export class GeocodingProviderFactory {
    */
   static createProvider(config: ProviderConfig): GeocodingProvider {
     switch (config.provider) {
-      case 'google':
-        return new GooglePlacesProvider(config)
       case 'mapbox':
         return new MapboxProvider(config)
       default:
         throw new GeocodingError(
-          `Unsupported geocoding provider: ${config.provider}`,
+          `Unsupported geocoding provider: ${config.provider}. Only 'mapbox' is supported.`,
           'UNSUPPORTED_PROVIDER',
           config.provider || 'unknown'
         )
@@ -29,7 +26,7 @@ export class GeocodingProviderFactory {
    * Create provider from environment variables
    */
   static createFromEnvironment(): GeocodingProvider {
-    const provider = (process.env.GEOCODING_PROVIDER || 'google') as 'google' | 'mapbox'
+    const provider = (process.env.GEOCODING_PROVIDER || 'mapbox') as 'mapbox'
     const apiKey = this.getApiKeyFromEnvironment(provider)
 
     if (!apiKey) {
@@ -80,8 +77,8 @@ export class GeocodingProviderFactory {
   /**
    * Get supported providers
    */
-  static getSupportedProviders(): Array<'google' | 'mapbox'> {
-    return ['google', 'mapbox']
+  static getSupportedProviders(): Array<'mapbox'> {
+    return ['mapbox']
   }
 }
 
