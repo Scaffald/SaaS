@@ -29,7 +29,6 @@ export {
 export {
   BaseGeocodingProvider,
   AddressUtils,
-  GooglePlacesProvider,
   MapboxProvider,
   GeocodingProviderFactory,
   GeocodingService,

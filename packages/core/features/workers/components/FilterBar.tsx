@@ -106,8 +106,8 @@ export const FilterBar = ({
               onLocationSelect?.(address.coordinates)
             }}
             placeholder="Search by city or address"
-            provider="google"
-            apiKey={process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY}
+            provider="mapbox"
+            apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
             zoomLevel="city"
             searchOptions={searchOptions}
             maxResults={5}
