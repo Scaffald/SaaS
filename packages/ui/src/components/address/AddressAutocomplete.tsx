@@ -10,6 +10,7 @@ import {
   Adapt,
   Sheet,
   Separator,
+  Popover,
 } from 'tamagui'
 import { FieldError } from '../FieldError'
 import { useAddressAutocomplete } from './hooks'
@@ -192,8 +193,6 @@ export function AddressAutocomplete({
       borderRadius={0}
       paddingHorizontal="$3"
       paddingVertical="$3"
-      position="relative"
-      zIndex={999}
       justifyContent="flex-start"
       onPress={() => handleAddressSelect(address)}
       pressStyle={{ backgroundColor: '$color6' }}
@@ -213,99 +212,143 @@ export function AddressAutocomplete({
   const showDropdown = showResults && (hasResults || loading)
 
   return (
-    <YStack gap="$2" position="relative" zIndex={999}>
-      {/* Input Container */}
-      <YStack>
-        <XStack
-          borderWidth={1}
-          borderColor={displayError ? '$red8' : '$borderColor'}
-          borderRadius="$4"
-          backgroundColor="$background"
-          paddingRight="$2"
-          alignItems="center"
-          focusStyle={{
-            borderColor: '$color8',
-          }}
-        >
-          <Input
-            ref={inputRef}
-            placeholder={placeholder}
-            value={inputValue}
-            onChangeText={handleInputChange}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
-            onKeyPress={handleKeyDown}
-            disabled={disabled}
-            borderWidth={0}
-            backgroundColor="transparent"
-            flex={1}
-            fontSize="$4"
-            paddingHorizontal="$3"
-            paddingVertical="$3"
-          />
-
-          {/* Loading indicator */}
-          {loading ? <Spinner size="small" color="$color10" marginRight="$2" /> : null}
-
-          {/* Clear button */}
-          {inputValue && !loading ? (
-            <Button
-              variant="outlined"
-              size="$2"
-              borderWidth={0}
-              onPress={handleClear}
-              disabled={disabled}
-              circular
-              marginRight="$1"
-            >
-              <Button.Text fontSize="$3" color="$color10">
-                ✕
-              </Button.Text>
-            </Button>
-          ) : null}
-        </XStack>
-
-        {/* Desktop Results Dropdown */}
-        {showDropdown && (
-          <Adapt when="sm" platform="web">
-            <YStack
-              position="absolute"
-              top="100%"
-              left={0}
-              right={0}
-              backgroundColor="$background"
+    <YStack gap="$2">
+      {/* Popover for Desktop Results */}
+      <Adapt when="sm" platform="web">
+        <Popover placement="bottom-start" open={showDropdown} onOpenChange={setShowResults}>
+          <Popover.Trigger asChild>
+            <XStack
               borderWidth={1}
-              borderColor="$borderColor"
-              borderTopWidth={0}
-              borderBottomLeftRadius="$4"
-              borderBottomRightRadius="$4"
-              maxHeight={300}
-              zIndex={999}
-              boxShadow="0px 2px 8px rgba(0,0,0,0.1)"
-              elevation={5}
-              style={{ zIndex: 999 }}
+              borderColor={displayError ? '$red8' : '$borderColor'}
+              borderRadius="$4"
+              backgroundColor="$background"
+              paddingRight="$2"
+              alignItems="center"
+              focusStyle={{
+                borderColor: '$color8',
+              }}
             >
-              <ScrollView ref={resultsRef} showsVerticalScrollIndicator={false}>
-                {hasResults ? (
-                  results.map((address, index) => (
-                    <Fragment key={address.id}>
-                      <ResultItem address={address} index={index} />
-                      {index < results.length - 1 && <Separator backgroundColor="$borderColor" />}
-                    </Fragment>
-                  ))
-                ) : loading ? (
-                  <YStack padding="$4" alignItems="center">
-                    <Text color="$color11">Searching...</Text>
-                  </YStack>
-                ) : null}
-              </ScrollView>
-            </YStack>
-          </Adapt>
-        )}
+              <Input
+                ref={inputRef}
+                placeholder={placeholder}
+                value={inputValue}
+                onChangeText={handleInputChange}
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
+                onKeyPress={handleKeyDown}
+                disabled={disabled}
+                borderWidth={0}
+                backgroundColor="transparent"
+                flex={1}
+                fontSize="$4"
+                paddingHorizontal="$3"
+                paddingVertical="$3"
+              />
 
-        {/* Mobile Results Sheet */}
-        {showDropdown && (
-          <Adapt when="sm" platform="touch">
+              {/* Loading indicator */}
+              {loading ? <Spinner size="small" color="$color10" marginRight="$2" /> : null}
+
+              {/* Clear button */}
+              {inputValue && !loading ? (
+                <Button
+                  variant="outlined"
+                  size="$2"
+                  borderWidth={0}
+                  onPress={handleClear}
+                  disabled={disabled}
+                  circular
+                  marginRight="$1"
+                >
+                  <Button.Text fontSize="$3" color="$color10">
+                    ✕
+                  </Button.Text>
+                </Button>
+              ) : null}
+            </XStack>
+          </Popover.Trigger>
+
+          <Popover.Content
+            borderRadius="$4"
+            padding={0}
+            maxHeight={300}
+            minWidth="$20"
+            elevate
+            borderWidth={1}
+            borderColor="$borderColor"
+            backgroundColor="$background"
+          >
+            <ScrollView ref={resultsRef} showsVerticalScrollIndicator={false}>
+              {hasResults ? (
+                results.map((address, index) => (
+                  <Fragment key={address.id}>
+                    <ResultItem address={address} index={index} />
+                    {index < results.length - 1 && <Separator backgroundColor="$borderColor" />}
+                  </Fragment>
+                ))
+              ) : loading ? (
+                <YStack padding="$4" alignItems="center">
+                  <Text color="$color11">Searching...</Text>
+                </YStack>
+              ) : null}
+            </ScrollView>
+          </Popover.Content>
+        </Popover>
+      </Adapt>
+
+      {/* Mobile fallback - non-Popover input with Sheet */}
+      <Adapt when="sm" platform="touch">
+        <YStack>
+          <XStack
+            borderWidth={1}
+            borderColor={displayError ? '$red8' : '$borderColor'}
+            borderRadius="$4"
+            backgroundColor="$background"
+            paddingRight="$2"
+            alignItems="center"
+            focusStyle={{
+              borderColor: '$color8',
+            }}
+          >
+            <Input
+              ref={inputRef}
+              placeholder={placeholder}
+              value={inputValue}
+              onChangeText={handleInputChange}
+              onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
+              onKeyPress={handleKeyDown}
+              disabled={disabled}
+              borderWidth={0}
+              backgroundColor="transparent"
+              flex={1}
+              fontSize="$4"
+              paddingHorizontal="$3"
+              paddingVertical="$3"
+            />
+
+            {/* Loading indicator */}
+            {loading ? <Spinner size="small" color="$color10" marginRight="$2" /> : null}
+
+            {/* Clear button */}
+            {inputValue && !loading ? (
+              <Button
+                variant="outlined"
+                size="$2"
+                borderWidth={0}
+                onPress={handleClear}
+                disabled={disabled}
+                circular
+                marginRight="$1"
+              >
+                <Button.Text fontSize="$3" color="$color10">
+                  ✕
+                </Button.Text>
+              </Button>
+            ) : null}
+          </XStack>
+
+          {/* Mobile Results Sheet */}
+          {showDropdown && (
             <Sheet modal open={showDropdown} onOpenChange={setShowResults}>
               <Sheet.Overlay />
               <Sheet.Frame padding="$4" space="$4">
@@ -330,9 +373,9 @@ export function AddressAutocomplete({
                 </YStack>
               </Sheet.Frame>
             </Sheet>
-          </Adapt>
-        )}
-      </YStack>
+          )}
+        </YStack>
+      </Adapt>
 
       {/* Error Message */}
       <FieldError message={displayError || undefined} />

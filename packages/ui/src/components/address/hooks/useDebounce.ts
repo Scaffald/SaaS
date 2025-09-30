@@ -41,7 +41,7 @@ export function useAddressDebounce<T>(value: T, delay: number): T {
  * @param deps - Dependencies array
  * @returns Debounced callback function
  */
-export function useAddressDebouncedCallback<T extends (...args: unknown[]) => unknown>(
+export function useAddressDebouncedCallback<T extends (...args: any[]) => any>(
   callback: T,
   delay: number,
   deps: DependencyList
