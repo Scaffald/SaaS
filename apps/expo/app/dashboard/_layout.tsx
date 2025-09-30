@@ -23,8 +23,8 @@ export default function Layout() {
     )
   }
 
-  const drawerWidth = media.gtSm ? 320 : 300
-  const isDesktop = media.gtSm
+  const drawerWidth = media.sm ? 320 : 300
+  const isDesktop = media.sm
 
   return (
     <>
@@ -42,8 +42,8 @@ export default function Layout() {
                   borderStyle="unset"
                   borderWidth={0}
                   bg="transparent"
-                  marginLeft="$3"
-                  paddingHorizontal="$4"
+                  ml="$3"
+                  px="$4"
                   onPress={() => {
                     navigation.dispatch(DrawerActions.toggleDrawer())
                   }}
@@ -55,7 +55,7 @@ export default function Layout() {
             <Button
               borderStyle="unset"
               borderWidth={0}
-              marginRight="$3"
+              mr="$3"
               bg="transparent"
               onPress={() => setNotificationsOpen(true)}
             >
