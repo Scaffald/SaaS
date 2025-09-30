@@ -110,8 +110,8 @@ export function ProfileEmploymentLeft() {
                 mode="hybrid"
                 placeholder="Search for your home address..."
                 formMethods={{
-                  setValue: setValue as (name: string, value: any) => void,
-                  trigger: trigger as (name: string) => void,
+                  setValue: setValue as <T>(name: string, value: T) => void,
+                  trigger: trigger as (name: string) => Promise<boolean>,
                 }}
                 fieldMapping={{
                   street: 'address.street',

@@ -31,7 +31,7 @@ export class GeocodingProviderFactory {
 
     if (!apiKey) {
       throw new GeocodingError(
-        `API key not found for ${provider} provider. Set GEOCODING_API_KEY or ${provider.toUpperCase()}_API_KEY`,
+        `API key not found for ${provider} provider. Set EXPO_PUBLIC_MAPBOX_TOKEN`,
         'MISSING_API_KEY',
         provider
       )
@@ -50,13 +50,13 @@ export class GeocodingProviderFactory {
   /**
    * Get API key from environment variables
    */
-  private static getApiKeyFromEnvironment(provider: string): string {
+  private static getApiKeyFromEnvironment(_provider: string): string {
     // Check provider-specific key first
-    const providerKey = process.env[`${provider.toUpperCase()}_API_KEY`]
+    const providerKey = process.env.EXPO_PUBLIC_MAPBOX_TOKEN
     if (providerKey) return providerKey
 
     // Fallback to generic key
-    const genericKey = process.env.GEOCODING_API_KEY
+    const genericKey = process.env.EXPO_PUBLIC_MAPBOX_TOKEN
     if (genericKey) return genericKey
 
     return ''

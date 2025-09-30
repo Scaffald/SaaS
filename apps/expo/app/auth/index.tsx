@@ -1,4 +1,6 @@
 import { LoginScreen } from '@app/core/features/auth/login-screen'
+import { WelcomeScreen } from '@app/core/features/auth/welcome-screen'
+import { XStack, YStack } from '@app/ui'
 import { Stack } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
@@ -10,7 +12,18 @@ export default function Screen() {
           title: 'Sign In',
         }}
       />
-      <LoginScreen />
+
+      <XStack f={1}>
+        <YStack f={2} fb={0} jc="center">
+          <YStack px="$4">
+            <LoginScreen />
+          </YStack>
+        </YStack>
+
+        <YStack $md={{ dsp: 'none' }} f={3} fb={0}>
+          <WelcomeScreen />
+        </YStack>
+      </XStack>
     </SafeAreaView>
   )
 }

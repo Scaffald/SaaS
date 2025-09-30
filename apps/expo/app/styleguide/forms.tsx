@@ -19,8 +19,41 @@ import {
   FieldError,
 } from '@app/ui'
 
+// Demo component interfaces
+interface MockAddressResult {
+  id: string
+  formattedAddress: string
+  streetNumber: string
+  route: string
+  streetAddress: string
+  locality: string
+  administrativeAreaLevel1: string
+  stateAbbreviation: string
+  postalCode: string
+  country: string
+  countryCode: string
+  coordinates: { lat: number; lng: number }
+}
+
+interface MockAddressAutocompleteProps {
+  value?: string
+  onChange?: (value: string) => void
+  onAddressSelect?: (address: MockAddressResult) => void
+  placeholder?: string
+  error?: string
+  disabled?: boolean
+}
+
+interface MockAddressFormProps {
+  mode?: string
+  placeholder?: string
+  error?: string
+  disabled?: boolean
+  onAddressSelect?: (address: MockAddressResult) => void
+}
+
 // Mock address data for demo purposes
-const MOCK_ADDRESSES = [
+const MOCK_ADDRESSES: MockAddressResult[] = [
   {
     id: '1',
     formattedAddress: '1600 Amphitheatre Parkway, Mountain View, CA 94043, USA',
@@ -101,10 +134,10 @@ const MockAddressAutocomplete = ({
   placeholder,
   error,
   disabled,
-}: any) => {
+}: MockAddressAutocompleteProps) => {
   const [inputValue, setInputValue] = useState(value || '')
   const [showResults, setShowResults] = useState(false)
-  const [filteredAddresses, setFilteredAddresses] = useState<any[]>([])
+  const [filteredAddresses, setFilteredAddresses] = useState<MockAddressResult[]>([])
 
   const handleInputChange = useCallback(
     (text: string) => {
@@ -126,7 +159,7 @@ const MockAddressAutocomplete = ({
   )
 
   const handleAddressSelect = useCallback(
-    (address: any) => {
+    (address: MockAddressResult) => {
       setInputValue(address.formattedAddress)
       setShowResults(false)
       onAddressSelect?.(address)
@@ -190,7 +223,13 @@ const MockAddressAutocomplete = ({
 }
 
 // Custom mock AddressForm for demo
-const MockAddressForm = ({ mode, placeholder, error, disabled, onAddressSelect }: any) => {
+const MockAddressForm = ({
+  mode,
+  placeholder,
+  error,
+  disabled,
+  onAddressSelect,
+}: MockAddressFormProps) => {
   const [address, setAddress] = useState({
     streetAddress: '',
     locality: '',
@@ -200,7 +239,7 @@ const MockAddressForm = ({ mode, placeholder, error, disabled, onAddressSelect }
   })
 
   const handleAutocompleteSelect = useCallback(
-    (selectedAddress: any) => {
+    (selectedAddress: MockAddressResult) => {
       setAddress({
         streetAddress: selectedAddress.streetAddress || '',
         locality: selectedAddress.locality || '',
@@ -604,48 +643,107 @@ export default function FormsPage() {
           </XStack>
 
           {/* Address Component Example */}
-          <YStack gap="$4" width="100%">
-            <YStack gap="$2">
-              <Text fontSize="$4" fontWeight="500" color="$color">
-                AddressAutocomplete (Demo Mode)
-              </Text>
-              <Text fontSize="$2" color="$color9">
-                Try typing: "1600", "Apple", "Seattle", "New York", or "Menlo"
-              </Text>
+          <YStack gap="$6" width="100%">
+            {/* Demo Version */}
+            <YStack gap="$3">
+              <YStack gap="$2">
+                <Text fontSize="$4" fontWeight="500" color="$color">
+                  AddressAutocomplete (Demo Mode)
+                </Text>
+                <Text fontSize="$2" color="$color9">
+                  Try typing: "1600", "Apple", "Seattle", "New York", or "Menlo"
+                </Text>
+              </YStack>
+              <MockAddressAutocomplete
+                value={addressSearch}
+                onChange={setAddressSearch}
+                onAddressSelect={(address: MockAddressResult) => {
+                  setAddressSearch(address.formattedAddress)
+                  console.log('Selected address:', address)
+                }}
+                placeholder="Search for an address..."
+                error={addressError}
+                disabled={addressDisabled}
+              />
             </YStack>
-            <MockAddressAutocomplete
-              value={addressSearch}
-              onChange={setAddressSearch}
-              onAddressSelect={(address: any) => {
-                setAddressSearch(address.formattedAddress)
-                console.log('Selected address:', address)
-              }}
-              placeholder="Search for an address..."
-              error={addressError}
-              disabled={addressDisabled}
-            />
 
-            <YStack gap="$2">
-              <Text fontSize="$4" fontWeight="500" color="$color">
-                AddressForm ({addressMode}) - Demo Mode
-              </Text>
-              <Text fontSize="$2" color="$color9">
-                {addressMode === 'hybrid'
-                  ? 'Includes autocomplete search + manual fields'
-                  : addressMode === 'autocomplete-only'
-                    ? 'Search only - no manual input fields'
-                    : 'Manual input fields only'}
-              </Text>
+            <Separator backgroundColor="$color6" />
+
+            {/* Production Version with Mapbox API */}
+            <YStack gap="$3">
+              <YStack gap="$2">
+                <Text fontSize="$4" fontWeight="500" color="$color">
+                  AddressAutocomplete (Production - Mapbox API)
+                </Text>
+                <Text fontSize="$2" color="$color9">
+                  Real Mapbox Places API integration - try any address
+                </Text>
+              </YStack>
+              <AddressAutocomplete
+                value=""
+                onChange={() => {}}
+                onAddressSelect={(address) => {
+                  console.log('Selected real address:', address)
+                }}
+                placeholder="Search for a real address..."
+                error={addressError}
+                disabled={addressDisabled}
+                provider="mapbox"
+                apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
+              />
             </YStack>
-            <MockAddressForm
-              mode={addressMode}
-              placeholder="Search for your address..."
-              error={addressError}
-              disabled={addressDisabled}
-              onAddressSelect={(address: any) => {
-                console.log('Selected address from form:', address)
-              }}
-            />
+
+            <Separator backgroundColor="$color6" />
+
+            {/* Address Form Examples */}
+            <YStack gap="$3">
+              <YStack gap="$2">
+                <Text fontSize="$4" fontWeight="500" color="$color">
+                  AddressForm ({addressMode}) - Demo Mode
+                </Text>
+                <Text fontSize="$2" color="$color9">
+                  {addressMode === 'hybrid'
+                    ? 'Includes autocomplete search + manual fields'
+                    : addressMode === 'autocomplete-only'
+                      ? 'Search only - no manual input fields'
+                      : 'Manual input fields only'}
+                </Text>
+              </YStack>
+              <MockAddressForm
+                mode={addressMode}
+                placeholder="Search for your address..."
+                error={addressError}
+                disabled={addressDisabled}
+                onAddressSelect={(address: MockAddressResult) => {
+                  console.log('Selected address from form:', address)
+                }}
+              />
+            </YStack>
+
+            <Separator backgroundColor="$color6" />
+
+            {/* Production Address Form */}
+            <YStack gap="$3">
+              <YStack gap="$2">
+                <Text fontSize="$4" fontWeight="500" color="$color">
+                  AddressForm ({addressMode}) - Production (Mapbox)
+                </Text>
+                <Text fontSize="$2" color="$color9">
+                  Real address form with Mapbox Places API integration
+                </Text>
+              </YStack>
+              <AddressForm
+                mode={addressMode}
+                placeholder="Search for your real address..."
+                error={addressError}
+                disabled={addressDisabled}
+                provider="mapbox"
+                apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
+                onAddressSelect={(address) => {
+                  console.log('Selected real address from form:', address)
+                }}
+              />
+            </YStack>
           </YStack>
         </YStack>
 
