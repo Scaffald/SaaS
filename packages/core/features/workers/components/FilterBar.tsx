@@ -1,5 +1,14 @@
 import { Fragment } from 'react'
-import { Button, Input, ScrollView, Separator, Text, XStack, YStack, useTheme } from '@app/ui'
+import {
+  Button,
+  ScrollView,
+  Separator,
+  Text,
+  XStack,
+  YStack,
+  useTheme,
+  AddressAutocomplete,
+} from '@app/ui'
 import {
   Filter,
   SlidersHorizontal,
@@ -25,6 +34,7 @@ type FilterBarProps = {
   onClearFilters: () => void
   isLocationLoading?: boolean
   locationPermissionStatus?: 'granted' | 'denied' | 'prompt' | 'unknown'
+  onLocationSelect?: (coordinates: { lat: number; lng: number }) => void
 }
 
 export const FilterBar = ({
@@ -37,6 +47,7 @@ export const FilterBar = ({
   onClearFilters,
   isLocationLoading = false,
   locationPermissionStatus = 'unknown',
+  onLocationSelect,
 }: FilterBarProps) => {
   const theme = useTheme()
 
@@ -77,26 +88,24 @@ export const FilterBar = ({
   return (
     <YStack gap="$3" width="100%">
       <XStack gap="$3" width="100%" flexWrap="wrap" alignItems="center">
-        <XStack
-          flexGrow={1}
-          minWidth={200}
-          alignItems="center"
-          borderWidth={1}
-          borderColor="$color5"
-          backgroundColor="$color2"
-          borderRadius="$3"
-          paddingHorizontal="$2"
-          paddingVertical="$1"
-          gap="$2"
-        >
-          <Input
-            flexGrow={1}
-            borderWidth={0}
-            backgroundColor="transparent"
-            size="$3"
+        <XStack flexGrow={1} minWidth={200} alignItems="center" position="relative">
+          <AddressAutocomplete
             value={locationQuery}
-            onChangeText={onLocationChange}
+            onChange={onLocationChange}
+            onAddressSelect={(address) => {
+              onLocationChange(address.formattedAddress)
+              onLocationSelect?.(address.coordinates)
+            }}
             placeholder="Search by city or address"
+            provider="google"
+            apiKey={process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY}
+            zoomLevel="city"
+            searchOptions={{
+              types: ['(cities)'],
+              country: 'US',
+            }}
+            maxResults={5}
+            debounceMs={300}
           />
           <Button
             size="$2"
@@ -107,6 +116,9 @@ export const FilterBar = ({
             disabled={isLocationLoading}
             opacity={locationPermissionStatus === 'denied' ? 0.5 : 1}
             backgroundColor={isLocationLoading ? '$color3' : 'transparent'}
+            position="absolute"
+            right="$2"
+            zIndex={10}
           />
         </XStack>
         <Button size="$2" icon={SlidersHorizontal} theme="blue" onPress={onAdjustFilters}>
