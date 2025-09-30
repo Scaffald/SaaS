@@ -36,14 +36,16 @@ export function GoogleSignIn() {
         throw new Error('no ID token present!')
       }
     } catch (error) {
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        // user cancelled the login flow
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        // operation (e.g. sign in) is in progress already
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        // play services not available or outdated
-      } else {
-        // some other error happened
+      if (error && typeof error === 'object' && 'code' in error) {
+        if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+          // user cancelled the login flow
+        } else if (error.code === statusCodes.IN_PROGRESS) {
+          // operation (e.g. sign in) is in progress already
+        } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+          // play services not available or outdated
+        } else {
+          // some other error happened
+        }
       }
     }
   }
@@ -56,7 +58,7 @@ export function GoogleSignIn() {
       scaleIcon={0.6}
       gap="$1.5"
       bg="white"
-      pressStyle={{ bg: 'transparent', opacity: 0.6, bw: '$0' }}
+      pressStyle={{ bg: 'transparent', opacity: 0.6, borderWidth: '$0' }}
       animation="200ms"
       chromeless
       fontWeight="500"

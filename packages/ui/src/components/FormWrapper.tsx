@@ -11,22 +11,7 @@ import {
  * this is pretty straightforward on web - check FormWrapper.native
  */
 const Wrapper = forwardRef<TamaguiElement, YStackProps>(function Wrapper(props, ref) {
-  return (
-    <YStack
-      ref={ref}
-      gap="$4"
-      flex={1}
-      justify="center"
-      $gtSm={{
-        w: '100%',
-        maw: 600,
-        als: 'center',
-      }}
-      // $gtSm={{ width: 500, mx: 'auto' }}
-      $sm={{ justify: 'space-between' }}
-      {...props}
-    />
-  )
+  return <YStack ref={ref} gap="$4" flex={1} justify="center" {...props} />
 })
 
 const Body = forwardRef<TamaguiElement, YStackProps>(function Body(props, ref) {

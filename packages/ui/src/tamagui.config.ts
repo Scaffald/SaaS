@@ -8,7 +8,11 @@ if (process.env.NODE_ENV === 'development') {
   })
 }
 
-export const config = createTamagui(defaultConfig)
+export const config = createTamagui({
+  ...defaultConfig,
+  disableSSR: true,
+  onlyAllowShorthands: false,
+})
 
 export default config
 

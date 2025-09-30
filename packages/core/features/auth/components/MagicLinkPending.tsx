@@ -294,7 +294,7 @@ const ResendTimer = ({
     return (
       <XStack
         items="center"
-        alignSelf="flex-end"
+        self="flex-end"
         justify="flex-end"
         gap="$2"
         className="flex"
@@ -312,7 +312,7 @@ const ResendTimer = ({
   return (
     <XStack
       items="center"
-      alignSelf="flex-end"
+      self="flex-end"
       justify="flex-end"
       gap="$2"
       className="flex"
@@ -421,12 +421,12 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
         rounded="$8"
         overflow="hidden"
         p="$5"
-        w="100%"
+        width="100%"
         maxW={400}
       >
         <View position="absolute" t="$4" r="$4">
           {codeEntered ? (
-            <View animation="bouncy" key="success" flex="row" gap="$2">
+            <View animation="bouncy" key="success" flexDirection="row" gap="$2">
               <AnimatePresence>
                 {verified && (
                   <Paragraph
@@ -501,7 +501,7 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
             )}
 
             <XStack
-              borderColor="$transparent"
+              borderColor="transparent"
               onPress={onBack}
               gap="$2"
               items="center"
@@ -516,8 +516,8 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
           {code ? (
             <View
               position="absolute"
-              w="100%"
-              h="100%"
+              width="100%"
+              height="100%"
               items="center"
               justify="center"
               bg="$background"
@@ -534,9 +534,9 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
           bg="$background"
           items="center"
           justify="center"
-          w="full"
-          h="100%"
-          $md={{ w: '100%', p: '$5' }}
+          width="100%"
+          height="100%"
+          $md={{ width: '100%', p: '$5' }}
           animation={'200ms'}
           opacity={!codeEntered ? 0 : 1}
           style={{ pointerEvents: !codeEntered ? 'none' : 'auto' }}
@@ -544,8 +544,8 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
         >
           <AnimatePresence>
             {codeEntered && (
-              <View flex={1} h="auto" justify="space-between" items="center" gap="$4" pt="$6">
-                <YStack flexGrow={1} justify="center" items="center" w="100%" gap="$2">
+              <View flex={1} height="auto" justify="space-between" items="center" gap="$4" pt="$6">
+                <YStack flex={1} justify="center" items="center" width="100%" gap="$2">
                   <Text fontWeight="bold" fontSize="$6">
                     Code Verified
                   </Text>

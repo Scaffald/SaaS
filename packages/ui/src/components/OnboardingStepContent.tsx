@@ -43,18 +43,18 @@ export const StepContent = ({
         size="$10"
         color="$color10"
         selectable={false}
-        ta="center"
+        text="center"
         $md={{
           size: '$10',
           mt: '$4',
-          col: '$color10',
+          color: '$color10',
         }}
       >
         {title}
       </H2>
       <Paragraph
         mt="$4"
-        maw={520}
+        maxW={520}
         mx="auto"
         animation="bouncy"
         y={0}
@@ -63,13 +63,13 @@ export const StepContent = ({
         opacity={1}
         scale={1}
         size="$6"
-        lh="$8"
-        ta="center"
+        lineHeight="$8"
+        text="center"
         color="$color9"
         selectable={false}
         $md={{
           mt: '$3',
-          col: '$color9',
+          color: '$color9',
         }}
       >
         {description}

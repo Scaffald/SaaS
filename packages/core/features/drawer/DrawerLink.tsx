@@ -104,25 +104,23 @@ export const DrawerLink = ({
     </XStack>
   )
 
-  // Common container props
-  const containerProps = {
-    items: 'center' as const,
-    justify: 'space-between' as const,
-    px: '$3' as const,
-    py: '$3' as const,
-    br: '$4' as const,
-    my: '$1' as const,
-    bg: active ? '$blue9' : '$transparent',
-    hoverStyle: { bg: active ? '$blue9' : '$color3' },
-    pressStyle: { bg: active ? '$blue9' : '$color3' },
-    cursor: 'pointer' as const,
-  }
-
   // If item is expandable, render with toggle functionality and sub-items
   if (item.isExpandable) {
     return (
       <YStack flex={1}>
-        <XStack {...containerProps} onPress={handleToggle}>
+        <XStack
+          onPress={handleToggle}
+          items="center"
+          justify="space-between"
+          px="$3"
+          py="$3"
+          rounded="$4"
+          my="$1"
+          bg={active ? '$blue9' : 'transparent'}
+          hoverStyle={{ bg: active ? '$blue9' : '$color3' }}
+          pressStyle={{ bg: active ? '$blue9' : '$color3' }}
+          cursor="pointer"
+        >
           {renderContent()}
           {renderRightSide()}
         </XStack>
@@ -148,7 +146,18 @@ export const DrawerLink = ({
   // For regular main items, render with proper touch handling
   return (
     <Link href={item.href} asChild>
-      <XStack {...containerProps}>
+      <XStack
+        items="center"
+        justify="space-between"
+        px="$3"
+        py="$3"
+        rounded="$4"
+        my="$1"
+        bg={active ? '$blue9' : 'transparent'}
+        hoverStyle={{ bg: active ? '$blue9' : '$color3' }}
+        pressStyle={{ bg: active ? '$blue9' : '$color3' }}
+        cursor="pointer"
+      >
         {renderContent()}
         {renderRightSide()}
       </XStack>

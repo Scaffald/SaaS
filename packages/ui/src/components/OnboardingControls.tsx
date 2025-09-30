@@ -43,7 +43,7 @@ export const OnboardingControls = ({
         b={0}
         l={0}
         r={0}
-        $sm={{ dsp: 'none' }}
+        $sm={{ display: 'none' }}
       >
         <Button
           chromeless

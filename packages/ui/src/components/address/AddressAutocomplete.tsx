@@ -59,7 +59,7 @@ export function AddressAutocomplete({
   const [inputValue, setInputValue] = useState(value)
   const [showResults, setShowResults] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement | null>(null)
   const resultsRef = useRef<ScrollView>(null)
 
   // Memoize config to prevent recreation on every render

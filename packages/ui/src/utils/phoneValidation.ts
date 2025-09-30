@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import PhoneNumber from 'awesome-phonenumber'
+import { parsePhoneNumber } from 'awesome-phonenumber'
 
 /**
  * Zod schema for phone number validation
@@ -12,8 +12,8 @@ export const phoneNumberSchema = z
     (phone) => {
       if (!phone) return true // Optional field
       try {
-        const pn = new PhoneNumber(phone)
-        return pn.isValid()
+        const pn = parsePhoneNumber(phone)
+        return pn.valid
       } catch {
         return false
       }
@@ -32,8 +32,8 @@ export const requiredPhoneNumberSchema = z
   .refine(
     (phone) => {
       try {
-        const pn = new PhoneNumber(phone)
-        return pn.isValid()
+        const pn = parsePhoneNumber(phone)
+        return pn.valid
       } catch {
         return false
       }
@@ -48,8 +48,8 @@ export const requiredPhoneNumberSchema = z
  */
 export const formatPhoneNumber = (phone: string, countryCode?: string): string => {
   try {
-    const pn = new PhoneNumber(phone, countryCode)
-    return pn.getNumber('international')
+    const pn = parsePhoneNumber(phone, { regionCode: countryCode })
+    return pn.number?.international || phone
   } catch {
     return phone
   }
@@ -60,8 +60,8 @@ export const formatPhoneNumber = (phone: string, countryCode?: string): string =
  */
 export const getE164Format = (phone: string, countryCode?: string): string => {
   try {
-    const pn = new PhoneNumber(phone, countryCode)
-    return pn.getNumber('e164')
+    const pn = parsePhoneNumber(phone, { regionCode: countryCode })
+    return pn.number?.e164 || phone
   } catch {
     return phone
   }
@@ -72,8 +72,8 @@ export const getE164Format = (phone: string, countryCode?: string): string => {
  */
 export const isValidPhoneNumber = (phone: string, countryCode?: string): boolean => {
   try {
-    const pn = new PhoneNumber(phone, countryCode)
-    return pn.isValid()
+    const pn = parsePhoneNumber(phone, { regionCode: countryCode })
+    return pn.valid
   } catch {
     return false
   }
@@ -84,8 +84,8 @@ export const isValidPhoneNumber = (phone: string, countryCode?: string): boolean
  */
 export const getPhoneRegionCode = (phone: string): string | undefined => {
   try {
-    const pn = new PhoneNumber(phone)
-    return pn.getRegionCode()
+    const pn = parsePhoneNumber(phone)
+    return pn.regionCode
   } catch {
     return undefined
   }
@@ -96,8 +96,8 @@ export const getPhoneRegionCode = (phone: string): string | undefined => {
  */
 export const getPhoneNumberType = (phone: string, countryCode?: string): string | undefined => {
   try {
-    const pn = new PhoneNumber(phone, countryCode)
-    return pn.getType()
+    const pn = parsePhoneNumber(phone, { regionCode: countryCode })
+    return pn.type
   } catch {
     return undefined
   }

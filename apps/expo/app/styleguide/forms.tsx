@@ -186,7 +186,7 @@ export default function FormsPage() {
           Form Components Demo
         </Text>
 
-        <Text fontSize="$4" color="$color10" ta="center" maxW={400}>
+        <Text fontSize="$4" color="$color10" text="center" maxW={400}>
           Interactive examples of all form components with different states and configurations
         </Text>
 
@@ -263,10 +263,10 @@ export default function FormsPage() {
           </YStack>
         </YStack>
 
-        <Separator width="80%" bg="$borderColor" />
+        <Separator width="80%" background="$borderColor" />
 
         {/* Select Component Section */}
-        <YStack gap="$4" flex={1} maxWidth={500} items="center">
+        <YStack gap="$4" flex={1} maxW={500} items="center">
           <Text fontSize="$6" fontWeight="600" color="$color">
             Select Component
           </Text>
@@ -330,10 +330,10 @@ export default function FormsPage() {
           </YStack>
         </YStack>
 
-        <Separator width="80%" bg="$borderColor" />
+        <Separator width="80%" background="$borderColor" />
 
         {/* Phone Number Input Section */}
-        <YStack gap="$4" flex={1} maxWidth={500} items="center">
+        <YStack gap="$4" flex={1} maxW={500} items="center">
           <Text fontSize="$6" fontWeight="600" color="$color">
             Phone Number Input
           </Text>
@@ -384,7 +384,7 @@ export default function FormsPage() {
         <Separator width="80%" bg="$borderColor" />
 
         {/* Address Components Section */}
-        <YStack gap="$4" flex={1} maxWidth={500} items="center">
+        <YStack gap="$4" flex={1} maxW={500} items="center">
           <Text fontSize="$6" fontWeight="600" color="$color">
             Address Components
           </Text>
@@ -480,10 +480,10 @@ export default function FormsPage() {
           </YStack>
         </YStack>
 
-        <Separator width="80%" backgroundColor="$borderColor" />
+        <Separator width="80%" bg="$borderColor" />
 
         {/* Avatar Image Picker Section */}
-        <YStack gap="$4" flex={1} maxWidth={500} items="center">
+        <YStack gap="$4" flex={1} maxW={500} items="center">
           <Text fontSize="$6" fontWeight="600" color="$color">
             Avatar Image Picker
           </Text>
@@ -536,10 +536,10 @@ export default function FormsPage() {
           />
         </YStack>
 
-        <Separator width="80%" backgroundColor="$borderColor" />
+        <Separator width="80%" bg="$borderColor" />
 
         {/* Toggle Card Section */}
-        <YStack gap="$4" flex={1} maxWidth={500} items="center">
+        <YStack gap="$4" flex={1} maxW={500} items="center">
           <Text fontSize="$6" fontWeight="600" color="$color">
             Toggle Cards
           </Text>
@@ -582,7 +582,6 @@ export default function FormsPage() {
                 checked={usResident}
                 onCheckedChange={setUsResident}
                 disabled={toggleCardsDisabled}
-                flex={1}
               />
 
               <ToggleCard
@@ -592,11 +591,10 @@ export default function FormsPage() {
                 checked={usPassport}
                 onCheckedChange={setUsPassport}
                 disabled={toggleCardsDisabled}
-                flex={1}
               />
             </YStack>
 
-            <Separator backgroundColor="$color6" />
+            <Separator bg="$color6" />
 
             {/* Toggle Cards with Expanded Content */}
             <YStack gap="$3">
@@ -614,9 +612,8 @@ export default function FormsPage() {
                 checked={securityEnabled}
                 onCheckedChange={setSecurityEnabled}
                 disabled={toggleCardsDisabled}
-                flex={1}
                 expandedContent={
-                  <YStack gap="$3" paddingTop="$2">
+                  <YStack gap="$3" pt="$2">
                     <Text fontSize="$3" fontWeight="500" color="$color11">
                       Authentication Method
                     </Text>
@@ -642,9 +639,8 @@ export default function FormsPage() {
                 checked={autoConnectWifi}
                 onCheckedChange={setAutoConnectWifi}
                 disabled={toggleCardsDisabled}
-                flex={1}
                 expandedContent={
-                  <YStack gap="$3" paddingTop="$2">
+                  <YStack gap="$3" pt="$2">
                     <Text fontSize="$3" fontWeight="500" color="$color11">
                       Network Preferences
                     </Text>
@@ -660,7 +656,7 @@ export default function FormsPage() {
               />
             </YStack>
 
-            <Separator backgroundColor="$color6" />
+            <Separator bg="$color6" />
 
             {/* Additional Examples */}
             <YStack gap="$3">
@@ -678,9 +674,8 @@ export default function FormsPage() {
                 checked={pushNotifications}
                 onCheckedChange={setPushNotifications}
                 disabled={toggleCardsDisabled}
-                flex={1}
                 expandedContent={
-                  <YStack gap="$3" paddingTop="$2">
+                  <YStack gap="$3" pt="$2">
                     <Text fontSize="$3" fontWeight="500" color="$color11">
                       Notification Types
                     </Text>
@@ -706,7 +701,6 @@ export default function FormsPage() {
                 checked={companyVehicle}
                 onCheckedChange={setCompanyVehicle}
                 disabled={toggleCardsDisabled}
-                flex={1}
               />
             </YStack>
           </YStack>
@@ -776,7 +770,7 @@ export default function FormsPage() {
               </Slider>
             </YStack>
 
-            <Separator backgroundColor="$color6" />
+            <Separator bg="$color6" />
 
             {/* Horizontal vs Vertical Sliders */}
             <YStack gap="$3">
@@ -790,7 +784,7 @@ export default function FormsPage() {
               <SliderDemo />
             </YStack>
 
-            <Separator backgroundColor="$color6" />
+            <Separator bg="$color6" />
 
             {/* Range Slider */}
             <YStack gap="$3">
@@ -810,7 +804,7 @@ export default function FormsPage() {
               </Slider>
             </YStack>
 
-            <Separator backgroundColor="$color6" />
+            <Separator bg="$color6" />
 
             {/* Custom Styled Slider */}
             <YStack gap="$3">
@@ -822,19 +816,19 @@ export default function FormsPage() {
               </Text>
 
               <Slider defaultValue={[60]} max={100} step={1} disabled={sliderDisabled} flex={1}>
-                <Slider.Track backgroundColor="$color6" height={8}>
-                  <Slider.TrackActive backgroundColor="$blue8" />
+                <Slider.Track bg="$color6" height={8}>
+                  <Slider.TrackActive bg="$blue8" />
                 </Slider.Track>
-                <Slider.Thumb size="$3" index={0} circular backgroundColor="$blue9" />
+                <Slider.Thumb size="$3" index={0} circular bg="$blue9" />
               </Slider>
             </YStack>
           </YStack>
         </YStack>
 
-        <Separator width="80%" backgroundColor="$borderColor" />
+        <Separator width="80%" bg="$borderColor" />
 
         {/* Switch Section */}
-        <YStack gap="$4" flex={1} maxWidth={500} items="center">
+        <YStack gap="$4" flex={1} maxW={500} items="center">
           <Text fontSize="$6" fontWeight="600" color="$color">
             Switch Components
           </Text>
@@ -937,7 +931,7 @@ export default function FormsPage() {
               </XStack>
             </YStack>
 
-            <Separator backgroundColor="$color6" />
+            <Separator bg="$color6" />
 
             {/* Size Comparison */}
             <YStack gap="$3">
@@ -951,7 +945,7 @@ export default function FormsPage() {
               <SwitchDemo />
             </YStack>
 
-            <Separator backgroundColor="$color6" />
+            <Separator bg="$color6" />
 
             {/* Custom Styled Switches */}
             <YStack gap="$3">
@@ -998,19 +992,19 @@ export default function FormsPage() {
                   id="custom-switch-3"
                   disabled={switchDisabled}
                   size={switchSize}
-                  bg="$purple8"
+                  backgroundColor="purple"
                 >
-                  <Switch.Thumb animation="quick" bg="$purple11" borderColor="$purple9" />
+                  <Switch.Thumb animation="quick" backgroundColor="purple" borderColor="purple" />
                 </Switch>
               </XStack>
             </YStack>
           </YStack>
         </YStack>
 
-        <Separator width="80%" backgroundColor="$borderColor" />
+        <Separator width="80%" bg="$borderColor" />
 
         {/* Form Patterns Section */}
-        <YStack gap="$4" flex={1} maxWidth={500} items="center">
+        <YStack gap="$4" flex={1} maxW={500} items="center">
           <Text fontSize="$6" fontWeight="600" color="$color">
             Form Patterns
           </Text>
@@ -1020,7 +1014,7 @@ export default function FormsPage() {
           </Text>
 
           {/* Sample Contact Form */}
-          <YStack gap="$3" flex={1} p="$4" backgroundColor="$color2" rounded="$4">
+          <YStack gap="$3" flex={1} p="$4" bg="$color2" rounded="$4">
             <Text fontSize="$5" fontWeight="500" color="$color">
               Contact Information Form
             </Text>
@@ -1050,7 +1044,7 @@ export default function FormsPage() {
         </YStack>
 
         {/* Footer */}
-        <YStack gap="$2" items="center" paddingTop="$6" paddingBottom="$4">
+        <YStack gap="$2" items="center" pt="$6" pb="$4">
           <Text fontSize="$3" color="$color9" text="center">
             All form components are cross-platform compatible
           </Text>

@@ -46,21 +46,17 @@ export const DrawerFooter = () => {
         borderColor="$color4"
         borderWidth={1}
         hoverStyle={{
-          backgroundColor: '$color4',
+          bg: '$color4',
           borderColor: '$color5',
         }}
         pressStyle={{
-          backgroundColor: '$color5',
+          bg: '$color5',
           borderColor: '$color6',
         }}
         onPress={handleThemeToggle}
         aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
       >
-        {isDark ? (
-          <Sun size={20} color={accentColor.val} />
-        ) : (
-          <Moon size={20} color={accentColor.val} />
-        )}
+        {isDark ? <Sun size={20} color="$accentColor" /> : <Moon size={20} color="$accentColor" />}
       </Button>
 
       {/* Logout Button */}

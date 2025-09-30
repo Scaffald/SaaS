@@ -14,8 +14,8 @@
   },
   "devDependencies": {
     "@types/pg": "^8.15.5",
-    "@types/uuid": "^11.0.0",
     "pg": "^8.16.3",
+    "supabase": "catalog:",
     "typescript": "catalog:",
     "uuid": "^13.0.0",
     "xlsx": "^0.18.5"

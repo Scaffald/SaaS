@@ -89,7 +89,7 @@ export const Onboarding = ({ onOnboarded, autoSwipe, steps }: OnboardingProps) =
       <YStack
         flex={1}
         bg="$color3"
-        ov="hidden"
+        overflow="hidden"
         pb={safeAreaInsets.bottom}
         pr={safeAreaInsets.right}
         pt={safeAreaInsets.top}
@@ -159,10 +159,10 @@ export const Background = ({ backgroundImage }: { backgroundImage?: string }) =>
           height="100%"
           resizeMode="cover"
           position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
+          t={0}
+          l={0}
+          r={0}
+          b={0}
         />
         {/* Theme-sensitive overlay with blur for better text readability */}
         <YStack

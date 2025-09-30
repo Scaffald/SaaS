@@ -90,14 +90,12 @@ export const ScaffaldLogoDemo = () => {
           <XStack gap="$4" items="center">
             <ScaffaldIcon
               size={48}
-              primaryColor={BRAND_COLORS.success}
               secondaryColor={BRAND_COLORS.warning}
               gradientStart={BRAND_COLORS.success}
               gradientEnd={BRAND_COLORS.warning}
             />
             <ScaffaldIcon
               size={48}
-              primaryColor={BRAND_COLORS.error}
               secondaryColor={BRAND_COLORS.info}
               gradientStart={BRAND_COLORS.error}
               gradientEnd={BRAND_COLORS.info}
