@@ -25,7 +25,8 @@ import {
   AVAILABILITY_OPTIONS,
 } from './config'
 import { api } from '@app/core/utils/api'
-import { DashboardWidget, AddressForm, LocationListInput } from '@app/ui'
+import { DashboardWidget, AddressForm, LocationListInput, ToggleCard } from '@app/ui'
+import { Flag, MapPin, Plane } from '@tamagui/lucide-icons'
 
 /**
  * Profile Employment Left Component
@@ -156,7 +157,7 @@ export function ProfileEmploymentLeft() {
             </YStack>
 
             {/* Preferred Work Locations */}
-            <YStack gap="$3">
+            <YStack gap="$3" py="$3">
               <Text fontWeight="600">Preferred Work Locations</Text>
               <Controller
                 name="preferred_work_locations"
@@ -178,69 +179,91 @@ export function ProfileEmploymentLeft() {
             {/* Travel Preferences */}
             <YStack gap="$3">
               <Text fontWeight="600">Travel Preferences</Text>
-              <XStack gap="$3" alignItems="center">
-                <Text>Willing to travel</Text>
-                <Controller
-                  name="willing_to_travel"
-                  control={control}
-                  render={({ field }) => (
-                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                  )}
-                />
-              </XStack>
-              {willingToTravel && (
-                <YStack gap="$2">
-                  <Text>Travel distance (miles)</Text>
-                  <Controller
-                    name="travel_distance_miles"
-                    control={control}
-                    render={({ field }) => (
-                      <YStack gap="$2">
-                        <Slider
-                          value={[field.value]}
-                          onValueChange={(value) => field.onChange(value[0])}
-                          min={10}
-                          max={100}
-                          step={5}
-                        >
-                          <Slider.Track>
-                            <Slider.TrackActive />
-                          </Slider.Track>
-                          <Slider.Thumb index={0} />
-                        </Slider>
-                        <Text fontSize="$2" color="$gray11">
-                          {field.value} miles
+              <Controller
+                name="willing_to_travel"
+                control={control}
+                render={({ field }) => (
+                  <ToggleCard
+                    icon={<Plane size="$2" color="$color11" />}
+                    title="Willing to Travel"
+                    description="I am available for work assignments that require travel"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    width="100%"
+                    expandedContent={
+                      <YStack gap="$3" paddingTop="$2">
+                        <Text fontSize="$3" fontWeight="500" color="$color11">
+                          Maximum Travel Distance
                         </Text>
+                        <Controller
+                          name="travel_distance_miles"
+                          control={control}
+                          render={({ field: distanceField }) => (
+                            <YStack gap="$3">
+                              <Slider
+                                value={[distanceField.value]}
+                                onValueChange={(value) => distanceField.onChange(value[0])}
+                                min={5}
+                                max={100}
+                                step={5}
+                              >
+                                <Slider.Track>
+                                  <Slider.TrackActive />
+                                </Slider.Track>
+                                <Slider.Thumb index={0} />
+                              </Slider>
+                              <XStack justifyContent="space-between" alignItems="center">
+                                <Text fontSize="$2" color="$color9">
+                                  5 miles
+                                </Text>
+                                <Text fontSize="$3" fontWeight="600" color="$color12">
+                                  {distanceField.value} miles
+                                </Text>
+                                <Text fontSize="$2" color="$color9">
+                                  100 miles
+                                </Text>
+                              </XStack>
+                            </YStack>
+                          )}
+                        />
                       </YStack>
-                    )}
+                    }
                   />
-                </YStack>
-              )}
+                )}
+              />
             </YStack>
 
             {/* Residency */}
             <YStack gap="$3">
               <Text fontWeight="600">Residency</Text>
-              <XStack gap="$3" alignItems="center">
-                <Text>US Resident</Text>
-                <Controller
-                  name="us_resident"
-                  control={control}
-                  render={({ field }) => (
-                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                  )}
-                />
-              </XStack>
-              <XStack gap="$3" alignItems="center">
-                <Text>US Passport</Text>
-                <Controller
-                  name="us_passport"
-                  control={control}
-                  render={({ field }) => (
-                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                  )}
-                />
-              </XStack>
+              <Controller
+                name="us_resident"
+                control={control}
+                render={({ field }) => (
+                  <ToggleCard
+                    icon={<Flag size="$2" color="$color11" />}
+                    title="US Resident"
+                    description="I am a permanent resident of the United States"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    width="100%"
+                  />
+                )}
+              />
+              <Controller
+                name="us_passport"
+                control={control}
+                render={({ field }) => (
+                  <ToggleCard
+                    icon={<MapPin size="$2" color="$color11" />}
+                    title="US Passport"
+                    description="I have a valid United States passport"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    width="100%"
+                  />
+                )}
+              />
 
               {/* Additional Residency Countries */}
               <YStack gap="$2">

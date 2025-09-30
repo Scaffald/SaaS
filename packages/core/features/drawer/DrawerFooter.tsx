@@ -35,7 +35,6 @@ export const DrawerFooter = () => {
       paddingVertical="$3"
       borderTopWidth={1}
       borderTopColor="$color4"
-      backgroundColor="$color2"
       justifyContent="space-between"
       alignItems="center"
     >
