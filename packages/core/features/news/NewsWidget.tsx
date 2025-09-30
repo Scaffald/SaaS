@@ -180,7 +180,7 @@ export function NewsWidget({
                   flex={1}
                   height="$3"
                 >
-                  <YStack zIndex={10}>
+                  <YStack z={10}>
                     <ChevronDown size={20} />
                   </YStack>
                 </Select.ScrollDownButton>

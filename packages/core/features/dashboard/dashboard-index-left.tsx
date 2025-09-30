@@ -13,9 +13,5 @@ export function DashboardIndexLeft() {
     router.push(route)
   }
 
-  return (
-    <ScrollView showsVerticalScrollIndicator={false}>
-      <ProfileCompletionWidget onNavigate={handleNavigate} />
-    </ScrollView>
-  )
+  return <ProfileCompletionWidget onNavigate={handleNavigate} />
 }

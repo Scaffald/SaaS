@@ -2,7 +2,8 @@ import { useUser } from '@app/core/utils/useUser'
 import { supabase } from '@app/core/utils/supabase/client'
 import { useLocalSearchParams, useRouter, useSegments } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { View, Text, Platform } from 'react-native'
+import { Platform } from 'react-native'
+import { YStack, Text } from 'tamagui'
 import { AUTH_ROUTES } from '@app/core/constants/routes'
 
 export default function RootIndex() {
@@ -116,37 +117,37 @@ export default function RootIndex() {
   // Show loading state while verifying magic link
   if (isVerifying) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <YStack flex={1} justify="center" items="center">
         <Text>Verifying your email...</Text>
-      </View>
+      </YStack>
     )
   }
 
   // Show error if verification failed
   if (verificationError) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-        <Text style={{ color: 'red', textAlign: 'center', marginBottom: 20 }}>
+      <YStack flex={1} justify="center" items="center" p="$4">
+        <Text color="$red10" text="center" mb="$4">
           Verification failed: {verificationError}
         </Text>
-        <Text style={{ textAlign: 'center' }}>Please try requesting a new magic link.</Text>
-      </View>
+        <Text text="center">Please try requesting a new magic link.</Text>
+      </YStack>
     )
   }
 
   // Show loading state while checking auth or waiting for navigation
   if (isPending || !isRouterReady || !hasNavigated) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <YStack flex={1} justify="center" items="center">
         <Text>Loading...</Text>
-      </View>
+      </YStack>
     )
   }
 
   // This should rarely be reached, but provides a fallback
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <YStack flex={1} justify="center" items="center">
       <Text>Initializing...</Text>
-    </View>
+    </YStack>
   )
 }

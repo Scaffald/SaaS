@@ -4,22 +4,20 @@ import { useProtectedRoute } from '@app/core/utils/auth/useProtectedRoute'
 import { DrawerActions } from '@react-navigation/native'
 import { Bell, Menu } from '@tamagui/lucide-icons'
 import { Drawer } from 'expo-router/drawer'
-import { useMedia } from 'tamagui'
+import { useMedia, YStack, Text } from 'tamagui'
 import { useState } from 'react'
-import { View, Text } from 'react-native'
 
 export default function Layout() {
   const { isLoading } = useProtectedRoute()
   const media = useMedia()
-  const { color2 } = useTheme()
   const [notificationsOpen, setNotificationsOpen] = useState(false)
 
   // Show loading state while checking authentication
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <YStack flex={1} justify="center" items="center">
         <Text>Loading...</Text>
-      </View>
+      </YStack>
     )
   }
 
@@ -32,7 +30,7 @@ export default function Layout() {
         screenOptions={({ navigation }) => ({
           headerShown: true,
           headerStyle: {
-            backgroundColor: color2.val,
+            backgroundColor: '$color2',
             borderWidth: 0,
           },
           headerLeft: isDesktop

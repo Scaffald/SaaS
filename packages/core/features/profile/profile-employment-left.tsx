@@ -49,7 +49,7 @@ export function ProfileEmploymentLeft() {
       })
       refetch()
     },
-    onError: (error: Error) => {
+    onError: (error) => {
       console.error('Error saving employment:', error)
       toast.show('Error', {
         message: error.message || 'Failed to save employment preferences. Please try again.',
@@ -187,11 +187,10 @@ export function ProfileEmploymentLeft() {
                     icon={<Plane size="$2" color="$color11" />}
                     title="Willing to Travel"
                     description="I am available for work assignments that require travel"
-                    checked={field.value}
+                    checked={field.value || false}
                     onCheckedChange={field.onChange}
-                    flex={1}
                     expandedContent={
-                      <YStack gap="$3" paddingTop="$2">
+                      <YStack gap="$3" pt="$2">
                         <Text fontSize="$3" fontWeight="500" color="$color11">
                           Maximum Travel Distance
                         </Text>
@@ -201,7 +200,7 @@ export function ProfileEmploymentLeft() {
                           render={({ field: distanceField }) => (
                             <YStack gap="$3">
                               <Slider
-                                value={[distanceField.value]}
+                                value={[distanceField.value || 50]}
                                 onValueChange={(value) => distanceField.onChange(value[0])}
                                 min={5}
                                 max={100}
@@ -244,9 +243,8 @@ export function ProfileEmploymentLeft() {
                     icon={<Flag size="$2" color="$color11" />}
                     title="US Resident"
                     description="I am a permanent resident of the United States"
-                    checked={field.value}
+                    checked={field.value || false}
                     onCheckedChange={field.onChange}
-                    flex={1}
                   />
                 )}
               />
@@ -258,9 +256,8 @@ export function ProfileEmploymentLeft() {
                     icon={<MapPin size="$2" color="$color11" />}
                     title="US Passport"
                     description="I have a valid United States passport"
-                    checked={field.value}
+                    checked={field.value || false}
                     onCheckedChange={field.onChange}
-                    flex={1}
                   />
                 )}
               />
@@ -409,7 +406,7 @@ export function ProfileEmploymentLeft() {
             </YStack>
 
             {/* Save Button */}
-            <XStack justify="flex-end" paddingTop="$4">
+            <XStack justify="flex-end" pt="$4">
               <Button
                 onPress={handleSubmit(onSubmit)}
                 disabled={!isDirty || isLoading}

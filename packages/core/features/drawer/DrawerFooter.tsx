@@ -9,7 +9,6 @@ import { GestureResponderEvent } from 'react-native'
  * Includes theme toggle button and logout button
  */
 export const DrawerFooter = () => {
-  const { accentColor } = useTheme()
   // Using supabase directly from import
   const { resolvedTheme, toggle } = useThemeSetting()
 
@@ -67,17 +66,17 @@ export const DrawerFooter = () => {
         borderColor="$color4"
         borderWidth={1}
         hoverStyle={{
-          backgroundColor: '$color4',
+          bg: '$color4',
           borderColor: '$color5',
         }}
         pressStyle={{
-          backgroundColor: '$color5',
+          bg: '$color5',
           borderColor: '$color6',
         }}
         onPress={handleLogout}
         aria-label="Sign out"
       >
-        <LogOut size={20} color={accentColor.val} />
+        <LogOut size={20} color="$accentColor" />
       </Button>
     </XStack>
   )

@@ -49,8 +49,6 @@ export const FilterBar = ({
   locationPermissionStatus = 'unknown',
   onLocationSelect,
 }: FilterBarProps) => {
-  const theme = useTheme()
-
   // Memoize search options to prevent recreation on every render
   const searchOptions = useMemo(
     () => ({

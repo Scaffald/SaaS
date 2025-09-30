@@ -38,10 +38,10 @@ export function ProfileSkillsLeft() {
     refetch,
     error: skillsError,
   } = api.profile.getSkills.useQuery(undefined, {
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error('getSkills query error:', error)
     },
-    onSuccess: (data) => {
+    onSuccess: (data: unknown) => {
       console.log('getSkills query success:', data)
     },
   })
@@ -243,7 +243,7 @@ export function ProfileSkillsLeft() {
             </YStack>
 
             {/* Save Button */}
-            <XStack justify="flex-end" paddingTop="$4">
+            <XStack justify="flex-end" pt="$4">
               <Button
                 onPress={handleSubmit(onSubmit)}
                 disabled={!isDirty || isLoading}

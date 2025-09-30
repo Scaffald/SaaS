@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router'
 import { useProtectedRoute } from '@app/core/utils/auth/useProtectedRoute'
-import { View, Text } from 'react-native'
+import { Text, View } from 'tamagui'
 
 export default function Layout() {
   const { isLoading } = useProtectedRoute()

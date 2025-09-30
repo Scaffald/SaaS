@@ -233,7 +233,7 @@ export function ProfileCertificationsRight() {
           </YStack>
 
           {/* Save Button */}
-          <XStack justify="flex-end" paddingTop="$4">
+          <XStack justify="flex-end" pt="$4">
             <Button
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
