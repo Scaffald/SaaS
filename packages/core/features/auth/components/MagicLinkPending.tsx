@@ -475,14 +475,14 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
                 Check your email
               </H2>
 
-              <View flex="row" items="center" justify="center" gap="$2" w="100%">
+              <View flexDirection="row" items="center" justify="center" gap="$2" flex={1}>
                 <Mail size="$1" color="$color12" />
                 <Paragraph size="$4" fontWeight="500" color="$color12">
                   {displayEmail}
                 </Paragraph>
               </View>
 
-              <Paragraph theme="alt1" text="center">
+              <Paragraph text="center">
                 Open the link in your email or enter the code below to sign in.
               </Paragraph>
             </View>

@@ -176,7 +176,7 @@ export const WorkersIndexScreen = () => {
             </YStack>
             <YStack flex={1} overflow="hidden">
               <ResultList
-                reflex={resultListRef}
+                ref={resultListRef}
                 profiles={talentProfiles}
                 selectedId={selectedProfileId}
                 onSelect={setSelectedProfileId}
@@ -188,7 +188,7 @@ export const WorkersIndexScreen = () => {
           <XStack flex={1} gap="$4" overflow="hidden">
             <YStack flexBasis={380} maxW={420} gap="$3" overflow="hidden">
               <ResultList
-                reflex={resultListRef}
+                ref={resultListRef}
                 profiles={talentProfiles}
                 selectedId={selectedProfileId}
                 onSelect={setSelectedProfileId}
@@ -216,12 +216,7 @@ export const WorkersIndexScreen = () => {
             <Text fontSize="$5" fontWeight="700">
               Filters
             </Text>
-            <Button
-              size="$2"
-              theme="gray"
-              icon={RefreshCw}
-              onPress={() => setActiveFilters(INITIAL_FILTERS)}
-            >
+            <Button size="$2" icon={RefreshCw} onPress={() => setActiveFilters(INITIAL_FILTERS)}>
               Reset
             </Button>
           </XStack>
@@ -244,7 +239,6 @@ export const WorkersIndexScreen = () => {
                 <Text fontWeight="600">{filter.label}</Text>
                 <Button
                   size="$2"
-                  theme="surface2"
                   icon={Filter}
                   onPress={() => {
                     if (filter.id === 'radius:custom') {
@@ -282,7 +276,7 @@ export const WorkersIndexScreen = () => {
             <Text fontSize="$5" fontWeight="700">
               Adjust Search Radius
             </Text>
-            <Button size="$2" theme="gray" onPress={() => setRadiusAdjustmentOpen(false)}>
+            <Button size="$2" onPress={() => setRadiusAdjustmentOpen(false)}>
               Done
             </Button>
           </XStack>

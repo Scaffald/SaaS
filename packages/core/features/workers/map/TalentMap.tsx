@@ -279,7 +279,7 @@ export const TalentMap = ({
 
   return (
     <View flex={1} position="relative" rounded="$5" overflow="hidden">
-      <div reflex={containerRef} style={MAP_CONTAINER_STYLE} />
+      <div ref={containerRef} style={MAP_CONTAINER_STYLE} />
     </View>
   )
 }

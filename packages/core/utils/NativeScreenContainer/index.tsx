@@ -12,7 +12,7 @@ const ScrollToTopTabBarContainer = ({ children, ...props }: ScrollToTopTabBarCon
   )
 
   return (
-    <ScrollView {...props} reflex={ref}>
+    <ScrollView {...props} ref={ref}>
       {children}
     </ScrollView>
   )

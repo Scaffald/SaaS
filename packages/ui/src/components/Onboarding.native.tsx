@@ -64,7 +64,7 @@ export const Onboarding = ({ onOnboarded, steps }: OnboardingProps) => {
 
         <YStack flex={1}>
           <ScrollView
-            reflex={scrollRef}
+            ref={scrollRef}
             horizontal
             pagingEnabled
             scrollEventThrottle={16}
