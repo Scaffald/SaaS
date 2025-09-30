@@ -52,6 +52,7 @@ export const WorkersIndexScreen = () => {
   } = useUserLocation()
 
   const [locationQuery, setLocationQuery] = useState('Marlborough, Connecticut, United States')
+  const [searchCenter, setSearchCenter] = useState<[number, number] | null>(null)
   const [radiusMeters, setRadiusMeters] = useState(defaultRadiusMeters)
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>(INITIAL_FILTERS)
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
@@ -60,22 +61,32 @@ export const WorkersIndexScreen = () => {
 
   const { data: talentProfiles = [], isLoading } = useTalentProfiles()
 
-  // Determine map center based on user location or default
+  // Determine map center based on search location, user location, or default
   const mapCenter: [number, number] = useMemo(() => {
+    if (searchCenter) {
+      return searchCenter
+    }
     if (location) {
       return [location.longitude, location.latitude]
     }
     return defaultCenter
-  }, [location])
+  }, [searchCenter, location])
 
   // Handle location request
   const handleLocationRequest = async () => {
     try {
       await requestLocation()
+      // Clear search center when using current location
+      setSearchCenter(null)
     } catch (error) {
       console.error('Failed to get location:', error)
     }
   }
+
+  // Handle location selection from autocomplete
+  const handleLocationSelect = useCallback((coordinates: { lat: number; lng: number }) => {
+    setSearchCenter([coordinates.lng, coordinates.lat])
+  }, [])
 
   // Update location query when user location changes
   const updateLocationQuery = useCallback(async (lat: number, lng: number) => {
@@ -135,6 +146,7 @@ export const WorkersIndexScreen = () => {
           locationQuery={locationQuery}
           onLocationChange={setLocationQuery}
           onLocationRequest={handleLocationRequest}
+          onLocationSelect={handleLocationSelect}
           onAdjustFilters={() => setFiltersOpen(true)}
           filters={allFilters}
           onRemoveFilter={(filterId) => {
