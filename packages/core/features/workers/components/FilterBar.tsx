@@ -54,7 +54,7 @@ export const FilterBar = ({
   // Memoize search options to prevent recreation on every render
   const searchOptions = useMemo(
     () => ({
-      types: ['(cities)'],
+      types: ['place', 'locality'], // Mapbox types for cities and localities
       country: 'US',
     }),
     []
