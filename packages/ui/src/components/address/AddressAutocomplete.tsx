@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react'
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import {
   YStack,
   XStack,
@@ -54,6 +54,24 @@ export function AddressAutocomplete({
   const inputRef = useRef<any>(null)
   const resultsRef = useRef<any>(null)
 
+  // Memoize config to prevent recreation on every render
+  const providerConfig = useMemo(() => {
+    if (!apiKey) return undefined
+    return {
+      provider,
+      apiKey,
+      defaultCountry: 'US' as const,
+    }
+  }, [provider, apiKey])
+
+  // Memoize searchOptions to prevent recreation on every render
+  const memoizedSearchOptions = useMemo(() => {
+    return {
+      ...searchOptions,
+      zoomLevel,
+    }
+  }, [searchOptions, zoomLevel])
+
   // Address autocomplete hook
   const {
     results,
@@ -62,17 +80,8 @@ export function AddressAutocomplete({
     search,
     clearResults,
   } = useAddressAutocomplete({
-    config: apiKey
-      ? {
-          provider,
-          apiKey,
-          defaultCountry: 'US',
-        }
-      : undefined,
-    searchOptions: {
-      ...searchOptions,
-      zoomLevel,
-    },
+    config: providerConfig,
+    searchOptions: memoizedSearchOptions,
     debounceMs,
     minLength,
     maxResults,
