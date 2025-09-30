@@ -602,7 +602,7 @@ export default function ChartsTestPage() {
   )
 
   return (
-    <ScrollView flex={1} backgroundColor="$background">
+    <ScrollView flex={1} bg="$background">
       <YStack p="$4" gap="$4">
         <YStack gap="$2">
           <H2>Charts Test Page</H2>
