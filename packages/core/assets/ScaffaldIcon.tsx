@@ -1,14 +1,12 @@
-import React from 'react'
 import { Svg, Path, Defs, LinearGradient, Stop } from 'react-native-svg'
+import type { ViewStyle } from 'react-native'
 
 export interface ScaffaldIconProps {
   size?: number
-  primaryColor?: string
   secondaryColor?: string
   gradientStart?: string
   gradientEnd?: string
-  className?: string
-  style?: any
+  style?: ViewStyle
 }
 
 /**
@@ -21,26 +19,22 @@ export interface ScaffaldIconProps {
  * - Cross-platform compatibility
  *
  * @param size - Icon size (default: 48)
- * @param primaryColor - Primary brand color (default: #034550)
  * @param secondaryColor - Secondary brand color (default: #2A7F8E)
  * @param gradientStart - Gradient start color (default: #76EAFF)
  * @param gradientEnd - Gradient end color (default: #239CB2)
- * @param className - CSS class name for web
  * @param style - Additional styles
  */
 export const ScaffaldIcon = ({
   size = 48,
-  primaryColor = '#034550',
   secondaryColor = '#2A7F8E',
   gradientStart = '#76EAFF',
   gradientEnd = '#239CB2',
-  className,
   style,
 }: ScaffaldIconProps) => {
   const viewBox = '0 0 102 99'
 
   return (
-    <Svg width={size} height={size} viewBox={viewBox} className={className} style={style}>
+    <Svg width={size} height={size} viewBox={viewBox} style={style}>
       <Defs>
         <LinearGradient
           id="paint0_linear_scaffold_icon"

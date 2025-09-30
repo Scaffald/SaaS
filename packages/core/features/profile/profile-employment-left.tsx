@@ -25,7 +25,7 @@ import {
   AVAILABILITY_OPTIONS,
 } from './config'
 import { api } from '@app/core/utils/api'
-import { DashboardWidget } from '@app/ui'
+import { DashboardWidget, AddressForm } from '@app/ui'
 
 /**
  * Profile Employment Left Component
@@ -62,6 +62,8 @@ export function ProfileEmploymentLeft() {
     formState: { errors, isDirty },
     watch,
     reset,
+    setValue,
+    trigger,
   } = useForm<EmploymentProfileFormData>({
     resolver: zodResolver(employmentProfileSchema),
     defaultValues: employmentProfileDefaults,
@@ -102,74 +104,30 @@ export function ProfileEmploymentLeft() {
           <H4>Employment Preferences</H4>
 
           <YStack gap="$4">
-            {/* Home Address */}
+            {/* Home Address with Smart Autocomplete */}
             <YStack gap="$3">
-              <Text fontWeight="600">Home Address</Text>
-              <YStack gap="$2">
-                <Controller
-                  name="address.street"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      placeholder="Street address"
-                      value={field.value || ''}
-                      onChangeText={field.onChange}
-                    />
-                  )}
-                />
-                <XStack gap="$2">
-                  <Controller
-                    name="address.city"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        placeholder="City"
-                        value={field.value || ''}
-                        onChangeText={field.onChange}
-                        flex={1}
-                      />
-                    )}
-                  />
-                  <Controller
-                    name="address.state"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        placeholder="State"
-                        value={field.value || ''}
-                        onChangeText={field.onChange}
-                        flex={1}
-                      />
-                    )}
-                  />
-                </XStack>
-                <XStack gap="$2">
-                  <Controller
-                    name="address.zip"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        placeholder="ZIP Code"
-                        value={field.value || ''}
-                        onChangeText={field.onChange}
-                        flex={1}
-                      />
-                    )}
-                  />
-                  <Controller
-                    name="address.country"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        placeholder="Country"
-                        value={field.value || ''}
-                        onChangeText={field.onChange}
-                        flex={2}
-                      />
-                    )}
-                  />
-                </XStack>
-              </YStack>
+              <AddressForm
+                mode="hybrid"
+                placeholder="Search for your home address..."
+                formMethods={{
+                  setValue: setValue as (name: string, value: any) => void,
+                  trigger: trigger as (name: string) => void,
+                }}
+                fieldMapping={{
+                  street: 'address.street',
+                  city: 'address.city',
+                  state: 'address.state',
+                  zip: 'address.zip',
+                  country: 'address.country',
+                }}
+                error={errors.address?.street?.message || errors.address?.city?.message}
+                provider="google"
+                zoomLevel="street"
+                searchOptions={{
+                  types: ['address'],
+                  country: 'US',
+                }}
+              />
             </YStack>
 
             {/* Preferred Work Locations */}

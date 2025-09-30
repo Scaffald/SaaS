@@ -1,10 +1,7 @@
 {
   "name": "scaffald",
   "private": true,
-  "workspaces": [
-    "apps/expo",
-    "packages/*"
-  ],
+  "workspaces": ["apps/expo", "packages/*"],
   "scripts": {
     "_with-env": "dotenv -e .env -c -- ",
     "dev": "cd apps/expo && yarn start",
@@ -95,9 +92,7 @@
     "ultra-runner": "^3.10.5"
   },
   "manypkg": {
-    "ignoredRules": [
-      "ROOT_HAS_DEV_DEPENDENCIES"
-    ]
+    "ignoredRules": ["ROOT_HAS_DEV_DEPENDENCIES"]
   },
   "dependencies": {
     "fast-xml-parser": "^5.2.5",

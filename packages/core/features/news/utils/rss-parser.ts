@@ -6,6 +6,53 @@ import type { NewsItem, ParsedRSSFeed } from '../config/types'
  * Handles RSS 2.0, Atom, and various feed formats
  */
 
+// Type definitions for parsed RSS structures
+interface ParsedXML {
+  rss?: { channel: RSSChannel }
+  feed?: AtomFeed
+  channel?: RSSChannel
+}
+
+interface RSSChannel {
+  title?: string
+  description?: string
+  lastBuildDate?: string
+  pubDate?: string
+  item?: RSSItem | RSSItem[]
+}
+
+interface RSSItem {
+  title?: string
+  description?: string
+  summary?: string
+  content?: string
+  link?: string
+  pubDate?: string
+  guid?: string | { '#text': string }
+  category?: string | Array<{ '#text': string }> | { '#text': string }
+  author?: string
+  'dc:creator'?: string
+}
+
+interface AtomFeed {
+  title?: string | { '#text': string }
+  subtitle?: string | { '#text': string }
+  updated?: string
+  entry?: AtomEntry | AtomEntry[]
+}
+
+interface AtomEntry {
+  id?: string
+  title?: string | { '#text': string }
+  summary?: string | { '#text': string }
+  content?: unknown
+  link?: { '@_href': string }
+  published?: string
+  updated?: string
+  category?: unknown
+  author?: { name?: string }
+}
+
 const xmlParser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: '@_',
@@ -50,7 +97,7 @@ function sanitizeXML(xmlString: string): string {
 /**
  * Normalize different RSS formats into consistent structure
  */
-function normalizeRSSFormat(parsed: any): ParsedRSSFeed {
+function normalizeRSSFormat(parsed: ParsedXML): ParsedRSSFeed {
   // Handle RSS 2.0 format
   if (parsed.rss?.channel) {
     return normalizeRSS2Format(parsed.rss.channel)
@@ -72,35 +119,35 @@ function normalizeRSSFormat(parsed: any): ParsedRSSFeed {
 /**
  * Normalize RSS 2.0 format
  */
-function normalizeRSS2Format(channel: any): ParsedRSSFeed {
+function normalizeRSS2Format(channel: RSSChannel): ParsedRSSFeed {
   const items = Array.isArray(channel.item) ? channel.item : channel.item ? [channel.item] : []
 
   return {
     title: decodeHtmlEntities(channel.title || 'Unknown Feed'),
     description: decodeHtmlEntities(channel.description || ''),
-    items: items.map(formatRSSItem).filter(Boolean),
-    lastUpdated: parseDate(channel.lastBuildDate || channel.pubDate) || new Date(),
+    items: items.map(formatRSSItem).filter((item): item is NewsItem => item !== null),
+    lastUpdated: parseDate(channel.lastBuildDate || channel.pubDate || '') || new Date(),
   }
 }
 
 /**
  * Normalize Atom format
  */
-function normalizeAtomFormat(feed: any): ParsedRSSFeed {
+function normalizeAtomFormat(feed: AtomFeed): ParsedRSSFeed {
   const entries = Array.isArray(feed.entry) ? feed.entry : feed.entry ? [feed.entry] : []
 
   return {
     title: decodeHtmlEntities(feed.title?.['#text'] || feed.title || 'Unknown Feed'),
     description: decodeHtmlEntities(feed.subtitle?.['#text'] || feed.subtitle || ''),
-    items: entries.map(formatAtomEntry).filter(Boolean),
-    lastUpdated: parseDate(feed.updated) || new Date(),
+    items: entries.map(formatAtomEntry).filter((item): item is NewsItem => item !== null),
+    lastUpdated: parseDate(feed.updated || '') || new Date(),
   }
 }
 
 /**
  * Format RSS 2.0 item into NewsItem
  */
-function formatRSSItem(item: any): NewsItem | null {
+function formatRSSItem(item: RSSItem): NewsItem | null {
   try {
     const title = decodeHtmlEntities(item.title || '')
     const link = item.link || item.guid?.['#text'] || item.guid
@@ -114,7 +161,7 @@ function formatRSSItem(item: any): NewsItem | null {
       title,
       description: decodeHtmlEntities(stripHtmlTags(item.description || item.summary || '')),
       link,
-      pubDate: parseDate(item.pubDate) || new Date(),
+      pubDate: parseDate(item.pubDate || '') || new Date(),
       category: extractCategory(item.category),
       image: extractImageFromContent(item.description || item.content) || undefined,
       author: item.author || item['dc:creator'] || undefined,
@@ -128,9 +175,11 @@ function formatRSSItem(item: any): NewsItem | null {
 /**
  * Format Atom entry into NewsItem
  */
-function formatAtomEntry(entry: any): NewsItem | null {
+function formatAtomEntry(entry: AtomEntry): NewsItem | null {
   try {
-    const title = decodeHtmlEntities(entry.title?.['#text'] || entry.title || '')
+    const title = decodeHtmlEntities(
+      (typeof entry.title === 'object' ? entry.title?.['#text'] : entry.title) || ''
+    )
     const link = entry.link?.['@_href'] || entry.id
 
     if (!title || !link) {
@@ -141,10 +190,12 @@ function formatAtomEntry(entry: any): NewsItem | null {
       id: entry.id || link,
       title,
       description: decodeHtmlEntities(
-        stripHtmlTags(entry.summary?.['#text'] || entry.summary || '')
+        stripHtmlTags(
+          (typeof entry.summary === 'object' ? entry.summary?.['#text'] : entry.summary) || ''
+        )
       ),
       link,
-      pubDate: parseDate(entry.published || entry.updated) || new Date(),
+      pubDate: parseDate(entry.published || entry.updated || '') || new Date(),
       category: extractCategory(entry.category),
       image: extractImageFromContent(entry.content || entry.summary) || undefined,
       author: entry.author?.name || undefined,
@@ -158,7 +209,7 @@ function formatAtomEntry(entry: any): NewsItem | null {
 /**
  * Extract category from various category formats
  */
-function extractCategory(category: any): string | undefined {
+function extractCategory(category: unknown): string | undefined {
   if (!category) return undefined
 
   if (typeof category === 'string') {
@@ -183,7 +234,7 @@ function extractCategory(category: any): string | undefined {
 /**
  * Extract image URL from content/description HTML
  */
-function extractImageFromContent(content: any): string | null {
+function extractImageFromContent(content: unknown): string | null {
   if (!content) return null
 
   const htmlContent = typeof content === 'object' ? content['#text'] || '' : content.toString()
@@ -206,7 +257,7 @@ function extractImageFromContent(content: any): string | null {
 /**
  * Parse various date formats into Date object
  */
-function parseDate(dateString: any): Date | null {
+function parseDate(dateString: Date | string): Date | null {
   if (!dateString) return null
 
   const dateStr =
@@ -235,8 +286,8 @@ function decodeHtmlEntities(text: string): string {
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&apos;/g, "'")
-    .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec))
-    .replace(/&#x([0-9a-f]+);/gi, (match, hex) => String.fromCharCode(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_match, dec) => String.fromCharCode(dec))
+    .replace(/&#x([0-9a-f]+);/gi, (_match, hex) => String.fromCharCode(parseInt(hex, 16)))
 }
 
 /**
