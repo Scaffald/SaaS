@@ -5,6 +5,7 @@ import { ChevronDown, RefreshCw, AlertCircle } from '@tamagui/lucide-icons'
 import { NewsCard } from '@app/ui'
 import { useAggregatedNews } from './hooks/useNewsFeed'
 import { getFeedsByIndustry, getDefaultFeeds, findFeedById } from './config/news-feeds'
+import { redirect } from '@app/core/utils/redirect'
 import type { NewsWidgetProps, NewsItem } from './config/types'
 
 /**
@@ -52,10 +53,8 @@ export function NewsWidget({
     if (onArticleClick) {
       onArticleClick(article)
     } else {
-      // Default behavior - open in new tab/window
-      if (typeof window !== 'undefined') {
-        window.open(article.link, '_blank')
-      }
+      // Default behavior - open in external browser/app
+      redirect(article.link)
     }
   }
 

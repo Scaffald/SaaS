@@ -94,5 +94,5 @@ export const mockTalentProfiles: TalentProfile[] = [
   },
 ]
 
-export const defaultCenter: [number, number] = [-72.6734, 41.55]
-export const defaultRadiusMeters = 50000
+export const defaultCenter: [number, number] = [-84.5555, 42.7325] // Lansing, MI - center of Great Lakes region
+export const defaultRadiusMeters = 150000 // 150km to cover more of the Great Lakes area

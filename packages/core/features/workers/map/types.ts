@@ -5,6 +5,19 @@ export type TalentMarker = {
   subtitle?: string
   metric?: string
   organization?: string
+  // Enhanced fields for richer annotations
+  profilePhoto?: string
+  score: number
+  hourlyRate?: number
+  experienceYears: number
+  topSkills: string[]
+  badges: Array<{
+    id: string
+    label: string
+    tone: 'success' | 'warning' | 'danger'
+  }>
+  availability: 'available' | 'busy' | 'unavailable'
+  locationLabel: string
 }
 
 export type TalentMapProps = {

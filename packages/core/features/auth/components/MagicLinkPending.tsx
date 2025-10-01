@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import type { Control, UseFormRegister, UseFormSetValue } from 'react-hook-form'
 import { Controller, useForm } from 'react-hook-form'
+import { getBaseUrl } from '@app/core/utils/getBaseUrl'
 import type { SizeTokens } from 'tamagui'
 import {
   AnimatePresence,
@@ -180,9 +181,9 @@ function CodeConfirmation({ size, codeSize, secureText, onEnter }: CodeConfirmat
 
   // shake animation
   useEffect(() => {
-    let interval: number | null = null
+    let interval: NodeJS.Timeout | null = null
 
-    interval = window.setInterval(() => {
+    interval = setInterval(() => {
       if (isValid) {
         setTranslateX(0)
       } else {
@@ -197,7 +198,7 @@ function CodeConfirmation({ size, codeSize, secureText, onEnter }: CodeConfirmat
     }, 50)
 
     return () => {
-      if (interval) window.clearInterval(interval)
+      if (interval) clearInterval(interval)
     }
   }, [isValid])
 
@@ -398,7 +399,7 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: window.location.origin,
+          emailRedirectTo: getBaseUrl(),
         },
       })
 

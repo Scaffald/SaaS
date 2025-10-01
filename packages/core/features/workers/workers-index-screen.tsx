@@ -1,5 +1,3 @@
-'use client'
-
 import { useMemo, useState, useRef, useCallback, useEffect } from 'react'
 import { Button, Paragraph, Separator, Sheet, Text, XStack, YStack, useMedia } from '@app/ui'
 import { Filter, RefreshCw, MapPin } from '@tamagui/lucide-icons'
@@ -39,7 +37,7 @@ const INITIAL_FILTERS: ActiveFilter[] = [
 
 export const WorkersIndexScreen = () => {
   const media = useMedia()
-  const isSmallScreen = media.sm && !media.gtSm
+  const isSmallScreen = media.sm
   const resultListRef = useRef<ResultListRef>(null)
 
   // Location functionality
@@ -124,8 +122,17 @@ export const WorkersIndexScreen = () => {
       talentProfiles.map((profile) => ({
         id: profile.id,
         coordinate: profile.coordinates,
-        title: 'Worker',
+        title: profile.name,
+        subtitle: profile.title,
         metric: `e ${profile.score}`,
+        score: profile.score,
+        hourlyRate: profile.hourlyRate,
+        experienceYears: profile.experienceYears,
+        topSkills: profile.skills.slice(0, 3),
+        badges: profile.badges,
+        availability: 'available' as const, // Default to available for now
+        locationLabel: profile.locationLabel,
+        organization: undefined, // Will default to worker icon
       })),
     [talentProfiles]
   )
@@ -141,7 +148,7 @@ export const WorkersIndexScreen = () => {
 
   return (
     <YStack flex={1} height="100vh" overflow="hidden">
-      <YStack p="$5" gap="$4" flexShrink={0}>
+      <YStack p="$5" gap="$4" shrink={0}>
         <FilterBar
           locationQuery={locationQuery}
           onLocationChange={setLocationQuery}
@@ -162,10 +169,10 @@ export const WorkersIndexScreen = () => {
         />
       </YStack>
 
-      <YStack flex={1} px="$5" paddingBottom="$5" overflow="hidden">
+      <YStack flex={1} px="$5" pb="$5" overflow="hidden">
         {isSmallScreen ? (
           <YStack gap="$4" flex={1} overflow="hidden">
-            <YStack height={320} flexShrink={0}>
+            <YStack height={320} shrink={0}>
               <TalentMap
                 center={mapCenter}
                 markers={markers}
