@@ -4,8 +4,5 @@ export { MapTooltip } from './MapTooltip'
 export { mockMapPins, defaultMapCenter, defaultMapZoom, defaultRadius } from './mockData'
 export type { MapPin as MapPinType, MapContainerProps, MapTooltipData, MapRegion } from './types'
 
-// New MapBox implementation with React Portal
-export { MapComponent } from './Map.web'
-export { MapMarker } from './MapMarker.web'
-export type { MapProps } from './Map.web'
-export type { MapMarkerData } from './MapMarker.web'
+// Web-specific MapBox components are NOT exported here to avoid breaking React Native
+// They should be imported directly: import { MapComponent, MapMarker } from '@app/ui/src/components/maps/Map.web'

@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@app/core/utils/supabase/client'
 import type { TalentProfile } from '../types'
-import { mockTalentProfiles } from '../data/mockProfiles'
 
 // Define types for database responses
 type ProfileRow = {
@@ -12,6 +11,12 @@ type ProfileRow = {
   avatar_url: string | null
   industry_name: string | null
   gamified_score: number | null
+  longitude: number | null
+  latitude: number | null
+  location: string | null
+  hourly_rate_cents: number | null
+  certifications: string[] | null
+  availability: string[] | null
   skills_summary: {
     skills?: string[]
   } | null
@@ -21,69 +26,33 @@ export const useTalentProfiles = () => {
   return useQuery({
     queryKey: ['talent-profiles'],
     queryFn: async (): Promise<TalentProfile[]> => {
-      // Try to get profiles from the accessible view
+      // Get profiles from the v_profile_search view
       const { data: profiles, error: profilesError } = await supabase
         .from('v_profile_search')
         .select('*')
-        .eq('open_to_work', true)
         .order('gamified_score', { ascending: false })
         .limit(50)
 
       if (profilesError) {
         console.error('Error fetching profiles from v_profile_search:', profilesError)
-        console.log('Falling back to mock data')
-        return mockTalentProfiles
+        throw new Error(`Failed to fetch profiles: ${profilesError.message}`)
       }
 
       if (!profiles || profiles.length === 0) {
-        console.log('No profiles found, falling back to mock data')
-        return mockTalentProfiles
+        console.log('No profiles found in database')
+        return []
       }
 
       console.log(`Found ${profiles.length} profiles from database`)
 
-      // Great Lakes region coordinates for distributing workers
-      const greatLakesLocations = [
-        { city: 'Detroit, MI', coords: [-83.0458, 42.3314] as [number, number] },
-        { city: 'Grand Rapids, MI', coords: [-85.6681, 42.9634] as [number, number] },
-        { city: 'Lansing, MI', coords: [-84.5555, 42.7325] as [number, number] },
-        { city: 'Cleveland, OH', coords: [-81.6944, 41.4993] as [number, number] },
-        { city: 'Columbus, OH', coords: [-82.9988, 39.9612] as [number, number] },
-        { city: 'Cincinnati, OH', coords: [-84.512, 39.1031] as [number, number] },
-        { city: 'Indianapolis, IN', coords: [-86.1581, 39.7684] as [number, number] },
-        { city: 'Chicago, IL', coords: [-87.6298, 41.8781] as [number, number] },
-        { city: 'Milwaukee, WI', coords: [-87.9065, 43.0389] as [number, number] },
-        { city: 'Minneapolis, MN', coords: [-93.265, 44.9778] as [number, number] },
-      ]
-
       // Transform to TalentProfile format
-      return (profiles as ProfileRow[]).map((profile, index): TalentProfile => {
+      return (profiles as ProfileRow[]).map((profile): TalentProfile => {
         const skills = profile.skills_summary?.skills || []
+        const certifications = profile.certifications || []
 
-        // Generate realistic certifications based on skills
-        const certifications: string[] = []
-        if (skills.includes('osha-30') || skills.includes('osha-10')) {
-          certifications.push('OSHA 30', 'OSHA 10')
-        }
-        if (skills.includes('first-aid') || skills.includes('cpr')) {
-          certifications.push('First Aid / CPR')
-        }
-        if (skills.includes('cdl')) {
-          certifications.push('CDL Medical Card')
-        }
-
-        // Assign location based on index to distribute across Great Lakes region
-        const locationIndex = index % greatLakesLocations.length
-        const location = greatLakesLocations[locationIndex]
-
-        // Add some random offset to coordinates for variety
-        const coordinates: [number, number] = [
-          location.coords[0] + (Math.random() - 0.5) * 0.3,
-          location.coords[1] + (Math.random() - 0.5) * 0.3,
-        ]
-
+        // Create badges from skills and certifications
         const badges = [
-          ...skills.slice(0, 4).map((skill: string) => ({
+          ...skills.slice(0, 3).map((skill: string) => ({
             id: skill.toLowerCase().replace(/\s+/g, '-'),
             label: skill,
             tone: 'success' as const,
@@ -95,10 +64,17 @@ export const useTalentProfiles = () => {
           })),
         ]
 
-        // Generate realistic hourly rate based on experience and skills
-        const baseRate = 25 + (profile.years_of_experience || 0) * 2
-        const skillsMultiplier = Math.min(skills.length * 0.5, 3)
-        const hourlyRate = Math.round(baseRate + skillsMultiplier + Math.random() * 10)
+        // Convert hourly rate from cents to dollars
+        const hourlyRate = profile.hourly_rate_cents
+          ? Math.round(profile.hourly_rate_cents / 100)
+          : 0
+
+        // Use coordinates from database (already jittered for privacy)
+        // Note: Coordinates may be null if user hasn't set location
+        const coordinates: [number, number] = [
+          profile.longitude || -84.5555, // Default to Lansing, MI if no coords
+          profile.latitude || 42.7325,
+        ]
 
         return {
           id: profile.id,
@@ -116,7 +92,7 @@ export const useTalentProfiles = () => {
           badges,
           certifications,
           skills,
-          locationLabel: location.city,
+          locationLabel: profile.location || 'Location not set',
           coordinates,
           avatarUrl: profile.avatar_url,
         }

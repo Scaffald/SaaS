@@ -16,7 +16,6 @@ import {
 import { OnboardingControls } from './OnboardingControls'
 
 export type OnboardingStepInfo = {
-  theme: ThemeName
   Content: FC
   backgroundImage?: string
 }

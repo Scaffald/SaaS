@@ -97,6 +97,8 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       (pin: MapPin) => {
         const element = document.createElement('div')
         element.style.cursor = 'pointer'
+        element.style.width = '48px'
+        element.style.height = '48px'
 
         // Create React root and render MapPin component
         // For now, we'll create a simple DOM element
@@ -120,7 +122,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           font-size: 12px;
           box-shadow: 0 2px 8px rgba(0,0,0,0.2);
           border: ${pin.selected ? '3px solid #1E40AF' : '2px solid white'};
-          transform: translate(-50%, -100%);
+          position: relative;
         ">
           ${pin.organization === 'Organization' ? '🏢' : '👤'}
           ${

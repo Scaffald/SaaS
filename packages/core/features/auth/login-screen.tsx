@@ -14,12 +14,10 @@ import { supabase } from '@app/core/utils/supabase/client'
 import { useUser } from '@app/core/utils/useUser'
 import { ScaffaldLogo } from '@app/core/assets'
 import { useEffect, useState } from 'react'
-import { FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Link } from 'expo-router'
 import { z } from 'zod'
 import { SocialLogin } from './components/SocialLogin'
-import { MagicLinkPending } from './components/MagicLinkPending'
 
 const LoginSchema = z.object({
   email: z
@@ -35,7 +33,6 @@ export const LoginScreen = () => {
   useRedirectAfterSignIn()
   const { isLoadingSession } = useUser()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitSuccess, setSubmitSuccess] = useState(false)
 
   useEffect(() => {
     // remove the persisted email from the url, mostly to not leak user's email in case they share it
@@ -79,7 +76,11 @@ export const LoginScreen = () => {
       }
 
       console.log('Magic link sent successfully!')
-      setSubmitSuccess(true)
+      // Navigate to verify screen with email
+      router.push({
+        pathname: '/auth/verify',
+        params: { email: data.email },
+      })
     } catch (error) {
       console.error('Error sending magic link:', error)
     } finally {
@@ -91,64 +92,52 @@ export const LoginScreen = () => {
 
   return (
     <FormProvider {...form}>
-      {submitSuccess ? (
-        <CheckYourEmail />
-      ) : (
-        <YStack gap="$4" p="$4" maxW={400} flex={1}>
-          <YStack gap="$4" mb="$3" items="center">
-            <ScaffaldLogo width={200} height={33} />
-            <YStack gap="$2" items="center">
-              <H2 $sm={{ size: '$8' }}>Get started</H2>
-              <Paragraph text="center">
-                Enter your email and we&apos;ll send a one-time sign-in link.
-              </Paragraph>
-            </YStack>
+      <YStack gap="$4" p="$4">
+        <YStack gap="$4" mb="$3" items="center">
+          <ScaffaldLogo width={200} height={33} />
+          <YStack gap="$2" items="center">
+            <Paragraph text="center">
+              Enter your email and we&apos;ll send a sign-in link. You can also use this to register
+              a new account.
+            </Paragraph>
           </YStack>
-
-          <Form onSubmit={handleSubmit}>
-            <YStack gap="$4">
-              <Input
-                placeholder="your@email.acme"
-                value={form.watch('email')}
-                onChangeText={(text) => form.setValue('email', text)}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-              />
-
-              {form.formState.errors.email && (
-                <Text color="$red10" fontSize="$2">
-                  {form.formState.errors.email.message}
-                </Text>
-              )}
-
-              <Theme inverse>
-                <Button
-                  onPress={handleSubmit}
-                  disabled={isSubmitting}
-                  opacity={isSubmitting ? 0.5 : 1}
-                >
-                  {isSubmitting ? 'Sending...' : 'Send Magic Link'}
-                </Button>
-              </Theme>
-
-              {isWeb && <SocialLogin />}
-              {!isWeb && <SocialLogin />}
-            </YStack>
-          </Form>
         </YStack>
-      )}
+
+        <Form onSubmit={handleSubmit}>
+          <YStack gap="$4">
+            <Input
+              placeholder="your@email.acme"
+              value={form.watch('email')}
+              onChangeText={(text) => form.setValue('email', text)}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+            />
+
+            {form.formState.errors.email && (
+              <Text color="$red10" fontSize="$2">
+                {form.formState.errors.email.message}
+              </Text>
+            )}
+
+            <Theme inverse>
+              <Button
+                onPress={handleSubmit}
+                disabled={isSubmitting}
+                opacity={isSubmitting ? 0.5 : 1}
+              >
+                {isSubmitting ? 'Sending...' : 'Send Magic Link'}
+              </Button>
+            </Theme>
+
+            <SocialLogin />
+          </YStack>
+        </Form>
+      </YStack>
       {/* this is displayed when the session is being updated - usually when the user is redirected back from an auth provider */}
       {isLoadingSession && <LoadingOverlay />}
     </FormProvider>
   )
-}
-
-const CheckYourEmail = () => {
-  const email = useWatch<z.infer<typeof LoginSchema>>({ name: 'email' })
-  const { reset } = useFormContext<z.infer<typeof LoginSchema>>()
-
-  return <MagicLinkPending email={email} onBack={() => reset({ email })} />
 }
 
 // we use this hook here because this is the page we redirect unauthenticated users to
