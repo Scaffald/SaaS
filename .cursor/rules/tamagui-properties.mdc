@@ -19,6 +19,7 @@ alwaysApply: false
 - **right** → `r`
 - **bottom** → `b`
 - **position** → `pos`
+- **zIndex** → `z`
 
 ## Spacing Properties
 ### Padding
