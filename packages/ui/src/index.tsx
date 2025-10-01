@@ -27,6 +27,7 @@ export * from './components/address'
 export * from './components/chips'
 export * from './components/image-picker'
 export * from './components/inputs'
+export * from './components/maps'
 
 // Configuration and utilities
 export * from './config/countries'

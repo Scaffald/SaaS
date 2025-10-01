@@ -1,42 +1,58 @@
 import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import mapboxgl from 'mapbox-gl'
-import type { TalentMarker } from './types'
 
-interface MapMarkerProps {
-  marker: TalentMarker
-  map: mapboxgl.Map
-  isSelected: boolean
-  onSelect: (id: string) => void
+export interface MapMarkerData {
+  id: string
+  coordinate: [number, number]
+  score?: number
+  hourlyRate?: number
+  availability?: 'available' | 'unavailable' | 'limited'
+  organization?: string
+  isSelected?: boolean
 }
 
-export const MapMarker = ({ marker, map, isSelected, onSelect }: MapMarkerProps) => {
+interface MapMarkerProps {
+  data: MapMarkerData
+  map: mapboxgl.Map
+  onSelect: (id: string) => void
+  children?: (props: {
+    isSelected: boolean
+    size: string
+    iconSize: string
+  }) => React.ReactNode
+}
+
+export const MapMarker = ({ data, map, onSelect, children }: MapMarkerProps) => {
   const contentRef = useRef(document.createElement('div'))
   const markerRef = useRef<mapboxgl.Marker | null>(null)
 
   useEffect(() => {
     markerRef.current = new mapboxgl.Marker(contentRef.current)
-      .setLngLat(marker.coordinate)
+      .setLngLat(data.coordinate)
       .addTo(map)
 
     return () => {
       markerRef.current?.remove()
     }
-  }, [map, marker.coordinate])
+  }, [map, data.coordinate])
 
   // Get colors based on availability
   const getColors = () => {
-    switch (marker.availability) {
+    switch (data.availability) {
       case 'available':
         return { bg: '#10B981', border: '#047857' }
       case 'unavailable':
         return { bg: '#EF4444', border: '#DC2626' }
+      case 'limited':
+        return { bg: '#F59E0B', border: '#D97706' }
       default:
         return { bg: '#3B82F6', border: '#1E40AF' }
     }
   }
 
   const colors = getColors()
+  const isSelected = data.isSelected ?? false
   const bgGradient = isSelected
     ? 'linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%)'
     : `linear-gradient(135deg, ${colors.bg} 0%, ${colors.border} 100%)`
@@ -44,13 +60,45 @@ export const MapMarker = ({ marker, map, isSelected, onSelect }: MapMarkerProps)
   const pinSize = isSelected ? '52px' : '48px'
   const iconSize = isSelected ? '24' : '22'
 
+  // Allow custom rendering via children render prop
+  if (children) {
+    return (
+      <>
+        {createPortal(
+          <button
+            type="button"
+            onClick={() => onSelect(data.id)}
+            aria-label={`Select marker ${data.id}`}
+            style={{
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              cursor: 'pointer',
+              transform: 'translate(-50%, -100%)',
+              transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+              zIndex: isSelected ? '10' : '1',
+              background: 'none',
+              border: 'none',
+              padding: 0,
+            }}
+          >
+            {children({ isSelected, size: pinSize, iconSize })}
+          </button>,
+          contentRef.current
+        )}
+      </>
+    )
+  }
+
+  // Default marker rendering
   return (
     <>
       {createPortal(
         <button
           type="button"
-          onClick={() => onSelect(marker.id)}
-          aria-label={`Select ${marker.title}`}
+          onClick={() => onSelect(data.id)}
+          aria-label={`Select marker ${data.id}`}
           style={{
             position: 'relative',
             display: 'flex',
@@ -83,27 +131,29 @@ export const MapMarker = ({ marker, map, isSelected, onSelect }: MapMarkerProps)
             }}
           >
             {/* Score Badge */}
-            <div
-              style={{
-                position: 'absolute',
-                top: '-8px',
-                right: '-8px',
-                width: '20px',
-                height: '20px',
-                borderRadius: '10px',
-                background: '#1F2937',
-                color: '#FFFFFF',
-                fontSize: '10px',
-                fontWeight: '700',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: '2px solid #FFFFFF',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-              }}
-            >
-              {marker.score}
-            </div>
+            {data.score !== undefined && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '-8px',
+                  right: '-8px',
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '10px',
+                  background: '#1F2937',
+                  color: '#FFFFFF',
+                  fontSize: '10px',
+                  fontWeight: '700',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '2px solid #FFFFFF',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                }}
+              >
+                {data.score}
+              </div>
+            )}
 
             {/* Icon */}
             <svg
@@ -120,7 +170,7 @@ export const MapMarker = ({ marker, map, isSelected, onSelect }: MapMarkerProps)
                 filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))',
               }}
             >
-              {marker.organization === 'Organization' ? (
+              {data.organization === 'Organization' ? (
                 <>
                   <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" />
                   <path d="M6 12H4a2 2 0 0 0-2 2v8h20v-8a2 2 0 0 0-2-2h-2" />
@@ -139,7 +189,7 @@ export const MapMarker = ({ marker, map, isSelected, onSelect }: MapMarkerProps)
           </div>
 
           {/* Hourly Rate Badge */}
-          {marker.hourlyRate && (
+          {data.hourlyRate && (
             <div
               style={{
                 position: 'absolute',
@@ -157,7 +207,7 @@ export const MapMarker = ({ marker, map, isSelected, onSelect }: MapMarkerProps)
                 whiteSpace: 'nowrap',
               }}
             >
-              ${marker.hourlyRate}/hr
+              ${data.hourlyRate}/hr
             </div>
           )}
         </button>,
