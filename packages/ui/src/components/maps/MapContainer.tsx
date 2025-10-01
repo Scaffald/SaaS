@@ -40,7 +40,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
     useImperativeHandle(ref, () => ({
       flyTo: (newCenter: [number, number], newZoom = zoom) => {
         const map = mapRef.current as any
-        if (map && map.flyTo) {
+        if (map?.flyTo) {
           map.flyTo({
             center: newCenter,
             zoom: newZoom,
@@ -282,10 +282,10 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
                       position="absolute"
                       t={-8}
                       r={-8}
-                      w={20}
-                      h={20}
+                      width={20}
+                      height={20}
                       rounded="$12"
-                      bg="$gray12"
+                      bg="$color12"
                       borderWidth={2}
                       borderColor="white"
                       items="center"

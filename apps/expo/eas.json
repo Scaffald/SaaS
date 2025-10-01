@@ -27,7 +27,7 @@
         "gradleCommand": ":app:bundleRelease",
         "cache": {
           "disabled": false,
-          "key": "production-android", 
+          "key": "production-android",
           "customPaths": ["node_modules"]
         }
       }
@@ -60,7 +60,7 @@
     },
     "development": {
       "releaseChannel": "development",
-      "distribution": "internal", 
+      "distribution": "internal",
       "developmentClient": true,
       "env": {
         "APP_ENV": "development",
@@ -92,7 +92,7 @@
       }
     },
     "development:simulator": {
-      "extends": "development", 
+      "extends": "development",
       "ios": {
         "simulator": true
       }
@@ -143,7 +143,7 @@
     "staging": {
       "ios": {
         "appleId": "your-apple-id@example.com",
-        "ascAppId": "1234567890", 
+        "ascAppId": "1234567890",
         "appleTeamId": "ABCD123456"
       },
       "android": {
