@@ -1,0 +1,142 @@
+---
+description: "Complete reference of all available workspace commands and scripts"
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# SCF-Neue Workspace Commands Reference
+
+## Development Commands
+### Core Development
+- `pnpm dev` - Start Expo development server (port 8081)
+- `pnpm web` - Start web development server (port 3000)
+- `pnpm ios` - Run iOS app (includes Xcode version check)
+- `pnpm android` - Run Android app
+- `pnpm web:build` - Build web app for production
+- `pnpm prebuild` - Generate native code before builds
+
+### Platform-Specific Development
+- `pnpm start:dev-client` - Start with dev client
+- `pnpm web:serve` - Serve built web app
+- `pnpm adb:reverse` - Reverse Android port forwarding
+
+## Code Quality Commands
+### Primary Workflow
+- `pnpm check` - Format, lint, and type check (same as CI)
+- `pnpm build` - Build all packages
+- `pnpm format:fix` - Fix formatting with Biome
+- `pnpm lint:fix` - Fix linting issues
+- `pnpm typecheck` - TypeScript type checking
+
+### Comprehensive Testing
+- `pnpm test:all` - Full test suite (integration + build)
+- `pnpm test:build` - Build verification
+- `pnpm test:lint` - Lint and type check
+- `pnpm test:deps` - Dependency checks
+- `pnpm test:integration` - Integration testing
+- `pnpm test:tamagui` - Tamagui-specific checks
+- `pnpm test:performance` - Performance testing
+
+## Supabase Commands
+### Core Operations
+- `pnpm supa start` - Start local Supabase
+- `pnpm supa stop` - Stop local Supabase
+- `pnpm supa status` - Check Supabase status
+- `pnpm supa reset` - Reset database
+
+### Type Generation
+- `pnpm supa:generate` - Generate types from local DB
+- `pnpm supa:generate:remote` - Generate types from remote DB
+
+### Development Tools
+- `pnpm supa:studio` - Open Supabase Studio (http://127.0.0.1:54323)
+- `pnpm supa:mailpit` - Open Mailpit (http://127.0.0.1:54324)
+
+### Migration Management
+- `pnpm supa migration:new <name>` - Create new migration
+- `pnpm supa migration:up` - Apply migrations
+
+## UI/Tamagui Commands
+### UI Package Operations
+- `pnpm ui:check` - Check UI package
+- `pnpm ui:optimize` - Optimize UI package
+- `pnpm ui:extract` - Extract UI components
+
+### Tamagui Operations
+- `pnpm tamagui:check` - Check Tamagui configuration
+- `pnpm tamagui:upgrade` - Upgrade Tamagui packages
+- `pnpm tamagui:upgrade:canary` - Upgrade to canary versions
+
+## Build & Deployment
+### Build Commands
+- `pnpm build` - Build all packages
+- `pnpm watch` - Watch mode for development
+- `pnpm deploy` - Deploy application
+
+### EAS Build Commands (Expo)
+#### Development Builds
+- `pnpm eas:build:dev:simulator:ios` - iOS simulator build
+- `pnpm eas:build:dev:simulator:android` - Android simulator build
+- `pnpm eas:build:dev:device:ios` - iOS device build
+- `pnpm eas:build:dev:device:android` - Android device build
+- `pnpm eas:build:dev:simulator:ios:local` - Local iOS simulator build
+
+#### Staging Builds
+- `pnpm eas:build:staging:ios` - iOS staging build
+- `pnpm eas:build:staging:android` - Android staging build
+
+#### Submit Commands
+- `pnpm eas:submit:dev:ios` - Submit dev iOS build
+- `pnpm eas:submit:dev:android` - Submit dev Android build
+- `pnpm eas:submit:staging:ios` - Submit staging iOS build
+- `pnpm eas:submit:staging:android` - Submit staging Android build
+
+#### Update Commands
+- `pnpm eas:update:dev:ios` - Update dev iOS app
+- `pnpm eas:update:dev:android` - Update dev Android app
+- `pnpm eas:update:staging:ios` - Update staging iOS app
+- `pnpm eas:update:staging:android` - Update staging Android app
+
+## Monorepo Management
+### Dependency Management
+- `pnpm check-deps` - Check dependency version consistency
+- `pnpm check-circular-deps` - Check for circular dependencies
+
+### Code Generation
+- `pnpm generate` - Generate code using Turbo generators
+
+### Validation
+- `pnpm validate:migration` - Validate migration changes
+
+## Package-Specific Commands
+### Core Package (`@app/core`)
+- `pnpm --filter @app/core build` - Build core package
+- `pnpm --filter @app/core watch` - Watch core package
+- `pnpm --filter @app/core check:type` - Type check core package
+
+### UI Package (`@app/ui`)
+- `pnpm --filter @app/ui build` - Build UI package
+- `pnpm --filter @app/ui watch` - Watch UI package
+- `pnpm --filter @app/ui check` - Check UI package
+- `pnpm --filter @app/ui format:fix` - Format UI package
+
+### Expo App (`expo-app`)
+- `pnpm --filter expo-app start` - Start Expo app
+- `pnpm --filter expo-app web` - Start web version
+- `pnpm --filter expo-app ios` - Run iOS version
+- `pnpm --filter expo-app android` - Run Android version
+
+## Server Ports
+- **Expo Dev Server**: http://localhost:8081
+- **Supabase Local**: http://localhost:54321
+- **Supabase Studio**: http://127.0.0.1:54323
+- **Mailpit**: http://127.0.0.1:54324
+- **Web Dev Server**: http://localhost:3000 (when using `pnpm web`)
+
+## Best Practices
+1. **Always use workspace commands** instead of direct package commands
+2. **Run `pnpm check`** before committing changes
+3. **Use `pnpm test:all`** for comprehensive validation
+4. **Check server status** before suggesting operations
+5. **Use platform-specific commands** for targeted development
+6. **Leverage EAS commands** for production builds and deployments

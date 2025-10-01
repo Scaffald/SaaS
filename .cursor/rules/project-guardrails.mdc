@@ -7,14 +7,14 @@ alwaysApply: true
 # SCF-Neue Project Guard Rails
 
 ## Package Manager & Tooling
-- **ALWAYS use `yarn` instead of `npm`** - This is a yarn workspace monorepo
-- **ALWAYS use `yarn supabase` or `yarn supa`** instead of global supabase CLI
-- **NEVER run `npm run dev`** - Use specific workspace commands instead
+- **ALWAYS use `pnpm` instead of `npm` or `yarn`** - This is a pnpm workspace monorepo
+- **ALWAYS use `pnpm supa`** instead of global supabase CLI
+- **NEVER run `npm run dev` or `yarn dev`** - Use specific workspace commands instead
 
 ## Server Management
 - **ASSUME servers are already running** on default ports:
-  - Expo dev server: `http://localhost:8081` (via `yarn dev`)
-  - Supabase local: `http://localhost:54321` (via `yarn supa start`)
+  - Expo dev server: `http://localhost:8081` (via `pnpm dev`)
+  - Supabase local: `http://localhost:54321` (via `pnpm supa start`)
 - **DO NOT start development servers** unless explicitly requested - they may run as background processes
 - **DO NOT run `next dev` or `expo start`** directly - use workspace commands
 
@@ -32,12 +32,12 @@ alwaysApply: true
 - **Use `git blame`** to understand who made specific changes
 
 ## Workspace Commands Reference
-- Web development: `yarn web` (Next.js on port 3000)
-- Mobile development: `yarn native` (Expo on port 8081)
-- Supabase operations: `yarn supa` (local Supabase)
-- Type checking: `yarn typecheck`
-- Linting: `yarn lint`
-- Building: `yarn build`
+- **Development**: `pnpm dev` (Expo on port 8081), `pnpm web` (Web on port 3000)
+- **Platform builds**: `pnpm ios`, `pnpm android`, `pnpm web:build`, `pnpm prebuild`
+- **Supabase operations**: `pnpm supa` (local Supabase), `pnpm supa:studio`, `pnpm supa:mailpit`
+- **Code quality**: `pnpm check`, `pnpm build`, `pnpm typecheck`, `pnpm lint`, `pnpm format:fix`
+- **Testing**: `pnpm test:all`, `pnpm test:build`, `pnpm test:lint`, `pnpm test:deps`
+- **UI/Tamagui**: `pnpm ui:check`, `pnpm ui:optimize`, `pnpm tamagui:check`, `pnpm tamagui:upgrade`
 
 ## File Structure Awareness
 - This is a **monorepo** with workspaces in `apps/` and `packages/`
@@ -58,4 +58,4 @@ alwaysApply: true
 2. **Use workspace-specific commands** for each app
 3. **Test changes in actual clients** rather than assuming they work
 4. **Check git history** for context on bugs or issues
-5. **Use yarn workspace commands** for package-specific operations
+5. **Use pnpm workspace commands** for package-specific operations

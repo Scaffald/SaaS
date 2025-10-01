@@ -28,7 +28,7 @@ export function GoogleSignIn() {
       onPress={() => handleOAuthSignIn()}
       icon={IconGoogle}
     >
-      Sign in with Google
+      Login with Google
     </Button>
   )
 }

@@ -7,9 +7,11 @@ alwaysApply: false
 # React Native & Expo Development Rules
 
 ## Command Usage
-- **ALWAYS use `yarn native`** instead of `expo start` directly
-- **ALWAYS use `yarn ios`** for iOS development
-- **ALWAYS use `yarn android`** for Android development
+- **ALWAYS use `pnpm dev`** instead of `expo start` directly
+- **ALWAYS use `pnpm ios`** for iOS development (includes Xcode version check)
+- **ALWAYS use `pnpm android`** for Android development
+- **ALWAYS use `pnpm web`** for web development
+- **ALWAYS use `pnpm web:build`** for production web builds
 - **NEVER run `expo start`** directly - use workspace commands
 
 ## Server Assumptions
@@ -17,10 +19,19 @@ alwaysApply: false
 - **ASSUME Metro bundler** is running and watching for changes
 - **DO NOT start Expo servers** unless explicitly requested
 
+## EAS Build Commands
+- **Development builds**: `pnpm eas:build:dev:*` (simulator, device, local)
+- **Staging builds**: `pnpm eas:build:staging:*`
+- **Submit builds**: `pnpm eas:submit:*`
+- **Update builds**: `pnpm eas:update:*`
+- **Platform-specific**: Add `:ios` or `:android` suffix
+
 ## Development Workflow
 - **Test on actual devices** when possible
 - **Use Expo Go app** for quick testing
 - **Test on both iOS and Android** when making platform-specific changes
+- **Use `pnpm prebuild`** before native builds
+- **Check Xcode version** automatically with `pnpm ios`
 
 ## Platform-Specific Files
 - `.native.tsx` - React Native specific implementations

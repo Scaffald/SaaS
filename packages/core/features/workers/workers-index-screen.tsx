@@ -1,6 +1,7 @@
 import { useMemo, useState, useRef, useCallback, useEffect } from 'react'
 import { Button, Paragraph, Separator, Sheet, Text, XStack, YStack, useMedia } from '@app/ui'
-import { Filter, RefreshCw, MapPin } from '@tamagui/lucide-icons'
+import { MapContainer, type MapPinType } from '@app/ui'
+import { Filter, RefreshCw, List } from '@tamagui/lucide-icons'
 
 import { FilterBar } from './components/FilterBar'
 import { RadiusSlider } from './components/RadiusSlider'
@@ -9,8 +10,6 @@ import { defaultCenter, defaultRadiusMeters } from './data/mockProfiles'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
 import { useUserLocation } from './hooks/useUserLocation'
 import type { ActiveFilter } from './types'
-import type { TalentMarker } from './map/types'
-import { TalentMap } from './map'
 
 const formatRadius = (meters: number): string => {
   const miles = meters / 1609.34
@@ -117,7 +116,8 @@ export const WorkersIndexScreen = () => {
     return [radiusFilter, ...activeFilters]
   }, [radiusFilter, activeFilters])
 
-  const markers: TalentMarker[] = useMemo(
+  // Convert profiles to map pins
+  const mapPins: MapPinType[] = useMemo(
     () =>
       talentProfiles.map((profile) => ({
         id: profile.id,
@@ -127,15 +127,14 @@ export const WorkersIndexScreen = () => {
         metric: `e ${profile.score}`,
         score: profile.score,
         hourlyRate: profile.hourlyRate,
-        experienceYears: profile.experienceYears,
-        topSkills: profile.skills.slice(0, 3),
         badges: profile.badges,
-        availability: 'available' as const, // Default to available for now
-        locationLabel: profile.locationLabel,
-        organization: undefined, // Will default to worker icon
+        availability: 'available' as const,
       })),
     [talentProfiles]
   )
+
+  // State for mobile results sheet
+  const [showResultsSheet, setShowResultsSheet] = useState(false)
 
   const handleMarkerPress = (profileId: string) => {
     setSelectedProfileId(profileId)
@@ -171,24 +170,33 @@ export const WorkersIndexScreen = () => {
 
       <YStack flex={1} px="$5" pb="$5" overflow="hidden">
         {isSmallScreen ? (
-          <YStack gap="$4" flex={1} overflow="hidden">
-            <YStack height={320} shrink={0}>
-              <TalentMap
+          <YStack flex={1} position="relative">
+            {/* Fullscreen Map */}
+            <YStack position="absolute" t={0} l={0} r={0} b={0}>
+              <MapContainer
+                pins={mapPins}
                 center={mapCenter}
-                markers={markers}
-                radiusMeters={radiusMeters}
-                selectedMarkerId={selectedProfileId}
-                onMarkerPress={handleMarkerPress}
+                zoom={7}
+                onPinPress={handleMarkerPress}
               />
             </YStack>
-            <YStack flex={1} overflow="hidden">
-              <ResultList
-                ref={resultListRef}
-                profiles={talentProfiles}
-                selectedId={selectedProfileId}
-                onSelect={setSelectedProfileId}
-                isLoading={isLoading}
-              />
+
+            {/* Floating Results Button */}
+            <YStack position="absolute" b="$4" l={0} r={0} px="$4" z={100}>
+              <Button
+                size="$5"
+                icon={List}
+                onPress={() => setShowResultsSheet(true)}
+                bg="$background"
+                borderWidth={1}
+                borderColor="$borderColor"
+                shadowColor="$shadowColor"
+                shadowOffset={{ width: 0, height: 4 }}
+                shadowOpacity={0.15}
+                shadowRadius={12}
+              >
+                View {talentProfiles.length} Results
+              </Button>
             </YStack>
           </YStack>
         ) : (
@@ -203,17 +211,42 @@ export const WorkersIndexScreen = () => {
               />
             </YStack>
             <YStack flex={1} overflow="hidden">
-              <TalentMap
+              <MapContainer
+                pins={mapPins}
                 center={mapCenter}
-                markers={markers}
-                radiusMeters={radiusMeters}
-                selectedMarkerId={selectedProfileId}
-                onMarkerPress={handleMarkerPress}
+                zoom={7}
+                onPinPress={handleMarkerPress}
               />
             </YStack>
           </XStack>
         )}
       </YStack>
+
+      {/* Mobile Results Sheet */}
+      <Sheet
+        modal
+        open={showResultsSheet}
+        onOpenChange={setShowResultsSheet}
+        snapPoints={[85, 50]}
+        dismissOnSnapToBottom
+      >
+        <Sheet.Overlay />
+        <Sheet.Handle />
+        <Sheet.Frame>
+          <YStack flex={1} overflow="hidden">
+            <ResultList
+              ref={resultListRef}
+              profiles={talentProfiles}
+              selectedId={selectedProfileId}
+              onSelect={(id) => {
+                setSelectedProfileId(id)
+                setShowResultsSheet(false)
+              }}
+              isLoading={isLoading}
+            />
+          </YStack>
+        </Sheet.Frame>
+      </Sheet>
 
       <Sheet modal open={filtersOpen} onOpenChange={setFiltersOpen} snapPoints={[70]}>
         <Sheet.Overlay />

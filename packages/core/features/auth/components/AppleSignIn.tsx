@@ -29,7 +29,7 @@ export function AppleSignIn() {
       onPress={() => handleOAuthSignIn()}
       icon={IconApple}
     >
-      Sign in with Apple
+      Login with Apple
     </Button>
   )
 }

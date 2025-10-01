@@ -16,6 +16,7 @@ import {
   Label,
   Text,
   H2,
+  H1,
 } from 'tamagui'
 
 import {
@@ -119,7 +120,7 @@ function CodeConfirmationInput({
           textContentType="oneTimeCode"
           autoComplete="one-time-code"
           secureTextEntry={secureTextEntry}
-          enterKeyHint={id === codeSize - 1 ? 'done' : 'next'}
+          // enterKeyHint={id === codeSize - 1 ? 'done' : 'next'}
           text="center"
           fontSize="$8"
           rounded="$5"
@@ -294,9 +295,9 @@ const ResendTimer = ({
   if (!isTimerActive) {
     return (
       <XStack
+        pt="$7"
         items="center"
-        self="flex-end"
-        justify="flex-end"
+        justify="center"
         gap="$2"
         className="flex"
         cursor="pointer"
@@ -304,7 +305,7 @@ const ResendTimer = ({
       >
         <RefreshCcw size={12} color="$blue10" />
         <Paragraph color="$blue10" text="right" fontSize="$1">
-          Resend OTP
+          Resend Code
         </Paragraph>
       </XStack>
     )
@@ -414,18 +415,21 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
   const displayEmail = email ?? 'your email address'
 
   return (
-    <View items="center" justify="center" gap="$4">
+    <View flex={1} items="center" justify="center" p="$4" width="100%">
       <View
-        minW={300}
+        borderWidth="$1"
+        borderColor="$borderColor"
         items="center"
         justify="center"
         rounded="$8"
         overflow="hidden"
-        p="$5"
+        p="$4"
+        px="$3"
+        $gtSm={{ p: '$5', minW: 300 }}
         width="100%"
-        maxW={400}
+        maxW={450}
       >
-        <View position="absolute" t="$4" r="$4">
+        <View r="$4">
           {codeEntered ? (
             <View animation="bouncy" key="success" flexDirection="row" gap="$2">
               <AnimatePresence>
@@ -445,17 +449,12 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
                 <CheckCircle2 color="$green10" />
               </View>
             </View>
-          ) : (
-            <View key="email" enterStyle={{ opacity: 0.5, scale: 1.5 }} animation="100ms">
-              <Mail size={16} opacity={0.25} />
-            </View>
-          )}
+          ) : null}
         </View>
 
         <View
           key="code"
           animation="200ms"
-          flex={1}
           opacity={codeEntered ? 0 : 1}
           style={{ pointerEvents: codeEntered ? 'none' : 'auto' }}
           transform={[{ translateX: codeEntered ? -150 : 0 }]}
@@ -466,33 +465,36 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
             exitStyle={{ opacity: 0 }}
             justify="space-between"
             gap="$4"
-            flex={1}
             opacity={code ? 0 : 1}
           >
-            <View items="center" gap="$3">
-              <ScaffaldLogo width={160} height={26} />
-              <H2 fontWeight="700" fontSize="$6" $md={{ fontSize: '$8' }} color="$color12">
+            <View items="center" gap="$3" width="100%">
+              <H1 fontWeight="700" fontSize="$7" color="$color12">
                 Check your email
-              </H2>
+              </H1>
 
-              <View flexDirection="row" items="center" justify="center" gap="$2" flex={1}>
+              <View flexDirection="row" items="center" justify="center" gap="$2">
                 <Mail size="$1" color="$color12" />
-                <Paragraph size="$4" fontWeight="500" color="$color12">
+                <Paragraph
+                  size="$3"
+                  $gtSm={{ size: '$4' }}
+                  fontWeight="500"
+                  color="$color12"
+                  numberOfLines={1}
+                  ellipsizeMode="middle"
+                >
                   {displayEmail}
                 </Paragraph>
               </View>
 
-              <Paragraph text="center">
+              <Paragraph text="center" size="$2" $gtSm={{ size: '$3' }}>
                 Open the link in your email or enter the code below to sign in.
               </Paragraph>
             </View>
 
-            <View px="$4" $md={{ px: 0 }}>
-              <YStack gap="$2">
-                <CodeConfirmation size="$5" codeSize={6} secureText={false} onEnter={handleEnter} />
+            <View width="100%">
+              <CodeConfirmation size="$5" codeSize={6} secureText={false} onEnter={handleEnter} />
 
-                <ResendTimer onComplete={handleResendComplete} onResendClick={handleResendClick} />
-              </YStack>
+              <ResendTimer onComplete={handleResendComplete} onResendClick={handleResendClick} />
             </View>
 
             {error && (
@@ -500,18 +502,6 @@ export const MagicLinkPending = ({ email, onBack }: MagicLinkPendingProps) => {
                 {error}
               </Paragraph>
             )}
-
-            <XStack
-              borderColor="transparent"
-              onPress={onBack}
-              gap="$2"
-              items="center"
-              justify="center"
-              cursor="pointer"
-            >
-              <ChevronLeft size={16} color="$color10" />
-              <Paragraph color="$color11">Back</Paragraph>
-            </XStack>
           </YStack>
 
           {code ? (
