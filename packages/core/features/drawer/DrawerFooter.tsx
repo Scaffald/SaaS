@@ -3,6 +3,7 @@ import { Moon, Sun, LogOut } from '@tamagui/lucide-icons'
 import { supabase } from '@app/core/utils/supabase/client'
 import { useThemeSetting } from '@app/core/provider/theme/UniversalThemeProvider'
 import { GestureResponderEvent } from 'react-native'
+import { Link } from 'expo-router'
 
 /**
  * DrawerFooter component renders fixed action buttons at the bottom of the drawer
@@ -57,6 +58,8 @@ export const DrawerFooter = () => {
       >
         {isDark ? <Sun size={20} color="$accentColor" /> : <Moon size={20} color="$accentColor" />}
       </Button>
+
+      <Link href="/map">Map</Link>
 
       {/* Logout Button */}
       <Button

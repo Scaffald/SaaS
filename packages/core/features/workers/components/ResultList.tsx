@@ -100,7 +100,7 @@ export const ResultList = forwardRef<ResultListRef, ResultListProps>(
 
     return (
       <YStack flex={1} gap="$3" overflow="hidden">
-        <XStack justify="space-between" items="center" flexShrink={0}>
+        <XStack justify="space-between" items="center" shrink={0}>
           <Text fontWeight="700" fontSize="$5">
             {profiles.length} results
           </Text>
@@ -111,7 +111,7 @@ export const ResultList = forwardRef<ResultListRef, ResultListProps>(
           showsVerticalScrollIndicator
           renderToHardwareTextureAndroid
         >
-          <YStack gap="$2" paddingBottom="$6">
+          <YStack gap="$2" pb="$6">
             {profiles.map((profile, index) => (
               <YStack key={profile.id} gap="$2">
                 <ResultCard

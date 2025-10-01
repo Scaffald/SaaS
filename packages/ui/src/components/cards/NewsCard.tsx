@@ -1,5 +1,6 @@
 import { ReactNode, useState, ElementRef } from 'react'
 import { Card, Image, View, Text, YStack, XStack, Button, Anchor, type CardProps } from 'tamagui'
+import * as Linking from 'expo-linking'
 
 /**
  * NewsCard - A reusable news card component with image overlay
@@ -69,8 +70,8 @@ export const NewsCard = ({
     if (disabled) return
     if (onPress) {
       onPress()
-    } else if (href && typeof window !== 'undefined') {
-      window.open(href, target)
+    } else if (href) {
+      Linking.openURL(href)
     }
   }
 
@@ -157,41 +158,22 @@ export const NewsCard = ({
             {/* Read More Link */}
             {showReadMore && isInteractive && (
               <XStack>
-                {href && typeof window !== 'undefined' ? (
-                  <Anchor href={href} target={target} textDecorationLine="none">
-                    <Button
-                      size="$3"
-                      variant="outlined"
-                      borderColor="$color8"
-                      color="$color12"
-                      fontWeight="600"
-                      pressStyle={{ scale: 0.95 }}
-                      hoverStyle={{
-                        bg: '$color3',
-                        borderColor: '$color9',
-                      }}
-                    >
-                      {readMoreText}
-                    </Button>
-                  </Anchor>
-                ) : (
-                  <Button
-                    size="$3"
-                    variant="outlined"
-                    borderColor="$color8"
-                    color="$color12"
-                    fontWeight="600"
-                    onPress={handlePress}
-                    disabled={disabled}
-                    pressStyle={{ scale: 0.95 }}
-                    hoverStyle={{
-                      bg: '$color3',
-                      borderColor: '$color9',
-                    }}
-                  >
-                    {readMoreText}
-                  </Button>
-                )}
+                <Button
+                  size="$3"
+                  variant="outlined"
+                  borderColor="$color8"
+                  color="$color12"
+                  fontWeight="600"
+                  onPress={handlePress}
+                  disabled={disabled}
+                  pressStyle={{ scale: 0.95 }}
+                  hoverStyle={{
+                    bg: '$color3',
+                    borderColor: '$color9',
+                  }}
+                >
+                  {readMoreText}
+                </Button>
               </XStack>
             )}
           </XStack>
