@@ -15,14 +15,13 @@ export const MapTooltip = memo(({ data, visible, position }: MapTooltipProps) =>
     <View
       position="absolute"
       bg="$background"
-      borderColor="$gray6"
+      borderColor="$color6"
       borderWidth={1}
-      borderRadius="$4"
-      padding="$3"
-      minWidth={200}
-      maxWidth={280}
-      elevation={3}
-      zIndex={1000}
+      rounded="$4"
+      p="$3"
+      minW={200}
+      maxW={280}
+      z={1000}
       style={{
         transform: 'translate(-50%, -100%)',
         top: position?.y ?? 0,

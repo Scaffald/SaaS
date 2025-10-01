@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { View, Text, YStack, Circle } from 'tamagui'
+import { View, Text, YStack, Circle, useTheme, GetThemeValueForKey } from 'tamagui'
 import { User, Building } from '@tamagui/lucide-icons'
 import type { MapPin as MapPinType } from './types'
 
@@ -9,19 +9,18 @@ interface MapPinProps {
 }
 
 export const MapPin = memo(({ pin, onPress }: MapPinProps) => {
-  const { id, score, hourlyRate, availability = 'available', organization, selected } = pin
+  const { id, score, availability = 'available', organization, selected } = pin
+  const theme = useTheme()
 
   // Get background color based on availability
-  const getBackgroundColor = () => {
+  const getBackgroundColor = (): GetThemeValueForKey<'backgroundColor'> => {
     switch (availability) {
       case 'available':
-        return '$green9'
-      case 'busy':
-        return '$orange9'
+        return theme.green9?.val as GetThemeValueForKey<'backgroundColor'>
       case 'unavailable':
-        return '$red9'
+        return theme.red9?.val as GetThemeValueForKey<'backgroundColor'>
       default:
-        return '$blue9'
+        return theme.blue9?.val as GetThemeValueForKey<'backgroundColor'>
     }
   }
 
@@ -62,31 +61,13 @@ export const MapPin = memo(({ pin, onPress }: MapPinProps) => {
             r={-8}
             items="center"
             justify="center"
-            borderWidth={2}
+            borderWidth={1}
             borderColor="$color1"
           >
             <Text color="white" fontSize={10} fontWeight="700">
               {score}
             </Text>
           </Circle>
-        )}
-
-        {/* Hourly Rate Badge */}
-        {hourlyRate && (
-          <View
-            position="absolute"
-            b={-8}
-            bg="white"
-            rounded="$2"
-            px={6}
-            py={2}
-            borderWidth={1}
-            borderColor={'$color12'}
-          >
-            <Text color={'$color12'} fontSize={9} fontWeight="600">
-              ${hourlyRate}/hr
-            </Text>
-          </View>
         )}
       </View>
 
