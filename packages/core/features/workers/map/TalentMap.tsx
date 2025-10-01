@@ -117,10 +117,6 @@ const createMarkerElement = (marker: TalentMarker) => {
       bgColor = '#10B981' // green
       borderColor = '#047857'
       break
-    case 'busy':
-      bgColor = '#F59E0B' // amber
-      borderColor = '#D97706'
-      break
     case 'unavailable':
       bgColor = '#EF4444' // red
       borderColor = '#DC2626'
@@ -242,30 +238,28 @@ const createMarkerElement = (marker: TalentMarker) => {
   return wrapper
 }
 
-const updateMarkerElement = (
-  element: HTMLElement,
-  metric: string | undefined,
-  label: string,
-  selected: boolean
-) => {
-  const metricNode = element.querySelector<HTMLElement>('span[data-role="metric"]')
-  const labelNode = element.querySelector<HTMLElement>('span[data-role="label"]')
+const updateMarkerElement = (element: HTMLElement, selected: boolean) => {
+  // Find the pin container (the rounded div with gradient background)
+  const pinContainer = element.querySelector<HTMLElement>('div[style*="border-radius"]')
 
-  if (metricNode) {
-    metricNode.textContent = metric ?? ''
-  }
-  if (labelNode) {
-    labelNode.textContent = label
-  }
-
-  if (selected) {
-    element.style.border = '2px solid rgba(30, 64, 175, 0.9)'
-    element.style.background = 'rgba(30, 64, 175, 0.2)'
-    element.style.boxShadow = '0 10px 28px rgba(30, 64, 175, 0.3)'
-  } else {
-    element.style.border = '2px solid rgba(59, 130, 246, 0.6)'
-    element.style.background = 'rgba(59, 130, 246, 0.18)'
-    element.style.boxShadow = '0 8px 20px rgba(37, 99, 235, 0.2)'
+  if (pinContainer) {
+    if (selected) {
+      // Selected state: blue background, larger size, larger drop shadow
+      pinContainer.style.transform = 'scale(1.15)'
+      pinContainer.style.width = '52px'
+      pinContainer.style.height = '52px'
+      pinContainer.style.background = 'linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%)'
+      pinContainer.style.boxShadow =
+        '0 8px 32px rgba(59, 130, 246, 0.4), 0 0 0 3px rgba(59, 130, 246, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.8)'
+    } else {
+      // Default state: reset to original styling
+      pinContainer.style.transform = 'scale(1)'
+      pinContainer.style.width = '48px'
+      pinContainer.style.height = '48px'
+      // Keep original gradient (will be set by createMarkerElement based on availability)
+      pinContainer.style.boxShadow =
+        '0 4px 20px rgba(0, 0, 0, 0.15), 0 0 0 2px rgba(255, 255, 255, 0.8)'
+    }
   }
 }
 
@@ -339,11 +333,23 @@ export const TalentMap = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Track initial center to prevent unnecessary map movements
+  const initialCenterRef = useRef(center)
+
   useEffect(() => {
     const map = mapRef.current
     if (!map) return
-    const targetZoom = radiusMeters ? radiusToZoomLevel(radiusMeters) : map.getZoom()
-    map.flyTo({ center, zoom: targetZoom, speed: 0.9, curve: 1.4, essential: true })
+
+    // Only fly to new location if center or radius actually changed
+    // Don't trigger on other re-renders (like selection changes)
+    const centerChanged =
+      initialCenterRef.current[0] !== center[0] || initialCenterRef.current[1] !== center[1]
+
+    if (centerChanged || radiusMeters) {
+      const targetZoom = radiusMeters ? radiusToZoomLevel(radiusMeters) : map.getZoom()
+      map.flyTo({ center, zoom: targetZoom, speed: 0.9, curve: 1.4, essential: true })
+      initialCenterRef.current = center
+    }
   }, [center, radiusMeters])
 
   useEffect(() => {
@@ -428,15 +434,10 @@ export const TalentMap = ({
           .addTo(map)
 
         markersRef.current.set(marker.id, { instance, element })
-        updateMarkerElement(element, marker.metric, marker.title, marker.id === selectedMarkerId)
+        updateMarkerElement(element, marker.id === selectedMarkerId)
       } else {
         existing.instance.setLngLat(marker.coordinate)
-        updateMarkerElement(
-          existing.element,
-          marker.metric,
-          marker.title,
-          marker.id === selectedMarkerId
-        )
+        updateMarkerElement(existing.element, marker.id === selectedMarkerId)
       }
     }
   }, [handleMarkerInteraction, isMapReady, markers, selectedMarkerId])

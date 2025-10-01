@@ -5,7 +5,7 @@ export interface MapPin {
   subtitle?: string
   score?: number
   hourlyRate?: number
-  availability?: 'available' | 'busy' | 'unavailable'
+  availability?: 'available' | 'unavailable'
   organization?: 'Individual' | 'Organization'
   badges?: Array<{
     id: string

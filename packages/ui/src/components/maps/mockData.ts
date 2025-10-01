@@ -22,7 +22,7 @@ export const mockMapPins: MapPin[] = [
     subtitle: 'Welder • 8 years experience',
     score: 88,
     hourlyRate: 38,
-    availability: 'busy',
+    availability: 'unavailable',
     organization: 'Individual',
     badges: [
       { id: 'welding', label: 'AWS Certified', tone: 'success' },
@@ -104,7 +104,7 @@ export const mockMapPins: MapPin[] = [
     subtitle: 'Painter • 9 years experience',
     score: 84,
     hourlyRate: 36,
-    availability: 'busy',
+    availability: 'unavailable',
     organization: 'Individual',
     badges: [
       { id: 'painting', label: 'Interior/Exterior', tone: 'success' },

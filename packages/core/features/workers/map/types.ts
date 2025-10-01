@@ -16,7 +16,7 @@ export type TalentMarker = {
     label: string
     tone: 'success' | 'warning' | 'danger'
   }>
-  availability: 'available' | 'busy' | 'unavailable'
+  availability: 'available' | 'unavailable'
   locationLabel: string
 }
 

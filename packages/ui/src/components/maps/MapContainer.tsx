@@ -107,7 +107,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           background: ${
             pin.availability === 'available'
               ? '#10B981'
-              : pin.availability === 'busy'
+              : pin.availability === 'unavailable'
                 ? '#F59E0B'
                 : '#EF4444'
           };
@@ -259,7 +259,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
                   bg={
                     pin.availability === 'available'
                       ? '$green9'
-                      : pin.availability === 'busy'
+                      : pin.availability === 'unavailable'
                         ? '$orange9'
                         : '$red9'
                   }
