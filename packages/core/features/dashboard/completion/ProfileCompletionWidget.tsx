@@ -1,7 +1,7 @@
 import React from 'react'
 import { Checklist, DashboardWidget } from '@app/ui'
 import { useProfileCompletion } from './useProfileCompletion'
-import type { ChecklistItem } from '@app/ui'
+import type { ChecklistItemType } from '@app/ui'
 
 export interface ProfileCompletionWidgetProps {
   onNavigate: (route: string) => void
@@ -16,7 +16,7 @@ export interface ProfileCompletionWidgetProps {
 export const ProfileCompletionWidget = ({ onNavigate }: ProfileCompletionWidgetProps) => {
   const { completionData, isLoading } = useProfileCompletion()
 
-  const handleItemPress = (item: ChecklistItem) => {
+  const handleItemPress = (item: ChecklistItemType) => {
     if (item.actionRoute) {
       onNavigate(item.actionRoute)
     }

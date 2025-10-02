@@ -28,24 +28,24 @@ Please check the following locations for comprehensive project information:
 ## Key Development Commands
 ```bash
 # Primary quality workflow (matches CI exactly)
-yarn check && yarn build
+pnpm check && pnpm build
 
 # Individual checks
-yarn check              # Format, lint, type check
-yarn build              # Build verification
-yarn check-deps         # Dependency consistency
-yarn lint-sherif        # Advanced monorepo linting
-yarn check-circular-deps # Circular import detection
+pnpm check              # Format, lint, type check
+pnpm build              # Build verification
+pnpm check-deps         # Dependency consistency
+pnpm lint-sherif        # Advanced monorepo linting
+pnpm check-circular-deps # Circular import detection
 ```
 
 ## Project Structure
-- **Yarn workspace monorepo** with cross-platform React Native/Next.js application
+- **pnpm workspace monorepo** with cross-platform React Native/Next.js application
 - **Primary platform**: React Native (Expo) for iOS, Android, and Web
 - **Tech stack**: TypeScript, Tamagui, Supabase, tRPC, Turbo
-- **Package manager**: Always use `yarn` instead of `npm`
+- **Package manager**: Always use `pnpm` instead of `npm`
 
 ## Quick Reference
-- **Always run `yarn check`** before committing changes
+- **Always run `pnpm check`** before committing changes
 - **Use direct imports** instead of barrel files for better performance
 - **Follow route naming convention**: `<parent>-<child>-{left|right|screen}.tsx`
 - **Prefer Tamagui components** for UI development

@@ -1,7 +1,7 @@
 # SCF-Neue Project Overview
 
 ## Project Type
-**Yarn Workspace Monorepo** - Cross-platform React Native/Next.js application with shared packages
+**pnpm Workspace Monorepo** - Cross-platform React Native/Next.js application with shared packages
 
 ## Tech Stack
 
@@ -9,7 +9,7 @@
 - **React Native** (Expo) - Mobile application
 - **Next.js** - Web application (legacy, being migrated)
 - **TypeScript** - Type safety across all packages
-- **Yarn 4.1.0** - Package manager with workspaces
+- **pnpm 4.1.0** - Package manager with workspaces
 - **Turbo** - Monorepo build system and task runner
 
 ### UI & Styling
@@ -74,11 +74,11 @@ SCF-Neue/
 ## Development Workflow
 
 ### Commands
-- `yarn dev` - Start Expo development server
-- `yarn web` - Start web development
-- `yarn check` - Format, lint, and type check
-- `yarn build` - Build all packages
-- `yarn supa` - Supabase operations
+- `pnpm dev` - Start Expo development server
+- `pnpm web` - Start web development
+- `pnpm check` - Format, lint, and type check
+- `pnpm build` - Build all packages
+- `pnpm supa` - Supabase operations
 
 ### Quality Checks
 - **Formatting**: Biome auto-formatting

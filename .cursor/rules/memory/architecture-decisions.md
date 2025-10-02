@@ -2,8 +2,8 @@
 
 ## Core Architectural Choices
 
-### 1. Monorepo with Yarn Workspaces
-**Decision**: Use Yarn workspace monorepo instead of separate repositories
+### 1. Monorepo with pnpm Workspaces
+**Decision**: Use pnpm workspace monorepo instead of separate repositories
 
 **Rationale**:
 - Shared code between web and mobile applications

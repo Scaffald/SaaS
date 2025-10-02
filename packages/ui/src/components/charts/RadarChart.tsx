@@ -33,7 +33,7 @@ export interface RadarChartProps {
   stripHeight?: number
   color?: string
   strokeWidth?: number
-  backgroundColor?: string
+  backgroundColor?: GetThemeValueForKey<'backgroundColor'>
   gridColor?: string
   labelColor?: string
   labelTextSize?: number
@@ -110,36 +110,28 @@ export const RadarChart = ({
   // Handle multiple datasets or single data array
   if (datasets && datasets.length > 0) {
     console.log('Using datasets:', datasets)
-    // For multiple datasets, use dataPoints prop
-    const dataPoints = datasets.map((dataset) => ({
-      data: dataset.data.map((item) => item.value),
-      color: dataset.color || dataset.strokeColor || '#1B6B93',
-      fillColor: dataset.fillColor,
-      strokeColor: dataset.strokeColor,
-      strokeWidth: dataset.strokeWidth || 2,
-      fillOpacity: dataset.fillOpacity || 0.6,
-    }))
-
-    const labels = datasets[0].data.map((item) => item.label || '')
-    console.log('DataPoints:', dataPoints)
+    // For multiple datasets, use first dataset only (multi-dataset not fully supported)
+    const firstDataset = datasets[0]
+    const chartDataValues = firstDataset.data.map((item) => item.value)
+    const labels = firstDataset.data.map((item) => item.label || '')
+    console.log('Dataset values:', chartDataValues)
     console.log('Labels:', labels)
 
     return (
-      <View items="center" bg={backgroundColor} rounded="$4" p="$4">
+      <View
+        items="center"
+        bg={typeof backgroundColor === 'string' ? backgroundColor : 'transparent'}
+        rounded="$4"
+        p="$4"
+      >
         <GiftedRadarChart
-          dataPoints={dataPoints}
+          data={chartDataValues}
           labels={labels}
-          height={height}
-          width={width}
           chartSize={radius * 2}
           maxValue={maxValue}
           noOfSections={noOfSections}
           isAnimated={isAnimated}
           animationDuration={animationDuration}
-          bg={backgroundColor}
-          gridColor={gridColor}
-          labelColor={labelColor}
-          labelTextSize={labelTextSize}
           {...props}
         />
       </View>
@@ -158,21 +150,20 @@ export const RadarChart = ({
   console.log('Single dataset - Labels:', labels)
 
   return (
-    <View items="center" bg={backgroundColor} rounded="$4" p="$4">
+    <View
+      items="center"
+      bg={typeof backgroundColor === 'string' ? backgroundColor : 'transparent'}
+      rounded="$4"
+      p="$4"
+    >
       <GiftedRadarChart
         data={chartDataValues}
         labels={labels}
-        height={height}
-        width={width}
         chartSize={radius * 2}
         maxValue={maxValue}
         noOfSections={noOfSections}
         isAnimated={isAnimated}
         animationDuration={animationDuration}
-        bg={backgroundColor}
-        gridColor={gridColor}
-        labelColor={labelColor}
-        labelTextSize={labelTextSize}
         {...props}
       />
     </View>

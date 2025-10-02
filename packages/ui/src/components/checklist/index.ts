@@ -4,10 +4,10 @@ export { ChecklistProgress } from './ChecklistProgress'
 export { ChecklistList } from './ChecklistList'
 export { ChecklistItem } from './ChecklistItem'
 export type {
-  ChecklistProps,
-  ChecklistItem,
   ChecklistHeaderProps,
-  ChecklistProgressProps,
-  ChecklistListProps,
+  ChecklistItem as ChecklistItemType,
   ChecklistItemProps,
+  ChecklistListProps,
+  ChecklistProgressProps,
+  ChecklistProps,
 } from './types'

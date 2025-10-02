@@ -1,49 +1,25 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
-import { Platform } from 'react-native'
-import { View, Text } from 'tamagui'
-import type { MapContainerProps, MapPin } from './types'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { View } from 'tamagui'
+import type { MapContainerProps, MapContainerRef } from './types'
+import { MapFallback } from './MapFallback'
 
 import 'mapbox-gl/dist/mapbox-gl.css'
 
-// Web-specific imports
-let mapboxgl: unknown
-
-// Native-specific imports (Mapbox React Native SDK)
-let MapboxGL: any
-
-if (Platform.OS === 'web') {
-  try {
-    mapboxgl = require('mapbox-gl')
-  } catch (e) {
-    console.warn('Mapbox GL not available:', e)
-  }
-} else {
-  try {
-    MapboxGL = require('@rnmapbox/maps').default
-  } catch (e) {
-    console.warn('Mapbox React Native SDK not available:', e)
-  }
-}
-
-export interface MapContainerRef {
-  flyTo: (center: [number, number], zoom?: number) => void
-  centerOnPin: (pinId: string) => void
-  getPinScreenCoordinates: (pinId: string) => { x: number; y: number } | null
-  setCardOverlay: (pinId: string | null, content: HTMLElement | null) => void
-}
+// Import mapboxgl with proper typing
+import mapboxgl from 'mapbox-gl'
 
 export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
   ({ pins, center = [-84.5555, 42.7325], zoom = 7, onPinPress, style }, ref) => {
     const mapContainerRef = useRef<HTMLDivElement | null>(null)
-    const mapRef = useRef<unknown>(null)
-    const markersRef = useRef(new Map<string, unknown>())
-    const cardMarkerRef = useRef<unknown>(null)
+    const mapRef = useRef<mapboxgl.Map | null>(null)
+    const markersRef = useRef(new Map<string, mapboxgl.Marker>())
+    const cardMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const [isMapReady, setIsMapReady] = useState(false)
 
     // Expose map methods to parent
     useImperativeHandle(ref, () => ({
       flyTo: (newCenter: [number, number], newZoom = zoom) => {
-        const map = mapRef.current as any
+        const map = mapRef.current
         if (map?.flyTo) {
           map.flyTo({
             center: newCenter,
@@ -53,7 +29,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         }
       },
       centerOnPin: (pinId: string) => {
-        const map = mapRef.current as any
+        const map = mapRef.current
         const pin = pins.find((p) => p.id === pinId)
         if (map && pin) {
           map.flyTo({
@@ -64,9 +40,9 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         }
       },
       getPinScreenCoordinates: (pinId: string) => {
-        const map = mapRef.current as any
+        const map = mapRef.current
         const pin = pins.find((p) => p.id === pinId)
-        if (!map || !pin || Platform.OS !== 'web') {
+        if (!map || !pin) {
           return null
         }
         // Convert geo coordinates to screen coordinates
@@ -74,14 +50,12 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         return { x: point.x, y: point.y }
       },
       setCardOverlay: (pinId: string | null, content: HTMLElement | null) => {
-        const map = mapRef.current as any
-        if (!map || Platform.OS !== 'web' || !mapboxgl) return
-
-        const mapboxInstance = mapboxgl as any
+        const map = mapRef.current
+        if (!map) return
 
         // Remove existing card marker
         if (cardMarkerRef.current) {
-          ;(cardMarkerRef.current as any).remove()
+          cardMarkerRef.current.remove()
           cardMarkerRef.current = null
         }
 
@@ -93,7 +67,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         if (!pin) return
 
         // Create a new marker anchored to the pin's coordinates
-        const marker = new mapboxInstance.Marker({
+        const marker = new mapboxgl.Marker({
           element: content,
           anchor: 'bottom', // Anchor the bottom of the card to the pin location
           offset: [0, -24], // Offset up by pin radius to position above pin
@@ -105,22 +79,21 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       },
     }))
 
-    // Initialize map (web only for now)
+    // Initialize map
     useEffect(() => {
-      if (Platform.OS !== 'web' || !mapboxgl || !mapContainerRef.current || mapRef.current) {
+      if (!mapContainerRef.current || mapRef.current) {
         return
       }
 
       // Set Mapbox access token
-      const mapboxInstance = mapboxgl as any
-      if (!mapboxInstance.accessToken) {
-        mapboxInstance.accessToken =
+      if (!mapboxgl.accessToken) {
+        mapboxgl.accessToken =
           process.env.EXPO_PUBLIC_MAPBOX_TOKEN ??
           process.env.MAPBOX_PUBLIC_TOKEN ??
           'pk.eyJ1Ijoic2NhZmZhbGQiLCJhIjoiY204Nmh5NWZ5MDRycTJrcHo0NHc1em5vZCJ9.w8FJ5p2msraGyyOeeLanhg'
       }
 
-      const map = new mapboxInstance.Map({
+      const map = new mapboxgl.Map({
         container: mapContainerRef.current,
         style: 'mapbox://styles/mapbox/streets-v12',
         center,
@@ -129,8 +102,8 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       })
 
       // Add navigation controls
-      map.addControl(new mapboxInstance.NavigationControl({ showCompass: false }), 'top-right')
-      map.addControl(new mapboxInstance.ScaleControl({ unit: 'imperial' }))
+      map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right')
+      map.addControl(new mapboxgl.ScaleControl({ unit: 'imperial' }))
 
       map.on('load', () => {
         // Add clustered source
@@ -241,17 +214,25 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         })
 
         // Handle cluster clicks - zoom in
-        map.on('click', 'clusters', (e: any) => {
+        map.on('click', 'clusters', (e) => {
           const features = map.queryRenderedFeatures(e.point, {
             layers: ['clusters'],
           })
+          if (!features || features.length === 0 || !features[0].properties?.cluster_id) {
+            return
+          }
           const clusterId = features[0].properties.cluster_id
-          map.getSource('pins').getClusterExpansionZoom(clusterId, (err: any, zoom: number) => {
+          const source = map.getSource('pins') as mapboxgl.GeoJSONSource | null
+          if (!source) {
+            console.error('No source found')
+            return
+          }
+          source.getClusterExpansionZoom(clusterId, (err, zoom) => {
             if (err) return
 
             map.easeTo({
-              center: features[0].geometry.coordinates,
-              zoom: zoom,
+              center: (features[0].geometry as GeoJSON.Point).coordinates as [number, number],
+              zoom: zoom as number,
             })
           })
         })
@@ -280,23 +261,23 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
 
     // Handle pin clicks and empty map clicks
     useEffect(() => {
-      if (!mapRef.current || !isMapReady || Platform.OS !== 'web') {
+      if (!mapRef.current || !isMapReady) {
         return
       }
 
-      const map = mapRef.current as any
+      const map = mapRef.current
 
-      const handlePinClick = (e: any) => {
+      const handlePinClick = (e: mapboxgl.MapMouseEvent) => {
         const features = map.queryRenderedFeatures(e.point, {
           layers: ['unclustered-point'],
         })
 
-        if (features.length > 0 && features[0].properties.id) {
+        if (features.length > 0 && features[0].properties?.id) {
           onPinPress?.(features[0].properties.id)
         }
       }
 
-      const handleMapClick = (e: any) => {
+      const handleMapClick = (e: mapboxgl.MapMouseEvent) => {
         // Check if clicking on a pin or cluster
         const features = map.queryRenderedFeatures(e.point, {
           layers: ['unclustered-point', 'clusters'],
@@ -308,6 +289,14 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         }
       }
 
+      // Cursor change handlers
+      const handleMouseEnter = () => {
+        map.getCanvas().style.cursor = 'pointer'
+      }
+      const handleMouseLeave = () => {
+        map.getCanvas().style.cursor = ''
+      }
+
       // Add click handler for individual pins
       map.on('click', 'unclustered-point', handlePinClick)
 
@@ -315,31 +304,27 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       map.on('click', handleMapClick)
 
       // Change cursor on hover
-      map.on('mouseenter', 'unclustered-point', () => {
-        map.getCanvas().style.cursor = 'pointer'
-      })
-      map.on('mouseleave', 'unclustered-point', () => {
-        map.getCanvas().style.cursor = ''
-      })
+      map.on('mouseenter', 'unclustered-point', handleMouseEnter)
+      map.on('mouseleave', 'unclustered-point', handleMouseLeave)
 
       return () => {
         map.off('click', 'unclustered-point', handlePinClick)
         map.off('click', handleMapClick)
-        map.off('mouseenter', 'unclustered-point')
-        map.off('mouseleave', 'unclustered-point')
+        map.off('mouseenter', 'unclustered-point', handleMouseEnter)
+        map.off('mouseleave', 'unclustered-point', handleMouseLeave)
       }
     }, [isMapReady, onPinPress])
 
     // Update GeoJSON source when pins change
     useEffect(() => {
-      if (!mapRef.current || !isMapReady || Platform.OS !== 'web' || !mapboxgl) {
+      if (!mapRef.current || !isMapReady) {
         return
       }
 
-      const map = mapRef.current as any
+      const map = mapRef.current
 
       // Convert pins to GeoJSON features
-      const geojsonData = {
+      const geojsonData: GeoJSON.FeatureCollection = {
         type: 'FeatureCollection',
         features: pins.map((pin) => ({
           type: 'Feature',
@@ -359,95 +344,11 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       }
 
       // Update the source data
-      const source = map.getSource('pins')
+      const source = map.getSource('pins') as mapboxgl.GeoJSONSource
       if (source) {
         source.setData(geojsonData)
       }
     }, [pins, isMapReady])
-
-    // Native implementation using Mapbox React Native SDK
-    if (Platform.OS !== 'web') {
-      if (!MapboxGL) {
-        return (
-          <View flex={1} bg="$background" items="center" justify="center" style={style}>
-            <View bg="$backgroundHover" rounded="$4" p="$4" items="center" gap="$2">
-              <Text fontSize="$6" fontWeight="bold" color="$color12">
-                📍
-              </Text>
-              <Text fontSize="$4" fontWeight="600" color="$color12">
-                Mapbox Maps
-              </Text>
-              <Text fontSize="$3" color="$color11" text="center">
-                Mapbox React Native SDK not installed.{'\n'}Run: yarn add @rnmapbox/maps
-              </Text>
-              <Text fontSize="$2" color="$color10" text="center">
-                {pins.length} pins ready to display
-              </Text>
-            </View>
-          </View>
-        )
-      }
-
-      // Set Mapbox access token for native
-      const accessToken =
-        process.env.EXPO_PUBLIC_MAPBOX_TOKEN ??
-        process.env.MAPBOX_PUBLIC_TOKEN ??
-        'pk.eyJ1Ijoic2NhZmZhbGQiLCJhIjoiY204Nmh5NWZ5MDRycTJrcHo0NHc1em5vZCJ9.w8FJ5p2msraGyyOeeLanhg'
-
-      MapboxGL.setAccessToken(accessToken)
-
-      const MapView = MapboxGL.MapView
-      const Camera = MapboxGL.Camera
-      const PointAnnotation = MapboxGL.PointAnnotation
-
-      return (
-        <View flex={1} style={style}>
-          <MapView
-            ref={mapRef}
-            style={{ flex: 1 }}
-            styleURL="mapbox://styles/mapbox/streets-v12"
-            onDidFinishLoadingMap={() => setIsMapReady(true)}
-          >
-            <Camera zoomLevel={zoom} centerCoordinate={center} animationDuration={0} />
-
-            {pins.map((pin) => (
-              <PointAnnotation
-                key={pin.id}
-                id={pin.id}
-                coordinate={pin.coordinate}
-                onSelected={() => onPinPress?.(pin.id)}
-              >
-                <View
-                  w={48}
-                  h={48}
-                  rounded="$12"
-                  bg={
-                    pin.availability === 'available'
-                      ? '$green9'
-                      : pin.availability === 'unavailable'
-                        ? '$red9'
-                        : '$red9'
-                  }
-                  borderWidth={pin.selected ? 3 : 2}
-                  borderColor={pin.selected ? '$blue10' : 'white'}
-                  items="center"
-                  justify="center"
-                  shadowColor="black"
-                  shadowOffset={{ width: 0, height: 2 }}
-                  shadowOpacity={0.25}
-                  shadowRadius={4}
-                  elevation={5}
-                >
-                  <Text fontSize={20} color="white">
-                    {pin.organization === 'Organization' ? '🏢' : '👤'}
-                  </Text>
-                </View>
-              </PointAnnotation>
-            ))}
-          </MapView>
-        </View>
-      )
-    }
 
     return (
       <View flex={1} position="relative" overflow="hidden" rounded="$5" style={style}>

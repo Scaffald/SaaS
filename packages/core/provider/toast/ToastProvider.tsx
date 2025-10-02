@@ -1,5 +1,6 @@
-import { CustomToast, ToastProvider as ToastProviderOG } from '@app/ui'
+import { ToastProvider as ToastProviderOG } from '@tamagui/toast'
 import { ReactNode } from 'react'
+import { CustomToast } from '@app/ui'
 
 import { ToastViewport, ToastViewportProps } from './ToastViewport'
 

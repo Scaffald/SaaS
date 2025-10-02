@@ -85,8 +85,8 @@ export const MapTooltip = memo(({ data, visible, position }: MapTooltipProps) =>
               Skills:
             </Text>
             <XStack gap="$1" flexWrap="wrap">
-              {data.skills.slice(0, 3).map((skill, index) => (
-                <View key={index} bg="$blue4" px="$2" py="$1" rounded="$2">
+              {data.skills.slice(0, 3).map((skill) => (
+                <View key={skill} bg="$blue4" px="$2" py="$1" rounded="$2">
                   <Text fontSize="$1" color="$blue11">
                     {skill}
                   </Text>
@@ -108,14 +108,14 @@ export const MapTooltip = memo(({ data, visible, position }: MapTooltipProps) =>
               Certifications:
             </Text>
             <XStack gap="$1" flexWrap="wrap">
-              {data.badges.slice(0, 2).map((badge, index) => (
+              {data.badges.slice(0, 2).map((badge) => (
                 <View
-                  key={index}
+                  key={badge.label}
                   bg={
                     badge.tone === 'success'
                       ? '$green4'
                       : badge.tone === 'warning'
-                        ? '$orange4'
+                        ? '$yellow4'
                         : '$red4'
                   }
                   px="$2"
@@ -128,7 +128,7 @@ export const MapTooltip = memo(({ data, visible, position }: MapTooltipProps) =>
                       badge.tone === 'success'
                         ? '$green11'
                         : badge.tone === 'warning'
-                          ? '$orange11'
+                          ? '$yellow11'
                           : '$red11'
                     }
                   >

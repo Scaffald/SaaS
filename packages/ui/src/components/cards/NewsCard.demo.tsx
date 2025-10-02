@@ -90,7 +90,7 @@ export const NewsCardDemo = () => {
             showReadMore
             onPress={() => alert('Read more clicked!')}
             header={
-              <Button size="$2" bg="$purple8" color="white" rounded="$10">
+              <Button size="$2" bg="$blue8" color="white" rounded="$10">
                 Science
               </Button>
             }
@@ -123,7 +123,7 @@ export const NewsCardDemo = () => {
             readMoreText="View Analysis"
             onPress={() => alert('Card interaction detected!')}
             header={
-              <Button size="$2" bg="$orange8" color="white" rounded="$10">
+              <Button size="$2" bg="$yellow8" color="white" rounded="$10">
                 Finance
               </Button>
             }

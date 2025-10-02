@@ -26,8 +26,8 @@ When browser testing is needed, present these choices:
 
 ## Web Server Management
 - **ALWAYS ask before starting development servers**:
-  - Next.js (`yarn web` or `next dev`)
-  - Expo web (`yarn native` or `expo start --web`)
+  - Next.js (`pnpm web` or `next dev`)
+  - Expo web (`pnpm native` or `expo start --web`)
   - Any other web servers
 - **CHECK if servers are already running** before suggesting to start new ones
 - **PROVIDE server status information** when relevant

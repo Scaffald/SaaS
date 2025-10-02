@@ -7,9 +7,9 @@ alwaysApply: true
 # SCF-Neue Project Guard Rails
 
 ## Package Manager & Tooling
-- **ALWAYS use `pnpm` instead of `npm` or `yarn`** - This is a pnpm workspace monorepo
+- **ALWAYS use `pnpm` instead of `npm` or `pnpm`** - This is a pnpm workspace monorepo
 - **ALWAYS use `pnpm supa`** instead of global supabase CLI
-- **NEVER run `npm run dev` or `yarn dev`** - Use specific workspace commands instead
+- **NEVER run `npm run dev` or `pnpm dev`** - Use specific workspace commands instead
 
 ## Server Management
 - **ASSUME servers are already running** on default ports:

@@ -1,4 +1,4 @@
-import { Text, YStack } from '@app/ui'
+import { Text, YStack } from 'tamagui'
 
 interface DrawModeIndicatorProps {
   isActive: boolean

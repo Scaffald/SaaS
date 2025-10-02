@@ -1,4 +1,4 @@
-import { Separator, SizableText, YStack, XStack, isWeb } from '@app/ui'
+import { Separator, SizableText, YStack, XStack, isWeb } from 'tamagui'
 
 import { AppleSignIn } from './AppleSignIn'
 import { GoogleSignIn } from './GoogleSignIn'

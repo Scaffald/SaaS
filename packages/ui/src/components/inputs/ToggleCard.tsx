@@ -1,17 +1,6 @@
-import { useId, type ReactNode } from 'react'
-import {
-  Button,
-  Label,
-  Switch,
-  Text,
-  View,
-  YStack,
-  AnimatePresence,
-  styled,
-  getTokens,
-  type ThemeName,
-  XStack,
-} from 'tamagui'
+import { type ReactNode } from 'react'
+import { Text, View, YStack, AnimatePresence, styled, type ThemeName, XStack } from 'tamagui'
+import { ToggleSwitch } from './ToggleSwitch'
 
 export interface ToggleCardProps {
   /** Icon to display on the left side */
@@ -91,8 +80,6 @@ export function ToggleCard({
   theme,
   testID,
 }: ToggleCardProps) {
-  const uniqueId = useId()
-
   const handlePress = () => {
     if (!disabled) {
       onCheckedChange(!checked)
@@ -132,31 +119,26 @@ export function ToggleCard({
         {icon && <View shrink={0}>{icon}</View>}
 
         {/* Title and Description */}
-        <View flex={1}>
-          <Label size="$4" htmlFor={`${uniqueId}switch`} fontWeight="600" color="$color12">
+        <YStack flex={1} gap="$1">
+          <Text fontSize="$4" fontWeight="600" color="$color12">
             {title}
-          </Label>
+          </Text>
           {description && (
-            <Text color="$color11" lineHeight="$1" fontSize="$3" text="left">
+            <Text color="$color11" lineHeight="$1" fontSize="$3">
               {description}
             </Text>
           )}
-        </View>
+        </YStack>
 
-        {/* Switch */}
+        {/* Custom Toggle */}
         <View self="center">
-          <Switch
-            id={`${uniqueId}switch`}
+          <ToggleSwitch
             checked={checked}
             onCheckedChange={onCheckedChange}
             disabled={disabled}
-            size="$2"
-            bg={checked ? '$color10' : '$color5'}
-            borderColor={checked ? '$color10' : '$color6'}
-            animation="200ms"
-          >
-            <Switch.Thumb borderColor="white" animation="200ms" bg="$color1" />
-          </Switch>
+            size="medium"
+            testID={`${testID}-toggle`}
+          />
         </View>
       </XStack>
 

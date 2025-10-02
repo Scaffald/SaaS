@@ -1,6 +1,6 @@
 import { X } from '@tamagui/lucide-icons'
 import { Button, XStack, Text } from 'tamagui'
-import type { SizeTokens, ThemeName } from 'tamagui'
+import type { GetThemeValueForKey, SizeTokens, ThemeName } from 'tamagui'
 import { ReactNode } from 'react'
 
 type FilterChipProps = {
@@ -33,7 +33,7 @@ export function FilterChip({
       theme={color as ThemeName}
     >
       {icon && icon}
-      <Text fontSize={size} color="$color">
+      <Text fontSize={size as GetThemeValueForKey<'fontSize'>} color="$color">
         {label}
       </Text>
       {removable && onRemove && (

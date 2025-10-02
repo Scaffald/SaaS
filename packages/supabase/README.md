@@ -1,6 +1,6 @@
 ## Setting up Supabase
 
-To go through the Supabase setup, CD to the root of the directory and run `yarn setup`.
+To go through the Supabase setup, CD to the root of the directory and run `pnpm setup`.
 
 Here are some guides from the official Supabase documentation:
 
@@ -15,14 +15,14 @@ After setting it up, you can use the [scripts](#scripts) to manage the common ta
 
 NOTE: Scripts starting with underscore (`_`) are not meant to be used directly.
 
-You can also run these scripts from the root by adding `supa` after yarn. So `yarn supa start` or `yarn supa g`.
+You can also run these scripts from the root by adding `supa` after pnpm. So `pnpm supa start` or `pnpm supa g`.
 
 #### Link Project
 
 Links your remote Supabase project. Set `EXPO_PUBLIC_SUPABASE_PROJECT_ID` in your `.env` to your Supabase's instance before running.
 
 ```shell
-yarn link-project
+pnpm link-project
 ```
 
 #### Generate
@@ -30,8 +30,8 @@ yarn link-project
 Generates types from your local Docker Supabase instance.
 
 ```shell
-yarn generate
-yarn g #alias
+pnpm generate
+pnpm g #alias
 ```
 
 - [Reference](https://supabase.com/docs/guides/api/rest/generating-types)
@@ -41,7 +41,7 @@ yarn g #alias
 Generates types from your remote Supabase instance using your project ID specific id in the root env files.
 
 ```shell
-yarn generate:remote
+pnpm generate:remote
 ```
 
 ### Type Helpers
@@ -53,7 +53,7 @@ yarn generate:remote
 Generates a new migration by diffing against the db.
 
 ```shell
-yarn migration:diff <MIGRATION_NAME>
+pnpm migration:diff <MIGRATION_NAME>
 ```
 
 - [Reference](https://supabase.com/docs/reference/cli/supabase-db-diff)
@@ -63,7 +63,7 @@ yarn migration:diff <MIGRATION_NAME>
 Generates a new migration by diffing against the db.
 
 ```shell
-yarn deploy
+pnpm deploy
 ```
 
 - [Reference](https://supabase.com/docs/reference/cli/supabase-db-push)
@@ -73,7 +73,7 @@ yarn deploy
 Start local Supabase instance.
 
 ```shell
-yarn start
+pnpm start
 ```
 
 #### Stop
@@ -81,7 +81,7 @@ yarn start
 Stop local Supabase instance.
 
 ```shell
-yarn stop
+pnpm stop
 ```
 
 #### Reset
@@ -89,13 +89,13 @@ yarn stop
 Reset local Supabase DB.
 
 ```shell
-yarn reset
+pnpm reset
 ```
 
 #### Lint
 
 ```shell
-yarn lint
+pnpm lint
 ```
 
 ## Profile verification fields

@@ -40,7 +40,7 @@ catalog:
   '@types/geojson': ~7946.0.14
   '@types/mapbox-gl': ~2.7.21
   '@types/node': ~20.0.0
-  '@types/react': ~19.0.0
+  '@types/react': ~19.1.0
   awesome-phonenumber: ~7.5.0
   babel-loader: ~8.3.0
   babel-plugin-module-resolver: ~4.1.0

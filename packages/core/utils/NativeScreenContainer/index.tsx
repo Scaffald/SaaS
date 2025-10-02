@@ -1,6 +1,5 @@
-import { ScrollView } from '@app/ui'
+import { ScrollView } from 'tamagui'
 import { useScrollToTop } from '@react-navigation/native'
-import { Stack } from 'expo-router'
 import { useRef, type ComponentProps, RefObject } from 'react'
 
 type ScrollToTopTabBarContainerProps = ComponentProps<typeof ScrollView>

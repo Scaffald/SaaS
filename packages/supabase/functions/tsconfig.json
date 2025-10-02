@@ -2,16 +2,18 @@
   "compilerOptions": {
     "allowImportingTsExtensions": true,
     "noEmit": true,
-    "strict": true,
-    "lib": ["esnext", "DOM"],
+    "strict": false,
+    "lib": ["esnext", "deno.ns"],
     "module": "esnext",
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
-    "types": [],
+    "types": ["npm:@types/deno"],
     "skipLibCheck": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "allowJs": true,
+    "noImplicitAny": false
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

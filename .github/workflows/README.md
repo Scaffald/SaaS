@@ -7,15 +7,15 @@ This workflow runs on every pull request and push to main branch to ensure code 
 ### Jobs
 
 #### 1. Code Quality Checks
-- **Format, Lint & Type Check**: Runs `yarn check` which includes:
-  - `yarn format:fix` - Biome code formatting
-  - `yarn lint:fix` - Biome linting
-  - `yarn typecheck` - TypeScript type checking via Turbo
-- **Build Verification**: Runs `yarn build` to ensure all packages build successfully
+- **Format, Lint & Type Check**: Runs `pnpm check` which includes:
+  - `pnpm format:fix` - Biome code formatting
+  - `pnpm lint:fix` - Biome linting
+  - `pnpm typecheck` - TypeScript type checking via Turbo
+- **Build Verification**: Runs `pnpm build` to ensure all packages build successfully
 
 #### 2. Monorepo Integrity Checks
-- **Dependency Deduplication**: Checks for duplicate dependencies in yarn.lock
-- **Yarn Constraints**: Validates yarn workspace constraints
+- **Dependency Deduplication**: Checks for duplicate dependencies in pnpm.lock
+- **pnpm Constraints**: Validates pnpm workspace constraints
 - **Dependency Version Consistency**: Ensures consistent dependency versions across workspaces
 - **Circular Dependencies**: Checks for circular imports across the monorepo
 - **Sherif Linting**: Advanced monorepo linting using sherif
@@ -37,23 +37,23 @@ Before pushing changes, run these commands locally to catch issues early:
 
 ```bash
 # Run all quality checks (same as CI)
-yarn check
+pnpm check
 
 # Build all packages
-yarn build
+pnpm build
 
 # Check monorepo integrity
-yarn check-deps
-yarn lint-sherif
-yarn check-circular-deps
+pnpm check-deps
+pnpm lint-sherif
+pnpm check-circular-deps
 ```
 
 ### Troubleshooting
 
 If checks fail:
 
-- **Format/Lint errors**: Run `yarn check` locally to auto-fix
+- **Format/Lint errors**: Run `pnpm check` locally to auto-fix
 - **Type errors**: Fix TypeScript issues in your code
-- **Build errors**: Ensure all packages build with `yarn build`
-- **Dependency issues**: Run `yarn dedupe` and `yarn check-deps`
+- **Build errors**: Ensure all packages build with `pnpm build`
+- **Dependency issues**: Run `pnpm dedupe` and `pnpm check-deps`
 - **Circular dependencies**: Review import structure

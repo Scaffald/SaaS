@@ -45,10 +45,10 @@ export const MyComponent = () => {
 
 ```bash
 # Full debug output during build
-DEBUG=tamagui yarn build
+DEBUG=tamagui pnpm build
 
 # Debug during development
-DEBUG=tamagui yarn dev
+DEBUG=tamagui pnpm dev
 ```
 
 ## Component Inspection Techniques

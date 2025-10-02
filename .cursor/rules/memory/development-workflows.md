@@ -12,11 +12,11 @@ git log --oneline -5
 git pull origin main
 
 # Install any new dependencies
-yarn install
+pnpm install
 
 # Start development servers (if not already running)
-yarn supa start    # Start Supabase (if needed)
-yarn dev          # Start Expo development server
+pnpm supa start    # Start Supabase (if needed)
+pnpm dev          # Start Expo development server
 ```
 
 ### 2. Making Changes
@@ -27,12 +27,12 @@ git checkout -b feature/your-feature-name
 # Make your changes...
 
 # Run quality checks before committing
-yarn check        # Format, lint, type check
-yarn build        # Verify builds work
+pnpm check        # Format, lint, type check
+pnpm build        # Verify builds work
 
 # Check for issues
-yarn check-deps   # Dependency consistency
-yarn lint-sherif  # Monorepo linting
+pnpm check-deps   # Dependency consistency
+pnpm lint-sherif  # Monorepo linting
 ```
 
 ### 3. Committing Changes
@@ -85,9 +85,9 @@ touch packages/core/features/new-feature/new-feature-overview-screen.tsx
 ### 4. Testing Phase
 ```bash
 # Test on multiple platforms
-yarn web         # Test web version
-yarn ios         # Test iOS (if available)
-yarn android     # Test Android (if available)
+pnpm web         # Test web version
+pnpm ios         # Test iOS (if available)
+pnpm android     # Test Android (if available)
 
 # Test API endpoints
 # Use browser extensions like REST Client or Thunder Client
@@ -97,7 +97,7 @@ yarn android     # Test Android (if available)
 ## Code Review Workflow
 
 ### 1. Pre-Review Checklist
-- [ ] All quality checks pass (`yarn check && yarn build`)
+- [ ] All quality checks pass (`pnpm check && pnpm build`)
 - [ ] No TypeScript errors
 - [ ] Components follow established patterns
 - [ ] Direct imports used (no barrel files)
@@ -134,10 +134,10 @@ git checkout main
 git pull origin main
 
 # Run full test suite
-yarn check && yarn build
-yarn check-deps
-yarn lint-sherif
-yarn check-circular-deps
+pnpm check && pnpm build
+pnpm check-deps
+pnpm lint-sherif
+pnpm check-circular-deps
 
 # Update version numbers if needed
 # Update CHANGELOG.md
@@ -146,12 +146,12 @@ yarn check-circular-deps
 ### 2. Deployment Process
 ```bash
 # Web deployment (Expo Web)
-yarn web:build
-yarn deploy:web
+pnpm web:build
+pnpm deploy:web
 
 # Mobile deployment (EAS Build)
-yarn deploy:preview    # For preview builds
-yarn deploy:prod      # For production builds
+pnpm deploy:preview    # For preview builds
+pnpm deploy:prod      # For production builds
 ```
 
 ### 3. Post-Release
@@ -165,14 +165,14 @@ yarn deploy:prod      # For production builds
 ### 1. Schema Changes
 ```bash
 # Create new migration
-yarn supa migration:new add_new_table
+pnpm supa migration:new add_new_table
 
 # Edit migration file in packages/supabase/migrations/
 # Apply migration
-yarn supa migration:up
+pnpm supa migration:up
 
 # Generate new types
-yarn supa generate
+pnpm supa generate
 ```
 
 ### 2. RLS Policy Updates
@@ -188,10 +188,10 @@ CREATE POLICY "Users can update own profile" ON profiles
 ### 3. Testing Database Changes
 ```bash
 # Reset database for testing
-yarn supa reset
+pnpm supa reset
 
 # Test with seed data
-yarn supa seed
+pnpm supa seed
 
 # Verify policies work correctly
 # Test API endpoints with different user roles
@@ -254,15 +254,15 @@ curl -X POST http://localhost:54321/functions/v1/trpc/profile.get \
 # .github/workflows/integrity.yaml
 jobs:
   code-quality:
-    - Format, lint, type check (yarn check)
-    - Build verification (yarn build)
+    - Format, lint, type check (pnpm check)
+    - Build verification (pnpm build)
   
   monorepo-integrity:
-    - Dependency checks (yarn check-deps)
-    - Sherif linting (yarn lint-sherif)
-    - Circular dependency check (yarn check-circular-deps)
-    - Yarn constraints (yarn constraints)
-    - Dedupe check (yarn dedupe --check)
+    - Dependency checks (pnpm check-deps)
+    - Sherif linting (pnpm lint-sherif)
+    - Circular dependency check (pnpm check-circular-deps)
+    - pnpm constraints (pnpm constraints)
+    - Dedupe check (pnpm dedupe --check)
 ```
 
 ### 3. Deployment Pipeline
@@ -279,8 +279,8 @@ git log --oneline -10
 git diff HEAD~5..HEAD
 
 # Check current status
-yarn check
-yarn supa status
+pnpm check
+pnpm supa status
 
 # Look for specific errors
 grep -r "error" packages/
@@ -310,10 +310,10 @@ npx bundle-analyzer
 ### 1. Regular Maintenance Tasks
 ```bash
 # Weekly dependency updates
-yarn upgrade-interactive
+pnpm upgrade-interactive
 
 # Monthly security audit
-yarn audit
+pnpm audit
 
 # Quarterly major version updates
 # Plan and test major dependency updates
@@ -322,9 +322,9 @@ yarn audit
 ### 2. Code Quality Maintenance
 ```bash
 # Regular code quality checks
-yarn check
-yarn lint-sherif
-yarn check-circular-deps
+pnpm check
+pnpm lint-sherif
+pnpm check-circular-deps
 
 # Refactoring sessions
 # Remove unused code
@@ -378,23 +378,23 @@ git push origin hotfix/critical-fix
 ### 2. Service Outages
 ```bash
 # Check service status
-yarn supa status
+pnpm supa status
 curl http://localhost:8081/health
 
 # Restart services
-yarn supa restart
-yarn dev
+pnpm supa restart
+pnpm dev
 
 # Check logs for errors
-yarn supa logs
+pnpm supa logs
 ```
 
 ### 3. Data Recovery
 ```bash
 # Database backup/restore
-yarn supa db dump > backup.sql
-yarn supa db reset
-yarn supa db restore < backup.sql
+pnpm supa db dump > backup.sql
+pnpm supa db reset
+pnpm supa db restore < backup.sql
 ```
 
 This workflow documentation should be updated regularly as the project evolves and new patterns emerge.

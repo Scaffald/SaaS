@@ -1,11 +1,11 @@
 import {
   BaseGeocodingProvider,
-  getStateAbbreviation,
-  normalizeComponent,
   generateId,
+  getStateAbbreviation,
   isValidCoordinates,
+  normalizeComponent,
 } from './base'
-import type { AddressResult, SearchOptions, ProviderConfig } from '../types'
+import type { AddressResult, ProviderConfig, SearchOptions } from '../types'
 import { GeocodingError } from '../types'
 
 // Mapbox API response interfaces
@@ -78,7 +78,8 @@ export class MapboxProvider extends BaseGeocodingProvider {
 
     try {
       const url = this.buildSearchUrl(query, options)
-      const response = (await this.fetchWithErrorHandling(url)) as MapboxResponse
+      const rawResponse = await this.fetchWithErrorHandling(url)
+      const response = (await rawResponse.json()) as MapboxResponse
 
       if (response.features && Array.isArray(response.features)) {
         const results = response.features.map((feature: MapboxFeature) =>
@@ -121,7 +122,8 @@ export class MapboxProvider extends BaseGeocodingProvider {
 
     try {
       const url = this.buildReverseGeocodingUrl(lng, lat, options) // Note: Mapbox uses lng,lat order
-      const response = await this.fetchWithErrorHandling(url)
+      const rawResponse = await this.fetchWithErrorHandling(url)
+      const response = (await rawResponse.json()) as MapboxResponse
 
       if (response.features && response.features.length > 0) {
         return this.normalizeMapboxResult(response.features[0])
@@ -362,7 +364,9 @@ export class MapboxProvider extends BaseGeocodingProvider {
     }
 
     if (components.locality) parts.push(components.locality)
-    if (components.administrativeAreaLevel1) parts.push(components.administrativeAreaLevel1)
+    if (components.administrativeAreaLevel1) {
+      parts.push(components.administrativeAreaLevel1)
+    }
     if (components.postalCode) parts.push(components.postalCode)
     if (components.country) parts.push(components.country)
 

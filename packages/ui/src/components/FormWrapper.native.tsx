@@ -30,6 +30,8 @@ const FormWrapperContext = createContext<{ height: number } | null>(null)
  */
 const Wrapper = forwardRef<TamaguiElement, YStackProps>(function Wrapper(props, ref) {
   const [height, setHeight] = useState(0)
+  const { width } = useWindowDimensions()
+  const isSmallScreen = width < 640
 
   return (
     <FormWrapperContext.Provider value={{ height }}>
@@ -40,13 +42,12 @@ const Wrapper = forwardRef<TamaguiElement, YStackProps>(function Wrapper(props, 
         ref={ref}
         gap="$4"
         flex={1}
-        justify="center"
-        $sm={{
+        justify={isSmallScreen ? 'space-between' : 'center'}
+        {...(isSmallScreen && {
           w: '100%',
-          maw: 600,
-          als: 'center',
-        }}
-        $sm={{ justify: 'space-between' }}
+          maxW: 600,
+          self: 'center',
+        })}
         {...props}
       />
     </FormWrapperContext.Provider>
@@ -83,7 +84,7 @@ const Footer = forwardRef<TamaguiElement, YStackProps>(function Footer(props, re
         px="$4"
         gap="$4"
         // reverse the direction so that the primary button is on the bottom of the screen on mobile
-        fd="column-reverse"
+        flexDirection="column-reverse"
         {...props}
       />
     </KeyboardAvoidingView>

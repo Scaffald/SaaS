@@ -1,6 +1,7 @@
 import { memo, forwardRef, Ref } from 'react'
 import { TamaguiElement } from 'tamagui'
-import { Button, Paragraph, SizableText, Text, XStack, YStack, Chip } from '@app/ui'
+import { Button, Paragraph, SizableText, Text, XStack, YStack } from 'tamagui'
+import { Chip } from '@app/ui'
 import { Award, BadgeCheck, Building, Clock3, DollarSign, Star } from '@tamagui/lucide-icons'
 
 import type { TalentProfile } from '../types'

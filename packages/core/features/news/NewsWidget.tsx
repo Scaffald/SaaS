@@ -79,9 +79,9 @@ export function NewsWidget({
       case 'sustainability':
         return '$green8'
       case 'finance':
-        return '$orange8'
+        return '$yellow8'
       case 'workforce':
-        return '$purple8'
+        return '$blue8'
       case 'equipment':
         return '$yellow8'
       default:

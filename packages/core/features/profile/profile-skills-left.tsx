@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
+import { randomUUID } from 'expo-crypto'
 import {
   YStack,
   XStack,
@@ -37,14 +38,7 @@ export function ProfileSkillsLeft() {
     isLoading: isLoadingSkills,
     refetch,
     error: skillsError,
-  } = api.profile.getSkills.useQuery(undefined, {
-    onError: (error: Error) => {
-      console.error('getSkills query error:', error)
-    },
-    onSuccess: (data: unknown) => {
-      console.log('getSkills query success:', data)
-    },
-  })
+  } = api.profile.getSkills.useQuery(undefined)
 
   console.log('Skills data:', skillsData)
   console.log('Skills loading:', isLoadingSkills)
@@ -85,7 +79,12 @@ export function ProfileSkillsLeft() {
   // Reset form when skills data is loaded
   useEffect(() => {
     if (skillsData) {
-      reset(skillsData)
+      // Convert null to undefined for primary_industry_id to match form schema
+      const formData = {
+        ...skillsData,
+        primary_industry_id: skillsData.primary_industry_id ?? undefined,
+      }
+      reset(formData)
     }
   }, [skillsData, reset])
 
@@ -114,7 +113,7 @@ export function ProfileSkillsLeft() {
 
   const addSkill = () => {
     append({
-      skill_id: crypto.randomUUID(),
+      skill_id: randomUUID(),
       skill_name: '',
       proficiency: 3,
       years_experience: 0,

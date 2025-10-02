@@ -74,10 +74,10 @@ export const Onboarding = ({ onOnboarded, steps }: OnboardingProps) => {
             const isActive = idx === stepIdx
             return (
               <YStack
-                key={`onboarding-step-${step.theme}-${idx}`}
+                key={`onboarding-step-${step.backgroundImage}-step`}
                 width={dimensions.width - (safeAreaInsets.left + safeAreaInsets.right)}
               >
-                {isActive && <step.Content key={`onboarding-content-${step.theme}-${idx}`} />}
+                {isActive && <step.Content key={`onboarding-content-${step.backgroundImage}`} />}
               </YStack>
             )
           })}

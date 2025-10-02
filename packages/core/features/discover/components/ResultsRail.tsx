@@ -1,4 +1,4 @@
-import { YStack } from '@app/ui'
+import { YStack } from 'tamagui'
 import type { RefObject } from 'react'
 import type { TalentProfile } from '../types'
 import { ResultList, type ResultListRef } from './ResultList'

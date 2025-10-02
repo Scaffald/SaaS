@@ -1,4 +1,4 @@
-import { Image, Text, XStack, YStack } from '@app/ui'
+import { GetThemeValueForKey, Image, Text, XStack, YStack } from 'tamagui'
 import { Building } from '@tamagui/lucide-icons'
 import { getInitials } from '../utils/getInitials'
 
@@ -43,7 +43,7 @@ export const ProfileAvatar = ({
     '$yellow10',
     '$gray10',
   ]
-  const bgColor = bgColors[colorIndex]
+  const bgColor = bgColors[colorIndex] as GetThemeValueForKey<'backgroundColor'>
 
   // If avatar URL exists, show image
   if (avatarUrl) {

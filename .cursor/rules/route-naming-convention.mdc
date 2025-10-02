@@ -94,7 +94,7 @@ Place configuration files in the `config/` folder:
 Use the `route` generator to quickly create new routes:
 
 ```bash
-yarn turbo gen route --name="profile-overview"
+pnpm turbo gen route --name="profile-overview"
 ```
 
 This will create all necessary files following the naming convention.

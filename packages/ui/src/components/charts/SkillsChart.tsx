@@ -1,8 +1,9 @@
-import React, { useEffect, FC } from 'react'
+import { useEffect, FC } from 'react'
 import { useWindowDimensions } from 'react-native'
 import { View, Text, type GetThemeValueForKey } from 'tamagui'
 import { Svg, G, Defs, LinearGradient, Stop, Rect, Circle, Polygon } from 'react-native-svg'
 import Animated, { useSharedValue, useAnimatedProps, withSpring } from 'react-native-reanimated'
+import { randomUUID } from 'expo-crypto'
 
 // Data interfaces
 export interface SkillsChartDataItem {
@@ -26,9 +27,9 @@ export interface SkillsChartProps {
   width?: number
   radius?: number
   maxValue?: number
-  backgroundColor?: string
+  backgroundColor?: GetThemeValueForKey<'backgroundColor'>
   gridColor?: string
-  labelColor?: string
+  labelColor?: GetThemeValueForKey<'color'>
   labelTextSize?: number
   isAnimated?: boolean
 }
@@ -120,7 +121,6 @@ export const SkillsChart: FC<SkillsChartProps> = ({
   maxValue = 100,
   backgroundColor = 'transparent',
   gridColor = '#E0E0E0',
-  labelColor = '#E0E0E0',
   labelTextSize = 12,
 }) => {
   const { width: screenWidth } = useWindowDimensions()
@@ -181,7 +181,7 @@ export const SkillsChart: FC<SkillsChartProps> = ({
 
         return (
           <View
-            key={`label-${label}-${set}`}
+            key={randomUUID()}
             position="absolute"
             l={left}
             t={top}
@@ -191,7 +191,7 @@ export const SkillsChart: FC<SkillsChartProps> = ({
             <Text
               fontSize={labelTextSize}
               fontWeight="bold"
-              color={labelColor}
+              color="$color12"
               text="center"
               numberOfLines={2}
             >

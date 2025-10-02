@@ -1,4 +1,4 @@
-import { XStack, YStack } from '@app/ui'
+import { XStack, YStack } from 'tamagui'
 import { WelcomeScreen } from './welcome-screen'
 import { ReactNode } from 'react'
 

@@ -5,10 +5,6 @@ import { useEvent } from 'tamagui'
 import type { MediaTypeOptionsString, UseFilePickerControl, UseFilePickerProps } from '../types'
 import { useDropZone } from './useDropZone'
 
-type _NativeFiles<MT extends MediaTypeOptionsString[]> = MT[number] extends 'Images'
-  ? ImagePicker.ImagePickerResult['assets']
-  : DocumentPicker.DocumentPickerResult[]
-
 export function useFilePicker<MT extends MediaTypeOptionsString>(
   props?: UseFilePickerProps<MT>
 ): UseFilePickerControl {
@@ -22,8 +18,7 @@ export function useFilePicker<MT extends MediaTypeOptionsString>(
 
   const { isDragAccept, isDragActive, isDragReject } = useDropZone({
     onOpen: _onOpenNative,
-    // @ts-ignore
-    mediaTypes,
+    mediaTypes: undefined, // MediaTypes don't apply on native
     noClick: true,
     ...rest,
   })
@@ -54,8 +49,8 @@ export function useFilePicker<MT extends MediaTypeOptionsString>(
       isDragActive: isDragActive || false,
       isDragReject: isDragReject || false,
     },
-    getInputProps: () => null,
-    getRootProps: () => null,
+    getInputProps: () => ({}),
+    getRootProps: () => ({}),
     open: _handleOpenNative,
   }
 

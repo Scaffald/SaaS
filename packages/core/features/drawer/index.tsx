@@ -1,4 +1,4 @@
-import { YStack, getTokens } from 'tamagui'
+import { GetThemeValueForKey, YStack, getTokens } from 'tamagui'
 import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import { useCallback, useState } from 'react'
 import { GestureResponderEvent } from 'react-native'
@@ -32,7 +32,7 @@ export type UnifiedDrawerProps = {
    * Custom styling props
    */
   showBoxShadow?: boolean
-  backgroundColor?: string
+  backgroundColor?: GetThemeValueForKey<'backgroundColor'>
 }
 
 export const UnifiedDrawer = ({
@@ -40,7 +40,7 @@ export const UnifiedDrawer = ({
   onNavigate,
   showSafeArea = Platform.OS !== 'web',
   showBoxShadow = true,
-  backgroundColor = '$color2',
+  backgroundColor = '$color2' as GetThemeValueForKey<'backgroundColor'>,
 }: UnifiedDrawerProps) => {
   const { top, bottom } = useSafeAreaInsets()
   const pathname = normalizePath(usePathname())

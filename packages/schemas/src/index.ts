@@ -9,7 +9,7 @@
  */
 
 // Common schemas
-export * from "./common";
+export * from './common'
 
 // Profile schemas
-export * from "./profile";
+export * from './profile'

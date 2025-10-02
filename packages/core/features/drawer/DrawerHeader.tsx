@@ -29,7 +29,8 @@ type ExtendedProfile = {
 export const DrawerHeader = ({ onNavigate }: DrawerHeaderProps) => {
   const { profile } = useUser()
   const profileHref = DASHBOARD_ROUTES.PROFILE?.fullPath || '/dashboard/profile'
-  const avatarSize = '$3'
+  const tokens = getTokens()
+  const avatarSize = tokens.size.$3.val as number
 
   // Construct display name from first_name and last_name, fallback to "Update Profile"
   const displayName = (() => {
@@ -66,7 +67,7 @@ export const DrawerHeader = ({ onNavigate }: DrawerHeaderProps) => {
                 {avatarUrl ? (
                   <Image
                     source={{ uri: avatarUrl }}
-                    style={{ width: avatarSize, height: avatarSize }}
+                    style={{ width: avatarSize, height: avatarSize, borderRadius: avatarSize / 2 }}
                     contentFit="cover"
                   />
                 ) : (
