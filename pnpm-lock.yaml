@@ -302,9 +302,6 @@ importers:
       fs-extra:
         specifier: ^11.2.0
         version: 11.3.2
-      supabase:
-        specifier: 'catalog:'
-        version: 2.47.2
       turbo:
         specifier: 'catalog:'
         version: 2.5.8
@@ -637,6 +634,19 @@ importers:
       '@types/react':
         specifier: 'catalog:'
         version: 19.0.14
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.3
+
+  packages/schemas:
+    dependencies:
+      zod:
+        specifier: 'catalog:'
+        version: 3.23.8
+    devDependencies:
+      '@biomejs/biome':
+        specifier: 'catalog:'
+        version: 1.9.4
       typescript:
         specifier: 'catalog:'
         version: 5.8.3

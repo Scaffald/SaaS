@@ -28,6 +28,8 @@ if (Platform.OS === 'web') {
 export interface MapContainerRef {
   flyTo: (center: [number, number], zoom?: number) => void
   centerOnPin: (pinId: string) => void
+  getPinScreenCoordinates: (pinId: string) => { x: number; y: number } | null
+  setCardOverlay: (pinId: string | null, content: HTMLElement | null) => void
 }
 
 export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
@@ -35,6 +37,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
     const mapContainerRef = useRef<HTMLDivElement | null>(null)
     const mapRef = useRef<unknown>(null)
     const markersRef = useRef(new Map<string, unknown>())
+    const cardMarkerRef = useRef<unknown>(null)
     const [isMapReady, setIsMapReady] = useState(false)
 
     // Expose map methods to parent
@@ -59,6 +62,46 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
             speed: 0.8,
           })
         }
+      },
+      getPinScreenCoordinates: (pinId: string) => {
+        const map = mapRef.current as any
+        const pin = pins.find((p) => p.id === pinId)
+        if (!map || !pin || Platform.OS !== 'web') {
+          return null
+        }
+        // Convert geo coordinates to screen coordinates
+        const point = map.project(pin.coordinate)
+        return { x: point.x, y: point.y }
+      },
+      setCardOverlay: (pinId: string | null, content: HTMLElement | null) => {
+        const map = mapRef.current as any
+        if (!map || Platform.OS !== 'web' || !mapboxgl) return
+
+        const mapboxInstance = mapboxgl as any
+
+        // Remove existing card marker
+        if (cardMarkerRef.current) {
+          ;(cardMarkerRef.current as any).remove()
+          cardMarkerRef.current = null
+        }
+
+        // If pinId is null or no content, just remove the marker
+        if (!pinId || !content) return
+
+        // Find the pin
+        const pin = pins.find((p) => p.id === pinId)
+        if (!pin) return
+
+        // Create a new marker anchored to the pin's coordinates
+        const marker = new mapboxInstance.Marker({
+          element: content,
+          anchor: 'bottom', // Anchor the bottom of the card to the pin location
+          offset: [0, -24], // Offset up by pin radius to position above pin
+        })
+          .setLngLat(pin.coordinate)
+          .addTo(map)
+
+        cardMarkerRef.current = marker
       },
     }))
 
@@ -166,16 +209,8 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
             'circle-color': [
               'case',
               ['boolean', ['get', 'selected'], false],
-              '#14B8A6', // Teal color for selected pins
-              [
-                'match',
-                ['get', 'availability'],
-                'available',
-                '#10B981',
-                'unavailable',
-                '#F59E0B',
-                '#EF4444', // default/unavailable
-              ],
+              '#3B82F6', // Blue9 color for selected pins (blue-500)
+              '#64748B', // Default: color9 equivalent (slate-500)
             ],
             'circle-radius': 24,
             'circle-stroke-width': [
@@ -202,39 +237,6 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           },
           paint: {
             'text-color': '#ffffff',
-          },
-        })
-
-        // Add score badge layer
-        map.addLayer({
-          id: 'unclustered-point-score',
-          type: 'circle',
-          source: 'pins',
-          filter: ['all', ['!', ['has', 'point_count']], ['has', 'score']],
-          paint: {
-            'circle-color': '#1F2937',
-            'circle-radius': 10,
-            'circle-stroke-width': 2,
-            'circle-stroke-color': '#ffffff',
-            'circle-translate': [16, -16],
-          },
-        })
-
-        // Add score text layer
-        map.addLayer({
-          id: 'unclustered-point-score-text',
-          type: 'symbol',
-          source: 'pins',
-          filter: ['all', ['!', ['has', 'point_count']], ['has', 'score']],
-          layout: {
-            'text-field': ['get', 'score'],
-            'text-size': 10,
-            'text-allow-overlap': true,
-            'text-ignore-placement': true,
-          },
-          paint: {
-            'text-color': '#ffffff',
-            'text-translate': [16, -16],
           },
         })
 
@@ -349,9 +351,9 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
             id: pin.id,
             title: pin.title,
             subtitle: pin.subtitle,
-            score: pin.score,
             availability: pin.availability,
             organization: pin.organization,
+            selected: pin.selected || false, // Include selected state
           },
         })),
       }
@@ -423,7 +425,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
                     pin.availability === 'available'
                       ? '$green9'
                       : pin.availability === 'unavailable'
-                        ? '$orange9'
+                        ? '$red9'
                         : '$red9'
                   }
                   borderWidth={pin.selected ? 3 : 2}
@@ -439,26 +441,6 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
                   <Text fontSize={20} color="white">
                     {pin.organization === 'Organization' ? '🏢' : '👤'}
                   </Text>
-
-                  {pin.score && (
-                    <View
-                      position="absolute"
-                      t={-8}
-                      r={-8}
-                      width={20}
-                      height={20}
-                      rounded="$12"
-                      bg="$color12"
-                      borderWidth={2}
-                      borderColor="white"
-                      items="center"
-                      justify="center"
-                    >
-                      <Text fontSize={10} fontWeight="700" color="white">
-                        {pin.score}
-                      </Text>
-                    </View>
-                  )}
                 </View>
               </PointAnnotation>
             ))}

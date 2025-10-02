@@ -10,6 +10,7 @@ import {
   styled,
   getTokens,
   type ThemeName,
+  XStack,
 } from 'tamagui'
 
 export interface ToggleCardProps {
@@ -100,7 +101,7 @@ export function ToggleCard({
 
   return (
     <YStack width={width} testID={testID}>
-      <Button
+      <XStack
         flexDirection="row"
         borderColor="$borderColor"
         borderWidth={1}
@@ -109,6 +110,7 @@ export function ToggleCard({
         $sm={{ mx: '$0' }}
         rounded="$3"
         flex={1}
+        height="auto"
         items="center"
         gap="$2.5"
         theme={theme}
@@ -135,7 +137,7 @@ export function ToggleCard({
             {title}
           </Label>
           {description && (
-            <Text color="$color11" lineHeight="$1" mt="$1" fontSize="$3" text="left">
+            <Text color="$color11" lineHeight="$1" fontSize="$3" text="left">
               {description}
             </Text>
           )}
@@ -156,7 +158,7 @@ export function ToggleCard({
             <Switch.Thumb borderColor="white" animation="200ms" bg="$color1" />
           </Switch>
         </View>
-      </Button>
+      </XStack>
 
       {/* Expandable Content */}
       {expandedContent && (

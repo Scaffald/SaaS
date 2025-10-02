@@ -3,6 +3,7 @@ packages:
   - packages/core
   - packages/ui
   - packages/supabase
+  - packages/schemas
 
 catalog:
   '@babel/core': ~7.26.0

@@ -9,14 +9,14 @@ interface MapPinProps {
 }
 
 export const MapPin = memo(({ pin, onPress }: MapPinProps) => {
-  const { id, score, availability = 'available', organization, selected } = pin
+  const { id, availability = 'available', organization, selected } = pin
   const theme = useTheme()
 
   // Get background color based on availability
   const getBackgroundColor = (): GetThemeValueForKey<'backgroundColor'> => {
     switch (availability) {
       case 'available':
-        return theme.green9?.val as GetThemeValueForKey<'backgroundColor'>
+        return theme.color9?.val as GetThemeValueForKey<'backgroundColor'>
       case 'unavailable':
         return theme.red9?.val as GetThemeValueForKey<'backgroundColor'>
       default:
@@ -49,25 +49,6 @@ export const MapPin = memo(({ pin, onPress }: MapPinProps) => {
           <Building size={22} color="white" />
         ) : (
           <User size={22} color="white" />
-        )}
-
-        {/* Score Badge */}
-        {score && (
-          <Circle
-            size={20}
-            bg="$color12"
-            position="absolute"
-            t={-8}
-            r={-8}
-            items="center"
-            justify="center"
-            borderWidth={1}
-            borderColor="$color1"
-          >
-            <Text color="white" fontSize={10} fontWeight="700">
-              {score}
-            </Text>
-          </Circle>
         )}
       </View>
 

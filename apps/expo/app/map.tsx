@@ -10,8 +10,12 @@ export default function MapTestPage() {
   const [showSearchSheet, setShowSearchSheet] = useState(false)
   const [drawMode, setDrawMode] = useState(false)
 
-  const handlePinPress = (pinId: string) => {
-    setSelectedPinId(selectedPinId === pinId ? null : pinId)
+  const handlePinPress = (pinId: string | null) => {
+    if (pinId === null) {
+      setSelectedPinId(null)
+    } else {
+      setSelectedPinId(selectedPinId === pinId ? null : pinId)
+    }
     // Note: We don't update the pins array to avoid map refresh
     // The selection state is tracked via selectedPinId only
   }
