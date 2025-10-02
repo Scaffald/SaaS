@@ -1,6 +1,6 @@
 import { useMemo, useState, useRef, useCallback } from 'react'
 import { Button, Paragraph, Separator, Sheet, Text, XStack, YStack } from '@app/ui'
-import { MapContainer, type MapPinType } from '@app/ui'
+import { MapContainer, type MapContainerRef, type MapPinType } from '@app/ui'
 import { Filter, RefreshCw } from '@tamagui/lucide-icons'
 import { useWindowDimensions } from 'react-native'
 
@@ -42,6 +42,7 @@ export const DiscoverIndexScreen = () => {
   const { width } = useWindowDimensions()
   const isSmallScreen = width < 640
   const resultListRef = useRef<ResultListRef>(null)
+  const mapRef = useRef<MapContainerRef>(null)
 
   // Location functionality
   const { location } = useUserLocation()
@@ -83,7 +84,7 @@ export const DiscoverIndexScreen = () => {
     return [radiusFilter, ...activeFilters]
   }, [radiusFilter, activeFilters])
 
-  // Convert profiles to map pins
+  // Convert profiles to map pins with selected state
   const mapPins: MapPinType[] = useMemo(
     () =>
       talentProfiles.map((profile) => ({
@@ -96,8 +97,9 @@ export const DiscoverIndexScreen = () => {
         hourlyRate: profile.hourlyRate,
         badges: profile.badges,
         availability: 'available' as const,
+        selected: profile.id === summaryProfileId || profile.id === selectedProfileId,
       })),
-    [talentProfiles]
+    [talentProfiles, summaryProfileId, selectedProfileId]
   )
 
   // Get profile for summary card
@@ -106,9 +108,16 @@ export const DiscoverIndexScreen = () => {
     return talentProfiles.find((p) => p.id === summaryProfileId) || null
   }, [summaryProfileId, talentProfiles])
 
-  // Handle pin click - show summary card
-  const handleMarkerPress = useCallback((profileId: string) => {
-    setSummaryProfileId(profileId)
+  // Handle pin click - show summary card or deselect
+  const handleMarkerPress = useCallback((profileId: string | null) => {
+    if (profileId === null) {
+      // Clicking empty space - clear selection
+      setSummaryProfileId(null)
+      setSelectedProfileId(null)
+    } else {
+      // Clicking a pin - show summary card
+      setSummaryProfileId(profileId)
+    }
   }, [])
 
   // Handle summary card click - show rail/sheet and highlight profile
@@ -147,6 +156,7 @@ export const DiscoverIndexScreen = () => {
     <YStack flex={1} height="100vh" overflow="hidden" position="relative">
       {/* Map as base layer */}
       <MapContainer
+        ref={mapRef}
         pins={mapPins}
         center={mapCenter}
         zoom={7}
@@ -191,7 +201,13 @@ export const DiscoverIndexScreen = () => {
             isVisible={showRail}
             profiles={talentProfiles}
             selectedId={selectedProfileId}
-            onSelect={setSelectedProfileId}
+            onSelect={(id) => {
+              setSelectedProfileId(id)
+              // Center map on selected pin
+              if (mapRef.current?.centerOnPin) {
+                mapRef.current.centerOnPin(id)
+              }
+            }}
             isLoading={isLoading}
             resultListRef={resultListRef}
           />

@@ -27,6 +27,7 @@ if (Platform.OS === 'web') {
 
 export interface MapContainerRef {
   flyTo: (center: [number, number], zoom?: number) => void
+  centerOnPin: (pinId: string) => void
 }
 
 export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
@@ -44,6 +45,17 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           map.flyTo({
             center: newCenter,
             zoom: newZoom,
+            speed: 0.8,
+          })
+        }
+      },
+      centerOnPin: (pinId: string) => {
+        const map = mapRef.current as any
+        const pin = pins.find((p) => p.id === pinId)
+        if (map && pin) {
+          map.flyTo({
+            center: pin.coordinate,
+            zoom: Math.max(map.getZoom(), 12), // Zoom in at least to level 12
             speed: 0.8,
           })
         }
@@ -152,16 +164,26 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           filter: ['!', ['has', 'point_count']],
           paint: {
             'circle-color': [
-              'match',
-              ['get', 'availability'],
-              'available',
-              '#10B981',
-              'unavailable',
-              '#F59E0B',
-              '#EF4444', // default/unavailable
+              'case',
+              ['boolean', ['get', 'selected'], false],
+              '#14B8A6', // Teal color for selected pins
+              [
+                'match',
+                ['get', 'availability'],
+                'available',
+                '#10B981',
+                'unavailable',
+                '#F59E0B',
+                '#EF4444', // default/unavailable
+              ],
             ],
             'circle-radius': 24,
-            'circle-stroke-width': 2,
+            'circle-stroke-width': [
+              'case',
+              ['boolean', ['get', 'selected'], false],
+              3, // Thicker stroke for selected
+              2,
+            ],
             'circle-stroke-color': '#ffffff',
           },
         })
@@ -254,7 +276,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       }
     }, [center, zoom])
 
-    // Handle pin clicks on unclustered points
+    // Handle pin clicks and empty map clicks
     useEffect(() => {
       if (!mapRef.current || !isMapReady || Platform.OS !== 'web') {
         return
@@ -272,8 +294,23 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         }
       }
 
+      const handleMapClick = (e: any) => {
+        // Check if clicking on a pin or cluster
+        const features = map.queryRenderedFeatures(e.point, {
+          layers: ['unclustered-point', 'clusters'],
+        })
+
+        // If not clicking on any feature, deselect
+        if (features.length === 0) {
+          onPinPress?.(null)
+        }
+      }
+
       // Add click handler for individual pins
       map.on('click', 'unclustered-point', handlePinClick)
+
+      // Add click handler for empty space
+      map.on('click', handleMapClick)
 
       // Change cursor on hover
       map.on('mouseenter', 'unclustered-point', () => {
@@ -285,6 +322,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
 
       return () => {
         map.off('click', 'unclustered-point', handlePinClick)
+        map.off('click', handleMapClick)
         map.off('mouseenter', 'unclustered-point')
         map.off('mouseleave', 'unclustered-point')
       }
