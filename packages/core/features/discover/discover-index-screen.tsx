@@ -1,16 +1,19 @@
-import { useMemo, useState, useRef } from 'react'
-import { Button, Paragraph, Separator, Sheet, Text, XGroup, XStack, YStack } from '@app/ui'
+import { useMemo, useState, useRef, useCallback } from 'react'
+import { Button, Paragraph, Separator, Sheet, Text, XStack, YStack } from '@app/ui'
 import { MapContainer, type MapPinType } from '@app/ui'
-import { Filter, RefreshCw, List } from '@tamagui/lucide-icons'
+import { Filter, RefreshCw } from '@tamagui/lucide-icons'
+import { useWindowDimensions } from 'react-native'
 
 import { FilterBar } from './components/FilterBar'
 import { RadiusSlider } from './components/RadiusSlider'
-import { ResultList, type ResultListRef } from './components/ResultList'
+import { ResultsRail } from './components/ResultsRail'
+import { ProfileSummaryCard } from './components/ProfileSummaryCard'
+import { DrawModeIndicator } from './components/DrawModeIndicator'
+import type { ResultListRef } from './components/ResultList'
 import { defaultCenter, defaultRadiusMeters } from './data/mockProfiles'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
 import { useUserLocation } from './hooks/useUserLocation'
-import type { ActiveFilter } from './types'
-import { useWindowDimensions } from 'react-native'
+import type { ActiveFilter, TalentProfile } from './types'
 
 const formatRadius = (meters: number): string => {
   const miles = meters / 1609.34
@@ -47,11 +50,13 @@ export const DiscoverIndexScreen = () => {
   const [radiusMeters, setRadiusMeters] = useState(defaultRadiusMeters)
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>(INITIAL_FILTERS)
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
+  const [summaryProfileId, setSummaryProfileId] = useState<string | null>(null)
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [radiusAdjustmentOpen, setRadiusAdjustmentOpen] = useState(false)
   const [showSearchSheet, setShowSearchSheet] = useState(false)
   const [drawMode, setDrawMode] = useState(false)
-  const [showRail, setshowRail] = useState(true)
+  const [showRail, setShowRail] = useState(true)
+  const [showResultsSheet, setShowResultsSheet] = useState(false)
 
   const { data: talentProfiles = [], isLoading } = useTalentProfiles()
 
@@ -95,149 +100,116 @@ export const DiscoverIndexScreen = () => {
     [talentProfiles]
   )
 
-  // State for mobile results sheet
-  const [showResultsSheet, setShowResultsSheet] = useState(false)
+  // Get profile for summary card
+  const summaryProfile = useMemo<TalentProfile | null>(() => {
+    if (!summaryProfileId) return null
+    return talentProfiles.find((p) => p.id === summaryProfileId) || null
+  }, [summaryProfileId, talentProfiles])
 
-  const handleMarkerPress = (profileId: string) => {
-    setSelectedProfileId(profileId)
+  // Handle pin click - show summary card
+  const handleMarkerPress = useCallback((profileId: string) => {
+    setSummaryProfileId(profileId)
+  }, [])
 
-    // Scroll to card with slight delay for better UX
-    setTimeout(() => {
-      resultListRef.current?.scrollToCard(profileId)
-    }, 100)
-  }
+  // Handle summary card click - show rail/sheet and highlight profile
+  const handleSummaryCardPress = useCallback(() => {
+    if (summaryProfileId) {
+      setSelectedProfileId(summaryProfileId)
+
+      if (isSmallScreen) {
+        // On mobile, open the results sheet
+        setShowResultsSheet(true)
+      } else {
+        // On desktop, show the rail
+        setShowRail(true)
+      }
+
+      // Scroll to card with slight delay for better UX
+      setTimeout(() => {
+        resultListRef.current?.scrollToCard(summaryProfileId)
+      }, 100)
+
+      // Hide summary card
+      setSummaryProfileId(null)
+    }
+  }, [summaryProfileId, isSmallScreen])
+
+  const handleReset = useCallback(() => {
+    setActiveFilters(INITIAL_FILTERS)
+    setSelectedProfileId(null)
+    setSummaryProfileId(null)
+    setRadiusMeters(defaultRadiusMeters)
+    setSearchCenter(null)
+    setDrawMode(false)
+  }, [])
 
   return (
-    <YStack flex={1}>
-      <YStack flex={1}>
-        {isSmallScreen ? (
-          <YStack flex={1} position="relative">
-            {/* Fullscreen Map */}
-            <MapContainer
-              pins={mapPins}
-              center={mapCenter}
-              zoom={7}
-              onPinPress={handleMarkerPress}
-            />
+    <YStack flex={1} height="100vh" overflow="hidden" position="relative">
+      {/* Map as base layer */}
+      <MapContainer
+        pins={mapPins}
+        center={mapCenter}
+        zoom={7}
+        onPinPress={handleMarkerPress}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+      />
 
-            <XGroup
-              style={{
-                backgroundColor: 'red',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                zIndex: 100,
-              }}
-            >
-              <XGroup.Item>
-                <Button width="50%" size="$2">
-                  Map
-                </Button>
-              </XGroup.Item>
-
-              <XGroup.Item>
-                <Button width="50%" size="$2">
-                  List
-                </Button>
-              </XGroup.Item>
-            </XGroup>
-
-            {/* Filter Bar with results button */}
-            <FilterBar
-              onResultsPress={() => setShowResultsSheet(true)}
-              resultsCount={talentProfiles.length}
-              onSearchPress={() => setShowSearchSheet(true)}
-              onFilterPress={() => setFiltersOpen(true)}
-              onDrawPress={() => setDrawMode(!drawMode)}
-              onResetPress={() => {
-                setActiveFilters(INITIAL_FILTERS)
-                setSelectedProfileId(null)
-                setRadiusMeters(defaultRadiusMeters)
-                setSearchCenter(null)
-                setDrawMode(false)
-              }}
-            />
-
-            {/* Draw Mode Indicator */}
-            {drawMode && (
-              <YStack
-                position="absolute"
-                t="$4"
-                l="$4"
-                r="$4"
-                z={100}
-                bg="$blue9"
-                p="$3"
-                rounded="$4"
-                items="center"
-              >
-                <Text color="white" fontSize="$4" fontWeight="600">
-                  🖊️ Draw Mode Active - Draw on the map to select an area
-                </Text>
-              </YStack>
-            )}
-          </YStack>
-        ) : (
-          <XStack flex={1} gap="$4" overflow="hidden">
-            <YStack flex={1} overflow="hidden" position="relative">
-              <MapContainer
-                pins={mapPins}
-                center={mapCenter}
-                zoom={7}
-                onPinPress={handleMarkerPress}
-              />
-
-              {/* Filter Bar for desktop view */}
-              <FilterBar
-                onResultsPress={() => setshowRail(!showRail)}
-                resultsCount={talentProfiles.length}
-                onSearchPress={() => setShowSearchSheet(true)}
-                onFilterPress={() => setFiltersOpen(true)}
-                onDrawPress={() => setDrawMode(!drawMode)}
-                onResetPress={() => {
-                  setActiveFilters(INITIAL_FILTERS)
-                  setSelectedProfileId(null)
-                  setRadiusMeters(defaultRadiusMeters)
-                  setSearchCenter(null)
-                  setDrawMode(false)
-                }}
-              />
-
-              {/* Draw Mode Indicator */}
-              {drawMode && (
-                <YStack
-                  position="absolute"
-                  t="$4"
-                  l="$4"
-                  r="$4"
-                  z={100}
-                  bg="$blue9"
-                  p="$3"
-                  rounded="$4"
-                  items="center"
-                >
-                  <Text color="white" fontSize="$4" fontWeight="600">
-                    🖊️ Draw Mode Active - Draw on the map to select an area
-                  </Text>
-                </YStack>
-              )}
+      {/* Overlay elements */}
+      {isSmallScreen ? (
+        <>
+          {/* Profile Summary Card - positioned above FilterBar */}
+          {summaryProfile && (
+            <YStack position="absolute" b={100} l="$4" r="$4" z={45} items="center">
+              <ProfileSummaryCard profile={summaryProfile} onPress={handleSummaryCardPress} />
             </YStack>
+          )}
 
-            {showRail && (
-              <YStack flexBasis={380} maxW={420} gap="$3" overflow="hidden">
-                <ResultList
-                  ref={resultListRef}
-                  profiles={talentProfiles}
-                  selectedId={selectedProfileId}
-                  onSelect={setSelectedProfileId}
-                  isLoading={isLoading}
-                />
-              </YStack>
-            )}
-          </XStack>
-        )}
-      </YStack>
+          {/* Filter Bar */}
+          <FilterBar
+            onResultsPress={() => setShowResultsSheet(true)}
+            resultsCount={talentProfiles.length}
+            onSearchPress={() => setShowSearchSheet(true)}
+            onFilterPress={() => setFiltersOpen(true)}
+            onDrawPress={() => setDrawMode(!drawMode)}
+            onResetPress={handleReset}
+          />
+
+          {/* Draw Mode Indicator */}
+          <DrawModeIndicator isActive={drawMode} />
+        </>
+      ) : (
+        <>
+          {/* Profile Summary Card - positioned above FilterBar */}
+          {summaryProfile && (
+            <YStack position="absolute" b={100} l="$4" r="$4" z={45} items="center">
+              <ProfileSummaryCard profile={summaryProfile} onPress={handleSummaryCardPress} />
+            </YStack>
+          )}
+
+          {/* Results Rail */}
+          <ResultsRail
+            isVisible={showRail}
+            profiles={talentProfiles}
+            selectedId={selectedProfileId}
+            onSelect={setSelectedProfileId}
+            isLoading={isLoading}
+            resultListRef={resultListRef}
+          />
+
+          {/* Filter Bar */}
+          <FilterBar
+            onResultsPress={() => setShowRail(!showRail)}
+            resultsCount={talentProfiles.length}
+            onSearchPress={() => setShowSearchSheet(true)}
+            onFilterPress={() => setFiltersOpen(true)}
+            onDrawPress={() => setDrawMode(!drawMode)}
+            onResetPress={handleReset}
+          />
+
+          {/* Draw Mode Indicator */}
+          <DrawModeIndicator isActive={drawMode} />
+        </>
+      )}
 
       {/* Search Sheet */}
       <Sheet
@@ -271,20 +243,21 @@ export const DiscoverIndexScreen = () => {
         <Sheet.Handle />
         <Sheet.Frame>
           <YStack flex={1} overflow="hidden">
-            <ResultList
-              ref={resultListRef}
+            <ResultsRail
+              isVisible={true}
               profiles={talentProfiles}
               selectedId={selectedProfileId}
               onSelect={(id) => {
                 setSelectedProfileId(id)
-                setShowResultsSheet(false)
               }}
               isLoading={isLoading}
+              resultListRef={resultListRef}
             />
           </YStack>
         </Sheet.Frame>
       </Sheet>
 
+      {/* Filter Sheet */}
       <Sheet modal open={filtersOpen} onOpenChange={setFiltersOpen} snapPoints={[70]}>
         <Sheet.Overlay />
         <Sheet.Handle />
@@ -340,6 +313,7 @@ export const DiscoverIndexScreen = () => {
         </Sheet.Frame>
       </Sheet>
 
+      {/* Radius Adjustment Sheet */}
       <Sheet
         modal
         open={radiusAdjustmentOpen}

@@ -100,7 +100,7 @@ export const ResultList = forwardRef<ResultListRef, ResultListProps>(
 
     return (
       <YStack flex={1} gap="$3" overflow="hidden">
-        <XStack justify="space-between" items="center" shrink={0}>
+        <XStack justify="space-between" items="center" shrink={0} pt="$3" px="$3">
           <Text fontWeight="700" fontSize="$5">
             {profiles.length} results
           </Text>
