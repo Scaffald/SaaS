@@ -25,7 +25,7 @@ import {
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
 } from '@app/core/utils/api'
-import { DashboardWidget, AddressForm, LocationListInput, ToggleCard } from '@app/ui'
+import { DashboardWidget, LocationListInput, ToggleCard } from '@app/ui'
 import { Flag, MapPin, Plane } from '@tamagui/lucide-icons'
 
 /**
@@ -63,8 +63,6 @@ export function ProfileEmploymentLeft() {
     formState: { errors, isDirty },
     watch,
     reset,
-    setValue,
-    trigger,
   } = useForm<EmploymentProfileFormData>({
     resolver: zodResolver(profileEmploymentInputSchema),
     defaultValues: profileEmploymentDefaults,
@@ -76,13 +74,7 @@ export function ProfileEmploymentLeft() {
   // Reset form when employment data is loaded
   useEffect(() => {
     if (employmentData) {
-      // Transform the data to match the form schema
-      const transformedData = {
-        ...employmentData,
-        // Ensure address is properly typed (convert null to undefined)
-        address: employmentData.address || undefined,
-      }
-      reset(transformedData)
+      reset(employmentData)
     }
   }, [employmentData, reset])
 
@@ -105,57 +97,12 @@ export function ProfileEmploymentLeft() {
   }
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <YStack>
       <DashboardWidget>
         <YStack gap="$4" p="$4" flex={1}>
           <H4>Employment Preferences</H4>
 
           <YStack gap="$4">
-            {/* Home Address with Smart Autocomplete */}
-            <YStack gap="$3">
-              <Text fontWeight="600">Home Address</Text>
-              <AddressForm
-                mode="hybrid"
-                placeholder="Search for your home address..."
-                error={errors.address?.street?.message || errors.address?.city?.message}
-                provider="mapbox"
-                apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
-                addressValue={{
-                  streetAddress: watch('address.street') || '',
-                  locality: watch('address.city') || '',
-                  stateAbbreviation: watch('address.state') || '',
-                  postalCode: watch('address.zip') || '',
-                  country: watch('address.country') || '',
-                  formattedAddress: [
-                    watch('address.street'),
-                    watch('address.city'),
-                    watch('address.state'),
-                    watch('address.zip'),
-                  ]
-                    .filter(Boolean)
-                    .join(', '),
-                }}
-                onAddressSelect={(address) => {
-                  console.log('Selected address:', address)
-                  // Update form fields with selected address
-                  setValue('address.street', address.streetAddress || '')
-                  setValue('address.city', address.locality || '')
-                  setValue(
-                    'address.state',
-                    address.stateAbbreviation || address.administrativeAreaLevel1 || ''
-                  )
-                  setValue('address.zip', address.postalCode || '')
-                  setValue('address.country', address.country || 'United States')
-
-                  // Trigger validation for updated fields
-                  trigger('address.street')
-                  trigger('address.city')
-                  trigger('address.state')
-                  trigger('address.zip')
-                }}
-              />
-            </YStack>
-
             {/* Preferred Work Locations */}
             <YStack gap="$3" py="$3">
               <Text fontWeight="600">Preferred Work Locations</Text>
@@ -434,6 +381,6 @@ export function ProfileEmploymentLeft() {
           </YStack>
         </YStack>
       </DashboardWidget>
-    </ScrollView>
+    </YStack>
   )
 }

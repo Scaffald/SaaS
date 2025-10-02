@@ -12,6 +12,8 @@ export const addressSchema = z.object({
   state: z.string().optional(),
   zip: z.string().optional(),
   country: z.string().optional(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
 })
 
 // =============================================================================
@@ -25,6 +27,7 @@ export const profileGeneralInputSchema = z.object({
   email: z.string().email().optional(),
   phone: z.string().optional(),
   about: z.string().max(500).optional(),
+  address: addressSchema.optional(),
 })
 
 export const profileGeneralOutputSchema = z.object({
@@ -34,6 +37,7 @@ export const profileGeneralOutputSchema = z.object({
   email: z.string(),
   phone: z.string(),
   about: z.string(),
+  address: addressSchema.nullable(),
 })
 
 // =============================================================================
@@ -72,9 +76,6 @@ export const AVAILABILITY_OPTIONS = [
 
 export const profileEmploymentInputSchema = z
   .object({
-    // Home Address
-    address: addressSchema.optional(),
-
     // Preferred work locations (up to 3)
     preferred_work_locations: z
       .array(z.string())
@@ -107,7 +108,6 @@ export const profileEmploymentInputSchema = z
   .partial()
 
 export const profileEmploymentOutputSchema = z.object({
-  address: addressSchema.nullable(),
   preferred_work_locations: z.array(z.string()),
   willing_to_travel: z.boolean(),
   travel_distance_miles: z.number(),
@@ -122,13 +122,6 @@ export const profileEmploymentOutputSchema = z.object({
 
 // Default values for employment profile
 export const profileEmploymentDefaults: Partial<EmploymentProfileFormData> = {
-  address: {
-    street: '',
-    city: '',
-    state: '',
-    zip: '',
-    country: 'United States',
-  },
   preferred_work_locations: [],
   willing_to_travel: false,
   travel_distance_miles: 25,

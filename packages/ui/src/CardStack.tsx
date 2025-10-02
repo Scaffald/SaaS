@@ -69,7 +69,7 @@ export const CardStack = ({
  * DirectionSlide component for controlling CardStack animation direction
  *
  * A toggle group component that allows users to select the slide direction
- * for the CardStack component. Useful for demos and interactive examples.
+ * for the CardStack component.
  *
  * @param props - DirectionSlide component props
  * @returns JSX element
@@ -233,24 +233,5 @@ export const StackedCards = ({
         </View>
       ))}
     </View>
-  )
-}
-
-/**
- * CardStackDemo component showcasing the CardStack functionality
- *
- * A demo component that displays a CardStack with direction controls.
- * Perfect for testing and showcasing the component's capabilities.
- *
- * @returns JSX element
- */
-export const CardStackDemo = () => {
-  const [direction, setDirection] = useState<'left' | 'right' | 'top' | 'bottom'>('left')
-
-  return (
-    <YStack maxW="100%" gap="$6" items="center">
-      <CardStack key={direction} direction={direction} />
-      <DirectionSlide direction={direction} setDirection={setDirection} />
-    </YStack>
   )
 }

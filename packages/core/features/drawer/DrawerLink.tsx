@@ -27,8 +27,8 @@ export const DrawerLink = ({
   if (item.disabled) {
     return (
       <XStack items="center" gap="$3" px="$3" py="$2" opacity={0.5} cursor="not-allowed" flex={1}>
-        {Icon && <Icon size={18} color="$color11" />}
-        <Paragraph size="$3" fontWeight="500" color="$color11">
+        {Icon && <Icon size={18} color="$color12" />}
+        <Paragraph size="$3" fontWeight="500" color="$color12">
           {item.title}
         </Paragraph>
       </XStack>
@@ -44,14 +44,14 @@ export const DrawerLink = ({
           rounded="$4"
           gap="$3"
           px="$3"
-          py="$3"
+          py="$2"
           pl="$9"
           pressStyle={{ bg: '$color1' }}
-          hoverStyle={{ bg: '$color3' }}
+          hoverStyle={{ bg: '$color4' }}
           cursor="pointer"
           flex={1}
         >
-          <Paragraph size="$2" fontWeight="600" color={active ? '$blue9' : '$color11'}>
+          <Paragraph size="$4" fontWeight="500" color={active ? '$blue9' : '$color12'}>
             {item.title}
           </Paragraph>
         </XStack>
@@ -65,16 +65,16 @@ export const DrawerLink = ({
 
     return (
       <XStack items="center" justify="center" width={25} height={20} rounded="$6">
-        <Icon size={20} color={active ? '$color12' : '$blue9'} />
+        <Icon size={20} color={active ? '$color1' : '$color12'} />
       </XStack>
     )
   }
 
   // Common content rendering logic
   const renderContent = () => (
-    <XStack items="center" gap="$3" my="$1">
+    <XStack items="center" gap="$3">
       {renderIcon()}
-      <Paragraph size="$3" fontWeight="500" color={active ? '$color12' : '$color11'}>
+      <Paragraph size="$4" fontWeight="600" color={active ? '$color1' : '$color12'}>
         {item.title}
       </Paragraph>
     </XStack>
@@ -85,7 +85,7 @@ export const DrawerLink = ({
     <XStack items="center" gap="$2">
       {item.badge && (
         <XStack px="$2" py="$1" rounded="$10" bg="$red9" minW={20} items="center">
-          <Paragraph size="$1" color="$color12" fontWeight="600">
+          <Paragraph size="$1" color={active ? '$color1' : '$color12'} fontWeight="600">
             {item.badge}
           </Paragraph>
         </XStack>
@@ -94,9 +94,9 @@ export const DrawerLink = ({
       {/* Chevron logic */}
       {item.isExpandable ? (
         isExpanded ? (
-          <ChevronDown size={16} color={active ? '$color12' : '$color10'} />
+          <ChevronDown size={16} color={active ? '$color1' : '$color10'} />
         ) : (
-          <ChevronLeft size={16} color={active ? '$color12' : '$color10'} />
+          <ChevronLeft size={16} color={active ? '$color11' : '$color10'} />
         )
       ) : (
         item.hasChevron && <ChevronRight size={16} color="$color10" />

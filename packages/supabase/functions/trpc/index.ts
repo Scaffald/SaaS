@@ -115,10 +115,10 @@ const profileRouter = t.router({
       })
     }
 
-    // Get additional data from user_private table
+    // Get additional data from user_private table including address
     const { data: privateData, error: privateError } = await supabase
       .from('user_private')
-      .select('phone, about')
+      .select('phone, about, address')
       .eq('user_id', user.id)
       .single()
 
@@ -138,6 +138,7 @@ const profileRouter = t.router({
       email: authUser?.user?.email || '',
       phone: privateData?.phone || '',
       about: privateData?.about || '',
+      address: privateData?.address || null,
     }
   }),
 
@@ -173,13 +174,14 @@ const profileRouter = t.router({
       }
 
       // Build user_private update object with only provided fields
-      const privateUpdate: UserPrivateUpdate = {
+      const privateUpdate: UserPrivateUpdate & { address?: Record<string, unknown> } = {
         user_id: user.id,
         updated_at: new Date().toISOString(),
       }
 
       if (input.phone !== undefined) privateUpdate.phone = input.phone
       if (input.about !== undefined) privateUpdate.about = input.about
+      if (input.address !== undefined) privateUpdate.address = input.address
 
       // Update user_private table only if there are fields to update
       if (Object.keys(privateUpdate).length > 2) {
@@ -204,11 +206,6 @@ const profileRouter = t.router({
     const { data: employmentData, error: employmentError } = await supabase
       .from('user_private')
       .select(`
-        employment_street,
-        employment_city,
-        employment_state,
-        employment_zip,
-        employment_country,
         preferred_work_locations,
         willing_to_travel,
         travel_distance_miles,
@@ -231,15 +228,6 @@ const profileRouter = t.router({
     }
 
     return {
-      address: employmentData
-        ? {
-            street: employmentData.employment_street || '',
-            city: employmentData.employment_city || '',
-            state: employmentData.employment_state || '',
-            zip: employmentData.employment_zip || '',
-            country: employmentData.employment_country || '',
-          }
-        : null,
       preferred_work_locations: employmentData?.preferred_work_locations || [],
       willing_to_travel: employmentData?.willing_to_travel || false,
       travel_distance_miles: employmentData?.travel_distance_miles || 25,
@@ -264,17 +252,6 @@ const profileRouter = t.router({
         updated_at: new Date().toISOString(),
       }
 
-      // Handle address components separately
-      if (input.address !== undefined) {
-        if (input.address.street !== undefined)
-          employmentUpdate.employment_street = input.address.street
-        if (input.address.city !== undefined) employmentUpdate.employment_city = input.address.city
-        if (input.address.state !== undefined)
-          employmentUpdate.employment_state = input.address.state
-        if (input.address.zip !== undefined) employmentUpdate.employment_zip = input.address.zip
-        if (input.address.country !== undefined)
-          employmentUpdate.employment_country = input.address.country
-      }
       if (input.preferred_work_locations !== undefined) {
         employmentUpdate.preferred_work_locations = input.preferred_work_locations
       }

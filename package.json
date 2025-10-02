@@ -24,9 +24,9 @@
     "tamagui:check": "tamagui check",
     "tamagui:upgrade": "pnpm up '*tamagui*'@latest '@tamagui/*'@latest",
     "tamagui:upgrade:canary": "pnpm up '*tamagui*'@canary '@tamagui/*'@canary",
-    "supa": "supabase --workdir ./packages/supabase --",
-    "supa:generate": "supabase gen types typescript --local > packages/supabase/types.ts",
-    "supa:generate:remote": "supabase gen types typescript --project-id qmfmpcyxsihhfttvqpbw > packages/supabase/types.ts",
+    "supa": "cd packages/supabase && pnpx supabase",
+    "supa:generate": "cd packages/supabase && pnpx supabase gen types typescript --local > types.ts",
+    "supa:generate:remote": "cd packages/supabase && pnpx supabase gen types typescript > packages/supabase/types.ts",
     "supa:studio": "echo 'Supabase Studio: http://127.0.0.1:54323' && open http://127.0.0.1:54323",
     "supa:mailpit": "echo 'Mailpit (Email Testing): http://127.0.0.1:54324' && open http://127.0.0.1:54324",
     "typecheck": "turbo typecheck",
@@ -50,7 +50,6 @@
     "@turbo/gen": "^2.5.8",
     "check-dependency-version-consistency": "^3.3.0",
     "fs-extra": "^11.2.0",
-    "supabase": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:"
   }

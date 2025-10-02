@@ -1,19 +1,17 @@
-import { MagicLinkPending } from '@app/core/features/auth/components/MagicLinkPending'
-import { Stack, useLocalSearchParams } from 'expo-router'
+import { SuccessView } from '@app/core/features/auth/components/SuccessView'
+import { Stack } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Screen() {
-  const params = useLocalSearchParams<{ email?: string }>()
-
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
       <Stack.Screen
         options={{
-          title: 'Verify Email',
+          title: 'Success',
           headerShown: true,
         }}
       />
-      <MagicLinkPending email={params.email} />
+      <SuccessView isVisible={true} />
     </SafeAreaView>
   )
 }

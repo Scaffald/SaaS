@@ -239,19 +239,58 @@ with hubs(city, state, lat, lon, area_code, postal_prefix) as (
     ('Burlington',     'VT', 44.4759, -73.2121, '802', '054'),
     ('Portland',       'ME', 43.6591, -70.2568, '207', '041')
 ),
-first_names(name) as (
+unique_people(n, first_name, last_name, headline, specialty) as (
   values
-    ('Alex'),('Jordan'),('Taylor'),('Casey'),('Riley'),('Avery'),('Parker'),('Morgan'),('Drew'),('Quinn'),
-    ('Sam'),('Chris'),('Jamie'),('Reese'),('Skyler'),('Cameron'),('Rowan'),('Hayden'),('Dakota'),('Emerson'),
-    ('Logan'),('Harper'),('Finley'),('Sawyer'),('Lennon'),('Blake'),('River'),('Phoenix'),('Sage'),('Kai'),
-    ('Max'),('Zoe'),('Maya'),('Leo'),('Nova'),('Jade'),('Finn'),('Luna'),('Asher'),('Eli')
-),
-last_names(name) as (
-  values
-    ('Smith'),('Johnson'),('Williams'),('Brown'),('Jones'),('Miller'),('Davis'),('Garcia'),('Rodriguez'),('Wilson'),
-    ('Martinez'),('Anderson'),('Taylor'),('Thomas'),('Hernandez'),('Moore'),('Martin'),('Jackson'),('Thompson'),('White'),
-    ('Lopez'),('Lee'),('Gonzalez'),('Harris'),('Clark'),('Lewis'),('Robinson'),('Walker'),('Hall'),('Allen'),
-    ('Young'),('King'),('Wright'),('Scott'),('Torres'),('Nguyen'),('Hill'),('Flores'),('Green'),('Adams')
+    (1, 'Marcus', 'Washington', 'Master Electrician & Safety Instructor', 'electrical,osha-30,leadership'),
+    (2, 'Sarah', 'Chen', 'Licensed Plumber & Project Manager', 'plumbing,project-management,blueprints'),
+    (3, 'James', 'Rodriguez', 'Certified Welder (AWS D1.1)', 'welding,quality-control,teamwork'),
+    (4, 'Emily', 'Thompson', 'HVAC Technician & EPA Certified', 'hvac,troubleshooting,customer-service'),
+    (5, 'David', 'Martinez', 'Heavy Equipment Operator', 'crane-operation,safety,communication'),
+    (6, 'Jennifer', 'Anderson', 'Commercial Carpenter & Foreman', 'carpentry,framing,leadership'),
+    (7, 'Michael', 'Taylor', 'CNC Machinist & Programmer', 'cnc-operating,machining,cad'),
+    (8, 'Lisa', 'Moore', 'Industrial Electrician', 'electrical,plc,troubleshooting'),
+    (9, 'Robert', 'Jackson', 'CDL-A Driver & Logistics Coordinator', 'truck-driving,logistics,time-management'),
+    (10, 'Maria', 'Garcia', 'Quality Control Inspector', 'quality-control,documentation,problem-solving'),
+    (11, 'Christopher', 'White', 'Solar Installation Specialist', 'solar-installation,electrical,roofing'),
+    (12, 'Ashley', 'Harris', 'Concrete Finisher & Formwork Specialist', 'concrete,formwork,precision'),
+    (13, 'Daniel', 'Martin', 'Industrial Maintenance Technician', 'maintenance,welding,electrical'),
+    (14, 'Jessica', 'Lee', 'CAD Designer & Estimator', 'cad,estimating,solidworks'),
+    (15, 'Matthew', 'Clark', 'Pipefitter & Steamfitter', 'pipefitting,welding,blueprints'),
+    (16, 'Amanda', 'Lewis', 'Warehouse Manager & Forklift Trainer', 'warehouse-operations,forklift,leadership'),
+    (17, 'Joshua', 'Walker', 'Roofing Contractor & Safety Officer', 'roofing,fall-protection,osha-30'),
+    (18, 'Nicole', 'Hall', 'Manufacturing Engineer', 'process-improvement,quality-control,lean-manufacturing'),
+    (19, 'Andrew', 'Young', 'Drywall Installer & Finisher', 'drywall,taping,finishing'),
+    (20, 'Stephanie', 'King', 'Field Service Technician', 'field-services,troubleshooting,customer-service'),
+    (21, 'Brandon', 'Wright', 'Structural Welder & Fabricator', 'welding,fabrication,blueprints'),
+    (22, 'Rachel', 'Scott', 'Assembly Line Supervisor', 'assembly,leadership,lean-manufacturing'),
+    (23, 'Kevin', 'Torres', 'Millwright & Precision Alignment', 'millwright,alignment,maintenance'),
+    (24, 'Lauren', 'Nguyen', 'AutoCAD Specialist & Detailer', 'autocad,detailing,technical-drawing'),
+    (25, 'Tyler', 'Hill', 'Journeyman Electrician', 'electrical,residential,commercial'),
+    (26, 'Megan', 'Flores', 'Paint & Coating Specialist', 'painting,coating,surface-prep'),
+    (27, 'Justin', 'Green', 'Excavator Operator & Site Foreman', 'excavation,grading,site-management'),
+    (28, 'Brittany', 'Adams', 'HVAC Service Manager', 'hvac,customer-service,scheduling'),
+    (29, 'Ryan', 'Baker', 'Precision Machinist', 'machining,measurement,quality'),
+    (30, 'Samantha', 'Nelson', 'Electrical Apprentice & Student', 'electrical,learning,safety'),
+    (31, 'Eric', 'Carter', 'Bridge & Highway Construction', 'concrete,rebar,heavy-civil'),
+    (32, 'Angela', 'Mitchell', 'Insulation Installer', 'insulation,energy-efficiency,safety'),
+    (33, 'Brian', 'Perez', 'Diesel Mechanic & Fleet Maintenance', 'diesel-repair,diagnostics,preventive-maintenance'),
+    (34, 'Melissa', 'Roberts', 'Crane Operator (CCO Certified)', 'crane-operation,rigging,safety'),
+    (35, 'Jason', 'Turner', 'Sheet Metal Fabricator', 'sheet-metal,fabrication,precision'),
+    (36, 'Heather', 'Phillips', 'Construction Project Coordinator', 'project-management,scheduling,communication'),
+    (37, 'Aaron', 'Campbell', 'Fire Sprinkler Installer', 'sprinkler-systems,welding,nfpa'),
+    (38, 'Amy', 'Parker', 'CNC Operator & Setup Technician', 'cnc-operating,tooling,quality'),
+    (39, 'Nathan', 'Evans', 'Industrial Painter', 'industrial-painting,coating,surface-prep'),
+    (40, 'Laura', 'Edwards', 'Inventory Control Specialist', 'inventory-management,data-entry,organization'),
+    (41, 'Jacob', 'Collins', 'Glazier & Window Installer', 'glass-installation,measuring,safety'),
+    (42, 'Michelle', 'Stewart', 'Production Scheduler', 'scheduling,erp-systems,coordination'),
+    (43, 'Jordan', 'Sanchez', 'Power Lineman & Utility Worker', 'power-systems,climbing,safety'),
+    (44, 'Kimberly', 'Morris', 'Industrial Hygienist', 'safety,testing,compliance'),
+    (45, 'Nicholas', 'Rogers', 'Tile Setter & Flooring Specialist', 'tile,flooring,layout'),
+    (46, 'Rebecca', 'Reed', 'Shipping & Receiving Coordinator', 'logistics,inventory,documentation'),
+    (47, 'Adam', 'Cook', 'Boilermaker & Pressure Vessel Welder', 'welding,boilermaking,confined-space'),
+    (48, 'Catherine', 'Morgan', 'Quality Assurance Engineer', 'quality-control,iso-certification,auditing'),
+    (49, 'Sean', 'Bell', 'Landscaping & Site Development', 'landscaping,grading,equipment-operation'),
+    (50, 'Diana', 'Murphy', 'Industrial Electrician & PLC Programmer', 'electrical,plc,automation')
 ),
 certification_bank(cert) as (
   values
@@ -272,29 +311,33 @@ industry_lookup as (
 seed_rows as (
   select
     gen_random_uuid() as id,
-    gs.n,
-    fn.name as first_name,
-    ln.name as last_name,
-    (fn.name || ' ' || ln.name) as display_name,
-    lower('seeduser_' || gs.n::text) as username,
-    lower('seeduser-' || gs.n::text) as slug,
-    case when random() < 0.5 then 'Skilled Trades Professional' else 'Industrial Technician' end as headline,
+    up.n,
+    up.first_name,
+    up.last_name,
+    (up.first_name || ' ' || up.last_name) as display_name,
+    lower('seeduser_' || up.n::text) as username,
+    lower('seeduser-' || up.n::text) as slug,
+    up.headline,
     format(
-      'Based in %s, %s. Experienced in %s.',
+      'Based in %s, %s with %s years of experience. Specializing in %s. %s',
       h.city,
       h.state,
-      (
-        select string_agg(skill, ', ')
-        from (
-          select skill from skill_bank order by random() limit 3
-        ) s
-      )
+      (5 + floor(random()*21))::text,
+      up.headline,
+      case 
+        when random() < 0.3 then 'Available for immediate start.'
+        when random() < 0.6 then 'Open to contract and permanent positions.'
+        else 'Seeking challenging opportunities in the field.'
+      end
     ) as bio,
     (random() < 0.7) as open_to_work,
     (5 + floor(random()*21))::smallint as years_of_experience,
     (
       select jsonb_build_object(
-        'skills', (select jsonb_agg(skill) from (select skill from skill_bank order by random() limit 5) x),
+        'skills', (
+          select jsonb_agg(skill) 
+          from unnest(string_to_array(up.specialty, ',')) as skill
+        ),
         'primary_location', jsonb_build_object('city', h.city, 'state', h.state),
         'travel_radius_miles', extra.travel_radius
       )
@@ -315,10 +358,8 @@ seed_rows as (
     extra.travel_radius,
     (extra.travel_radius > 60) as open_to_travel,
     format('%s, %s', h.city, h.state) as location_label,
-    lower(replace(fn.name,' ','')) || '.' || lower(replace(ln.name,' ','')) || '.' || gs.n::text || '@example.test' as email
-  from generate_series(1, 50) as gs(n)
-  cross join lateral (select name from first_names order by random() limit 1) fn
-  cross join lateral (select name from last_names order by random() limit 1) ln
+    lower(replace(up.first_name,' ','')) || '.' || lower(replace(up.last_name,' ','')) || '.' || up.n::text || '@example.test' as email
+  from unique_people up
   cross join lateral (select * from hubs order by random() limit 1) h
   cross join lateral (
     select

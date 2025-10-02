@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { Text, YStack, XStack, Button, Spinner } from 'tamagui'
-import { Select } from '@tamagui/select'
+import { Text, YStack, XStack, Button, Spinner, Select } from 'tamagui'
 import { ChevronDown, RefreshCw, AlertCircle } from '@tamagui/lucide-icons'
 import { NewsCard } from '@app/ui'
 import { useAggregatedNews } from './hooks/useNewsFeed'
@@ -98,7 +97,7 @@ export function NewsWidget({
   return (
     <YStack gap="$4">
       {/* Header with title and controls */}
-      <XStack justify="space-between" items="center" px="$6" pt="$6">
+      <XStack justify="space-between" items="center" px="$5" pt="$3">
         <Text fontSize="$6" fontWeight="600">
           News
         </Text>
