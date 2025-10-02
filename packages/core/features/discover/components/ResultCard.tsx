@@ -17,22 +17,22 @@ export const ResultCard = memo(
       <YStack
         ref={ref}
         borderWidth={1}
-        borderColor={isSelected ? '$blue7' : '$color5'}
+        borderColor={isSelected ? '$blue9' : '$color5'}
         rounded="$3"
         p="$3"
-        bg={isSelected ? '$blue2' : '$background'}
+        bg={isSelected ? '$blue9' : '$background'}
         gap="$2"
         pressStyle={{ scale: 0.98 }}
-        hoverStyle={{ bg: '$color2' }}
+        hoverStyle={{ bg: isSelected ? '$blue9' : '$color2' }}
         onPress={() => onSelect(profile.id)}
         // Add animation for selection highlight
         animation={isSelected ? 'bouncy' : undefined}
         animateOnly={['backgroundColor', 'borderColor']}
         // Add subtle shadow when selected
-        style={isSelected ? { boxShadow: '0 2px 4px rgba(59, 130, 246, 0.1)' } : undefined}
+        style={isSelected ? { boxShadow: '0 4px 8px rgba(59, 130, 246, 0.2)' } : undefined}
       >
         <XStack justify="space-between" items="center">
-          <SizableText size="$5" fontWeight="700">
+          <SizableText size="$5" fontWeight="700" color={isSelected ? '$color1' : '$color12'}>
             {profile.name}
           </SizableText>
           <XStack items="center" gap="$2">
@@ -45,28 +45,28 @@ export const ResultCard = memo(
           </XStack>
         </XStack>
 
-        <Paragraph size="$3" color="$color11" numberOfLines={2}>
+        <Paragraph size="$3" color={isSelected ? '$color1' : '$color11'} numberOfLines={2}>
           {profile.title}
         </Paragraph>
 
         <XStack flexWrap="wrap" gap="$2">
           <XStack items="center" gap="$1">
-            <Clock3 size={14} color="$color10" />
-            <Text color="$color11" fontSize="$2">
+            <Clock3 size={14} color={isSelected ? '$color1' : '$color10'} />
+            <Text color={isSelected ? '$color1' : '$color11'} fontSize="$2">
               {profile.experienceYears} years
             </Text>
           </XStack>
           {profile.hourlyRate ? (
             <XStack items="center" gap="$1">
-              <DollarSign size={14} color="$color10" />
-              <Text color="$color11" fontSize="$2">
+              <DollarSign size={14} color={isSelected ? '$color1' : '$color10'} />
+              <Text color={isSelected ? '$color1' : '$color11'} fontSize="$2">
                 ${profile.hourlyRate}/hr
               </Text>
             </XStack>
           ) : null}
           <XStack items="center" gap="$1">
-            <Award size={14} color="$color10" />
-            <Text color="$color11" fontSize="$2">
+            <Award size={14} color={isSelected ? '$color1' : '$color10'} />
+            <Text color={isSelected ? '$color1' : '$color11'} fontSize="$2">
               {profile.locationLabel}
             </Text>
           </XStack>

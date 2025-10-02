@@ -1,4 +1,22 @@
-import { z } from 'zod'
+import { z } from "zod";
+
+// Phone validation helper (matches frontend validation)
+const phoneNumberSchema = z
+  .string()
+  .optional()
+  .refine(
+    (phone) => {
+      if (!phone) return true; // Optional field
+      // Basic phone validation - accepts various formats
+      // E.164 format, national formats, etc.
+      const phoneRegex =
+        /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/;
+      return phoneRegex.test(phone);
+    },
+    {
+      message: "Please enter a valid phone number",
+    },
+  );
 
 /**
  * Consolidated schemas for tRPC operations
@@ -14,21 +32,28 @@ export const addressSchema = z.object({
   country: z.string().optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
-})
+});
 
 // =============================================================================
 // PROFILE GENERAL SCHEMAS
 // =============================================================================
 
 export const profileGeneralInputSchema = z.object({
-  first_name: z.string().min(1, 'First name is required').max(50, 'First name too long'),
-  last_name: z.string().min(1, 'Last name is required').max(50, 'Last name too long'),
-  avatar_path: z.union([z.string().url(), z.string().min(1), z.literal('')]).optional(),
+  first_name: z.string().min(1, "First name is required").max(
+    50,
+    "First name too long",
+  ),
+  last_name: z.string().min(1, "Last name is required").max(
+    50,
+    "Last name too long",
+  ),
+  avatar_path: z.union([z.string().url(), z.string().min(1), z.literal("")])
+    .optional(),
   email: z.string().email().optional(),
-  phone: z.string().optional(),
+  phone: phoneNumberSchema,
   about: z.string().max(500).optional(),
-  address: addressSchema.optional(),
-})
+  address: addressSchema.nullable().optional(),
+});
 
 export const profileGeneralOutputSchema = z.object({
   first_name: z.string(),
@@ -38,7 +63,7 @@ export const profileGeneralOutputSchema = z.object({
   phone: z.string(),
   about: z.string(),
   address: addressSchema.nullable(),
-})
+});
 
 // =============================================================================
 // PROFILE EMPLOYMENT SCHEMAS
@@ -46,40 +71,40 @@ export const profileGeneralOutputSchema = z.object({
 
 // Constants for employment options
 export const DRIVERS_LICENSE_OPTIONS = [
-  'Class M',
-  'Class A',
-  'Class B',
-  'Class C',
-  'CDL A',
-  'CDL B',
-  'CDL C',
-] as const
+  "Class M",
+  "Class A",
+  "Class B",
+  "Class C",
+  "CDL A",
+  "CDL B",
+  "CDL C",
+] as const;
 
 export const MILITARY_STATUS_OPTIONS = [
-  'Active Duty',
-  'Reserve',
-  'National Guard',
-  'Veteran',
-  'Retired',
-] as const
+  "Active Duty",
+  "Reserve",
+  "National Guard",
+  "Veteran",
+  "Retired",
+] as const;
 
 export const AVAILABILITY_OPTIONS = [
-  'Part-time',
-  'Contract',
-  'Full-time',
-  'Weekend',
-  'Night Shift',
-  'Day Shift',
-  'Temporary',
-  'Short Notice',
-] as const
+  "Part-time",
+  "Contract",
+  "Full-time",
+  "Weekend",
+  "Night Shift",
+  "Day Shift",
+  "Temporary",
+  "Short Notice",
+] as const;
 
 export const profileEmploymentInputSchema = z
   .object({
     // Preferred work locations (up to 3)
     preferred_work_locations: z
       .array(z.string())
-      .max(3, 'Maximum 3 work locations allowed')
+      .max(3, "Maximum 3 work locations allowed")
       .optional(),
 
     // Travel preferences
@@ -88,13 +113,17 @@ export const profileEmploymentInputSchema = z
 
     // Residency (multiple countries but keep US boolean)
     us_resident: z.boolean().optional(),
-    residency_countries: z.array(z.string()).max(3, 'Maximum 3 countries allowed').optional(),
+    residency_countries: z.array(z.string()).max(
+      3,
+      "Maximum 3 countries allowed",
+    ).optional(),
 
     // Passport
     us_passport: z.boolean().optional(),
 
     // Drivers License (multi-select array)
-    drivers_license_classes: z.array(z.enum(DRIVERS_LICENSE_OPTIONS)).optional(),
+    drivers_license_classes: z.array(z.enum(DRIVERS_LICENSE_OPTIONS))
+      .optional(),
 
     // Military Status (multi-select)
     military_status: z.array(z.enum(MILITARY_STATUS_OPTIONS)).optional(),
@@ -105,7 +134,7 @@ export const profileEmploymentInputSchema = z
     // Hourly Rate
     hourly_rate: z.number().min(0).max(200).optional(),
   })
-  .partial()
+  .partial();
 
 export const profileEmploymentOutputSchema = z.object({
   preferred_work_locations: z.array(z.string()),
@@ -118,7 +147,7 @@ export const profileEmploymentOutputSchema = z.object({
   military_status: z.array(z.string()),
   availability: z.array(z.string()),
   hourly_rate: z.number().nullable(),
-})
+});
 
 // Default values for employment profile
 export const profileEmploymentDefaults: Partial<EmploymentProfileFormData> = {
@@ -132,7 +161,7 @@ export const profileEmploymentDefaults: Partial<EmploymentProfileFormData> = {
   military_status: [],
   availability: [],
   hourly_rate: undefined,
-}
+};
 
 // =============================================================================
 // PROFILE SKILLS SCHEMAS
@@ -150,7 +179,7 @@ export const profileSkillsInputSchema = z
           years_experience: z.number().min(0).max(50).optional(),
           is_primary: z.boolean().default(false),
           endorsed_count: z.number().default(0).optional(),
-        })
+        }),
       )
       .optional(),
 
@@ -161,7 +190,7 @@ export const profileSkillsInputSchema = z
     // Skill categories of interest
     skill_categories: z.array(z.string()).optional(),
   })
-  .partial()
+  .partial();
 
 export const profileSkillsOutputSchema = z.object({
   skills: z.array(
@@ -172,12 +201,12 @@ export const profileSkillsOutputSchema = z.object({
       years_experience: z.number().nullable(),
       is_primary: z.boolean(),
       endorsed_count: z.number(),
-    })
+    }),
   ),
   primary_industry_id: z.string().nullable(),
   secondary_industries: z.array(z.string()),
   skill_categories: z.array(z.string()),
-})
+});
 
 // =============================================================================
 // AVATAR UPLOAD SCHEMA
@@ -187,12 +216,12 @@ export const uploadAvatarInputSchema = z.object({
   file: z.string(), // Base64 encoded file
   fileName: z.string(),
   contentType: z.string(),
-})
+});
 
 export const uploadAvatarOutputSchema = z.object({
   success: z.boolean(),
   avatarPath: z.string(),
-})
+});
 
 // =============================================================================
 // DATABASE UPDATE SCHEMAS
@@ -204,14 +233,14 @@ export const profileUpdateSchema = z.object({
   first_name: z.string().optional(),
   last_name: z.string().optional(),
   avatar_path: z.string().optional(),
-})
+});
 
 export const userPrivateUpdateSchema = z.object({
   user_id: z.string(),
   updated_at: z.string(),
   phone: z.string().optional(),
   about: z.string().optional(),
-})
+});
 
 export const userPrivateEmploymentUpdateSchema = z.object({
   user_id: z.string(),
@@ -231,24 +260,32 @@ export const userPrivateEmploymentUpdateSchema = z.object({
   military_status: z.array(z.string()).optional(),
   availability: z.array(z.string()).optional(),
   hourly_rate: z.number().optional(),
-})
+});
 
 // =============================================================================
 // INFERRED TYPES FOR EXPORT
 // =============================================================================
 
-export type ProfileGeneralInput = z.infer<typeof profileGeneralInputSchema>
-export type ProfileGeneralOutput = z.infer<typeof profileGeneralOutputSchema>
-export type ProfileEmploymentInput = z.infer<typeof profileEmploymentInputSchema>
-export type ProfileEmploymentOutput = z.infer<typeof profileEmploymentOutputSchema>
-export type ProfileSkillsInput = z.infer<typeof profileSkillsInputSchema>
-export type ProfileSkillsOutput = z.infer<typeof profileSkillsOutputSchema>
-export type UploadAvatarInput = z.infer<typeof uploadAvatarInputSchema>
-export type UploadAvatarOutput = z.infer<typeof uploadAvatarOutputSchema>
+export type ProfileGeneralInput = z.infer<typeof profileGeneralInputSchema>;
+export type ProfileGeneralOutput = z.infer<typeof profileGeneralOutputSchema>;
+export type ProfileEmploymentInput = z.infer<
+  typeof profileEmploymentInputSchema
+>;
+export type ProfileEmploymentOutput = z.infer<
+  typeof profileEmploymentOutputSchema
+>;
+export type ProfileSkillsInput = z.infer<typeof profileSkillsInputSchema>;
+export type ProfileSkillsOutput = z.infer<typeof profileSkillsOutputSchema>;
+export type UploadAvatarInput = z.infer<typeof uploadAvatarInputSchema>;
+export type UploadAvatarOutput = z.infer<typeof uploadAvatarOutputSchema>;
 
-export type ProfileUpdate = z.infer<typeof profileUpdateSchema>
-export type UserPrivateUpdate = z.infer<typeof userPrivateUpdateSchema>
-export type UserPrivateEmploymentUpdate = z.infer<typeof userPrivateEmploymentUpdateSchema>
+export type ProfileUpdate = z.infer<typeof profileUpdateSchema>;
+export type UserPrivateUpdate = z.infer<typeof userPrivateUpdateSchema>;
+export type UserPrivateEmploymentUpdate = z.infer<
+  typeof userPrivateEmploymentUpdateSchema
+>;
 
 // Form data type for client-side components
-export type EmploymentProfileFormData = z.infer<typeof profileEmploymentInputSchema>
+export type EmploymentProfileFormData = z.infer<
+  typeof profileEmploymentInputSchema
+>;

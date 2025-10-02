@@ -90,13 +90,40 @@ export function ProfileGeneralLeft() {
     }
   }, [profileData, reset])
 
+  // Debug: Log form state changes
+  useEffect(() => {
+    console.log('📊 Form state updated:', {
+      isDirty,
+      hasErrors: Object.keys(errors).length > 0,
+      errorCount: Object.keys(errors).length,
+      errors: errors,
+    })
+  }, [isDirty, errors])
+
   const onSubmit = async (data: GeneralProfileFormData) => {
+    console.log('🟢 Form submission started')
+    console.log('📋 Form data:', JSON.stringify(data, null, 2))
+    console.log('✅ Form validation passed')
+
     setIsLoading(true)
     try {
       await updateProfileMutation.mutateAsync(data)
+      console.log('✅ Profile updated successfully')
+    } catch (error) {
+      console.error('❌ Profile update failed:', error)
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const onError = (validationErrors: typeof errors) => {
+    console.log('❌ Form validation failed')
+    console.log('📋 Validation errors:', JSON.stringify(validationErrors, null, 2))
+    console.log('📊 Form state:', {
+      isDirty,
+      isValid: Object.keys(validationErrors).length === 0,
+      errorCount: Object.keys(validationErrors).length,
+    })
   }
 
   if (isLoadingProfile) {
@@ -321,7 +348,7 @@ export function ProfileGeneralLeft() {
           {/* Save Button */}
           <XStack justify="flex-end" pt="$4">
             <Button
-              onPress={handleSubmit(onSubmit)}
+              onPress={handleSubmit(onSubmit, onError)}
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}
               space={isLoading ? '$2' : 0}

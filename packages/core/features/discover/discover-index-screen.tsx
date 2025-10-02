@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef, useCallback } from 'react'
+import { useMemo, useState, useRef, useCallback, useEffect } from 'react'
 import { Button, Paragraph, Separator, Sheet, Text, XStack, YStack } from '@app/ui'
 import { MapContainer, type MapContainerRef, type MapPinType } from '@app/ui'
 import { Filter, RefreshCw } from '@tamagui/lucide-icons'
@@ -109,16 +109,32 @@ export const DiscoverIndexScreen = () => {
   }, [summaryProfileId, talentProfiles])
 
   // Handle pin click - show summary card or deselect
-  const handleMarkerPress = useCallback((profileId: string | null) => {
-    if (profileId === null) {
-      // Clicking empty space - clear selection
-      setSummaryProfileId(null)
-      setSelectedProfileId(null)
-    } else {
-      // Clicking a pin - show summary card
-      setSummaryProfileId(profileId)
-    }
-  }, [])
+  const handleMarkerPress = useCallback(
+    (profileId: string | null) => {
+      if (profileId === null) {
+        // Clicking empty space - clear selection
+        setSummaryProfileId(null)
+        setSelectedProfileId(null)
+      } else {
+        // On mobile: show summary card
+        // On desktop: select in rail and scroll to it
+        if (isSmallScreen) {
+          setSummaryProfileId(profileId)
+        } else {
+          setSelectedProfileId(profileId)
+          // Ensure rail is visible first
+          setShowRail(true)
+          // Scroll to card in rail after ensuring visibility
+          setTimeout(() => {
+            if (resultListRef.current?.scrollToCard) {
+              resultListRef.current.scrollToCard(profileId)
+            }
+          }, 200)
+        }
+      }
+    },
+    [isSmallScreen]
+  )
 
   // Handle summary card click - show rail/sheet and highlight profile
   const handleSummaryCardPress = useCallback(() => {
@@ -167,13 +183,12 @@ export const DiscoverIndexScreen = () => {
       {/* Overlay elements */}
       {isSmallScreen ? (
         <>
-          {/* Profile Summary Card - positioned above FilterBar */}
+          {/* Profile Summary Card - Mobile Only - Full Width Above FilterBar */}
           {summaryProfile && (
-            <YStack position="absolute" b={100} l="$4" r="$4" z={45} items="center">
+            <YStack position="absolute" justify="center" b={100} l={0} r={0} z={45}>
               <ProfileSummaryCard profile={summaryProfile} onPress={handleSummaryCardPress} />
             </YStack>
           )}
-
           {/* Filter Bar */}
           <FilterBar
             onResultsPress={() => setShowResultsSheet(true)}
@@ -189,13 +204,6 @@ export const DiscoverIndexScreen = () => {
         </>
       ) : (
         <>
-          {/* Profile Summary Card - positioned above FilterBar */}
-          {summaryProfile && (
-            <YStack position="absolute" b={100} l="$4" r="$4" z={45} items="center">
-              <ProfileSummaryCard profile={summaryProfile} onPress={handleSummaryCardPress} />
-            </YStack>
-          )}
-
           {/* Results Rail */}
           <ResultsRail
             isVisible={showRail}

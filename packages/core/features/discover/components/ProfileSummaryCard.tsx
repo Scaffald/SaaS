@@ -9,6 +9,7 @@ interface ProfileSummaryCardProps {
 export function ProfileSummaryCard({ profile, onPress }: ProfileSummaryCardProps) {
   return (
     <Card
+      self="center"
       elevate
       size="$2"
       bg="$background"
