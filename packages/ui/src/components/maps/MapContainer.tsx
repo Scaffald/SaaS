@@ -144,16 +144,75 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           },
         })
 
-        // Add layer for unclustered points (individual pins)
+        // Add layer for unclustered points (individual pins) - visible circles
         map.addLayer({
           id: 'unclustered-point',
           type: 'circle',
           source: 'pins',
           filter: ['!', ['has', 'point_count']],
           paint: {
-            'circle-color': '#11b4da',
-            'circle-radius': 0, // We'll use custom markers
-            'circle-stroke-width': 0,
+            'circle-color': [
+              'match',
+              ['get', 'availability'],
+              'available',
+              '#10B981',
+              'unavailable',
+              '#F59E0B',
+              '#EF4444', // default/unavailable
+            ],
+            'circle-radius': 24,
+            'circle-stroke-width': 2,
+            'circle-stroke-color': '#ffffff',
+          },
+        })
+
+        // Add text layer for pin icons/emojis
+        map.addLayer({
+          id: 'unclustered-point-icon',
+          type: 'symbol',
+          source: 'pins',
+          filter: ['!', ['has', 'point_count']],
+          layout: {
+            'text-field': ['match', ['get', 'organization'], 'Organization', '🏢', '👤'],
+            'text-size': 20,
+            'text-allow-overlap': true,
+            'text-ignore-placement': true,
+          },
+          paint: {
+            'text-color': '#ffffff',
+          },
+        })
+
+        // Add score badge layer
+        map.addLayer({
+          id: 'unclustered-point-score',
+          type: 'circle',
+          source: 'pins',
+          filter: ['all', ['!', ['has', 'point_count']], ['has', 'score']],
+          paint: {
+            'circle-color': '#1F2937',
+            'circle-radius': 10,
+            'circle-stroke-width': 2,
+            'circle-stroke-color': '#ffffff',
+            'circle-translate': [16, -16],
+          },
+        })
+
+        // Add score text layer
+        map.addLayer({
+          id: 'unclustered-point-score-text',
+          type: 'symbol',
+          source: 'pins',
+          filter: ['all', ['!', ['has', 'point_count']], ['has', 'score']],
+          layout: {
+            'text-field': ['get', 'score'],
+            'text-size': 10,
+            'text-allow-overlap': true,
+            'text-ignore-placement': true,
+          },
+          paint: {
+            'text-color': '#ffffff',
+            'text-translate': [16, -16],
           },
         })
 
@@ -195,69 +254,41 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       }
     }, [center, zoom])
 
-    // Handle pin rendering
-    const createPinElement = useCallback(
-      (pin: MapPin) => {
-        const element = document.createElement('div')
-        element.style.cursor = 'pointer'
-        element.style.width = '48px'
-        element.style.height = '48px'
+    // Handle pin clicks on unclustered points
+    useEffect(() => {
+      if (!mapRef.current || !isMapReady || Platform.OS !== 'web') {
+        return
+      }
 
-        // Create React root and render MapPin component
-        // For now, we'll create a simple DOM element
-        element.innerHTML = `
-        <div style="
-          width: 48px;
-          height: 48px;
-          background: ${
-            pin.availability === 'available'
-              ? '#10B981'
-              : pin.availability === 'unavailable'
-                ? '#F59E0B'
-                : '#EF4444'
-          };
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          font-weight: bold;
-          font-size: 12px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-          border: ${pin.selected ? '3px solid #1E40AF' : '2px solid white'};
-          position: relative;
-        ">
-          ${pin.organization === 'Organization' ? '🏢' : '👤'}
-          ${
-            pin.score
-              ? `<div style="
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #1F2937;
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            border: 2px solid white;
-          ">${pin.score}</div>`
-              : ''
-          }
-        </div>
-      `
+      const map = mapRef.current as any
 
-        element.addEventListener('click', () => {
-          onPinPress?.(pin.id)
+      const handlePinClick = (e: any) => {
+        const features = map.queryRenderedFeatures(e.point, {
+          layers: ['unclustered-point'],
         })
 
-        return element
-      },
-      [onPinPress]
-    )
+        if (features.length > 0 && features[0].properties.id) {
+          onPinPress?.(features[0].properties.id)
+        }
+      }
+
+      // Add click handler for individual pins
+      map.on('click', 'unclustered-point', handlePinClick)
+
+      // Change cursor on hover
+      map.on('mouseenter', 'unclustered-point', () => {
+        map.getCanvas().style.cursor = 'pointer'
+      })
+      map.on('mouseleave', 'unclustered-point', () => {
+        map.getCanvas().style.cursor = ''
+      })
+
+      return () => {
+        map.off('click', 'unclustered-point', handlePinClick)
+        map.off('mouseenter', 'unclustered-point')
+        map.off('mouseleave', 'unclustered-point')
+      }
+    }, [isMapReady, onPinPress])
 
     // Update GeoJSON source when pins change
     useEffect(() => {
@@ -293,87 +324,6 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         source.setData(geojsonData)
       }
     }, [pins, isMapReady])
-
-    // Update custom markers based on map state (zoom, pan)
-    useEffect(() => {
-      if (!mapRef.current || !isMapReady || Platform.OS !== 'web' || !mapboxgl) {
-        return
-      }
-
-      const map = mapRef.current as any
-      const mapboxInstance = mapboxgl as any
-
-      const updateMarkers = () => {
-        const currentMarkers = markersRef.current
-
-        // Get all unclustered point features currently visible
-        const features = map.querySourceFeatures('pins', {
-          sourceLayer: 'pins',
-        })
-
-        // Filter to only unclustered features
-        const unclusteredFeatures = features.filter((feature: any) => !feature.properties.cluster)
-
-        // Get set of unclustered pin IDs
-        const unclusteredIds = new Set(
-          unclusteredFeatures.map((feature: any) => feature.properties.id)
-        )
-
-        // Remove markers for pins that are now clustered or no longer exist
-        for (const [id, marker] of currentMarkers.entries()) {
-          if (!unclusteredIds.has(id)) {
-            const markerInstance = marker as any
-            markerInstance.remove()
-            currentMarkers.delete(id)
-          }
-        }
-
-        // Add or update markers for unclustered pins
-        for (const feature of unclusteredFeatures) {
-          const pinId = feature.properties.id
-          const pin = pins.find((p) => p.id === pinId)
-
-          if (!pin) continue
-
-          const existingMarker = currentMarkers.get(pinId) as any
-
-          if (existingMarker) {
-            // Update existing marker position and appearance
-            existingMarker.setLngLat(feature.geometry.coordinates)
-            const newElement = createPinElement(pin)
-            existingMarker.getElement().replaceWith(newElement)
-            existingMarker._element = newElement
-          } else {
-            // Create new marker for unclustered point
-            const element = createPinElement(pin)
-            const marker = new mapboxInstance.Marker({
-              element,
-              anchor: 'bottom',
-            })
-              .setLngLat(feature.geometry.coordinates)
-              .addTo(map)
-
-            currentMarkers.set(pinId, marker)
-          }
-        }
-      }
-
-      // Update markers when map moves/zooms
-      map.on('moveend', updateMarkers)
-      map.on('sourcedata', (e: any) => {
-        if (e.sourceId === 'pins' && e.isSourceLoaded) {
-          updateMarkers()
-        }
-      })
-
-      // Initial update
-      updateMarkers()
-
-      return () => {
-        map.off('moveend', updateMarkers)
-        map.off('sourcedata', updateMarkers)
-      }
-    }, [pins, isMapReady, createPinElement])
 
     // Native implementation using Mapbox React Native SDK
     if (Platform.OS !== 'web') {
