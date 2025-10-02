@@ -113,6 +113,8 @@ export interface AddressAutocompleteProps {
   minLength?: number
   /** Maximum results to show */
   maxResults?: number
+  /** Style props for the wrapper container */
+  containerProps?: Record<string, unknown>
 }
 
 export interface AddressFormProps

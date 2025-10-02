@@ -47,6 +47,7 @@ export function AddressAutocomplete({
   debounceMs = 300,
   minLength = 2,
   maxResults = 5,
+  containerProps = {},
 }: AddressAutocompleteProps) {
   const [inputValue, setInputValue] = useState(value)
   const [showResults, setShowResults] = useState(false)
@@ -223,6 +224,7 @@ export function AddressAutocomplete({
             focusStyle={{
               borderColor: '$color8',
             }}
+            {...containerProps}
           >
             <Input
               ref={inputRef}

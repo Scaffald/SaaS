@@ -1,10 +1,10 @@
 import { useMemo, useState, useRef, useCallback } from 'react'
-import { Button, Paragraph, Separator, Sheet, Text, XStack, YStack } from 'tamagui'
+import { Sheet, YStack } from 'tamagui'
 import { MapContainer, type MapContainerRef, type MapPinType } from '@app/ui'
-import { Filter, RefreshCw } from '@tamagui/lucide-icons'
 import { useWindowDimensions } from 'react-native'
 
 import { FilterBar } from './components/FilterBar'
+import { FilterPopup } from './components/FilterPopup'
 import { MapSearchInput } from './components/MapSearchInput'
 import { ResultsRail } from './components/ResultsRail'
 import { ProfileSummaryCard } from './components/ProfileSummaryCard'
@@ -12,17 +12,7 @@ import type { ResultListRef } from './components/ResultList'
 import { defaultCenter } from './data/mockProfiles'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
 import { useUserLocation } from './hooks/useUserLocation'
-import type { ActiveFilter, TalentProfile } from './types'
-
-const INITIAL_FILTERS: ActiveFilter[] = [
-  { id: 'score:40', label: 'Elevate score: > 40', category: 'other' },
-  { id: 'skills:hardwood', label: 'Skills: Hardwood, Exterior, Interior', category: 'skill' },
-  {
-    id: 'cert:osha',
-    label: 'Certification: OSHA Outreach · Construction',
-    category: 'certification',
-  },
-]
+import type { TalentProfile } from './types'
 
 export const DiscoverIndexScreen = () => {
   const { width } = useWindowDimensions()
@@ -34,7 +24,6 @@ export const DiscoverIndexScreen = () => {
   const { location } = useUserLocation()
 
   const [searchCenter, setSearchCenter] = useState<[number, number] | null>(null)
-  const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>(INITIAL_FILTERS)
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
   const [summaryProfileId, setSummaryProfileId] = useState<string | null>(null)
   const [filtersOpen, setFiltersOpen] = useState(false)
@@ -134,7 +123,6 @@ export const DiscoverIndexScreen = () => {
   }, [summaryProfileId, isSmallScreen])
 
   const handleReset = useCallback(() => {
-    setActiveFilters(INITIAL_FILTERS)
     setSelectedProfileId(null)
     setSummaryProfileId(null)
     setSearchCenter(null)
@@ -169,6 +157,7 @@ export const DiscoverIndexScreen = () => {
         isVisible={showSearchInput}
         onClose={() => setShowSearchInput(false)}
         onLocationSelect={handleLocationSelect}
+        railVisible={!isSmallScreen && showRail}
       />
 
       {/* Overlay elements */}
@@ -184,9 +173,22 @@ export const DiscoverIndexScreen = () => {
           <FilterBar
             onResultsPress={() => setShowResultsSheet(true)}
             resultsCount={talentProfiles.length}
-            onSearchPress={() => setShowSearchInput(true)}
-            onFilterPress={() => setFiltersOpen(true)}
+            onSearchPress={() => {
+              if (!showSearchInput) {
+                setSummaryProfileId(null)
+              }
+              setShowSearchInput(!showSearchInput)
+            }}
+            onFilterPress={() => {
+              if (!filtersOpen) {
+                setSummaryProfileId(null)
+              }
+              setFiltersOpen(!filtersOpen)
+            }}
             onResetPress={handleReset}
+            railVisible={false}
+            searchActive={showSearchInput}
+            filterActive={filtersOpen}
           />
         </>
       ) : (
@@ -211,9 +213,22 @@ export const DiscoverIndexScreen = () => {
           <FilterBar
             onResultsPress={() => setShowRail(!showRail)}
             resultsCount={talentProfiles.length}
-            onSearchPress={() => setShowSearchInput(true)}
-            onFilterPress={() => setFiltersOpen(true)}
+            onSearchPress={() => {
+              if (!showSearchInput) {
+                setSummaryProfileId(null)
+              }
+              setShowSearchInput(!showSearchInput)
+            }}
+            onFilterPress={() => {
+              if (!filtersOpen) {
+                setSummaryProfileId(null)
+              }
+              setFiltersOpen(!filtersOpen)
+            }}
             onResetPress={handleReset}
+            railVisible={showRail}
+            searchActive={showSearchInput}
+            filterActive={filtersOpen}
           />
         </>
       )}
@@ -244,56 +259,12 @@ export const DiscoverIndexScreen = () => {
         </Sheet.Frame>
       </Sheet>
 
-      {/* Filter Sheet */}
-      <Sheet modal open={filtersOpen} onOpenChange={setFiltersOpen} snapPoints={[70]}>
-        <Sheet.Overlay />
-        <Sheet.Handle />
-        <Sheet.Frame p="$5" gap="$4">
-          <XStack justify="space-between" items="center">
-            <Text fontSize="$5" fontWeight="700">
-              Filters
-            </Text>
-            <Button size="$2" icon={RefreshCw} onPress={() => setActiveFilters(INITIAL_FILTERS)}>
-              Reset
-            </Button>
-          </XStack>
-          <Paragraph color="$color11">
-            Filter controls will connect to live data in a follow-up pass. For now this keeps the
-            layout and interactions consistent across web and native.
-          </Paragraph>
-          <Separator />
-          <YStack gap="$3">
-            {activeFilters.map((filter) => (
-              <XStack
-                key={filter.id}
-                justify="space-between"
-                items="center"
-                borderWidth={1}
-                borderColor="$color5"
-                rounded="$3"
-                p="$3"
-              >
-                <Text fontWeight="600">{filter.label}</Text>
-                <Button
-                  size="$2"
-                  icon={Filter}
-                  onPress={() => {
-                    setFiltersOpen(false)
-                  }}
-                >
-                  Adjust
-                </Button>
-              </XStack>
-            ))}
-            {activeFilters.length === 0 ? (
-              <XStack items="center" gap="$2">
-                <Filter size={16} color="$color10" />
-                <Text color="$color10">No filters applied</Text>
-              </XStack>
-            ) : null}
-          </YStack>
-        </Sheet.Frame>
-      </Sheet>
+      {/* Filter Popup */}
+      <FilterPopup
+        isOpen={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        railVisible={!isSmallScreen && showRail}
+      />
     </YStack>
   )
 }
