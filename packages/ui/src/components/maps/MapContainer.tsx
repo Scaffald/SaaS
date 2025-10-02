@@ -78,6 +78,109 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       map.addControl(new mapboxInstance.ScaleControl({ unit: 'imperial' }))
 
       map.on('load', () => {
+        // Add clustered source
+        map.addSource('pins', {
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features: [],
+          },
+          cluster: true,
+          clusterMaxZoom: 17, // Max zoom to cluster points on
+          clusterRadius: 50, // Radius of each cluster when clustering points (px)
+        })
+
+        // Add cluster circle layer
+        map.addLayer({
+          id: 'clusters',
+          type: 'circle',
+          source: 'pins',
+          filter: ['has', 'point_count'],
+          paint: {
+            'circle-color': [
+              'step',
+              ['get', 'point_count'],
+              '#51bbd6', // Color for clusters with < 10 points
+              10,
+              '#f1f075', // Color for clusters with 10-99 points
+              100,
+              '#f28cb1', // Color for clusters with 100+ points
+            ],
+            'circle-radius': [
+              'step',
+              ['get', 'point_count'],
+              20, // 40px diameter for < 10 points
+              10,
+              30, // 60px diameter for 10-99 points
+              100,
+              40, // 80px diameter for 100+ points
+            ],
+            'circle-stroke-width': 2,
+            'circle-stroke-color': '#fff',
+          },
+        })
+
+        // Add cluster count text layer
+        map.addLayer({
+          id: 'cluster-count',
+          type: 'symbol',
+          source: 'pins',
+          filter: ['has', 'point_count'],
+          layout: {
+            'text-field': ['get', 'point_count_abbreviated'],
+            'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+            'text-size': [
+              'step',
+              ['get', 'point_count'],
+              14, // Text size for < 10 points
+              10,
+              16, // Text size for 10-99 points
+              100,
+              18, // Text size for 100+ points
+            ],
+          },
+          paint: {
+            'text-color': '#ffffff',
+          },
+        })
+
+        // Add layer for unclustered points (individual pins)
+        map.addLayer({
+          id: 'unclustered-point',
+          type: 'circle',
+          source: 'pins',
+          filter: ['!', ['has', 'point_count']],
+          paint: {
+            'circle-color': '#11b4da',
+            'circle-radius': 0, // We'll use custom markers
+            'circle-stroke-width': 0,
+          },
+        })
+
+        // Handle cluster clicks - zoom in
+        map.on('click', 'clusters', (e: any) => {
+          const features = map.queryRenderedFeatures(e.point, {
+            layers: ['clusters'],
+          })
+          const clusterId = features[0].properties.cluster_id
+          map.getSource('pins').getClusterExpansionZoom(clusterId, (err: any, zoom: number) => {
+            if (err) return
+
+            map.easeTo({
+              center: features[0].geometry.coordinates,
+              zoom: zoom,
+            })
+          })
+        })
+
+        // Change cursor on cluster hover
+        map.on('mouseenter', 'clusters', () => {
+          map.getCanvas().style.cursor = 'pointer'
+        })
+        map.on('mouseleave', 'clusters', () => {
+          map.getCanvas().style.cursor = ''
+        })
+
         setIsMapReady(true)
       })
 
@@ -156,49 +259,119 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       [onPinPress]
     )
 
-    // Update markers when pins change
+    // Update GeoJSON source when pins change
     useEffect(() => {
       if (!mapRef.current || !isMapReady || Platform.OS !== 'web' || !mapboxgl) {
         return
       }
 
       const map = mapRef.current as any
-      const currentMarkers = markersRef.current
+
+      // Convert pins to GeoJSON features
+      const geojsonData = {
+        type: 'FeatureCollection',
+        features: pins.map((pin) => ({
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: pin.coordinate,
+          },
+          properties: {
+            id: pin.id,
+            title: pin.title,
+            subtitle: pin.subtitle,
+            score: pin.score,
+            availability: pin.availability,
+            organization: pin.organization,
+          },
+        })),
+      }
+
+      // Update the source data
+      const source = map.getSource('pins')
+      if (source) {
+        source.setData(geojsonData)
+      }
+    }, [pins, isMapReady])
+
+    // Update custom markers based on map state (zoom, pan)
+    useEffect(() => {
+      if (!mapRef.current || !isMapReady || Platform.OS !== 'web' || !mapboxgl) {
+        return
+      }
+
+      const map = mapRef.current as any
       const mapboxInstance = mapboxgl as any
 
-      // Remove markers that no longer exist
-      const newPinIds = new Set(pins.map((p) => p.id))
-      for (const [id, marker] of currentMarkers.entries()) {
-        if (!newPinIds.has(id)) {
-          const markerInstance = marker as any
-          markerInstance.remove()
-          currentMarkers.delete(id)
+      const updateMarkers = () => {
+        const currentMarkers = markersRef.current
+
+        // Get all unclustered point features currently visible
+        const features = map.querySourceFeatures('pins', {
+          sourceLayer: 'pins',
+        })
+
+        // Filter to only unclustered features
+        const unclusteredFeatures = features.filter((feature: any) => !feature.properties.cluster)
+
+        // Get set of unclustered pin IDs
+        const unclusteredIds = new Set(
+          unclusteredFeatures.map((feature: any) => feature.properties.id)
+        )
+
+        // Remove markers for pins that are now clustered or no longer exist
+        for (const [id, marker] of currentMarkers.entries()) {
+          if (!unclusteredIds.has(id)) {
+            const markerInstance = marker as any
+            markerInstance.remove()
+            currentMarkers.delete(id)
+          }
+        }
+
+        // Add or update markers for unclustered pins
+        for (const feature of unclusteredFeatures) {
+          const pinId = feature.properties.id
+          const pin = pins.find((p) => p.id === pinId)
+
+          if (!pin) continue
+
+          const existingMarker = currentMarkers.get(pinId) as any
+
+          if (existingMarker) {
+            // Update existing marker position and appearance
+            existingMarker.setLngLat(feature.geometry.coordinates)
+            const newElement = createPinElement(pin)
+            existingMarker.getElement().replaceWith(newElement)
+            existingMarker._element = newElement
+          } else {
+            // Create new marker for unclustered point
+            const element = createPinElement(pin)
+            const marker = new mapboxInstance.Marker({
+              element,
+              anchor: 'bottom',
+            })
+              .setLngLat(feature.geometry.coordinates)
+              .addTo(map)
+
+            currentMarkers.set(pinId, marker)
+          }
         }
       }
 
-      // Add or update markers
-      for (const pin of pins) {
-        const existingMarker = currentMarkers.get(pin.id) as any
-
-        if (existingMarker) {
-          // Update existing marker position and appearance
-          existingMarker.setLngLat(pin.coordinate)
-          // Update element if needed (for selection state, etc.)
-          const newElement = createPinElement(pin)
-          existingMarker.getElement().replaceWith(newElement)
-          existingMarker._element = newElement
-        } else {
-          // Create new marker
-          const element = createPinElement(pin)
-          const marker = new mapboxInstance.Marker({
-            element,
-            anchor: 'bottom',
-          })
-            .setLngLat(pin.coordinate)
-            .addTo(map)
-
-          currentMarkers.set(pin.id, marker)
+      // Update markers when map moves/zooms
+      map.on('moveend', updateMarkers)
+      map.on('sourcedata', (e: any) => {
+        if (e.sourceId === 'pins' && e.isSourceLoaded) {
+          updateMarkers()
         }
+      })
+
+      // Initial update
+      updateMarkers()
+
+      return () => {
+        map.off('moveend', updateMarkers)
+        map.off('sourcedata', updateMarkers)
       }
     }, [pins, isMapReady, createPinElement])
 
