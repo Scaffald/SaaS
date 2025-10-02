@@ -461,6 +461,81 @@ Read this [StackOverflow](https://stackoverflow.com/a/67705721/9891069) for more
 
 You can use Supabase's [Row-Level Security (RLS)](https://supabase.com/docs/guides/auth/row-level-security) to handle authorization of users.
 
+### Super Admin Role Assignment
+
+The project includes a `super_admin` role for administrative access to the `/office` dashboard. To assign super admin privileges:
+
+#### Automated Assignment via Migration
+
+The migration `028_seed_super_admins.sql` automatically assigns super_admin role to these email addresses:
+- clay@unicorn.love
+- clay@scaffald.com
+- zach@unicorn.love
+- marc@unicorn.love
+- vince@unicorn.love
+
+**Important:** The migration only assigns roles to users that exist when it runs. If users sign up after the migration, you'll need to assign roles manually.
+
+#### Manual Role Assignment
+
+To manually assign super_admin role to a user:
+
+1. Ensure the user has signed up and their account exists in `auth.users`
+2. Run this SQL command (replace email as needed):
+
+```sql
+INSERT INTO public.role_assignments (role_id, user_id)
+SELECT r.id, u.id 
+FROM public.roles r, auth.users u 
+WHERE r.name = 'super_admin' 
+  AND r.scope = 'platform' 
+  AND u.email = 'user@example.com'
+ON CONFLICT DO NOTHING;
+```
+
+#### Assign Multiple Users at Once
+
+```sql
+INSERT INTO public.role_assignments (role_id, user_id)
+SELECT r.id, u.id 
+FROM public.roles r, auth.users u 
+WHERE r.name = 'super_admin' 
+  AND r.scope = 'platform' 
+  AND u.email IN (
+    'clay@unicorn.love',
+    'clay@scaffald.com',
+    'zach@unicorn.love',
+    'marc@unicorn.love',
+    'vince@unicorn.love'
+  )
+ON CONFLICT DO NOTHING;
+```
+
+#### Verify Role Assignment
+
+```sql
+SELECT u.email, r.name as role, ra.created_at 
+FROM auth.users u 
+JOIN public.role_assignments ra ON ra.user_id = u.id 
+JOIN public.roles r ON r.id = ra.role_id 
+WHERE r.name = 'super_admin' 
+ORDER BY u.email;
+```
+
+### Office Dashboard
+
+The `/office` route provides administrative access for super admins:
+
+- **Access Control**: Protected by `super_admin` role requirement
+- **Features**: User management, system administration
+- **Navigation**: Includes drawer with "Worker Dashboard" and "Office" links
+- **Debugging**: Role checks are logged to console for troubleshooting
+
+To access the office dashboard:
+1. Sign in with a super admin account
+2. Navigate to `/office`
+3. Check browser console for role verification logs
+
 ## Environment Convention
 
 For simplicities sake we recommend one `.env` file on your local machine for your entire project, in the root directory.

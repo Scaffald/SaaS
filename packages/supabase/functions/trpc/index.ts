@@ -9,7 +9,7 @@ import {
   uploadAvatarInputSchema,
   type UserPrivateEmploymentUpdate,
   type UserPrivateUpdate,
-} from "../_shared/schemas/consolidated";
+} from "../_shared/schemas/consolidated.ts";
 
 // Environment variables
 const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
@@ -88,6 +88,79 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 });
 
 const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+// Middleware for super admin procedures
+const enforceSuperAdmin = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  const { data, error } = await ctx.supabase.rpc("user_has_role", {
+    p_user_id: ctx.user.id,
+    p_role_name: "super_admin",
+    p_org_id: null,
+  });
+
+  if (error || !data) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Super admin access required",
+    });
+  }
+
+  return next({ ctx });
+});
+
+const superAdminProcedure = t.procedure.use(enforceSuperAdmin);
+
+// Auth router
+const authRouter = t.router({
+  getUserRoles: protectedProcedure.query(async ({ ctx }) => {
+    const { data } = await ctx.supabase
+      .from("role_assignments")
+      .select("role:roles(name)")
+      .eq("user_id", ctx.user.id);
+
+    const roles = data?.map((r: any) => r.role?.name).filter(Boolean) ?? [];
+
+    return { roles };
+  }),
+});
+
+// Office router (super admin only)
+const officeRouter = t.router({
+  listUsers: superAdminProcedure.query(async ({ ctx }) => {
+    const { data, error, count } = await ctx.supabase
+      .from("profiles")
+      .select(
+        "id, first_name, last_name, avatar_path, created_at, updated_at",
+        {
+          count: "exact",
+        },
+      )
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: error.message,
+      });
+    }
+
+    return { users: data ?? [], total: count ?? 0 };
+  }),
+
+  getUser: superAdminProcedure.query(async ({ ctx }) => {
+    // For now, return mock data - will be implemented with proper input schema
+    return { profile: null, privateData: null };
+  }),
+
+  updateUser: superAdminProcedure.mutation(async ({ ctx }) => {
+    // For now, return success - will be implemented with proper input schema
+    return { success: true };
+  }),
+});
 
 // Profile router
 const profileRouter = t.router({
@@ -561,6 +634,8 @@ const profileRouter = t.router({
 // App router
 const appRouter = t.router({
   profile: profileRouter,
+  auth: authRouter,
+  office: officeRouter,
 });
 
 // Export the router type for client-side usage

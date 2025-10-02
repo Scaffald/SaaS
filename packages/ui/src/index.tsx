@@ -63,3 +63,7 @@ export * from './utils/phoneValidation'
 
 // CardStack component
 export * from './CardStack'
+
+// Table components
+export * from './components/table/TableParts'
+export * from './components/table/DataTable'
