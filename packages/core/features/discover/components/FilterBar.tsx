@@ -7,6 +7,9 @@ type FilterBarProps = {
   onResetPress?: () => void
   onResultsPress?: () => void
   resultsCount?: number
+  railVisible?: boolean
+  searchActive?: boolean
+  filterActive?: boolean
 }
 
 /**
@@ -19,9 +22,21 @@ export const FilterBar = ({
   onResetPress,
   onResultsPress,
   resultsCount = 0,
+  railVisible = false,
+  searchActive = false,
+  filterActive = false,
 }: FilterBarProps) => {
   return (
-    <XStack position="absolute" b="$4" l={0} r={0} z={50} items="center" justify="center">
+    <XStack
+      position="absolute"
+      b="$4"
+      l={0}
+      r={railVisible ? 440 : 0}
+      z={50}
+      items="center"
+      justify="center"
+      animation="quick"
+    >
       <XStack
         bg="$background"
         px="$3"
@@ -55,9 +70,10 @@ export const FilterBar = ({
           scaleIcon={1.4}
           onPress={onSearchPress}
           variant="outlined"
-          bg="$background"
-          hoverStyle={{ bg: '$backgroundHover' }}
-          pressStyle={{ bg: '$backgroundPress' }}
+          bg={searchActive ? '$blue9' : '$background'}
+          color={searchActive ? 'white' : '$color'}
+          hoverStyle={{ bg: searchActive ? '$blue10' : '$backgroundHover' }}
+          pressStyle={{ bg: searchActive ? '$blue11' : '$backgroundPress' }}
         />
         <Button
           size="$4"
@@ -66,9 +82,10 @@ export const FilterBar = ({
           scaleIcon={1.4}
           onPress={onFilterPress}
           variant="outlined"
-          bg="$background"
-          hoverStyle={{ bg: '$backgroundHover' }}
-          pressStyle={{ bg: '$backgroundPress' }}
+          bg={filterActive ? '$blue9' : '$background'}
+          color={filterActive ? 'white' : '$color'}
+          hoverStyle={{ bg: filterActive ? '$blue10' : '$backgroundHover' }}
+          pressStyle={{ bg: filterActive ? '$blue11' : '$backgroundPress' }}
         />
         <Button
           size="$4"
