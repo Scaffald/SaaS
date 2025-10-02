@@ -714,6 +714,9 @@ importers:
       '@tamagui/helpers-icon':
         specifier: 'catalog:'
         version: 1.135.0(react-dom@19.1.0(react@19.1.0))(react-native-svg@15.13.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
+      '@tamagui/lucide-icons':
+        specifier: 'catalog:'
+        version: 1.135.0(react-dom@19.1.0(react@19.1.0))(react-native-svg@15.13.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
       '@tamagui/react-native-media-driver':
         specifier: 'catalog:'
         version: 1.135.0(react-dom@19.1.0(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
@@ -729,6 +732,9 @@ importers:
       '@tamagui/toast':
         specifier: 'catalog:'
         version: 1.135.0(react-dom@19.1.0(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
+      '@tanstack/react-table':
+        specifier: ^8.20.5
+        version: 8.20.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@ts-react/form':
         specifier: 'catalog:'
         version: 1.6.4(@hookform/resolvers@3.1.1(react-hook-form@7.63.0(react@19.1.0)))(react-hook-form@7.63.0(react@19.1.0))(react@19.1.0)(zod@3.23.8)
@@ -3855,7 +3861,7 @@ packages:
 
   cross-env@7.0.3:
     resolution: {integrity: sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==}
-    engines: {node: '>=10.14', npm: '>=6', pnpm: '>=1'}
+    engines: {node: '>=10.14', npm: '>=6', yarn: '>=1'}
     hasBin: true
 
   cross-fetch@3.2.0:
@@ -10891,6 +10897,16 @@ snapshots:
       '@tamagui/helpers-icon': 1.135.0(react-dom@19.1.0(react@19.1.0))(react-native-svg@15.12.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
       react: 19.1.0
       react-native-svg: 15.12.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
+    transitivePeerDependencies:
+      - react-dom
+      - react-native
+
+  '@tamagui/lucide-icons@1.135.0(react-dom@19.1.0(react@19.1.0))(react-native-svg@15.13.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@tamagui/core': 1.135.0(react-dom@19.1.0(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
+      '@tamagui/helpers-icon': 1.135.0(react-dom@19.1.0(react@19.1.0))(react-native-svg@15.13.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-native-svg: 15.13.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
     transitivePeerDependencies:
       - react-dom
       - react-native
