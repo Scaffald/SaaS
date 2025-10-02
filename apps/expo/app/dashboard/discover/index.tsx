@@ -1,5 +1,5 @@
-import { DiscoverIndexScreen } from '@app/core/features/discover/discover-index-screen'
+import { Redirect } from 'expo-router'
 
-export default function DiscoverRoute() {
-  return <DiscoverIndexScreen />
+export default function DiscoverIndexRoute() {
+  return <Redirect href="/dashboard/discover/map" />
 }
