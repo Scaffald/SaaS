@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { randomUUID } from 'expo-crypto'
 import { YStack, XStack, Text, Button } from 'tamagui'
 import { Plus, X } from '@tamagui/lucide-icons'
 import { AddressAutocomplete } from './AddressAutocomplete'
@@ -121,11 +122,7 @@ export function LocationListInput({
       <YStack gap="$2">
         {value.length > 0 ? (
           Array.from({ length: fieldCount }, (_, index) => (
-            <XStack
-              key={`location-field-${index}-${value[index] || 'empty'}`}
-              gap="$2"
-              items="flex-start"
-            >
+            <XStack key={randomUUID()} gap="$2" items="flex-start">
               <YStack flex={1}>
                 <AddressAutocomplete
                   value={value[index] || ''}

@@ -6,7 +6,6 @@
   "types": "./index.ts",
   "sideEffects": ["*.css"],
   "scripts": {
-    "build": "tsc",
     "watch": "tsc --watch",
     "check:type": "tsc --noEmit",
     "lint": "biome lint .",
