@@ -7,7 +7,6 @@ import { SplashScreen, Stack } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
 import { LogBox, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -60,24 +59,26 @@ export default function DashboardLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-        <SafeAreaProvider>
-          <Provider initialSession={initialSession}>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen
-                name="auth"
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="dashboard"
-                options={{
-                  headerShown: false,
-                }}
-              />
-            </Stack>
-          </Provider>
-        </SafeAreaProvider>
+        <Provider initialSession={initialSession}>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+            }}
+          >
+            <Stack.Screen
+              name="auth"
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="dashboard"
+              options={{
+                headerShown: false,
+              }}
+            />
+          </Stack>
+        </Provider>
       </View>
     </GestureHandlerRootView>
   )

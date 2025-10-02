@@ -233,14 +233,14 @@ const routeConfig: Record<string, RouteConfig> = {
         },
       },
 
-      // Dashboard Workers routes
-      workers: {
-        path: '/dashboard/workers',
-        title: 'Workers',
+      // Dashboard Discover routes
+      discover: {
+        path: '/dashboard/discover',
+        title: 'Discover',
         children: {
           index: {
-            path: '/dashboard/workers',
-            title: 'Workers',
+            path: '/dashboard/discover',
+            title: 'Discover',
           },
         },
       },
@@ -263,7 +263,7 @@ export const DASHBOARD_ROUTES = {
   INDEX: ROUTES.dashboard,
   PROFILE: ROUTES.dashboard.childrenArray?.find((r) => r.path === '/dashboard/profile'),
   SETTINGS: ROUTES.dashboard.childrenArray?.find((r) => r.path === '/dashboard/settings'),
-  WORKERS: ROUTES.dashboard.childrenArray?.find((r) => r.path === '/dashboard/workers'),
+  Discover: ROUTES.dashboard.childrenArray?.find((r) => r.path === '/dashboard/discover'),
 }
 
 // Route type for TypeScript safety

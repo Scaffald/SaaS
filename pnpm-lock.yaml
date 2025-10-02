@@ -256,7 +256,7 @@ catalogs:
       specifier: ~14.2.5
       version: 14.2.5
     supabase:
-      specifier: ~2.47.2
+      specifier: 2.47.2
       version: 2.47.2
     superjson:
       specifier: ~1.13.1

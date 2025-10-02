@@ -1,4 +1,4 @@
-import { YStack, Text, H3, H4, ScrollView } from 'tamagui'
+import { YStack, Text, H3, H4 } from 'tamagui'
 import { DashboardWidget, StackedCards } from '@app/ui'
 
 /**
@@ -47,7 +47,7 @@ export function ProfileGeneralRight() {
           </Text>
           <Text fontSize="$3" color="$color8" lineHeight="$4">
             Sharing verified information builds credibility with employers. In one large-scale
-            study, workers who displayed credentials publicly increased their likelihood of gaining
+            study, discover who displayed credentials publicly increased their likelihood of gaining
             new employment by about 6 percentage points compared to those who didn't. Trust really
             does make a measurable difference.
           </Text>
@@ -57,24 +57,21 @@ export function ProfileGeneralRight() {
   ]
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
-      <YStack gap="$4">
-        <DashboardWidget>
-          <H3>General Information</H3>
-          <Text color="$color11" fontSize="$3">
-            Update your basic profile information including your name, photo, and contact details.
-          </Text>
-        </DashboardWidget>
+    <YStack gap="$4">
+      <DashboardWidget>
+        <H3>General Information</H3>
+        <Text color="$color11" fontSize="$3">
+          Update your basic profile information including your name, photo, and contact details.
+        </Text>
+      </DashboardWidget>
 
-        <StackedCards
-          cards={profileTipCards}
-          interval={8000}
-          autoPlay={true}
-          flex={1}
-          maxStackSize={2}
-          wrapperComponent={DashboardWidget}
-        />
-      </YStack>
-    </ScrollView>
+      <StackedCards
+        cards={profileTipCards}
+        interval={8000}
+        autoPlay={true}
+        maxStackSize={2}
+        wrapperComponent={DashboardWidget}
+      />
+    </YStack>
   )
 }

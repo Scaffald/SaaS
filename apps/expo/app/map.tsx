@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { View, Text, YStack, XStack, Button, Sheet } from '@app/ui'
 import { MapContainer, mockMapPins, type MapPinType } from '@app/ui/src/components/maps'
-import { Filter, X, Settings } from '@tamagui/lucide-icons'
+import { FilterBar } from '@app/core/features/discover/components/FilterBar'
 
 export default function MapTestPage() {
   const [selectedPinId, setSelectedPinId] = useState<string | null>(null)
   const [pins, setPins] = useState<MapPinType[]>(mockMapPins)
   const [showFilterSheet, setShowFilterSheet] = useState(false)
-  const [showSettingsSheet, setShowSettingsSheet] = useState(false)
+  const [showSearchSheet, setShowSearchSheet] = useState(false)
+  const [drawMode, setDrawMode] = useState(false)
 
   const handlePinPress = (pinId: string) => {
     setSelectedPinId(selectedPinId === pinId ? null : pinId)
@@ -88,10 +89,10 @@ export default function MapTestPage() {
                     key={badge.id}
                     bg={
                       badge.tone === 'success'
-                        ? '$green4'
+                        ? '$green3'
                         : badge.tone === 'warning'
-                          ? '$orange4'
-                          : '$red4'
+                          ? '$yellow3'
+                          : '$red3'
                     }
                     px="$2"
                     py="$1"
@@ -101,10 +102,10 @@ export default function MapTestPage() {
                       fontSize="$2"
                       color={
                         badge.tone === 'success'
-                          ? '$green11'
+                          ? '$green10'
                           : badge.tone === 'warning'
-                            ? '$orange11'
-                            : '$red11'
+                            ? '$yellow10'
+                            : '$red10'
                       }
                     >
                       {badge.label}
@@ -117,46 +118,44 @@ export default function MapTestPage() {
         </View>
       )}
 
-      {/* Bottom Control Bar - Always visible */}
-      <View
-        position="absolute"
-        b={0}
-        l={0}
-        r={0}
-        z={50}
-        bg="$background"
-        borderTopWidth={1}
-        borderTopColor="$borderColor"
-        shadowColor="$shadowColor"
-        shadowOffset={{ width: 0, height: -2 }}
-        shadowOpacity={0.1}
-        shadowRadius={8}
+      {/* Filter Bar - Simple 4-button overlay */}
+      <FilterBar
+        onSearchPress={() => setShowSearchSheet(true)}
+        onFilterPress={() => setShowFilterSheet(true)}
+        onDrawPress={() => setDrawMode(!drawMode)}
+        onResetPress={() => {
+          setPins(mockMapPins)
+          setSelectedPinId(null)
+          setDrawMode(false)
+        }}
+      />
+
+      {/* Search Sheet */}
+      <Sheet
+        modal
+        open={showSearchSheet}
+        onOpenChange={setShowSearchSheet}
+        snapPoints={[60]}
+        dismissOnSnapToBottom
       >
-        <XStack gap="$2" p="$3" items="center" justify="space-between">
-          <Button size="$4" flex={1} icon={Filter} onPress={() => setShowFilterSheet(true)}>
-            Filter
-          </Button>
-          <Button
-            size="$4"
-            flex={1}
-            icon={X}
-            variant="outlined"
-            onPress={() => setPins(mockMapPins)}
-          >
-            Clear
-          </Button>
-          <Button size="$4" flex={1} icon={Settings} onPress={() => setShowSettingsSheet(true)}>
-            Settings
-          </Button>
-        </XStack>
-      </View>
+        <Sheet.Overlay />
+        <Sheet.Frame bg="$background" p="$4" gap="$4">
+          <Sheet.Handle />
+          <YStack gap="$3">
+            <Text fontSize="$6" fontWeight="bold" color="$color12">
+              Search
+            </Text>
+            <Text color="$color11">Search by location, worker name, or skills...</Text>
+          </YStack>
+        </Sheet.Frame>
+      </Sheet>
 
       {/* Filter Sheet */}
       <Sheet
         modal
         open={showFilterSheet}
         onOpenChange={setShowFilterSheet}
-        snapPoints={[40]}
+        snapPoints={[60]}
         dismissOnSnapToBottom
       >
         <Sheet.Overlay />
@@ -166,30 +165,32 @@ export default function MapTestPage() {
             <Text fontSize="$6" fontWeight="bold" color="$color12">
               Filters
             </Text>
-            <Text color="$color11">Hello World - Filter options will go here</Text>
+            <Text color="$color11">Filter by skills, availability, certifications, etc.</Text>
           </YStack>
         </Sheet.Frame>
       </Sheet>
 
-      {/* Settings Sheet */}
-      <Sheet
-        modal
-        open={showSettingsSheet}
-        onOpenChange={setShowSettingsSheet}
-        snapPoints={[40]}
-        dismissOnSnapToBottom
-      >
-        <Sheet.Overlay />
-        <Sheet.Frame bg="$background" p="$4" gap="$4">
-          <Sheet.Handle />
-          <YStack gap="$3">
-            <Text fontSize="$6" fontWeight="bold" color="$color12">
-              Settings
-            </Text>
-            <Text color="$color11">Hello World - Settings options will go here</Text>
-          </YStack>
-        </Sheet.Frame>
-      </Sheet>
+      {/* Draw Mode Indicator */}
+      {drawMode && (
+        <View
+          position="absolute"
+          t="$4"
+          l="$4"
+          r="$4"
+          z={100}
+          bg="$blue9"
+          p="$3"
+          rounded="$4"
+          animation="quick"
+          enterStyle={{ opacity: 0, y: -20 }}
+          exitStyle={{ opacity: 0, y: -20 }}
+          items="center"
+        >
+          <Text color="white" fontSize="$4" fontWeight="600">
+            🖊️ Draw Mode Active - Draw on the map to select an area
+          </Text>
+        </View>
+      )}
     </View>
   )
 }

@@ -15,7 +15,7 @@ CREATE OR REPLACE FUNCTION public.jitter_coordinate(
 )
 RETURNS double precision
 LANGUAGE sql
-IMMUTABLE
+VOLATILE
 AS $$
   -- Add random offset between -max_offset and +max_offset
   -- 0.03 degrees ≈ 3.3km at equator, ≈ 2.1km at 45° latitude
@@ -61,8 +61,7 @@ SELECT
 FROM public.users u
 LEFT JOIN public.user_private up ON up.user_id = u.id
 LEFT JOIN public.industries i ON i.id = u.industry_id
-WHERE up.geo IS NOT NULL  -- Only include users with coordinates
-  AND u.open_to_work = true;  -- Only show users open to work
+WHERE up.geo IS NOT NULL;  -- Only include users with coordinates
 
 -- Grant access to authenticated users
 GRANT SELECT ON public.v_profile_search TO authenticated;

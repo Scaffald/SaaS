@@ -19,25 +19,12 @@ export const DrawerContent = ({
   drawerProps,
 }: DrawerContentProps) => {
   return (
-    <YStack
-      flex={1}
-      maxW={320}
-      bg="$color1"
-      borderRightWidth={1}
-      // borderColor="$color4"
-      px="$4"
-      py="$4"
-      borderWidth={0}
-    >
+    <YStack flex={1} gap="$4" px="$4" py="$4">
       {/* Top Section - User Profile - Sticky */}
       <DrawerHeader onNavigate={onNavigate} />
 
       {/* Scrollable Content - Using DrawerContentScrollView for proper gesture handling */}
-      <DrawerContentScrollView
-        {...drawerProps}
-        style={{ flex: 1 }}
-        showsVerticalScrollIndicator={false}
-      >
+      <DrawerContentScrollView {...drawerProps} showsVerticalScrollIndicator={false}>
         <YStack gap="$1" flex={1}>
           {drawerSections.map((section) => (
             <DrawerSection

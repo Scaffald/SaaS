@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { YStack, XStack, View, ScrollView, useMedia } from 'tamagui'
+import { YStack, XStack, View, ScrollView, useMedia, useWindowDimensions } from 'tamagui'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 type DashboardLayoutProps = {
@@ -8,14 +8,15 @@ type DashboardLayoutProps = {
 }
 
 export const DashboardLayout = ({ rightContent, leftContent }: DashboardLayoutProps) => {
+  const { width } = useWindowDimensions()
+  const isSmallScreen = width < 640
+
   return (
     <ScrollView flex={1} bg="$color2" pt="$3" pb="$5" showsVerticalScrollIndicator={false}>
       <XStack
-        height="100vh"
-        gap="$3"
-        flexDirection="column"
-        p="$3"
-        $md={{ flexDirection: 'row', gap: '$8', p: '$7' }}
+        gap={isSmallScreen ? '$3' : '$8'}
+        flexDirection={isSmallScreen ? 'column' : 'row'}
+        p={isSmallScreen ? '$3' : '$7'}
       >
         {leftContent && (
           <YStack minW={300} flex={2}>

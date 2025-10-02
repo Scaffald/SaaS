@@ -1,4 +1,4 @@
-import { YStack, Text, H3, ScrollView } from 'tamagui'
+import { YStack, Text, H3 } from 'tamagui'
 
 /**
  * Profile Employment Right Component
@@ -6,14 +6,13 @@ import { YStack, Text, H3, ScrollView } from 'tamagui'
  */
 export function ProfileEmploymentRight() {
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <YStack>
       <YStack gap="$4" p="$4">
-        <H3>Employment Information</H3>
         <Text color="$color11" fontSize="$3">
           Update your employment preferences including location, travel willingness, availability,
           and compensation.
         </Text>
       </YStack>
-    </ScrollView>
+    </YStack>
   )
 }

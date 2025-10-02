@@ -16,7 +16,7 @@ import { useToastController } from '@tamagui/toast'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { generalProfileSchema, type GeneralProfileFormData, generalProfileDefaults } from './config'
-import { PhoneNumberInput } from '@app/ui'
+import { PhoneNumberInput, AddressForm } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
 import { DashboardWidget, AvatarImagePicker } from '@app/ui'
@@ -74,6 +74,7 @@ export function ProfileGeneralLeft() {
     watch,
     reset,
     setValue,
+    trigger,
   } = useForm<GeneralProfileFormData>({
     resolver: zodResolver(generalProfileSchema),
     defaultValues: generalProfileDefaults,
@@ -108,10 +109,8 @@ export function ProfileGeneralLeft() {
   }
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <YStack>
       <DashboardWidget>
-        <H4>Edit General Information</H4>
-
         <YStack gap="$4">
           {/* Avatar Section */}
           <YStack gap="$3" items="center">
@@ -266,6 +265,59 @@ export function ProfileGeneralLeft() {
             </Text>
           </YStack>
 
+          {/* Home Address with Smart Autocomplete */}
+          <YStack gap="$3">
+            <Text fontWeight="600">Home Address</Text>
+            <AddressForm
+              mode="hybrid"
+              placeholder="Search for your home address..."
+              error={errors.address?.street?.message || errors.address?.city?.message}
+              provider="mapbox"
+              apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
+              addressValue={{
+                streetAddress: watch('address.street') || '',
+                locality: watch('address.city') || '',
+                stateAbbreviation: watch('address.state') || '',
+                postalCode: watch('address.zip') || '',
+                country: watch('address.country') || '',
+                formattedAddress: [
+                  watch('address.street'),
+                  watch('address.city'),
+                  watch('address.state'),
+                  watch('address.zip'),
+                ]
+                  .filter(Boolean)
+                  .join(', '),
+              }}
+              onAddressSelect={(address) => {
+                console.log('Selected address:', address)
+                // Update form fields with selected address
+                setValue('address.street', address.streetAddress || '')
+                setValue('address.city', address.locality || '')
+                setValue(
+                  'address.state',
+                  address.stateAbbreviation || address.administrativeAreaLevel1 || ''
+                )
+                setValue('address.zip', address.postalCode || '')
+                setValue('address.country', address.country || 'United States')
+
+                // Store latitude and longitude for map display
+                if (address.coordinates?.lat !== undefined) {
+                  setValue('address.latitude', address.coordinates.lat)
+                }
+                if (address.coordinates?.lng !== undefined) {
+                  setValue('address.longitude', address.coordinates.lng)
+                }
+
+                // Trigger validation for updated fields
+                trigger('address.street')
+                trigger('address.city')
+                trigger('address.state')
+                trigger('address.zip')
+              }}
+            />
+          </YStack>
+
           {/* Save Button */}
           <XStack justify="flex-end" pt="$4">
             <Button
@@ -294,6 +346,6 @@ export function ProfileGeneralLeft() {
           </XStack>
         </YStack>
       </DashboardWidget>
-    </ScrollView>
+    </YStack>
   )
 }

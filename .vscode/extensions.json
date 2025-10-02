@@ -1,8 +1,5 @@
 {
   "recommendations": [
-    "biomejs.biome",
-    "expo.vscode-expo-tools",
-    "ms-azuretools.vscode-docker",
-    "yoavbls.pretty-ts-errors"
+    "denoland.vscode-deno"
   ]
 }

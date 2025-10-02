@@ -2,20 +2,9 @@ import { z } from 'zod'
 
 /**
  * Employment Profile Form Schema
- * Fields: Home Address, Preferred work locations, Travel, Residency, Military, etc.
+ * Fields: Preferred work locations, Travel, Residency, Military, etc.
  */
 export const employmentProfileSchema = z.object({
-  // Home Address
-  address: z
-    .object({
-      street: z.string().optional(),
-      city: z.string().optional(),
-      state: z.string().optional(),
-      zip: z.string().optional(),
-      country: z.string().optional(),
-    })
-    .optional(),
-
   // Preferred work locations (up to 3)
   preferred_work_locations: z
     .array(z.string())
@@ -66,13 +55,6 @@ export const employmentProfileSchema = z.object({
 export type EmploymentProfileFormData = z.infer<typeof employmentProfileSchema>
 
 export const employmentProfileDefaults: Partial<EmploymentProfileFormData> = {
-  address: {
-    street: '',
-    city: '',
-    state: '',
-    zip: '',
-    country: 'United States',
-  },
   preferred_work_locations: [],
   willing_to_travel: false,
   travel_distance_miles: 25,

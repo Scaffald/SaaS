@@ -1,5 +1,5 @@
-import { useMemo, useState, useRef, useCallback, useEffect } from 'react'
-import { Button, Paragraph, Separator, Sheet, Text, XStack, YStack, useMedia } from '@app/ui'
+import { useMemo, useState, useRef } from 'react'
+import { Button, Paragraph, Separator, Sheet, Text, XGroup, XStack, YStack } from '@app/ui'
 import { MapContainer, type MapPinType } from '@app/ui'
 import { Filter, RefreshCw, List } from '@tamagui/lucide-icons'
 
@@ -10,6 +10,7 @@ import { defaultCenter, defaultRadiusMeters } from './data/mockProfiles'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
 import { useUserLocation } from './hooks/useUserLocation'
 import type { ActiveFilter } from './types'
+import { useWindowDimensions } from 'react-native'
 
 const formatRadius = (meters: number): string => {
   const miles = meters / 1609.34
@@ -34,27 +35,23 @@ const INITIAL_FILTERS: ActiveFilter[] = [
   },
 ]
 
-export const WorkersIndexScreen = () => {
-  const media = useMedia()
-  const isSmallScreen = media.sm
+export const DiscoverIndexScreen = () => {
+  const { width } = useWindowDimensions()
+  const isSmallScreen = width < 640
   const resultListRef = useRef<ResultListRef>(null)
 
   // Location functionality
-  const {
-    location,
-    isLoading: isLocationLoading,
-    error: _locationError,
-    requestLocation,
-    permissionStatus,
-  } = useUserLocation()
+  const { location } = useUserLocation()
 
-  const [locationQuery, setLocationQuery] = useState('Marlborough, Connecticut, United States')
   const [searchCenter, setSearchCenter] = useState<[number, number] | null>(null)
   const [radiusMeters, setRadiusMeters] = useState(defaultRadiusMeters)
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>(INITIAL_FILTERS)
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [radiusAdjustmentOpen, setRadiusAdjustmentOpen] = useState(false)
+  const [showSearchSheet, setShowSearchSheet] = useState(false)
+  const [drawMode, setDrawMode] = useState(false)
+  const [showRail, setshowRail] = useState(true)
 
   const { data: talentProfiles = [], isLoading } = useTalentProfiles()
 
@@ -68,41 +65,6 @@ export const WorkersIndexScreen = () => {
     }
     return defaultCenter
   }, [searchCenter, location])
-
-  // Handle location request
-  const handleLocationRequest = async () => {
-    try {
-      await requestLocation()
-      // Clear search center when using current location
-      setSearchCenter(null)
-    } catch (error) {
-      console.error('Failed to get location:', error)
-    }
-  }
-
-  // Handle location selection from autocomplete
-  const handleLocationSelect = useCallback((coordinates: { lat: number; lng: number }) => {
-    setSearchCenter([coordinates.lng, coordinates.lat])
-  }, [])
-
-  // Update location query when user location changes
-  const updateLocationQuery = useCallback(async (lat: number, lng: number) => {
-    try {
-      // For web, we can use a simple approach or integrate with a geocoding service
-      // For now, we'll use a basic format
-      setLocationQuery(`Current Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`)
-    } catch (error) {
-      console.error('Failed to update location query:', error)
-      setLocationQuery(`Current Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`)
-    }
-  }, [])
-
-  // Update location query when location changes
-  useEffect(() => {
-    if (location) {
-      updateLocationQuery(location.latitude, location.longitude)
-    }
-  }, [location, updateLocationQuery])
 
   // Create radius filter dynamically
   const radiusFilter: ActiveFilter = {
@@ -146,81 +108,156 @@ export const WorkersIndexScreen = () => {
   }
 
   return (
-    <YStack flex={1} height="100vh" overflow="hidden">
-      <YStack p="$5" gap="$4" shrink={0}>
-        <FilterBar
-          locationQuery={locationQuery}
-          onLocationChange={setLocationQuery}
-          onLocationRequest={handleLocationRequest}
-          onLocationSelect={handleLocationSelect}
-          onAdjustFilters={() => setFiltersOpen(true)}
-          filters={allFilters}
-          onRemoveFilter={(filterId) => {
-            if (filterId === 'radius:custom') {
-              // Don't allow removing radius filter
-              return
-            }
-            setActiveFilters((current) => current.filter((filter) => filter.id !== filterId))
-          }}
-          onClearFilters={() => setActiveFilters([])}
-          isLocationLoading={isLocationLoading}
-          locationPermissionStatus={permissionStatus}
-        />
-      </YStack>
-
-      <YStack flex={1} px="$5" pb="$5" overflow="hidden">
+    <YStack flex={1}>
+      <YStack flex={1}>
         {isSmallScreen ? (
           <YStack flex={1} position="relative">
             {/* Fullscreen Map */}
-            <YStack position="absolute" t={0} l={0} r={0} b={0}>
-              <MapContainer
-                pins={mapPins}
-                center={mapCenter}
-                zoom={7}
-                onPinPress={handleMarkerPress}
-              />
-            </YStack>
+            <MapContainer
+              pins={mapPins}
+              center={mapCenter}
+              zoom={7}
+              onPinPress={handleMarkerPress}
+            />
 
-            {/* Floating Results Button */}
-            <YStack position="absolute" b="$4" l={0} r={0} px="$4" z={100}>
-              <Button
-                size="$5"
-                icon={List}
-                onPress={() => setShowResultsSheet(true)}
-                bg="$background"
-                borderWidth={1}
-                borderColor="$borderColor"
-                shadowColor="$shadowColor"
-                shadowOffset={{ width: 0, height: 4 }}
-                shadowOpacity={0.15}
-                shadowRadius={12}
+            <XGroup
+              style={{
+                backgroundColor: 'red',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                zIndex: 100,
+              }}
+            >
+              <XGroup.Item>
+                <Button width="50%" size="$2">
+                  Map
+                </Button>
+              </XGroup.Item>
+
+              <XGroup.Item>
+                <Button width="50%" size="$2">
+                  List
+                </Button>
+              </XGroup.Item>
+            </XGroup>
+
+            {/* Filter Bar with results button */}
+            <FilterBar
+              onResultsPress={() => setShowResultsSheet(true)}
+              resultsCount={talentProfiles.length}
+              onSearchPress={() => setShowSearchSheet(true)}
+              onFilterPress={() => setFiltersOpen(true)}
+              onDrawPress={() => setDrawMode(!drawMode)}
+              onResetPress={() => {
+                setActiveFilters(INITIAL_FILTERS)
+                setSelectedProfileId(null)
+                setRadiusMeters(defaultRadiusMeters)
+                setSearchCenter(null)
+                setDrawMode(false)
+              }}
+            />
+
+            {/* Draw Mode Indicator */}
+            {drawMode && (
+              <YStack
+                position="absolute"
+                t="$4"
+                l="$4"
+                r="$4"
+                z={100}
+                bg="$blue9"
+                p="$3"
+                rounded="$4"
+                items="center"
               >
-                View {talentProfiles.length} Results
-              </Button>
-            </YStack>
+                <Text color="white" fontSize="$4" fontWeight="600">
+                  🖊️ Draw Mode Active - Draw on the map to select an area
+                </Text>
+              </YStack>
+            )}
           </YStack>
         ) : (
           <XStack flex={1} gap="$4" overflow="hidden">
-            <YStack flexBasis={380} maxW={420} gap="$3" overflow="hidden">
-              <ResultList
-                ref={resultListRef}
-                profiles={talentProfiles}
-                selectedId={selectedProfileId}
-                onSelect={setSelectedProfileId}
-                isLoading={isLoading}
-              />
-            </YStack>
-            <YStack flex={1} overflow="hidden">
+            <YStack flex={1} overflow="hidden" position="relative">
               <MapContainer
                 pins={mapPins}
                 center={mapCenter}
                 zoom={7}
                 onPinPress={handleMarkerPress}
               />
+
+              {/* Filter Bar for desktop view */}
+              <FilterBar
+                onResultsPress={() => setshowRail(!showRail)}
+                resultsCount={talentProfiles.length}
+                onSearchPress={() => setShowSearchSheet(true)}
+                onFilterPress={() => setFiltersOpen(true)}
+                onDrawPress={() => setDrawMode(!drawMode)}
+                onResetPress={() => {
+                  setActiveFilters(INITIAL_FILTERS)
+                  setSelectedProfileId(null)
+                  setRadiusMeters(defaultRadiusMeters)
+                  setSearchCenter(null)
+                  setDrawMode(false)
+                }}
+              />
+
+              {/* Draw Mode Indicator */}
+              {drawMode && (
+                <YStack
+                  position="absolute"
+                  t="$4"
+                  l="$4"
+                  r="$4"
+                  z={100}
+                  bg="$blue9"
+                  p="$3"
+                  rounded="$4"
+                  items="center"
+                >
+                  <Text color="white" fontSize="$4" fontWeight="600">
+                    🖊️ Draw Mode Active - Draw on the map to select an area
+                  </Text>
+                </YStack>
+              )}
             </YStack>
+
+            {showRail && (
+              <YStack flexBasis={380} maxW={420} gap="$3" overflow="hidden">
+                <ResultList
+                  ref={resultListRef}
+                  profiles={talentProfiles}
+                  selectedId={selectedProfileId}
+                  onSelect={setSelectedProfileId}
+                  isLoading={isLoading}
+                />
+              </YStack>
+            )}
           </XStack>
         )}
       </YStack>
+
+      {/* Search Sheet */}
+      <Sheet
+        modal
+        open={showSearchSheet}
+        onOpenChange={setShowSearchSheet}
+        snapPoints={[60]}
+        dismissOnSnapToBottom
+      >
+        <Sheet.Overlay />
+        <Sheet.Handle />
+        <Sheet.Frame bg="$background" p="$4" gap="$4">
+          <YStack gap="$3">
+            <Text fontSize="$6" fontWeight="bold" color="$color12">
+              Search
+            </Text>
+            <Paragraph color="$color11">Search by location, worker name, or skills...</Paragraph>
+          </YStack>
+        </Sheet.Frame>
+      </Sheet>
 
       {/* Mobile Results Sheet */}
       <Sheet
@@ -337,4 +374,4 @@ export const WorkersIndexScreen = () => {
   )
 }
 
-export default WorkersIndexScreen
+export default DiscoverIndexScreen

@@ -26,15 +26,15 @@ export const generateDashboardDrawerItems = (): DrawerItemConfig[] => {
     icon: BarChart3,
   })
 
-  // Workers route
-  const workersIndexRoute = DASHBOARD_ROUTES.WORKERS?.childrenArray?.find(
-    (r) => r.path === '/dashboard/workers'
+  // Discover route
+  const discoverIndexRoute = DASHBOARD_ROUTES.Discover?.childrenArray?.find(
+    (r) => r.path === '/dashboard/discover'
   )
-  if (workersIndexRoute) {
+  if (discoverIndexRoute) {
     items.push({
-      key: 'workers',
-      title: 'Workers',
-      href: workersIndexRoute.fullPath,
+      key: 'discover',
+      title: 'Discover',
+      href: discoverIndexRoute.fullPath,
       icon: MapIcon,
     })
   }

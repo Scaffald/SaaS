@@ -9,13 +9,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 export default function Screen() {
   const [hasOnboarded, setHasOnboarded] = useState(false)
   const { width } = useWindowDimensions()
-
-  // Use 640px breakpoint (Tamagui's sm breakpoint)
-  // Screens smaller than 640px are considered small
   const isSmallScreen = width < 640
 
-  // On small screens (<640px): show WelcomeScreen first, then LoginScreen after onboarding
-  // On larger screens (>=640px): show side-by-side layout
   if (isSmallScreen && !hasOnboarded) {
     return (
       <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>

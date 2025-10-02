@@ -84,46 +84,44 @@ export const Onboarding = ({ onOnboarded, autoSwipe, steps }: OnboardingProps) =
   const safeAreaInsets = useSafeAreaInsets()
 
   return (
-    <Theme name={currentStep.theme as ThemeName}>
-      <YStack
-        flex={1}
-        bg="$color3"
-        overflow="hidden"
-        pb={safeAreaInsets.bottom}
-        pr={safeAreaInsets.right}
-        pt={safeAreaInsets.top}
-        pl={safeAreaInsets.left}
-      >
+    <YStack
+      flex={1}
+      bg="$color3"
+      overflow="hidden"
+      pb={safeAreaInsets.bottom}
+      pr={safeAreaInsets.right}
+      pt={safeAreaInsets.top}
+      pl={safeAreaInsets.left}
+    >
+      <AnimatePresence>
+        <Background key={key} backgroundImage={currentStep.backgroundImage} />
+      </AnimatePresence>
+
+      <YStack flex={1} {...panResponder.panHandlers}>
         <AnimatePresence>
-          <Background key={key} backgroundImage={currentStep.backgroundImage} />
+          <currentStep.Content key={key} />
         </AnimatePresence>
-
-        <YStack flex={1} {...panResponder.panHandlers}>
-          <AnimatePresence>
-            <currentStep.Content key={key} />
-          </AnimatePresence>
-        </YStack>
-
-        <XStack gap={10} justify="center" my="$4">
-          {Array.from({ length: stepsCount }, (_, idx) => {
-            const isActive = idx === stepIdx
-            return (
-              <Point
-                key={`point-${idx}-${stepsCount}`}
-                active={isActive}
-                onPress={() => setStepIdx(idx)}
-              />
-            )
-          })}
-        </XStack>
-        <OnboardingControls
-          currentIdx={stepIdx}
-          onChange={(val) => setStepIdx(val)}
-          stepsCount={stepsCount}
-          onFinish={onOnboarded}
-        />
       </YStack>
-    </Theme>
+
+      <XStack gap={10} justify="center" my="$4">
+        {Array.from({ length: stepsCount }, (_, idx) => {
+          const isActive = idx === stepIdx
+          return (
+            <Point
+              key={`point-${idx}-${stepsCount}`}
+              active={isActive}
+              onPress={() => setStepIdx(idx)}
+            />
+          )
+        })}
+      </XStack>
+      <OnboardingControls
+        currentIdx={stepIdx}
+        onChange={(val) => setStepIdx(val)}
+        stepsCount={stepsCount}
+        onFinish={onOnboarded}
+      />
+    </YStack>
   )
 }
 

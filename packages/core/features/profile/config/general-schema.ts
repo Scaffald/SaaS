@@ -3,7 +3,7 @@ import { phoneNumberSchema } from '@app/ui'
 
 /**
  * General Profile Form Schema
- * Fields: Avatar, First/Last Name, About, Phone, Email
+ * Fields: Avatar, First/Last Name, About, Phone, Email, Home Address
  */
 export const generalProfileSchema = z.object({
   // Avatar - optional (can be full URL or path)
@@ -21,6 +21,19 @@ export const generalProfileSchema = z.object({
 
   // Email - optional (read-only, managed by auth system)
   email: z.string().email('Please enter a valid email address').optional(),
+
+  // Home Address
+  address: z
+    .object({
+      street: z.string().optional(),
+      city: z.string().optional(),
+      state: z.string().optional(),
+      zip: z.string().optional(),
+      country: z.string().optional(),
+      latitude: z.number().optional(),
+      longitude: z.number().optional(),
+    })
+    .optional(),
 })
 
 export type GeneralProfileFormData = z.infer<typeof generalProfileSchema>
@@ -32,4 +45,13 @@ export const generalProfileDefaults: GeneralProfileFormData = {
   about: '',
   phone: '',
   email: '',
+  address: {
+    street: '',
+    city: '',
+    state: '',
+    zip: '',
+    country: 'United States',
+    latitude: undefined,
+    longitude: undefined,
+  },
 }
