@@ -42,15 +42,13 @@ export const FilterBar = ({
         <Button
           size="$4"
           circular
-          icon={List}
-          scaleIcon={1.4}
           onPress={onResultsPress}
           variant="outlined"
           bg="$background"
           hoverStyle={{ bg: '$backgroundHover' }}
           pressStyle={{ bg: '$backgroundPress' }}
         >
-          {resultsCount > 0 ? resultsCount : null}
+          {resultsCount > 0 ? resultsCount : <List size={22} />}
         </Button>
         <Button
           size="$4"
