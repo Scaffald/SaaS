@@ -1,8 +1,8 @@
 ## Getting Started
 
-If you're getting issues with the /android or /ios directories when setting up the starter, you can safely remove them and re-generate them using `yarn ios` and `yarn android`.
+If you're getting issues with the /android or /ios directories when setting up the starter, you can safely remove them and re-generate them using `pnpm ios` and `pnpm android`.
 
-In the expo folder, You can also run the `yarn start:dev-client` command which will start the dev client for you with a pre-built step that will re generate the native apps (recreate the ios and android folders) on the fly.
+In the expo folder, You can also run the `pnpm start:dev-client` command which will start the dev client for you with a pre-built step that will re generate the native apps (recreate the ios and android folders) on the fly.
 
 ## Environment
 
@@ -13,7 +13,7 @@ We don't provide priority support for Windows, and lesser to Linux, but we do ai
 The following are the tested and supported versions of packages:
 
 - Node.js: 18.17.0
-- Yarn: 4.1.0
+- pnpm: 4.1.0
 - npm: 9.6.7
 - TypeScript: 5.3.3
 
@@ -58,7 +58,7 @@ We like `fnm` to manage node, and then ensure your `apps/expo/ios/.xcode.env` ha
 NODE_BINARY=/Users/n8/Library/Caches/fnm_multishells/69747_1653603955297/bin/node
 ```
 
-You may need to run `yarn ios` once to have it generate the env file, and then re-run it once you set the NODE_BINARY properly.
+You may need to run `pnpm ios` once to have it generate the env file, and then re-run it once you set the NODE_BINARY properly.
 
 ## Included packages
 
@@ -72,7 +72,7 @@ You may need to run `yarn ios` once to have it generate the env file, and then r
 
 Note that you don't need to do this if you've already cloned this using `create tamagui`.
 
-To configure the project, `cd` into the root of the project and run `yarn setup`.
+To configure the project, `cd` into the root of the project and run `pnpm setup`.
 
 ## Supabase Authentication and Database
 
@@ -122,12 +122,12 @@ After cloning the project and setting up your environment variables:
 
 2. Link your Supabase project:
    ```bash
-   yarn link-project
+   pnpm link-project
    ```
 
 3. Deploy the initial database tables:
    ```bash
-   yarn deploy
+   pnpm deploy
    ```
 
 These steps will create the necessary tables in your online Supabase project.
@@ -147,31 +147,31 @@ Please reference [Supabase's documentation](https://supabase.com/docs/guides/sel
 
 ### Development scripts
 
-- Web: `yarn web`
-- iOS: `yarn ios`
-- Android: `yarn android`
+- Web: `pnpm web`
+- iOS: `pnpm ios`
+- Android: `pnpm android`
 
 ### Supabase Development Commands
 
-- Start Supabase: `yarn supa:start` (with environment variables loaded)
-- Stop Supabase: `yarn supa:stop`
-- Restart Supabase: `yarn supa:restart`
-- Check status: `yarn supa:status`
-- Reset database: `yarn supa:reset`
-- Generate types: `yarn supa:generate` (local) or `yarn supa:generate:remote`
-- Create migration: `yarn supa:migration:new <name>`
-- Apply migrations: `yarn supa:migration:up`
-- Open Studio: `yarn supa:studio` (opens http://127.0.0.1:54323)
-- Open Mailpit: `yarn supa:mailpit` (opens http://127.0.0.1:54324)
+- Start Supabase: `pnpm supa:start` (with environment variables loaded)
+- Stop Supabase: `pnpm supa:stop`
+- Restart Supabase: `pnpm supa:restart`
+- Check status: `pnpm supa:status`
+- Reset database: `pnpm supa:reset`
+- Generate types: `pnpm supa:generate` (local) or `pnpm supa:generate:remote`
+- Create migration: `pnpm supa:migration:new <name>`
+- Apply migrations: `pnpm supa:migration:up`
+- Open Studio: `pnpm supa:studio` (opens http://127.0.0.1:54323)
+- Open Mailpit: `pnpm supa:mailpit` (opens http://127.0.0.1:54324)
 
-**Important:** Always use `yarn supa:start` instead of direct supabase commands to ensure environment variables are properly loaded.
+**Important:** Always use `pnpm supa:start` instead of direct supabase commands to ensure environment variables are properly loaded.
 
 NOTE: When using tRPC, even if you just want to develop on native, you need to have the web server running to be able to make tRPC requests.
 
 The iOS simulator will not make requests to localhost
 
 ```bash
-yarn web -H $(yarn get-local-ip-mac | head -n 1)
+pnpm web -H $(pnpm get-local-ip-mac | head -n 1)
 ```
 
 ### EAS dev builds
@@ -219,17 +219,17 @@ yarn web -H $(yarn get-local-ip-mac | head -n 1)
 
 In the `apps/expo` folder you can use EAS and a few helpful scripts:
 
-- `yarn eas:build:dev:simulator:android` for android
-- `yarn eas:build:dev:simulator:ios` for ios
+- `pnpm eas:build:dev:simulator:android` for android
+- `pnpm eas:build:dev:simulator:ios` for ios
 
 Add `--local` to build locally.
 
 ### Code generation script
 
-- Component: `yarn gen component`
-- Screen: `yarn gen screen`
-- tRPC Router: `yarn gen router`
-- **Route: `yarn gen route`** (New! See Route Naming Convention below)
+- Component: `pnpm gen component`
+- Screen: `pnpm gen screen`
+- tRPC Router: `pnpm gen router`
+- **Route: `pnpm gen route`** (New! See Route Naming Convention below)
 
 ### Signup Flow
 
@@ -373,11 +373,11 @@ The simplest way to run a native project. A iOS or Android physical device is ne
 
 #### First-time Setup
 
-- run a build for either native platform `yarn ios` or `yarn android`
+- run a build for either native platform `pnpm ios` or `pnpm android`
 
 To run an expo app on your machine locally:
 
-- `yarn native` from the root of the project
+- `pnpm native` from the root of the project
 - select `development` from the cli menu
 
 ## Native Builds
@@ -390,7 +390,7 @@ To run a [native build](https://docs.expo.dev/develop/development-builds/introdu
 
 - `npx expo install expo-dev-client`
 - in `apps/expo/package.json` update script `"start": "TAMAGUI_ENV=dev expo start --dev-client"`
-- `yarn ios` or `yarn android`
+- `pnpm ios` or `pnpm android`
 
 ## Expo Go
 
@@ -414,7 +414,7 @@ We use `expo-router` for the native side, so simply create `_layout.tsx` files i
 
 Authentication is handled by Supabase Auth. Email and password auth is included in the starter but you can get OAuth to work too.
 
-Check emails that are sent to you locally like the auth confirmation using InBucket at http://localhost:54324 once your Supabase is running `yarn supa start` from the root of the project.
+Check emails that are sent to you locally like the auth confirmation using InBucket at http://localhost:54324 once your Supabase is running `pnpm supa start` from the root of the project.
 
 Redirect URL for email signup needs to be configured in Supabase Auth dashboard on production located in sidebar `authentication / URL Configuration` `Redirect URLs` option.
 
@@ -474,8 +474,8 @@ You can `cp .env.example .env` to get started.
 To add an icon or font, use:
 
 ```sh
-yarn add:font
-yarn add:icon
+pnpm add:font
+pnpm add:icon
 ```
 
 The package is included in the `packages` workspace in this repo. You can tweak and adjust the icon and font usage and logic to your linking.
@@ -513,9 +513,9 @@ When creating new UI components:
 Always run these commands after making changes:
 
 ```bash
-yarn format:fix    # Fix formatting issues
-yarn lint:fix      # Fix linting issues
-yarn check:type    # Check TypeScript types (optional)
+pnpm format:fix    # Fix formatting issues
+pnpm lint:fix      # Fix linting issues
+pnpm check:type    # Check TypeScript types (optional)
 ```
 
 ## Adding new dependencies
@@ -526,9 +526,9 @@ If you're installing a JavaScript-only dependency that will be used across platf
 
 ```sh
 cd packages/core
-yarn add date-fns
+pnpm add date-fns
 cd ../..
-yarn
+pnpm
 ```
 
 ### Native dependencies
@@ -537,9 +537,9 @@ If you're installing a library with any native code, you must install it in `exp
 
 ```sh
 cd apps/expo
-yarn add react-native-reanimated
+pnpm add react-native-reanimated
 cd ..
-yarn
+pnpm
 ```
 
 You can also install the native library inside of `packages/core` if you want to get autoimport for that package inside of the `app` folder. However, you need to be careful and install the _exact_ same version in both packages. If the versions mismatch at all, you'll potentially get terrible bugs. This is a classic monorepo issue. I use `lerna-update-wizard` to help with this (you don't need to use Lerna to use that lib).
@@ -592,16 +592,16 @@ We provide several turbo generators to speed up development:
 
 ```bash
 # Create a new component
-yarn gen component
+pnpm gen component
 
 # Create a new screen
-yarn gen screen
+pnpm gen screen
 
 # Create a new tRPC router
-yarn gen router
+pnpm gen router
 
 # Create a new dashboard route (recommended)
-yarn gen route
+pnpm gen route
 ```
 
 ### Generator Best Practices
@@ -611,21 +611,21 @@ yarn gen route
 3. **Review generated code** - customize as needed for your specific use case
 4. **Run quality checks** after generation:
    ```bash
-   yarn format:fix
-   yarn lint:fix
+   pnpm format:fix
+   pnpm lint:fix
    ```
 
 ## Troubleshooting
 
 ### Xcode cannot find 'node'
 
-If building with xcode, or running `yarn ios/android` and you receive a wall of red errors - you may need to remove `.xcode.env.local` from the root of the project.
+If building with xcode, or running `pnpm ios/android` and you receive a wall of red errors - you may need to remove `.xcode.env.local` from the root of the project.
 
 Alternative fix from [lerisse](https://github.com/lerisse):
 
 > A more permanent solution I’ve found for node error would be to replace the temp path created in Xcode.env.local to your local node install path. Usually for Mac that would be defaulted to /usr/local/bin/node
 
-Running `pod install` inside a yarn alias can create this broken file.
+Running `pod install` inside a pnpm alias can create this broken file.
 
 https://github.com/facebook/react-native/issues/43285
 
@@ -634,5 +634,5 @@ https://github.com/facebook/react-native/issues/43285
 iOS simulator will not make requests to localhost, you will need to run the next.js server based on your local IP address.
 
 ```bash
-yarn web -H $(yarn get-local-ip-mac)
+pnpm web -H $(pnpm get-local-ip-mac)
 ```

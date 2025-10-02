@@ -1,12 +1,12 @@
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAddressDebounce, useAddressDebouncedCallback } from './useDebounce'
 import { useGeocodingProvider } from './useGeocodingProvider'
 import type {
   AddressResult,
-  SearchOptions,
-  ProviderConfig,
-  UseAddressAutocompleteReturn,
   GeocodingProvider,
+  ProviderConfig,
+  SearchOptions,
+  UseAddressAutocompleteReturn,
 } from '../types'
 
 interface UseAddressAutocompleteOptions {
@@ -124,20 +124,13 @@ export function useAddressAutocomplete(
     [provider, isReady, searchOptions, maxResults, minLength]
   )
 
-  // Debounced search execution
-  const debouncedSearch = useAddressDebouncedCallback(
-    performSearch,
-    0, // No additional debounce since we're using debounced query
-    [performSearch]
-  )
-
   // Trigger search when debounced query changes
   useEffect(() => {
     // Only search when we have a debounced query
     if (debouncedQuery.trim()) {
-      debouncedSearch(debouncedQuery)
+      performSearch(debouncedQuery)
     }
-  }, [debouncedQuery, debouncedSearch])
+  }, [debouncedQuery, performSearch])
 
   // Manual search function
   const search = useCallback((searchQuery: string) => {

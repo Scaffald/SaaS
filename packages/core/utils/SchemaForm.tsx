@@ -1,6 +1,7 @@
-import { FieldError, Form, type FormProps, FormWrapper, Theme, Input } from '@app/ui'
+import { Form, type FormProps, Theme, Input } from 'tamagui'
+import { FieldError, FormWrapper } from '@app/ui'
 import { createTsForm, createUniqueFieldSchema } from '@ts-react/form'
-import type { ComponentProps } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -64,7 +65,7 @@ export const SchemaForm: typeof _SchemaForm = ({ ...props }) => {
 
   return (
     <_SchemaForm {...props} renderAfter={renderAfter}>
-      {(fields, _context) => {
+      {(fields: Record<string, ReactNode>, _context: unknown) => {
         const childRenderer = props.children as SchemaFormChildRenderer | undefined
 
         return (

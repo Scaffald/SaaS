@@ -49,7 +49,7 @@ export function CodeConfirmation({ size, codeSize, secureText, onEnter }: CodeCo
 
   // shake animation
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null
+    let interval: ReturnType<typeof setInterval> | null = null
 
     interval = setInterval(() => {
       if (isValid) {

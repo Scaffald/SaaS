@@ -1,4 +1,4 @@
-import { YStack } from '@app/ui'
+import { YStack } from 'tamagui'
 import { DrawerLink } from './DrawerLink'
 import type { DrawerSectionProps } from './types'
 

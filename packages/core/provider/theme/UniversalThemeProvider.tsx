@@ -1,4 +1,4 @@
-import { useIsomorphicLayoutEffect } from '@app/ui'
+import { useIsomorphicLayoutEffect } from 'tamagui'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { StatusBar } from 'expo-status-bar'

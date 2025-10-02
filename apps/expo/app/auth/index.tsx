@@ -1,6 +1,6 @@
 import { LoginScreen } from '@app/core/features/auth/login-screen'
 import { WelcomeScreen } from '@app/core/features/auth/welcome-screen'
-import { XStack, YStack } from '@app/ui'
+import { XStack, YStack } from 'tamagui'
 import { Stack } from 'expo-router'
 import { useState } from 'react'
 import { useWindowDimensions } from 'react-native'

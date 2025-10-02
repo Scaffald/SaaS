@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 /**
  * Address schema used across the application
@@ -16,6 +16,6 @@ export const addressSchema = z
     longitude: z.number().optional(),
   })
   .nullable()
-  .optional();
+  .optional()
 
-export type Address = z.infer<typeof addressSchema>;
+export type Address = z.infer<typeof addressSchema>

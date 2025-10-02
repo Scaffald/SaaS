@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, YStack, XStack, Button, Sheet } from '@app/ui'
+import { View, Text, YStack, XStack, Button, Sheet } from 'tamagui'
 import { MapContainer, mockMapPins, type MapPinType } from '@app/ui/src/components/maps'
 import { FilterBar } from '@app/core/features/discover/components/FilterBar'
 

@@ -1,11 +1,11 @@
 // Core types
 export type {
-  AddressResult,
-  SearchOptions,
-  ProviderConfig,
   AddressAutocompleteProps,
   AddressFormProps,
+  AddressResult,
   GeocodingProvider,
+  ProviderConfig,
+  SearchOptions,
   UseAddressAutocompleteReturn,
   UseGeocodingProviderReturn,
 } from './types'
@@ -18,19 +18,26 @@ export { LocationListInput } from './LocationListInput'
 
 // Hooks
 export {
+  useAddressAutocomplete,
   useAddressDebounce,
   useAddressDebouncedCallback,
   useGeocodingProvider,
   useGeocodingProviderFromEnv,
-  useAddressAutocomplete,
   useSimpleAddressAutocomplete,
 } from './hooks'
 
 // Providers
 export {
   BaseGeocodingProvider,
-  AddressUtils,
-  MapboxProvider,
-  GeocodingProviderFactory,
+  createFromEnvironment,
+  createProvider,
+  generateId,
   GeocodingService,
+  getApiKeyFromEnvironment,
+  getStateAbbreviation,
+  getSupportedProviders,
+  isValidCoordinates,
+  MapboxProvider,
+  normalizeComponent,
+  validateConfig,
 } from './providers'

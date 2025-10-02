@@ -1,4 +1,4 @@
-import { Card, Paragraph, Text, XStack, YStack } from '@app/ui'
+import { Card, Paragraph, Text, XStack, YStack } from 'tamagui'
 import type { TalentProfile } from '../types'
 
 interface ProfileSummaryCardProps {

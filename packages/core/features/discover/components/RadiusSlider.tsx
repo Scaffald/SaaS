@@ -1,4 +1,4 @@
-import { Slider, Text, XStack, YStack } from '@app/ui'
+import { Slider, Text, XStack, YStack } from 'tamagui'
 
 type RadiusSliderProps = {
   value: number

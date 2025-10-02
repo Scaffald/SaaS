@@ -1,11 +1,12 @@
 import { DrawerMenu } from '@app/core/features/drawer'
-import { Button, useTheme, NotificationsActionSheet } from '@app/ui'
+import { Button, useTheme } from 'tamagui'
 import { useProtectedRoute } from '@app/core/utils/auth/useProtectedRoute'
 import { DrawerActions } from '@react-navigation/native'
 import { Bell, Menu } from '@tamagui/lucide-icons'
 import { Drawer } from 'expo-router/drawer'
 import { useMedia, YStack, Text, useWindowDimensions } from 'tamagui'
 import { useState } from 'react'
+import { NotificationsActionSheet } from '@app/ui/src/components/NotificationsActionSheet'
 
 export default function Layout() {
   const { isLoading } = useProtectedRoute()
@@ -34,7 +35,7 @@ export default function Layout() {
           headerLeftContainerStyle: {},
           headerTitleStyle: {
             color: theme.color12.val,
-            marginLeft: isSmall ? '0' : '35px',
+            marginLeft: isSmall ? 0 : 35,
           },
           headerLeft: () => (
             <Button

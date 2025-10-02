@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "lib": ["deno.ns", "deno.unstable"],
+    // "lib": ["deno.ns", "deno.unstable"],
     "types": ["node"]
   },
   "include": ["functions/_shared/**/*"],

@@ -1,5 +1,6 @@
 import { useState, useEffect, ReactNode, ComponentType } from 'react'
-import { Image, Text, View, XStack, YStack } from 'tamagui'
+import { Text, View, XStack } from 'tamagui'
+import { randomUUID } from 'expo-crypto'
 
 const axises = {
   left: {
@@ -60,7 +61,12 @@ export const CardStack = ({
       overflow="hidden"
       enterStyle={disableSlideIn ? { opacity: 1 } : { opacity: 0, [axis.axis]: axis.value }}
     >
-      <View width={width}>{children}</View>
+      <View
+        width={typeof width === 'number' ? width : undefined}
+        flex={typeof width === 'string' ? 1 : undefined}
+      >
+        {children}
+      </View>
     </View>
   )
 }
@@ -85,7 +91,7 @@ export const DirectionSlide = ({ direction, setDirection }: DirectionSlideProps)
   const directions = ['left', 'right', 'top', 'bottom'] as const
 
   return (
-    <View flex="row" gap="$2">
+    <View gap="$2">
       <XStack gap="$2" flex={1}>
         {directions.map((dir) => {
           const active = dir === direction
@@ -102,7 +108,6 @@ export const DirectionSlide = ({ direction, setDirection }: DirectionSlideProps)
             >
               <Text
                 color={active ? '$color1' : '$color10'}
-                fontFamily="$mono"
                 fontWeight="600"
                 textTransform="capitalize"
                 fontSize="$2"
@@ -183,10 +188,15 @@ export const StackedCards = ({
   }
 
   return (
-    <View position="relative" width={width} height={200}>
+    <View
+      position="relative"
+      width={typeof width === 'number' ? width : undefined}
+      flex={typeof width === 'string' ? 1 : undefined}
+      height={200}
+    >
       {visibleCards.map((card, stackIndex) => (
         <View
-          key={`card-${currentIndex}-${stackIndex}-${card.id || card.title || stackIndex}`}
+          key={randomUUID()}
           position="absolute"
           t={stackIndex * 8}
           l={stackIndex * 4}

@@ -1,36 +1,36 @@
-import { isWeb } from '@app/ui'
+import { isWeb } from "tamagui";
 
-import { replaceLocalhost } from './getLocalhost.native'
+import { replaceLocalhost } from "./getLocalhost.native";
 
 export function _getBaseUrl() {
-  if (isWeb && typeof window !== 'undefined') {
+  if (isWeb && typeof window !== "undefined") {
     // browser should use relative path
-    return ''
+    return "";
   }
 
   if (process.env.EXPO_PUBLIC_URL) {
     // overwrites the rest - set this on your native app deployment
-    return `${process.env.EXPO_PUBLIC_URL}`
+    return `${process.env.EXPO_PUBLIC_URL}`;
   }
 
   if (process.env.VERCEL_URL) {
     // reference for vercel.com
-    return `https://${process.env.VERCEL_URL}`
+    return `https://${process.env.VERCEL_URL}`;
   }
 
   if (process.env.RENDER_INTERNAL_HOSTNAME) {
     // reference for render.com
-    return `http://${process.env.RENDER_INTERNAL_HOSTNAME}:${process.env.PORT}`
+    return `http://${process.env.RENDER_INTERNAL_HOSTNAME}:${process.env.PORT}`;
   }
 
   // assume localhost
-  return `http://localhost:${process.env.PORT ?? 3000}`
+  return `http://localhost:${process.env.PORT ?? 3000}`;
 }
 
 export function getBaseUrl() {
-  let url = _getBaseUrl()
+  let url = _getBaseUrl();
   if (!isWeb) {
-    url = replaceLocalhost(url)
+    url = replaceLocalhost(url);
   }
-  return url
+  return url;
 }

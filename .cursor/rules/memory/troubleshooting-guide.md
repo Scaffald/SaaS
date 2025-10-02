@@ -14,17 +14,17 @@
 **Solutions**:
 ```bash
 # Regenerate Supabase types
-yarn supa generate
+pnpm supa generate
 
 # Clear TypeScript cache
 rm -rf node_modules/.cache
-yarn install
+pnpm install
 
 # Check for circular dependencies
-yarn check-circular-deps
+pnpm check-circular-deps
 
 # Run type checking
-yarn typecheck
+pnpm typecheck
 ```
 
 #### 2. Metro Bundler Issues (React Native)
@@ -32,7 +32,7 @@ yarn typecheck
 **Solutions**:
 ```bash
 # Clear Metro cache
-yarn start --clear
+pnpm start --clear
 
 # Reset Metro bundler
 npx react-native start --reset-cache
@@ -40,7 +40,7 @@ npx react-native start --reset-cache
 # Clear all caches
 rm -rf node_modules/.cache
 rm -rf .expo
-yarn install
+pnpm install
 ```
 
 #### 3. Expo Development Server Issues
@@ -52,13 +52,13 @@ killall node
 killall expo
 
 # Restart development server
-yarn dev
+pnpm dev
 
 # Check if port is in use
 lsof -ti:8081 | xargs kill -9
 
 # Use different port
-yarn start --port 8082
+pnpm start --port 8082
 ```
 
 ### Database and API Issues
@@ -68,19 +68,19 @@ yarn start --port 8082
 **Debugging Steps**:
 ```bash
 # Check Supabase status
-yarn supa status
+pnpm supa status
 
 # Verify environment variables
 echo $EXPO_PUBLIC_SUPABASE_URL
 echo $EXPO_PUBLIC_SUPABASE_ANON_KEY
 
 # Test database connection
-yarn supa db ping
+pnpm supa db ping
 ```
 
 **Solutions**:
 - Verify `.env` file exists and has correct values
-- Check if Supabase is running locally: `yarn supa start`
+- Check if Supabase is running locally: `pnpm supa start`
 - Verify RLS policies allow access
 - Check network connectivity
 
@@ -128,23 +128,23 @@ RESET ROLE;
 
 ### Package and Dependency Issues
 
-#### 1. Yarn Workspace Issues
+#### 1. pnpm Workspace Issues
 **Symptoms**: Packages not found, version conflicts
 **Solutions**:
 ```bash
 # Check workspace integrity
-yarn check-deps
+pnpm check-deps
 
 # Fix dependency versions
-yarn dedupe
+pnpm dedupe
 
 # Reinstall all dependencies
 rm -rf node_modules
-rm yarn.lock
-yarn install
+rm pnpm.lock
+pnpm install
 
 # Check for duplicate packages
-yarn why package-name
+pnpm why package-name
 ```
 
 #### 2. Sherif Linting Warnings
@@ -157,10 +157,10 @@ yarn why package-name
 **Solutions**:
 ```bash
 # Run sherif with autofix
-yarn lint-sherif -f
+pnpm lint-sherif -f
 
 # Check specific issues
-yarn lint-sherif --verbose
+pnpm lint-sherif --verbose
 
 # Move dependencies to correct location
 # Root package.json should only have devDependencies
@@ -171,7 +171,7 @@ yarn lint-sherif --verbose
 **Detection**:
 ```bash
 # Check for circular dependencies
-yarn check-circular-deps
+pnpm check-circular-deps
 
 # Check specific package
 scripts/check-circular-deps.sh packages/core/src
@@ -225,7 +225,7 @@ export function Component() {
 **Solutions**:
 ```bash
 # Use Turbo cache
-yarn build --cache
+pnpm build --cache
 
 # Check for large dependencies
 npx bundle-analyzer
@@ -261,28 +261,28 @@ const handlePress = useCallback(() => {
 **Solutions**:
 ```bash
 # Run checks manually
-yarn check
+pnpm check
 
 # Fix formatting issues
-yarn format:fix
+pnpm format:fix
 
 # Fix linting issues
-yarn lint:fix
+pnpm lint:fix
 
 # Skip hooks (not recommended)
 git commit --no-verify
 ```
 
 #### 2. Merge Conflicts in Generated Files
-**Symptoms**: Conflicts in yarn.lock, generated types
+**Symptoms**: Conflicts in pnpm.lock, generated types
 **Solutions**:
 ```bash
-# For yarn.lock conflicts
-rm yarn.lock
-yarn install
+# For pnpm.lock conflicts
+rm pnpm.lock
+pnpm install
 
 # For generated types
-yarn supa generate
+pnpm supa generate
 
 # For package-lock.json (if exists)
 rm package-lock.json
@@ -357,18 +357,18 @@ export function Component() {
 rm -rf node_modules
 rm -rf .expo
 rm -rf .next
-rm yarn.lock
+rm pnpm.lock
 rm package-lock.json
 
 # Reinstall
-yarn install
+pnpm install
 
 # Regenerate types
-yarn supa generate
+pnpm supa generate
 
 # Restart services
-yarn supa restart
-yarn dev
+pnpm supa restart
+pnpm dev
 ```
 
 ### 2. Rollback Strategy
@@ -392,12 +392,12 @@ git revert <problematic-commit-hash>
 # Restart all services
 killall node
 killall expo
-yarn supa stop
-yarn supa start
-yarn dev
+pnpm supa stop
+pnpm supa start
+pnpm dev
 
 # Check service status
-yarn supa status
+pnpm supa status
 curl http://localhost:8081
 curl http://localhost:54321/health
 ```
@@ -409,18 +409,18 @@ curl http://localhost:54321/health
 - Steps to reproduce
 - Environment details (OS, Node version, etc.)
 - Recent changes (git log)
-- Package versions (yarn list)
+- Package versions (pnpm list)
 
 ### 2. Useful Commands for Bug Reports
 ```bash
 # System information
 node --version
-yarn --version
+pnpm --version
 expo --version
 
 # Package information
-yarn list --depth=0
-yarn why problematic-package
+pnpm list --depth=0
+pnpm why problematic-package
 
 # Git context
 git log --oneline -5

@@ -7,7 +7,6 @@ import {
   Input,
   H4,
   Switch,
-  Slider,
   Checkbox,
   ScrollView,
   Spinner,
@@ -25,7 +24,7 @@ import {
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
 } from '@app/core/utils/api'
-import { DashboardWidget, LocationListInput, ToggleCard } from '@app/ui'
+import { DashboardWidget, LocationListInput, ToggleCard, RangeSlider } from '@app/ui'
 import { Flag, MapPin, Plane } from '@tamagui/lucide-icons'
 
 /**
@@ -146,24 +145,22 @@ export function ProfileEmploymentLeft() {
                           control={control}
                           render={({ field: distanceField }) => (
                             <YStack gap="$3">
-                              <Slider
-                                value={[distanceField.value || 50]}
-                                onValueChange={(value) => distanceField.onChange(value[0])}
+                              <RangeSlider
+                                value={distanceField.value ?? 50}
+                                onValueChange={distanceField.onChange}
                                 min={5}
                                 max={100}
                                 step={5}
-                              >
-                                <Slider.Track>
-                                  <Slider.TrackActive />
-                                </Slider.Track>
-                                <Slider.Thumb index={0} />
-                              </Slider>
+                                size="medium"
+                                testID="travel-distance-slider"
+                                accessibilityLabel="Travel distance slider"
+                              />
                               <XStack justify="space-between" items="center">
                                 <Text fontSize="$2" color="$color9">
                                   5 miles
                                 </Text>
                                 <Text fontSize="$3" fontWeight="600" color="$color12">
-                                  {distanceField.value} miles
+                                  {distanceField.value ?? 50} miles
                                 </Text>
                                 <Text fontSize="$2" color="$color9">
                                   100 miles

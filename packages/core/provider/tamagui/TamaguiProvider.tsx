@@ -1,7 +1,8 @@
 import { ReactNode } from 'react'
-import { config, isWeb, TamaguiProvider as TamaguiProviderOG, useDidFinishSSR } from '@app/ui'
+import { isWeb, TamaguiProvider as TamaguiProviderOG, useDidFinishSSR } from 'tamagui'
 
 import { useRootTheme, useThemeSetting } from '../theme/UniversalThemeProvider'
+import { config } from '@app/ui'
 
 export const TamaguiProvider = ({ children }: { children: ReactNode }) => {
   const [rootTheme] = useRootTheme()

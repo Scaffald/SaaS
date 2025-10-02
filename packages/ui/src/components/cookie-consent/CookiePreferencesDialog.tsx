@@ -107,7 +107,7 @@ export const CookiePreferencesDialog = () => {
           elevate
           size="$5"
           gap="$4"
-          w="100%"
+          width="100%"
           maxW={520}
           maxH={600}
         >

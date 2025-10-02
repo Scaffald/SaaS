@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ScrollView, YStack, XStack, Text, Button, Card, H2, H3, View } from '@app/ui'
+import { ScrollView, YStack, XStack, Text, Button, Card, H2, H3, View } from 'tamagui'
 import {
   BarChart,
   LineChart,
@@ -408,7 +408,7 @@ export default function ChartsTestPage() {
           <YStack gap="$3" flex={1}>
             {projectOverviewData.map((item) => (
               <XStack key={item.text} gap="$2" items="center">
-                <View width={12} height={12} rounded={6} bg={item.color} />
+                <View width={12} height={12} rounded={6} bg="$color9" />
                 <YStack>
                   <Text fontSize="$4" fontWeight="600" color="$color12">
                     {item.value}%

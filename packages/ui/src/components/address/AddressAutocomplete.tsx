@@ -1,13 +1,5 @@
-import {
-  useState,
-  useRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  memo,
-  Fragment,
-  KeyboardEvent,
-} from 'react'
+import { useState, useRef, useCallback, useEffect, useMemo, memo, Fragment } from 'react'
+import type { TextInput } from 'react-native'
 import {
   YStack,
   XStack,
@@ -59,7 +51,7 @@ export function AddressAutocomplete({
   const [inputValue, setInputValue] = useState(value)
   const [showResults, setShowResults] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
-  const inputRef = useRef<HTMLInputElement | null>(null)
+  const inputRef = useRef<TextInput | null>(null)
   const resultsRef = useRef<ScrollView>(null)
 
   // Memoize config to prevent recreation on every render
@@ -135,26 +127,24 @@ export function AddressAutocomplete({
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback(
-    (event: KeyboardEvent<HTMLInputElement>) => {
+    (event: { nativeEvent: { key: string } }) => {
       if (!showResults || results.length === 0) return
 
-      switch (event.key) {
+      const key = event.nativeEvent.key
+
+      switch (key) {
         case 'ArrowDown':
-          event.preventDefault()
           setSelectedIndex((prev) => (prev < results.length - 1 ? prev + 1 : prev))
           break
         case 'ArrowUp':
-          event.preventDefault()
           setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1))
           break
         case 'Enter':
-          event.preventDefault()
           if (selectedIndex >= 0 && selectedIndex < results.length) {
             handleAddressSelect(results[selectedIndex])
           }
           break
         case 'Escape':
-          event.preventDefault()
           setShowResults(false)
           setSelectedIndex(-1)
           inputRef.current?.blur()
@@ -275,7 +265,7 @@ export function AddressAutocomplete({
 
         <Popover.Content
           rounded="$4"
-          padding={0}
+          p={0}
           maxH={300}
           minW="$20"
           elevate
@@ -284,9 +274,9 @@ export function AddressAutocomplete({
           bg="$background"
           // Mobile-optimized sizing
           $sm={{
-            minWidth: '90%',
-            maxWidth: '95%',
-            maxHeight: 250,
+            minW: '90%',
+            maxW: '95%',
+            maxH: 250,
           }}
         >
           <ScrollView ref={resultsRef} showsVerticalScrollIndicator={false}>

@@ -21,11 +21,11 @@ export const ChecklistItem = ({ item, onPress }: ChecklistItemProps) => {
       px="$3"
       height="auto"
       pressStyle={{
-        backgroundColor: '$color2',
+        bg: '$color2',
         borderColor: '$color7',
       }}
       hoverStyle={{
-        backgroundColor: '$color2',
+        bg: '$color2',
         borderColor: '$color7',
       }}
       justify="flex-start"

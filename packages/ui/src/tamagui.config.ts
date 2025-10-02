@@ -1,11 +1,11 @@
-import { animations, defaultConfig } from "@tamagui/config/v4";
-import { createTamagui, setupDev } from "tamagui";
+import { animations, defaultConfig } from '@tamagui/config/v4'
+import { createTamagui, setupDev } from 'tamagui'
 
 // Development setup - only in development
-if (process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV === 'development') {
   setupDev({
     visualizer: true,
-  });
+  })
 }
 
 export const config = createTamagui({
@@ -26,15 +26,15 @@ export const config = createTamagui({
     gtLg: { minWidth: 1120 + 1 },
     short: { maxHeight: 820 },
     tall: { minHeight: 820 },
-    hoverNone: { hover: "none" },
-    pointerCoarse: { pointer: "coarse" },
+    hoverNone: { hover: 'none' },
+    pointerCoarse: { pointer: 'coarse' },
   },
-});
+})
 
-export default config;
+export default config
 
-export type Conf = typeof config;
+export type Conf = typeof config
 
-declare module "tamagui" {
+declare module 'tamagui' {
   interface TamaguiCustomConfig extends Conf {}
 }

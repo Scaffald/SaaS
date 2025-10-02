@@ -1,4 +1,4 @@
-import { ToastViewport as ToastViewportOg } from '@app/ui'
+import { ToastViewport as ToastViewportOg } from '@tamagui/toast'
 
 export interface ToastViewportProps {
   noSafeArea?: boolean

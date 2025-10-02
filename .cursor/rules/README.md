@@ -6,14 +6,14 @@ This directory contains streamlined Cursor rules that establish guard rails and 
 
 ### 1. `code-quality.mdc`
 **CI/CD aligned code quality standards** - Applied to all TypeScript/JavaScript files:
-- **Pre-commit workflow**: Always run `yarn check` before committing
+- **Pre-commit workflow**: Always run `pnpm check` before committing
 - **CI alignment**: Run same checks locally as GitHub Actions
 - **Quality gates**: Zero formatting errors, minimal warnings, successful builds
-- **Commands**: `yarn check && yarn build` (matches CI exactly)
+- **Commands**: `pnpm check && pnpm build` (matches CI exactly)
 
 ### 2. `project-guardrails.mdc`
 **Essential project practices** - Applied to all files:
-- **Package manager**: Always use `yarn` instead of `npm`
+- **Package manager**: Always use `pnpm` instead of `npm`
 - **Server management**: Assume servers are running, use workspace commands
 - **Testing**: Always prompt for testing in actual clients
 - **Git context**: Check git history for debugging and bug fixes
@@ -30,13 +30,13 @@ This directory contains streamlined Cursor rules that establish guard rails and 
 
 ### 4. `supabase.mdc`
 **Supabase development** - Auto-attached to Supabase files:
-- Use `yarn supa` instead of global supabase CLI
+- Use `pnpm supa` instead of global supabase CLI
 - Assume Supabase running on localhost:54321
-- Common commands: `yarn supa start/stop/generate/migration:new`
+- Common commands: `pnpm supa start/stop/generate/migration:new`
 
 ### 5. `react-native.mdc`
 **React Native/Expo development** - Auto-attached to React Native files:
-- Use `yarn native`, `yarn ios`, `yarn android`
+- Use `pnpm native`, `pnpm ios`, `pnpm android`
 - Assume Expo dev server running on localhost:8081
 - Test on actual devices when possible
 
@@ -69,7 +69,7 @@ This directory contains streamlined Cursor rules that establish guard rails and 
 ## Key Benefits
 
 1. **CI/CD Alignment** - Local development matches GitHub Actions exactly
-2. **Consistent Tooling** - Always use yarn workspace commands
+2. **Consistent Tooling** - Always use pnpm workspace commands
 3. **Quality Enforcement** - Automated formatting, linting, and type checking
 4. **Type Safety** - Strong TypeScript typing standards, no `any` types
 5. **Context Awareness** - Git history checking for debugging
@@ -80,14 +80,14 @@ This directory contains streamlined Cursor rules that establish guard rails and 
 
 ```bash
 # Before committing (matches CI exactly)
-yarn check && yarn build
+pnpm check && pnpm build
 
 # Individual quality checks
-yarn check              # Format, lint, type check
-yarn build              # Build verification
-yarn check-deps         # Dependency consistency
-yarn lint-sherif        # Advanced monorepo linting
-yarn check-circular-deps # Circular import detection
+pnpm check              # Format, lint, type check
+pnpm build              # Build verification
+pnpm check-deps         # Dependency consistency
+pnpm lint-sherif        # Advanced monorepo linting
+pnpm check-circular-deps # Circular import detection
 ```
 
 ## Adding New Rules

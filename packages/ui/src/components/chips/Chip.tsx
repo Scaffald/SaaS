@@ -2,23 +2,23 @@ import { styled, Text } from 'tamagui'
 
 export const Chip = styled(Text, {
   name: 'Chip',
-  backgroundColor: '$background',
+  bg: '$background',
   borderColor: '$borderColor',
   borderWidth: 1,
-  borderRadius: '$4',
-  paddingHorizontal: '$3',
-  paddingVertical: '$2',
+  rounded: '$4',
+  px: '$3',
+  py: '$2',
   fontSize: '$3',
   color: '$color',
 
   variants: {
     variant: {
       default: {
-        backgroundColor: '$background',
+        bg: '$background',
         borderColor: '$borderColor',
       },
       filled: {
-        backgroundColor: '$blue9',
+        bg: '$blue9',
         color: '$blue1',
         borderColor: '$blue9',
       },

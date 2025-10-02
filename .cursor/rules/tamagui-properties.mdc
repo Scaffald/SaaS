@@ -48,6 +48,9 @@ alwaysApply: false
 - **minHeight** → `minH`
 - **maxHeight** → `maxH`
 
+## Alignment Properties
+- **alignSelf** → `als`
+
 ## Shadow Properties
 - **DO NOT use** `shadowColor`, `shadowOffset`, `shadowOpacity`, `shadowRadius`
 - **USE** `boxShadow` property instead

@@ -1,4 +1,4 @@
-import { Button } from '@app/ui'
+import { Button } from 'tamagui'
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin'
 import { supabase } from '@app/core/utils/supabase/client'
 import { useRouter } from 'expo-router'

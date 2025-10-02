@@ -1,61 +1,63 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery } from "@tanstack/react-query";
 
-import { useSessionContext } from './supabase/useSessionContext'
-import { supabase } from './supabase/client'
+import { useSessionContext } from "./supabase/useSessionContext";
+import { supabase } from "./supabase/client";
 
 // Define the profile type based on the database schema
 type Profile = {
-  id: string
-  name: string | null
-  about: string | null
-  avatar_path: string | null
-  created_at: string
-  updated_at: string
-}
+  id: string;
+  name: string | null;
+  about: string | null;
+  avatar_url: string | null;
+  created_at: string;
+  updated_at: string;
+};
 
 function useProfile() {
-  const { session } = useSessionContext()
-  const user = session?.user
+  const { session } = useSessionContext();
+  const user = session?.user;
   // Using supabase directly from import
   const { data, isPending, refetch } = useQuery({
-    queryKey: ['profile', user?.id],
+    queryKey: ["profile", user?.id],
     queryFn: async (): Promise<Profile | null> => {
-      if (!user?.id) return null
+      if (!user?.id) return null;
       const { data, error } = await supabase
-        .from('profiles')
-        .select('id, name, about, avatar_path, created_at, updated_at')
-        .eq('id', user.id)
-        .single()
+        .from("profiles")
+        .select("id, name, about, avatar_url, created_at, updated_at")
+        .eq("id", user.id)
+        .single();
       if (error) {
         // no rows - edge case of user being deleted
-        if (error.code === 'PGRST116') {
-          await supabase.auth.signOut()
-          return null
+        if (error.code === "PGRST116") {
+          await supabase.auth.signOut();
+          return null;
         }
-        throw new Error(error.message)
+        throw new Error(error.message);
       }
-      return data as Profile
+      return data as Profile;
     },
-  })
+  });
 
-  return { data, isPending, refetch }
+  return { data, isPending, refetch };
 }
 
 export const useUser = () => {
-  const { session, isLoading: isLoadingSession } = useSessionContext()
-  const user = session?.user
-  const { data: profile, refetch, isPending: isLoadingProfile } = useProfile()
+  const { session, isLoading: isLoadingSession } = useSessionContext();
+  const user = session?.user;
+  const { data: profile, refetch, isPending: isLoadingProfile } = useProfile();
 
   const avatarUrl = (() => {
-    if (profile?.avatar_path) return profile.avatar_path
-    if (typeof user?.user_metadata.avatar_url === 'string') return user.user_metadata.avatar_url
+    if (profile?.avatar_url) return profile.avatar_url;
+    if (typeof user?.user_metadata.avatar_url === "string") {
+      return user.user_metadata.avatar_url;
+    }
 
-    const params = new URLSearchParams()
-    const name = profile?.name || user?.email || ''
-    params.append('name', name)
-    params.append('size', '256') // will be resized again by Expo Image
-    return `https://ui-avatars.com/api.jpg?${params.toString()}`
-  })()
+    const params = new URLSearchParams();
+    const name = profile?.name || user?.email || "";
+    params.append("name", name);
+    params.append("size", "256"); // will be resized again by Expo Image
+    return `https://ui-avatars.com/api.jpg?${params.toString()}`;
+  })();
 
   return {
     session,
@@ -67,5 +69,5 @@ export const useUser = () => {
     isLoadingProfile,
     isLoading: isLoadingSession || isLoadingProfile,
     isPending: isLoadingSession || isLoadingProfile,
-  }
-}
+  };
+};

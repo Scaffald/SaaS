@@ -1,5 +1,5 @@
 import { useMemo, useState, useRef, useCallback, useEffect } from 'react'
-import { Button, Paragraph, Separator, Sheet, Text, XStack, YStack } from '@app/ui'
+import { Button, Paragraph, Separator, Sheet, Text, XStack, YStack } from 'tamagui'
 import { MapContainer, type MapContainerRef, type MapPinType } from '@app/ui'
 import { Filter, RefreshCw } from '@tamagui/lucide-icons'
 import { useWindowDimensions } from 'react-native'

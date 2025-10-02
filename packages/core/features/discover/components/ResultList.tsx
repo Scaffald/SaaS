@@ -1,4 +1,4 @@
-import { ScrollView, Separator, Text, XStack, YStack, Spinner } from '@app/ui'
+import { ScrollView, Separator, Text, XStack, YStack, Spinner } from 'tamagui'
 import { forwardRef, useImperativeHandle, useRef } from 'react'
 import { Platform } from 'react-native'
 

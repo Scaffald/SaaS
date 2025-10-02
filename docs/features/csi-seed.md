@@ -33,7 +33,7 @@ The skills table includes CSI-specific fields:
 **Usage**:
 ```bash
 # From the packages/supabase directory
-yarn ts-node scripts/seed-csi.ts /path/to/COMBINED.xlsx
+pnpm ts-node scripts/seed-csi.ts /path/to/COMBINED.xlsx
 ```
 
 **Features**:

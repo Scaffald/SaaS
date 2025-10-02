@@ -1,4 +1,4 @@
-import { XStack, Button } from '@app/ui'
+import { XStack, Button } from 'tamagui'
 import { Search, SlidersHorizontal, Pencil, RotateCcw, List } from '@tamagui/lucide-icons'
 
 type FilterBarProps = {

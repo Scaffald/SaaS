@@ -118,24 +118,14 @@ export const PopulationPyramid = ({
         showXAxisIndices={showXAxisIndices}
         yAxisColor={yAxisColor}
         xAxisColor={xAxisColor}
-        yAxisTextStyle={yAxisTextStyle}
-        xAxisLabelTextStyle={xAxisLabelTextStyle}
         leftBarColor={leftBarColor}
         rightBarColor={rightBarColor}
         leftBarBorderColor={leftBarBorderColor}
         rightBarBorderColor={rightBarBorderColor}
         leftBarBorderWidth={leftBarBorderWidth}
         rightBarBorderWidth={rightBarBorderWidth}
-        leftBarrounded={leftBarBorderRadius}
-        rightBarrounded={rightBarBorderRadius}
         leftBarLabelColor={leftBarLabelColor}
         rightBarLabelColor={rightBarLabelColor}
-        leftBarLabelTextStyle={leftBarLabelTextStyle}
-        rightBarLabelTextStyle={rightBarLabelTextStyle}
-        showValuesAsLabels={showValuesAsLabels}
-        isAnimated={isAnimated}
-        animationDuration={animationDuration}
-        onPress={onPress}
         {...props}
       />
     </View>

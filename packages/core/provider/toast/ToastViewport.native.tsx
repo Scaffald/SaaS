@@ -1,4 +1,4 @@
-import { ToastViewport as ToastViewportOg } from '@app/ui'
+import { ToastViewport as ToastViewportOg } from '@tamagui/toast'
 
 import { ToastViewportProps } from './ToastViewport'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'

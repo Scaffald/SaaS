@@ -1,19 +1,17 @@
-export { MapContainer } from "./MapContainer";
-export { MapPin } from "./MapPin";
-export { MapTooltip } from "./MapTooltip";
+export { MapContainer } from './MapContainer'
+export { MapPin } from './MapPin'
+export { MapTooltip } from './MapTooltip'
+export { MapFallback } from './MapFallback'
 export {
   defaultMapCenter,
   defaultMapZoom,
   defaultRadius,
   mockMapPins,
-} from "./mockData";
+} from './mockData'
 export type {
   MapContainerProps,
+  MapContainerRef,
   MapPin as MapPinType,
   MapRegion,
   MapTooltipData,
-} from "./types";
-export type { MapContainerRef } from "./MapContainer";
-
-// Web-specific MapBox components are NOT exported here to avoid breaking React Native
-// They should be imported directly: import { MapComponent, MapMarker } from '@app/ui/src/components/maps/Map.web'
+} from './types'

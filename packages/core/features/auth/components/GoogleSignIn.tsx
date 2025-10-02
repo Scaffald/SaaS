@@ -1,4 +1,4 @@
-import { Button } from '@app/ui'
+import { Button } from 'tamagui'
 import { supabase } from '@app/core/utils/supabase/client'
 
 import { IconGoogle } from './IconGoogle'
