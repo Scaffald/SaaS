@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useWindowDimensions } from 'react-native'
 import {
   YStack,
   XStack,
@@ -6,11 +7,10 @@ import {
   Button,
   Input,
   H4,
-  Switch,
-  Checkbox,
-  ScrollView,
   Spinner,
   AnimatePresence,
+  Slider,
+  Checkbox,
 } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { useForm, Controller } from 'react-hook-form'
@@ -24,8 +24,8 @@ import {
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
 } from '@app/core/utils/api'
-import { DashboardWidget, LocationListInput, ToggleCard, RangeSlider } from '@app/ui'
-import { Flag, MapPin, Plane } from '@tamagui/lucide-icons'
+import { DashboardWidget, LocationListInput, ToggleCard } from '@app/ui'
+import { Flag, MapPin, Plane, DollarSign, Car, Shield, Calendar } from '@tamagui/lucide-icons'
 
 /**
  * Profile Employment Left Component
@@ -99,9 +99,35 @@ export function ProfileEmploymentLeft() {
     <YStack>
       <DashboardWidget>
         <YStack gap="$4" p="$4" flex={1}>
-          <H4>Employment Preferences</H4>
-
           <YStack gap="$4">
+            {/* Hourly Rate */}
+            <YStack gap="$2">
+              <Text fontWeight="600">Hourly Rate ($)</Text>
+              <Controller
+                name="hourly_rate"
+                control={control}
+                render={({ field }) => (
+                  <XStack gap="$3" items="center">
+                    <Input
+                      flex={1}
+                      placeholder="Enter your hourly rate"
+                      value={field.value?.toString() || ''}
+                      onChangeText={(text) =>
+                        field.onChange(text ? Number.parseFloat(text) : undefined)
+                      }
+                      keyboardType="numeric"
+                      borderColor={errors.hourly_rate ? '$red8' : '$borderColor'}
+                    />
+                  </XStack>
+                )}
+              />
+              {errors.hourly_rate && (
+                <Text color="$red10" fontSize="$2">
+                  {errors.hourly_rate.message}
+                </Text>
+              )}
+            </YStack>
+
             {/* Preferred Work Locations */}
             <YStack gap="$3" py="$3">
               <Text fontWeight="600">Preferred Work Locations</Text>
@@ -145,16 +171,19 @@ export function ProfileEmploymentLeft() {
                           control={control}
                           render={({ field: distanceField }) => (
                             <YStack gap="$3">
-                              <RangeSlider
-                                value={distanceField.value ?? 50}
-                                onValueChange={distanceField.onChange}
+                              <Slider
+                                value={[distanceField.value ?? 50]}
+                                onValueChange={([value]) => distanceField.onChange(value)}
                                 min={5}
                                 max={100}
                                 step={5}
-                                size="medium"
-                                testID="travel-distance-slider"
-                                accessibilityLabel="Travel distance slider"
-                              />
+                                size="$1"
+                              >
+                                <Slider.Track>
+                                  <Slider.TrackActive />
+                                </Slider.Track>
+                                <Slider.Thumb index={0} circular />
+                              </Slider>
                               <XStack justify="space-between" items="center">
                                 <Text fontSize="$2" color="$color9">
                                   5 miles
@@ -186,7 +215,7 @@ export function ProfileEmploymentLeft() {
                   <ToggleCard
                     icon={<Flag size="$2" color="$color11" />}
                     title="US Resident"
-                    description="I am a permanent resident of the United States"
+                    description="I am a resident of the United States"
                     checked={field.value || false}
                     onCheckedChange={field.onChange}
                   />
@@ -205,64 +234,68 @@ export function ProfileEmploymentLeft() {
                   />
                 )}
               />
-
-              {/* Additional Residency Countries */}
-              <YStack gap="$2">
-                <Text fontWeight="500">Additional Residency Countries (up to 3)</Text>
-                <Controller
-                  name="residency_countries"
-                  control={control}
-                  render={({ field }) => (
-                    <YStack gap="$2">
-                      {[0, 1, 2].map((index) => (
-                        <Input
-                          key={index}
-                          placeholder={`Country ${index + 1}`}
-                          value={field.value?.[index] || ''}
-                          onChangeText={(text) => {
-                            const current = field.value || []
-                            const updated = [...current]
-                            if (text) {
-                              updated[index] = text
-                            } else {
-                              updated.splice(index, 1)
-                            }
-                            field.onChange(updated.filter(Boolean))
-                          }}
-                        />
-                      ))}
-                    </YStack>
-                  )}
-                />
-              </YStack>
             </YStack>
 
             {/* Drivers License */}
             <YStack gap="$3">
-              <Text fontWeight="600">Drivers License Classes</Text>
+              <Text fontWeight="600">Driver's License</Text>
               <Controller
                 name="drivers_license_classes"
                 control={control}
-                render={({ field }) => (
-                  <YStack gap="$2">
-                    {DRIVERS_LICENSE_OPTIONS.map((license) => (
-                      <XStack key={license} gap="$2" items="center">
-                        <Checkbox
-                          checked={field.value?.includes(license) || false}
-                          onCheckedChange={(checked) => {
-                            const current = field.value || []
-                            if (checked) {
-                              field.onChange([...current, license])
-                            } else {
-                              field.onChange(current.filter((l) => l !== license))
-                            }
-                          }}
-                        />
-                        <Text>{license}</Text>
-                      </XStack>
-                    ))}
-                  </YStack>
-                )}
+                render={({ field }) => {
+                  const [isExpanded, setIsExpanded] = useState(
+                    !!(field.value && field.value.length > 0)
+                  )
+
+                  return (
+                    <ToggleCard
+                      icon={<Car size="$2" color="$color11" />}
+                      title="I have a valid driver's license"
+                      description="Select all license classes that apply"
+                      checked={isExpanded}
+                      onCheckedChange={(checked) => {
+                        setIsExpanded(checked)
+                        if (!checked) {
+                          field.onChange([])
+                        }
+                      }}
+                      expandedContent={
+                        <YStack gap="$2" pt="$2">
+                          {DRIVERS_LICENSE_OPTIONS.map((license) => (
+                            <XStack key={license} gap="$3" items="center">
+                              <Checkbox
+                                checked={field.value?.includes(license) || false}
+                                onCheckedChange={(checked) => {
+                                  const current = field.value || []
+                                  if (checked === true) {
+                                    field.onChange([...current, license])
+                                  } else {
+                                    const filtered = current.filter((l) => l !== license)
+                                    field.onChange(filtered)
+                                  }
+                                }}
+                              />
+                              <Text
+                                onPress={() => {
+                                  const current = field.value || []
+                                  const isChecked = current.includes(license)
+                                  if (isChecked) {
+                                    const filtered = current.filter((l) => l !== license)
+                                    field.onChange(filtered)
+                                  } else {
+                                    field.onChange([...current, license])
+                                  }
+                                }}
+                              >
+                                Class {license}
+                              </Text>
+                            </XStack>
+                          ))}
+                        </YStack>
+                      }
+                    />
+                  )
+                }}
               />
             </YStack>
 
@@ -272,26 +305,46 @@ export function ProfileEmploymentLeft() {
               <Controller
                 name="military_status"
                 control={control}
-                render={({ field }) => (
-                  <YStack gap="$2">
-                    {MILITARY_STATUS_OPTIONS.map((status) => (
-                      <XStack key={status} gap="$2" items="center">
-                        <Checkbox
-                          checked={field.value?.includes(status) || false}
-                          onCheckedChange={(checked) => {
-                            const current = field.value || []
-                            if (checked) {
-                              field.onChange([...current, status])
-                            } else {
-                              field.onChange(current.filter((s) => s !== status))
-                            }
-                          }}
-                        />
-                        <Text>{status}</Text>
-                      </XStack>
-                    ))}
-                  </YStack>
-                )}
+                render={({ field }) => {
+                  const [isExpanded, setIsExpanded] = useState(
+                    !!(field.value && field.value.length > 0)
+                  )
+
+                  return (
+                    <ToggleCard
+                      icon={<Shield size="$2" color="$color11" />}
+                      title="Former/Current Military"
+                      description="Select all that apply"
+                      checked={isExpanded}
+                      onCheckedChange={(checked) => {
+                        setIsExpanded(checked)
+                        if (!checked) {
+                          field.onChange([])
+                        }
+                      }}
+                      expandedContent={
+                        <YStack gap="$2" pt="$2">
+                          {MILITARY_STATUS_OPTIONS.map((status) => (
+                            <XStack key={status} gap="$3" items="center">
+                              <Checkbox
+                                checked={field.value?.includes(status) || false}
+                                onCheckedChange={(checked) => {
+                                  const current = field.value || []
+                                  if (checked === true) {
+                                    field.onChange([...current, status])
+                                  } else {
+                                    field.onChange(current.filter((s) => s !== status))
+                                  }
+                                }}
+                              />
+                              <Text>{status}</Text>
+                            </XStack>
+                          ))}
+                        </YStack>
+                      }
+                    />
+                  )
+                }}
               />
             </YStack>
 
@@ -301,52 +354,47 @@ export function ProfileEmploymentLeft() {
               <Controller
                 name="availability"
                 control={control}
-                render={({ field }) => (
-                  <YStack gap="$2">
-                    {AVAILABILITY_OPTIONS.map((option) => (
-                      <XStack key={option} gap="$2" items="center">
-                        <Checkbox
-                          checked={field.value?.includes(option) || false}
-                          onCheckedChange={(checked) => {
-                            const current = field.value || []
-                            if (checked) {
-                              field.onChange([...current, option])
-                            } else {
-                              field.onChange(current.filter((a) => a !== option))
-                            }
-                          }}
-                        />
-                        <Text>{option}</Text>
-                      </XStack>
-                    ))}
-                  </YStack>
-                )}
-              />
-            </YStack>
+                render={({ field }) => {
+                  const [isExpanded, setIsExpanded] = useState(
+                    !!(field.value && field.value.length > 0)
+                  )
 
-            {/* Hourly Rate */}
-            <YStack gap="$2">
-              <Text fontWeight="600">Hourly Rate ($)</Text>
-              <Controller
-                name="hourly_rate"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    placeholder="Hourly rate"
-                    value={field.value?.toString() || ''}
-                    onChangeText={(text) =>
-                      field.onChange(text ? Number.parseFloat(text) : undefined)
-                    }
-                    keyboardType="numeric"
-                    borderColor={errors.hourly_rate ? '$red8' : '$borderColor'}
-                  />
-                )}
+                  return (
+                    <ToggleCard
+                      icon={<Calendar size="$2" color="$color11" />}
+                      title="I'm available for work"
+                      description="Select all that apply"
+                      checked={isExpanded}
+                      onCheckedChange={(checked) => {
+                        setIsExpanded(checked)
+                        if (!checked) {
+                          field.onChange([])
+                        }
+                      }}
+                      expandedContent={
+                        <YStack gap="$2" pt="$2">
+                          {AVAILABILITY_OPTIONS.map((option) => (
+                            <XStack key={option} gap="$3" items="center">
+                              <Checkbox
+                                checked={field.value?.includes(option) || false}
+                                onCheckedChange={(checked) => {
+                                  const current = field.value || []
+                                  if (checked === true) {
+                                    field.onChange([...current, option])
+                                  } else {
+                                    field.onChange(current.filter((a) => a !== option))
+                                  }
+                                }}
+                              />
+                              <Text>{option}</Text>
+                            </XStack>
+                          ))}
+                        </YStack>
+                      }
+                    />
+                  )
+                }}
               />
-              {errors.hourly_rate && (
-                <Text color="$red10" fontSize="$2">
-                  {errors.hourly_rate.message}
-                </Text>
-              )}
             </YStack>
 
             {/* Save Button */}

@@ -17,8 +17,8 @@ export interface ToggleCardProps {
   expandedContent?: ReactNode
   /** Whether the card is disabled */
   disabled?: boolean
-  /** Width of the card */
-  width?: number
+  /** Width of the card (can be number or string like "100%") */
+  width?: number | string
   /** Theme variant to apply */
   theme?: ThemeName
   /** Optional test ID for testing */
@@ -57,7 +57,7 @@ const AnimatedExpandedContent = styled(YStack, {
  * <ToggleCard
  *   icon={<Flag size="$2" color="$color11" />}
  *   title="US Resident"
- *   description="I am a permanent resident of the United States"
+ *   description="I am a resident of the United States"
  *   checked={usResident}
  *   onCheckedChange={setUsResident}
  *   expandedContent={
@@ -76,7 +76,7 @@ export function ToggleCard({
   onCheckedChange,
   expandedContent,
   disabled = false,
-  width = 400,
+  width = 300,
   theme,
   testID,
 }: ToggleCardProps) {
@@ -87,7 +87,7 @@ export function ToggleCard({
   }
 
   return (
-    <YStack width={width} testID={testID}>
+    <YStack {...(typeof width === 'number' ? { width } : { flex: 1, minWidth: 0 })} testID={testID}>
       <XStack
         flexDirection="row"
         borderColor="$borderColor"

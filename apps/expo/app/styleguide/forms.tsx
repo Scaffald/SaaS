@@ -578,7 +578,7 @@ export default function FormsPage() {
               <ToggleCard
                 icon={<Flag size="$2" color="$color11" />}
                 title="US Resident"
-                description="I am a permanent resident of the United States"
+                description="I am a resident of the United States"
                 checked={usResident}
                 onCheckedChange={setUsResident}
                 disabled={toggleCardsDisabled}
