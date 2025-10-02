@@ -1,34 +1,20 @@
-import { useMemo, useState, useRef, useCallback, useEffect } from 'react'
+import { useMemo, useState, useRef, useCallback } from 'react'
 import { Button, Paragraph, Separator, Sheet, Text, XStack, YStack } from 'tamagui'
 import { MapContainer, type MapContainerRef, type MapPinType } from '@app/ui'
 import { Filter, RefreshCw } from '@tamagui/lucide-icons'
 import { useWindowDimensions } from 'react-native'
 
 import { FilterBar } from './components/FilterBar'
-import { RadiusSlider } from './components/RadiusSlider'
+import { MapSearchInput } from './components/MapSearchInput'
 import { ResultsRail } from './components/ResultsRail'
 import { ProfileSummaryCard } from './components/ProfileSummaryCard'
-import { DrawModeIndicator } from './components/DrawModeIndicator'
 import type { ResultListRef } from './components/ResultList'
-import { defaultCenter, defaultRadiusMeters } from './data/mockProfiles'
+import { defaultCenter } from './data/mockProfiles'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
 import { useUserLocation } from './hooks/useUserLocation'
 import type { ActiveFilter, TalentProfile } from './types'
 
-const formatRadius = (meters: number): string => {
-  const miles = meters / 1609.34
-  if (miles < 1) {
-    return `${Math.round(miles * 10) / 10} mi`
-  }
-  return `${Math.round(miles)} mi`
-}
-
 const INITIAL_FILTERS: ActiveFilter[] = [
-  {
-    id: 'location:marlborough',
-    label: 'Marlborough, Connecticut, United States',
-    category: 'location',
-  },
   { id: 'score:40', label: 'Elevate score: > 40', category: 'other' },
   { id: 'skills:hardwood', label: 'Skills: Hardwood, Exterior, Interior', category: 'skill' },
   {
@@ -48,14 +34,11 @@ export const DiscoverIndexScreen = () => {
   const { location } = useUserLocation()
 
   const [searchCenter, setSearchCenter] = useState<[number, number] | null>(null)
-  const [radiusMeters, setRadiusMeters] = useState(defaultRadiusMeters)
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>(INITIAL_FILTERS)
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
   const [summaryProfileId, setSummaryProfileId] = useState<string | null>(null)
   const [filtersOpen, setFiltersOpen] = useState(false)
-  const [radiusAdjustmentOpen, setRadiusAdjustmentOpen] = useState(false)
-  const [showSearchSheet, setShowSearchSheet] = useState(false)
-  const [drawMode, setDrawMode] = useState(false)
+  const [showSearchInput, setShowSearchInput] = useState(false)
   const [showRail, setShowRail] = useState(true)
   const [showResultsSheet, setShowResultsSheet] = useState(false)
 
@@ -71,18 +54,6 @@ export const DiscoverIndexScreen = () => {
     }
     return defaultCenter
   }, [searchCenter, location])
-
-  // Create radius filter dynamically
-  const radiusFilter: ActiveFilter = {
-    id: 'radius:custom',
-    label: `Radius: ${formatRadius(radiusMeters)}`,
-    category: 'radius',
-  }
-
-  // Combine radius filter with other filters
-  const allFilters = useMemo(() => {
-    return [radiusFilter, ...activeFilters]
-  }, [radiusFilter, activeFilters])
 
   // Convert profiles to map pins with selected state
   const mapPins: MapPinType[] = useMemo(
@@ -111,6 +82,9 @@ export const DiscoverIndexScreen = () => {
   // Handle pin click - show summary card or deselect
   const handleMarkerPress = useCallback(
     (profileId: string | null) => {
+      // Hide search input when user interacts with map
+      setShowSearchInput(false)
+
       if (profileId === null) {
         // Clicking empty space - clear selection
         setSummaryProfileId(null)
@@ -163,10 +137,20 @@ export const DiscoverIndexScreen = () => {
     setActiveFilters(INITIAL_FILTERS)
     setSelectedProfileId(null)
     setSummaryProfileId(null)
-    setRadiusMeters(defaultRadiusMeters)
     setSearchCenter(null)
-    setDrawMode(false)
+    setShowSearchInput(false)
   }, [])
+
+  const handleLocationSelect = useCallback(
+    (location: { longitude: number; latitude: number; label: string }) => {
+      setSearchCenter([location.longitude, location.latitude])
+      // Center the map on the new location
+      if (mapRef.current?.flyTo) {
+        mapRef.current.flyTo([location.longitude, location.latitude], 12)
+      }
+    },
+    []
+  )
 
   return (
     <YStack flex={1} height="100vh" overflow="hidden" position="relative">
@@ -178,6 +162,13 @@ export const DiscoverIndexScreen = () => {
         zoom={7}
         onPinPress={handleMarkerPress}
         style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+      />
+
+      {/* Search Input Overlay */}
+      <MapSearchInput
+        isVisible={showSearchInput}
+        onClose={() => setShowSearchInput(false)}
+        onLocationSelect={handleLocationSelect}
       />
 
       {/* Overlay elements */}
@@ -193,14 +184,10 @@ export const DiscoverIndexScreen = () => {
           <FilterBar
             onResultsPress={() => setShowResultsSheet(true)}
             resultsCount={talentProfiles.length}
-            onSearchPress={() => setShowSearchSheet(true)}
+            onSearchPress={() => setShowSearchInput(true)}
             onFilterPress={() => setFiltersOpen(true)}
-            onDrawPress={() => setDrawMode(!drawMode)}
             onResetPress={handleReset}
           />
-
-          {/* Draw Mode Indicator */}
-          <DrawModeIndicator isActive={drawMode} />
         </>
       ) : (
         <>
@@ -224,36 +211,12 @@ export const DiscoverIndexScreen = () => {
           <FilterBar
             onResultsPress={() => setShowRail(!showRail)}
             resultsCount={talentProfiles.length}
-            onSearchPress={() => setShowSearchSheet(true)}
+            onSearchPress={() => setShowSearchInput(true)}
             onFilterPress={() => setFiltersOpen(true)}
-            onDrawPress={() => setDrawMode(!drawMode)}
             onResetPress={handleReset}
           />
-
-          {/* Draw Mode Indicator */}
-          <DrawModeIndicator isActive={drawMode} />
         </>
       )}
-
-      {/* Search Sheet */}
-      <Sheet
-        modal
-        open={showSearchSheet}
-        onOpenChange={setShowSearchSheet}
-        snapPoints={[60]}
-        dismissOnSnapToBottom
-      >
-        <Sheet.Overlay />
-        <Sheet.Handle />
-        <Sheet.Frame bg="$background" p="$4" gap="$4">
-          <YStack gap="$3">
-            <Text fontSize="$6" fontWeight="bold" color="$color12">
-              Search
-            </Text>
-            <Paragraph color="$color11">Search by location, worker name, or skills...</Paragraph>
-          </YStack>
-        </Sheet.Frame>
-      </Sheet>
 
       {/* Mobile Results Sheet */}
       <Sheet
@@ -300,7 +263,7 @@ export const DiscoverIndexScreen = () => {
           </Paragraph>
           <Separator />
           <YStack gap="$3">
-            {allFilters.map((filter) => (
+            {activeFilters.map((filter) => (
               <XStack
                 key={filter.id}
                 justify="space-between"
@@ -315,57 +278,20 @@ export const DiscoverIndexScreen = () => {
                   size="$2"
                   icon={Filter}
                   onPress={() => {
-                    if (filter.id === 'radius:custom') {
-                      setRadiusAdjustmentOpen(true)
-                      setFiltersOpen(false)
-                    } else {
-                      setFiltersOpen(false)
-                    }
+                    setFiltersOpen(false)
                   }}
                 >
                   Adjust
                 </Button>
               </XStack>
             ))}
-            {allFilters.length === 0 ? (
+            {activeFilters.length === 0 ? (
               <XStack items="center" gap="$2">
                 <Filter size={16} color="$color10" />
                 <Text color="$color10">No filters applied</Text>
               </XStack>
             ) : null}
           </YStack>
-        </Sheet.Frame>
-      </Sheet>
-
-      {/* Radius Adjustment Sheet */}
-      <Sheet
-        modal
-        open={radiusAdjustmentOpen}
-        onOpenChange={setRadiusAdjustmentOpen}
-        snapPoints={[50]}
-      >
-        <Sheet.Overlay />
-        <Sheet.Handle />
-        <Sheet.Frame p="$5" gap="$4">
-          <XStack justify="space-between" items="center">
-            <Text fontSize="$5" fontWeight="700">
-              Adjust Search Radius
-            </Text>
-            <Button size="$2" onPress={() => setRadiusAdjustmentOpen(false)}>
-              Done
-            </Button>
-          </XStack>
-          <Paragraph color="$color11">
-            Drag the slider to adjust your search radius. The map will update in real-time.
-          </Paragraph>
-          <Separator />
-          <RadiusSlider
-            value={radiusMeters}
-            onValueChange={setRadiusMeters}
-            min={1000}
-            max={100000}
-            step={1000}
-          />
         </Sheet.Frame>
       </Sheet>
     </YStack>

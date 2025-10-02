@@ -8,7 +8,6 @@ export default function MapTestPage() {
   const [pins, setPins] = useState<MapPinType[]>(mockMapPins)
   const [showFilterSheet, setShowFilterSheet] = useState(false)
   const [showSearchSheet, setShowSearchSheet] = useState(false)
-  const [drawMode, setDrawMode] = useState(false)
 
   const handlePinPress = (pinId: string | null) => {
     if (pinId === null) {
@@ -122,15 +121,13 @@ export default function MapTestPage() {
         </View>
       )}
 
-      {/* Filter Bar - Simple 4-button overlay */}
+      {/* Filter Bar - Simple button overlay */}
       <FilterBar
         onSearchPress={() => setShowSearchSheet(true)}
         onFilterPress={() => setShowFilterSheet(true)}
-        onDrawPress={() => setDrawMode(!drawMode)}
         onResetPress={() => {
           setPins(mockMapPins)
           setSelectedPinId(null)
-          setDrawMode(false)
         }}
       />
 
@@ -173,28 +170,6 @@ export default function MapTestPage() {
           </YStack>
         </Sheet.Frame>
       </Sheet>
-
-      {/* Draw Mode Indicator */}
-      {drawMode && (
-        <View
-          position="absolute"
-          t="$4"
-          l="$4"
-          r="$4"
-          z={100}
-          bg="$blue9"
-          p="$3"
-          rounded="$4"
-          animation="quick"
-          enterStyle={{ opacity: 0, y: -20 }}
-          exitStyle={{ opacity: 0, y: -20 }}
-          items="center"
-        >
-          <Text color="white" fontSize="$4" fontWeight="600">
-            🖊️ Draw Mode Active - Draw on the map to select an area
-          </Text>
-        </View>
-      )}
     </View>
   )
 }

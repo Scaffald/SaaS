@@ -1,23 +1,21 @@
 import { XStack, Button } from 'tamagui'
-import { Search, SlidersHorizontal, Pencil, RotateCcw, List } from '@tamagui/lucide-icons'
+import { Search, SlidersHorizontal, RotateCcw, List } from '@tamagui/lucide-icons'
 
 type FilterBarProps = {
   onSearchPress?: () => void
   onFilterPress?: () => void
-  onDrawPress?: () => void
   onResetPress?: () => void
   onResultsPress?: () => void
   resultsCount?: number
 }
 
 /**
- * Simplified FilterBar component with 4 icon buttons
+ * Simplified FilterBar component with icon buttons
  * Designed to overlay the bottom of a map
  */
 export const FilterBar = ({
   onSearchPress,
   onFilterPress,
-  onDrawPress,
   onResetPress,
   onResultsPress,
   resultsCount = 0,
@@ -67,17 +65,6 @@ export const FilterBar = ({
           icon={SlidersHorizontal}
           scaleIcon={1.4}
           onPress={onFilterPress}
-          variant="outlined"
-          bg="$background"
-          hoverStyle={{ bg: '$backgroundHover' }}
-          pressStyle={{ bg: '$backgroundPress' }}
-        />
-        <Button
-          size="$4"
-          circular
-          icon={Pencil}
-          scaleIcon={1.4}
-          onPress={onDrawPress}
           variant="outlined"
           bg="$background"
           hoverStyle={{ bg: '$backgroundHover' }}

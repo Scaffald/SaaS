@@ -8,7 +8,7 @@ type Profile = {
   id: string;
   name: string | null;
   about: string | null;
-  avatar_url: string | null;
+  avatar_path: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -23,7 +23,7 @@ function useProfile() {
       if (!user?.id) return null;
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, name, about, avatar_url, created_at, updated_at")
+        .select("id, name, about, avatar_path, created_at, updated_at")
         .eq("id", user.id)
         .single();
       if (error) {
@@ -47,7 +47,7 @@ export const useUser = () => {
   const { data: profile, refetch, isPending: isLoadingProfile } = useProfile();
 
   const avatarUrl = (() => {
-    if (profile?.avatar_url) return profile.avatar_url;
+    if (profile?.avatar_path) return profile.avatar_path;
     if (typeof user?.user_metadata.avatar_url === "string") {
       return user.user_metadata.avatar_url;
     }

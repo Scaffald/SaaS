@@ -1,4 +1,4 @@
-import type { GeocodingProvider, ProviderConfig, AddressResult, SearchOptions } from '../types'
+import type { AddressResult, GeocodingProvider, ProviderConfig, SearchOptions } from '../types'
 import { GeocodingError } from '../types'
 
 /**
@@ -33,7 +33,12 @@ export abstract class BaseGeocodingProvider implements GeocodingProvider {
     // Type guard for error objects
     const isErrorWithProperties = (
       err: unknown
-    ): err is { name?: string; code?: string; status?: number; message?: string } => {
+    ): err is {
+      name?: string
+      code?: string
+      status?: number
+      message?: string
+    } => {
       return typeof err === 'object' && err !== null
     }
 
@@ -107,7 +112,7 @@ export abstract class BaseGeocodingProvider implements GeocodingProvider {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
       }
 
-      return await response.json()
+      return response
     } catch (error) {
       this.handleError(error, 'API request')
     }
