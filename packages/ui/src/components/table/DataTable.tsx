@@ -58,7 +58,7 @@ export function DataTable<TData>({
 
   if (isLoading) {
     return (
-      <View p="$4" ai="center">
+      <View p="$4" items="center">
         <Text>Loading...</Text>
       </View>
     )
@@ -66,7 +66,7 @@ export function DataTable<TData>({
 
   if (tableRows.length === 0) {
     return (
-      <View p="$4" ai="center">
+      <View p="$4" items="center">
         <Text>{emptyMessage}</Text>
       </View>
     )
@@ -114,7 +114,7 @@ export function DataTable<TData>({
                         cursor={header.column.getCanSort() ? 'pointer' : 'default'}
                         onPress={header.column.getToggleSortingHandler()}
                         gap="$2"
-                        ai="center"
+                        items="center"
                       >
                         <Text fontSize="$4" selectable={false}>
                           {flexRender(header.column.columnDef.header, header.getContext())}
@@ -156,7 +156,7 @@ export function DataTable<TData>({
                             : 'middle'
                       }
                     >
-                      <Text fontSize="$4" color="$gray11">
+                      <Text fontSize="$4" color="$color11">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </Text>
                     </Table.Cell>
@@ -171,8 +171,8 @@ export function DataTable<TData>({
       {/* Pagination Footer */}
       <View
         flexDirection="row"
-        ai="center"
-        jc="space-between"
+        items="center"
+        justify="space-between"
         px="$4"
         py="$3"
         borderTopWidth={1}
@@ -230,7 +230,7 @@ export function DataTable<TData>({
         </Text>
 
         {isWeb && (
-          <View flexDirection="row" gap="$2" ai="center">
+          <View flexDirection="row" gap="$2" items="center">
             <Text fontSize="$3">Go to:</Text>
             <Input
               size="$3"

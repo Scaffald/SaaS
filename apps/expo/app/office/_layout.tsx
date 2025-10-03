@@ -17,7 +17,7 @@ export default function OfficeLayout() {
 
   if (isLoading) {
     return (
-      <YStack flex={1} justifyContent="center" alignItems="center">
+      <YStack flex={1} justify="center" items="center">
         <Spinner size="large" />
         <Text mt="$4">Loading...</Text>
       </YStack>

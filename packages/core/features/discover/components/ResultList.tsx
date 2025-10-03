@@ -3,12 +3,19 @@ import { forwardRef, useImperativeHandle, useRef } from 'react'
 import { Platform } from 'react-native'
 
 import type { TalentProfile } from '../types'
+import type { OrganizationMapPin } from '../hooks/useOrganizations'
 import { ResultCard } from './ResultCard'
+import { OrganizationCard } from './OrganizationCard'
+
+type ResultItem =
+  | ({ type: 'profile' } & TalentProfile)
+  | ({ type: 'organization' } & OrganizationMapPin)
 
 type ResultListProps = {
   profiles: TalentProfile[]
+  organizations?: OrganizationMapPin[]
   selectedId: string | null
-  onSelect: (profileId: string) => void
+  onSelect: (id: string) => void
   isLoading?: boolean
 }
 
@@ -17,8 +24,14 @@ export interface ResultListRef {
 }
 
 export const ResultList = forwardRef<ResultListRef, ResultListProps>(
-  ({ profiles, selectedId, onSelect, isLoading }, ref) => {
+  ({ profiles, organizations = [], selectedId, onSelect, isLoading }, ref) => {
     const scrollViewRef = useRef<ScrollView>(null)
+
+    // Combine profiles and organizations into a single list
+    const allResults: ResultItem[] = [
+      ...profiles.map((profile) => ({ type: 'profile' as const, ...profile })),
+      ...organizations.map((org) => ({ type: 'organization' as const, ...org })),
+    ]
     const cardRefs = useRef<
       Map<
         string,
@@ -102,7 +115,7 @@ export const ResultList = forwardRef<ResultListRef, ResultListProps>(
       <YStack flex={1} gap="$3" overflow="hidden">
         <XStack justify="space-between" items="center" shrink={0} pt="$3" px="$3">
           <Text fontWeight="700" fontSize="$5">
-            {profiles.length} results
+            {allResults.length} results
           </Text>
         </XStack>
         <ScrollView
@@ -112,15 +125,24 @@ export const ResultList = forwardRef<ResultListRef, ResultListProps>(
           renderToHardwareTextureAndroid
         >
           <YStack gap="$2" pb="$6">
-            {profiles.map((profile, index) => (
-              <YStack key={profile.id} gap="$2">
-                <ResultCard
-                  ref={(ref) => registerCardRef(profile.id, ref)}
-                  profile={profile}
-                  isSelected={profile.id === selectedId}
-                  onSelect={onSelect}
-                />
-                {index < profiles.length - 1 ? <Separator /> : null}
+            {allResults.map((result, index) => (
+              <YStack key={result.id} gap="$2">
+                {result.type === 'profile' ? (
+                  <ResultCard
+                    ref={(ref) => registerCardRef(result.id, ref)}
+                    profile={result}
+                    isSelected={result.id === selectedId}
+                    onSelect={onSelect}
+                  />
+                ) : (
+                  <OrganizationCard
+                    ref={(ref) => registerCardRef(result.id, ref)}
+                    organization={result}
+                    isSelected={result.id === selectedId}
+                    onSelect={onSelect}
+                  />
+                )}
+                {index < allResults.length - 1 ? <Separator /> : null}
               </YStack>
             ))}
           </YStack>

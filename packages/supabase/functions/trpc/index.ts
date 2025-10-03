@@ -9,6 +9,7 @@ import {
   uploadAvatarInputSchema,
   type UserPrivateEmploymentUpdate,
   type UserPrivateUpdate,
+  // @ts-ignore - Deno requires .ts extension
 } from "../_shared/schemas/consolidated.ts";
 
 // Environment variables

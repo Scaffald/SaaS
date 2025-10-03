@@ -172,18 +172,22 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           },
         })
 
-        // Add layer for unclustered points (individual pins) - visible circles
+        // Add layer for worker pins (circles)
         map.addLayer({
-          id: 'unclustered-point',
+          id: 'worker-point',
           type: 'circle',
           source: 'pins',
-          filter: ['!', ['has', 'point_count']],
+          filter: [
+            'all',
+            ['!', ['has', 'point_count']],
+            ['!=', ['get', 'organization'], 'Organization'],
+          ],
           paint: {
             'circle-color': [
               'case',
               ['boolean', ['get', 'selected'], false],
-              '#3B82F6', // Blue9 color for selected pins (blue-500)
-              '#64748B', // Default: color9 equivalent (slate-500)
+              '#3B82F6', // Blue color for selected pins
+              '#22C55E', // Green for available workers
             ],
             'circle-radius': 24,
             'circle-stroke-width': [
@@ -196,14 +200,67 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           },
         })
 
-        // Add text layer for pin icons/emojis
+        // Add text layer for worker icons
         map.addLayer({
-          id: 'unclustered-point-icon',
+          id: 'worker-point-icon',
           type: 'symbol',
           source: 'pins',
-          filter: ['!', ['has', 'point_count']],
+          filter: [
+            'all',
+            ['!', ['has', 'point_count']],
+            ['!=', ['get', 'organization'], 'Organization'],
+          ],
           layout: {
-            'text-field': ['match', ['get', 'organization'], 'Organization', '🏢', '👤'],
+            'text-field': '👤',
+            'text-size': 20,
+            'text-allow-overlap': true,
+            'text-ignore-placement': true,
+          },
+          paint: {
+            'text-color': '#ffffff',
+          },
+        })
+
+        // Add layer for organization pins (larger purple squares)
+        map.addLayer({
+          id: 'org-point',
+          type: 'circle',
+          source: 'pins',
+          filter: [
+            'all',
+            ['!', ['has', 'point_count']],
+            ['==', ['get', 'organization'], 'Organization'],
+          ],
+          paint: {
+            'circle-color': [
+              'case',
+              ['boolean', ['get', 'selected'], false],
+              '#3B82F6', // Blue for selected
+              '#A855F7', // Purple for organizations
+            ],
+            'circle-radius': 24,
+            'circle-stroke-width': [
+              'case',
+              ['boolean', ['get', 'selected'], false],
+              3, // Thicker stroke for selected
+              2,
+            ],
+            'circle-stroke-color': '#ffffff',
+          },
+        })
+
+        // Add text layer for organization icons
+        map.addLayer({
+          id: 'org-point-icon',
+          type: 'symbol',
+          source: 'pins',
+          filter: [
+            'all',
+            ['!', ['has', 'point_count']],
+            ['==', ['get', 'organization'], 'Organization'],
+          ],
+          layout: {
+            'text-field': '🏢',
             'text-size': 20,
             'text-allow-overlap': true,
             'text-ignore-placement': true,
@@ -269,7 +326,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
 
       const handlePinClick = (e: mapboxgl.MapMouseEvent) => {
         const features = map.queryRenderedFeatures(e.point, {
-          layers: ['unclustered-point'],
+          layers: ['worker-point', 'org-point'],
         })
 
         if (features.length > 0 && features[0].properties?.id) {
@@ -280,7 +337,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       const handleMapClick = (e: mapboxgl.MapMouseEvent) => {
         // Check if clicking on a pin or cluster
         const features = map.queryRenderedFeatures(e.point, {
-          layers: ['unclustered-point', 'clusters'],
+          layers: ['worker-point', 'org-point', 'clusters'],
         })
 
         // If not clicking on any feature, deselect
@@ -297,21 +354,27 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         map.getCanvas().style.cursor = ''
       }
 
-      // Add click handler for individual pins
-      map.on('click', 'unclustered-point', handlePinClick)
+      // Add click handlers for both worker and org pins
+      map.on('click', 'worker-point', handlePinClick)
+      map.on('click', 'org-point', handlePinClick)
 
       // Add click handler for empty space
       map.on('click', handleMapClick)
 
       // Change cursor on hover
-      map.on('mouseenter', 'unclustered-point', handleMouseEnter)
-      map.on('mouseleave', 'unclustered-point', handleMouseLeave)
+      map.on('mouseenter', 'worker-point', handleMouseEnter)
+      map.on('mouseleave', 'worker-point', handleMouseLeave)
+      map.on('mouseenter', 'org-point', handleMouseEnter)
+      map.on('mouseleave', 'org-point', handleMouseLeave)
 
       return () => {
-        map.off('click', 'unclustered-point', handlePinClick)
+        map.off('click', 'worker-point', handlePinClick)
+        map.off('click', 'org-point', handlePinClick)
         map.off('click', handleMapClick)
-        map.off('mouseenter', 'unclustered-point', handleMouseEnter)
-        map.off('mouseleave', 'unclustered-point', handleMouseLeave)
+        map.off('mouseenter', 'worker-point', handleMouseEnter)
+        map.off('mouseleave', 'worker-point', handleMouseLeave)
+        map.off('mouseenter', 'org-point', handleMouseEnter)
+        map.off('mouseleave', 'org-point', handleMouseLeave)
       }
     }, [isMapReady, onPinPress])
 

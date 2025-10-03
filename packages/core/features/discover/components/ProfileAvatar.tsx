@@ -41,7 +41,7 @@ export const ProfileAvatar = ({
     '$pink10',
     '$red10',
     '$yellow10',
-    '$gray10',
+    '$color10',
   ]
   const bgColor = bgColors[colorIndex] as GetThemeValueForKey<'backgroundColor'>
 

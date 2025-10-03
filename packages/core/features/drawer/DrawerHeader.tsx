@@ -6,6 +6,7 @@ import { DASHBOARD_ROUTES } from '@app/core/constants/routes'
 import { useUser } from '@app/core/utils/useUser'
 import { Image } from 'expo-image'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
+import { ScaffaldLogo } from '@app/core/assets'
 
 type DrawerHeaderProps = {
   onNavigate?: (href: string, event: GestureResponderEvent) => void
@@ -50,6 +51,12 @@ export const DrawerHeader = ({ onNavigate }: DrawerHeaderProps) => {
 
   return (
     <YStack gap="$4" shrink={0}>
+      {/* Logo Section */}
+      <XStack justify="center" py="$2">
+        <ScaffaldLogo height={20} />
+      </XStack>
+
+      {/* Profile Section */}
       <Card px="$4" py="$3" gap="$3" rounded="$5" borderColor="$color4" bg="$color4">
         <Link href={profileHref} asChild>
           <ListItem

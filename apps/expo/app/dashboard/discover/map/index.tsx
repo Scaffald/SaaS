@@ -1,5 +1,5 @@
-import { DiscoverIndexScreen } from '@app/core/features/discover/discover-index-screen'
+import { DiscoverMapScreen } from '@app/core/features/discover/discover-map-screen'
 
 export default function DiscoverMapRoute() {
-  return <DiscoverIndexScreen />
+  return <DiscoverMapScreen />
 }
