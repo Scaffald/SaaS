@@ -3055,6 +3055,19 @@ export type Database = {
         Args: { "": string }
         Returns: unknown
       }
+      get_organizations_with_coords: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          address: Json
+          employee_count_range: string
+          id: string
+          industry_name: string
+          latitude: number
+          longitude: number
+          name: string
+          slug: string
+        }[]
+      }
       get_proj4_from_srid: {
         Args: { "": number }
         Returns: string

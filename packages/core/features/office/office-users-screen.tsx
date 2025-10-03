@@ -2,7 +2,7 @@ import { YStack, XStack, Text, Input, DataTable } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
-import { createColumnHelper } from '@tanstack/react-table'
+import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
 
 type User = {
   id: string
@@ -43,7 +43,7 @@ export function OfficeUsersScreen() {
   return (
     <YStack flex={1} bg="$background">
       {/* Header */}
-      <XStack p="$4" gap="$4" ai="center" borderBottomWidth={1} bc="$borderColor">
+      <XStack p="$4" gap="$4" items="center" borderBottomWidth={1} bg="$borderColor">
         <Text fontSize="$8" fontWeight="bold">
           Users
         </Text>
@@ -52,10 +52,10 @@ export function OfficeUsersScreen() {
 
       {/* Table */}
       <DataTable
-        columns={columns}
+        columns={columns as ColumnDef<unknown, unknown>[]}
         data={data?.users ?? []}
         isLoading={isLoading}
-        onRowClick={(user) => router.push(`/office/user/${user.id}`)}
+        onRowClick={(user) => router.push(`/office/user/${(user as User).id}`)}
         pageSize={50}
         emptyMessage="No users found"
       />

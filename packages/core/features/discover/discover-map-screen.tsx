@@ -11,10 +11,11 @@ import { ProfileSummaryCard } from './components/ProfileSummaryCard'
 import type { ResultListRef } from './components/ResultList'
 import { defaultCenter } from './data/mockProfiles'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
+import { useOrganizations } from './hooks/useOrganizations'
 import { useUserLocation } from './hooks/useUserLocation'
 import type { TalentProfile } from './types'
 
-export const DiscoverIndexScreen = () => {
+export const DiscoverMapScreen = () => {
   const { width } = useWindowDimensions()
   const isSmallScreen = width < 640
   const resultListRef = useRef<ResultListRef>(null)
@@ -32,6 +33,7 @@ export const DiscoverIndexScreen = () => {
   const [showResultsSheet, setShowResultsSheet] = useState(false)
 
   const { data: talentProfiles = [], isLoading } = useTalentProfiles()
+  const { data: organizations = [], isLoading: isLoadingOrgs } = useOrganizations()
 
   // Determine map center based on search location, user location, or default
   const mapCenter: [number, number] = useMemo(() => {
@@ -44,23 +46,33 @@ export const DiscoverIndexScreen = () => {
     return defaultCenter
   }, [searchCenter, location])
 
-  // Convert profiles to map pins with selected state
-  const mapPins: MapPinType[] = useMemo(
-    () =>
-      talentProfiles.map((profile) => ({
-        id: profile.id,
-        coordinate: profile.coordinates,
-        title: profile.name,
-        subtitle: profile.title,
-        metric: `e ${profile.score}`,
-        score: profile.score,
-        hourlyRate: profile.hourlyRate,
-        badges: profile.badges,
-        availability: 'available' as const,
-        selected: profile.id === summaryProfileId || profile.id === selectedProfileId,
-      })),
-    [talentProfiles, summaryProfileId, selectedProfileId]
-  )
+  // Convert profiles and organizations to map pins with selected state
+  const mapPins: MapPinType[] = useMemo(() => {
+    const workerPins = talentProfiles.map((profile) => ({
+      id: profile.id,
+      coordinate: profile.coordinates,
+      title: profile.name,
+      subtitle: profile.title,
+      metric: `e ${profile.score}`,
+      score: profile.score,
+      hourlyRate: profile.hourlyRate,
+      badges: profile.badges,
+      availability: 'available' as const,
+      organization: 'Individual' as const,
+      selected: profile.id === summaryProfileId || profile.id === selectedProfileId,
+    }))
+
+    const orgPins = organizations.map((org) => ({
+      id: org.id,
+      coordinate: org.coordinates,
+      title: org.name,
+      subtitle: org.industry || 'Organization',
+      organization: 'Organization' as const,
+      selected: org.id === summaryProfileId || org.id === selectedProfileId,
+    }))
+
+    return [...workerPins, ...orgPins]
+  }, [talentProfiles, organizations, summaryProfileId, selectedProfileId])
 
   // Get profile for summary card
   const summaryProfile = useMemo<TalentProfile | null>(() => {
@@ -172,7 +184,7 @@ export const DiscoverIndexScreen = () => {
           {/* Filter Bar */}
           <FilterBar
             onResultsPress={() => setShowResultsSheet(true)}
-            resultsCount={talentProfiles.length}
+            resultsCount={talentProfiles.length + organizations.length}
             onSearchPress={() => {
               if (!showSearchInput) {
                 setSummaryProfileId(null)
@@ -197,6 +209,7 @@ export const DiscoverIndexScreen = () => {
           <ResultsRail
             isVisible={showRail}
             profiles={talentProfiles}
+            organizations={organizations}
             selectedId={selectedProfileId}
             onSelect={(id) => {
               setSelectedProfileId(id)
@@ -212,7 +225,7 @@ export const DiscoverIndexScreen = () => {
           {/* Filter Bar */}
           <FilterBar
             onResultsPress={() => setShowRail(!showRail)}
-            resultsCount={talentProfiles.length}
+            resultsCount={talentProfiles.length + organizations.length}
             onSearchPress={() => {
               if (!showSearchInput) {
                 setSummaryProfileId(null)
@@ -248,11 +261,12 @@ export const DiscoverIndexScreen = () => {
             <ResultsRail
               isVisible={true}
               profiles={talentProfiles}
+              organizations={organizations}
               selectedId={selectedProfileId}
               onSelect={(id) => {
                 setSelectedProfileId(id)
               }}
-              isLoading={isLoading}
+              isLoading={isLoading || isLoadingOrgs}
               resultListRef={resultListRef}
             />
           </YStack>
@@ -269,4 +283,4 @@ export const DiscoverIndexScreen = () => {
   )
 }
 
-export default DiscoverIndexScreen
+export default DiscoverMapScreen
