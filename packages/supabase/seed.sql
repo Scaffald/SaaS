@@ -813,12 +813,12 @@ with user_lookup as (
 )
 insert into public.candidate_job_links (id, job_id, user_id, relationship_type, source, notes, created_by)
 select
-  id::uuid,
+  cv.id::uuid,
   jl.id,
   ul.id,
-  relationship_type,
-  source,
-  notes,
+  cv.relationship_type,
+  cv.source,
+  cv.notes,
   cbl.id
 from candidate_link_values cv
 join job_lookup jl on jl.slug = cv.job_slug
