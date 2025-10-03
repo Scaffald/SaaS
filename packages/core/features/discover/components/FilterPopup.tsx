@@ -9,6 +9,8 @@ import {
   ScrollView,
   Slider,
   AnimatePresence,
+  Switch,
+  Label,
 } from 'tamagui'
 import { ChevronDown, ChevronRight, X } from '@tamagui/lucide-icons'
 
@@ -16,17 +18,29 @@ type FilterPopupProps = {
   isOpen: boolean
   onClose: () => void
   railVisible?: boolean
+  showWorkers?: boolean
+  showOrganizations?: boolean
+  onShowWorkersChange?: (value: boolean) => void
+  onShowOrganizationsChange?: (value: boolean) => void
 }
 
-type AccordionSection = 'score' | 'skills' | 'certifications'
+type AccordionSection = 'show' | 'score' | 'skills' | 'certifications'
 
 /**
  * Filter Popup Component
  * 300px wide x 400px high popup with accordion sections for filters
  * Animates in above the filter bar, similar to search input
  */
-export const FilterPopup = ({ isOpen, onClose, railVisible = false }: FilterPopupProps) => {
-  const [openSections, setOpenSections] = useState<Set<AccordionSection>>(new Set(['score']))
+export const FilterPopup = ({
+  isOpen,
+  onClose,
+  railVisible = false,
+  showWorkers = true,
+  showOrganizations = true,
+  onShowWorkersChange,
+  onShowOrganizationsChange,
+}: FilterPopupProps) => {
+  const [openSections, setOpenSections] = useState<Set<AccordionSection>>(new Set(['show']))
   const [scoreValue, setScoreValue] = useState(40)
   const [skillsSearch, setSkillsSearch] = useState('')
   const [selectedSkills, setSelectedSkills] = useState<string[]>([
@@ -116,6 +130,66 @@ export const FilterPopup = ({ isOpen, onClose, railVisible = false }: FilterPopu
             {/* Scrollable Content */}
             <ScrollView flex={1} showsVerticalScrollIndicator={false}>
               <YStack p="$3" gap="$2">
+                {/* Show Section */}
+                <YStack>
+                  <Button
+                    unstyled
+                    onPress={() => toggleSection('show')}
+                    px="$3"
+                    py="$2"
+                    hoverStyle={{ bg: '$color3' }}
+                    pressStyle={{ bg: '$color4' }}
+                    rounded="$3"
+                  >
+                    <XStack justify="space-between" items="center" flex={1}>
+                      <Text fontSize="$4" fontWeight="600">
+                        Show
+                      </Text>
+                      {openSections.has('show') ? (
+                        <ChevronDown size={16} />
+                      ) : (
+                        <ChevronRight size={16} />
+                      )}
+                    </XStack>
+                  </Button>
+
+                  {openSections.has('show') && (
+                    <YStack gap="$3" px="$3" py="$3">
+                      {/* Workers Toggle */}
+                      <XStack justify="space-between" items="center">
+                        <Label htmlFor="workers-toggle" fontSize="$3">
+                          Workers
+                        </Label>
+                        <Switch
+                          id="workers-toggle"
+                          size="$3"
+                          checked={showWorkers}
+                          onCheckedChange={onShowWorkersChange}
+                        >
+                          <Switch.Thumb animation="quick" />
+                        </Switch>
+                      </XStack>
+
+                      {/* Organizations Toggle */}
+                      <XStack justify="space-between" items="center">
+                        <Label htmlFor="organizations-toggle" fontSize="$3">
+                          Organizations
+                        </Label>
+                        <Switch
+                          id="organizations-toggle"
+                          size="$3"
+                          checked={showOrganizations}
+                          onCheckedChange={onShowOrganizationsChange}
+                        >
+                          <Switch.Thumb animation="quick" />
+                        </Switch>
+                      </XStack>
+                    </YStack>
+                  )}
+                </YStack>
+
+                <Separator />
+
                 {/* Elevate Score Section */}
                 <YStack>
                   <Button

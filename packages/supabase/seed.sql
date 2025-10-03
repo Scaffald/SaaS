@@ -96,7 +96,7 @@ skill_inserts as (
     ps.id
   from skill_categories sc
   left join parent_skills ps on ps.name = sc.parent_skill
-  on conflict (name) do nothing
+  where sc.category != 'construction'  -- Skip construction skills, will be seeded via CSI taxonomy
   returning id, name
 )
 select count(*) as skills_created from skill_inserts;
