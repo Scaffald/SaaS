@@ -621,12 +621,6 @@ You can also install the native library inside of `packages/core` if you want to
 
 You may potentially want to have the native module transpiled for the next app. If you get error messages with `Cannot use import statement outside a module`, you may need to use `transpilePackages` in your `next.config.js` and add the module to the array there.
 
-## Deploying to Vercel
-
-- Root: `apps/next`
-- Build command: leave default setting
-- Output dir: leave default setting
-
 ## Using With Expo Application Services (EAS)
 
 EAS has already been configured for you, but you still need to do the following:

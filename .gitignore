@@ -25,9 +25,6 @@ npm-debug.log*
 .env.production.local
 .env.production
 
-# vercel
-.vercel
-
 # typescript
 *.tsbuildinfo
 
