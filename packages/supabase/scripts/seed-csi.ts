@@ -1,298 +1,434 @@
 // scripts/seed-csi.ts
+// Seeds CSI MasterFormat 2018 codes from YAML into the skills table
 import * as fs from "node:fs";
 import * as path from "node:path";
-import * as XLSX from "xlsx";
+import * as yaml from "yaml";
 import { Client } from "pg";
 import { v5 as uuidv5 } from "uuid";
 
-type Row = {
-  AA: string;
-  BB: string;
-  CC: string;
-  DD: string;
+// =========================================================
+// Types
+// =========================================================
+
+interface CSIYamlNode {
+  code: string;
   title: string;
-  code_key: string;
-  parent_key: string | null;
-  id: string;
-  parent_id: string | null;
-};
-
-// Namespace for deterministic UUIDs (CSI 2020)
-const NS_SKILLS = uuidv5("scaffald:skills:csi2020", uuidv5.URL);
-const NS_INDUSTRY = uuidv5("scaffald:industry", uuidv5.URL);
-const INDUSTRY_ID = uuidv5("construction", NS_INDUSTRY); // deterministic
-const INDUSTRY_SLUG = "construction";
-
-function isTwoDigits(s: string) {
-  return /^\d{2}$/.test(s);
+  children?: CSIYamlNode[];
 }
 
-function parseLineToParts(
-  line: string,
-): { AA: string; BB: string; CC: string; DD: string; title: string } | null {
-  const s = line.trim();
-  let m = s.match(/^(\d{2})\s+(\d{2})\s+(\d{2})(?:[.\s](\d{2}))?\s+(.*\S)\s*$/);
-  if (m) {
-    const [, AA, BB, CC, DDmaybe, title] = m;
-    return { AA, BB, CC, DD: DDmaybe ?? "00", title: title.trim() };
+interface CSIRecord {
+  id: string;
+  name: string;
+  parent_id: string | null;
+  active: boolean;
+  csi_code: [string, string, string, string];
+  csi_code_key: string;
+  csi_display: string;
+  csi_depth: number;
+}
+
+// =========================================================
+// Constants
+// =========================================================
+
+const NS_SKILLS = uuidv5("scaffald:skills:csi2018", uuidv5.URL);
+const INDUSTRY_SLUG = "construction";
+
+// =========================================================
+// UUID Generation
+// =========================================================
+
+function toUUID(codeKey: string): string {
+  return uuidv5(codeKey, NS_SKILLS);
+}
+
+// =========================================================
+// Code Parsing
+// =========================================================
+
+/**
+ * Parse a CSI code string into its 4 components
+ * Examples:
+ *   "03" -> ["03", "00", "00", "00"]
+ *   "03 11" -> ["03", "11", "00", "00"]
+ *   "03 11 13" -> ["03", "11", "13", "00"]
+ *   "03 11 13.16" -> ["03", "11", "13", "16"]
+ */
+function parseCSICode(code: string): [string, string, string, string] {
+  const normalized = code.replace(/\./g, " ").trim();
+  const parts = normalized.split(/\s+/);
+
+  const result: [string, string, string, string] = ["00", "00", "00", "00"];
+
+  for (let i = 0; i < Math.min(4, parts.length); i++) {
+    const part = parts[i].padStart(2, "0");
+    if (/^\d{2}$/.test(part)) {
+      result[i] = part;
+    }
   }
-  m = s.match(/^(\d{2})\s+(.*\S)\s*$/);
-  if (m) {
-    const [, AA, title] = m;
-    return { AA, BB: "00", CC: "00", DD: "00", title: title.trim() };
+
+  return result;
+}
+
+/**
+ * Generate the code key from 4-part array
+ * ["03", "11", "13", "16"] -> "03-11-13-16"
+ */
+function generateCodeKey(code: [string, string, string, string]): string {
+  return code.join("-");
+}
+
+/**
+ * Generate the display format
+ * ["03", "11", "13", "16"] -> "03 11 13.16"
+ */
+function generateDisplayCode(code: [string, string, string, string]): string {
+  const [AA, BB, CC, DD] = code;
+  return `${AA} ${BB} ${CC}.${DD}`;
+}
+
+/**
+ * Calculate depth of CSI code
+ * ["03", "00", "00", "00"] -> 1
+ * ["03", "11", "00", "00"] -> 2
+ * ["03", "11", "13", "00"] -> 3
+ * ["03", "11", "13", "16"] -> 4
+ */
+function calculateDepth(code: [string, string, string, string]): number {
+  const [_AA, BB, CC, DD] = code;
+  if (DD !== "00") return 4;
+  if (CC !== "00") return 3;
+  if (BB !== "00") return 2;
+  return 1;
+}
+
+/**
+ * Get parent code for a given code
+ * ["03", "11", "13", "16"] -> ["03", "11", "13", "00"]
+ * ["03", "11", "13", "00"] -> ["03", "11", "00", "00"]
+ * ["03", "11", "00", "00"] -> ["03", "00", "00", "00"]
+ * ["03", "00", "00", "00"] -> null
+ */
+function getParentCode(
+  code: [string, string, string, string],
+): [string, string, string, string] | null {
+  const [AA, BB, CC, DD] = code;
+
+  if (DD !== "00") {
+    return [AA, BB, CC, "00"];
   }
+  if (CC !== "00") {
+    return [AA, BB, "00", "00"];
+  }
+  if (BB !== "00") {
+    return [AA, "00", "00", "00"];
+  }
+
   return null;
 }
 
-function normalizeFromColumns(
-  code: string,
-  title: string,
-): { AA: string; BB: string; CC: string; DD: string; title: string } | null {
-  const digits = (code.match(/\d+/g) ?? []).join("");
-  if (digits.length < 2) return null;
-  let pairs: string[] = [];
-  for (let i = 0; i < Math.min(8, digits.length); i += 2) {
-    pairs.push(digits.slice(i, i + 2).padStart(2, "0"));
-  }
-  while (pairs.length < 4) pairs.push("00");
-  pairs = pairs.slice(0, 4);
-  const [AA, BB, CC, DD] = pairs;
-  return { AA, BB, CC, DD, title: (title || "").trim() };
-}
+// =========================================================
+// YAML Processing
+// =========================================================
 
-function parentKey(
-  AA: string,
-  BB: string,
-  CC: string,
-  DD: string,
-): string | null {
-  if (BB === "00" && CC === "00" && DD === "00") return null;
-  if (CC === "00" && DD === "00") return `${AA}-00-00-00`;
-  if (DD === "00") return `${AA}-${BB}-00-00`;
-  return `${AA}-${BB}-${CC}-00`;
-}
+/**
+ * Recursively process YAML hierarchy and flatten into records
+ */
+function processYamlHierarchy(
+  nodes: CSIYamlNode[],
+  parentCode: [string, string, string, string] | null = null,
+): CSIRecord[] {
+  const records: CSIRecord[] = [];
 
-function codeKey(AA: string, BB: string, CC: string, DD: string) {
-  return `${AA}-${BB}-${CC}-${DD}`;
-}
+  for (const node of nodes) {
+    const code = parseCSICode(node.code);
+    const codeKey = generateCodeKey(code);
+    const displayCode = generateDisplayCode(code);
+    const depth = calculateDepth(code);
 
-function toUUID(key: string) {
-  return uuidv5(key, NS_SKILLS);
-}
+    const parentCodeArray = parentCode || getParentCode(code);
+    const parentId = parentCodeArray
+      ? toUUID(generateCodeKey(parentCodeArray))
+      : null;
 
-function loadXlsx(filePath: string): Row[] {
-  const wb = XLSX.readFile(filePath);
-  const rows: Row[] = [];
-  const seenKeys = new Set<string>();
+    const record: CSIRecord = {
+      id: toUUID(codeKey),
+      name: node.title,
+      parent_id: parentId,
+      active: true,
+      csi_code: code,
+      csi_code_key: codeKey,
+      csi_display: displayCode,
+      csi_depth: depth,
+    };
 
-  for (const sheetName of wb.SheetNames) {
-    const ws = wb.Sheets[sheetName];
-    const data = XLSX.utils.sheet_to_json(ws, {
-      header: 1,
-      blankrows: false,
-    }) as (
-      | string
-      | number
-      | null
-      | undefined
-    )[][];
+    records.push(record);
 
-    for (const row of data) {
-      if (!row || row.length === 0) continue;
-
-      if (row.length === 1 && typeof row[0] === "string") {
-        const parsed = parseLineToParts(row[0]);
-        if (!parsed) continue;
-        const { AA, BB, CC, DD, title } = parsed;
-        if (
-          !isTwoDigits(AA) || !isTwoDigits(BB) || !isTwoDigits(CC) ||
-          !isTwoDigits(DD)
-        ) continue;
-        const pkey = parentKey(AA, BB, CC, DD);
-        const ckey = codeKey(AA, BB, CC, DD);
-        if (seenKeys.has(ckey)) continue;
-        seenKeys.add(ckey);
-        rows.push({
-          AA,
-          BB,
-          CC,
-          DD,
-          title,
-          code_key: ckey,
-          parent_key: pkey,
-          id: toUUID(ckey),
-          parent_id: pkey ? toUUID(pkey) : null,
-        });
-        continue;
-      }
-
-      if (row.length >= 2 && typeof row[0] === "string") {
-        const code = String(row[0] ?? "");
-        const title = String(row[1] ?? "");
-        const parsed = normalizeFromColumns(code, title);
-        if (!parsed) continue;
-        const { AA, BB, CC, DD } = parsed;
-        const ttl = parsed.title;
-        if (!ttl) continue;
-        const pkey = parentKey(AA, BB, CC, DD);
-        const ckey = codeKey(AA, BB, CC, DD);
-        if (seenKeys.has(ckey)) continue;
-        seenKeys.add(ckey);
-        rows.push({
-          AA,
-          BB,
-          CC,
-          DD,
-          title: ttl,
-          code_key: ckey,
-          parent_key: pkey,
-          id: toUUID(ckey),
-          parent_id: pkey ? toUUID(pkey) : null,
-        });
-      }
+    // Process children recursively
+    if (node.children && node.children.length > 0) {
+      const childRecords = processYamlHierarchy(node.children, code);
+      records.push(...childRecords);
     }
   }
 
-  // Ensure missing ancestors
-  const existing = new Set(rows.map((r) => r.code_key));
-  const add: Row[] = [];
-  for (const r of rows) {
-    const ancestors: (string | null)[] = [
-      r.parent_key,
-      r.CC !== "00" ? codeKey(r.AA, r.BB, "00", "00") : null,
-      r.BB !== "00" ? codeKey(r.AA, "00", "00", "00") : null,
-    ];
-    for (const ak of ancestors) {
-      if (!ak || existing.has(ak)) continue;
-      const [AA, BB, CC, DD] = ak.split("-");
-      const ttl = r.title.split(/[:\-–—(]/)[0].trim() || "Untitled";
-      add.push({
-        AA,
-        BB,
-        CC,
-        DD,
-        title: ttl,
-        code_key: ak,
-        parent_key: parentKey(AA, BB, CC, DD),
-        id: toUUID(ak),
-        parent_id: parentKey(AA, BB, CC, DD)
-          ? toUUID(parentKey(AA, BB, CC, DD)!)
+  return records;
+}
+
+/**
+ * Ensure all parent records exist by synthesizing missing ones
+ */
+function ensureParentRecords(records: CSIRecord[]): CSIRecord[] {
+  const existing = new Set(records.map((r) => r.csi_code_key));
+  const synthetic: CSIRecord[] = [];
+
+  for (const record of records) {
+    let currentCode = record.csi_code;
+
+    // Walk up the parent chain
+    while (true) {
+      const parentCode = getParentCode(currentCode);
+      if (!parentCode) break;
+
+      const parentKey = generateCodeKey(parentCode);
+      if (existing.has(parentKey)) break;
+
+      // Create synthetic parent record
+      const displayCode = generateDisplayCode(parentCode);
+      const depth = calculateDepth(parentCode);
+      const grandparentCode = getParentCode(parentCode);
+
+      synthetic.push({
+        id: toUUID(parentKey),
+        name: `${displayCode} (Parent Category)`,
+        parent_id: grandparentCode
+          ? toUUID(generateCodeKey(grandparentCode))
           : null,
+        active: true,
+        csi_code: parentCode,
+        csi_code_key: parentKey,
+        csi_display: displayCode,
+        csi_depth: depth,
       });
-      existing.add(ak);
+
+      existing.add(parentKey);
+      currentCode = parentCode;
     }
   }
-  return rows.concat(add);
+
+  return [...synthetic, ...records];
 }
 
-async function upsertIndustry(client: Client) {
-  await client.query(
+// =========================================================
+// Database Operations
+// =========================================================
+
+async function getOrCreateIndustry(client: Client): Promise<string> {
+  const result = await client.query(
     `
-    INSERT INTO industries (id, slug, name, description, metadata, created_at, updated_at)
-    VALUES ($1, $2, $3, $4, '{}'::jsonb, NOW(), NOW())
-    ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name;
-  `,
+    INSERT INTO industries (slug, name, description, metadata, created_at, updated_at)
+    VALUES ($1, $2, $3, '{}'::jsonb, NOW(), NOW())
+    ON CONFLICT (slug) DO UPDATE SET 
+      name = EXCLUDED.name,
+      description = EXCLUDED.description,
+      updated_at = NOW()
+    RETURNING id;
+    `,
     [
-      INDUSTRY_ID,
       INDUSTRY_SLUG,
-      "construction",
-      "CSI MasterFormat skills live under this industry.",
+      "Construction",
+      "Construction industry with CSI MasterFormat 2018 skills taxonomy.",
     ],
   );
+  return result.rows[0].id;
 }
 
-type Insertable = {
-  id: string;
-  name: string;
-  industry_id: string;
-  parent_id: string | null;
-  active: boolean;
-  csi: [string, string, string, string];
-};
+async function upsertSkills(
+  client: Client,
+  industryId: string,
+  records: CSIRecord[],
+): Promise<void> {
+  // Sort by depth to ensure parents are inserted before children
+  records.sort((a, b) => {
+    if (a.csi_depth !== b.csi_depth) {
+      return a.csi_depth - b.csi_depth;
+    }
+    return a.csi_code_key.localeCompare(b.csi_code_key);
+  });
 
-function toInsertable(r: Row): Insertable {
-  return {
-    id: r.id,
-    name: r.title,
-    industry_id: INDUSTRY_ID,
-    parent_id: r.parent_id,
-    active: true,
-    csi: [r.AA, r.BB, r.CC, r.DD],
-  };
-}
+  const batchSize = 500;
+  for (let i = 0; i < records.length; i += batchSize) {
+    const batch = records.slice(i, i + batchSize);
+    const values: unknown[] = [];
+    const placeholders: string[] = [];
 
-async function upsertSkills(client: Client, rows: Row[]) {
-  const depth = (
-    r: Row,
-  ) => (r.DD !== "00" ? 4 : r.CC !== "00" ? 3 : r.BB !== "00" ? 2 : 1);
-  rows.sort((a, b) =>
-    depth(a) - depth(b) || a.code_key.localeCompare(b.code_key)
-  );
-
-  const batchSize = 1000;
-  for (let i = 0; i < rows.length; i += batchSize) {
-    const slice = rows.slice(i, i + batchSize).map(toInsertable);
-    const values:
-      (string | boolean | null | [string, string, string, string])[] = [];
-    const tuples: string[] = [];
-    slice.forEach((r, idx) => {
-      const o = idx * 6;
-      tuples.push(
-        `($${o + 1}, $${o + 2}, $${o + 3}, $${o + 4}, $${o + 5}, $${
-          o + 6
+    batch.forEach((record, idx) => {
+      const offset = idx * 9;
+      placeholders.push(
+        `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${
+          offset + 5
+        }, $${offset + 6}::text[], $${offset + 7}, $${offset + 8}, $${
+          offset + 9
         }, NOW(), NOW())`,
       );
-      values.push(r.id, r.name, r.industry_id, r.parent_id, r.active, r.csi);
+      values.push(
+        record.id,
+        record.name,
+        industryId,
+        record.parent_id,
+        record.active,
+        record.csi_code,
+        record.csi_code_key,
+        record.csi_display,
+        record.csi_depth,
+      );
     });
 
     const sql = `
-      INSERT INTO skills (id, name, industry_id, parent_id, active, csi, created_at, updated_at)
-      VALUES ${tuples.join(",")}
-      ON CONFLICT (code_key) DO UPDATE
-        SET name = EXCLUDED.name,
-            industry_id = EXCLUDED.industry_id,
-            parent_id = EXCLUDED.parent_id,
-            active = EXCLUDED.active,
-            csi = EXCLUDED.csi,
-            updated_at = NOW();
+      INSERT INTO skills (
+        id, 
+        name, 
+        industry_id, 
+        parent_id, 
+        active, 
+        csi_code, 
+        csi_code_key, 
+        csi_display, 
+        csi_depth,
+        created_at, 
+        updated_at
+      )
+      VALUES ${placeholders.join(",")}
+      ON CONFLICT (csi_code_key) 
+      DO UPDATE SET
+        name = EXCLUDED.name,
+        industry_id = EXCLUDED.industry_id,
+        parent_id = EXCLUDED.parent_id,
+        active = EXCLUDED.active,
+        csi_code = EXCLUDED.csi_code,
+        csi_display = EXCLUDED.csi_display,
+        csi_depth = EXCLUDED.csi_depth,
+        updated_at = NOW()
+      WHERE skills.csi_code_key IS NOT NULL;
     `;
+
     await client.query(sql, values);
+    console.log(
+      `Processed batch ${i / batchSize + 1}: ${batch.length} records`,
+    );
   }
 }
 
-async function main() {
+// =========================================================
+// Main
+// =========================================================
+
+async function main(): Promise<void> {
   const fileArg = process.argv[2];
   if (!fileArg) {
-    console.error("Usage: ts-node scripts/seed-csi.ts /path/to/COMBINED.xlsx");
+    console.error("Usage: pnpm tsx scripts/seed-csi.ts <path-to-yaml-file>");
+    console.error(
+      "Example: pnpm tsx scripts/seed-csi.ts scripts/csi_masterformat_2018_taxonomy.yaml",
+    );
     process.exit(1);
   }
+
   const filePath = path.resolve(fileArg);
   if (!fs.existsSync(filePath)) {
     console.error(`File not found: ${filePath}`);
     process.exit(1);
   }
 
-  const databaseUrl = process.env.DATABASE_URL;
-  if (!databaseUrl) {
-    console.error("Please set DATABASE_URL in your environment.");
+  console.log(`Reading CSI taxonomy from: ${filePath}`);
+
+  // Read and parse YAML
+  const yamlContent = fs.readFileSync(filePath, "utf-8");
+  const parsedYaml = yaml.parse(yamlContent) as
+    | { nodes: CSIYamlNode[] }
+    | CSIYamlNode[];
+
+  // Handle both formats: direct array or object with nodes property
+  let nodes: CSIYamlNode[];
+  if (Array.isArray(parsedYaml)) {
+    nodes = parsedYaml;
+  } else if (
+    parsedYaml && typeof parsedYaml === "object" && "nodes" in parsedYaml
+  ) {
+    nodes = parsedYaml.nodes;
+  } else {
+    console.error(
+      "Error: YAML file must contain an array or object with 'nodes' property",
+    );
     process.exit(1);
   }
 
-  const rows = loadXlsx(filePath);
+  if (!Array.isArray(nodes)) {
+    console.error("Error: Nodes must be an array");
+    process.exit(1);
+  }
+
+  console.log(`Parsed ${nodes.length} top-level divisions from YAML`);
+
+  // Process hierarchy
+  const records = processYamlHierarchy(nodes);
+  console.log(`Generated ${records.length} records from hierarchy`);
+
+  // Ensure parent records
+  const allRecords = ensureParentRecords(records);
+  console.log(
+    `Total records (including synthetic parents): ${allRecords.length}`,
+  );
+
+  // Connect to database
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) {
+    console.error("Error: DATABASE_URL environment variable is not set");
+    console.error("Set it to your Supabase local connection string:");
+    console.error(
+      "  export DATABASE_URL='postgresql://postgres:postgres@localhost:54322/postgres'",
+    );
+    process.exit(1);
+  }
 
   const client = new Client({ connectionString: databaseUrl });
   await client.connect();
+
   try {
+    console.log("Starting database transaction...");
     await client.query("BEGIN");
-    await upsertIndustry(client);
-    await upsertSkills(client, rows);
+
+    console.log("Getting or creating construction industry...");
+    const industryId = await getOrCreateIndustry(client);
+    console.log(`Industry ID: ${industryId}`);
+
+    console.log("Upserting CSI skills...");
+    await upsertSkills(client, industryId, allRecords);
+
     await client.query("COMMIT");
+    console.log("✓ Successfully seeded CSI MasterFormat 2018 taxonomy!");
+    console.log(`  Total records: ${allRecords.length}`);
     console.log(
-      `Seeded ${rows.length} CSI 2020 records (including synthesized parents).`,
+      `  Depth 1 (Divisions): ${
+        allRecords.filter((r) => r.csi_depth === 1).length
+      }`,
+    );
+    console.log(
+      `  Depth 2 (Level 2): ${
+        allRecords.filter((r) => r.csi_depth === 2).length
+      }`,
+    );
+    console.log(
+      `  Depth 3 (Level 3): ${
+        allRecords.filter((r) => r.csi_depth === 3).length
+      }`,
+    );
+    console.log(
+      `  Depth 4 (Level 4): ${
+        allRecords.filter((r) => r.csi_depth === 4).length
+      }`,
     );
   } catch (err) {
     await client.query("ROLLBACK");
-    console.error(err);
+    console.error("Error seeding database:", err);
     process.exitCode = 1;
   } finally {
     await client.end();
@@ -300,6 +436,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error(err);
+  console.error("Fatal error:", err);
   process.exit(1);
 });

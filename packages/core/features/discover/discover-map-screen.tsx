@@ -31,6 +31,8 @@ export const DiscoverMapScreen = () => {
   const [showSearchInput, setShowSearchInput] = useState(false)
   const [showRail, setShowRail] = useState(true)
   const [showResultsSheet, setShowResultsSheet] = useState(false)
+  const [showWorkers, setShowWorkers] = useState(true)
+  const [showOrganizations, setShowOrganizations] = useState(true)
 
   const { data: talentProfiles = [], isLoading } = useTalentProfiles()
   const { data: organizations = [], isLoading: isLoadingOrgs } = useOrganizations()
@@ -48,31 +50,42 @@ export const DiscoverMapScreen = () => {
 
   // Convert profiles and organizations to map pins with selected state
   const mapPins: MapPinType[] = useMemo(() => {
-    const workerPins = talentProfiles.map((profile) => ({
-      id: profile.id,
-      coordinate: profile.coordinates,
-      title: profile.name,
-      subtitle: profile.title,
-      metric: `e ${profile.score}`,
-      score: profile.score,
-      hourlyRate: profile.hourlyRate,
-      badges: profile.badges,
-      availability: 'available' as const,
-      organization: 'Individual' as const,
-      selected: profile.id === summaryProfileId || profile.id === selectedProfileId,
-    }))
+    const workerPins = showWorkers
+      ? talentProfiles.map((profile) => ({
+          id: profile.id,
+          coordinate: profile.coordinates,
+          title: profile.name,
+          subtitle: profile.title,
+          metric: `e ${profile.score}`,
+          score: profile.score,
+          hourlyRate: profile.hourlyRate,
+          badges: profile.badges,
+          availability: 'available' as const,
+          organization: 'Individual' as const,
+          selected: profile.id === summaryProfileId || profile.id === selectedProfileId,
+        }))
+      : []
 
-    const orgPins = organizations.map((org) => ({
-      id: org.id,
-      coordinate: org.coordinates,
-      title: org.name,
-      subtitle: org.industry || 'Organization',
-      organization: 'Organization' as const,
-      selected: org.id === summaryProfileId || org.id === selectedProfileId,
-    }))
+    const orgPins = showOrganizations
+      ? organizations.map((org) => ({
+          id: org.id,
+          coordinate: org.coordinates,
+          title: org.name,
+          subtitle: org.industry || 'Organization',
+          organization: 'Organization' as const,
+          selected: org.id === summaryProfileId || org.id === selectedProfileId,
+        }))
+      : []
 
     return [...workerPins, ...orgPins]
-  }, [talentProfiles, organizations, summaryProfileId, selectedProfileId])
+  }, [
+    talentProfiles,
+    organizations,
+    summaryProfileId,
+    selectedProfileId,
+    showWorkers,
+    showOrganizations,
+  ])
 
   // Get profile for summary card
   const summaryProfile = useMemo<TalentProfile | null>(() => {
@@ -208,8 +221,8 @@ export const DiscoverMapScreen = () => {
           {/* Results Rail */}
           <ResultsRail
             isVisible={showRail}
-            profiles={talentProfiles}
-            organizations={organizations}
+            profiles={showWorkers ? talentProfiles : []}
+            organizations={showOrganizations ? organizations : []}
             selectedId={selectedProfileId}
             onSelect={(id) => {
               setSelectedProfileId(id)
@@ -260,8 +273,8 @@ export const DiscoverMapScreen = () => {
           <YStack flex={1} overflow="hidden">
             <ResultsRail
               isVisible={true}
-              profiles={talentProfiles}
-              organizations={organizations}
+              profiles={showWorkers ? talentProfiles : []}
+              organizations={showOrganizations ? organizations : []}
               selectedId={selectedProfileId}
               onSelect={(id) => {
                 setSelectedProfileId(id)
@@ -278,6 +291,10 @@ export const DiscoverMapScreen = () => {
         isOpen={filtersOpen}
         onClose={() => setFiltersOpen(false)}
         railVisible={!isSmallScreen && showRail}
+        showWorkers={showWorkers}
+        showOrganizations={showOrganizations}
+        onShowWorkersChange={setShowWorkers}
+        onShowOrganizationsChange={setShowOrganizations}
       />
     </YStack>
   )
