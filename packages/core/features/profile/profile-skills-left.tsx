@@ -12,6 +12,7 @@ import {
   Adapt,
   Sheet,
   Separator,
+  useWindowDimensions,
 } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { Plus, X, ChevronRight } from '@tamagui/lucide-icons'
@@ -56,6 +57,8 @@ export function ProfileSkillsLeft() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
   const toast = useToastController()
+  const { width } = useWindowDimensions()
+  const isMobile = width < 640
 
   // Fetch industries
   const { data: industriesData, isLoading: isLoadingIndustries } =
@@ -82,6 +85,20 @@ export function ProfileSkillsLeft() {
     onError: (error) => {
       toast.show('Error', {
         message: error.message || 'Failed to add skill',
+      })
+    },
+  })
+
+  const updateSkillMutation = api.profile.updateUserSkill.useMutation({
+    onSuccess: () => {
+      toast.show('Skill Updated', {
+        message: 'Skill proficiency has been updated!',
+      })
+      refetchSkills()
+    },
+    onError: (error) => {
+      toast.show('Error', {
+        message: error.message || 'Failed to update skill',
       })
     },
   })
@@ -176,6 +193,12 @@ export function ProfileSkillsLeft() {
     [utils]
   )
 
+  // Get explicit skills (user-added)
+  const explicitSkills = userSkillsData?.explicitSkills || []
+
+  // Get existing skill IDs for highlighting in modal
+  const existingSkillIds = explicitSkills.map((skill: UserSkill) => skill.skill_id)
+
   // Handle skill selection from modal
   const handleSelectSkill = useCallback(
     async (skillId: string, proficiency: number) => {
@@ -187,6 +210,17 @@ export function ProfileSkillsLeft() {
     [addSkillMutation]
   )
 
+  // Handle skill update from modal
+  const handleUpdateSkill = useCallback(
+    async (skillId: string, proficiency: number) => {
+      await updateSkillMutation.mutateAsync({
+        skillId,
+        proficiency,
+      })
+    },
+    [updateSkillMutation]
+  )
+
   // Handle remove skill
   const handleRemoveSkill = useCallback(
     async (skillId: string) => {
@@ -194,9 +228,6 @@ export function ProfileSkillsLeft() {
     },
     [removeSkillMutation]
   )
-
-  // Get explicit skills (user-added)
-  const explicitSkills = userSkillsData?.explicitSkills || []
 
   if (isLoadingIndustries || isLoadingSkills) {
     return (
@@ -225,7 +256,7 @@ export function ProfileSkillsLeft() {
                   <Select.Value placeholder="Select an industry" />
                 </Select.Trigger>
 
-                <Adapt when="sm" platform="touch">
+                <Adapt when={isMobile} platform="touch">
                   <Sheet
                     native
                     modal
@@ -292,9 +323,6 @@ export function ProfileSkillsLeft() {
               {explicitSkills.length === 0 && selectedIndustry && (
                 <YStack p="$4" items="center" gap="$2">
                   <Text color="$color11">No skills added yet</Text>
-                  <Button onPress={() => setIsModalOpen(true)} icon={Plus} size="$3">
-                    Add Your First Skill
-                  </Button>
                 </YStack>
               )}
 
@@ -364,9 +392,11 @@ export function ProfileSkillsLeft() {
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSelectSkill={handleSelectSkill}
+        onUpdateSkill={handleUpdateSkill}
         onSearchParents={handleSearchParents}
         onGetChildren={handleGetChildren}
         isSearching={isSearching}
+        existingSkillIds={existingSkillIds}
       />
     </>
   )

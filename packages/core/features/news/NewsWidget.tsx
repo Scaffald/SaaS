@@ -1,5 +1,15 @@
 import { useState } from 'react'
-import { Text, YStack, XStack, Button, Spinner, Select } from 'tamagui'
+import {
+  Text,
+  YStack,
+  XStack,
+  Button,
+  Spinner,
+  Select,
+  Adapt,
+  Sheet,
+  useWindowDimensions,
+} from 'tamagui'
 import { ChevronDown, RefreshCw, AlertCircle } from '@tamagui/lucide-icons'
 import { NewsCard } from '@app/ui'
 import { useAggregatedNews } from './hooks/useNewsFeed'
@@ -23,6 +33,8 @@ export function NewsWidget({
   showFeedSelector = true,
   onArticleClick,
 }: NewsWidgetProps) {
+  const { width } = useWindowDimensions()
+  const isMobile = width < 640
   const industryFeeds = getFeedsByIndustry(industry)
   const defaultFeeds = getDefaultFeeds(industry)
   const [selectedFeedIds, setSelectedFeedIds] = useState<string[]>(defaultFeeds)
@@ -109,6 +121,31 @@ export function NewsWidget({
               <Select.Trigger width={140} iconAfter={ChevronDown}>
                 <Select.Value placeholder="Select feed" />
               </Select.Trigger>
+
+              <Adapt when={isMobile} platform="touch">
+                <Sheet
+                  native
+                  modal
+                  dismissOnSnapToBottom
+                  animationConfig={{
+                    type: 'spring',
+                    damping: 20,
+                    mass: 1.2,
+                    stiffness: 250,
+                  }}
+                >
+                  <Sheet.Frame>
+                    <Sheet.ScrollView>
+                      <Adapt.Contents />
+                    </Sheet.ScrollView>
+                  </Sheet.Frame>
+                  <Sheet.Overlay
+                    animation="lazy"
+                    enterStyle={{ opacity: 0 }}
+                    exitStyle={{ opacity: 0 }}
+                  />
+                </Sheet>
+              </Adapt>
 
               <Select.Content zIndex={200000}>
                 <Select.ScrollUpButton

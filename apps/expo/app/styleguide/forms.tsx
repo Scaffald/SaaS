@@ -14,6 +14,7 @@ import {
   Slider,
   Switch,
   Label,
+  useWindowDimensions,
 } from 'tamagui'
 import {
   PhoneNumberInput,
@@ -26,6 +27,9 @@ import {
 import { Flag, MapPin, Shield, Car, Wifi, Bell } from '@tamagui/lucide-icons'
 
 export default function FormsPage() {
+  const { width } = useWindowDimensions()
+  const isMobile = width < 640
+
   // State for basic inputs
   const [basicInput, setBasicInput] = useState('')
   const [basicInputError, setBasicInputError] = useState('')
@@ -296,7 +300,7 @@ export default function FormsPage() {
                 <Select.Value placeholder="Choose an option..." />
               </Select.Trigger>
 
-              <Adapt when="sm" platform="touch">
+              <Adapt when={isMobile} platform="touch">
                 <Sheet modal dismissOnSnapToBottom>
                   <Sheet.Frame>
                     <Sheet.ScrollView>
