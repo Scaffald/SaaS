@@ -56,6 +56,7 @@ export * from './components/chips'
 export * from './components/image-picker'
 export * from './components/inputs'
 export * from './components/maps'
+export * from './components/skills'
 
 // Configuration and utilities
 export * from './config/countries'

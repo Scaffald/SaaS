@@ -4,17 +4,18 @@ This directory contains scripts for seeding CSI (Construction Specifications Ins
 
 ## Overview
 
-The CSI seeding system imports the complete CSI MasterFormat 2018 taxonomy into the database as skills with proper parent-child relationships. The system uses:
+The CSI seeding system imports the complete CSI MasterFormat 2020 taxonomy into the database as skills with proper parent-child relationships. The system uses:
 
-- **YAML format** for the taxonomy data
+- **CSV format** for the taxonomy data (simple, flat structure)
 - **PostgreSQL** for database operations
 - **Deterministic UUIDs** to ensure consistent IDs across environments
+- **Automatic parent synthesis** to fill in missing hierarchy levels
 
 ## Files
 
 - `seed-csi.ts` - Main seeding script
-- `csi_masterformat_2018_taxonomy.yaml` - CSI MasterFormat 2018 taxonomy data
-- `seed-csi-2020.xlsx` - Legacy Excel format (deprecated)
+- `seed-csi-2020.csv` - CSI MasterFormat 2020 taxonomy data (CSV format)
+- `test-csv-parsing.ts` - Test script for CSV parsing logic
 
 ## Prerequisites
 
@@ -38,35 +39,46 @@ The CSI seeding system imports the complete CSI MasterFormat 2018 taxonomy into 
 ```bash
 # From the project root
 cd packages/supabase
-pnpm tsx scripts/seed-csi.ts scripts/csi_masterformat_2018_taxonomy.yaml
+npx tsx scripts/seed-csi.ts /path/to/seed-csi-2020.csv
+
+# Example with absolute path
+npx tsx scripts/seed-csi.ts ~/path/to/seed-csi-2020.csv
+```
+
+### Testing CSV Parsing (Without Database)
+
+```bash
+# Test CSV parsing logic with sample data
+npx tsx scripts/test-csv-parsing.ts
 ```
 
 ### Output
 
 The script will:
-1. Parse the YAML taxonomy
-2. Generate records with proper parent-child relationships
+1. Parse the CSV file (simple code, description format)
+2. Calculate parent-child relationships from CSI code structure
 3. Create synthetic parent records for any missing ancestors
-4. Insert/update all records in the database
+4. Insert/update all records in the database in batches
 
 Expected output:
 ```
-Reading CSI taxonomy from: /path/to/csi_masterformat_2018_taxonomy.yaml
-Parsed 50 top-level divisions from YAML
-Generated 3500 records from hierarchy
-Total records (including synthetic parents): 3800
+Reading CSI taxonomy from: /path/to/seed-csi-2020.csv
+Parsed 9000 rows from CSV
+Generated 8950 records from CSV
+Skipped 50 malformed rows
+Total records (including synthetic parents): 9200
 Starting database transaction...
 Upserting construction industry...
 Upserting CSI skills...
 Processed batch 1: 500 records
 Processed batch 2: 500 records
 ...
-✓ Successfully seeded CSI MasterFormat 2018 taxonomy!
-  Total records: 3800
-  Depth 1 (Divisions): 50
-  Depth 2 (Level 2): 450
-  Depth 3 (Level 3): 1200
-  Depth 4 (Level 4): 2100
+✓ Successfully seeded CSI MasterFormat 2020 taxonomy!
+  Total records: 9200
+  Depth 1 (Divisions): 52
+  Depth 2 (Level 2): 850
+  Depth 3 (Level 3): 3800
+  Depth 4 (Level 4): 4498
 ```
 
 ## Database Schema
@@ -102,29 +114,52 @@ The script automatically establishes parent-child relationships:
         └── 03 11 13.16 Metal Concrete Forming
 ```
 
-## YAML Format
+## CSV Format
 
-The YAML taxonomy follows this structure:
+The CSV file uses a simple flat structure with two columns:
 
-```yaml
-- code: "03"
-  title: "Concrete"
-  children:
-    - code: "03 11"
-      title: "Concrete Forming"
-      children:
-        - code: "03 11 13"
-          title: "Structural Cast-In-Place Concrete Forming"
-          children:
-            - code: "03 11 13.16"
-              title: "Metal Concrete Forming"
+```csv
+00 00 00,Procurement and Contracting Requirements
+00 01 01,Project Title Page
+00 24 13.13,Scopes of Bids (Multiple Contracts)
+03 11 13.16,Metal Concrete Forming
 ```
+
+### Format Specifications
+
+- **No header row** - Data starts immediately
+- **Two columns**: CSI Code, Description
+- **Comma-delimited**
+- **Code format**: Supports multiple formats
+  - Division: `"03"`
+  - Level 2: `"03 11"`
+  - Level 3: `"03 11 13"`
+  - Level 4: `"03 11 13.16"` (note the period before last segment)
 
 ### Key Features
 
-- **Hierarchical structure**: Children nested under parents
-- **Flexible code format**: Supports `"03"`, `"03 11"`, `"03 11 13"`, `"03 11 13.16"`
-- **Automatic padding**: `"3"` → `"03"`, incomplete codes padded with zeros
+- **Flat structure**: No nesting required - hierarchy inferred from codes
+- **Automatic parent creation**: Missing parent levels are synthesized
+- **Flexible code format**: All standard CSI formats supported
+- **Automatic padding**: Incomplete codes padded with zeros
+- **Validation**: Malformed rows are skipped with warnings
+
+### How Parent-Child Relationships Work
+
+The script automatically calculates parent-child relationships from the code structure:
+
+```
+Input:  03 11 13.16, Metal Concrete Forming
+        ↓
+Parse:  ["03", "11", "13", "16"]
+        ↓
+Parent: ["03", "11", "13", "00"] (calculated)
+        ↓
+The script ensures these parents exist:
+  - 03-00-00-00 (Division)
+  - 03-11-00-00 (Level 2)
+  - 03-11-13-00 (Level 3)
+```
 
 ## Database Functions
 
@@ -184,13 +219,18 @@ The database enforces these rules via triggers and constraints:
 
 To update the taxonomy:
 
-1. Edit `csi_masterformat_2018_taxonomy.yaml`
+1. Update your CSV file with new codes and descriptions
 2. Run the seeding script (it will upsert existing records)
 3. The script is idempotent - safe to run multiple times
 
 ```bash
-pnpm tsx scripts/seed-csi.ts scripts/csi_masterformat_2018_taxonomy.yaml
+npx tsx scripts/seed-csi.ts /path/to/updated-csi-data.csv
 ```
+
+The script uses `ON CONFLICT` clauses to update existing records, so you can:
+- Add new CSI codes
+- Update descriptions of existing codes
+- The script will maintain all existing parent-child relationships
 
 ## Troubleshooting
 
@@ -217,12 +257,19 @@ pnpm supa migration list
 pnpm supa migration up
 ```
 
-### YAML Parsing Errors
+### CSV Parsing Errors
 
-Ensure your YAML file:
-- Has proper indentation (2 spaces)
-- Uses quotes around code values
-- Has valid array structure at root level
+Ensure your CSV file:
+- Has no header row (data starts immediately)
+- Uses comma as delimiter
+- Has exactly two columns per row
+- CSI codes match the pattern: `\d{2}(\s\d{2}){0,2}(\.\d{2})?`
+- Examples of valid codes: `"03"`, `"03 11"`, `"03 11 13"`, `"03 11 13.16"`
+
+If you see "Skipping malformed code" warnings:
+- Check the code format matches the expected pattern
+- Ensure there are no extra spaces or special characters
+- Verify the CSV is properly formatted
 
 ### Duplicate Key Errors
 

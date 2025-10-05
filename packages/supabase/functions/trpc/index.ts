@@ -2,10 +2,16 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { createClient } from "@supabase/supabase-js";
 import {
+  addUserSkillInputSchema,
+  getSkillChildrenInputSchema,
   profileEmploymentInputSchema,
   profileGeneralInputSchema,
   profileSkillsInputSchema,
   type ProfileUpdate,
+  removeUserSkillInputSchema,
+  searchParentSkillsInputSchema,
+  searchSkillsInputSchema,
+  updateUserSkillInputSchema,
   uploadAvatarInputSchema,
   type UserPrivateEmploymentUpdate,
   type UserPrivateUpdate,
@@ -14,15 +20,16 @@ import {
 
 // Environment variables
 const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
-const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
 // Create tRPC context
 const createTRPCContext = async (opts: { req: Request }) => {
   const authorizationHeader = opts.req.headers.get("authorization");
   console.log("Auth header present:", !!authorizationHeader);
 
-  // Create Supabase client with auth context
-  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  // Create Supabase client with service role key (bypasses RLS)
+  // We'll manually enforce authorization in our procedures
+  const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     global: {
       headers: authorizationHeader
         ? { Authorization: authorizationHeader }
@@ -395,23 +402,306 @@ const profileRouter = t.router({
       return { success: true };
     }),
 
-  getSkills: protectedProcedure.query(async () => {
-    // For now, we'll return mock data since we don't have a skills table yet
-    // TODO: Implement actual skills table query using ctx.supabase and ctx.user
-    // In a real implementation, you'd query from a user_skills table
+  // Get list of industries for selector
+  getIndustries: protectedProcedure.query(async ({ ctx }) => {
+    const { supabase } = ctx;
+
+    const { data, error } = await supabase
+      .from("industries")
+      .select("id, name, slug")
+      .order("name");
+
+    if (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: `Failed to fetch industries: ${error.message}`,
+      });
+    }
+
+    return { industries: data || [] };
+  }),
+
+  // NEW: Search parent skills only (simplified cascading approach)
+  searchParentSkills: protectedProcedure
+    .input(searchParentSkillsInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabase } = ctx;
+
+      const { data, error } = await supabase.rpc("search_parent_skills", {
+        p_query: input.query,
+        p_industry_id: input.industryId,
+        p_limit: input.limit || 20,
+      });
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to search parent skills: ${error.message}`,
+        });
+      }
+
+      return { skills: data || [] };
+    }),
+
+  // NEW: Get all children of a parent skill
+  getSkillChildren: protectedProcedure
+    .input(getSkillChildrenInputSchema)
+    .query(async ({ ctx, input }) => {
+      const { supabase } = ctx;
+
+      const { data, error } = await supabase.rpc("get_skill_children", {
+        p_parent_id: input.parentId,
+      });
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to get skill children: ${error.message}`,
+        });
+      }
+
+      return { children: data || [] };
+    }),
+
+  // DEPRECATED: Keep for backwards compatibility (use searchParentSkills instead)
+  searchSkills: protectedProcedure
+    .input(searchSkillsInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabase } = ctx;
+
+      const { data, error } = await supabase.rpc(
+        "search_skills_with_hierarchy",
+        {
+          p_query: input.query,
+          p_industry_id: input.industryId,
+          p_limit: input.limit || 20,
+        },
+      );
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to search skills: ${error.message}`,
+        });
+      }
+
+      return { skills: data || [] };
+    }),
+
+  // Get skill details
+  getSkillDetails: protectedProcedure
+    .input(removeUserSkillInputSchema)
+    .query(async ({ ctx, input }) => {
+      const { supabase } = ctx;
+
+      const { data, error } = await supabase.rpc("get_skill_details", {
+        p_skill_id: input.skillId,
+      });
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch skill details: ${error.message}`,
+        });
+      }
+
+      if (!data || data.length === 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Skill not found",
+        });
+      }
+
+      return { skill: data[0] };
+    }),
+
+  // Get user's skills with hierarchy
+  getUserSkills: protectedProcedure.query(async ({ ctx }) => {
+    const { supabase, user } = ctx;
+
+    const { data, error } = await supabase.rpc(
+      "get_user_skills_with_parents",
+      {
+        p_user_id: user.id,
+      },
+    );
+
+    if (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: `Failed to fetch user skills: ${error.message}`,
+      });
+    }
+
+    // Separate explicit and implied skills
+    const explicitSkills = (data || []).filter((
+      skill: { is_explicit: boolean },
+    ) => skill.is_explicit);
+    const impliedSkills = (data || []).filter((
+      skill: { is_explicit: boolean },
+    ) => !skill.is_explicit);
+
     return {
-      skills: [],
-      primary_industry_id: null,
+      explicitSkills,
+      impliedSkills,
+      allSkills: data || [],
+    };
+  }),
+
+  // Add skill to user profile
+  addUserSkill: protectedProcedure
+    .input(addUserSkillInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      const { error } = await supabase.from("user_skills").insert({
+        user_id: user.id,
+        skill_id: input.skillId,
+        proficiency: input.proficiency,
+        source: "self",
+      });
+
+      if (error) {
+        // Handle duplicate key error
+        if (error.code === "23505") {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "You have already added this skill",
+          });
+        }
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to add skill: ${error.message}`,
+        });
+      }
+
+      return { success: true };
+    }),
+
+  // Update user skill
+  updateUserSkill: protectedProcedure
+    .input(updateUserSkillInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      const updateData: {
+        proficiency?: number;
+        updated_at?: string;
+      } = {};
+
+      if (input.proficiency !== undefined) {
+        updateData.proficiency = input.proficiency;
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        return { success: true };
+      }
+
+      const { error } = await supabase
+        .from("user_skills")
+        .update(updateData)
+        .eq("user_id", user.id)
+        .eq("skill_id", input.skillId);
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to update skill: ${error.message}`,
+        });
+      }
+
+      return { success: true };
+    }),
+
+  // Remove user skill
+  removeUserSkill: protectedProcedure
+    .input(removeUserSkillInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      const { error } = await supabase
+        .from("user_skills")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("skill_id", input.skillId);
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to remove skill: ${error.message}`,
+        });
+      }
+
+      return { success: true };
+    }),
+
+  // Legacy endpoints - kept for backwards compatibility
+  getSkills: protectedProcedure.query(async ({ ctx }) => {
+    const { supabase, user } = ctx;
+
+    // Get user's primary industry from user_private
+    const { data: privateData } = await supabase
+      .from("user_private")
+      .select("primary_industry_id")
+      .eq("user_id", user.id)
+      .single();
+
+    // Get user's explicit skills
+    const { data: skillsData } = await supabase
+      .from("user_skills")
+      .select(`
+        skill_id,
+        proficiency,
+        skills (
+          id,
+          name
+        )
+      `)
+      .eq("user_id", user.id);
+
+    const skills = (skillsData || []).map((us: {
+      skill_id: string;
+      proficiency: number;
+      skills: { id: string; name: string } | null;
+    }) => ({
+      skill_id: us.skill_id,
+      skill_name: us.skills?.name || "",
+      proficiency: us.proficiency,
+      years_experience: 0,
+      is_primary: false,
+      endorsed_count: 0,
+    }));
+
+    return {
+      skills,
+      primary_industry_id: privateData?.primary_industry_id || null,
       secondary_industries: [],
       skill_categories: [],
     };
   }),
 
   updateSkills: protectedProcedure.input(profileSkillsInputSchema).mutation(
-    async ({ input }) => {
-      // For now, we'll just return success since we don't have a skills table yet
-      // TODO: In a real implementation, you'd update the user_skills table using ctx.supabase and ctx.user
-      console.log("Skills data to save:", input);
+    async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      // Update primary industry if provided
+      if (input.primary_industry_id !== undefined) {
+        const { error: industryError } = await supabase
+          .from("user_private")
+          .upsert({
+            user_id: user.id,
+            primary_industry_id: input.primary_industry_id,
+            updated_at: new Date().toISOString(),
+          });
+
+        if (industryError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to update industry: ${industryError.message}`,
+          });
+        }
+      }
 
       return { success: true };
     },

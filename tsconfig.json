@@ -8,16 +8,5 @@
     "noEmit": true
   },
   "exclude": ["supabase/**/*"],
-  "references": [
-    {
-      "path": "apps/expo"
-    },
-    {
-      "path": "packages/core"
-    },
-    {
-      "path": "packages/ui"
-    }
-  ],
   "extends": "./tsconfig.base.json"
 }

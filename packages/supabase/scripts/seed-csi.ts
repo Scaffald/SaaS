@@ -1,20 +1,14 @@
 // scripts/seed-csi.ts
-// Seeds CSI MasterFormat 2018 codes from YAML into the skills table
+// Seeds CSI MasterFormat 2020 codes from CSV into the skills table
 import * as fs from "node:fs";
 import * as path from "node:path";
-import * as yaml from "yaml";
+import { parse } from "csv-parse/sync";
 import { Client } from "pg";
 import { v5 as uuidv5 } from "uuid";
 
 // =========================================================
 // Types
 // =========================================================
-
-interface CSIYamlNode {
-  code: string;
-  title: string;
-  children?: CSIYamlNode[];
-}
 
 interface CSIRecord {
   id: string;
@@ -128,32 +122,42 @@ function getParentCode(
 }
 
 // =========================================================
-// YAML Processing
+// CSV Processing
 // =========================================================
 
 /**
- * Recursively process YAML hierarchy and flatten into records
+ * Process CSV rows and convert to CSI records
  */
-function processYamlHierarchy(
-  nodes: CSIYamlNode[],
-  parentCode: [string, string, string, string] | null = null,
-): CSIRecord[] {
+function processCsvRows(rows: string[][]): CSIRecord[] {
   const records: CSIRecord[] = [];
+  let skippedCount = 0;
 
-  for (const node of nodes) {
-    const code = parseCSICode(node.code);
+  for (const [codeStr, title] of rows) {
+    // Skip rows with missing data
+    if (!codeStr || !title) {
+      skippedCount++;
+      continue;
+    }
+
+    // Basic validation: CSI codes should match expected pattern
+    if (!codeStr.match(/^\d{2}(\s\d{2}){0,2}(\.\d{2})?$/)) {
+      console.warn(`Skipping malformed code: "${codeStr}"`);
+      skippedCount++;
+      continue;
+    }
+
+    const code = parseCSICode(codeStr);
     const codeKey = generateCodeKey(code);
     const displayCode = generateDisplayCode(code);
     const depth = calculateDepth(code);
 
-    const parentCodeArray = parentCode || getParentCode(code);
-    const parentId = parentCodeArray
-      ? toUUID(generateCodeKey(parentCodeArray))
-      : null;
+    // Calculate parent based on code structure
+    const parentCode = getParentCode(code);
+    const parentId = parentCode ? toUUID(generateCodeKey(parentCode)) : null;
 
     const record: CSIRecord = {
       id: toUUID(codeKey),
-      name: node.title,
+      name: title.trim(),
       parent_id: parentId,
       active: true,
       csi_code: code,
@@ -163,12 +167,10 @@ function processYamlHierarchy(
     };
 
     records.push(record);
+  }
 
-    // Process children recursively
-    if (node.children && node.children.length > 0) {
-      const childRecords = processYamlHierarchy(node.children, code);
-      records.push(...childRecords);
-    }
+  if (skippedCount > 0) {
+    console.log(`Skipped ${skippedCount} malformed rows`);
   }
 
   return records;
@@ -325,9 +327,9 @@ async function upsertSkills(
 async function main(): Promise<void> {
   const fileArg = process.argv[2];
   if (!fileArg) {
-    console.error("Usage: pnpm tsx scripts/seed-csi.ts <path-to-yaml-file>");
+    console.error("Usage: pnpm tsx scripts/seed-csi.ts <path-to-csv-file>");
     console.error(
-      "Example: pnpm tsx scripts/seed-csi.ts scripts/csi_masterformat_2018_taxonomy.yaml",
+      "Example: pnpm tsx scripts/seed-csi.ts scripts/seed-csi-2020.csv",
     );
     process.exit(1);
   }
@@ -340,37 +342,19 @@ async function main(): Promise<void> {
 
   console.log(`Reading CSI taxonomy from: ${filePath}`);
 
-  // Read and parse YAML
-  const yamlContent = fs.readFileSync(filePath, "utf-8");
-  const parsedYaml = yaml.parse(yamlContent) as
-    | { nodes: CSIYamlNode[] }
-    | CSIYamlNode[];
+  // Read and parse CSV
+  const csvContent = fs.readFileSync(filePath, "utf-8");
+  const rows = parse(csvContent, {
+    skip_empty_lines: true,
+    trim: true,
+    relax_column_count: true, // Handle any formatting inconsistencies
+  }) as string[][];
 
-  // Handle both formats: direct array or object with nodes property
-  let nodes: CSIYamlNode[];
-  if (Array.isArray(parsedYaml)) {
-    nodes = parsedYaml;
-  } else if (
-    parsedYaml && typeof parsedYaml === "object" && "nodes" in parsedYaml
-  ) {
-    nodes = parsedYaml.nodes;
-  } else {
-    console.error(
-      "Error: YAML file must contain an array or object with 'nodes' property",
-    );
-    process.exit(1);
-  }
+  console.log(`Parsed ${rows.length} rows from CSV`);
 
-  if (!Array.isArray(nodes)) {
-    console.error("Error: Nodes must be an array");
-    process.exit(1);
-  }
-
-  console.log(`Parsed ${nodes.length} top-level divisions from YAML`);
-
-  // Process hierarchy
-  const records = processYamlHierarchy(nodes);
-  console.log(`Generated ${records.length} records from hierarchy`);
+  // Process CSV rows
+  const records = processCsvRows(rows);
+  console.log(`Generated ${records.length} records from CSV`);
 
   // Ensure parent records
   const allRecords = ensureParentRecords(records);
@@ -404,7 +388,7 @@ async function main(): Promise<void> {
     await upsertSkills(client, industryId, allRecords);
 
     await client.query("COMMIT");
-    console.log("✓ Successfully seeded CSI MasterFormat 2018 taxonomy!");
+    console.log("✓ Successfully seeded CSI MasterFormat 2020 taxonomy!");
     console.log(`  Total records: ${allRecords.length}`);
     console.log(
       `  Depth 1 (Divisions): ${
