@@ -1,5 +1,18 @@
 import { useState } from 'react'
-import { YStack, XStack, Text, Button, Input, H4, TextArea, Select, ScrollView } from 'tamagui'
+import {
+  YStack,
+  XStack,
+  Text,
+  Button,
+  Input,
+  H4,
+  TextArea,
+  Select,
+  ScrollView,
+  Adapt,
+  Sheet,
+  useWindowDimensions,
+} from 'tamagui'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, X, ChevronDown } from '@tamagui/lucide-icons'
@@ -18,6 +31,8 @@ import {
  */
 export function ProfileEducationRight() {
   const [isLoading, setIsLoading] = useState(false)
+  const { width } = useWindowDimensions()
+  const isMobile = width < 640
 
   const {
     control,
@@ -67,6 +82,32 @@ export function ProfileEducationRight() {
                   <Select.Trigger iconAfter={ChevronDown}>
                     <Select.Value placeholder="Select education level" />
                   </Select.Trigger>
+
+                  <Adapt when={isMobile} platform="touch">
+                    <Sheet
+                      native
+                      modal
+                      dismissOnSnapToBottom
+                      animationConfig={{
+                        type: 'spring',
+                        damping: 20,
+                        mass: 1.2,
+                        stiffness: 250,
+                      }}
+                    >
+                      <Sheet.Frame>
+                        <Sheet.ScrollView>
+                          <Adapt.Contents />
+                        </Sheet.ScrollView>
+                      </Sheet.Frame>
+                      <Sheet.Overlay
+                        animation="lazy"
+                        enterStyle={{ opacity: 0 }}
+                        exitStyle={{ opacity: 0 }}
+                      />
+                    </Sheet>
+                  </Adapt>
+
                   <Select.Content>
                     <Select.ScrollUpButton />
                     <Select.Viewport>
@@ -145,6 +186,32 @@ export function ProfileEducationRight() {
                           <Select.Trigger iconAfter={ChevronDown}>
                             <Select.Value placeholder="Select degree type" />
                           </Select.Trigger>
+
+                          <Adapt when={isMobile} platform="touch">
+                            <Sheet
+                              native
+                              modal
+                              dismissOnSnapToBottom
+                              animationConfig={{
+                                type: 'spring',
+                                damping: 20,
+                                mass: 1.2,
+                                stiffness: 250,
+                              }}
+                            >
+                              <Sheet.Frame>
+                                <Sheet.ScrollView>
+                                  <Adapt.Contents />
+                                </Sheet.ScrollView>
+                              </Sheet.Frame>
+                              <Sheet.Overlay
+                                animation="lazy"
+                                enterStyle={{ opacity: 0 }}
+                                exitStyle={{ opacity: 0 }}
+                              />
+                            </Sheet>
+                          </Adapt>
+
                           <Select.Content>
                             <Select.ScrollUpButton />
                             <Select.Viewport>

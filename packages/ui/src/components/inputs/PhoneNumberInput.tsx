@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react'
-import { XStack, YStack, Text, Select, Input, Adapt, Sheet } from 'tamagui'
+import { XStack, YStack, Text, Select, Input, Adapt, Sheet, useWindowDimensions } from 'tamagui'
 import { FieldError } from '../FieldError'
 import {
   COUNTRIES,
@@ -58,6 +58,9 @@ export const PhoneNumberInput = ({
   storeFormatted = false,
   countries = COUNTRIES,
 }: PhoneNumberInputProps) => {
+  const { width } = useWindowDimensions()
+  const isMobile = width < 640
+
   // Helper function to format phone number for display
   const formatPhoneForDisplay = useCallback((phoneValue: string, countryCode: string) => {
     if (!phoneValue) return phoneValue
@@ -219,14 +222,28 @@ export const PhoneNumberInput = ({
               </Select.Value>
             </Select.Trigger>
 
-            <Adapt when="sm" platform="touch">
-              <Sheet modal dismissOnSnapToBottom>
+            <Adapt when={isMobile} platform="touch">
+              <Sheet
+                native
+                modal
+                dismissOnSnapToBottom
+                animationConfig={{
+                  type: 'spring',
+                  damping: 20,
+                  mass: 1.2,
+                  stiffness: 250,
+                }}
+              >
                 <Sheet.Frame>
                   <Sheet.ScrollView>
                     <Adapt.Contents />
                   </Sheet.ScrollView>
                 </Sheet.Frame>
-                <Sheet.Overlay />
+                <Sheet.Overlay
+                  animation="lazy"
+                  enterStyle={{ opacity: 0 }}
+                  exitStyle={{ opacity: 0 }}
+                />
               </Sheet>
             </Adapt>
 
