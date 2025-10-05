@@ -2,6 +2,9 @@
   "name": "@app/supabase",
   "version": "0.0.0",
   "private": true,
+  "scripts": {
+    "seed-csi": "npx tsx packages/supabase/scripts/seed-csi.ts '$HOME/Library/CloudStorage/GoogleDrive-clay@unicorn.love/Shared drives/[SCF] Scaffald/Assets/MasterFormat/seed-csi-2020.csv'"
+  },
   "exports": {
     "./types": "./types.ts",
     "./functions/_shared/schemas": "./functions/_shared/schemas/index.ts",

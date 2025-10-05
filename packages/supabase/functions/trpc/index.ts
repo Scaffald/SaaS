@@ -21,6 +21,22 @@ import {
 // Environment variables
 const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+// Try multiple possible anon key env var names
+const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY") ??
+  Deno.env.get("SUPABASE_KEY") ??
+  Deno.env.get("ANON_KEY") ?? "";
+
+// Debug: Log key availability
+console.log("Environment check:", {
+  hasUrl: !!supabaseUrl,
+  hasServiceKey: !!supabaseServiceKey,
+  hasAnonKey: !!supabaseAnonKey,
+  anonKeyLength: supabaseAnonKey.length,
+  url: supabaseUrl,
+  // Log first few chars of keys to verify they're loading
+  serviceKeyPrefix: supabaseServiceKey.substring(0, 12),
+  anonKeyPrefix: supabaseAnonKey.substring(0, 12),
+});
 
 // Create tRPC context
 const createTRPCContext = async (opts: { req: Request }) => {
@@ -552,13 +568,52 @@ const profileRouter = t.router({
   addUserSkill: protectedProcedure
     .input(addUserSkillInputSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { user, userToken } = ctx;
 
-      const { error } = await supabase.from("user_skills").insert({
-        user_id: user.id,
-        skill_id: input.skillId,
-        proficiency: input.proficiency,
-        source: "self",
+      console.log("addUserSkill attempt:", {
+        userId: user.id,
+        skillId: input.skillId,
+        hasToken: !!userToken,
+        tokenLength: userToken?.length,
+      });
+
+      // Create a user-scoped client with anon key to properly respect RLS
+      const userScopedClient = createClient(supabaseUrl, supabaseAnonKey, {
+        global: {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        },
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      });
+
+      // Verify the user context is set properly
+      const { data: authCheck, error: authError } = await userScopedClient.auth
+        .getUser();
+      console.log("Auth check before insert:", {
+        hasAuthData: !!authCheck,
+        authUserId: authCheck?.user?.id,
+        authError: authError?.message,
+      });
+
+      const { data, error } = await userScopedClient.from("user_skills").insert(
+        {
+          user_id: user.id,
+          skill_id: input.skillId,
+          proficiency: input.proficiency,
+          source: "self",
+        },
+      );
+
+      console.log("Insert result:", {
+        hasData: !!data,
+        hasError: !!error,
+        errorCode: error?.code,
+        errorMessage: error?.message,
+        errorDetails: error?.details,
       });
 
       if (error) {
@@ -583,7 +638,7 @@ const profileRouter = t.router({
   updateUserSkill: protectedProcedure
     .input(updateUserSkillInputSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { user, userToken } = ctx;
 
       const updateData: {
         proficiency?: number;
@@ -598,7 +653,20 @@ const profileRouter = t.router({
         return { success: true };
       }
 
-      const { error } = await supabase
+      // Create a user-scoped client with anon key to properly respect RLS
+      const userScopedClient = createClient(supabaseUrl, supabaseAnonKey, {
+        global: {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        },
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      });
+
+      const { error } = await userScopedClient
         .from("user_skills")
         .update(updateData)
         .eq("user_id", user.id)
@@ -618,9 +686,22 @@ const profileRouter = t.router({
   removeUserSkill: protectedProcedure
     .input(removeUserSkillInputSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { user, userToken } = ctx;
 
-      const { error } = await supabase
+      // Create a user-scoped client with anon key to properly respect RLS
+      const userScopedClient = createClient(supabaseUrl, supabaseAnonKey, {
+        global: {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        },
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      });
+
+      const { error } = await userScopedClient
         .from("user_skills")
         .delete()
         .eq("user_id", user.id)
@@ -653,25 +734,33 @@ const profileRouter = t.router({
       .select(`
         skill_id,
         proficiency,
-        skills (
+        skills!inner (
           id,
           name
         )
       `)
       .eq("user_id", user.id);
 
-    const skills = (skillsData || []).map((us: {
-      skill_id: string;
-      proficiency: number;
-      skills: { id: string; name: string } | null;
-    }) => ({
-      skill_id: us.skill_id,
-      skill_name: us.skills?.name || "",
-      proficiency: us.proficiency,
-      years_experience: 0,
-      is_primary: false,
-      endorsed_count: 0,
-    }));
+    const skills = (skillsData || []).map((us) => {
+      // Handle both object and array cases from Supabase typing
+      const skillsRelation = us.skills as
+        | { id: string; name: string }
+        | { id: string; name: string }[]
+        | null;
+
+      const skillName = Array.isArray(skillsRelation)
+        ? skillsRelation[0]?.name
+        : skillsRelation?.name;
+
+      return {
+        skill_id: us.skill_id,
+        skill_name: skillName || "",
+        proficiency: us.proficiency,
+        years_experience: 0,
+        is_primary: false,
+        endorsed_count: 0,
+      };
+    });
 
     return {
       skills,
