@@ -1,275 +1,373 @@
-import { useState, useEffect } from 'react'
-import { randomUUID } from 'expo-crypto'
+import { useState, useEffect, useCallback } from 'react'
 import {
   YStack,
   XStack,
   Text,
   Button,
-  Input,
   H4,
-  Slider,
   ScrollView,
   Spinner,
-  AnimatePresence,
+  Card,
+  Select,
+  Adapt,
+  Sheet,
+  Separator,
 } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
-import { useForm, Controller, useFieldArray } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, X } from '@tamagui/lucide-icons'
-import {
-  skillsProfileSchema,
-  type SkillsProfileFormData,
-  skillsProfileDefaults,
-  PROFICIENCY_LEVELS,
-} from './config'
+import { Plus, X, ChevronRight } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
 import { DashboardWidget } from '@app/ui'
+import { SkillSearchModal, type ParentSkill, type SkillChild } from '@app/ui'
+
+/**
+ * User skill with hierarchy information
+ */
+interface UserSkill {
+  skill_id: string
+  skill_name: string
+  csi_display: string | null
+  proficiency: number | null
+  years_experience: number | null
+  source: string
+  last_verified_at: string | null
+  hierarchy_path: string
+  hierarchy_ids: string[]
+  is_explicit: boolean
+  depth: number
+}
+
+/**
+ * Proficiency level display helper
+ */
+const PROFICIENCY_LABELS = {
+  1: 'Beginner',
+  2: 'Novice',
+  3: 'Intermediate',
+  4: 'Advanced',
+  5: 'Expert',
+} as const
 
 /**
  * Profile Skills Left Component
- * Form for managing skills and proficiency levels
+ * Form for managing skills with industry-based search
  */
 export function ProfileSkillsLeft() {
-  const [isLoading, setIsLoading] = useState(false)
+  const [selectedIndustry, setSelectedIndustry] = useState<string>('')
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isSearching, setIsSearching] = useState(false)
   const toast = useToastController()
 
+  // Fetch industries
+  const { data: industriesData, isLoading: isLoadingIndustries } =
+    api.profile.getIndustries.useQuery()
+
+  // Fetch user's skills
   const {
-    data: skillsData,
+    data: userSkillsData,
     isLoading: isLoadingSkills,
-    refetch,
-    error: skillsError,
-  } = api.profile.getSkills.useQuery(undefined)
+    refetch: refetchSkills,
+  } = api.profile.getUserSkills.useQuery()
 
-  console.log('Skills data:', skillsData)
-  console.log('Skills loading:', isLoadingSkills)
-  console.log('Skills error:', skillsError)
+  // Get current skills data (legacy endpoint for industry)
+  const { data: skillsData } = api.profile.getSkills.useQuery()
 
-  const updateSkillsMutation = api.profile.updateSkills.useMutation({
-    onSuccess: (data) => {
-      console.log('updateSkills mutation success:', data)
-      toast.show('Skills Updated', {
-        message: 'Your skills have been saved successfully!',
+  // Mutations
+  const addSkillMutation = api.profile.addUserSkill.useMutation({
+    onSuccess: () => {
+      toast.show('Skill Added', {
+        message: 'Skill has been added to your profile!',
       })
-      refetch()
+      refetchSkills()
     },
     onError: (error) => {
-      console.error('updateSkills mutation error:', error)
       toast.show('Error', {
-        message: error.message || 'Failed to save skills. Please try again.',
+        message: error.message || 'Failed to add skill',
       })
     },
   })
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors, isDirty },
-    reset,
-  } = useForm<SkillsProfileFormData>({
-    resolver: zodResolver(skillsProfileSchema),
-    defaultValues: skillsProfileDefaults,
-    mode: 'onChange', // Real-time validation
+  const removeSkillMutation = api.profile.removeUserSkill.useMutation({
+    onSuccess: () => {
+      toast.show('Skill Removed', {
+        message: 'Skill has been removed from your profile',
+      })
+      refetchSkills()
+    },
+    onError: (error) => {
+      toast.show('Error', {
+        message: error.message || 'Failed to remove skill',
+      })
+    },
   })
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'skills',
+  const updateIndustryMutation = api.profile.updateSkills.useMutation({
+    onSuccess: () => {
+      toast.show('Industry Updated', {
+        message: 'Your primary industry has been updated',
+      })
+    },
+    onError: (error) => {
+      toast.show('Error', {
+        message: error.message || 'Failed to update industry',
+      })
+    },
   })
 
-  // Reset form when skills data is loaded
+  // Set initial industry from user data
   useEffect(() => {
-    if (skillsData) {
-      // Convert null to undefined for primary_industry_id to match form schema
-      const formData = {
-        ...skillsData,
-        primary_industry_id: skillsData.primary_industry_id ?? undefined,
+    if (skillsData?.primary_industry_id && !selectedIndustry) {
+      setSelectedIndustry(skillsData.primary_industry_id)
+    }
+  }, [skillsData, selectedIndustry])
+
+  // Handle industry change
+  const handleIndustryChange = useCallback(
+    async (industryId: string) => {
+      setSelectedIndustry(industryId)
+      await updateIndustryMutation.mutateAsync({
+        primary_industry_id: industryId,
+      })
+    },
+    [updateIndustryMutation]
+  )
+
+  // NEW: Mutations for cascading skill selection
+  const searchParentSkillsMutation = api.profile.searchParentSkills.useMutation()
+
+  // Handle parent skill search
+  const handleSearchParents = useCallback(
+    async (query: string): Promise<ParentSkill[]> => {
+      if (!selectedIndustry) {
+        return []
       }
-      reset(formData)
-    }
-  }, [skillsData, reset])
 
-  const onSubmit = async (data: SkillsProfileFormData) => {
-    console.log('Form submitted with data:', data)
-    setIsLoading(true)
-    try {
-      console.log('Calling updateSkillsMutation...')
-      const result = await updateSkillsMutation.mutateAsync(data)
-      console.log('Mutation result:', result)
-    } catch (error) {
-      console.error('Mutation error:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+      setIsSearching(true)
+      try {
+        const result = await searchParentSkillsMutation.mutateAsync({
+          query,
+          industryId: selectedIndustry,
+          limit: 20,
+        })
+        return result.skills
+      } catch (error) {
+        console.error('Search error:', error)
+        return []
+      } finally {
+        setIsSearching(false)
+      }
+    },
+    [selectedIndustry, searchParentSkillsMutation]
+  )
 
-  if (isLoadingSkills) {
+  // Create tRPC utils for imperative queries
+  const utils = api.useUtils()
+
+  // Handle get skill children
+  const handleGetChildren = useCallback(
+    async (parentId: string): Promise<SkillChild[]> => {
+      try {
+        const result = await utils.profile.getSkillChildren.fetch({ parentId })
+        return result.children || []
+      } catch (error) {
+        console.error('Error getting children:', error)
+        return []
+      }
+    },
+    [utils]
+  )
+
+  // Handle skill selection from modal
+  const handleSelectSkill = useCallback(
+    async (skillId: string, proficiency: number) => {
+      await addSkillMutation.mutateAsync({
+        skillId,
+        proficiency,
+      })
+    },
+    [addSkillMutation]
+  )
+
+  // Handle remove skill
+  const handleRemoveSkill = useCallback(
+    async (skillId: string) => {
+      await removeSkillMutation.mutateAsync({ skillId })
+    },
+    [removeSkillMutation]
+  )
+
+  // Get explicit skills (user-added)
+  const explicitSkills = userSkillsData?.explicitSkills || []
+
+  if (isLoadingIndustries || isLoadingSkills) {
     return (
       <YStack gap="$4" p="$4" flex={1} justify="center" items="center">
         <Spinner size="large" />
-        <Text>Loading skills...</Text>
+        <Text>Loading...</Text>
       </YStack>
     )
   }
 
-  const addSkill = () => {
-    append({
-      skill_id: randomUUID(),
-      skill_name: '',
-      proficiency: 3,
-      years_experience: 0,
-      is_primary: false,
-      endorsed_count: 0,
-    })
-  }
-
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
-      <DashboardWidget>
-        <YStack gap="$4" p="$4" flex={1}>
-          <H4>Skills & Expertise</H4>
+    <>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <DashboardWidget>
+          <YStack gap="$4" p="$4" flex={1}>
+            <H4>Skills & Expertise</H4>
 
-          <YStack gap="$4">
+            {/* Industry Selector */}
+            <YStack gap="$2">
+              <Text fontWeight="600">Primary Industry *</Text>
+              <Text fontSize="$2" color="$color11">
+                Select your industry to search for relevant skills
+              </Text>
+              <Select value={selectedIndustry} onValueChange={handleIndustryChange} size="$4">
+                <Select.Trigger width="100%">
+                  <Select.Value placeholder="Select an industry" />
+                </Select.Trigger>
+
+                <Adapt when="sm" platform="touch">
+                  <Sheet
+                    native
+                    modal
+                    dismissOnSnapToBottom
+                    animationConfig={{
+                      type: 'spring',
+                      damping: 20,
+                      mass: 1.2,
+                      stiffness: 250,
+                    }}
+                  >
+                    <Sheet.Frame>
+                      <Sheet.ScrollView>
+                        <Adapt.Contents />
+                      </Sheet.ScrollView>
+                    </Sheet.Frame>
+                    <Sheet.Overlay
+                      animation="lazy"
+                      enterStyle={{ opacity: 0 }}
+                      exitStyle={{ opacity: 0 }}
+                    />
+                  </Sheet>
+                </Adapt>
+
+                <Select.Content zIndex={200000}>
+                  <Select.ScrollUpButton />
+                  <Select.Viewport>
+                    {industriesData?.industries.map((industry, index) => (
+                      <Select.Item key={industry.id} value={industry.id} index={index}>
+                        <Select.ItemText>{industry.name}</Select.ItemText>
+                      </Select.Item>
+                    ))}
+                  </Select.Viewport>
+                  <Select.ScrollDownButton />
+                </Select.Content>
+              </Select>
+            </YStack>
+
+            <Separator />
+
             {/* Skills List */}
             <YStack gap="$3">
               <XStack justify="space-between" items="center">
                 <Text fontWeight="600">Your Skills</Text>
-                <Button size="$3" onPress={addSkill} icon={Plus}>
+                <Button
+                  size="$3"
+                  onPress={() => setIsModalOpen(true)}
+                  icon={Plus}
+                  disabled={!selectedIndustry}
+                  opacity={!selectedIndustry ? 0.5 : 1}
+                >
                   Add Skill
                 </Button>
               </XStack>
 
-              {fields.map((field, index) => (
-                <YStack
-                  key={field.id}
-                  gap="$3"
-                  p="$3"
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  rounded="$4"
-                >
-                  <XStack justify="space-between" items="center">
-                    <Text fontWeight="600">Skill {index + 1}</Text>
-                    <Button size="$2" variant="outlined" onPress={() => remove(index)} icon={X}>
-                      Remove
-                    </Button>
-                  </XStack>
+              {!selectedIndustry && (
+                <Card bordered bg="$color3" p="$3">
+                  <Text fontSize="$2" color="$color11" text="center">
+                    Please select an industry to add skills
+                  </Text>
+                </Card>
+              )}
 
-                  {/* Skill Name */}
-                  <YStack gap="$2">
-                    <Text>Skill Name *</Text>
-                    <Controller
-                      name={`skills.${index}.skill_name`}
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          placeholder="e.g. JavaScript, Welding, Project Management"
-                          value={field.value}
-                          onChangeText={field.onChange}
-                          borderColor={
-                            errors.skills?.[index]?.skill_name ? '$red8' : '$borderColor'
-                          }
-                        />
-                      )}
-                    />
-                    {errors.skills?.[index]?.skill_name && (
-                      <Text color="$red10" fontSize="$2">
-                        {errors.skills[index]?.skill_name?.message}
-                      </Text>
-                    )}
-                  </YStack>
-
-                  {/* Proficiency Level */}
-                  <YStack gap="$2">
-                    <Text>Proficiency Level</Text>
-                    <Controller
-                      name={`skills.${index}.proficiency`}
-                      control={control}
-                      render={({ field }) => (
-                        <YStack gap="$2">
-                          <Slider
-                            value={[field.value]}
-                            onValueChange={(value) => field.onChange(value[0])}
-                            min={1}
-                            max={5}
-                            step={1}
-                          >
-                            <Slider.Track>
-                              <Slider.TrackActive />
-                            </Slider.Track>
-                            <Slider.Thumb index={0} />
-                          </Slider>
-                          <XStack justify="space-between">
-                            <Text fontSize="$2" color="$color11">
-                              {PROFICIENCY_LEVELS.find((level) => level.value === field.value)
-                                ?.label || 'Intermediate'}
-                            </Text>
-                            <Text fontSize="$2" color="$color11">
-                              {field.value}/5
-                            </Text>
-                          </XStack>
-                        </YStack>
-                      )}
-                    />
-                  </YStack>
-
-                  {/* Years of Experience */}
-                  <YStack gap="$2">
-                    <Text>Years of Experience</Text>
-                    <Controller
-                      name={`skills.${index}.years_experience`}
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          placeholder="Years of experience"
-                          value={field.value?.toString() || ''}
-                          onChangeText={(text) => field.onChange(text ? Number.parseInt(text) : 0)}
-                          keyboardType="numeric"
-                        />
-                      )}
-                    />
-                  </YStack>
-                </YStack>
-              ))}
-
-              {fields.length === 0 && (
+              {explicitSkills.length === 0 && selectedIndustry && (
                 <YStack p="$4" items="center" gap="$2">
                   <Text color="$color11">No skills added yet</Text>
-                  <Button onPress={addSkill} icon={Plus}>
+                  <Button onPress={() => setIsModalOpen(true)} icon={Plus} size="$3">
                     Add Your First Skill
                   </Button>
                 </YStack>
               )}
-            </YStack>
 
-            {/* Save Button */}
-            <XStack justify="flex-end" pt="$4">
-              <Button
-                onPress={handleSubmit(onSubmit)}
-                disabled={!isDirty || isLoading}
-                opacity={!isDirty || isLoading ? 0.5 : 1}
-                space={isLoading ? '$2' : 0}
-              >
-                <AnimatePresence>
-                  {isLoading && (
-                    <Button.Icon>
-                      <Spinner
-                        animation="bouncy"
-                        enterStyle={{
-                          scale: 0,
-                        }}
-                        exitStyle={{
-                          scale: 0,
-                        }}
-                      />
-                    </Button.Icon>
-                  )}
-                </AnimatePresence>
-                <Button.Text>{isLoading ? 'Saving...' : 'Save Changes'}</Button.Text>
-              </Button>
-            </XStack>
+              {explicitSkills.map((skill: UserSkill) => (
+                <Card key={skill.skill_id} bordered size="$4">
+                  <Card.Header gap="$2">
+                    {/* Hierarchy Breadcrumb */}
+                    <XStack gap="$1" items="center" flexWrap="wrap" flex={1}>
+                      {skill.hierarchy_path.split(' > ').map((part, index, arr) => (
+                        <XStack key={`${skill.skill_id}-${index}`} items="center" gap="$1">
+                          <Text
+                            fontSize={index === arr.length - 1 ? '$3' : '$2'}
+                            color={index === arr.length - 1 ? '$color12' : '$color11'}
+                            fontWeight={index === arr.length - 1 ? '600' : '400'}
+                          >
+                            {part}
+                          </Text>
+                          {index < arr.length - 1 && <ChevronRight size={12} color="$color11" />}
+                        </XStack>
+                      ))}
+                    </XStack>
+
+                    {/* CSI Code if available */}
+                    {skill.csi_display && (
+                      <Text fontSize="$2" color="$color10">
+                        CSI {skill.csi_display}
+                      </Text>
+                    )}
+
+                    {/* Proficiency */}
+                    <XStack justify="space-between" items="center" pt="$2">
+                      <YStack gap="$1">
+                        <Text fontSize="$2" color="$color11">
+                          Proficiency
+                        </Text>
+                        <Text fontWeight="600" fontSize="$3">
+                          {skill.proficiency &&
+                            PROFICIENCY_LABELS[
+                              skill.proficiency as keyof typeof PROFICIENCY_LABELS
+                            ]}{' '}
+                          ({skill.proficiency}/5)
+                        </Text>
+                      </YStack>
+
+                      <XStack gap="$2">
+                        <Button
+                          size="$2"
+                          variant="outlined"
+                          icon={X}
+                          onPress={() => handleRemoveSkill(skill.skill_id)}
+                          disabled={removeSkillMutation.isPending}
+                        >
+                          Remove
+                        </Button>
+                      </XStack>
+                    </XStack>
+                  </Card.Header>
+                </Card>
+              ))}
+            </YStack>
           </YStack>
-        </YStack>
-      </DashboardWidget>
-    </ScrollView>
+        </DashboardWidget>
+      </ScrollView>
+
+      {/* Skill Search Modal */}
+      <SkillSearchModal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSelectSkill={handleSelectSkill}
+        onSearchParents={handleSearchParents}
+        onGetChildren={handleGetChildren}
+        isSearching={isSearching}
+      />
+    </>
   )
 }

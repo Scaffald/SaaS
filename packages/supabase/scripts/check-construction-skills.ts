@@ -18,12 +18,7 @@ async function main() {
 
     console.log("Construction industry skills:");
     console.log(`Total found: ${result.rows.length}`);
-    console.log("\nSkills:");
-    result.rows.forEach((row) => {
-      console.log(
-        `  ${row.name} (csi_code_key: ${row.csi_code_key || "null"})`,
-      );
-    });
+    console.log("\nSkills:", result.rows);
   } finally {
     await client.end();
   }

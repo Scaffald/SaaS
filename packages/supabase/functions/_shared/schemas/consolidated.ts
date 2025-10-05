@@ -209,6 +209,121 @@ export const profileSkillsOutputSchema = z.object({
 });
 
 // =============================================================================
+// SKILLS API SCHEMAS
+// =============================================================================
+
+// Search parent skills input (simplified cascading approach)
+export const searchParentSkillsInputSchema = z.object({
+  query: z.string().min(1, "Search query is required"),
+  industryId: z.string().uuid(),
+  limit: z.number().min(1).max(50).optional().default(20),
+});
+
+// Parent skill output
+export const parentSkillSchema = z.object({
+  skill_id: z.string(),
+  skill_name: z.string(),
+  csi_display: z.string().nullable(),
+  csi_code: z.array(z.string()).nullable(),
+  active: z.boolean(),
+  child_count: z.number(),
+});
+
+// Get skill children input
+export const getSkillChildrenInputSchema = z.object({
+  parentId: z.string().uuid(),
+});
+
+// Skill child output (with hierarchy)
+export const skillChildSchema = z.object({
+  skill_id: z.string(),
+  skill_name: z.string(),
+  csi_display: z.string().nullable(),
+  csi_code: z.array(z.string()).nullable(),
+  parent_id: z.string().nullable(),
+  depth: z.number(),
+  hierarchy_path: z.string(),
+  active: z.boolean(),
+  leaf_node: z.boolean(),
+});
+
+// Legacy: Keep for backwards compatibility (deprecated)
+export const searchSkillsInputSchema = z.object({
+  query: z.string().min(1, "Search query is required"),
+  industryId: z.string().uuid(),
+  limit: z.number().min(1).max(50).optional().default(20),
+});
+
+export const skillWithHierarchySchema = z.object({
+  skill_id: z.string(),
+  skill_name: z.string(),
+  csi_display: z.string().nullable(),
+  csi_code: z.array(z.string()).nullable(),
+  parent_id: z.string().nullable(),
+  hierarchy_path: z.string(),
+  hierarchy_ids: z.array(z.string()),
+  depth: z.number(),
+  active: z.boolean(),
+});
+
+// Skill details output
+export const skillDetailsSchema = z.object({
+  skill_id: z.string(),
+  skill_name: z.string(),
+  csi_display: z.string().nullable(),
+  csi_code: z.array(z.string()).nullable(),
+  parent_id: z.string().nullable(),
+  industry_id: z.string().nullable(),
+  industry_name: z.string().nullable(),
+  hierarchy_path: z.string(),
+  hierarchy_ids: z.array(z.string()),
+  active: z.boolean(),
+  created_at: z.string(),
+});
+
+// User skill with hierarchy output
+export const userSkillWithHierarchySchema = z.object({
+  skill_id: z.string(),
+  skill_name: z.string(),
+  csi_display: z.string().nullable(),
+  proficiency: z.number().nullable(),
+  years_experience: z.number().nullable(),
+  source: z.string(),
+  last_verified_at: z.string().nullable(),
+  hierarchy_path: z.string(),
+  hierarchy_ids: z.array(z.string()),
+  is_explicit: z.boolean(),
+  depth: z.number(),
+});
+
+// Add user skill input
+export const addUserSkillInputSchema = z.object({
+  skillId: z.string().uuid(),
+  proficiency: z.number().min(1).max(5),
+  yearsExperience: z.number().min(0).max(50).optional(),
+});
+
+// Update user skill input
+export const updateUserSkillInputSchema = z.object({
+  skillId: z.string().uuid(),
+  proficiency: z.number().min(1).max(5).optional(),
+  yearsExperience: z.number().min(0).max(50).optional(),
+});
+
+// Remove user skill input
+export const removeUserSkillInputSchema = z.object({
+  skillId: z.string().uuid(),
+});
+
+// Industry output
+export const industrySchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  slug: z.string(),
+  active: z.boolean(),
+});
+
+// =============================================================================
 // AVATAR UPLOAD SCHEMA
 // =============================================================================
 
