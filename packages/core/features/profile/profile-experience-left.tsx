@@ -74,7 +74,8 @@ export function ProfileExperienceLeft() {
       reset({
         total_years_experience: experienceSummaryQuery.data.total_years_experience || undefined,
         career_level: experienceSummaryQuery.data.career_level || undefined,
-        experience_entries: experienceQuery.data.map((exp) => ({
+        // biome-ignore lint/suspicious/noExplicitAny: API response type
+        experience_entries: experienceQuery.data.map((exp: any) => ({
           id: exp.id,
           job_title: exp.job_title,
           company_name: exp.company_name,

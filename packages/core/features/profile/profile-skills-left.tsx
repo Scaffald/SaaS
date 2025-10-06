@@ -82,7 +82,8 @@ export function ProfileSkillsLeft() {
       })
       refetchSkills()
     },
-    onError: (error) => {
+    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
+    onError: (error: any) => {
       toast.show('Error', {
         message: error.message || 'Failed to add skill',
       })
@@ -96,7 +97,8 @@ export function ProfileSkillsLeft() {
       })
       refetchSkills()
     },
-    onError: (error) => {
+    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
+    onError: (error: any) => {
       toast.show('Error', {
         message: error.message || 'Failed to update skill',
       })
@@ -110,7 +112,8 @@ export function ProfileSkillsLeft() {
       })
       refetchSkills()
     },
-    onError: (error) => {
+    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
+    onError: (error: any) => {
       toast.show('Error', {
         message: error.message || 'Failed to remove skill',
       })
@@ -123,7 +126,8 @@ export function ProfileSkillsLeft() {
         message: 'Your primary industry has been updated',
       })
     },
-    onError: (error) => {
+    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
+    onError: (error: any) => {
       toast.show('Error', {
         message: error.message || 'Failed to update industry',
       })
@@ -284,7 +288,8 @@ export function ProfileSkillsLeft() {
                 <Select.Content zIndex={200000}>
                   <Select.ScrollUpButton />
                   <Select.Viewport>
-                    {industriesData?.industries.map((industry, index) => (
+                    {/* biome-ignore lint/suspicious/noExplicitAny: API response type */}
+                    {industriesData?.industries.map((industry: any, index: number) => (
                       <Select.Item key={industry.id} value={industry.id} index={index}>
                         <Select.ItemText>{industry.name}</Select.ItemText>
                       </Select.Item>

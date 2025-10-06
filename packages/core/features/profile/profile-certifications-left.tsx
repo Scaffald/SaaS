@@ -72,7 +72,8 @@ export function ProfileCertificationsLeft() {
 
       // 2. Update form with returned IDs from database
       if (result.certifications) {
-        result.certifications.forEach((savedCert, index) => {
+        // biome-ignore lint/suspicious/noExplicitAny: API response type
+        result.certifications.forEach((savedCert: any, index: number) => {
           if (data.certifications?.[index]) {
             setValue(`certifications.${index}.id`, savedCert.id, { shouldDirty: false })
           }

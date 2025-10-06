@@ -7,10 +7,12 @@ import { getBaseUrl } from "./getBaseUrl";
 import { supabase } from "./supabase/client";
 
 // Create tRPC React client with proper typing from shared supabase package
-export const api = createTRPCReact<AppRouter>();
+// biome-ignore lint/suspicious/noExplicitAny: Required for cross-environment tRPC compatibility
+export const api = createTRPCReact<AppRouter>() as any;
 
 export const createTrpcClient = () =>
-  api.createClient({
+  // biome-ignore lint/suspicious/noExplicitAny: Required for tRPC router compatibility
+  (api as any).createClient({
     links: [
       httpBatchLink({
         url: `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/trpc`,

@@ -48,7 +48,8 @@ export function ProfileEmploymentLeft() {
       })
       refetch()
     },
-    onError: (error) => {
+    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
+    onError: (error: any) => {
       console.error('Error saving employment:', error)
       toast.show('Error', {
         message: error.message || 'Failed to save employment preferences. Please try again.',

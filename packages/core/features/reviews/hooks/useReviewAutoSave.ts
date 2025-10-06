@@ -59,7 +59,7 @@ export function useReviewAutoSave({
     // Set new timeout for debounced save
     timeoutRef.current = setTimeout(() => {
       save();
-    }, debounceMs);
+    }, debounceMs) as unknown as NodeJS.Timeout;
 
     // Cleanup
     return () => {

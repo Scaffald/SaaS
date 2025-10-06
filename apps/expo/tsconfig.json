@@ -9,10 +9,13 @@
     "../../packages/supabase/types.ts",
     "../../packages/supabase/client-types.ts",
     "../../packages/supabase/app-router-type.ts",
-    "../../packages/supabase/helpers.ts"
+    "../../packages/supabase/helpers.ts",
+    "../../packages/supabase/functions/_shared/schemas/consolidated.ts"
   ],
   "exclude": [
-    "../../packages/supabase/functions/**/*",
+    "../../packages/supabase/functions/trpc/**/*",
+    "../../packages/supabase/functions/job-import/**/*",
+    "../../packages/supabase/functions/news/**/*",
     "../../packages/supabase/scripts/**/*",
     "../../packages/supabase/types-trpc.ts"
   ],

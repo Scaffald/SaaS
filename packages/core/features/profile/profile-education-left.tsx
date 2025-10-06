@@ -70,7 +70,8 @@ export function ProfileEducationLeft() {
     if (educationQuery.data && educationLevelQuery.data) {
       reset({
         education_level: educationLevelQuery.data.education_level || undefined,
-        education_entries: educationQuery.data.map((edu) => ({
+        // biome-ignore lint/suspicious/noExplicitAny: API response type
+        education_entries: educationQuery.data.map((edu: any) => ({
           id: edu.id,
           institution_name: edu.institution_name,
           degree_type: edu.degree_type || undefined,

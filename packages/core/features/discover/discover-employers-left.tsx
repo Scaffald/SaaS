@@ -46,7 +46,7 @@ export function DiscoverEmployersLeft({
   })
 
   const handleViewDetails = (employer: Employer) => {
-    setSelectedEmployer(employer)
+    _setSelectedEmployer(employer)
     // TODO: Open detail modal or navigate to detail page
     console.log('View employer details:', employer)
   }
