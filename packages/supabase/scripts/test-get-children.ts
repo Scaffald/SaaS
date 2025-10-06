@@ -38,12 +38,12 @@ async function main() {
     console.log(
       `Found ${childrenResult.rows.length} children (showing first 10):`,
     );
-    childrenResult.rows.forEach((child) => {
+    for (const child of childrenResult.rows) {
       console.log(`  - ${child.hierarchy_path}`);
       console.log(
         `    ID: ${child.skill_id}, Depth: ${child.depth}, Active: ${child.active}`,
       );
-    });
+    }
   } finally {
     await client.end();
   }

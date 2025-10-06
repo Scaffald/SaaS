@@ -59,8 +59,6 @@ export const DrawerFooter = () => {
         {isDark ? <Sun size={20} color="$accentColor" /> : <Moon size={20} color="$accentColor" />}
       </Button>
 
-      <Link href="/map">Map</Link>
-
       {/* Logout Button */}
       <Button
         size="$3"

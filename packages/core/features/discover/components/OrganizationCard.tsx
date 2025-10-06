@@ -13,10 +13,17 @@ type OrganizationCardProps = {
 
 export const OrganizationCard = memo(
   forwardRef<TamaguiElement, OrganizationCardProps>(
-    ({ organization, isSelected, onSelect }, ref) => {
+    ({ organization, isSelected, onSelect }, forwardedRef) => {
       return (
         <YStack
-          ref={ref}
+          ref={(node) => {
+            // Forward to parent ref
+            if (typeof forwardedRef === 'function') {
+              forwardedRef(node)
+            } else if (forwardedRef) {
+              forwardedRef.current = node
+            }
+          }}
           borderWidth={1}
           borderColor={isSelected ? '$blue9' : '$color5'}
           rounded="$3"

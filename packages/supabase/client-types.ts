@@ -1,4 +1,12 @@
-// Re-export types from consolidated schemas for client-side usage
+/**
+ * Client-side types and exports for tRPC and schemas
+ * Re-exports from _shared directory to avoid importing Deno-specific code
+ */
+
+// Re-export AppRouter type
+export type { AppRouter } from "./app-router-type";
+
+// Re-export types from consolidated schemas
 export type {
   EmploymentProfileFormData,
   ProfileEmploymentInput,
@@ -9,7 +17,7 @@ export type {
   ProfileSkillsOutput,
   UploadAvatarInput,
   UploadAvatarOutput,
-} from "./schemas/consolidated";
+} from "./functions/_shared/schemas/consolidated";
 
 // Re-export constants and schemas
 export {
@@ -18,8 +26,4 @@ export {
   MILITARY_STATUS_OPTIONS,
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
-} from "./schemas/consolidated";
-
-// AppRouter type for client-side tRPC usage
-// Re-export from the types-trpc file to avoid importing Deno-specific code
-export type { AppRouter } from "../../types-trpc";
+} from "./functions/_shared/schemas/consolidated";

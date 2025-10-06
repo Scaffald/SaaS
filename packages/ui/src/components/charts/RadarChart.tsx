@@ -33,7 +33,7 @@ export interface RadarChartProps {
   stripHeight?: number
   color?: string
   strokeWidth?: number
-  backgroundColor?: GetThemeValueForKey<'backgroundColor'>
+  bg?: GetThemeValueForKey<'backgroundColor'>
   gridColor?: string
   labelColor?: string
   labelTextSize?: number
@@ -95,7 +95,7 @@ export const RadarChart = ({
   stripHeight = 80,
   color = '#1B6B93',
   strokeWidth = 3,
-  backgroundColor = 'transparent',
+  bg = 'transparent',
   gridColor = '#E0E0E0',
   labelColor = '#E0E0E0',
   labelTextSize = 12,
@@ -118,12 +118,7 @@ export const RadarChart = ({
     console.log('Labels:', labels)
 
     return (
-      <View
-        items="center"
-        bg={typeof backgroundColor === 'string' ? backgroundColor : 'transparent'}
-        rounded="$4"
-        p="$4"
-      >
+      <View items="center" bg={typeof bg === 'string' ? bg : 'transparent'} rounded="$4" p="$4">
         <GiftedRadarChart
           data={chartDataValues}
           labels={labels}
@@ -150,12 +145,7 @@ export const RadarChart = ({
   console.log('Single dataset - Labels:', labels)
 
   return (
-    <View
-      items="center"
-      bg={typeof backgroundColor === 'string' ? backgroundColor : 'transparent'}
-      rounded="$4"
-      p="$4"
-    >
+    <View items="center" bg={typeof bg === 'string' ? bg : 'transparent'} rounded="$4" p="$4">
       <GiftedRadarChart
         data={chartDataValues}
         labels={labels}

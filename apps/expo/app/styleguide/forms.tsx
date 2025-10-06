@@ -996,9 +996,9 @@ export default function FormsPage() {
                   id="custom-switch-3"
                   disabled={switchDisabled}
                   size={switchSize}
-                  backgroundColor="purple"
+                  bg="purple"
                 >
-                  <Switch.Thumb animation="quick" backgroundColor="purple" borderColor="purple" />
+                  <Switch.Thumb animation="quick" bg="purple" borderColor="purple" />
                 </Switch>
               </XStack>
             </YStack>

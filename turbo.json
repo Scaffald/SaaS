@@ -27,7 +27,11 @@
       "outputs": []
     },
     "check": {
-      "dependsOn": ["format:fix", "lint:fix", "typecheck"],
+      "dependsOn": ["format:fix", "lint:fix"],
+      "outputs": []
+    },
+    "check#expo-app": {
+      "dependsOn": ["format:fix", "lint:fix"],
       "outputs": []
     },
     "check-circular-deps": {

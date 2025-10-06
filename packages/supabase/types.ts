@@ -609,6 +609,255 @@ export type Database = {
           },
         ]
       }
+      external_job_feeds: {
+        Row: {
+          created_at: string | null
+          error_count: number | null
+          feed_type: string
+          fetch_interval_hours: number | null
+          id: string
+          is_active: boolean | null
+          last_error: string | null
+          last_fetched_at: string | null
+          last_success_at: string | null
+          name: string
+          parser_config: Json | null
+          updated_at: string | null
+          url: string
+        }
+        Insert: {
+          created_at?: string | null
+          error_count?: number | null
+          feed_type: string
+          fetch_interval_hours?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_error?: string | null
+          last_fetched_at?: string | null
+          last_success_at?: string | null
+          name: string
+          parser_config?: Json | null
+          updated_at?: string | null
+          url: string
+        }
+        Update: {
+          created_at?: string | null
+          error_count?: number | null
+          feed_type?: string
+          fetch_interval_hours?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_error?: string | null
+          last_fetched_at?: string | null
+          last_success_at?: string | null
+          name?: string
+          parser_config?: Json | null
+          updated_at?: string | null
+          url?: string
+        }
+        Relationships: []
+      }
+      external_job_industries: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          external_job_id: string
+          industry_id: string
+          mapped_by: string | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          external_job_id: string
+          industry_id: string
+          mapped_by?: string | null
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          external_job_id?: string
+          industry_id?: string
+          mapped_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "external_job_industries_external_job_id_fkey"
+            columns: ["external_job_id"]
+            isOneToOne: false
+            referencedRelation: "external_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "external_job_industries_industry_id_fkey"
+            columns: ["industry_id"]
+            isOneToOne: false
+            referencedRelation: "industries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      external_job_skills: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          external_job_id: string
+          extracted_by: string | null
+          required_level: number | null
+          skill_id: string
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          external_job_id: string
+          extracted_by?: string | null
+          required_level?: number | null
+          skill_id: string
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          external_job_id?: string
+          extracted_by?: string | null
+          required_level?: number | null
+          skill_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "external_job_skills_external_job_id_fkey"
+            columns: ["external_job_id"]
+            isOneToOne: false
+            referencedRelation: "external_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "external_job_skills_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      external_jobs: {
+        Row: {
+          application_url: string | null
+          archived_at: string | null
+          benefits: string[] | null
+          company_headquarters: string | null
+          company_logo: string | null
+          company_name: string | null
+          company_website: string | null
+          compensation_currency: string | null
+          compensation_max: number | null
+          compensation_min: number | null
+          compensation_period: string | null
+          content_hash: string | null
+          created_at: string | null
+          description: string | null
+          expires_date: string | null
+          external_guid: string
+          external_url: string | null
+          featured: boolean | null
+          feed_id: string
+          id: string
+          is_active: boolean | null
+          job_category: string | null
+          job_location: string | null
+          job_tags: string[] | null
+          job_type: string | null
+          last_processed_at: string | null
+          posted_date: string | null
+          raw_data: Json | null
+          requirements: string[] | null
+          responsibilities: string[] | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          application_url?: string | null
+          archived_at?: string | null
+          benefits?: string[] | null
+          company_headquarters?: string | null
+          company_logo?: string | null
+          company_name?: string | null
+          company_website?: string | null
+          compensation_currency?: string | null
+          compensation_max?: number | null
+          compensation_min?: number | null
+          compensation_period?: string | null
+          content_hash?: string | null
+          created_at?: string | null
+          description?: string | null
+          expires_date?: string | null
+          external_guid: string
+          external_url?: string | null
+          featured?: boolean | null
+          feed_id: string
+          id?: string
+          is_active?: boolean | null
+          job_category?: string | null
+          job_location?: string | null
+          job_tags?: string[] | null
+          job_type?: string | null
+          last_processed_at?: string | null
+          posted_date?: string | null
+          raw_data?: Json | null
+          requirements?: string[] | null
+          responsibilities?: string[] | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          application_url?: string | null
+          archived_at?: string | null
+          benefits?: string[] | null
+          company_headquarters?: string | null
+          company_logo?: string | null
+          company_name?: string | null
+          company_website?: string | null
+          compensation_currency?: string | null
+          compensation_max?: number | null
+          compensation_min?: number | null
+          compensation_period?: string | null
+          content_hash?: string | null
+          created_at?: string | null
+          description?: string | null
+          expires_date?: string | null
+          external_guid?: string
+          external_url?: string | null
+          featured?: boolean | null
+          feed_id?: string
+          id?: string
+          is_active?: boolean | null
+          job_category?: string | null
+          job_location?: string | null
+          job_tags?: string[] | null
+          job_type?: string | null
+          last_processed_at?: string | null
+          posted_date?: string | null
+          raw_data?: Json | null
+          requirements?: string[] | null
+          responsibilities?: string[] | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "external_jobs_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "external_job_feeds"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "external_jobs_feed_id_fkey"
+            columns: ["feed_id"]
+            isOneToOne: false
+            referencedRelation: "v_job_import_stats"
+            referencedColumns: ["feed_id"]
+          },
+        ]
+      }
       follows: {
         Row: {
           created_at: string
@@ -2626,6 +2875,61 @@ export type Database = {
         }
         Relationships: []
       }
+      v_cron_jobs: {
+        Row: {
+          active: boolean | null
+          command: string | null
+          database: string | null
+          jobid: number | null
+          jobname: string | null
+          nodename: string | null
+          nodeport: number | null
+          schedule: string | null
+          username: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          command?: string | null
+          database?: string | null
+          jobid?: number | null
+          jobname?: string | null
+          nodename?: string | null
+          nodeport?: number | null
+          schedule?: string | null
+          username?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          command?: string | null
+          database?: string | null
+          jobid?: number | null
+          jobname?: string | null
+          nodename?: string | null
+          nodeport?: number | null
+          schedule?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
+      v_job_import_stats: {
+        Row: {
+          active_jobs: number | null
+          archived_jobs: number | null
+          avg_industry_confidence: number | null
+          error_count: number | null
+          feed_id: string | null
+          feed_name: string | null
+          feed_type: string | null
+          is_active: boolean | null
+          last_fetched_at: string | null
+          last_success_at: string | null
+          mapped_industries: number | null
+          most_recent_job_date: string | null
+          total_jobs: number | null
+          unique_companies: number | null
+        }
+        Relationships: []
+      }
       v_job_search: {
         Row: {
           address: Json | null
@@ -3164,6 +3468,10 @@ export type Database = {
         Args: { "": unknown } | { "": unknown }
         Returns: string
       }
+      calculate_job_content_hash: {
+        Args: { p_company: string; p_description: string; p_title: string }
+        Returns: string
+      }
       citext: {
         Args: { "": boolean } | { "": string } | { "": unknown }
         Returns: string
@@ -3257,6 +3565,17 @@ export type Database = {
       find_csi_skill_by_code: {
         Args: { code_array: string[] }
         Returns: string
+      }
+      find_similar_jobs: {
+        Args: {
+          p_company: string
+          p_posted_within_days?: number
+          p_title: string
+        }
+        Returns: {
+          job_id: string
+          similarity_score: number
+        }[]
       }
       geography: {
         Args: { "": string } | { "": unknown }
@@ -4978,6 +5297,10 @@ export type Database = {
       text: {
         Args: { "": unknown }
         Returns: string
+      }
+      trigger_job_import: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       unlockrows: {
         Args: { "": string }
