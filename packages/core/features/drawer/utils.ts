@@ -1,26 +1,35 @@
+import { DASHBOARD_ROUTES, OFFICE_ROUTES } from "@app/core/constants/routes";
+
 /**
  * Normalizes a path string by cleaning up query parameters, tabs routes, and extra slashes
  * @param value - The path string to normalize
  * @returns Normalized path string
  */
 export const normalizePath = (value: string) => {
-  if (!value) return '/'
-  const withoutQuery = value.split('?')[0]
-  const cleaned = withoutQuery.replace(/\/\(tabs\)/g, '')
-  const normalized = cleaned.replace(/\/+/g, '/')
-  if (normalized === '' || normalized === '/') return '/'
-  return normalized.endsWith('/') ? normalized.slice(0, -1) : normalized
-}
+  if (!value) return "/";
+  const withoutQuery = value.split("?")[0];
+  const cleaned = withoutQuery.replace(/\/\(tabs\)/g, "");
+  const normalized = cleaned.replace(/\/+/g, "/");
+  if (normalized === "" || normalized === "/") return "/";
+  return normalized.endsWith("/") ? normalized.slice(0, -1) : normalized;
+};
 
 export const isActivePath = (pathname: string, href: string) => {
-  if (href === '/') {
-    return pathname === '/' || pathname === '/index'
+  if (href === "/") {
+    return pathname === "/" || pathname === "/index";
   }
 
   // Special case for dashboard: only match exact path or /dashboard/index
-  if (href === '/dashboard') {
-    return pathname === '/dashboard' || pathname === '/dashboard/index'
+  const dashboardPath = DASHBOARD_ROUTES.INDEX?.fullPath || "/dashboard";
+  if (href === dashboardPath) {
+    return pathname === dashboardPath || pathname === `${dashboardPath}/index`;
   }
 
-  return pathname === href || pathname.startsWith(`${href}/`)
-}
+  // Special case for office: only match exact path or /office/index
+  const officePath = OFFICE_ROUTES.INDEX?.fullPath || "/office";
+  if (href === officePath) {
+    return pathname === officePath || pathname === `${officePath}/index`;
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`);
+};

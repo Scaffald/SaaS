@@ -1,0 +1,159 @@
+---
+description: "Route path management and constants usage"
+globs: ["**/*.tsx", "**/*.ts"]
+alwaysApply: false
+---
+
+# Route Constants Usage
+
+## Core Principle: Never Use Hardcoded Route Paths
+
+All route paths must be defined in `packages/core/constants/routes.ts` and referenced through the exported constants.
+
+## Route Constants Structure
+
+### Available Route Constants
+
+```typescript
+import { 
+  ROUTES, 
+  DASHBOARD_ROUTES, 
+  OFFICE_ROUTES, 
+  AUTH_ROUTES 
+} from '@app/core/constants/routes'
+
+// Dashboard routes
+DASHBOARD_ROUTES.INDEX.fullPath        // "/dashboard"
+DASHBOARD_ROUTES.PROFILE.fullPath      // "/dashboard/profile"
+DASHBOARD_ROUTES.SETTINGS.fullPath     // "/dashboard/settings"
+DASHBOARD_ROUTES.Discover.fullPath     // "/dashboard/discover"
+
+// Office routes (admin only)
+OFFICE_ROUTES.INDEX.fullPath           // "/office"
+OFFICE_ROUTES.JOBS.fullPath            // "/office/jobs"
+
+// Auth routes
+AUTH_ROUTES.INDEX.fullPath             // "/auth"
+AUTH_ROUTES.CONFIRM.fullPath           // "/auth/confirm"
+```
+
+## Usage Patterns
+
+### ❌ Bad - Hardcoded Paths
+
+```typescript
+// DON'T DO THIS
+<Link href="/dashboard">Dashboard</Link>
+<Link href="/office/jobs">Manage Jobs</Link>
+
+router.push('/dashboard')
+router.replace('/office')
+
+const isActive = pathname === '/dashboard'
+```
+
+### ✅ Good - Using Route Constants
+
+```typescript
+// DO THIS
+import { DASHBOARD_ROUTES, OFFICE_ROUTES } from '@app/core/constants/routes'
+
+<Link href={DASHBOARD_ROUTES.INDEX.fullPath}>Dashboard</Link>
+<Link href={OFFICE_ROUTES.JOBS.fullPath}>Manage Jobs</Link>
+
+router.push(DASHBOARD_ROUTES.INDEX.fullPath)
+router.replace(OFFICE_ROUTES.INDEX.fullPath)
+
+const isActive = pathname === DASHBOARD_ROUTES.INDEX.fullPath
+```
+
+### Using Route Titles
+
+```typescript
+// Access route metadata
+const title = DASHBOARD_ROUTES.PROFILE.title // "Profile"
+const path = DASHBOARD_ROUTES.PROFILE.fullPath // "/dashboard/profile"
+```
+
+## Adding New Routes
+
+When adding new routes, update `packages/core/constants/routes.ts`:
+
+```typescript
+// 1. Add to route config
+const routeConfig: Record<string, RouteConfig> = {
+  // ... existing routes
+  
+  newSection: {
+    path: "/new-section",
+    title: "New Section",
+    isProtected: true,
+    children: {
+      index: {
+        path: "/new-section",
+        title: "New Section Home",
+      },
+      subsection: {
+        path: "/new-section/subsection",
+        title: "Subsection",
+      },
+    },
+  },
+}
+
+// 2. Export convenience accessor
+export const NEW_SECTION_ROUTES = {
+  INDEX: ROUTES.newSection.childrenArray?.find((r) => r.path === "/new-section"),
+  SUBSECTION: ROUTES.newSection.childrenArray?.find((r) => r.path === "/new-section/subsection"),
+}
+```
+
+## Special Cases
+
+### Root Path
+
+```typescript
+// Root path is always "/"
+if (href === "/") {
+  return pathname === "/" || pathname === "/index"
+}
+```
+
+### Path Matching in Utils
+
+Use route constants for path matching:
+
+```typescript
+import { DASHBOARD_ROUTES, OFFICE_ROUTES } from '@app/core/constants/routes'
+
+// Exact path matching
+const dashboardPath = DASHBOARD_ROUTES.INDEX?.fullPath || "/dashboard"
+if (href === dashboardPath) {
+  return pathname === dashboardPath || pathname === `${dashboardPath}/index`
+}
+```
+
+## Benefits
+
+1. **Type Safety** - TypeScript will catch typos and missing routes
+2. **Single Source of Truth** - All paths defined in one place
+3. **Easier Refactoring** - Change path in one place, updates everywhere
+4. **Better IDE Support** - Autocomplete and navigation
+5. **Documentation** - Route metadata (title, description) in one place
+
+## Enforcement
+
+- **ALWAYS import route constants** when working with navigation
+- **NEVER use string literals** for route paths (except in routes.ts itself)
+- **ALWAYS use `.fullPath`** property to get the actual path string
+- **DOCUMENT new routes** with proper titles and descriptions
+
+## Migration
+
+When finding hardcoded paths:
+
+1. Identify the path and its purpose
+2. Check if it exists in `routes.ts`
+3. If not, add it to `routes.ts` with proper structure
+4. Replace hardcoded string with route constant reference
+5. Verify the change works correctly

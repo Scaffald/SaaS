@@ -1,7 +1,12 @@
 import type { JSX } from "react";
-import { DASHBOARD_ROUTES, ROUTES } from "@app/core/constants/routes";
+import {
+  DASHBOARD_ROUTES,
+  OFFICE_ROUTES,
+  ROUTES,
+} from "@app/core/constants/routes";
 import {
   BarChart3,
+  Briefcase,
   Building2,
   Cog,
   Map as MapIcon,
@@ -13,15 +18,29 @@ import type { DrawerItemConfig, DrawerSectionConfig } from "./types";
 
 /**
  * Generates drawer items dynamically from dashboard routes
+ * @param options - Optional configuration for drawer items
+ * @param options.includeOfficeLink - Whether to include the Office link (for admin users)
  * @returns Array of drawer item configurations
  */
-export const generateDashboardDrawerItems = (): DrawerItemConfig[] => {
+export const generateDashboardDrawerItems = (options?: {
+  includeOfficeLink?: boolean;
+}): DrawerItemConfig[] => {
   const items: DrawerItemConfig[] = [];
+
+  // Office link (for admin users only)
+  if (options?.includeOfficeLink && OFFICE_ROUTES.INDEX) {
+    items.push({
+      key: "office",
+      title: OFFICE_ROUTES.INDEX.title || "Office",
+      href: OFFICE_ROUTES.INDEX.fullPath,
+      icon: Briefcase,
+    });
+  }
 
   // Main dashboard item
   items.push({
     key: "dashboard",
-    title: "Dashboard",
+    title: DASHBOARD_ROUTES.INDEX?.title || "Dashboard",
     href: DASHBOARD_ROUTES.INDEX?.fullPath || "/dashboard",
     icon: BarChart3,
   });
@@ -97,11 +116,21 @@ export const generateDashboardDrawerItems = (): DrawerItemConfig[] => {
 
 /**
  * Main drawer sections configuration
+ * @param options - Optional configuration for drawer sections
+ * @param options.includeOfficeLink - Whether to include the Office link (for admin users)
+ * @returns Array of drawer section configurations
  */
-export const drawerSections: DrawerSectionConfig[] = [
+export const getDrawerSections = (options?: {
+  includeOfficeLink?: boolean;
+}): DrawerSectionConfig[] => [
   {
     key: "main",
     title: "",
-    items: generateDashboardDrawerItems(),
+    items: generateDashboardDrawerItems(options),
   },
 ];
+
+/**
+ * Default drawer sections configuration (backward compatibility)
+ */
+export const drawerSections: DrawerSectionConfig[] = getDrawerSections();
