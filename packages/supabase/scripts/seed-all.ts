@@ -1,19 +1,51 @@
 /**
  * Comprehensive seeding script for development
- * Seeds jobs from RSS feeds and verifies skills are properly loaded
+ * Seeds CSI codes and external jobs from RSS feeds
  */
 
 import { createClient } from "@supabase/supabase-js";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
+import * as path from "node:path";
 
-const supabaseUrl = process.env.SUPABASE_URL || "http://127.0.0.1:54321";
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const execAsync = promisify(exec);
+
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL ||
+  "http://127.0.0.1:54321";
+const supabaseServiceKey = process.env.SUPABASE_SECRET || "";
 
 if (!supabaseServiceKey) {
-  console.error("❌ SUPABASE_SERVICE_ROLE_KEY is required");
+  console.error("❌ SUPABASE_SECRET is required");
+  console.error("💡 Get it from: pnpm supa status");
   process.exit(1);
 }
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+async function seedCSICodes() {
+  console.log("\n🏗️  Seeding CSI MasterFormat 2020 Codes...");
+
+  try {
+    const scriptDir = path.dirname(new URL(import.meta.url).pathname);
+    const csiScriptPath = path.join(scriptDir, "seed-csi.ts");
+
+    // Run the CSI seeding script
+    const { stdout, stderr } = await execAsync(
+      `pnpx tsx "${csiScriptPath}"`,
+      {
+        env: { ...process.env },
+      },
+    );
+
+    if (stdout) console.log(stdout);
+    if (stderr) console.error(stderr);
+
+    return true;
+  } catch (error) {
+    console.error("❌ Error seeding CSI codes:", error);
+    return false;
+  }
+}
 
 async function verifySkills() {
   console.log("\n📊 Verifying Skills Data...");
@@ -246,20 +278,41 @@ async function displayStats() {
 async function main() {
   console.log("🌱 Starting Database Seeding...\n");
 
-  // Verify base data
-  const skillsOk = await verifySkills();
+  // Check industries first
   const industriesOk = await verifyIndustries();
+  if (!industriesOk) {
+    console.error("\n❌ Industries verification failed. Run migrations first:");
+    console.error("   pnpm supa:reset");
+    process.exit(1);
+  }
 
-  if (!skillsOk || !industriesOk) {
-    console.error("\n❌ Base data verification failed. Run migrations first:");
-    console.error("   pnpm supa db reset");
+  // Seed CSI codes first (this will create the construction industry and skills)
+  console.log("\n" + "=".repeat(50));
+  console.log("📋 Step 1: Seeding CSI MasterFormat 2020 Codes");
+  console.log("=".repeat(50));
+  const csiSeeded = await seedCSICodes();
+
+  if (!csiSeeded) {
+    console.error("\n❌ CSI seeding failed. Check errors above.");
+    process.exit(1);
+  }
+
+  // Verify skills were seeded
+  const skillsOk = await verifySkills();
+  if (!skillsOk) {
+    console.error("\n❌ Skills verification failed after CSI seeding.");
     process.exit(1);
   }
 
   // Seed jobs
+  console.log("\n" + "=".repeat(50));
+  console.log("📋 Step 2: Seeding External Jobs from RSS Feeds");
+  console.log("=".repeat(50));
   const jobsImported = await seedJobs(10);
 
-  console.log(`\n✅ Seeding complete! Imported ${jobsImported} jobs.`);
+  console.log(`\n✅ Seeding complete!`);
+  console.log(`   - CSI codes seeded ✓`);
+  console.log(`   - ${jobsImported} jobs imported ✓`);
 
   // Display stats
   await displayStats();

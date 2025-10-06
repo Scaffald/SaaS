@@ -32,6 +32,7 @@ export { ToastProvider, ToastViewport } from '@tamagui/toast'
 
 // Re-export our custom components
 export { FieldError } from './components/FieldError'
+export { FileUpload, type FileUploadProps } from './components/FileUpload'
 export { FormWrapper } from './components/FormWrapper'
 
 // Individual component exports to avoid circular dependencies

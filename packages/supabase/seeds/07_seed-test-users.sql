@@ -1,7 +1,6 @@
 -- =========================================================
--- 017_seed_users.sql — Development user seeding
--- Creates a small set of test users for development
--- Note: Main user seeding is now handled in supabase/seed.sql
+-- Test Users Seed Data
+-- Creates specific test users for development and testing
 -- =========================================================
 
 begin;

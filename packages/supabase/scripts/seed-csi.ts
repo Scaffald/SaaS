@@ -325,22 +325,18 @@ async function upsertSkills(
 // =========================================================
 
 async function main(): Promise<void> {
-  const fileArg = process.argv[2];
-  if (!fileArg) {
-    console.error("Usage: pnpm tsx scripts/seed-csi.ts <path-to-csv-file>");
-    console.error(
-      "Example: pnpm tsx scripts/seed-csi.ts scripts/seed-csi-2020.csv",
-    );
-    process.exit(1);
-  }
+  // Auto-detect CSV file in scripts directory
+  const scriptDir = path.dirname(new URL(import.meta.url).pathname);
+  const csvFileName = "seed-csi-2020.csv";
+  const filePath = path.join(scriptDir, csvFileName);
 
-  const filePath = path.resolve(fileArg);
   if (!fs.existsSync(filePath)) {
-    console.error(`File not found: ${filePath}`);
+    console.error(`❌ CSV file not found: ${filePath}`);
+    console.error(`💡 Expected file: ${csvFileName} in scripts directory`);
     process.exit(1);
   }
 
-  console.log(`Reading CSI taxonomy from: ${filePath}`);
+  console.log(`📖 Reading CSI taxonomy from: ${csvFileName}`);
 
   // Read and parse CSV
   const csvContent = fs.readFileSync(filePath, "utf-8");

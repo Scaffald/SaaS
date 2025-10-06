@@ -8,7 +8,7 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = process.env.SUPABASE_URL || "http://127.0.0.1:54321";
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY ||
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const supabaseServiceKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || "";
 
 console.log("🔍 Testing External Jobs Permissions\n");
 console.log("Environment check:");

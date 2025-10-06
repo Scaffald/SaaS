@@ -339,6 +339,109 @@ export const uploadAvatarOutputSchema = z.object({
 });
 
 // =============================================================================
+// CERTIFICATION FILE UPLOAD SCHEMAS
+// =============================================================================
+
+export const uploadCertificationFileInputSchema = z.object({
+  certificationId: z.string().uuid(),
+  file: z.string(), // Base64 encoded file
+  fileName: z.string(),
+  contentType: z.string().refine(
+    (type) =>
+      type === "application/pdf" ||
+      type === "image/png" ||
+      type === "image/jpeg" ||
+      type === "image/jpg",
+    {
+      message: "File must be PDF, PNG, or JPEG",
+    },
+  ),
+});
+
+export const uploadCertificationFileOutputSchema = z.object({
+  success: z.boolean(),
+  filePath: z.string(),
+});
+
+export const deleteCertificationFileInputSchema = z.object({
+  certificationId: z.string().uuid(),
+  filePath: z.string(),
+});
+
+export const deleteCertificationFileOutputSchema = z.object({
+  success: z.boolean(),
+});
+
+// =============================================================================
+// CERTIFICATION CRUD SCHEMAS
+// =============================================================================
+
+export const certificationSchema = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string().min(1),
+  issuing_organization: z.string().min(1),
+  issue_date: z.string().optional(),
+  expiration_date: z.string().optional(),
+  credential_id: z.string().optional(),
+  credential_url: z.string().optional(),
+  certificate_file_path: z.string().optional(),
+  description: z.string().optional(),
+  is_active: z.boolean().default(true),
+  verification_status: z.enum(["verified", "pending", "unverified"]).default(
+    "unverified",
+  ),
+});
+
+export const saveCertificationsInputSchema = z.object({
+  certifications: z.array(certificationSchema),
+});
+
+export const saveCertificationsOutputSchema = z.object({
+  success: z.boolean(),
+  certifications: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      issuing_organization: z.string(),
+      issue_date: z.string().nullable(),
+      expiration_date: z.string().nullable(),
+      credential_id: z.string().nullable(),
+      credential_url: z.string().nullable(),
+      certificate_file_path: z.string().nullable(),
+      description: z.string().nullable(),
+      is_active: z.boolean(),
+      verification_status: z.string(),
+    }),
+  ),
+});
+
+export const getCertificationsOutputSchema = z.array(
+  z.object({
+    id: z.string(),
+    name: z.string(),
+    issuing_organization: z.string(),
+    issue_date: z.string().nullable(),
+    expiration_date: z.string().nullable(),
+    credential_id: z.string().nullable(),
+    credential_url: z.string().nullable(),
+    certificate_file_path: z.string().nullable(),
+    description: z.string().nullable(),
+    is_active: z.boolean(),
+    verification_status: z.string(),
+    created_at: z.string(),
+    updated_at: z.string(),
+  }),
+);
+
+export const deleteCertificationInputSchema = z.object({
+  certificationId: z.string().uuid(),
+});
+
+export const deleteCertificationOutputSchema = z.object({
+  success: z.boolean(),
+});
+
+// =============================================================================
 // DATABASE UPDATE SCHEMAS
 // =============================================================================
 

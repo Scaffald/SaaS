@@ -1,6 +1,7 @@
 -- =========================================================
--- 047_seed_soft_skills.sql
--- Seed soft skills reference data for construction industry
+-- Soft Skills Seed Data
+-- Comprehensive soft skills taxonomy for construction industry
+-- Moved from migration 047_seed_soft_skills.sql
 -- =========================================================
 
 begin;
@@ -16,7 +17,9 @@ insert into public.soft_skills (category, name, description, order_index) values
   ('reliability', 'Focus & attention', 'Maintains concentration on tasks', 5),
   ('reliability', 'Multitasking', 'Handles multiple tasks simultaneously', 6),
   ('reliability', 'Attendance', 'Shows up consistently and on time', 7),
-  ('reliability', 'Follow-through', 'Completes commitments and follows up', 8)
+  ('reliability', 'Follow-through', 'Completes commitments and follows up', 8),
+  ('reliability', 'Time management', 'Manages time effectively to meet deadlines', 9),
+  ('reliability', 'Consistency', 'Delivers reliable and predictable results', 10)
 on conflict (category, name) do nothing;
 
 -- =========================
@@ -28,7 +31,10 @@ insert into public.soft_skills (category, name, description, order_index) values
   ('collaboration', 'Conflict resolution', 'Handles disagreements professionally', 3),
   ('collaboration', 'Adaptability', 'Adjusts to changing conditions and requirements', 4),
   ('collaboration', 'Open-minded', 'Receptive to feedback and new ideas', 5),
-  ('collaboration', 'Active listening', 'Understands and responds to others effectively', 6)
+  ('collaboration', 'Active listening', 'Understands and responds to others effectively', 6),
+  ('collaboration', 'Cooperation', 'Works well with diverse team members', 7),
+  ('collaboration', 'Respect', 'Shows respect for colleagues and clients', 8),
+  ('collaboration', 'Flexibility', 'Adapts approach based on situation', 9)
 on conflict (category, name) do nothing;
 
 -- =========================
@@ -40,7 +46,10 @@ insert into public.soft_skills (category, name, description, order_index) values
   ('professionalism', 'Problem-solving', 'Finds solutions independently and creatively', 3),
   ('professionalism', 'Initiative', 'Takes action proactively without being asked', 4),
   ('professionalism', 'Accountability', 'Takes responsibility for actions and outcomes', 5),
-  ('professionalism', 'Professionalism', 'Maintains professional demeanor and appearance', 6)
+  ('professionalism', 'Professionalism', 'Maintains professional demeanor and appearance', 6),
+  ('professionalism', 'Leadership', 'Guides and motivates team members', 7),
+  ('professionalism', 'Integrity', 'Acts with honesty and ethical principles', 8),
+  ('professionalism', 'Positive attitude', 'Maintains optimistic and constructive outlook', 9)
 on conflict (category, name) do nothing;
 
 -- =========================
@@ -51,28 +60,7 @@ insert into public.soft_skills (category, name, description, order_index) values
   ('technical', 'Tool proficiency', 'Uses equipment properly and safely', 2),
   ('technical', 'Technical knowledge', 'Demonstrates understanding of trade', 3),
   ('technical', 'Attention to detail', 'Ensures precision and accuracy in work', 4),
-  ('technical', 'Quality control', 'Maintains high standards in all work', 5)
-on conflict (category, name) do nothing;
-
--- =========================
--- Additional common soft skills
--- =========================
-insert into public.soft_skills (category, name, description, order_index) values
-  -- More reliability skills
-  ('reliability', 'Time management', 'Manages time effectively to meet deadlines', 9),
-  ('reliability', 'Consistency', 'Delivers reliable and predictable results', 10),
-  
-  -- More collaboration skills
-  ('collaboration', 'Cooperation', 'Works well with diverse team members', 7),
-  ('collaboration', 'Respect', 'Shows respect for colleagues and clients', 8),
-  ('collaboration', 'Flexibility', 'Adapts approach based on situation', 9),
-  
-  -- More professionalism skills
-  ('professionalism', 'Leadership', 'Guides and motivates team members', 7),
-  ('professionalism', 'Integrity', 'Acts with honesty and ethical principles', 8),
-  ('professionalism', 'Positive attitude', 'Maintains optimistic and constructive outlook', 9),
-  
-  -- More technical skills
+  ('technical', 'Quality control', 'Maintains high standards in all work', 5),
   ('technical', 'Innovation', 'Finds creative solutions to technical challenges', 6),
   ('technical', 'Continuous learning', 'Seeks to improve skills and knowledge', 7)
 on conflict (category, name) do nothing;
