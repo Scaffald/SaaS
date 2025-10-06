@@ -1,0 +1,330 @@
+import { useState, useEffect } from 'react'
+import { YStack, XStack, Button, Text, Card } from 'tamagui'
+import { ChevronLeft, ChevronRight, X } from '@tamagui/lucide-icons'
+import { ReviewProgress } from './ReviewProgress'
+import { ReviewStep1Skills } from './ReviewStep1Skills'
+import { ReviewStep2SkillsTags } from './ReviewStep2SkillsTags'
+import { ReviewStepCategoryRating } from './ReviewStepCategoryRating'
+import { ReviewStepCategoryTags } from './ReviewStepCategoryTags'
+import { ReviewStep7Summary } from './ReviewStep7Summary'
+import { ReviewStep8Recommendation } from './ReviewStep8Recommendation'
+import { useReviewDraft } from '../hooks/useReviewDraft'
+import { useReviewAutoSave } from '../hooks/useReviewAutoSave'
+import { api } from '@app/core/utils/api'
+
+interface Review {
+  id: string
+  subject_id: string
+  subject_type: string
+  status: string
+  author_user_id: string
+}
+
+interface ReviewWizardProps {
+  subjectId: string
+  subjectName: string
+  onCancel: () => void
+  onComplete: () => void
+}
+
+// Mock soft skills - will be replaced with API data
+const MOCK_RELIABILITY_SKILLS = [
+  { id: 'rel1', name: 'Deadline management', category: 'reliability' },
+  { id: 'rel2', name: 'Prioritization', category: 'reliability' },
+  { id: 'rel3', name: 'Time management', category: 'reliability' },
+  { id: 'rel4', name: 'Task delegation', category: 'reliability' },
+]
+
+const MOCK_COLLABORATION_SKILLS = [
+  { id: 'col1', name: 'Communication', category: 'collaboration' },
+  { id: 'col2', name: 'Teamwork', category: 'collaboration' },
+  { id: 'col3', name: 'Active listening', category: 'collaboration' },
+  { id: 'col4', name: 'Conflict resolution', category: 'collaboration' },
+]
+
+export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: ReviewWizardProps) {
+  const totalSteps = 8
+  const [reviewId, setReviewId] = useState<string | null>(null)
+  const [isCreatingDraft, setIsCreatingDraft] = useState(false)
+
+  // Initialize review draft state
+  const reviewDraft = useReviewDraft({
+    subjectId,
+  })
+
+  // tRPC mutations and queries
+  const createDraftMutation = api.reviews.createDraft.useMutation()
+  const saveDraftMutation = api.reviews.saveDraft.useMutation()
+  const submitReviewMutation = api.reviews.submitReview.useMutation()
+  const { data: myReviews, isLoading: isLoadingReviews } = api.reviews.getMyReviews.useQuery()
+
+  // Check for existing draft or create new one on mount
+  useEffect(() => {
+    const initializeDraft = async () => {
+      if (reviewId) return // Already initialized
+      if (isLoadingReviews) return // Wait for reviews to finish loading
+      if (!myReviews) return // Wait for reviews data
+
+      setIsCreatingDraft(true)
+      try {
+        // Check if a draft already exists
+        const existingDraft = myReviews.find(
+          (review: Review) =>
+            review.subject_id === subjectId &&
+            review.subject_type === 'user' &&
+            review.status === 'draft'
+        )
+
+        if (existingDraft) {
+          // Resume existing draft
+          setReviewId(existingDraft.id)
+          console.log('Resuming existing draft:', existingDraft.id)
+        } else {
+          // Create new draft
+          const result = await createDraftMutation.mutateAsync({
+            subjectId,
+            subjectType: 'user',
+          })
+          setReviewId(result.id)
+          console.log('Created new draft:', result.id)
+        }
+      } catch (error) {
+        console.error('Failed to initialize review draft:', error)
+      } finally {
+        setIsCreatingDraft(false)
+      }
+    }
+
+    initializeDraft()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subjectId, myReviews, isLoadingReviews]) // Run when subjectId, myReviews, or loading state changes
+
+  // Setup auto-save - only enabled when we have a reviewId
+  useReviewAutoSave({
+    draft: reviewDraft.getDraft(),
+    enabled: !!reviewId && reviewDraft.hasUnsavedChanges,
+    onSave: async (draft) => {
+      if (!reviewId) return
+
+      await saveDraftMutation.mutateAsync({
+        reviewId,
+        draft: {
+          subjectId: draft.subjectId,
+          skillsRatings: draft.skillsRatings,
+          skillsStrengths: draft.skillsStrengths,
+          skillsImprovements: draft.skillsImprovements,
+          reliabilityRating: draft.reliabilityRating,
+          reliabilityStrengths: draft.reliabilityStrengths,
+          reliabilityImprovements: draft.reliabilityImprovements,
+          collaborationRating: draft.collaborationRating,
+          collaborationStrengths: draft.collaborationStrengths,
+          collaborationImprovements: draft.collaborationImprovements,
+          summary: draft.summary,
+          recommendation: draft.recommendation,
+          currentStep: draft.currentStep,
+        },
+      })
+    },
+    onSaveSuccess: () => {
+      reviewDraft.markAsSaved()
+    },
+    onSaveError: (error) => {
+      console.error('Failed to auto-save:', error)
+    },
+  })
+
+  const canGoBack = reviewDraft.currentStep > 1
+  const canGoForward = reviewDraft.currentStep < totalSteps
+  const isLastStep = reviewDraft.currentStep === totalSteps
+
+  const handleBack = () => {
+    reviewDraft.goToPreviousStep()
+  }
+
+  const handleNext = () => {
+    reviewDraft.goToNextStep()
+  }
+
+  const handleSubmit = async () => {
+    if (!reviewId) {
+      console.error('Cannot submit: no review ID')
+      return
+    }
+
+    try {
+      const draft = reviewDraft.getDraft()
+      await submitReviewMutation.mutateAsync({
+        reviewId,
+        recommendation: draft.recommendation ? 1 : -1,
+      })
+      onComplete()
+    } catch (error) {
+      console.error('Failed to submit review:', error)
+    }
+  }
+
+  // Show loading state while creating draft
+  if (isCreatingDraft || !reviewId) {
+    return (
+      <Card elevate bordered>
+        <YStack gap="$4" p="$5" minH={600} justify="center" items="center">
+          <Text fontSize="$6" color="$color11">
+            Preparing review form...
+          </Text>
+        </YStack>
+      </Card>
+    )
+  }
+
+  return (
+    <Card elevate bordered>
+      <YStack gap="$4" p="$5">
+        {/* Header */}
+        <XStack justify="space-between" items="center">
+          <YStack gap="$1">
+            <Text fontSize="$8" fontWeight="700" color="$color12">
+              Leave a Review
+            </Text>
+            <Text fontSize="$5" color="$color11">
+              for {subjectName}
+            </Text>
+          </YStack>
+          <Button size="$3" circular icon={X} onPress={onCancel} chromeless />
+        </XStack>
+
+        {/* Progress Indicator */}
+        <ReviewProgress currentStep={reviewDraft.currentStep} totalSteps={totalSteps} />
+
+        {/* Step Content */}
+        <Card bg="$color2" bordered>
+          <YStack p="$5" minH={400} gap="$4">
+            {/* Step 1: Technical Skills Rating */}
+            {reviewDraft.currentStep === 1 && (
+              <ReviewStep1Skills
+                ratings={reviewDraft.skillsRatings}
+                onChange={reviewDraft.updateSkillRating}
+              />
+            )}
+
+            {/* Step 2: Skills Tags */}
+            {reviewDraft.currentStep === 2 && (
+              <ReviewStep2SkillsTags
+                strengths={reviewDraft.skillsStrengths}
+                improvements={reviewDraft.skillsImprovements}
+                onToggleStrength={reviewDraft.toggleSkillStrength}
+                onToggleImprovement={reviewDraft.toggleSkillImprovement}
+              />
+            )}
+
+            {/* Step 3: Reliability Rating */}
+            {reviewDraft.currentStep === 3 && (
+              <ReviewStepCategoryRating
+                title="Reliability"
+                description="How reliable were they in meeting deadlines and commitments?"
+                category="Reliability"
+                rating={reviewDraft.reliabilityRating}
+                onChange={reviewDraft.updateReliabilityRating}
+              />
+            )}
+
+            {/* Step 4: Reliability Tags */}
+            {reviewDraft.currentStep === 4 && (
+              <ReviewStepCategoryTags
+                title="Reliability - Details"
+                description="What are their reliability strengths and areas to improve?"
+                skills={MOCK_RELIABILITY_SKILLS}
+                strengths={reviewDraft.reliabilityStrengths}
+                improvements={reviewDraft.reliabilityImprovements}
+                onToggleStrength={reviewDraft.toggleReliabilityStrength}
+                onToggleImprovement={reviewDraft.toggleReliabilityImprovement}
+              />
+            )}
+
+            {/* Step 5: Collaboration Rating */}
+            {reviewDraft.currentStep === 5 && (
+              <ReviewStepCategoryRating
+                title="Collaboration"
+                description="How well did they collaborate with others?"
+                category="Collaboration"
+                rating={reviewDraft.collaborationRating}
+                onChange={reviewDraft.updateCollaborationRating}
+              />
+            )}
+
+            {/* Step 6: Collaboration Tags */}
+            {reviewDraft.currentStep === 6 && (
+              <ReviewStepCategoryTags
+                title="Collaboration - Details"
+                description="What are their collaboration strengths and areas to improve?"
+                skills={MOCK_COLLABORATION_SKILLS}
+                strengths={reviewDraft.collaborationStrengths}
+                improvements={reviewDraft.collaborationImprovements}
+                onToggleStrength={reviewDraft.toggleCollaborationStrength}
+                onToggleImprovement={reviewDraft.toggleCollaborationImprovement}
+              />
+            )}
+
+            {/* Step 7: Summary */}
+            {reviewDraft.currentStep === 7 && (
+              <ReviewStep7Summary
+                comment={reviewDraft.summary}
+                onChange={reviewDraft.updateSummary}
+              />
+            )}
+
+            {/* Step 8: Recommendation */}
+            {reviewDraft.currentStep === 8 && (
+              <ReviewStep8Recommendation
+                recommendation={reviewDraft.recommendation}
+                onChange={reviewDraft.updateRecommendation}
+              />
+            )}
+          </YStack>
+        </Card>
+
+        {/* Navigation Buttons */}
+        <XStack gap="$3" justify="space-between">
+          <Button
+            size="$4"
+            variant="outlined"
+            icon={ChevronLeft}
+            onPress={handleBack}
+            disabled={!canGoBack}
+            opacity={canGoBack ? 1 : 0.5}
+          >
+            Back
+          </Button>
+
+          <XStack gap="$2">
+            <Button size="$4" variant="outlined" onPress={onCancel}>
+              Save & Exit
+            </Button>
+
+            {isLastStep ? (
+              <Button size="$4" theme="green" onPress={handleSubmit}>
+                Submit Review
+              </Button>
+            ) : (
+              <Button
+                size="$4"
+                theme="blue"
+                iconAfter={ChevronRight}
+                onPress={handleNext}
+                disabled={!canGoForward}
+              >
+                Continue
+              </Button>
+            )}
+          </XStack>
+        </XStack>
+
+        {/* Auto-save Indicator */}
+        <XStack justify="center">
+          <Text fontSize="$3" color="$color10">
+            {reviewDraft.hasUnsavedChanges ? '💾 Saving...' : '✓ All changes saved'}
+          </Text>
+        </XStack>
+      </YStack>
+    </Card>
+  )
+}

@@ -1,84 +1,87 @@
-import { useState } from 'react'
-import { YStack, ScrollView, Text, Spinner } from 'tamagui'
-import { WorkerCard, type Worker } from './components/WorkerCard'
-import { api } from '@app/core/utils/api'
+import { useMemo } from 'react'
+import { YStack } from 'tamagui'
+import type { ResultListRef } from './components/ResultList'
+import { ResultList } from './components/ResultList'
+import { useTalentProfiles } from './hooks/useTalentProfiles'
 
 interface DiscoverWorkersLeftProps {
   searchQuery: string
   selectedIndustries: string[]
+  minScore: number
+  selectedSkills: string[]
+  selectedCertifications: string[]
+  selectedProfileId: string | null
+  onSelect: (id: string) => void
+  resultListRef: React.RefObject<ResultListRef | null>
 }
 
 /**
  * Discover Workers Left Component
- * Left panel content for the workers discovery page - displays worker listings
+ * Left panel content for the workers discovery page - displays worker listings using map components
  */
 export function DiscoverWorkersLeft({
   searchQuery,
   selectedIndustries: _selectedIndustries,
+  minScore,
+  selectedSkills,
+  selectedCertifications,
+  selectedProfileId,
+  onSelect,
+  resultListRef,
 }: DiscoverWorkersLeftProps) {
-  // Fetch workers from API
-  const { data, isLoading } = api.workers.getWorkers.useQuery()
-  const workers = data?.workers || []
+  // Fetch workers using the same hook as the map page
+  const { data: talentProfiles = [], isLoading } = useTalentProfiles()
 
   // Filter workers based on search and filters
-  const filteredWorkers = workers.filter((worker: Worker) => {
-    // Search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase()
-      const displayName =
-        worker.name || `${worker.first_name || ''} ${worker.last_name || ''}`.trim()
-      const matchesSearch =
-        displayName.toLowerCase().includes(query) || worker.about?.toLowerCase().includes(query)
+  const filteredProfiles = useMemo(() => {
+    return talentProfiles.filter((profile) => {
+      // Search filter - matches name, title, or location
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase()
+        const matchesSearch =
+          profile.name.toLowerCase().includes(query) ||
+          profile.title.toLowerCase().includes(query) ||
+          profile.locationLabel.toLowerCase().includes(query)
 
-      if (!matchesSearch) return false
-    }
+        if (!matchesSearch) return false
+      }
 
-    // Note: Industry and skill filtering would require additional data from the API
-    // For now, we'll skip these filters in the list view
+      // Score filter
+      if (profile.score < minScore) {
+        return false
+      }
 
-    return true
-  })
+      // Skills filter - worker must have at least one selected skill
+      if (selectedSkills.length > 0) {
+        const hasMatchingSkill = selectedSkills.some((selectedSkill) =>
+          profile.skills.some((skill) => skill.toLowerCase().includes(selectedSkill.toLowerCase()))
+        )
+        if (!hasMatchingSkill) return false
+      }
 
-  const handleViewDetails = (worker: Worker) => {
-    // TODO: Open detail modal or navigate to detail page
-    console.log('View worker details:', worker)
-  }
+      // Certifications filter - worker must have at least one selected certification
+      if (selectedCertifications.length > 0) {
+        const hasMatchingCert = selectedCertifications.some((selectedCert) =>
+          profile.certifications.some((cert) =>
+            cert.toLowerCase().includes(selectedCert.toLowerCase())
+          )
+        )
+        if (!hasMatchingCert) return false
+      }
 
-  if (isLoading) {
-    return (
-      <YStack flex={1} items="center" justify="center" p="$4">
-        <Spinner size="large" color="$blue10" />
-        <Text mt="$2" color="$color11">
-          Loading workers...
-        </Text>
-      </YStack>
-    )
-  }
-
-  if (filteredWorkers.length === 0) {
-    return (
-      <YStack flex={1} items="center" justify="center" p="$4" gap="$2">
-        <Text fontSize="$6" fontWeight="600" color="$color12">
-          No workers found
-        </Text>
-        <Text fontSize="$4" color="$color11">
-          Try adjusting your filters or search query
-        </Text>
-      </YStack>
-    )
-  }
+      return true
+    })
+  }, [talentProfiles, searchQuery, minScore, selectedSkills, selectedCertifications])
 
   return (
-    <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <YStack gap="$3" p="$4">
-        <Text fontSize="$5" fontWeight="600" color="$color12">
-          {filteredWorkers.length} {filteredWorkers.length === 1 ? 'Worker' : 'Workers'}
-        </Text>
-
-        {filteredWorkers.map((worker: Worker) => (
-          <WorkerCard key={worker.id} worker={worker} onViewDetails={handleViewDetails} />
-        ))}
-      </YStack>
-    </ScrollView>
+    <YStack flex={1} overflow="hidden">
+      <ResultList
+        ref={resultListRef}
+        profiles={filteredProfiles}
+        selectedId={selectedProfileId}
+        onSelect={onSelect}
+        isLoading={isLoading}
+      />
+    </YStack>
   )
 }

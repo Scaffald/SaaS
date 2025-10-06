@@ -4,6 +4,8 @@ import { employersRouter } from "./employers.router.ts";
 import { jobsRouter } from "./jobs.router.ts";
 import { officeRouter } from "./office.router.ts";
 import { profileRouter } from "./profile/index.ts";
+import { reviewsRouter } from "./reviews.router.ts";
+import { userProfileRouter } from "./user-profile.router.ts";
 import { workersRouter } from "./workers.router.ts";
 
 /**
@@ -17,6 +19,8 @@ export const appRouter = t.router({
   jobs: jobsRouter,
   employers: employersRouter,
   workers: workersRouter,
+  userProfile: userProfileRouter,
+  reviews: reviewsRouter,
 });
 
 // Export the router type for client-side usage
