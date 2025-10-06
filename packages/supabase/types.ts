@@ -2494,6 +2494,7 @@ export type Database = {
       }
       user_certifications: {
         Row: {
+          certificate_file_path: string | null
           created_at: string | null
           credential_id: string | null
           credential_url: string | null
@@ -2510,6 +2511,7 @@ export type Database = {
           verification_status: string | null
         }
         Insert: {
+          certificate_file_path?: string | null
           created_at?: string | null
           credential_id?: string | null
           credential_url?: string | null
@@ -2526,6 +2528,7 @@ export type Database = {
           verification_status?: string | null
         }
         Update: {
+          certificate_file_path?: string | null
           created_at?: string | null
           credential_id?: string | null
           credential_url?: string | null

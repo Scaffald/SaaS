@@ -37,7 +37,7 @@ export const ProfileAvatar = ({
     '$blue10',
     '$green10',
     '$purple10',
-    '$orange10',
+    '$red10',
     '$pink10',
     '$red10',
     '$yellow10',

@@ -107,7 +107,7 @@ Comprehensive seeding script for development data.
 
 **Environment Variables:**
 - `SUPABASE_URL` - Defaults to http://127.0.0.1:54321
-- `SUPABASE_SERVICE_ROLE_KEY` - Required
+- `EXPO_PUBLIC_SUPABASE_ANON_KEY` - Required
 
 **Output:**
 ```
@@ -148,7 +148,7 @@ Permission testing script for external jobs feature.
 **Environment Variables:**
 - `SUPABASE_URL` - Defaults to http://127.0.0.1:54321
 - `SUPABASE_ANON_KEY` - Required
-- `SUPABASE_SERVICE_ROLE_KEY` - Required
+- `EXPO_PUBLIC_SUPABASE_ANON_KEY` - Required
 
 **Output:**
 ```
@@ -270,7 +270,7 @@ Set these in your shell or `.env.local`:
 ```bash
 SUPABASE_URL=http://127.0.0.1:54321
 SUPABASE_ANON_KEY=<your-anon-key>
-SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
+EXPO_PUBLIC_SUPABASE_ANON_KEY=<your-service-role-key>
 ```
 
 Get keys from:
@@ -279,8 +279,8 @@ pnpm supa status
 ```
 
 ### Required for Scripts
-- **seed**: `SUPABASE_SERVICE_ROLE_KEY`
-- **test:permissions**: `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+- **seed**: `EXPO_PUBLIC_SUPABASE_ANON_KEY`
+- **test:permissions**: `SUPABASE_ANON_KEY`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`
 
 ## Related Documentation
 

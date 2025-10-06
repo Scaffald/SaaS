@@ -3,12 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "seed-csi": "npx tsx scripts/seed-csi.ts '$HOME/Library/CloudStorage/GoogleDrive-clay@unicorn.love/Shared drives/[SCF] Scaffald/Assets/MasterFormat/seed-csi-2020.csv'",
-    "seed": "SUPABASE_URL=http://127.0.0.1:54321 pnpx tsx scripts/seed-all.ts",
-    "test:permissions": "SUPABASE_URL=http://127.0.0.1:54321 pnpx tsx scripts/test-external-jobs-permissions.ts",
-    "db:reset": "cd packages/supabase && pnpx supabase db reset",
-    "db:reset:seed": "pnpm db:reset && pnpm seed",
-    "db:setup": "pnpm db:reset:seed && pnpm test:permissions"
+    "seed": "pnpx tsx scripts/seed-all.ts",
+    "test:permissions": "pnpx tsx scripts/test-external-jobs-permissions.ts"
   },
   "exports": {
     "./types": "./types.ts",

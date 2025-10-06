@@ -1,4 +1,8 @@
--- Seed super admin role assignments for core team members
+-- =========================================================
+-- Super Admin Role Assignments Seed Data
+-- Assigns super_admin role to core team members
+-- =========================================================
+
 BEGIN;
 
 -- Insert super_admin role assignments for core team members

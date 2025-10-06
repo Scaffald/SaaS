@@ -1,7 +1,10 @@
 import { t } from "../../middleware.ts";
 import { profileAvatarRouter } from "./avatar.router.ts";
+import { profileCertificationsRouter } from "./certifications.router.ts";
 import { profileCompletionRouter } from "./completion.router.ts";
+import { profileEducationRouter } from "./education.router.ts";
 import { profileEmploymentRouter } from "./employment.router.ts";
+import { profileExperienceRouter } from "./experience.router.ts";
 import { profileGeneralRouter } from "./general.router.ts";
 import { profileSkillsRouter } from "./skills.router.ts";
 
@@ -13,5 +16,8 @@ export const profileRouter = t.mergeRouters(
   profileEmploymentRouter,
   profileSkillsRouter,
   profileAvatarRouter,
+  profileCertificationsRouter,
+  profileEducationRouter,
+  profileExperienceRouter,
   profileCompletionRouter,
 );

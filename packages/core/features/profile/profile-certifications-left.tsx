@@ -1,9 +1,21 @@
 import { useState } from 'react'
-import { YStack, XStack, Text, Button, Input, H4, TextArea, ScrollView } from 'tamagui'
+import {
+  YStack,
+  XStack,
+  Text,
+  Button,
+  Input,
+  H4,
+  TextArea,
+  ScrollView,
+  RadioGroup,
+  Label,
+} from 'tamagui'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, X } from '@tamagui/lucide-icons'
-import { DashboardWidget } from '@app/ui'
+import { Plus, X, Link as LinkIcon, Upload as UploadIcon } from '@tamagui/lucide-icons'
+import { DashboardWidget, FileUpload } from '@app/ui'
+import { api } from '@app/core/utils/api'
 import {
   certificationsProfileSchema,
   type CertificationsProfileFormData,
@@ -17,10 +29,13 @@ import {
  */
 export function ProfileCertificationsLeft() {
   const [isLoading, setIsLoading] = useState(false)
+  const [inputMethod, setInputMethod] = useState<Record<string, 'url' | 'file'>>({})
+  const [pendingFiles, setPendingFiles] = useState<Record<number, File>>({})
 
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors, isDirty },
   } = useForm<CertificationsProfileFormData>({
     resolver: zodResolver(certificationsProfileSchema),
@@ -33,11 +48,78 @@ export function ProfileCertificationsLeft() {
     name: 'certifications',
   })
 
+  // tRPC queries and mutations
+  // @ts-ignore - Profile router will be available after type generation
+  const { data: _existingCertifications, refetch: refetchCertifications } =
+    api.profile?.getCertifications?.useQuery() || { data: [], refetch: () => {} }
+
+  // @ts-ignore
+  const saveMutation = api.profile?.saveCertifications?.useMutation()
+  // @ts-ignore
+  const uploadFileMutation = api.profile?.uploadCertificationFile?.useMutation()
+  // @ts-ignore
+  const deleteFileMutation = api.profile?.deleteCertificationFile?.useMutation()
+
   const onSubmit = async (data: CertificationsProfileFormData) => {
+    if (!saveMutation) return
+
     setIsLoading(true)
     try {
-      console.log('Saving certifications data:', data)
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      // 1. First, save all certifications to get database UUIDs
+      const result = await saveMutation.mutateAsync({
+        certifications: data.certifications || [],
+      })
+
+      // 2. Update form with returned IDs from database
+      if (result.certifications) {
+        result.certifications.forEach((savedCert, index) => {
+          if (data.certifications?.[index]) {
+            setValue(`certifications.${index}.id`, savedCert.id, { shouldDirty: false })
+          }
+        })
+      }
+
+      // 3. Now upload any pending files with the new UUIDs
+      if (uploadFileMutation && Object.keys(pendingFiles).length > 0) {
+        for (const [indexStr, file] of Object.entries(pendingFiles)) {
+          const index = Number.parseInt(indexStr)
+          const certId = result.certifications[index]?.id
+
+          if (certId) {
+            try {
+              // Convert file to base64
+              const base64 = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader()
+                reader.onload = () => resolve(reader.result as string)
+                reader.onerror = reject
+                reader.readAsDataURL(file)
+              })
+
+              const uploadResult = await uploadFileMutation.mutateAsync({
+                certificationId: certId,
+                file: base64,
+                fileName: file.name,
+                contentType: file.type,
+              })
+
+              // Update form with the file path
+              setValue(`certifications.${index}.certificate_file_path`, uploadResult.filePath, {
+                shouldDirty: false,
+              })
+            } catch (error) {
+              console.error(`Error uploading file for certification ${index}:`, error)
+            }
+          }
+        }
+
+        // Clear pending files after upload
+        setPendingFiles({})
+      }
+
+      // 4. Refetch certifications to get latest data
+      await refetchCertifications()
+
+      console.log('Certifications saved successfully!')
     } catch (error) {
       console.error('Error saving certifications:', error)
     } finally {
@@ -46,7 +128,51 @@ export function ProfileCertificationsLeft() {
   }
 
   const addCertification = () => {
-    append(createNewCertification())
+    const newCert = createNewCertification()
+    append(newCert)
+    // Set default input method to URL
+    setInputMethod((prev) => ({ ...prev, [fields.length]: 'url' }))
+  }
+
+  const handleFileSelect = (file: File, index: number) => {
+    // Store file in pending state - will upload on form submit
+    setPendingFiles((prev) => ({ ...prev, [index]: file }))
+    // Mark form as dirty so save button enables
+    setValue(`certifications.${index}.certificate_file_path`, 'pending', {
+      shouldDirty: true,
+    })
+  }
+
+  const handleFileRemove = async (index: number, certId: string | undefined, filePath: string) => {
+    // If it's a pending file, just remove from state
+    if (pendingFiles[index]) {
+      setPendingFiles((prev) => {
+        const newFiles = { ...prev }
+        delete newFiles[index]
+        return newFiles
+      })
+      setValue(`certifications.${index}.certificate_file_path`, undefined, {
+        shouldDirty: true,
+      })
+      return
+    }
+
+    // If it's an uploaded file, delete from server
+    if (certId && filePath && deleteFileMutation) {
+      try {
+        await deleteFileMutation.mutateAsync({
+          certificationId: certId,
+          filePath,
+        })
+
+        // Clear the file path from form
+        setValue(`certifications.${index}.certificate_file_path`, undefined, {
+          shouldDirty: true,
+        })
+      } catch (error) {
+        console.error('Error deleting file:', error)
+      }
+    }
   }
 
   return (
@@ -159,45 +285,117 @@ export function ProfileCertificationsLeft() {
                 </YStack>
               </XStack>
 
-              {/* Credential ID and URL */}
-              <XStack gap="$3">
-                <YStack gap="$2" flex={1}>
-                  <Text>Credential ID</Text>
-                  <Controller
-                    name={`certifications.${index}.credential_id`}
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        placeholder="Certificate ID"
-                        value={field.value || ''}
-                        onChangeText={field.onChange}
-                      />
-                    )}
-                  />
-                </YStack>
-                <YStack gap="$2" flex={1}>
-                  <Text>Credential URL</Text>
-                  <Controller
-                    name={`certifications.${index}.credential_url`}
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        placeholder="https://..."
-                        value={field.value || ''}
-                        onChangeText={field.onChange}
-                        borderColor={
-                          errors.certifications?.[index]?.credential_url ? '$red8' : '$borderColor'
-                        }
-                      />
-                    )}
-                  />
-                  {errors.certifications?.[index]?.credential_url && (
-                    <Text color="$red10" fontSize="$2">
-                      {errors.certifications[index]?.credential_url?.message}
-                    </Text>
+              {/* Credential ID */}
+              <YStack gap="$2">
+                <Text>Credential ID</Text>
+                <Controller
+                  name={`certifications.${index}.credential_id`}
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      placeholder="Certificate ID"
+                      value={field.value || ''}
+                      onChangeText={field.onChange}
+                    />
                   )}
-                </YStack>
-              </XStack>
+                />
+              </YStack>
+
+              {/* Certificate Proof Section */}
+              <YStack gap="$3" p="$3" bg="$background" rounded="$3">
+                <Text fontWeight="600">Certificate Proof (Optional)</Text>
+                <Text fontSize="$2" color="$color11">
+                  Provide either a link to your certificate or upload a file
+                </Text>
+
+                {/* Radio Group for Input Method */}
+                <RadioGroup
+                  value={inputMethod[index] || 'url'}
+                  onValueChange={(value) =>
+                    setInputMethod((prev) => ({ ...prev, [index]: value as 'url' | 'file' }))
+                  }
+                >
+                  <XStack gap="$4">
+                    <XStack gap="$2" items="center">
+                      <RadioGroup.Item value="url" id={`url-${index}`}>
+                        <RadioGroup.Indicator />
+                      </RadioGroup.Item>
+                      <Label htmlFor={`url-${index}`} display="flex" gap="$2" items="center">
+                        <LinkIcon size={16} />
+                        <Text>External URL</Text>
+                      </Label>
+                    </XStack>
+                    <XStack gap="$2" items="center">
+                      <RadioGroup.Item value="file" id={`file-${index}`}>
+                        <RadioGroup.Indicator />
+                      </RadioGroup.Item>
+                      <Label htmlFor={`file-${index}`} display="flex" gap="$2" items="center">
+                        <UploadIcon size={16} />
+                        <Text>Upload File</Text>
+                      </Label>
+                    </XStack>
+                  </XStack>
+                </RadioGroup>
+
+                {/* Conditional Input - URL or File Upload */}
+                {(inputMethod[index] || 'url') === 'url' ? (
+                  <YStack gap="$2">
+                    <Text fontSize="$2">Credential URL</Text>
+                    <Controller
+                      name={`certifications.${index}.credential_url`}
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          placeholder="https://..."
+                          value={field.value || ''}
+                          onChangeText={field.onChange}
+                          borderColor={
+                            errors.certifications?.[index]?.credential_url
+                              ? '$red8'
+                              : '$borderColor'
+                          }
+                        />
+                      )}
+                    />
+                    {errors.certifications?.[index]?.credential_url && (
+                      <Text color="$red10" fontSize="$2">
+                        {errors.certifications[index]?.credential_url?.message}
+                      </Text>
+                    )}
+                  </YStack>
+                ) : (
+                  <Controller
+                    name={`certifications.${index}.certificate_file_path`}
+                    control={control}
+                    render={({ field: fileField }) => (
+                      <FileUpload
+                        onFileSelect={(file) => handleFileSelect(file, index)}
+                        onFileRemove={
+                          fileField.value && fileField.value !== 'pending'
+                            ? () =>
+                                handleFileRemove(
+                                  index,
+                                  fields[index].id as string | undefined,
+                                  fileField.value || ''
+                                )
+                            : pendingFiles[index]
+                              ? () => handleFileRemove(index, undefined, '')
+                              : undefined
+                        }
+                        currentFileName={
+                          pendingFiles[index]
+                            ? pendingFiles[index].name
+                            : fileField.value && fileField.value !== 'pending'
+                              ? fileField.value.split('/').pop()
+                              : undefined
+                        }
+                        disabled={false}
+                        error={errors.certifications?.[index]?.certificate_file_path?.message}
+                      />
+                    )}
+                  />
+                )}
+              </YStack>
 
               {/* Description */}
               <YStack gap="$2">
@@ -221,9 +419,6 @@ export function ProfileCertificationsLeft() {
           {fields.length === 0 && (
             <YStack p="$4" items="center" gap="$2">
               <Text color="$color11">No certifications added yet</Text>
-              <Button onPress={addCertification} icon={Plus}>
-                Add Your First Certification
-              </Button>
             </YStack>
           )}
         </YStack>

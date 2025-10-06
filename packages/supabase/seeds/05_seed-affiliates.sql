@@ -1,7 +1,8 @@
 -- =========================================================
--- 006_seed_affiliates.sql
+-- Affiliate Programs Seed Data
 -- Sample affiliate programs for development
 -- Seeds OSHA/NCCER-style partners for industry-aware education recommendations
+-- Moved from migration 006_seed_affiliates.sql
 -- =========================================================
 
 begin;

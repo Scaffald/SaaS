@@ -1,293 +1,245 @@
-import { useState } from 'react'
-import { YStack, XStack, Text, Button, Input, H4, TextArea, Switch, ScrollView } from 'tamagui'
-import { useForm, Controller, useFieldArray } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, X } from '@tamagui/lucide-icons'
-import {
-  experienceProfileSchema,
-  type ExperienceProfileFormData,
-  experienceProfileDefaults,
-  createNewExperienceEntry,
-} from './config'
+import { YStack, XStack, Text, H3, H4, ScrollView, Separator } from 'tamagui'
+import { Briefcase, Calendar, MapPin, Building2, TrendingUp } from '@tamagui/lucide-icons'
+import { api } from '@app/core/utils/api'
+import { format } from 'date-fns'
+import { randomUUID } from 'expo-crypto'
 
 /**
  * Profile Experience Right Component
- * Form for managing work experience
+ * Displays list of user's work experience history
  */
 export function ProfileExperienceRight() {
-  const [isLoading, setIsLoading] = useState(false)
+  // @ts-ignore - Profile router will be available after type generation
+  const { data: experienceEntries, isLoading } = api.profile?.getExperience?.useQuery() || {
+    data: [],
+    isLoading: false,
+  }
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors, isDirty },
-  } = useForm<ExperienceProfileFormData>({
-    resolver: zodResolver(experienceProfileSchema),
-    defaultValues: experienceProfileDefaults,
-    mode: 'onChange',
-  })
+  // @ts-ignore - Profile router will be available after type generation
+  const { data: summaryData } = api.profile?.getExperienceSummary?.useQuery() || {
+    data: { total_years_experience: null, career_level: null },
+  }
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'experience_entries',
-  })
-
-  const onSubmit = async (data: ExperienceProfileFormData) => {
-    setIsLoading(true)
+  const formatDate = (dateStr: string | null | undefined) => {
+    if (!dateStr) return 'N/A'
     try {
-      console.log('Saving experience data:', data)
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-    } catch (error) {
-      console.error('Error saving experience:', error)
-    } finally {
-      setIsLoading(false)
+      return format(new Date(dateStr), 'MMM yyyy')
+    } catch {
+      return dateStr
     }
   }
 
-  const addExperienceEntry = () => {
-    append(createNewExperienceEntry())
+  const formatDateRange = (
+    startDate: string | null | undefined,
+    endDate: string | null | undefined,
+    isCurrent: boolean
+  ) => {
+    const start = formatDate(startDate)
+    const end = isCurrent ? 'Present' : formatDate(endDate)
+    return `${start} - ${end}`
   }
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <YStack gap="$4" p="$4" flex={1}>
-        <H4>Work Experience</H4>
+      <YStack gap="$4" p="$4">
+        <YStack gap="$2">
+          <H3>Your Experience</H3>
+          <Text color="$color11" fontSize="$3">
+            {experienceEntries?.length || 0} experience entr
+            {(experienceEntries?.length || 0) !== 1 ? 'ies' : 'y'} on record
+          </Text>
+          <XStack gap="$4" flexWrap="wrap">
+            {summaryData?.total_years_experience && (
+              <Text color="$color11" fontSize="$2">
+                Total Experience: {summaryData.total_years_experience} years
+              </Text>
+            )}
+            {summaryData?.career_level && (
+              <Text color="$color11" fontSize="$2">
+                Career Level: {summaryData.career_level}
+              </Text>
+            )}
+          </XStack>
+        </YStack>
 
-        <YStack gap="$4">
-          {/* Experience Entries */}
+        {isLoading && (
+          <YStack p="$4" items="center">
+            <Text color="$color11">Loading work experience...</Text>
+          </YStack>
+        )}
+
+        {!isLoading && (!experienceEntries || experienceEntries.length === 0) && (
+          <YStack
+            p="$4"
+            items="center"
+            gap="$2"
+            bg="$background"
+            rounded="$4"
+            borderWidth={1}
+            borderColor="$borderColor"
+          >
+            <Briefcase size={48} color="$color11" />
+            <Text color="$color11">
+              No work experience yet. Add your first experience entry using the form on the left.
+            </Text>
+          </YStack>
+        )}
+
+        {experienceEntries && experienceEntries.length > 0 && (
           <YStack gap="$3">
-            <XStack justify="space-between" items="center">
-              <Text fontWeight="600">Your Work Experience</Text>
-              <Button size="$3" onPress={addExperienceEntry} icon={Plus}>
-                Add Experience
-              </Button>
-            </XStack>
-
-            {fields.map((field, index) => (
+            {/* biome-ignore lint/suspicious/noExplicitAny: tRPC types not yet generated */}
+            {experienceEntries.map((exp: any) => (
               <YStack
-                key={field.id}
+                key={exp.id}
                 gap="$3"
-                p="$3"
+                p="$4"
+                bg="$background"
+                rounded="$4"
                 borderWidth={1}
                 borderColor="$borderColor"
-                rounded="$4"
               >
-                <XStack justify="space-between" items="center">
-                  <Text fontWeight="600">Experience {index + 1}</Text>
-                  <Button size="$2" variant="outlined" onPress={() => remove(index)} icon={X}>
-                    Remove
-                  </Button>
-                </XStack>
-
-                {/* Job Title and Company */}
-                <XStack gap="$3">
-                  <YStack gap="$2" flex={1}>
-                    <Text>Job Title *</Text>
-                    <Controller
-                      name={`experience_entries.${index}.job_title`}
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          placeholder="e.g. Senior Software Engineer"
-                          value={field.value}
-                          onChangeText={field.onChange}
-                          borderColor={
-                            errors.experience_entries?.[index]?.job_title ? '$red8' : '$borderColor'
-                          }
-                        />
-                      )}
-                    />
-                    {errors.experience_entries?.[index]?.job_title && (
-                      <Text color="$red10" fontSize="$2">
-                        {errors.experience_entries[index]?.job_title?.message}
-                      </Text>
-                    )}
-                  </YStack>
-
-                  <YStack gap="$2" flex={1}>
-                    <Text>Company *</Text>
-                    <Controller
-                      name={`experience_entries.${index}.company_name`}
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          placeholder="e.g. Google Inc."
-                          value={field.value}
-                          onChangeText={field.onChange}
-                          borderColor={
-                            errors.experience_entries?.[index]?.company_name
-                              ? '$red8'
-                              : '$borderColor'
-                          }
-                        />
-                      )}
-                    />
-                    {errors.experience_entries?.[index]?.company_name && (
-                      <Text color="$red10" fontSize="$2">
-                        {errors.experience_entries[index]?.company_name?.message}
-                      </Text>
-                    )}
-                  </YStack>
-                </XStack>
-
-                {/* Location and Employment Type */}
-                <XStack gap="$3">
-                  <YStack gap="$2" flex={1}>
-                    <Text>Location</Text>
-                    <Controller
-                      name={`experience_entries.${index}.location`}
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          placeholder="e.g. San Francisco, CA"
-                          value={field.value || ''}
-                          onChangeText={field.onChange}
-                        />
-                      )}
-                    />
-                  </YStack>
-
-                  <YStack gap="$2" flex={1}>
-                    <Text>Employment Type</Text>
-                    <Controller
-                      name={`experience_entries.${index}.employment_type`}
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          placeholder="e.g. Full-time"
-                          value={field.value || ''}
-                          onChangeText={field.onChange}
-                        />
-                      )}
-                    />
-                  </YStack>
-                </XStack>
-
-                {/* Start and End Dates */}
-                <XStack gap="$3">
-                  <YStack gap="$2" flex={1}>
-                    <Text>Start Date</Text>
-                    <Controller
-                      name={`experience_entries.${index}.start_date`}
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          placeholder="YYYY-MM-DD"
-                          value={field.value || ''}
-                          onChangeText={field.onChange}
-                        />
-                      )}
-                    />
-                  </YStack>
-                  <YStack gap="$2" flex={1}>
-                    <Text>End Date</Text>
-                    <Controller
-                      name={`experience_entries.${index}.end_date`}
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          placeholder="YYYY-MM-DD or 'Present'"
-                          value={field.value || ''}
-                          onChangeText={field.onChange}
-                        />
-                      )}
-                    />
-                  </YStack>
-                </XStack>
-
-                {/* Current Job Toggle */}
-                <XStack gap="$3" items="center">
-                  <Text>Currently working here</Text>
-                  <Controller
-                    name={`experience_entries.${index}.is_current`}
-                    control={control}
-                    render={({ field }) => (
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
-                    )}
-                  />
-                </XStack>
-
-                {/* Description */}
+                {/* Header */}
                 <YStack gap="$2">
-                  <Text>Job Description</Text>
-                  <Controller
-                    name={`experience_entries.${index}.description`}
-                    control={control}
-                    render={({ field }) => (
-                      <TextArea
-                        placeholder="Describe your role, responsibilities, and key achievements..."
-                        value={field.value || ''}
-                        onChangeText={field.onChange}
-                        minH={100}
-                      />
-                    )}
-                  />
+                  <XStack justify="space-between" items="flex-start">
+                    <YStack gap="$1" flex={1}>
+                      <H4>{exp.job_title}</H4>
+                      <XStack gap="$2" items="center" flexWrap="wrap">
+                        <Text color="$color11" fontSize="$3" fontWeight="600">
+                          {exp.company_name}
+                        </Text>
+                        {exp.employment_type && (
+                          <>
+                            <Text color="$color11" fontSize="$2">
+                              •
+                            </Text>
+                            <Text color="$color11" fontSize="$2">
+                              {exp.employment_type}
+                            </Text>
+                          </>
+                        )}
+                        {exp.is_current && (
+                          <>
+                            <Text color="$color11" fontSize="$2">
+                              •
+                            </Text>
+                            <Text color="$green10" fontSize="$2" fontWeight="600">
+                              Current Position
+                            </Text>
+                          </>
+                        )}
+                      </XStack>
+                    </YStack>
+                  </XStack>
                 </YStack>
 
-                {/* Skills Used */}
-                <YStack gap="$2">
-                  <Text>Skills Used</Text>
-                  <Controller
-                    name={`experience_entries.${index}.skills_used`}
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        placeholder="e.g. JavaScript, React, Node.js (comma separated)"
-                        value={
-                          Array.isArray(field.value) ? field.value.join(', ') : field.value || ''
-                        }
-                        onChangeText={(text) =>
-                          field.onChange(text ? text.split(', ').map((s) => s.trim()) : [])
-                        }
-                      />
-                    )}
-                  />
-                </YStack>
+                <Separator />
 
-                {/* Achievements */}
+                {/* Details */}
                 <YStack gap="$2">
-                  <Text>Key Achievements</Text>
-                  <Controller
-                    name={`experience_entries.${index}.key_achievements`}
-                    control={control}
-                    render={({ field }) => (
-                      <TextArea
-                        placeholder="List your key achievements and accomplishments in this role..."
-                        value={
-                          Array.isArray(field.value) ? field.value.join('\n') : field.value || ''
-                        }
-                        onChangeText={(text) =>
-                          field.onChange(text ? text.split('\n').filter((a) => a.trim()) : [])
-                        }
-                        minH={80}
-                      />
-                    )}
-                  />
+                  {/* Dates */}
+                  {(exp.start_date || exp.end_date) && (
+                    <XStack gap="$2" items="center">
+                      <Calendar size={16} color="$color11" />
+                      <Text fontSize="$2" color="$color11">
+                        {formatDateRange(exp.start_date, exp.end_date, exp.is_current)}
+                      </Text>
+                    </XStack>
+                  )}
+
+                  {/* Location */}
+                  {exp.location && (
+                    <XStack gap="$2" items="center">
+                      <MapPin size={16} color="$color11" />
+                      <Text fontSize="$2" color="$color11">
+                        {exp.location}
+                        {exp.is_remote && ' (Remote)'}
+                      </Text>
+                    </XStack>
+                  )}
+
+                  {/* Company Size */}
+                  {exp.company_size && (
+                    <XStack gap="$2" items="center">
+                      <Building2 size={16} color="$color11" />
+                      <Text fontSize="$2" color="$color11">
+                        {exp.company_size}
+                      </Text>
+                    </XStack>
+                  )}
+
+                  {/* Industry */}
+                  {exp.industry && (
+                    <XStack gap="$2" items="center">
+                      <TrendingUp size={16} color="$color11" />
+                      <Text fontSize="$2" color="$color11">
+                        {exp.industry}
+                      </Text>
+                    </XStack>
+                  )}
+
+                  {/* Description */}
+                  {exp.description && (
+                    <YStack gap="$1">
+                      <Text fontSize="$2" fontWeight="600" color="$color11">
+                        Description:
+                      </Text>
+                      <Text fontSize="$3" color="$color11">
+                        {exp.description}
+                      </Text>
+                    </YStack>
+                  )}
+
+                  {/* Key Achievements */}
+                  {exp.key_achievements && exp.key_achievements.length > 0 && (
+                    <YStack gap="$1">
+                      <Text fontSize="$2" fontWeight="600" color="$color11">
+                        Key Achievements:
+                      </Text>
+                      <YStack gap="$1" pl="$2">
+                        {exp.key_achievements.map((achievement: string) => (
+                          <XStack key={randomUUID()} gap="$2">
+                            <Text fontSize="$2" color="$color11">
+                              •
+                            </Text>
+                            <Text fontSize="$2" color="$color11" flex={1}>
+                              {achievement}
+                            </Text>
+                          </XStack>
+                        ))}
+                      </YStack>
+                    </YStack>
+                  )}
+
+                  {/* Skills Used */}
+                  {exp.skills_used && exp.skills_used.length > 0 && (
+                    <YStack gap="$1">
+                      <Text fontSize="$2" fontWeight="600" color="$color11">
+                        Skills:
+                      </Text>
+                      <XStack gap="$2" flexWrap="wrap">
+                        {exp.skills_used.map((skill: string) => (
+                          <XStack
+                            key={randomUUID()}
+                            px="$2"
+                            py="$1"
+                            bg="$backgroundHover"
+                            rounded="$2"
+                            borderWidth={1}
+                            borderColor="$borderColor"
+                          >
+                            <Text fontSize="$2" color="$color11">
+                              {skill}
+                            </Text>
+                          </XStack>
+                        ))}
+                      </XStack>
+                    </YStack>
+                  )}
                 </YStack>
               </YStack>
             ))}
-
-            {fields.length === 0 && (
-              <YStack p="$4" items="center" gap="$2">
-                <Text color="$color11">No work experience added yet</Text>
-                <Button onPress={addExperienceEntry} icon={Plus}>
-                  Add Your First Job
-                </Button>
-              </YStack>
-            )}
           </YStack>
-
-          {/* Save Button */}
-          <XStack justify="flex-end" pt="$4">
-            <Button
-              onPress={handleSubmit(onSubmit)}
-              disabled={!isDirty || isLoading}
-              opacity={!isDirty || isLoading ? 0.5 : 1}
-            >
-              {isLoading ? 'Saving...' : 'Save Changes'}
-            </Button>
-          </XStack>
-        </YStack>
+        )}
       </YStack>
     </ScrollView>
   )

@@ -77,7 +77,7 @@ Add to your `.env` or Supabase dashboard:
 ```bash
 # Required
 SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your_service_role_key
 
 # Optional - for AI-powered industry mapping
 OPENAI_API_KEY=sk-...

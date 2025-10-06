@@ -125,7 +125,7 @@ serve(async (req) => {
   try {
     const supabase = createClient<Database>(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      Deno.env.get("EXPO_PUBLIC_SUPABASE_ANON_KEY") ?? "",
     );
 
     // Get active feeds

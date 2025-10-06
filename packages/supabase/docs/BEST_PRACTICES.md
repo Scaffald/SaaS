@@ -161,7 +161,7 @@ For each major feature, create a test script:
 // packages/supabase/scripts/test-feature-permissions.ts
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.SUPABASE_URL || 'http://127.0.0.1:54321'
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321'
 const anonKey = process.env.SUPABASE_ANON_KEY || ''
 
 async function testFeature() {
