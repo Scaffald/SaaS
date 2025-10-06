@@ -1,12 +1,7 @@
-import { DiscoverWorkersLeft } from '@app/core/features/discover/discover-workers-left'
-import { DiscoverWorkersRight } from '@app/core/features/discover/discover-workers-right'
+import { DiscoverWorkersScreen } from '@app/core/features/discover/discover-workers-screen'
 import { DashboardLayout } from '@app/ui/src/components/layouts/DashboardLayout'
 
 export default function DiscoverWorkersPage() {
-  return (
-    <DashboardLayout
-      leftContent={<DiscoverWorkersLeft />}
-      rightContent={<DiscoverWorkersRight />}
-    />
-  )
+  const { left, right } = DiscoverWorkersScreen()
+  return <DashboardLayout leftContent={left} rightContent={right} />
 }
