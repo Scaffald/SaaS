@@ -1,8 +1,10 @@
 import { t } from "../middleware.ts";
 import { authRouter } from "./auth.router.ts";
+import { employersRouter } from "./employers.router.ts";
 import { jobsRouter } from "./jobs.router.ts";
 import { officeRouter } from "./office.router.ts";
 import { profileRouter } from "./profile/index.ts";
+import { workersRouter } from "./workers.router.ts";
 
 /**
  * Main application router
@@ -13,6 +15,8 @@ export const appRouter = t.router({
   auth: authRouter,
   office: officeRouter,
   jobs: jobsRouter,
+  employers: employersRouter,
+  workers: workersRouter,
 });
 
 // Export the router type for client-side usage
