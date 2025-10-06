@@ -1,12 +1,13 @@
 import { YStack, Text, ScrollView } from 'tamagui'
 import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { BarChart3, Building2 } from '@tamagui/lucide-icons'
+import { BarChart3, Building2, Briefcase } from '@tamagui/lucide-icons'
 import { DrawerHeader } from './DrawerHeader'
 import { DrawerLink } from './DrawerLink'
 import { DrawerFooter } from './DrawerFooter'
 import { usePathname } from '@app/core/utils/usePathname'
 import { normalizePath } from './utils'
+import { DASHBOARD_ROUTES, OFFICE_ROUTES } from '@app/core/constants/routes'
 
 export const OfficeDrawerMenuMobile = (props: DrawerContentComponentProps) => {
   const { top, bottom } = useSafeAreaInsets()
@@ -25,30 +26,48 @@ export const OfficeDrawerMenuMobile = (props: DrawerContentComponentProps) => {
         {/* Navigation Links */}
         <ScrollView showsVerticalScrollIndicator={false}>
           <YStack gap="$1">
-            <DrawerLink
-              item={{
-                key: 'worker-dashboard',
-                title: 'Worker Dashboard',
-                href: '/dashboard',
-                icon: BarChart3,
-              }}
-              pathname={pathname}
-              onNavigate={handleNavigate}
-              expandedItems={new Set()}
-              onToggleExpanded={() => {}}
-            />
-            <DrawerLink
-              item={{
-                key: 'office',
-                title: 'Office',
-                href: '/office',
-                icon: Building2,
-              }}
-              pathname={pathname}
-              onNavigate={handleNavigate}
-              expandedItems={new Set()}
-              onToggleExpanded={() => {}}
-            />
+            {DASHBOARD_ROUTES.INDEX && (
+              <DrawerLink
+                item={{
+                  key: 'worker-dashboard',
+                  title: DASHBOARD_ROUTES.INDEX.title || 'Worker Dashboard',
+                  href: DASHBOARD_ROUTES.INDEX.fullPath,
+                  icon: BarChart3,
+                }}
+                pathname={pathname}
+                onNavigate={handleNavigate}
+                expandedItems={new Set()}
+                onToggleExpanded={() => {}}
+              />
+            )}
+            {OFFICE_ROUTES.INDEX && (
+              <DrawerLink
+                item={{
+                  key: 'office',
+                  title: OFFICE_ROUTES.INDEX.title || 'Office',
+                  href: OFFICE_ROUTES.INDEX.fullPath,
+                  icon: Building2,
+                }}
+                pathname={pathname}
+                onNavigate={handleNavigate}
+                expandedItems={new Set()}
+                onToggleExpanded={() => {}}
+              />
+            )}
+            {OFFICE_ROUTES.JOBS && (
+              <DrawerLink
+                item={{
+                  key: 'manage-jobs',
+                  title: OFFICE_ROUTES.JOBS.title || 'Manage Jobs',
+                  href: OFFICE_ROUTES.JOBS.fullPath,
+                  icon: Briefcase,
+                }}
+                pathname={pathname}
+                onNavigate={handleNavigate}
+                expandedItems={new Set()}
+                onToggleExpanded={() => {}}
+              />
+            )}
           </YStack>
         </ScrollView>
 

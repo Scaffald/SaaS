@@ -267,6 +267,23 @@ const routeConfig: Record<string, RouteConfig> = {
       },
     },
   },
+
+  // Office routes (admin only)
+  office: {
+    path: "/office",
+    title: "Office",
+    isProtected: true,
+    children: {
+      index: {
+        path: "/office",
+        title: "Office Home",
+      },
+      jobs: {
+        path: "/office/jobs",
+        title: "Manage Jobs",
+      },
+    },
+  },
 };
 
 // Create the route tree
@@ -293,6 +310,11 @@ export const DASHBOARD_ROUTES = {
   Discover: ROUTES.dashboard.childrenArray?.find((r) =>
     r.path === "/dashboard/discover"
   ),
+};
+
+export const OFFICE_ROUTES = {
+  INDEX: ROUTES.office.childrenArray?.find((r) => r.path === "/office"),
+  JOBS: ROUTES.office.childrenArray?.find((r) => r.path === "/office/jobs"),
 };
 
 // Route type for TypeScript safety
