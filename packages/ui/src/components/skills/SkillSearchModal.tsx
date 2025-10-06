@@ -13,6 +13,7 @@ import {
   Separator,
   useWindowDimensions,
   Sheet,
+  GetThemeValueForKey,
 } from 'tamagui'
 import { Search, X, ChevronRight, ArrowLeft } from '@tamagui/lucide-icons'
 
@@ -239,10 +240,13 @@ export function SkillSearchModal({
   )
 
   // Get proficiency color (green gradient)
-  const getProficiencyColor = useCallback((value: number) => {
-    const opacity = 0.2 + (value - 1) * 0.2 // 0.2, 0.4, 0.6, 0.8, 1.0
-    return `rgba(34, 197, 94, ${opacity})` // green color with varying opacity
-  }, [])
+  const getProficiencyColor = useCallback(
+    (value: number): GetThemeValueForKey<'backgroundColor'> => {
+      const opacity = 0.2 + (value - 1) * 0.2 // 0.2, 0.4, 0.6, 0.8, 1.0
+      return `rgba(34, 197, 94, ${opacity})` // green color with varying opacity
+    },
+    []
+  )
 
   // Get step title
   const getStepTitle = () => {
@@ -272,19 +276,19 @@ export function SkillSearchModal({
           <ScrollView flex={1} showsVerticalScrollIndicator={false}>
             <YStack gap="$2">
               {parentResults.length === 0 && searchQuery.trim().length >= 2 && !isLoading && (
-                <YStack p="$4" alignItems="center" gap="$2">
+                <YStack p="$4" items="center" gap="$2">
                   <Text color="$color11">No skill categories found</Text>
-                  <Text fontSize="$2" color="$color11" textAlign="center">
+                  <Text fontSize="$2" color="$color11" text="center">
                     Try a different search term
                   </Text>
                 </YStack>
               )}
 
               {parentResults.length === 0 && searchQuery.trim().length < 2 && (
-                <YStack p="$4" alignItems="center" gap="$2">
+                <YStack p="$4" items="center" gap="$2">
                   <Search size={32} color="$color11" />
                   <Text color="$color11">Start typing to search skill categories</Text>
-                  <Text fontSize="$2" color="$color11" textAlign="center">
+                  <Text fontSize="$2" color="$color11" text="center">
                     Search for top-level categories like "Concrete" or "Electrical"
                   </Text>
                 </YStack>
@@ -300,7 +304,7 @@ export function SkillSearchModal({
                   onPress={() => handleParentSelect(parent)}
                 >
                   <Card.Header>
-                    <XStack justifyContent="space-between" alignItems="center">
+                    <XStack justify="space-between" items="center">
                       <YStack flex={1}>
                         <Text fontSize="$4" fontWeight="600">
                           {parent.skill_name}
@@ -311,7 +315,7 @@ export function SkillSearchModal({
                           </Text>
                         )}
                       </YStack>
-                      <XStack gap="$2" alignItems="center">
+                      <XStack gap="$2" items="center">
                         <Text fontSize="$2" color="$color11">
                           {parent.child_count} {parent.child_count === 1 ? 'skill' : 'skills'}
                         </Text>
@@ -331,7 +335,7 @@ export function SkillSearchModal({
       return (
         <YStack gap="$4" flex={1}>
           {isLoadingChildren ? (
-            <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
+            <YStack flex={1} items="center" justify="center" gap="$3">
               <Spinner size="large" />
               <Text color="$color11">Loading skills...</Text>
             </YStack>
@@ -339,7 +343,7 @@ export function SkillSearchModal({
             <ScrollView flex={1} showsVerticalScrollIndicator={false}>
               <YStack gap="$2">
                 {children.length === 0 && (
-                  <YStack p="$4" alignItems="center" gap="$2">
+                  <YStack p="$4" items="center" gap="$2">
                     <Text color="$color11">No sub-skills found</Text>
                   </YStack>
                 )}
@@ -359,7 +363,7 @@ export function SkillSearchModal({
                     >
                       <Card.Header>
                         <YStack gap="$1">
-                          <XStack justifyContent="space-between" alignItems="center">
+                          <XStack justify="space-between" items="center">
                             <Text fontSize="$3" fontWeight="600">
                               {child.skill_name}
                             </Text>
@@ -393,7 +397,7 @@ export function SkillSearchModal({
           {/* Selected Skill Details */}
           <Card bordered>
             <Card.Header>
-              <XStack justifyContent="space-between" alignItems="center">
+              <XStack justify="space-between" items="center">
                 <YStack flex={1}>
                   <Text fontSize="$4" fontWeight="600">
                     {selectedChild.skill_name}
@@ -416,7 +420,7 @@ export function SkillSearchModal({
           <Separator />
 
           {/* Proficiency Selector */}
-          <YStack gap="$3" paddingBottom="$4">
+          <YStack gap="$3" pb="$4">
             <Text fontWeight="600" fontSize="$4">
               Proficiency Level
             </Text>
@@ -430,15 +434,15 @@ export function SkillSearchModal({
               size="$3"
             >
               <Slider.Track>
-                <Slider.TrackActive backgroundColor={getProficiencyColor(proficiency)} />
+                <Slider.TrackActive bg={getProficiencyColor(proficiency)} />
               </Slider.Track>
               <Slider.Thumb index={0} circular size="$1" />
             </Slider>
 
             {/* Current Level Display */}
-            <Card bordered backgroundColor="$color3">
+            <Card bordered bg="$color3">
               <Card.Header>
-                <XStack justifyContent="space-between" alignItems="center">
+                <XStack justify="space-between" items="center">
                   <YStack>
                     <Text fontWeight="600" fontSize="$5" color="$green9">
                       {currentLevel?.label}
@@ -460,10 +464,10 @@ export function SkillSearchModal({
                 <XStack
                   key={level.value}
                   gap="$2"
-                  alignItems="center"
+                  items="center"
                   opacity={proficiency === level.value ? 1 : 0.5}
                 >
-                  <Text fontWeight="600" minWidth={30}>
+                  <Text fontWeight="600" minW={30}>
                     {level.value}
                   </Text>
                   <Text flex={1} fontSize="$2">
@@ -475,7 +479,7 @@ export function SkillSearchModal({
           </YStack>
 
           {/* Actions */}
-          <XStack gap="$3" paddingTop="$4">
+          <XStack gap="$3" pt="$4">
             <Button flex={1} variant="outlined" onPress={handleBack}>
               Back
             </Button>
@@ -503,12 +507,12 @@ export function SkillSearchModal({
         animation="medium"
       >
         <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
-        <Sheet.Frame padding="$4" gap="$4" backgroundColor="$background">
+        <Sheet.Frame p="$4" gap="$4" bg="$background">
           <Sheet.Handle />
 
           {/* Header */}
-          <XStack justifyContent="space-between" alignItems="center">
-            <XStack gap="$2" alignItems="center">
+          <XStack justify="space-between" items="center">
+            <XStack gap="$2" items="center">
               {step !== 'search-parent' && (
                 <Button size="$3" circular chromeless icon={ArrowLeft} onPress={handleBack} />
               )}
@@ -553,15 +557,15 @@ export function SkillSearchModal({
           enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
           exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
           gap="$4"
-          minWidth={500}
-          maxWidth={600}
-          minHeight={500}
-          maxHeight="80vh"
+          minW={500}
+          maxW={600}
+          minH={500}
+          maxH="80vh"
         >
           {/* Header */}
           <Dialog.Title>
-            <XStack justifyContent="space-between" alignItems="center">
-              <XStack gap="$2" alignItems="center">
+            <XStack justify="space-between" items="center">
+              <XStack gap="$2" items="center">
                 {step !== 'search-parent' && (
                   <Button size="$3" circular chromeless icon={ArrowLeft} onPress={handleBack} />
                 )}

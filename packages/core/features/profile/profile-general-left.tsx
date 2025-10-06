@@ -136,243 +136,241 @@ export function ProfileGeneralLeft() {
   }
 
   return (
-    <YStack>
-      <DashboardWidget>
-        <YStack gap="$4">
-          {/* Avatar Section */}
-          <YStack gap="$3" items="center">
-            <Text fontWeight="600">Profile Photo</Text>
-            <AvatarImagePicker
-              value={getAvatarUrl(avatarPath) || ''}
-              onImageSelect={async (imageUri) => {
-                if (imageUri) {
-                  // Convert image to base64 for upload
-                  try {
-                    const response = await fetch(imageUri)
-                    const blob = await response.blob()
-                    const reader = new FileReader()
-                    reader.onloadend = () => {
-                      const base64data = reader.result as string
-                      uploadAvatarMutation.mutate({
-                        file: base64data,
-                        fileName: `avatar-${Date.now()}.jpg`,
-                        contentType: blob.type || 'image/jpeg',
-                      })
-                    }
-                    reader.readAsDataURL(blob)
-                  } catch (error) {
-                    console.error('Error processing image:', error)
-                    toast.show('Error', {
-                      message: 'Failed to process image. Please try again.',
+    <DashboardWidget>
+      <YStack gap="$4">
+        {/* Avatar Section */}
+        <YStack gap="$3" items="center">
+          <Text fontWeight="600">Profile Photo</Text>
+          <AvatarImagePicker
+            value={getAvatarUrl(avatarPath) || ''}
+            onImageSelect={async (imageUri) => {
+              if (imageUri) {
+                // Convert image to base64 for upload
+                try {
+                  const response = await fetch(imageUri)
+                  const blob = await response.blob()
+                  const reader = new FileReader()
+                  reader.onloadend = () => {
+                    const base64data = reader.result as string
+                    uploadAvatarMutation.mutate({
+                      file: base64data,
+                      fileName: `avatar-${Date.now()}.jpg`,
+                      contentType: blob.type || 'image/jpeg',
                     })
                   }
-                } else {
-                  // Clear avatar
-                  setValue('avatar_path', '')
+                  reader.readAsDataURL(blob)
+                } catch (error) {
+                  console.error('Error processing image:', error)
+                  toast.show('Error', {
+                    message: 'Failed to process image. Please try again.',
+                  })
                 }
-              }}
-              size={120}
-              disabled={uploadAvatarMutation.isPending}
-              placeholder="Upload Avatar"
-            />
-            {uploadAvatarMutation.isPending && (
-              <Text fontSize="$2" color="$color10">
-                Uploading avatar...
-              </Text>
-            )}
-          </YStack>
+              } else {
+                // Clear avatar
+                setValue('avatar_path', '')
+              }
+            }}
+            size={120}
+            disabled={uploadAvatarMutation.isPending}
+            placeholder="Upload Avatar"
+          />
+          {uploadAvatarMutation.isPending && (
+            <Text fontSize="$2" color="$color10">
+              Uploading avatar...
+            </Text>
+          )}
+        </YStack>
 
-          {/* Name Fields */}
-          <XStack gap="$3">
-            <YStack gap="$2" flex={1}>
-              <Text fontWeight="600">First Name *</Text>
-              <Controller
-                name="first_name"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    placeholder="First name"
-                    value={field.value}
-                    onChangeText={field.onChange}
-                    borderColor={errors.first_name ? '$red8' : '$borderColor'}
-                  />
-                )}
-              />
-              {errors.first_name && (
-                <Text color="$red10" fontSize="$2">
-                  {errors.first_name.message}
-                </Text>
-              )}
-            </YStack>
-
-            <YStack gap="$2" flex={1}>
-              <Text fontWeight="600">Last Name *</Text>
-              <Controller
-                name="last_name"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    placeholder="Last name"
-                    value={field.value}
-                    onChangeText={field.onChange}
-                    borderColor={errors.last_name ? '$red8' : '$borderColor'}
-                  />
-                )}
-              />
-              {errors.last_name && (
-                <Text color="$red10" fontSize="$2">
-                  {errors.last_name.message}
-                </Text>
-              )}
-            </YStack>
-          </XStack>
-
-          {/* About Section */}
-          <YStack gap="$2">
-            <Text fontWeight="600">About</Text>
+        {/* Name Fields */}
+        <XStack gap="$3">
+          <YStack gap="$2" flex={1}>
+            <Text fontWeight="600">First Name *</Text>
             <Controller
-              name="about"
-              control={control}
-              render={({ field }) => (
-                <TextArea
-                  placeholder="Tell us about yourself..."
-                  value={field.value || ''}
-                  onChangeText={field.onChange}
-                  minH={100}
-                  borderColor={errors.about ? '$red8' : '$borderColor'}
-                />
-              )}
-            />
-            {errors.about && (
-              <Text color="$red10" fontSize="$2">
-                {errors.about.message}
-              </Text>
-            )}
-          </YStack>
-
-          {/* Contact Information */}
-          <YStack gap="$2">
-            <Text fontWeight="600">Phone</Text>
-            <Controller
-              name="phone"
-              control={control}
-              render={({ field }) => (
-                <PhoneNumberInput
-                  value={field.value || ''}
-                  onChange={field.onChange}
-                  error={errors.phone?.message}
-                  defaultCountry="US"
-                  storeFormatted={true}
-                />
-              )}
-            />
-          </YStack>
-
-          <YStack gap="$2">
-            <Text fontWeight="600">Email (Read-only)</Text>
-            <Controller
-              name="email"
+              name="first_name"
               control={control}
               render={({ field }) => (
                 <Input
-                  placeholder="Email address"
+                  placeholder="First name"
                   value={field.value}
-                  onChangeText={() => {}} // Make read-only
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  editable={false}
-                  opacity={0.7}
-                  bg="$color2"
-                  borderColor="$color6"
+                  onChangeText={field.onChange}
+                  borderColor={errors.first_name ? '$red8' : '$borderColor'}
                 />
               )}
             />
-            <Text color="$color10" fontSize="$2">
-              Email changes must be made through account settings
-            </Text>
+            {errors.first_name && (
+              <Text color="$red10" fontSize="$2">
+                {errors.first_name.message}
+              </Text>
+            )}
           </YStack>
 
-          {/* Home Address with Smart Autocomplete */}
-          <YStack gap="$3">
-            <Text fontWeight="600">Home Address</Text>
-            <AddressForm
-              mode="hybrid"
-              placeholder="Search for your home address..."
-              error={errors.address?.street?.message || errors.address?.city?.message}
-              provider="mapbox"
-              apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
-              addressValue={{
-                streetAddress: watch('address.street') || '',
-                locality: watch('address.city') || '',
-                stateAbbreviation: watch('address.state') || '',
-                postalCode: watch('address.zip') || '',
-                country: watch('address.country') || '',
-                formattedAddress: [
-                  watch('address.street'),
-                  watch('address.city'),
-                  watch('address.state'),
-                  watch('address.zip'),
-                ]
-                  .filter(Boolean)
-                  .join(', '),
-              }}
-              onAddressSelect={(address) => {
-                console.log('Selected address:', address)
-                // Update form fields with selected address
-                setValue('address.street', address.streetAddress || '')
-                setValue('address.city', address.locality || '')
-                setValue(
-                  'address.state',
-                  address.stateAbbreviation || address.administrativeAreaLevel1 || ''
-                )
-                setValue('address.zip', address.postalCode || '')
-                setValue('address.country', address.country || 'United States')
-
-                // Store latitude and longitude for map display
-                if (address.coordinates?.lat !== undefined) {
-                  setValue('address.latitude', address.coordinates.lat)
-                }
-                if (address.coordinates?.lng !== undefined) {
-                  setValue('address.longitude', address.coordinates.lng)
-                }
-
-                // Trigger validation for updated fields
-                trigger('address.street')
-                trigger('address.city')
-                trigger('address.state')
-                trigger('address.zip')
-              }}
+          <YStack gap="$2" flex={1}>
+            <Text fontWeight="600">Last Name *</Text>
+            <Controller
+              name="last_name"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  placeholder="Last name"
+                  value={field.value}
+                  onChangeText={field.onChange}
+                  borderColor={errors.last_name ? '$red8' : '$borderColor'}
+                />
+              )}
             />
+            {errors.last_name && (
+              <Text color="$red10" fontSize="$2">
+                {errors.last_name.message}
+              </Text>
+            )}
           </YStack>
+        </XStack>
 
-          {/* Save Button */}
-          <XStack justify="flex-end" pt="$4">
-            <Button
-              onPress={handleSubmit(onSubmit, onError)}
-              disabled={!isDirty || isLoading}
-              opacity={!isDirty || isLoading ? 0.5 : 1}
-              space={isLoading ? '$2' : 0}
-            >
-              <AnimatePresence>
-                {isLoading && (
-                  <Button.Icon>
-                    <Spinner
-                      animation="bouncy"
-                      enterStyle={{
-                        scale: 0,
-                      }}
-                      exitStyle={{
-                        scale: 0,
-                      }}
-                    />
-                  </Button.Icon>
-                )}
-              </AnimatePresence>
-              <Button.Text>{isLoading ? 'Saving...' : 'Save Changes'}</Button.Text>
-            </Button>
-          </XStack>
+        {/* About Section */}
+        <YStack gap="$2">
+          <Text fontWeight="600">About</Text>
+          <Controller
+            name="about"
+            control={control}
+            render={({ field }) => (
+              <TextArea
+                placeholder="Tell us about yourself..."
+                value={field.value || ''}
+                onChangeText={field.onChange}
+                minH={100}
+                borderColor={errors.about ? '$red8' : '$borderColor'}
+              />
+            )}
+          />
+          {errors.about && (
+            <Text color="$red10" fontSize="$2">
+              {errors.about.message}
+            </Text>
+          )}
         </YStack>
-      </DashboardWidget>
-    </YStack>
+
+        {/* Contact Information */}
+        <YStack gap="$2">
+          <Text fontWeight="600">Phone</Text>
+          <Controller
+            name="phone"
+            control={control}
+            render={({ field }) => (
+              <PhoneNumberInput
+                value={field.value || ''}
+                onChange={field.onChange}
+                error={errors.phone?.message}
+                defaultCountry="US"
+                storeFormatted={true}
+              />
+            )}
+          />
+        </YStack>
+
+        <YStack gap="$2">
+          <Text fontWeight="600">Email (Read-only)</Text>
+          <Controller
+            name="email"
+            control={control}
+            render={({ field }) => (
+              <Input
+                placeholder="Email address"
+                value={field.value}
+                onChangeText={() => {}} // Make read-only
+                keyboardType="email-address"
+                autoCapitalize="none"
+                editable={false}
+                opacity={0.7}
+                bg="$color2"
+                borderColor="$color6"
+              />
+            )}
+          />
+          <Text color="$color10" fontSize="$2">
+            Email changes must be made through account settings
+          </Text>
+        </YStack>
+
+        {/* Home Address with Smart Autocomplete */}
+        <YStack gap="$3">
+          <Text fontWeight="600">Home Address</Text>
+          <AddressForm
+            mode="hybrid"
+            placeholder="Search for your home address..."
+            error={errors.address?.street?.message || errors.address?.city?.message}
+            provider="mapbox"
+            apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
+            addressValue={{
+              streetAddress: watch('address.street') || '',
+              locality: watch('address.city') || '',
+              stateAbbreviation: watch('address.state') || '',
+              postalCode: watch('address.zip') || '',
+              country: watch('address.country') || '',
+              formattedAddress: [
+                watch('address.street'),
+                watch('address.city'),
+                watch('address.state'),
+                watch('address.zip'),
+              ]
+                .filter(Boolean)
+                .join(', '),
+            }}
+            onAddressSelect={(address) => {
+              console.log('Selected address:', address)
+              // Update form fields with selected address
+              setValue('address.street', address.streetAddress || '')
+              setValue('address.city', address.locality || '')
+              setValue(
+                'address.state',
+                address.stateAbbreviation || address.administrativeAreaLevel1 || ''
+              )
+              setValue('address.zip', address.postalCode || '')
+              setValue('address.country', address.country || 'United States')
+
+              // Store latitude and longitude for map display
+              if (address.coordinates?.lat !== undefined) {
+                setValue('address.latitude', address.coordinates.lat)
+              }
+              if (address.coordinates?.lng !== undefined) {
+                setValue('address.longitude', address.coordinates.lng)
+              }
+
+              // Trigger validation for updated fields
+              trigger('address.street')
+              trigger('address.city')
+              trigger('address.state')
+              trigger('address.zip')
+            }}
+          />
+        </YStack>
+
+        {/* Save Button */}
+        <XStack justify="flex-end" pt="$4">
+          <Button
+            onPress={handleSubmit(onSubmit, onError)}
+            disabled={!isDirty || isLoading}
+            opacity={!isDirty || isLoading ? 0.5 : 1}
+            space={isLoading ? '$2' : 0}
+          >
+            <AnimatePresence>
+              {isLoading && (
+                <Button.Icon>
+                  <Spinner
+                    animation="bouncy"
+                    enterStyle={{
+                      scale: 0,
+                    }}
+                    exitStyle={{
+                      scale: 0,
+                    }}
+                  />
+                </Button.Icon>
+              )}
+            </AnimatePresence>
+            <Button.Text>{isLoading ? 'Saving...' : 'Save Changes'}</Button.Text>
+          </Button>
+        </XStack>
+      </YStack>
+    </DashboardWidget>
   )
 }

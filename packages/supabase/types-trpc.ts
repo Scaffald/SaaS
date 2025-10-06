@@ -1,7 +1,13 @@
 /**
  * tRPC Router Types Export
- * This file exports the AppRouter type from the Edge Function for client-side usage
+ * This file provides the AppRouter type for client-side usage
+ *
+ * Note: This is imported from the functions directory only for type extraction.
+ * The actual implementation runs in Deno edge functions.
  */
 
-// Re-export the AppRouter type from the tRPC function
-export type { AppRouter } from './functions/trpc/index'
+// Import type only to avoid pulling in Deno-specific runtime code
+import type { AppRouter } from "./functions/trpc/index";
+
+// Re-export for client usage
+export type { AppRouter };

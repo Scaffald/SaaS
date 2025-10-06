@@ -509,7 +509,7 @@ export default function ChartsTestPage() {
           data={styledRadarData[0].data}
           height={300}
           radius={120}
-          backgroundColor="#1A202C"
+          bg="#1A202C"
           gridColor="#E0E0E0"
           labelColor="#E0E0E0"
           labelTextSize={14}
@@ -555,7 +555,7 @@ export default function ChartsTestPage() {
           showSets={[0, 1]}
           height={300}
           radius={120}
-          backgroundColor="#1A202C"
+          bg="#1A202C"
           gridColor="#E0E0E0"
           labelColor="#E0E0E0"
           labelTextSize={14}

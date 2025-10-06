@@ -49,16 +49,55 @@ export const ResultList = forwardRef<ResultListRef, ResultListProps>(
     // Expose scroll functionality to parent
     useImperativeHandle(ref, () => ({
       scrollToCard: (profileId: string) => {
+        console.log('[SCROLL_DEBUG] scrollToCard called:', {
+          profileId,
+          totalRegisteredRefs: cardRefs.current.size,
+          registeredIds: Array.from(cardRefs.current.keys()),
+          hasCardRef: cardRefs.current.has(profileId),
+          hasScrollView: !!scrollViewRef.current,
+          platform: Platform.OS,
+        })
+
         const cardRef = cardRefs.current.get(profileId)
-        if (!cardRef || !scrollViewRef.current) return
+        if (!cardRef || !scrollViewRef.current) {
+          console.warn('[SCROLL_DEBUG] Cannot scroll - missing refs:', {
+            hasCardRef: !!cardRef,
+            hasScrollView: !!scrollViewRef.current,
+          })
+          return
+        }
 
         if (Platform.OS === 'web') {
-          const element = cardRef as HTMLElement
-          element.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center',
-            inline: 'nearest',
+          console.log('[SCROLL_DEBUG] Web scroll - accessing scrollable element')
+
+          // The ref IS the scrollable element (has class is_ScrollView)
+          const scrollContainer = scrollViewRef.current as unknown as HTMLElement | null
+
+          if (!scrollContainer) {
+            console.warn('[SCROLL_DEBUG] ScrollView ref is null')
+            return
+          }
+
+          console.log('[SCROLL_DEBUG] ScrollContainer info:', {
+            className: scrollContainer.className,
+            scrollHeight: scrollContainer.scrollHeight,
+            clientHeight: scrollContainer.clientHeight,
+            currentScrollTop: scrollContainer.scrollTop,
           })
+
+          // Calculate card position and scroll to it
+          const cardElement = cardRef as HTMLElement
+          const cardTop = cardElement.offsetTop
+          const targetScroll = cardTop - 100 // Center with offset
+
+          console.log('[SCROLL_DEBUG] Calculated scroll position:', {
+            cardTop,
+            targetScroll,
+          })
+
+          // Set scroll position directly
+          scrollContainer.scrollTop = targetScroll
+          console.log('[SCROLL_DEBUG] ScrollTop set to:', scrollContainer.scrollTop)
         } else {
           const nativeCardRef = cardRef as {
             measureLayout: (
@@ -74,12 +113,19 @@ export const ResultList = forwardRef<ResultListRef, ResultListProps>(
           nativeCardRef.measureLayout(
             scrollViewRef.current,
             (_x: number, y: number, _width: number, _height: number) => {
+              console.log('[SCROLL_DEBUG] Native scroll - measured position:', {
+                y,
+                scrollToY: y - 100,
+              })
               nativeScrollView.scrollTo({
                 y: y - 100,
                 animated: true,
               })
+              console.log('[SCROLL_DEBUG] Native scroll - scrollTo called')
             },
-            () => {}
+            () => {
+              console.error('[SCROLL_DEBUG] Native scroll - measureLayout failed')
+            }
           )
         }
       },
@@ -87,6 +133,11 @@ export const ResultList = forwardRef<ResultListRef, ResultListProps>(
 
     const registerCardRef = (profileId: string, ref: unknown) => {
       if (ref) {
+        console.log('[SCROLL_DEBUG] Registering card ref:', {
+          profileId,
+          hasRef: !!ref,
+          totalRefs: cardRefs.current.size + 1,
+        })
         cardRefs.current.set(
           profileId,
           ref as
@@ -99,6 +150,8 @@ export const ResultList = forwardRef<ResultListRef, ResultListProps>(
                 ) => void
               }
         )
+      } else {
+        console.log('[SCROLL_DEBUG] Received null ref for:', profileId)
       }
     }
 

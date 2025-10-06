@@ -1,13 +1,30 @@
+import { useState } from 'react'
 import { DiscoverJobsLeft } from './discover-jobs-left'
 import { DiscoverJobsRight } from './discover-jobs-right'
 
 /**
  * Discover Jobs Screen Component
- * Main screen component that combines left and right panels
+ * Main screen for job discovery with search/filter on right and job list on left
  */
 export function DiscoverJobsScreen() {
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
+  const [selectedJobTypes, setSelectedJobTypes] = useState<string[]>([])
+
   return {
-    left: <DiscoverJobsLeft />,
-    right: <DiscoverJobsRight />,
+    left: (
+      <DiscoverJobsLeft
+        searchQuery={searchQuery}
+        selectedIndustries={selectedIndustries}
+        selectedJobTypes={selectedJobTypes}
+      />
+    ),
+    right: (
+      <DiscoverJobsRight
+        onSearchChange={setSearchQuery}
+        onIndustriesChange={setSelectedIndustries}
+        onJobTypesChange={setSelectedJobTypes}
+      />
+    ),
   }
 }

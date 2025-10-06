@@ -27,7 +27,7 @@ export interface SkillsChartProps {
   width?: number
   radius?: number
   maxValue?: number
-  backgroundColor?: GetThemeValueForKey<'backgroundColor'>
+  bg?: GetThemeValueForKey<'backgroundColor'>
   gridColor?: string
   labelColor?: GetThemeValueForKey<'color'>
   labelTextSize?: number
@@ -87,7 +87,7 @@ const RadarPolygon: FC<RadarPolygonProps> = ({ dimensions, fill, stroke, data })
  * @param width - Chart width (defaults to screen width)
  * @param radius - Chart radius (defaults to 120)
  * @param maxValue - Maximum value for scaling (defaults to 100)
- * @param backgroundColor - Background color (defaults to transparent)
+ * @param bg - Background color (defaults to transparent)
  * @param gridColor - Grid line color (defaults to #E0E0E0)
  * @param labelColor - Label text color (defaults to #E0E0E0)
  * @param labelTextSize - Label font size (defaults to 12)
@@ -119,7 +119,7 @@ export const SkillsChart: FC<SkillsChartProps> = ({
   width,
   radius = 120,
   maxValue = 100,
-  backgroundColor = 'transparent',
+  bg = 'transparent',
   gridColor = '#E0E0E0',
   labelTextSize = 12,
 }) => {
@@ -204,7 +204,7 @@ export const SkillsChart: FC<SkillsChartProps> = ({
   )
 
   return (
-    <View items="center" justify="center" minH={chartHeight} flex={1} bg={backgroundColor}>
+    <View items="center" justify="center" minH={chartHeight} flex={1} bg={bg}>
       <View position="absolute" height="100%" flex={1}>
         <Svg height="100%" width="100%">
           <Defs>

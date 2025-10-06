@@ -6,13 +6,22 @@
     "../../packages/ui",
     "../../packages/api",
     "../../packages/core",
-    "../../packages/supabase"
+    "../../packages/supabase/types.ts",
+    "../../packages/supabase/client-types.ts",
+    "../../packages/supabase/app-router-type.ts",
+    "../../packages/supabase/helpers.ts"
   ],
-  "exclude": ["../../supabase/functions/**/*"],
+  "exclude": [
+    "../../packages/supabase/functions/**/*",
+    "../../packages/supabase/scripts/**/*",
+    "../../packages/supabase/types-trpc.ts"
+  ],
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "noEmit": true,
     "composite": true,
     "jsx": "react-jsx",
+    "skipLibCheck": true,
     "baseUrl": "../../",
     "paths": {
       "@app/core": ["packages/core"],

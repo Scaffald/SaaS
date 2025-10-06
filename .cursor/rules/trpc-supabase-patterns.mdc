@@ -1,0 +1,255 @@
+---
+description: "tRPC and Supabase RLS patterns - proper security practices"
+globs: ["packages/supabase/functions/trpc/**/*", "**/*trpc*"]
+alwaysApply: false
+---
+
+# tRPC and Supabase Security Patterns
+
+## Core Principle: NEVER Bypass RLS
+
+Row Level Security (RLS) is your primary security mechanism. The service role should **respect RLS policies**, not bypass them.
+
+## tRPC Context Pattern
+
+### ✅ Correct Pattern
+```typescript
+// Create context with service role
+const createTRPCContext = async (opts: { req: Request }) => {
+  const authHeader = opts.req.headers.get("authorization");
+  
+  // Service role client - will RESPECT RLS policies
+  const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+    global: {
+      headers: authHeader ? { Authorization: authHeader } : {},
+    },
+  });
+
+  return { supabase, user: extractedUser };
+};
+
+// In router - use context client
+const jobsRouter = t.router({
+  getJobs: t.procedure.query(async ({ ctx }) => {
+    // Uses service role but respects RLS
+    const { data } = await ctx.supabase
+      .from('jobs')
+      .select('*');
+    
+    return data;
+  }),
+});
+```
+
+### ❌ Incorrect Pattern
+```typescript
+// DON'T DO THIS - bypasses RLS entirely
+const jobsRouter = t.router({
+  getJobs: t.procedure.query(async ({ ctx }) => {
+    // Creating new admin client bypasses RLS
+    const admin = createClient(url, serviceKey);
+    const { data } = await admin.from('jobs').select('*');
+    return data;
+  }),
+});
+```
+
+## Database Security Layers
+
+### 1. Table Grants
+```sql
+-- Grant SELECT for public data
+GRANT SELECT ON jobs TO anon;
+GRANT SELECT ON jobs TO authenticated;
+
+-- Grant specific operations for authenticated users
+GRANT INSERT, UPDATE ON user_data TO authenticated;
+```
+
+### 2. RLS Policies
+```sql
+-- Enable RLS
+ALTER TABLE jobs ENABLE ROW LEVEL SECURITY;
+
+-- Public read access
+CREATE POLICY jobs_public_read ON jobs
+  FOR SELECT TO anon, authenticated
+  USING (is_published = true);
+
+-- User-specific write access
+CREATE POLICY user_data_own ON user_data
+  FOR ALL TO authenticated
+  USING (user_id = auth.uid())
+  WITH CHECK (user_id = auth.uid());
+```
+
+### 3. Service Role Grants
+```sql
+-- Service role needs explicit grants too
+GRANT ALL ON jobs TO service_role;
+GRANT ALL ON user_data TO service_role;
+```
+
+## Access Patterns
+
+### Public Data (Anonymous + Authenticated)
+```typescript
+// No middleware needed for public data
+const publicRouter = t.router({
+  getJobs: t.procedure.query(async ({ ctx }) => {
+    // RLS policy handles access control
+    return await ctx.supabase
+      .from('jobs')
+      .select('*')
+      .eq('is_published', true);
+  }),
+});
+```
+
+### Protected Data (Authenticated Only)
+```typescript
+const protectedProcedure = t.procedure.use(enforceAuth);
+
+const protectedRouter = t.router({
+  getMyProfile: protectedProcedure.query(async ({ ctx }) => {
+    // RLS policy ensures user can only see their own data
+    return await ctx.supabase
+      .from('profiles')
+      .select('*')
+      .eq('user_id', ctx.user.id)
+      .single();
+  }),
+});
+```
+
+### Admin Data (Role-Based)
+```typescript
+const adminProcedure = t.procedure.use(enforceAdmin);
+
+const adminRouter = t.router({
+  getAllUsers: adminProcedure.query(async ({ ctx }) => {
+    // RLS policy checks admin role
+    return await ctx.supabase
+      .from('profiles')
+      .select('*');
+  }),
+});
+```
+
+## Common Pitfalls
+
+### ❌ Don't: Create New Admin Clients
+```typescript
+// BAD - Bypasses all security
+const admin = createClient(url, serviceKey);
+await admin.from('sensitive_data').select('*');
+```
+
+### ✅ Do: Use Context Client
+```typescript
+// GOOD - Respects RLS policies
+await ctx.supabase
+  .from('sensitive_data')
+  .select('*');
+```
+
+### ❌ Don't: Use `!inner` for Public Data
+```typescript
+// BAD - Can block access unnecessarily
+.select('job, industry!inner(name)')
+```
+
+### ✅ Do: Use Regular Joins
+```typescript
+// GOOD - Allows optional relationships
+.select('job, industry(name)')
+```
+
+### ❌ Don't: Assume Service Role Bypasses RLS
+The service role client with proper setup will **respect RLS policies**. This is correct behavior.
+
+### ✅ Do: Design Proper RLS Policies
+```sql
+-- Public tables need policies for anon + authenticated
+CREATE POLICY public_read ON jobs
+  FOR SELECT TO anon, authenticated
+  USING (true);
+
+-- Private tables need user-specific policies  
+CREATE POLICY user_access ON private_data
+  FOR ALL TO authenticated
+  USING (user_id = auth.uid());
+```
+
+## Debugging RLS Issues
+
+### Check Grants
+```sql
+-- See what's granted
+SELECT grantee, privilege_type 
+FROM information_schema.role_table_grants 
+WHERE table_name = 'your_table';
+```
+
+### Check Policies
+```sql
+-- See active policies
+SELECT * FROM pg_policies 
+WHERE tablename = 'your_table';
+```
+
+### Test as Different Roles
+```typescript
+// Test as anon
+const anon = createClient(url, anonKey);
+const { data, error } = await anon.from('jobs').select('*');
+
+// Test as authenticated (in your tRPC router)
+const { data, error } = await ctx.supabase.from('jobs').select('*');
+```
+
+## Best Practices
+
+1. **Always enable RLS** on tables with sensitive data
+2. **Grant appropriate permissions** to anon/authenticated/service_role
+3. **Use context client** in tRPC routers - don't create new clients
+4. **Test with different roles** to ensure policies work correctly
+5. **Document security assumptions** in migrations
+6. **Prefer explicit grants** over broad permissions
+7. **Use policies for fine-grained control** over simple grants
+
+## Migration Template
+
+```sql
+BEGIN;
+
+-- Create table
+CREATE TABLE jobs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  is_published BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE jobs ENABLE ROW LEVEL SECURITY;
+
+-- Grant table access
+GRANT SELECT ON jobs TO anon, authenticated;
+GRANT ALL ON jobs TO service_role;
+
+-- Create policies
+CREATE POLICY jobs_public_read ON jobs
+  FOR SELECT TO anon, authenticated
+  USING (is_published = true);
+
+COMMIT;
+```
+
+## Key Takeaways
+
+- Service role + RLS = Secure and flexible
+- Never bypass RLS in application code
+- Use grants + policies for layered security
+- Context client respects RLS automatically
+- Test your security assumptions thoroughly
