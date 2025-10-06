@@ -1577,6 +1577,196 @@ export type Database = {
           },
         ]
       }
+      review_category_ratings: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          rating: number
+          review_id: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          rating: number
+          review_id: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          review_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_category_ratings_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      review_flags: {
+        Row: {
+          created_at: string
+          flagged_by_user_id: string
+          id: string
+          notes: string | null
+          reason: string
+          review_id: string
+          reviewed_at: string | null
+          reviewed_by_user_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          flagged_by_user_id: string
+          id?: string
+          notes?: string | null
+          reason: string
+          review_id: string
+          reviewed_at?: string | null
+          reviewed_by_user_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          flagged_by_user_id?: string
+          id?: string
+          notes?: string | null
+          reason?: string
+          review_id?: string
+          reviewed_at?: string | null
+          reviewed_by_user_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_flags_flagged_by_user_id_fkey"
+            columns: ["flagged_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_flags_flagged_by_user_id_fkey"
+            columns: ["flagged_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_flags_flagged_by_user_id_fkey"
+            columns: ["flagged_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_user_directory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_flags_flagged_by_user_id_fkey"
+            columns: ["flagged_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_user_private"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_flags_flagged_by_user_id_fkey"
+            columns: ["flagged_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_user_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_flags_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_flags_reviewed_by_user_id_fkey"
+            columns: ["reviewed_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_flags_reviewed_by_user_id_fkey"
+            columns: ["reviewed_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_flags_reviewed_by_user_id_fkey"
+            columns: ["reviewed_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_user_directory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_flags_reviewed_by_user_id_fkey"
+            columns: ["reviewed_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_user_private"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_flags_reviewed_by_user_id_fkey"
+            columns: ["reviewed_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_user_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      review_progress: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          current_step: number
+          last_step_completed: string | null
+          review_id: string
+          steps_completed: Json
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          current_step?: number
+          last_step_completed?: string | null
+          review_id: string
+          steps_completed?: Json
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          current_step?: number
+          last_step_completed?: string | null
+          review_id?: string
+          steps_completed?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_progress_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: true
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       review_skill_proficiency_logs: {
         Row: {
           aggregated_score: number
@@ -1744,16 +1934,25 @@ export type Database = {
       review_soft_skill_votes: {
         Row: {
           created_at: string
+          is_strength: boolean | null
+          notes: string | null
+          rating: number | null
           review_id: string
           skill_id: string
         }
         Insert: {
           created_at?: string
+          is_strength?: boolean | null
+          notes?: string | null
+          rating?: number | null
           review_id: string
           skill_id: string
         }
         Update: {
           created_at?: string
+          is_strength?: boolean | null
+          notes?: string | null
+          rating?: number | null
           review_id?: string
           skill_id?: string
         }
@@ -1778,6 +1977,7 @@ export type Database = {
         Row: {
           author_user_id: string
           body: string | null
+          comment: string | null
           created_at: string
           headline: string | null
           id: string
@@ -1798,6 +1998,7 @@ export type Database = {
         Insert: {
           author_user_id: string
           body?: string | null
+          comment?: string | null
           created_at?: string
           headline?: string | null
           id?: string
@@ -1818,6 +2019,7 @@ export type Database = {
         Update: {
           author_user_id?: string
           body?: string | null
+          comment?: string | null
           created_at?: string
           headline?: string | null
           id?: string
@@ -2037,6 +2239,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      soft_skills: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          order_index: number
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          order_index?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          order_index?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       spatial_ref_sys: {
         Row: {
@@ -3831,6 +4066,10 @@ export type Database = {
         Args: { "": number }
         Returns: string
       }
+      get_review_progress_percentage: {
+        Args: { p_review_id: string }
+        Returns: number
+      }
       get_skill_children: {
         Args: { p_parent_id: string }
         Returns: {
@@ -5305,6 +5544,10 @@ export type Database = {
       unlockrows: {
         Args: { "": string }
         Returns: number
+      }
+      update_review_progress: {
+        Args: { p_completed?: boolean; p_review_id: string; p_step: string }
+        Returns: undefined
       }
       updategeometrysrid: {
         Args: {
