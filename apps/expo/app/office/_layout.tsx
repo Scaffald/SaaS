@@ -77,6 +77,9 @@ export default function OfficeLayout() {
         drawerContent={(props) => <OfficeDrawerMenuMobile {...props} />}
       >
         <Drawer.Screen name="index" options={{ title: 'Office' }} />
+        <Drawer.Screen name="jobs/index" options={{ title: 'Jobs' }} />
+        <Drawer.Screen name="jobs/create" options={{ title: 'Create Job' }} />
+        <Drawer.Screen name="jobs/[id]/edit" options={{ title: 'Edit Job' }} />
       </Drawer>
 
       <NotificationsActionSheet open={notificationsOpen} onOpenChange={setNotificationsOpen} />

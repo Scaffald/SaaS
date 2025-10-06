@@ -1,8 +1,10 @@
-import { YStack, XStack, Text, Input, DataTable } from '@app/ui'
+import { YStack, XStack, Text, Input, DataTable, Button } from '@app/ui'
+import { Card } from 'tamagui'
 import { api } from '@app/core/utils/api'
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
+import { Briefcase, Users } from '@tamagui/lucide-icons'
 
 type User = {
   id: string
@@ -42,6 +44,41 @@ export function OfficeUsersScreen() {
 
   return (
     <YStack flex={1} bg="$background">
+      {/* Quick Actions */}
+      <XStack p="$4" gap="$4">
+        <Card
+          flex={1}
+          p="$4"
+          pressStyle={{ scale: 0.98 }}
+          onPress={() => router.push('/office/jobs')}
+        >
+          <YStack gap="$2">
+            <XStack items="center" gap="$2">
+              <Briefcase size={20} />
+              <Text fontSize="$6" fontWeight="600">
+                Job Postings
+              </Text>
+            </XStack>
+            <Text fontSize="$3" color="$color11">
+              Manage job listings and applications
+            </Text>
+          </YStack>
+        </Card>
+        <Card flex={1} p="$4" bg="$color3">
+          <YStack gap="$2">
+            <XStack items="center" gap="$2">
+              <Users size={20} />
+              <Text fontSize="$6" fontWeight="600">
+                User Management
+              </Text>
+            </XStack>
+            <Text fontSize="$3" color="$color11">
+              View and manage platform users
+            </Text>
+          </YStack>
+        </Card>
+      </XStack>
+
       {/* Header */}
       <XStack p="$4" gap="$4" items="center" borderBottomWidth={1} bg="$borderColor">
         <Text fontSize="$8" fontWeight="bold">
