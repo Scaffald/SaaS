@@ -42,7 +42,8 @@ export function ProfileGeneralLeft() {
       })
       refetch()
     },
-    onError: (error) => {
+    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
+    onError: (error: any) => {
       console.error('Error saving profile:', error)
       toast.show('Error', {
         message: error.message || 'Failed to save profile. Please try again.',
@@ -51,7 +52,8 @@ export function ProfileGeneralLeft() {
   })
 
   const uploadAvatarMutation = api.profile.uploadAvatar.useMutation({
-    onSuccess: (data) => {
+    // biome-ignore lint/suspicious/noExplicitAny: tRPC response type
+    onSuccess: (data: any) => {
       toast.show('Avatar Uploaded', {
         message: 'Your avatar has been uploaded successfully!',
       })
@@ -59,7 +61,8 @@ export function ProfileGeneralLeft() {
       setValue('avatar_path', data.avatarPath)
       refetch()
     },
-    onError: (error) => {
+    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
+    onError: (error: any) => {
       console.error('Error uploading avatar:', error)
       toast.show('Upload Error', {
         message: error.message || 'Failed to upload avatar. Please try again.',

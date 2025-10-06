@@ -99,7 +99,8 @@ export function ProfileCertificationsRight() {
 
         {certifications && certifications.length > 0 && (
           <YStack gap="$3">
-            {certifications.map((cert) => (
+            {/* biome-ignore lint/suspicious/noExplicitAny: API response type */}
+            {certifications.map((cert: any) => (
               <YStack
                 key={cert.id}
                 gap="$3"
@@ -111,7 +112,7 @@ export function ProfileCertificationsRight() {
               >
                 {/* Header */}
                 <YStack gap="$2">
-                  <XStack justify="space-between" items="start">
+                  <XStack justify="space-between" items="flex-start">
                     <YStack gap="$1" flex={1}>
                       <H4>{cert.name}</H4>
                       <Text color="$color11" fontSize="$3">

@@ -87,7 +87,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           ]}
           enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
           exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
-          w={600}
+          width={600}
           maxH="85vh"
         >
           <ScrollView showsVerticalScrollIndicator={false}>
@@ -139,11 +139,11 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     )}
 
                     <YStack gap="$2" items="center">
-                      <Text fontSize="$8" fontWeight="700" color="$color12" ta="center">
+                      <Text fontSize="$8" fontWeight="700" color="$color12">
                         {profile.name}
                       </Text>
                       {profile.headline && (
-                        <Text fontSize="$5" color="$color11" ta="center">
+                        <Text fontSize="$5" color="$color11">
                           {profile.headline}
                         </Text>
                       )}
@@ -204,7 +204,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     )}
 
                     {profile.open_to_work && (
-                      <XStack bg="$green3" px="$3" py="$1.5" rounded="$3" als="flex-start">
+                      <XStack bg="$green3" px="$3" py="$1.5" rounded="$3">
                         <Text fontSize="$3" fontWeight="600" color="$green11">
                           Available for Work
                         </Text>
@@ -239,7 +239,8 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                           </Text>
                         </XStack>
                         <YStack gap="$2">
-                          {topSkills.map((skill) => (
+                          {/* biome-ignore lint/suspicious/noExplicitAny: API response type */}
+                          {topSkills.map((skill: any) => (
                             <XStack key={skill.id} justify="space-between" items="center">
                               <Text fontSize="$4" color="$color11">
                                 {skill.name}
@@ -258,7 +259,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                                     bg="$blue10"
                                   />
                                 </YStack>
-                                <YStack minWidth={30}>
+                                <YStack minW={30}>
                                   <Text fontSize="$3" color="$color10">
                                     {skill.proficiency}%
                                   </Text>
@@ -283,7 +284,8 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                           </Text>
                         </XStack>
                         <YStack gap="$2">
-                          {topCertifications.map((cert) => (
+                          {/* biome-ignore lint/suspicious/noExplicitAny: API response type */}
+                          {topCertifications.map((cert: any) => (
                             <YStack key={cert.id} gap="$1">
                               <Text fontSize="$4" fontWeight="600" color="$color12">
                                 {cert.name}

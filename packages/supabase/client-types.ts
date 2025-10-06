@@ -3,7 +3,7 @@
  * Re-exports from _shared directory to avoid importing Deno-specific code
  */
 
-// Re-export AppRouter type
+// Re-export AppRouter type (placeholder to avoid Deno imports)
 export type { AppRouter } from "./app-router-type";
 
 // Re-export types from consolidated schemas
