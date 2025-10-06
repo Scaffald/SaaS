@@ -13,3 +13,6 @@ export * from './common'
 
 // Profile schemas
 export * from './profile'
+
+// Job schemas
+export * from './jobs'
