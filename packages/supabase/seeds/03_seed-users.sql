@@ -41,56 +41,62 @@ with hubs(city, state, lat, lon, area_code, postal_prefix) as (
 ),
 unique_people(n, first_name, last_name, headline, specialty) as (
   values
-    (1, 'Marcus', 'Washington', 'Master Electrician & Safety Instructor', 'electrical,osha-30,leadership'),
-    (2, 'Sarah', 'Chen', 'Licensed Plumber & Project Manager', 'plumbing,project-management,blueprints'),
-    (3, 'James', 'Rodriguez', 'Certified Welder (AWS D1.1)', 'welding,quality-control,teamwork'),
-    (4, 'Emily', 'Thompson', 'HVAC Technician & EPA Certified', 'hvac,troubleshooting,customer-service'),
-    (5, 'David', 'Martinez', 'Heavy Equipment Operator', 'crane-operation,safety,communication'),
-    (6, 'Jennifer', 'Anderson', 'Commercial Carpenter & Foreman', 'carpentry,framing,leadership'),
-    (7, 'Michael', 'Taylor', 'CNC Machinist & Programmer', 'cnc-operating,machining,cad'),
-    (8, 'Lisa', 'Moore', 'Industrial Electrician', 'electrical,plc,troubleshooting'),
-    (9, 'Robert', 'Jackson', 'CDL-A Driver & Logistics Coordinator', 'truck-driving,logistics,time-management'),
-    (10, 'Maria', 'Garcia', 'Quality Control Inspector', 'quality-control,documentation,problem-solving'),
-    (11, 'Christopher', 'White', 'Solar Installation Specialist', 'solar-installation,electrical,roofing'),
-    (12, 'Ashley', 'Harris', 'Concrete Finisher & Formwork Specialist', 'concrete,formwork,precision'),
-    (13, 'Daniel', 'Martin', 'Industrial Maintenance Technician', 'maintenance,welding,electrical'),
-    (14, 'Jessica', 'Lee', 'CAD Designer & Estimator', 'cad,estimating,solidworks'),
-    (15, 'Matthew', 'Clark', 'Pipefitter & Steamfitter', 'pipefitting,welding,blueprints'),
-    (16, 'Amanda', 'Lewis', 'Warehouse Manager & Forklift Trainer', 'warehouse-operations,forklift,leadership'),
-    (17, 'Joshua', 'Walker', 'Roofing Contractor & Safety Officer', 'roofing,fall-protection,osha-30'),
-    (18, 'Nicole', 'Hall', 'Manufacturing Engineer', 'process-improvement,quality-control,lean-manufacturing'),
-    (19, 'Andrew', 'Young', 'Drywall Installer & Finisher', 'drywall,taping,finishing'),
-    (20, 'Stephanie', 'King', 'Field Service Technician', 'field-services,troubleshooting,customer-service'),
-    (21, 'Brandon', 'Wright', 'Structural Welder & Fabricator', 'welding,fabrication,blueprints'),
-    (22, 'Rachel', 'Scott', 'Assembly Line Supervisor', 'assembly,leadership,lean-manufacturing'),
-    (23, 'Kevin', 'Torres', 'Millwright & Precision Alignment', 'millwright,alignment,maintenance'),
-    (24, 'Lauren', 'Nguyen', 'AutoCAD Specialist & Detailer', 'autocad,detailing,technical-drawing'),
-    (25, 'Tyler', 'Hill', 'Journeyman Electrician', 'electrical,residential,commercial'),
-    (26, 'Megan', 'Flores', 'Paint & Coating Specialist', 'painting,coating,surface-prep'),
-    (27, 'Justin', 'Green', 'Excavator Operator & Site Foreman', 'excavation,grading,site-management'),
-    (28, 'Brittany', 'Adams', 'HVAC Service Manager', 'hvac,customer-service,scheduling'),
-    (29, 'Ryan', 'Baker', 'Precision Machinist', 'machining,measurement,quality'),
-    (30, 'Samantha', 'Nelson', 'Electrical Apprentice & Student', 'electrical,learning,safety'),
-    (31, 'Eric', 'Carter', 'Bridge & Highway Construction', 'concrete,rebar,heavy-civil'),
-    (32, 'Angela', 'Mitchell', 'Insulation Installer', 'insulation,energy-efficiency,safety'),
-    (33, 'Brian', 'Perez', 'Diesel Mechanic & Fleet Maintenance', 'diesel-repair,diagnostics,preventive-maintenance'),
-    (34, 'Melissa', 'Roberts', 'Crane Operator (CCO Certified)', 'crane-operation,rigging,safety'),
-    (35, 'Jason', 'Turner', 'Sheet Metal Fabricator', 'sheet-metal,fabrication,precision'),
-    (36, 'Heather', 'Phillips', 'Construction Project Coordinator', 'project-management,scheduling,communication'),
-    (37, 'Aaron', 'Campbell', 'Fire Sprinkler Installer', 'sprinkler-systems,welding,nfpa'),
-    (38, 'Amy', 'Parker', 'CNC Operator & Setup Technician', 'cnc-operating,tooling,quality'),
-    (39, 'Nathan', 'Evans', 'Industrial Painter', 'industrial-painting,coating,surface-prep'),
-    (40, 'Laura', 'Edwards', 'Inventory Control Specialist', 'inventory-management,data-entry,organization'),
-    (41, 'Jacob', 'Collins', 'Glazier & Window Installer', 'glass-installation,measuring,safety'),
-    (42, 'Michelle', 'Stewart', 'Production Scheduler', 'scheduling,erp-systems,coordination'),
-    (43, 'Jordan', 'Sanchez', 'Power Lineman & Utility Worker', 'power-systems,climbing,safety'),
-    (44, 'Kimberly', 'Morris', 'Industrial Hygienist', 'safety,testing,compliance'),
-    (45, 'Nicholas', 'Rogers', 'Tile Setter & Flooring Specialist', 'tile,flooring,layout'),
-    (46, 'Rebecca', 'Reed', 'Shipping & Receiving Coordinator', 'logistics,inventory,documentation'),
-    (47, 'Adam', 'Cook', 'Boilermaker & Pressure Vessel Welder', 'welding,boilermaking,confined-space'),
-    (48, 'Catherine', 'Morgan', 'Quality Assurance Engineer', 'quality-control,iso-certification,auditing'),
-    (49, 'Sean', 'Bell', 'Landscaping & Site Development', 'landscaping,grading,equipment-operation'),
-    (50, 'Diana', 'Murphy', 'Industrial Electrician & PLC Programmer', 'electrical,plc,automation')
+    -- Core Team Members (Super Admins)
+    (1, 'Clay', 'Unicorn', 'Platform Administrator', 'leadership,platform-management,development'),
+    (2, 'Zach', 'Servideo', 'Platform Administrator', 'leadership,platform-management,operations'),
+    (3, 'Marc', 'Gigliotti', 'Platform Administrator', 'leadership,platform-management,strategy'),
+    (4, 'Vince', 'Giacomini', 'Platform Administrator', 'leadership,platform-management,technology'),
+    -- Seed Users
+    (5, 'Marcus', 'Washington', 'Master Electrician & Safety Instructor', 'electrical,osha-30,leadership'),
+    (6, 'Sarah', 'Chen', 'Licensed Plumber & Project Manager', 'plumbing,project-management,blueprints'),
+    (7, 'James', 'Rodriguez', 'Certified Welder (AWS D1.1)', 'welding,quality-control,teamwork'),
+    (8, 'Emily', 'Thompson', 'HVAC Technician & EPA Certified', 'hvac,troubleshooting,customer-service'),
+    (9, 'David', 'Martinez', 'Heavy Equipment Operator', 'crane-operation,safety,communication'),
+    (10, 'Jennifer', 'Anderson', 'Commercial Carpenter & Foreman', 'carpentry,framing,leadership'),
+    (11, 'Michael', 'Taylor', 'CNC Machinist & Programmer', 'cnc-operating,machining,cad'),
+    (12, 'Lisa', 'Moore', 'Industrial Electrician', 'electrical,plc,troubleshooting'),
+    (13, 'Robert', 'Jackson', 'CDL-A Driver & Logistics Coordinator', 'truck-driving,logistics,time-management'),
+    (14, 'Maria', 'Garcia', 'Quality Control Inspector', 'quality-control,documentation,problem-solving'),
+    (15, 'Christopher', 'White', 'Solar Installation Specialist', 'solar-installation,electrical,roofing'),
+    (16, 'Ashley', 'Harris', 'Concrete Finisher & Formwork Specialist', 'concrete,formwork,precision'),
+    (17, 'Daniel', 'Martin', 'Industrial Maintenance Technician', 'maintenance,welding,electrical'),
+    (18, 'Jessica', 'Lee', 'CAD Designer & Estimator', 'cad,estimating,solidworks'),
+    (19, 'Matthew', 'Clark', 'Pipefitter & Steamfitter', 'pipefitting,welding,blueprints'),
+    (20, 'Amanda', 'Lewis', 'Warehouse Manager & Forklift Trainer', 'warehouse-operations,forklift,leadership'),
+    (21, 'Joshua', 'Walker', 'Roofing Contractor & Safety Officer', 'roofing,fall-protection,osha-30'),
+    (22, 'Nicole', 'Hall', 'Manufacturing Engineer', 'process-improvement,quality-control,lean-manufacturing'),
+    (23, 'Andrew', 'Young', 'Drywall Installer & Finisher', 'drywall,taping,finishing'),
+    (24, 'Stephanie', 'King', 'Field Service Technician', 'field-services,troubleshooting,customer-service'),
+    (25, 'Brandon', 'Wright', 'Structural Welder & Fabricator', 'welding,fabrication,blueprints'),
+    (26, 'Rachel', 'Scott', 'Assembly Line Supervisor', 'assembly,leadership,lean-manufacturing'),
+    (27, 'Kevin', 'Torres', 'Millwright & Precision Alignment', 'millwright,alignment,maintenance'),
+    (28, 'Lauren', 'Nguyen', 'AutoCAD Specialist & Detailer', 'autocad,detailing,technical-drawing'),
+    (29, 'Tyler', 'Hill', 'Journeyman Electrician', 'electrical,residential,commercial'),
+    (30, 'Megan', 'Flores', 'Paint & Coating Specialist', 'painting,coating,surface-prep'),
+    (31, 'Justin', 'Green', 'Excavator Operator & Site Foreman', 'excavation,grading,site-management'),
+    (32, 'Brittany', 'Adams', 'HVAC Service Manager', 'hvac,customer-service,scheduling'),
+    (33, 'Ryan', 'Baker', 'Precision Machinist', 'machining,measurement,quality'),
+    (34, 'Samantha', 'Nelson', 'Electrical Apprentice & Student', 'electrical,learning,safety'),
+    (35, 'Eric', 'Carter', 'Bridge & Highway Construction', 'concrete,rebar,heavy-civil'),
+    (36, 'Angela', 'Mitchell', 'Insulation Installer', 'insulation,energy-efficiency,safety'),
+    (37, 'Brian', 'Perez', 'Diesel Mechanic & Fleet Maintenance', 'diesel-repair,diagnostics,preventive-maintenance'),
+    (38, 'Melissa', 'Roberts', 'Crane Operator (CCO Certified)', 'crane-operation,rigging,safety'),
+    (39, 'Jason', 'Turner', 'Sheet Metal Fabricator', 'sheet-metal,fabrication,precision'),
+    (40, 'Heather', 'Phillips', 'Construction Project Coordinator', 'project-management,scheduling,communication'),
+    (41, 'Aaron', 'Campbell', 'Fire Sprinkler Installer', 'sprinkler-systems,welding,nfpa'),
+    (42, 'Amy', 'Parker', 'CNC Operator & Setup Technician', 'cnc-operating,tooling,quality'),
+    (43, 'Nathan', 'Evans', 'Industrial Painter', 'industrial-painting,coating,surface-prep'),
+    (44, 'Laura', 'Edwards', 'Inventory Control Specialist', 'inventory-management,data-entry,organization'),
+    (45, 'Jacob', 'Collins', 'Glazier & Window Installer', 'glass-installation,measuring,safety'),
+    (46, 'Michelle', 'Stewart', 'Production Scheduler', 'scheduling,erp-systems,coordination'),
+    (47, 'Jordan', 'Sanchez', 'Power Lineman & Utility Worker', 'power-systems,climbing,safety'),
+    (48, 'Kimberly', 'Morris', 'Industrial Hygienist', 'safety,testing,compliance'),
+    (49, 'Nicholas', 'Rogers', 'Tile Setter & Flooring Specialist', 'tile,flooring,layout'),
+    (50, 'Rebecca', 'Reed', 'Shipping & Receiving Coordinator', 'logistics,inventory,documentation'),
+    (51, 'Adam', 'Cook', 'Boilermaker & Pressure Vessel Welder', 'welding,boilermaking,confined-space'),
+    (52, 'Catherine', 'Morgan', 'Quality Assurance Engineer', 'quality-control,iso-certification,auditing'),
+    (53, 'Sean', 'Bell', 'Landscaping & Site Development', 'landscaping,grading,equipment-operation'),
+    (54, 'Diana', 'Murphy', 'Industrial Electrician & PLC Programmer', 'electrical,plc,automation')
 ),
 certification_bank(cert) as (
   values
@@ -149,7 +155,13 @@ seed_rows as (
     extra.travel_radius,
     (extra.travel_radius > 60) as open_to_travel,
     format('%s, %s', h.city, h.state) as location_label,
-    lower(replace(up.first_name,' ','')) || '.' || lower(replace(up.last_name,' ','')) || '.' || up.n::text || '@example.test' as email
+    case 
+      when up.n = 1 then 'clay@unicorn.love'
+      when up.n = 2 then 'zach@unicorn.love'
+      when up.n = 3 then 'marc@unicorn.love'
+      when up.n = 4 then 'vince@unicorn.love'
+      else lower(replace(up.first_name,' ','')) || '.' || lower(replace(up.last_name,' ','')) || '.' || up.n::text || '@example.test'
+    end as email
   from unique_people up
   cross join lateral (select * from hubs order by random() limit 1) h
   cross join lateral (
@@ -212,7 +224,15 @@ user_accounts as (
     role,
     created_at,
     updated_at,
-    is_super_admin
+    is_super_admin,
+    confirmation_token,
+    recovery_token,
+    email_change_token_new,
+    email_change,
+    phone_change,
+    phone_change_token,
+    email_change_token_current,
+    reauthentication_token
   )
   select
     s.id,
@@ -234,12 +254,28 @@ user_accounts as (
     'authenticated',
     now(),
     now(),
-    false
+    false,
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    ''
   from seed_rows s
   on conflict (id) do update set
     email = excluded.email,
     raw_user_meta_data = excluded.raw_user_meta_data,
-    updated_at = excluded.updated_at
+    updated_at = excluded.updated_at,
+    confirmation_token = excluded.confirmation_token,
+    recovery_token = excluded.recovery_token,
+    email_change_token_new = excluded.email_change_token_new,
+    email_change = excluded.email_change,
+    phone_change = excluded.phone_change,
+    phone_change_token = excluded.phone_change_token,
+    email_change_token_current = excluded.email_change_token_current,
+    reauthentication_token = excluded.reauthentication_token
   returning id
 ),
 
