@@ -1,22 +1,8 @@
 import { useState } from 'react'
-import { YStack, Text, Input, Button, Separator, XStack, ScrollView } from 'tamagui'
+import { YStack, Text, Input, Button, Separator, XStack, ScrollView, Spinner } from 'tamagui'
 import { Search, Filter, X } from '@tamagui/lucide-icons'
 import { DashboardWidget } from '@app/ui'
-
-const INDUSTRIES = [
-  'Construction',
-  'Electrical',
-  'Plumbing',
-  'HVAC',
-  'Carpentry',
-  'Roofing',
-  'Flooring',
-  'Painting',
-  'Landscaping',
-  'Welding',
-]
-
-const JOB_TYPES = ['Full-Time', 'Part-Time', 'Contract', 'Temporary']
+import { api } from '@app/core/utils/api'
 
 interface DiscoverJobsRightProps {
   onSearchChange: (search: string) => void
@@ -36,6 +22,11 @@ export function DiscoverJobsRight({
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
   const [selectedJobTypes, setSelectedJobTypes] = useState<string[]>([])
+
+  // Fetch filter options from API
+  const { data: filterData, isLoading: filtersLoading } = api.jobs.getFilterOptions.useQuery()
+  const INDUSTRIES = filterData?.industries || []
+  const JOB_TYPES = filterData?.jobTypes || []
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value)
@@ -71,6 +62,17 @@ export function DiscoverJobsRight({
 
   const hasActiveFilters =
     searchQuery || selectedIndustries.length > 0 || selectedJobTypes.length > 0
+
+  if (filtersLoading) {
+    return (
+      <YStack flex={1} items="center" justify="center" p="$4">
+        <Spinner size="large" color="$blue10" />
+        <Text mt="$2" color="$color11">
+          Loading filters...
+        </Text>
+      </YStack>
+    )
+  }
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
@@ -113,56 +115,60 @@ export function DiscoverJobsRight({
         </DashboardWidget>
 
         {/* Industry Filter */}
-        <DashboardWidget>
-          <YStack gap="$3">
-            <Text fontSize="$4" fontWeight="600" color="$color12">
-              Industry
-            </Text>
+        {INDUSTRIES.length > 0 && (
+          <DashboardWidget>
+            <YStack gap="$3">
+              <Text fontSize="$4" fontWeight="600" color="$color12">
+                Industry ({INDUSTRIES.length})
+              </Text>
 
-            <YStack gap="$2">
-              {INDUSTRIES.map((industry) => {
-                const isSelected = selectedIndustries.includes(industry)
-                return (
-                  <Button
-                    key={industry}
-                    size="$3"
-                    variant={isSelected ? 'outlined' : 'outlined'}
-                    theme={isSelected ? 'blue' : undefined}
-                    onPress={() => toggleIndustry(industry)}
-                  >
-                    {industry}
-                  </Button>
-                )
-              })}
+              <YStack gap="$2">
+                {INDUSTRIES.map((industry: string) => {
+                  const isSelected = selectedIndustries.includes(industry)
+                  return (
+                    <Button
+                      key={industry}
+                      size="$3"
+                      variant={isSelected ? 'outlined' : 'outlined'}
+                      theme={isSelected ? 'blue' : undefined}
+                      onPress={() => toggleIndustry(industry)}
+                    >
+                      {industry}
+                    </Button>
+                  )
+                })}
+              </YStack>
             </YStack>
-          </YStack>
-        </DashboardWidget>
+          </DashboardWidget>
+        )}
 
         {/* Job Type Filter */}
-        <DashboardWidget>
-          <YStack gap="$3">
-            <Text fontSize="$4" fontWeight="600" color="$color12">
-              Job Type
-            </Text>
+        {JOB_TYPES.length > 0 && (
+          <DashboardWidget>
+            <YStack gap="$3">
+              <Text fontSize="$4" fontWeight="600" color="$color12">
+                Job Type ({JOB_TYPES.length})
+              </Text>
 
-            <YStack gap="$2">
-              {JOB_TYPES.map((type) => {
-                const isSelected = selectedJobTypes.includes(type)
-                return (
-                  <Button
-                    key={type}
-                    size="$3"
-                    variant={isSelected ? 'outlined' : 'outlined'}
-                    theme={isSelected ? 'blue' : undefined}
-                    onPress={() => toggleJobType(type)}
-                  >
-                    {type}
-                  </Button>
-                )
-              })}
+              <YStack gap="$2">
+                {JOB_TYPES.map((type: string) => {
+                  const isSelected = selectedJobTypes.includes(type)
+                  return (
+                    <Button
+                      key={type}
+                      size="$3"
+                      variant={isSelected ? 'outlined' : 'outlined'}
+                      theme={isSelected ? 'blue' : undefined}
+                      onPress={() => toggleJobType(type)}
+                    >
+                      {type}
+                    </Button>
+                  )
+                })}
+              </YStack>
             </YStack>
-          </YStack>
-        </DashboardWidget>
+          </DashboardWidget>
+        )}
 
         {/* Active Filters Summary */}
         {hasActiveFilters && (

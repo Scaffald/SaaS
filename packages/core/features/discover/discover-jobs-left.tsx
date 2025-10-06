@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { YStack, ScrollView, Text, Spinner } from 'tamagui'
 import { ExternalJobCard, type ExternalJob } from './components/ExternalJobCard'
+import { ExternalJobDetailModal } from './components/ExternalJobDetailModal'
 import { api } from '@app/core/utils/api'
 
 interface DiscoverJobsLeftProps {
@@ -17,12 +19,15 @@ export function DiscoverJobsLeft({
   selectedIndustries,
   selectedJobTypes,
 }: DiscoverJobsLeftProps) {
+  const [selectedJob, setSelectedJob] = useState<ExternalJob | null>(null)
+  const [modalOpen, setModalOpen] = useState(false)
+
   // Fetch real jobs from API
   const { data, isLoading } = api.jobs.getExternalJobs.useQuery()
   const jobs = data?.jobs || []
 
   // Filter jobs based on search and filters
-  const filteredJobs = jobs.filter((job) => {
+  const filteredJobs = jobs.filter((job: ExternalJob) => {
     // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
@@ -37,8 +42,9 @@ export function DiscoverJobsLeft({
 
     // Industry filter
     if (selectedIndustries && selectedIndustries.length > 0) {
-      const hasMatchingIndustry = job.industries?.some((industry) =>
-        selectedIndustries.includes(industry.industry_name)
+      const hasMatchingIndustry = job.industries?.some(
+        (industry: { industry_name: string; confidence_score: number }) =>
+          selectedIndustries.includes(industry.industry_name)
       )
       if (!hasMatchingIndustry) return false
     }
@@ -53,9 +59,15 @@ export function DiscoverJobsLeft({
     return true
   })
 
+  const handleViewDetails = (job: ExternalJob) => {
+    setSelectedJob(job)
+    setModalOpen(true)
+  }
+
   const handleJobApply = (jobId: string) => {
     console.log('Applied to job:', jobId)
     // TODO: Track application analytics
+    setModalOpen(false)
   }
 
   if (isLoading) {
@@ -83,16 +95,25 @@ export function DiscoverJobsLeft({
   }
 
   return (
-    <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <YStack gap="$3" p="$4">
-        <Text fontSize="$5" fontWeight="600" color="$color12">
-          {filteredJobs.length} {filteredJobs.length === 1 ? 'Job' : 'Jobs'} Available
-        </Text>
+    <>
+      <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+        <YStack gap="$3" p="$4">
+          <Text fontSize="$5" fontWeight="600" color="$color12">
+            {filteredJobs.length} {filteredJobs.length === 1 ? 'Job' : 'Jobs'} Available
+          </Text>
 
-        {filteredJobs.map((job) => (
-          <ExternalJobCard key={job.id} job={job} onApply={handleJobApply} />
-        ))}
-      </YStack>
-    </ScrollView>
+          {filteredJobs.map((job: ExternalJob) => (
+            <ExternalJobCard key={job.id} job={job} onViewDetails={handleViewDetails} />
+          ))}
+        </YStack>
+      </ScrollView>
+
+      <ExternalJobDetailModal
+        job={selectedJob}
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        onApply={handleJobApply}
+      />
+    </>
   )
 }

@@ -26,10 +26,10 @@ export interface ExternalJob {
 
 interface ExternalJobCardProps {
   job: ExternalJob
-  onApply?: (jobId: string) => void
+  onViewDetails: (job: ExternalJob) => void
 }
 
-export function ExternalJobCard({ job, onApply }: ExternalJobCardProps) {
+export function ExternalJobCard({ job, onViewDetails }: ExternalJobCardProps) {
   const formatDate = (dateString?: string) => {
     if (!dateString) return null
     const date = new Date(dateString)
@@ -55,10 +55,6 @@ export function ExternalJobCard({ job, onApply }: ExternalJobCardProps) {
       return `${symbol}${job.compensation_min.toLocaleString()}+`
     }
     return null
-  }
-
-  const handleOpenLink = (url: string) => {
-    Linking.openURL(url)
   }
 
   const compensation = formatCompensation()
@@ -190,25 +186,9 @@ export function ExternalJobCard({ job, onApply }: ExternalJobCardProps) {
       <Separator />
 
       {/* Actions */}
-      <XStack gap="$2" justify="space-between">
-        <Button
-          size="$3"
-          variant="outlined"
-          iconAfter={<ExternalLink size={16} />}
-          onPress={() => handleOpenLink(job.external_url)}
-        >
+      <XStack gap="$2" justify="flex-end">
+        <Button size="$3" theme="blue" onPress={() => onViewDetails(job)}>
           View Details
-        </Button>
-
-        <Button
-          size="$3"
-          theme="blue"
-          onPress={() => {
-            onApply?.(job.id)
-            handleOpenLink(job.application_url)
-          }}
-        >
-          Apply Now
         </Button>
       </XStack>
     </Card>
