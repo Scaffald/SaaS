@@ -79,4 +79,56 @@ export const jobsRouter = t.router({
 
     return { jobs };
   }),
+
+  /**
+   * Get available filter options from actual job data
+   * Returns unique industries, job types, and locations
+   */
+  getFilterOptions: t.procedure.query(async ({ ctx }) => {
+    const { supabase } = ctx;
+
+    const { data, error } = await supabase
+      .from("external_jobs")
+      .select(`
+        job_type,
+        job_location,
+        external_job_industries(
+          industry:industries(
+            name
+          )
+        )
+      `)
+      .eq("is_active", true);
+
+    if (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: `Failed to fetch filter options: ${error.message}`,
+      });
+    }
+
+    // Extract unique values
+    const jobTypes = new Set<string>();
+    const locations = new Set<string>();
+    const industries = new Set<string>();
+
+    for (const job of (data || [])) {
+      if (job.job_type) jobTypes.add(job.job_type);
+      if (job.job_location) locations.add(job.job_location);
+
+      if (Array.isArray(job.external_job_industries)) {
+        for (const eji of job.external_job_industries) {
+          if (eji.industry?.name) {
+            industries.add(eji.industry.name);
+          }
+        }
+      }
+    }
+
+    return {
+      jobTypes: Array.from(jobTypes).sort(),
+      locations: Array.from(locations).sort(),
+      industries: Array.from(industries).sort(),
+    };
+  }),
 });

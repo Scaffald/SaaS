@@ -1,347 +1,290 @@
-# CSI MasterFormat Seeding Scripts
+# Supabase Scripts Documentation
 
-This directory contains scripts for seeding CSI (Construction Specifications Institute) MasterFormat codes into the skills table.
+This directory contains scripts for managing database operations, seeding data, and testing permissions.
 
-## Overview
+## Quick Start
 
-The CSI seeding system imports the complete CSI MasterFormat 2020 taxonomy into the database as skills with proper parent-child relationships. The system uses:
+### Complete Database Setup
+Reset database, run migrations, seed data, and test permissions:
+```bash
+pnpm --filter @app/supabase db:setup
+```
 
-- **CSV format** for the taxonomy data (simple, flat structure)
-- **PostgreSQL** for database operations
-- **Deterministic UUIDs** to ensure consistent IDs across environments
-- **Automatic parent synthesis** to fill in missing hierarchy levels
+### Individual Operations
 
-## Files
+#### Reset Database
+```bash
+pnpm supa db reset
+```
 
-- `seed-csi.ts` - Main seeding script
-- `seed-csi-2020.csv` - CSI MasterFormat 2020 taxonomy data (CSV format)
-- `test-csv-parsing.ts` - Test script for CSV parsing logic
+#### Seed Data Only
+```bash
+pnpm --filter @app/supabase seed
+```
 
-## Prerequisites
+#### Test Permissions
+```bash
+pnpm --filter @app/supabase test:permissions
+```
 
-1. **Local Supabase instance running**:
+#### Reset and Seed
+```bash
+pnpm --filter @app/supabase db:reset:seed
+```
+
+## Available Scripts
+
+### Database Management
+
+#### `db:reset`
+Resets the local database and applies all migrations.
+```bash
+pnpm --filter @app/supabase db:reset
+```
+
+#### `db:reset:seed`
+Resets database and seeds with development data.
+```bash
+pnpm --filter @app/supabase db:reset:seed
+```
+
+#### `db:setup`
+Complete setup: reset, seed, and test.
+```bash
+pnpm --filter @app/supabase db:setup
+```
+
+### Seeding
+
+#### `seed`
+Seeds the database with external jobs from RSS feeds.
+- Verifies skills and industries are present
+- Imports jobs from active job feeds
+- Imports 10 jobs per feed by default
+- Displays statistics after completion
+
+```bash
+pnpm --filter @app/supabase seed
+```
+
+**What it seeds:**
+- External jobs (30 jobs from 3 feeds)
+- Verifies 71 skills are present
+- Verifies 4 industries are present
+
+#### `seed-csi`
+Seeds CSI (Construction Specifications Institute) MasterFormat data.
+```bash
+pnpm --filter @app/supabase seed-csi
+```
+
+### Testing
+
+#### `test:permissions`
+Tests database permissions for all roles (anon, authenticated, service_role).
+```bash
+pnpm --filter @app/supabase test:permissions
+```
+
+**Tests performed:**
+- Anonymous access to external_jobs
+- Service role access with joins
+- Job feeds access
+- Related table permissions
+
+## Script Details
+
+### seed-all.ts
+Comprehensive seeding script for development data.
+
+**Features:**
+- Verifies base data (skills, industries)
+- Fetches jobs from RSS feeds
+- Imports configurable number of jobs per feed
+- Updates feed metadata (last_fetched_at, error_count)
+- Displays database statistics
+- Error handling and retry logic
+
+**Environment Variables:**
+- `SUPABASE_URL` - Defaults to http://127.0.0.1:54321
+- `SUPABASE_SERVICE_ROLE_KEY` - Required
+
+**Output:**
+```
+🌱 Starting Database Seeding...
+
+📊 Verifying Skills Data...
+✅ Found 71 skills in database
+
+🏭 Verifying Industries Data...
+✅ Found 4 industries in database
+
+💼 Seeding External Jobs...
+   Found 3 active job feeds
+   ✅ Imported 10 jobs from WeWorkRemotely - All Jobs
+   ✅ Imported 10 jobs from WeWorkRemotely - Programming
+   ✅ Imported 10 jobs from WeWorkRemotely - Design
+
+✅ Seeding complete! Imported 30 jobs.
+
+📊 Database Statistics
+==================================================
+Total Jobs: 30
+Active Jobs: 30
+Total Skills: 71
+Total Industries: 4
+Active Feeds: 3
+```
+
+### test-external-jobs-permissions.ts
+Permission testing script for external jobs feature.
+
+**What it tests:**
+1. Anonymous user access to external_jobs table
+2. Service role access with industry joins
+3. Job feeds access
+4. Related table grants (industries, skills)
+
+**Environment Variables:**
+- `SUPABASE_URL` - Defaults to http://127.0.0.1:54321
+- `SUPABASE_ANON_KEY` - Required
+- `SUPABASE_SERVICE_ROLE_KEY` - Required
+
+**Output:**
+```
+🔍 Testing External Jobs Permissions
+
+✅ Anonymous access successful - Found 5 jobs
+✅ Service role access successful - Found 5 jobs with industries
+✅ Job feeds access successful - Found 3 active feeds
+
+Overall: ✅ ALL TESTS PASSED
+```
+
+### import-jobs.ts
+Legacy job import script (superseded by seed-all.ts).
+
+Use `seed-all.ts` for new development.
+
+## Development Workflow
+
+### Initial Setup
+1. Start Supabase:
    ```bash
    pnpm supa start
    ```
 
-2. **Database URL environment variable**:
+2. Setup database:
    ```bash
-   export DATABASE_URL='postgresql://postgres:postgres@localhost:54322/postgres'
+   pnpm --filter @app/supabase db:setup
    ```
 
-3. **Migration applied**:
-   The migration `030_add_csi_skill_columns.sql` must be applied to add CSI-specific columns to the skills table.
+3. Verify:
+   - Check Supabase Studio: http://127.0.0.1:54323
+   - Review external_jobs table
+   - Check external_job_feeds table
 
-## Usage
-
-### Running the Seeding Script
-
-```bash
-# From the project root
-cd packages/supabase
-npx tsx scripts/seed-csi.ts /path/to/seed-csi-2020.csv
-
-# Example with absolute path
-npx tsx scripts/seed-csi.ts ~/path/to/seed-csi-2020.csv
-```
-
-### Testing CSV Parsing (Without Database)
+### After Migrations
+When you add new migrations:
 
 ```bash
-# Test CSV parsing logic with sample data
-npx tsx scripts/test-csv-parsing.ts
+pnpm supa db reset
+pnpm --filter @app/supabase seed
 ```
 
-### Output
-
-The script will:
-1. Parse the CSV file (simple code, description format)
-2. Calculate parent-child relationships from CSI code structure
-3. Create synthetic parent records for any missing ancestors
-4. Insert/update all records in the database in batches
-
-Expected output:
-```
-Reading CSI taxonomy from: /path/to/seed-csi-2020.csv
-Parsed 9000 rows from CSV
-Generated 8950 records from CSV
-Skipped 50 malformed rows
-Total records (including synthetic parents): 9200
-Starting database transaction...
-Upserting construction industry...
-Upserting CSI skills...
-Processed batch 1: 500 records
-Processed batch 2: 500 records
-...
-✓ Successfully seeded CSI MasterFormat 2020 taxonomy!
-  Total records: 9200
-  Depth 1 (Divisions): 52
-  Depth 2 (Level 2): 850
-  Depth 3 (Level 3): 3800
-  Depth 4 (Level 4): 4498
-```
-
-## Database Schema
-
-### New Columns Added to `skills` Table
-
-The migration adds these CSI-specific columns:
-
-| Column | Type | Description | Example |
-|--------|------|-------------|---------|
-| `csi_code` | `text[]` | 4-element array | `['03','11','13','16']` |
-| `csi_code_key` | `text` | Unique key (indexed) | `'03-11-13-16'` |
-| `csi_display` | `text` | Human-readable format | `'03 11 13.16'` |
-| `csi_depth` | `smallint` | Hierarchy level (1-4) | `4` |
-
-### CSI Code Hierarchy
-
-CSI codes follow a 4-level hierarchy:
-
-1. **Division (Level 1)**: `03` → `03-00-00-00`
-2. **Level 2**: `03 11` → `03-11-00-00`
-3. **Level 3**: `03 11 13` → `03-11-13-00`
-4. **Level 4**: `03 11 13.16` → `03-11-13-16`
-
-### Parent-Child Relationships
-
-The script automatically establishes parent-child relationships:
-
-```
-03 Concrete (Division)
-└── 03 11 Concrete Forming
-    └── 03 11 13 Structural Cast-In-Place Concrete Forming
-        └── 03 11 13.16 Metal Concrete Forming
-```
-
-## CSV Format
-
-The CSV file uses a simple flat structure with two columns:
-
-```csv
-00 00 00,Procurement and Contracting Requirements
-00 01 01,Project Title Page
-00 24 13.13,Scopes of Bids (Multiple Contracts)
-03 11 13.16,Metal Concrete Forming
-```
-
-### Format Specifications
-
-- **No header row** - Data starts immediately
-- **Two columns**: CSI Code, Description
-- **Comma-delimited**
-- **Code format**: Supports multiple formats
-  - Division: `"03"`
-  - Level 2: `"03 11"`
-  - Level 3: `"03 11 13"`
-  - Level 4: `"03 11 13.16"` (note the period before last segment)
-
-### Key Features
-
-- **Flat structure**: No nesting required - hierarchy inferred from codes
-- **Automatic parent creation**: Missing parent levels are synthesized
-- **Flexible code format**: All standard CSI formats supported
-- **Automatic padding**: Incomplete codes padded with zeros
-- **Validation**: Malformed rows are skipped with warnings
-
-### How Parent-Child Relationships Work
-
-The script automatically calculates parent-child relationships from the code structure:
-
-```
-Input:  03 11 13.16, Metal Concrete Forming
-        ↓
-Parse:  ["03", "11", "13", "16"]
-        ↓
-Parent: ["03", "11", "13", "00"] (calculated)
-        ↓
-The script ensures these parents exist:
-  - 03-00-00-00 (Division)
-  - 03-11-00-00 (Level 2)
-  - 03-11-13-00 (Level 3)
-```
-
-## Database Functions
-
-### Finding Skills by CSI Code
-
-```sql
--- Find a specific CSI skill
-SELECT * FROM find_csi_skill_by_code(ARRAY['03','11','13','16']);
-
--- Query by csi_code directly
-SELECT * FROM skills WHERE csi_code = ARRAY['03','11','13','16'];
-
--- Query by csi_code_key
-SELECT * FROM skills WHERE csi_code_key = '03-11-13-16';
-
--- Find all Level 3 skills in Division 03
-SELECT * FROM skills 
-WHERE csi_code[1] = '03' 
-  AND csi_depth = 3;
-```
-
-### Querying the Hierarchy
-
-```sql
--- Get all children of a division
-SELECT * FROM skills 
-WHERE csi_code[1] = '03' 
-ORDER BY csi_code_key;
-
--- Get immediate children of a skill
-SELECT child.*
-FROM skills parent
-JOIN skills child ON child.parent_id = parent.id
-WHERE parent.csi_code_key = '03-11-00-00';
-
--- Get all descendants (recursive)
-WITH RECURSIVE descendants AS (
-  SELECT * FROM skills WHERE csi_code_key = '03-00-00-00'
-  UNION
-  SELECT s.* FROM skills s
-  JOIN descendants d ON s.parent_id = d.id
-)
-SELECT * FROM descendants ORDER BY csi_depth, csi_code_key;
-```
-
-## Validation and Constraints
-
-The database enforces these rules via triggers and constraints:
-
-1. **CSI codes must have exactly 4 elements**
-2. **CSI depth must be between 1 and 4**
-3. **CSI skills must belong to construction industry**
-4. **Parent skills must be in the same industry**
-5. **Unique csi_code_key across all skills**
-
-## Updating the Taxonomy
-
-To update the taxonomy:
-
-1. Update your CSV file with new codes and descriptions
-2. Run the seeding script (it will upsert existing records)
-3. The script is idempotent - safe to run multiple times
+### Testing Changes
+After modifying permissions or RLS policies:
 
 ```bash
-npx tsx scripts/seed-csi.ts /path/to/updated-csi-data.csv
+pnpm --filter @app/supabase test:permissions
 ```
 
-The script uses `ON CONFLICT` clauses to update existing records, so you can:
-- Add new CSI codes
-- Update descriptions of existing codes
-- The script will maintain all existing parent-child relationships
+### Troubleshooting
 
-## Troubleshooting
+#### Permission Errors
+If you get "permission denied" errors:
 
-### Database Connection Issues
+1. Check grants exist:
+   ```sql
+   SELECT grantee, privilege_type 
+   FROM information_schema.role_table_grants 
+   WHERE table_name = 'external_jobs';
+   ```
 
-```bash
-# Check if Supabase is running
-pnpm supa status
+2. Check RLS policies:
+   ```sql
+   SELECT * FROM pg_policies WHERE tablename = 'external_jobs';
+   ```
 
-# Start Supabase if not running
-pnpm supa start
+3. Run permission tests:
+   ```bash
+   pnpm --filter @app/supabase test:permissions
+   ```
 
-# Verify DATABASE_URL
-echo $DATABASE_URL
-```
+#### Seeding Fails
+If seeding fails:
 
-### Migration Not Applied
+1. Verify migrations applied:
+   ```bash
+   pnpm supa db reset
+   ```
 
-```bash
-# Check migration status
-pnpm supa migration list
+2. Check base data exists:
+   - Skills should have 71 records
+   - Industries should have 4 records
+   - Job feeds should have 3 active records
 
-# Apply pending migrations
-pnpm supa migration up
-```
+3. Check RSS feed URLs are accessible
 
-### CSV Parsing Errors
+#### Empty Results
+If queries return no data:
 
-Ensure your CSV file:
-- Has no header row (data starts immediately)
-- Uses comma as delimiter
-- Has exactly two columns per row
-- CSI codes match the pattern: `\d{2}(\s\d{2}){0,2}(\.\d{2})?`
-- Examples of valid codes: `"03"`, `"03 11"`, `"03 11 13"`, `"03 11 13.16"`
+1. Run seeding:
+   ```bash
+   pnpm --filter @app/supabase seed
+   ```
 
-If you see "Skipping malformed code" warnings:
-- Check the code format matches the expected pattern
-- Ensure there are no extra spaces or special characters
-- Verify the CSV is properly formatted
+2. Verify data in Supabase Studio
 
-### Duplicate Key Errors
+3. Check RLS policies aren't filtering everything
 
-The script uses `ON CONFLICT` to handle duplicates. If you see errors:
-1. Check for duplicate `csi_code_key` values in your YAML
-2. Verify the `csi_code_key_unique` constraint exists
+## Package.json Scripts Reference
 
-## Performance Considerations
-
-- **Batch size**: 500 records per batch (configurable)
-- **Transaction-based**: All-or-nothing insert
-- **Indexed columns**: `csi_code`, `csi_code_key`, `csi_depth`
-- **Deterministic UUIDs**: Same input always produces same IDs
-
-## Examples
-
-### Querying Concrete-Related Skills
-
-```sql
--- All concrete division skills
-SELECT name, csi_display, csi_depth 
-FROM skills 
-WHERE csi_code[1] = '03'
-ORDER BY csi_code_key;
-
--- Only structural concrete forming
-SELECT name, csi_display
-FROM skills
-WHERE csi_code_key LIKE '03-11-13%';
-```
-
-### Finding Parent Skills
-
-```sql
--- Get parent of a skill
-SELECT parent.name, parent.csi_display
-FROM skills child
-JOIN skills parent ON child.parent_id = parent.id
-WHERE child.csi_code_key = '03-11-13-16';
-```
-
-### Skills by Depth Level
-
-```sql
--- Count skills at each depth
-SELECT csi_depth, COUNT(*) as count
-FROM skills
-WHERE csi_code IS NOT NULL
-GROUP BY csi_depth
-ORDER BY csi_depth;
-```
-
-## Integration with Application
-
-The seeded skills can be used in your application for:
-
-- **Skill selection**: Let users pick their construction specialties
-- **Job matching**: Match workers to jobs by CSI codes
-- **Filtering**: Filter organizations/jobs by CSI specialties
-- **Hierarchy navigation**: Browse skills by division/level
-
-Example React query:
-
-```typescript
-const { data: divisions } = useQuery({
-  queryKey: ['csi-divisions'],
-  queryFn: async () => {
-    const { data } = await supabase
-      .from('skills')
-      .select('*')
-      .eq('csi_depth', 1)
-      .order('csi_code_key');
-    return data;
+```json
+{
+  "scripts": {
+    "seed": "Seed database with development data",
+    "test:permissions": "Test database permissions",
+    "db:reset": "Reset database and apply migrations",
+    "db:reset:seed": "Reset and seed database",
+    "db:setup": "Complete setup: reset, seed, test"
   }
-});
+}
+```
+
+## Environment Variables
+
+### Local Development
+Set these in your shell or `.env.local`:
+
+```bash
+SUPABASE_URL=http://127.0.0.1:54321
+SUPABASE_ANON_KEY=<your-anon-key>
+SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
+```
+
+Get keys from:
+```bash
+pnpm supa status
+```
+
+### Required for Scripts
+- **seed**: `SUPABASE_SERVICE_ROLE_KEY`
+- **test:permissions**: `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+
+## Related Documentation
+
+- [Migration Consolidation](../migrations/MIGRATION_CONSOLIDATION.md)
+- [Migration Best Practices](../migrations/BEST_PRACTICES.md)
+- [tRPC Supabase Patterns](../../.cursor/rules/trpc-supabase-patterns.mdc)
+- [Job Import README](../functions/README-JOB-IMPORT.md)
