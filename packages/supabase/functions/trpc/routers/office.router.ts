@@ -16,7 +16,7 @@ export const officeRouter = t.router({
    * Returns paginated list of users with basic profile info
    */
   listUsers: superAdminProcedure.query(async ({ ctx }) => {
-    const { data, error, count } = await ctx.supabase
+    const { data, error, count } = await ctx.supabaseAdmin
       .from("profiles")
       .select(
         "id, first_name, last_name, avatar_path, created_at, updated_at",
@@ -71,7 +71,7 @@ export const officeRouter = t.router({
       }),
     )
     .query(async ({ ctx, input }) => {
-      let query = ctx.supabase
+      let query = ctx.supabaseAdmin
         .from("jobs")
         .select(
           `
@@ -125,7 +125,7 @@ export const officeRouter = t.router({
   getJob: superAdminProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      const { data, error } = await ctx.supabase
+      const { data, error } = await ctx.supabaseAdmin
         .from("jobs")
         .select(
           `
@@ -231,11 +231,11 @@ export const officeRouter = t.router({
   updateJob: superAdminProcedure
     .input(jobUpdateSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabase } = ctx;
+      const { supabaseAdmin } = ctx;
       const { id, certification_ids, skill_ids, ...jobData } = input;
 
       // Update job
-      const { data: job, error: jobError } = await supabase
+      const { data: job, error: jobError } = await supabaseAdmin
         .from("jobs")
         .update(jobData)
         .eq("id", id)
@@ -252,11 +252,11 @@ export const officeRouter = t.router({
       // Update certifications if provided
       if (certification_ids !== undefined) {
         // Delete existing certifications
-        await supabase.from("job_certifications").delete().eq("job_id", id);
+        await supabaseAdmin.from("job_certifications").delete().eq("job_id", id);
 
         // Insert new certifications
         if (certification_ids.length > 0) {
-          const { error: certError } = await supabase
+          const { error: certError } = await supabaseAdmin
             .from("job_certifications")
             .insert(
               certification_ids.map((cert_id) => ({
@@ -275,11 +275,11 @@ export const officeRouter = t.router({
       // Update skills if provided
       if (skill_ids !== undefined) {
         // Delete existing skills
-        await supabase.from("job_skills").delete().eq("job_id", id);
+        await supabaseAdmin.from("job_skills").delete().eq("job_id", id);
 
         // Insert new skills
         if (skill_ids.length > 0) {
-          const { error: skillError } = await supabase
+          const { error: skillError } = await supabaseAdmin
             .from("job_skills")
             .insert(
               skill_ids.map((skill_id) => ({
@@ -303,7 +303,7 @@ export const officeRouter = t.router({
   publishJob: superAdminProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      const { data: job, error } = await ctx.supabase
+      const { data: job, error } = await ctx.supabaseAdmin
         .from("jobs")
         .update({
           status: "open",
@@ -329,7 +329,7 @@ export const officeRouter = t.router({
   closeJob: superAdminProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      const { data: job, error } = await ctx.supabase
+      const { data: job, error } = await ctx.supabaseAdmin
         .from("jobs")
         .update({ status: "closed" })
         .eq("id", input.id)
@@ -351,7 +351,7 @@ export const officeRouter = t.router({
    * Super admins can see and manage jobs for any organization
    */
   getOrganizations: superAdminProcedure.query(async ({ ctx }) => {
-    const { data, error } = await ctx.supabase
+    const { data, error } = await ctx.supabaseAdmin
       .from("organizations")
       .select("id, name, slug, owner_user_id")
       .order("name", { ascending: true });
@@ -370,7 +370,7 @@ export const officeRouter = t.router({
    * Get all certifications
    */
   getCertifications: superAdminProcedure.query(async ({ ctx }) => {
-    const { data, error } = await ctx.supabase
+    const { data, error } = await ctx.supabaseAdmin
       .from("certifications")
       .select("*")
       .eq("is_active", true)
@@ -390,7 +390,7 @@ export const officeRouter = t.router({
    * Get all skills
    */
   getSkills: superAdminProcedure.query(async ({ ctx }) => {
-    const { data, error } = await ctx.supabase
+    const { data, error } = await ctx.supabaseAdmin
       .from("skills")
       .select("id, name, industry_id")
       .eq("active", true)
