@@ -160,7 +160,7 @@ export const officeRouter = t.router({
   createJob: superAdminProcedure
     .input(jobCreateSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabaseAdmin, user } = ctx;
 
       if (!user) {
         throw new TRPCError({
@@ -172,8 +172,8 @@ export const officeRouter = t.router({
       // Extract certification_ids and skill_ids before inserting job
       const { certification_ids, skill_ids, ...jobData } = input;
 
-      // Insert job
-      const { data: job, error: jobError } = await supabase
+      // Insert job using admin client to bypass RLS
+      const { data: job, error: jobError } = await supabaseAdmin
         .from("jobs")
         .insert({
           ...jobData,
@@ -191,7 +191,7 @@ export const officeRouter = t.router({
 
       // Insert certifications if provided
       if (certification_ids && certification_ids.length > 0) {
-        const { error: certError } = await supabase
+        const { error: certError } = await supabaseAdmin
           .from("job_certifications")
           .insert(
             certification_ids.map((cert_id) => ({
@@ -208,7 +208,7 @@ export const officeRouter = t.router({
 
       // Insert skills if provided
       if (skill_ids && skill_ids.length > 0) {
-        const { error: skillError } = await supabase
+        const { error: skillError } = await supabaseAdmin
           .from("job_skills")
           .insert(
             skill_ids.map((skill_id) => ({
