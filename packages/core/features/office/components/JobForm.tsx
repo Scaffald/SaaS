@@ -4,7 +4,7 @@ import { TextArea, Adapt, Sheet, Select } from 'tamagui'
 import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
-import { useOrganizations } from '@app/core/utils/useOrganizations'
+import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
 
 type JobFormData = {
@@ -51,7 +51,7 @@ const PAY_RANGE_TYPES = [
 export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   const router = useRouter()
   const toast = useToastController()
-  const { data: organizationsData } = useOrganizations()
+  const { data: organizationsData } = useAllOrganizations()
 
   const [formData, setFormData] = useState<JobFormData>({
     title: initialData?.title || '',
@@ -68,8 +68,12 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
 
   // Auto-select organization if only one available
   useEffect(() => {
-    if (organizationsData && organizationsData.length === 1 && !formData.organization_id) {
-      const orgId = organizationsData[0].organization_id
+    if (
+      organizationsData?.organizations &&
+      organizationsData.organizations.length === 1 &&
+      !formData.organization_id
+    ) {
+      const orgId = organizationsData.organizations[0].id
       if (orgId) {
         setFormData((prev) => ({
           ...prev,
@@ -127,7 +131,9 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   }
 
   const isLoading = createJob.isPending || updateJob.isPending
-  const organizations = organizationsData || []
+  const organizations = organizationsData?.organizations || []
+
+  type Organization = { id: string; name: string; slug: string; owner_user_id: string | null }
 
   return (
     <ScrollView>
@@ -159,17 +165,14 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
               <Select.Viewport>
                 <Select.Group>
                   <Select.Label>Organizations</Select.Label>
-                  {organizations.map((org, i) => {
-                    const orgId = org.organization_id || ''
-                    return (
-                      <Select.Item key={orgId} index={i} value={orgId}>
-                        <Select.ItemText>{org.organization_name}</Select.ItemText>
-                        <Select.ItemIndicator>
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    )
-                  })}
+                  {organizations.map((org: Organization, i: number) => (
+                    <Select.Item key={org.id} index={i} value={org.id}>
+                      <Select.ItemText>{org.name}</Select.ItemText>
+                      <Select.ItemIndicator>
+                        <Check size={16} />
+                      </Select.ItemIndicator>
+                    </Select.Item>
+                  ))}
                 </Select.Group>
               </Select.Viewport>
               <Select.ScrollDownButton />

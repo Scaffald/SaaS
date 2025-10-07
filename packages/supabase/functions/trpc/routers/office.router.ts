@@ -347,6 +347,26 @@ export const officeRouter = t.router({
     }),
 
   /**
+   * Get all organizations (admin view)
+   * Super admins can see and manage jobs for any organization
+   */
+  getOrganizations: superAdminProcedure.query(async ({ ctx }) => {
+    const { data, error } = await ctx.supabase
+      .from("organizations")
+      .select("id, name, slug, owner_user_id")
+      .order("name", { ascending: true });
+
+    if (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: `Failed to fetch organizations: ${error.message}`,
+      });
+    }
+
+    return { organizations: data ?? [] };
+  }),
+
+  /**
    * Get all certifications
    */
   getCertifications: superAdminProcedure.query(async ({ ctx }) => {

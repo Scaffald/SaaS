@@ -182,6 +182,69 @@ export function ExternalJobDetailModal({
                 </YStack>
               )}
 
+              {/* Responsibilities */}
+              {job.responsibilities && job.responsibilities.length > 0 && (
+                <YStack gap="$2">
+                  <Text fontSize="$5" fontWeight="600" color="$color12">
+                    Responsibilities
+                  </Text>
+                  <YStack gap="$2" pl="$2">
+                    {job.responsibilities.map((resp) => (
+                      <XStack key={`resp-${resp.substring(0, 50)}`} gap="$2">
+                        <Text fontSize="$4" color="$color11">
+                          •
+                        </Text>
+                        <Text fontSize="$4" color="$color11" flex={1} lineHeight="$1">
+                          {resp}
+                        </Text>
+                      </XStack>
+                    ))}
+                  </YStack>
+                </YStack>
+              )}
+
+              {/* Requirements */}
+              {job.requirements && job.requirements.length > 0 && (
+                <YStack gap="$2">
+                  <Text fontSize="$5" fontWeight="600" color="$color12">
+                    Requirements
+                  </Text>
+                  <YStack gap="$2" pl="$2">
+                    {job.requirements.map((req) => (
+                      <XStack key={`req-${req.substring(0, 50)}`} gap="$2">
+                        <Text fontSize="$4" color="$color11">
+                          •
+                        </Text>
+                        <Text fontSize="$4" color="$color11" flex={1} lineHeight="$1">
+                          {req}
+                        </Text>
+                      </XStack>
+                    ))}
+                  </YStack>
+                </YStack>
+              )}
+
+              {/* Benefits */}
+              {job.benefits && job.benefits.length > 0 && (
+                <YStack gap="$2">
+                  <Text fontSize="$5" fontWeight="600" color="$color12">
+                    Benefits & Perks
+                  </Text>
+                  <YStack gap="$2" pl="$2">
+                    {job.benefits.map((benefit) => (
+                      <XStack key={`benefit-${benefit.substring(0, 50)}`} gap="$2">
+                        <Text fontSize="$4" color="$green11">
+                          ✓
+                        </Text>
+                        <Text fontSize="$4" color="$color11" flex={1} lineHeight="$1">
+                          {benefit}
+                        </Text>
+                      </XStack>
+                    ))}
+                  </YStack>
+                </YStack>
+              )}
+
               {/* Tags */}
               <XStack gap="$2" flexWrap="wrap">
                 {job.industries?.map((industry) => (
