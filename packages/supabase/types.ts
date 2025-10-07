@@ -170,96 +170,6 @@ export type Database = {
           },
         ]
       }
-      application_stage_history: {
-        Row: {
-          application_id: string
-          changed_by: string | null
-          created_at: string
-          from_stage_id: string | null
-          id: string
-          notes: string | null
-          reason: string | null
-          to_stage_id: string
-        }
-        Insert: {
-          application_id: string
-          changed_by?: string | null
-          created_at?: string
-          from_stage_id?: string | null
-          id?: string
-          notes?: string | null
-          reason?: string | null
-          to_stage_id: string
-        }
-        Update: {
-          application_id?: string
-          changed_by?: string | null
-          created_at?: string
-          from_stage_id?: string | null
-          id?: string
-          notes?: string | null
-          reason?: string | null
-          to_stage_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "application_stage_history_application_id_fkey"
-            columns: ["application_id"]
-            isOneToOne: false
-            referencedRelation: "applications"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "application_stage_history_changed_by_fkey"
-            columns: ["changed_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "application_stage_history_changed_by_fkey"
-            columns: ["changed_by"]
-            isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "application_stage_history_changed_by_fkey"
-            columns: ["changed_by"]
-            isOneToOne: false
-            referencedRelation: "v_user_directory"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "application_stage_history_changed_by_fkey"
-            columns: ["changed_by"]
-            isOneToOne: false
-            referencedRelation: "v_user_private"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "application_stage_history_changed_by_fkey"
-            columns: ["changed_by"]
-            isOneToOne: false
-            referencedRelation: "v_user_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "application_stage_history_from_stage_id_fkey"
-            columns: ["from_stage_id"]
-            isOneToOne: false
-            referencedRelation: "pipeline_stages"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "application_stage_history_to_stage_id_fkey"
-            columns: ["to_stage_id"]
-            isOneToOne: false
-            referencedRelation: "pipeline_stages"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       applications: {
         Row: {
           answers: Json | null
@@ -269,14 +179,11 @@ export type Database = {
           id: string
           is_shortlisted: boolean | null
           job_id: string
-          pipeline_id: string | null
-          pipeline_stage_id: string | null
           reject_meta: Json | null
           reject_reasons: string[] | null
           rejected_at: string | null
           resume_url: string | null
           stage_changed_at: string | null
-          stage_entered_at: string
           status: string
           user_id: string
         }
@@ -288,14 +195,11 @@ export type Database = {
           id?: string
           is_shortlisted?: boolean | null
           job_id: string
-          pipeline_id?: string | null
-          pipeline_stage_id?: string | null
           reject_meta?: Json | null
           reject_reasons?: string[] | null
           rejected_at?: string | null
           resume_url?: string | null
           stage_changed_at?: string | null
-          stage_entered_at?: string
           status?: string
           user_id: string
         }
@@ -307,14 +211,11 @@ export type Database = {
           id?: string
           is_shortlisted?: boolean | null
           job_id?: string
-          pipeline_id?: string | null
-          pipeline_stage_id?: string | null
           reject_meta?: Json | null
           reject_reasons?: string[] | null
           rejected_at?: string | null
           resume_url?: string | null
           stage_changed_at?: string | null
-          stage_entered_at?: string
           status?: string
           user_id?: string
         }
@@ -341,20 +242,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "applications_pipeline_id_fkey"
-            columns: ["pipeline_id"]
-            isOneToOne: false
-            referencedRelation: "pipelines"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "applications_pipeline_stage_id_fkey"
-            columns: ["pipeline_stage_id"]
-            isOneToOne: false
-            referencedRelation: "pipeline_stages"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "applications_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -384,134 +271,6 @@ export type Database = {
           },
           {
             foreignKeyName: "applications_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "v_user_search"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      candidate_job_links: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          id: string
-          job_id: string
-          notes: string | null
-          relationship_type: string
-          source: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          job_id: string
-          notes?: string | null
-          relationship_type: string
-          source?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          job_id?: string
-          notes?: string | null
-          relationship_type?: string
-          source?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "candidate_job_links_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "candidate_job_links_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "candidate_job_links_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "v_user_directory"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "candidate_job_links_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "v_user_private"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "candidate_job_links_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "v_user_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "candidate_job_links_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "jobs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "candidate_job_links_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "v_job_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "candidate_job_links_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "v_jobs_with_details"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "candidate_job_links_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "candidate_job_links_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "candidate_job_links_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "v_user_directory"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "candidate_job_links_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "v_user_private"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "candidate_job_links_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "v_user_search"
@@ -1105,91 +864,6 @@ export type Database = {
           },
         ]
       }
-      job_pipelines: {
-        Row: {
-          assigned_by: string | null
-          created_at: string
-          job_id: string
-          pipeline_id: string
-        }
-        Insert: {
-          assigned_by?: string | null
-          created_at?: string
-          job_id: string
-          pipeline_id: string
-        }
-        Update: {
-          assigned_by?: string | null
-          created_at?: string
-          job_id?: string
-          pipeline_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "job_pipelines_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "job_pipelines_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "job_pipelines_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
-            referencedRelation: "v_user_directory"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "job_pipelines_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
-            referencedRelation: "v_user_private"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "job_pipelines_assigned_by_fkey"
-            columns: ["assigned_by"]
-            isOneToOne: false
-            referencedRelation: "v_user_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "job_pipelines_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "jobs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "job_pipelines_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "v_job_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "job_pipelines_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "v_jobs_with_details"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "job_pipelines_pipeline_id_fkey"
-            columns: ["pipeline_id"]
-            isOneToOne: false
-            referencedRelation: "pipelines"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       job_skills: {
         Row: {
           created_at: string
@@ -1523,95 +1197,6 @@ export type Database = {
             columns: ["owner_user_id"]
             isOneToOne: false
             referencedRelation: "v_user_search"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      pipeline_stages: {
-        Row: {
-          color: string | null
-          created_at: string
-          description: string | null
-          id: string
-          name: string
-          pipeline_id: string
-          sla_days: number | null
-          stage_order: number
-          updated_at: string
-        }
-        Insert: {
-          color?: string | null
-          created_at?: string
-          description?: string | null
-          id?: string
-          name: string
-          pipeline_id: string
-          sla_days?: number | null
-          stage_order: number
-          updated_at?: string
-        }
-        Update: {
-          color?: string | null
-          created_at?: string
-          description?: string | null
-          id?: string
-          name?: string
-          pipeline_id?: string
-          sla_days?: number | null
-          stage_order?: number
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "pipeline_stages_pipeline_id_fkey"
-            columns: ["pipeline_id"]
-            isOneToOne: false
-            referencedRelation: "pipelines"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      pipelines: {
-        Row: {
-          created_at: string
-          description: string | null
-          id: string
-          is_default: boolean
-          name: string
-          organization_id: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_default?: boolean
-          name: string
-          organization_id: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_default?: boolean
-          name?: string
-          organization_id?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "pipelines_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "pipelines_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "v_org_directory"
             referencedColumns: ["id"]
           },
         ]
