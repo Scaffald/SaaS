@@ -39,23 +39,107 @@ export const officeRouter = t.router({
 
   /**
    * Get user details
-   * TODO: Implement with proper input schema
    */
-  getUser: superAdminProcedure.query(async ({ ctx }) => {
-    const _res = await ctx.supabase;
-    // For now, return mock data - will be implemented with proper input schema
-    return { profile: null, privateData: null };
-  }),
+  getUser: superAdminProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      // Get profile data
+      const { data: profile, error: profileError } = await ctx.supabaseAdmin
+        .from("profiles")
+        .select("*")
+        .eq("id", input.id)
+        .single();
+
+      if (profileError) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `User not found: ${profileError.message}`,
+        });
+      }
+
+      // Get private data
+      const { data: privateData, error: privateError } = await ctx.supabaseAdmin
+        .from("user_private")
+        .select("*")
+        .eq("user_id", input.id)
+        .single();
+
+      if (privateError && privateError.code !== "PGRST116") {
+        // PGRST116 is "no rows returned", which is acceptable
+        console.error("Error fetching private data:", privateError);
+      }
+
+      return { 
+        profile, 
+        privateData: privateData || null 
+      };
+    }),
 
   /**
-   * Update user
-   * TODO: Implement with proper input schema
+   * Update user profile and private data
    */
-  updateUser: superAdminProcedure.mutation(async ({ ctx }) => {
-    const _res = await ctx.supabase;
-    // For now, return success - will be implemented with proper input schema
-    return { success: true };
-  }),
+  updateUser: superAdminProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        profile: z
+          .object({
+            first_name: z.string().optional(),
+            last_name: z.string().optional(),
+            display_name: z.string().optional(),
+            bio: z.string().optional(),
+          })
+          .optional(),
+        privateData: z
+          .object({
+            email: z.string().email().optional(),
+            phone_number: z.string().optional(),
+            birth_date: z.string().optional(),
+            location: z.string().optional(),
+            employment_status: z.string().optional(),
+            job_search_status: z.string().optional(),
+            years_of_experience: z.number().optional(),
+            current_title: z.string().optional(),
+            current_employer: z.string().optional(),
+          })
+          .optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id, profile, privateData } = input;
+
+      // Update profile if data provided
+      if (profile) {
+        const { error: profileError } = await ctx.supabaseAdmin
+          .from("profiles")
+          .update(profile)
+          .eq("id", id);
+
+        if (profileError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to update profile: ${profileError.message}`,
+          });
+        }
+      }
+
+      // Update private data if provided
+      if (privateData) {
+        const { error: privateError } = await ctx.supabaseAdmin
+          .from("user_private")
+          .update(privateData)
+          .eq("user_id", id);
+
+        if (privateError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to update private data: ${privateError.message}`,
+          });
+        }
+      }
+
+      return { success: true };
+    }),
 
   /**
    * List all jobs (admin view)

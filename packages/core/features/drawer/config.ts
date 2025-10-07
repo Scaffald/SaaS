@@ -27,13 +27,35 @@ export const generateDashboardDrawerItems = (options?: {
 }): DrawerItemConfig[] => {
   const items: DrawerItemConfig[] = [];
 
-  // Office link (for admin users only)
+  // Office section (for admin users only) - Make expandable with Users and Jobs
   if (options?.includeOfficeLink && OFFICE_ROUTES.INDEX) {
+    const officeSubItems: DrawerItemConfig[] = [];
+
+    // Add Users sub-item if available
+    if (OFFICE_ROUTES.USERS) {
+      officeSubItems.push({
+        key: "office-users",
+        title: OFFICE_ROUTES.USERS.title || "Users",
+        href: OFFICE_ROUTES.USERS.fullPath,
+      });
+    }
+
+    // Add Jobs sub-item if available
+    if (OFFICE_ROUTES.JOBS) {
+      officeSubItems.push({
+        key: "office-jobs",
+        title: OFFICE_ROUTES.JOBS.title || "Jobs",
+        href: OFFICE_ROUTES.JOBS.fullPath,
+      });
+    }
+
     items.push({
       key: "office",
-      title: OFFICE_ROUTES.INDEX.title || "Office",
+      title: "Office",
       href: OFFICE_ROUTES.INDEX.fullPath,
-      icon: Briefcase,
+      icon: Building2,
+      isExpandable: officeSubItems.length > 0,
+      subItems: officeSubItems.length > 0 ? officeSubItems : undefined,
     });
   }
 
