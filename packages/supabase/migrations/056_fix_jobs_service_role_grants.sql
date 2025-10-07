@@ -5,11 +5,16 @@
 
 BEGIN;
 
--- Grant all permissions to service_role for jobs table
+-- Grant all permissions to service_role for jobs table and all related tables
 -- Service role should be able to bypass RLS when needed
 GRANT ALL ON public.jobs TO service_role;
-
--- Also ensure service role has permissions on related tables
 GRANT ALL ON public.job_skills TO service_role;
+GRANT ALL ON public.job_certifications TO service_role;
+GRANT ALL ON public.organizations TO service_role;
+GRANT ALL ON public.teams TO service_role;
+GRANT ALL ON public.users TO service_role;
+GRANT ALL ON public.profiles TO service_role;
+GRANT ALL ON public.certifications TO service_role;
+GRANT ALL ON public.skills TO service_role;
 
 COMMIT;
