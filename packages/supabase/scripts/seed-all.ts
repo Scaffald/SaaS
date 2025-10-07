@@ -47,6 +47,31 @@ async function seedCSICodes() {
   }
 }
 
+async function seedJobs() {
+  console.log("\n💼 Seeding External Jobs with Enhanced Parsing...");
+
+  try {
+    const scriptDir = path.dirname(new URL(import.meta.url).pathname);
+    const jobsScriptPath = path.join(scriptDir, "seed-jobs.ts");
+
+    // Run the jobs seeding script
+    const { stdout, stderr } = await execAsync(
+      `pnpx tsx "${jobsScriptPath}"`,
+      {
+        env: { ...process.env },
+      },
+    );
+
+    if (stdout) console.log(stdout);
+    if (stderr) console.error(stderr);
+
+    return true;
+  } catch (error) {
+    console.error("❌ Error seeding jobs:", error);
+    return false;
+  }
+}
+
 async function verifySkills() {
   console.log("\n📊 Verifying Skills Data...");
 
@@ -110,129 +135,6 @@ async function verifyIndustries() {
   return true;
 }
 
-async function seedJobs(limit = 10) {
-  console.log("\n💼 Seeding External Jobs...");
-
-  const { data: feeds, error: feedsError } = await supabase
-    .from("external_job_feeds")
-    .select("*")
-    .eq("is_active", true);
-
-  if (feedsError) {
-    console.error("❌ Error fetching feeds:", feedsError);
-    return 0;
-  }
-
-  console.log(`   Found ${feeds?.length || 0} active job feeds`);
-
-  let totalImported = 0;
-
-  for (const feed of feeds || []) {
-    console.log(`\n   Processing: ${feed.name}`);
-
-    try {
-      const response = await fetch(feed.url);
-      if (!response.ok) {
-        console.error(`   ❌ Failed to fetch: ${response.statusText}`);
-        continue;
-      }
-
-      const xml = await response.text();
-      const items = xml.match(/<item>([\s\S]*?)<\/item>/g) || [];
-
-      console.log(`   Found ${items.length} jobs in feed`);
-
-      let imported = 0;
-      for (const item of items.slice(0, limit)) {
-        // Extract job data
-        const title =
-          item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/)?.[1] ||
-          item.match(/<title>(.*?)<\/title>/)?.[1] ||
-          "";
-        const link = item.match(/<link>(.*?)<\/link>/)?.[1] || "";
-        const description =
-          item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/)
-            ?.[1] ||
-          item.match(/<description>(.*?)<\/description>/)?.[1] ||
-          "";
-        const pubDate = item.match(/<pubDate>(.*?)<\/pubDate>/)?.[1] || "";
-
-        // Parse title for company name
-        const titleParts = title.split(": ");
-        const company_name = titleParts.length > 1
-          ? titleParts[0].trim()
-          : "Unknown Company";
-        const job_title = titleParts.length > 1
-          ? titleParts.slice(1).join(": ").trim()
-          : title;
-
-        // Clean description
-        const cleanDescription = description
-          .replace(/<[^>]*>/g, "")
-          .substring(0, 500);
-
-        const { error: insertError } = await supabase
-          .from("external_jobs")
-          .upsert(
-            {
-              feed_id: feed.id,
-              external_guid: link,
-              title: job_title || "Untitled Position",
-              company_name,
-              job_location: "Remote",
-              description: cleanDescription,
-              posted_date: pubDate
-                ? new Date(pubDate).toISOString()
-                : new Date().toISOString(),
-              application_url: link,
-              external_url: link,
-              is_active: true,
-              raw_data: { title, link, description, pubDate },
-            },
-            {
-              onConflict: "feed_id,external_guid",
-            },
-          );
-
-        if (insertError) {
-          console.error("   ⚠️  Insert error:", insertError.message);
-        } else {
-          imported++;
-        }
-      }
-
-      console.log(`   ✅ Imported ${imported} jobs from ${feed.name}`);
-      totalImported += imported;
-
-      // Update last_fetched_at
-      await supabase
-        .from("external_job_feeds")
-        .update({
-          last_fetched_at: new Date().toISOString(),
-          last_success_at: new Date().toISOString(),
-          error_count: 0,
-        })
-        .eq("id", feed.id);
-    } catch (error) {
-      const errorMessage = error instanceof Error
-        ? error.message
-        : String(error);
-      console.error(`   ❌ Error processing feed: ${errorMessage}`);
-
-      // Update error info
-      await supabase
-        .from("external_job_feeds")
-        .update({
-          error_count: (feed.error_count || 0) + 1,
-          last_error: errorMessage,
-        })
-        .eq("id", feed.id);
-    }
-  }
-
-  return totalImported;
-}
-
 async function displayStats() {
   console.log(`\n${"=".repeat(50)}`);
   console.log("📊 Database Statistics");
@@ -287,7 +189,7 @@ async function main() {
   }
 
   // Seed CSI codes first (this will create the construction industry and skills)
-  console.log("\n" + "=".repeat(50));
+  console.log(`\n${"=".repeat(50)}`);
   console.log("📋 Step 1: Seeding CSI MasterFormat 2020 Codes");
   console.log("=".repeat(50));
   const csiSeeded = await seedCSICodes();
@@ -305,14 +207,19 @@ async function main() {
   }
 
   // Seed jobs
-  console.log("\n" + "=".repeat(50));
+  console.log(`\n${"=".repeat(50)}`);
   console.log("📋 Step 2: Seeding External Jobs from RSS Feeds");
   console.log("=".repeat(50));
-  const jobsImported = await seedJobs(10);
+  const jobsSeeded = await seedJobs();
+
+  if (!jobsSeeded) {
+    console.error("\n❌ Jobs seeding failed. Check errors above.");
+    process.exit(1);
+  }
 
   console.log(`\n✅ Seeding complete!`);
   console.log(`   - CSI codes seeded ✓`);
-  console.log(`   - ${jobsImported} jobs imported ✓`);
+  console.log(`   - External jobs seeded ✓`);
 
   // Display stats
   await displayStats();
@@ -320,9 +227,7 @@ async function main() {
   console.log("💡 Next steps:");
   console.log("   - Start dev server: pnpm dev");
   console.log("   - Test tRPC endpoint: Navigate to /dashboard/discover/jobs");
-  console.log(
-    "   - Run permission tests: pnpm test:permissions\n",
-  );
+  console.log("   - Run permission tests: pnpm test:permissions\n");
 }
 
 main().catch((error) => {

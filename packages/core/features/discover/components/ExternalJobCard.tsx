@@ -7,13 +7,18 @@ export interface ExternalJob {
   title: string
   company_name?: string
   company_logo?: string
+  company_website?: string
   job_location?: string
   job_type?: string
   job_category?: string
   description?: string
+  responsibilities?: string[]
+  requirements?: string[]
+  benefits?: string[]
   compensation_min?: number
   compensation_max?: number
   compensation_currency?: string
+  compensation_period?: string
   posted_date?: string
   application_url: string
   external_url: string
