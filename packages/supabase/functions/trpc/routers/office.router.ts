@@ -6,6 +6,10 @@ import {
   jobPublishSchema,
   jobUpdateSchema,
 } from "../../_shared/job-schemas.ts";
+import {
+  generalProfileSchema,
+  employmentProfileSchema,
+} from "../../_shared/profile-schemas.ts";
 
 /**
  * Office router - super admin only operations
@@ -489,4 +493,192 @@ export const officeRouter = t.router({
 
     return { skills: data ?? [] };
   }),
+
+  /**
+   * Get user general profile data (admin)
+   * Uses the same schema as user profile for consistency
+   */
+  getUserGeneral: superAdminProcedure
+    .input(z.object({ userId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const { data: profile, error: profileError } = await ctx.supabaseAdmin
+        .from("profiles")
+        .select("first_name, last_name, about, avatar_path, email")
+        .eq("id", input.userId)
+        .single();
+
+      if (profileError) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `User profile not found: ${profileError.message}`,
+        });
+      }
+
+      const { data: privateData, error: privateError } = await ctx.supabaseAdmin
+        .from("user_private")
+        .select("phone_number, street_address, city, state, zip_code, country, latitude, longitude")
+        .eq("user_id", input.userId)
+        .single();
+
+      if (privateError && privateError.code !== "PGRST116") {
+        console.error("Error fetching private data:", privateError);
+      }
+
+      return {
+        first_name: profile.first_name || "",
+        last_name: profile.last_name || "",
+        about: profile.about || "",
+        avatar_path: profile.avatar_path || "",
+        email: profile.email || "",
+        phone: privateData?.phone_number || "",
+        address: {
+          street: privateData?.street_address || "",
+          city: privateData?.city || "",
+          state: privateData?.state || "",
+          zip: privateData?.zip_code || "",
+          country: privateData?.country || "United States",
+          latitude: privateData?.latitude,
+          longitude: privateData?.longitude,
+        },
+      };
+    }),
+
+  /**
+   * Update user general profile (admin)
+   * Uses the same schema as user profile for consistency
+   */
+  updateUserGeneral: superAdminProcedure
+    .input(
+      z.object({
+        userId: z.string().uuid(),
+        data: generalProfileSchema,
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { userId, data } = input;
+
+      // Update profiles table
+      const profileUpdate: Record<string, string> = {};
+      if (data.first_name) profileUpdate.first_name = data.first_name;
+      if (data.last_name) profileUpdate.last_name = data.last_name;
+      if (data.about !== undefined) profileUpdate.about = data.about;
+      if (data.avatar_path !== undefined) profileUpdate.avatar_path = data.avatar_path;
+
+      if (Object.keys(profileUpdate).length > 0) {
+        const { error: profileError } = await ctx.supabaseAdmin
+          .from("profiles")
+          .update(profileUpdate)
+          .eq("id", userId);
+
+        if (profileError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to update profile: ${profileError.message}`,
+          });
+        }
+      }
+
+      // Update user_private table
+      const privateUpdate: Record<string, string | number | null> = {};
+      if (data.phone !== undefined) privateUpdate.phone_number = data.phone;
+      if (data.address) {
+        if (data.address.street !== undefined) privateUpdate.street_address = data.address.street;
+        if (data.address.city !== undefined) privateUpdate.city = data.address.city;
+        if (data.address.state !== undefined) privateUpdate.state = data.address.state;
+        if (data.address.zip !== undefined) privateUpdate.zip_code = data.address.zip;
+        if (data.address.country !== undefined) privateUpdate.country = data.address.country;
+        if (data.address.latitude !== undefined) privateUpdate.latitude = data.address.latitude;
+        if (data.address.longitude !== undefined) privateUpdate.longitude = data.address.longitude;
+      }
+
+      if (Object.keys(privateUpdate).length > 0) {
+        const { error: privateError } = await ctx.supabaseAdmin
+          .from("user_private")
+          .update(privateUpdate)
+          .eq("user_id", userId);
+
+        if (privateError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to update private data: ${privateError.message}`,
+          });
+        }
+      }
+
+      return { success: true };
+    }),
+
+  /**
+   * Get user employment data (admin)
+   * Uses the same schema as user profile for consistency
+   */
+  getUserEmployment: superAdminProcedure
+    .input(z.object({ userId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const { data, error } = await ctx.supabaseAdmin
+        .from("user_private")
+        .select(
+          "preferred_work_locations, willing_to_travel, travel_distance_miles, us_resident, us_passport, drivers_license_classes, military_status, availability, hourly_rate"
+        )
+        .eq("user_id", input.userId)
+        .single();
+
+      if (error && error.code !== "PGRST116") {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `User employment data not found: ${error.message}`,
+        });
+      }
+
+      return {
+        preferred_work_locations: data?.preferred_work_locations || [],
+        willing_to_travel: data?.willing_to_travel || false,
+        travel_distance_miles: data?.travel_distance_miles || 25,
+        us_resident: data?.us_resident || false,
+        us_passport: data?.us_passport || false,
+        drivers_license_classes: data?.drivers_license_classes || [],
+        military_status: data?.military_status || [],
+        availability: data?.availability || [],
+        hourly_rate: data?.hourly_rate,
+      };
+    }),
+
+  /**
+   * Update user employment data (admin)
+   * Uses the same schema as user profile for consistency
+   */
+  updateUserEmployment: superAdminProcedure
+    .input(
+      z.object({
+        userId: z.string().uuid(),
+        data: employmentProfileSchema,
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { userId, data } = input;
+
+      const { error } = await ctx.supabaseAdmin
+        .from("user_private")
+        .update({
+          preferred_work_locations: data.preferred_work_locations,
+          willing_to_travel: data.willing_to_travel,
+          travel_distance_miles: data.travel_distance_miles,
+          us_resident: data.us_resident,
+          us_passport: data.us_passport,
+          drivers_license_classes: data.drivers_license_classes,
+          military_status: data.military_status,
+          availability: data.availability,
+          hourly_rate: data.hourly_rate,
+        })
+        .eq("user_id", userId);
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to update employment data: ${error.message}`,
+        });
+      }
+
+      return { success: true };
+    }),
 });
