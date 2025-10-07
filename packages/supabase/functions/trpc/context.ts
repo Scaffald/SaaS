@@ -27,8 +27,7 @@ export const createTRPCContext = async (opts: { req: Request }) => {
   const authorizationHeader = opts.req.headers.get("authorization");
   console.log("Auth header present:", !!authorizationHeader);
 
-  // Create Supabase client with service role key (respects RLS with proper grants)
-  // We'll manually enforce authorization in our procedures
+  // Create Supabase client with user's auth for permission checks
   const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     global: {
       headers: authorizationHeader
@@ -36,6 +35,9 @@ export const createTRPCContext = async (opts: { req: Request }) => {
         : {},
     },
   });
+
+  // Create admin client without auth header for elevated operations
+  const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
   let userId: string | undefined;
   let userToken: string | undefined;
@@ -75,6 +77,7 @@ export const createTRPCContext = async (opts: { req: Request }) => {
     user: userId ? { id: userId } : undefined,
     userToken,
     supabase,
+    supabaseAdmin, // Admin client without user auth
   };
 };
 
