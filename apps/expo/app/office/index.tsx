@@ -1,5 +1,6 @@
-import { OfficeUsersScreen } from '@app/core/features/office/office-users-screen'
+import { Redirect } from 'expo-router'
+import { OFFICE_ROUTES } from '@app/core/constants/routes'
 
 export default function OfficeIndex() {
-  return <OfficeUsersScreen />
+  return <Redirect href={OFFICE_ROUTES.USERS?.fullPath || '/office/users'} />
 }

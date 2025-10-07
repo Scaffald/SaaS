@@ -14,6 +14,7 @@ export type { DrawerItemConfig, DrawerSectionConfig, DrawerContentProps } from '
 export { drawerSections } from './config'
 export { normalizePath } from './utils'
 export { DrawerFooter } from './DrawerFooter'
+export { DrawerLayout } from './DrawerLayout'
 
 export type UnifiedDrawerProps = {
   /**

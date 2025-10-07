@@ -276,7 +276,11 @@ const routeConfig: Record<string, RouteConfig> = {
     children: {
       index: {
         path: "/office",
-        title: "Office Home",
+        title: "Office",
+      },
+      users: {
+        path: "/office/users",
+        title: "Manage Users",
       },
       jobs: {
         path: "/office/jobs",
@@ -314,6 +318,7 @@ export const DASHBOARD_ROUTES = {
 
 export const OFFICE_ROUTES = {
   INDEX: ROUTES.office.childrenArray?.find((r) => r.path === "/office"),
+  USERS: ROUTES.office.childrenArray?.find((r) => r.path === "/office/users"),
   JOBS: ROUTES.office.childrenArray?.find((r) => r.path === "/office/jobs"),
 };
 
