@@ -1,14 +1,19 @@
 import { useState } from 'react'
-import { YStack, ScrollView, Text, Spinner } from 'tamagui'
+import { YStack, ScrollView, Text, Spinner, XStack } from 'tamagui'
 import { ExternalJobCard, type ExternalJob } from './components/ExternalJobCard'
 import { ExternalJobDetailModal } from './components/ExternalJobDetailModal'
+import { InternalJobCard, type InternalJob } from './components/InternalJobCard'
+import { InternalJobDetailModal } from './components/InternalJobDetailModal'
 import { api } from '@app/core/utils/api'
 
 interface DiscoverJobsLeftProps {
   searchQuery: string
   selectedIndustries: string[]
   selectedJobTypes: string[]
+  jobSource?: 'all' | 'internal' | 'external'
 }
+
+type MixedJob = { type: 'external'; job: ExternalJob } | { type: 'internal'; job: InternalJob }
 
 /**
  * Discover Jobs Left Component
@@ -18,31 +23,70 @@ export function DiscoverJobsLeft({
   searchQuery,
   selectedIndustries,
   selectedJobTypes,
+  jobSource = 'all',
 }: DiscoverJobsLeftProps) {
-  const [selectedJob, setSelectedJob] = useState<ExternalJob | null>(null)
-  const [modalOpen, setModalOpen] = useState(false)
+  const [selectedExternalJob, setSelectedExternalJob] = useState<ExternalJob | null>(null)
+  const [selectedInternalJob, setSelectedInternalJob] = useState<InternalJob | null>(null)
+  const [externalModalOpen, setExternalModalOpen] = useState(false)
+  const [internalModalOpen, setInternalModalOpen] = useState(false)
 
-  // Fetch real jobs from API
-  const { data, isLoading } = api.jobs.getExternalJobs.useQuery()
-  const jobs = data?.jobs || []
+  // Fetch external jobs
+  const { data: externalData, isLoading: externalLoading } = api.jobs.getExternalJobs.useQuery(
+    undefined,
+    {
+      enabled: jobSource === 'all' || jobSource === 'external',
+    }
+  )
 
-  // Filter jobs based on search and filters
-  const filteredJobs = jobs.filter((job: ExternalJob) => {
+  // Fetch internal jobs
+  const { data: internalData, isLoading: internalLoading } = api.jobs.getPublishedJobs.useQuery(
+    {
+      search: searchQuery,
+    },
+    {
+      enabled: jobSource === 'all' || jobSource === 'internal',
+    }
+  )
+
+  const externalJobs = externalData?.jobs || []
+  const internalJobs = internalData?.jobs || []
+
+  const isLoading = externalLoading || internalLoading
+
+  // Combine and filter both job types
+  const mixedJobs: MixedJob[] = [
+    ...externalJobs.map((job: ExternalJob): MixedJob => ({ type: 'external', job })),
+    ...internalJobs.map((job: InternalJob): MixedJob => ({ type: 'internal', job })),
+  ]
+
+  const filteredJobs = mixedJobs.filter((item) => {
+    const job = item.job
+
     // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
-      const matchesSearch =
-        job.title.toLowerCase().includes(query) ||
-        job.company_name?.toLowerCase().includes(query) ||
-        job.description?.toLowerCase().includes(query) ||
-        job.job_category?.toLowerCase().includes(query)
-
-      if (!matchesSearch) return false
+      if (item.type === 'external') {
+        const extJob = job as ExternalJob
+        const matchesSearch =
+          extJob.title.toLowerCase().includes(query) ||
+          extJob.company_name?.toLowerCase().includes(query) ||
+          extJob.description?.toLowerCase().includes(query) ||
+          extJob.job_category?.toLowerCase().includes(query)
+        if (!matchesSearch) return false
+      } else {
+        const intJob = job as InternalJob
+        const matchesSearch =
+          intJob.title.toLowerCase().includes(query) ||
+          intJob.organization?.name?.toLowerCase().includes(query) ||
+          intJob.description?.toLowerCase().includes(query)
+        if (!matchesSearch) return false
+      }
     }
 
-    // Industry filter
-    if (selectedIndustries && selectedIndustries.length > 0) {
-      const hasMatchingIndustry = job.industries?.some(
+    // Industry filter (external jobs only for now)
+    if (selectedIndustries && selectedIndustries.length > 0 && item.type === 'external') {
+      const extJob = job as ExternalJob
+      const hasMatchingIndustry = extJob.industries?.some(
         (industry: { industry_name: string; confidence_score: number }) =>
           selectedIndustries.includes(industry.industry_name)
       )
@@ -51,23 +95,40 @@ export function DiscoverJobsLeft({
 
     // Job type filter
     if (selectedJobTypes && selectedJobTypes.length > 0) {
-      if (!job.job_type || !selectedJobTypes.includes(job.job_type)) {
-        return false
+      if (item.type === 'external') {
+        const extJob = job as ExternalJob
+        if (!extJob.job_type || !selectedJobTypes.includes(extJob.job_type)) {
+          return false
+        }
+      } else {
+        const intJob = job as InternalJob
+        if (!intJob.employment_type || !selectedJobTypes.includes(intJob.employment_type)) {
+          return false
+        }
       }
     }
 
     return true
   })
 
-  const handleViewDetails = (job: ExternalJob) => {
-    setSelectedJob(job)
-    setModalOpen(true)
+  const handleViewExternalDetails = (job: ExternalJob) => {
+    setSelectedExternalJob(job)
+    setExternalModalOpen(true)
   }
 
-  const handleJobApply = (jobId: string) => {
-    console.log('Applied to job:', jobId)
-    // TODO: Track application analytics
-    setModalOpen(false)
+  const handleViewInternalDetails = (job: InternalJob) => {
+    setSelectedInternalJob(job)
+    setInternalModalOpen(true)
+  }
+
+  const handleExternalJobApply = (jobId: string) => {
+    console.log('Applied to external job:', jobId)
+    setExternalModalOpen(false)
+  }
+
+  const handleInternalJobApply = () => {
+    // Refetch jobs to update application status
+    internalData && api.jobs.getPublishedJobs.useQuery.refetch?.()
   }
 
   if (isLoading) {
@@ -102,17 +163,39 @@ export function DiscoverJobsLeft({
             {filteredJobs.length} {filteredJobs.length === 1 ? 'Job' : 'Jobs'} Available
           </Text>
 
-          {filteredJobs.map((job: ExternalJob) => (
-            <ExternalJobCard key={job.id} job={job} onViewDetails={handleViewDetails} />
-          ))}
+          {filteredJobs.map((item) => {
+            if (item.type === 'external') {
+              return (
+                <ExternalJobCard
+                  key={`external-${item.job.id}`}
+                  job={item.job}
+                  onViewDetails={handleViewExternalDetails}
+                />
+              )
+            }
+            return (
+              <InternalJobCard
+                key={`internal-${item.job.id}`}
+                job={item.job}
+                onViewDetails={handleViewInternalDetails}
+              />
+            )
+          })}
         </YStack>
       </ScrollView>
 
       <ExternalJobDetailModal
-        job={selectedJob}
-        open={modalOpen}
-        onOpenChange={setModalOpen}
-        onApply={handleJobApply}
+        job={selectedExternalJob}
+        open={externalModalOpen}
+        onOpenChange={setExternalModalOpen}
+        onApply={handleExternalJobApply}
+      />
+
+      <InternalJobDetailModal
+        job={selectedInternalJob}
+        open={internalModalOpen}
+        onOpenChange={setInternalModalOpen}
+        onApplySuccess={handleInternalJobApply}
       />
     </>
   )

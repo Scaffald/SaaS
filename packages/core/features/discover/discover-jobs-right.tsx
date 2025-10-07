@@ -8,6 +8,8 @@ interface DiscoverJobsRightProps {
   onSearchChange: (search: string) => void
   onIndustriesChange: (industries: string[]) => void
   onJobTypesChange: (types: string[]) => void
+  jobSource: 'all' | 'internal' | 'external'
+  onJobSourceChange: (source: 'all' | 'internal' | 'external') => void
 }
 
 /**
@@ -18,6 +20,8 @@ export function DiscoverJobsRight({
   onSearchChange,
   onIndustriesChange,
   onJobTypesChange,
+  jobSource,
+  onJobSourceChange,
 }: DiscoverJobsRightProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
@@ -112,6 +116,42 @@ export function DiscoverJobsRight({
               </Button>
             )}
           </XStack>
+        </DashboardWidget>
+
+        {/* Job Source Filter */}
+        <DashboardWidget>
+          <YStack gap="$3">
+            <Text fontSize="$4" fontWeight="600" color="$color12">
+              Job Source
+            </Text>
+
+            <YStack gap="$2">
+              <Button
+                size="$3"
+                variant="outlined"
+                theme={jobSource === 'all' ? 'blue' : undefined}
+                onPress={() => onJobSourceChange('all')}
+              >
+                All Jobs
+              </Button>
+              <Button
+                size="$3"
+                variant="outlined"
+                theme={jobSource === 'internal' ? 'blue' : undefined}
+                onPress={() => onJobSourceChange('internal')}
+              >
+                Internal Jobs (Scaffald)
+              </Button>
+              <Button
+                size="$3"
+                variant="outlined"
+                theme={jobSource === 'external' ? 'blue' : undefined}
+                onPress={() => onJobSourceChange('external')}
+              >
+                External Jobs
+              </Button>
+            </YStack>
+          </YStack>
         </DashboardWidget>
 
         {/* Industry Filter */}

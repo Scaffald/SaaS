@@ -10,6 +10,7 @@ export function DiscoverJobsScreen() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
   const [selectedJobTypes, setSelectedJobTypes] = useState<string[]>([])
+  const [jobSource, setJobSource] = useState<'all' | 'internal' | 'external'>('all')
 
   return {
     left: (
@@ -17,6 +18,7 @@ export function DiscoverJobsScreen() {
         searchQuery={searchQuery}
         selectedIndustries={selectedIndustries}
         selectedJobTypes={selectedJobTypes}
+        jobSource={jobSource}
       />
     ),
     right: (
@@ -24,6 +26,8 @@ export function DiscoverJobsScreen() {
         onSearchChange={setSearchQuery}
         onIndustriesChange={setSelectedIndustries}
         onJobTypesChange={setSelectedJobTypes}
+        jobSource={jobSource}
+        onJobSourceChange={setJobSource}
       />
     ),
   }
