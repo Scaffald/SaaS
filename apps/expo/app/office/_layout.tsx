@@ -3,28 +3,30 @@ import { DrawerLayout } from '@app/core/features/drawer/DrawerLayout'
 import { Drawer } from 'expo-router/drawer'
 import { YStack, Text, Spinner } from 'tamagui'
 
-function ProtectionWrapper() {
+export default function OfficeLayout() {
   const { isAuthorized, isLoading } = useRoleProtectedRoute(['super_admin'])
 
+  // Show loading state BEFORE rendering the drawer
   if (isLoading) {
     return (
-      <YStack flex={1} justify="center" items="center">
+      <YStack flex={1} justify="center" items="center" bg="$background">
         <Spinner size="large" />
         <Text mt="$4">Loading...</Text>
       </YStack>
     )
   }
 
-  if (!isAuthorized) return null
+  // If not authorized, the hook will handle redirect
+  if (!isAuthorized) {
+    return null
+  }
 
-  return null
-}
-
-export default function OfficeLayout() {
+  // Only render drawer once auth is confirmed
   return (
-    <DrawerLayout protectionComponent={<ProtectionWrapper />}>
+    <DrawerLayout protectionComponent={null}>
       <Drawer.Screen name="index" options={{ title: 'Office' }} />
       <Drawer.Screen name="users/index" options={{ title: 'Manage Users' }} />
+      <Drawer.Screen name="users/[id]/edit" options={{ title: 'Edit User' }} />
       <Drawer.Screen name="jobs/index" options={{ title: 'Manage Jobs' }} />
       <Drawer.Screen name="jobs/create" options={{ title: 'Create Job' }} />
       <Drawer.Screen name="jobs/[id]/edit" options={{ title: 'Edit Job' }} />

@@ -1,53 +1,113 @@
-import { YStack, Spinner, Text } from '@app/ui'
-import { useLocalSearchParams } from 'expo-router'
-import { api } from '@app/core/utils/api'
-import { UserForm } from '@app/core/features/office/components/UserForm'
+import { YStack, ScrollView, Text, XStack, Button, H2, Separator } from '@app/ui'
+import { Card } from 'tamagui'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { GeneralProfileSection, EmploymentSection } from '@app/core/features/profile/components'
+import { ProfileSkillsLeft } from '@app/core/features/profile/profile-skills-left'
+import { ProfileExperienceLeft } from '@app/core/features/profile/profile-experience-left'
+import { ProfileEducationLeft } from '@app/core/features/profile/profile-education-left'
+import { ProfileCertificationsLeft } from '@app/core/features/profile/profile-certifications-left'
 
 export default function EditUserPage() {
   const { id } = useLocalSearchParams<{ id: string }>()
+  const router = useRouter()
 
-  const { data, isLoading } = api.office.getUser.useQuery({ id: id! }, { enabled: !!id })
-
-  if (isLoading) {
+  if (!id) {
     return (
       <YStack flex={1} bg="$background" items="center" justify="center">
-        <Spinner size="large" />
-      </YStack>
-    )
-  }
-
-  if (!data?.profile) {
-    return (
-      <YStack flex={1} bg="$background" items="center" justify="center">
-        <Text>User not found</Text>
+        <Text>Invalid user ID</Text>
       </YStack>
     )
   }
 
   return (
-    <UserForm
-      userId={id!}
-      initialProfile={{
-        first_name: data.profile.first_name,
-        last_name: data.profile.last_name,
-        display_name: data.profile.display_name,
-        bio: data.profile.bio,
-      }}
-      initialPrivateData={
-        data.privateData
-          ? {
-              email: data.privateData.email,
-              phone_number: data.privateData.phone_number,
-              birth_date: data.privateData.birth_date,
-              location: data.privateData.location,
-              employment_status: data.privateData.employment_status,
-              job_search_status: data.privateData.job_search_status,
-              years_of_experience: data.privateData.years_of_experience,
-              current_title: data.privateData.current_title,
-              current_employer: data.privateData.current_employer,
-            }
-          : null
-      }
-    />
+    <ScrollView flex={1} bg="$background">
+      <YStack p="$4" gap="$4">
+        {/* Header */}
+        <YStack gap="$3">
+          <XStack items="center" justify="space-between">
+            <H2>Edit User Profile</H2>
+            <Button onPress={() => router.back()} variant="outlined">
+              Back to Users
+            </Button>
+          </XStack>
+          <Text color="$color11" fontSize="$3">
+            Comprehensive user profile management with all profile sections.
+          </Text>
+          <Separator />
+        </YStack>
+
+        {/* General Profile Section */}
+        <YStack gap="$2">
+          <Text fontSize="$6" fontWeight="600">
+            General Information
+          </Text>
+          <GeneralProfileSection userId={id} mode="admin" />
+        </YStack>
+
+        {/* Employment Section */}
+        <YStack gap="$2">
+          <Text fontSize="$6" fontWeight="600">
+            Employment Preferences
+          </Text>
+          <EmploymentSection userId={id} mode="admin" />
+        </YStack>
+
+        {/* Skills Section - Note: Currently operates on current admin user */}
+        <YStack gap="$2">
+          <Text fontSize="$6" fontWeight="600">
+            Skills & Expertise
+          </Text>
+          <Card bordered bg="$yellow2" p="$3" mb="$2">
+            <Text fontSize="$2" color="$yellow11">
+              ⚠️ Note: Skills section currently shows/edits the logged-in admin's skills. Full
+              multi-user support coming soon.
+            </Text>
+          </Card>
+          <ProfileSkillsLeft />
+        </YStack>
+
+        {/* Experience Section - Note: Currently operates on current admin user */}
+        <YStack gap="$2">
+          <Text fontSize="$6" fontWeight="600">
+            Work Experience
+          </Text>
+          <Card bordered bg="$yellow2" p="$3" mb="$2">
+            <Text fontSize="$2" color="$yellow11">
+              ⚠️ Note: Experience section currently shows/edits the logged-in admin's experience.
+              Full multi-user support coming soon.
+            </Text>
+          </Card>
+          <ProfileExperienceLeft />
+        </YStack>
+
+        {/* Education Section - Note: Currently operates on current admin user */}
+        <YStack gap="$2">
+          <Text fontSize="$6" fontWeight="600">
+            Education
+          </Text>
+          <Card bordered bg="$yellow2" p="$3" mb="$2">
+            <Text fontSize="$2" color="$yellow11">
+              ⚠️ Note: Education section currently shows/edits the logged-in admin's education. Full
+              multi-user support coming soon.
+            </Text>
+          </Card>
+          <ProfileEducationLeft />
+        </YStack>
+
+        {/* Certifications Section - Note: Currently operates on current admin user */}
+        <YStack gap="$2">
+          <Text fontSize="$6" fontWeight="600">
+            Certifications
+          </Text>
+          <Card bordered bg="$yellow2" p="$3" mb="$2">
+            <Text fontSize="$2" color="$yellow11">
+              ⚠️ Note: Certifications section currently shows/edits the logged-in admin's
+              certifications. Full multi-user support coming soon.
+            </Text>
+          </Card>
+          <ProfileCertificationsLeft />
+        </YStack>
+      </YStack>
+    </ScrollView>
   )
 }
