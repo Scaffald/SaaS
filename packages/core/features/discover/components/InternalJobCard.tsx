@@ -3,7 +3,7 @@ import { Building2, MapPin, DollarSign, Briefcase, Clock } from '@tamagui/lucide
 import { Chip } from '@app/ui'
 
 /**
- * Internal job type definition
+ * Internal job type definition with all enhanced fields
  */
 export interface InternalJob {
   id: string
@@ -31,6 +31,35 @@ export interface InternalJob {
     id: string
     name: string
   }>
+
+  // Application Screening (Migration 067)
+  require_current_location?: boolean
+  require_relocation_willingness?: boolean
+  minimum_years_experience?: number
+  require_work_authorization?: boolean
+  require_earliest_start_date?: boolean
+
+  // Job Metadata (Migration 068)
+  application_deadline?: string
+
+  // Enhanced Requirements (Migration 069)
+  minimum_education_level?: 'none' | 'high_school' | 'associate' | 'bachelor' | 'master' | 'phd'
+  require_background_check?: boolean
+  background_check_type?: string
+  require_drug_test?: boolean
+  require_drivers_license?: boolean
+  drivers_license_type?: string
+  security_clearance_required?: string
+  travel_percentage?: number
+
+  // Compensation & Benefits (Migration 070)
+  benefits_summary?: string
+
+  // Location & Scheduling (Migration 072)
+  relocation_assistance_offered?: boolean
+  relocation_assistance_details?: string
+  work_schedule_details?: string
+  timezone?: string
 }
 
 interface InternalJobCardProps {
