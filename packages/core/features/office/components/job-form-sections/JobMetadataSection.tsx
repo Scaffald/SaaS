@@ -87,14 +87,14 @@ export function JobMetadataSection({
       gap="$4"
       p="$4"
       bg="$background"
-      borderRadius="$4"
+      rounded="$4"
       borderWidth={1}
       borderColor="$borderColor"
     >
       <Text fontSize="$6" fontWeight="600">
         Job Metadata & Management
       </Text>
-      <Text fontSize="$2" color="$gray10">
+      <Text fontSize="$2" color="$color10">
         Internal tracking and management information
       </Text>
 
@@ -205,10 +205,10 @@ export function JobMetadataSection({
       </YStack>
 
       {/* Is Confidential */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+      <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
           <Label htmlFor="confidential">Confidential posting</Label>
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Hide company name and details from job listings
           </Text>
         </YStack>
@@ -229,7 +229,7 @@ export function JobMetadataSection({
           value={localState.application_deadline || ''}
           onChangeText={(text) => handleChange('application_deadline', text || undefined)}
         />
-        <Text fontSize="$2" color="$gray10">
+        <Text fontSize="$2" color="$color10">
           Last date to accept applications
         </Text>
       </YStack>
@@ -241,7 +241,7 @@ export function JobMetadataSection({
           value={localState.target_start_date || ''}
           onChangeText={(text) => handleChange('target_start_date', text || undefined)}
         />
-        <Text fontSize="$2" color="$gray10">
+        <Text fontSize="$2" color="$color10">
           When you want the hire to start
         </Text>
       </YStack>
@@ -253,7 +253,7 @@ export function JobMetadataSection({
           value={localState.estimated_hire_date || ''}
           onChangeText={(text) => handleChange('estimated_hire_date', text || undefined)}
         />
-        <Text fontSize="$2" color="$gray10">
+        <Text fontSize="$2" color="$color10">
           When you expect to make a hire
         </Text>
       </YStack>

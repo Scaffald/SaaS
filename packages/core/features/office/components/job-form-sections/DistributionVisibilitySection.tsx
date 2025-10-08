@@ -43,22 +43,22 @@ export function DistributionVisibilitySection({
       gap="$4"
       p="$4"
       bg="$background"
-      borderRadius="$4"
+      rounded="$4"
       borderWidth={1}
       borderColor="$borderColor"
     >
       <Text fontSize="$6" fontWeight="600">
         Distribution & Visibility
       </Text>
-      <Text fontSize="$2" color="$gray10">
+      <Text fontSize="$2" color="$color10">
         Control job posting visibility and distribution
       </Text>
 
       {/* Is Featured */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+      <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
           <Label htmlFor="featured">Featured job</Label>
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Highlight this job in listings
           </Text>
         </YStack>
@@ -79,7 +79,7 @@ export function DistributionVisibilitySection({
             value={localState.featured_until || ''}
             onChangeText={(text) => handleChange('featured_until', text || undefined)}
           />
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Date when featured status expires
           </Text>
         </YStack>
@@ -99,7 +99,7 @@ export function DistributionVisibilitySection({
             handleChange('seo_keywords', keywords.length > 0 ? keywords : undefined)
           }}
         />
-        <Text fontSize="$2" color="$gray10">
+        <Text fontSize="$2" color="$color10">
           Comma-separated keywords for search optimization
         </Text>
       </YStack>
@@ -112,7 +112,7 @@ export function DistributionVisibilitySection({
           value={localState.external_application_url || ''}
           onChangeText={(text) => handleChange('external_application_url', text || undefined)}
         />
-        <Text fontSize="$2" color="$gray10">
+        <Text fontSize="$2" color="$color10">
           Redirect to external ATS for applications
         </Text>
       </YStack>

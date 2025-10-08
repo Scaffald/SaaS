@@ -2,12 +2,14 @@ import { YStack } from 'tamagui'
 import type { RefObject } from 'react'
 import type { TalentProfile } from '../types'
 import type { OrganizationMapPin } from '../hooks/useOrganizations'
+import type { JobMapPin } from '../hooks/useJobs'
 import { ResultList, type ResultListRef } from './ResultList'
 
 interface ResultsRailProps {
   isVisible: boolean
   profiles: TalentProfile[]
   organizations?: OrganizationMapPin[]
+  jobs?: JobMapPin[]
   selectedId: string | null
   onSelect: (id: string) => void
   isLoading?: boolean
@@ -18,6 +20,7 @@ export function ResultsRail({
   isVisible,
   profiles,
   organizations,
+  jobs,
   selectedId,
   onSelect,
   isLoading,
@@ -50,6 +53,7 @@ export function ResultsRail({
         ref={resultListRef}
         profiles={profiles}
         organizations={organizations}
+        jobs={jobs}
         selectedId={selectedId}
         onSelect={onSelect}
         isLoading={isLoading}

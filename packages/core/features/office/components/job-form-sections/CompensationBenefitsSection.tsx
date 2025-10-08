@@ -76,14 +76,14 @@ export function CompensationBenefitsSection({
       gap="$4"
       p="$4"
       bg="$background"
-      borderRadius="$4"
+      rounded="$4"
       borderWidth={1}
       borderColor="$borderColor"
     >
       <Text fontSize="$6" fontWeight="600">
         Compensation & Benefits
       </Text>
-      <Text fontSize="$2" color="$gray10">
+      <Text fontSize="$2" color="$color10">
         Detailed compensation information and benefits package
       </Text>
 
@@ -99,10 +99,10 @@ export function CompensationBenefitsSection({
       </YStack>
 
       {/* Bonus Structure */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+      <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
           <Label htmlFor="bonusStructure">Has bonus structure</Label>
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Performance or other bonus opportunities
           </Text>
         </YStack>
@@ -128,10 +128,10 @@ export function CompensationBenefitsSection({
       )}
 
       {/* Equity */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+      <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
           <Label htmlFor="equity">Has equity compensation</Label>
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Stock options, RSUs, or other equity
           </Text>
         </YStack>
@@ -173,10 +173,10 @@ export function CompensationBenefitsSection({
       </YStack>
 
       {/* Relocation Package */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+      <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
           <Label htmlFor="relocation">Has relocation package</Label>
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Relocation assistance available
           </Text>
         </YStack>
@@ -202,10 +202,10 @@ export function CompensationBenefitsSection({
       )}
 
       {/* Overtime Eligible */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+      <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
           <Label htmlFor="overtime">Overtime eligible</Label>
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Position eligible for overtime pay
           </Text>
         </YStack>

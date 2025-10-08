@@ -4,16 +4,20 @@ import { Platform } from 'react-native'
 
 import type { TalentProfile } from '../types'
 import type { OrganizationMapPin } from '../hooks/useOrganizations'
+import type { JobMapPin } from '../hooks/useJobs'
 import { ResultCard } from './ResultCard'
 import { OrganizationCard } from './OrganizationCard'
+import { JobCard } from './JobCard'
 
 type ResultItem =
   | ({ type: 'profile' } & TalentProfile)
   | ({ type: 'organization' } & OrganizationMapPin)
+  | ({ type: 'job' } & JobMapPin)
 
 type ResultListProps = {
   profiles: TalentProfile[]
   organizations?: OrganizationMapPin[]
+  jobs?: JobMapPin[]
   selectedId: string | null
   onSelect: (id: string) => void
   isLoading?: boolean
@@ -24,13 +28,14 @@ export interface ResultListRef {
 }
 
 export const ResultList = forwardRef<ResultListRef, ResultListProps>(
-  ({ profiles, organizations = [], selectedId, onSelect, isLoading }, ref) => {
+  ({ profiles, organizations = [], jobs = [], selectedId, onSelect, isLoading }, ref) => {
     const scrollViewRef = useRef<ScrollView>(null)
 
-    // Combine profiles and organizations into a single list
+    // Combine profiles, organizations, and jobs into a single list
     const allResults: ResultItem[] = [
       ...profiles.map((profile) => ({ type: 'profile' as const, ...profile })),
       ...organizations.map((org) => ({ type: 'organization' as const, ...org })),
+      ...jobs.map((job) => ({ type: 'job' as const, ...job })),
     ]
     const cardRefs = useRef<
       Map<
@@ -187,12 +192,18 @@ export const ResultList = forwardRef<ResultListRef, ResultListProps>(
                     isSelected={result.id === selectedId}
                     onSelect={onSelect}
                   />
-                ) : (
+                ) : result.type === 'organization' ? (
                   <OrganizationCard
                     ref={(ref) => registerCardRef(result.id, ref)}
                     organization={result}
                     isSelected={result.id === selectedId}
                     onSelect={onSelect}
+                  />
+                ) : (
+                  <JobCard
+                    job={result}
+                    isSelected={result.id === selectedId}
+                    onPress={() => onSelect(result.id)}
                   />
                 )}
                 {index < allResults.length - 1 ? <Separator /> : null}

@@ -36,7 +36,7 @@ export const ProfileAvatar = ({
   const bgColors = [
     '$blue10',
     '$green10',
-    '$purple10',
+    '$blue10',
     '$red10',
     '$pink10',
     '$red10',

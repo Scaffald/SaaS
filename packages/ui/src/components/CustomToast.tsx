@@ -31,7 +31,7 @@ export const CustomToast = () => {
               icon={X}
               size="$1"
               circular
-              style={{ alignItems: 'center', justifyContent: 'center' }}
+              style={{ items: 'center', justifyContent: 'center' }}
             ></Button>
           </Toast.Close> */}
         </XStack>

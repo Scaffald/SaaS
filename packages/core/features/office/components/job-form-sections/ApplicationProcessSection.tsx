@@ -47,22 +47,22 @@ export function ApplicationProcessSection({
       gap="$4"
       p="$4"
       bg="$background"
-      borderRadius="$4"
+      rounded="$4"
       borderWidth={1}
       borderColor="$borderColor"
     >
       <Text fontSize="$6" fontWeight="600">
         Application Process
       </Text>
-      <Text fontSize="$2" color="$gray10">
+      <Text fontSize="$2" color="$color10">
         Configure the application process and requirements
       </Text>
 
       {/* Requires Assessment */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+      <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
           <Label htmlFor="assessment">Requires assessment</Label>
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Skills or aptitude test required
           </Text>
         </YStack>
@@ -87,10 +87,10 @@ export function ApplicationProcessSection({
       )}
 
       {/* Requires Video Interview */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+      <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
           <Label htmlFor="videoInterview">Requires video interview</Label>
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Pre-recorded video interview required
           </Text>
         </YStack>
@@ -115,7 +115,7 @@ export function ApplicationProcessSection({
             handleChange('estimated_application_time_minutes', Number.isNaN(num) ? undefined : num)
           }}
         />
-        <Text fontSize="$2" color="$gray10">
+        <Text fontSize="$2" color="$color10">
           How long it takes to complete the application
         </Text>
       </YStack>
@@ -132,7 +132,7 @@ export function ApplicationProcessSection({
             handleChange('application_expiry_days', Number.isNaN(num) ? undefined : num)
           }}
         />
-        <Text fontSize="$2" color="$gray10">
+        <Text fontSize="$2" color="$color10">
           Days after which started applications expire
         </Text>
       </YStack>
