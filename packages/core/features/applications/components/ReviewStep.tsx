@@ -1,5 +1,5 @@
 import { Button, Separator, Text, XStack, YStack } from 'tamagui'
-import { Check, Edit2 } from '@tamagui/lucide-icons'
+import { Check, Edit3 } from '@tamagui/lucide-icons'
 import type { ScreeningAnswers, CustomQuestionAnswer, AttachmentMetadata } from '@app/schemas'
 
 export interface ReviewStepProps {
@@ -53,7 +53,7 @@ export function ReviewStep({
   isSubmitting = false,
 }: ReviewStepProps) {
   return (
-    <YStack gap="$6" width="100%" maxWidth={800} padding="$4">
+    <YStack gap="$6" width="100%" maxW={800} p="$4">
       {/* Header */}
       <YStack gap="$2">
         <Text fontSize="$8" fontWeight="bold" color="$color12">
@@ -67,20 +67,20 @@ export function ReviewStep({
       {/* Screening Information Section */}
       <YStack
         gap="$4"
-        backgroundColor="$background"
-        padding="$4"
-        borderRadius="$4"
+        bg="$background"
+        p="$4"
+        rounded="$4"
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <XStack justifyContent="space-between" alignItems="center">
+        <XStack justify="space-between" items="center">
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Basic Information
           </Text>
           <Button
             size="$3"
             variant="outlined"
-            icon={Edit2}
+            icon={Edit3}
             onPress={() => onEdit('screening')}
             disabled={isSubmitting}
           >
@@ -122,20 +122,20 @@ export function ReviewStep({
       {customQuestionAnswers.length > 0 && (
         <YStack
           gap="$4"
-          backgroundColor="$background"
-          padding="$4"
-          borderRadius="$4"
+          bg="$background"
+          p="$4"
+          rounded="$4"
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <XStack justifyContent="space-between" alignItems="center">
+          <XStack justify="space-between" items="center">
             <Text fontSize="$6" fontWeight="bold" color="$color12">
               Additional Questions
             </Text>
             <Button
               size="$3"
               variant="outlined"
-              icon={Edit2}
+              icon={Edit3}
               onPress={() => onEdit('questions')}
               disabled={isSubmitting}
             >
@@ -160,20 +160,20 @@ export function ReviewStep({
       {/* Attachments Section */}
       <YStack
         gap="$4"
-        backgroundColor="$background"
-        padding="$4"
-        borderRadius="$4"
+        bg="$background"
+        p="$4"
+        rounded="$4"
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <XStack justifyContent="space-between" alignItems="center">
+        <XStack justify="space-between" items="center">
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Uploaded Documents
           </Text>
           <Button
             size="$3"
             variant="outlined"
-            icon={Edit2}
+            icon={Edit3}
             onPress={() => onEdit('attachments')}
             disabled={isSubmitting}
           >
@@ -186,7 +186,7 @@ export function ReviewStep({
         <YStack gap="$3">
           {Object.keys(attachments).length > 0 ? (
             Object.entries(attachments).map(([type, metadata]) => (
-              <XStack key={type} gap="$2" alignItems="center">
+              <XStack key={type} gap="$2" items="center">
                 <Check size={20} color="$green10" />
                 <YStack gap="$1" flex={1}>
                   <Text fontSize="$3" fontWeight="600" color="$color12">
@@ -207,14 +207,7 @@ export function ReviewStep({
       </YStack>
 
       {/* Terms and Conditions */}
-      <YStack
-        gap="$2"
-        padding="$4"
-        backgroundColor="$blue2"
-        borderRadius="$4"
-        borderWidth={1}
-        borderColor="$blue7"
-      >
+      <YStack gap="$2" p="$4" bg="$blue2" rounded="$4" borderWidth={1} borderColor="$blue7">
         <Text fontSize="$3" color="$color12">
           By submitting this application, you confirm that all information provided is accurate and
           complete. You understand that any false information may result in rejection of your

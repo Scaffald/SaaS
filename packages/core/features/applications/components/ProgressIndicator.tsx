@@ -37,36 +37,36 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
   }
 
   return (
-    <XStack gap="$2" alignItems="center" flexWrap="wrap" padding="$4">
+    <XStack gap="$2" items="center" flexWrap="wrap" p="$4">
       {steps.map((step, index) => {
         const status = getStepStatus(step.id)
         const isLast = index === steps.length - 1
 
         return (
-          <XStack key={step.id} gap="$2" alignItems="center">
+          <XStack key={step.id} gap="$2" items="center">
             {/* Step Circle */}
-            <YStack gap="$1" alignItems="center">
+            <YStack gap="$1" items="center">
               <Circle
                 size={40}
-                backgroundColor={
-                  status === 'completed' ? '$green9' : status === 'current' ? '$blue9' : '$gray5'
+                bg={
+                  status === 'completed' ? '$green9' : status === 'current' ? '$blue9' : '$color5'
                 }
                 borderWidth={2}
                 borderColor={
-                  status === 'completed' ? '$green10' : status === 'current' ? '$blue10' : '$gray7'
+                  status === 'completed' ? '$green10' : status === 'current' ? '$blue10' : '$color7'
                 }
-                justifyContent="center"
-                alignItems="center"
+                justify="center"
+                items="center"
               >
                 {status === 'completed' ? (
-                  <Text fontSize="$6" fontWeight="bold" color="$white">
+                  <Text fontSize="$6" fontWeight="bold" color="$color12">
                     ✓
                   </Text>
                 ) : (
                   <Text
                     fontSize="$4"
                     fontWeight="bold"
-                    color={status === 'current' ? '$white' : '$gray10'}
+                    color={status === 'current' ? '$color12' : '$color10'}
                   >
                     {index + 1}
                   </Text>
@@ -78,8 +78,8 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                 fontSize="$2"
                 fontWeight={status === 'current' ? 'bold' : 'normal'}
                 color={status === 'completed' || status === 'current' ? '$color12' : '$color10'}
-                textAlign="center"
-                maxWidth={80}
+                text="center"
+                maxW={80}
               >
                 {step.label}
               </Text>
@@ -90,8 +90,8 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
               <YStack
                 width={40}
                 height={2}
-                backgroundColor={status === 'completed' ? '$green9' : '$gray5'}
-                marginBottom={24}
+                bg={status === 'completed' ? '$green9' : '$color5'}
+                mb={24}
               />
             )}
           </XStack>
