@@ -81,7 +81,7 @@ export function ScreeningStep({
   }
 
   return (
-    <YStack gap="$6" width="100%" maxWidth={600} padding="$4">
+    <YStack gap="$6" width="100%" maxW={600} p="$4">
       {/* Header */}
       <YStack gap="$2">
         <Text fontSize="$8" fontWeight="bold" color="$color12">
@@ -122,7 +122,7 @@ export function ScreeningStep({
         <Label fontSize="$4" fontWeight="600">
           Are you willing to relocate for this position?
         </Label>
-        <XStack gap="$4" alignItems="center">
+        <XStack gap="$4" items="center">
           <Switch
             checked={answers.willing_to_relocate || false}
             onCheckedChange={(checked) => {
@@ -178,7 +178,7 @@ export function ScreeningStep({
         <Label fontSize="$4" fontWeight="600">
           Are you legally authorized to work in the United States?
         </Label>
-        <XStack gap="$4" alignItems="center">
+        <XStack gap="$4" items="center">
           <Switch
             checked={answers.is_authorized_to_work || false}
             onCheckedChange={(checked) => {
@@ -215,12 +215,12 @@ export function ScreeningStep({
               <XStack
                 key={option}
                 gap="$3"
-                alignItems="center"
-                padding="$3"
-                borderRadius="$4"
+                items="center"
+                p="$3"
+                rounded="$4"
                 borderWidth={1}
                 borderColor={answers.earliest_start_date === option ? '$blue9' : '$borderColor'}
-                backgroundColor={answers.earliest_start_date === option ? '$blue2' : '$background'}
+                bg={answers.earliest_start_date === option ? '$blue2' : '$background'}
                 pressStyle={{ scale: 0.98 }}
                 onPress={() => {
                   onAnswersChange({ ...answers, earliest_start_date: option })
@@ -234,15 +234,15 @@ export function ScreeningStep({
                 <YStack
                   width={20}
                   height={20}
-                  borderRadius="$12"
+                  rounded="$12"
                   borderWidth={2}
                   borderColor={answers.earliest_start_date === option ? '$blue9' : '$borderColor'}
-                  justifyContent="center"
-                  alignItems="center"
-                  backgroundColor="$background"
+                  justify="center"
+                  items="center"
+                  bg="$background"
                 >
                   {answers.earliest_start_date === option && (
-                    <YStack width={12} height={12} borderRadius="$12" backgroundColor="$blue9" />
+                    <YStack width={12} height={12} rounded="$12" bg="$blue9" />
                   )}
                 </YStack>
                 <Text fontSize="$3" color="$color12">
