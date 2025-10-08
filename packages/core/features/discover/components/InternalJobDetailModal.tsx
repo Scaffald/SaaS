@@ -9,6 +9,9 @@ import {
   Separator,
   TextArea,
   Spinner,
+  Input,
+  Switch,
+  Label,
 } from 'tamagui'
 import {
   Building2,
@@ -18,6 +21,12 @@ import {
   Clock,
   X,
   CheckCircle2,
+  Calendar,
+  Award,
+  Shield,
+  Plane,
+  Home,
+  Heart,
 } from '@tamagui/lucide-icons'
 import { Chip } from '@app/ui'
 import type { InternalJob } from './InternalJobCard'
@@ -29,6 +38,15 @@ interface InternalJobDetailModalProps {
   onOpenChange: (open: boolean) => void
   hasApplied?: boolean
   onApplySuccess?: () => void
+}
+
+interface ApplicationFormData {
+  cover_letter: string
+  current_location?: string
+  willing_to_relocate?: boolean
+  years_of_experience?: number
+  work_authorization?: boolean
+  earliest_start_date?: string
 }
 
 /**
@@ -96,8 +114,26 @@ function formatRemoteOption(option?: string): string {
 }
 
 /**
- * Internal Job Detail Modal Component
- * Displays full job details with apply functionality
+ * Format education level for display
+ */
+function formatEducationLevel(level?: string): string {
+  if (!level) return ''
+
+  const levelMap: Record<string, string> = {
+    none: 'No formal education required',
+    high_school: 'High School Diploma',
+    associate: "Associate's Degree",
+    bachelor: "Bachelor's Degree",
+    master: "Master's Degree",
+    phd: 'Ph.D.',
+  }
+
+  return levelMap[level] || level
+}
+
+/**
+ * Enhanced Internal Job Detail Modal Component
+ * Displays comprehensive job details with robust application process
  */
 export function InternalJobDetailModal({
   job,
@@ -106,14 +142,28 @@ export function InternalJobDetailModal({
   hasApplied = false,
   onApplySuccess,
 }: InternalJobDetailModalProps) {
-  const [coverLetter, setCoverLetter] = useState('')
+  const [formData, setFormData] = useState<ApplicationFormData>({
+    cover_letter: '',
+    current_location: '',
+    willing_to_relocate: false,
+    years_of_experience: undefined,
+    work_authorization: false,
+    earliest_start_date: '',
+  })
   const [showApplicationForm, setShowApplicationForm] = useState(false)
   const [applicationSuccess, setApplicationSuccess] = useState(false)
 
   const applyMutation = api.jobs.createApplication.useMutation({
     onSuccess: () => {
       setApplicationSuccess(true)
-      setCoverLetter('')
+      setFormData({
+        cover_letter: '',
+        current_location: '',
+        willing_to_relocate: false,
+        years_of_experience: undefined,
+        work_authorization: false,
+        earliest_start_date: '',
+      })
       setTimeout(() => {
         setShowApplicationForm(false)
         setApplicationSuccess(false)
@@ -132,20 +182,49 @@ export function InternalJobDetailModal({
   const employmentType = formatEmploymentType(job.employment_type)
   const remoteOption = formatRemoteOption(job.remote_option)
 
+  // Check if screening questions are required
+  const hasScreeningQuestions =
+    job.require_current_location ||
+    job.require_relocation_willingness ||
+    job.minimum_years_experience ||
+    job.require_work_authorization ||
+    job.require_earliest_start_date
+
   const handleApply = () => {
     if (hasApplied) return
 
+    // For now, just submit with cover letter
+    // In the future, we'll include screening responses
     applyMutation.mutate({
       job_id: job.id,
-      cover_letter: coverLetter || undefined,
+      cover_letter: formData.cover_letter || undefined,
     })
   }
 
   const handleClose = () => {
     setShowApplicationForm(false)
     setApplicationSuccess(false)
-    setCoverLetter('')
+    setFormData({
+      cover_letter: '',
+      current_location: '',
+      willing_to_relocate: false,
+      years_of_experience: undefined,
+      work_authorization: false,
+      earliest_start_date: '',
+    })
     onOpenChange(false)
+  }
+
+  // Check if form is valid based on required fields
+  const isFormValid = () => {
+    if (job.require_current_location && !formData.current_location) return false
+    if (job.require_work_authorization && !formData.work_authorization) return false
+    if (
+      job.minimum_years_experience &&
+      (!formData.years_of_experience || formData.years_of_experience < job.minimum_years_experience)
+    )
+      return false
+    return true
   }
 
   return (
@@ -175,6 +254,7 @@ export function InternalJobDetailModal({
           exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
           gap="$4"
           width="90%"
+          maxHeight="90%"
         >
           <Dialog.Title fontSize="$7" fontWeight="700">
             {job.title}
@@ -231,6 +311,21 @@ export function InternalJobDetailModal({
                 </XStack>
               )}
 
+              {/* Benefits Summary */}
+              {job.benefits_summary && (
+                <YStack gap="$2" bg="$green2" p="$3" br="$4">
+                  <XStack gap="$2" items="center">
+                    <Heart size={16} color="$green10" />
+                    <Text fontSize="$4" fontWeight="600" color="$green11">
+                      Benefits
+                    </Text>
+                  </XStack>
+                  <Text fontSize="$3" color="$green11">
+                    {job.benefits_summary}
+                  </Text>
+                </YStack>
+              )}
+
               <Separator />
 
               {/* Description */}
@@ -242,6 +337,146 @@ export function InternalJobDetailModal({
                   {job.description}
                 </Text>
               </YStack>
+
+              {/* Requirements Section */}
+              {(job.minimum_education_level ||
+                job.minimum_years_experience ||
+                job.require_background_check ||
+                job.require_drug_test ||
+                job.require_drivers_license ||
+                job.security_clearance_required ||
+                job.travel_percentage) && (
+                <>
+                  <Separator />
+                  <YStack gap="$3">
+                    <Text fontSize="$5" fontWeight="600" color="$color12">
+                      Requirements
+                    </Text>
+                    <YStack gap="$2">
+                      {job.minimum_education_level && (
+                        <XStack gap="$2" items="center">
+                          <Award size={16} color="$orange10" />
+                          <Text fontSize="$3" color="$color11">
+                            {formatEducationLevel(job.minimum_education_level)}
+                          </Text>
+                        </XStack>
+                      )}
+                      {job.minimum_years_experience && (
+                        <XStack gap="$2" items="center">
+                          <Clock size={16} color="$blue10" />
+                          <Text fontSize="$3" color="$color11">
+                            {job.minimum_years_experience}+ years of experience
+                          </Text>
+                        </XStack>
+                      )}
+                      {job.require_background_check && (
+                        <XStack gap="$2" items="center">
+                          <Shield size={16} color="$purple10" />
+                          <Text fontSize="$3" color="$color11">
+                            Background check required
+                            {job.background_check_type && ` (${job.background_check_type})`}
+                          </Text>
+                        </XStack>
+                      )}
+                      {job.require_drug_test && (
+                        <XStack gap="$2" items="center">
+                          <Shield size={16} color="$purple10" />
+                          <Text fontSize="$3" color="$color11">
+                            Drug test required
+                          </Text>
+                        </XStack>
+                      )}
+                      {job.require_drivers_license && (
+                        <XStack gap="$2" items="center">
+                          <Briefcase size={16} color="$blue10" />
+                          <Text fontSize="$3" color="$color11">
+                            Driver's license required
+                            {job.drivers_license_type && ` (${job.drivers_license_type})`}
+                          </Text>
+                        </XStack>
+                      )}
+                      {job.security_clearance_required && (
+                        <XStack gap="$2" items="center">
+                          <Shield size={16} color="$red10" />
+                          <Text fontSize="$3" color="$color11">
+                            Security clearance: {job.security_clearance_required}
+                          </Text>
+                        </XStack>
+                      )}
+                      {job.travel_percentage && job.travel_percentage > 0 && (
+                        <XStack gap="$2" items="center">
+                          <Plane size={16} color="$blue10" />
+                          <Text fontSize="$3" color="$color11">
+                            Travel: {job.travel_percentage}%
+                          </Text>
+                        </XStack>
+                      )}
+                    </YStack>
+                  </YStack>
+                </>
+              )}
+
+              {/* Work Schedule & Location */}
+              {(job.work_schedule_details || job.relocation_assistance_offered || job.timezone) && (
+                <>
+                  <Separator />
+                  <YStack gap="$3">
+                    <Text fontSize="$5" fontWeight="600" color="$color12">
+                      Work Details
+                    </Text>
+                    <YStack gap="$2">
+                      {job.work_schedule_details && (
+                        <XStack gap="$2" items="center">
+                          <Clock size={16} color="$blue10" />
+                          <Text fontSize="$3" color="$color11">
+                            {job.work_schedule_details}
+                          </Text>
+                        </XStack>
+                      )}
+                      {job.timezone && (
+                        <XStack gap="$2" items="center">
+                          <MapPin size={16} color="$blue10" />
+                          <Text fontSize="$3" color="$color11">
+                            Timezone: {job.timezone}
+                          </Text>
+                        </XStack>
+                      )}
+                      {job.relocation_assistance_offered && (
+                        <XStack gap="$2" items="center">
+                          <Home size={16} color="$green10" />
+                          <Text fontSize="$3" color="$color11">
+                            Relocation assistance available
+                            {job.relocation_assistance_details &&
+                              `: ${job.relocation_assistance_details}`}
+                          </Text>
+                        </XStack>
+                      )}
+                    </YStack>
+                  </YStack>
+                </>
+              )}
+
+              {/* Deadlines */}
+              {job.application_deadline && (
+                <>
+                  <Separator />
+                  <YStack gap="$2" bg="$yellow2" p="$3" br="$4">
+                    <XStack gap="$2" items="center">
+                      <Calendar size={16} color="$yellow10" />
+                      <Text fontSize="$4" fontWeight="600" color="$yellow11">
+                        Application Deadline
+                      </Text>
+                    </XStack>
+                    <Text fontSize="$3" color="$yellow11">
+                      {new Date(job.application_deadline).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </Text>
+                  </YStack>
+                </>
+              )}
 
               {/* Required Certifications */}
               {job.certifications && job.certifications.length > 0 && (
@@ -310,27 +545,121 @@ export function InternalJobDetailModal({
                 </>
               )}
 
-              {/* Application Form */}
+              {/* Enhanced Application Form */}
               {!hasApplied && showApplicationForm && !applicationSuccess && (
                 <>
                   <Separator />
-                  <YStack gap="$3">
-                    <Text fontSize="$5" fontWeight="600" color="$color12">
+                  <YStack gap="$4">
+                    <Text fontSize="$6" fontWeight="600" color="$color12">
                       Submit Application
                     </Text>
+
+                    {/* Screening Questions */}
+                    {hasScreeningQuestions && (
+                      <YStack gap="$3" bg="$blue2" p="$3" br="$4">
+                        <Text fontSize="$4" fontWeight="600" color="$blue11">
+                          Screening Questions
+                        </Text>
+
+                        {job.require_current_location && (
+                          <YStack gap="$2">
+                            <Label fontSize="$3" color="$blue11">
+                              Current Location *
+                            </Label>
+                            <Input
+                              placeholder="City, State"
+                              value={formData.current_location}
+                              onChangeText={(text) =>
+                                setFormData({ ...formData, current_location: text })
+                              }
+                            />
+                          </YStack>
+                        )}
+
+                        {job.require_relocation_willingness && (
+                          <XStack gap="$3" items="center">
+                            <Switch
+                              checked={formData.willing_to_relocate}
+                              onCheckedChange={(checked) =>
+                                setFormData({ ...formData, willing_to_relocate: checked })
+                              }
+                            >
+                              <Switch.Thumb animation="quick" />
+                            </Switch>
+                            <Label fontSize="$3" color="$blue11">
+                              Willing to relocate
+                            </Label>
+                          </XStack>
+                        )}
+
+                        {job.minimum_years_experience && (
+                          <YStack gap="$2">
+                            <Label fontSize="$3" color="$blue11">
+                              Years of Experience *
+                              <Text color="$blue9"> (minimum: {job.minimum_years_experience})</Text>
+                            </Label>
+                            <Input
+                              placeholder="e.g., 5"
+                              keyboardType="numeric"
+                              value={formData.years_of_experience?.toString() || ''}
+                              onChangeText={(text) => {
+                                const num = Number.parseInt(text, 10)
+                                setFormData({
+                                  ...formData,
+                                  years_of_experience: Number.isNaN(num) ? undefined : num,
+                                })
+                              }}
+                            />
+                          </YStack>
+                        )}
+
+                        {job.require_work_authorization && (
+                          <XStack gap="$3" items="center">
+                            <Switch
+                              checked={formData.work_authorization}
+                              onCheckedChange={(checked) =>
+                                setFormData({ ...formData, work_authorization: checked })
+                              }
+                            >
+                              <Switch.Thumb animation="quick" />
+                            </Switch>
+                            <Label fontSize="$3" color="$blue11">
+                              Authorized to work in the US *
+                            </Label>
+                          </XStack>
+                        )}
+
+                        {job.require_earliest_start_date && (
+                          <YStack gap="$2">
+                            <Label fontSize="$3" color="$blue11">
+                              Earliest Start Date
+                            </Label>
+                            <Input
+                              placeholder="MM/DD/YYYY"
+                              value={formData.earliest_start_date}
+                              onChangeText={(text) =>
+                                setFormData({ ...formData, earliest_start_date: text })
+                              }
+                            />
+                          </YStack>
+                        )}
+                      </YStack>
+                    )}
+
+                    {/* Cover Letter */}
                     <YStack gap="$2">
-                      <Text fontSize="$3" color="$color11">
+                      <Label fontSize="$3" color="$color11">
                         Cover Letter (Optional)
-                      </Text>
+                      </Label>
                       <TextArea
                         placeholder="Tell us why you're a great fit for this position..."
-                        value={coverLetter}
-                        onChangeText={setCoverLetter}
+                        value={formData.cover_letter}
+                        onChangeText={(text) => setFormData({ ...formData, cover_letter: text })}
                         height={120}
                         maxLength={2000}
                       />
                       <Text fontSize="$2" color="$color9">
-                        {coverLetter.length}/2000 characters
+                        {formData.cover_letter.length}/2000 characters
                       </Text>
                     </YStack>
 
@@ -340,7 +669,7 @@ export function InternalJobDetailModal({
                         size="$4"
                         theme="blue"
                         onPress={handleApply}
-                        disabled={applyMutation.isPending}
+                        disabled={applyMutation.isPending || !isFormValid()}
                         icon={applyMutation.isPending ? <Spinner /> : undefined}
                       >
                         {applyMutation.isPending ? 'Submitting...' : 'Submit Application'}
@@ -368,10 +697,10 @@ export function InternalJobDetailModal({
               {applicationSuccess && (
                 <YStack gap="$3" items="center" py="$4">
                   <CheckCircle2 size={48} color="$green10" />
-                  <Text fontSize="$5" fontWeight="600" color="$green10">
+                  <Text fontSize="$5" fontWeight="600" color="$green10" ta="center">
                     Application Submitted!
                   </Text>
-                  <Text fontSize="$3" color="$color11">
+                  <Text fontSize="$3" color="$color11" ta="center">
                     Your application has been submitted successfully. The employer will review your
                     application and contact you if you're a good fit.
                   </Text>
@@ -386,7 +715,7 @@ export function InternalJobDetailModal({
                     <Chip bg="$green9" color="$green1" fontSize="$4" px="$4" py="$3">
                       ✓ Applied
                     </Chip>
-                    <Text fontSize="$3" color="$color11">
+                    <Text fontSize="$3" color="$color11" ta="center">
                       You have already applied to this position
                     </Text>
                   </YStack>
