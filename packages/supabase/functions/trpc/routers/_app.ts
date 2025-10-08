@@ -1,4 +1,5 @@
 import { t } from "../middleware.ts";
+import { applicationsRouter } from "./applications.router.ts";
 import { authRouter } from "./auth.router.ts";
 import { employersRouter } from "./employers.router.ts";
 import { jobsRouter } from "./jobs.router.ts";
@@ -17,6 +18,7 @@ export const appRouter = t.router({
   auth: authRouter,
   office: officeRouter,
   jobs: jobsRouter,
+  applications: applicationsRouter,
   employers: employersRouter,
   workers: workersRouter,
   userProfile: userProfileRouter,
