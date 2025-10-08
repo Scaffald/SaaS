@@ -475,6 +475,9 @@ importers:
 
   packages/core:
     dependencies:
+      '@app/schemas':
+        specifier: workspace:*
+        version: link:../schemas
       '@app/supabase':
         specifier: workspace:*
         version: link:../supabase

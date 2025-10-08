@@ -12,6 +12,7 @@
     "lint:fix": "biome lint --write ."
   },
   "dependencies": {
+    "@app/schemas": "workspace:*",
     "@app/supabase": "workspace:*",
     "@app/ui": "workspace:*",
     "@react-navigation/drawer": "^7.5.8",

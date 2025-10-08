@@ -148,8 +148,8 @@ export function ReviewStep({
           <YStack gap="$3">
             {customQuestionAnswers.map((answer) => (
               <InfoRow
-                key={answer.question_text}
-                label={answer.question_text}
+                key={answer.question}
+                label={answer.question}
                 value={formatAnswer(answer.answer)}
               />
             ))}
@@ -248,9 +248,12 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 /**
  * Format answer based on type
  */
-function formatAnswer(answer: string | string[]): string {
+function formatAnswer(answer: string | string[] | boolean): string {
   if (Array.isArray(answer)) {
     return answer.join(', ')
+  }
+  if (typeof answer === 'boolean') {
+    return answer ? 'Yes' : 'No'
   }
   return answer
 }

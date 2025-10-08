@@ -7,8 +7,11 @@ import {
   applicationSubmitSchema,
   applicationUpdateSchema,
   fileUploadSchema,
-} from '@app/schemas'
-import { publicProcedure, router } from '../trpc'
+} from '../../_shared/application-schemas.ts'
+import { t } from '../middleware.ts'
+
+const publicProcedure = t.procedure
+const router = t.router
 
 /**
  * Applications router - handles job application operations
