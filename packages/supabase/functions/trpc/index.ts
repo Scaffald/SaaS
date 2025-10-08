@@ -10,20 +10,21 @@ export type { AppRouter };
  * Handles all tRPC requests with proper CORS support
  */
 Deno.serve(async (req: Request) => {
+  // CORS headers to be applied to all responses
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+    "Access-Control-Allow-Headers":
+      "authorization, x-client-info, apikey, content-type, x-trpc-source",
+  };
+
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response("ok", {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-        "Access-Control-Allow-Headers":
-          "authorization, x-client-info, apikey, content-type, x-trpc-source",
-      },
-    });
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    return await fetchRequestHandler({
+    const response = await fetchRequestHandler({
       endpoint: "/trpc",
       req,
       router: appRouter,
@@ -32,11 +33,26 @@ Deno.serve(async (req: Request) => {
         enabled: true,
       },
     });
+
+    // Add CORS headers to the response
+    const headers = new Headers(response.headers);
+    for (const [key, value] of Object.entries(corsHeaders)) {
+      headers.set(key, value);
+    }
+
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers,
+    });
   } catch (error) {
     console.error("tRPC handler error:", error);
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        ...corsHeaders
+      },
     });
   }
 });
