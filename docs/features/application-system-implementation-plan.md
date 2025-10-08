@@ -356,21 +356,23 @@ Content:
 - [ ] Generate updated TypeScript types
 
 ### Backend Services
-- [ ] Create application schemas in `packages/schemas/src/applications/`
-- [ ] Create application.schema.ts with all validation schemas
-- [ ] Create applications.router.ts in tRPC
-- [ ] Implement submitApplication endpoint
-- [ ] Implement updateApplicationStep endpoint
-- [ ] Implement uploadAttachment endpoint
-- [ ] Implement calculateScore endpoint
-- [ ] Implement applyAutoScreening endpoint
-- [ ] Implement getApplicationStatus endpoint
-- [ ] Implement getUserApplications endpoint
-- [ ] Implement getJobApplications endpoint (admin)
-- [ ] Create application-validation.ts service
-- [ ] Create application-scoring.ts service
-- [ ] Create pipeline-integration.ts service
-- [ ] Add comprehensive error handling
+- [x] Create application schemas in `packages/schemas/src/applications/`
+- [x] Create application.schema.ts with all validation schemas
+- [x] Create applications.router.ts in tRPC
+- [x] Implement submitApplication endpoint
+- [x] Implement updateApplicationStep endpoint
+- [x] Implement uploadAttachment endpoint (getUploadUrl + confirmUpload)
+- [x] Implement calculateScore endpoint
+- [x] Implement getUserApplications endpoint
+- [x] Implement getById endpoint
+- [x] Implement withdraw endpoint
+- [x] Implement update endpoint
+- [x] Export applications router from main tRPC router
+- [x] Add comprehensive error handling
+- [ ] Implement getJobApplications endpoint (admin) - Phase 4
+- [ ] Create application-validation.ts service (optional - logic in router)
+- [ ] Create application-scoring.ts service (handled by database function)
+- [ ] Create pipeline-integration.ts service (Phase 4)
 - [ ] Add logging for debugging
 
 ### Frontend - Application Flow
