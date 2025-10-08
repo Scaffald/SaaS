@@ -174,7 +174,7 @@ export const jobsRouter = t.router({
           pay_range_type,
           posted_at,
           created_at,
-          organization:organizations(
+          organization:organizations!organization_id(
             id,
             name,
             slug
@@ -280,7 +280,7 @@ export const jobsRouter = t.router({
         .select(
           `
           *,
-          organization:organizations(
+          organization:organizations!organization_id(
             id,
             name,
             slug
@@ -478,7 +478,7 @@ export const jobsRouter = t.router({
             pay_range_max_cents,
             pay_range_type,
             status,
-            organization:organizations(
+            organization:organizations!organization_id(
               id,
               name,
               slug

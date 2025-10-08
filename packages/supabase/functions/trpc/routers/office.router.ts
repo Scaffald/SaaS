@@ -176,8 +176,8 @@ export const officeRouter = t.router({
           posted_at,
           created_at,
           updated_at,
-          organization:organizations(id, name, slug),
-          created_by:users(id, username, display_name)
+          organization:organizations!organization_id(id, name, slug),
+          created_by:users!created_by_user_id(id, username, display_name)
         `,
           { count: "exact" },
         )
@@ -218,9 +218,9 @@ export const officeRouter = t.router({
         .select(
           `
           *,
-          organization:organizations(id, name, slug),
+          organization:organizations!organization_id(id, name, slug),
           team:teams(id, name),
-          created_by:users(id, username, display_name),
+          created_by:users!created_by_user_id(id, username, display_name),
           job_certifications(
             certification:certifications(id, name, slug, issuing_organization)
           ),

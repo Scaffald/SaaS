@@ -1,0 +1,264 @@
+import { useState } from 'react'
+import { YStack, XStack, Text, Input } from '@app/ui'
+import { Adapt, Sheet, Select, Label, Switch, TextArea } from 'tamagui'
+import { Check, ChevronDown } from '@tamagui/lucide-icons'
+
+interface CompensationBenefitsSectionProps {
+  benefitsSummary?: string
+  hasBonusStructure?: boolean
+  bonusDetails?: string
+  hasEquity?: boolean
+  equityDetails?: string
+  signOnBonusCents?: number
+  hasRelocationPackage?: boolean
+  relocationPackageDetails?: string
+  overtimeEligible?: boolean
+  payFrequency?: 'hourly' | 'weekly' | 'biweekly' | 'semimonthly' | 'monthly'
+  onUpdate: (data: {
+    benefits_summary?: string
+    has_bonus_structure?: boolean
+    bonus_details?: string
+    has_equity?: boolean
+    equity_details?: string
+    sign_on_bonus_cents?: number
+    has_relocation_package?: boolean
+    relocation_package_details?: string
+    overtime_eligible?: boolean
+    pay_frequency?: 'hourly' | 'weekly' | 'biweekly' | 'semimonthly' | 'monthly'
+  }) => void
+}
+
+const PAY_FREQUENCIES = [
+  { value: 'hourly', label: 'Hourly' },
+  { value: 'weekly', label: 'Weekly' },
+  { value: 'biweekly', label: 'Bi-weekly' },
+  { value: 'semimonthly', label: 'Semi-monthly' },
+  { value: 'monthly', label: 'Monthly' },
+]
+
+export function CompensationBenefitsSection({
+  benefitsSummary,
+  hasBonusStructure,
+  bonusDetails,
+  hasEquity,
+  equityDetails,
+  signOnBonusCents,
+  hasRelocationPackage,
+  relocationPackageDetails,
+  overtimeEligible,
+  payFrequency,
+  onUpdate,
+}: CompensationBenefitsSectionProps) {
+  const [localState, setLocalState] = useState({
+    benefits_summary: benefitsSummary,
+    has_bonus_structure: hasBonusStructure,
+    bonus_details: bonusDetails,
+    has_equity: hasEquity,
+    equity_details: equityDetails,
+    sign_on_bonus_cents: signOnBonusCents,
+    has_relocation_package: hasRelocationPackage,
+    relocation_package_details: relocationPackageDetails,
+    overtime_eligible: overtimeEligible,
+    pay_frequency: payFrequency,
+  })
+
+  const handleChange = (
+    key: keyof typeof localState,
+    value: string | number | boolean | undefined
+  ) => {
+    const newState = { ...localState, [key]: value }
+    setLocalState(newState)
+    onUpdate(newState)
+  }
+
+  return (
+    <YStack
+      gap="$4"
+      p="$4"
+      bg="$background"
+      borderRadius="$4"
+      borderWidth={1}
+      borderColor="$borderColor"
+    >
+      <Text fontSize="$6" fontWeight="600">
+        Compensation & Benefits
+      </Text>
+      <Text fontSize="$2" color="$gray10">
+        Detailed compensation information and benefits package
+      </Text>
+
+      {/* Benefits Summary */}
+      <YStack gap="$2">
+        <Label>Benefits summary</Label>
+        <TextArea
+          placeholder="Describe health insurance, PTO, retirement plans, etc."
+          value={localState.benefits_summary || ''}
+          onChangeText={(text) => handleChange('benefits_summary', text || undefined)}
+          height={100}
+        />
+      </YStack>
+
+      {/* Bonus Structure */}
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+        <YStack gap="$1" flex={1}>
+          <Label htmlFor="bonusStructure">Has bonus structure</Label>
+          <Text fontSize="$2" color="$gray10">
+            Performance or other bonus opportunities
+          </Text>
+        </YStack>
+        <Switch
+          id="bonusStructure"
+          checked={localState.has_bonus_structure || false}
+          onCheckedChange={(checked) => handleChange('has_bonus_structure', checked)}
+        >
+          <Switch.Thumb animation="quick" />
+        </Switch>
+      </XStack>
+
+      {localState.has_bonus_structure && (
+        <YStack gap="$2">
+          <Label>Bonus details</Label>
+          <TextArea
+            placeholder="Describe bonus structure, eligibility, and potential amounts"
+            value={localState.bonus_details || ''}
+            onChangeText={(text) => handleChange('bonus_details', text || undefined)}
+            height={80}
+          />
+        </YStack>
+      )}
+
+      {/* Equity */}
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+        <YStack gap="$1" flex={1}>
+          <Label htmlFor="equity">Has equity compensation</Label>
+          <Text fontSize="$2" color="$gray10">
+            Stock options, RSUs, or other equity
+          </Text>
+        </YStack>
+        <Switch
+          id="equity"
+          checked={localState.has_equity || false}
+          onCheckedChange={(checked) => handleChange('has_equity', checked)}
+        >
+          <Switch.Thumb animation="quick" />
+        </Switch>
+      </XStack>
+
+      {localState.has_equity && (
+        <YStack gap="$2">
+          <Label>Equity details</Label>
+          <TextArea
+            placeholder="Describe equity compensation structure"
+            value={localState.equity_details || ''}
+            onChangeText={(text) => handleChange('equity_details', text || undefined)}
+            height={80}
+          />
+        </YStack>
+      )}
+
+      {/* Sign-on Bonus */}
+      <YStack gap="$2">
+        <Label>Sign-on bonus ($)</Label>
+        <Input
+          placeholder="0.00"
+          keyboardType="numeric"
+          value={
+            localState.sign_on_bonus_cents ? (localState.sign_on_bonus_cents / 100).toString() : ''
+          }
+          onChangeText={(text) => {
+            const value = Number.parseFloat(text) || 0
+            handleChange('sign_on_bonus_cents', value > 0 ? Math.round(value * 100) : undefined)
+          }}
+        />
+      </YStack>
+
+      {/* Relocation Package */}
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+        <YStack gap="$1" flex={1}>
+          <Label htmlFor="relocation">Has relocation package</Label>
+          <Text fontSize="$2" color="$gray10">
+            Relocation assistance available
+          </Text>
+        </YStack>
+        <Switch
+          id="relocation"
+          checked={localState.has_relocation_package || false}
+          onCheckedChange={(checked) => handleChange('has_relocation_package', checked)}
+        >
+          <Switch.Thumb animation="quick" />
+        </Switch>
+      </XStack>
+
+      {localState.has_relocation_package && (
+        <YStack gap="$2">
+          <Label>Relocation package details</Label>
+          <TextArea
+            placeholder="Describe relocation assistance offered"
+            value={localState.relocation_package_details || ''}
+            onChangeText={(text) => handleChange('relocation_package_details', text || undefined)}
+            height={80}
+          />
+        </YStack>
+      )}
+
+      {/* Overtime Eligible */}
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+        <YStack gap="$1" flex={1}>
+          <Label htmlFor="overtime">Overtime eligible</Label>
+          <Text fontSize="$2" color="$gray10">
+            Position eligible for overtime pay
+          </Text>
+        </YStack>
+        <Switch
+          id="overtime"
+          checked={localState.overtime_eligible || false}
+          onCheckedChange={(checked) => handleChange('overtime_eligible', checked)}
+        >
+          <Switch.Thumb animation="quick" />
+        </Switch>
+      </XStack>
+
+      {/* Pay Frequency */}
+      <YStack gap="$2">
+        <Label>Pay frequency</Label>
+        <Select
+          value={localState.pay_frequency || ''}
+          onValueChange={(value) => handleChange('pay_frequency', value || undefined)}
+        >
+          <Select.Trigger iconAfter={ChevronDown}>
+            <Select.Value placeholder="Select pay frequency" />
+          </Select.Trigger>
+
+          <Adapt when="sm" platform="touch">
+            <Sheet modal dismissOnSnapToBottom>
+              <Sheet.Frame>
+                <Sheet.ScrollView>
+                  <Adapt.Contents />
+                </Sheet.ScrollView>
+              </Sheet.Frame>
+              <Sheet.Overlay />
+            </Sheet>
+          </Adapt>
+
+          <Select.Content zIndex={200000}>
+            <Select.ScrollUpButton />
+            <Select.Viewport>
+              <Select.Group>
+                <Select.Label>Pay Frequency</Select.Label>
+                {PAY_FREQUENCIES.map((freq, i) => (
+                  <Select.Item key={freq.value} index={i} value={freq.value}>
+                    <Select.ItemText>{freq.label}</Select.ItemText>
+                    <Select.ItemIndicator>
+                      <Check size={16} />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                ))}
+              </Select.Group>
+            </Select.Viewport>
+            <Select.ScrollDownButton />
+          </Select.Content>
+        </Select>
+      </YStack>
+    </YStack>
+  )
+}
