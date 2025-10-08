@@ -76,7 +76,7 @@ const Cell = styled(ThemeableStack, {
     alignCells: (val: AlignCells) => {
       return {
         items: val.y === 'center' ? 'center' : `flex-${val.y}`,
-        justifyContent: val.x === 'center' ? 'center' : `flex-${val.x}`,
+        justify: val.x === 'center' ? 'center' : `flex-${val.x}`,
       }
     },
     cellLocation: {
@@ -115,7 +115,7 @@ const HeaderCell = styled(ThemeableStack, {
     alignHeaderCells: (val: AlignHeaderCells) => {
       return {
         items: val.y === 'center' ? 'center' : `flex-${val.y}`,
-        justifyContent: val.x === 'center' ? 'center' : `flex-${val.x}`,
+        justify: val.x === 'center' ? 'center' : `flex-${val.x}`,
       }
     },
 

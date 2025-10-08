@@ -46,27 +46,27 @@ export function SuccessStep({
   onReturnToJobs,
 }: SuccessStepProps) {
   return (
-    <YStack gap="$6" width="100%" maxWidth={600} padding="$6" ai="center">
+    <YStack gap="$6" width="100%" maxW={600} p="$6" items="center">
       {/* Success Icon */}
       <YStack
         width={80}
         height={80}
-        borderRadius="$12"
-        backgroundColor="$green2"
+        rounded="$12"
+        bg="$green2"
         borderWidth={2}
         borderColor="$green9"
-        ai="center"
-        jc="center"
+        items="center"
+        justify="center"
       >
         <Check size={48} color="$green10" />
       </YStack>
 
       {/* Success Message */}
-      <YStack gap="$2" ai="center">
-        <Text fontSize="$9" fontWeight="bold" color="$color12" ta="center">
+      <YStack gap="$2" items="center">
+        <Text fontSize="$9" fontWeight="bold" color="$color12" text="center">
           Application Submitted!
         </Text>
-        <Text fontSize="$5" color="$color11" ta="center">
+        <Text fontSize="$5" color="$color11" text="center">
           Thank you for applying to {jobTitle} at {organizationName}
         </Text>
       </YStack>
@@ -74,10 +74,10 @@ export function SuccessStep({
       {/* Application ID */}
       <YStack
         gap="$2"
-        ai="center"
-        padding="$4"
-        backgroundColor="$background"
-        borderRadius="$4"
+        items="center"
+        p="$4"
+        bg="$background"
+        rounded="$4"
         borderWidth={1}
         borderColor="$borderColor"
         width="100%"
@@ -85,10 +85,10 @@ export function SuccessStep({
         <Text fontSize="$3" fontWeight="600" color="$color11">
           Application Reference
         </Text>
-        <Text fontSize="$4" fontWeight="bold" color="$blue10" fontFamily="$mono">
+        <Text fontSize="$4" fontWeight="bold" color="$blue10">
           {applicationId.slice(0, 8).toUpperCase()}
         </Text>
-        <Text fontSize="$2" color="$color10" ta="center">
+        <Text fontSize="$2" color="$color10" text="center">
           Save this reference number for your records
         </Text>
       </YStack>
@@ -96,9 +96,9 @@ export function SuccessStep({
       {/* What Happens Next */}
       <YStack
         gap="$3"
-        padding="$4"
-        backgroundColor="$blue2"
-        borderRadius="$4"
+        p="$4"
+        bg="$blue2"
+        rounded="$4"
         borderWidth={1}
         borderColor="$blue7"
         width="100%"
@@ -123,9 +123,9 @@ export function SuccessStep({
       {/* Tips */}
       <YStack
         gap="$2"
-        padding="$4"
-        backgroundColor="$background"
-        borderRadius="$4"
+        p="$4"
+        bg="$background"
+        rounded="$4"
         borderWidth={1}
         borderColor="$borderColor"
         width="100%"
@@ -169,16 +169,8 @@ export function SuccessStep({
  */
 function StepItem({ number, text }: { number: number; text: string }) {
   return (
-    <YStack fd="row" gap="$3" ai="flex-start">
-      <YStack
-        width={24}
-        height={24}
-        borderRadius="$12"
-        backgroundColor="$blue9"
-        ai="center"
-        jc="center"
-        flexShrink={0}
-      >
+    <YStack flexDirection="row" gap="$3" items="flex-start">
+      <YStack width={24} height={24} rounded="$12" bg="$blue9" items="center" justify="center">
         <Text fontSize="$2" fontWeight="bold" color="white">
           {number}
         </Text>

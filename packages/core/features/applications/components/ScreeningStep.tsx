@@ -260,13 +260,7 @@ export function ScreeningStep({
       </YStack>
 
       {/* Continue Button */}
-      <Button
-        size="$5"
-        theme="blue"
-        onPress={validateAndContinue}
-        disabled={isSubmitting}
-        marginTop="$4"
-      >
+      <Button size="$5" theme="blue" onPress={validateAndContinue} disabled={isSubmitting} mt="$4">
         {isSubmitting ? 'Saving...' : 'Continue'}
       </Button>
     </YStack>
