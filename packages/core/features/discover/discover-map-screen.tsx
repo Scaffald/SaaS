@@ -118,20 +118,11 @@ export const DiscoverMapScreen = () => {
 
       if (profileId === null) {
         // Clicking empty space - clear selection
-        console.log('[SCROLL_DEBUG] Pin deselected - clearing selection')
         setSummaryProfileId(null)
         setSelectedProfileId(null)
       } else {
         // On mobile: show summary card
         // On desktop: select in rail and scroll to it
-        console.log('[SCROLL_DEBUG] Pin clicked:', {
-          profileId,
-          isSmallScreen,
-          railVisible: showRail,
-          hasResultListRef: !!resultListRef.current,
-          hasScrollToCard: !!resultListRef.current?.scrollToCard,
-        })
-
         if (isSmallScreen) {
           setSummaryProfileId(profileId)
         } else {
@@ -139,17 +130,9 @@ export const DiscoverMapScreen = () => {
           // Ensure rail is visible first
           setShowRail(true)
           // Scroll to card in rail after ensuring visibility
-          console.log('[SCROLL_DEBUG] Scheduling scroll to card in 200ms')
           setTimeout(() => {
-            console.log('[SCROLL_DEBUG] Attempting scroll to card:', {
-              profileId,
-              hasRef: !!resultListRef.current,
-              hasScrollToCard: !!resultListRef.current?.scrollToCard,
-            })
             if (resultListRef.current?.scrollToCard) {
               resultListRef.current.scrollToCard(profileId)
-            } else {
-              console.warn('[SCROLL_DEBUG] ScrollToCard not available!')
             }
           }, 200)
         }
