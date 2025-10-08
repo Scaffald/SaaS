@@ -31,6 +31,7 @@ import {
 import { Chip } from '@app/ui'
 import type { InternalJob } from './InternalJobCard'
 import { api } from '@app/core/utils/api'
+import { ApplicationWizard } from '@app/core/features/applications/components'
 
 interface InternalJobDetailModalProps {
   job: InternalJob | null
@@ -151,6 +152,7 @@ export function InternalJobDetailModal({
     earliest_start_date: '',
   })
   const [showApplicationForm, setShowApplicationForm] = useState(false)
+  const [showApplicationWizard, setShowApplicationWizard] = useState(false)
   const [applicationSuccess, setApplicationSuccess] = useState(false)
 
   const applyMutation = api.jobs.createApplication.useMutation({
@@ -531,18 +533,42 @@ export function InternalJobDetailModal({
               )}
 
               {/* Application Section */}
-              {!hasApplied && !showApplicationForm && (
+              {!hasApplied && !showApplicationForm && !showApplicationWizard && (
                 <>
                   <Separator />
                   <Button
                     size="$4"
                     theme="blue"
-                    onPress={() => setShowApplicationForm(true)}
+                    onPress={() => setShowApplicationWizard(true)}
                     mt="$2"
                   >
                     Apply for this Position
                   </Button>
                 </>
+              )}
+
+              {/* Application Wizard (New) */}
+              {!hasApplied && showApplicationWizard && (
+                <YStack flex={1} height="100%" width="100%">
+                  <ApplicationWizard
+                    jobId={job.id}
+                    jobTitle={job.title}
+                    organizationName={job.organization?.name || 'Unknown Organization'}
+                    onSuccess={(applicationId) => {
+                      console.log('Application submitted successfully:', applicationId)
+                      setShowApplicationWizard(false)
+                      setApplicationSuccess(true)
+                      onApplySuccess?.()
+                    }}
+                    onCancel={() => {
+                      setShowApplicationWizard(false)
+                    }}
+                    onReturnToJobs={() => {
+                      setShowApplicationWizard(false)
+                      onOpenChange(false)
+                    }}
+                  />
+                </YStack>
               )}
 
               {/* Enhanced Application Form */}
