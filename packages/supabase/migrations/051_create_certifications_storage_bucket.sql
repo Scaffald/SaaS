@@ -8,15 +8,17 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('certifications', 'certifications', true)
 ON CONFLICT (id) DO NOTHING;
 
--- Set up RLS policies for certifications bucket
+-- Set up RLS policies for certifications bucket (idempotent)
 
 -- Public read access - allows viewing/downloading certificates
+DROP POLICY IF EXISTS "Certification files are publicly accessible" ON storage.objects;
 CREATE POLICY "Certification files are publicly accessible" 
 ON storage.objects
 FOR SELECT 
 USING (bucket_id = 'certifications');
 
 -- Users can upload their own certification files
+DROP POLICY IF EXISTS "Users can upload their own certification files" ON storage.objects;
 CREATE POLICY "Users can upload their own certification files" 
 ON storage.objects
 FOR INSERT 
@@ -26,6 +28,7 @@ WITH CHECK (
 );
 
 -- Users can update their own certification files
+DROP POLICY IF EXISTS "Users can update their own certification files" ON storage.objects;
 CREATE POLICY "Users can update their own certification files" 
 ON storage.objects
 FOR UPDATE 
@@ -35,6 +38,7 @@ USING (
 );
 
 -- Users can delete their own certification files
+DROP POLICY IF EXISTS "Users can delete their own certification files" ON storage.objects;
 CREATE POLICY "Users can delete their own certification files" 
 ON storage.objects
 FOR DELETE 

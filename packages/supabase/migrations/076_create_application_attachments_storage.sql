@@ -26,10 +26,11 @@ VALUES (
 ON CONFLICT (id) DO NOTHING;
 
 -- =========================================================
--- RLS Policies for application-attachments bucket
+-- RLS Policies for application-attachments bucket (idempotent)
 -- =========================================================
 
 -- Users can upload their own attachments (INSERT)
+DROP POLICY IF EXISTS "application_attachments_user_upload" ON storage.objects;
 CREATE POLICY "application_attachments_user_upload"
   ON storage.objects FOR INSERT
   TO authenticated
@@ -39,6 +40,7 @@ CREATE POLICY "application_attachments_user_upload"
   );
 
 -- Users can view their own attachments (SELECT)
+DROP POLICY IF EXISTS "application_attachments_user_read" ON storage.objects;
 CREATE POLICY "application_attachments_user_read"
   ON storage.objects FOR SELECT
   TO authenticated
@@ -48,6 +50,7 @@ CREATE POLICY "application_attachments_user_read"
   );
 
 -- Users can update their own attachments (UPDATE)
+DROP POLICY IF EXISTS "application_attachments_user_update" ON storage.objects;
 CREATE POLICY "application_attachments_user_update"
   ON storage.objects FOR UPDATE
   TO authenticated
@@ -61,6 +64,7 @@ CREATE POLICY "application_attachments_user_update"
   );
 
 -- Users can delete their own attachments (DELETE)
+DROP POLICY IF EXISTS "application_attachments_user_delete" ON storage.objects;
 CREATE POLICY "application_attachments_user_delete"
   ON storage.objects FOR DELETE
   TO authenticated
@@ -70,6 +74,7 @@ CREATE POLICY "application_attachments_user_delete"
   );
 
 -- Organization owners can view attachments for their jobs (SELECT)
+DROP POLICY IF EXISTS "application_attachments_owner_read" ON storage.objects;
 CREATE POLICY "application_attachments_owner_read"
   ON storage.objects FOR SELECT
   TO authenticated
@@ -87,6 +92,7 @@ CREATE POLICY "application_attachments_owner_read"
   );
 
 -- Platform admins can view all attachments (SELECT)
+DROP POLICY IF EXISTS "application_attachments_admin_read" ON storage.objects;
 CREATE POLICY "application_attachments_admin_read"
   ON storage.objects FOR SELECT
   TO authenticated
@@ -102,6 +108,7 @@ CREATE POLICY "application_attachments_admin_read"
   );
 
 -- Platform admins can delete any attachment (DELETE)
+DROP POLICY IF EXISTS "application_attachments_admin_delete" ON storage.objects;
 CREATE POLICY "application_attachments_admin_delete"
   ON storage.objects FOR DELETE
   TO authenticated
