@@ -7,11 +7,11 @@ const phoneNumberSchema = z
   .refine(
     (phone) => {
       if (!phone) return true; // Optional field
-      // Basic phone validation - accepts various formats
-      // E.164 format, national formats, etc.
-      const phoneRegex =
-        /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/;
-      return phoneRegex.test(phone);
+      // Remove all formatting characters for validation
+      const digitsOnly = phone.replace(/[^\d]/g, '');
+      // Must have at least 10 digits (for US/international numbers)
+      // and no more than 15 digits (E.164 standard max)
+      return digitsOnly.length >= 10 && digitsOnly.length <= 15;
     },
     {
       message: "Please enter a valid phone number",
