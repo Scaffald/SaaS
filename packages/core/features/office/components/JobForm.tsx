@@ -6,8 +6,21 @@ import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import {
+  ApplicationScreeningSection,
+  AutoRejectionSection,
+  ScoreThresholdSection,
+  JobMetadataSection,
+  EnhancedRequirementsSection,
+  CompensationBenefitsSection,
+  ApplicationProcessSection,
+  LocationSchedulingSection,
+  DistributionVisibilitySection,
+  ComplianceAnalyticsSection,
+} from './job-form-sections'
 
 type JobFormData = {
+  // Basic fields
   title: string
   description: string
   organization_id: string
@@ -18,6 +31,85 @@ type JobFormData = {
   pay_range_max_cents?: number
   pay_range_type?: string
   position_level?: string
+
+  // Application Screening
+  require_current_location?: boolean
+  require_relocation_willingness?: boolean
+  minimum_years_experience?: number
+  require_work_authorization?: boolean
+  require_earliest_start_date?: boolean
+
+  // Auto-Rejection & Score
+  enable_auto_reject?: boolean
+  auto_reject_criteria?: {
+    score_minimum?: number
+    require_work_authorization?: boolean
+    require_all_skills?: boolean
+    require_all_certifications?: boolean
+  }
+  minimum_score?: number
+
+  // Job Metadata
+  internal_job_code?: string
+  department?: string
+  cost_center?: string
+  number_of_openings?: number
+  priority_level?: 'urgent' | 'high' | 'normal' | 'low'
+  requisition_number?: string
+  job_category?: string
+  is_confidential?: boolean
+  application_deadline?: string
+  target_start_date?: string
+  estimated_hire_date?: string
+
+  // Enhanced Requirements
+  minimum_education_level?: 'none' | 'high_school' | 'associate' | 'bachelor' | 'master' | 'phd'
+  require_background_check?: boolean
+  background_check_type?: string
+  require_drug_test?: boolean
+  require_drivers_license?: boolean
+  drivers_license_type?: string
+  security_clearance_required?: string
+  travel_percentage?: number
+  shift_requirements?: string
+
+  // Compensation & Benefits
+  benefits_summary?: string
+  has_bonus_structure?: boolean
+  bonus_details?: string
+  has_equity?: boolean
+  equity_details?: string
+  sign_on_bonus_cents?: number
+  has_relocation_package?: boolean
+  relocation_package_details?: string
+  overtime_eligible?: boolean
+  pay_frequency?: 'hourly' | 'weekly' | 'biweekly' | 'semimonthly' | 'monthly'
+
+  // Application Process
+  requires_assessment?: boolean
+  assessment_details?: string
+  requires_video_interview?: boolean
+  estimated_application_time_minutes?: number
+  application_expiry_days?: number
+
+  // Location & Scheduling
+  relocation_assistance_offered?: boolean
+  relocation_assistance_details?: string
+  work_schedule_details?: string
+  timezone?: string
+
+  // Distribution & Visibility
+  is_featured?: boolean
+  featured_until?: string
+  seo_keywords?: string[]
+  external_application_url?: string
+
+  // Compliance & Analytics
+  eeo_job_category?: string
+  is_veteran_friendly?: boolean
+  is_disability_friendly?: boolean
+  affirmative_action_plan?: boolean
+  source_tracking_enabled?: boolean
 }
 
 type JobFormProps = {
@@ -105,6 +197,27 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     },
   })
 
+  // Section update handlers
+  const handleSectionUpdate = (data: Partial<JobFormData>) => {
+    setFormData((prev) => ({ ...prev, ...data }))
+  }
+
+  const handleScoreUpdate = (score?: number) => {
+    setFormData((prev) => ({ ...prev, minimum_score: score }))
+  }
+
+  const handleAutoRejectUpdate = (data: {
+    enable_auto_reject: boolean
+    auto_reject_criteria: {
+      score_minimum?: number
+      require_work_authorization?: boolean
+      require_all_skills?: boolean
+      require_all_certifications?: boolean
+    }
+  }) => {
+    setFormData((prev) => ({ ...prev, ...data }))
+  }
+
   const handleSubmit = (asDraft = true) => {
     // Build submit data, excluding empty strings for optional enums
     const submitData: Record<string, unknown> = {
@@ -114,14 +227,19 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
       status: asDraft ? ('draft' as const) : ('open' as const),
     }
 
-    // Only include optional fields if they have values
-    if (formData.employment_type) submitData.employment_type = formData.employment_type
-    if (formData.remote_option) submitData.remote_option = formData.remote_option
-    if (formData.location) submitData.location = formData.location
-    if (formData.pay_range_min_cents) submitData.pay_range_min_cents = formData.pay_range_min_cents
-    if (formData.pay_range_max_cents) submitData.pay_range_max_cents = formData.pay_range_max_cents
-    if (formData.pay_range_type) submitData.pay_range_type = formData.pay_range_type
-    if (formData.position_level) submitData.position_level = formData.position_level
+    // Include all optional fields if they have values
+    for (const key of Object.keys(formData)) {
+      const value = formData[key as keyof JobFormData]
+      if (
+        value !== undefined &&
+        value !== '' &&
+        key !== 'title' &&
+        key !== 'description' &&
+        key !== 'organization_id'
+      ) {
+        submitData[key] = value
+      }
+    }
 
     if (mode === 'create') {
       createJob.mutate(submitData)
@@ -392,6 +510,112 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             disabled={isLoading}
           />
         </YStack>
+
+        {/* Divider */}
+        <YStack height={1} bg="$borderColor" my="$4" />
+
+        {/* Job Metadata Section */}
+        <JobMetadataSection
+          internalJobCode={formData.internal_job_code}
+          department={formData.department}
+          costCenter={formData.cost_center}
+          numberOfOpenings={formData.number_of_openings}
+          priorityLevel={formData.priority_level}
+          requisitionNumber={formData.requisition_number}
+          jobCategory={formData.job_category}
+          isConfidential={formData.is_confidential}
+          applicationDeadline={formData.application_deadline}
+          targetStartDate={formData.target_start_date}
+          estimatedHireDate={formData.estimated_hire_date}
+          onUpdate={handleSectionUpdate}
+        />
+
+        {/* Application Screening Section */}
+        <ApplicationScreeningSection
+          requireCurrentLocation={formData.require_current_location || false}
+          requireRelocationWillingness={formData.require_relocation_willingness || false}
+          minimumYearsExperience={formData.minimum_years_experience}
+          requireWorkAuthorization={formData.require_work_authorization || false}
+          requireEarliestStartDate={formData.require_earliest_start_date || false}
+          onUpdate={handleSectionUpdate}
+        />
+
+        {/* Score Threshold Section */}
+        <ScoreThresholdSection minimumScore={formData.minimum_score} onUpdate={handleScoreUpdate} />
+
+        {/* Auto-Rejection Section */}
+        <AutoRejectionSection
+          enabled={formData.enable_auto_reject || false}
+          criteria={formData.auto_reject_criteria || {}}
+          onUpdate={handleAutoRejectUpdate}
+        />
+
+        {/* Enhanced Requirements Section */}
+        <EnhancedRequirementsSection
+          minimumEducationLevel={formData.minimum_education_level}
+          requireBackgroundCheck={formData.require_background_check}
+          backgroundCheckType={formData.background_check_type}
+          requireDrugTest={formData.require_drug_test}
+          requireDriversLicense={formData.require_drivers_license}
+          driversLicenseType={formData.drivers_license_type}
+          securityClearanceRequired={formData.security_clearance_required}
+          travelPercentage={formData.travel_percentage}
+          shiftRequirements={formData.shift_requirements}
+          onUpdate={handleSectionUpdate}
+        />
+
+        {/* Compensation & Benefits Section */}
+        <CompensationBenefitsSection
+          benefitsSummary={formData.benefits_summary}
+          hasBonusStructure={formData.has_bonus_structure}
+          bonusDetails={formData.bonus_details}
+          hasEquity={formData.has_equity}
+          equityDetails={formData.equity_details}
+          signOnBonusCents={formData.sign_on_bonus_cents}
+          hasRelocationPackage={formData.has_relocation_package}
+          relocationPackageDetails={formData.relocation_package_details}
+          overtimeEligible={formData.overtime_eligible}
+          payFrequency={formData.pay_frequency}
+          onUpdate={handleSectionUpdate}
+        />
+
+        {/* Application Process Section */}
+        <ApplicationProcessSection
+          requiresAssessment={formData.requires_assessment}
+          assessmentDetails={formData.assessment_details}
+          requiresVideoInterview={formData.requires_video_interview}
+          estimatedApplicationTimeMinutes={formData.estimated_application_time_minutes}
+          applicationExpiryDays={formData.application_expiry_days}
+          onUpdate={handleSectionUpdate}
+        />
+
+        {/* Location & Scheduling Section */}
+        <LocationSchedulingSection
+          relocationAssistanceOffered={formData.relocation_assistance_offered}
+          relocationAssistanceDetails={formData.relocation_assistance_details}
+          workScheduleDetails={formData.work_schedule_details}
+          timezone={formData.timezone}
+          onUpdate={handleSectionUpdate}
+        />
+
+        {/* Distribution & Visibility Section */}
+        <DistributionVisibilitySection
+          isFeatured={formData.is_featured}
+          featuredUntil={formData.featured_until}
+          seoKeywords={formData.seo_keywords}
+          externalApplicationUrl={formData.external_application_url}
+          onUpdate={handleSectionUpdate}
+        />
+
+        {/* Compliance & Analytics Section */}
+        <ComplianceAnalyticsSection
+          eeoJobCategory={formData.eeo_job_category}
+          isVeteranFriendly={formData.is_veteran_friendly}
+          isDisabilityFriendly={formData.is_disability_friendly}
+          affirmativeActionPlan={formData.affirmative_action_plan}
+          sourceTrackingEnabled={formData.source_tracking_enabled}
+          onUpdate={handleSectionUpdate}
+        />
 
         {/* Actions */}
         <XStack gap="$3" pt="$4">

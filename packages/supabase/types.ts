@@ -1,3 +1,7 @@
+
+> scaffald@ supa /Users/clay/Development/SCF-Neue
+> dotenv -- pnpx supabase --workdir packages gen types typescript --local
+
 export type Json =
   | string
   | number
@@ -93,15 +97,7 @@ export type Database = {
           terms?: Json | null
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "application_inquiries_application_id_fkey"
-            columns: ["application_id"]
-            isOneToOne: false
-            referencedRelation: "applications"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       application_messages: {
         Row: {
@@ -126,13 +122,6 @@ export type Database = {
           id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "application_messages_application_id_fkey"
-            columns: ["application_id"]
-            isOneToOne: false
-            referencedRelation: "applications"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "application_messages_author_user_id_fkey"
             columns: ["author_user_id"]
@@ -170,53 +159,147 @@ export type Database = {
           },
         ]
       }
+      application_stage_history: {
+        Row: {
+          application_id: string
+          changed_by: string | null
+          created_at: string
+          from_stage_id: string | null
+          id: string
+          notes: string | null
+          reason: string | null
+          to_stage_id: string
+        }
+        Insert: {
+          application_id: string
+          changed_by?: string | null
+          created_at?: string
+          from_stage_id?: string | null
+          id?: string
+          notes?: string | null
+          reason?: string | null
+          to_stage_id: string
+        }
+        Update: {
+          application_id?: string
+          changed_by?: string | null
+          created_at?: string
+          from_stage_id?: string | null
+          id?: string
+          notes?: string | null
+          reason?: string | null
+          to_stage_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_stage_history_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_stage_history_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "v_applications_with_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_stage_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_stage_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_stage_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "v_user_directory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_stage_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "v_user_private"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_stage_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "v_user_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_stage_history_from_stage_id_fkey"
+            columns: ["from_stage_id"]
+            isOneToOne: false
+            referencedRelation: "pipeline_stages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_stage_history_to_stage_id_fkey"
+            columns: ["to_stage_id"]
+            isOneToOne: false
+            referencedRelation: "pipeline_stages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       applications: {
         Row: {
-          answers: Json | null
-          archived_at: string | null
-          cover_letter_url: string | null
-          created_at: string
+          applied_at: string
+          cover_letter: string | null
           id: string
-          is_shortlisted: boolean | null
           job_id: string
-          reject_meta: Json | null
-          reject_reasons: string[] | null
-          rejected_at: string | null
-          resume_url: string | null
-          stage_changed_at: string | null
+          metadata: Json | null
+          notes: Json | null
+          pipeline_id: string | null
+          pipeline_stage_id: string | null
+          resume_path: string | null
+          stage_entered_at: string
           status: string
+          updated_at: string
           user_id: string
         }
         Insert: {
-          answers?: Json | null
-          archived_at?: string | null
-          cover_letter_url?: string | null
-          created_at?: string
+          applied_at?: string
+          cover_letter?: string | null
           id?: string
-          is_shortlisted?: boolean | null
           job_id: string
-          reject_meta?: Json | null
-          reject_reasons?: string[] | null
-          rejected_at?: string | null
-          resume_url?: string | null
-          stage_changed_at?: string | null
+          metadata?: Json | null
+          notes?: Json | null
+          pipeline_id?: string | null
+          pipeline_stage_id?: string | null
+          resume_path?: string | null
+          stage_entered_at?: string
           status?: string
+          updated_at?: string
           user_id: string
         }
         Update: {
-          answers?: Json | null
-          archived_at?: string | null
-          cover_letter_url?: string | null
-          created_at?: string
+          applied_at?: string
+          cover_letter?: string | null
           id?: string
-          is_shortlisted?: boolean | null
           job_id?: string
-          reject_meta?: Json | null
-          reject_reasons?: string[] | null
-          rejected_at?: string | null
-          resume_url?: string | null
-          stage_changed_at?: string | null
+          metadata?: Json | null
+          notes?: Json | null
+          pipeline_id?: string | null
+          pipeline_stage_id?: string | null
+          resume_path?: string | null
+          stage_entered_at?: string
           status?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: [
@@ -239,6 +322,20 @@ export type Database = {
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "v_jobs_with_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_pipeline_id_fkey"
+            columns: ["pipeline_id"]
+            isOneToOne: false
+            referencedRelation: "pipelines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_pipeline_stage_id_fkey"
+            columns: ["pipeline_stage_id"]
+            isOneToOne: false
+            referencedRelation: "pipeline_stages"
             referencedColumns: ["id"]
           },
           {
@@ -271,6 +368,134 @@ export type Database = {
           },
           {
             foreignKeyName: "applications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_user_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      candidate_job_links: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          job_id: string
+          notes: string | null
+          relationship_type: string
+          source: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          job_id: string
+          notes?: string | null
+          relationship_type: string
+          source?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          job_id?: string
+          notes?: string | null
+          relationship_type?: string
+          source?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidate_job_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidate_job_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidate_job_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_user_directory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidate_job_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_user_private"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidate_job_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_user_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidate_job_links_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidate_job_links_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "v_job_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidate_job_links_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "v_jobs_with_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidate_job_links_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidate_job_links_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidate_job_links_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_user_directory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidate_job_links_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_user_private"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "candidate_job_links_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "v_user_search"
@@ -864,6 +1089,91 @@ export type Database = {
           },
         ]
       }
+      job_pipelines: {
+        Row: {
+          assigned_by: string | null
+          created_at: string
+          job_id: string
+          pipeline_id: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          created_at?: string
+          job_id: string
+          pipeline_id: string
+        }
+        Update: {
+          assigned_by?: string | null
+          created_at?: string
+          job_id?: string
+          pipeline_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_pipelines_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_pipelines_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_pipelines_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "v_user_directory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_pipelines_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "v_user_private"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_pipelines_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "v_user_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_pipelines_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_pipelines_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "v_job_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_pipelines_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "v_jobs_with_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_pipelines_pipeline_id_fkey"
+            columns: ["pipeline_id"]
+            isOneToOne: false
+            referencedRelation: "pipelines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       job_skills: {
         Row: {
           created_at: string
@@ -917,86 +1227,311 @@ export type Database = {
       jobs: {
         Row: {
           address: Json | null
+          affirmative_action_plan: boolean | null
+          application_deadline: string | null
+          application_expiry_days: number | null
+          assessment_details: string | null
+          assigned_team_id: string | null
+          auto_reject_criteria: Json | null
+          background_check_type: string | null
+          benefits_summary: string | null
+          bonus_details: string | null
           closes_at: string | null
           compensation: Json | null
+          cost_center: string | null
           created_at: string
           created_by_user_id: string | null
+          custom_application_questions: Json | null
+          department: string | null
           description: string | null
+          drivers_license_type: string | null
+          eeo_job_category: string | null
           employment_type: string | null
+          enable_auto_reject: boolean | null
+          equity_details: string | null
+          estimated_application_time_minutes: number | null
+          estimated_hire_date: string | null
+          external_application_url: string | null
+          featured_until: string | null
           geo: unknown | null
+          has_bonus_structure: boolean | null
+          has_equity: boolean | null
+          has_relocation_package: boolean | null
+          hiring_manager_id: string | null
           id: string
+          internal_job_code: string | null
+          is_confidential: boolean | null
+          is_disability_friendly: boolean | null
+          is_featured: boolean | null
+          is_veteran_friendly: boolean | null
+          job_category: string | null
+          language_requirements: Json | null
           location: string | null
           min_reputation: number | null
+          minimum_education_level: string | null
+          minimum_score: number | null
+          minimum_years_experience: number | null
+          number_of_openings: number | null
           organization_id: string
+          overtime_eligible: boolean | null
+          pay_frequency: string | null
           pay_range_max_cents: number | null
           pay_range_min_cents: number | null
           pay_range_type: string | null
+          physical_requirements: Json | null
           position_level: string | null
           posted_at: string | null
+          posting_channels: Json | null
+          priority_level: string | null
+          recruiter_id: string | null
+          relocation_assistance_details: string | null
+          relocation_assistance_offered: boolean | null
+          relocation_package_details: string | null
           remote_option: string | null
+          require_background_check: boolean | null
+          require_current_location: boolean | null
+          require_drivers_license: boolean | null
+          require_drug_test: boolean | null
+          require_earliest_start_date: boolean | null
+          require_relocation_willingness: boolean | null
+          require_work_authorization: boolean | null
+          required_attachments: Json | null
+          requires_assessment: boolean | null
+          requires_video_interview: boolean | null
+          requisition_number: string | null
           search_tsv: unknown | null
+          security_clearance_required: string | null
+          seo_keywords: string[] | null
+          shift_requirements: string | null
+          show_team_on_posting: boolean | null
+          sign_on_bonus_cents: number | null
           slug: string | null
+          source_tracking_enabled: boolean | null
           status: string
+          target_start_date: string | null
           team_id: string | null
+          team_visibility: string | null
+          timezone: string | null
           title: string
+          travel_percentage: number | null
           updated_at: string
+          utm_parameters: Json | null
           visibility: string | null
+          work_locations: Json | null
+          work_schedule_details: string | null
         }
         Insert: {
           address?: Json | null
+          affirmative_action_plan?: boolean | null
+          application_deadline?: string | null
+          application_expiry_days?: number | null
+          assessment_details?: string | null
+          assigned_team_id?: string | null
+          auto_reject_criteria?: Json | null
+          background_check_type?: string | null
+          benefits_summary?: string | null
+          bonus_details?: string | null
           closes_at?: string | null
           compensation?: Json | null
+          cost_center?: string | null
           created_at?: string
           created_by_user_id?: string | null
+          custom_application_questions?: Json | null
+          department?: string | null
           description?: string | null
+          drivers_license_type?: string | null
+          eeo_job_category?: string | null
           employment_type?: string | null
+          enable_auto_reject?: boolean | null
+          equity_details?: string | null
+          estimated_application_time_minutes?: number | null
+          estimated_hire_date?: string | null
+          external_application_url?: string | null
+          featured_until?: string | null
           geo?: unknown | null
+          has_bonus_structure?: boolean | null
+          has_equity?: boolean | null
+          has_relocation_package?: boolean | null
+          hiring_manager_id?: string | null
           id?: string
+          internal_job_code?: string | null
+          is_confidential?: boolean | null
+          is_disability_friendly?: boolean | null
+          is_featured?: boolean | null
+          is_veteran_friendly?: boolean | null
+          job_category?: string | null
+          language_requirements?: Json | null
           location?: string | null
           min_reputation?: number | null
+          minimum_education_level?: string | null
+          minimum_score?: number | null
+          minimum_years_experience?: number | null
+          number_of_openings?: number | null
           organization_id: string
+          overtime_eligible?: boolean | null
+          pay_frequency?: string | null
           pay_range_max_cents?: number | null
           pay_range_min_cents?: number | null
           pay_range_type?: string | null
+          physical_requirements?: Json | null
           position_level?: string | null
           posted_at?: string | null
+          posting_channels?: Json | null
+          priority_level?: string | null
+          recruiter_id?: string | null
+          relocation_assistance_details?: string | null
+          relocation_assistance_offered?: boolean | null
+          relocation_package_details?: string | null
           remote_option?: string | null
+          require_background_check?: boolean | null
+          require_current_location?: boolean | null
+          require_drivers_license?: boolean | null
+          require_drug_test?: boolean | null
+          require_earliest_start_date?: boolean | null
+          require_relocation_willingness?: boolean | null
+          require_work_authorization?: boolean | null
+          required_attachments?: Json | null
+          requires_assessment?: boolean | null
+          requires_video_interview?: boolean | null
+          requisition_number?: string | null
           search_tsv?: unknown | null
+          security_clearance_required?: string | null
+          seo_keywords?: string[] | null
+          shift_requirements?: string | null
+          show_team_on_posting?: boolean | null
+          sign_on_bonus_cents?: number | null
           slug?: string | null
+          source_tracking_enabled?: boolean | null
           status?: string
+          target_start_date?: string | null
           team_id?: string | null
+          team_visibility?: string | null
+          timezone?: string | null
           title: string
+          travel_percentage?: number | null
           updated_at?: string
+          utm_parameters?: Json | null
           visibility?: string | null
+          work_locations?: Json | null
+          work_schedule_details?: string | null
         }
         Update: {
           address?: Json | null
+          affirmative_action_plan?: boolean | null
+          application_deadline?: string | null
+          application_expiry_days?: number | null
+          assessment_details?: string | null
+          assigned_team_id?: string | null
+          auto_reject_criteria?: Json | null
+          background_check_type?: string | null
+          benefits_summary?: string | null
+          bonus_details?: string | null
           closes_at?: string | null
           compensation?: Json | null
+          cost_center?: string | null
           created_at?: string
           created_by_user_id?: string | null
+          custom_application_questions?: Json | null
+          department?: string | null
           description?: string | null
+          drivers_license_type?: string | null
+          eeo_job_category?: string | null
           employment_type?: string | null
+          enable_auto_reject?: boolean | null
+          equity_details?: string | null
+          estimated_application_time_minutes?: number | null
+          estimated_hire_date?: string | null
+          external_application_url?: string | null
+          featured_until?: string | null
           geo?: unknown | null
+          has_bonus_structure?: boolean | null
+          has_equity?: boolean | null
+          has_relocation_package?: boolean | null
+          hiring_manager_id?: string | null
           id?: string
+          internal_job_code?: string | null
+          is_confidential?: boolean | null
+          is_disability_friendly?: boolean | null
+          is_featured?: boolean | null
+          is_veteran_friendly?: boolean | null
+          job_category?: string | null
+          language_requirements?: Json | null
           location?: string | null
           min_reputation?: number | null
+          minimum_education_level?: string | null
+          minimum_score?: number | null
+          minimum_years_experience?: number | null
+          number_of_openings?: number | null
           organization_id?: string
+          overtime_eligible?: boolean | null
+          pay_frequency?: string | null
           pay_range_max_cents?: number | null
           pay_range_min_cents?: number | null
           pay_range_type?: string | null
+          physical_requirements?: Json | null
           position_level?: string | null
           posted_at?: string | null
+          posting_channels?: Json | null
+          priority_level?: string | null
+          recruiter_id?: string | null
+          relocation_assistance_details?: string | null
+          relocation_assistance_offered?: boolean | null
+          relocation_package_details?: string | null
           remote_option?: string | null
+          require_background_check?: boolean | null
+          require_current_location?: boolean | null
+          require_drivers_license?: boolean | null
+          require_drug_test?: boolean | null
+          require_earliest_start_date?: boolean | null
+          require_relocation_willingness?: boolean | null
+          require_work_authorization?: boolean | null
+          required_attachments?: Json | null
+          requires_assessment?: boolean | null
+          requires_video_interview?: boolean | null
+          requisition_number?: string | null
           search_tsv?: unknown | null
+          security_clearance_required?: string | null
+          seo_keywords?: string[] | null
+          shift_requirements?: string | null
+          show_team_on_posting?: boolean | null
+          sign_on_bonus_cents?: number | null
           slug?: string | null
+          source_tracking_enabled?: boolean | null
           status?: string
+          target_start_date?: string | null
           team_id?: string | null
+          team_visibility?: string | null
+          timezone?: string | null
           title?: string
+          travel_percentage?: number | null
           updated_at?: string
+          utm_parameters?: Json | null
           visibility?: string | null
+          work_locations?: Json | null
+          work_schedule_details?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "jobs_assigned_team_id_fkey"
+            columns: ["assigned_team_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_assigned_team_id_fkey"
+            columns: ["assigned_team_id"]
+            isOneToOne: false
+            referencedRelation: "v_applications_with_details"
+            referencedColumns: ["organization_id"]
+          },
+          {
+            foreignKeyName: "jobs_assigned_team_id_fkey"
+            columns: ["assigned_team_id"]
+            isOneToOne: false
+            referencedRelation: "v_org_directory"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "jobs_created_by_user_id_fkey"
             columns: ["created_by_user_id"]
@@ -1033,6 +1568,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "jobs_hiring_manager_id_fkey"
+            columns: ["hiring_manager_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_hiring_manager_id_fkey"
+            columns: ["hiring_manager_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_hiring_manager_id_fkey"
+            columns: ["hiring_manager_id"]
+            isOneToOne: false
+            referencedRelation: "v_user_directory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_hiring_manager_id_fkey"
+            columns: ["hiring_manager_id"]
+            isOneToOne: false
+            referencedRelation: "v_user_private"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_hiring_manager_id_fkey"
+            columns: ["hiring_manager_id"]
+            isOneToOne: false
+            referencedRelation: "v_user_search"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "jobs_organization_id_fkey"
             columns: ["organization_id"]
             isOneToOne: false
@@ -1043,7 +1613,49 @@ export type Database = {
             foreignKeyName: "jobs_organization_id_fkey"
             columns: ["organization_id"]
             isOneToOne: false
+            referencedRelation: "v_applications_with_details"
+            referencedColumns: ["organization_id"]
+          },
+          {
+            foreignKeyName: "jobs_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
             referencedRelation: "v_org_directory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_recruiter_id_fkey"
+            columns: ["recruiter_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_recruiter_id_fkey"
+            columns: ["recruiter_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_recruiter_id_fkey"
+            columns: ["recruiter_id"]
+            isOneToOne: false
+            referencedRelation: "v_user_directory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_recruiter_id_fkey"
+            columns: ["recruiter_id"]
+            isOneToOne: false
+            referencedRelation: "v_user_private"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_recruiter_id_fkey"
+            columns: ["recruiter_id"]
+            isOneToOne: false
+            referencedRelation: "v_user_search"
             referencedColumns: ["id"]
           },
           {
@@ -1084,6 +1696,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_skills_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "v_applications_with_details"
+            referencedColumns: ["organization_id"]
           },
           {
             foreignKeyName: "organization_skills_organization_id_fkey"
@@ -1197,6 +1816,102 @@ export type Database = {
             columns: ["owner_user_id"]
             isOneToOne: false
             referencedRelation: "v_user_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pipeline_stages: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          pipeline_id: string
+          sla_days: number | null
+          stage_order: number
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          pipeline_id: string
+          sla_days?: number | null
+          stage_order: number
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          pipeline_id?: string
+          sla_days?: number | null
+          stage_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pipeline_stages_pipeline_id_fkey"
+            columns: ["pipeline_id"]
+            isOneToOne: false
+            referencedRelation: "pipelines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pipelines: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_default: boolean
+          name: string
+          organization_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_default?: boolean
+          name: string
+          organization_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_default?: boolean
+          name?: string
+          organization_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pipelines_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pipelines_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "v_applications_with_details"
+            referencedColumns: ["organization_id"]
+          },
+          {
+            foreignKeyName: "pipelines_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "v_org_directory"
             referencedColumns: ["id"]
           },
         ]
@@ -2245,6 +2960,13 @@ export type Database = {
             foreignKeyName: "teams_organization_id_fkey"
             columns: ["organization_id"]
             isOneToOne: false
+            referencedRelation: "v_applications_with_details"
+            referencedColumns: ["organization_id"]
+          },
+          {
+            foreignKeyName: "teams_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
             referencedRelation: "v_org_directory"
             referencedColumns: ["id"]
           },
@@ -2877,6 +3599,92 @@ export type Database = {
         }
         Relationships: []
       }
+      v_applications_with_details: {
+        Row: {
+          applicant_avatar_path: string | null
+          applicant_first_name: string | null
+          applicant_last_name: string | null
+          applied_at: string | null
+          cover_letter: string | null
+          employment_type: string | null
+          id: string | null
+          job_id: string | null
+          job_location: string | null
+          job_status: string | null
+          job_title: string | null
+          metadata: Json | null
+          notes: Json | null
+          organization_id: string | null
+          organization_name: string | null
+          organization_slug: string | null
+          pay_range_max_cents: number | null
+          pay_range_min_cents: number | null
+          pay_range_type: string | null
+          remote_option: string | null
+          resume_path: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "v_job_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "v_jobs_with_details"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_user_directory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_user_private"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_user_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_cron_jobs: {
         Row: {
           active: boolean | null
@@ -2970,6 +3778,13 @@ export type Database = {
             foreignKeyName: "jobs_organization_id_fkey"
             columns: ["organization_id"]
             isOneToOne: false
+            referencedRelation: "v_applications_with_details"
+            referencedColumns: ["organization_id"]
+          },
+          {
+            foreignKeyName: "jobs_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
             referencedRelation: "v_org_directory"
             referencedColumns: ["id"]
           },
@@ -3056,6 +3871,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "v_applications_with_details"
+            referencedColumns: ["organization_id"]
           },
           {
             foreignKeyName: "jobs_organization_id_fkey"
@@ -3564,6 +4386,10 @@ export type Database = {
       calculate_job_content_hash: {
         Args: { p_company: string; p_description: string; p_title: string }
         Returns: string
+      }
+      check_existing_application: {
+        Args: { p_job_id: string; p_user_id: string }
+        Returns: boolean
       }
       citext: {
         Args: { "": boolean } | { "": string } | { "": unknown }

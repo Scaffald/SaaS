@@ -1,0 +1,140 @@
+import { useState } from 'react'
+import { YStack, XStack, Text, Input } from '@app/ui'
+import { Label, Switch } from 'tamagui'
+
+interface ComplianceAnalyticsSectionProps {
+  eeoJobCategory?: string
+  isVeteranFriendly?: boolean
+  isDisabilityFriendly?: boolean
+  affirmativeActionPlan?: boolean
+  sourceTrackingEnabled?: boolean
+  onUpdate: (data: {
+    eeo_job_category?: string
+    is_veteran_friendly?: boolean
+    is_disability_friendly?: boolean
+    affirmative_action_plan?: boolean
+    source_tracking_enabled?: boolean
+  }) => void
+}
+
+export function ComplianceAnalyticsSection({
+  eeoJobCategory,
+  isVeteranFriendly,
+  isDisabilityFriendly,
+  affirmativeActionPlan,
+  sourceTrackingEnabled,
+  onUpdate,
+}: ComplianceAnalyticsSectionProps) {
+  const [localState, setLocalState] = useState({
+    eeo_job_category: eeoJobCategory,
+    is_veteran_friendly: isVeteranFriendly,
+    is_disability_friendly: isDisabilityFriendly,
+    affirmative_action_plan: affirmativeActionPlan,
+    source_tracking_enabled: sourceTrackingEnabled,
+  })
+
+  const handleChange = (key: keyof typeof localState, value: string | boolean | undefined) => {
+    const newState = { ...localState, [key]: value }
+    setLocalState(newState)
+    onUpdate(newState)
+  }
+
+  return (
+    <YStack
+      gap="$4"
+      p="$4"
+      bg="$background"
+      borderRadius="$4"
+      borderWidth={1}
+      borderColor="$borderColor"
+    >
+      <Text fontSize="$6" fontWeight="600">
+        Compliance & Analytics
+      </Text>
+      <Text fontSize="$2" color="$gray10">
+        EEO compliance and tracking settings
+      </Text>
+
+      {/* EEO Job Category */}
+      <YStack gap="$2">
+        <Label>EEO job category</Label>
+        <Input
+          placeholder="e.g. Craft Workers, Laborers, Operatives"
+          value={localState.eeo_job_category || ''}
+          onChangeText={(text) => handleChange('eeo_job_category', text || undefined)}
+        />
+        <Text fontSize="$2" color="$gray10">
+          Equal Employment Opportunity category
+        </Text>
+      </YStack>
+
+      {/* Veteran Friendly */}
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+        <YStack gap="$1" flex={1}>
+          <Label htmlFor="veteranFriendly">Veteran friendly</Label>
+          <Text fontSize="$2" color="$gray10">
+            Position suitable for veterans
+          </Text>
+        </YStack>
+        <Switch
+          id="veteranFriendly"
+          checked={localState.is_veteran_friendly || false}
+          onCheckedChange={(checked) => handleChange('is_veteran_friendly', checked)}
+        >
+          <Switch.Thumb animation="quick" />
+        </Switch>
+      </XStack>
+
+      {/* Disability Friendly */}
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+        <YStack gap="$1" flex={1}>
+          <Label htmlFor="disabilityFriendly">Disability friendly</Label>
+          <Text fontSize="$2" color="$gray10">
+            Accommodations available for disabilities
+          </Text>
+        </YStack>
+        <Switch
+          id="disabilityFriendly"
+          checked={localState.is_disability_friendly || false}
+          onCheckedChange={(checked) => handleChange('is_disability_friendly', checked)}
+        >
+          <Switch.Thumb animation="quick" />
+        </Switch>
+      </XStack>
+
+      {/* Affirmative Action Plan */}
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+        <YStack gap="$1" flex={1}>
+          <Label htmlFor="affirmativeAction">Affirmative action plan</Label>
+          <Text fontSize="$2" color="$gray10">
+            Part of affirmative action hiring
+          </Text>
+        </YStack>
+        <Switch
+          id="affirmativeAction"
+          checked={localState.affirmative_action_plan || false}
+          onCheckedChange={(checked) => handleChange('affirmative_action_plan', checked)}
+        >
+          <Switch.Thumb animation="quick" />
+        </Switch>
+      </XStack>
+
+      {/* Source Tracking */}
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+        <YStack gap="$1" flex={1}>
+          <Label htmlFor="sourceTracking">Source tracking enabled</Label>
+          <Text fontSize="$2" color="$gray10">
+            Track where applicants find this job
+          </Text>
+        </YStack>
+        <Switch
+          id="sourceTracking"
+          checked={localState.source_tracking_enabled || false}
+          onCheckedChange={(checked) => handleChange('source_tracking_enabled', checked)}
+        >
+          <Switch.Thumb animation="quick" />
+        </Switch>
+      </XStack>
+    </YStack>
+  )
+}
