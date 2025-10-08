@@ -44,14 +44,14 @@ export function ComplianceAnalyticsSection({
       gap="$4"
       p="$4"
       bg="$background"
-      borderRadius="$4"
+      rounded="$4"
       borderWidth={1}
       borderColor="$borderColor"
     >
       <Text fontSize="$6" fontWeight="600">
         Compliance & Analytics
       </Text>
-      <Text fontSize="$2" color="$gray10">
+      <Text fontSize="$2" color="$color10">
         EEO compliance and tracking settings
       </Text>
 
@@ -63,16 +63,16 @@ export function ComplianceAnalyticsSection({
           value={localState.eeo_job_category || ''}
           onChangeText={(text) => handleChange('eeo_job_category', text || undefined)}
         />
-        <Text fontSize="$2" color="$gray10">
+        <Text fontSize="$2" color="$color10">
           Equal Employment Opportunity category
         </Text>
       </YStack>
 
       {/* Veteran Friendly */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+      <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
           <Label htmlFor="veteranFriendly">Veteran friendly</Label>
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Position suitable for veterans
           </Text>
         </YStack>
@@ -86,10 +86,10 @@ export function ComplianceAnalyticsSection({
       </XStack>
 
       {/* Disability Friendly */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+      <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
           <Label htmlFor="disabilityFriendly">Disability friendly</Label>
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Accommodations available for disabilities
           </Text>
         </YStack>
@@ -103,10 +103,10 @@ export function ComplianceAnalyticsSection({
       </XStack>
 
       {/* Affirmative Action Plan */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+      <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
           <Label htmlFor="affirmativeAction">Affirmative action plan</Label>
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Part of affirmative action hiring
           </Text>
         </YStack>
@@ -120,10 +120,10 @@ export function ComplianceAnalyticsSection({
       </XStack>
 
       {/* Source Tracking */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+      <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
           <Label htmlFor="sourceTracking">Source tracking enabled</Label>
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Track where applicants find this job
           </Text>
         </YStack>

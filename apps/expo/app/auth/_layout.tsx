@@ -8,7 +8,7 @@ export default function Layout() {
   // Show loading state while checking authentication
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View flex={1} justify="center" items="center">
         <Text>Loading...</Text>
       </View>
     )

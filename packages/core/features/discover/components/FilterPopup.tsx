@@ -20,8 +20,10 @@ type FilterPopupProps = {
   railVisible?: boolean
   showWorkers?: boolean
   showOrganizations?: boolean
+  showJobs?: boolean
   onShowWorkersChange?: (value: boolean) => void
   onShowOrganizationsChange?: (value: boolean) => void
+  onShowJobsChange?: (value: boolean) => void
 }
 
 type AccordionSection = 'show' | 'score' | 'skills' | 'certifications'
@@ -37,8 +39,10 @@ export const FilterPopup = ({
   railVisible = false,
   showWorkers = true,
   showOrganizations = true,
+  showJobs = true,
   onShowWorkersChange,
   onShowOrganizationsChange,
+  onShowJobsChange,
 }: FilterPopupProps) => {
   const [openSections, setOpenSections] = useState<Set<AccordionSection>>(new Set(['show']))
   const [scoreValue, setScoreValue] = useState(40)
@@ -180,6 +184,21 @@ export const FilterPopup = ({
                           size="$3"
                           checked={showOrganizations}
                           onCheckedChange={onShowOrganizationsChange}
+                        >
+                          <Switch.Thumb animation="quick" />
+                        </Switch>
+                      </XStack>
+
+                      {/* Jobs Toggle */}
+                      <XStack justify="space-between" items="center">
+                        <Label htmlFor="jobs-toggle" fontSize="$3">
+                          Jobs
+                        </Label>
+                        <Switch
+                          id="jobs-toggle"
+                          size="$3"
+                          checked={showJobs}
+                          onCheckedChange={onShowJobsChange}
                         >
                           <Switch.Thumb animation="quick" />
                         </Switch>

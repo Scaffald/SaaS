@@ -1,7 +1,4 @@
 
-> scaffald@ supa /Users/clay/Development/SCF-Neue
-> dotenv -- pnpx supabase --workdir packages gen types typescript --local
-
 export type Json =
   | string
   | number
@@ -258,49 +255,88 @@ export type Database = {
       }
       applications: {
         Row: {
+          application_score: number | null
           applied_at: string
+          attachments: Json | null
+          auto_reject_reason: string | null
+          auto_rejected: boolean | null
+          completed_steps: string[] | null
           cover_letter: string | null
+          current_location: string | null
+          custom_question_answers: Json | null
+          earliest_start_date: string | null
           id: string
+          is_authorized_to_work: boolean | null
+          is_complete: boolean | null
           job_id: string
           metadata: Json | null
           notes: Json | null
           pipeline_id: string | null
           pipeline_stage_id: string | null
           resume_path: string | null
+          screening_answers: Json | null
           stage_entered_at: string
           status: string
           updated_at: string
           user_id: string
+          willing_to_relocate: boolean | null
+          years_experience: number | null
         }
         Insert: {
+          application_score?: number | null
           applied_at?: string
+          attachments?: Json | null
+          auto_reject_reason?: string | null
+          auto_rejected?: boolean | null
+          completed_steps?: string[] | null
           cover_letter?: string | null
+          current_location?: string | null
+          custom_question_answers?: Json | null
+          earliest_start_date?: string | null
           id?: string
+          is_authorized_to_work?: boolean | null
+          is_complete?: boolean | null
           job_id: string
           metadata?: Json | null
           notes?: Json | null
           pipeline_id?: string | null
           pipeline_stage_id?: string | null
           resume_path?: string | null
+          screening_answers?: Json | null
           stage_entered_at?: string
           status?: string
           updated_at?: string
           user_id: string
+          willing_to_relocate?: boolean | null
+          years_experience?: number | null
         }
         Update: {
+          application_score?: number | null
           applied_at?: string
+          attachments?: Json | null
+          auto_reject_reason?: string | null
+          auto_rejected?: boolean | null
+          completed_steps?: string[] | null
           cover_letter?: string | null
+          current_location?: string | null
+          custom_question_answers?: Json | null
+          earliest_start_date?: string | null
           id?: string
+          is_authorized_to_work?: boolean | null
+          is_complete?: boolean | null
           job_id?: string
           metadata?: Json | null
           notes?: Json | null
           pipeline_id?: string | null
           pipeline_stage_id?: string | null
           resume_path?: string | null
+          screening_answers?: Json | null
           stage_entered_at?: string
           status?: string
           updated_at?: string
           user_id?: string
+          willing_to_relocate?: boolean | null
+          years_experience?: number | null
         }
         Relationships: [
           {
@@ -3604,12 +3640,25 @@ export type Database = {
           applicant_avatar_path: string | null
           applicant_first_name: string | null
           applicant_last_name: string | null
+          application_score: number | null
           applied_at: string | null
+          attachments: Json | null
+          auto_reject_reason: string | null
+          auto_rejected: boolean | null
+          completed_steps: string[] | null
           cover_letter: string | null
+          current_location: string | null
+          custom_question_answers: Json | null
+          earliest_start_date: string | null
           employment_type: string | null
           id: string | null
+          is_authorized_to_work: boolean | null
+          is_complete: boolean | null
           job_id: string | null
           job_location: string | null
+          job_min_years_experience: number | null
+          job_minimum_score: number | null
+          job_requires_work_authorization: boolean | null
           job_status: string | null
           job_title: string | null
           metadata: Json | null
@@ -3622,9 +3671,12 @@ export type Database = {
           pay_range_type: string | null
           remote_option: string | null
           resume_path: string | null
+          screening_answers: Json | null
           status: string | null
           updated_at: string | null
           user_id: string | null
+          willing_to_relocate: boolean | null
+          years_experience: number | null
         }
         Relationships: [
           {
@@ -4321,6 +4373,10 @@ export type Database = {
             }
         Returns: string
       }
+      apply_auto_rejection: {
+        Args: { p_application_id: string }
+        Returns: boolean
+      }
       apply_profile_revocation_effects: {
         Args: {
           p_fields: string[]
@@ -4383,9 +4439,17 @@ export type Database = {
         Args: { "": unknown } | { "": unknown }
         Returns: string
       }
+      calculate_application_score: {
+        Args: { p_application_id: string }
+        Returns: number
+      }
       calculate_job_content_hash: {
         Args: { p_company: string; p_description: string; p_title: string }
         Returns: string
+      }
+      check_auto_rejection_preview: {
+        Args: { p_job_id: string; p_user_id: string }
+        Returns: Json
       }
       check_existing_application: {
         Args: { p_job_id: string; p_user_id: string }
@@ -4414,6 +4478,10 @@ export type Database = {
       citextsend: {
         Args: { "": string }
         Returns: string
+      }
+      complete_application: {
+        Args: { p_application_id: string }
+        Returns: boolean
       }
       create_organization: {
         Args: {
@@ -4495,6 +4563,16 @@ export type Database = {
           job_id: string
           similarity_score: number
         }[]
+      }
+      generate_attachment_path: {
+        Args: {
+          p_application_id: string
+          p_attachment_type: string
+          p_filename: string
+          p_job_id: string
+          p_user_id: string
+        }
+        Returns: string
       }
       geography: {
         Args: { "": string } | { "": unknown }
@@ -4720,6 +4798,10 @@ export type Database = {
         Args: { "": string }
         Returns: unknown
       }
+      get_attachment_metadata: {
+        Args: { p_application_id: string; p_attachment_type: string }
+        Returns: Json
+      }
       get_organizations_with_coords: {
         Args: { params?: Json }
         Returns: {
@@ -4846,6 +4928,14 @@ export type Database = {
       }
       has_active_subscription: {
         Args: { target_org_id: string }
+        Returns: boolean
+      }
+      is_application_draft: {
+        Args: { p_application_id: string }
+        Returns: boolean
+      }
+      is_valid_attachment_type: {
+        Args: { p_type: string }
         Returns: boolean
       }
       jitter_coordinate: {
@@ -5077,6 +5167,10 @@ export type Database = {
           p_subject_type: Database["public"]["Enums"]["profile_verification_subject"]
         }
         Returns: undefined
+      }
+      recalculate_job_application_scores: {
+        Args: { p_job_id: string }
+        Returns: number
       }
       release_pending_reviews: {
         Args: Record<PropertyKey, never>

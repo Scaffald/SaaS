@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Input, Button, Spinner, ScrollView } from '@app/ui'
+import { YStack, XStack, Text, Input, Button, Spinner, ScrollView, AddressForm } from '@app/ui'
 import { TextArea, Adapt, Sheet, Select } from 'tamagui'
+import type { AddressResult } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
@@ -27,6 +28,15 @@ type JobFormData = {
   employment_type?: string
   remote_option?: string
   location?: string
+  address?: {
+    street?: string
+    city?: string
+    state?: string
+    zip?: string
+    country?: string
+    latitude?: number
+    longitude?: number
+  }
   pay_range_min_cents?: number
   pay_range_max_cents?: number
   pay_range_type?: string
@@ -152,6 +162,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     employment_type: initialData?.employment_type,
     remote_option: initialData?.remote_option,
     location: initialData?.location || '',
+    address: initialData?.address,
     pay_range_min_cents: initialData?.pay_range_min_cents,
     pay_range_max_cents: initialData?.pay_range_max_cents,
     pay_range_type: initialData?.pay_range_type,
@@ -409,15 +420,48 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           </Select>
         </YStack>
 
-        {/* Location */}
+        {/* Location with Smart Autocomplete */}
         <YStack gap="$2">
           <Text fontWeight="600">Location *</Text>
-          <Input
-            placeholder="e.g. San Francisco, CA"
+          <AddressForm
+            mode="hybrid"
+            placeholder="Search for city or address..."
+            provider="mapbox"
+            apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
+            zoomLevel="city"
+            addressValue={{
+              streetAddress: formData.address?.street || '',
+              locality: formData.address?.city || '',
+              stateAbbreviation: formData.address?.state || '',
+              postalCode: formData.address?.zip || '',
+              country: formData.address?.country || '',
+              formattedAddress: formData.location || '',
+            }}
             value={formData.location}
-            onChangeText={(text: string) => setFormData({ ...formData, location: text })}
-            disabled={isLoading}
+            onChange={(text: string) => setFormData({ ...formData, location: text })}
+            onAddressSelect={(address: AddressResult) => {
+              console.log('Selected job location:', address)
+              setFormData({
+                ...formData,
+                location: address.formattedAddress,
+                address: {
+                  street: address.streetAddress || address.route || '',
+                  city: address.locality || '',
+                  state: address.stateAbbreviation || address.administrativeAreaLevel1 || '',
+                  zip: address.postalCode || '',
+                  country: address.country || 'United States',
+                  latitude: address.coordinates?.lat,
+                  longitude: address.coordinates?.lng,
+                },
+              })
+            }}
           />
+          {formData.address?.latitude && formData.address?.longitude && (
+            <Text fontSize="$2" color="$color10">
+              📍 Coordinates: {formData.address.latitude.toFixed(4)},{' '}
+              {formData.address.longitude.toFixed(4)}
+            </Text>
+          )}
         </YStack>
 
         {/* Pay Range */}

@@ -55,22 +55,22 @@ export function ApplicationScreeningSection({
       gap="$4"
       p="$4"
       bg="$background"
-      borderRadius="$4"
+      rounded="$4"
       borderWidth={1}
       borderColor="$borderColor"
     >
       <Text fontSize="$6" fontWeight="600">
         Application Requirements
       </Text>
-      <Text fontSize="$2" color="$gray10">
+      <Text fontSize="$2" color="$color10">
         Configure what information applicants must provide
       </Text>
 
       {/* Current Location */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+      <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
           <Label htmlFor="currentLocation">Current location</Label>
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Ask applicants for their current location
           </Text>
         </YStack>
@@ -84,10 +84,10 @@ export function ApplicationScreeningSection({
       </XStack>
 
       {/* Willing to Relocate */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+      <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
           <Label htmlFor="relocation">Willing to relocate</Label>
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Ask if applicants are willing to relocate
           </Text>
         </YStack>
@@ -102,10 +102,10 @@ export function ApplicationScreeningSection({
 
       {/* Minimum Years of Experience */}
       <YStack gap="$2">
-        <XStack gap="$3" alignItems="center" justifyContent="space-between">
+        <XStack gap="$3" items="center" justify="space-between">
           <YStack gap="$1" flex={1}>
             <Label>Minimum years of experience</Label>
-            <Text fontSize="$2" color="$gray10">
+            <Text fontSize="$2" color="$color10">
               Require minimum experience level
             </Text>
           </YStack>
@@ -152,10 +152,10 @@ export function ApplicationScreeningSection({
       </YStack>
 
       {/* Work Authorization */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+      <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
           <Label htmlFor="workAuth">Authorized to work in US</Label>
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Require work authorization status
           </Text>
         </YStack>
@@ -169,10 +169,10 @@ export function ApplicationScreeningSection({
       </XStack>
 
       {/* Earliest Start Date */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+      <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
           <Label htmlFor="startDate">Earliest start date</Label>
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Ask when applicants can start
           </Text>
         </YStack>

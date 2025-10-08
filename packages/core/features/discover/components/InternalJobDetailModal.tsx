@@ -254,7 +254,7 @@ export function InternalJobDetailModal({
           exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
           gap="$4"
           width="90%"
-          maxHeight="90%"
+          maxH="90%"
         >
           <Dialog.Title fontSize="$7" fontWeight="700">
             {job.title}
@@ -313,7 +313,7 @@ export function InternalJobDetailModal({
 
               {/* Benefits Summary */}
               {job.benefits_summary && (
-                <YStack gap="$2" bg="$green2" p="$3" br="$4">
+                <YStack gap="$2" bg="$green2" p="$3" rounded="$4">
                   <XStack gap="$2" items="center">
                     <Heart size={16} color="$green10" />
                     <Text fontSize="$4" fontWeight="600" color="$green11">
@@ -355,7 +355,7 @@ export function InternalJobDetailModal({
                     <YStack gap="$2">
                       {job.minimum_education_level && (
                         <XStack gap="$2" items="center">
-                          <Award size={16} color="$orange10" />
+                          <Award size={16} color="$red10" />
                           <Text fontSize="$3" color="$color11">
                             {formatEducationLevel(job.minimum_education_level)}
                           </Text>
@@ -371,7 +371,7 @@ export function InternalJobDetailModal({
                       )}
                       {job.require_background_check && (
                         <XStack gap="$2" items="center">
-                          <Shield size={16} color="$purple10" />
+                          <Shield size={16} color="$blue10" />
                           <Text fontSize="$3" color="$color11">
                             Background check required
                             {job.background_check_type && ` (${job.background_check_type})`}
@@ -380,7 +380,7 @@ export function InternalJobDetailModal({
                       )}
                       {job.require_drug_test && (
                         <XStack gap="$2" items="center">
-                          <Shield size={16} color="$purple10" />
+                          <Shield size={16} color="$blue10" />
                           <Text fontSize="$3" color="$color11">
                             Drug test required
                           </Text>
@@ -460,7 +460,7 @@ export function InternalJobDetailModal({
               {job.application_deadline && (
                 <>
                   <Separator />
-                  <YStack gap="$2" bg="$yellow2" p="$3" br="$4">
+                  <YStack gap="$2" bg="$yellow2" p="$3" rounded="$4">
                     <XStack gap="$2" items="center">
                       <Calendar size={16} color="$yellow10" />
                       <Text fontSize="$4" fontWeight="600" color="$yellow11">
@@ -556,7 +556,7 @@ export function InternalJobDetailModal({
 
                     {/* Screening Questions */}
                     {hasScreeningQuestions && (
-                      <YStack gap="$3" bg="$blue2" p="$3" br="$4">
+                      <YStack gap="$3" bg="$blue2" p="$3" rounded="$4">
                         <Text fontSize="$4" fontWeight="600" color="$blue11">
                           Screening Questions
                         </Text>
@@ -697,10 +697,10 @@ export function InternalJobDetailModal({
               {applicationSuccess && (
                 <YStack gap="$3" items="center" py="$4">
                   <CheckCircle2 size={48} color="$green10" />
-                  <Text fontSize="$5" fontWeight="600" color="$green10" ta="center">
+                  <Text fontSize="$5" fontWeight="600" color="$green10" text="center">
                     Application Submitted!
                   </Text>
-                  <Text fontSize="$3" color="$color11" ta="center">
+                  <Text fontSize="$3" color="$color11" text="center">
                     Your application has been submitted successfully. The employer will review your
                     application and contact you if you're a good fit.
                   </Text>
@@ -715,7 +715,7 @@ export function InternalJobDetailModal({
                     <Chip bg="$green9" color="$green1" fontSize="$4" px="$4" py="$3">
                       ✓ Applied
                     </Chip>
-                    <Text fontSize="$3" color="$color11" ta="center">
+                    <Text fontSize="$3" color="$color11" text="center">
                       You have already applied to this position
                     </Text>
                   </YStack>

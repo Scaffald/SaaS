@@ -16,3 +16,6 @@ export * from './profile'
 
 // Job schemas
 export * from './jobs'
+
+// Application schemas
+export * from './applications'

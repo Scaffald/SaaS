@@ -12,6 +12,7 @@ import type { ResultListRef } from './components/ResultList'
 import { defaultCenter } from './data/mockProfiles'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
 import { useOrganizations } from './hooks/useOrganizations'
+import { useJobs } from './hooks/useJobs'
 import { useUserLocation } from './hooks/useUserLocation'
 import type { TalentProfile } from './types'
 
@@ -33,9 +34,11 @@ export const DiscoverMapScreen = () => {
   const [showResultsSheet, setShowResultsSheet] = useState(false)
   const [showWorkers, setShowWorkers] = useState(true)
   const [showOrganizations, setShowOrganizations] = useState(true)
+  const [showJobs, setShowJobs] = useState(true)
 
   const { data: talentProfiles = [], isLoading } = useTalentProfiles()
   const { data: organizations = [], isLoading: isLoadingOrgs } = useOrganizations()
+  const { data: jobs = [], isLoading: isLoadingJobs } = useJobs()
 
   // Determine map center based on search location, user location, or default
   const mapCenter: [number, number] = useMemo(() => {
@@ -48,7 +51,7 @@ export const DiscoverMapScreen = () => {
     return defaultCenter
   }, [searchCenter, location])
 
-  // Convert profiles and organizations to map pins with selected state
+  // Convert profiles, organizations, and jobs to map pins with selected state
   const mapPins: MapPinType[] = useMemo(() => {
     const workerPins = showWorkers
       ? talentProfiles.map((profile) => ({
@@ -77,14 +80,28 @@ export const DiscoverMapScreen = () => {
         }))
       : []
 
-    return [...workerPins, ...orgPins]
+    const jobPins = showJobs
+      ? jobs.map((job) => ({
+          id: job.id,
+          coordinate: job.coordinates,
+          title: job.title,
+          subtitle: job.organization_name || 'Job Opening',
+          organization: 'Job' as const,
+          color: '#FFD700', // Yellow for jobs
+          selected: job.id === summaryProfileId || job.id === selectedProfileId,
+        }))
+      : []
+
+    return [...workerPins, ...orgPins, ...jobPins]
   }, [
     talentProfiles,
     organizations,
+    jobs,
     summaryProfileId,
     selectedProfileId,
     showWorkers,
     showOrganizations,
+    showJobs,
   ])
 
   // Get profile for summary card
@@ -214,7 +231,7 @@ export const DiscoverMapScreen = () => {
           {/* Filter Bar */}
           <FilterBar
             onResultsPress={() => setShowResultsSheet(true)}
-            resultsCount={talentProfiles.length + organizations.length}
+            resultsCount={talentProfiles.length + organizations.length + jobs.length}
             onSearchPress={() => {
               if (!showSearchInput) {
                 setSummaryProfileId(null)
@@ -240,6 +257,7 @@ export const DiscoverMapScreen = () => {
             isVisible={showRail}
             profiles={showWorkers ? talentProfiles : []}
             organizations={showOrganizations ? organizations : []}
+            jobs={showJobs ? jobs : []}
             selectedId={selectedProfileId}
             onSelect={(id) => {
               setSelectedProfileId(id)
@@ -255,7 +273,7 @@ export const DiscoverMapScreen = () => {
           {/* Filter Bar */}
           <FilterBar
             onResultsPress={() => setShowRail(!showRail)}
-            resultsCount={talentProfiles.length + organizations.length}
+            resultsCount={talentProfiles.length + organizations.length + jobs.length}
             onSearchPress={() => {
               if (!showSearchInput) {
                 setSummaryProfileId(null)
@@ -292,11 +310,12 @@ export const DiscoverMapScreen = () => {
               isVisible={true}
               profiles={showWorkers ? talentProfiles : []}
               organizations={showOrganizations ? organizations : []}
+              jobs={showJobs ? jobs : []}
               selectedId={selectedProfileId}
               onSelect={(id) => {
                 setSelectedProfileId(id)
               }}
-              isLoading={isLoading || isLoadingOrgs}
+              isLoading={isLoading || isLoadingOrgs || isLoadingJobs}
               resultListRef={resultListRef}
             />
           </YStack>
@@ -310,8 +329,10 @@ export const DiscoverMapScreen = () => {
         railVisible={!isSmallScreen && showRail}
         showWorkers={showWorkers}
         showOrganizations={showOrganizations}
+        showJobs={showJobs}
         onShowWorkersChange={setShowWorkers}
         onShowOrganizationsChange={setShowOrganizations}
+        onShowJobsChange={setShowJobs}
       />
     </YStack>
   )

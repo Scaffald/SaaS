@@ -73,14 +73,14 @@ export function EnhancedRequirementsSection({
       gap="$4"
       p="$4"
       bg="$background"
-      borderRadius="$4"
+      rounded="$4"
       borderWidth={1}
       borderColor="$borderColor"
     >
       <Text fontSize="$6" fontWeight="600">
         Enhanced Requirements
       </Text>
-      <Text fontSize="$2" color="$gray10">
+      <Text fontSize="$2" color="$color10">
         Additional job requirements and qualifications
       </Text>
 
@@ -127,10 +127,10 @@ export function EnhancedRequirementsSection({
       </YStack>
 
       {/* Background Check */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+      <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
           <Label htmlFor="backgroundCheck">Require background check</Label>
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Background screening required for this position
           </Text>
         </YStack>
@@ -155,10 +155,10 @@ export function EnhancedRequirementsSection({
       )}
 
       {/* Drug Test */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+      <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
           <Label htmlFor="drugTest">Require drug test</Label>
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Pre-employment drug screening required
           </Text>
         </YStack>
@@ -172,10 +172,10 @@ export function EnhancedRequirementsSection({
       </XStack>
 
       {/* Driver's License */}
-      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+      <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
           <Label htmlFor="driversLicense">Require driver's license</Label>
-          <Text fontSize="$2" color="$gray10">
+          <Text fontSize="$2" color="$color10">
             Valid driver's license required
           </Text>
         </YStack>
@@ -223,7 +223,7 @@ export function EnhancedRequirementsSection({
             }
           }}
         />
-        <Text fontSize="$2" color="$gray10">
+        <Text fontSize="$2" color="$color10">
           Percentage of time spent traveling for work
         </Text>
       </YStack>
