@@ -238,7 +238,7 @@ user_accounts as (
     s.id,
     '00000000-0000-0000-0000-000000000000'::uuid,
     s.email,
-    crypt('SeedUser123!', gen_salt('bf')),
+    extensions.crypt('SeedUser123!', extensions.gen_salt('bf')),
     now(),
     now(),
     jsonb_build_object('provider', 'email'),
