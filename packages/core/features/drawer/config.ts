@@ -48,6 +48,15 @@ export const generateDashboardDrawerItems = (options?: {
       });
     }
 
+    // Add Universities sub-item if available
+    if (OFFICE_ROUTES.UNIVERSITIES) {
+      officeSubItems.push({
+        key: "office-universities",
+        title: OFFICE_ROUTES.UNIVERSITIES.title || "Universities",
+        href: OFFICE_ROUTES.UNIVERSITIES.fullPath,
+      });
+    }
+
     items.push({
       key: "office",
       title: "Office",
