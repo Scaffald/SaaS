@@ -10,11 +10,13 @@ import {
   employmentProfileSchema,
   generalProfileSchema,
 } from "../../_shared/profile-schemas.ts";
+import { officeUniversitiesRouter } from "./office/universities.router.ts";
 
 /**
  * Office router - super admin only operations
  */
 export const officeRouter = t.router({
+  universities: officeUniversitiesRouter,
   /**
    * List all users
    * Returns paginated list of users with basic profile info

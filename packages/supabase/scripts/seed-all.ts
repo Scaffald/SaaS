@@ -47,6 +47,45 @@ async function seedCSICodes() {
   }
 }
 
+async function seedUniversities() {
+  console.log("\n🎓 Seeding Universities Catalog...");
+
+  try {
+    const scriptDir = path.dirname(new URL(import.meta.url).pathname);
+    const universitiesScriptPath = path.join(scriptDir, "seed-universities.ts");
+    const jsonPath = path.join(scriptDir, "seed-universities.json");
+
+    // Check if JSON file exists
+    const fs = await import("node:fs");
+    if (!fs.existsSync(jsonPath)) {
+      console.log(
+        "⏭️  Skipping universities seed (seed-universities.json not found)",
+      );
+      return true; // Not an error, just skip
+    }
+
+    // Run the universities seeding script
+    const { stdout, stderr } = await execAsync(
+      `pnpx tsx "${universitiesScriptPath}"`,
+      {
+        env: {
+          ...process.env,
+          DATABASE_URL: process.env.DATABASE_URL ||
+            "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
+        },
+      },
+    );
+
+    if (stdout) console.log(stdout);
+    if (stderr) console.error(stderr);
+
+    return true;
+  } catch (error) {
+    console.error("❌ Error seeding universities:", error);
+    return false;
+  }
+}
+
 async function seedJobs() {
   console.log("\n💼 Seeding External Jobs with Enhanced Parsing...");
 
@@ -101,6 +140,41 @@ async function verifySkills() {
   console.log(
     `   Top-level skills: ${topSkills?.map((s) => s.name).join(", ")}`,
   );
+  return true;
+}
+
+async function verifyUniversities() {
+  console.log("\n🎓 Verifying Universities Data...");
+
+  const { count: universityCount, error: universityError } = await supabase
+    .from("universities")
+    .select("*", { count: "exact", head: true });
+
+  if (universityError) {
+    console.error("❌ Error checking universities:", universityError);
+    return false;
+  }
+
+  console.log(`✅ Found ${universityCount} universities in database`);
+
+  // Check for some universities
+  const { data: universities, error: uniError } = await supabase
+    .from("universities")
+    .select("id, name, country")
+    .limit(5);
+
+  if (uniError) {
+    console.error("❌ Error fetching universities:", uniError);
+    return false;
+  }
+
+  if (universities && universities.length > 0) {
+    console.log(
+      `   Sample universities: ${
+        universities?.map((u) => `${u.name} (${u.country})`).join(", ")
+      }`,
+    );
+  }
   return true;
 }
 
@@ -167,6 +241,13 @@ async function displayStats() {
 
   console.log(`Total Industries: ${industryCount}`);
 
+  // Universities stats
+  const { count: universityCount } = await supabase
+    .from("universities")
+    .select("*", { count: "exact", head: true });
+
+  console.log(`Total Universities: ${universityCount || 0}`);
+
   // Feeds stats
   const { count: feedCount } = await supabase
     .from("external_job_feeds")
@@ -206,9 +287,23 @@ async function main() {
     process.exit(1);
   }
 
+  // Seed universities
+  console.log(`\n${"=".repeat(50)}`);
+  console.log("📋 Step 2: Seeding Universities Catalog");
+  console.log("=".repeat(50));
+  const universitiesSeeded = await seedUniversities();
+
+  if (!universitiesSeeded) {
+    console.error("\n❌ Universities seeding failed. Check errors above.");
+    process.exit(1);
+  }
+
+  // Verify universities if they were seeded
+  await verifyUniversities();
+
   // Seed jobs
   console.log(`\n${"=".repeat(50)}`);
-  console.log("📋 Step 2: Seeding External Jobs from RSS Feeds");
+  console.log("📋 Step 3: Seeding External Jobs from RSS Feeds");
   console.log("=".repeat(50));
   const jobsSeeded = await seedJobs();
 
@@ -219,6 +314,7 @@ async function main() {
 
   console.log(`\n✅ Seeding complete!`);
   console.log(`   - CSI codes seeded ✓`);
+  console.log(`   - Universities seeded ✓`);
   console.log(`   - External jobs seeded ✓`);
 
   // Display stats
