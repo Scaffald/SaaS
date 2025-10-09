@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { YStack, ScrollView, Text, Input, Label, Button, XStack, Separator, Slider } from 'tamagui'
-import { Search, Filter, X, Award, BadgeCheck } from '@tamagui/lucide-icons'
+import { YStack, ScrollView, Text, Button, XStack, Separator, Slider, Input, Label } from 'tamagui'
+import { Search, X, Award, BadgeCheck } from '@tamagui/lucide-icons'
 
 interface DiscoverWorkersRightProps {
   onSearchChange: (query: string) => void
@@ -28,32 +28,12 @@ export function DiscoverWorkersRight({
   onCertificationsChange,
 }: DiscoverWorkersRightProps) {
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
   const [skillInput, setSkillInput] = useState('')
   const [certificationInput, setCertificationInput] = useState('')
-
-  // Mock industries - in real app, fetch from API
-  const industries = [
-    'Construction',
-    'Manufacturing',
-    'Engineering',
-    'Technology',
-    'Healthcare',
-    'Education',
-  ]
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value)
     onSearchChange(value)
-  }
-
-  const handleIndustryToggle = (industry: string) => {
-    const newIndustries = selectedIndustries.includes(industry)
-      ? selectedIndustries.filter((i) => i !== industry)
-      : [...selectedIndustries, industry]
-
-    setSelectedIndustries(newIndustries)
-    onIndustriesChange(newIndustries)
   }
 
   const handleAddSkill = () => {
@@ -80,7 +60,6 @@ export function DiscoverWorkersRight({
 
   const handleClearFilters = () => {
     setSearchQuery('')
-    setSelectedIndustries([])
     setSkillInput('')
     setCertificationInput('')
     onSearchChange('')
@@ -92,7 +71,6 @@ export function DiscoverWorkersRight({
 
   const hasActiveFilters =
     searchQuery.length > 0 ||
-    selectedIndustries.length > 0 ||
     minScore > 0 ||
     selectedSkills.length > 0 ||
     selectedCertifications.length > 0
@@ -140,7 +118,7 @@ export function DiscoverWorkersRight({
         <YStack gap="$3">
           <XStack justify="space-between" items="center">
             <Text fontSize="$4" fontWeight="600" color="$color12">
-              Minimum Elevate Score
+              Score
             </Text>
             <Text fontSize="$5" fontWeight="700" color="$blue10">
               {minScore}
@@ -157,7 +135,7 @@ export function DiscoverWorkersRight({
             <Slider.Track>
               <Slider.TrackActive />
             </Slider.Track>
-            <Slider.Thumb circular index={0} />
+            <Slider.Thumb circular index={0} size="$0.75" />
           </Slider>
         </YStack>
 
@@ -268,35 +246,6 @@ export function DiscoverWorkersRight({
           )}
         </YStack>
 
-        <Separator />
-
-        {/* Industry Filter */}
-        <YStack gap="$3">
-          <XStack items="center" gap="$2">
-            <Filter size={16} color="$color12" />
-            <Text fontSize="$4" fontWeight="600" color="$color12">
-              Industries
-            </Text>
-          </XStack>
-
-          <YStack gap="$2">
-            {industries.map((industry) => {
-              const isSelected = selectedIndustries.includes(industry)
-              return (
-                <Button
-                  key={industry}
-                  size="$3"
-                  theme={isSelected ? 'blue' : undefined}
-                  variant="outlined"
-                  onPress={() => handleIndustryToggle(industry)}
-                >
-                  {industry}
-                </Button>
-              )
-            })}
-          </YStack>
-        </YStack>
-
         {/* Active Filters Summary */}
         {hasActiveFilters && (
           <>
@@ -343,18 +292,6 @@ export function DiscoverWorkersRight({
                   <Text fontSize="$3" fontWeight="600" color="$green10">
                     {selectedCertifications.length}
                   </Text>
-                </XStack>
-              )}
-              {selectedIndustries.length > 0 && (
-                <XStack gap="$2" items="center" flexWrap="wrap">
-                  <Text fontSize="$3" color="$color11">
-                    Industries:
-                  </Text>
-                  {selectedIndustries.map((industry) => (
-                    <Text key={industry} fontSize="$3" fontWeight="600" color="$blue10">
-                      {industry}
-                    </Text>
-                  ))}
                 </XStack>
               )}
             </YStack>
