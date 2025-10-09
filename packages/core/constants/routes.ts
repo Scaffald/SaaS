@@ -286,6 +286,10 @@ const routeConfig: Record<string, RouteConfig> = {
         path: "/office/jobs",
         title: "Manage Jobs",
       },
+      universities: {
+        path: "/office/universities",
+        title: "Manage Universities",
+      },
     },
   },
 };
@@ -320,6 +324,9 @@ export const OFFICE_ROUTES = {
   INDEX: ROUTES.office.childrenArray?.find((r) => r.path === "/office"),
   USERS: ROUTES.office.childrenArray?.find((r) => r.path === "/office/users"),
   JOBS: ROUTES.office.childrenArray?.find((r) => r.path === "/office/jobs"),
+  UNIVERSITIES: ROUTES.office.childrenArray?.find((r) =>
+    r.path === "/office/universities"
+  ),
 };
 
 // Route type for TypeScript safety
