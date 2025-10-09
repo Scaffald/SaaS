@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 import { protectedProcedure, t } from "../../middleware.ts";
 import {
   deleteCertificationFileInputSchema,
@@ -18,7 +19,271 @@ import {
  */
 export const profileCertificationsRouter = t.router({
   /**
-   * Get user's certifications
+   * Search certifications catalog for user selection
+   */
+  searchCatalogCertifications: protectedProcedure
+    .input(
+      z.object({
+        query: z.string().min(1),
+        category: z.enum([
+          "safety",
+          "trade",
+          "equipment",
+          "license",
+          "management",
+          "other",
+        ]).optional(),
+        limit: z.number().min(1).max(50).default(20),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { supabase } = ctx;
+
+      let query = supabase
+        .from("certifications")
+        .select("*")
+        .eq("is_active", true)
+        .ilike("name", `%${input.query}%`)
+        .order("name")
+        .limit(input.limit);
+
+      if (input.category) {
+        query = query.eq("category", input.category);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to search certifications: ${error.message}`,
+        });
+      }
+
+      return { certifications: data || [] };
+    }),
+
+  /**
+   * Add certification from catalog to user profile
+   */
+  addUserCertification: protectedProcedure
+    .input(
+      z.object({
+        certification_id: z.string().uuid(),
+        issue_date: z.string(),
+        expiration_date: z.string().optional(),
+        credential_id: z.string().optional(),
+        credential_url: z.string().optional(),
+        description: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      try {
+        // Verify certification exists in catalog
+        const { data: catalogCert, error: catalogError } = await supabase
+          .from("certifications")
+          .select("id, name, issuing_organization")
+          .eq("id", input.certification_id)
+          .eq("is_active", true)
+          .single();
+
+        if (catalogError || !catalogCert) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Certification not found in catalog",
+          });
+        }
+
+        // Check if user already has this certification
+        const { data: existing } = await supabase
+          .from("user_certifications")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("certification_id", input.certification_id)
+          .eq("is_active", true)
+          .single();
+
+        if (existing) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "You already have this certification",
+          });
+        }
+
+        // Create user certification
+        const { data, error } = await supabase
+          .from("user_certifications")
+          .insert({
+            user_id: user.id,
+            certification_id: input.certification_id,
+            issue_date: input.issue_date,
+            expiration_date: input.expiration_date || null,
+            credential_id: input.credential_id || null,
+            credential_url: input.credential_url || null,
+            description: input.description || null,
+            is_active: true,
+            verification_status: "unverified",
+          })
+          .select()
+          .single();
+
+        if (error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to add certification: ${error.message}`,
+          });
+        }
+
+        return { success: true, certification: data };
+      } catch (error) {
+        const errorMessage = error instanceof Error
+          ? error.message
+          : String(error);
+        console.error("Add user certification error:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to add certification: ${errorMessage}`,
+        });
+      }
+    }),
+
+  /**
+   * Update user certification metadata
+   */
+  updateUserCertificationMetadata: protectedProcedure
+    .input(
+      z.object({
+        certification_id: z.string().uuid(),
+        issue_date: z.string().optional(),
+        expiration_date: z.string().optional(),
+        credential_id: z.string().optional(),
+        credential_url: z.string().optional(),
+        description: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      try {
+        const { certification_id, ...updates } = input;
+
+        const { data, error } = await supabase
+          .from("user_certifications")
+          .update({
+            ...updates,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", certification_id)
+          .eq("user_id", user.id)
+          .select()
+          .single();
+
+        if (error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to update certification: ${error.message}`,
+          });
+        }
+
+        return { success: true, certification: data };
+      } catch (error) {
+        const errorMessage = error instanceof Error
+          ? error.message
+          : String(error);
+        console.error("Update user certification error:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to update certification: ${errorMessage}`,
+        });
+      }
+    }),
+
+  /**
+   * Remove user certification
+   */
+  removeUserCertification: protectedProcedure
+    .input(z.object({ certification_id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      try {
+        // Get certification to check if it has a file
+        const { data: cert, error: fetchError } = await supabase
+          .from("user_certifications")
+          .select("certificate_file_path")
+          .eq("id", input.certification_id)
+          .eq("user_id", user.id)
+          .single();
+
+        if (fetchError) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Certification not found",
+          });
+        }
+
+        // Delete file from storage if exists
+        if (cert.certificate_file_path) {
+          await supabase.storage
+            .from("certifications")
+            .remove([cert.certificate_file_path]);
+        }
+
+        // Soft delete certification record
+        const { error: deleteError } = await supabase
+          .from("user_certifications")
+          .update({ is_active: false })
+          .eq("id", input.certification_id)
+          .eq("user_id", user.id);
+
+        if (deleteError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to remove certification: ${deleteError.message}`,
+          });
+        }
+
+        return { success: true };
+      } catch (error) {
+        const errorMessage = error instanceof Error
+          ? error.message
+          : String(error);
+        console.error("Remove user certification error:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to remove certification: ${errorMessage}`,
+        });
+      }
+    }),
+
+  /**
+   * Get user's certifications with catalog details
+   */
+  getUserCertificationsWithDetails: protectedProcedure.query(
+    async ({ ctx }) => {
+      const { supabase, user } = ctx;
+
+      const { data, error } = await supabase
+        .from("v_user_certifications_with_details")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("issue_date", { ascending: false });
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch certifications: ${error.message}`,
+        });
+      }
+
+      return { certifications: data || [] };
+    },
+  ),
+
+  /**
+   * Get user's certifications (legacy - maintains backwards compatibility)
    */
   getCertifications: protectedProcedure
     .output(getCertificationsOutputSchema)

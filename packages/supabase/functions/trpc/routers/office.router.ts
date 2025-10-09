@@ -7,8 +7,8 @@ import {
   jobUpdateSchema,
 } from "../../_shared/job-schemas.ts";
 import {
-  generalProfileSchema,
   employmentProfileSchema,
+  generalProfileSchema,
 } from "../../_shared/profile-schemas.ts";
 
 /**
@@ -73,9 +73,9 @@ export const officeRouter = t.router({
         console.error("Error fetching private data:", privateError);
       }
 
-      return { 
-        profile, 
-        privateData: privateData || null 
+      return {
+        profile,
+        privateData: privateData || null,
       };
     }),
 
@@ -340,7 +340,10 @@ export const officeRouter = t.router({
       // Update certifications if provided
       if (certification_ids !== undefined) {
         // Delete existing certifications
-        await supabaseAdmin.from("job_certifications").delete().eq("job_id", id);
+        await supabaseAdmin.from("job_certifications").delete().eq(
+          "job_id",
+          id,
+        );
 
         // Insert new certifications
         if (certification_ids.length > 0) {
@@ -455,7 +458,62 @@ export const officeRouter = t.router({
   }),
 
   /**
-   * Get all certifications
+   * Search certifications with pagination
+   */
+  searchCertifications: superAdminProcedure
+    .input(
+      z.object({
+        query: z.string().optional(),
+        category: z.enum([
+          "safety",
+          "trade",
+          "equipment",
+          "license",
+          "management",
+          "other",
+        ]).optional(),
+        include_inactive: z.boolean().default(false),
+        limit: z.number().min(1).max(100).default(50),
+        offset: z.number().min(0).default(0),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      let query = ctx.supabaseAdmin
+        .from("certifications")
+        .select("*", { count: "exact" })
+        .order("name");
+
+      if (!input.include_inactive) {
+        query = query.eq("is_active", true);
+      }
+
+      if (input.category) {
+        query = query.eq("category", input.category);
+      }
+
+      if (input.query) {
+        query = query.ilike("name", `%${input.query}%`);
+      }
+
+      query = query.range(input.offset, input.offset + input.limit - 1);
+
+      const { data, error, count } = await query;
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to search certifications: ${error.message}`,
+        });
+      }
+
+      return {
+        certifications: data ?? [],
+        total: count ?? 0,
+      };
+    }),
+
+  /**
+   * Get all certifications (simple list)
    */
   getCertifications: superAdminProcedure.query(async ({ ctx }) => {
     const { data, error } = await ctx.supabaseAdmin
@@ -473,6 +531,164 @@ export const officeRouter = t.router({
 
     return { certifications: data ?? [] };
   }),
+
+  /**
+   * Get single certification by ID
+   */
+  getCertification: superAdminProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const { data, error } = await ctx.supabaseAdmin
+        .from("certifications")
+        .select("*")
+        .eq("id", input.id)
+        .single();
+
+      if (error) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `Certification not found: ${error.message}`,
+        });
+      }
+
+      return { certification: data };
+    }),
+
+  /**
+   * Create new certification
+   */
+  createCertification: superAdminProcedure
+    .input(
+      z.object({
+        name: z.string().min(1, "Name is required"),
+        slug: z.string().min(1, "Slug is required"),
+        issuing_organization: z.string().optional(),
+        category: z.enum([
+          "safety",
+          "trade",
+          "equipment",
+          "license",
+          "management",
+          "other",
+        ]),
+        description: z.string().optional(),
+        typical_duration_days: z.number().int().positive().optional(),
+        requires_renewal: z.boolean().default(false),
+        renewal_period_months: z.number().int().positive().optional(),
+        metadata: z.record(z.any()).optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { data, error } = await ctx.supabaseAdmin
+        .from("certifications")
+        .insert({
+          ...input,
+          is_active: true,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to create certification: ${error.message}`,
+        });
+      }
+
+      return { certification: data };
+    }),
+
+  /**
+   * Update existing certification
+   */
+  updateCertification: superAdminProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        name: z.string().min(1).optional(),
+        slug: z.string().min(1).optional(),
+        issuing_organization: z.string().optional(),
+        category: z.enum([
+          "safety",
+          "trade",
+          "equipment",
+          "license",
+          "management",
+          "other",
+        ]).optional(),
+        description: z.string().optional(),
+        typical_duration_days: z.number().int().positive().optional(),
+        requires_renewal: z.boolean().optional(),
+        renewal_period_months: z.number().int().positive().optional(),
+        is_active: z.boolean().optional(),
+        metadata: z.record(z.any()).optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id, ...updateData } = input;
+
+      const { data, error } = await ctx.supabaseAdmin
+        .from("certifications")
+        .update(updateData)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to update certification: ${error.message}`,
+        });
+      }
+
+      return { certification: data };
+    }),
+
+  /**
+   * Deactivate certification (soft delete)
+   */
+  deactivateCertification: superAdminProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const { data, error } = await ctx.supabaseAdmin
+        .from("certifications")
+        .update({ is_active: false })
+        .eq("id", input.id)
+        .select()
+        .single();
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to deactivate certification: ${error.message}`,
+        });
+      }
+
+      return { certification: data };
+    }),
+
+  /**
+   * Reactivate certification
+   */
+  reactivateCertification: superAdminProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const { data, error } = await ctx.supabaseAdmin
+        .from("certifications")
+        .update({ is_active: true })
+        .eq("id", input.id)
+        .select()
+        .single();
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to reactivate certification: ${error.message}`,
+        });
+      }
+
+      return { certification: data };
+    }),
 
   /**
    * Get all skills
@@ -516,7 +732,9 @@ export const officeRouter = t.router({
 
       const { data: privateData, error: privateError } = await ctx.supabaseAdmin
         .from("user_private")
-        .select("phone_number, street_address, city, state, zip_code, country, latitude, longitude")
+        .select(
+          "phone_number, street_address, city, state, zip_code, country, latitude, longitude",
+        )
         .eq("user_id", input.userId)
         .single();
 
@@ -562,7 +780,9 @@ export const officeRouter = t.router({
       if (data.first_name) profileUpdate.first_name = data.first_name;
       if (data.last_name) profileUpdate.last_name = data.last_name;
       if (data.about !== undefined) profileUpdate.about = data.about;
-      if (data.avatar_path !== undefined) profileUpdate.avatar_path = data.avatar_path;
+      if (data.avatar_path !== undefined) {
+        profileUpdate.avatar_path = data.avatar_path;
+      }
 
       if (Object.keys(profileUpdate).length > 0) {
         const { error: profileError } = await ctx.supabaseAdmin
@@ -582,13 +802,27 @@ export const officeRouter = t.router({
       const privateUpdate: Record<string, string | number | null> = {};
       if (data.phone !== undefined) privateUpdate.phone_number = data.phone;
       if (data.address) {
-        if (data.address.street !== undefined) privateUpdate.street_address = data.address.street;
-        if (data.address.city !== undefined) privateUpdate.city = data.address.city;
-        if (data.address.state !== undefined) privateUpdate.state = data.address.state;
-        if (data.address.zip !== undefined) privateUpdate.zip_code = data.address.zip;
-        if (data.address.country !== undefined) privateUpdate.country = data.address.country;
-        if (data.address.latitude !== undefined) privateUpdate.latitude = data.address.latitude;
-        if (data.address.longitude !== undefined) privateUpdate.longitude = data.address.longitude;
+        if (data.address.street !== undefined) {
+          privateUpdate.street_address = data.address.street;
+        }
+        if (data.address.city !== undefined) {
+          privateUpdate.city = data.address.city;
+        }
+        if (data.address.state !== undefined) {
+          privateUpdate.state = data.address.state;
+        }
+        if (data.address.zip !== undefined) {
+          privateUpdate.zip_code = data.address.zip;
+        }
+        if (data.address.country !== undefined) {
+          privateUpdate.country = data.address.country;
+        }
+        if (data.address.latitude !== undefined) {
+          privateUpdate.latitude = data.address.latitude;
+        }
+        if (data.address.longitude !== undefined) {
+          privateUpdate.longitude = data.address.longitude;
+        }
       }
 
       if (Object.keys(privateUpdate).length > 0) {
@@ -618,7 +852,7 @@ export const officeRouter = t.router({
       const { data, error } = await ctx.supabaseAdmin
         .from("user_private")
         .select(
-          "preferred_work_locations, willing_to_travel, travel_distance_miles, us_resident, us_passport, drivers_license_classes, military_status, availability, hourly_rate"
+          "preferred_work_locations, willing_to_travel, travel_distance_miles, us_resident, us_passport, drivers_license_classes, military_status, availability, hourly_rate",
         )
         .eq("user_id", input.userId)
         .single();
