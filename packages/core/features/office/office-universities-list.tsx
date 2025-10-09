@@ -118,7 +118,7 @@ export function OfficeUniversitiesList({ onEdit, onRefresh }: OfficeUniversities
   ]
 
   return (
-    <YStack flex={1} bg="$background">
+    <YStack flex={1} bg="$background" height="100vh">
       {/* Header */}
       <YStack
         p="$4"
@@ -185,47 +185,49 @@ export function OfficeUniversitiesList({ onEdit, onRefresh }: OfficeUniversities
         )}
       </YStack>
 
-      {/* Table */}
-      <DataTable
-        columns={
-          [
-            ...columns,
-            columnHelper.display({
-              id: 'actions',
-              header: 'Actions',
-              cell: (info) => {
-                const university = info.row.original
-                return (
-                  <XStack gap="$2">
-                    <Button
-                      size="$2"
-                      variant="outlined"
-                      icon={Pencil}
-                      onPress={() => onEdit(university)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      size="$2"
-                      variant="outlined"
-                      theme="red"
-                      icon={Trash2}
-                      onPress={() => handleDelete(university)}
-                    >
-                      Delete
-                    </Button>
-                  </XStack>
-                )
-              },
-            }),
-          ] as ColumnDef<unknown, unknown>[]
-        }
-        data={universities}
-        isLoading={isLoading}
-        onRowClick={(university) => onEdit(university as University)}
-        pageSize={pageSize}
-        emptyMessage="No universities found"
-      />
+      {/* Table - with scroll */}
+      <YStack flex={1} overflow="hidden">
+        <DataTable
+          columns={
+            [
+              ...columns,
+              columnHelper.display({
+                id: 'actions',
+                header: 'Actions',
+                cell: (info) => {
+                  const university = info.row.original
+                  return (
+                    <XStack gap="$2">
+                      <Button
+                        size="$2"
+                        variant="outlined"
+                        icon={Pencil}
+                        onPress={() => onEdit(university)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        size="$2"
+                        variant="outlined"
+                        theme="red"
+                        icon={Trash2}
+                        onPress={() => handleDelete(university)}
+                      >
+                        Delete
+                      </Button>
+                    </XStack>
+                  )
+                },
+              }),
+            ] as ColumnDef<unknown, unknown>[]
+          }
+          data={universities}
+          isLoading={isLoading}
+          onRowClick={(university) => onEdit(university as University)}
+          pageSize={pageSize}
+          emptyMessage="No universities found"
+        />
+      </YStack>
 
       {/* Pagination */}
       {totalPages > 1 && (
