@@ -122,7 +122,8 @@ export function LocationListInput({
       <YStack gap="$2">
         {value.length > 0 ? (
           Array.from({ length: fieldCount }, (_, index) => (
-            <XStack key={randomUUID()} gap="$2" items="flex-start">
+            // biome-ignore lint/suspicious/noArrayIndexKey: Index is stable here since locations don't reorder
+            <XStack key={`location-input-${index}`} gap="$2" items="flex-start">
               <YStack flex={1}>
                 <AddressAutocomplete
                   value={value[index] || ''}

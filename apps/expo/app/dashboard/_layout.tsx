@@ -20,7 +20,10 @@ export default function Layout() {
   return (
     <DrawerLayout protectionComponent={null}>
       <Drawer.Screen name="index" options={{ title: 'Dashboard' }} />
-      <Drawer.Screen name="discover/index" options={{ title: 'Discover' }} />
+      <Drawer.Screen name="discover/map/index" options={{ title: 'Map Search' }} />
+      <Drawer.Screen name="discover/workers/index" options={{ title: 'Search Workers' }} />
+      <Drawer.Screen name="discover/employers/index" options={{ title: 'Search Employers' }} />
+      <Drawer.Screen name="discover/jobs/index" options={{ title: 'Search Jobs' }} />
       <Drawer.Screen name="profile/general/index" options={{ title: 'General Information' }} />
       <Drawer.Screen name="profile/education/index" options={{ title: 'Education' }} />
       <Drawer.Screen name="profile/employment/index" options={{ title: 'Employment' }} />

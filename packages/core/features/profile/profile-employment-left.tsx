@@ -11,6 +11,7 @@ import {
   AnimatePresence,
   Slider,
   Checkbox,
+  Label,
 } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { useForm, Controller } from 'react-hook-form'
@@ -25,7 +26,16 @@ import {
   profileEmploymentInputSchema,
 } from '@app/core/utils/api'
 import { DashboardWidget, LocationListInput, ToggleCard } from '@app/ui'
-import { Flag, MapPin, Plane, DollarSign, Car, Shield, Calendar } from '@tamagui/lucide-icons'
+import {
+  Flag,
+  MapPin,
+  Plane,
+  DollarSign,
+  Car,
+  Shield,
+  Calendar,
+  Check,
+} from '@tamagui/lucide-icons'
 
 /**
  * Profile Employment Left Component
@@ -79,13 +89,32 @@ export function ProfileEmploymentLeft() {
   }, [employmentData, reset])
 
   const onSubmit = async (data: EmploymentProfileFormData) => {
+    console.log('✅ Form submission started')
+    console.log('📋 Form data:', JSON.stringify(data, null, 2))
     setIsLoading(true)
     try {
       await updateEmploymentMutation.mutateAsync(data)
+    } catch (error) {
+      console.error('❌ Mutation error:', error)
     } finally {
       setIsLoading(false)
     }
   }
+
+  const onFormError = (formErrors: typeof errors) => {
+    console.error('❌ Form validation failed!')
+    console.error('Validation errors:', JSON.stringify(formErrors, null, 2))
+    toast.show('Validation Error', {
+      message: 'Please check the form for errors',
+    })
+  }
+
+  // Debug: Log errors whenever they change
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      console.log('⚠️ Current form errors:', errors)
+    }
+  }, [errors])
 
   if (isLoadingEmployment) {
     return (
@@ -100,6 +129,20 @@ export function ProfileEmploymentLeft() {
     <YStack>
       <DashboardWidget>
         <YStack gap="$4" p="$4" flex={1}>
+          {/* Debug: Show validation errors */}
+          {Object.keys(errors).length > 0 && (
+            <YStack bg="$red2" p="$3" rounded="$4" borderWidth={1} borderColor="$red8">
+              <Text fontWeight="600" color="$red11" mb="$2">
+                Validation Errors:
+              </Text>
+              {Object.entries(errors).map(([key, error]) => (
+                <Text key={key} color="$red11" fontSize="$2">
+                  • {key}: {error?.message?.toString() || 'Invalid value'}
+                </Text>
+              ))}
+            </YStack>
+          )}
+
           <YStack gap="$4">
             {/* Hourly Rate */}
             <YStack gap="$2">
@@ -244,16 +287,20 @@ export function ProfileEmploymentLeft() {
                 name="drivers_license_classes"
                 control={control}
                 render={({ field }) => {
-                  const [isExpanded, setIsExpanded] = useState(
-                    !!(field.value && field.value.length > 0)
-                  )
+                  const hasValues = !!(field.value && field.value.length > 0)
+                  const [isExpanded, setIsExpanded] = useState(hasValues)
+
+                  // Sync expanded state with checkbox values
+                  useEffect(() => {
+                    setIsExpanded(hasValues)
+                  }, [hasValues])
 
                   return (
                     <ToggleCard
                       icon={<Car size="$2" color="$color11" />}
                       title="I have a valid driver's license"
                       description="Select all license classes that apply"
-                      checked={isExpanded}
+                      checked={hasValues || isExpanded}
                       onCheckedChange={(checked) => {
                         setIsExpanded(checked)
                         if (!checked) {
@@ -262,36 +309,33 @@ export function ProfileEmploymentLeft() {
                       }}
                       expandedContent={
                         <YStack gap="$2" pt="$2">
-                          {DRIVERS_LICENSE_OPTIONS.map((license) => (
-                            <XStack key={license} gap="$3" items="center">
-                              <Checkbox
-                                checked={field.value?.includes(license) || false}
-                                onCheckedChange={(checked) => {
-                                  const current = field.value || []
-                                  if (checked === true) {
-                                    field.onChange([...current, license])
-                                  } else {
-                                    const filtered = current.filter((l) => l !== license)
-                                    field.onChange(filtered)
-                                  }
-                                }}
-                              />
-                              <Text
-                                onPress={() => {
-                                  const current = field.value || []
-                                  const isChecked = current.includes(license)
-                                  if (isChecked) {
-                                    const filtered = current.filter((l) => l !== license)
-                                    field.onChange(filtered)
-                                  } else {
-                                    field.onChange([...current, license])
-                                  }
-                                }}
-                              >
-                                Class {license}
-                              </Text>
-                            </XStack>
-                          ))}
+                          {DRIVERS_LICENSE_OPTIONS.map((license) => {
+                            const checkboxId = `license-${license.replace(/\s+/g, '-').toLowerCase()}`
+                            return (
+                              <XStack key={license} gap="$3" items="center">
+                                <Checkbox
+                                  id={checkboxId}
+                                  checked={field.value?.includes(license) || false}
+                                  onCheckedChange={(checked) => {
+                                    const current = field.value || []
+                                    if (checked === true) {
+                                      field.onChange([...current, license])
+                                    } else {
+                                      const filtered = current.filter((l) => l !== license)
+                                      field.onChange(filtered)
+                                    }
+                                  }}
+                                >
+                                  <Checkbox.Indicator>
+                                    <Check size={16} />
+                                  </Checkbox.Indicator>
+                                </Checkbox>
+                                <Label htmlFor={checkboxId} cursor="pointer">
+                                  {license}
+                                </Label>
+                              </XStack>
+                            )
+                          })}
                         </YStack>
                       }
                     />
@@ -307,16 +351,20 @@ export function ProfileEmploymentLeft() {
                 name="military_status"
                 control={control}
                 render={({ field }) => {
-                  const [isExpanded, setIsExpanded] = useState(
-                    !!(field.value && field.value.length > 0)
-                  )
+                  const hasValues = !!(field.value && field.value.length > 0)
+                  const [isExpanded, setIsExpanded] = useState(hasValues)
+
+                  // Sync expanded state with checkbox values
+                  useEffect(() => {
+                    setIsExpanded(hasValues)
+                  }, [hasValues])
 
                   return (
                     <ToggleCard
                       icon={<Shield size="$2" color="$color11" />}
                       title="Former/Current Military"
                       description="Select all that apply"
-                      checked={isExpanded}
+                      checked={hasValues || isExpanded}
                       onCheckedChange={(checked) => {
                         setIsExpanded(checked)
                         if (!checked) {
@@ -325,22 +373,32 @@ export function ProfileEmploymentLeft() {
                       }}
                       expandedContent={
                         <YStack gap="$2" pt="$2">
-                          {MILITARY_STATUS_OPTIONS.map((status) => (
-                            <XStack key={status} gap="$3" items="center">
-                              <Checkbox
-                                checked={field.value?.includes(status) || false}
-                                onCheckedChange={(checked) => {
-                                  const current = field.value || []
-                                  if (checked === true) {
-                                    field.onChange([...current, status])
-                                  } else {
-                                    field.onChange(current.filter((s) => s !== status))
-                                  }
-                                }}
-                              />
-                              <Text>{status}</Text>
-                            </XStack>
-                          ))}
+                          {MILITARY_STATUS_OPTIONS.map((status) => {
+                            const checkboxId = `military-${status.replace(/\s+/g, '-').toLowerCase()}`
+                            return (
+                              <XStack key={status} gap="$3" items="center">
+                                <Checkbox
+                                  id={checkboxId}
+                                  checked={field.value?.includes(status) || false}
+                                  onCheckedChange={(checked) => {
+                                    const current = field.value || []
+                                    if (checked === true) {
+                                      field.onChange([...current, status])
+                                    } else {
+                                      field.onChange(current.filter((s) => s !== status))
+                                    }
+                                  }}
+                                >
+                                  <Checkbox.Indicator>
+                                    <Check size={16} />
+                                  </Checkbox.Indicator>
+                                </Checkbox>
+                                <Label htmlFor={checkboxId} cursor="pointer">
+                                  {status}
+                                </Label>
+                              </XStack>
+                            )
+                          })}
                         </YStack>
                       }
                     />
@@ -356,16 +414,20 @@ export function ProfileEmploymentLeft() {
                 name="availability"
                 control={control}
                 render={({ field }) => {
-                  const [isExpanded, setIsExpanded] = useState(
-                    !!(field.value && field.value.length > 0)
-                  )
+                  const hasValues = !!(field.value && field.value.length > 0)
+                  const [isExpanded, setIsExpanded] = useState(hasValues)
+
+                  // Sync expanded state with checkbox values
+                  useEffect(() => {
+                    setIsExpanded(hasValues)
+                  }, [hasValues])
 
                   return (
                     <ToggleCard
                       icon={<Calendar size="$2" color="$color11" />}
                       title="I'm available for work"
                       description="Select all that apply"
-                      checked={isExpanded}
+                      checked={hasValues || isExpanded}
                       onCheckedChange={(checked) => {
                         setIsExpanded(checked)
                         if (!checked) {
@@ -374,22 +436,32 @@ export function ProfileEmploymentLeft() {
                       }}
                       expandedContent={
                         <YStack gap="$2" pt="$2">
-                          {AVAILABILITY_OPTIONS.map((option) => (
-                            <XStack key={option} gap="$3" items="center">
-                              <Checkbox
-                                checked={field.value?.includes(option) || false}
-                                onCheckedChange={(checked) => {
-                                  const current = field.value || []
-                                  if (checked === true) {
-                                    field.onChange([...current, option])
-                                  } else {
-                                    field.onChange(current.filter((a) => a !== option))
-                                  }
-                                }}
-                              />
-                              <Text>{option}</Text>
-                            </XStack>
-                          ))}
+                          {AVAILABILITY_OPTIONS.map((option) => {
+                            const checkboxId = `availability-${option.replace(/\s+/g, '-').toLowerCase()}`
+                            return (
+                              <XStack key={option} gap="$3" items="center">
+                                <Checkbox
+                                  id={checkboxId}
+                                  checked={field.value?.includes(option) || false}
+                                  onCheckedChange={(checked) => {
+                                    const current = field.value || []
+                                    if (checked === true) {
+                                      field.onChange([...current, option])
+                                    } else {
+                                      field.onChange(current.filter((a) => a !== option))
+                                    }
+                                  }}
+                                >
+                                  <Checkbox.Indicator>
+                                    <Check size={16} />
+                                  </Checkbox.Indicator>
+                                </Checkbox>
+                                <Label htmlFor={checkboxId} cursor="pointer">
+                                  {option}
+                                </Label>
+                              </XStack>
+                            )
+                          })}
                         </YStack>
                       }
                     />
@@ -401,7 +473,7 @@ export function ProfileEmploymentLeft() {
             {/* Save Button */}
             <XStack justify="flex-end" pt="$4">
               <Button
-                onPress={handleSubmit(onSubmit)}
+                onPress={handleSubmit(onSubmit, onFormError)}
                 disabled={!isDirty || isLoading}
                 opacity={!isDirty || isLoading ? 0.5 : 1}
                 space={isLoading ? '$2' : 0}

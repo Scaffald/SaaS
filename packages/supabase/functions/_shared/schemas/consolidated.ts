@@ -8,7 +8,7 @@ const phoneNumberSchema = z
     (phone) => {
       if (!phone) return true; // Optional field
       // Remove all formatting characters for validation
-      const digitsOnly = phone.replace(/[^\d]/g, '');
+      const digitsOnly = phone.replace(/[^\d]/g, "");
       // Must have at least 10 digits (for US/international numbers)
       // and no more than 15 digits (E.164 standard max)
       return digitsOnly.length >= 10 && digitsOnly.length <= 15;
@@ -109,30 +109,29 @@ export const profileEmploymentInputSchema = z
 
     // Travel preferences
     willing_to_travel: z.boolean().optional(),
-    travel_distance_miles: z.number().min(5).max(100).optional(),
+    travel_distance_miles: z.number().max(100).optional(),
 
     // Residency (multiple countries but keep US boolean)
     us_resident: z.boolean().optional(),
-    residency_countries: z.array(z.string()).max(
-      3,
-      "Maximum 3 countries allowed",
-    ).optional(),
+    residency_countries: z
+      .array(z.string())
+      .max(3, "Maximum 3 countries allowed")
+      .optional(),
 
     // Passport
     us_passport: z.boolean().optional(),
 
     // Drivers License (multi-select array)
-    drivers_license_classes: z.array(z.enum(DRIVERS_LICENSE_OPTIONS))
-      .optional(),
+    drivers_license_classes: z.array(z.string()).optional(),
 
     // Military Status (multi-select)
-    military_status: z.array(z.enum(MILITARY_STATUS_OPTIONS)).optional(),
+    military_status: z.array(z.string()).optional(),
 
-    // Availability (multi-select)
-    availability: z.array(z.enum(AVAILABILITY_OPTIONS)).optional(),
+    // Availability (multi-select - accepts any string values)
+    availability: z.array(z.string()).optional(),
 
-    // Hourly Rate
-    hourly_rate: z.number().min(0).max(200).optional(),
+    // Hourly Rate (no minimum, max 200)
+    hourly_rate: z.number().max(200).optional(),
   })
   .partial();
 
