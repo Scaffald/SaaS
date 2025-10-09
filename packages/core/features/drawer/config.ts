@@ -8,7 +8,6 @@ import {
   BarChart3,
   Briefcase,
   Building2,
-  Cog,
   Map as MapIcon,
   Palette,
   User,
@@ -103,29 +102,6 @@ export const generateDashboardDrawerItems = (options?: {
       isExpandable: true,
       subItems: profileChildren.map((childRoute) => ({
         key: `profile-${childRoute.path.split("/").pop()}`,
-        title: childRoute.title || "Untitled",
-        href: childRoute.fullPath,
-        // No icon for child items
-      })),
-    });
-  }
-
-  // Settings route - Make expandable with children
-  if (DASHBOARD_ROUTES.SETTINGS) {
-    // Filter out the index route to avoid duplication with parent
-    const settingsChildren = (DASHBOARD_ROUTES.SETTINGS.childrenArray || [])
-      .filter(
-        (route) => route.path !== DASHBOARD_ROUTES.SETTINGS?.path,
-      );
-
-    items.push({
-      key: "settings",
-      title: "Settings",
-      href: DASHBOARD_ROUTES.SETTINGS.fullPath, // Keep href for direct navigation if needed
-      icon: Cog,
-      isExpandable: true,
-      subItems: settingsChildren.map((childRoute) => ({
-        key: `settings-${childRoute.path.split("/").pop()}`,
         title: childRoute.title || "Untitled",
         href: childRoute.fullPath,
         // No icon for child items

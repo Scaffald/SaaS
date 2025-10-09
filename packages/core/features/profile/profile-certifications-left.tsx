@@ -10,12 +10,28 @@ import {
   ScrollView,
   RadioGroup,
   Label,
+  Card,
+  Separator,
 } from 'tamagui'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, X, Link as LinkIcon, Upload as UploadIcon } from '@tamagui/lucide-icons'
+import {
+  Plus,
+  X,
+  Link as LinkIcon,
+  Upload as UploadIcon,
+  Award,
+  Calendar,
+  ExternalLink,
+  Download,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+} from '@tamagui/lucide-icons'
 import { DashboardWidget, FileUpload } from '@app/ui'
 import { api } from '@app/core/utils/api'
+import { ProfileEmptyState } from './components'
+import { formatDate } from './utils/date-formatting'
 import {
   certificationsProfileSchema,
   type CertificationsProfileFormData,
@@ -434,6 +450,136 @@ export function ProfileCertificationsLeft() {
             {isLoading ? 'Saving...' : 'Save Changes'}
           </Button>
         </XStack>
+
+        <Separator />
+
+        {/* Saved Certifications Display */}
+        <YStack gap="$3">
+          <Text fontWeight="600" fontSize="$5">
+            Saved Certifications
+          </Text>
+
+          {!_existingCertifications || _existingCertifications.length === 0 ? (
+            <ProfileEmptyState
+              icon={Award}
+              message="No certifications saved yet. Add your first certification above and click Save Changes."
+            />
+          ) : (
+            <YStack gap="$3">
+              {/* biome-ignore lint/suspicious/noExplicitAny: API response type */}
+              {_existingCertifications.map((cert: any) => (
+                <Card key={cert.id} bordered size="$4">
+                  <Card.Header gap="$3">
+                    {/* Header */}
+                    <YStack gap="$2">
+                      <XStack justify="space-between" items="flex-start">
+                        <YStack gap="$1" flex={1}>
+                          <H4>{cert.name}</H4>
+                          <Text color="$color11" fontSize="$3">
+                            {cert.issuing_organization}
+                          </Text>
+                        </YStack>
+                        {cert.verification_status === 'verified' && (
+                          <XStack gap="$2" items="center">
+                            <CheckCircle size={16} color="$green10" />
+                            <Text color="$green10" fontSize="$2" fontWeight="600">
+                              Verified
+                            </Text>
+                          </XStack>
+                        )}
+                        {cert.verification_status === 'pending' && (
+                          <XStack gap="$2" items="center">
+                            <Clock size={16} color="$yellow10" />
+                            <Text color="$yellow10" fontSize="$2" fontWeight="600">
+                              Pending
+                            </Text>
+                          </XStack>
+                        )}
+                        {!cert.verification_status && (
+                          <XStack gap="$2" items="center">
+                            <AlertCircle size={16} color="$color10" />
+                            <Text color="$color10" fontSize="$2">
+                              Not Verified
+                            </Text>
+                          </XStack>
+                        )}
+                      </XStack>
+                    </YStack>
+
+                    <Separator />
+
+                    {/* Details */}
+                    <YStack gap="$2">
+                      {/* Dates */}
+                      <XStack gap="$2" items="center">
+                        <Calendar size={16} color="$color11" />
+                        <Text fontSize="$2" color="$color11">
+                          Issued: {formatDate(cert.issue_date)}
+                          {cert.expiration_date &&
+                            ` • Expires: ${formatDate(cert.expiration_date)}`}
+                        </Text>
+                      </XStack>
+
+                      {/* Credential ID */}
+                      {cert.credential_id && (
+                        <Text fontSize="$2" color="$color11">
+                          Credential ID: {cert.credential_id}
+                        </Text>
+                      )}
+
+                      {/* Description */}
+                      {cert.description && (
+                        <Text fontSize="$3" color="$color11">
+                          {cert.description}
+                        </Text>
+                      )}
+                    </YStack>
+
+                    {/* Actions */}
+                    {(cert.credential_url || cert.certificate_file_path) && (
+                      <>
+                        <Separator />
+                        <XStack gap="$2" flexWrap="wrap">
+                          {cert.credential_url && (
+                            <Button
+                              size="$2"
+                              variant="outlined"
+                              icon={ExternalLink}
+                              onPress={() => {
+                                if (typeof window !== 'undefined') {
+                                  window.open(cert.credential_url || '', '_blank')
+                                }
+                              }}
+                            >
+                              View Online
+                            </Button>
+                          )}
+                          {cert.certificate_file_path && (
+                            <Button
+                              size="$2"
+                              variant="outlined"
+                              icon={Download}
+                              onPress={() => {
+                                const supabaseUrl =
+                                  process.env.EXPO_PUBLIC_SUPABASE_URL || 'http://localhost:54321'
+                                const fileUrl = `${supabaseUrl}/storage/v1/object/public/certifications/${cert.certificate_file_path}`
+                                if (typeof window !== 'undefined') {
+                                  window.open(fileUrl, '_blank')
+                                }
+                              }}
+                            >
+                              Download
+                            </Button>
+                          )}
+                        </XStack>
+                      </>
+                    )}
+                  </Card.Header>
+                </Card>
+              ))}
+            </YStack>
+          )}
+        </YStack>
       </YStack>
     </DashboardWidget>
   )

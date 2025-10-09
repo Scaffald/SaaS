@@ -14,10 +14,24 @@ import {
   useWindowDimensions,
   Spinner,
   Label,
+  Card,
+  Separator,
 } from 'tamagui'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, X, ChevronDown } from '@tamagui/lucide-icons'
+import {
+  Plus,
+  X,
+  ChevronDown,
+  Briefcase,
+  Calendar,
+  MapPin,
+  Building2,
+  TrendingUp,
+} from '@tamagui/lucide-icons'
+import { ProfileEmptyState } from './components'
+import { formatDateRange } from './utils/date-formatting'
+import { randomUUID } from 'expo-crypto'
 import {
   experienceProfileSchema,
   type ExperienceProfileFormData,
@@ -525,6 +539,170 @@ export function ProfileExperienceLeft() {
             {isLoading ? 'Saving...' : 'Save Changes'}
           </Button>
         </XStack>
+
+        <Separator />
+
+        {/* Saved Experience Display */}
+        <YStack gap="$3">
+          <Text fontWeight="600" fontSize="$5">
+            Saved Experience
+          </Text>
+
+          {!experienceQuery.data || experienceQuery.data.length === 0 ? (
+            <ProfileEmptyState
+              icon={Briefcase}
+              message="No work experience saved yet. Add your first experience entry above and click Save Changes."
+            />
+          ) : (
+            <YStack gap="$3">
+              {/* biome-ignore lint/suspicious/noExplicitAny: tRPC types not yet generated */}
+              {experienceQuery.data.map((exp: any) => (
+                <Card key={exp.id} bordered size="$4">
+                  <Card.Header gap="$3">
+                    {/* Header */}
+                    <YStack gap="$2">
+                      <XStack justify="space-between" items="flex-start">
+                        <YStack gap="$1" flex={1}>
+                          <H4>{exp.job_title}</H4>
+                          <XStack gap="$2" items="center" flexWrap="wrap">
+                            <Text color="$color11" fontSize="$3" fontWeight="600">
+                              {exp.company_name}
+                            </Text>
+                            {exp.employment_type && (
+                              <>
+                                <Text color="$color11" fontSize="$2">
+                                  •
+                                </Text>
+                                <Text color="$color11" fontSize="$2">
+                                  {exp.employment_type}
+                                </Text>
+                              </>
+                            )}
+                            {exp.is_current && (
+                              <>
+                                <Text color="$color11" fontSize="$2">
+                                  •
+                                </Text>
+                                <Text color="$green10" fontSize="$2" fontWeight="600">
+                                  Current Position
+                                </Text>
+                              </>
+                            )}
+                          </XStack>
+                        </YStack>
+                      </XStack>
+                    </YStack>
+
+                    <Separator />
+
+                    {/* Details */}
+                    <YStack gap="$2">
+                      {/* Dates */}
+                      {(exp.start_date || exp.end_date) && (
+                        <XStack gap="$2" items="center">
+                          <Calendar size={16} color="$color11" />
+                          <Text fontSize="$2" color="$color11">
+                            {formatDateRange(exp.start_date, exp.end_date, exp.is_current)}
+                          </Text>
+                        </XStack>
+                      )}
+
+                      {/* Location */}
+                      {exp.location && (
+                        <XStack gap="$2" items="center">
+                          <MapPin size={16} color="$color11" />
+                          <Text fontSize="$2" color="$color11">
+                            {exp.location}
+                            {exp.is_remote && ' (Remote)'}
+                          </Text>
+                        </XStack>
+                      )}
+
+                      {/* Company Size */}
+                      {exp.company_size && (
+                        <XStack gap="$2" items="center">
+                          <Building2 size={16} color="$color11" />
+                          <Text fontSize="$2" color="$color11">
+                            {exp.company_size}
+                          </Text>
+                        </XStack>
+                      )}
+
+                      {/* Industry */}
+                      {exp.industry && (
+                        <XStack gap="$2" items="center">
+                          <TrendingUp size={16} color="$color11" />
+                          <Text fontSize="$2" color="$color11">
+                            {exp.industry}
+                          </Text>
+                        </XStack>
+                      )}
+
+                      {/* Description */}
+                      {exp.description && (
+                        <YStack gap="$1">
+                          <Text fontSize="$2" fontWeight="600" color="$color11">
+                            Description:
+                          </Text>
+                          <Text fontSize="$3" color="$color11">
+                            {exp.description}
+                          </Text>
+                        </YStack>
+                      )}
+
+                      {/* Key Achievements */}
+                      {exp.key_achievements && exp.key_achievements.length > 0 && (
+                        <YStack gap="$1">
+                          <Text fontSize="$2" fontWeight="600" color="$color11">
+                            Key Achievements:
+                          </Text>
+                          <YStack gap="$1" pl="$2">
+                            {exp.key_achievements.map((achievement: string) => (
+                              <XStack key={randomUUID()} gap="$2">
+                                <Text fontSize="$2" color="$color11">
+                                  •
+                                </Text>
+                                <Text fontSize="$2" color="$color11" flex={1}>
+                                  {achievement}
+                                </Text>
+                              </XStack>
+                            ))}
+                          </YStack>
+                        </YStack>
+                      )}
+
+                      {/* Skills Used */}
+                      {exp.skills_used && exp.skills_used.length > 0 && (
+                        <YStack gap="$1">
+                          <Text fontSize="$2" fontWeight="600" color="$color11">
+                            Skills:
+                          </Text>
+                          <XStack gap="$2" flexWrap="wrap">
+                            {exp.skills_used.map((skill: string) => (
+                              <XStack
+                                key={randomUUID()}
+                                px="$2"
+                                py="$1"
+                                bg="$backgroundHover"
+                                rounded="$2"
+                                borderWidth={1}
+                                borderColor="$borderColor"
+                              >
+                                <Text fontSize="$2" color="$color11">
+                                  {skill}
+                                </Text>
+                              </XStack>
+                            ))}
+                          </XStack>
+                        </YStack>
+                      )}
+                    </YStack>
+                  </Card.Header>
+                </Card>
+              ))}
+            </YStack>
+          )}
+        </YStack>
       </YStack>
     </DashboardWidget>
   )
