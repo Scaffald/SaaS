@@ -59,10 +59,7 @@ export const profileEducationRouter = t.router({
 
       const { data, error } = await supabase
         .from("user_education")
-        .select(`
-          *,
-          university:universities(name)
-        `)
+        .select("*")
         .eq("user_id", user.id)
         .order("start_date", { ascending: false });
 
@@ -73,12 +70,24 @@ export const profileEducationRouter = t.router({
         });
       }
 
-      // Map data to include institution_name from university catalog
-      const educationData = data?.map((edu) => ({
-        ...edu,
-        institution_name: edu.university?.name || edu.institution_name,
-        university: undefined, // Remove the nested university object
-      })) || [];
+      // Fetch university names for records that have university_id
+      const educationData = await Promise.all(
+        (data || []).map(async (edu) => {
+          if (edu.university_id) {
+            const { data: university } = await supabase
+              .from("data.universities")
+              .select("name")
+              .eq("id", edu.university_id)
+              .single();
+
+            return {
+              ...edu,
+              institution_name: university?.name || edu.institution_name,
+            };
+          }
+          return edu;
+        }),
+      );
 
       return educationData;
     }),

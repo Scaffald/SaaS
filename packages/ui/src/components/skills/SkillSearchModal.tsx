@@ -18,30 +18,23 @@ import {
 import { Search, X, ChevronRight, ArrowLeft } from '@tamagui/lucide-icons'
 
 /**
- * Parent skill from search
+ * Parent skill from search (multi-taxonomy format)
  */
 export interface ParentSkill {
-  skill_id: string
-  skill_name: string
-  csi_display: string | null
-  csi_code: string[] | null
-  active: boolean
-  child_count: number
+  id: string
+  name: string
+  code: string
+  depth: number
 }
 
 /**
- * Child skill with hierarchy
+ * Child skill with hierarchy (not used in multi-taxonomy)
  */
 export interface SkillChild {
-  skill_id: string
-  skill_name: string
-  csi_display: string | null
-  csi_code: string[] | null
-  parent_id: string | null
+  id: string
+  name: string
+  code: string
   depth: number
-  hierarchy_path: string
-  active: boolean
-  leaf_node: boolean
 }
 
 /**
@@ -159,25 +152,13 @@ export function SkillSearchModal({
     [handleSearchParents]
   )
 
-  // Handle parent selection
-  const handleParentSelect = useCallback(
-    async (parent: ParentSkill) => {
-      setSelectedParent(parent)
-      setIsLoadingChildren(true)
-
-      try {
-        const childResults = await onGetChildren(parent.skill_id)
-        setChildren(childResults)
-        setStep('select-child')
-      } catch (error) {
-        console.error('Error loading children:', error)
-        setChildren([])
-      } finally {
-        setIsLoadingChildren(false)
-      }
-    },
-    [onGetChildren]
-  )
+  // Handle parent selection (multi-taxonomy: go straight to proficiency)
+  const handleParentSelect = useCallback(async (parent: ParentSkill) => {
+    // In multi-taxonomy, we select the skill directly (no children)
+    setSelectedChild(parent as unknown as SkillChild)
+    setProficiency(3)
+    setStep('set-proficiency')
+  }, [])
 
   // Handle child selection
   const handleChildSelect = useCallback((child: SkillChild) => {
@@ -201,12 +182,12 @@ export function SkillSearchModal({
   // Handle confirm selection
   const handleConfirm = useCallback(() => {
     if (selectedChild) {
-      const isExisting = existingSkillIds.includes(selectedChild.skill_id)
+      const isExisting = existingSkillIds.includes(selectedChild.id)
 
       if (isExisting && onUpdateSkill) {
-        onUpdateSkill(selectedChild.skill_id, proficiency)
+        onUpdateSkill(selectedChild.id, proficiency)
       } else {
-        onSelectSkill(selectedChild.skill_id, proficiency)
+        onSelectSkill(selectedChild.id, proficiency)
       }
 
       // Reset state
@@ -251,7 +232,7 @@ export function SkillSearchModal({
   // Get step title
   const getStepTitle = () => {
     if (step === 'search-parent') return 'Search Skills'
-    if (step === 'select-child') return `Select from ${selectedParent?.skill_name}`
+    if (step === 'select-child') return `Select from ${selectedParent?.name}`
     return 'Set Proficiency Level'
   }
 
@@ -296,7 +277,7 @@ export function SkillSearchModal({
 
               {parentResults.map((parent) => (
                 <Card
-                  key={parent.skill_id}
+                  key={parent.id}
                   size="$4"
                   bordered
                   pressStyle={{ scale: 0.98, backgroundColor: '$color5' }}
@@ -307,20 +288,15 @@ export function SkillSearchModal({
                     <XStack justify="space-between" items="center">
                       <YStack flex={1}>
                         <Text fontSize="$4" fontWeight="600">
-                          {parent.skill_name}
+                          {parent.name}
                         </Text>
-                        {parent.csi_display && (
+                        {parent.code && (
                           <Text fontSize="$2" color="$color10">
-                            CSI {parent.csi_display}
+                            {parent.code}
                           </Text>
                         )}
                       </YStack>
-                      <XStack gap="$2" items="center">
-                        <Text fontSize="$2" color="$color11">
-                          {parent.child_count} {parent.child_count === 1 ? 'skill' : 'skills'}
-                        </Text>
-                        <ChevronRight size={20} color="$color11" />
-                      </XStack>
+                      <ChevronRight size={20} color="$color11" />
                     </XStack>
                   </Card.Header>
                 </Card>
@@ -349,10 +325,10 @@ export function SkillSearchModal({
                 )}
 
                 {children.map((child) => {
-                  const isExisting = existingSkillIds.includes(child.skill_id)
+                  const isExisting = existingSkillIds.includes(child.id)
                   return (
                     <Card
-                      key={child.skill_id}
+                      key={child.id}
                       size="$4"
                       bordered
                       borderColor={isExisting ? '$blue9' : undefined}
@@ -365,7 +341,7 @@ export function SkillSearchModal({
                         <YStack gap="$1">
                           <XStack justify="space-between" items="center">
                             <Text fontSize="$3" fontWeight="600">
-                              {child.skill_name}
+                              {child.name}
                             </Text>
                             {isExisting && (
                               <Text fontSize="$2" color="$blue9" fontWeight="600">
@@ -373,9 +349,9 @@ export function SkillSearchModal({
                               </Text>
                             )}
                           </XStack>
-                          {child.csi_display && (
+                          {child.code && (
                             <Text fontSize="$2" color="$color10">
-                              CSI {child.csi_display}
+                              {child.code}
                             </Text>
                           )}
                         </YStack>
@@ -391,7 +367,7 @@ export function SkillSearchModal({
     }
 
     if (step === 'set-proficiency' && selectedChild) {
-      const isExisting = existingSkillIds.includes(selectedChild.skill_id)
+      const isExisting = existingSkillIds.includes(selectedChild.id)
       return (
         <YStack gap="$4" flex={1}>
           {/* Selected Skill Details */}
@@ -400,11 +376,11 @@ export function SkillSearchModal({
               <XStack justify="space-between" items="center">
                 <YStack flex={1}>
                   <Text fontSize="$4" fontWeight="600">
-                    {selectedChild.skill_name}
+                    {selectedChild.name}
                   </Text>
-                  {selectedChild.csi_display && (
+                  {selectedChild.code && (
                     <Text fontSize="$2" color="$color10">
-                      CSI {selectedChild.csi_display}
+                      {selectedChild.code}
                     </Text>
                   )}
                 </YStack>

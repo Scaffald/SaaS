@@ -14,7 +14,7 @@ async function main() {
 
     // Check CSI MasterFormat
     const csiResult = await client.query(
-      "SELECT count(*) FROM csi.masterformat",
+      "SELECT count(*) FROM data.masterformat",
     );
     console.log(`✅ CSI MasterFormat: ${csiResult.rows[0].count} records`);
 
@@ -26,7 +26,7 @@ async function main() {
 
     // Check Universities
     const uniResult = await client.query(
-      "SELECT count(*) FROM public.universities",
+      "SELECT count(*) FROM data.universities",
     );
     console.log(`✅ Universities: ${uniResult.rows[0].count} records`);
 

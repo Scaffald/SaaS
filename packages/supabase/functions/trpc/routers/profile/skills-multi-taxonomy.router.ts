@@ -98,12 +98,11 @@ export const skillsMultiTaxonomyRouter = t.router({
 
       // Search CSI if applicable
       if (taxonomies.includes("csi")) {
-        const { data: csiData, error: csiError } = await supabase.rpc(
-          "csi.search_masterformat",
-          {
+        const { data: csiData, error: csiError } = await supabase
+          .schema("data")
+          .rpc("search_masterformat", {
             search_term: input.query,
-          },
-        );
+          });
 
         if (!csiError && csiData) {
           results.push(
@@ -184,7 +183,8 @@ export const skillsMultiTaxonomyRouter = t.router({
       (data || []).map(async (skill) => {
         if (skill.skill_taxonomy === "csi" && skill.csi_skill_id) {
           const { data: csiData } = await supabase
-            .from("csi.masterformat")
+            .schema("data")
+            .from("masterformat")
             .select("code_key, code_display, name, depth")
             .eq("id", skill.csi_skill_id)
             .single();
@@ -200,11 +200,12 @@ export const skillsMultiTaxonomyRouter = t.router({
               }
               : null,
           };
-        } else if (
-          skill.skill_taxonomy === "onet" && skill.onet_occupation_id
-        ) {
+        }
+
+        if (skill.skill_taxonomy === "onet" && skill.onet_occupation_id) {
           const { data: onetData } = await supabase
-            .from("onet.occupation_data")
+            .schema("onet")
+            .from("occupation_data")
             .select("onetsoc_code, title, description")
             .eq("onetsoc_code", skill.onet_occupation_id)
             .single();

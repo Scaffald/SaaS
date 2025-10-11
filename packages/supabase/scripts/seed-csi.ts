@@ -263,7 +263,7 @@ async function upsertSkills(
     });
 
     const sql = `
-      INSERT INTO csi.masterformat (
+      INSERT INTO data.masterformat (
         id,
         code,
         code_key,
