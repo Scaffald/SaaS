@@ -21,23 +21,6 @@ import { DashboardWidget } from '@app/ui'
 import { SkillSearchModal, type ParentSkill, type SkillChild } from '@app/ui'
 
 /**
- * User skill with hierarchy information
- */
-interface UserSkill {
-  skill_id: string
-  skill_name: string
-  csi_display: string | null
-  proficiency: number | null
-  years_experience: number | null
-  source: string
-  last_verified_at: string | null
-  hierarchy_path: string
-  hierarchy_ids: string[]
-  is_explicit: boolean
-  depth: number
-}
-
-/**
  * Proficiency level display helper
  */
 const PROFICIENCY_LABELS = {
@@ -71,11 +54,11 @@ export function ProfileSkillsLeft() {
     refetch: refetchSkills,
   } = api.profile.getUserSkills.useQuery()
 
-  // Get current skills data (legacy endpoint for industry)
-  const { data: skillsData } = api.profile.getSkills.useQuery()
+  // Get primary industry
+  const { data: primaryIndustryData } = api.profile.getPrimaryIndustry.useQuery()
 
   // Mutations
-  const addSkillMutation = api.profile.addUserSkill.useMutation({
+  const addSkillMutation = api.profile.addSkill.useMutation({
     onSuccess: () => {
       toast.show('Skill Added', {
         message: 'Skill has been added to your profile!',
@@ -90,7 +73,7 @@ export function ProfileSkillsLeft() {
     },
   })
 
-  const updateSkillMutation = api.profile.updateUserSkill.useMutation({
+  const updateSkillMutation = api.profile.updateSkill.useMutation({
     onSuccess: () => {
       toast.show('Skill Updated', {
         message: 'Skill proficiency has been updated!',
@@ -105,7 +88,7 @@ export function ProfileSkillsLeft() {
     },
   })
 
-  const removeSkillMutation = api.profile.removeUserSkill.useMutation({
+  const removeSkillMutation = api.profile.removeSkill.useMutation({
     onSuccess: () => {
       toast.show('Skill Removed', {
         message: 'Skill has been removed from your profile',
@@ -120,7 +103,7 @@ export function ProfileSkillsLeft() {
     },
   })
 
-  const updateIndustryMutation = api.profile.updateSkills.useMutation({
+  const updateIndustryMutation = api.profile.updatePrimaryIndustry.useMutation({
     onSuccess: () => {
       toast.show('Industry Updated', {
         message: 'Your primary industry has been updated',
@@ -136,26 +119,33 @@ export function ProfileSkillsLeft() {
 
   // Set initial industry from user data
   useEffect(() => {
-    if (skillsData?.primary_industry_id && !selectedIndustry) {
-      setSelectedIndustry(skillsData.primary_industry_id)
+    if (primaryIndustryData?.primary_industry_id && !selectedIndustry) {
+      setSelectedIndustry(primaryIndustryData.primary_industry_id)
     }
-  }, [skillsData, selectedIndustry])
+  }, [primaryIndustryData, selectedIndustry])
 
   // Handle industry change
   const handleIndustryChange = useCallback(
     async (industryId: string) => {
       setSelectedIndustry(industryId)
       await updateIndustryMutation.mutateAsync({
-        primary_industry_id: industryId,
+        industryId,
       })
     },
     [updateIndustryMutation]
   )
 
-  // NEW: Mutations for cascading skill selection
-  const searchParentSkillsMutation = api.profile.searchParentSkills.useMutation()
+  // Get industry slug for search
+  const selectedIndustrySlug =
+    industriesData?.industries.find(
+      // biome-ignore lint/suspicious/noExplicitAny: API response type
+      (ind: any) => ind.id === selectedIndustry
+    )?.slug || 'construction'
 
-  // Handle parent skill search
+  // Multi-taxonomy skill search
+  const searchSkillsMutation = api.profile.searchSkills.useMutation()
+
+  // Handle skill search (adapted for multi-taxonomy)
   const handleSearchParents = useCallback(
     async (query: string): Promise<ParentSkill[]> => {
       if (!selectedIndustry) {
@@ -164,12 +154,25 @@ export function ProfileSkillsLeft() {
 
       setIsSearching(true)
       try {
-        const result = await searchParentSkillsMutation.mutateAsync({
+        const result = await searchSkillsMutation.mutateAsync({
           query,
-          industryId: selectedIndustry,
+          industrySlug: selectedIndustrySlug,
           limit: 20,
         })
-        return result.skills
+        // Convert multi-taxonomy results to ParentSkill format
+        return result.skills.map(
+          (skill: {
+            skill_id: string
+            name: string
+            display_code: string
+            hierarchy_level: number | null
+          }) => ({
+            id: skill.skill_id,
+            name: skill.name,
+            code: skill.display_code,
+            depth: skill.hierarchy_level || 0,
+          })
+        )
       } catch (error) {
         console.error('Search error:', error)
         return []
@@ -177,49 +180,44 @@ export function ProfileSkillsLeft() {
         setIsSearching(false)
       }
     },
-    [selectedIndustry, searchParentSkillsMutation]
+    [selectedIndustry, selectedIndustrySlug, searchSkillsMutation]
   )
 
-  // Create tRPC utils for imperative queries
-  const utils = api.useUtils()
+  // Handle get skill children - not applicable for multi-taxonomy
+  const handleGetChildren = useCallback(async (_parentId: string): Promise<SkillChild[]> => {
+    // Multi-taxonomy doesn't have hierarchical children
+    return []
+  }, [])
 
-  // Handle get skill children
-  const handleGetChildren = useCallback(
-    async (parentId: string): Promise<SkillChild[]> => {
-      try {
-        const result = await utils.profile.getSkillChildren.fetch({ parentId })
-        return result.children || []
-      } catch (error) {
-        console.error('Error getting children:', error)
-        return []
-      }
-    },
-    [utils]
-  )
-
-  // Get explicit skills (user-added)
-  const explicitSkills = userSkillsData?.explicitSkills || []
+  // Get user skills (adapted for new structure)
+  const userSkills = userSkillsData?.skills || []
 
   // Get existing skill IDs for highlighting in modal
-  const existingSkillIds = explicitSkills.map((skill: UserSkill) => skill.skill_id)
+  const existingSkillIds = userSkills.map(
+    (skill: { id: string; csi_skill_id: string | null; onet_occupation_id: string | null }) =>
+      skill.csi_skill_id || skill.onet_occupation_id || skill.id
+  )
 
   // Handle skill selection from modal
   const handleSelectSkill = useCallback(
     async (skillId: string, proficiency: number) => {
+      // Determine taxonomy based on industry
+      const taxonomy = selectedIndustrySlug === 'construction' ? 'csi' : 'onet'
       await addSkillMutation.mutateAsync({
+        taxonomy,
         skillId,
-        proficiency,
+        proficiencyLevel: proficiency,
       })
     },
-    [addSkillMutation]
+    [addSkillMutation, selectedIndustrySlug]
   )
 
   // Handle skill update from modal
   const handleUpdateSkill = useCallback(
-    async (skillId: string, proficiency: number) => {
+    async (userSkillId: string, proficiency: number) => {
       await updateSkillMutation.mutateAsync({
-        skillId,
-        proficiency,
+        userSkillId,
+        proficiencyLevel: proficiency,
       })
     },
     [updateSkillMutation]
@@ -227,8 +225,8 @@ export function ProfileSkillsLeft() {
 
   // Handle remove skill
   const handleRemoveSkill = useCallback(
-    async (skillId: string) => {
-      await removeSkillMutation.mutateAsync({ skillId })
+    async (userSkillId: string) => {
+      await removeSkillMutation.mutateAsync({ userSkillId })
     },
     [removeSkillMutation]
   )
@@ -325,68 +323,67 @@ export function ProfileSkillsLeft() {
                 </Card>
               )}
 
-              {explicitSkills.length === 0 && selectedIndustry && (
+              {userSkills.length === 0 && selectedIndustry && (
                 <YStack p="$4" items="center" gap="$2">
                   <Text color="$color11">No skills added yet</Text>
                 </YStack>
               )}
 
-              {explicitSkills.map((skill: UserSkill) => (
-                <Card key={skill.skill_id} bordered size="$4">
-                  <Card.Header gap="$2">
-                    {/* Hierarchy Breadcrumb */}
-                    <XStack gap="$1" items="center" flexWrap="wrap" flex={1}>
-                      {skill.hierarchy_path.split(' > ').map((part, index, arr) => (
-                        <XStack key={`${skill.skill_id}-${index}`} items="center" gap="$1">
-                          <Text
-                            fontSize={index === arr.length - 1 ? '$3' : '$2'}
-                            color={index === arr.length - 1 ? '$color12' : '$color11'}
-                            fontWeight={index === arr.length - 1 ? '600' : '400'}
-                          >
-                            {part}
-                          </Text>
-                          {index < arr.length - 1 && <ChevronRight size={12} color="$color11" />}
-                        </XStack>
-                      ))}
-                    </XStack>
-
-                    {/* CSI Code if available */}
-                    {skill.csi_display && (
-                      <Text fontSize="$2" color="$color10">
-                        CSI {skill.csi_display}
-                      </Text>
-                    )}
-
-                    {/* Proficiency */}
-                    <XStack justify="space-between" items="center" pt="$2">
+              {userSkills.map(
+                (skill: {
+                  id: string
+                  skill_details: {
+                    name: string
+                    display_code: string
+                    hierarchy_level: number | null
+                  } | null
+                  proficiency_level: number | null
+                }) => (
+                  <Card key={skill.id} bordered size="$4">
+                    <Card.Header gap="$2">
+                      {/* Skill Name and Code */}
                       <YStack gap="$1">
-                        <Text fontSize="$2" color="$color11">
-                          Proficiency
+                        <Text fontSize="$4" fontWeight="600">
+                          {skill.skill_details?.name || 'Unknown Skill'}
                         </Text>
-                        <Text fontWeight="600" fontSize="$3">
-                          {skill.proficiency &&
-                            PROFICIENCY_LABELS[
-                              skill.proficiency as keyof typeof PROFICIENCY_LABELS
-                            ]}{' '}
-                          ({skill.proficiency}/5)
-                        </Text>
+                        {skill.skill_details?.display_code && (
+                          <Text fontSize="$2" color="$color10">
+                            Code: {skill.skill_details.display_code}
+                          </Text>
+                        )}
                       </YStack>
 
-                      <XStack gap="$2">
-                        <Button
-                          size="$2"
-                          variant="outlined"
-                          icon={X}
-                          onPress={() => handleRemoveSkill(skill.skill_id)}
-                          disabled={removeSkillMutation.isPending}
-                        >
-                          Remove
-                        </Button>
+                      {/* Proficiency */}
+                      <XStack justify="space-between" items="center" pt="$2">
+                        <YStack gap="$1">
+                          <Text fontSize="$2" color="$color11">
+                            Proficiency
+                          </Text>
+                          <Text fontWeight="600" fontSize="$3">
+                            {skill.proficiency_level &&
+                              PROFICIENCY_LABELS[
+                                skill.proficiency_level as keyof typeof PROFICIENCY_LABELS
+                              ]}{' '}
+                            ({skill.proficiency_level}/5)
+                          </Text>
+                        </YStack>
+
+                        <XStack gap="$2">
+                          <Button
+                            size="$2"
+                            variant="outlined"
+                            icon={X}
+                            onPress={() => handleRemoveSkill(skill.id)}
+                            disabled={removeSkillMutation.isPending}
+                          >
+                            Remove
+                          </Button>
+                        </XStack>
                       </XStack>
-                    </XStack>
-                  </Card.Header>
-                </Card>
-              ))}
+                    </Card.Header>
+                  </Card>
+                )
+              )}
             </YStack>
           </YStack>
         </DashboardWidget>

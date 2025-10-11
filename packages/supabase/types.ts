@@ -7,6 +7,1792 @@ export type Json =
   | Json[];
 
 export type Database = {
+  data: {
+    Tables: {
+      masterformat: {
+        Row: {
+          active: boolean | null;
+          code: string[];
+          code_display: string;
+          code_key: string;
+          created_at: string | null;
+          depth: number;
+          description: string | null;
+          id: string;
+          metadata: Json | null;
+          name: string;
+          parent_id: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          active?: boolean | null;
+          code: string[];
+          code_display: string;
+          code_key: string;
+          created_at?: string | null;
+          depth: number;
+          description?: string | null;
+          id?: string;
+          metadata?: Json | null;
+          name: string;
+          parent_id?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          active?: boolean | null;
+          code?: string[];
+          code_display?: string;
+          code_key?: string;
+          created_at?: string | null;
+          depth?: number;
+          description?: string | null;
+          id?: string;
+          metadata?: Json | null;
+          name?: string;
+          parent_id?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "masterformat_parent_id_fkey";
+            columns: ["parent_id"];
+            isOneToOne: false;
+            referencedRelation: "masterformat";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      universities: {
+        Row: {
+          alpha_two_code: string;
+          country: string;
+          created_at: string | null;
+          domains: string[] | null;
+          id: string;
+          is_active: boolean | null;
+          metadata: Json | null;
+          name: string;
+          slug: string;
+          state_province: string | null;
+          updated_at: string | null;
+          web_pages: string[] | null;
+        };
+        Insert: {
+          alpha_two_code: string;
+          country: string;
+          created_at?: string | null;
+          domains?: string[] | null;
+          id?: string;
+          is_active?: boolean | null;
+          metadata?: Json | null;
+          name: string;
+          slug: string;
+          state_province?: string | null;
+          updated_at?: string | null;
+          web_pages?: string[] | null;
+        };
+        Update: {
+          alpha_two_code?: string;
+          country?: string;
+          created_at?: string | null;
+          domains?: string[] | null;
+          id?: string;
+          is_active?: boolean | null;
+          metadata?: Json | null;
+          name?: string;
+          slug?: string;
+          state_province?: string | null;
+          updated_at?: string | null;
+          web_pages?: string[] | null;
+        };
+        Relationships: [];
+      };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      get_hierarchy_path: {
+        Args: { code_id: string };
+        Returns: {
+          code_key: string;
+          id: string;
+          level: number;
+          name: string;
+        }[];
+      };
+      search_masterformat: {
+        Args: { search_term: string };
+        Returns: {
+          code_display: string;
+          code_key: string;
+          depth: number;
+          id: string;
+          name: string;
+          relevance: number;
+        }[];
+      };
+      search_universities: {
+        Args: { p_country?: string; p_limit?: number; p_query: string };
+        Returns: {
+          alpha_two_code: string;
+          country: string;
+          domains: string[];
+          id: string;
+          name: string;
+          similarity: number;
+          slug: string;
+          state_province: string;
+          web_pages: string[];
+        }[];
+      };
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
+  onet: {
+    Tables: {
+      abilities: {
+        Row: {
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          element_id: string;
+          lower_ci_bound: number | null;
+          n: number | null;
+          not_relevant: string | null;
+          onetsoc_code: string;
+          recommend_suppress: string | null;
+          scale_id: string;
+          standard_error: number | null;
+          upper_ci_bound: number | null;
+        };
+        Insert: {
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          element_id: string;
+          lower_ci_bound?: number | null;
+          n?: number | null;
+          not_relevant?: string | null;
+          onetsoc_code: string;
+          recommend_suppress?: string | null;
+          scale_id: string;
+          standard_error?: number | null;
+          upper_ci_bound?: number | null;
+        };
+        Update: {
+          data_value?: number;
+          date_updated?: string;
+          domain_source?: string;
+          element_id?: string;
+          lower_ci_bound?: number | null;
+          n?: number | null;
+          not_relevant?: string | null;
+          onetsoc_code?: string;
+          recommend_suppress?: string | null;
+          scale_id?: string;
+          standard_error?: number | null;
+          upper_ci_bound?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "abilities_element_id_fkey";
+            columns: ["element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName: "abilities_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+          {
+            foreignKeyName: "abilities_scale_id_fkey";
+            columns: ["scale_id"];
+            isOneToOne: false;
+            referencedRelation: "scales_reference";
+            referencedColumns: ["scale_id"];
+          },
+        ];
+      };
+      abilities_to_work_activities: {
+        Row: {
+          abilities_element_id: string;
+          work_activities_element_id: string;
+        };
+        Insert: {
+          abilities_element_id: string;
+          work_activities_element_id: string;
+        };
+        Update: {
+          abilities_element_id?: string;
+          work_activities_element_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName:
+              "abilities_to_work_activities_abilities_element_id_fkey";
+            columns: ["abilities_element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName:
+              "abilities_to_work_activities_work_activities_element_id_fkey";
+            columns: ["work_activities_element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+        ];
+      };
+      abilities_to_work_context: {
+        Row: {
+          abilities_element_id: string;
+          work_context_element_id: string;
+        };
+        Insert: {
+          abilities_element_id: string;
+          work_context_element_id: string;
+        };
+        Update: {
+          abilities_element_id?: string;
+          work_context_element_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName:
+              "abilities_to_work_context_abilities_element_id_fkey";
+            columns: ["abilities_element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName:
+              "abilities_to_work_context_work_context_element_id_fkey";
+            columns: ["work_context_element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+        ];
+      };
+      alternate_titles: {
+        Row: {
+          alternate_title: string;
+          onetsoc_code: string;
+          short_title: string | null;
+          sources: string;
+        };
+        Insert: {
+          alternate_title: string;
+          onetsoc_code: string;
+          short_title?: string | null;
+          sources: string;
+        };
+        Update: {
+          alternate_title?: string;
+          onetsoc_code?: string;
+          short_title?: string | null;
+          sources?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "alternate_titles_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+        ];
+      };
+      basic_interests_to_riasec: {
+        Row: {
+          basic_interests_element_id: string;
+          riasec_element_id: string;
+        };
+        Insert: {
+          basic_interests_element_id: string;
+          riasec_element_id: string;
+        };
+        Update: {
+          basic_interests_element_id?: string;
+          riasec_element_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName:
+              "basic_interests_to_riasec_basic_interests_element_id_fkey";
+            columns: ["basic_interests_element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName: "basic_interests_to_riasec_riasec_element_id_fkey";
+            columns: ["riasec_element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+        ];
+      };
+      content_model_reference: {
+        Row: {
+          description: string;
+          element_id: string;
+          element_name: string;
+        };
+        Insert: {
+          description: string;
+          element_id: string;
+          element_name: string;
+        };
+        Update: {
+          description?: string;
+          element_id?: string;
+          element_name?: string;
+        };
+        Relationships: [];
+      };
+      dwa_reference: {
+        Row: {
+          dwa_id: string;
+          dwa_title: string;
+          element_id: string;
+          iwa_id: string;
+        };
+        Insert: {
+          dwa_id: string;
+          dwa_title: string;
+          element_id: string;
+          iwa_id: string;
+        };
+        Update: {
+          dwa_id?: string;
+          dwa_title?: string;
+          element_id?: string;
+          iwa_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "dwa_reference_element_id_fkey";
+            columns: ["element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName: "dwa_reference_iwa_id_fkey";
+            columns: ["iwa_id"];
+            isOneToOne: false;
+            referencedRelation: "iwa_reference";
+            referencedColumns: ["iwa_id"];
+          },
+        ];
+      };
+      education_training_experience: {
+        Row: {
+          category: number | null;
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          element_id: string;
+          lower_ci_bound: number | null;
+          n: number | null;
+          onetsoc_code: string;
+          recommend_suppress: string | null;
+          scale_id: string;
+          standard_error: number | null;
+          upper_ci_bound: number | null;
+        };
+        Insert: {
+          category?: number | null;
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          element_id: string;
+          lower_ci_bound?: number | null;
+          n?: number | null;
+          onetsoc_code: string;
+          recommend_suppress?: string | null;
+          scale_id: string;
+          standard_error?: number | null;
+          upper_ci_bound?: number | null;
+        };
+        Update: {
+          category?: number | null;
+          data_value?: number;
+          date_updated?: string;
+          domain_source?: string;
+          element_id?: string;
+          lower_ci_bound?: number | null;
+          n?: number | null;
+          onetsoc_code?: string;
+          recommend_suppress?: string | null;
+          scale_id?: string;
+          standard_error?: number | null;
+          upper_ci_bound?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "education_training_experience_element_id_fkey";
+            columns: ["element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName:
+              "education_training_experience_element_id_scale_id_category_fkey";
+            columns: ["element_id", "scale_id", "category"];
+            isOneToOne: false;
+            referencedRelation: "ete_categories";
+            referencedColumns: ["element_id", "scale_id", "category"];
+          },
+          {
+            foreignKeyName: "education_training_experience_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+          {
+            foreignKeyName: "education_training_experience_scale_id_fkey";
+            columns: ["scale_id"];
+            isOneToOne: false;
+            referencedRelation: "scales_reference";
+            referencedColumns: ["scale_id"];
+          },
+        ];
+      };
+      emerging_tasks: {
+        Row: {
+          category: string;
+          date_updated: string;
+          domain_source: string;
+          onetsoc_code: string;
+          original_task_id: number | null;
+          task: string;
+        };
+        Insert: {
+          category: string;
+          date_updated: string;
+          domain_source: string;
+          onetsoc_code: string;
+          original_task_id?: number | null;
+          task: string;
+        };
+        Update: {
+          category?: string;
+          date_updated?: string;
+          domain_source?: string;
+          onetsoc_code?: string;
+          original_task_id?: number | null;
+          task?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "emerging_tasks_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+          {
+            foreignKeyName: "emerging_tasks_original_task_id_fkey";
+            columns: ["original_task_id"];
+            isOneToOne: false;
+            referencedRelation: "task_statements";
+            referencedColumns: ["task_id"];
+          },
+        ];
+      };
+      ete_categories: {
+        Row: {
+          category: number;
+          category_description: string;
+          element_id: string;
+          scale_id: string;
+        };
+        Insert: {
+          category: number;
+          category_description: string;
+          element_id: string;
+          scale_id: string;
+        };
+        Update: {
+          category?: number;
+          category_description?: string;
+          element_id?: string;
+          scale_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "ete_categories_element_id_fkey";
+            columns: ["element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName: "ete_categories_scale_id_fkey";
+            columns: ["scale_id"];
+            isOneToOne: false;
+            referencedRelation: "scales_reference";
+            referencedColumns: ["scale_id"];
+          },
+        ];
+      };
+      interests: {
+        Row: {
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          element_id: string;
+          onetsoc_code: string;
+          scale_id: string;
+        };
+        Insert: {
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          element_id: string;
+          onetsoc_code: string;
+          scale_id: string;
+        };
+        Update: {
+          data_value?: number;
+          date_updated?: string;
+          domain_source?: string;
+          element_id?: string;
+          onetsoc_code?: string;
+          scale_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "interests_element_id_fkey";
+            columns: ["element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName: "interests_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+          {
+            foreignKeyName: "interests_scale_id_fkey";
+            columns: ["scale_id"];
+            isOneToOne: false;
+            referencedRelation: "scales_reference";
+            referencedColumns: ["scale_id"];
+          },
+        ];
+      };
+      interests_illus_activities: {
+        Row: {
+          activity: string;
+          element_id: string;
+          interest_type: string;
+        };
+        Insert: {
+          activity: string;
+          element_id: string;
+          interest_type: string;
+        };
+        Update: {
+          activity?: string;
+          element_id?: string;
+          interest_type?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "interests_illus_activities_element_id_fkey";
+            columns: ["element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+        ];
+      };
+      interests_illus_occupations: {
+        Row: {
+          element_id: string;
+          interest_type: string;
+          onetsoc_code: string;
+        };
+        Insert: {
+          element_id: string;
+          interest_type: string;
+          onetsoc_code: string;
+        };
+        Update: {
+          element_id?: string;
+          interest_type?: string;
+          onetsoc_code?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "interests_illus_occupations_element_id_fkey";
+            columns: ["element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName: "interests_illus_occupations_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+        ];
+      };
+      iwa_reference: {
+        Row: {
+          element_id: string;
+          iwa_id: string;
+          iwa_title: string;
+        };
+        Insert: {
+          element_id: string;
+          iwa_id: string;
+          iwa_title: string;
+        };
+        Update: {
+          element_id?: string;
+          iwa_id?: string;
+          iwa_title?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "iwa_reference_element_id_fkey";
+            columns: ["element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+        ];
+      };
+      job_zone_reference: {
+        Row: {
+          education: string;
+          examples: string;
+          experience: string;
+          job_training: string;
+          job_zone: number;
+          name: string;
+          svp_range: string;
+        };
+        Insert: {
+          education: string;
+          examples: string;
+          experience: string;
+          job_training: string;
+          job_zone: number;
+          name: string;
+          svp_range: string;
+        };
+        Update: {
+          education?: string;
+          examples?: string;
+          experience?: string;
+          job_training?: string;
+          job_zone?: number;
+          name?: string;
+          svp_range?: string;
+        };
+        Relationships: [];
+      };
+      job_zones: {
+        Row: {
+          date_updated: string;
+          domain_source: string;
+          job_zone: number;
+          onetsoc_code: string;
+        };
+        Insert: {
+          date_updated: string;
+          domain_source: string;
+          job_zone: number;
+          onetsoc_code: string;
+        };
+        Update: {
+          date_updated?: string;
+          domain_source?: string;
+          job_zone?: number;
+          onetsoc_code?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "job_zones_job_zone_fkey";
+            columns: ["job_zone"];
+            isOneToOne: false;
+            referencedRelation: "job_zone_reference";
+            referencedColumns: ["job_zone"];
+          },
+          {
+            foreignKeyName: "job_zones_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+        ];
+      };
+      knowledge: {
+        Row: {
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          element_id: string;
+          lower_ci_bound: number | null;
+          n: number | null;
+          not_relevant: string | null;
+          onetsoc_code: string;
+          recommend_suppress: string | null;
+          scale_id: string;
+          standard_error: number | null;
+          upper_ci_bound: number | null;
+        };
+        Insert: {
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          element_id: string;
+          lower_ci_bound?: number | null;
+          n?: number | null;
+          not_relevant?: string | null;
+          onetsoc_code: string;
+          recommend_suppress?: string | null;
+          scale_id: string;
+          standard_error?: number | null;
+          upper_ci_bound?: number | null;
+        };
+        Update: {
+          data_value?: number;
+          date_updated?: string;
+          domain_source?: string;
+          element_id?: string;
+          lower_ci_bound?: number | null;
+          n?: number | null;
+          not_relevant?: string | null;
+          onetsoc_code?: string;
+          recommend_suppress?: string | null;
+          scale_id?: string;
+          standard_error?: number | null;
+          upper_ci_bound?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "knowledge_element_id_fkey";
+            columns: ["element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName: "knowledge_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+          {
+            foreignKeyName: "knowledge_scale_id_fkey";
+            columns: ["scale_id"];
+            isOneToOne: false;
+            referencedRelation: "scales_reference";
+            referencedColumns: ["scale_id"];
+          },
+        ];
+      };
+      level_scale_anchors: {
+        Row: {
+          anchor_description: string;
+          anchor_value: number;
+          element_id: string;
+          scale_id: string;
+        };
+        Insert: {
+          anchor_description: string;
+          anchor_value: number;
+          element_id: string;
+          scale_id: string;
+        };
+        Update: {
+          anchor_description?: string;
+          anchor_value?: number;
+          element_id?: string;
+          scale_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "level_scale_anchors_element_id_fkey";
+            columns: ["element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName: "level_scale_anchors_scale_id_fkey";
+            columns: ["scale_id"];
+            isOneToOne: false;
+            referencedRelation: "scales_reference";
+            referencedColumns: ["scale_id"];
+          },
+        ];
+      };
+      occupation_data: {
+        Row: {
+          description: string;
+          onetsoc_code: string;
+          title: string;
+        };
+        Insert: {
+          description: string;
+          onetsoc_code: string;
+          title: string;
+        };
+        Update: {
+          description?: string;
+          onetsoc_code?: string;
+          title?: string;
+        };
+        Relationships: [];
+      };
+      occupation_level_metadata: {
+        Row: {
+          date_updated: string;
+          item: string;
+          n: number | null;
+          onetsoc_code: string;
+          percent: number | null;
+          response: string | null;
+        };
+        Insert: {
+          date_updated: string;
+          item: string;
+          n?: number | null;
+          onetsoc_code: string;
+          percent?: number | null;
+          response?: string | null;
+        };
+        Update: {
+          date_updated?: string;
+          item?: string;
+          n?: number | null;
+          onetsoc_code?: string;
+          percent?: number | null;
+          response?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "occupation_level_metadata_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+        ];
+      };
+      related_occupations: {
+        Row: {
+          onetsoc_code: string;
+          related_index: number;
+          related_onetsoc_code: string;
+          relatedness_tier: string;
+        };
+        Insert: {
+          onetsoc_code: string;
+          related_index: number;
+          related_onetsoc_code: string;
+          relatedness_tier: string;
+        };
+        Update: {
+          onetsoc_code?: string;
+          related_index?: number;
+          related_onetsoc_code?: string;
+          relatedness_tier?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "related_occupations_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+          {
+            foreignKeyName: "related_occupations_related_onetsoc_code_fkey";
+            columns: ["related_onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+        ];
+      };
+      riasec_keywords: {
+        Row: {
+          element_id: string;
+          keyword: string;
+          keyword_type: string;
+        };
+        Insert: {
+          element_id: string;
+          keyword: string;
+          keyword_type: string;
+        };
+        Update: {
+          element_id?: string;
+          keyword?: string;
+          keyword_type?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "riasec_keywords_element_id_fkey";
+            columns: ["element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+        ];
+      };
+      sample_of_reported_titles: {
+        Row: {
+          onetsoc_code: string;
+          reported_job_title: string;
+          shown_in_my_next_move: string;
+        };
+        Insert: {
+          onetsoc_code: string;
+          reported_job_title: string;
+          shown_in_my_next_move: string;
+        };
+        Update: {
+          onetsoc_code?: string;
+          reported_job_title?: string;
+          shown_in_my_next_move?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "sample_of_reported_titles_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+        ];
+      };
+      scales_reference: {
+        Row: {
+          maximum: number;
+          minimum: number;
+          scale_id: string;
+          scale_name: string;
+        };
+        Insert: {
+          maximum: number;
+          minimum: number;
+          scale_id: string;
+          scale_name: string;
+        };
+        Update: {
+          maximum?: number;
+          minimum?: number;
+          scale_id?: string;
+          scale_name?: string;
+        };
+        Relationships: [];
+      };
+      skills: {
+        Row: {
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          element_id: string;
+          lower_ci_bound: number | null;
+          n: number | null;
+          not_relevant: string | null;
+          onetsoc_code: string;
+          recommend_suppress: string | null;
+          scale_id: string;
+          standard_error: number | null;
+          upper_ci_bound: number | null;
+        };
+        Insert: {
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          element_id: string;
+          lower_ci_bound?: number | null;
+          n?: number | null;
+          not_relevant?: string | null;
+          onetsoc_code: string;
+          recommend_suppress?: string | null;
+          scale_id: string;
+          standard_error?: number | null;
+          upper_ci_bound?: number | null;
+        };
+        Update: {
+          data_value?: number;
+          date_updated?: string;
+          domain_source?: string;
+          element_id?: string;
+          lower_ci_bound?: number | null;
+          n?: number | null;
+          not_relevant?: string | null;
+          onetsoc_code?: string;
+          recommend_suppress?: string | null;
+          scale_id?: string;
+          standard_error?: number | null;
+          upper_ci_bound?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "skills_element_id_fkey";
+            columns: ["element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName: "skills_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+          {
+            foreignKeyName: "skills_scale_id_fkey";
+            columns: ["scale_id"];
+            isOneToOne: false;
+            referencedRelation: "scales_reference";
+            referencedColumns: ["scale_id"];
+          },
+        ];
+      };
+      skills_to_work_activities: {
+        Row: {
+          skills_element_id: string;
+          work_activities_element_id: string;
+        };
+        Insert: {
+          skills_element_id: string;
+          work_activities_element_id: string;
+        };
+        Update: {
+          skills_element_id?: string;
+          work_activities_element_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "skills_to_work_activities_skills_element_id_fkey";
+            columns: ["skills_element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName:
+              "skills_to_work_activities_work_activities_element_id_fkey";
+            columns: ["work_activities_element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+        ];
+      };
+      skills_to_work_context: {
+        Row: {
+          skills_element_id: string;
+          work_context_element_id: string;
+        };
+        Insert: {
+          skills_element_id: string;
+          work_context_element_id: string;
+        };
+        Update: {
+          skills_element_id?: string;
+          work_context_element_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "skills_to_work_context_skills_element_id_fkey";
+            columns: ["skills_element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName:
+              "skills_to_work_context_work_context_element_id_fkey";
+            columns: ["work_context_element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+        ];
+      };
+      survey_booklet_locations: {
+        Row: {
+          element_id: string;
+          scale_id: string;
+          survey_item_number: string;
+        };
+        Insert: {
+          element_id: string;
+          scale_id: string;
+          survey_item_number: string;
+        };
+        Update: {
+          element_id?: string;
+          scale_id?: string;
+          survey_item_number?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "survey_booklet_locations_element_id_fkey";
+            columns: ["element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName: "survey_booklet_locations_scale_id_fkey";
+            columns: ["scale_id"];
+            isOneToOne: false;
+            referencedRelation: "scales_reference";
+            referencedColumns: ["scale_id"];
+          },
+        ];
+      };
+      task_categories: {
+        Row: {
+          category: number;
+          category_description: string;
+          scale_id: string;
+        };
+        Insert: {
+          category: number;
+          category_description: string;
+          scale_id: string;
+        };
+        Update: {
+          category?: number;
+          category_description?: string;
+          scale_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "task_categories_scale_id_fkey";
+            columns: ["scale_id"];
+            isOneToOne: false;
+            referencedRelation: "scales_reference";
+            referencedColumns: ["scale_id"];
+          },
+        ];
+      };
+      task_ratings: {
+        Row: {
+          category: number | null;
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          lower_ci_bound: number | null;
+          n: number | null;
+          onetsoc_code: string;
+          recommend_suppress: string | null;
+          scale_id: string;
+          standard_error: number | null;
+          task_id: number;
+          upper_ci_bound: number | null;
+        };
+        Insert: {
+          category?: number | null;
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          lower_ci_bound?: number | null;
+          n?: number | null;
+          onetsoc_code: string;
+          recommend_suppress?: string | null;
+          scale_id: string;
+          standard_error?: number | null;
+          task_id: number;
+          upper_ci_bound?: number | null;
+        };
+        Update: {
+          category?: number | null;
+          data_value?: number;
+          date_updated?: string;
+          domain_source?: string;
+          lower_ci_bound?: number | null;
+          n?: number | null;
+          onetsoc_code?: string;
+          recommend_suppress?: string | null;
+          scale_id?: string;
+          standard_error?: number | null;
+          task_id?: number;
+          upper_ci_bound?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "task_ratings_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+          {
+            foreignKeyName: "task_ratings_scale_id_category_fkey";
+            columns: ["scale_id", "category"];
+            isOneToOne: false;
+            referencedRelation: "task_categories";
+            referencedColumns: ["scale_id", "category"];
+          },
+          {
+            foreignKeyName: "task_ratings_scale_id_fkey";
+            columns: ["scale_id"];
+            isOneToOne: false;
+            referencedRelation: "scales_reference";
+            referencedColumns: ["scale_id"];
+          },
+          {
+            foreignKeyName: "task_ratings_task_id_fkey";
+            columns: ["task_id"];
+            isOneToOne: false;
+            referencedRelation: "task_statements";
+            referencedColumns: ["task_id"];
+          },
+        ];
+      };
+      task_statements: {
+        Row: {
+          date_updated: string;
+          domain_source: string;
+          incumbents_responding: number | null;
+          onetsoc_code: string;
+          task: string;
+          task_id: number;
+          task_type: string | null;
+        };
+        Insert: {
+          date_updated: string;
+          domain_source: string;
+          incumbents_responding?: number | null;
+          onetsoc_code: string;
+          task: string;
+          task_id: number;
+          task_type?: string | null;
+        };
+        Update: {
+          date_updated?: string;
+          domain_source?: string;
+          incumbents_responding?: number | null;
+          onetsoc_code?: string;
+          task?: string;
+          task_id?: number;
+          task_type?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "task_statements_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+        ];
+      };
+      tasks_to_dwas: {
+        Row: {
+          date_updated: string;
+          domain_source: string;
+          dwa_id: string;
+          onetsoc_code: string;
+          task_id: number;
+        };
+        Insert: {
+          date_updated: string;
+          domain_source: string;
+          dwa_id: string;
+          onetsoc_code: string;
+          task_id: number;
+        };
+        Update: {
+          date_updated?: string;
+          domain_source?: string;
+          dwa_id?: string;
+          onetsoc_code?: string;
+          task_id?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "tasks_to_dwas_dwa_id_fkey";
+            columns: ["dwa_id"];
+            isOneToOne: false;
+            referencedRelation: "dwa_reference";
+            referencedColumns: ["dwa_id"];
+          },
+          {
+            foreignKeyName: "tasks_to_dwas_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+          {
+            foreignKeyName: "tasks_to_dwas_task_id_fkey";
+            columns: ["task_id"];
+            isOneToOne: false;
+            referencedRelation: "task_statements";
+            referencedColumns: ["task_id"];
+          },
+        ];
+      };
+      technology_skills: {
+        Row: {
+          commodity_code: number;
+          example: string;
+          hot_technology: string;
+          in_demand: string;
+          onetsoc_code: string;
+        };
+        Insert: {
+          commodity_code: number;
+          example: string;
+          hot_technology: string;
+          in_demand: string;
+          onetsoc_code: string;
+        };
+        Update: {
+          commodity_code?: number;
+          example?: string;
+          hot_technology?: string;
+          in_demand?: string;
+          onetsoc_code?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "technology_skills_commodity_code_fkey";
+            columns: ["commodity_code"];
+            isOneToOne: false;
+            referencedRelation: "unspsc_reference";
+            referencedColumns: ["commodity_code"];
+          },
+          {
+            foreignKeyName: "technology_skills_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+        ];
+      };
+      tools_used: {
+        Row: {
+          commodity_code: number;
+          example: string;
+          onetsoc_code: string;
+        };
+        Insert: {
+          commodity_code: number;
+          example: string;
+          onetsoc_code: string;
+        };
+        Update: {
+          commodity_code?: number;
+          example?: string;
+          onetsoc_code?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "tools_used_commodity_code_fkey";
+            columns: ["commodity_code"];
+            isOneToOne: false;
+            referencedRelation: "unspsc_reference";
+            referencedColumns: ["commodity_code"];
+          },
+          {
+            foreignKeyName: "tools_used_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+        ];
+      };
+      unspsc_reference: {
+        Row: {
+          class_code: number;
+          class_title: string;
+          commodity_code: number;
+          commodity_title: string;
+          family_code: number;
+          family_title: string;
+          segment_code: number;
+          segment_title: string;
+        };
+        Insert: {
+          class_code: number;
+          class_title: string;
+          commodity_code: number;
+          commodity_title: string;
+          family_code: number;
+          family_title: string;
+          segment_code: number;
+          segment_title: string;
+        };
+        Update: {
+          class_code?: number;
+          class_title?: string;
+          commodity_code?: number;
+          commodity_title?: string;
+          family_code?: number;
+          family_title?: string;
+          segment_code?: number;
+          segment_title?: string;
+        };
+        Relationships: [];
+      };
+      work_activities: {
+        Row: {
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          element_id: string;
+          lower_ci_bound: number | null;
+          n: number | null;
+          not_relevant: string | null;
+          onetsoc_code: string;
+          recommend_suppress: string | null;
+          scale_id: string;
+          standard_error: number | null;
+          upper_ci_bound: number | null;
+        };
+        Insert: {
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          element_id: string;
+          lower_ci_bound?: number | null;
+          n?: number | null;
+          not_relevant?: string | null;
+          onetsoc_code: string;
+          recommend_suppress?: string | null;
+          scale_id: string;
+          standard_error?: number | null;
+          upper_ci_bound?: number | null;
+        };
+        Update: {
+          data_value?: number;
+          date_updated?: string;
+          domain_source?: string;
+          element_id?: string;
+          lower_ci_bound?: number | null;
+          n?: number | null;
+          not_relevant?: string | null;
+          onetsoc_code?: string;
+          recommend_suppress?: string | null;
+          scale_id?: string;
+          standard_error?: number | null;
+          upper_ci_bound?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "work_activities_element_id_fkey";
+            columns: ["element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName: "work_activities_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+          {
+            foreignKeyName: "work_activities_scale_id_fkey";
+            columns: ["scale_id"];
+            isOneToOne: false;
+            referencedRelation: "scales_reference";
+            referencedColumns: ["scale_id"];
+          },
+        ];
+      };
+      work_context: {
+        Row: {
+          category: number | null;
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          element_id: string;
+          lower_ci_bound: number | null;
+          n: number | null;
+          not_relevant: string | null;
+          onetsoc_code: string;
+          recommend_suppress: string | null;
+          scale_id: string;
+          standard_error: number | null;
+          upper_ci_bound: number | null;
+        };
+        Insert: {
+          category?: number | null;
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          element_id: string;
+          lower_ci_bound?: number | null;
+          n?: number | null;
+          not_relevant?: string | null;
+          onetsoc_code: string;
+          recommend_suppress?: string | null;
+          scale_id: string;
+          standard_error?: number | null;
+          upper_ci_bound?: number | null;
+        };
+        Update: {
+          category?: number | null;
+          data_value?: number;
+          date_updated?: string;
+          domain_source?: string;
+          element_id?: string;
+          lower_ci_bound?: number | null;
+          n?: number | null;
+          not_relevant?: string | null;
+          onetsoc_code?: string;
+          recommend_suppress?: string | null;
+          scale_id?: string;
+          standard_error?: number | null;
+          upper_ci_bound?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "work_context_element_id_fkey";
+            columns: ["element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName: "work_context_element_id_scale_id_category_fkey";
+            columns: ["element_id", "scale_id", "category"];
+            isOneToOne: false;
+            referencedRelation: "work_context_categories";
+            referencedColumns: ["element_id", "scale_id", "category"];
+          },
+          {
+            foreignKeyName: "work_context_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+          {
+            foreignKeyName: "work_context_scale_id_fkey";
+            columns: ["scale_id"];
+            isOneToOne: false;
+            referencedRelation: "scales_reference";
+            referencedColumns: ["scale_id"];
+          },
+        ];
+      };
+      work_context_categories: {
+        Row: {
+          category: number;
+          category_description: string;
+          element_id: string;
+          scale_id: string;
+        };
+        Insert: {
+          category: number;
+          category_description: string;
+          element_id: string;
+          scale_id: string;
+        };
+        Update: {
+          category?: number;
+          category_description?: string;
+          element_id?: string;
+          scale_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "work_context_categories_element_id_fkey";
+            columns: ["element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName: "work_context_categories_scale_id_fkey";
+            columns: ["scale_id"];
+            isOneToOne: false;
+            referencedRelation: "scales_reference";
+            referencedColumns: ["scale_id"];
+          },
+        ];
+      };
+      work_styles: {
+        Row: {
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          element_id: string;
+          lower_ci_bound: number | null;
+          n: number | null;
+          onetsoc_code: string;
+          recommend_suppress: string | null;
+          scale_id: string;
+          standard_error: number | null;
+          upper_ci_bound: number | null;
+        };
+        Insert: {
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          element_id: string;
+          lower_ci_bound?: number | null;
+          n?: number | null;
+          onetsoc_code: string;
+          recommend_suppress?: string | null;
+          scale_id: string;
+          standard_error?: number | null;
+          upper_ci_bound?: number | null;
+        };
+        Update: {
+          data_value?: number;
+          date_updated?: string;
+          domain_source?: string;
+          element_id?: string;
+          lower_ci_bound?: number | null;
+          n?: number | null;
+          onetsoc_code?: string;
+          recommend_suppress?: string | null;
+          scale_id?: string;
+          standard_error?: number | null;
+          upper_ci_bound?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "work_styles_element_id_fkey";
+            columns: ["element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName: "work_styles_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+          {
+            foreignKeyName: "work_styles_scale_id_fkey";
+            columns: ["scale_id"];
+            isOneToOne: false;
+            referencedRelation: "scales_reference";
+            referencedColumns: ["scale_id"];
+          },
+        ];
+      };
+      work_values: {
+        Row: {
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          element_id: string;
+          onetsoc_code: string;
+          scale_id: string;
+        };
+        Insert: {
+          data_value: number;
+          date_updated: string;
+          domain_source: string;
+          element_id: string;
+          onetsoc_code: string;
+          scale_id: string;
+        };
+        Update: {
+          data_value?: number;
+          date_updated?: string;
+          domain_source?: string;
+          element_id?: string;
+          onetsoc_code?: string;
+          scale_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "work_values_element_id_fkey";
+            columns: ["element_id"];
+            isOneToOne: false;
+            referencedRelation: "content_model_reference";
+            referencedColumns: ["element_id"];
+          },
+          {
+            foreignKeyName: "work_values_onetsoc_code_fkey";
+            columns: ["onetsoc_code"];
+            isOneToOne: false;
+            referencedRelation: "occupation_data";
+            referencedColumns: ["onetsoc_code"];
+          },
+          {
+            foreignKeyName: "work_values_scale_id_fkey";
+            columns: ["scale_id"];
+            isOneToOne: false;
+            referencedRelation: "scales_reference";
+            referencedColumns: ["scale_id"];
+          },
+        ];
+      };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      get_occupation: {
+        Args: { soc_code: string };
+        Returns: {
+          description: string;
+          onetsoc_code: string;
+          title: string;
+        }[];
+      };
+      search_occupations: {
+        Args: { search_term: string };
+        Returns: {
+          description: string;
+          onetsoc_code: string;
+          relevance: number;
+          title: string;
+        }[];
+      };
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
   public: {
     Tables: {
       affiliates: {
@@ -346,20 +2132,6 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "applications_job_id_fkey";
-            columns: ["job_id"];
-            isOneToOne: false;
-            referencedRelation: "v_job_search";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "applications_job_id_fkey";
-            columns: ["job_id"];
-            isOneToOne: false;
-            referencedRelation: "v_jobs_with_details";
-            referencedColumns: ["id"];
-          },
-          {
             foreignKeyName: "applications_pipeline_id_fkey";
             columns: ["pipeline_id"];
             isOneToOne: false;
@@ -485,20 +2257,6 @@ export type Database = {
             columns: ["job_id"];
             isOneToOne: false;
             referencedRelation: "jobs";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "candidate_job_links_job_id_fkey";
-            columns: ["job_id"];
-            isOneToOne: false;
-            referencedRelation: "v_job_search";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "candidate_job_links_job_id_fkey";
-            columns: ["job_id"];
-            isOneToOne: false;
-            referencedRelation: "v_jobs_with_details";
             referencedColumns: ["id"];
           },
           {
@@ -1108,20 +2866,6 @@ export type Database = {
             referencedRelation: "jobs";
             referencedColumns: ["id"];
           },
-          {
-            foreignKeyName: "job_certifications_job_id_fkey";
-            columns: ["job_id"];
-            isOneToOne: false;
-            referencedRelation: "v_job_search";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "job_certifications_job_id_fkey";
-            columns: ["job_id"];
-            isOneToOne: false;
-            referencedRelation: "v_jobs_with_details";
-            referencedColumns: ["id"];
-          },
         ];
       };
       job_pipelines: {
@@ -1187,20 +2931,6 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "job_pipelines_job_id_fkey";
-            columns: ["job_id"];
-            isOneToOne: false;
-            referencedRelation: "v_job_search";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "job_pipelines_job_id_fkey";
-            columns: ["job_id"];
-            isOneToOne: false;
-            referencedRelation: "v_jobs_with_details";
-            referencedColumns: ["id"];
-          },
-          {
             foreignKeyName: "job_pipelines_pipeline_id_fkey";
             columns: ["pipeline_id"];
             isOneToOne: false;
@@ -1211,22 +2941,43 @@ export type Database = {
       };
       job_skills: {
         Row: {
-          created_at: string;
+          created_at: string | null;
+          csi_skill_id: string | null;
+          id: string;
+          is_required: boolean | null;
           job_id: string;
+          metadata: Json | null;
+          onet_occupation_id: string | null;
+          priority_order: number | null;
           required_level: number | null;
-          skill_id: string;
+          skill_taxonomy: string;
+          updated_at: string | null;
         };
         Insert: {
-          created_at?: string;
+          created_at?: string | null;
+          csi_skill_id?: string | null;
+          id?: string;
+          is_required?: boolean | null;
           job_id: string;
+          metadata?: Json | null;
+          onet_occupation_id?: string | null;
+          priority_order?: number | null;
           required_level?: number | null;
-          skill_id: string;
+          skill_taxonomy: string;
+          updated_at?: string | null;
         };
         Update: {
-          created_at?: string;
+          created_at?: string | null;
+          csi_skill_id?: string | null;
+          id?: string;
+          is_required?: boolean | null;
           job_id?: string;
+          metadata?: Json | null;
+          onet_occupation_id?: string | null;
+          priority_order?: number | null;
           required_level?: number | null;
-          skill_id?: string;
+          skill_taxonomy?: string;
+          updated_at?: string | null;
         };
         Relationships: [
           {
@@ -1234,27 +2985,6 @@ export type Database = {
             columns: ["job_id"];
             isOneToOne: false;
             referencedRelation: "jobs";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "job_skills_job_id_fkey";
-            columns: ["job_id"];
-            isOneToOne: false;
-            referencedRelation: "v_job_search";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "job_skills_job_id_fkey";
-            columns: ["job_id"];
-            isOneToOne: false;
-            referencedRelation: "v_jobs_with_details";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "job_skills_skill_id_fkey";
-            columns: ["skill_id"];
-            isOneToOne: false;
-            referencedRelation: "skills";
             referencedColumns: ["id"];
           },
         ];
@@ -1704,25 +3434,40 @@ export type Database = {
       };
       organization_skills: {
         Row: {
-          created_at: string;
+          created_at: string | null;
+          csi_skill_id: string | null;
+          id: string;
+          is_core_competency: boolean | null;
+          metadata: Json | null;
+          onet_occupation_id: string | null;
           organization_id: string;
-          priority: number | null;
-          required_level: number | null;
-          skill_id: string;
+          proficiency_level: number | null;
+          skill_taxonomy: string;
+          updated_at: string | null;
         };
         Insert: {
-          created_at?: string;
+          created_at?: string | null;
+          csi_skill_id?: string | null;
+          id?: string;
+          is_core_competency?: boolean | null;
+          metadata?: Json | null;
+          onet_occupation_id?: string | null;
           organization_id: string;
-          priority?: number | null;
-          required_level?: number | null;
-          skill_id: string;
+          proficiency_level?: number | null;
+          skill_taxonomy: string;
+          updated_at?: string | null;
         };
         Update: {
-          created_at?: string;
+          created_at?: string | null;
+          csi_skill_id?: string | null;
+          id?: string;
+          is_core_competency?: boolean | null;
+          metadata?: Json | null;
+          onet_occupation_id?: string | null;
           organization_id?: string;
-          priority?: number | null;
-          required_level?: number | null;
-          skill_id?: string;
+          proficiency_level?: number | null;
+          skill_taxonomy?: string;
+          updated_at?: string | null;
         };
         Relationships: [
           {
@@ -1744,13 +3489,6 @@ export type Database = {
             columns: ["organization_id"];
             isOneToOne: false;
             referencedRelation: "v_org_directory";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "organization_skills_skill_id_fkey";
-            columns: ["skill_id"];
-            isOneToOne: false;
-            referencedRelation: "skills";
             referencedColumns: ["id"];
           },
         ];
@@ -2703,10 +4441,6 @@ export type Database = {
         Row: {
           active: boolean | null;
           created_at: string;
-          csi_code: string[] | null;
-          csi_code_key: string | null;
-          csi_depth: number | null;
-          csi_display: string | null;
           id: string;
           industry_id: string | null;
           name: string;
@@ -2716,10 +4450,6 @@ export type Database = {
         Insert: {
           active?: boolean | null;
           created_at?: string;
-          csi_code?: string[] | null;
-          csi_code_key?: string | null;
-          csi_depth?: number | null;
-          csi_display?: string | null;
           id?: string;
           industry_id?: string | null;
           name: string;
@@ -2729,10 +4459,6 @@ export type Database = {
         Update: {
           active?: boolean | null;
           created_at?: string;
-          csi_code?: string[] | null;
-          csi_code_key?: string | null;
-          csi_depth?: number | null;
-          csi_display?: string | null;
           id?: string;
           industry_id?: string | null;
           name?: string;
@@ -3018,6 +4744,7 @@ export type Database = {
       user_certifications: {
         Row: {
           certificate_file_path: string | null;
+          certification_id: string | null;
           created_at: string | null;
           credential_id: string | null;
           credential_url: string | null;
@@ -3026,8 +4753,8 @@ export type Database = {
           id: string;
           is_active: boolean | null;
           issue_date: string | null;
-          issuing_organization: string;
-          name: string;
+          issuing_organization: string | null;
+          name: string | null;
           skills_gained: string[] | null;
           updated_at: string | null;
           user_id: string;
@@ -3035,6 +4762,7 @@ export type Database = {
         };
         Insert: {
           certificate_file_path?: string | null;
+          certification_id?: string | null;
           created_at?: string | null;
           credential_id?: string | null;
           credential_url?: string | null;
@@ -3043,8 +4771,8 @@ export type Database = {
           id?: string;
           is_active?: boolean | null;
           issue_date?: string | null;
-          issuing_organization: string;
-          name: string;
+          issuing_organization?: string | null;
+          name?: string | null;
           skills_gained?: string[] | null;
           updated_at?: string | null;
           user_id: string;
@@ -3052,6 +4780,7 @@ export type Database = {
         };
         Update: {
           certificate_file_path?: string | null;
+          certification_id?: string | null;
           created_at?: string | null;
           credential_id?: string | null;
           credential_url?: string | null;
@@ -3060,14 +4789,21 @@ export type Database = {
           id?: string;
           is_active?: boolean | null;
           issue_date?: string | null;
-          issuing_organization?: string;
-          name?: string;
+          issuing_organization?: string | null;
+          name?: string | null;
           skills_gained?: string[] | null;
           updated_at?: string | null;
           user_id?: string;
           verification_status?: string | null;
         };
         Relationships: [
+          {
+            foreignKeyName: "user_certifications_certification_id_fkey";
+            columns: ["certification_id"];
+            isOneToOne: false;
+            referencedRelation: "certifications";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "user_certifications_user_id_fkey";
             columns: ["user_id"];
@@ -3116,11 +4852,12 @@ export type Database = {
           gpa: number | null;
           honors: string[] | null;
           id: string;
-          institution_name: string;
+          institution_name: string | null;
           is_current: boolean | null;
           is_verified: boolean | null;
           location: string | null;
           start_date: string | null;
+          university_id: string | null;
           updated_at: string | null;
           user_id: string;
         };
@@ -3134,11 +4871,12 @@ export type Database = {
           gpa?: number | null;
           honors?: string[] | null;
           id?: string;
-          institution_name: string;
+          institution_name?: string | null;
           is_current?: boolean | null;
           is_verified?: boolean | null;
           location?: string | null;
           start_date?: string | null;
+          university_id?: string | null;
           updated_at?: string | null;
           user_id: string;
         };
@@ -3152,11 +4890,12 @@ export type Database = {
           gpa?: number | null;
           honors?: string[] | null;
           id?: string;
-          institution_name?: string;
+          institution_name?: string | null;
           is_current?: boolean | null;
           is_verified?: boolean | null;
           location?: string | null;
           start_date?: string | null;
+          university_id?: string | null;
           updated_at?: string | null;
           user_id?: string;
         };
@@ -3468,37 +5207,54 @@ export type Database = {
       };
       user_skills: {
         Row: {
-          created_at: string;
-          last_verified_at: string | null;
-          proficiency: number | null;
-          skill_id: string;
-          source: string | null;
+          created_at: string | null;
+          csi_skill_id: string | null;
+          id: string;
+          metadata: Json | null;
+          notes: string | null;
+          onet_occupation_id: string | null;
+          proficiency_level: number | null;
+          skill_taxonomy: string;
+          updated_at: string | null;
           user_id: string;
+          verified: boolean | null;
+          verified_at: string | null;
+          verified_by: string | null;
+          years_experience: number | null;
         };
         Insert: {
-          created_at?: string;
-          last_verified_at?: string | null;
-          proficiency?: number | null;
-          skill_id: string;
-          source?: string | null;
+          created_at?: string | null;
+          csi_skill_id?: string | null;
+          id?: string;
+          metadata?: Json | null;
+          notes?: string | null;
+          onet_occupation_id?: string | null;
+          proficiency_level?: number | null;
+          skill_taxonomy: string;
+          updated_at?: string | null;
           user_id: string;
+          verified?: boolean | null;
+          verified_at?: string | null;
+          verified_by?: string | null;
+          years_experience?: number | null;
         };
         Update: {
-          created_at?: string;
-          last_verified_at?: string | null;
-          proficiency?: number | null;
-          skill_id?: string;
-          source?: string | null;
+          created_at?: string | null;
+          csi_skill_id?: string | null;
+          id?: string;
+          metadata?: Json | null;
+          notes?: string | null;
+          onet_occupation_id?: string | null;
+          proficiency_level?: number | null;
+          skill_taxonomy?: string;
+          updated_at?: string | null;
           user_id?: string;
+          verified?: boolean | null;
+          verified_at?: string | null;
+          verified_by?: string | null;
+          years_experience?: number | null;
         };
         Relationships: [
-          {
-            foreignKeyName: "user_skills_skill_id_fkey";
-            columns: ["skill_id"];
-            isOneToOne: false;
-            referencedRelation: "skills";
-            referencedColumns: ["id"];
-          },
           {
             foreignKeyName: "user_skills_user_id_fkey";
             columns: ["user_id"];
@@ -3530,6 +5286,41 @@ export type Database = {
           {
             foreignKeyName: "user_skills_user_id_fkey";
             columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "v_user_search";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_skills_verified_by_fkey";
+            columns: ["verified_by"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_skills_verified_by_fkey";
+            columns: ["verified_by"];
+            isOneToOne: false;
+            referencedRelation: "v_profile_search";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_skills_verified_by_fkey";
+            columns: ["verified_by"];
+            isOneToOne: false;
+            referencedRelation: "v_user_directory";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_skills_verified_by_fkey";
+            columns: ["verified_by"];
+            isOneToOne: false;
+            referencedRelation: "v_user_private";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_skills_verified_by_fkey";
+            columns: ["verified_by"];
             isOneToOne: false;
             referencedRelation: "v_user_search";
             referencedColumns: ["id"];
@@ -3642,6 +5433,20 @@ export type Database = {
         };
         Relationships: [];
       };
+      v_all_skills: {
+        Row: {
+          active: boolean | null;
+          code: string | null;
+          description: string | null;
+          display_code: string | null;
+          hierarchy_level: number | null;
+          name: string | null;
+          parent_ref: string | null;
+          skill_id: string | null;
+          taxonomy: string | null;
+        };
+        Relationships: [];
+      };
       v_applications_with_details: {
         Row: {
           applicant_avatar_path: string | null;
@@ -3691,20 +5496,6 @@ export type Database = {
             columns: ["job_id"];
             isOneToOne: false;
             referencedRelation: "jobs";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "applications_job_id_fkey";
-            columns: ["job_id"];
-            isOneToOne: false;
-            referencedRelation: "v_job_search";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "applications_job_id_fkey";
-            columns: ["job_id"];
-            isOneToOne: false;
-            referencedRelation: "v_jobs_with_details";
             referencedColumns: ["id"];
           },
           {
@@ -3798,161 +5589,6 @@ export type Database = {
           unique_companies: number | null;
         };
         Relationships: [];
-      };
-      v_job_search: {
-        Row: {
-          address: Json | null;
-          closes_at: string | null;
-          compensation: Json | null;
-          description: string | null;
-          employment_type: string | null;
-          geo: unknown | null;
-          id: string | null;
-          location: string | null;
-          min_reputation: number | null;
-          organization_id: string | null;
-          organization_name: string | null;
-          organization_slug: string | null;
-          position_level: string | null;
-          posted_at: string | null;
-          remote_option: string | null;
-          search_tsv: unknown | null;
-          skills: string[] | null;
-          slug: string | null;
-          status: string | null;
-          team_id: string | null;
-          team_name: string | null;
-          title: string | null;
-          visibility: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "jobs_organization_id_fkey";
-            columns: ["organization_id"];
-            isOneToOne: false;
-            referencedRelation: "organizations";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "jobs_organization_id_fkey";
-            columns: ["organization_id"];
-            isOneToOne: false;
-            referencedRelation: "v_applications_with_details";
-            referencedColumns: ["organization_id"];
-          },
-          {
-            foreignKeyName: "jobs_organization_id_fkey";
-            columns: ["organization_id"];
-            isOneToOne: false;
-            referencedRelation: "v_org_directory";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "jobs_team_id_fkey";
-            columns: ["team_id"];
-            isOneToOne: false;
-            referencedRelation: "teams";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
-      v_jobs_with_details: {
-        Row: {
-          address: Json | null;
-          closes_at: string | null;
-          compensation: Json | null;
-          created_at: string | null;
-          created_by_user_id: string | null;
-          description: string | null;
-          employment_type: string | null;
-          geo: unknown | null;
-          id: string | null;
-          location: string | null;
-          min_reputation: number | null;
-          organization_id: string | null;
-          organization_name: string | null;
-          organization_slug: string | null;
-          pay_range_max_cents: number | null;
-          pay_range_min_cents: number | null;
-          pay_range_type: string | null;
-          position_level: string | null;
-          posted_at: string | null;
-          remote_option: string | null;
-          required_certifications: string[] | null;
-          required_skills: string[] | null;
-          search_tsv: unknown | null;
-          slug: string | null;
-          status: string | null;
-          team_id: string | null;
-          title: string | null;
-          updated_at: string | null;
-          visibility: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "jobs_created_by_user_id_fkey";
-            columns: ["created_by_user_id"];
-            isOneToOne: false;
-            referencedRelation: "users";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "jobs_created_by_user_id_fkey";
-            columns: ["created_by_user_id"];
-            isOneToOne: false;
-            referencedRelation: "v_profile_search";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "jobs_created_by_user_id_fkey";
-            columns: ["created_by_user_id"];
-            isOneToOne: false;
-            referencedRelation: "v_user_directory";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "jobs_created_by_user_id_fkey";
-            columns: ["created_by_user_id"];
-            isOneToOne: false;
-            referencedRelation: "v_user_private";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "jobs_created_by_user_id_fkey";
-            columns: ["created_by_user_id"];
-            isOneToOne: false;
-            referencedRelation: "v_user_search";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "jobs_organization_id_fkey";
-            columns: ["organization_id"];
-            isOneToOne: false;
-            referencedRelation: "organizations";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "jobs_organization_id_fkey";
-            columns: ["organization_id"];
-            isOneToOne: false;
-            referencedRelation: "v_applications_with_details";
-            referencedColumns: ["organization_id"];
-          },
-          {
-            foreignKeyName: "jobs_organization_id_fkey";
-            columns: ["organization_id"];
-            isOneToOne: false;
-            referencedRelation: "v_org_directory";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "jobs_team_id_fkey";
-            columns: ["team_id"];
-            isOneToOne: false;
-            referencedRelation: "teams";
-            referencedColumns: ["id"];
-          },
-        ];
       };
       v_org_directory: {
         Row: {
@@ -4107,6 +5743,76 @@ export type Database = {
         };
         Relationships: [];
       };
+      v_user_certifications_with_details: {
+        Row: {
+          catalog_description: string | null;
+          category: string | null;
+          certificate_file_path: string | null;
+          certification_id: string | null;
+          certification_name: string | null;
+          certification_slug: string | null;
+          created_at: string | null;
+          credential_id: string | null;
+          credential_url: string | null;
+          description: string | null;
+          expiration_date: string | null;
+          id: string | null;
+          is_active: boolean | null;
+          is_from_catalog: boolean | null;
+          issue_date: string | null;
+          issuing_organization: string | null;
+          renewal_period_months: number | null;
+          requires_renewal: boolean | null;
+          typical_duration_days: number | null;
+          updated_at: string | null;
+          user_id: string | null;
+          verification_status: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "user_certifications_certification_id_fkey";
+            columns: ["certification_id"];
+            isOneToOne: false;
+            referencedRelation: "certifications";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_certifications_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_certifications_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "v_profile_search";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_certifications_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "v_user_directory";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_certifications_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "v_user_private";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_certifications_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "v_user_search";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       v_user_directory: {
         Row: {
           created_at: string | null;
@@ -4127,6 +5833,70 @@ export type Database = {
             columns: ["industry_id"];
             isOneToOne: false;
             referencedRelation: "industries";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      v_user_education_with_details: {
+        Row: {
+          activities: string | null;
+          alpha_two_code: string | null;
+          country: string | null;
+          created_at: string | null;
+          degree_type: string | null;
+          description: string | null;
+          domains: string[] | null;
+          end_date: string | null;
+          field_of_study: string | null;
+          gpa: number | null;
+          honors: string[] | null;
+          id: string | null;
+          institution_name: string | null;
+          is_current: boolean | null;
+          is_from_catalog: boolean | null;
+          is_verified: boolean | null;
+          location: string | null;
+          start_date: string | null;
+          university_id: string | null;
+          university_slug: string | null;
+          updated_at: string | null;
+          user_id: string | null;
+          web_pages: string[] | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "user_education_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_education_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "v_profile_search";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_education_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "v_user_directory";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_education_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "v_user_private";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_education_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "v_user_search";
             referencedColumns: ["id"];
           },
         ];
@@ -4225,6 +5995,55 @@ export type Database = {
             columns: ["industry_id"];
             isOneToOne: false;
             referencedRelation: "industries";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      v_user_skills_detailed: {
+        Row: {
+          csi_skill: Json | null;
+          id: string | null;
+          onet_skill: Json | null;
+          proficiency_level: number | null;
+          skill_taxonomy: string | null;
+          user_id: string | null;
+          verified: boolean | null;
+          years_experience: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "user_skills_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_skills_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "v_profile_search";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_skills_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "v_user_directory";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_skills_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "v_user_private";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_skills_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "v_user_search";
             referencedColumns: ["id"];
           },
         ];
@@ -4558,10 +6377,6 @@ export type Database = {
         Args: { geom1: unknown; geom2: unknown };
         Returns: boolean;
       };
-      find_csi_skill_by_code: {
-        Args: { code_array: string[] };
-        Returns: string;
-      };
       find_similar_jobs: {
         Args: {
           p_company: string;
@@ -4845,36 +6660,6 @@ export type Database = {
         Args: { p_review_id: string };
         Returns: number;
       };
-      get_skill_children: {
-        Args: { p_parent_id: string };
-        Returns: {
-          active: boolean;
-          csi_code: string[];
-          csi_display: string;
-          depth: number;
-          hierarchy_path: string;
-          leaf_node: boolean;
-          parent_id: string;
-          skill_id: string;
-          skill_name: string;
-        }[];
-      };
-      get_skill_details: {
-        Args: { p_skill_id: string };
-        Returns: {
-          active: boolean;
-          created_at: string;
-          csi_code: string[];
-          csi_display: string;
-          hierarchy_ids: string[];
-          hierarchy_path: string;
-          industry_id: string;
-          industry_name: string;
-          parent_id: string;
-          skill_id: string;
-          skill_name: string;
-        }[];
-      };
       get_skill_hierarchy: {
         Args: { p_skill_id: string };
         Returns: {
@@ -4885,22 +6670,6 @@ export type Database = {
           parent_id: string;
           skill_id: string;
           skill_name: string;
-        }[];
-      };
-      get_user_skills_with_parents: {
-        Args: { p_user_id: string };
-        Returns: {
-          csi_display: string;
-          depth: number;
-          hierarchy_ids: string[];
-          hierarchy_path: string;
-          is_explicit: boolean;
-          last_verified_at: string;
-          proficiency: number;
-          skill_id: string;
-          skill_name: string;
-          source: string;
-          years_experience: number;
         }[];
       };
       gettransactionid: {
@@ -5207,6 +6976,17 @@ export type Database = {
             Database["public"]["Enums"]["profile_verification_subject"];
           verified_at: string;
           verified_by: string;
+        }[];
+      };
+      search_all_skills: {
+        Args: { search_term: string; taxonomy_filter?: string };
+        Returns: {
+          code: string;
+          display_code: string;
+          name: string;
+          relevance: number;
+          skill_id: string;
+          taxonomy: string;
         }[];
       };
       search_parent_skills: {
@@ -6390,6 +8170,11 @@ export type Database = {
     };
     Enums: {
       affiliate_type: "education" | "certification" | "training" | "resource";
+      certification_verification_status:
+        | "unverified"
+        | "pending"
+        | "verified"
+        | "rejected";
       profile_verification_subject:
         | "profile"
         | "user"
@@ -7086,9 +8871,21 @@ export type CompositeTypes<
   : never;
 
 export const Constants = {
+  data: {
+    Enums: {},
+  },
+  onet: {
+    Enums: {},
+  },
   public: {
     Enums: {
       affiliate_type: ["education", "certification", "training", "resource"],
+      certification_verification_status: [
+        "unverified",
+        "pending",
+        "verified",
+        "rejected",
+      ],
       profile_verification_subject: [
         "profile",
         "user",
