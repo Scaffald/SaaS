@@ -1,5 +1,6 @@
 import { Svg, Path, Defs, LinearGradient, Stop } from 'react-native-svg'
 import type { ViewStyle } from 'react-native'
+import { useMemo } from 'react'
 
 export interface ScaffaldLogoProps {
   width?: number
@@ -39,11 +40,17 @@ export const ScaffaldLogo = ({
 }: ScaffaldLogoProps) => {
   const viewBox = '0 0 609 99'
 
+  // Generate unique gradient ID for each logo instance
+  const gradientId = useMemo(
+    () => `logo-gradient-${Math.random().toString(36).substring(2, 11)}`,
+    []
+  )
+
   return (
     <Svg width={width} height={height} viewBox={viewBox} style={style}>
       <Defs>
         <LinearGradient
-          id="paint0_linear_6_54"
+          id={gradientId}
           x1="51"
           y1="0"
           x2="51"
@@ -62,10 +69,7 @@ export const ScaffaldLogo = ({
       <Path d="M90.9999 99L102 89H55.9999V99H90.9999Z" fill={secondaryColor} />
 
       {/* Main Scaffold Icon */}
-      <Path
-        d="M32 0L0 89H46V65H39L51 34.5L63 65H56V89H102L70 0H32Z"
-        fill="url(#paint0_linear_6_54)"
-      />
+      <Path d="M32 0L0 89H46V65H39L51 34.5L63 65H56V89H102L70 0H32Z" fill={`url(#${gradientId})`} />
 
       {/* Text: "SCAFFALD" */}
       <Path

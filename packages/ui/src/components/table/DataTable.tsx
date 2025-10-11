@@ -28,6 +28,7 @@ export interface DataTableProps<TData> {
   emptyMessage?: string
   cellWidth?: string
   cellHeight?: string
+  hidePagination?: boolean
 }
 
 export function DataTable<TData>({
@@ -39,6 +40,7 @@ export function DataTable<TData>({
   emptyMessage = 'No data available',
   cellWidth = '$15',
   cellHeight = '$5',
+  hidePagination = false,
 }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
@@ -77,10 +79,10 @@ export function DataTable<TData>({
       <ScrollView horizontal>
         <View flex={1} flexDirection="column" gap="$4" px="$4" py="$6">
           <Table
-            alignCells={{ x: 'center', y: 'center' }}
-            alignHeaderCells={{ y: 'center', x: 'center' }}
-            cellWidth={cellWidth as any}
-            cellHeight={cellHeight as any}
+            alignCells={{ x: 'left', y: 'center' }}
+            alignHeaderCells={{ y: 'center', x: 'left' }}
+            cellWidth={cellWidth as never}
+            cellHeight={cellHeight as never}
             borderWidth={0.5}
             borderTopRightRadius="$4"
             borderTopLeftRadius="$4"
@@ -169,83 +171,85 @@ export function DataTable<TData>({
       </ScrollView>
 
       {/* Pagination Footer */}
-      <View
-        flexDirection="row"
-        items="center"
-        justify="space-between"
-        px="$4"
-        py="$3"
-        borderTopWidth={1}
-        borderColor="$borderColor"
-        gap="$4"
-        $sm={{
-          flexDirection: 'column',
-        }}
-      >
-        <XGroup>
-          <XGroup.Item>
-            <Button
-              size="$3"
-              onPress={() => table.setPageIndex(0)}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <Button.Icon>
-                <ChevronFirst />
-              </Button.Icon>
-            </Button>
-          </XGroup.Item>
-          <XGroup.Item>
-            <Button
-              size="$3"
-              onPress={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <Button.Icon>
-                <ChevronLeft />
-              </Button.Icon>
-            </Button>
-          </XGroup.Item>
-          <XGroup.Item>
-            <Button size="$3" onPress={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-              <Button.Icon>
-                <ChevronRight />
-              </Button.Icon>
-            </Button>
-          </XGroup.Item>
-          <XGroup.Item>
-            <Button
-              size="$3"
-              onPress={() => table.setPageIndex(table.getPageCount() - 1)}
-              disabled={!table.getCanNextPage()}
-            >
-              <Button.Icon>
-                <ChevronLast />
-              </Button.Icon>
-            </Button>
-          </XGroup.Item>
-        </XGroup>
+      {!hidePagination && (
+        <View
+          flexDirection="row"
+          items="center"
+          justify="space-between"
+          px="$4"
+          py="$3"
+          borderTopWidth={1}
+          borderColor="$borderColor"
+          gap="$4"
+          $sm={{
+            flexDirection: 'column',
+          }}
+        >
+          <XGroup>
+            <XGroup.Item>
+              <Button
+                size="$3"
+                onPress={() => table.setPageIndex(0)}
+                disabled={!table.getCanPreviousPage()}
+              >
+                <Button.Icon>
+                  <ChevronFirst />
+                </Button.Icon>
+              </Button>
+            </XGroup.Item>
+            <XGroup.Item>
+              <Button
+                size="$3"
+                onPress={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                <Button.Icon>
+                  <ChevronLeft />
+                </Button.Icon>
+              </Button>
+            </XGroup.Item>
+            <XGroup.Item>
+              <Button size="$3" onPress={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+                <Button.Icon>
+                  <ChevronRight />
+                </Button.Icon>
+              </Button>
+            </XGroup.Item>
+            <XGroup.Item>
+              <Button
+                size="$3"
+                onPress={() => table.setPageIndex(table.getPageCount() - 1)}
+                disabled={!table.getCanNextPage()}
+              >
+                <Button.Icon>
+                  <ChevronLast />
+                </Button.Icon>
+              </Button>
+            </XGroup.Item>
+          </XGroup>
 
-        <Text fontSize="$3">
-          Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-        </Text>
+          <Text fontSize="$3">
+            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+          </Text>
 
-        {isWeb && (
-          <View flexDirection="row" gap="$2" items="center">
-            <Text fontSize="$3">Go to:</Text>
-            <Input
-              size="$3"
-              width="$5"
-              keyboardType="numeric"
-              {...({ type: 'number' } as any)}
-              defaultValue={String(table.getState().pagination.pageIndex + 1)}
-              onChangeText={(text) => {
-                const page = text ? Number(text) - 1 : 0
-                table.setPageIndex(page)
-              }}
-            />
-          </View>
-        )}
-      </View>
+          {isWeb && (
+            <View flexDirection="row" gap="$2" items="center">
+              <Text fontSize="$3">Go to:</Text>
+              <Input
+                size="$3"
+                width="$5"
+                keyboardType="numeric"
+                {...({ type: 'number' } as any)}
+                defaultValue={String(table.getState().pagination.pageIndex + 1)}
+                onChangeText={(text) => {
+                  const page = text ? Number(text) - 1 : 0
+                  table.setPageIndex(page)
+                }}
+              />
+            </View>
+          )}
+        </View>
+      )}
     </View>
   )
 }

@@ -1,5 +1,5 @@
-import { OfficeUniversitiesScreen } from '@app/core/features/office/office-universities-screen'
+import { OfficeUniversitiesList } from '@app/core/features/office/office-universities-list'
 
 export default function OfficeUniversitiesPage() {
-  return <OfficeUniversitiesScreen />
+  return <OfficeUniversitiesList />
 }

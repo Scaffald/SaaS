@@ -1,9 +1,11 @@
-import { YStack, XStack, Text, Input, DataTable, Button } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
-import { Plus } from '@tamagui/lucide-icons'
+import { Button, XStack } from 'tamagui'
+import { Pencil } from '@tamagui/lucide-icons'
+import { OfficePageLayout } from './components/OfficePageLayout'
+import { DeleteButton } from './components/DeleteButton'
 
 type Job = {
   id: string
@@ -43,7 +45,10 @@ const formatPayRange = (job: Job) => {
   return `$${min}-$${max} ${type === 'hourly' ? '/hr' : type === 'salary' ? '/yr' : ''}`
 }
 
-const columns = [
+const createColumns = (
+  router: ReturnType<typeof useRouter>,
+  onDelete: (id: string) => Promise<void>
+) => [
   columnHelper.accessor('title', {
     header: 'Title',
     cell: (info) => info.getValue(),
@@ -72,44 +77,67 @@ const columns = [
     header: 'Created',
     cell: (info) => new Date(info.getValue()).toLocaleDateString(),
   }),
+  columnHelper.display({
+    id: 'actions',
+    header: 'Actions',
+    cell: (info) => {
+      const job = info.row.original
+      return (
+        <XStack gap="$2">
+          <Button
+            size="$2"
+            variant="outlined"
+            icon={Pencil}
+            onPress={() => router.push(`/office/jobs/${job.id}/edit`)}
+          >
+            Edit
+          </Button>
+          <DeleteButton itemName={job.title} itemType="job" onDelete={() => onDelete(job.id)} />
+        </XStack>
+      )
+    },
+  }),
 ]
 
 export function OfficeJobsList() {
   const router = useRouter()
   const [search, setSearch] = useState('')
 
-  const { data, isLoading } = api.office.listJobs.useQuery({
+  const { data, isLoading, refetch } = api.office.listJobs.useQuery({
     limit: 50,
     offset: 0,
   })
+
+  const deleteMutation = api.office.deleteJob.useMutation({
+    onSuccess: () => {
+      refetch()
+    },
+  })
+
+  const handleDelete = async (id: string) => {
+    await deleteMutation.mutateAsync({ id })
+  }
 
   const jobs = data?.jobs ?? []
   const filteredJobs = jobs.filter((job: Job) =>
     job.title.toLowerCase().includes(search.toLowerCase())
   )
 
-  return (
-    <YStack flex={1} bg="$background">
-      {/* Header */}
-      <XStack p="$4" gap="$4" items="center" borderBottomWidth={1} bg="$borderColor">
-        <Text fontSize="$8" fontWeight="bold">
-          Jobs
-        </Text>
-        <Input flex={1} placeholder="Search jobs..." value={search} onChangeText={setSearch} />
-        <Button icon={Plus} onPress={() => router.push('/office/jobs/create')} themeInverse>
-          Create Job
-        </Button>
-      </XStack>
+  const columns = createColumns(router, handleDelete)
 
-      {/* Table */}
-      <DataTable
-        columns={columns as ColumnDef<unknown, unknown>[]}
-        data={filteredJobs}
-        isLoading={isLoading}
-        onRowClick={(job) => router.push(`/office/jobs/${(job as Job).id}/edit`)}
-        pageSize={50}
-        emptyMessage="No jobs found"
-      />
-    </YStack>
+  return (
+    <OfficePageLayout
+      title="Jobs"
+      searchPlaceholder="Search jobs..."
+      searchValue={search}
+      onSearchChange={setSearch}
+      createButtonLabel="Create Job"
+      onCreateClick={() => router.push('/office/jobs/create')}
+      columns={columns as ColumnDef<Job, unknown>[]}
+      data={filteredJobs}
+      isLoading={isLoading}
+      pageSize={50}
+      emptyMessage="No jobs found"
+    />
   )
 }

@@ -440,6 +440,44 @@ export const officeRouter = t.router({
     }),
 
   /**
+   * Delete job (hard delete)
+   * Removes job and related records permanently
+   */
+  deleteJob: superAdminProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const { supabaseAdmin } = ctx;
+
+      // Delete related records first (due to foreign key constraints)
+      // Delete job certifications
+      await supabaseAdmin.from("job_certifications").delete().eq(
+        "job_id",
+        input.id,
+      );
+
+      // Delete job skills
+      await supabaseAdmin.from("job_skills").delete().eq("job_id", input.id);
+
+      // Delete applications (if any)
+      await supabaseAdmin.from("applications").delete().eq("job_id", input.id);
+
+      // Finally delete the job itself
+      const { error } = await supabaseAdmin
+        .from("jobs")
+        .delete()
+        .eq("id", input.id);
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to delete job: ${error.message}`,
+        });
+      }
+
+      return { success: true };
+    }),
+
+  /**
    * Get all organizations (admin view)
    * Super admins can see and manage jobs for any organization
    */
@@ -512,6 +550,131 @@ export const officeRouter = t.router({
         certifications: data ?? [],
         total: count ?? 0,
       };
+    }),
+
+  /**
+   * Create new user (sends invite email)
+   * Creates user in Supabase Auth and sends invite email
+   */
+  createUser: superAdminProcedure
+    .input(
+      z.object({
+        email: z.string().email("Valid email required"),
+        first_name: z.string().min(1, "First name required"),
+        last_name: z.string().min(1, "Last name required"),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { supabaseAdmin } = ctx;
+
+      // 1. Create user in Supabase Auth
+      const { data: authData, error: authError } = await supabaseAdmin.auth
+        .admin.createUser({
+          email: input.email,
+          email_confirm: false, // User must confirm via invite email
+          user_metadata: {
+            first_name: input.first_name,
+            last_name: input.last_name,
+          },
+        });
+
+      if (authError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to create user: ${authError.message}`,
+        });
+      }
+
+      // 2. Send invite email
+      const { error: inviteError } = await supabaseAdmin.auth.admin
+        .inviteUserByEmail(
+          input.email,
+        );
+
+      if (inviteError) {
+        console.error("Failed to send invite email:", inviteError);
+        // Don't fail the whole operation if invite fails - user is created
+      }
+
+      // 3. Profile is created automatically via database trigger
+      // 4. Return user data
+      return {
+        user: authData.user,
+        inviteSent: !inviteError,
+      };
+    }),
+
+  /**
+   * Delete user (hard delete)
+   * Permanently removes user and all related data
+   */
+  deleteUser: superAdminProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const { supabaseAdmin } = ctx;
+
+      // Delete related records first
+      // Note: Many tables have ON DELETE CASCADE, but we'll be explicit
+
+      // Delete user skills
+      await supabaseAdmin.from("user_skills").delete().eq("user_id", input.id);
+
+      // Delete user certifications
+      await supabaseAdmin.from("user_certifications").delete().eq(
+        "user_id",
+        input.id,
+      );
+
+      // Delete work experience
+      await supabaseAdmin.from("work_experience").delete().eq(
+        "user_id",
+        input.id,
+      );
+
+      // Delete education
+      await supabaseAdmin.from("education").delete().eq("user_id", input.id);
+
+      // Delete applications
+      await supabaseAdmin.from("applications").delete().eq("user_id", input.id);
+
+      // Delete reviews authored by user
+      await supabaseAdmin.from("reviews").delete().eq("user_id", input.id);
+
+      // Delete organization memberships
+      await supabaseAdmin.from("organization_members").delete().eq(
+        "user_id",
+        input.id,
+      );
+
+      // Delete user_private data
+      await supabaseAdmin.from("user_private").delete().eq("user_id", input.id);
+
+      // Delete profile
+      const { error: profileError } = await supabaseAdmin
+        .from("profiles")
+        .delete()
+        .eq("id", input.id);
+
+      if (profileError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to delete user profile: ${profileError.message}`,
+        });
+      }
+
+      // Delete from Supabase Auth
+      const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(
+        input.id,
+      );
+
+      if (authError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to delete user from auth: ${authError.message}`,
+        });
+      }
+
+      return { success: true };
     }),
 
   /**
