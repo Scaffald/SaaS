@@ -58,6 +58,10 @@ export * from './components/image-picker'
 export * from './components/inputs'
 export * from './components/maps'
 export * from './components/skills'
+export * from './components/university'
+
+// Hooks
+export * from './hooks/useUniversitySearch'
 
 // Configuration and utilities
 export * from './config/countries'

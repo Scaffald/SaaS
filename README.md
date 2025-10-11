@@ -111,26 +111,85 @@ You can create a new Supabase database by following the [Supabase Database](http
 
 It is possible to develop locally with Supabase. This is useful for development and testing.
 
-#### Initial Supabase Setup Steps
+#### Local Database Setup & Seeding
 
 After cloning the project and setting up your environment variables:
 
-1. Navigate to the supabase folder:
+**1. Reset Database (Apply All Migrations)**
+```bash
+pnpm supa db reset
+```
+This will:
+- Apply all 90+ migrations including O*NET occupational database (1,016 occupations)
+- Run SQL seeds (industries, organizations, users, etc.)
+- Set up complete database schema
+
+**2. Seed Additional Data**
+```bash
+pnpm supa:seed
+```
+This will seed:
+- **CSI MasterFormat 2020**: 8,955 construction skills
+- **Universities**: 10,191 universities from 202 countries
+- **External Jobs**: 30+ jobs from RSS feeds
+
+**Complete Reset Workflow:**
+```bash
+pnpm supa db reset && pnpm supa:seed
+```
+
+#### What's Included in Database
+
+After reset and seeding, your local database contains:
+- ✅ **O*NET Database**: 1,016 occupations with skills, abilities, knowledge, work activities, and more
+- ✅ **CSI MasterFormat**: Construction industry skills taxonomy
+- ✅ **Universities**: Global university catalog
+- ✅ **Industries**: Base industries (Construction, Manufacturing, Transportation, Energy)
+- ✅ **External Jobs**: Sample job postings from feeds
+- ✅ **Test Users**: Development user accounts
+
+#### O*NET Occupational Database
+
+The O*NET database is automatically imported via migrations and includes:
+- 1,016+ occupations with detailed descriptions
+- Skills, abilities, and knowledge requirements
+- Work activities, context, and styles
+- Education and training requirements
+- Technology requirements and tools
+- RIASEC interest profiles
+
+**Querying O*NET Data:**
+```sql
+-- Search occupations
+SELECT * FROM onet.search_occupations('software engineer');
+
+-- Get specific occupation
+SELECT * FROM onet.get_occupation('15-1252.00');
+
+-- Browse all occupations
+SELECT onetsoc_code, title FROM onet.occupation_data ORDER BY title;
+```
+
+For more details, see [O*NET README](packages/supabase/onet/README.md).
+
+#### Cloud Deployment Steps
+
+For deploying to online Supabase project:
+
+1. Link your Supabase project:
    ```bash
-   cd supabase
+   pnpm supa link
    ```
 
-2. Link your Supabase project:
+2. Push migrations to cloud:
    ```bash
-   pnpm link-project
+   pnpm supa db push
    ```
 
-3. Deploy the initial database tables:
+3. Seed cloud database:
    ```bash
-   pnpm deploy
+   pnpm supa:seed:prod
    ```
-
-These steps will create the necessary tables in your online Supabase project.
 
 <details>
   <summary>Self-hosting Supabase</summary>

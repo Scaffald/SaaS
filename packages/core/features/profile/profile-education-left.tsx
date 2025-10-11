@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import {
   YStack,
   XStack,
@@ -29,8 +29,17 @@ import {
   DEGREE_TYPE_OPTIONS,
   createNewEducationEntry,
 } from './config'
-import { DashboardWidget } from '@app/ui'
+import { DashboardWidget, UniversityAutocomplete } from '@app/ui'
 import { api } from '@app/core/utils/api'
+
+// University type definition
+interface University {
+  id: string
+  name: string
+  country: string
+  alpha_two_code: string
+  slug: string
+}
 
 /**
  * Profile Education Right Component
@@ -52,6 +61,27 @@ export function ProfileEducationLeft() {
       educationLevelQuery.refetch()
     },
   })
+
+  // University search state
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // University search query (only runs when query is valid)
+  const searchUniversitiesQuery = api.office.universities.searchUniversities.useQuery(
+    {
+      query: searchQuery,
+      country: 'United States',
+      limit: 5,
+    },
+    {
+      enabled: searchQuery.length >= 3,
+      keepPreviousData: true,
+    }
+  )
+
+  // Handle search input changes
+  const handleUniversitySearch = useCallback((query: string) => {
+    setSearchQuery(query)
+  }, [])
 
   const {
     control,
@@ -224,26 +254,31 @@ export function ProfileEducationLeft() {
                 <YStack gap="$2" flex={1}>
                   <Text>Institution *</Text>
                   <Controller
-                    name={`education_entries.${index}.institution_name`}
+                    name={`education_entries.${index}.university_id`}
                     control={control}
-                    render={({ field }) => (
-                      <Input
-                        placeholder="e.g. University of California"
-                        value={field.value}
-                        onChangeText={field.onChange}
-                        borderColor={
-                          errors.education_entries?.[index]?.institution_name
-                            ? '$red8'
-                            : '$borderColor'
-                        }
+                    render={({ field: universityField }) => (
+                      <Controller
+                        name={`education_entries.${index}.institution_name`}
+                        control={control}
+                        render={({ field: nameField }) => (
+                          <UniversityAutocomplete
+                            value={nameField.value || ''}
+                            onChange={nameField.onChange}
+                            onUniversitySelect={(university: University) => {
+                              universityField.onChange(university.id)
+                              nameField.onChange(university.name)
+                            }}
+                            onSearch={handleUniversitySearch}
+                            results={searchUniversitiesQuery.data?.universities || []}
+                            loading={searchUniversitiesQuery.isLoading}
+                            searchError={searchUniversitiesQuery.error?.message}
+                            placeholder="Search for institution..."
+                            error={errors.education_entries?.[index]?.university_id?.message}
+                          />
+                        )}
                       />
                     )}
                   />
-                  {errors.education_entries?.[index]?.institution_name && (
-                    <Text color="$red10" fontSize="$2">
-                      {errors.education_entries[index]?.institution_name?.message}
-                    </Text>
-                  )}
                 </YStack>
 
                 <YStack gap="$2" flex={1}>

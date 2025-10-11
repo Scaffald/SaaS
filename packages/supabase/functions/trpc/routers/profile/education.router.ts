@@ -8,7 +8,8 @@ import { protectedProcedure, t } from "../../middleware.ts";
 const educationEntrySchema = z.object({
   id: z.string().uuid().optional(),
   user_id: z.string().uuid().optional(),
-  institution_name: z.string().min(1, "Institution name is required"),
+  university_id: z.string().uuid(),
+  institution_name: z.string().optional().nullable(),
   degree_type: z.string().optional().nullable(),
   field_of_study: z.string().optional().nullable(),
   start_date: z.string().optional().nullable(),
@@ -49,7 +50,7 @@ const deleteEducationOutputSchema = z.object({
  */
 export const profileEducationRouter = t.router({
   /**
-   * Get user's education entries
+   * Get user's education entries with university details
    */
   getEducation: protectedProcedure
     .output(getEducationOutputSchema)
@@ -58,7 +59,10 @@ export const profileEducationRouter = t.router({
 
       const { data, error } = await supabase
         .from("user_education")
-        .select("*")
+        .select(`
+          *,
+          university:universities(name)
+        `)
         .eq("user_id", user.id)
         .order("start_date", { ascending: false });
 
@@ -69,7 +73,14 @@ export const profileEducationRouter = t.router({
         });
       }
 
-      return data || [];
+      // Map data to include institution_name from university catalog
+      const educationData = data?.map((edu) => ({
+        ...edu,
+        institution_name: edu.university?.name || edu.institution_name,
+        university: undefined, // Remove the nested university object
+      })) || [];
+
+      return educationData;
     }),
 
   /**
@@ -133,7 +144,8 @@ export const profileEducationRouter = t.router({
             const { data, error } = await supabase
               .from("user_education")
               .update({
-                institution_name: edu.institution_name,
+                university_id: edu.university_id,
+                institution_name: edu.institution_name || null,
                 degree_type: edu.degree_type || null,
                 field_of_study: edu.field_of_study || null,
                 start_date: edu.start_date || null,
@@ -166,7 +178,8 @@ export const profileEducationRouter = t.router({
               .from("user_education")
               .insert({
                 user_id: user.id,
-                institution_name: edu.institution_name,
+                university_id: edu.university_id,
+                institution_name: edu.institution_name || null,
                 degree_type: edu.degree_type || null,
                 field_of_study: edu.field_of_study || null,
                 start_date: edu.start_date || null,
