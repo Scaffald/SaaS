@@ -1,19 +1,19 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { University } from "../components/university/UniversityAutocomplete";
+import { useCallback, useEffect, useRef, useState } from 'react'
+import type { University } from '../components/university/UniversityAutocomplete'
 
 export interface UseUniversitySearchOptions {
-  debounceMs?: number;
-  minLength?: number;
-  maxResults?: number;
-  defaultCountry?: string;
+  debounceMs?: number
+  minLength?: number
+  maxResults?: number
+  defaultCountry?: string
 }
 
 export interface UseUniversitySearchResult {
-  results: University[];
-  loading: boolean;
-  error: string | undefined;
-  search: (query: string) => void;
-  clearResults: () => void;
+  results: University[]
+  loading: boolean
+  error: string | undefined
+  search: (query: string) => void
+  clearResults: () => void
 }
 
 /**
@@ -26,97 +26,97 @@ export interface UseUniversitySearchResult {
  */
 export function useUniversitySearch(
   searchFn: (params: {
-    query: string;
-    country?: string;
-    limit: number;
+    query: string
+    country?: string
+    limit: number
   }) => Promise<{ universities: University[] }>,
-  options: UseUniversitySearchOptions = {},
+  options: UseUniversitySearchOptions = {}
 ): UseUniversitySearchResult {
   const {
     debounceMs = 300,
     minLength = 3,
     maxResults = 5,
-    defaultCountry = "United States",
-  } = options;
+    defaultCountry = 'United States',
+  } = options
 
-  const [results, setResults] = useState<University[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | undefined>(undefined);
-  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const abortControllerRef = useRef<AbortController | null>(null);
+  const [results, setResults] = useState<University[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | undefined>(undefined)
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   // Clear results
   const clearResults = useCallback(() => {
-    setResults([]);
-    setError(undefined);
-    setLoading(false);
-  }, []);
+    setResults([])
+    setError(undefined)
+    setLoading(false)
+  }, [])
 
   // Search function with debouncing
   const search = useCallback(
     (query: string) => {
       // Clear existing timer
       if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
+        clearTimeout(debounceTimerRef.current)
       }
 
       // Clear previous search
       if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
+        abortControllerRef.current.abort()
       }
 
       // Validate query length
       if (query.trim().length < minLength) {
-        clearResults();
-        return;
+        clearResults()
+        return
       }
 
       // Set loading state immediately
-      setLoading(true);
-      setError(undefined);
+      setLoading(true)
+      setError(undefined)
 
       // Debounce the actual search
       debounceTimerRef.current = setTimeout(async () => {
         try {
           // Create abort controller for this search
-          abortControllerRef.current = new AbortController();
+          abortControllerRef.current = new AbortController()
 
           // Execute search
           const result = await searchFn({
             query: query.trim(),
             country: defaultCountry,
             limit: maxResults,
-          });
+          })
 
           // Update results if not aborted
           if (!abortControllerRef.current.signal.aborted) {
-            setResults(result.universities);
-            setLoading(false);
+            setResults(result.universities)
+            setLoading(false)
           }
         } catch (err) {
           // Only update error if not aborted
           if (!abortControllerRef.current?.signal.aborted) {
-            setError(err instanceof Error ? err.message : "Search failed");
-            setResults([]);
-            setLoading(false);
+            setError(err instanceof Error ? err.message : 'Search failed')
+            setResults([])
+            setLoading(false)
           }
         }
-      }, debounceMs);
+      }, debounceMs)
     },
-    [searchFn, minLength, maxResults, defaultCountry, debounceMs, clearResults],
-  );
+    [searchFn, minLength, maxResults, defaultCountry, debounceMs, clearResults]
+  )
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
+        clearTimeout(debounceTimerRef.current)
       }
       if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
+        abortControllerRef.current.abort()
       }
-    };
-  }, []);
+    }
+  }, [])
 
   return {
     results,
@@ -124,5 +124,5 @@ export function useUniversitySearch(
     error,
     search,
     clearResults,
-  };
+  }
 }
