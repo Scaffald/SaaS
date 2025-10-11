@@ -1,4 +1,4 @@
-import { GetThemeValueForKey, Image, Text, XStack, YStack } from 'tamagui'
+import { type GetThemeValueForKey, Image, Text, XStack, YStack } from 'tamagui'
 import { Building } from '@tamagui/lucide-icons'
 import { getInitials } from '../utils/getInitials'
 

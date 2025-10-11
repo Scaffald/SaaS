@@ -1,4 +1,5 @@
 import { api } from '@app/core/utils/api'
+import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
@@ -88,7 +89,7 @@ const createColumns = (
             size="$2"
             variant="outlined"
             icon={Pencil}
-            onPress={() => router.push(`/office/jobs/${job.id}/edit`)}
+            onPress={() => router.push(RouteBuilder.officeJobsEdit(job.id))}
           >
             Edit
           </Button>
@@ -132,7 +133,7 @@ export function OfficeJobsList() {
       searchValue={search}
       onSearchChange={setSearch}
       createButtonLabel="Create Job"
-      onCreateClick={() => router.push('/office/jobs/create')}
+      onCreateClick={() => router.push(ROUTES.OFFICE_JOBS_CREATE.path)}
       columns={columns as ColumnDef<Job, unknown>[]}
       data={filteredJobs}
       isLoading={isLoading}

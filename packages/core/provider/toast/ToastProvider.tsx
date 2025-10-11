@@ -1,8 +1,8 @@
 import { ToastProvider as ToastProviderOG } from '@tamagui/toast'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { CustomToast } from '@app/ui'
 
-import { ToastViewport, ToastViewportProps } from './ToastViewport'
+import { ToastViewport, type ToastViewportProps } from './ToastViewport'
 
 export const ToastProvider = ({
   children,

@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react'
+import { type ReactNode, useState } from 'react'
 import { Button, useTheme, YStack, Text } from 'tamagui'
 import { DrawerActions } from '@react-navigation/native'
 import { Bell, Menu } from '@tamagui/lucide-icons'

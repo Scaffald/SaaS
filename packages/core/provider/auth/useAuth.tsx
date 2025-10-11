@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { SessionContext, SessionContextHelper } from './AuthProvider'
+import { SessionContext, type SessionContextHelper } from './AuthProvider'
 
 /**
  * Modern useAuth hook for consuming authentication state

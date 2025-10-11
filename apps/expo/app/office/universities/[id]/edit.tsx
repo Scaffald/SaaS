@@ -1,6 +1,7 @@
 import { YStack, Spinner } from '@app/ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { api } from '@app/core/utils/api'
+import { ROUTES } from '@app/core/constants/routes'
 import { OfficeUniversitiesForm } from '@app/core/features/office/office-universities-form'
 
 export default function EditUniversityPage() {
@@ -32,7 +33,7 @@ export default function EditUniversityPage() {
     <OfficeUniversitiesForm
       selectedUniversity={data.university}
       onUniversitySaved={() => {
-        router.push('/office/universities')
+        router.push(ROUTES.OFFICE_UNIVERSITIES.path)
       }}
       onCancel={() => {
         router.back()

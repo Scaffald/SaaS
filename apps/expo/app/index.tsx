@@ -94,7 +94,7 @@ export default function RootIndex() {
           router.replace('/dashboard')
         } else {
           console.log('Navigating to auth for unauthenticated user')
-          router.replace(AUTH_ROUTES.INDEX?.fullPath || '/auth')
+          router.replace(AUTH_ROUTES.INDEX.path)
         }
         setHasNavigated(true)
       } catch (error) {

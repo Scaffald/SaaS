@@ -1,5 +1,5 @@
 import { ChevronRight, ChevronDown, ChevronUp, ChevronLeft } from '@tamagui/lucide-icons'
-import { GestureResponderEvent } from 'react-native'
+import type { GestureResponderEvent } from 'react-native'
 import { XStack, Paragraph, YStack } from 'tamagui'
 import { Link } from 'expo-router'
 import type { DrawerItemConfig, DrawerLinkProps } from './types'

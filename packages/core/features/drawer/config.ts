@@ -9,7 +9,6 @@ import {
   Briefcase,
   Building2,
   Map as MapIcon,
-  Palette,
   User,
   Users,
 } from "@tamagui/lucide-icons";
@@ -27,96 +26,114 @@ export const generateDashboardDrawerItems = (options?: {
   const items: DrawerItemConfig[] = [];
 
   // Office section (for admin users only) - Make expandable with Users and Jobs
-  if (options?.includeOfficeLink && OFFICE_ROUTES.INDEX) {
-    const officeSubItems: DrawerItemConfig[] = [];
-
-    // Add Users sub-item if available
-    if (OFFICE_ROUTES.USERS) {
-      officeSubItems.push({
+  if (options?.includeOfficeLink) {
+    const officeSubItems: DrawerItemConfig[] = [
+      {
         key: "office-users",
-        title: OFFICE_ROUTES.USERS.title || "Users",
-        href: OFFICE_ROUTES.USERS.fullPath,
-      });
-    }
-
-    // Add Jobs sub-item if available
-    if (OFFICE_ROUTES.JOBS) {
-      officeSubItems.push({
+        title: ROUTES.OFFICE_USERS.title,
+        href: ROUTES.OFFICE_USERS.path,
+      },
+      {
         key: "office-jobs",
-        title: OFFICE_ROUTES.JOBS.title || "Jobs",
-        href: OFFICE_ROUTES.JOBS.fullPath,
-      });
-    }
-
-    // Add Universities sub-item if available
-    if (OFFICE_ROUTES.UNIVERSITIES) {
-      officeSubItems.push({
+        title: ROUTES.OFFICE_JOBS.title,
+        href: ROUTES.OFFICE_JOBS.path,
+      },
+      {
         key: "office-universities",
-        title: OFFICE_ROUTES.UNIVERSITIES.title || "Universities",
-        href: OFFICE_ROUTES.UNIVERSITIES.fullPath,
-      });
-    }
+        title: ROUTES.OFFICE_UNIVERSITIES.title,
+        href: ROUTES.OFFICE_UNIVERSITIES.path,
+      },
+    ];
 
     items.push({
       key: "office",
       title: "Office",
-      href: OFFICE_ROUTES.INDEX.fullPath,
+      href: ROUTES.OFFICE.path,
       icon: Building2,
-      isExpandable: officeSubItems.length > 0,
-      subItems: officeSubItems.length > 0 ? officeSubItems : undefined,
+      isExpandable: true,
+      subItems: officeSubItems,
     });
   }
 
   // Main dashboard item
   items.push({
     key: "dashboard",
-    title: DASHBOARD_ROUTES.INDEX?.title || "Dashboard",
-    href: DASHBOARD_ROUTES.INDEX?.fullPath || "/dashboard",
+    title: ROUTES.DASHBOARD.title,
+    href: ROUTES.DASHBOARD.path,
     icon: BarChart3,
   });
 
   // Discover route - Make expandable with children
-  if (DASHBOARD_ROUTES.Discover) {
-    // Include all children including the index route since parent is expandable
-    const discoverChildren = DASHBOARD_ROUTES.Discover.childrenArray || [];
-
-    items.push({
-      key: "discover",
-      title: "Discover",
-      href: DASHBOARD_ROUTES.Discover.fullPath, // Required by type but not used for navigation when expandable
-      icon: MapIcon,
-      isExpandable: true,
-      subItems: discoverChildren.map((childRoute) => ({
-        key: `discover-${childRoute.path.split("/").pop()}`,
-        title: childRoute.title || "Untitled",
-        href: childRoute.fullPath,
-        // No icon for child items
-      })),
-    });
-  }
+  items.push({
+    key: "discover",
+    title: "Discover",
+    href: ROUTES.DASHBOARD_DISCOVER_MAP.path,
+    icon: MapIcon,
+    isExpandable: true,
+    subItems: [
+      {
+        key: "discover-map",
+        title: ROUTES.DASHBOARD_DISCOVER_MAP.title,
+        href: ROUTES.DASHBOARD_DISCOVER_MAP.path,
+      },
+      {
+        key: "discover-workers",
+        title: ROUTES.DASHBOARD_DISCOVER_WORKERS.title,
+        href: ROUTES.DASHBOARD_DISCOVER_WORKERS.path,
+      },
+      {
+        key: "discover-employers",
+        title: ROUTES.DASHBOARD_DISCOVER_EMPLOYERS.title,
+        href: ROUTES.DASHBOARD_DISCOVER_EMPLOYERS.path,
+      },
+      {
+        key: "discover-jobs",
+        title: ROUTES.DASHBOARD_DISCOVER_JOBS.title,
+        href: ROUTES.DASHBOARD_DISCOVER_JOBS.path,
+      },
+    ],
+  });
 
   // Profile route - Make expandable with children
-  if (DASHBOARD_ROUTES.PROFILE) {
-    // Filter out the index route to avoid duplication with parent
-    const profileChildren = (DASHBOARD_ROUTES.PROFILE.childrenArray || [])
-      .filter(
-        (route) => route.path !== DASHBOARD_ROUTES.PROFILE?.path,
-      );
-
-    items.push({
-      key: "profile",
-      title: "Profile",
-      href: DASHBOARD_ROUTES.PROFILE.fullPath, // Keep href for direct navigation if needed
-      icon: User,
-      isExpandable: true,
-      subItems: profileChildren.map((childRoute) => ({
-        key: `profile-${childRoute.path.split("/").pop()}`,
-        title: childRoute.title || "Untitled",
-        href: childRoute.fullPath,
-        // No icon for child items
-      })),
-    });
-  }
+  items.push({
+    key: "profile",
+    title: "Profile",
+    href: ROUTES.DASHBOARD_PROFILE.path,
+    icon: User,
+    isExpandable: true,
+    subItems: [
+      {
+        key: "profile-general",
+        title: ROUTES.DASHBOARD_PROFILE_GENERAL.title,
+        href: ROUTES.DASHBOARD_PROFILE_GENERAL.path,
+      },
+      {
+        key: "profile-employment",
+        title: ROUTES.DASHBOARD_PROFILE_EMPLOYMENT.title,
+        href: ROUTES.DASHBOARD_PROFILE_EMPLOYMENT.path,
+      },
+      {
+        key: "profile-skills",
+        title: ROUTES.DASHBOARD_PROFILE_SKILLS.title,
+        href: ROUTES.DASHBOARD_PROFILE_SKILLS.path,
+      },
+      {
+        key: "profile-certifications",
+        title: ROUTES.DASHBOARD_PROFILE_CERTIFICATIONS.title,
+        href: ROUTES.DASHBOARD_PROFILE_CERTIFICATIONS.path,
+      },
+      {
+        key: "profile-education",
+        title: ROUTES.DASHBOARD_PROFILE_EDUCATION.title,
+        href: ROUTES.DASHBOARD_PROFILE_EDUCATION.path,
+      },
+      {
+        key: "profile-experience",
+        title: ROUTES.DASHBOARD_PROFILE_EXPERIENCE.title,
+        href: ROUTES.DASHBOARD_PROFILE_EXPERIENCE.path,
+      },
+    ],
+  });
 
   return items;
 };

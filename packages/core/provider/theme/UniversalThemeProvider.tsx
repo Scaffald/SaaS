@@ -2,7 +2,7 @@ import { useIsomorphicLayoutEffect } from 'tamagui'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { StatusBar } from 'expo-status-bar'
-import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Appearance, Platform, useColorScheme } from 'react-native'
 
 type ThemeProviderProps = {

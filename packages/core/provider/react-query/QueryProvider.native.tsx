@@ -6,7 +6,7 @@ import {
   onlineManager,
 } from '@tanstack/react-query'
 import { api, createTrpcClient } from '@app/core/utils/api'
-import { useEffect, useState, ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import type { AppStateStatus } from 'react-native'
 import { AppState, Platform } from 'react-native'
 

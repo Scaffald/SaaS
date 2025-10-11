@@ -1,5 +1,5 @@
 import { supabase } from '@app/core/utils/supabase/client'
-import { createContext, useEffect, useState, ReactNode, useCallback } from 'react'
+import { createContext, useEffect, useState, type ReactNode, useCallback } from 'react'
 import type { Session } from '@supabase/supabase-js'
 
 import { AuthStateChangeHandler } from './AuthStateChangeHandler'
