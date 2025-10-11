@@ -1,6 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { superAdminProcedure, t } from "../../middleware.ts";
+import {
+  protectedProcedure,
+  superAdminProcedure,
+  t,
+} from "../../middleware.ts";
 
 /**
  * Office Universities router - handles university catalog management (admin only)
@@ -90,8 +94,9 @@ export const officeUniversitiesRouter = t.router({
 
   /**
    * Search universities (for user-facing autocomplete)
+   * Available to all authenticated users for education profile forms
    */
-  searchUniversities: superAdminProcedure
+  searchUniversities: protectedProcedure
     .input(
       z.object({
         query: z.string().min(1),
