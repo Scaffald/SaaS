@@ -88,7 +88,7 @@ export const ApplicationsKanbanBoard = () => {
             {apps.map(app => (
               <Card key={app.id} padding="$3" marginTop="$2">
                 <Text>{app.candidate.name}</Text>
-                <Text fontSize="$2" color="$gray11">Score: {app.score}</Text>
+                <Text fontSize="$2" color="$color11">Score: {app.score}</Text>
               </Card>
             ))}
           </YStack>

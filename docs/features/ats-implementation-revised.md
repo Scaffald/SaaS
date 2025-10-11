@@ -385,13 +385,13 @@ export const ApplicationsKanbanBoard = ({ applications }) => {
                 ref={provided.innerRef}
                 {...provided.droppableProps}
                 minWidth={280}
-                backgroundColor="$gray2"
+                backgroundColor="$color2"
                 borderRadius="$4"
                 padding="$3"
               >
                 <XStack justifyContent="space-between" marginBottom="$3">
                   <Text fontWeight="600">{STATUS_LABELS[status]}</Text>
-                  <Text color="$gray11">{groupedApplications[status].length}</Text>
+                  <Text color="$color11">{groupedApplications[status].length}</Text>
                 </XStack>
                 
                 <YStack gap="$2">
@@ -404,7 +404,7 @@ export const ApplicationsKanbanBoard = ({ applications }) => {
                           {...provided.dragHandleProps}
                           padding="$3"
                           pressStyle={{ scale: 0.98 }}
-                          hoverStyle={{ backgroundColor: '$gray3' }}
+                          hoverStyle={{ backgroundColor: '$color3' }}
                           cursor="pointer"
                         >
                           <XStack gap="$3" alignItems="center">
@@ -415,14 +415,14 @@ export const ApplicationsKanbanBoard = ({ applications }) => {
                             
                             <YStack flex={1}>
                               <Text fontWeight="600">{app.candidate.name}</Text>
-                              <Text fontSize="$2" color="$gray11">
+                              <Text fontSize="$2" color="$color11">
                                 {app.candidate.title}
                               </Text>
                               <XStack gap="$2" marginTop="$1">
                                 <Text fontSize="$2" color="$blue10">
                                   Score: {app.score}
                                 </Text>
-                                <Text fontSize="$2" color="$gray11">
+                                <Text fontSize="$2" color="$color11">
                                   {new Date(app.appliedAt).toLocaleDateString()}
                                 </Text>
                               </XStack>
@@ -477,7 +477,7 @@ export const CandidateDetailModal = ({ applicationId, onClose }) => {
         <XStack justifyContent="space-between" marginBottom="$4">
           <YStack>
             <H3>{application.candidate.name}</H3>
-            <Text color="$gray11">{application.candidate.title}</Text>
+            <Text color="$color11">{application.candidate.title}</Text>
           </YStack>
           <Button size="$2" circular onPress={onClose}>
             ✕
@@ -620,19 +620,19 @@ export const OfficeAnalyticsScreen = () => {
       {/* Key Metrics */}
       <XStack gap="$3">
         <Card flex={1} padding="$4">
-          <Text color="$gray11">Total Applications</Text>
+          <Text color="$color11">Total Applications</Text>
           <H1>{mockStats.totalApplications}</H1>
           <Text color="$green10">↑ 12% from last month</Text>
         </Card>
         
         <Card flex={1} padding="$4">
-          <Text color="$gray11">Hired</Text>
+          <Text color="$color11">Hired</Text>
           <H1>{mockStats.hired}</H1>
           <Text color="$green10">↑ 5% from last month</Text>
         </Card>
         
         <Card flex={1} padding="$4">
-          <Text color="$gray11">Avg. Time to Hire</Text>
+          <Text color="$color11">Avg. Time to Hire</Text>
           <H1>{mockStats.averageTimeToHire} days</H1>
           <Text color="$red10">↑ 2 days from last month</Text>
         </Card>

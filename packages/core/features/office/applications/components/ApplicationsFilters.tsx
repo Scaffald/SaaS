@@ -28,7 +28,7 @@ export const ApplicationsFilters = ({
   return (
     <XStack gap="$3" py="$3" px="$4" bg="$color2" rounded="$4" mb="$4" flexWrap="wrap">
       {/* Job Filter */}
-      <YStack minWidth={200}>
+      <YStack width={200}>
         <Text fontSize="$2" mb="$2" opacity={0.7}>
           Filter by Job
         </Text>
@@ -47,11 +47,11 @@ export const ApplicationsFilters = ({
 
           <Select.Content>
             <Select.Viewport>
-              <Select.Item value="all">
+              <Select.Item index={0} value="all">
                 <Select.ItemText>All Jobs</Select.ItemText>
               </Select.Item>
-              {jobs.map((job) => (
-                <Select.Item key={job.id} value={job.id}>
+              {jobs.map((job, idx) => (
+                <Select.Item key={job.id} index={idx + 1} value={job.id}>
                   <Select.ItemText>{job.title}</Select.ItemText>
                 </Select.Item>
               ))}
@@ -61,7 +61,7 @@ export const ApplicationsFilters = ({
       </YStack>
 
       {/* Status Filter */}
-      <YStack minWidth={200}>
+      <YStack width={200}>
         <Text fontSize="$2" mb="$2" opacity={0.7}>
           Filter by Status
         </Text>
@@ -80,25 +80,25 @@ export const ApplicationsFilters = ({
 
           <Select.Content>
             <Select.Viewport>
-              <Select.Item value="all">
+              <Select.Item index={0} value="all">
                 <Select.ItemText>All Statuses</Select.ItemText>
               </Select.Item>
-              <Select.Item value="new">
+              <Select.Item index={1} value="new">
                 <Select.ItemText>New</Select.ItemText>
               </Select.Item>
-              <Select.Item value="screen">
+              <Select.Item index={2} value="screen">
                 <Select.ItemText>Screening</Select.ItemText>
               </Select.Item>
-              <Select.Item value="interview">
+              <Select.Item index={3} value="interview">
                 <Select.ItemText>Interview</Select.ItemText>
               </Select.Item>
-              <Select.Item value="offer">
+              <Select.Item index={4} value="offer">
                 <Select.ItemText>Offer</Select.ItemText>
               </Select.Item>
-              <Select.Item value="hired">
+              <Select.Item index={5} value="hired">
                 <Select.ItemText>Hired</Select.ItemText>
               </Select.Item>
-              <Select.Item value="rejected">
+              <Select.Item index={6} value="rejected">
                 <Select.ItemText>Rejected</Select.ItemText>
               </Select.Item>
             </Select.Viewport>

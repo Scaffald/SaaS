@@ -228,7 +228,7 @@ export function AttachmentsStep({
                   {getAttachment('resume')?.filename}
                 </Text>
                 <Text fontSize="$2" color="$color11">
-                  {formatFileSize(getAttachment('resume')?.size)}
+                  {formatFileSize(getAttachment('resume')?.size ?? 0)}
                 </Text>
               </YStack>
             </XStack>
@@ -322,7 +322,7 @@ export function AttachmentsStep({
                   {getAttachment('cover_letter')?.filename}
                 </Text>
                 <Text fontSize="$2" color="$color11">
-                  {formatFileSize(getAttachment('cover_letter')?.size)}
+                  {formatFileSize(getAttachment('cover_letter')?.size ?? 0)}
                 </Text>
               </YStack>
             </XStack>
@@ -416,7 +416,7 @@ export function AttachmentsStep({
                   {getAttachment('portfolio')?.filename}
                 </Text>
                 <Text fontSize="$2" color="$color11">
-                  {formatFileSize(getAttachment('portfolio')?.size)}
+                  {formatFileSize(getAttachment('portfolio')?.size ?? 0)}
                 </Text>
               </YStack>
             </XStack>

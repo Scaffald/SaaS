@@ -28,29 +28,21 @@ export const OfficeApplicationsScreen = () => {
   }, [filters])
 
   return (
-    <YStack flex={1} padding="$4" backgroundColor="$background">
+    <YStack flex={1} p="$4" bg="$background">
       {/* Header */}
-      <XStack justifyContent="space-between" alignItems="center" marginBottom="$4">
+      <XStack justify="space-between" items="center" mb="$4">
         <YStack>
           <H2>Applications</H2>
-          <Text color="$gray11" fontSize="$3">
+          <Text color="$color11" fontSize="$3">
             {filteredApplications.length} total applications
           </Text>
         </YStack>
 
         <XStack gap="$2">
-          <Button
-            size="$3"
-            variant={viewMode === 'kanban' ? 'outlined' : 'ghost'}
-            onPress={() => setViewMode('kanban')}
-          >
+          <Button size="$3" onPress={() => setViewMode('kanban')}>
             Kanban
           </Button>
-          <Button
-            size="$3"
-            variant={viewMode === 'list' ? 'outlined' : 'ghost'}
-            onPress={() => setViewMode('list')}
-          >
+          <Button size="$3" onPress={() => setViewMode('list')}>
             List
           </Button>
         </XStack>
@@ -63,7 +55,7 @@ export const OfficeApplicationsScreen = () => {
       {viewMode === 'kanban' ? (
         <ApplicationsKanbanBoard applications={filteredApplications} />
       ) : (
-        <YStack padding="$4">
+        <YStack p="$4">
           <Text>List view coming soon...</Text>
         </YStack>
       )}
