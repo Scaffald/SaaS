@@ -26,7 +26,6 @@ interface CSIRecord {
 // =========================================================
 
 const NS_SKILLS = uuidv5("scaffald:skills:csi2018", uuidv5.URL);
-const INDUSTRY_SLUG = "construction";
 
 // =========================================================
 // UUID Generation
@@ -224,29 +223,8 @@ function ensureParentRecords(records: CSIRecord[]): CSIRecord[] {
 // Database Operations
 // =========================================================
 
-async function getOrCreateIndustry(client: Client): Promise<string> {
-  const result = await client.query(
-    `
-    INSERT INTO industries (slug, name, description, metadata, created_at, updated_at)
-    VALUES ($1, $2, $3, '{}'::jsonb, NOW(), NOW())
-    ON CONFLICT (slug) DO UPDATE SET 
-      name = EXCLUDED.name,
-      description = EXCLUDED.description,
-      updated_at = NOW()
-    RETURNING id;
-    `,
-    [
-      INDUSTRY_SLUG,
-      "Construction",
-      "Construction industry with CSI MasterFormat 2018 skills taxonomy.",
-    ],
-  );
-  return result.rows[0].id;
-}
-
 async function upsertSkills(
   client: Client,
-  industryId: string,
   records: CSIRecord[],
 ): Promise<void> {
   // Sort by depth to ensure parents are inserted before children
@@ -264,53 +242,48 @@ async function upsertSkills(
     const placeholders: string[] = [];
 
     batch.forEach((record, idx) => {
-      const offset = idx * 9;
+      const offset = idx * 8;
       placeholders.push(
-        `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${
-          offset + 5
-        }, $${offset + 6}::text[], $${offset + 7}, $${offset + 8}, $${
-          offset + 9
+        `($${offset + 1}, $${offset + 2}::text[], $${offset + 3}, $${
+          offset + 4
+        }, $${offset + 5}, $${offset + 6}, $${offset + 7}, $${
+          offset + 8
         }, NOW(), NOW())`,
       );
       values.push(
         record.id,
-        record.name,
-        industryId,
-        record.parent_id,
-        record.active,
         record.csi_code,
         record.csi_code_key,
         record.csi_display,
+        record.name,
         record.csi_depth,
+        record.parent_id,
+        record.active,
       );
     });
 
     const sql = `
-      INSERT INTO skills (
-        id, 
-        name, 
-        industry_id, 
-        parent_id, 
-        active, 
-        csi_code, 
-        csi_code_key, 
-        csi_display, 
-        csi_depth,
+      INSERT INTO csi.masterformat (
+        id,
+        code,
+        code_key,
+        code_display,
+        name,
+        depth,
+        parent_id,
+        active,
         created_at, 
         updated_at
       )
       VALUES ${placeholders.join(",")}
-      ON CONFLICT (csi_code_key) 
+      ON CONFLICT (code_key) 
       DO UPDATE SET
         name = EXCLUDED.name,
-        industry_id = EXCLUDED.industry_id,
+        code_display = EXCLUDED.code_display,
+        depth = EXCLUDED.depth,
         parent_id = EXCLUDED.parent_id,
         active = EXCLUDED.active,
-        csi_code = EXCLUDED.csi_code,
-        csi_display = EXCLUDED.csi_display,
-        csi_depth = EXCLUDED.csi_depth,
-        updated_at = NOW()
-      WHERE skills.csi_code_key IS NOT NULL;
+        updated_at = NOW();
     `;
 
     await client.query(sql, values);
@@ -376,12 +349,8 @@ async function main(): Promise<void> {
     console.log("Starting database transaction...");
     await client.query("BEGIN");
 
-    console.log("Getting or creating construction industry...");
-    const industryId = await getOrCreateIndustry(client);
-    console.log(`Industry ID: ${industryId}`);
-
-    console.log("Upserting CSI skills...");
-    await upsertSkills(client, industryId, allRecords);
+    console.log("Upserting CSI MasterFormat codes...");
+    await upsertSkills(client, allRecords);
 
     await client.query("COMMIT");
     console.log("✓ Successfully seeded CSI MasterFormat 2020 taxonomy!");
