@@ -25,6 +25,7 @@ export default function OfficeLayout() {
   return (
     <DrawerLayout protectionComponent={null}>
       <Drawer.Screen name="index" options={{ title: 'Office' }} />
+      <Drawer.Screen name="applications/index" options={{ title: 'Applications' }} />
       <Drawer.Screen name="users/index" options={{ title: 'Manage Users' }} />
       <Drawer.Screen name="users/[id]/edit" options={{ title: 'Edit User' }} />
       <Drawer.Screen name="jobs/index" options={{ title: 'Manage Jobs' }} />

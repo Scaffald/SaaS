@@ -1,4 +1,4 @@
-import { ReactNode, ComponentProps } from 'react'
+import type { ReactNode, ComponentProps } from 'react'
 import { Card, useWindowDimensions, type CardProps } from 'tamagui'
 
 /**

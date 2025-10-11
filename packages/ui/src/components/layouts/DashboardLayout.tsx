@@ -1,6 +1,5 @@
-import { ReactNode } from 'react'
-import { YStack, XStack, View, ScrollView, useMedia, useWindowDimensions } from 'tamagui'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import type { ReactNode } from 'react'
+import { YStack, XStack, ScrollView, useWindowDimensions } from 'tamagui'
 
 type DashboardLayoutProps = {
   rightContent?: ReactNode

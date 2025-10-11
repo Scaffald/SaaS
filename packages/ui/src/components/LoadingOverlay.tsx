@@ -1,4 +1,4 @@
-import { Spinner, YStack, YStackProps } from 'tamagui'
+import { Spinner, YStack, type YStackProps } from 'tamagui'
 
 export const LoadingOverlay = (props: YStackProps) => {
   return (

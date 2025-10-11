@@ -1,4 +1,4 @@
-import { Spinner, SpinnerProps, YStack } from 'tamagui'
+import { Spinner, type SpinnerProps, YStack } from 'tamagui'
 
 export const FullscreenSpinner = (props: SpinnerProps) => {
   return (

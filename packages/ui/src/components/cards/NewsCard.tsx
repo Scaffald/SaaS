@@ -1,4 +1,4 @@
-import { ReactNode, useState, ElementRef } from 'react'
+import { type ReactNode, useState, type ElementRef } from 'react'
 import { Card, Image, View, Text, YStack, XStack, Button, Anchor, type CardProps } from 'tamagui'
 import * as Linking from 'expo-linking'
 

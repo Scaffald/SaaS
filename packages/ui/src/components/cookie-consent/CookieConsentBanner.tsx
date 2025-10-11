@@ -5,7 +5,7 @@ import {
   AnimatePresence,
   Button,
   Card,
-  CardProps,
+  type CardProps,
   Paragraph,
   SizableText,
   View,

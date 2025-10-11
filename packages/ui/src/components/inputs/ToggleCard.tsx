@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { Text, View, YStack, AnimatePresence, styled, type ThemeName, XStack } from 'tamagui'
 import { ToggleSwitch } from './ToggleSwitch'
 

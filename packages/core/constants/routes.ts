@@ -197,6 +197,16 @@ const ROUTES_CONFIG = {
     title: "Edit University",
     isProtected: true,
   },
+  OFFICE_APPLICATIONS: {
+    path: "/office/applications",
+    title: "Applications",
+    isProtected: true,
+  },
+  OFFICE_APPLICATIONS_DETAIL: {
+    path: "/office/applications/:id",
+    title: "Application Detail",
+    isProtected: true,
+  },
 } as const satisfies Record<string, RouteConfig>;
 
 // ============================================================================

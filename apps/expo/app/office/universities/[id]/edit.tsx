@@ -8,8 +8,16 @@ export default function EditUniversityPage() {
   const router = useRouter()
   const { id } = useLocalSearchParams<{ id: string }>()
 
+  if (!id) {
+    return (
+      <YStack flex={1} bg="$background" items="center" justify="center">
+        <YStack>Invalid university ID</YStack>
+      </YStack>
+    )
+  }
+
   const { data, isLoading } = api.office.universities.getUniversity.useQuery(
-    { id: id! },
+    { id },
     { enabled: !!id }
   )
 

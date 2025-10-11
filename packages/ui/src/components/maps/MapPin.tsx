@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { View, Text, YStack, Circle, useTheme, GetThemeValueForKey } from 'tamagui'
+import { View, YStack, Circle, useTheme, type GetThemeValueForKey } from 'tamagui'
 import { User, Building } from '@tamagui/lucide-icons'
 import type { MapPin as MapPinType } from './types'
 

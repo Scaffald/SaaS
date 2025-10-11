@@ -12,6 +12,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
+    "noImplicitOverride": true,
     "target": "es2022",
     "incremental": true,
     "baseUrl": ".",

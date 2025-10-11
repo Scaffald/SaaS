@@ -1,5 +1,5 @@
-import { IconProps } from '@tamagui/helpers-icon'
-import React, { FC } from 'react'
+import type { IconProps } from '@tamagui/helpers-icon'
+import React, { type FC } from 'react'
 import { H2, Paragraph, YStack } from 'tamagui'
 
 export const StepContent = ({

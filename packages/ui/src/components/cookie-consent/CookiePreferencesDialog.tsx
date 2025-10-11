@@ -14,7 +14,7 @@ import {
 } from 'tamagui'
 
 import { useCookieConsent } from './CookieConsentProvider'
-import { CookieConsentCategory, CookieConsentSelections } from './types'
+import type { CookieConsentCategory, CookieConsentSelections } from './types'
 
 const CategoryRow = ({
   category,

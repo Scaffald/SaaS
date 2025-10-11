@@ -13,7 +13,7 @@ import {
   Separator,
   useWindowDimensions,
   Sheet,
-  GetThemeValueForKey,
+  type GetThemeValueForKey,
 } from 'tamagui'
 import { Search, X, ChevronRight, ArrowLeft } from '@tamagui/lucide-icons'
 

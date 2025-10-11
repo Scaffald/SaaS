@@ -1,4 +1,4 @@
-import { useState, useEffect, ReactNode, ComponentType } from 'react'
+import { useState, useEffect, type ReactNode, type ComponentType } from 'react'
 import { Text, View, XStack } from 'tamagui'
 import { randomUUID } from 'expo-crypto'
 
