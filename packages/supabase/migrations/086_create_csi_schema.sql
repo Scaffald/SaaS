@@ -64,7 +64,7 @@ RETURNS TABLE (
   code_display TEXT,
   name TEXT,
   depth SMALLINT,
-  relevance REAL
+  relevance NUMERIC
 ) AS $$
 BEGIN
   RETURN QUERY
