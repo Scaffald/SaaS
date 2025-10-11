@@ -220,16 +220,21 @@ RETURNS TABLE (
   code TEXT,
   display_code TEXT,
   name TEXT,
-  relevance REAL
+  relevance INT
 ) AS $$
 BEGIN
   RETURN QUERY
-  SELECT * FROM v_all_skills
-  WHERE (taxonomy_filter IS NULL OR taxonomy = taxonomy_filter)
-    AND name ILIKE '%' || search_term || '%'
-  ORDER BY 
-    CASE WHEN name ILIKE search_term || '%' THEN 1 ELSE 2 END,
-    name
+  SELECT 
+    v.taxonomy,
+    v.skill_id,
+    v.code,
+    v.display_code,
+    v.name,
+    CASE WHEN v.name ILIKE search_term || '%' THEN 1 ELSE 2 END as relevance
+  FROM v_all_skills v
+  WHERE (taxonomy_filter IS NULL OR v.taxonomy = taxonomy_filter)
+    AND v.name ILIKE '%' || search_term || '%'
+  ORDER BY relevance, v.name
   LIMIT 100;
 END;
 $$ LANGUAGE plpgsql STABLE;
