@@ -1,4 +1,4 @@
-import { useEffect, FC } from 'react'
+import { useEffect, type FC } from 'react'
 import { useWindowDimensions } from 'react-native'
 import { View, Text, type GetThemeValueForKey } from 'tamagui'
 import { Svg, G, Defs, LinearGradient, Stop, Rect, Circle, Polygon } from 'react-native-svg'

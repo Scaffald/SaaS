@@ -1,6 +1,10 @@
-import { useMemo } from 'react'
-import type { GeocodingProvider, ProviderConfig, UseGeocodingProviderReturn } from '../types'
-import { createProvider, createFromEnvironment } from '../providers'
+import { useMemo } from "react";
+import type {
+  GeocodingProvider,
+  ProviderConfig,
+  UseGeocodingProviderReturn,
+} from "../types";
+import { createFromEnvironment, createProvider } from "../providers";
 
 /**
  * Hook to create and manage a geocoding provider instance
@@ -8,21 +12,23 @@ import { createProvider, createFromEnvironment } from '../providers'
  * @param config - Provider configuration
  * @returns Provider instance, ready state, and error
  */
-export function useGeocodingProvider(config: ProviderConfig): UseGeocodingProviderReturn {
+export function useGeocodingProvider(
+  config: ProviderConfig,
+): UseGeocodingProviderReturn {
   const provider = useMemo(() => {
     try {
-      return createProvider(config)
+      return createProvider(config);
     } catch (error) {
-      console.error('Failed to create geocoding provider:', error)
-      return null
+      console.error("Failed to create geocoding provider:", error);
+      return null;
     }
-  }, [config.provider, config.apiKey, config.defaultCountry, config.language])
+  }, [config.provider, config.apiKey, config.defaultCountry, config.language]);
 
   return {
-    provider: provider!,
+    provider: provider || null,
     isReady: provider !== null,
-    error: provider === null ? 'Failed to initialize geocoding provider' : null,
-  }
+    error: provider === null ? "Failed to initialize geocoding provider" : null,
+  };
 }
 
 /**
@@ -33,16 +39,21 @@ export function useGeocodingProvider(config: ProviderConfig): UseGeocodingProvid
 export function useGeocodingProviderFromEnv(): UseGeocodingProviderReturn {
   const provider = useMemo(() => {
     try {
-      return createFromEnvironment()
+      return createFromEnvironment();
     } catch (error) {
-      console.error('Failed to create geocoding provider from environment:', error)
-      return null
+      console.error(
+        "Failed to create geocoding provider from environment:",
+        error,
+      );
+      return null;
     }
-  }, [])
+  }, []);
 
   return {
-    provider: provider!,
+    provider: provider || null,
     isReady: provider !== null,
-    error: provider === null ? 'Failed to initialize geocoding provider from environment' : null,
-  }
+    error: provider === null
+      ? "Failed to initialize geocoding provider from environment"
+      : null,
+  };
 }

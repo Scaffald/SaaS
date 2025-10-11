@@ -61,7 +61,33 @@ This document tracks our gradual improvements to linting and type safety setting
 **Result:** All route references are now type-safe with zero runtime overhead. No TypeScript errors.
 
 ## Phase 2: Recommended Next Steps
-## Phase 4: Recommended Next Steps
+## Phase 4: noImplicitOverride + Non-Null Assertions ✅
+**Date:** 2025-01-11
+
+**Changes Made:**
+- Added `noImplicitOverride: true` to `tsconfig.base.json`
+- Changed `noNonNullAssertion: "off"` to `"warn"` in `biome.json`
+- Ran audit and found 13 instances of non-null assertions
+- Auto-fixed 6 instances in `AttachmentsStep.tsx`
+
+**Results:**
+- ✅ `noImplicitOverride` enabled - No errors! Project already follows this pattern
+- ✅ Non-null assertions: Reduced from 13 to 7 (6 fixed automatically)
+- ✅ Created detailed audit document at `docs/non-null-assertions-audit.md`
+
+**Remaining Work:**
+- 7 non-null assertions to fix manually:
+  - 2 in office edit pages (route params)
+  - 2 in geocoding provider (env variables)
+  - 2 in onboarding components (refs/state)
+  - 1 in theme provider (configuration)
+
+**Benefits:**
+- Compile-time method override safety
+- Runtime null-safety instead of compile-time assertions
+- Documented all remaining issues with clear fix strategies
+
+## Phase 5: Recommended Next Steps
 
 ### Option A: Ultra-Gradual Approach (Recommended)
 Start with the least disruptive changes:

@@ -1,11 +1,11 @@
 import { useRef, useState } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { ScrollView as RNScrollView } from 'react-native'
+import type { ScrollView as RNScrollView } from 'react-native'
 import {
   Circle,
   Image,
   ScrollView,
-  ScrollViewProps,
+  type ScrollViewProps,
   Theme,
   ThemeName,
   XStack,
@@ -14,7 +14,7 @@ import {
   useWindowDimensions,
 } from 'tamagui'
 
-import { OnboardingProps } from './Onboarding'
+import type { OnboardingProps } from './Onboarding'
 import { OnboardingControls } from './OnboardingControls'
 
 export const Onboarding = ({ onOnboarded, steps }: OnboardingProps) => {
@@ -25,8 +25,8 @@ export const Onboarding = ({ onOnboarded, steps }: OnboardingProps) => {
   // prevent a background to ever "continue" animation / try to continue where it left off - cause looks weird
 
   const [key, setKey] = useState(0)
-  const currentStep = steps[stepIdx]!
   const stepsCount = steps.length
+  const currentStep = steps[stepIdx] || steps[0]
 
   const setStepIdx = (newIdx: number) => {
     if (stepIdx !== newIdx) {

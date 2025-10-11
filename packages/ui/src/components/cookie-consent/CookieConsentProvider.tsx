@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from 'react'
 
-import {
+import type {
   CookieConsentCategory,
   CookieConsentSelections,
   CookieConsentState,

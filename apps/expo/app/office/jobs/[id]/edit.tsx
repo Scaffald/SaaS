@@ -6,7 +6,15 @@ import { JobForm } from '@app/core/features/office/components/JobForm'
 export default function EditJobPage() {
   const { id } = useLocalSearchParams<{ id: string }>()
 
-  const { data, isLoading } = api.office.getJob.useQuery({ id: id! }, { enabled: !!id })
+  if (!id) {
+    return (
+      <YStack flex={1} bg="$background" items="center" justify="center">
+        <YStack>Invalid job ID</YStack>
+      </YStack>
+    )
+  }
+
+  const { data, isLoading } = api.office.getJob.useQuery({ id }, { enabled: !!id })
 
   if (isLoading) {
     return (

@@ -225,10 +225,10 @@ export function AttachmentsStep({
               <FileText size={24} color="$blue9" />
               <YStack flex={1}>
                 <Text fontSize="$4" fontWeight="600" color="$color12">
-                  {getAttachment('resume')!.filename}
+                  {getAttachment('resume')?.filename}
                 </Text>
                 <Text fontSize="$2" color="$color11">
-                  {formatFileSize(getAttachment('resume')!.size)}
+                  {formatFileSize(getAttachment('resume')?.size)}
                 </Text>
               </YStack>
             </XStack>
@@ -319,10 +319,10 @@ export function AttachmentsStep({
               <FileText size={24} color="$blue9" />
               <YStack flex={1}>
                 <Text fontSize="$4" fontWeight="600" color="$color12">
-                  {getAttachment('cover_letter')!.filename}
+                  {getAttachment('cover_letter')?.filename}
                 </Text>
                 <Text fontSize="$2" color="$color11">
-                  {formatFileSize(getAttachment('cover_letter')!.size)}
+                  {formatFileSize(getAttachment('cover_letter')?.size)}
                 </Text>
               </YStack>
             </XStack>
@@ -413,10 +413,10 @@ export function AttachmentsStep({
               <FileText size={24} color="$blue9" />
               <YStack flex={1}>
                 <Text fontSize="$4" fontWeight="600" color="$color12">
-                  {getAttachment('portfolio')!.filename}
+                  {getAttachment('portfolio')?.filename}
                 </Text>
                 <Text fontSize="$2" color="$color11">
-                  {formatFileSize(getAttachment('portfolio')!.size)}
+                  {formatFileSize(getAttachment('portfolio')?.size)}
                 </Text>
               </YStack>
             </XStack>

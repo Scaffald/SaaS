@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, ReactNode, FC, useMemo } from 'react'
+import React, { useEffect, useState, useCallback, ReactNode, type FC, useMemo } from 'react'
 import { PanResponder } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
@@ -38,8 +38,8 @@ export const Onboarding = ({ onOnboarded, autoSwipe, steps }: OnboardingProps) =
   // prevent a background to ever "continue" animation / try to continue where it left off - cause looks weird
 
   const [key, setKey] = useState(0)
-  const currentStep = steps[stepIdx]!
   const stepsCount = steps.length
+  const currentStep = steps[stepIdx] || steps[0]
 
   const setStepIdx = useCallback(
     (newIdx: number) => {

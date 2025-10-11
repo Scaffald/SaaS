@@ -152,7 +152,7 @@ export const useThemeSetting = () => {
   const outputContext = {
     ...context,
     systemTheme: context.systemTheme as 'light' | 'dark',
-    themes: context.themes!,
+    themes: context.themes || ['light', 'dark'],
     current: context.current ?? 'system',
     resolvedTheme,
     set: (value: string) => {
