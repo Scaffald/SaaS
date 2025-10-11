@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import {
   CookieConsentBanner,
   CookieConsentProvider as UICookieConsentProvider,
-  CookieConsentStorage,
+  type CookieConsentStorage,
   CookiePreferencesDialog,
 } from '@app/ui'
 

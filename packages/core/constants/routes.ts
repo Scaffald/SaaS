@@ -1,372 +1,338 @@
 /**
- * Evolved Application Route Configuration
+ * Type-Safe Application Route Configuration
  *
- * Features:
- * - Hierarchical nested route structure matching Expo app structure
- * - Inline parameter conversion functions
- * - Convenient methods (.map(), .filter(), etc.)
- * - Type-safe route generation
+ * This system provides:
+ * - Zero hardcoded route strings
+ * - Strongly-typed route access (no optional chaining needed)
+ * - Dynamic route builders for parameterized paths
+ * - Compile-time route validation
  * - Centralized route management
- * - Only auth and dashboard routes (all dashboard routes are protected)
  */
 
-// Base types for route configuration
+// ============================================================================
+// Types
+// ============================================================================
+
 export type RouteParams = Record<string, string | number>;
-export type RouteFunction = (params?: RouteParams) => string;
 
 export interface RouteConfig {
-  path: string;
-  title?: string;
-  description?: string;
-  isAuth?: boolean;
-  isProtected?: boolean;
-  children?: Record<string, RouteConfig>;
-  dynamic?: boolean;
-  params?: string[];
+  readonly path: string;
+  readonly title: string;
+  readonly description?: string;
+  readonly isProtected?: boolean;
+  readonly isAuth?: boolean;
 }
 
-export interface RouteNode extends RouteConfig {
-  // Flattened path for easy access
-  fullPath: string;
-  // Parent reference for navigation
-  parent?: RouteNode;
-  // Children as an array for iteration
-  childrenArray?: RouteNode[];
-  // Methods for convenience
-  map: <T>(fn: (route: RouteNode) => T) => T[];
-  filter: (fn: (route: RouteNode) => boolean) => RouteNode[];
-  find: (fn: (route: RouteNode) => boolean) => RouteNode | undefined;
-  findByPath: (path: string) => RouteNode | undefined;
-  getProtectedRoutes: () => RouteNode[];
-  getAuthRoutes: () => RouteNode[];
-  toPath: RouteFunction;
-  isActive: (currentPath: string) => boolean;
-  isParentOf: (path: string) => boolean;
-}
+// ============================================================================
+// Route Definitions
+// ============================================================================
 
-// Dynamic route builder
-const buildDynamicRoute = (
-  template: string,
-  params: RouteParams = {},
-): string => {
-  let result = template;
-
-  // Replace parameter placeholders
-  for (const [key, value] of Object.entries(params)) {
-    result = result.replace(`:${key}`, String(value));
-  }
-
-  // Remove any remaining unused parameters
-  result = result.replace(/\/:[^/]+/g, "");
-
-  // Clean up double slashes and trailing slashes
-  result = result.replace(/\/+/g, "/").replace(/\/$/, "") || "/";
-
-  return result;
-};
-
-// Route node factory
-const createRouteNode = (
-  config: RouteConfig,
-  fullPath: string,
-  parent?: RouteNode,
-): RouteNode => {
-  const node: RouteNode = {
-    ...config,
-    fullPath,
-    parent,
-    childrenArray: [],
-
-    // Convenience methods
-    map: <T>(fn: (route: RouteNode) => T): T[] => {
-      const results: T[] = [fn(node)];
-      for (const child of node.childrenArray || []) {
-        results.push(...child.map(fn));
-      }
-      return results;
-    },
-
-    filter: (fn: (route: RouteNode) => boolean): RouteNode[] => {
-      const results: RouteNode[] = [];
-      if (fn(node)) results.push(node);
-      for (const child of node.childrenArray || []) {
-        results.push(...child.filter(fn));
-      }
-      return results;
-    },
-
-    find: (fn: (route: RouteNode) => boolean): RouteNode | undefined => {
-      if (fn(node)) return node;
-      for (const child of node.childrenArray || []) {
-        const found = child.find(fn);
-        if (found) return found;
-      }
-      return undefined;
-    },
-
-    findByPath: (path: string): RouteNode | undefined => {
-      return node.find((route) => route.fullPath === path);
-    },
-
-    getProtectedRoutes: (): RouteNode[] => {
-      return node.filter((route) => route.isProtected === true);
-    },
-
-    getAuthRoutes: (): RouteNode[] => {
-      return node.filter((route) => route.isAuth === true);
-    },
-
-    toPath: (params?: RouteParams): string => {
-      return buildDynamicRoute(fullPath, params);
-    },
-
-    isActive: (currentPath: string): boolean => {
-      if (currentPath === fullPath) return true;
-      return node.isParentOf(currentPath);
-    },
-
-    isParentOf: (path: string): boolean => {
-      return path.startsWith(`${fullPath}/`);
-    },
-  };
-
-  // Process children
-  if (config.children) {
-    node.childrenArray = Object.entries(config.children).map(
-      ([_key, childConfig]) => {
-        const childPath = childConfig.path.startsWith("/")
-          ? childConfig.path
-          : `${fullPath}/${childConfig.path}`;
-
-        return createRouteNode(childConfig, childPath, node);
-      },
-    );
-  }
-
-  return node;
-};
-
-// Core route configuration - matches Expo app structure exactly
-const routeConfig: Record<string, RouteConfig> = {
-  // Root route
-  home: {
+const ROUTES_CONFIG = {
+  // Root
+  HOME: {
     path: "/",
     title: "Home",
   },
 
-  // Authentication routes
-  auth: {
+  // Auth Routes
+  AUTH: {
     path: "/auth",
-    title: "Authentication",
+    title: "Sign In",
     isAuth: true,
-    children: {
-      index: {
-        path: "/auth",
-        title: "Sign In",
-      },
-      confirm: {
-        path: "/auth/confirm",
-        title: "Confirm Account",
-      },
-    },
+  },
+  AUTH_CONFIRM: {
+    path: "/auth/confirm",
+    title: "Confirm Account",
+    isAuth: true,
+  },
+  AUTH_SUCCESS: {
+    path: "/auth/success",
+    title: "Success",
+    isAuth: true,
   },
 
-  // Dashboard routes (all protected)
-  dashboard: {
+  // Dashboard Routes
+  DASHBOARD: {
     path: "/dashboard",
     title: "Dashboard",
     isProtected: true,
-    children: {
-      index: {
-        path: "/dashboard",
-        title: "Dashboard Home",
-      },
-
-      // Dashboard Profile routes
-      profile: {
-        path: "/dashboard/profile",
-        title: "Profile",
-        children: {
-          index: {
-            path: "/dashboard/profile",
-            title: "Profile Overview",
-          },
-          general: {
-            path: "/dashboard/profile/general",
-            title: "General",
-          },
-          employment: {
-            path: "/dashboard/profile/employment",
-            title: "Employment",
-          },
-          skills: {
-            path: "/dashboard/profile/skills",
-            title: "Skills",
-          },
-          certifications: {
-            path: "/dashboard/profile/certifications",
-            title: "Certifications",
-          },
-          education: {
-            path: "/dashboard/profile/education",
-            title: "Education",
-          },
-          experience: {
-            path: "/dashboard/profile/experience",
-            title: "Experience",
-          },
-        },
-      },
-
-      // Dashboard Settings routes
-      settings: {
-        path: "/dashboard/settings",
-        title: "Settings",
-        children: {
-          index: {
-            path: "/dashboard/settings",
-            title: "Settings",
-          },
-          general: {
-            path: "/dashboard/settings/general",
-            title: "General Settings",
-          },
-          security: {
-            path: "/dashboard/settings/security",
-            title: "Security Settings",
-          },
-          authentication: {
-            path: "/dashboard/settings/authentication",
-            title: "Authentication Settings",
-          },
-        },
-      },
-
-      // Dashboard Discover routes
-      discover: {
-        path: "/dashboard/discover",
-        title: "Discover",
-        children: {
-          map: {
-            path: "/dashboard/discover/map",
-            title: "Map",
-          },
-          workers: {
-            path: "/dashboard/discover/workers",
-            title: "Workers",
-          },
-          employers: {
-            path: "/dashboard/discover/employers",
-            title: "Employers",
-          },
-          jobs: {
-            path: "/dashboard/discover/jobs",
-            title: "Jobs",
-          },
-        },
-      },
-    },
   },
 
-  // Office routes (admin only)
-  office: {
+  // Dashboard > Profile
+  DASHBOARD_PROFILE: {
+    path: "/dashboard/profile",
+    title: "Profile",
+    isProtected: true,
+  },
+  DASHBOARD_PROFILE_GENERAL: {
+    path: "/dashboard/profile/general",
+    title: "General",
+    isProtected: true,
+  },
+  DASHBOARD_PROFILE_EMPLOYMENT: {
+    path: "/dashboard/profile/employment",
+    title: "Employment",
+    isProtected: true,
+  },
+  DASHBOARD_PROFILE_SKILLS: {
+    path: "/dashboard/profile/skills",
+    title: "Skills",
+    isProtected: true,
+  },
+  DASHBOARD_PROFILE_CERTIFICATIONS: {
+    path: "/dashboard/profile/certifications",
+    title: "Certifications",
+    isProtected: true,
+  },
+  DASHBOARD_PROFILE_EDUCATION: {
+    path: "/dashboard/profile/education",
+    title: "Education",
+    isProtected: true,
+  },
+  DASHBOARD_PROFILE_EXPERIENCE: {
+    path: "/dashboard/profile/experience",
+    title: "Experience",
+    isProtected: true,
+  },
+
+  // Dashboard > Settings
+  DASHBOARD_SETTINGS: {
+    path: "/dashboard/settings",
+    title: "Settings",
+    isProtected: true,
+  },
+  DASHBOARD_SETTINGS_GENERAL: {
+    path: "/dashboard/settings/general",
+    title: "General Settings",
+    isProtected: true,
+  },
+  DASHBOARD_SETTINGS_SECURITY: {
+    path: "/dashboard/settings/security",
+    title: "Security Settings",
+    isProtected: true,
+  },
+  DASHBOARD_SETTINGS_AUTHENTICATION: {
+    path: "/dashboard/settings/authentication",
+    title: "Authentication Settings",
+    isProtected: true,
+  },
+
+  // Dashboard > Discover
+  DASHBOARD_DISCOVER_MAP: {
+    path: "/dashboard/discover/map",
+    title: "Map",
+    isProtected: true,
+  },
+  DASHBOARD_DISCOVER_WORKERS: {
+    path: "/dashboard/discover/workers",
+    title: "Workers",
+    isProtected: true,
+  },
+  DASHBOARD_DISCOVER_EMPLOYERS: {
+    path: "/dashboard/discover/employers",
+    title: "Employers",
+    isProtected: true,
+  },
+  DASHBOARD_DISCOVER_JOBS: {
+    path: "/dashboard/discover/jobs",
+    title: "Jobs",
+    isProtected: true,
+  },
+
+  // Dashboard > Users (dynamic)
+  DASHBOARD_USER: {
+    path: "/dashboard/users/:userId",
+    title: "User Profile",
+    isProtected: true,
+  },
+
+  // Office Routes
+  OFFICE: {
     path: "/office",
     title: "Office",
     isProtected: true,
-    children: {
-      index: {
-        path: "/office",
-        title: "Office",
-      },
-      users: {
-        path: "/office/users",
-        title: "Manage Users",
-      },
-      jobs: {
-        path: "/office/jobs",
-        title: "Manage Jobs",
-      },
-      universities: {
-        path: "/office/universities",
-        title: "Manage Universities",
-      },
-    },
   },
-};
+  OFFICE_USERS: {
+    path: "/office/users",
+    title: "Manage Users",
+    isProtected: true,
+  },
+  OFFICE_USERS_CREATE: {
+    path: "/office/users/create",
+    title: "Create User",
+    isProtected: true,
+  },
+  OFFICE_USERS_EDIT: {
+    path: "/office/users/:id/edit",
+    title: "Edit User",
+    isProtected: true,
+  },
+  OFFICE_JOBS: {
+    path: "/office/jobs",
+    title: "Manage Jobs",
+    isProtected: true,
+  },
+  OFFICE_JOBS_CREATE: {
+    path: "/office/jobs/create",
+    title: "Create Job",
+    isProtected: true,
+  },
+  OFFICE_JOBS_EDIT: {
+    path: "/office/jobs/:id/edit",
+    title: "Edit Job",
+    isProtected: true,
+  },
+  OFFICE_UNIVERSITIES: {
+    path: "/office/universities",
+    title: "Manage Universities",
+    isProtected: true,
+  },
+  OFFICE_UNIVERSITIES_CREATE: {
+    path: "/office/universities/create",
+    title: "Create University",
+    isProtected: true,
+  },
+  OFFICE_UNIVERSITIES_EDIT: {
+    path: "/office/universities/:id/edit",
+    title: "Edit University",
+    isProtected: true,
+  },
+} as const satisfies Record<string, RouteConfig>;
 
-// Create the route tree
-export const ROUTES = Object.fromEntries(
-  Object.entries(routeConfig).map((
-    [key, config],
-  ) => [key, createRouteNode(config, config.path)]),
-) as Record<string, RouteNode>;
+// ============================================================================
+// Strongly-Typed Routes Object
+// ============================================================================
 
-// Convenience accessors for common routes
-export const AUTH_ROUTES = {
-  INDEX: ROUTES.auth.childrenArray?.find((r) => r.path === "/auth"),
-  CONFIRM: ROUTES.auth.childrenArray?.find((r) => r.path === "/auth/confirm"),
-};
+export const ROUTES = ROUTES_CONFIG;
 
-export const DASHBOARD_ROUTES = {
-  INDEX: ROUTES.dashboard,
-  PROFILE: ROUTES.dashboard.childrenArray?.find((r) =>
-    r.path === "/dashboard/profile"
-  ),
-  SETTINGS: ROUTES.dashboard.childrenArray?.find((r) =>
-    r.path === "/dashboard/settings"
-  ),
-  Discover: ROUTES.dashboard.childrenArray?.find((r) =>
-    r.path === "/dashboard/discover"
-  ),
-};
+// ============================================================================
+// Dynamic Route Builders
+// ============================================================================
 
-export const OFFICE_ROUTES = {
-  INDEX: ROUTES.office.childrenArray?.find((r) => r.path === "/office"),
-  USERS: ROUTES.office.childrenArray?.find((r) => r.path === "/office/users"),
-  JOBS: ROUTES.office.childrenArray?.find((r) => r.path === "/office/jobs"),
-  UNIVERSITIES: ROUTES.office.childrenArray?.find((r) =>
-    r.path === "/office/universities"
-  ),
-};
+/**
+ * Build a route with dynamic parameters
+ * @example buildRoute(ROUTES.OFFICE_JOBS_EDIT, { id: 123 }) => '/office/jobs/123/edit'
+ */
+export function buildRoute(
+  route: RouteConfig,
+  params: RouteParams = {},
+): string {
+  let path = route.path;
 
-// Route type for TypeScript safety
-export type AppRoute = RouteNode;
-
-// Helper functions
-export const buildRoute = (
-  route: RouteNode | string,
-  params?: RouteParams,
-): string => {
-  if (typeof route === "string") {
-    return buildDynamicRoute(route, params);
+  for (const [key, value] of Object.entries(params)) {
+    path = path.replace(`:${key}`, String(value));
   }
-  return route.toPath(params);
-};
 
-export const findRouteByPath = (path: string): RouteNode | undefined => {
-  return Object.values(ROUTES).find((route) => route.findByPath(path));
-};
+  return path;
+}
 
-export const getProtectedRoutes = (): RouteNode[] => {
-  return Object.values(ROUTES).flatMap((route) => route.getProtectedRoutes());
-};
+/**
+ * Type-safe route builders for common dynamic routes
+ */
+export const RouteBuilder = {
+  // Office routes
+  officeUsersEdit: (id: string | number) =>
+    buildRoute(ROUTES.OFFICE_USERS_EDIT, { id }),
+  officeJobsEdit: (id: string | number) =>
+    buildRoute(ROUTES.OFFICE_JOBS_EDIT, { id }),
+  officeUniversitiesEdit: (id: string | number) =>
+    buildRoute(ROUTES.OFFICE_UNIVERSITIES_EDIT, { id }),
 
-export const getAuthRoutes = (): RouteNode[] => {
-  return Object.values(ROUTES).flatMap((route) => route.getAuthRoutes());
-};
+  // Dashboard routes
+  dashboardUser: (userId: string | number) =>
+    buildRoute(ROUTES.DASHBOARD_USER, { userId }),
+} as const;
 
-// Navigation helpers
-export const isProtectedPath = (path: string): boolean => {
-  return getProtectedRoutes().some((route) =>
-    path === route.fullPath || route.isParentOf(path)
+// ============================================================================
+// Legacy Compatibility (for gradual migration)
+// ============================================================================
+
+/**
+ * @deprecated Use ROUTES directly instead
+ */
+export const AUTH_ROUTES = {
+  INDEX: ROUTES.AUTH,
+  CONFIRM: ROUTES.AUTH_CONFIRM,
+  SUCCESS: ROUTES.AUTH_SUCCESS,
+} as const;
+
+/**
+ * @deprecated Use ROUTES directly instead
+ */
+export const DASHBOARD_ROUTES = {
+  INDEX: ROUTES.DASHBOARD,
+  PROFILE: ROUTES.DASHBOARD_PROFILE,
+  SETTINGS: ROUTES.DASHBOARD_SETTINGS,
+} as const;
+
+/**
+ * @deprecated Use ROUTES directly instead
+ */
+export const OFFICE_ROUTES = {
+  INDEX: ROUTES.OFFICE,
+  USERS: ROUTES.OFFICE_USERS,
+  JOBS: ROUTES.OFFICE_JOBS,
+  UNIVERSITIES: ROUTES.OFFICE_UNIVERSITIES,
+} as const;
+
+// ============================================================================
+// Route Helpers
+// ============================================================================
+
+/**
+ * Check if a path is protected (requires authentication)
+ */
+export function isProtectedPath(path: string): boolean {
+  return Object.values(ROUTES).some(
+    (route) =>
+      "isProtected" in route &&
+      route.isProtected === true &&
+      path.startsWith(route.path.split(":")[0]),
   );
-};
+}
 
-export const isAuthPath = (path: string): boolean => {
-  return getAuthRoutes().some((route) =>
-    path === route.fullPath || route.isParentOf(path)
+/**
+ * Check if a path is an auth path
+ */
+export function isAuthPath(path: string): boolean {
+  return Object.values(ROUTES).some(
+    (route) =>
+      "isAuth" in route &&
+      route.isAuth === true &&
+      path.startsWith(route.path),
   );
-};
+}
 
-// Export the main routes object for easy access
-export { ROUTES as default };
+/**
+ * Check if a path matches a route (handles dynamic segments)
+ */
+export function matchesRoute(path: string, route: RouteConfig): boolean {
+  const routePattern = route.path.replace(/:[^/]+/g, "[^/]+");
+  const regex = new RegExp(`^${routePattern}$`);
+  return regex.test(path);
+}
+
+/**
+ * Check if current path is active (matches route or is a child)
+ */
+export function isActiveRoute(
+  currentPath: string,
+  route: RouteConfig,
+): boolean {
+  // Exact match
+  if (currentPath === route.path) return true;
+
+  // Handle dynamic routes
+  if (matchesRoute(currentPath, route)) return true;
+
+  // Check if current path is a child of this route
+  const basePath = route.path.split(":")[0];
+  return currentPath.startsWith(`${basePath}/`);
+}
+
+// ============================================================================
+// Type Exports
+// ============================================================================
+
+export type RoutePath = typeof ROUTES[keyof typeof ROUTES]["path"];
+export type RouteKey = keyof typeof ROUTES;

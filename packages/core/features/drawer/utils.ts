@@ -20,15 +20,16 @@ export const isActivePath = (pathname: string, href: string) => {
   }
 
   // Special case for dashboard: only match exact path or /dashboard/index
-  const dashboardPath = DASHBOARD_ROUTES.INDEX?.fullPath || "/dashboard";
+  const dashboardPath = DASHBOARD_ROUTES.INDEX.path;
   if (href === dashboardPath) {
     return pathname === dashboardPath || pathname === `${dashboardPath}/index`;
   }
 
   // Special case for office: match exact path or child paths
-  const officePath = OFFICE_ROUTES.INDEX?.fullPath || "/office";
+  const officePath = OFFICE_ROUTES.INDEX.path;
   if (href === officePath) {
-    return pathname === officePath || pathname === `${officePath}/index` || pathname.startsWith(`${officePath}/`);
+    return pathname === officePath || pathname === `${officePath}/index` ||
+      pathname.startsWith(`${officePath}/`);
   }
 
   return pathname === href || pathname.startsWith(`${href}/`);

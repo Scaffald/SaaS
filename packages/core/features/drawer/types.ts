@@ -1,7 +1,7 @@
 import type { JSX } from 'react'
 import type { GestureResponderEvent } from 'react-native'
 import type { DrawerContentComponentProps } from '@react-navigation/drawer'
-import { BarChart3 } from '@tamagui/lucide-icons'
+import type { BarChart3 } from '@tamagui/lucide-icons'
 
 /**
  * Configuration for individual drawer menu items

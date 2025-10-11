@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { Database } from '@app/supabase/types'
+import type { Database } from '@app/supabase/types'
 
 import { supabase } from './supabase/client'
 import { useUser } from './useUser'

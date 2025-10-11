@@ -1,7 +1,7 @@
-import { GetThemeValueForKey, YStack, getTokens } from 'tamagui'
+import { type GetThemeValueForKey, YStack, getTokens } from 'tamagui'
 import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import { useCallback, useState } from 'react'
-import { GestureResponderEvent } from 'react-native'
+import type { GestureResponderEvent } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Platform } from 'react-native'
 

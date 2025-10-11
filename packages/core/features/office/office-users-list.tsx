@@ -1,4 +1,5 @@
 import { api } from '@app/core/utils/api'
+import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
@@ -51,7 +52,7 @@ const createColumns = (
             size="$2"
             variant="outlined"
             icon={Pencil}
-            onPress={() => router.push(`/office/users/${user.id}/edit`)}
+            onPress={() => router.push(RouteBuilder.officeUsersEdit(user.id))}
           >
             Edit
           </Button>
@@ -95,7 +96,7 @@ export function OfficeUsersList() {
       searchValue={search}
       onSearchChange={setSearch}
       createButtonLabel="Create User"
-      onCreateClick={() => router.push('/office/users/create')}
+      onCreateClick={() => router.push(ROUTES.OFFICE_USERS_CREATE.path)}
       columns={columns as ColumnDef<User, unknown>[]}
       data={filteredUsers}
       isLoading={isLoading}

@@ -4,6 +4,7 @@ import { CheckCircle2 } from '@tamagui/lucide-icons'
 import { supabase } from '@app/core/utils/supabase/client'
 import { getBaseUrl } from '@app/core/utils/getBaseUrl'
 import { router } from 'expo-router'
+import { ROUTES } from '@app/core/constants/routes'
 
 import { CodeConfirmation } from './CodeConfirmation'
 import { EmailHeader } from './EmailHeader'
@@ -58,7 +59,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
 
         setVerified(true)
         setCodeEntered(true)
-        router.push('/auth/success')
+        router.push(ROUTES.AUTH_SUCCESS.path)
       } catch (err) {
         console.error('Error during OTP verification:', err)
         setError(err instanceof Error ? err.message : 'An error occurred')

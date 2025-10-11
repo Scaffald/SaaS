@@ -1,4 +1,4 @@
-import { themed, IconProps } from '@tamagui/helpers-icon'
+import { themed, type IconProps } from '@tamagui/helpers-icon'
 import { memo } from 'react'
 import { Path, Svg } from 'react-native-svg'
 

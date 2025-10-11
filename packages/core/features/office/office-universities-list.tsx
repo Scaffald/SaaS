@@ -5,6 +5,7 @@ import { XStack } from 'tamagui'
 import { api } from '@app/core/utils/api'
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
 import { Pencil } from '@tamagui/lucide-icons'
+import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { DeleteButton } from './components/DeleteButton'
 
@@ -55,7 +56,7 @@ const createColumns = (
             size="$2"
             variant="outlined"
             icon={Pencil}
-            onPress={() => router.push(`/office/universities/${university.id}/edit`)}
+            onPress={() => router.push(RouteBuilder.officeUniversitiesEdit(university.id))}
           >
             Edit
           </Button>
@@ -102,7 +103,7 @@ export function OfficeUniversitiesList() {
       searchValue={search}
       onSearchChange={setSearch}
       createButtonLabel="Create University"
-      onCreateClick={() => router.push('/office/universities/create')}
+      onCreateClick={() => router.push(ROUTES.OFFICE_UNIVERSITIES_CREATE.path)}
       columns={columns as ColumnDef<University, unknown>[]}
       data={universities}
       isLoading={isLoading}

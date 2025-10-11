@@ -41,15 +41,31 @@ This directory contains detailed documentation for Scaffald's major features and
   - News hooks (`packages/core/features/news/hooks/useNewsFeed.tsx`)
   - News widgets (`packages/core/features/news/`)
 
-### Job Management System
-- **Status**: ✅ Implemented (Core Schema)
-- **Description**: Complete job posting, application, and management system
+### Job Management & ATS System
+- **Status**: 🚧 Phases 1-3 Complete (40% Overall) - **UI-First Approach for Phase 4**
+- **Documentation**: 
+  - **[ATS Implementation Revised](./ats-implementation-revised.md)** - 🎨 **START HERE: UI-First approach with mock data**
+  - [ATS Summary](./ATS-SUMMARY.md) - Quick reference and status
+  - [Application System Implementation Plan](./application-system-implementation-plan.md) - Original bottom-up plan
+  - [Application System Progress](./application-system-progress.md) - Progress tracking
+  - [ATS Roadmap](./ats-roadmap.md) - Complete GitHub issue mapping
+  - [ATS Schema Design](./ats-schema.md) - Basic schema
+  - [ATS Schema Design (Comprehensive)](../roadmap/ats-schema-design.md) - Full schema design
+- **Description**: Complete job posting, application, and ATS system
+- **Implementation Status**:
+  - ✅ Phase 1: Database Schema & Storage (100%)
+  - ✅ Phase 2: Backend API & Validation (100%)
+  - ✅ Phase 3: Candidate Application Flow (100%)
+  - 🚧 Phase 4: Admin/Recruiter Interface (0% - NEXT)
 - **Key Features**:
   - Job postings with skills requirements
+  - Multi-step application wizard
+  - File upload system (resume, cover letter, portfolio)
+  - Auto-screening and scoring
   - Application tracking and status management
   - Organization and team-based job management
   - Geographic and remote work support
-- **Database**: Full schema implemented in `packages/supabase/migrations/003_create_domain_tables.sql`
+- **Database**: Migrations 075-078 for enhanced ATS features
 
 ## Planned Features
 

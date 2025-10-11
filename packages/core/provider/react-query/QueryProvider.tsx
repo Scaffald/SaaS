@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider as QueryClientProviderOG } from '@tanstack/react-query'
 import { api, createTrpcClient } from '@app/core/utils/api'
-import { useState, ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 
 export const QueryClientProvider = ({ children }: { children: ReactNode }) => {
   const [queryClient] = useState(

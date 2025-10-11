@@ -11,6 +11,7 @@ import {
 } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { api } from '@app/core/utils/api'
+import { RouteBuilder } from '@app/core/constants/routes'
 
 interface WorkerPreviewModalProps {
   userId: string | null
@@ -48,7 +49,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
 
   const handleViewFullProfile = () => {
     if (userId) {
-      router.push(`/dashboard/users/${userId}`)
+      router.push(RouteBuilder.dashboardUser(userId))
       onOpenChange(false)
     }
   }

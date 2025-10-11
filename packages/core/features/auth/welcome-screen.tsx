@@ -1,4 +1,4 @@
-import { Onboarding, OnboardingStepInfo, StepContent } from '@app/ui'
+import { Onboarding, type OnboardingStepInfo, StepContent } from '@app/ui'
 import { ArrowUp, Rocket, Sparkles } from '@tamagui/lucide-icons'
 
 const steps: OnboardingStepInfo[] = [

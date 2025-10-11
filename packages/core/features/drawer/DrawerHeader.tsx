@@ -1,6 +1,6 @@
 import { Avatar, Card, ListItem, XStack, YStack, getTokens } from 'tamagui'
 import { ChevronRight, User } from '@tamagui/lucide-icons'
-import { GestureResponderEvent } from 'react-native'
+import type { GestureResponderEvent } from 'react-native'
 import { Link } from 'expo-router'
 import { DASHBOARD_ROUTES } from '@app/core/constants/routes'
 import { useUser } from '@app/core/utils/useUser'
@@ -29,7 +29,7 @@ type ExtendedProfile = {
  */
 export const DrawerHeader = ({ onNavigate }: DrawerHeaderProps) => {
   const { profile } = useUser()
-  const profileHref = DASHBOARD_ROUTES.PROFILE?.fullPath || '/dashboard/profile'
+  const profileHref = DASHBOARD_ROUTES.PROFILE.path
   const tokens = getTokens()
   const avatarSize = tokens.size.$3.val as number
 

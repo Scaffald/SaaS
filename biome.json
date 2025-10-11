@@ -52,7 +52,7 @@
         "noRedeclare": "off"
       },
       "style": {
-        "useImportType": "off",
+        "useImportType": "warn",
         "useNodejsImportProtocol": "off",
         "noNonNullAssertion": "off",
         "noUnusedTemplateLiteral": "off"

@@ -2,7 +2,7 @@ import { Button, XStack, useTheme } from 'tamagui'
 import { Moon, Sun, LogOut } from '@tamagui/lucide-icons'
 import { supabase } from '@app/core/utils/supabase/client'
 import { useThemeSetting } from '@app/core/provider/theme/UniversalThemeProvider'
-import { GestureResponderEvent } from 'react-native'
+import type { GestureResponderEvent } from 'react-native'
 import { Link } from 'expo-router'
 
 /**
