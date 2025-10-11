@@ -30,6 +30,9 @@ export default function OfficeLayout() {
       <Drawer.Screen name="jobs/index" options={{ title: 'Manage Jobs' }} />
       <Drawer.Screen name="jobs/create" options={{ title: 'Create Job' }} />
       <Drawer.Screen name="jobs/[id]/edit" options={{ title: 'Edit Job' }} />
+      <Drawer.Screen name="universities/index" options={{ title: 'Manage Universities' }} />
+      <Drawer.Screen name="universities/create" options={{ title: 'Create University' }} />
+      <Drawer.Screen name="universities/[id]/edit" options={{ title: 'Edit University' }} />
     </DrawerLayout>
   )
 }
