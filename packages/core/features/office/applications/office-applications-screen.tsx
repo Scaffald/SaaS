@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
-import { YStack, XStack, H2, Button, Text } from '@app/ui'
-import { mockApplications, mockJobs } from '../mock-data/ats-mock-data'
+import { YStack, XStack, H2, Button, Text, Spinner } from '@app/ui'
+import { useApplications } from './hooks/useApplications'
+import type { Applications } from './hooks/useApplications'
 import { ApplicationsKanbanBoard } from './components/ApplicationsKanbanBoard'
 import { ApplicationsFilters } from './components/ApplicationsFilters'
 import type { ApplicationStatus } from '../mock-data/ats-mock-data'
@@ -17,15 +18,55 @@ export const OfficeApplicationsScreen = () => {
     minScore: 0,
   })
 
-  // Filter mock data based on filters
+  // Fetch applications using tRPC
+  const { applications, isLoading, isError, error } = useApplications({
+    status:
+      (filters.status as
+        | 'pending'
+        | 'reviewing'
+        | 'interview'
+        | 'offer'
+        | 'hired'
+        | 'rejected'
+        | 'withdrawn'
+        | undefined) || undefined,
+  })
+
+  // Filter applications by score (client-side for now)
   const filteredApplications = useMemo(() => {
-    return mockApplications.filter((app) => {
-      if (filters.jobId && app.job.id !== filters.jobId) return false
-      if (filters.status && app.status !== filters.status) return false
-      if (app.score < filters.minScore) return false
+    return applications.filter((app: Applications[number]) => {
+      if (app.application_score && app.application_score < filters.minScore) return false
       return true
     })
-  }, [filters])
+  }, [applications, filters.minScore])
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <YStack flex={1} items="center" justify="center" bg="$background">
+        <Spinner size="large" />
+        <Text mt="$4" color="$color11">
+          Loading applications...
+        </Text>
+      </YStack>
+    )
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <YStack flex={1} items="center" justify="center" bg="$background" p="$4">
+        <Text color="$red10" fontSize="$5" fontWeight="bold">
+          Error Loading Applications
+        </Text>
+        <YStack items="center">
+          <Text color="$color11" mt="$2">
+            {error?.message || 'Failed to load applications. Please try again.'}
+          </Text>
+        </YStack>
+      </YStack>
+    )
+  }
 
   return (
     <YStack flex={1} p="$4" bg="$background">
@@ -39,17 +80,25 @@ export const OfficeApplicationsScreen = () => {
         </YStack>
 
         <XStack gap="$2">
-          <Button size="$3" onPress={() => setViewMode('kanban')}>
+          <Button
+            size="$3"
+            onPress={() => setViewMode('kanban')}
+            variant={viewMode === 'kanban' ? 'outlined' : undefined}
+          >
             Kanban
           </Button>
-          <Button size="$3" onPress={() => setViewMode('list')}>
+          <Button
+            size="$3"
+            onPress={() => setViewMode('list')}
+            variant={viewMode === 'list' ? 'outlined' : undefined}
+          >
             List
           </Button>
         </XStack>
       </XStack>
 
-      {/* Filters */}
-      <ApplicationsFilters filters={filters} onFiltersChange={setFilters} jobs={mockJobs} />
+      {/* Filters - Note: needs jobs list from API */}
+      <ApplicationsFilters filters={filters} onFiltersChange={setFilters} jobs={[]} />
 
       {/* Content */}
       {viewMode === 'kanban' ? (
