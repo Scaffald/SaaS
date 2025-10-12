@@ -7,8 +7,8 @@ This directory contains detailed documentation for Scaffald's major features and
 ### Office Administration (Super Admin)
 - **Status**: ✅ Implemented
 - **Documentation**: 
-  - [Office Organizations CRUD](../office-organizations-crud.md) - Organization management
-  - [Office CRUD Standards](../office-crud-standards.md) - Standards and patterns
+  - [Office Organizations CRUD](../office/organizations-crud.md) - Organization management
+  - [Office CRUD Standards](../office/crud-standards.md) - Standards and patterns
 - **Description**: Super admin interface for managing platform resources
 - **Key Features**:
   - **Organizations Management**: Create, update, delete organizations with industry classification
@@ -82,34 +82,34 @@ This directory contains detailed documentation for Scaffald's major features and
   - News widgets and cards (`packages/core/features/news/`)
 
 ### Job Management & ATS System
-- **Status**: 🚧 Phase 4A Complete, Phase 4B In Progress (72% Overall)
+- **Status**: 🚧 76% Complete - Phase 4B In Progress
 - **Documentation**: 
-  - **[ATS Phase 4A Summary](./ATS-PHASE-4A-SUMMARY.md)** - 🎉 **Latest completion summary**
-  - **[ATS Implementation Revised](./ats-implementation-revised.md)** - 🎨 UI-First approach with mock data
-  - [ATS Summary](./ATS-SUMMARY.md) - Quick reference and status
-  - [Application System Implementation Plan](./application-system-implementation-plan.md) - Original bottom-up plan
-  - [Application System Progress](./application-system-progress.md) - Progress tracking
-  - [ATS Roadmap](./ats-roadmap.md) - Complete GitHub issue mapping
-  - [ATS Schema Design](./ats-schema.md) - Basic schema
-  - [ATS Schema Design (Comprehensive)](../roadmap/ats-schema-design.md) - Full schema design
-- **Description**: Complete job posting, application, and ATS system
+  - **[ATS Roadmap](./ats-roadmap.md)** - 📋 Complete status and GitHub issue mapping (single source of truth)
+  - [ATS Implementation (UI-First)](./ats-implementation-revised.md) - UI-first development approach
+  - [ATS Getting Started](./ats-getting-started.md) - Setup and quickstart guide
+  - [ATS Schema](./ats-schema.md) - Basic database schema
+  - [ATS Schema Design (Full)](../roadmap/ats-schema-design.md) - Complete future schema
+- **Description**: Complete job posting, application, and applicant tracking system
 - **Implementation Status**:
   - ✅ Phase 1: Database Schema & Storage (100%)
   - ✅ Phase 2: Backend API & Validation (100%)
   - ✅ Phase 3: Candidate Application Flow (100%)
   - ✅ Phase 4A: Core Recruiter UI (100%)
-  - 🚧 Phase 4B: Backend Integration (In Progress)
+  - 🚧 Phase 4B: Backend Integration (50%)
+  - ⏳ Phase 4C: Advanced Features (Planned)
+  - ⏳ Phase 5: Analytics & Compliance (Planned)
 - **Key Features**:
-  - Job postings with skills requirements
-  - Multi-step application wizard
-  - File upload system (resume, cover letter, portfolio)
-  - Auto-screening and scoring
-  - Application tracking and status management
-  - Kanban board for application pipeline
-  - Candidate detail modal with profile, notes, messages
-  - Organization and team-based job management
-  - Geographic and remote work support
-- **Database**: Migrations 075-078, 092-093 for enhanced ATS features
+  - **Job Postings**: Create jobs with skills, certifications, location requirements
+  - **Application Flow**: Multi-step wizard with screening questions, custom questions, file uploads
+  - **Auto-Screening**: 100-point scoring algorithm with auto-rejection rules
+  - **Recruiter UI**: Kanban board with 6 status columns, candidate detail modals
+  - **File Management**: Resume, cover letter, portfolio storage with signed URLs
+  - **Notes & Ratings**: Private recruiter notes with 5-star rating system
+  - **Messaging**: Direct communication between recruiters and candidates
+  - **Status Management**: Track applications through hiring pipeline
+- **Database**: Migrations 075-078 (enhanced applications), 092 (applications view), 093 (organization locations)
+- **Components**: 2,034 lines (Kanban board, detail modal, filters, mock data)
+- **GitHub Issues**: 24 total (3 complete, 3 in progress, 18 planned)
 
 ## Planned Features
 

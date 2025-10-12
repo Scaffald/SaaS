@@ -386,9 +386,9 @@ export const skillsMultiTaxonomyRouter = t.router({
     const { supabase, user } = ctx;
 
     const { data, error } = await supabase
-      .from("user_private")
-      .select("primary_industry_id, industries(id, name, slug)")
-      .eq("user_id", user.id)
+      .from("users")
+      .select("industry_id, industries(id, name, slug)")
+      .eq("id", user.id)
       .single();
 
     if (error && error.code !== "PGRST116") {
@@ -399,7 +399,7 @@ export const skillsMultiTaxonomyRouter = t.router({
     }
 
     return {
-      primary_industry_id: data?.primary_industry_id || null,
+      primary_industry_id: data?.industry_id || null,
       industry: data?.industries || null,
     };
   }),
@@ -413,12 +413,12 @@ export const skillsMultiTaxonomyRouter = t.router({
       const { supabase, user } = ctx;
 
       const { error } = await supabase
-        .from("user_private")
-        .upsert({
-          user_id: user.id,
-          primary_industry_id: input.industryId,
+        .from("users")
+        .update({
+          industry_id: input.industryId,
           updated_at: new Date().toISOString(),
-        });
+        })
+        .eq("id", user.id);
 
       if (error) {
         throw new TRPCError({

@@ -183,7 +183,7 @@ export const profileSkillsInputSchema = z
       .optional(),
 
     // Industry focus
-    primary_industry_id: z.string().uuid().optional(),
+    industry_id: z.string().uuid().optional(),
     secondary_industries: z.array(z.string().uuid()).max(3).optional(),
 
     // Skill categories of interest
@@ -202,7 +202,7 @@ export const profileSkillsOutputSchema = z.object({
       endorsed_count: z.number(),
     }),
   ),
-  primary_industry_id: z.string().nullable(),
+  industry_id: z.string().nullable(),
   secondary_industries: z.array(z.string()),
   skill_categories: z.array(z.string()),
 });
