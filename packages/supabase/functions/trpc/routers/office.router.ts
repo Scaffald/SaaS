@@ -498,6 +498,226 @@ export const officeRouter = t.router({
   }),
 
   /**
+   * List organizations with pagination and search
+   */
+  listOrganizations: superAdminProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(100).default(50),
+        offset: z.number().min(0).default(0),
+        search: z.string().optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      let query = ctx.supabaseAdmin
+        .from("organizations")
+        .select(
+          `
+          id,
+          name,
+          slug,
+          industry_id,
+          logo_url,
+          visibility,
+          owner_user_id,
+          created_at,
+          updated_at,
+          industry:industries(name)
+        `,
+          { count: "exact" },
+        )
+        .order("created_at", { ascending: false })
+        .range(input.offset, input.offset + input.limit - 1);
+
+      if (input.search) {
+        query = query.or(
+          `name.ilike.%${input.search}%,slug.ilike.%${input.search}%`,
+        );
+      }
+
+      const { data, error, count } = await query;
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch organizations: ${error.message}`,
+        });
+      }
+
+      // Transform data to include industry_name
+      const organizations = (data ?? []).map((org) => ({
+        ...org,
+        industry_name: org.industry?.name || null,
+      }));
+
+      return {
+        organizations,
+        total: count ?? 0,
+      };
+    }),
+
+  /**
+   * Get single organization with full details
+   */
+  getOrganization: superAdminProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const { data, error } = await ctx.supabaseAdmin
+        .from("organizations")
+        .select(
+          `
+          *,
+          industry:industries(id, name)
+        `,
+        )
+        .eq("id", input.id)
+        .single();
+
+      if (error) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `Organization not found: ${error.message}`,
+        });
+      }
+
+      return { organization: data };
+    }),
+
+  /**
+   * Create new organization
+   */
+  createOrganization: superAdminProcedure
+    .input(
+      z.object({
+        name: z.string().min(1, "Name is required"),
+        slug: z.string().min(1, "Slug is required").toLowerCase(),
+        industry_id: z.string().uuid().optional(),
+        logo_url: z.string().url().optional().or(z.literal("")),
+        visibility: z.enum(["public", "private"]).default("public"),
+        address: z.record(z.unknown()).optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { user } = ctx;
+
+      if (!user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not authenticated",
+        });
+      }
+
+      // Check if slug is unique
+      const { data: existing } = await ctx.supabaseAdmin
+        .from("organizations")
+        .select("id")
+        .eq("slug", input.slug)
+        .single();
+
+      if (existing) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "An organization with this slug already exists",
+        });
+      }
+
+      const { data: organization, error } = await ctx.supabaseAdmin
+        .from("organizations")
+        .insert({
+          ...input,
+          owner_user_id: user.id,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to create organization: ${error.message}`,
+        });
+      }
+
+      return { organization };
+    }),
+
+  /**
+   * Update existing organization
+   */
+  updateOrganization: superAdminProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        name: z.string().min(1, "Name is required"),
+        slug: z.string().min(1, "Slug is required").toLowerCase(),
+        industry_id: z.string().uuid().optional(),
+        logo_url: z.string().url().optional().or(z.literal("")),
+        visibility: z.enum(["public", "private"]),
+        address: z.record(z.unknown()).optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id, ...updateData } = input;
+
+      // Check if slug is unique (excluding current organization)
+      const { data: existing } = await ctx.supabaseAdmin
+        .from("organizations")
+        .select("id")
+        .eq("slug", input.slug)
+        .neq("id", id)
+        .single();
+
+      if (existing) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "An organization with this slug already exists",
+        });
+      }
+
+      const { data: organization, error } = await ctx.supabaseAdmin
+        .from("organizations")
+        .update(updateData)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to update organization: ${error.message}`,
+        });
+      }
+
+      return { organization };
+    }),
+
+  /**
+   * Delete organization (hard delete)
+   * WARNING: This will cascade delete:
+   * - Teams and team_members
+   * - Jobs and all related records (applications, job_skills, job_certifications)
+   * - Organization_skills
+   * - Follows
+   * - Invites
+   */
+  deleteOrganization: superAdminProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const { error } = await ctx.supabaseAdmin
+        .from("organizations")
+        .delete()
+        .eq("id", input.id);
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to delete organization: ${error.message}`,
+        });
+      }
+
+      return { success: true };
+    }),
+
+  /**
    * Search certifications with pagination
    */
   searchCertifications: superAdminProcedure

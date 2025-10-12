@@ -9,13 +9,16 @@
  */
 
 // Common schemas
-export * from './common'
+export * from "./common";
 
 // Profile schemas
-export * from './profile'
+export * from "./profile";
 
 // Job schemas
-export * from './jobs'
+export * from "./jobs";
 
 // Application schemas
-export * from './applications'
+export * from "./applications";
+
+// Organization schemas
+export * from "./organizations";

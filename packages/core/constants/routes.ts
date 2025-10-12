@@ -207,6 +207,21 @@ const ROUTES_CONFIG = {
     title: "Application Detail",
     isProtected: true,
   },
+  OFFICE_ORGANIZATIONS: {
+    path: "/office/organizations",
+    title: "Manage Organizations",
+    isProtected: true,
+  },
+  OFFICE_ORGANIZATIONS_CREATE: {
+    path: "/office/organizations/create",
+    title: "Create Organization",
+    isProtected: true,
+  },
+  OFFICE_ORGANIZATIONS_EDIT: {
+    path: "/office/organizations/:id/edit",
+    title: "Edit Organization",
+    isProtected: true,
+  },
 } as const satisfies Record<string, RouteConfig>;
 
 // ============================================================================
