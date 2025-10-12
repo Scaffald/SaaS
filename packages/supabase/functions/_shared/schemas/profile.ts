@@ -67,12 +67,12 @@ export const profileEmploymentSchema = z
       .optional(),
 
     // Travel preferences
-    willing_to_travel: z.boolean().optional(),
+    open_to_travel: z.boolean().optional(),
     travel_distance_miles: z.number().min(10).max(100).optional(),
 
     // Residency (multiple countries but keep US boolean)
     us_resident: z.boolean().optional(),
-    residency_countries: z.array(z.string()).max(
+    authorized_countries: z.array(z.string()).max(
       3,
       "Maximum 3 countries allowed",
     ).optional(),
@@ -141,10 +141,10 @@ export const profileEmploymentOutputSchema = z.object({
     })
     .nullable(),
   preferred_work_locations: z.array(z.string()),
-  willing_to_travel: z.boolean(),
+  open_to_travel: z.boolean(),
   travel_distance_miles: z.number(),
   us_resident: z.boolean(),
-  residency_countries: z.array(z.string()),
+  authorized_countries: z.array(z.string()),
   us_passport: z.boolean(),
   drivers_license_classes: z.array(z.string()),
   military_status: z.array(z.string()),
@@ -162,10 +162,10 @@ export const userPrivateEmploymentUpdateSchema = z.object({
   employment_zip: z.string().optional(),
   employment_country: z.string().optional(),
   preferred_work_locations: z.array(z.string()).optional(),
-  willing_to_travel: z.boolean().optional(),
+  open_to_travel: z.boolean().optional(),
   travel_distance_miles: z.number().optional(),
   us_resident: z.boolean().optional(),
-  residency_countries: z.array(z.string()).optional(),
+  authorized_countries: z.array(z.string()).optional(),
   us_passport: z.boolean().optional(),
   drivers_license_classes: z.array(z.string()).optional(),
   military_status: z.array(z.string()).optional(),

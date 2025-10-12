@@ -33,7 +33,11 @@ async function seedCSICodes() {
     const { stdout, stderr } = await execAsync(
       `pnpx tsx "${csiScriptPath}"`,
       {
-        env: { ...process.env },
+        env: {
+          ...process.env,
+          DATABASE_URL: process.env.DATABASE_URL ||
+            "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
+        },
       },
     );
 
@@ -97,7 +101,11 @@ async function seedJobs() {
     const { stdout, stderr } = await execAsync(
       `pnpx tsx "${jobsScriptPath}"`,
       {
-        env: { ...process.env },
+        env: {
+          ...process.env,
+          DATABASE_URL: process.env.DATABASE_URL ||
+            "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
+        },
       },
     );
 
@@ -112,34 +120,38 @@ async function seedJobs() {
 }
 
 async function verifySkills() {
-  console.log("\n📊 Verifying Skills Data...");
+  console.log("\n📊 Verifying CSI MasterFormat Data...");
 
-  const { count: skillCount, error: skillError } = await supabase
-    .from("skills")
+  const { count: csiCount, error: csiError } = await supabase
+    .schema("data")
+    .from("masterformat")
     .select("*", { count: "exact", head: true });
 
-  if (skillError) {
-    console.error("❌ Error checking skills:", skillError);
+  if (csiError) {
+    console.error("❌ Error checking CSI codes:", csiError);
     return false;
   }
 
-  console.log(`✅ Found ${skillCount} skills in database`);
+  console.log(`✅ Found ${csiCount} CSI MasterFormat codes in database`);
 
-  // Check for top-level skills
-  const { data: topSkills, error: topError } = await supabase
-    .from("skills")
+  // Check for top-level codes (depth 1 - divisions)
+  const { data: topCodes, error: topError } = await supabase
+    .schema("data")
+    .from("masterformat")
     .select("id, name")
-    .is("parent_id", null)
+    .eq("depth", 1)
     .limit(5);
 
   if (topError) {
-    console.error("❌ Error fetching top skills:", topError);
+    console.error("❌ Error fetching top CSI codes:", topError);
     return false;
   }
 
-  console.log(
-    `   Top-level skills: ${topSkills?.map((s) => s.name).join(", ")}`,
-  );
+  if (topCodes && topCodes.length > 0) {
+    console.log(
+      `   Sample divisions: ${topCodes?.map((s) => s.name).join(", ")}`,
+    );
+  }
   return true;
 }
 
@@ -217,31 +229,45 @@ async function displayStats() {
   console.log("=".repeat(50));
 
   // Jobs stats
-  const { count: jobCount } = await supabase
+  const { count: jobCount, error: jobError } = await supabase
     .from("external_jobs")
     .select("*", { count: "exact", head: true });
 
-  const { count: activeJobCount } = await supabase
-    .from("external_jobs")
-    .select("*", { count: "exact", head: true })
-    .eq("is_active", true);
+  if (!jobError) {
+    const { count: activeJobCount } = await supabase
+      .from("external_jobs")
+      .select("*", { count: "exact", head: true })
+      .eq("is_active", true);
 
-  console.log(`Total Jobs: ${jobCount}`);
-  console.log(`Active Jobs: ${activeJobCount}`);
+    console.log(`Total Jobs: ${jobCount || 0}`);
+    console.log(`Active Jobs: ${activeJobCount || 0}`);
+  }
+
+  // CSI MasterFormat stats (in data schema)
+  const { count: csiCount, error: csiError } = await supabase
+    .schema("data")
+    .from("masterformat")
+    .select("*", { count: "exact", head: true });
+
+  if (!csiError) {
+    console.log(`CSI MasterFormat Codes: ${csiCount || 0}`);
+  }
 
   // Skills stats
-  const { count: skillCount } = await supabase
+  const { count: skillCount, error: skillError } = await supabase
     .from("skills")
     .select("*", { count: "exact", head: true });
 
-  console.log(`Total Skills: ${skillCount}`);
+  if (!skillError) {
+    console.log(`Total Skills: ${skillCount || 0}`);
+  }
 
   // Industries stats
   const { count: industryCount } = await supabase
     .from("industries")
     .select("*", { count: "exact", head: true });
 
-  console.log(`Total Industries: ${industryCount}`);
+  console.log(`Total Industries: ${industryCount || 0}`);
 
   // Universities stats
   const { count: universityCount } = await supabase
@@ -251,13 +277,16 @@ async function displayStats() {
 
   console.log(`Total Universities: ${universityCount || 0}`);
 
-  // Feeds stats
-  const { count: feedCount } = await supabase
+  // Feeds stats (optional table)
+  const { count: feedCount, error: feedError } = await supabase
     .from("external_job_feeds")
     .select("*", { count: "exact", head: true })
     .eq("is_active", true);
 
-  console.log(`Active Feeds: ${feedCount}`);
+  if (!feedError) {
+    console.log(`Active Feeds: ${feedCount || 0}`);
+  }
+
   console.log(`${"=".repeat(50)}\n`);
 }
 
@@ -283,10 +312,10 @@ async function main() {
     process.exit(1);
   }
 
-  // Verify skills were seeded
-  const skillsOk = await verifySkills();
-  if (!skillsOk) {
-    console.error("\n❌ Skills verification failed after CSI seeding.");
+  // Verify CSI codes were seeded
+  const csiOk = await verifySkills();
+  if (!csiOk) {
+    console.error("\n❌ CSI MasterFormat verification failed after seeding.");
     process.exit(1);
   }
 

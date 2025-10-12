@@ -27,10 +27,10 @@ export const profileGeneralRouter = t.router({
       console.error("Error fetching auth user:", authError.message);
     }
 
-    // Get profile data from profiles table
+    // Get profile data from users table (includes about)
     const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("first_name, last_name, avatar_path")
+      .from("users")
+      .select("first_name, last_name, avatar_path, about")
       .eq("id", user.id)
       .single();
 
@@ -41,10 +41,11 @@ export const profileGeneralRouter = t.router({
       });
     }
 
-    // Get additional data from user_private table including address
+    // Get address from private.profile table
     const { data: privateData, error: privateError } = await supabase
-      .from("user_private")
-      .select("phone, about, address")
+      .schema("private")
+      .from("profile")
+      .select("address")
       .eq("user_id", user.id)
       .single();
 
@@ -62,26 +63,26 @@ export const profileGeneralRouter = t.router({
       last_name: profile?.last_name || "",
       avatar_path: profile?.avatar_path || "",
       email: authUser?.user?.email || "",
-      phone: privateData?.phone || "",
-      about: privateData?.about || "",
+      phone: authUser?.user?.phone || "",
+      about: profile?.about || "",
       address: privateData?.address || null,
     };
   }),
 
   /**
    * Update general profile information
-   * Updates user's basic profile data in profiles and user_private tables
+   * Updates user's basic profile data in users and private.profile tables
    */
   updateGeneral: protectedProcedure
     .input(profileGeneralInputSchema)
     .mutation(async ({ ctx, input }) => {
       const { supabase, user } = ctx;
 
-      // Note: Email updates are not supported to avoid authentication issues
-      // The email field is read-only and comes from the auth system
+      // Note: Email and phone updates are not supported
+      // These fields are read-only and come from the auth system
 
       // Build profile update object with only provided fields
-      const profileUpdate: ProfileUpdate = {
+      const profileUpdate: ProfileUpdate & { about?: string } = {
         id: user.id,
         updated_at: new Date().toISOString(),
       };
@@ -95,11 +96,14 @@ export const profileGeneralRouter = t.router({
       if (input.avatar_path !== undefined) {
         profileUpdate.avatar_path = input.avatar_path;
       }
+      if (input.about !== undefined) {
+        profileUpdate.about = input.about;
+      }
 
-      // Update profiles table only if there are fields to update
+      // Update users table only if there are fields to update
       if (Object.keys(profileUpdate).length > 2) {
         // More than just id and updated_at
-        const { error: profileError } = await supabase.from("profiles").upsert(
+        const { error: profileError } = await supabase.from("users").upsert(
           profileUpdate,
         );
 
@@ -111,7 +115,7 @@ export const profileGeneralRouter = t.router({
         }
       }
 
-      // Build user_private update object with only provided fields
+      // Build private.profile update object with only provided fields (just address)
       const privateUpdate: UserPrivateUpdate & {
         address?: Record<string, unknown>;
       } = {
@@ -119,18 +123,18 @@ export const profileGeneralRouter = t.router({
         updated_at: new Date().toISOString(),
       };
 
-      if (input.phone !== undefined) privateUpdate.phone = input.phone;
-      if (input.about !== undefined) privateUpdate.about = input.about;
       if (input.address !== undefined) {
         privateUpdate.address = input.address === null
           ? undefined
           : input.address;
       }
 
-      // Update user_private table only if there are fields to update
+      // Update private.profile table only if there are fields to update
       if (Object.keys(privateUpdate).length > 2) {
         // More than just user_id and updated_at
-        const { error: privateError } = await supabase.from("user_private")
+        const { error: privateError } = await supabase
+          .schema("private")
+          .from("profile")
           .upsert(privateUpdate);
 
         if (privateError) {

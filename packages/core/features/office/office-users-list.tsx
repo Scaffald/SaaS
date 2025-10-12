@@ -1,6 +1,5 @@
 import { api } from '@app/core/utils/api'
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
-import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
 import { Button, XStack } from 'tamagui'
@@ -63,9 +62,12 @@ const createColumns = (
   }),
 ]
 
-export function OfficeUsersList() {
+interface OfficeUsersListProps {
+  searchValue?: string
+}
+
+export function OfficeUsersList({ searchValue = '' }: OfficeUsersListProps) {
   const router = useRouter()
-  const [search, setSearch] = useState('')
 
   const { data, isLoading, refetch } = api.office.listUsers.useQuery()
 
@@ -80,8 +82,11 @@ export function OfficeUsersList() {
   }
 
   const users = data?.users ?? []
+
+  // Filter users based on search value
   const filteredUsers = users.filter((user: User) => {
-    const searchLower = search.toLowerCase()
+    if (!searchValue) return true
+    const searchLower = searchValue.toLowerCase()
     const firstName = user.first_name?.toLowerCase() || ''
     const lastName = user.last_name?.toLowerCase() || ''
     return firstName.includes(searchLower) || lastName.includes(searchLower)
@@ -91,12 +96,6 @@ export function OfficeUsersList() {
 
   return (
     <OfficePageLayout
-      title="Users"
-      searchPlaceholder="Search users..."
-      searchValue={search}
-      onSearchChange={setSearch}
-      createButtonLabel="Create User"
-      onCreateClick={() => router.push(ROUTES.OFFICE_USERS_CREATE.path)}
       columns={columns as ColumnDef<User, unknown>[]}
       data={filteredUsers}
       isLoading={isLoading}
@@ -104,4 +103,11 @@ export function OfficeUsersList() {
       emptyMessage="No users found"
     />
   )
+}
+
+// Export props for header configuration
+export const officeUsersHeaderConfig = {
+  searchPlaceholder: 'Search users...',
+  createButtonLabel: 'Create User',
+  createRoute: ROUTES.OFFICE_USERS_CREATE.path,
 }

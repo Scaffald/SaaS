@@ -79,7 +79,7 @@ export function ProfileEmploymentLeft() {
     mode: 'onChange', // Real-time validation
   })
 
-  const _willingToTravel = watch('willing_to_travel')
+  const _openToTravel = watch('open_to_travel')
 
   // Reset form when employment data is loaded
   useEffect(() => {
@@ -196,7 +196,7 @@ export function ProfileEmploymentLeft() {
             <YStack gap="$3">
               <Text fontWeight="600">Travel Preferences</Text>
               <Controller
-                name="willing_to_travel"
+                name="open_to_travel"
                 control={control}
                 render={({ field }) => (
                   <ToggleCard

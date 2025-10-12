@@ -94,7 +94,7 @@ export const profileEducationRouter = t.router({
     }),
 
   /**
-   * Get education level from user_private
+   * Get education level from private.profile
    */
   getEducationLevel: protectedProcedure
     .output(z.object({ education_level: z.string().nullable() }))
@@ -102,7 +102,8 @@ export const profileEducationRouter = t.router({
       const { supabase, user } = ctx;
 
       const { data, error } = await supabase
-        .from("user_private")
+        .schema("private")
+        .from("profile")
         .select("education_level")
         .eq("user_id", user.id)
         .single();
@@ -127,10 +128,11 @@ export const profileEducationRouter = t.router({
       const { supabase, user } = ctx;
 
       try {
-        // Update education level in user_private if provided
+        // Update education level in private.profile if provided
         if (input.education_level !== undefined) {
           const { error: levelError } = await supabase
-            .from("user_private")
+            .schema("private")
+            .from("profile")
             .update({
               education_level: input.education_level,
               updated_at: new Date().toISOString(),

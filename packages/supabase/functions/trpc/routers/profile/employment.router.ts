@@ -17,15 +17,16 @@ export const profileEmploymentRouter = t.router({
   getEmployment: protectedProcedure.query(async ({ ctx }) => {
     const { supabase, user } = ctx;
 
-    // Get employment data from user_private table
+    // Get employment data from private.profile table
     const { data: employmentData, error: employmentError } = await supabase
-      .from("user_private")
+      .schema("private")
+      .from("profile")
       .select(`
         preferred_work_locations,
-        willing_to_travel,
+        open_to_travel,
         travel_distance_miles,
         us_resident,
-        residency_countries,
+        authorized_countries,
         us_passport,
         drivers_license_classes,
         military_status,
@@ -44,10 +45,10 @@ export const profileEmploymentRouter = t.router({
 
     return {
       preferred_work_locations: employmentData?.preferred_work_locations || [],
-      willing_to_travel: employmentData?.willing_to_travel || false,
+      open_to_travel: employmentData?.open_to_travel ?? true,
       travel_distance_miles: employmentData?.travel_distance_miles || 25,
       us_resident: employmentData?.us_resident || false,
-      residency_countries: employmentData?.residency_countries || [],
+      authorized_countries: employmentData?.authorized_countries || [],
       us_passport: employmentData?.us_passport || false,
       drivers_license_classes: employmentData?.drivers_license_classes || [],
       military_status: employmentData?.military_status || [],
@@ -58,7 +59,7 @@ export const profileEmploymentRouter = t.router({
 
   /**
    * Update employment profile information
-   * Updates user's employment preferences in user_private table
+   * Updates user's employment preferences in private.profile table
    */
   updateEmployment: protectedProcedure
     .input(profileEmploymentInputSchema)
@@ -75,8 +76,8 @@ export const profileEmploymentRouter = t.router({
         employmentUpdate.preferred_work_locations =
           input.preferred_work_locations;
       }
-      if (input.willing_to_travel !== undefined) {
-        employmentUpdate.willing_to_travel = input.willing_to_travel;
+      if (input.open_to_travel !== undefined) {
+        employmentUpdate.open_to_travel = input.open_to_travel;
       }
       if (input.travel_distance_miles !== undefined) {
         employmentUpdate.travel_distance_miles = input.travel_distance_miles;
@@ -84,8 +85,8 @@ export const profileEmploymentRouter = t.router({
       if (input.us_resident !== undefined) {
         employmentUpdate.us_resident = input.us_resident;
       }
-      if (input.residency_countries !== undefined) {
-        employmentUpdate.residency_countries = input.residency_countries;
+      if (input.authorized_countries !== undefined) {
+        employmentUpdate.authorized_countries = input.authorized_countries;
       }
       if (input.us_passport !== undefined) {
         employmentUpdate.us_passport = input.us_passport;
@@ -104,11 +105,12 @@ export const profileEmploymentRouter = t.router({
         employmentUpdate.hourly_rate = input.hourly_rate;
       }
 
-      // Update user_private table only if there are fields to update
+      // Update private.profile table only if there are fields to update
       if (Object.keys(employmentUpdate).length > 2) {
         // More than just user_id and updated_at
         const { error: employmentError } = await supabase
-          .from("user_private")
+          .schema("private")
+          .from("profile")
           .upsert(employmentUpdate);
 
         if (employmentError) {

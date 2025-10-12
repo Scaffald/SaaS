@@ -96,7 +96,7 @@ This document outlines the comprehensive integration of the **O*NET (Occupationa
 - [ ] Update prerequisites schema with career assessment fields
 - [ ] Create `RiasecQuickAssessment` component (6 simple questions)
 - [ ] Create `OccupationSearch` component for occupation selection
-- [ ] Enhance `PrerequisitesModal` with optional career assessment step
+- [ ] Enhance `Prerequisites` with optional career assessment step
 - [ ] Update `prerequisites.router.ts` to save career data
 - [ ] Add interest-based onboarding flow
 
@@ -392,7 +392,7 @@ New:     Skills (20) + Experience (20) + Certifications (10) + Education (10) +
 ### Component Hierarchy
 
 ```
-PrerequisitesModal
+Prerequisites
 ├── RiasecQuickAssessment
 └── OccupationSearch
 

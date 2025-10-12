@@ -4,6 +4,7 @@ import { authRouter } from "./auth.router.ts";
 import { employersRouter } from "./employers.router.ts";
 import { jobsRouter } from "./jobs.router.ts";
 import { officeRouter } from "./office.router.ts";
+import { onetRouter } from "./onet.router.ts";
 import { prerequisitesRouter } from "./prerequisites.router.ts";
 import { profileRouter } from "./profile/index.ts";
 import { reviewsRouter } from "./reviews.router.ts";
@@ -25,6 +26,7 @@ export const appRouter = t.router({
   userProfile: userProfileRouter,
   reviews: reviewsRouter,
   prerequisites: prerequisitesRouter,
+  onet: onetRouter,
 });
 
 // Export the router type for client-side usage

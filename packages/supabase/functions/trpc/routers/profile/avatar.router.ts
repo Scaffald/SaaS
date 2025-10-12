@@ -49,7 +49,7 @@ export const profileAvatarRouter = t.router({
 
         // Store only the file path, not the full URL
         // Client will construct the full URL using their environment variables
-        const { error: updateError } = await supabase.from("profiles").upsert({
+        const { error: updateError } = await supabase.from("users").upsert({
           id: user.id,
           avatar_path: uniqueFileName, // Store just the file path
           updated_at: new Date().toISOString(),
