@@ -30,7 +30,6 @@ const experienceEntrySchema = z.object({
 const getExperienceOutputSchema = z.array(experienceEntrySchema);
 
 const saveExperienceInputSchema = z.object({
-  total_years_experience: z.number().min(0).max(50).optional().nullable(),
   career_level: z.string().optional().nullable(),
   experience_entries: z.array(experienceEntrySchema),
 });
@@ -77,12 +76,11 @@ export const profileExperienceRouter = t.router({
     }),
 
   /**
-   * Get experience summary from user_private
+   * Get experience summary from private.profile
    */
   getExperienceSummary: protectedProcedure
     .output(
       z.object({
-        total_years_experience: z.number().nullable(),
         career_level: z.string().nullable(),
       }),
     )
@@ -90,8 +88,9 @@ export const profileExperienceRouter = t.router({
       const { supabase, user } = ctx;
 
       const { data, error } = await supabase
-        .from("user_private")
-        .select("total_years_experience, career_level")
+        .schema("private")
+        .from("profile")
+        .select("career_level")
         .eq("user_id", user.id)
         .single();
 
@@ -103,7 +102,6 @@ export const profileExperienceRouter = t.router({
       }
 
       return {
-        total_years_experience: data?.total_years_experience || null,
         career_level: data?.career_level || null,
       };
     }),
@@ -118,25 +116,16 @@ export const profileExperienceRouter = t.router({
       const { supabase, user } = ctx;
 
       try {
-        // Update experience summary in user_private if provided
-        if (
-          input.total_years_experience !== undefined ||
-          input.career_level !== undefined
-        ) {
+        // Update experience summary in private.profile if provided
+        if (input.career_level !== undefined) {
           const updateData: Record<string, unknown> = {
             updated_at: new Date().toISOString(),
+            career_level: input.career_level,
           };
 
-          if (input.total_years_experience !== undefined) {
-            updateData.total_years_experience = input.total_years_experience;
-          }
-
-          if (input.career_level !== undefined) {
-            updateData.career_level = input.career_level;
-          }
-
           const { error: summaryError } = await supabase
-            .from("user_private")
+            .schema("private")
+            .from("profile")
             .update(updateData)
             .eq("user_id", user.id);
 

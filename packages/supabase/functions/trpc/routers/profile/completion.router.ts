@@ -13,28 +13,16 @@ export const profileCompletionRouter = t.router({
     const { supabase, user } = ctx;
 
     try {
-      // Get profile data from profiles table (linked to auth.users)
-      const { data: profileData, error: profileError } = await supabase
-        .from("profiles")
-        .select("first_name, last_name")
-        .eq("id", user.id)
-        .single();
-
-      if (profileError && profileError.code !== "PGRST116") {
-        console.error("Profile data error:", profileError);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to fetch profile data: ${profileError.message}`,
-        });
-      }
-
-      // Get user_private data directly (this should work with proper RLS)
+      // Get private.profile data directly (includes first_name, last_name)
       const { data: privateData, error: privateError } = await supabase
-        .from("user_private")
+        .schema("private")
+        .from("profile")
         .select(`
+          first_name,
+          last_name,
           phone,
           address,
-          preferred_work_locations,
+          location,
           availability,
           education_level
         `)
@@ -136,8 +124,8 @@ export const profileCompletionRouter = t.router({
       }
 
       return {
-        first_name: profileData?.first_name || "",
-        last_name: profileData?.last_name || "",
+        first_name: privateData?.first_name || "",
+        last_name: privateData?.last_name || "",
         user_private: privateData,
         users: { industry_id: null }, // Simplified - we don't actually need this for completion
         user_skills: skillsData,

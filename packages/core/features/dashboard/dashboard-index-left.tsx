@@ -1,6 +1,7 @@
 import { YStack, Spinner, Text } from 'tamagui'
 import { ProfileCompletionWidget } from './completion'
 import { PrerequisiteWidget } from '../prerequisites/PrerequisiteWidget'
+import { CareerAssessmentWidget } from '../career-assessment'
 import { useRouter } from 'expo-router'
 import { api } from '@app/core/utils/api'
 
@@ -32,6 +33,11 @@ export function DashboardIndexLeft() {
     return <PrerequisiteWidget />
   }
 
-  // Show ProfileCompletionWidget if prerequisites are complete
-  return <ProfileCompletionWidget onNavigate={handleNavigate} />
+  // Show ProfileCompletionWidget and CareerAssessmentWidget if prerequisites are complete
+  return (
+    <YStack gap="$4">
+      <ProfileCompletionWidget onNavigate={handleNavigate} />
+      <CareerAssessmentWidget />
+    </YStack>
+  )
 }

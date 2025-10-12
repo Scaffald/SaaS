@@ -6,7 +6,7 @@ import { supabase } from "./supabase/client";
 // Define the profile type based on the database schema
 type Profile = {
   id: string;
-  name: string | null;
+  display_name: string | null;
   about: string | null;
   avatar_path: string | null;
   created_at: string;
@@ -22,8 +22,8 @@ function useProfile() {
     queryFn: async (): Promise<Profile | null> => {
       if (!user?.id) return null;
       const { data, error } = await supabase
-        .from("profiles")
-        .select("id, name, about, avatar_path, created_at, updated_at")
+        .from("users")
+        .select("id, display_name, about, avatar_path, created_at, updated_at")
         .eq("id", user.id)
         .single();
       if (error) {
@@ -53,7 +53,7 @@ export const useUser = () => {
     }
 
     const params = new URLSearchParams();
-    const name = profile?.name || user?.email || "";
+    const name = profile?.display_name || user?.email || "";
     params.append("name", name);
     params.append("size", "256"); // will be resized again by Expo Image
     return `https://ui-avatars.com/api.jpg?${params.toString()}`;

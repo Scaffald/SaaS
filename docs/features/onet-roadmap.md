@@ -70,7 +70,7 @@ This document maps all GitHub issues to the O*NET integration phases and tracks 
   - Autocomplete search using O*NET data
   - Debounced search (300ms)
   - Display occupation title and code
-- [ ] Update `PrerequisitesModal.tsx`
+- [ ] Update `Prerequisites.tsx`
   - Add optional career assessment step after industry selection
   - "Help me discover my career path" checkbox
   - Conditional rendering of RIASEC questions

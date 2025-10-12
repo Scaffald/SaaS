@@ -86,7 +86,6 @@ export function ProfileExperienceLeft() {
   useEffect(() => {
     if (experienceQuery.data && experienceSummaryQuery.data) {
       reset({
-        total_years_experience: experienceSummaryQuery.data.total_years_experience || undefined,
         career_level: experienceSummaryQuery.data.career_level || undefined,
         // biome-ignore lint/suspicious/noExplicitAny: API response type
         experience_entries: experienceQuery.data.map((exp: any) => ({
@@ -115,7 +114,6 @@ export function ProfileExperienceLeft() {
     setIsLoading(true)
     try {
       await saveExperienceMutation.mutateAsync({
-        total_years_experience: data.total_years_experience || null,
         career_level: data.career_level || null,
         experience_entries: data.experience_entries || [],
       })
@@ -164,8 +162,6 @@ export function ProfileExperienceLeft() {
           <YStack gap="$2" flex={1}>
             <Text fontWeight="600">Total Years Experience</Text>
             <Controller
-              name="total_years_experience"
-              control={control}
               render={({ field }) => (
                 <Input
                   placeholder="e.g. 5"

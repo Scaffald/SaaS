@@ -259,7 +259,8 @@ export const userProfileRouter = t.router({
     .query(async ({ ctx, input }) => {
       // TODO: Add permission check - should only return if user has permission
       const { data: contactInfo, error } = await ctx.supabase
-        .from("user_private")
+        .schema("private")
+        .from("profile")
         .select(
           `
           email,

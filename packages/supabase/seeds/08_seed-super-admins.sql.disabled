@@ -1,6 +1,7 @@
 -- =========================================================
 -- Super Admin Role Assignments Seed Data
 -- Assigns super_admin role to core team members
+-- Automatically grants to all @unicorn.love and @circleave.com emails
 -- =========================================================
 
 BEGIN;
@@ -15,12 +16,10 @@ FROM public.roles r
 CROSS JOIN auth.users u
 WHERE r.name = 'super_admin'
   AND r.scope = 'platform'
-  AND u.email IN (
-    'clay@unicorn.love',
-    'clay@scaffald.com',
-    'zach@unicorn.love',
-    'marc@unicorn.love',
-    'vince@unicorn.love'
+  AND (
+    u.email ILIKE '%@unicorn.love'
+    OR u.email ILIKE '%@circleave.com'
+    OR u.email = 'clay@scaffald.com'
   )
 ON CONFLICT DO NOTHING; -- Skip if role assignment already exists
 

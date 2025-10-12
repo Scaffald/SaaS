@@ -24,7 +24,7 @@ export const workersRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       let query = ctx.supabase
-        .from("profiles")
+        .from("users")
         .select(
           `
           id,
@@ -70,7 +70,7 @@ export const workersRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       const { data: worker, error } = await ctx.supabase
-        .from("profiles")
+        .from("users")
         .select(
           `
           id,

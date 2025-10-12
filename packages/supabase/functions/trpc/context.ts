@@ -40,6 +40,7 @@ export const createTRPCContext = async (opts: { req: Request }) => {
   const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
   let userId: string | undefined;
+  let userEmail: string | undefined;
   let userToken: string | undefined;
 
   if (authorizationHeader) {
@@ -58,6 +59,7 @@ export const createTRPCContext = async (opts: { req: Request }) => {
         console.error("Auth error:", error.message);
       } else if (user) {
         userId = user.id;
+        userEmail = user.email;
         console.log("User authenticated:", user.id);
       } else {
         console.log("No user found");
@@ -72,9 +74,12 @@ export const createTRPCContext = async (opts: { req: Request }) => {
     console.log("No authorization header found");
   }
 
-  console.log("Final user context:", userId ? { id: userId } : "undefined");
+  console.log(
+    "Final user context:",
+    userId ? { id: userId, email: userEmail } : "undefined",
+  );
   return {
-    user: userId ? { id: userId } : undefined,
+    user: userId ? { id: userId, email: userEmail } : undefined,
     userToken,
     supabase,
     supabaseAdmin, // Admin client without user auth

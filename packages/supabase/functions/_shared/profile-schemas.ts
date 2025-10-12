@@ -65,7 +65,7 @@ export const employmentProfileSchema = z.object({
     .optional(),
 
   // Travel preferences
-  willing_to_travel: z.boolean().default(false),
+  open_to_travel: z.boolean().default(true),
   travel_distance_miles: z.number().min(10).max(100).default(25),
 
   // Residency

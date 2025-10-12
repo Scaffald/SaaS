@@ -254,10 +254,29 @@ export const applicationsRouter = router({
         });
       }
 
-      // Query from view that has all relationships pre-joined
+      // Query applications with related data using direct joins
       let query = supabase
-        .from("v_applications_with_user_profiles")
-        .select("*")
+        .from("applications")
+        .select(`
+          *,
+          user:users!applications_user_id_fkey(
+            id,
+            slug,
+            username,
+            about,
+            avatar_path
+          ),
+          job:jobs(
+            id,
+            slug,
+            title,
+            employment_type,
+            remote_option,
+            location,
+            status,
+            organization_id
+          )
+        `)
         .eq("user_id", user.id)
         .order("applied_at", { ascending: false })
         .range(input.offset, input.offset + input.limit - 1);

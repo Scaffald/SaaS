@@ -33,6 +33,7 @@
     "tamagui:upgrade:canary": "pnpm up '*tamagui*'@canary '@tamagui/*'@canary",
     "supa": "pnpm env-local pnpx supabase --workdir packages",
     "supa:seed": "pnpm env-local pnpm --filter @app/supabase seed",
+    "supa:reset": "pnpm supa db reset && pnpm supa seed && pnpm test",
     "supa:seed:prod": "pnpm env-prod pnpm --filter @app/supabase seed",
     "supa:push": "pnpm env-local pnpx supabase --workdir packages db push",
     "supa:push:seed": "pnpm env-local pnpx supabase --workdir packages db push --include-seed",

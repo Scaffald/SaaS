@@ -14,7 +14,7 @@ export const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   }
   return next({
     ctx: {
-      user: { ...ctx.user },
+      user: { id: ctx.user.id, email: ctx.user.email },
       userToken: ctx.userToken,
       supabase: ctx.supabase,
     },

@@ -20,7 +20,7 @@ export const officeRouter = t.router({
    */
   listUsers: superAdminProcedure.query(async ({ ctx }) => {
     const { data, error, count } = await ctx.supabaseAdmin
-      .from("profiles")
+      .from("users")
       .select(
         "id, first_name, last_name, avatar_path, created_at, updated_at",
         {
@@ -48,7 +48,7 @@ export const officeRouter = t.router({
     .query(async ({ ctx, input }) => {
       // Get profile data
       const { data: profile, error: profileError } = await ctx.supabaseAdmin
-        .from("profiles")
+        .from("users")
         .select("*")
         .eq("id", input.id)
         .single();
@@ -62,7 +62,8 @@ export const officeRouter = t.router({
 
       // Get private data
       const { data: privateData, error: privateError } = await ctx.supabaseAdmin
-        .from("user_private")
+        .schema("private")
+        .from("profile")
         .select("*")
         .eq("user_id", input.id)
         .single();
@@ -95,8 +96,6 @@ export const officeRouter = t.router({
           .optional(),
         privateData: z
           .object({
-            email: z.string().email().optional(),
-            phone_number: z.string().optional(),
             birth_date: z.string().optional(),
             location: z.string().optional(),
             employment_status: z.string().optional(),
@@ -114,7 +113,7 @@ export const officeRouter = t.router({
       // Update profile if data provided
       if (profile) {
         const { error: profileError } = await ctx.supabaseAdmin
-          .from("profiles")
+          .from("users")
           .update(profile)
           .eq("id", id);
 
@@ -129,7 +128,8 @@ export const officeRouter = t.router({
       // Update private data if provided
       if (privateData) {
         const { error: privateError } = await ctx.supabaseAdmin
-          .from("user_private")
+          .schema("private")
+          .from("profile")
           .update(privateData)
           .eq("user_id", id);
 
@@ -860,12 +860,15 @@ export const officeRouter = t.router({
         input.id,
       );
 
-      // Delete user_private data
-      await supabaseAdmin.from("user_private").delete().eq("user_id", input.id);
+      // Delete private data
+      await supabaseAdmin.schema("private").from("profile").delete().eq(
+        "user_id",
+        input.id,
+      );
 
       // Delete profile
       const { error: profileError } = await supabaseAdmin
-        .from("profiles")
+        .from("users")
         .delete()
         .eq("id", input.id);
 
@@ -1087,8 +1090,8 @@ export const officeRouter = t.router({
     .input(z.object({ userId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { data: profile, error: profileError } = await ctx.supabaseAdmin
-        .from("profiles")
-        .select("first_name, last_name, about, avatar_path, email")
+        .from("users")
+        .select("first_name, last_name, about, avatar_path")
         .eq("id", input.userId)
         .single();
 
@@ -1099,10 +1102,19 @@ export const officeRouter = t.router({
         });
       }
 
+      // Get email from auth.users
+      const { data: authUser, error: authError } = await ctx.supabaseAdmin.auth
+        .admin.getUserById(input.userId);
+
+      if (authError) {
+        console.error("Error fetching auth user:", authError);
+      }
+
       const { data: privateData, error: privateError } = await ctx.supabaseAdmin
-        .from("user_private")
+        .schema("private")
+        .from("profile")
         .select(
-          "phone_number, street_address, city, state, zip_code, country, latitude, longitude",
+          "street_address, city, state, zip_code, country, latitude, longitude",
         )
         .eq("user_id", input.userId)
         .single();
@@ -1116,8 +1128,8 @@ export const officeRouter = t.router({
         last_name: profile.last_name || "",
         about: profile.about || "",
         avatar_path: profile.avatar_path || "",
-        email: profile.email || "",
-        phone: privateData?.phone_number || "",
+        email: authUser?.user?.email || "",
+        phone: authUser?.user?.phone || "",
         address: {
           street: privateData?.street_address || "",
           city: privateData?.city || "",
@@ -1155,7 +1167,7 @@ export const officeRouter = t.router({
 
       if (Object.keys(profileUpdate).length > 0) {
         const { error: profileError } = await ctx.supabaseAdmin
-          .from("profiles")
+          .from("users")
           .update(profileUpdate)
           .eq("id", userId);
 
@@ -1167,9 +1179,8 @@ export const officeRouter = t.router({
         }
       }
 
-      // Update user_private table
+      // Update private table (phone is read-only from auth.users, not updated here)
       const privateUpdate: Record<string, string | number | null> = {};
-      if (data.phone !== undefined) privateUpdate.phone_number = data.phone;
       if (data.address) {
         if (data.address.street !== undefined) {
           privateUpdate.street_address = data.address.street;
@@ -1196,7 +1207,8 @@ export const officeRouter = t.router({
 
       if (Object.keys(privateUpdate).length > 0) {
         const { error: privateError } = await ctx.supabaseAdmin
-          .from("user_private")
+          .schema("private")
+          .from("profile")
           .update(privateUpdate)
           .eq("user_id", userId);
 
@@ -1219,9 +1231,10 @@ export const officeRouter = t.router({
     .input(z.object({ userId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { data, error } = await ctx.supabaseAdmin
-        .from("user_private")
+        .schema("private")
+        .from("profile")
         .select(
-          "preferred_work_locations, willing_to_travel, travel_distance_miles, us_resident, us_passport, drivers_license_classes, military_status, availability, hourly_rate",
+          "preferred_work_locations, open_to_travel, travel_distance_miles, us_resident, us_passport, drivers_license_classes, military_status, availability, hourly_rate",
         )
         .eq("user_id", input.userId)
         .single();
@@ -1235,7 +1248,7 @@ export const officeRouter = t.router({
 
       return {
         preferred_work_locations: data?.preferred_work_locations || [],
-        willing_to_travel: data?.willing_to_travel || false,
+        open_to_travel: data?.open_to_travel ?? true,
         travel_distance_miles: data?.travel_distance_miles || 25,
         us_resident: data?.us_resident || false,
         us_passport: data?.us_passport || false,
@@ -1261,10 +1274,11 @@ export const officeRouter = t.router({
       const { userId, data } = input;
 
       const { error } = await ctx.supabaseAdmin
-        .from("user_private")
+        .schema("private")
+        .from("profile")
         .update({
           preferred_work_locations: data.preferred_work_locations,
-          willing_to_travel: data.willing_to_travel,
+          open_to_travel: data.open_to_travel,
           travel_distance_miles: data.travel_distance_miles,
           us_resident: data.us_resident,
           us_passport: data.us_passport,

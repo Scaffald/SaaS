@@ -275,6 +275,16 @@ export async function seedJobs(limit = 10) {
     .eq("is_active", true);
 
   if (feedsError) {
+    // Table doesn't exist yet - this is expected if jobs feature hasn't been set up
+    if (feedsError.code === "PGRST205") {
+      console.log(
+        "⏭️  Skipping external jobs seeding (external_job_feeds table not found)",
+      );
+      console.log(
+        "   This is expected if the jobs feature hasn't been set up yet.",
+      );
+      return 0;
+    }
     console.error("❌ Error fetching feeds:", feedsError);
     return 0;
   }
@@ -309,9 +319,10 @@ export async function seedJobs(limit = 10) {
         const rawDescription =
           item.match(/<description>([\s\S]*?)<\/description>/)?.[1] || "";
         const pubDate = item.match(/<pubDate>(.*?)<\/pubDate>/)?.[1] || "";
-        
+
         // Extract category and type from RSS feed directly
-        const feedCategory = item.match(/<category>(.*?)<\/category>/)?.[1] || null;
+        const feedCategory = item.match(/<category>(.*?)<\/category>/)?.[1] ||
+          null;
         const feedType = item.match(/<type>(.*?)<\/type>/)?.[1] || null;
         const feedRegion = item.match(/<region>(.*?)<\/region>/)?.[1] || null;
 
@@ -332,7 +343,7 @@ export async function seedJobs(limit = 10) {
           ? company
           : parsedData.company_name;
         parsedData.title = jobTitle;
-        
+
         // Override with RSS feed fields if available
         if (feedCategory) parsedData.job_category = feedCategory;
         if (feedType) parsedData.job_type = feedType;
