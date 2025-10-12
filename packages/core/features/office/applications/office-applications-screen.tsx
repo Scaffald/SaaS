@@ -4,7 +4,7 @@ import { useApplications } from './hooks/useApplications'
 import type { Applications } from './hooks/useApplications'
 import { ApplicationsKanbanBoard } from './components/ApplicationsKanbanBoard'
 import { ApplicationsFilters } from './components/ApplicationsFilters'
-import type { ApplicationStatus } from '../mock-data/ats-mock-data'
+import type { ApplicationStatus, MockApplication } from '../mock-data/ats-mock-data'
 
 export const OfficeApplicationsScreen = () => {
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban')
@@ -32,13 +32,76 @@ export const OfficeApplicationsScreen = () => {
         | undefined) || undefined,
   })
 
+  // Transform real database records to MockApplication format for UI compatibility
+  // Data comes from v_applications_with_user_profiles view with flattened fields
+  const transformedApplications = useMemo(() => {
+    return applications.map((app: Applications[number]): MockApplication => {
+      // Map database status to UI status
+      const statusMap: Record<string, ApplicationStatus> = {
+        pending: 'new',
+        reviewing: 'screen',
+        interview: 'interview',
+        offer: 'offer',
+        hired: 'hired',
+        rejected: 'rejected',
+        withdrawn: 'rejected',
+      }
+
+      return {
+        id: app.id,
+        status: statusMap[app.status] || 'new',
+        appliedAt: app.applied_at,
+        updatedAt: app.updated_at,
+        score: app.application_score || 0,
+        autoRejected: app.auto_rejected || false,
+        screeningAnswers: {
+          currentLocation: app.current_location || '',
+          willingToRelocate: app.willing_to_relocate || false,
+          yearsExperience: app.years_experience || 0,
+          isAuthorizedToWork: app.is_authorized_to_work || false,
+          earliestStartDate: app.earliest_start_date || '',
+        },
+        customAnswers: (app.custom_question_answers || []).map(
+          (qa: { question: string; answer: string }) => ({
+            question: qa.question || '',
+            answer: qa.answer || '',
+          })
+        ),
+        attachments: app.attachments || {},
+        notes: [], // Notes not included in current query
+        messages: [], // Messages not included in current query
+        stageHistory: [], // Stage history not included in current query
+        candidate: {
+          id: app.candidate_id || app.user_id,
+          name: app.candidate_name || 'Unknown',
+          email: '', // Not included in view
+          phone: '', // Not included in view
+          title: app.profile_about ? app.profile_about.substring(0, 50) : 'Applicant',
+          photo: app.profile_avatar_path || '',
+          location: app.current_location || '',
+          yearsExperience: app.years_experience || 0,
+          skills: [], // Not displayed in kanban view
+          certifications: [], // Not displayed in kanban view
+          experience: [], // Not displayed in kanban view
+        },
+        job: {
+          id: app.job_id,
+          title: app.job_title || 'Position',
+          company: '', // Not in current schema
+          location: app.job_location || '',
+          payRange: '', // Not displayed in kanban view
+        },
+      }
+    })
+  }, [applications])
+
   // Filter applications by score (client-side for now)
   const filteredApplications = useMemo(() => {
-    return applications.filter((app: Applications[number]) => {
-      if (app.application_score && app.application_score < filters.minScore) return false
+    return transformedApplications.filter((app: MockApplication) => {
+      if (app.score < filters.minScore) return false
       return true
     })
-  }, [applications, filters.minScore])
+  }, [transformedApplications, filters.minScore])
 
   // Loading state
   if (isLoading) {

@@ -254,9 +254,9 @@ export const applicationsRouter = router({
         });
       }
 
-      // Simplified query - fetch applications only first
+      // Query from view that has all relationships pre-joined
       let query = supabase
-        .from("applications")
+        .from("v_applications_with_user_profiles")
         .select("*")
         .eq("user_id", user.id)
         .order("applied_at", { ascending: false })
