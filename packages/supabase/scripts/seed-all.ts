@@ -147,7 +147,8 @@ async function verifyUniversities() {
   console.log("\n🎓 Verifying Universities Data...");
 
   const { count: universityCount, error: universityError } = await supabase
-    .from("data.universities")
+    .schema("data")
+    .from("universities")
     .select("*", { count: "exact", head: true });
 
   if (universityError) {
@@ -159,7 +160,8 @@ async function verifyUniversities() {
 
   // Check for some universities
   const { data: universities, error: uniError } = await supabase
-    .from("data.universities")
+    .schema("data")
+    .from("universities")
     .select("id, name, country")
     .limit(5);
 
@@ -243,7 +245,8 @@ async function displayStats() {
 
   // Universities stats
   const { count: universityCount } = await supabase
-    .from("data.universities")
+    .schema("data")
+    .from("universities")
     .select("*", { count: "exact", head: true });
 
   console.log(`Total Universities: ${universityCount || 0}`);

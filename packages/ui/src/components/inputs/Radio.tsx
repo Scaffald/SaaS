@@ -137,13 +137,8 @@ export function Radio({
       disabled={disabled}
       size={size}
       onPress={handlePress}
+      aria-label={accessibilityLabel}
       testID={testID}
-      accessibilityLabel={accessibilityLabel}
-      accessibilityRole="radio"
-      accessibilityState={{
-        checked,
-        disabled,
-      }}
       borderWidth={2}
       rounded={50}
       bg="transparent"

@@ -75,7 +75,8 @@ export const profileEducationRouter = t.router({
         (data || []).map(async (edu) => {
           if (edu.university_id) {
             const { data: university } = await supabase
-              .from("data.universities")
+              .schema("data")
+              .from("universities")
               .select("name")
               .eq("id", edu.university_id)
               .single();

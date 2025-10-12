@@ -3,6 +3,7 @@
   "include": [
     "assets",
     "features",
+    "forms",
     "provider",
     "utils",
     "constants",
