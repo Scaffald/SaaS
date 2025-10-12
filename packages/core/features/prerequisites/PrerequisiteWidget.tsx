@@ -325,6 +325,87 @@ export function PrerequisiteWidget() {
               )}
             </YStack>
 
+            <Separator />
+
+            {/* 5. Legal Agreements */}
+            <YStack gap="$3">
+              <Text fontWeight="600">Legal Agreements *</Text>
+
+              {/* Privacy Policy */}
+              <Controller
+                name="accepts_privacy_policy"
+                control={control}
+                render={({ field }) => (
+                  <YStack gap="$2">
+                    <XStack gap="$3" items="center" pressStyle={{ opacity: 0.7 }}>
+                      <CustomCheckbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        size="medium"
+                      />
+                      <Text flex={1} onPress={() => field.onChange(!field.value)}>
+                        I accept the{' '}
+                        <Text
+                          color="$blue10"
+                          textDecorationLine="underline"
+                          onPress={(e) => {
+                            e.stopPropagation()
+                            if (typeof window !== 'undefined') {
+                              window.open('https://scaffald.com/privacy', '_blank')
+                            }
+                          }}
+                        >
+                          Privacy Policy
+                        </Text>
+                      </Text>
+                    </XStack>
+                    {errors.accepts_privacy_policy && (
+                      <Text color="$red10" fontSize="$2">
+                        {errors.accepts_privacy_policy.message}
+                      </Text>
+                    )}
+                  </YStack>
+                )}
+              />
+
+              {/* Terms of Service */}
+              <Controller
+                name="accepts_terms_of_service"
+                control={control}
+                render={({ field }) => (
+                  <YStack gap="$2">
+                    <XStack gap="$3" items="center" pressStyle={{ opacity: 0.7 }}>
+                      <CustomCheckbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        size="medium"
+                      />
+                      <Text flex={1} onPress={() => field.onChange(!field.value)}>
+                        I accept the{' '}
+                        <Text
+                          color="$blue10"
+                          textDecorationLine="underline"
+                          onPress={(e) => {
+                            e.stopPropagation()
+                            if (typeof window !== 'undefined') {
+                              window.open('https://scaffald.com/terms', '_blank')
+                            }
+                          }}
+                        >
+                          Terms of Service
+                        </Text>
+                      </Text>
+                    </XStack>
+                    {errors.accepts_terms_of_service && (
+                      <Text color="$red10" fontSize="$2">
+                        {errors.accepts_terms_of_service.message}
+                      </Text>
+                    )}
+                  </YStack>
+                )}
+              />
+            </YStack>
+
             {/* Submit Button */}
             <Button
               onPress={handleSubmit(onSubmit)}
