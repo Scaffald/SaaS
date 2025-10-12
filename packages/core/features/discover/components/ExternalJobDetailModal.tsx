@@ -1,3 +1,8 @@
+/**
+ * @deprecated This modal component is deprecated in favor of the route-based job detail flow.
+ * Use the router navigation to /dashboard/discover/jobs/[id] instead.
+ * This component is kept for backward compatibility but will be removed in a future version.
+ */
 import { YStack, XStack, Text, Button, Separator, ScrollView, Dialog } from 'tamagui'
 import {
   Building2,

@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { Button, ScrollView, Text, XStack, YStack } from 'tamagui'
-import { AlertCircle, X } from '@tamagui/lucide-icons'
+import { AlertCircle } from '@tamagui/lucide-icons'
 import { ProgressIndicator } from './ProgressIndicator'
 import { ScreeningStep } from './ScreeningStep'
 import { CustomQuestionsStep } from './CustomQuestionsStep'
 import { AttachmentsStep } from './AttachmentsStep'
+import type { Attachments } from './AttachmentsStep'
 import { ReviewStep } from './ReviewStep'
 import { SuccessStep } from './SuccessStep'
 import { useApplicationForm } from '../hooks/useApplicationForm'
-import type { ApplicationStepType } from '@app/schemas'
+import type { ApplicationStepType, AttachmentMetadata } from '@app/schemas'
 import { ApplicationStep } from '@app/schemas'
+import type { CustomQuestion } from './CustomQuestionsStep'
 
 export interface ApplicationWizardProps {
   /**
@@ -76,18 +78,25 @@ export function ApplicationWizard({
     customQuestionAnswers,
     attachments,
     updateScreeningAnswers,
+    updateAllAttachments,
     nextStep,
     previousStep,
     submitApplication,
     isSubmitting,
     submitError,
     completedSteps,
+    isEditMode,
   } = useApplicationForm(jobId)
 
-  // Define application steps
+  // TODO: Fetch actual custom questions for this job
+  const customQuestions: CustomQuestion[] = [] // Replace with actual data fetch
+
+  // Define application steps - only include custom questions if there are any
   const steps: Array<{ id: ApplicationStepType; label: string }> = [
     { id: ApplicationStep.SCREENING, label: 'Screening' },
-    { id: ApplicationStep.CUSTOM_QUESTIONS, label: 'Questions' },
+    ...(customQuestions.length > 0
+      ? [{ id: ApplicationStep.CUSTOM_QUESTIONS, label: 'Questions' }]
+      : []),
     { id: ApplicationStep.ATTACHMENTS, label: 'Documents' },
     { id: ApplicationStep.REVIEW, label: 'Review' },
   ]
@@ -102,15 +111,6 @@ export function ApplicationWizard({
       }
     } catch (err) {
       console.error('Failed to submit application:', err)
-    }
-  }
-
-  // Handle cancel with confirmation
-  const handleCancel = () => {
-    if (completedSteps.length > 0) {
-      setShowCancelConfirm(true)
-    } else {
-      onCancel?.()
     }
   }
 
@@ -144,18 +144,14 @@ export function ApplicationWizard({
         borderBottomColor="$borderColor"
         gap="$3"
       >
-        <XStack justify="space-between" items="center">
-          <YStack gap="$1" flex={1}>
-            <Text fontSize="$6" fontWeight="bold" color="$color12">
-              Apply to {jobTitle}
-            </Text>
-            <Text fontSize="$3" color="$color11">
-              {organizationName}
-            </Text>
-          </YStack>
-
-          <Button size="$3" circular variant="outlined" icon={X} onPress={handleCancel} />
-        </XStack>
+        <YStack gap="$1">
+          <Text fontSize="$6" fontWeight="bold" color="$color12">
+            {isEditMode ? 'Update Application' : 'Apply'} to {jobTitle}
+          </Text>
+          <Text fontSize="$3" color="$color11">
+            {organizationName}
+          </Text>
+        </YStack>
 
         {/* Progress Indicator */}
         <ProgressIndicator
@@ -184,13 +180,20 @@ export function ApplicationWizard({
             <ScreeningStep
               answers={screeningAnswers}
               onAnswersChange={updateScreeningAnswers}
-              onContinue={() => nextStep('custom_questions')}
+              onContinue={() => {
+                // Skip custom questions if there are none
+                if (customQuestions.length === 0) {
+                  nextStep('attachments')
+                } else {
+                  nextStep('custom_questions')
+                }
+              }}
             />
           )}
 
-          {currentStep === 'custom_questions' && (
+          {currentStep === 'custom_questions' && customQuestions.length > 0 && (
             <CustomQuestionsStep
-              questions={[]}
+              questions={customQuestions}
               answers={customQuestionAnswers}
               onAnswersChange={(answers) => {
                 // TODO: Implement updateCustomQuestionAnswers in useApplicationForm
@@ -204,10 +207,15 @@ export function ApplicationWizard({
 
           {currentStep === 'attachments' && (
             <AttachmentsStep
-              attachments={attachments}
+              attachments={attachments as Attachments}
               onAttachmentsChange={(newAttachments) => {
-                // TODO: Implement updateAttachments in useApplicationForm
-                console.log('Attachments updated:', newAttachments)
+                // Convert Attachments type to Record<string, AttachmentMetadata>
+                const attachmentsRecord: Record<string, AttachmentMetadata> = {}
+                if (newAttachments.resume) attachmentsRecord.resume = newAttachments.resume
+                if (newAttachments.cover_letter)
+                  attachmentsRecord.cover_letter = newAttachments.cover_letter
+                if (newAttachments.portfolio) attachmentsRecord.portfolio = newAttachments.portfolio
+                updateAllAttachments(attachmentsRecord)
               }}
               onPrevious={() => previousStep('custom_questions')}
               onContinue={() => nextStep('review')}
@@ -227,6 +235,7 @@ export function ApplicationWizard({
               }}
               onSubmit={handleSubmit}
               isSubmitting={isSubmitting}
+              isEditMode={isEditMode}
             />
           )}
         </YStack>

@@ -32,6 +32,11 @@ export interface ReviewStepProps {
    * Whether the application is being submitted
    */
   isSubmitting?: boolean
+
+  /**
+   * Whether this is editing an existing application
+   */
+  isEditMode?: boolean
 }
 
 /**
@@ -51,6 +56,7 @@ export function ReviewStep({
   onEdit,
   onSubmit,
   isSubmitting = false,
+  isEditMode = false,
 }: ReviewStepProps) {
   return (
     <YStack gap="$6" width="100%" maxW={800} p="$4">
@@ -223,7 +229,13 @@ export function ReviewStep({
         disabled={isSubmitting}
         icon={isSubmitting ? undefined : Check}
       >
-        {isSubmitting ? 'Submitting Application...' : 'Submit Application'}
+        {isSubmitting
+          ? isEditMode
+            ? 'Updating Application...'
+            : 'Submitting Application...'
+          : isEditMode
+            ? 'Update Application'
+            : 'Submit Application'}
       </Button>
     </YStack>
   )

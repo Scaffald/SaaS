@@ -509,6 +509,126 @@ export const jobsRouter = t.router({
     }),
 
   /**
+   * Get user's application for a specific job
+   * Returns the application if it exists
+   */
+  getMyApplicationForJob: protectedProcedure
+    .input(z.object({ job_id: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      if (!user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Must be logged in",
+        });
+      }
+
+      const { data: application, error } = await supabase
+        .from("applications")
+        .select("*")
+        .eq("job_id", input.job_id)
+        .eq("user_id", user.id)
+        .single();
+
+      if (error && error.code !== "PGRST116") {
+        // PGRST116 is "not found" - that's ok, just means no application
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch application: ${error.message}`,
+        });
+      }
+
+      return { application: application || null };
+    }),
+
+  /**
+   * Update an existing application
+   * Users can update their own applications
+   */
+  updateApplication: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        current_location: z.string().optional(),
+        willing_to_relocate: z.boolean().optional(),
+        years_experience: z.number().optional(),
+        is_authorized_to_work: z.boolean().optional(),
+        earliest_start_date: z.string().optional(),
+        cover_letter: z.string().optional(),
+        resume_path: z.string().optional(),
+        custom_question_answers: z.array(z.any()).optional(),
+        attachments: z.record(z.any()).optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      if (!user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Must be logged in",
+        });
+      }
+
+      // Verify ownership
+      const { data: application, error: fetchError } = await supabase
+        .from("applications")
+        .select("user_id, job_id, status")
+        .eq("id", input.id)
+        .single();
+
+      if (fetchError || !application) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Application not found",
+        });
+      }
+
+      if (application.user_id !== user.id) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Not authorized to update this application",
+        });
+      }
+
+      // Check if job is still open
+      const { data: job } = await supabase
+        .from("jobs")
+        .select("status")
+        .eq("id", application.job_id)
+        .single();
+
+      if (job && job.status !== "open") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "This job is no longer accepting applications",
+        });
+      }
+
+      // Update application
+      const { id, ...updateData } = input;
+      const { data: updated, error: updateError } = await supabase
+        .from("applications")
+        .update({
+          ...updateData,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", input.id)
+        .select()
+        .single();
+
+      if (updateError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to update application: ${updateError.message}`,
+        });
+      }
+
+      return { application: updated };
+    }),
+
+  /**
    * Withdraw application
    * Users can withdraw their own applications
    */
