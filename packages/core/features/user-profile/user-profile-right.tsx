@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { YStack, Dialog, Sheet } from 'tamagui'
-import { Platform } from 'react-native'
+import { YStack } from 'tamagui'
+import { ResponsiveModal } from '@app/ui'
 import { DashboardWidget } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useUser } from '@app/core/utils/useUser'
@@ -49,63 +49,20 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
         </DashboardWidget>
       </YStack>
 
-      {/* Review Modal - Dialog for web, Sheet for mobile */}
-      {Platform.OS === 'web' ? (
-        <Dialog open={showReviewModal} onOpenChange={setShowReviewModal}>
-          <Dialog.Portal>
-            <Dialog.Overlay
-              key="overlay"
-              animation="quick"
-              opacity={0.5}
-              enterStyle={{ opacity: 0 }}
-              exitStyle={{ opacity: 0 }}
-            />
-            <Dialog.Content
-              bordered
-              elevate
-              key="content"
-              animateOnly={['transform', 'opacity']}
-              animation={[
-                'quick',
-                {
-                  opacity: {
-                    overshootClamping: true,
-                  },
-                },
-              ]}
-              enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
-              exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
-              width={900}
-            >
-              <ReviewWizard
-                subjectId={userId}
-                subjectName={profile?.name || 'this user'}
-                onCancel={handleCloseReview}
-                onComplete={handleReviewComplete}
-              />
-            </Dialog.Content>
-          </Dialog.Portal>
-        </Dialog>
-      ) : (
-        <Sheet
-          modal
-          open={showReviewModal}
-          onOpenChange={setShowReviewModal}
-          snapPoints={[90]}
-          dismissOnSnapToBottom
-        >
-          <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
-          <Sheet.Handle />
-          <Sheet.Frame p="$4" gap="$4">
-            <ReviewWizard
-              subjectId={userId}
-              subjectName={profile?.name || 'this user'}
-              onCancel={handleCloseReview}
-              onComplete={handleReviewComplete}
-            />
-          </Sheet.Frame>
-        </Sheet>
-      )}
+      {/* Review Modal */}
+      <ResponsiveModal
+        open={showReviewModal}
+        onOpenChange={setShowReviewModal}
+        title={`Review ${profile?.name || 'User'}`}
+        size="large"
+      >
+        <ReviewWizard
+          subjectId={userId}
+          subjectName={profile?.name || 'this user'}
+          onCancel={handleCloseReview}
+          onComplete={handleReviewComplete}
+        />
+      </ResponsiveModal>
     </>
   )
 }

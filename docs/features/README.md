@@ -4,6 +4,25 @@ This directory contains detailed documentation for Scaffald's major features and
 
 ## Current Features
 
+### Office Administration (Super Admin)
+- **Status**: ✅ Implemented
+- **Documentation**: 
+  - [Office Organizations CRUD](../office-organizations-crud.md) - Organization management
+  - [Office CRUD Standards](../office-crud-standards.md) - Standards and patterns
+- **Description**: Super admin interface for managing platform resources
+- **Key Features**:
+  - **Organizations Management**: Create, update, delete organizations with industry classification
+  - **Jobs Management**: Admin interface for job postings
+  - **Users Management**: User administration and role management
+  - **Universities Management**: University catalog with import and CRUD
+  - **Applications Management**: View and manage job applications across organizations
+- **Components**:
+  - Unified OfficePageLayout with consistent styling
+  - Reusable form components with Zod validation
+  - Standardized list/table patterns with pagination
+  - tRPC endpoints with proper RLS and service role access
+- **Routes**: `/office/*` - Only accessible to super admins
+
 ### Profile Completion System
 - **Status**: ✅ Implemented
 - **Description**: Dashboard widget that tracks profile completion across different sections (general, employment, education, skills, certifications, experience)
@@ -17,34 +36,56 @@ This directory contains detailed documentation for Scaffald's major features and
   - Clean, left-aligned UI design
   - Responsive across all platforms
 
-### CSI MasterFormat Integration
+### Multi-Taxonomy Skills System
 - **Status**: ✅ Implemented
-- **Documentation**: [csi-seed.md](./csi-seed.md)
-- **Description**: Standardized construction industry skills taxonomy based on CSI MasterFormat
+- **Description**: Comprehensive skills management system with multiple industry taxonomies
 - **Key Features**:
-  - Hierarchical skills structure with CSI codes
-  - Automated seeding from Excel files
-  - Industry-specific skill organization
-  - Database schema with CSI-specific fields
-- **Implementation**: Complete with seeding script and database schema
+  - **CSI MasterFormat**: Construction industry skills with CSI codes
+  - **O*NET Integration**: Occupational skills and requirements database
+  - **Industry-based filtering**: Skills filtered by selected industries
+  - **Multi-taxonomy search**: Search across CSI, O*NET, and custom skills
+  - **Polymorphic associations**: Skills linked to profiles, jobs, organizations
+  - **Proficiency levels**: Support for skill proficiency tracking
+- **Database**: Dedicated `data` schema for taxonomies, migrations for O*NET import
+- **Components**: `ProfileSkillsLeft.tsx` - Two-column inline pattern with search
+
+### Address & Location System
+- **Status**: ✅ Implemented
+- **Description**: Comprehensive address autocomplete and location management system
+- **Key Features**:
+  - **Dual Provider Support**: Mapbox and Google Places APIs
+  - **Address Autocomplete**: Real-time address suggestions with debouncing
+  - **Location List Input**: Multi-location management component
+  - **Geocoding**: Convert addresses to coordinates and vice versa
+  - **Organization Locations**: JSONB-based location storage for organizations
+  - **Infinite Loop Prevention**: Stable rendering with proper effect dependencies
+- **Components**:
+  - `AddressAutocomplete.tsx` - Main autocomplete component
+  - `LocationListInput.tsx` - Multi-location list management
+  - `OrganizationLocationsInput.tsx` - Organization-specific location input
+  - `useAddressAutocomplete.ts` - Hook for autocomplete logic
+  - `useGeocodingProvider.ts` - Provider abstraction layer
+- **Database**: Migration 093 adds `locations` JSONB column to organizations
 
 ### News Feed System
 - **Status**: ✅ Implemented
 - **Description**: RSS-based news feed system for industry-specific content
 - **Key Features**:
-  - Multiple RSS feed support
+  - Multiple RSS feed support (ENR and other construction industry feeds)
   - Industry-specific content filtering
   - Real-time feed updates
   - Cross-platform news widgets
+  - CORS proxy for feed fetching
 - **Components**: 
   - RSS parser (`packages/core/features/news/utils/rss-parser.ts`)
   - News hooks (`packages/core/features/news/hooks/useNewsFeed.tsx`)
-  - News widgets (`packages/core/features/news/`)
+  - News widgets and cards (`packages/core/features/news/`)
 
 ### Job Management & ATS System
-- **Status**: 🚧 Phases 1-3 Complete (40% Overall) - **UI-First Approach for Phase 4**
+- **Status**: 🚧 Phase 4A Complete, Phase 4B In Progress (72% Overall)
 - **Documentation**: 
-  - **[ATS Implementation Revised](./ats-implementation-revised.md)** - 🎨 **START HERE: UI-First approach with mock data**
+  - **[ATS Phase 4A Summary](./ATS-PHASE-4A-SUMMARY.md)** - 🎉 **Latest completion summary**
+  - **[ATS Implementation Revised](./ats-implementation-revised.md)** - 🎨 UI-First approach with mock data
   - [ATS Summary](./ATS-SUMMARY.md) - Quick reference and status
   - [Application System Implementation Plan](./application-system-implementation-plan.md) - Original bottom-up plan
   - [Application System Progress](./application-system-progress.md) - Progress tracking
@@ -56,16 +97,19 @@ This directory contains detailed documentation for Scaffald's major features and
   - ✅ Phase 1: Database Schema & Storage (100%)
   - ✅ Phase 2: Backend API & Validation (100%)
   - ✅ Phase 3: Candidate Application Flow (100%)
-  - 🚧 Phase 4: Admin/Recruiter Interface (0% - NEXT)
+  - ✅ Phase 4A: Core Recruiter UI (100%)
+  - 🚧 Phase 4B: Backend Integration (In Progress)
 - **Key Features**:
   - Job postings with skills requirements
   - Multi-step application wizard
   - File upload system (resume, cover letter, portfolio)
   - Auto-screening and scoring
   - Application tracking and status management
+  - Kanban board for application pipeline
+  - Candidate detail modal with profile, notes, messages
   - Organization and team-based job management
   - Geographic and remote work support
-- **Database**: Migrations 075-078 for enhanced ATS features
+- **Database**: Migrations 075-078, 092-093 for enhanced ATS features
 
 ## Planned Features
 
