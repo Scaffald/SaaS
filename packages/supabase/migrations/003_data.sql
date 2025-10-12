@@ -38,13 +38,6 @@ CREATE TABLE IF NOT EXISTS onet.content_model_reference (
   description TEXT NOT NULL,
   PRIMARY KEY (element_id));
 
-CREATE TABLE IF NOT EXISTS onet.scales_reference (
-  scale_id VARCHAR(3) NOT NULL,
-  scale_name VARCHAR(50) NOT NULL,
-  minimum DECIMAL(1,0) NOT NULL,
-  maximum DECIMAL(3,0) NOT NULL,
-  PRIMARY KEY (scale_id));
-
 CREATE TABLE IF NOT EXISTS onet.occupation_data (
   onetsoc_code CHAR(10) NOT NULL,
   title VARCHAR(150) NOT NULL,

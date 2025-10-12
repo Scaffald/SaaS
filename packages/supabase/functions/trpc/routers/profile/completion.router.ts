@@ -14,13 +14,13 @@ export const profileCompletionRouter = t.router({
 
     try {
       // Get private.profile data directly (includes first_name, last_name)
+      // Note: phone is stored in auth.users, not in private.profile
       const { data: privateData, error: privateError } = await supabase
         .schema("private")
         .from("profile")
         .select(`
           first_name,
           last_name,
-          phone,
           address,
           location,
           availability,
