@@ -29,7 +29,8 @@ export const officeUniversitiesRouter = t.router({
       const { page, pageSize, search, country, sortBy, sortOrder } = input;
 
       let query = supabase
-        .from("data.universities")
+        .schema("data")
+        .from("universities")
         .select("*", { count: "exact" })
         .eq("is_active", true);
 
@@ -77,7 +78,8 @@ export const officeUniversitiesRouter = t.router({
       const { supabase } = ctx;
 
       const { data, error } = await supabase
-        .from("data.universities")
+        .schema("data")
+        .from("universities")
         .select("*")
         .eq("id", input.id)
         .single();
@@ -134,7 +136,8 @@ export const officeUniversitiesRouter = t.router({
     const { supabase } = ctx;
 
     const { data, error } = await supabase
-      .from("data.universities")
+      .schema("data")
+      .from("universities")
       .select("country, alpha_two_code")
       .eq("is_active", true);
 
@@ -193,7 +196,8 @@ export const officeUniversitiesRouter = t.router({
       try {
         // Check if slug already exists
         const { data: existing } = await supabase
-          .from("data.universities")
+          .schema("data")
+          .from("universities")
           .select("id")
           .eq("slug", input.slug)
           .single();
@@ -206,7 +210,8 @@ export const officeUniversitiesRouter = t.router({
         }
 
         const { data, error } = await supabase
-          .from("data.universities")
+          .schema("data")
+          .from("universities")
           .insert({
             name: input.name,
             slug: input.slug,
@@ -270,7 +275,8 @@ export const officeUniversitiesRouter = t.router({
         // Check if slug is being changed to one that already exists
         if (updateData.slug) {
           const { data: existing } = await supabase
-            .from("data.universities")
+            .schema("data")
+            .from("universities")
             .select("id")
             .eq("slug", updateData.slug)
             .neq("id", id)
@@ -285,7 +291,8 @@ export const officeUniversitiesRouter = t.router({
         }
 
         const { data, error } = await supabase
-          .from("data.universities")
+          .schema("data")
+          .from("universities")
           .update({
             name: updateData.name,
             slug: updateData.slug,
@@ -349,7 +356,8 @@ export const officeUniversitiesRouter = t.router({
 
         // Soft delete by setting is_active to false
         const { error } = await supabase
-          .from("data.universities")
+          .schema("data")
+          .from("universities")
           .update({
             is_active: false,
             updated_at: new Date().toISOString(),
@@ -387,13 +395,15 @@ export const officeUniversitiesRouter = t.router({
 
     // Get total count
     const { count: totalCount } = await supabase
-      .from("data.universities")
+      .schema("data")
+      .from("universities")
       .select("*", { count: "exact", head: true })
       .eq("is_active", true);
 
     // Get country count
     const { data: countries } = await supabase
-      .from("data.universities")
+      .schema("data")
+      .from("universities")
       .select("country")
       .eq("is_active", true);
 

@@ -271,14 +271,14 @@ export function AddressAutocomplete({
           rounded="$4"
           p={0}
           maxH={300}
-          minW="$20"
+          width="100%"
           elevate
           borderWidth={1}
           borderColor="$borderColor"
           bg="$background"
           // Mobile-optimized sizing
           $sm={{
-            minW: '90%',
+            width: '90%',
             maxW: '95%',
             maxH: 250,
           }}

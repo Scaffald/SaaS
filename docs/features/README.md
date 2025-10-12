@@ -113,6 +113,29 @@ This directory contains detailed documentation for Scaffald's major features and
 
 ## Planned Features
 
+### O*NET Career Intelligence Integration
+- **Status**: 📋 Planning Complete, Ready for Implementation
+- **Documentation**: 
+  - **[O*NET Integration](./onet-integration.md)** - 📚 Complete feature documentation
+  - **[O*NET Roadmap](./onet-roadmap.md)** - 📋 Implementation roadmap with GitHub issues
+- **Description**: Comprehensive integration of O*NET 30.0 Database for intelligent career guidance, skill recommendations, and enhanced job matching
+- **Key Features**:
+  - **RIASEC Career Assessment**: Scientific interest profiling during onboarding
+  - **Career Recommendations**: AI-powered occupation matching based on user interests
+  - **Skills Auto-Population**: Smart skill suggestions from occupation data
+  - **Career Explorer**: Browse and search 1,000+ occupations with detailed insights
+  - **Skill Gap Analysis**: Identify missing skills for target careers
+  - **Enhanced Job Matching**: Multi-dimensional compatibility scoring (skills, abilities, interests, work values)
+  - **Dashboard Widgets**: Career insights prominently displayed
+  - **Abilities & Knowledge Tracking**: Comprehensive profile beyond just skills
+- **Implementation**: 7-week phased approach across 6 phases
+- **Business Value**:
+  - Guide workers to discover new career paths
+  - Increase profile completion by 30%
+  - Improve job match quality by 25%
+  - Differentiate platform with science-backed guidance
+- **Foundation**: O*NET 30.0 database already imported with 1,016 occupations
+
 ### RSS Job Feeds Integration
 - **Status**: 📋 Planned
 - **Documentation**: [rss-job-feeds.md](./rss-job-feeds.md)

@@ -138,13 +138,8 @@ export function Checkbox({
       disabled={disabled}
       size={size}
       onPress={handlePress}
+      aria-label={accessibilityLabel}
       testID={testID}
-      accessibilityLabel={accessibilityLabel}
-      accessibilityRole="checkbox"
-      accessibilityState={{
-        checked,
-        disabled,
-      }}
       borderWidth={2}
       rounded={size === 'small' ? 2 : size === 'medium' ? 3 : 4}
     >
