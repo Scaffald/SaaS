@@ -43,6 +43,11 @@ export const generateDashboardDrawerItems = (options?: {
         title: ROUTES.OFFICE_UNIVERSITIES.title,
         href: ROUTES.OFFICE_UNIVERSITIES.path,
       },
+      {
+        key: "office-applications",
+        title: ROUTES.OFFICE_APPLICATIONS.title,
+        href: ROUTES.OFFICE_APPLICATIONS.path,
+      },
     ];
 
     items.push({
