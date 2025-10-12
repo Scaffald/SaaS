@@ -47,6 +47,7 @@ export * from './components/Onboarding'
 export { OnboardingControls } from './components/OnboardingControls'
 export { StepContent } from './components/OnboardingStepContent'
 export { NotificationsActionSheet } from './components/NotificationsActionSheet'
+export { ResponsiveModal, type ResponsiveModalProps } from './components/ResponsiveModal'
 
 // Layout components
 export { DashboardLayout } from './components/layouts/DashboardLayout'
@@ -73,3 +74,6 @@ export * from './CardStack'
 // Table components
 export * from './components/table/TableParts'
 export * from './components/table/DataTable'
+
+// Kanban components
+export * from './components/kanban'

@@ -4,9 +4,11 @@
 
 Complete CRUD (Create, Read, Update, Delete) operations for managing organizations in the `/office` context. This feature allows super admins to manage employer/organization profiles.
 
-## Implementation Status: ✅ Complete
+## Implementation Status: ✅ Complete (with Locations Enhancement)
 
-All components and functionality have been implemented following the established patterns from Jobs, Universities, and Applications.
+All components and functionality have been implemented following the established patterns from Jobs, Universities, and Applications. 
+
+**Latest Update (Oct 11, 2025):** Added organization locations feature with multi-location support, infinite loop fixes, and proper data persistence.
 
 ## Files Created/Modified
 
@@ -17,7 +19,8 @@ All components and functionality have been implemented following the established
 
 ### Core Components
 - `packages/core/features/office/office-organizations-list.tsx` - List component with table, search, and actions
-- `packages/core/features/office/components/OrganizationForm.tsx` - Shared form for create/edit
+- `packages/core/features/office/components/OrganizationForm.tsx` - Shared form for create/edit with locations support
+- `packages/core/features/office/components/OrganizationLocationsInput.tsx` - Multi-location input component
 
 ### Schemas
 - `packages/schemas/src/organizations/index.ts` - Zod validation schemas
@@ -35,6 +38,12 @@ All components and functionality have been implemented following the established
 - Updated `packages/core/constants/routes.ts` - Added organization routes
 - Updated `packages/core/features/drawer/config.ts` - Added to Office navigation
 
+### Database
+- **Migration 093:** `packages/supabase/migrations/093_add_organization_locations.sql`
+  - Adds `locations` JSONB column to organizations table
+  - Stores array of location objects with address, coordinates, and metadata
+  - Indexed for performance
+
 ## Features
 
 ### List View
@@ -50,16 +59,23 @@ All components and functionality have been implemented following the established
 - Industry dropdown (optional) - Populated from industries table
 - Logo URL field (optional)
 - Visibility dropdown (public/private)
+- **Locations input (optional)** - Multi-location management
+  - Address autocomplete with Mapbox/Google Places
+  - Add/remove multiple locations
+  - Visual location cards with address display
+  - Geocoded coordinates stored automatically
 - Form validation with Zod schemas
 - Auto-slug generation from organization name
 - Success toast and redirect after creation
 
 ### Edit Form
-- Pre-populated form with existing organization data
+- Pre-populated form with existing organization data including locations
 - Same validation as create form
+- Locations properly loaded from JSONB column
 - Slug uniqueness check (excluding current organization)
 - Success toast and redirect after update
 - Loading states while fetching data
+- useEffect to reset form when initialData changes
 
 ### Delete Operation
 - Confirmation dialog with organization name
@@ -167,6 +183,18 @@ output: {
 - Must be either 'public' or 'private'
 - Defaults to 'public'
 
+### Locations
+- Optional
+- Array of location objects
+- Each location contains:
+  - `address`: Full formatted address string
+  - `latitude`: Number (geocoded)
+  - `longitude`: Number (geocoded)
+  - `place_id`: String (provider-specific ID)
+  - `city`, `state`, `country`: Optional address components
+- Stored as JSONB in database
+- Empty array if no locations provided
+
 ## Security
 
 ### Authorization
@@ -216,10 +244,22 @@ When an organization is deleted, the following related records are automatically
 - Industry dropdown with industries from API
 - Visibility toggle
 - Auto-slug generation
+- **Locations management** with `OrganizationLocationsInput`
 - Form validation with error messages
 - Loading/saving states
 - Success/error toasts
 - Navigation after successful operations
+- `useEffect` to reset form when initialData changes (fixes edit form persistence)
+
+### OrganizationLocationsInput (New Component)
+- Integrates with `LocationListInput` from UI package
+- Mapbox geocoding provider configuration
+- Multi-location management
+- Add/remove locations with visual cards
+- Address autocomplete with debouncing
+- Automatic geocoding to coordinates
+- Stable rendering with `useRef` for IDs (prevents infinite loops)
+- Syncs with React Hook Form via `onChange` callback
 
 ## Navigation
 
@@ -240,14 +280,19 @@ ROUTES.OFFICE_ORGANIZATIONS_EDIT // /office/organizations/:id/edit
 - [ ] List organizations with pagination
 - [ ] Search organizations by name and slug
 - [ ] Create new organization
-  - [ ] With all fields
-  - [ ] With only required fields
+  - [ ] With all fields including locations
+  - [ ] With only required fields (no locations)
+  - [ ] With multiple locations
   - [ ] Slug auto-generation
   - [ ] Slug uniqueness validation
+  - [ ] Locations geocoded properly
 - [ ] Edit existing organization
   - [ ] Update all fields
   - [ ] Update slug (uniqueness check)
   - [ ] Update industry
+  - [ ] Add/remove locations
+  - [ ] Locations persist after save
+  - [ ] Form resets when switching organizations
 - [ ] Delete organization
   - [ ] Confirmation dialog shows
   - [ ] Cascade deletes work correctly
@@ -257,20 +302,55 @@ ROUTES.OFFICE_ORGANIZATIONS_EDIT // /office/organizations/:id/edit
   - [ ] Required fields
   - [ ] URL format for logo_url
   - [ ] Slug format
+  - [ ] Locations data structure
 - [ ] Navigation
   - [ ] Appears in Office drawer
   - [ ] Only visible to super admins
   - [ ] Routing works correctly
+- [ ] Address Autocomplete
+  - [ ] No infinite rendering loops
+  - [ ] Search debouncing works
+  - [ ] Results display properly
+  - [ ] Selection adds location
+  - [ ] Coordinates geocoded correctly
+
+## Recent Updates & Bug Fixes
+
+### Commit 3492343 (Oct 11, 2025) - Address Autocomplete & Locations Fix
+**Problem:** Infinite rendering loops and locations not persisting in edit form
+
+**Solutions:**
+1. **useAddressAutocomplete**: Removed `performSearch` from useEffect deps to prevent infinite re-renders
+2. **AddressAutocomplete**: Fixed value sync effect to only update when not showing results
+3. **useGeocodingProvider**: Used `JSON.stringify` for deep config comparison
+4. **LocationListInput**: Memoized `searchOptions` to prevent unnecessary recreations
+5. **OrganizationLocationsInput**: Used `useRef` instead of `useMemo` for stable location IDs
+6. **tRPC getOrganization**: Returns locations from JSONB column
+7. **tRPC updateOrganization**: Saves locations to JSONB column
+8. **OrganizationForm**: Added `useEffect` to reset form with `initialData` on changes
+
+**Files Changed:**
+- `packages/ui/src/components/address/AddressAutocomplete.tsx`
+- `packages/ui/src/components/address/LocationListInput.tsx`
+- `packages/ui/src/components/address/hooks/useAddressAutocomplete.ts`
+- `packages/ui/src/components/address/hooks/useGeocodingProvider.ts`
+- `packages/core/features/office/components/OrganizationLocationsInput.tsx` (246 lines)
+- `packages/core/features/office/components/OrganizationForm.tsx`
+- `packages/supabase/functions/trpc/routers/office.router.ts`
+- `packages/supabase/migrations/093_add_organization_locations.sql`
 
 ## Future Enhancements
 
 1. **Soft Delete**: Add `deleted_at` column for soft deletes
 2. **Bulk Operations**: Select multiple organizations for batch actions
-3. **Advanced Search**: Filter by industry, visibility, creation date
+3. **Advanced Search**: Filter by industry, visibility, creation date, location
 4. **Image Upload**: Direct logo upload instead of URL
 5. **Organization Details Page**: View-only page with full organization info
 6. **Audit Log**: Track changes to organizations
 7. **Export**: Export organizations list to CSV/Excel
+8. **Location Map View**: Display organization locations on interactive map
+9. **Duplicate Detection**: Warn when creating similar organizations
+10. **Location Validation**: Verify location addresses are valid and geocodable
 
 ## Related Features
 
