@@ -184,4 +184,25 @@ ALTER TABLE private.invites
   ADD CONSTRAINT invites_issuer_user_id_fkey 
   FOREIGN KEY (issuer_user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
+-- =========================================================
+-- PRIVATE SCHEMA - Role Management
+-- =========================================================
+
+-- Role Assignments
+ALTER TABLE private.role_assignments
+  ADD CONSTRAINT role_assignments_role_id_fkey
+  FOREIGN KEY (role_id) REFERENCES private.roles(id) ON DELETE CASCADE;
+
+ALTER TABLE private.role_assignments
+  ADD CONSTRAINT role_assignments_user_id_fkey
+  FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+ALTER TABLE private.role_assignments
+  ADD CONSTRAINT role_assignments_scope_org_id_fkey
+  FOREIGN KEY (scope_org_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+
+ALTER TABLE private.role_assignments
+  ADD CONSTRAINT role_assignments_scope_team_id_fkey
+  FOREIGN KEY (scope_team_id) REFERENCES public.teams(id) ON DELETE CASCADE;
+
 COMMIT;

@@ -85,6 +85,8 @@ CREATE TABLE public.organizations (
   slug CITEXT UNIQUE NOT NULL,
   industry_id UUID,  -- FK to industries(id) in 002_relations.sql
   logo_url TEXT,
+  website TEXT,
+  description TEXT,
   address JSONB,
   geo GEOGRAPHY(POINT, 4326),
   visibility TEXT DEFAULT 'public' CHECK (visibility IN ('public', 'private')),
@@ -343,6 +345,31 @@ CREATE TABLE private.invites (
   expires_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   consumed_at TIMESTAMPTZ
+);
+
+-- Roles (RBAC system)
+CREATE TABLE private.roles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  scope TEXT CHECK (scope IN ('platform', 'organization', 'team')) NOT NULL,
+  name TEXT UNIQUE NOT NULL,
+  description TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Role Assignments
+CREATE TABLE private.role_assignments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  role_id UUID NOT NULL,  -- FK to private.roles in 002_relations.sql
+  user_id UUID NOT NULL,  -- FK to public.users in 002_relations.sql
+  scope_org_id UUID,  -- FK to public.organizations in 002_relations.sql
+  scope_team_id UUID,  -- FK to public.teams in 002_relations.sql
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(role_id, user_id, scope_org_id, scope_team_id),
+  CHECK (
+    (scope_org_id IS NULL AND scope_team_id IS NULL)
+    OR (scope_org_id IS NOT NULL AND scope_team_id IS NULL)
+    OR (scope_org_id IS NULL AND scope_team_id IS NOT NULL)
+  )
 );
 
 COMMIT;

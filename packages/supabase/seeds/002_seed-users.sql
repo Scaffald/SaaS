@@ -114,15 +114,15 @@ FROM (VALUES
 ) AS users(id, email, name, first_name, last_name, phone, location)
 ON CONFLICT (id) DO NOTHING;
 
--- Insert super_admin role assignments for core team members
--- This will only insert if the user exists and doesn't already have the role
-INSERT INTO public.role_assignments (role_id, user_id)
+-- Assign 'office' role to core team members
+-- (They already have 'worker' role from trigger)
+INSERT INTO private.role_assignments (role_id, user_id)
 SELECT 
   r.id as role_id,
   u.id as user_id
-FROM public.roles r
+FROM private.roles r
 CROSS JOIN auth.users u
-WHERE r.name = 'super_admin'
+WHERE r.name = 'office'
   AND r.scope = 'platform'
   AND (
     u.email ILIKE '%@unicorn.love'
