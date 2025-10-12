@@ -3,7 +3,6 @@
  * User onboarding prerequisites widget and configuration
  */
 
-export { PrerequisitesModal } from "./prerequisites-modal";
 export { PrerequisiteWidget } from "./PrerequisiteWidget";
 export {
   prerequisitesDefaults,

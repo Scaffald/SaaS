@@ -20,6 +20,8 @@ const prerequisitesInputSchema = z.object({
   }),
   user_types: z.array(z.enum(["worker", "employer", "customer"])).min(1),
   industry_id: z.string().min(1),
+  accepts_privacy_policy: z.boolean(),
+  accepts_terms_of_service: z.boolean(),
 });
 
 /**
@@ -75,10 +77,12 @@ export const prerequisitesRouter = t.router({
       });
     }
 
-    // Get preferences (user_types, prerequisites_completed_at)
+    // Get preferences (user_types, prerequisites_completed_at, legal acceptance)
     const { data: preferences, error: prefsError } = await supabase
       .from("user_preferences")
-      .select("user_types, prerequisites_completed_at")
+      .select(
+        "user_types, prerequisites_completed_at, accepted_privacy_policy_at, accepted_terms_of_service_at",
+      )
       .eq("user_id", user.id)
       .single();
 
@@ -98,8 +102,11 @@ export const prerequisitesRouter = t.router({
     const hasUserTypes = preferences?.user_types &&
       preferences.user_types.length > 0;
     const hasIndustry = userData?.industry_id;
+    const hasAcceptedPrivacy = !!preferences?.accepted_privacy_policy_at;
+    const hasAcceptedTerms = !!preferences?.accepted_terms_of_service_at;
 
-    const isComplete = hasName && hasAddress && hasUserTypes && hasIndustry;
+    const isComplete = hasName && hasAddress && hasUserTypes && hasIndustry &&
+      hasAcceptedPrivacy && hasAcceptedTerms;
 
     return {
       isComplete: !!isComplete,
@@ -107,6 +114,8 @@ export const prerequisitesRouter = t.router({
       hasAddress: !!hasAddress,
       hasUserTypes: !!hasUserTypes,
       hasIndustry: !!hasIndustry,
+      hasAcceptedPrivacy,
+      hasAcceptedTerms,
       completedAt: preferences?.prerequisites_completed_at || null,
       data: {
         first_name: profile?.first_name || "",
@@ -174,13 +183,22 @@ export const prerequisitesRouter = t.router({
         });
       }
 
-      // 4. Update user_preferences table (user_types, prerequisites_completed_at)
+      // 4. Update user_preferences table (user_types, prerequisites_completed_at, legal acceptance)
+      const now = new Date().toISOString();
       const { error: prefsError } = await supabase.from("user_preferences")
         .upsert({
           user_id: user.id,
           user_types: input.user_types,
-          prerequisites_completed_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
+          prerequisites_completed_at: now,
+          accepted_privacy_policy_at: input.accepts_privacy_policy ? now : null,
+          accepted_terms_of_service_at: input.accepts_terms_of_service
+            ? now
+            : null,
+          privacy_policy_version: input.accepts_privacy_policy ? "v1.0" : null,
+          terms_of_service_version: input.accepts_terms_of_service
+            ? "v1.0"
+            : null,
+          updated_at: now,
         });
 
       if (prefsError) {
