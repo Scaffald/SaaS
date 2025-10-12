@@ -79,6 +79,16 @@ test_endpoint \
   "${BASE_URL}/jobs.getFilterOptions"
 
 echo ""
+
+# Test Universities Router
+echo -e "${YELLOW}🎓 Universities Router Tests${NC}"
+echo "----------------------------"
+
+test_endpoint \
+  "searchUniversities" \
+  "${BASE_URL}/office.universities.searchUniversities?batch=1&input=%7B%220%22%3A%7B%22query%22%3A%22harvard%22%2C%22limit%22%3A5%7D%7D"
+
+echo ""
 echo "================================"
 echo -e "Test Results: ${GREEN}${PASSED} passed${NC}, ${RED}${FAILED} failed${NC}"
 echo "================================"

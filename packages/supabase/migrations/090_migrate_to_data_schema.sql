@@ -85,7 +85,7 @@ ALTER TABLE public.job_skills
 -- Drop old function
 DROP FUNCTION IF EXISTS public.search_universities(text, text, int);
 
--- Create new function in data schema
+-- Create new function in data schema using ILIKE for better matching
 CREATE OR REPLACE FUNCTION data.search_universities(
   p_query text,
   p_country text DEFAULT NULL,
@@ -116,12 +116,23 @@ BEGIN
     u.domains,
     u.web_pages,
     u.state_province,
-    similarity(u.name, p_query) as similarity
+    -- Calculate similarity based on position of match
+    CASE 
+      WHEN u.name ILIKE p_query || '%' THEN 1.0  -- Starts with query
+      WHEN u.name ILIKE '%' || p_query || '%' THEN 0.5  -- Contains query
+      ELSE 0.0
+    END::real as similarity
   FROM data.universities u
   WHERE u.is_active = true
     AND (p_country IS NULL OR u.country = p_country)
-    AND u.name % p_query  -- Trigram similarity operator
-  ORDER BY similarity DESC, u.name
+    AND u.name ILIKE '%' || p_query || '%'  -- Use ILIKE for case-insensitive search
+  ORDER BY 
+    -- Prioritize exact start matches, then any match
+    CASE 
+      WHEN u.name ILIKE p_query || '%' THEN 1
+      ELSE 2
+    END,
+    u.name
   LIMIT p_limit;
 END;
 $$;
