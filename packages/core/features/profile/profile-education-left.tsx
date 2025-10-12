@@ -8,19 +8,14 @@ import {
   H4,
   TextArea,
   Select,
-  ScrollView,
   Adapt,
   Sheet,
   useWindowDimensions,
   Spinner,
-  Card,
-  Separator,
 } from 'tamagui'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, X, ChevronDown, GraduationCap, Calendar, Award, MapPin } from '@tamagui/lucide-icons'
-import { ProfileEmptyState } from './components'
-import { formatDateRange } from './utils/date-formatting'
+import { Plus, X, ChevronDown } from '@tamagui/lucide-icons'
 import {
   educationProfileSchema,
   type EducationProfileFormData,
@@ -249,90 +244,89 @@ export function ProfileEducationLeft() {
                 </Button>
               </XStack>
 
-              {/* Institution and Degree */}
-              <XStack gap="$3">
-                <YStack gap="$2" flex={1}>
-                  <Text>Institution *</Text>
-                  <Controller
-                    name={`education_entries.${index}.university_id`}
-                    control={control}
-                    render={({ field: universityField }) => (
-                      <Controller
-                        name={`education_entries.${index}.institution_name`}
-                        control={control}
-                        render={({ field: nameField }) => (
-                          <UniversityAutocomplete
-                            value={nameField.value || ''}
-                            onChange={nameField.onChange}
-                            onUniversitySelect={(university: University) => {
-                              universityField.onChange(university.id)
-                              nameField.onChange(university.name)
-                            }}
-                            onSearch={handleUniversitySearch}
-                            results={searchUniversitiesQuery.data?.universities || []}
-                            loading={searchUniversitiesQuery.isLoading}
-                            searchError={searchUniversitiesQuery.error?.message}
-                            placeholder="Search for institution..."
-                            error={errors.education_entries?.[index]?.university_id?.message}
+              {/* Institution */}
+              <YStack gap="$2">
+                <Text>Institution *</Text>
+                <Controller
+                  name={`education_entries.${index}.university_id`}
+                  control={control}
+                  render={({ field: universityField }) => (
+                    <Controller
+                      name={`education_entries.${index}.institution_name`}
+                      control={control}
+                      render={({ field: nameField }) => (
+                        <UniversityAutocomplete
+                          value={nameField.value || ''}
+                          onChange={nameField.onChange}
+                          onUniversitySelect={(university: University) => {
+                            universityField.onChange(university.id)
+                            nameField.onChange(university.name)
+                          }}
+                          onSearch={handleUniversitySearch}
+                          results={searchUniversitiesQuery.data?.universities || []}
+                          loading={searchUniversitiesQuery.isLoading}
+                          searchError={searchUniversitiesQuery.error?.message}
+                          placeholder="Search for institution..."
+                          error={errors.education_entries?.[index]?.university_id?.message}
+                        />
+                      )}
+                    />
+                  )}
+                />
+              </YStack>
+
+              {/* Degree Type */}
+              <YStack gap="$2">
+                <Text>Degree Type</Text>
+                <Controller
+                  name={`education_entries.${index}.degree_type`}
+                  control={control}
+                  render={({ field }) => (
+                    <Select value={field.value || ''} onValueChange={field.onChange}>
+                      <Select.Trigger iconAfter={ChevronDown}>
+                        <Select.Value placeholder="Select degree type" />
+                      </Select.Trigger>
+
+                      <Adapt when={isMobile} platform="touch">
+                        <Sheet
+                          native
+                          modal
+                          dismissOnSnapToBottom
+                          animationConfig={{
+                            type: 'spring',
+                            damping: 20,
+                            mass: 1.2,
+                            stiffness: 250,
+                          }}
+                        >
+                          <Sheet.Frame>
+                            <Sheet.ScrollView>
+                              <Adapt.Contents />
+                            </Sheet.ScrollView>
+                          </Sheet.Frame>
+                          <Sheet.Overlay
+                            animation="lazy"
+                            enterStyle={{ opacity: 0 }}
+                            exitStyle={{ opacity: 0 }}
                           />
-                        )}
-                      />
-                    )}
-                  />
-                </YStack>
+                        </Sheet>
+                      </Adapt>
 
-                <YStack gap="$2" flex={1}>
-                  <Text>Degree Type</Text>
-                  <Controller
-                    name={`education_entries.${index}.degree_type`}
-                    control={control}
-                    render={({ field }) => (
-                      <Select value={field.value || ''} onValueChange={field.onChange}>
-                        <Select.Trigger iconAfter={ChevronDown}>
-                          <Select.Value placeholder="Select degree type" />
-                        </Select.Trigger>
-
-                        <Adapt when={isMobile} platform="touch">
-                          <Sheet
-                            native
-                            modal
-                            dismissOnSnapToBottom
-                            animationConfig={{
-                              type: 'spring',
-                              damping: 20,
-                              mass: 1.2,
-                              stiffness: 250,
-                            }}
-                          >
-                            <Sheet.Frame>
-                              <Sheet.ScrollView>
-                                <Adapt.Contents />
-                              </Sheet.ScrollView>
-                            </Sheet.Frame>
-                            <Sheet.Overlay
-                              animation="lazy"
-                              enterStyle={{ opacity: 0 }}
-                              exitStyle={{ opacity: 0 }}
-                            />
-                          </Sheet>
-                        </Adapt>
-
-                        <Select.Content>
-                          <Select.ScrollUpButton />
-                          <Select.Viewport>
-                            {DEGREE_TYPE_OPTIONS.map((type) => (
-                              <Select.Item key={type} value={type} index={0}>
-                                <Select.ItemText>{type}</Select.ItemText>
-                              </Select.Item>
-                            ))}
-                          </Select.Viewport>
-                          <Select.ScrollDownButton />
-                        </Select.Content>
-                      </Select>
-                    )}
-                  />
-                </YStack>
-              </XStack>
+                      <Select.Content>
+                        <Select.ScrollUpButton />
+                        <Select.Viewport>
+                          {DEGREE_TYPE_OPTIONS.map((type) => (
+                            <Select.Item key={type} value={type} index={0}>
+                              <Select.ItemText>{type}</Select.ItemText>
+                            </Select.Item>
+                          ))}
+                        </Select.Viewport>
+                        <Select.ScrollDownButton />
+                      </Select.Content>
+                    </Select>
+                  )}
+                />
+              </YStack>
 
               {/* Field of Study */}
               <YStack gap="$2">
@@ -470,116 +464,6 @@ export function ProfileEducationLeft() {
             {isLoading ? 'Saving...' : 'Save Changes'}
           </Button>
         </XStack>
-
-        <Separator />
-
-        {/* Saved Education Display */}
-        <YStack gap="$3">
-          <Text fontWeight="600" fontSize="$5">
-            Saved Education
-          </Text>
-
-          {!educationQuery.data || educationQuery.data.length === 0 ? (
-            <ProfileEmptyState
-              icon={GraduationCap}
-              message="No education history saved yet. Add your first education entry above and click Save Changes."
-            />
-          ) : (
-            <YStack gap="$3">
-              {/* biome-ignore lint/suspicious/noExplicitAny: tRPC types not yet generated */}
-              {educationQuery.data.map((edu: any) => (
-                <Card key={edu.id} bordered size="$4">
-                  <Card.Header gap="$3">
-                    {/* Header */}
-                    <YStack gap="$2">
-                      <XStack justify="space-between" items="flex-start">
-                        <YStack gap="$1" flex={1}>
-                          <H4>{edu.institution_name}</H4>
-                          {edu.degree_type && (
-                            <Text color="$color11" fontSize="$3" fontWeight="600">
-                              {edu.degree_type}
-                              {edu.field_of_study && ` in ${edu.field_of_study}`}
-                            </Text>
-                          )}
-                        </YStack>
-                      </XStack>
-                    </YStack>
-
-                    <Separator />
-
-                    {/* Details */}
-                    <YStack gap="$2">
-                      {/* Dates */}
-                      {(edu.start_date || edu.end_date) && (
-                        <XStack gap="$2" items="center">
-                          <Calendar size={16} color="$color11" />
-                          <Text fontSize="$2" color="$color11">
-                            {formatDateRange(edu.start_date, edu.end_date, edu.is_current)}
-                          </Text>
-                        </XStack>
-                      )}
-
-                      {/* Location */}
-                      {edu.location && (
-                        <XStack gap="$2" items="center">
-                          <MapPin size={16} color="$color11" />
-                          <Text fontSize="$2" color="$color11">
-                            {edu.location}
-                          </Text>
-                        </XStack>
-                      )}
-
-                      {/* GPA and Honors */}
-                      {(edu.gpa || (edu.honors && edu.honors.length > 0)) && (
-                        <XStack gap="$3" flexWrap="wrap">
-                          {edu.gpa && (
-                            <XStack gap="$2" items="center">
-                              <Text fontSize="$2" color="$color11" fontWeight="600">
-                                GPA: {edu.gpa.toFixed(2)}
-                              </Text>
-                            </XStack>
-                          )}
-                          {edu.honors && edu.honors.length > 0 && (
-                            <XStack gap="$2" items="center">
-                              <Award size={16} color="$color11" />
-                              <Text fontSize="$2" color="$color11">
-                                {edu.honors.join(', ')}
-                              </Text>
-                            </XStack>
-                          )}
-                        </XStack>
-                      )}
-
-                      {/* Activities */}
-                      {edu.activities && (
-                        <YStack gap="$1">
-                          <Text fontSize="$2" fontWeight="600" color="$color11">
-                            Activities & Societies:
-                          </Text>
-                          <Text fontSize="$2" color="$color11">
-                            {edu.activities}
-                          </Text>
-                        </YStack>
-                      )}
-
-                      {/* Description */}
-                      {edu.description && (
-                        <YStack gap="$1">
-                          <Text fontSize="$2" fontWeight="600" color="$color11">
-                            Description:
-                          </Text>
-                          <Text fontSize="$3" color="$color11">
-                            {edu.description}
-                          </Text>
-                        </YStack>
-                      )}
-                    </YStack>
-                  </Card.Header>
-                </Card>
-              ))}
-            </YStack>
-          )}
-        </YStack>
       </YStack>
     </DashboardWidget>
   )

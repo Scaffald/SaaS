@@ -65,7 +65,7 @@ The test suite uses Supabase's **Inbucket** email testing server to test actual 
 ### Token Caching
 
 Tokens are cached to avoid repeated authentication:
-- **Location**: `packages/supabase/functions/trpc/__tests__/fixtures/tokens.json`
+- **Location**: `packages/supabase/functions/trpc/__tests__/tokens.json`
 - **Validity**: 1 hour (configurable in `config.toml`)
 - **Automatic refresh**: Re-run auth tests if tokens expire
 

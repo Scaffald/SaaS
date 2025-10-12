@@ -108,11 +108,14 @@ export const officeUniversitiesRouter = t.router({
       const { supabase } = ctx;
 
       // Use the search_universities function for trigram similarity
-      const { data, error } = await supabase.rpc("data.search_universities", {
-        p_query: input.query,
-        p_country: input.country || null,
-        p_limit: input.limit,
-      });
+      // Note: Must call from data schema since function is defined there
+      const { data, error } = await supabase
+        .schema("data")
+        .rpc("search_universities", {
+          p_query: input.query,
+          p_country: input.country || null,
+          p_limit: input.limit,
+        });
 
       if (error) {
         throw new TRPCError({
