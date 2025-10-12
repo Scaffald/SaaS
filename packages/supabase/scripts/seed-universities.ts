@@ -154,7 +154,7 @@ async function upsertUniversities(
     });
 
     const sql = `
-      INSERT INTO universities (
+      INSERT INTO data.universities (
         id, 
         name, 
         slug, 
