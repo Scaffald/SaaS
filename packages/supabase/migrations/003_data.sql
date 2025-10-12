@@ -820,6 +820,16 @@ GRANT ALL ON ALL TABLES IN SCHEMA data TO service_role;
 GRANT USAGE ON SCHEMA data TO authenticated, anon;
 GRANT SELECT ON ALL TABLES IN SCHEMA data TO authenticated, anon;
 
+-- =========================================================
+-- SECTION 5: DEFAULT ROLES
+-- =========================================================
+
+-- Insert default platform roles
+INSERT INTO private.roles (scope, name, description) VALUES
+  ('platform', 'worker', 'Default role for all platform users'),
+  ('platform', 'office', 'Office staff with administrative access')
+ON CONFLICT (name) DO NOTHING;
+
 COMMIT;
 
 -- =========================================================

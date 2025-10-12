@@ -88,6 +88,67 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- =========================================================
+-- SECTION 2B: ROLE MANAGEMENT FUNCTIONS
+-- =========================================================
+
+-- Check if user has a specific role
+CREATE OR REPLACE FUNCTION public.user_has_role(
+  p_user_id UUID,
+  p_role_name TEXT,
+  p_org_id UUID DEFAULT NULL
+) RETURNS BOOLEAN
+LANGUAGE sql STABLE
+SECURITY DEFINER
+SET search_path = public, private
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM private.role_assignments ra
+    JOIN private.roles r ON r.id = ra.role_id
+    WHERE ra.user_id = p_user_id
+      AND r.name = p_role_name
+      AND (
+        -- Platform scope (no org/team restriction)
+        r.scope = 'platform'
+        -- Or org scope matching the requested org
+        OR (r.scope = 'organization' AND ra.scope_org_id = p_org_id)
+        -- Or team scope
+        OR (r.scope = 'team' AND ra.scope_team_id = p_org_id)
+      )
+  );
+$$;
+
+COMMENT ON FUNCTION public.user_has_role IS 'Check if a user has a specific role, with optional org/team scoping';
+
+-- Auto-assign 'worker' role to new users
+CREATE OR REPLACE FUNCTION private.assign_default_role()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, private
+AS $$
+BEGIN
+  -- Assign the 'worker' role to new users
+  INSERT INTO private.role_assignments (role_id, user_id)
+  SELECT r.id, NEW.id
+  FROM private.roles r
+  WHERE r.name = 'worker'
+  ON CONFLICT DO NOTHING;
+  
+  RETURN NEW;
+END;
+$$;
+
+COMMENT ON FUNCTION private.assign_default_role IS 'Automatically assigns the worker role to new users';
+
+-- Trigger to auto-assign worker role
+DROP TRIGGER IF EXISTS assign_default_role_trigger ON public.users;
+CREATE TRIGGER assign_default_role_trigger
+  AFTER INSERT ON public.users
+  FOR EACH ROW
+  EXECUTE FUNCTION private.assign_default_role();
+
+-- =========================================================
 -- SECTION 3: UPDATED_AT TRIGGERS
 -- =========================================================
 
