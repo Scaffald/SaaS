@@ -50,8 +50,10 @@
     "test:lint": "pnpm lint:fix && pnpm typecheck && pnpm check-deps",
     "test:deps": "pnpm check-deps && pnpm check-circular-deps",
     "test:tamagui": "pnpm tamagui:check",
+    "test:api": "pnpm --filter @app/supabase test:endpoints",
     "test:integration": "pnpm test:deps && pnpm test:lint && pnpm test:tamagui",
     "test:all": "pnpm test:integration && pnpm test:build",
+    "test": "pnpm check && pnpm test:api",
     "test:performance": "cd apps/expo && time pnpm web:build",
     "validate:migration": "pnpm test:all && echo '✅ Migration validation complete'"
   },
