@@ -32,8 +32,7 @@ export function ProfileSkillsLeft() {
       // Refetch skills to update the right column
       userSkillsQuery.refetch()
     },
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.show('Error', {
         message: error.message || 'Failed to add skill',
       })
@@ -46,8 +45,7 @@ export function ProfileSkillsLeft() {
         message: 'Your primary industry has been updated',
       })
     },
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.show('Error', {
         message: error.message || 'Failed to update industry',
       })

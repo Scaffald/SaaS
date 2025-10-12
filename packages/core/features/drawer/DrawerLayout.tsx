@@ -17,13 +17,21 @@ interface DrawerLayoutProps {
    * Child Drawer.Screen components
    */
   children: ReactNode
+  /**
+   * Whether to hide the drawer and header (e.g., during prerequisites completion)
+   */
+  hideDrawer?: boolean
 }
 
 /**
  * Shared drawer layout component used by both dashboard and office sections
  * Provides consistent drawer behavior, styling, and responsive design
  */
-export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProps) {
+export function DrawerLayout({
+  protectionComponent,
+  children,
+  hideDrawer = false,
+}: DrawerLayoutProps) {
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const { width } = useWindowDimensions()
   const theme = useTheme()
@@ -35,51 +43,53 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
 
       <Drawer
         screenOptions={({ navigation }) => ({
-          headerShown: true,
-          headerStyle: {
-            backgroundColor: theme.color2.val,
-          },
-          headerLeftContainerStyle: {},
-          headerTitleStyle: {
-            color: theme.color12.val,
-            marginLeft: isSmall ? 0 : 35,
-          },
-          headerLeft: () => (
-            <Button
-              borderStyle="unset"
-              borderWidth={0}
-              bg="transparent"
-              display={isSmall ? 'flex' : 'none'}
-              ml="$5"
-              px="$4"
-              height={30}
-              onPress={() => {
-                navigation.dispatch(DrawerActions.toggleDrawer())
-              }}
-            >
-              <Menu size={24} />
-            </Button>
-          ),
-          headerRight: () => (
-            <Button
-              borderStyle="unset"
-              borderWidth={0}
-              mr="$5"
-              bg="transparent"
-              height={30}
-              onPress={() => setNotificationsOpen(true)}
-            >
-              <Bell size={20} />
-            </Button>
-          ),
-          drawerType: isSmall ? 'front' : 'permanent',
-          swipeEnabled: isSmall,
-          overlayColor: 'rgba(0, 0, 0, 0.15)',
-          drawerStyle: {
-            width: 300,
-          },
+          headerShown: !hideDrawer,
+          drawerType: hideDrawer ? 'back' : isSmall ? 'front' : 'permanent',
+          swipeEnabled: hideDrawer ? false : isSmall,
+          ...(hideDrawer
+            ? {}
+            : {
+                headerStyle: {
+                  backgroundColor: theme.color2.val,
+                },
+                headerLeftContainerStyle: {},
+                headerTitleStyle: {
+                  color: theme.color12.val,
+                  marginLeft: isSmall ? 0 : 35,
+                },
+                headerLeft: () => (
+                  <Button
+                    borderStyle="unset"
+                    borderWidth={0}
+                    bg="transparent"
+                    display={isSmall ? 'flex' : 'none'}
+                    ml="$5"
+                    px="$4"
+                    height={30}
+                    onPress={() => {
+                      navigation.dispatch(DrawerActions.toggleDrawer())
+                    }}
+                  >
+                    <Menu size={24} />
+                  </Button>
+                ),
+                headerRight: () => (
+                  <Button
+                    borderStyle="unset"
+                    borderWidth={0}
+                    mr="$5"
+                    bg="transparent"
+                    height={30}
+                    onPress={() => setNotificationsOpen(true)}
+                  >
+                    <Bell size={20} />
+                  </Button>
+                ),
+              }),
+          overlayColor: hideDrawer ? 'transparent' : 'rgba(0, 0, 0, 0.15)',
+          drawerStyle: hideDrawer ? { width: 0, display: 'none' } : { width: 300 },
         })}
-        drawerContent={(props) => <DrawerMenu {...props} />}
+        drawerContent={hideDrawer ? () => null : (props) => <DrawerMenu {...props} />}
       >
         {children}
       </Drawer>

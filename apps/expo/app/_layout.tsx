@@ -1,7 +1,6 @@
 import '../tamagui-web.css'
 import type { Session } from '@supabase/supabase-js'
 import { Provider, loadThemePromise } from '@app/core/provider'
-import { PrerequisitesModal } from '@app/core/features/prerequisites'
 import { supabase } from '@app/core/utils/supabase/client'
 import { useFonts } from 'expo-font'
 import { SplashScreen, Stack } from 'expo-router'
@@ -61,7 +60,6 @@ export default function DashboardLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
         <Provider initialSession={initialSession}>
-          <PrerequisitesModal />
           <Stack
             screenOptions={{
               headerShown: false,

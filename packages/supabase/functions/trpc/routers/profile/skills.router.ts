@@ -341,11 +341,11 @@ export const profileSkillsRouter = t.router({
   getSkills: protectedProcedure.query(async ({ ctx }) => {
     const { supabase, user } = ctx;
 
-    // Get user's primary industry from user_private
-    const { data: privateData } = await supabase
-      .from("user_private")
-      .select("primary_industry_id")
-      .eq("user_id", user.id)
+    // Get user's primary industry from users table
+    const { data: userData } = await supabase
+      .from("users")
+      .select("industry_id")
+      .eq("id", user.id)
       .single();
 
     // Get user's explicit skills
@@ -384,7 +384,7 @@ export const profileSkillsRouter = t.router({
 
     return {
       skills,
-      primary_industry_id: privateData?.primary_industry_id || null,
+      primary_industry_id: userData?.industry_id || null,
       secondary_industries: [],
       skill_categories: [],
     };
@@ -398,14 +398,14 @@ export const profileSkillsRouter = t.router({
       const { supabase, user } = ctx;
 
       // Update primary industry if provided
-      if (input.primary_industry_id !== undefined) {
+      if (input.industry_id !== undefined) {
         const { error: industryError } = await supabase
-          .from("user_private")
-          .upsert({
-            user_id: user.id,
-            primary_industry_id: input.primary_industry_id,
+          .from("users")
+          .update({
+            industry_id: input.industry_id,
             updated_at: new Date().toISOString(),
-          });
+          })
+          .eq("id", user.id);
 
         if (industryError) {
           throw new TRPCError({

@@ -182,7 +182,7 @@ export function PrerequisitesModal() {
 
         {/* 2. Address */}
         <YStack gap="$3">
-          <H4>My address:</H4>
+          <Text fontWeight="600">Address:</Text>
           <Text fontSize="$2" color="$color11" mb="$2">
             Search and select your home address
           </Text>
@@ -208,7 +208,7 @@ export function PrerequisitesModal() {
 
         {/* 3. User Types */}
         <YStack gap="$3">
-          <H4>I am a (select all that apply):</H4>
+          <Text fontWeight="600">I am a (select all that apply):</Text>
           <Controller
             name="user_types"
             control={control}
@@ -258,7 +258,6 @@ export function PrerequisitesModal() {
 
         {/* 4. Primary Industry */}
         <YStack gap="$3">
-          <H4>My primary industry is:</H4>
           <Controller
             name="industry_id"
             control={control}

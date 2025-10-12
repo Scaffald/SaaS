@@ -2,12 +2,30 @@ import { useProtectedRoute } from '@app/core/utils/auth/useProtectedRoute'
 import { DrawerLayout } from '@app/core/features/drawer/DrawerLayout'
 import { Drawer } from 'expo-router/drawer'
 import { YStack, Text, Spinner } from 'tamagui'
+import { useRouter } from 'expo-router'
+import { usePathname } from '@app/core/utils/usePathname'
+import { useEffect } from 'react'
+import { api } from '@app/core/utils/api'
 
 export default function Layout() {
   const { isLoading } = useProtectedRoute()
+  const router = useRouter()
+  const pathname = usePathname()
+
+  // Check prerequisites status
+  const { data: statusData, isLoading: isCheckingPrereqs } = api.prerequisites.check.useQuery()
+
+  // Redirect to /dashboard if prerequisites incomplete and not already there
+  useEffect(() => {
+    if (!isCheckingPrereqs && statusData && !statusData.isComplete) {
+      if (pathname !== '/dashboard' && !pathname?.startsWith('/dashboard/index')) {
+        router.replace('/dashboard')
+      }
+    }
+  }, [statusData, isCheckingPrereqs, pathname, router])
 
   // Show loading state BEFORE rendering the drawer
-  if (isLoading) {
+  if (isLoading || isCheckingPrereqs) {
     return (
       <YStack flex={1} justify="center" items="center" bg="$background">
         <Spinner size="large" />
@@ -18,7 +36,7 @@ export default function Layout() {
 
   // Only render drawer once auth is confirmed
   return (
-    <DrawerLayout protectionComponent={null}>
+    <DrawerLayout protectionComponent={null} hideDrawer={!statusData?.isComplete}>
       <Drawer.Screen name="index" options={{ title: 'Dashboard' }} />
       <Drawer.Screen name="discover/map/index" options={{ title: 'Map Search' }} />
       <Drawer.Screen name="discover/workers/index" options={{ title: 'Search Workers' }} />
