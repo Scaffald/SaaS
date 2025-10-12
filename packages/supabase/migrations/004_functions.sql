@@ -83,7 +83,6 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 COMMENT ON FUNCTION public.handle_new_user IS 'Automatically creates user profile records when a new auth user is created';
 
 -- Attach trigger to auth.users
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
@@ -93,55 +92,46 @@ CREATE TRIGGER on_auth_user_created
 -- =========================================================
 
 -- Users table
-DROP TRIGGER IF EXISTS trg_users_updated_at ON public.users;
 CREATE TRIGGER trg_users_updated_at
   BEFORE UPDATE ON public.users
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
 -- Private profile
-DROP TRIGGER IF EXISTS trg_profile_updated_at ON private.profile;
 CREATE TRIGGER trg_profile_updated_at
   BEFORE UPDATE ON private.profile
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
 -- Preferences
-DROP TRIGGER IF EXISTS trg_preferences_updated_at ON private.preferences;
 CREATE TRIGGER trg_preferences_updated_at
   BEFORE UPDATE ON private.preferences
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
 -- Industries
-DROP TRIGGER IF EXISTS trg_industries_updated_at ON public.industries;
 CREATE TRIGGER trg_industries_updated_at
   BEFORE UPDATE ON public.industries
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
 -- Organizations
-DROP TRIGGER IF EXISTS trg_organizations_updated_at ON public.organizations;
 CREATE TRIGGER trg_organizations_updated_at
   BEFORE UPDATE ON public.organizations
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
 -- Teams
-DROP TRIGGER IF EXISTS trg_teams_updated_at ON public.teams;
 CREATE TRIGGER trg_teams_updated_at
   BEFORE UPDATE ON public.teams
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
 -- Jobs
-DROP TRIGGER IF EXISTS trg_jobs_updated_at ON public.jobs;
 CREATE TRIGGER trg_jobs_updated_at
   BEFORE UPDATE ON public.jobs
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
 -- Skills
-DROP TRIGGER IF EXISTS trg_skills_updated_at ON public.skills;
 CREATE TRIGGER trg_skills_updated_at
   BEFORE UPDATE ON public.skills
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
 -- Reviews
-DROP TRIGGER IF EXISTS trg_reviews_updated_at ON public.reviews;
 CREATE TRIGGER trg_reviews_updated_at
   BEFORE UPDATE ON public.reviews
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
@@ -162,7 +152,6 @@ BEGIN
 END;
 $$;
 
-DROP TRIGGER IF EXISTS trg_orgs_tsv ON public.organizations;
 CREATE TRIGGER trg_orgs_tsv
   BEFORE INSERT OR UPDATE OF name, slug
   ON public.organizations
@@ -182,7 +171,6 @@ BEGIN
 END;
 $$;
 
-DROP TRIGGER IF EXISTS trg_jobs_tsv ON public.jobs;
 CREATE TRIGGER trg_jobs_tsv
   BEFORE INSERT OR UPDATE OF title, description, position_level, location
   ON public.jobs
@@ -407,7 +395,7 @@ RETURNS TABLE (
 )
 LANGUAGE sql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
   SELECT 
     o.id,
