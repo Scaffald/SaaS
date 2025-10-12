@@ -1,9 +1,6 @@
-import { useState } from 'react'
 import { YStack, ScrollView, Text, Spinner, XStack } from 'tamagui'
 import { ExternalJobCard, type ExternalJob } from './components/ExternalJobCard'
-import { ExternalJobDetailModal } from './components/ExternalJobDetailModal'
 import { InternalJobCard, type InternalJob } from './components/InternalJobCard'
-import { InternalJobDetailModal } from './components/InternalJobDetailModal'
 import { api } from '@app/core/utils/api'
 
 interface DiscoverJobsLeftProps {
@@ -25,11 +22,6 @@ export function DiscoverJobsLeft({
   selectedJobTypes,
   jobSource = 'all',
 }: DiscoverJobsLeftProps) {
-  const [selectedExternalJob, setSelectedExternalJob] = useState<ExternalJob | null>(null)
-  const [selectedInternalJob, setSelectedInternalJob] = useState<InternalJob | null>(null)
-  const [externalModalOpen, setExternalModalOpen] = useState(false)
-  const [internalModalOpen, setInternalModalOpen] = useState(false)
-
   // Fetch external jobs
   const { data: externalData, isLoading: externalLoading } = api.jobs.getExternalJobs.useQuery(
     undefined,
@@ -48,8 +40,19 @@ export function DiscoverJobsLeft({
     }
   )
 
+  // Fetch user's applications to show applied status
+  const { data: applicationsData } = api.jobs.getMyApplications.useQuery(
+    { limit: 100, offset: 0 },
+    { enabled: true }
+  )
+
   const externalJobs = externalData?.jobs || []
   const internalJobs = internalData?.jobs || []
+
+  // Create a set of job IDs user has applied to
+  const appliedJobIds = new Set(
+    applicationsData?.applications?.map((app: { job_id: string }) => app.job_id) || []
+  )
 
   const isLoading = externalLoading || internalLoading
 
@@ -111,26 +114,6 @@ export function DiscoverJobsLeft({
     return true
   })
 
-  const handleViewExternalDetails = (job: ExternalJob) => {
-    setSelectedExternalJob(job)
-    setExternalModalOpen(true)
-  }
-
-  const handleViewInternalDetails = (job: InternalJob) => {
-    setSelectedInternalJob(job)
-    setInternalModalOpen(true)
-  }
-
-  const handleExternalJobApply = (jobId: string) => {
-    console.log('Applied to external job:', jobId)
-    setExternalModalOpen(false)
-  }
-
-  const handleInternalJobApply = () => {
-    // Refetch jobs to update application status
-    internalData && api.jobs.getPublishedJobs.useQuery.refetch?.()
-  }
-
   if (isLoading) {
     return (
       <YStack flex={1} items="center" justify="center" p="$4">
@@ -156,47 +139,25 @@ export function DiscoverJobsLeft({
   }
 
   return (
-    <>
-      <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-        <YStack gap="$3" p="$4">
-          <Text fontSize="$5" fontWeight="600" color="$color12">
-            {filteredJobs.length} {filteredJobs.length === 1 ? 'Job' : 'Jobs'} Available
-          </Text>
+    <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+      <YStack gap="$3" p="$4">
+        <Text fontSize="$5" fontWeight="600" color="$color12">
+          {filteredJobs.length} {filteredJobs.length === 1 ? 'Job' : 'Jobs'} Available
+        </Text>
 
-          {filteredJobs.map((item) => {
-            if (item.type === 'external') {
-              return (
-                <ExternalJobCard
-                  key={`external-${item.job.id}`}
-                  job={item.job}
-                  onViewDetails={handleViewExternalDetails}
-                />
-              )
-            }
-            return (
-              <InternalJobCard
-                key={`internal-${item.job.id}`}
-                job={item.job}
-                onViewDetails={handleViewInternalDetails}
-              />
-            )
-          })}
-        </YStack>
-      </ScrollView>
-
-      <ExternalJobDetailModal
-        job={selectedExternalJob}
-        open={externalModalOpen}
-        onOpenChange={setExternalModalOpen}
-        onApply={handleExternalJobApply}
-      />
-
-      <InternalJobDetailModal
-        job={selectedInternalJob}
-        open={internalModalOpen}
-        onOpenChange={setInternalModalOpen}
-        onApplySuccess={handleInternalJobApply}
-      />
-    </>
+        {filteredJobs.map((item) => {
+          if (item.type === 'external') {
+            return <ExternalJobCard key={`external-${item.job.id}`} job={item.job} />
+          }
+          return (
+            <InternalJobCard
+              key={`internal-${item.job.id}`}
+              job={item.job}
+              hasApplied={appliedJobIds.has(item.job.id)}
+            />
+          )
+        })}
+      </YStack>
+    </ScrollView>
   )
 }

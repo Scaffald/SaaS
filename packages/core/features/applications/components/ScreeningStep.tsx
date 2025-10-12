@@ -48,11 +48,6 @@ export function ScreeningStep({
   const validateAndContinue = () => {
     const newErrors: Partial<Record<keyof ScreeningAnswers, string>> = {}
 
-    // Validate current location
-    if (!answers.current_location?.trim()) {
-      newErrors.current_location = 'Please enter your current location'
-    }
-
     // Validate years of experience
     if (answers.years_experience === undefined || answers.years_experience === null) {
       newErrors.years_experience = 'Please enter your years of experience'
@@ -90,31 +85,6 @@ export function ScreeningStep({
         <Text fontSize="$4" color="$color11">
           Please provide some basic information to help us match you with this position.
         </Text>
-      </YStack>
-
-      {/* Current Location */}
-      <YStack gap="$2">
-        <Label htmlFor="current_location" fontSize="$4" fontWeight="600">
-          Current Location
-        </Label>
-        <Input
-          id="current_location"
-          placeholder="City, State"
-          value={answers.current_location || ''}
-          onChangeText={(text) => {
-            onAnswersChange({ ...answers, current_location: text })
-            if (errors.current_location) {
-              setErrors({ ...errors, current_location: undefined })
-            }
-          }}
-          borderColor={errors.current_location ? '$red9' : '$borderColor'}
-          disabled={isSubmitting}
-        />
-        {errors.current_location && (
-          <Text fontSize="$2" color="$red10">
-            {errors.current_location}
-          </Text>
-        )}
       </YStack>
 
       {/* Willing to Relocate */}

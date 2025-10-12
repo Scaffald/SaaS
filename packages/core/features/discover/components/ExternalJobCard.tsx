@@ -1,6 +1,8 @@
 import { Card, XStack, YStack, Text, Button, Separator } from 'tamagui'
 import { Building2, MapPin, Clock, DollarSign, ExternalLink } from '@tamagui/lucide-icons'
 import { Linking } from 'react-native'
+import { useRouter } from 'expo-router'
+import { RouteBuilder } from '@app/core/constants/routes'
 
 export interface ExternalJob {
   id: string
@@ -31,10 +33,10 @@ export interface ExternalJob {
 
 interface ExternalJobCardProps {
   job: ExternalJob
-  onViewDetails: (job: ExternalJob) => void
 }
 
-export function ExternalJobCard({ job, onViewDetails }: ExternalJobCardProps) {
+export function ExternalJobCard({ job }: ExternalJobCardProps) {
+  const router = useRouter()
   const formatDate = (dateString?: string) => {
     if (!dateString) return null
     const date = new Date(dateString)
@@ -192,7 +194,11 @@ export function ExternalJobCard({ job, onViewDetails }: ExternalJobCardProps) {
 
       {/* Actions */}
       <XStack gap="$2" justify="flex-end">
-        <Button size="$3" theme="blue" onPress={() => onViewDetails(job)}>
+        <Button
+          size="$3"
+          theme="blue"
+          onPress={() => router.push(RouteBuilder.discoverJobDetail(job.id))}
+        >
           View Details
         </Button>
       </XStack>

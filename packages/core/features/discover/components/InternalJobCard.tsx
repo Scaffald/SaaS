@@ -1,6 +1,8 @@
 import { Card, Text, XStack, YStack, Button } from 'tamagui'
 import { Building2, MapPin, DollarSign, Briefcase, Clock } from '@tamagui/lucide-icons'
 import { Chip } from '@app/ui'
+import { useRouter } from 'expo-router'
+import { RouteBuilder } from '@app/core/constants/routes'
 
 /**
  * Internal job type definition with all enhanced fields
@@ -64,7 +66,6 @@ export interface InternalJob {
 
 interface InternalJobCardProps {
   job: InternalJob
-  onViewDetails: (job: InternalJob) => void
   hasApplied?: boolean
 }
 
@@ -155,7 +156,8 @@ function formatRelativeTime(dateString?: string): string {
  * Internal Job Card Component
  * Displays a job posting from internal organizations
  */
-export function InternalJobCard({ job, onViewDetails, hasApplied }: InternalJobCardProps) {
+export function InternalJobCard({ job, hasApplied }: InternalJobCardProps) {
+  const router = useRouter()
   const payRange = formatPayRange(
     job.pay_range_min_cents,
     job.pay_range_max_cents,
@@ -174,7 +176,7 @@ export function InternalJobCard({ job, onViewDetails, hasApplied }: InternalJobC
       hoverStyle={{ bg: '$backgroundHover' }}
       pressStyle={{ bg: '$backgroundPress' }}
       cursor="pointer"
-      onPress={() => onViewDetails(job)}
+      onPress={() => router.push(RouteBuilder.discoverJobDetail(job.id))}
     >
       <YStack gap="$3">
         {/* Header */}
@@ -284,7 +286,12 @@ export function InternalJobCard({ job, onViewDetails, hasApplied }: InternalJobC
         ) : null}
 
         {/* Action button */}
-        <Button size="$3" theme="blue" onPress={() => onViewDetails(job)} mt="$2">
+        <Button
+          size="$3"
+          theme="blue"
+          onPress={() => router.push(RouteBuilder.discoverJobDetail(job.id))}
+          mt="$2"
+        >
           {hasApplied ? 'View Application' : 'View Details'}
         </Button>
       </YStack>
