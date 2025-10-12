@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { randomUUID } from 'expo-crypto'
 import { YStack, XStack, Text, Button } from 'tamagui'
 import { Plus, X } from '@tamagui/lucide-icons'
@@ -103,11 +103,15 @@ export function LocationListInput({
   }
 
   // Search options optimized for broader locations (city, county, state)
-  const searchOptions = {
-    zoomLevel: 'city' as const,
-    types: ['place', 'locality', 'district', 'region'], // Cities, localities, districts, states/regions
-    country: 'us', // Restrict to US for work locations
-  }
+  // Memoize to prevent recreating on every render
+  const searchOptions = useMemo(
+    () => ({
+      zoomLevel: 'city' as const,
+      types: ['place', 'locality', 'district', 'region'], // Cities, localities, districts, states/regions
+      country: 'us', // Restrict to US for work locations
+    }),
+    []
+  )
 
   return (
     <YStack gap="$3" position="relative" z={999}>

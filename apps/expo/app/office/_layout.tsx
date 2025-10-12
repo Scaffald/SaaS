@@ -34,6 +34,9 @@ export default function OfficeLayout() {
       <Drawer.Screen name="universities/index" options={{ title: 'Manage Universities' }} />
       <Drawer.Screen name="universities/create" options={{ title: 'Create University' }} />
       <Drawer.Screen name="universities/[id]/edit" options={{ title: 'Edit University' }} />
+      <Drawer.Screen name="organizations/index" options={{ title: 'Manage Organizations' }} />
+      <Drawer.Screen name="organizations/create" options={{ title: 'Create Organization' }} />
+      <Drawer.Screen name="organizations/[id]/edit" options={{ title: 'Edit Organization' }} />
     </DrawerLayout>
   )
 }

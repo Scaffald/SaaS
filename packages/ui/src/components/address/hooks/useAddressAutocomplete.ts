@@ -130,7 +130,8 @@ export function useAddressAutocomplete(
     if (debouncedQuery.trim()) {
       performSearch(debouncedQuery)
     }
-  }, [debouncedQuery, performSearch])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedQuery])
 
   // Manual search function
   const search = useCallback((searchQuery: string) => {

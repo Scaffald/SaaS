@@ -653,6 +653,10 @@ export const officeRouter = t.router({
         logo_url: z.string().url().optional().or(z.literal("")),
         visibility: z.enum(["public", "private"]),
         address: z.record(z.unknown()).optional(),
+        locations: z.array(z.object({
+          name: z.string(),
+          address: z.record(z.unknown()),
+        })).optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -673,6 +677,7 @@ export const officeRouter = t.router({
         });
       }
 
+      // Update organization including locations in JSONB column
       const { data: organization, error } = await ctx.supabaseAdmin
         .from("organizations")
         .update(updateData)

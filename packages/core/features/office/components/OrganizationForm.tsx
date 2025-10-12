@@ -1,13 +1,18 @@
 import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Button, Input, H4, Spinner, Select } from 'tamagui'
+import { YStack, XStack, Text, Button, Input, H4, Spinner, Select, ScrollView } from 'tamagui'
 import { useRouter } from 'expo-router'
 import { useToastController } from '@tamagui/toast'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { organizationCreateSchema, type OrganizationCreate } from '@app/schemas'
+import {
+  organizationCreateSchema,
+  type OrganizationCreate,
+  type OrganizationLocation,
+} from '@app/schemas'
 import { api } from '@app/core/utils/api'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
 import { supabase } from '@app/core/utils/supabase/client'
+import { OrganizationLocationsInput } from './OrganizationLocationsInput'
 
 type OrganizationFormData = OrganizationCreate
 
@@ -46,6 +51,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
     formState: { errors, isDirty },
     setValue,
     watch,
+    reset,
   } = useForm<OrganizationFormData>({
     resolver: zodResolver(organizationCreateSchema),
     defaultValues: initialData || {
@@ -55,8 +61,16 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       logo_url: '',
       visibility: 'public',
       address: undefined,
+      locations: [{ name: '', address: {} }],
     },
   })
+
+  // Reset form when initialData changes (for edit mode)
+  useEffect(() => {
+    if (initialData) {
+      reset(initialData)
+    }
+  }, [initialData, reset])
 
   // Auto-generate slug from name
   const generateSlug = (text: string) => {
@@ -108,9 +122,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
   }
 
   return (
-    <YStack flex={1} bg="$background" p="$4" gap="$4">
-      <H4>{mode === 'create' ? 'Create Organization' : 'Edit Organization'}</H4>
-
+    <ScrollView flex={1} bg="$color2" p="$5" showsVerticalScrollIndicator={false}>
       {/* Name */}
       <Controller
         name="name"
@@ -279,6 +291,22 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         )}
       />
 
+      {/* Locations */}
+      <Controller
+        name="locations"
+        control={control}
+        render={({ field }) => (
+          <OrganizationLocationsInput
+            value={field.value}
+            onChange={field.onChange}
+            errors={errors.locations?.message}
+            disabled={isLoading}
+            provider="mapbox"
+            apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
+          />
+        )}
+      />
+
       {/* Submit buttons */}
       <XStack justify="flex-end" gap="$2" mt="$4">
         <Button variant="outlined" onPress={() => router.back()} disabled={isLoading}>
@@ -292,6 +320,6 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
           {isLoading ? 'Saving...' : mode === 'create' ? 'Create' : 'Update'}
         </Button>
       </XStack>
-    </YStack>
+    </ScrollView>
   )
 }
