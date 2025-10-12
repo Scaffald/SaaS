@@ -1,16 +1,13 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { superAdminProcedure, t } from "../middleware.ts";
-import {
-  jobCreateSchema,
-  jobPublishSchema,
-  jobUpdateSchema,
-} from "../../_shared/job-schemas.ts";
+import { jobCreateSchema, jobUpdateSchema } from "../../_shared/job-schemas.ts";
 import {
   employmentProfileSchema,
   generalProfileSchema,
 } from "../../_shared/profile-schemas.ts";
 import { officeUniversitiesRouter } from "./office/universities.router.ts";
+import { transformJobSkills } from "../../_shared/skill-helpers.ts";
 
 /**
  * Office router - super admin only operations
@@ -227,7 +224,9 @@ export const officeRouter = t.router({
             certification:certifications(id, name, slug, issuing_organization)
           ),
           job_skills(
-            skill:skills(id, name)
+            skill_taxonomy,
+            csi_skill_id,
+            onet_occupation_id
           )
         `,
         )
@@ -241,7 +240,12 @@ export const officeRouter = t.router({
         });
       }
 
-      return { job: data };
+      return {
+        job: {
+          ...data,
+          skills: transformJobSkills(data.job_skills || []),
+        },
+      };
     }),
 
   /**
@@ -296,20 +300,13 @@ export const officeRouter = t.router({
         }
       }
 
-      // Insert skills if provided
+      // TODO: Skill insertion needs to be updated for polymorphic skills
+      // The new schema requires skill_taxonomy, csi_skill_id, or onet_occupation_id
+      // This will need to be implemented when the job creation UI is updated
       if (skill_ids && skill_ids.length > 0) {
-        const { error: skillError } = await supabaseAdmin
-          .from("job_skills")
-          .insert(
-            skill_ids.map((skill_id) => ({
-              job_id: job.id,
-              skill_id: skill_id,
-            })),
-          );
-
-        if (skillError) {
-          console.error("Failed to insert skills:", skillError);
-        }
+        console.warn(
+          "Skill insertion not yet implemented for polymorphic skills",
+        );
       }
 
       return { job };
@@ -365,25 +362,17 @@ export const officeRouter = t.router({
         }
       }
 
-      // Update skills if provided
+      // TODO: Skill updates need to be updated for polymorphic skills
+      // The new schema requires skill_taxonomy, csi_skill_id, or onet_occupation_id
+      // This will need to be implemented when the job editing UI is updated
       if (skill_ids !== undefined) {
         // Delete existing skills
         await supabaseAdmin.from("job_skills").delete().eq("job_id", id);
 
-        // Insert new skills
         if (skill_ids.length > 0) {
-          const { error: skillError } = await supabaseAdmin
-            .from("job_skills")
-            .insert(
-              skill_ids.map((skill_id) => ({
-                job_id: id,
-                skill_id: skill_id,
-              })),
-            );
-
-          if (skillError) {
-            console.error("Failed to update skills:", skillError);
-          }
+          console.warn(
+            "Skill insertion not yet implemented for polymorphic skills",
+          );
         }
       }
 
@@ -1082,22 +1071,12 @@ export const officeRouter = t.router({
 
   /**
    * Get all skills
+   * TODO: Update to query from polymorphic skill sources (CSI, O*NET)
    */
   getSkills: superAdminProcedure.query(async ({ ctx }) => {
-    const { data, error } = await ctx.supabaseAdmin
-      .from("skills")
-      .select("id, name, industry_id")
-      .eq("active", true)
-      .order("name");
-
-    if (error) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: `Failed to fetch skills: ${error.message}`,
-      });
-    }
-
-    return { skills: data ?? [] };
+    // For now, return empty array since the skills table no longer exists
+    // This needs to be updated to query csi.masterformat and onet.occupation_data
+    return { skills: [] };
   }),
 
   /**

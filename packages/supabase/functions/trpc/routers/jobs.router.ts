@@ -1,10 +1,14 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { t, protectedProcedure } from "../middleware.ts";
+import { protectedProcedure, t } from "../middleware.ts";
 import {
   applicationCreateSchema,
   applicationWithdrawSchema,
 } from "../../_shared/application-schemas.ts";
+import {
+  JOB_SKILLS_SELECT,
+  transformJobSkills,
+} from "../../_shared/skill-helpers.ts";
 
 /**
  * Jobs router - handles job-related operations
@@ -154,7 +158,7 @@ export const jobsRouter = t.router({
         skill_ids: z.array(z.string().uuid()).optional(),
         limit: z.number().min(1).max(100).default(50),
         offset: z.number().min(0).default(0),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const { supabase } = ctx;
@@ -187,13 +191,12 @@ export const jobsRouter = t.router({
             )
           ),
           job_skills(
-            skill:skills(
-              id,
-              name
-            )
+            skill_taxonomy,
+            csi_skill_id,
+            onet_occupation_id
           )
         `,
-          { count: "exact" }
+          { count: "exact" },
         )
         .eq("status", "open")
         .order("posted_at", { ascending: false });
@@ -201,7 +204,7 @@ export const jobsRouter = t.router({
       // Apply filters
       if (input.search) {
         query = query.or(
-          `title.ilike.%${input.search}%,description.ilike.%${input.search}%`
+          `title.ilike.%${input.search}%,description.ilike.%${input.search}%`,
         );
       }
 
@@ -253,14 +256,16 @@ export const jobsRouter = t.router({
         organization: job.organization,
         certifications: Array.isArray(job.job_certifications)
           ? job.job_certifications
-            .map((jc: { certification?: { id?: string; name?: string; slug?: string } | null }) => jc.certification)
+            .map((
+              jc: {
+                certification?:
+                  | { id?: string; name?: string; slug?: string }
+                  | null;
+              },
+            ) => jc.certification)
             .filter(Boolean)
           : [],
-        skills: Array.isArray(job.job_skills)
-          ? job.job_skills
-            .map((js: { skill?: { id?: string; name?: string } | null }) => js.skill)
-            .filter(Boolean)
-          : [],
+        skills: transformJobSkills(job.job_skills || []),
       }));
 
       return { jobs, total: count || 0 };
@@ -296,12 +301,11 @@ export const jobsRouter = t.router({
             )
           ),
           job_skills(
-            skill:skills(
-              id,
-              name
-            )
+            skill_taxonomy,
+            csi_skill_id,
+            onet_occupation_id
           )
-        `
+        `,
         )
         .eq("id", input.id)
         .eq("status", "open")
@@ -345,11 +349,7 @@ export const jobsRouter = t.router({
               is_required: jc.is_required,
             }))
             : [],
-          skills: Array.isArray(data.job_skills)
-            ? data.job_skills
-              .map((js: { skill?: { id?: string; name?: string } | null }) => js.skill)
-              .filter(Boolean)
-            : [],
+          skills: transformJobSkills(data.job_skills || []),
         },
         hasApplied,
       };
@@ -450,7 +450,7 @@ export const jobsRouter = t.router({
           .optional(),
         limit: z.number().min(1).max(100).default(50),
         offset: z.number().min(0).default(0),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const { supabase, user } = ctx;
@@ -485,7 +485,7 @@ export const jobsRouter = t.router({
             )
           )
         `,
-          { count: "exact" }
+          { count: "exact" },
         )
         .eq("user_id", user.id)
         .order("applied_at", { ascending: false });
@@ -586,9 +586,11 @@ export const jobsRouter = t.router({
           certification:certifications(name)
         ),
         job_skills(
-          skill:skills(name)
+          skill_taxonomy,
+          csi_skill_id,
+          onet_occupation_id
         )
-      `
+      `,
       )
       .eq("status", "open");
 
@@ -618,12 +620,9 @@ export const jobsRouter = t.router({
         }
       }
 
-      if (Array.isArray(job.job_skills)) {
-        for (const js of job.job_skills) {
-          if (js.skill?.name) {
-            skills.add(js.skill.name);
-          }
-        }
+      const jobSkills = transformJobSkills(job.job_skills || []);
+      for (const skill of jobSkills) {
+        skills.add(skill.id); // Store skill IDs - names need separate lookup
       }
     }
 
