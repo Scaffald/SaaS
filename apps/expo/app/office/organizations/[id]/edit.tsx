@@ -43,6 +43,7 @@ export default function EditOrganizationPage() {
         logo_url: data.organization.logo_url || undefined,
         visibility: data.organization.visibility || 'public',
         address: data.organization.address || undefined,
+        locations: data.organization.locations || [],
       }}
     />
   )

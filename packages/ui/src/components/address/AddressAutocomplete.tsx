@@ -89,10 +89,12 @@ export function AddressAutocomplete({
   })
 
   // Update input value when external value changes
+  // Only sync if the external value is different AND we're not currently editing
   useEffect(() => {
-    if (value !== inputValue) {
+    if (value !== inputValue && !showResults) {
       setInputValue(value)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
 
   // Handle input changes
