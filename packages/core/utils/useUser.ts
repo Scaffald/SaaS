@@ -43,7 +43,11 @@ function useProfile() {
     enabled: !!user?.id,
   });
 
-  return { data, isPending, refetch };
+  // React Query returns isPending: true for disabled queries
+  // We only want to report pending when the query is actually running
+  const isActuallyPending = !!user?.id && isPending;
+
+  return { data, isPending: isActuallyPending, refetch };
 }
 
 export const useUser = () => {
