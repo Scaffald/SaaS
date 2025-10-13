@@ -372,4 +372,21 @@ CREATE TABLE private.role_assignments (
   )
 );
 
+-- User Certifications (personal certification data - PII)
+CREATE TABLE private.user_certifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL,  -- FK to users(id) in 002_relations.sql
+  certification_id UUID NOT NULL,  -- FK to certifications(id) in 002_relations.sql
+  issue_date DATE,
+  expiration_date DATE,
+  credential_id TEXT,
+  credential_url TEXT,
+  certificate_file_path TEXT,
+  description TEXT,
+  is_active BOOLEAN DEFAULT true,
+  verification_status TEXT DEFAULT 'unverified' CHECK (verification_status IN ('unverified', 'pending', 'verified', 'rejected')),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 COMMIT;

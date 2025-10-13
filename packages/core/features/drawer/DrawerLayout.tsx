@@ -5,7 +5,7 @@ import { Bell, Menu } from '@tamagui/lucide-icons'
 import { Drawer } from 'expo-router/drawer'
 import { useWindowDimensions } from 'tamagui'
 import { NotificationsActionSheet } from '@app/ui'
-import { DrawerMenu } from './index'
+import { DrawerMenu } from './DrawerMenu'
 
 interface DrawerLayoutProps {
   /**
