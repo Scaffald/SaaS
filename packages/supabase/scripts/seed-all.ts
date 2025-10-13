@@ -90,6 +90,35 @@ async function seedUniversities() {
   }
 }
 
+async function seedCertifications() {
+  console.log("\n📜 Seeding Certifications Catalog...");
+
+  try {
+    const scriptDir = path.dirname(new URL(import.meta.url).pathname);
+    const certsScriptPath = path.join(scriptDir, "seed-certifications.ts");
+
+    // Run the certifications seeding script
+    const { stdout, stderr } = await execAsync(
+      `pnpx tsx "${certsScriptPath}"`,
+      {
+        env: {
+          ...process.env,
+          DATABASE_URL: process.env.DATABASE_URL ||
+            "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
+        },
+      },
+    );
+
+    if (stdout) console.log(stdout);
+    if (stderr) console.error(stderr);
+
+    return true;
+  } catch (error) {
+    console.error("❌ Error seeding certifications:", error);
+    return false;
+  }
+}
+
 async function seedJobs() {
   console.log("\n💼 Seeding External Jobs with Enhanced Parsing...");
 
@@ -187,6 +216,42 @@ async function verifyUniversities() {
       `   Sample universities: ${
         universities?.map((u) => `${u.name} (${u.country})`).join(", ")
       }`,
+    );
+  }
+  return true;
+}
+
+async function verifyCertifications() {
+  console.log("\n📜 Verifying Certifications Data...");
+
+  const { count: certCount, error: certError } = await supabase
+    .schema("data")
+    .from("certifications")
+    .select("*", { count: "exact", head: true });
+
+  if (certError) {
+    console.error("❌ Error fetching certifications:", certError);
+    return false;
+  }
+
+  console.log(`✅ Found ${certCount} certifications in database`);
+
+  // Check for some certifications
+  const { data: certs, error: certsError } = await supabase
+    .schema("data")
+    .from("certifications")
+    .select("slug, title, depth")
+    .eq("depth", 2)
+    .limit(5);
+
+  if (certsError) {
+    console.error("❌ Error fetching certifications:", certsError);
+    return false;
+  }
+
+  if (certs && certs.length > 0) {
+    console.log(
+      `   Sample certifications: ${certs?.map((c) => c.title).join(", ")}`,
     );
   }
   return true;
@@ -333,9 +398,23 @@ async function main() {
   // Verify universities if they were seeded
   await verifyUniversities();
 
+  // Seed certifications
+  console.log(`\n${"=".repeat(50)}`);
+  console.log("📋 Step 3: Seeding Certifications Catalog");
+  console.log("=".repeat(50));
+  const certificationsSeeded = await seedCertifications();
+
+  if (!certificationsSeeded) {
+    console.error("\n❌ Certifications seeding failed. Check errors above.");
+    process.exit(1);
+  }
+
+  // Verify certifications
+  await verifyCertifications();
+
   // Seed jobs
   console.log(`\n${"=".repeat(50)}`);
-  console.log("📋 Step 3: Seeding External Jobs from RSS Feeds");
+  console.log("📋 Step 4: Seeding External Jobs from RSS Feeds");
   console.log("=".repeat(50));
   const jobsSeeded = await seedJobs();
 

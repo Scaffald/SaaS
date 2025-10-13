@@ -678,6 +678,21 @@ CREATE TABLE data.universities (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Certifications Catalog Table (hierarchical reference data)
+CREATE TABLE data.certifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug TEXT UNIQUE NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  parent_id UUID,  -- FK to certifications(id) in 002_relations.sql (self-reference)
+  depth INTEGER NOT NULL DEFAULT 0,  -- 0=top level, 1=category, 2=certification
+  hierarchy_path TEXT NOT NULL,       -- e.g., 'osha.construction.osha-10-construction'
+  sort_order INTEGER DEFAULT 0,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- =========================================================
 -- SECTION 3: POLYMORPHIC SKILL ASSOCIATIONS
 -- =========================================================
