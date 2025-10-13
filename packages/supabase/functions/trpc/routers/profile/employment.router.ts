@@ -31,7 +31,7 @@ export const profileEmploymentRouter = t.router({
         drivers_license_classes,
         military_status,
         availability,
-        hourly_rate
+        hourly_rate_cents
       `)
       .eq("user_id", user.id)
       .single();
@@ -43,6 +43,11 @@ export const profileEmploymentRouter = t.router({
       });
     }
 
+    // Convert hourly_rate_cents to hourly_rate (dollars)
+    const hourlyRate = employmentData?.hourly_rate_cents
+      ? employmentData.hourly_rate_cents / 100
+      : null;
+
     return {
       preferred_work_locations: employmentData?.preferred_work_locations || [],
       open_to_travel: employmentData?.open_to_travel ?? true,
@@ -53,7 +58,7 @@ export const profileEmploymentRouter = t.router({
       drivers_license_classes: employmentData?.drivers_license_classes || [],
       military_status: employmentData?.military_status || [],
       availability: employmentData?.availability || [],
-      hourly_rate: employmentData?.hourly_rate || null,
+      hourly_rate: hourlyRate,
     };
   }),
 
@@ -102,7 +107,10 @@ export const profileEmploymentRouter = t.router({
         employmentUpdate.availability = input.availability;
       }
       if (input.hourly_rate !== undefined) {
-        employmentUpdate.hourly_rate = input.hourly_rate;
+        // Convert hourly_rate (dollars) to hourly_rate_cents for database storage
+        employmentUpdate.hourly_rate_cents = Math.round(
+          input.hourly_rate * 100,
+        );
       }
 
       // Update private.profile table only if there are fields to update

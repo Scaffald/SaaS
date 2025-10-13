@@ -476,7 +476,7 @@ export const userPrivateEmploymentUpdateSchema = z.object({
   drivers_license_classes: z.array(z.string()).optional(),
   military_status: z.array(z.string()).optional(),
   availability: z.array(z.string()).optional(),
-  hourly_rate: z.number().optional(),
+  hourly_rate_cents: z.number().optional(), // Database stores cents as integer
 });
 
 // =============================================================================
