@@ -1,7 +1,15 @@
-import { YStack, DataTable } from '@app/ui'
+import { YStack, XStack, DataTable, Input, Button, H2 } from '@app/ui'
 import type { ColumnDef } from '@tanstack/react-table'
+import type { Dispatch, SetStateAction } from 'react'
+import { Plus } from '@tamagui/lucide-icons'
 
 interface OfficePageLayoutProps<TData> {
+  title: string
+  searchPlaceholder: string
+  searchValue: string
+  onSearchChange: Dispatch<SetStateAction<string>>
+  createButtonLabel: string
+  onCreateClick: () => void
   columns: ColumnDef<TData, unknown>[]
   data: TData[]
   isLoading?: boolean
@@ -11,6 +19,12 @@ interface OfficePageLayoutProps<TData> {
 }
 
 export function OfficePageLayout<TData>({
+  title,
+  searchPlaceholder,
+  searchValue,
+  onSearchChange,
+  createButtonLabel,
+  onCreateClick,
   columns,
   data,
   isLoading = false,
@@ -19,7 +33,16 @@ export function OfficePageLayout<TData>({
   emptyMessage = 'No data found',
 }: OfficePageLayoutProps<TData>) {
   return (
-    <YStack flex={1} bg="$background">
+    <YStack flex={1} bg="$background" p="$4" gap="$4">
+      <XStack justify="space-between" items="center">
+        <H2>{title}</H2>
+        <Button icon={Plus} onPress={onCreateClick}>
+          {createButtonLabel}
+        </Button>
+      </XStack>
+
+      <Input placeholder={searchPlaceholder} value={searchValue} onChangeText={onSearchChange} />
+
       <DataTable
         columns={columns}
         data={data}

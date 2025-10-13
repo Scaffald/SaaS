@@ -201,14 +201,14 @@ export function EmploymentSection({
         <YStack gap="$3">
           <Text fontWeight="600">Travel Preferences</Text>
           <Controller
-            name="willing_to_travel"
+            name="open_to_travel"
             control={control}
             render={({ field }) => (
               <ToggleCard
                 icon={<Plane size="$2" color="$color11" />}
                 title="Willing to Travel"
                 description="I am available for work assignments that require travel"
-                checked={field.value || false}
+                checked={(field.value as boolean) || false}
                 onCheckedChange={field.onChange}
                 disabled={readOnly}
                 expandedContent={

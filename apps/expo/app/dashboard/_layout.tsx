@@ -8,12 +8,18 @@ import { useEffect } from 'react'
 import { api } from '@app/core/utils/api'
 
 export default function Layout() {
-  const { isLoading } = useProtectedRoute()
+  const { isLoading, user } = useProtectedRoute()
   const router = useRouter()
   const pathname = usePathname()
 
-  // Check prerequisites status
-  const { data: statusData, isLoading: isCheckingPrereqs } = api.prerequisites.check.useQuery()
+  // Check prerequisites status - only run when we have a valid user
+  // This prevents race conditions after DB resets when session is invalid
+  const { data: statusData, isLoading: isCheckingPrereqs } = api.prerequisites.check.useQuery(
+    undefined,
+    {
+      enabled: !!user, // Only run if user exists
+    }
+  )
 
   // Redirect to /dashboard if prerequisites incomplete and not already there
   useEffect(() => {

@@ -127,13 +127,13 @@ export function OccupationSearch({
           {occupations.map((occupation: Occupation) => (
             <XStack
               key={occupation.onetsoc_code}
-              padding="$3"
+              p="$3"
               gap="$2"
               hoverStyle={{
-                backgroundColor: '$backgroundHover',
+                bg: '$backgroundHover',
               }}
               pressStyle={{
-                backgroundColor: '$backgroundPress',
+                bg: '$backgroundPress',
               }}
               cursor="pointer"
               onPress={() => handleSelect(occupation)}
@@ -154,16 +154,16 @@ export function OccupationSearch({
       {debouncedSearch.length >= 2 && !isLoading && occupations.length === 0 && showResults && (
         <YStack
           position="absolute"
-          top="100%"
-          left={0}
-          right={0}
+          t="100%"
+          l={0}
+          r={0}
           mt="$1"
           borderWidth={1}
           borderColor="$borderColor"
-          borderRadius="$3"
-          backgroundColor="$background"
-          padding="$3"
-          zIndex={1000}
+          rounded="$3"
+          bg="$background"
+          p="$3"
+          z={1000}
         >
           <Text fontSize="$3" color="$color11">
             No occupations found for "{debouncedSearch}"
