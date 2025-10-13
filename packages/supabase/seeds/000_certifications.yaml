@@ -1,0 +1,217 @@
+osha:
+  title: Occupational Safety and Health Administration (OSHA)
+  description: Federal safety certification and training standards for construction and industry.
+  construction:
+    title: OSHA Certifications for Construction Workers
+    description: OSHA-authorized safety training courses for construction environments.
+    osha-10-construction:
+      title: OSHA 10-Hour Construction
+      description: Basic safety orientation for entry-level construction workers.
+    osha-30-construction:
+      title: OSHA 30-Hour Construction
+      description: Extended safety training for supervisors and site leads in construction.
+    fall-protection:
+      title: Fall Protection
+      description: Required training for working at heights and preventing fall-related injuries.
+    scaffolding-safety:
+      title: Scaffolding Safety
+      description: Training for safely erecting and working on scaffolds.
+    confined-space-entry:
+      title: Confined Space Entry (CSE)
+      description: Training for working in limited-entry environments like tanks, tunnels, or crawlspaces.
+    lockout-tagout-loto:
+      title: Lockout/Tagout (LOTO)
+      description: Procedures for controlling hazardous energy during maintenance and repair.
+    forklift-operator-construction:
+      title: Forklift Operator Certification (Construction)
+      description: OSHA-compliant training for operating forklifts on construction sites.
+    hazard-communication-hazcom:
+      title: Hazard Communication (HAZCOM)
+      description: Understanding chemical hazards, SDS sheets, and workplace labeling.
+    respiratory-protection:
+      title: Respiratory Protection
+      description: Use and selection of respirators in hazardous environments.
+    hazwoper-24:
+      title: HAZWOPER 24-Hour
+      description: Safety training for workers on controlled hazardous waste sites (limited scope).
+    hazwoper-40:
+      title: HAZWOPER 40-Hour
+      description: Advanced certification for workers dealing with hazardous materials or cleanup.
+
+first_aid:
+  title: First Aid, CPR & Emergency Response
+  description: Medical response and emergency intervention training for workplace safety.
+  cpr_aed:
+    title: CPR & AED
+    description: Cardiac emergency response and automated external defibrillator training.
+    cpr-aed-adult:
+      title: CPR & AED (Adult)
+      description: Adult-focused cardiac emergency response and defibrillator usage.
+    cpr-aed-child-infant:
+      title: CPR & AED (Infant & Child)
+      description: Life-saving training for children and infants.
+  general:
+    title: General First Aid
+    description: Medical training for workplace injuries and emergency response.
+    basic-first-aid:
+      title: Basic First Aid
+      description: Emergency response for common injuries and medical emergencies.
+    bloodborne-pathogens:
+      title: Bloodborne Pathogens
+      description: Safe handling and protection from blood and bodily fluid exposure.
+    wilderness-first-aid:
+      title: Wilderness First Aid
+      description: Extended care techniques for remote or isolated environments.
+
+construction_trades:
+  title: Licensed Construction Trades
+  description: State licenses and credentials for skilled trades workers.
+  electrical:
+    title: Electrical
+    description: State and union licenses for electricians.
+    journeyman-electrician:
+      title: Journeyman Electrician
+      description: Licensed credential for experienced electricians.
+    master-electrician:
+      title: Master Electrician
+      description: Highest level of state licensure for electricians.
+    nfpa-70e:
+      title: Electrical Safety (NFPA 70E)
+      description: Arc flash safety and electrical hazard training.
+
+  plumbing:
+    title: Plumbing
+    description: State licenses and specialty training for plumbers.
+    journeyman-plumber:
+      title: Journeyman Plumber
+      description: State-level license for professional plumbers.
+    master-plumber:
+      title: Master Plumber
+      description: Advanced plumbing license allowing supervision and business ownership.
+    backflow-prevention:
+      title: Backflow Prevention
+      description: Specialized training in preventing water system contamination.
+
+  hvac:
+    title: HVAC
+    description: EPA and industry-recognized credentials for HVAC technicians.
+    epa-608:
+      title: EPA 608
+      description: Required for handling refrigerants in HVAC systems (Types I, II, III).
+    nate:
+      title: NATE
+      description: Industry-standard HVAC technician credential.
+    hvac-excellence:
+      title: HVAC Excellence
+      description: Performance-based HVAC technician credential.
+
+  welding:
+    title: Welding
+    description: AWS credentials for structural and specialty welding.
+    aws-certified-welder:
+      title: AWS Certified Welder
+      description: Entry-level performance credential for structural and pipe welding.
+    aws-d1-1:
+      title: AWS D1.1 Structural Welding
+      description: Standard for structural steel welding.
+
+  heavy_equipment:
+    title: Heavy Equipment
+    description: Training and credentials for excavation and construction vehicle operation.
+    excavator-operator:
+      title: Excavator Operator
+      description: Training for safe and efficient excavator use.
+    skid-steer-operator:
+      title: Skid Steer Operator
+      description: Operating compact loaders on construction sites.
+    bulldozer-operator:
+      title: Bulldozer Operator
+      description: Credential for operating bulldozers in construction sites.
+    nccer-operator:
+      title: NCCER Heavy Equipment Operator
+      description: National credential for multi-equipment operation.
+
+  crane_rigging:
+    title: Crane & Rigging
+    description: NCCCO and union credentials for lifting operations.
+    nccco-crane-operator:
+      title: NCCCO Crane Operator
+      description: Nationally recognized license for crane operators.
+    signal-person:
+      title: Signal Person
+      description: Required for directing crane movements on site.
+    rigger:
+      title: Certified Rigger
+      description: Proper rigging practices for heavy lifting.
+
+project_management:
+  title: Project Management
+  description: Professional credentials for managing and supervising construction projects.
+  general:
+    title: Leadership & Management
+    description: Industry agnostic credentials for project management roles.
+    pmp:
+      title: Project Management Professional (PMP)
+      description: Global standard for project managers across industries.
+  construction:
+    title: Leadership & Management
+    description: Industry-standard credentials for construction management roles.
+    ccm:
+      title: Certified Construction Manager (CCM)
+      description: Premier credential for experienced construction managers.
+    associate-constructor:
+      title: Associate Constructor (AC)
+      description: Entry-level from the American Institute of Constructors.
+    cpc:
+      title: Certified Professional Constructor (CPC)
+      description: Advanced credential for project leaders.
+    lean-construction:
+      title: Lean Construction
+      description: Waste-reduction and process improvement methodologies.
+    supervisor-safety:
+      title: Supervisor Safety
+      description: Advanced safety credential for leads and foremen.
+
+sustainability:
+  title: Green & Environmental
+  description: Credentials for sustainable, efficient, and environmentally safe building practices.
+  general:
+    title: Environmental & Green Building
+    description: Credentials for environmentally responsible construction and energy efficiency.
+    epa-lead-renovator:
+      title: EPA Lead Renovator (RRP)
+      description: Required for disturbing lead-based paint in pre-1978 housing.
+    leed-green-associate:
+      title: LEED Green Associate
+      description: Entry-level for sustainable building design and construction.
+    leed-ap:
+      title: LEED Accredited Professional (AP)
+      description: Advanced credential in specific LEED tracks (BD+C, ID+C, O+M).
+    swppp:
+      title: Stormwater Pollution Prevention Plan (SWPPP)
+      description: Environmental planning for water runoff compliance.
+    energy-auditor:
+      title: Certified Energy Auditor
+      description: Measures energy efficiency in homes and buildings (BPI / RESNET).
+    nahb-green-pro:
+      title: Certified Green Professional (CGP)
+      description: Green building practices for builders and remodelers.
+
+construction_software:
+  title: Construction Software & Tools
+  description: Credentials for digital construction platforms and BIM tools.
+  general:
+    title: Software & Digital Tools
+    description: Recognized credentials for digital workflows and modeling tools.
+    procore-certified:
+      title: Procore Certified User
+      description: Training in Procore's construction project management suite.
+    autodesk-construction-cloud:
+      title: Autodesk Construction Cloud
+      description: Skill-based credential in design, plan, build, and operate modules.
+    bluebeam-certified:
+      title: Bluebeam Certified User
+      description: Using Bluebeam Revu for document markup and workflows.
+    trimble-field-tools:
+      title: Trimble Field Tools
+      description: Hardware and software for layout, scanning, and BIM.
