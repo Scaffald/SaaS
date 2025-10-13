@@ -161,16 +161,7 @@ export function ProfileExperienceLeft() {
         <XStack gap="$3">
           <YStack gap="$2" flex={1}>
             <Text fontWeight="600">Total Years Experience</Text>
-            <Controller
-              render={({ field }) => (
-                <Input
-                  placeholder="e.g. 5"
-                  value={field.value?.toString() || ''}
-                  onChangeText={(text) => field.onChange(text ? Number.parseInt(text) : undefined)}
-                  keyboardType="numeric"
-                />
-              )}
-            />
+            <Input placeholder="e.g. 5" keyboardType="numeric" disabled opacity={0.5} />
           </YStack>
 
           <YStack gap="$2" flex={1}>

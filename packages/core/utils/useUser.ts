@@ -27,8 +27,11 @@ function useProfile() {
         .eq("id", user.id)
         .single();
       if (error) {
-        // no rows - edge case of user being deleted
+        // PGRST116 = no rows - user deleted from database (e.g., after DB reset)
         if (error.code === "PGRST116") {
+          console.log(
+            "[useUser] User not found in database (likely after DB reset), signing out",
+          );
           await supabase.auth.signOut();
           return null;
         }
@@ -36,6 +39,8 @@ function useProfile() {
       }
       return data as Profile;
     },
+    // Only run query if we have a user session
+    enabled: !!user?.id,
   });
 
   return { data, isPending, refetch };

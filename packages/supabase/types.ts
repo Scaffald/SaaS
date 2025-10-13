@@ -2113,6 +2113,65 @@ export type Database = {
         };
         Relationships: [];
       };
+      role_assignments: {
+        Row: {
+          created_at: string | null;
+          id: string;
+          role_id: string;
+          scope_org_id: string | null;
+          scope_team_id: string | null;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: string;
+          role_id: string;
+          scope_org_id?: string | null;
+          scope_team_id?: string | null;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string;
+          role_id?: string;
+          scope_org_id?: string | null;
+          scope_team_id?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "role_assignments_role_id_fkey";
+            columns: ["role_id"];
+            isOneToOne: false;
+            referencedRelation: "roles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      roles: {
+        Row: {
+          created_at: string | null;
+          description: string | null;
+          id: string;
+          name: string;
+          scope: string;
+        };
+        Insert: {
+          created_at?: string | null;
+          description?: string | null;
+          id?: string;
+          name: string;
+          scope: string;
+        };
+        Update: {
+          created_at?: string | null;
+          description?: string | null;
+          id?: string;
+          name?: string;
+          scope?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -2380,6 +2439,7 @@ export type Database = {
         Row: {
           address: Json | null;
           created_at: string;
+          description: string | null;
           geo: unknown | null;
           id: string;
           industry_id: string | null;
@@ -2390,10 +2450,12 @@ export type Database = {
           slug: string;
           updated_at: string;
           visibility: string | null;
+          website: string | null;
         };
         Insert: {
           address?: Json | null;
           created_at?: string;
+          description?: string | null;
           geo?: unknown | null;
           id?: string;
           industry_id?: string | null;
@@ -2404,10 +2466,12 @@ export type Database = {
           slug: string;
           updated_at?: string;
           visibility?: string | null;
+          website?: string | null;
         };
         Update: {
           address?: Json | null;
           created_at?: string;
+          description?: string | null;
           geo?: unknown | null;
           id?: string;
           industry_id?: string | null;
@@ -2418,6 +2482,7 @@ export type Database = {
           slug?: string;
           updated_at?: string;
           visibility?: string | null;
+          website?: string | null;
         };
         Relationships: [
           {
@@ -2432,6 +2497,13 @@ export type Database = {
             columns: ["owner_user_id"];
             isOneToOne: false;
             referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "organizations_owner_user_id_fkey";
+            columns: ["owner_user_id"];
+            isOneToOne: false;
+            referencedRelation: "v_profile_search";
             referencedColumns: ["id"];
           },
         ];
@@ -2549,6 +2621,13 @@ export type Database = {
             referencedRelation: "users";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "reviews_author_user_id_fkey";
+            columns: ["author_user_id"];
+            isOneToOne: false;
+            referencedRelation: "v_profile_search";
+            referencedColumns: ["id"];
+          },
         ];
       };
       skills: {
@@ -2630,6 +2709,13 @@ export type Database = {
             referencedRelation: "users";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "team_members_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "v_profile_search";
+            referencedColumns: ["id"];
+          },
         ];
       };
       teams: {
@@ -2669,6 +2755,13 @@ export type Database = {
             columns: ["created_by"];
             isOneToOne: false;
             referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "teams_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "v_profile_search";
             referencedColumns: ["id"];
           },
           {
@@ -2738,10 +2831,24 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
+            foreignKeyName: "user_skills_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "v_profile_search";
+            referencedColumns: ["id"];
+          },
+          {
             foreignKeyName: "user_skills_verified_by_fkey";
             columns: ["verified_by"];
             isOneToOne: false;
             referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_skills_verified_by_fkey";
+            columns: ["verified_by"];
+            isOneToOne: false;
+            referencedRelation: "v_profile_search";
             referencedColumns: ["id"];
           },
         ];
@@ -2816,7 +2923,32 @@ export type Database = {
       };
     };
     Views: {
-      [_ in never]: never;
+      v_profile_search: {
+        Row: {
+          availability: string[] | null;
+          avatar_url: string | null;
+          bio: string | null;
+          certifications: string[] | null;
+          created_at: string | null;
+          education_level: string | null;
+          gamified_score: number | null;
+          headline: string | null;
+          hourly_rate_cents: number | null;
+          id: string | null;
+          industry_name: string | null;
+          latitude: number | null;
+          location: string | null;
+          longitude: number | null;
+          name: string | null;
+          open_to_travel: boolean | null;
+          open_to_work: boolean | null;
+          skills_summary: Json | null;
+          travel_mileage: number | null;
+          updated_at: string | null;
+          years_of_experience: number | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       citext: {
@@ -2843,6 +2975,22 @@ export type Database = {
         Args: { "": string };
         Returns: string;
       };
+      get_organizations_with_coords: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          address: Json;
+          id: string;
+          industry_name: string;
+          latitude: number;
+          longitude: number;
+          name: string;
+          slug: string;
+        }[];
+      };
+      jitter_coordinate: {
+        Args: { coord: number; max_offset_degrees?: number };
+        Returns: number;
+      };
       search_all_skills: {
         Args: { search_term: string; taxonomy_filter?: string };
         Returns: {
@@ -2853,6 +3001,10 @@ export type Database = {
           skill_id: string;
           taxonomy: string;
         }[];
+      };
+      user_has_role: {
+        Args: { p_org_id?: string; p_role_name: string; p_user_id: string };
+        Returns: boolean;
       };
     };
     Enums: {

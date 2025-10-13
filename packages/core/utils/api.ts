@@ -1,7 +1,8 @@
-import { httpBatchLink } from "@trpc/client";
+import { httpBatchLink, TRPCClientError, type TRPCLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
 import { Platform } from "react-native";
 import type { AppRouter } from "@app/supabase/client-types";
+import { observable } from "@trpc/server/observable";
 
 import { getBaseUrl } from "./getBaseUrl";
 import { supabase } from "./supabase/client";
@@ -10,10 +11,40 @@ import { supabase } from "./supabase/client";
 // biome-ignore lint/suspicious/noExplicitAny: Required for cross-environment tRPC compatibility
 export const api = createTRPCReact<AppRouter>() as any;
 
+// Custom error handling link type
+const sessionValidationLink: TRPCLink<AppRouter> = () => {
+  return ({ next, op }) => {
+    return observable((observer) => {
+      const unsubscribe = next(op).subscribe({
+        next: observer.next.bind(observer),
+        error: async (err) => {
+          // Check if this is an UNAUTHORIZED error indicating invalid session
+          if (
+            err instanceof TRPCClientError &&
+            err.data?.code === "UNAUTHORIZED"
+          ) {
+            console.log(
+              "[tRPC] Invalid session detected (likely after DB reset), signing out",
+            );
+            // Sign out to clear the invalid session
+            await supabase.auth.signOut();
+          }
+          observer.error(err);
+        },
+        complete: observer.complete.bind(observer),
+      });
+      return unsubscribe;
+    });
+  };
+};
+
 export const createTrpcClient = () =>
   // biome-ignore lint/suspicious/noExplicitAny: Required for tRPC router compatibility
   (api as any).createClient({
     links: [
+      // Error handling link - detects invalid sessions and signs out
+      // This prevents stale sessions after DB resets from causing issues
+      sessionValidationLink,
       httpBatchLink({
         url: `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/trpc`,
         async headers() {
