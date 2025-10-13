@@ -131,6 +131,28 @@ WHERE r.name = 'office'
   )
 ON CONFLICT DO NOTHING; -- Skip if role assignment already exists
 
+-- Update geo coordinates for users based on their location
+-- This populates the PostGIS geography field for the v_profile_search view
+UPDATE private.profile
+SET geo = ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography
+FROM (VALUES
+  -- Massachusetts locations
+  ('Ipswich, Massachusetts, United States', -70.8417, 42.6792),
+  ('Clare, Michigan, United States', -84.7697, 43.8197),
+  ('Boston, Massachusetts, United States', -71.0589, 42.3601),
+  ('Gloucester, Massachusetts, United States', -70.6620, 42.6159),
+  ('Braintree, Massachusetts, United States', -71.0020, 42.2084),
+  ('Manchester, New Hampshire, United States', -71.5381, 42.9956),
+  ('Kentucky, United States', -85.7585, 37.8393),
+  ('Peabody, Massachusetts, United States', -70.9286, 42.5334),
+  ('Salem, Massachusetts, United States', -70.8967, 42.5195),
+  ('Beverly, Massachusetts, United States', -70.8800, 42.5584),
+  ('Wenham, Massachusetts, United States', -70.8878, 42.6042),
+  ('Danvers, Massachusetts, United States', -70.9300, 42.5751),
+  ('Massachusetts, United States', -71.3824, 42.4072)
+) AS coords(location_text, longitude, latitude)
+WHERE private.profile.location = coords.location_text;
+
 COMMIT;
 
 -- =========================================================

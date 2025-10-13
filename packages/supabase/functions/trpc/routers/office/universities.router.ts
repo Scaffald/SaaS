@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {
   protectedProcedure,
-  superAdminProcedure,
+  officeProcedure,
   t,
 } from "../../middleware.ts";
 
@@ -13,7 +13,7 @@ export const officeUniversitiesRouter = t.router({
   /**
    * Get paginated list of universities
    */
-  getUniversities: superAdminProcedure
+  getUniversities: officeProcedure
     .input(
       z.object({
         page: z.number().min(1).default(1),
@@ -72,7 +72,7 @@ export const officeUniversitiesRouter = t.router({
   /**
    * Get single university by ID
    */
-  getUniversity: superAdminProcedure
+  getUniversity: officeProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { supabase } = ctx;
@@ -132,7 +132,7 @@ export const officeUniversitiesRouter = t.router({
   /**
    * Get list of countries with university counts
    */
-  getCountries: superAdminProcedure.query(async ({ ctx }) => {
+  getCountries: officeProcedure.query(async ({ ctx }) => {
     const { supabase } = ctx;
 
     const { data, error } = await supabase
@@ -177,7 +177,7 @@ export const officeUniversitiesRouter = t.router({
   /**
    * Create new university
    */
-  createUniversity: superAdminProcedure
+  createUniversity: officeProcedure
     .input(
       z.object({
         name: z.string().min(1, "Name is required"),
@@ -252,7 +252,7 @@ export const officeUniversitiesRouter = t.router({
   /**
    * Update existing university
    */
-  updateUniversity: superAdminProcedure
+  updateUniversity: officeProcedure
     .input(
       z.object({
         id: z.string().uuid(),
@@ -334,7 +334,7 @@ export const officeUniversitiesRouter = t.router({
   /**
    * Delete (soft delete) university
    */
-  deleteUniversity: superAdminProcedure
+  deleteUniversity: officeProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const { supabase } = ctx;
@@ -390,7 +390,7 @@ export const officeUniversitiesRouter = t.router({
   /**
    * Get statistics about universities
    */
-  getStatistics: superAdminProcedure.query(async ({ ctx }) => {
+  getStatistics: officeProcedure.query(async ({ ctx }) => {
     const { supabase } = ctx;
 
     // Get total count

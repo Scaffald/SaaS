@@ -19,19 +19,19 @@ export const DrawerContent = ({
   onToggleExpanded,
   drawerProps,
 }: DrawerContentProps) => {
-  const { isSuperAdmin, roles, isLoading } = useUserRoles()
+  const { hasOfficeRole, roles, isLoading } = useUserRoles()
 
   // Debug logging
   console.log('[DrawerContent] Role status:', {
-    isSuperAdmin,
+    hasOfficeRole,
     roles,
     isLoading,
-    willShowOffice: isSuperAdmin,
+    willShowOffice: hasOfficeRole,
   })
 
-  // Get drawer sections with Office link if user is admin
+  // Get drawer sections with Office link if user has office role
   const drawerSections = getDrawerSections({
-    includeOfficeLink: isSuperAdmin,
+    includeOfficeLink: hasOfficeRole,
   })
 
   return (

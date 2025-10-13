@@ -22,24 +22,24 @@ export const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 });
 
 /**
- * Middleware to enforce super admin role
- * Checks if user has super_admin role before proceeding
+ * Middleware to enforce office role
+ * Checks if user has office role before proceeding
  */
-export const enforceSuperAdmin = t.middleware(async ({ ctx, next }) => {
+export const enforceOfficeRole = t.middleware(async ({ ctx, next }) => {
   if (!ctx.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
   const { data, error } = await ctx.supabase.rpc("user_has_role", {
     p_user_id: ctx.user.id,
-    p_role_name: "super_admin",
+    p_role_name: "office",
     p_org_id: null,
   });
 
   if (error || !data) {
     throw new TRPCError({
       code: "FORBIDDEN",
-      message: "Super admin access required",
+      message: "Office access required",
     });
   }
 
@@ -57,6 +57,6 @@ export const publicProcedure = t.procedure;
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
 
 /**
- * Super admin procedure - requires super admin role
+ * Office procedure - requires office role
  */
-export const superAdminProcedure = t.procedure.use(enforceSuperAdmin);
+export const officeProcedure = t.procedure.use(enforceOfficeRole);
