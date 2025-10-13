@@ -27,10 +27,10 @@ export const profileGeneralRouter = t.router({
       console.error("Error fetching auth user:", authError.message);
     }
 
-    // Get profile data from users table (includes about)
+    // Get profile data from users table (public data only)
     const { data: profile, error: profileError } = await supabase
       .from("users")
-      .select("first_name, last_name, avatar_path, about")
+      .select("avatar_path, about")
       .eq("id", user.id)
       .single();
 
@@ -41,11 +41,11 @@ export const profileGeneralRouter = t.router({
       });
     }
 
-    // Get address from private.profile table
+    // Get PII data from private.profile table (first_name, last_name, address)
     const { data: privateData, error: privateError } = await supabase
       .schema("private")
       .from("profile")
-      .select("address")
+      .select("first_name, last_name, address")
       .eq("user_id", user.id)
       .single();
 
@@ -59,8 +59,8 @@ export const profileGeneralRouter = t.router({
     console.log("Auth user email:", authUser?.user?.email);
 
     return {
-      first_name: profile?.first_name || "",
-      last_name: profile?.last_name || "",
+      first_name: privateData?.first_name || "",
+      last_name: privateData?.last_name || "",
       avatar_path: profile?.avatar_path || "",
       email: authUser?.user?.email || "",
       phone: authUser?.user?.phone || "",
@@ -81,18 +81,12 @@ export const profileGeneralRouter = t.router({
       // Note: Email and phone updates are not supported
       // These fields are read-only and come from the auth system
 
-      // Build profile update object with only provided fields
+      // Build profile update object with only provided fields (public data)
       const profileUpdate: ProfileUpdate & { about?: string } = {
         id: user.id,
         updated_at: new Date().toISOString(),
       };
 
-      if (input.first_name !== undefined) {
-        profileUpdate.first_name = input.first_name;
-      }
-      if (input.last_name !== undefined) {
-        profileUpdate.last_name = input.last_name;
-      }
       if (input.avatar_path !== undefined) {
         profileUpdate.avatar_path = input.avatar_path;
       }
@@ -115,18 +109,39 @@ export const profileGeneralRouter = t.router({
         }
       }
 
-      // Build private.profile update object with only provided fields (just address)
+      // Build private.profile update object with only provided fields (PII data)
       const privateUpdate: UserPrivateUpdate & {
+        first_name?: string;
+        last_name?: string;
         address?: Record<string, unknown>;
+        geo?: string;
       } = {
         user_id: user.id,
         updated_at: new Date().toISOString(),
       };
 
+      if (input.first_name !== undefined) {
+        privateUpdate.first_name = input.first_name;
+      }
+      if (input.last_name !== undefined) {
+        privateUpdate.last_name = input.last_name;
+      }
       if (input.address !== undefined) {
         privateUpdate.address = input.address === null
           ? undefined
           : input.address;
+
+        // If address has lat/lng, convert to PostGIS POINT for geo field
+        if (
+          input.address && typeof input.address === "object" &&
+          "latitude" in input.address && "longitude" in input.address &&
+          input.address.latitude !== undefined &&
+          input.address.longitude !== undefined
+        ) {
+          // PostGIS POINT format: POINT(longitude latitude)
+          privateUpdate.geo =
+            `POINT(${input.address.longitude} ${input.address.latitude})`;
+        }
       }
 
       // Update private.profile table only if there are fields to update

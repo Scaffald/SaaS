@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { superAdminProcedure, t } from "../middleware.ts";
+import { officeProcedure, t } from "../middleware.ts";
 import { jobCreateSchema, jobUpdateSchema } from "../../_shared/job-schemas.ts";
 import {
   employmentProfileSchema,
@@ -18,7 +18,7 @@ export const officeRouter = t.router({
    * List all users
    * Returns paginated list of users with basic profile info
    */
-  listUsers: superAdminProcedure.query(async ({ ctx }) => {
+  listUsers: officeProcedure.query(async ({ ctx }) => {
     const { data, error, count } = await ctx.supabaseAdmin
       .from("users")
       .select(
@@ -43,7 +43,7 @@ export const officeRouter = t.router({
   /**
    * Get user details
    */
-  getUser: superAdminProcedure
+  getUser: officeProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       // Get profile data
@@ -82,7 +82,7 @@ export const officeRouter = t.router({
   /**
    * Update user profile and private data
    */
-  updateUser: superAdminProcedure
+  updateUser: officeProcedure
     .input(
       z.object({
         id: z.string().uuid(),
@@ -148,7 +148,7 @@ export const officeRouter = t.router({
    * List all jobs (admin view)
    * Returns jobs with optional filters
    */
-  listJobs: superAdminProcedure
+  listJobs: officeProcedure
     .input(
       z.object({
         organization_id: z.string().uuid().optional(),
@@ -209,7 +209,7 @@ export const officeRouter = t.router({
   /**
    * Get single job with full details
    */
-  getJob: superAdminProcedure
+  getJob: officeProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { data, error } = await ctx.supabaseAdmin
@@ -251,7 +251,7 @@ export const officeRouter = t.router({
   /**
    * Create new job
    */
-  createJob: superAdminProcedure
+  createJob: officeProcedure
     .input(jobCreateSchema)
     .mutation(async ({ ctx, input }) => {
       const { supabaseAdmin, user } = ctx;
@@ -315,7 +315,7 @@ export const officeRouter = t.router({
   /**
    * Update existing job
    */
-  updateJob: superAdminProcedure
+  updateJob: officeProcedure
     .input(jobUpdateSchema)
     .mutation(async ({ ctx, input }) => {
       const { supabaseAdmin } = ctx;
@@ -382,7 +382,7 @@ export const officeRouter = t.router({
   /**
    * Publish job (draft -> open)
    */
-  publishJob: superAdminProcedure
+  publishJob: officeProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const { data: job, error } = await ctx.supabaseAdmin
@@ -408,7 +408,7 @@ export const officeRouter = t.router({
   /**
    * Close job
    */
-  closeJob: superAdminProcedure
+  closeJob: officeProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const { data: job, error } = await ctx.supabaseAdmin
@@ -432,7 +432,7 @@ export const officeRouter = t.router({
    * Delete job (hard delete)
    * Removes job and related records permanently
    */
-  deleteJob: superAdminProcedure
+  deleteJob: officeProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const { supabaseAdmin } = ctx;
@@ -470,7 +470,7 @@ export const officeRouter = t.router({
    * Get all organizations (admin view)
    * Super admins can see and manage jobs for any organization
    */
-  getOrganizations: superAdminProcedure.query(async ({ ctx }) => {
+  getOrganizations: officeProcedure.query(async ({ ctx }) => {
     const { data, error } = await ctx.supabaseAdmin
       .from("organizations")
       .select("id, name, slug, owner_user_id")
@@ -489,7 +489,7 @@ export const officeRouter = t.router({
   /**
    * List organizations with pagination and search
    */
-  listOrganizations: superAdminProcedure
+  listOrganizations: officeProcedure
     .input(
       z.object({
         limit: z.number().min(1).max(100).default(50),
@@ -548,7 +548,7 @@ export const officeRouter = t.router({
   /**
    * Get single organization with full details
    */
-  getOrganization: superAdminProcedure
+  getOrganization: officeProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { data, error } = await ctx.supabaseAdmin
@@ -575,7 +575,7 @@ export const officeRouter = t.router({
   /**
    * Create new organization
    */
-  createOrganization: superAdminProcedure
+  createOrganization: officeProcedure
     .input(
       z.object({
         name: z.string().min(1, "Name is required"),
@@ -632,7 +632,7 @@ export const officeRouter = t.router({
   /**
    * Update existing organization
    */
-  updateOrganization: superAdminProcedure
+  updateOrganization: officeProcedure
     .input(
       z.object({
         id: z.string().uuid(),
@@ -693,7 +693,7 @@ export const officeRouter = t.router({
    * - Follows
    * - Invites
    */
-  deleteOrganization: superAdminProcedure
+  deleteOrganization: officeProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const { error } = await ctx.supabaseAdmin
@@ -714,7 +714,7 @@ export const officeRouter = t.router({
   /**
    * Search certifications with pagination
    */
-  searchCertifications: superAdminProcedure
+  searchCertifications: officeProcedure
     .input(
       z.object({
         query: z.string().optional(),
@@ -770,7 +770,7 @@ export const officeRouter = t.router({
    * Create new user (sends invite email)
    * Creates user in Supabase Auth and sends invite email
    */
-  createUser: superAdminProcedure
+  createUser: officeProcedure
     .input(
       z.object({
         email: z.string().email("Valid email required"),
@@ -822,7 +822,7 @@ export const officeRouter = t.router({
    * Delete user (hard delete)
    * Permanently removes user and all related data
    */
-  deleteUser: superAdminProcedure
+  deleteUser: officeProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const { supabaseAdmin } = ctx;
@@ -897,7 +897,7 @@ export const officeRouter = t.router({
   /**
    * Get all certifications (simple list)
    */
-  getCertifications: superAdminProcedure.query(async ({ ctx }) => {
+  getCertifications: officeProcedure.query(async ({ ctx }) => {
     const { data, error } = await ctx.supabaseAdmin
       .from("certifications")
       .select("*")
@@ -917,7 +917,7 @@ export const officeRouter = t.router({
   /**
    * Get single certification by ID
    */
-  getCertification: superAdminProcedure
+  getCertification: officeProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { data, error } = await ctx.supabaseAdmin
@@ -939,7 +939,7 @@ export const officeRouter = t.router({
   /**
    * Create new certification
    */
-  createCertification: superAdminProcedure
+  createCertification: officeProcedure
     .input(
       z.object({
         name: z.string().min(1, "Name is required"),
@@ -983,7 +983,7 @@ export const officeRouter = t.router({
   /**
    * Update existing certification
    */
-  updateCertification: superAdminProcedure
+  updateCertification: officeProcedure
     .input(
       z.object({
         id: z.string().uuid(),
@@ -1029,7 +1029,7 @@ export const officeRouter = t.router({
   /**
    * Deactivate certification (soft delete)
    */
-  deactivateCertification: superAdminProcedure
+  deactivateCertification: officeProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const { data, error } = await ctx.supabaseAdmin
@@ -1052,7 +1052,7 @@ export const officeRouter = t.router({
   /**
    * Reactivate certification
    */
-  reactivateCertification: superAdminProcedure
+  reactivateCertification: officeProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const { data, error } = await ctx.supabaseAdmin
@@ -1076,7 +1076,7 @@ export const officeRouter = t.router({
    * Get all skills
    * TODO: Update to query from polymorphic skill sources (CSI, O*NET)
    */
-  getSkills: superAdminProcedure.query(async ({ ctx }) => {
+  getSkills: officeProcedure.query(async ({ ctx }) => {
     // For now, return empty array since the skills table no longer exists
     // This needs to be updated to query csi.masterformat and onet.occupation_data
     return { skills: [] };
@@ -1086,7 +1086,7 @@ export const officeRouter = t.router({
    * Get user general profile data (admin)
    * Uses the same schema as user profile for consistency
    */
-  getUserGeneral: superAdminProcedure
+  getUserGeneral: officeProcedure
     .input(z.object({ userId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { data: profile, error: profileError } = await ctx.supabaseAdmin
@@ -1146,7 +1146,7 @@ export const officeRouter = t.router({
    * Update user general profile (admin)
    * Uses the same schema as user profile for consistency
    */
-  updateUserGeneral: superAdminProcedure
+  updateUserGeneral: officeProcedure
     .input(
       z.object({
         userId: z.string().uuid(),
@@ -1227,7 +1227,7 @@ export const officeRouter = t.router({
    * Get user employment data (admin)
    * Uses the same schema as user profile for consistency
    */
-  getUserEmployment: superAdminProcedure
+  getUserEmployment: officeProcedure
     .input(z.object({ userId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { data, error } = await ctx.supabaseAdmin
@@ -1263,7 +1263,7 @@ export const officeRouter = t.router({
    * Update user employment data (admin)
    * Uses the same schema as user profile for consistency
    */
-  updateUserEmployment: superAdminProcedure
+  updateUserEmployment: officeProcedure
     .input(
       z.object({
         userId: z.string().uuid(),

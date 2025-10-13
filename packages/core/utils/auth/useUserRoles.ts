@@ -22,6 +22,6 @@ export function useUserRoles() {
       console.log(`[useUserRoles] Checking role "${roleName}":`, hasRole);
       return hasRole;
     },
-    isSuperAdmin: data?.roles?.includes("super_admin") ?? false,
+    hasOfficeRole: data?.roles?.includes("office") ?? false,
   };
 }
