@@ -31,7 +31,7 @@ SELECT
   users.id::uuid,
   users.email,
   NULLIF(users.phone, ''),  -- Convert empty strings to NULL
-  crypt('password123', gen_salt('bf')),
+  extensions.crypt('password123', extensions.gen_salt('bf')),
   NOW(),
   '{"provider": "email", "providers": ["email"]}'::jsonb,
   jsonb_build_object(

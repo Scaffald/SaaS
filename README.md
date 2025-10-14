@@ -1,3 +1,5 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/ce335a05-285b-4e5b-84f9-5da31a6cdf6f/deploy-status)](https://app.netlify.com/projects/scaffald/deploys)
+
 ## Getting Started
 
 If you're getting issues with the /android or /ios directories when setting up the starter, you can safely remove them and re-generate them using `pnpm ios` and `pnpm android`.

@@ -114,7 +114,6 @@ export type Database = {
       }
       universities: {
         Row: {
-          active: boolean | null
           alpha_two_code: string | null
           country: string
           created_at: string | null
@@ -128,7 +127,6 @@ export type Database = {
           web_pages: string[] | null
         }
         Insert: {
-          active?: boolean | null
           alpha_two_code?: string | null
           country: string
           created_at?: string | null
@@ -142,7 +140,6 @@ export type Database = {
           web_pages?: string[] | null
         }
         Update: {
-          active?: boolean | null
           alpha_two_code?: string | null
           country?: string
           created_at?: string | null
@@ -185,7 +182,6 @@ export type Database = {
       search_universities: {
         Args: { p_country?: string; p_limit?: number; p_query: string }
         Returns: {
-          active: boolean | null
           alpha_two_code: string | null
           country: string
           created_at: string | null
@@ -2259,6 +2255,105 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
           verification_status?: string | null
+        }
+        Relationships: []
+      }
+      user_education: {
+        Row: {
+          created_at: string | null
+          degree_type: string | null
+          description: string | null
+          end_date: string | null
+          field_of_study: string | null
+          id: string
+          institution_name: string | null
+          is_current: boolean | null
+          location: string | null
+          start_date: string | null
+          university_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          degree_type?: string | null
+          description?: string | null
+          end_date?: string | null
+          field_of_study?: string | null
+          id?: string
+          institution_name?: string | null
+          is_current?: boolean | null
+          location?: string | null
+          start_date?: string | null
+          university_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          degree_type?: string | null
+          description?: string | null
+          end_date?: string | null
+          field_of_study?: string | null
+          id?: string
+          institution_name?: string | null
+          is_current?: boolean | null
+          location?: string | null
+          start_date?: string | null
+          university_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_experience: {
+        Row: {
+          company_name: string
+          created_at: string | null
+          description: string | null
+          employment_type: string | null
+          end_date: string | null
+          id: string
+          is_current: boolean | null
+          is_remote: boolean | null
+          job_title: string
+          location: string | null
+          organization_id: string | null
+          start_date: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          company_name: string
+          created_at?: string | null
+          description?: string | null
+          employment_type?: string | null
+          end_date?: string | null
+          id?: string
+          is_current?: boolean | null
+          is_remote?: boolean | null
+          job_title: string
+          location?: string | null
+          organization_id?: string | null
+          start_date?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          company_name?: string
+          created_at?: string | null
+          description?: string | null
+          employment_type?: string | null
+          end_date?: string | null
+          id?: string
+          is_current?: boolean | null
+          is_remote?: boolean | null
+          job_title?: string
+          location?: string | null
+          organization_id?: string | null
+          start_date?: string | null
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
