@@ -2,8 +2,20 @@
 // Seeds universities from JSON file into the universities catalog table
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { Client } from "pg";
+import { createClient } from "@supabase/supabase-js";
 import { v5 as uuidv5 } from "uuid";
+
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL ||
+  "http://127.0.0.1:54321";
+const supabaseServiceKey = process.env.SUPABASE_SECRET || "";
+
+if (!supabaseServiceKey) {
+  console.error("❌ SUPABASE_SECRET is required");
+  console.error("💡 Get it from: pnpm supa status");
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 // =========================================================
 // Types
@@ -118,86 +130,45 @@ function processUniversities(
 // =========================================================
 
 async function upsertUniversities(
-  client: Client,
   universities: ProcessedUniversity[],
 ): Promise<void> {
   const batchSize = 500;
-  let totalInserted = 0;
-  let totalUpdated = 0;
 
   for (let i = 0; i < universities.length; i += batchSize) {
     const batch = universities.slice(i, i + batchSize);
-    const values: unknown[] = [];
-    const placeholders: string[] = [];
 
-    batch.forEach((uni, idx) => {
-      const offset = idx * 9;
-      placeholders.push(
-        `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${
-          offset + 5
-        }, $${offset + 6}::text[], $${offset + 7}::text[], $${offset + 8}, $${
-          offset + 9
-        }::jsonb)`,
-      );
+    // Prepare records for Supabase upsert
+    const batchData = batch.map((uni) => ({
+      id: uni.id,
+      name: uni.name,
+      slug: uni.slug,
+      country: uni.country,
+      alpha_two_code: uni.alpha_two_code,
+      domains: uni.domains,
+      web_pages: uni.web_pages,
+      state_province: uni.state_province,
+      metadata: uni.metadata,
+    }));
 
-      values.push(
-        uni.id,
-        uni.name,
-        uni.slug,
-        uni.country,
-        uni.alpha_two_code,
-        uni.domains,
-        uni.web_pages,
-        uni.state_province,
-        JSON.stringify(uni.metadata),
-      );
-    });
+    const { error } = await supabase
+      .schema("data")
+      .from("universities")
+      .upsert(batchData, {
+        onConflict: "slug",
+      });
 
-    const sql = `
-      INSERT INTO data.universities (
-        id, 
-        name, 
-        slug, 
-        country, 
-        alpha_two_code, 
-        domains, 
-        web_pages, 
-        state_province, 
-        metadata
-      )
-      VALUES ${placeholders.join(",")}
-      ON CONFLICT (slug) 
-      DO UPDATE SET
-        name = EXCLUDED.name,
-        country = EXCLUDED.country,
-        alpha_two_code = EXCLUDED.alpha_two_code,
-        domains = EXCLUDED.domains,
-        web_pages = EXCLUDED.web_pages,
-        state_province = EXCLUDED.state_province,
-        metadata = EXCLUDED.metadata,
-        updated_at = NOW()
-      RETURNING (xmax = 0) AS inserted;
-    `;
-
-    const result = await client.query(sql, values);
-
-    // Count inserts vs updates
-    const inserted = result.rows.filter((r) => r.inserted).length;
-    const updated = result.rows.length - inserted;
-    totalInserted += inserted;
-    totalUpdated += updated;
+    if (error) {
+      throw new Error(`Failed to upsert batch: ${error.message}`);
+    }
 
     console.log(
       `Batch ${i / batchSize + 1}/${
         Math.ceil(universities.length / batchSize)
-      }: ` +
-        `${inserted} inserted, ${updated} updated`,
+      }: ${batch.length} records processed`,
     );
   }
 
-  console.log(
-    `\nTotal: ${totalInserted} inserted, ${totalUpdated} updated, ${universities.length} processed`,
-  );
+  console.log(`\nTotal: ${universities.length} universities processed`);
 }
 
 // =========================================================
@@ -285,38 +256,14 @@ async function main(): Promise<void> {
   // Display statistics
   displayStatistics(universities);
 
-  // Connect to database
-  const databaseUrl = process.env.DATABASE_URL;
-  if (!databaseUrl) {
-    console.error("\n❌ Error: DATABASE_URL environment variable is not set");
-    console.error("Set it to your Supabase local connection string:");
-    console.error(
-      "  export DATABASE_URL='postgresql://postgres:postgres@localhost:54322/postgres'",
-    );
-    process.exit(1);
-  }
-
-  const client = new Client({ connectionString: databaseUrl });
-
   try {
-    console.log("\n🔌 Connecting to database...");
-    await client.connect();
-    console.log("✓ Connected");
+    console.log("\n💾 Upserting universities...");
+    await upsertUniversities(universities);
 
-    console.log("\n📝 Starting transaction...");
-    await client.query("BEGIN");
-
-    console.log("💾 Upserting universities...");
-    await upsertUniversities(client, universities);
-
-    await client.query("COMMIT");
     console.log("\n✓ Successfully seeded universities catalog!");
   } catch (err) {
-    await client.query("ROLLBACK");
     console.error("\n❌ Error seeding database:", err);
     process.exitCode = 1;
-  } finally {
-    await client.end();
   }
 }
 
