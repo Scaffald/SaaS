@@ -15,12 +15,8 @@ const educationEntrySchema = z.object({
   start_date: z.string().optional().nullable(),
   end_date: z.string().optional().nullable(),
   is_current: z.boolean().default(false),
-  gpa: z.number().min(0).max(4.0).optional().nullable(),
-  honors: z.array(z.string()).optional().nullable(),
-  activities: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
   location: z.string().optional().nullable(),
-  is_verified: z.boolean().default(false),
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
 });
@@ -58,6 +54,7 @@ export const profileEducationRouter = t.router({
       const { supabase, user } = ctx;
 
       const { data, error } = await supabase
+        .schema("private")
         .from("user_education")
         .select("*")
         .eq("user_id", user.id)
@@ -154,6 +151,7 @@ export const profileEducationRouter = t.router({
           if (edu.id) {
             // Update existing education
             const { data, error } = await supabase
+              .schema("private")
               .from("user_education")
               .update({
                 university_id: edu.university_id,
@@ -163,12 +161,8 @@ export const profileEducationRouter = t.router({
                 start_date: edu.start_date || null,
                 end_date: edu.end_date || null,
                 is_current: edu.is_current,
-                gpa: edu.gpa || null,
-                honors: edu.honors || null,
-                activities: edu.activities || null,
                 description: edu.description || null,
                 location: edu.location || null,
-                is_verified: edu.is_verified,
                 updated_at: new Date().toISOString(),
               })
               .eq("id", edu.id)
@@ -187,6 +181,7 @@ export const profileEducationRouter = t.router({
           } else {
             // Create new education
             const { data, error } = await supabase
+              .schema("private")
               .from("user_education")
               .insert({
                 user_id: user.id,
@@ -197,12 +192,8 @@ export const profileEducationRouter = t.router({
                 start_date: edu.start_date || null,
                 end_date: edu.end_date || null,
                 is_current: edu.is_current,
-                gpa: edu.gpa || null,
-                honors: edu.honors || null,
-                activities: edu.activities || null,
                 description: edu.description || null,
                 location: edu.location || null,
-                is_verified: edu.is_verified,
               })
               .select()
               .single();
@@ -245,6 +236,7 @@ export const profileEducationRouter = t.router({
 
       try {
         const { error } = await supabase
+          .schema("private")
           .from("user_education")
           .delete()
           .eq("id", input.educationId)

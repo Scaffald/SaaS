@@ -670,7 +670,6 @@ CREATE TABLE data.universities (
   web_pages TEXT[] DEFAULT ARRAY[]::TEXT[],
   
   -- Metadata
-  active BOOLEAN DEFAULT true,
   metadata JSONB DEFAULT '{}'::jsonb,
   
   -- Timestamps

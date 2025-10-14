@@ -332,15 +332,20 @@ BEGIN
   RETURN QUERY
   SELECT u.*
   FROM data.universities u
-  WHERE u.active = true
-    AND u.name % p_query
+  WHERE u.name ILIKE '%' || p_query || '%'
     AND (p_country IS NULL OR u.country = p_country)
-  ORDER BY similarity(u.name, p_query) DESC, u.name
+  ORDER BY 
+    CASE 
+      WHEN u.name ILIKE p_query || '%' THEN 1
+      WHEN u.name ILIKE '% ' || p_query || '%' THEN 2
+      ELSE 3
+    END,
+    u.name
   LIMIT p_limit;
 END;
 $$ LANGUAGE plpgsql STABLE;
 
-COMMENT ON FUNCTION data.search_universities IS 'Search universities by name with optional country filter';
+COMMENT ON FUNCTION data.search_universities IS 'Search universities by name with optional country filter (case-insensitive)';
 
 -- =========================================================
 -- SECTION 6: O*NET FUNCTIONS (PLACEHOLDER)

@@ -109,35 +109,6 @@ export function ProfileEducationRight() {
                   </YStack>
                 )}
 
-                {/* GPA */}
-                {edu.gpa && (
-                  <Text fontSize="$2" color="$color11" fontWeight="600">
-                    GPA: {edu.gpa.toFixed(2)}
-                  </Text>
-                )}
-
-                {/* Honors */}
-                {edu.honors && edu.honors.length > 0 && (
-                  <YStack gap="$1">
-                    <Award size={16} color="$color11" />
-                    <Text fontSize="$2" color="$color11">
-                      {edu.honors.join(', ')}
-                    </Text>
-                  </YStack>
-                )}
-
-                {/* Activities */}
-                {edu.activities && (
-                  <YStack gap="$1">
-                    <Text fontSize="$2" fontWeight="600" color="$color11">
-                      Activities:
-                    </Text>
-                    <Text fontSize="$2" color="$color11">
-                      {edu.activities}
-                    </Text>
-                  </YStack>
-                )}
-
                 {/* Description */}
                 {edu.description && (
                   <YStack gap="$1">

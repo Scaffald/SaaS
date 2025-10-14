@@ -43,7 +43,6 @@ export const experienceProfileSchema = z.object({
           ])
           .optional(),
         salary_range: z.string().optional(),
-        is_verified: z.boolean().default(false),
       }),
     )
     .optional(),
@@ -84,7 +83,6 @@ export const createNewExperienceEntry = () => ({
   industry: "",
   company_size: undefined,
   salary_range: "",
-  is_verified: false,
 });
 
 // Employment type options
