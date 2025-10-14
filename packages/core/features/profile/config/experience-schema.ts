@@ -9,6 +9,7 @@ export const experienceProfileSchema = z.object({
     .array(
       z.object({
         id: z.string().uuid().optional(),
+        organization_id: z.string().uuid().optional(),
         job_title: z.string().min(1, "Job title is required"),
         company_name: z.string().min(1, "Company name is required"),
         employment_type: z
@@ -28,21 +29,6 @@ export const experienceProfileSchema = z.object({
         end_date: z.string().optional(), // ISO date string
         is_current: z.boolean().default(false),
         description: z.string().max(2000).optional(),
-        key_achievements: z.array(z.string()).optional(),
-        skills_used: z.array(z.string()).optional(),
-        industry: z.string().optional(),
-        company_size: z
-          .enum([
-            "1-10 employees",
-            "11-50 employees",
-            "51-200 employees",
-            "201-500 employees",
-            "501-1000 employees",
-            "1001-5000 employees",
-            "5001+ employees",
-          ])
-          .optional(),
-        salary_range: z.string().optional(),
       }),
     )
     .optional(),
@@ -69,6 +55,7 @@ export const experienceProfileDefaults: Partial<ExperienceProfileFormData> = {
 // Helper function to create new experience entry
 export const createNewExperienceEntry = () => ({
   id: undefined,
+  organization_id: undefined,
   job_title: "",
   company_name: "",
   employment_type: undefined,
@@ -78,11 +65,6 @@ export const createNewExperienceEntry = () => ({
   end_date: "",
   is_current: false,
   description: "",
-  key_achievements: [],
-  skills_used: [],
-  industry: "",
-  company_size: undefined,
-  salary_range: "",
 });
 
 // Employment type options
