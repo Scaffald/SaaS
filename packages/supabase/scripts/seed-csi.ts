@@ -3,8 +3,20 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { parse } from "csv-parse/sync";
-import { Client } from "pg";
+import { createClient } from "@supabase/supabase-js";
 import { v5 as uuidv5 } from "uuid";
+
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL ||
+  "http://127.0.0.1:54321";
+const supabaseServiceKey = process.env.SUPABASE_SECRET || "";
+
+if (!supabaseServiceKey) {
+  console.error("❌ SUPABASE_SECRET is required");
+  console.error("💡 Get it from: pnpm supa status");
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 // =========================================================
 // Types
@@ -223,10 +235,7 @@ function ensureParentRecords(records: CSIRecord[]): CSIRecord[] {
 // Database Operations
 // =========================================================
 
-async function upsertSkills(
-  client: Client,
-  records: CSIRecord[],
-): Promise<void> {
+async function upsertSkills(records: CSIRecord[]): Promise<void> {
   // Sort by depth to ensure parents are inserted before children
   records.sort((a, b) => {
     if (a.csi_depth !== b.csi_depth) {
@@ -238,55 +247,30 @@ async function upsertSkills(
   const batchSize = 500;
   for (let i = 0; i < records.length; i += batchSize) {
     const batch = records.slice(i, i + batchSize);
-    const values: unknown[] = [];
-    const placeholders: string[] = [];
 
-    batch.forEach((record, idx) => {
-      const offset = idx * 8;
-      placeholders.push(
-        `($${offset + 1}, $${offset + 2}::text[], $${offset + 3}, $${
-          offset + 4
-        }, $${offset + 5}, $${offset + 6}, $${offset + 7}, $${
-          offset + 8
-        }, NOW(), NOW())`,
-      );
-      values.push(
-        record.id,
-        record.csi_code,
-        record.csi_code_key,
-        record.csi_display,
-        record.name,
-        record.csi_depth,
-        record.parent_id,
-        record.active,
-      );
-    });
+    // Prepare records for Supabase upsert
+    const batchData = batch.map((record) => ({
+      id: record.id,
+      code: record.csi_code,
+      code_key: record.csi_code_key,
+      code_display: record.csi_display,
+      name: record.name,
+      depth: record.csi_depth,
+      parent_id: record.parent_id,
+      active: record.active,
+    }));
 
-    const sql = `
-      INSERT INTO data.masterformat (
-        id,
-        code,
-        code_key,
-        code_display,
-        name,
-        depth,
-        parent_id,
-        active,
-        created_at, 
-        updated_at
-      )
-      VALUES ${placeholders.join(",")}
-      ON CONFLICT (code_key) 
-      DO UPDATE SET
-        name = EXCLUDED.name,
-        code_display = EXCLUDED.code_display,
-        depth = EXCLUDED.depth,
-        parent_id = EXCLUDED.parent_id,
-        active = EXCLUDED.active,
-        updated_at = NOW();
-    `;
+    const { error } = await supabase
+      .schema("data")
+      .from("masterformat")
+      .upsert(batchData, {
+        onConflict: "code_key",
+      });
 
-    await client.query(sql, values);
+    if (error) {
+      throw new Error(`Failed to upsert batch: ${error.message}`);
+    }
+
     console.log(
       `Processed batch ${i / batchSize + 1}: ${batch.length} records`,
     );
@@ -331,28 +315,10 @@ async function main(): Promise<void> {
     `Total records (including synthetic parents): ${allRecords.length}`,
   );
 
-  // Connect to database
-  const databaseUrl = process.env.DATABASE_URL;
-  if (!databaseUrl) {
-    console.error("Error: DATABASE_URL environment variable is not set");
-    console.error("Set it to your Supabase local connection string:");
-    console.error(
-      "  export DATABASE_URL='postgresql://postgres:postgres@localhost:54322/postgres'",
-    );
-    process.exit(1);
-  }
-
-  const client = new Client({ connectionString: databaseUrl });
-  await client.connect();
-
   try {
-    console.log("Starting database transaction...");
-    await client.query("BEGIN");
-
     console.log("Upserting CSI MasterFormat codes...");
-    await upsertSkills(client, allRecords);
+    await upsertSkills(allRecords);
 
-    await client.query("COMMIT");
     console.log("✓ Successfully seeded CSI MasterFormat 2020 taxonomy!");
     console.log(`  Total records: ${allRecords.length}`);
     console.log(
@@ -376,11 +342,8 @@ async function main(): Promise<void> {
       }`,
     );
   } catch (err) {
-    await client.query("ROLLBACK");
     console.error("Error seeding database:", err);
     process.exitCode = 1;
-  } finally {
-    await client.end();
   }
 }
 

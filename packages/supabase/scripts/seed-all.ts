@@ -324,7 +324,7 @@ async function displayStats() {
     console.log(`Active Jobs: ${activeJobCount || 0}`);
   }
 
-  // CSI MasterFormat stats (in data schema)
+  // CSI MasterFormat stats
   const { count: csiCount, error: csiError } = await supabase
     .schema("data")
     .from("masterformat")
