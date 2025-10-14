@@ -12,8 +12,11 @@ interface Certification {
   title: string
   description: string | null
   depth: number
-  parent_id: string | null
   sort_order: number
+}
+
+interface CertificationWithParent extends Certification {
+  parent_id: string | null
 }
 
 interface UserCertification {
@@ -108,7 +111,7 @@ export function ProfileCertificationsLeft({
   }
 
   // Handle selecting a depth 0 certification
-  const handleSelectTopLevel = async (cert: Certification) => {
+  const handleSelectTopLevel = async (cert: Certification): Promise<void> => {
     try {
       await addTopLevel.mutateAsync({ certification_id: cert.id })
     } catch (error) {
@@ -321,7 +324,7 @@ function Depth1Categories({
     { enabled: true }
   )
 
-  const depth1Categories = childrenData?.certifications || []
+  const depth1Categories: CertificationWithParent[] = childrenData?.certifications || []
   const typedTree = certTree as unknown as CertificationTree
 
   if (depth1Categories.length === 0) {
@@ -334,7 +337,7 @@ function Depth1Categories({
 
   return (
     <YStack gap="$2">
-      {depth1Categories.map((category: Certification) => {
+      {depth1Categories.map((category: CertificationWithParent) => {
         const isExpanded = expandedCategories.has(category.id)
         const depth2Items = typedTree.depth2ByParent[category.id] || []
 
@@ -383,7 +386,7 @@ function Depth2Certifications({
     { enabled: true }
   )
 
-  const depth2Certs = childrenData?.certifications || []
+  const depth2Certs: CertificationWithParent[] = childrenData?.certifications || []
 
   if (depth2Certs.length === 0) {
     return (
@@ -400,7 +403,7 @@ function Depth2Certifications({
 
   return (
     <YStack gap="$2">
-      {depth2Certs.map((cert: Certification) => {
+      {depth2Certs.map((cert: CertificationWithParent) => {
         const userCert = savedMap.get(cert.id)
         const isChecked = !!userCert
         const hasProof = !!(userCert?.credential_url || userCert?.certificate_file_path)

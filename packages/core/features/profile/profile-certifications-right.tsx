@@ -137,9 +137,9 @@ export function ProfileCertificationsRight() {
   if (allDepth2Certs.length === 0) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" alignItems="center" paddingTop="$8">
+        <YStack gap="$4" items="center" pt="$8">
           <Award size={48} color="$color11" />
-          <YStack gap="$2" alignItems="center">
+          <YStack gap="$2" items="center">
             <H4>Your Certifications</H4>
             <Text color="$color11">Check certifications on the left to add them here</Text>
           </YStack>
@@ -225,7 +225,7 @@ export function ProfileCertificationsRight() {
                         <Text fontWeight="600" fontSize="$3">
                           Upload Certificate
                         </Text>
-                        <XStack gap="$2" alignItems="center">
+                        <XStack gap="$2" style={{ alignItems: 'center' }}>
                           <Button
                             flex={1}
                             icon={<Upload size={16} />}
@@ -240,7 +240,7 @@ export function ProfileCertificationsRight() {
                               }
                               input.click()
                             }}
-                            theme={selectedFiles[cert.id] ? 'active' : undefined}
+                            bg={selectedFiles[cert.id] ? '$blue9' : undefined}
                           >
                             {selectedFiles[cert.id] ? selectedFiles[cert.id]?.name : 'Choose File'}
                           </Button>
