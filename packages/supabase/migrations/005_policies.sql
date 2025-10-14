@@ -33,6 +33,10 @@ ALTER TABLE private.applications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE private.application_messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE private.application_inquiries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE private.invites ENABLE ROW LEVEL SECURITY;
+ALTER TABLE private.user_certifications ENABLE ROW LEVEL SECURITY;
+
+-- Data schema tables
+ALTER TABLE data.certifications ENABLE ROW LEVEL SECURITY;
 
 -- =========================================================
 -- SECTION 2: PUBLIC.USERS POLICIES
@@ -510,7 +514,50 @@ CREATE POLICY invites_update ON private.invites
   WITH CHECK (issuer_user_id = auth.uid());
 
 -- =========================================================
--- SECTION 23: GRANTS - PUBLIC SCHEMA
+-- SECTION 23: DATA.CERTIFICATIONS POLICIES
+-- =========================================================
+
+-- Public read access for certifications catalog
+CREATE POLICY certifications_public_read ON data.certifications
+  FOR SELECT TO anon, authenticated
+  USING (is_active = true);
+
+-- Only admins can manage certifications catalog
+CREATE POLICY certifications_admin_manage ON data.certifications
+  FOR ALL TO authenticated
+  USING (public.user_has_role(auth.uid(), 'admin'));
+
+-- =========================================================
+-- SECTION 24: PRIVATE.USER_CERTIFICATIONS POLICIES
+-- =========================================================
+
+CREATE POLICY user_certifications_own_select ON private.user_certifications
+  FOR SELECT TO authenticated
+  USING (auth.uid() = user_id);
+
+CREATE POLICY user_certifications_own_insert ON private.user_certifications
+  FOR INSERT TO authenticated
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY user_certifications_own_update ON private.user_certifications
+  FOR UPDATE TO authenticated
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY user_certifications_own_delete ON private.user_certifications
+  FOR DELETE TO authenticated
+  USING (auth.uid() = user_id);
+
+-- =========================================================
+-- SECTION 25: GRANTS - DATA SCHEMA
+-- =========================================================
+
+-- Certifications catalog (reference data)
+GRANT SELECT ON data.certifications TO anon, authenticated;
+GRANT ALL ON data.certifications TO service_role;
+
+-- =========================================================
+-- SECTION 26: GRANTS - PUBLIC SCHEMA
 -- =========================================================
 
 -- Industries
@@ -573,7 +620,7 @@ GRANT INSERT ON public.review_aspects TO authenticated;
 GRANT ALL ON public.review_aspects TO service_role;
 
 -- =========================================================
--- SECTION 24: GRANTS - PRIVATE SCHEMA
+-- SECTION 27: GRANTS - PRIVATE SCHEMA
 -- =========================================================
 
 -- Private Profile
@@ -603,5 +650,9 @@ GRANT ALL ON private.application_inquiries TO service_role;
 -- Invites
 GRANT SELECT, INSERT, UPDATE ON private.invites TO authenticated;
 GRANT ALL ON private.invites TO service_role;
+
+-- User Certifications
+GRANT SELECT, INSERT, UPDATE, DELETE ON private.user_certifications TO authenticated;
+GRANT ALL ON private.user_certifications TO service_role;
 
 COMMIT;

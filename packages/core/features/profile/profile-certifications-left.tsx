@@ -1,586 +1,426 @@
-import { useState } from 'react'
-import {
-  YStack,
-  XStack,
-  Text,
-  Button,
-  Input,
-  H4,
-  TextArea,
-  ScrollView,
-  RadioGroup,
-  Label,
-  Card,
-  Separator,
-} from 'tamagui'
-import { useForm, Controller, useFieldArray } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Plus,
-  X,
-  Link as LinkIcon,
-  Upload as UploadIcon,
-  Award,
-  Calendar,
-  ExternalLink,
-  Download,
-  CheckCircle,
-  Clock,
-  AlertCircle,
-} from '@tamagui/lucide-icons'
-import { DashboardWidget, FileUpload } from '@app/ui'
+import { useState, useEffect } from 'react'
+import { YStack, XStack, Text, H4, Spinner, ScrollView } from 'tamagui'
+import { Award } from '@tamagui/lucide-icons'
+import { DashboardWidget } from '@app/ui'
+import { CertificationSearch, CertificationChip, CertificationCheckbox, ToggleCard } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { ProfileEmptyState } from './components'
-import { formatDate } from './utils/date-formatting'
-import {
-  certificationsProfileSchema,
-  type CertificationsProfileFormData,
-  certificationsProfileDefaults,
-  createNewCertification,
-} from './config'
+
+interface Certification {
+  id: string
+  slug: string
+  title: string
+  description: string | null
+  depth: number
+  parent_id: string | null
+  sort_order: number
+}
+
+interface UserCertification {
+  id: string
+  certification_id: string
+  credential_url: string | null
+  certificate_file_path: string | null
+  catalog: Certification
+}
+
+interface CertificationTree {
+  depth0: UserCertification[]
+  depth1ByParent: Record<string, UserCertification[]>
+  depth2ByParent: Record<string, UserCertification[]>
+}
+
+interface ProfileCertificationsLeftProps {
+  onSelectCertificationForProof?: (certId: string, certTitle: string) => void
+}
 
 /**
  * Profile Certifications Left Component
- * Form for managing certifications and credentials
+ * Hierarchical certification selection with progressive saving
  */
-export function ProfileCertificationsLeft() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [inputMethod, setInputMethod] = useState<Record<string, 'url' | 'file'>>({})
-  const [pendingFiles, setPendingFiles] = useState<Record<number, File>>({})
+export function ProfileCertificationsLeft({
+  onSelectCertificationForProof,
+}: ProfileCertificationsLeftProps) {
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<Certification[]>([])
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
 
+  // Queries
   const {
-    control,
-    handleSubmit,
-    setValue,
-    formState: { errors, isDirty },
-  } = useForm<CertificationsProfileFormData>({
-    resolver: zodResolver(certificationsProfileSchema),
-    defaultValues: certificationsProfileDefaults,
-    mode: 'onChange',
+    data: certTree,
+    refetch: refetchTree,
+    isLoading: isLoadingTree,
+  } = api.profile.certifications.getUserCertificationTree.useQuery()
+
+  const { data: topLevelResults, isLoading: isLoadingSearch } =
+    api.profile.certifications.getTopLevelCertifications.useQuery(
+      { search: searchQuery },
+      { enabled: searchQuery.length > 0 }
+    )
+
+  // Mutations
+  const addTopLevel = api.profile.certifications.addTopLevelCertification.useMutation({
+    onSuccess: () => refetchTree(),
   })
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'certifications',
+  const addCategory = api.profile.certifications.addCategoryCertification.useMutation({
+    onSuccess: () => refetchTree(),
   })
 
-  // tRPC queries and mutations
-  // @ts-ignore - Profile router will be available after type generation
-  const { data: _existingCertifications, refetch: refetchCertifications } =
-    api.profile?.getCertifications?.useQuery() || { data: [], refetch: () => {} }
+  const toggleCert = api.profile.certifications.toggleSpecificCertification.useMutation({
+    onSuccess: () => refetchTree(),
+  })
 
-  // @ts-ignore
-  const saveMutation = api.profile?.saveCertifications?.useMutation()
-  // @ts-ignore
-  const uploadFileMutation = api.profile?.uploadCertificationFile?.useMutation()
-  // @ts-ignore
-  const deleteFileMutation = api.profile?.deleteCertificationFile?.useMutation()
+  const removeTopLevel = api.profile.certifications.removeTopLevelCertification.useMutation({
+    onSuccess: () => refetchTree(),
+  })
 
-  const onSubmit = async (data: CertificationsProfileFormData) => {
-    if (!saveMutation) return
+  // Update search results when query returns
+  useEffect(() => {
+    if (topLevelResults?.certifications) {
+      setSearchResults(topLevelResults.certifications)
+    }
+  }, [topLevelResults])
 
-    setIsLoading(true)
+  // Auto-expand categories that have checked depth 2 certifications
+  useEffect(() => {
+    if (!certTree) return
+
+    const categoriesToExpand = new Set<string>()
+    const typedTree = certTree as unknown as CertificationTree
+
+    // Check all depth 2 items by parent (depth 1 category)
+    const depth2ByParent = typedTree.depth2ByParent || {}
+
+    // If a depth 1 category has any depth 2 items, it should be expanded
+    for (const [categoryId, items] of Object.entries(depth2ByParent)) {
+      if (Array.isArray(items) && items.length > 0) {
+        categoriesToExpand.add(categoryId)
+      }
+    }
+
+    setExpandedCategories(categoriesToExpand)
+  }, [certTree])
+
+  // Handle search query changes
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query)
+  }
+
+  // Handle selecting a depth 0 certification
+  const handleSelectTopLevel = async (cert: Certification) => {
     try {
-      // 1. First, save all certifications to get database UUIDs
-      const result = await saveMutation.mutateAsync({
-        certifications: data.certifications || [],
-      })
-
-      // 2. Update form with returned IDs from database
-      if (result.certifications) {
-        // biome-ignore lint/suspicious/noExplicitAny: API response type
-        result.certifications.forEach((savedCert: any, index: number) => {
-          if (data.certifications?.[index]) {
-            setValue(`certifications.${index}.id`, savedCert.id, { shouldDirty: false })
-          }
-        })
-      }
-
-      // 3. Now upload any pending files with the new UUIDs
-      if (uploadFileMutation && Object.keys(pendingFiles).length > 0) {
-        for (const [indexStr, file] of Object.entries(pendingFiles)) {
-          const index = Number.parseInt(indexStr)
-          const certId = result.certifications[index]?.id
-
-          if (certId) {
-            try {
-              // Convert file to base64
-              const base64 = await new Promise<string>((resolve, reject) => {
-                const reader = new FileReader()
-                reader.onload = () => resolve(reader.result as string)
-                reader.onerror = reject
-                reader.readAsDataURL(file)
-              })
-
-              const uploadResult = await uploadFileMutation.mutateAsync({
-                certificationId: certId,
-                file: base64,
-                fileName: file.name,
-                contentType: file.type,
-              })
-
-              // Update form with the file path
-              setValue(`certifications.${index}.certificate_file_path`, uploadResult.filePath, {
-                shouldDirty: false,
-              })
-            } catch (error) {
-              console.error(`Error uploading file for certification ${index}:`, error)
-            }
-          }
-        }
-
-        // Clear pending files after upload
-        setPendingFiles({})
-      }
-
-      // 4. Refetch certifications to get latest data
-      await refetchCertifications()
-
-      console.log('Certifications saved successfully!')
+      await addTopLevel.mutateAsync({ certification_id: cert.id })
     } catch (error) {
-      console.error('Error saving certifications:', error)
-    } finally {
-      setIsLoading(false)
+      console.error('Error adding top-level certification:', error)
     }
   }
 
-  const addCertification = () => {
-    const newCert = createNewCertification()
-    append(newCert)
-    // Set default input method to URL
-    setInputMethod((prev) => ({ ...prev, [fields.length]: 'url' }))
-  }
-
-  const handleFileSelect = (file: File, index: number) => {
-    // Store file in pending state - will upload on form submit
-    setPendingFiles((prev) => ({ ...prev, [index]: file }))
-    // Mark form as dirty so save button enables
-    setValue(`certifications.${index}.certificate_file_path`, 'pending', {
-      shouldDirty: true,
-    })
-  }
-
-  const handleFileRemove = async (index: number, certId: string | undefined, filePath: string) => {
-    // If it's a pending file, just remove from state
-    if (pendingFiles[index]) {
-      setPendingFiles((prev) => {
-        const newFiles = { ...prev }
-        delete newFiles[index]
-        return newFiles
+  // Handle removing a depth 0 certification
+  const handleRemoveTopLevel = async (topLevelId: string) => {
+    try {
+      const result = await removeTopLevel.mutateAsync({
+        top_level_id: topLevelId,
+        confirmed: false,
       })
-      setValue(`certifications.${index}.certificate_file_path`, undefined, {
-        shouldDirty: true,
-      })
-      return
-    }
 
-    // If it's an uploaded file, delete from server
-    if (certId && filePath && deleteFileMutation) {
-      try {
-        await deleteFileMutation.mutateAsync({
-          certificationId: certId,
-          filePath,
-        })
+      if (result.needsConfirmation) {
+        // Show confirmation dialog
+        const confirmed = confirm(
+          `${result.message}\n\nAre you sure you want to remove this certification and all related items?`
+        )
 
-        // Clear the file path from form
-        setValue(`certifications.${index}.certificate_file_path`, undefined, {
-          shouldDirty: true,
-        })
-      } catch (error) {
-        console.error('Error deleting file:', error)
+        if (confirmed) {
+          await removeTopLevel.mutateAsync({
+            top_level_id: topLevelId,
+            confirmed: true,
+          })
+        }
       }
+    } catch (error) {
+      console.error('Error removing top-level certification:', error)
     }
+  }
+
+  // Handle toggling a depth 1 category
+  const handleToggleCategory = async (categoryId: string, parentId: string) => {
+    const isExpanded = expandedCategories.has(categoryId)
+
+    if (!isExpanded) {
+      // Check if already saved
+      const depth1Items = certTree?.depth1ByParent[parentId] || []
+      const alreadySaved = depth1Items.some(
+        (item: UserCertification) => item.certification_id === categoryId
+      )
+
+      if (!alreadySaved) {
+        // First time expanding - save to DB
+        try {
+          await addCategory.mutateAsync({
+            category_id: categoryId,
+            parent_id: parentId,
+          })
+        } catch (error) {
+          console.error('Error adding category:', error)
+          return
+        }
+      }
+
+      // Expand in UI
+      setExpandedCategories((prev) => new Set([...prev, categoryId]))
+    } else {
+      // Just collapse UI (don't delete from DB)
+      setExpandedCategories((prev) => {
+        const next = new Set(prev)
+        next.delete(categoryId)
+        return next
+      })
+    }
+  }
+
+  // Handle checking/unchecking a depth 2 certification
+  const handleCheckCertification = async (
+    certId: string,
+    parentId: string,
+    checked: boolean,
+    categoryId: string
+  ) => {
+    try {
+      // If checking the first item, auto-expand the parent category
+      if (checked) {
+        setExpandedCategories((prev) => new Set([...prev, categoryId]))
+      }
+
+      await toggleCert.mutateAsync({
+        certification_id: certId,
+        parent_id: parentId,
+        checked,
+      })
+
+      // After successful toggle, check if we should auto-collapse
+      // (This will be handled by the useEffect that watches certTree)
+    } catch (error) {
+      console.error('Error toggling certification:', error)
+    }
+  }
+
+  // Get selected top-level certification IDs
+  const selectedTopLevelIds = (certTree?.depth0 || []).map(
+    (item: UserCertification) => item.certification_id
+  )
+
+  if (isLoadingTree) {
+    return (
+      <DashboardWidget>
+        <YStack gap="$4" style={{ alignItems: 'center', justifyContent: 'center', minHeight: 300 }}>
+          <Spinner size="large" />
+          <Text>Loading certifications...</Text>
+        </YStack>
+      </DashboardWidget>
+    )
   }
 
   return (
     <DashboardWidget>
-      <H4>Certifications & Credentials</H4>
-
       <YStack gap="$4">
-        {/* Certifications List */}
-        <YStack gap="$3">
-          <XStack justify="space-between" items="center">
-            <Text fontWeight="600">Your Certifications</Text>
-            <Button size="$3" onPress={addCertification} icon={Plus}>
-              Add Certification
-            </Button>
-          </XStack>
+        <H4>Certifications & Credentials</H4>
 
-          {fields.map((field, index) => (
-            <YStack
-              key={field.id}
-              gap="$3"
-              p="$3"
-              borderWidth={1}
-              borderColor="$borderColor"
-              rounded="$4"
-            >
-              <XStack justify="space-between" items="center">
-                <Text fontWeight="600">Certification {index + 1}</Text>
-                <Button size="$2" variant="outlined" onPress={() => remove(index)} icon={X}>
-                  Remove
-                </Button>
-              </XStack>
+        {/* Search for depth 0 certifications */}
+        <CertificationSearch
+          onSelect={handleSelectTopLevel}
+          searchResults={searchResults}
+          onSearchChange={handleSearchChange}
+          isLoading={isLoadingSearch}
+          selectedIds={selectedTopLevelIds}
+        />
 
-              {/* Certification Name */}
-              <YStack gap="$2">
-                <Text>Certification Name *</Text>
-                <Controller
-                  name={`certifications.${index}.name`}
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      placeholder="e.g. AWS Certified Solutions Architect"
-                      value={field.value}
-                      onChangeText={field.onChange}
-                      borderColor={errors.certifications?.[index]?.name ? '$red8' : '$borderColor'}
-                    />
-                  )}
+        {/* Selected top-level certifications as chips */}
+        {certTree?.depth0 && certTree.depth0.length > 0 && (
+          <YStack gap="$3">
+            <Text fontWeight="600" fontSize="$4">
+              Selected Categories
+            </Text>
+            <XStack gap="$2" flexWrap="wrap">
+              {certTree.depth0.map((item: UserCertification) => (
+                <CertificationChip
+                  key={item.id}
+                  certification={{
+                    id: item.certification_id,
+                    title: item.catalog.title,
+                  }}
+                  onRemove={handleRemoveTopLevel}
+                  disabled={removeTopLevel.isLoading}
                 />
-                {errors.certifications?.[index]?.name && (
-                  <Text color="$red10" fontSize="$2">
-                    {errors.certifications[index]?.name?.message}
-                  </Text>
-                )}
-              </YStack>
-
-              {/* Issuing Organization */}
-              <YStack gap="$2">
-                <Text>Issuing Organization *</Text>
-                <Controller
-                  name={`certifications.${index}.issuing_organization`}
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      placeholder="e.g. Amazon Web Services"
-                      value={field.value}
-                      onChangeText={field.onChange}
-                      borderColor={
-                        errors.certifications?.[index]?.issuing_organization
-                          ? '$red8'
-                          : '$borderColor'
-                      }
-                    />
-                  )}
-                />
-                {errors.certifications?.[index]?.issuing_organization && (
-                  <Text color="$red10" fontSize="$2">
-                    {errors.certifications[index]?.issuing_organization?.message}
-                  </Text>
-                )}
-              </YStack>
-
-              {/* Issue and Expiration Dates */}
-              <XStack gap="$3">
-                <YStack gap="$2" flex={1}>
-                  <Text>Issue Date</Text>
-                  <Controller
-                    name={`certifications.${index}.issue_date`}
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        placeholder="YYYY-MM-DD"
-                        value={field.value || ''}
-                        onChangeText={field.onChange}
-                      />
-                    )}
-                  />
-                </YStack>
-                <YStack gap="$2" flex={1}>
-                  <Text>Expiration Date</Text>
-                  <Controller
-                    name={`certifications.${index}.expiration_date`}
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        placeholder="YYYY-MM-DD"
-                        value={field.value || ''}
-                        onChangeText={field.onChange}
-                      />
-                    )}
-                  />
-                </YStack>
-              </XStack>
-
-              {/* Credential ID */}
-              <YStack gap="$2">
-                <Text>Credential ID</Text>
-                <Controller
-                  name={`certifications.${index}.credential_id`}
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      placeholder="Certificate ID"
-                      value={field.value || ''}
-                      onChangeText={field.onChange}
-                    />
-                  )}
-                />
-              </YStack>
-
-              {/* Certificate Proof Section */}
-              <YStack gap="$3" p="$3" bg="$background" rounded="$3">
-                <Text fontWeight="600">Certificate Proof (Optional)</Text>
-                <Text fontSize="$2" color="$color11">
-                  Provide either a link to your certificate or upload a file
-                </Text>
-
-                {/* Radio Group for Input Method */}
-                <RadioGroup
-                  value={inputMethod[index] || 'url'}
-                  onValueChange={(value) =>
-                    setInputMethod((prev) => ({ ...prev, [index]: value as 'url' | 'file' }))
-                  }
-                >
-                  <XStack gap="$4">
-                    <XStack gap="$2" items="center">
-                      <RadioGroup.Item value="url" id={`url-${index}`}>
-                        <RadioGroup.Indicator />
-                      </RadioGroup.Item>
-                      <Label htmlFor={`url-${index}`} display="flex" gap="$2" items="center">
-                        <LinkIcon size={16} />
-                        <Text>External URL</Text>
-                      </Label>
-                    </XStack>
-                    <XStack gap="$2" items="center">
-                      <RadioGroup.Item value="file" id={`file-${index}`}>
-                        <RadioGroup.Indicator />
-                      </RadioGroup.Item>
-                      <Label htmlFor={`file-${index}`} display="flex" gap="$2" items="center">
-                        <UploadIcon size={16} />
-                        <Text>Upload File</Text>
-                      </Label>
-                    </XStack>
-                  </XStack>
-                </RadioGroup>
-
-                {/* Conditional Input - URL or File Upload */}
-                {(inputMethod[index] || 'url') === 'url' ? (
-                  <YStack gap="$2">
-                    <Text fontSize="$2">Credential URL</Text>
-                    <Controller
-                      name={`certifications.${index}.credential_url`}
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          placeholder="https://..."
-                          value={field.value || ''}
-                          onChangeText={field.onChange}
-                          borderColor={
-                            errors.certifications?.[index]?.credential_url
-                              ? '$red8'
-                              : '$borderColor'
-                          }
-                        />
-                      )}
-                    />
-                    {errors.certifications?.[index]?.credential_url && (
-                      <Text color="$red10" fontSize="$2">
-                        {errors.certifications[index]?.credential_url?.message}
-                      </Text>
-                    )}
-                  </YStack>
-                ) : (
-                  <Controller
-                    name={`certifications.${index}.certificate_file_path`}
-                    control={control}
-                    render={({ field: fileField }) => (
-                      <FileUpload
-                        onFileSelect={(file) => handleFileSelect(file, index)}
-                        onFileRemove={
-                          fileField.value && fileField.value !== 'pending'
-                            ? () =>
-                                handleFileRemove(
-                                  index,
-                                  fields[index].id as string | undefined,
-                                  fileField.value || ''
-                                )
-                            : pendingFiles[index]
-                              ? () => handleFileRemove(index, undefined, '')
-                              : undefined
-                        }
-                        currentFileName={
-                          pendingFiles[index]
-                            ? pendingFiles[index].name
-                            : fileField.value && fileField.value !== 'pending'
-                              ? fileField.value.split('/').pop()
-                              : undefined
-                        }
-                        disabled={false}
-                        error={errors.certifications?.[index]?.certificate_file_path?.message}
-                      />
-                    )}
-                  />
-                )}
-              </YStack>
-
-              {/* Description */}
-              <YStack gap="$2">
-                <Text>Description</Text>
-                <Controller
-                  name={`certifications.${index}.description`}
-                  control={control}
-                  render={({ field }) => (
-                    <TextArea
-                      placeholder="Describe what this certification covers..."
-                      value={field.value || ''}
-                      onChangeText={field.onChange}
-                      minH={80}
-                    />
-                  )}
-                />
-              </YStack>
-            </YStack>
-          ))}
-
-          {fields.length === 0 && (
-            <YStack p="$4" items="center" gap="$2">
-              <Text color="$color11">No certifications added yet</Text>
-            </YStack>
-          )}
-        </YStack>
-
-        {/* Save Button */}
-        <XStack justify="flex-end" pt="$4">
-          <Button
-            onPress={handleSubmit(onSubmit)}
-            disabled={!isDirty || isLoading}
-            opacity={!isDirty || isLoading ? 0.5 : 1}
-          >
-            {isLoading ? 'Saving...' : 'Save Changes'}
-          </Button>
-        </XStack>
-
-        <Separator />
-
-        {/* Saved Certifications Display */}
-        <YStack gap="$3">
-          <Text fontWeight="600" fontSize="$5">
-            Saved Certifications
-          </Text>
-
-          {!_existingCertifications || _existingCertifications.length === 0 ? (
-            <ProfileEmptyState
-              icon={Award}
-              message="No certifications saved yet. Add your first certification above and click Save Changes."
-            />
-          ) : (
-            <YStack gap="$3">
-              {/* biome-ignore lint/suspicious/noExplicitAny: API response type */}
-              {_existingCertifications.map((cert: any) => (
-                <Card key={cert.id} bordered size="$4">
-                  <Card.Header gap="$3">
-                    {/* Header */}
-                    <YStack gap="$2">
-                      <XStack justify="space-between" items="flex-start">
-                        <YStack gap="$1" flex={1}>
-                          <H4>{cert.name}</H4>
-                          <Text color="$color11" fontSize="$3">
-                            {cert.issuing_organization}
-                          </Text>
-                        </YStack>
-                        {cert.verification_status === 'verified' && (
-                          <XStack gap="$2" items="center">
-                            <CheckCircle size={16} color="$green10" />
-                            <Text color="$green10" fontSize="$2" fontWeight="600">
-                              Verified
-                            </Text>
-                          </XStack>
-                        )}
-                        {cert.verification_status === 'pending' && (
-                          <XStack gap="$2" items="center">
-                            <Clock size={16} color="$yellow10" />
-                            <Text color="$yellow10" fontSize="$2" fontWeight="600">
-                              Pending
-                            </Text>
-                          </XStack>
-                        )}
-                        {!cert.verification_status && (
-                          <XStack gap="$2" items="center">
-                            <AlertCircle size={16} color="$color10" />
-                            <Text color="$color10" fontSize="$2">
-                              Not Verified
-                            </Text>
-                          </XStack>
-                        )}
-                      </XStack>
-                    </YStack>
-
-                    <Separator />
-
-                    {/* Details */}
-                    <YStack gap="$2">
-                      {/* Dates */}
-                      <XStack gap="$2" items="center">
-                        <Calendar size={16} color="$color11" />
-                        <Text fontSize="$2" color="$color11">
-                          Issued: {formatDate(cert.issue_date)}
-                          {cert.expiration_date &&
-                            ` • Expires: ${formatDate(cert.expiration_date)}`}
-                        </Text>
-                      </XStack>
-
-                      {/* Credential ID */}
-                      {cert.credential_id && (
-                        <Text fontSize="$2" color="$color11">
-                          Credential ID: {cert.credential_id}
-                        </Text>
-                      )}
-
-                      {/* Description */}
-                      {cert.description && (
-                        <Text fontSize="$3" color="$color11">
-                          {cert.description}
-                        </Text>
-                      )}
-                    </YStack>
-
-                    {/* Actions */}
-                    {(cert.credential_url || cert.certificate_file_path) && (
-                      <>
-                        <Separator />
-                        <XStack gap="$2" flexWrap="wrap">
-                          {cert.credential_url && (
-                            <Button
-                              size="$2"
-                              variant="outlined"
-                              icon={ExternalLink}
-                              onPress={() => {
-                                if (typeof window !== 'undefined') {
-                                  window.open(cert.credential_url || '', '_blank')
-                                }
-                              }}
-                            >
-                              View Online
-                            </Button>
-                          )}
-                          {cert.certificate_file_path && (
-                            <Button
-                              size="$2"
-                              variant="outlined"
-                              icon={Download}
-                              onPress={() => {
-                                const supabaseUrl =
-                                  process.env.EXPO_PUBLIC_SUPABASE_URL || 'http://localhost:54321'
-                                const fileUrl = `${supabaseUrl}/storage/v1/object/public/certifications/${cert.certificate_file_path}`
-                                if (typeof window !== 'undefined') {
-                                  window.open(fileUrl, '_blank')
-                                }
-                              }}
-                            >
-                              Download
-                            </Button>
-                          )}
-                        </XStack>
-                      </>
-                    )}
-                  </Card.Header>
-                </Card>
               ))}
-            </YStack>
-          )}
-        </YStack>
+            </XStack>
+          </YStack>
+        )}
+
+        {/* Depth 1 categories and depth 2 certifications */}
+        <ScrollView height={600}>
+          <YStack gap="$3">
+            {certTree?.depth0 && certTree.depth0.length > 0 ? (
+              certTree.depth0.map((topLevel: UserCertification) => {
+                return (
+                  <YStack key={topLevel.id} gap="$2">
+                    <Text fontWeight="600" fontSize="$5" color="$blue11">
+                      {topLevel.catalog.title}
+                    </Text>
+
+                    {/* Fetch and display depth 1 categories */}
+                    <Depth1Categories
+                      parentId={topLevel.certification_id}
+                      expandedCategories={expandedCategories}
+                      onToggle={handleToggleCategory}
+                      certTree={certTree}
+                      onCheckCertification={handleCheckCertification}
+                      onSelectForProof={onSelectCertificationForProof}
+                      toggleCertMutation={toggleCert}
+                    />
+                  </YStack>
+                )
+              })
+            ) : (
+              <ProfileEmptyState
+                icon={Award}
+                message="Search and select certification categories above to get started."
+              />
+            )}
+          </YStack>
+        </ScrollView>
       </YStack>
     </DashboardWidget>
+  )
+}
+
+// Component to handle depth 1 categories
+function Depth1Categories({
+  parentId,
+  expandedCategories,
+  onToggle,
+  certTree,
+  onCheckCertification,
+  onSelectForProof,
+  toggleCertMutation,
+}: {
+  parentId: string
+  expandedCategories: Set<string>
+  onToggle: (categoryId: string, parentId: string) => void
+  certTree: unknown
+  onCheckCertification: (
+    certId: string,
+    parentId: string,
+    checked: boolean,
+    categoryId: string
+  ) => void
+  onSelectForProof?: (certId: string, certTitle: string) => void
+  toggleCertMutation: { isLoading: boolean }
+}) {
+  const { data: childrenData } = api.profile.certifications.getCertificationChildren.useQuery(
+    { parent_id: parentId },
+    { enabled: true }
+  )
+
+  const depth1Categories = childrenData?.certifications || []
+  const typedTree = certTree as unknown as CertificationTree
+
+  if (depth1Categories.length === 0) {
+    return (
+      <Text fontSize="$2" color="$color11">
+        No sub-categories available
+      </Text>
+    )
+  }
+
+  return (
+    <YStack gap="$2">
+      {depth1Categories.map((category: Certification) => {
+        const isExpanded = expandedCategories.has(category.id)
+        const depth2Items = typedTree.depth2ByParent[category.id] || []
+
+        return (
+          <ToggleCard
+            key={category.id}
+            title={category.title}
+            description={category.description || undefined}
+            checked={isExpanded}
+            onCheckedChange={() => onToggle(category.id, parentId)}
+            expandedContent={
+              <Depth2Certifications
+                categoryId={category.id}
+                parentId={category.id}
+                savedDepth2={depth2Items}
+                onCheck={onCheckCertification}
+                onSelectForProof={onSelectForProof}
+                toggleMutation={toggleCertMutation}
+              />
+            }
+          />
+        )
+      })}
+    </YStack>
+  )
+}
+
+// Component to handle depth 2 certifications
+function Depth2Certifications({
+  categoryId,
+  parentId,
+  savedDepth2,
+  onCheck,
+  onSelectForProof,
+  toggleMutation,
+}: {
+  categoryId: string
+  parentId: string
+  savedDepth2: UserCertification[]
+  onCheck: (certId: string, parentId: string, checked: boolean, categoryId: string) => void
+  onSelectForProof?: (certId: string, certTitle: string) => void
+  toggleMutation: { isLoading: boolean }
+}) {
+  const { data: childrenData } = api.profile.certifications.getCertificationChildren.useQuery(
+    { parent_id: parentId },
+    { enabled: true }
+  )
+
+  const depth2Certs = childrenData?.certifications || []
+
+  if (depth2Certs.length === 0) {
+    return (
+      <Text fontSize="$2" color="$color11">
+        No specific certifications available
+      </Text>
+    )
+  }
+
+  // Create a map of saved certifications
+  const savedMap = new Map(
+    savedDepth2.map((item: UserCertification) => [item.certification_id, item])
+  )
+
+  return (
+    <YStack gap="$2">
+      {depth2Certs.map((cert: Certification) => {
+        const userCert = savedMap.get(cert.id)
+        const isChecked = !!userCert
+        const hasProof = !!(userCert?.credential_url || userCert?.certificate_file_path)
+
+        return (
+          <CertificationCheckbox
+            key={cert.id}
+            certification={cert}
+            checked={isChecked}
+            onCheckedChange={(checked: boolean) => onCheck(cert.id, parentId, checked, categoryId)}
+            hasProof={hasProof}
+            onAddProof={
+              isChecked && onSelectForProof
+                ? () => onSelectForProof(userCert?.id || cert.id, cert.title)
+                : undefined
+            }
+            disabled={toggleMutation.isLoading}
+          />
+        )
+      })}
+    </YStack>
   )
 }

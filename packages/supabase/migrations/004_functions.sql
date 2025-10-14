@@ -536,8 +536,9 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA onet TO anon;
 GRANT SELECT ON public.v_profile_search TO authenticated, anon;
 
 -- =========================================================
--- SECTION 11: CERTIFICATIONS - RLS, INDEXES, TRIGGERS
+-- SECTION 11: CERTIFICATIONS - INDEXES AND TRIGGERS
 -- =========================================================
+-- Note: RLS policies are in 005_policies.sql
 
 -- Indexes for certifications catalog (data schema)
 CREATE INDEX IF NOT EXISTS certifications_parent_id_idx ON data.certifications(parent_id);
@@ -546,53 +547,11 @@ CREATE INDEX IF NOT EXISTS certifications_slug_idx ON data.certifications(slug);
 CREATE INDEX IF NOT EXISTS certifications_hierarchy_path_idx ON data.certifications(hierarchy_path);
 CREATE INDEX IF NOT EXISTS certifications_sort_order_idx ON data.certifications(parent_id, sort_order);
 
--- Enable RLS on certifications (reference data - read-only for most users)
-ALTER TABLE data.certifications ENABLE ROW LEVEL SECURITY;
-
--- Public read access for certifications catalog
-CREATE POLICY "certifications_public_read"
-  ON data.certifications FOR SELECT
-  TO anon, authenticated
-  USING (is_active = true);
-
--- Only admins can manage certifications catalog
-CREATE POLICY "certifications_admin_manage"
-  ON data.certifications FOR ALL
-  TO authenticated
-  USING (public.user_has_role(auth.uid(), 'admin'));
-
 -- Indexes for user_certifications (private)
 CREATE INDEX IF NOT EXISTS user_certifications_user_id_idx ON private.user_certifications(user_id);
 CREATE INDEX IF NOT EXISTS user_certifications_certification_id_idx ON private.user_certifications(certification_id);
 CREATE INDEX IF NOT EXISTS user_certifications_user_active_idx ON private.user_certifications(user_id, is_active) WHERE is_active = true;
 CREATE INDEX IF NOT EXISTS user_certifications_file_path_idx ON private.user_certifications(user_id, certificate_file_path) WHERE certificate_file_path IS NOT NULL;
-
--- Enable RLS on user_certifications
-ALTER TABLE private.user_certifications ENABLE ROW LEVEL SECURITY;
-
--- Users can view their own certifications
-CREATE POLICY "user_certifications_own_read"
-  ON private.user_certifications FOR SELECT
-  TO authenticated
-  USING (auth.uid() = user_id);
-
--- Users can insert their own certifications
-CREATE POLICY "user_certifications_own_insert"
-  ON private.user_certifications FOR INSERT
-  TO authenticated
-  WITH CHECK (auth.uid() = user_id);
-
--- Users can update their own certifications
-CREATE POLICY "user_certifications_own_update"
-  ON private.user_certifications FOR UPDATE
-  TO authenticated
-  USING (auth.uid() = user_id);
-
--- Users can delete their own certifications
-CREATE POLICY "user_certifications_own_delete"
-  ON private.user_certifications FOR DELETE
-  TO authenticated
-  USING (auth.uid() = user_id);
 
 -- Updated_at triggers
 CREATE TRIGGER trg_certifications_updated_at
