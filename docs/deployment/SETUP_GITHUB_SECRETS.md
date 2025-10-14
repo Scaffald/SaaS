@@ -18,7 +18,7 @@ To enable automatic deployments, you need to configure secrets in your GitHub re
 
 **How to get it:**
 1. Go to [Netlify](https://app.netlify.com)
-2. Click your profile icon (top right) → **User settings**
+2. Click your profile icon (bottom left) → **User settings**
 3. Navigate to **Applications** → **Personal access tokens**
 4. Click **New access token**
 5. Name it: `GitHub Actions Deployment`
@@ -28,7 +28,7 @@ To enable automatic deployments, you need to configure secrets in your GitHub re
 **Purpose:** Identifies which Netlify site to deploy to
 
 **How to get it:**
-1. Go to your Netlify site dashboard
+1. Go to your (Netlify site dashboard)[https://app.netlify.com/projects/scaffald/configuration/general]
 2. Navigate to **Site settings** → **General** → **Site details**
 3. Copy the **Site ID** (looks like: `abc123-def456-ghi789`)
 
@@ -117,36 +117,37 @@ gh secret set EXPO_PUBLIC_MAPBOX_STYLE_URL
 gh secret set EXPO_PUBLIC_MAPBOX_API_URL
 ```
 
-## 📝 Netlify Site Setup
+## 📝 Netlify Site Setup (Simplified)
 
-### 1. Create Netlify Site (if not exists)
+Good news! Your project already has a `netlify.toml` configured, so setup is much simpler.
 
+### 1. Get Your Netlify Site ID
+
+**If you already have a site:**
+1. Go to [Netlify Dashboard](https://app.netlify.com)
+2. Select your site
+3. Go to **Site settings** → **General** → **Site details**
+4. Copy the **Site ID** (e.g., `ce335a05-285b-4e5b-84f9-5da31a6cdf6f`)
+
+**If you need to create a site:**
 1. Go to [Netlify](https://app.netlify.com)
 2. Click **Add new site** → **Import an existing project**
-3. Connect your Git provider (GitHub)
-4. **Important:** Do NOT set up automatic deployments
-5. Choose **Skip for now** for build settings
-6. Click **Deploy site**
+3. Connect to GitHub and select your repository
+4. **Important:** Choose "Deploy without building" or skip build settings
+5. Your `netlify.toml` will be automatically detected
+6. Copy the Site ID from Site settings
 
-### 2. Configure Netlify Settings
+### 2. What netlify.toml Provides
 
-1. Go to **Site settings** → **Build & deploy**
-2. **Build settings:**
-   - Build command: Leave blank (GitHub Actions handles this)
-   - Publish directory: Leave blank
-3. **Deploy settings:**
-   - **Stop builds:** Yes (GitHub Actions handles deployment)
-4. **Branch deploys:**
-   - Production branch: `production`
-   - Branch deploys: Disable for non-production branches
+Your `netlify.toml` already configures:
+- ✅ Build settings (deploys pre-built files from GitHub Actions)
+- ✅ Publish directory (`apps/expo/dist`)
+- ✅ SPA routing redirects
+- ✅ Security headers
+- ✅ Caching strategy
+- ✅ Production/staging contexts
 
-### 3. Configure Environment Variables (Optional)
-
-If you want Netlify to also have the environment variables:
-
-1. Go to **Site settings** → **Environment variables**
-2. Add the same `EXPO_PUBLIC_*` variables as GitHub secrets
-3. This is optional since GitHub Actions builds with these values
+**No manual Netlify configuration needed!**
 
 ## 🗄️ Supabase Project Setup
 
