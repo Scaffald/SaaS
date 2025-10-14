@@ -63,69 +63,39 @@ echo ""
 echo "📋 Step 1: Checking Supabase project link"
 echo "========================================"
 
-cd packages/supabase
-
-# Check if project is linked
-if pnpx supabase db remote --status > /dev/null 2>&1; then
-    echo -e "${GREEN}✅ Supabase project linked${NC}"
+# Check if project is linked by listing projects
+if pnpm supa projects list > /dev/null 2>&1; then
+    # Further verify that a project is actually linked (has the bullet)
+    if pnpm supa projects list 2>/dev/null | grep -q "●"; then
+        LINKED_PROJECT=$(pnpm supa projects list 2>/dev/null | grep "●" | awk '{print $NF}')
+        echo -e "${GREEN}✅ Linked to Supabase project: ${LINKED_PROJECT}${NC}"
+    else
+        echo -e "${RED}❌ No Supabase project is currently linked${NC}"
+        echo ""
+        echo "To link your project:"
+        echo "  pnpm supa link --project-ref YOUR-PROJECT-REF"
+        exit 1
+    fi
 else
-    echo -e "${RED}❌ Supabase project not linked${NC}"
-    echo ""
-    echo "To link your project:"
-    echo "  cd packages/supabase"
-    echo "  pnpx supabase link --project-ref YOUR-PROJECT-REF"
-    cd ../..
+    echo -e "${RED}❌ Failed to access Supabase projects${NC}"
+    echo "   Check your Supabase authentication"
     exit 1
 fi
 
 echo ""
 echo "📋 Step 2: Resetting Production Database"
 echo "========================================"
-echo "Applying all migrations to production..."
+echo "This will completely DROP and recreate the database schema..."
 
-# Push all migrations to production (this resets and applies migrations)
-if pnpx supabase db push --linked; then
-    echo -e "${GREEN}✅ Migrations applied successfully${NC}"
+# Reset database - this drops everything and reapplies all migrations
+# Note: pnpm supa must be run from root directory
+if pnpm supa db reset --linked; then
+    echo -e "${GREEN}✅ Database reset and migrations applied successfully${NC}"
 else
-    echo -e "${RED}❌ Migration failed${NC}"
-    cd ../..
+    echo -e "${RED}❌ Database reset failed${NC}"
     exit 1
 fi
 
-cd ../..
-
-echo ""
-echo "📋 Step 3: Seeding Production Data"
-echo "========================================"
-
-# Run the seeding script with production environment
-if pnpm supa:seed:prod; then
-    echo -e "${GREEN}✅ Database seeded successfully${NC}"
-else
-    echo -e "${YELLOW}⚠️  Seeding completed with warnings${NC}"
-fi
-
-echo ""
-echo "📋 Step 4: Generating TypeScript Types"
-echo "========================================"
-
-if pnpm supa:generate:prod; then
-    echo -e "${GREEN}✅ Types generated from production database${NC}"
-else
-    echo -e "${YELLOW}⚠️  Type generation had warnings${NC}"
-fi
-
-echo ""
-echo "📋 Step 5: Verifying Deployment"
-echo "========================================"
-
-# Basic verification - check if we can connect
-if pnpm env-prod pnpx supabase --workdir packages db remote --status > /dev/null 2>&1; then
-    echo -e "${GREEN}✅ Database connection verified${NC}"
-else
-    echo -e "${RED}❌ Database connection failed${NC}"
-    exit 1
-fi
 
 echo ""
 echo -e "${GREEN}🎉 Production Database Deployment Complete!${NC}"
@@ -137,5 +107,5 @@ echo "   2. Test authentication flows"
 echo "   3. Deploy Edge Functions: pnpm deploy:prod:functions"
 echo "   4. Deploy web app: pnpm deploy:prod:web"
 echo ""
-echo "🔗 Supabase Dashboard: https://supabase.com/dashboard/project/_"
+echo "� Supabase Dashboard: https://supabase.com/dashboard/project/_"
 echo ""

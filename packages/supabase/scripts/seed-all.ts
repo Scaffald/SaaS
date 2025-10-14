@@ -29,15 +29,11 @@ async function seedCSICodes() {
     const scriptDir = path.dirname(new URL(import.meta.url).pathname);
     const csiScriptPath = path.join(scriptDir, "seed-csi.ts");
 
-    // Run the CSI seeding script
+    // Run the CSI seeding script with inherited environment
     const { stdout, stderr } = await execAsync(
       `pnpx tsx "${csiScriptPath}"`,
       {
-        env: {
-          ...process.env,
-          DATABASE_URL: process.env.DATABASE_URL ||
-            "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
-        },
+        env: process.env, // Inherit all environment variables
       },
     );
 
@@ -68,15 +64,11 @@ async function seedUniversities() {
       return true; // Not an error, just skip
     }
 
-    // Run the universities seeding script
+    // Run the universities seeding script with inherited environment
     const { stdout, stderr } = await execAsync(
       `pnpx tsx "${universitiesScriptPath}"`,
       {
-        env: {
-          ...process.env,
-          DATABASE_URL: process.env.DATABASE_URL ||
-            "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
-        },
+        env: process.env, // Inherit all environment variables
       },
     );
 
@@ -97,15 +89,11 @@ async function seedCertifications() {
     const scriptDir = path.dirname(new URL(import.meta.url).pathname);
     const certsScriptPath = path.join(scriptDir, "seed-certifications.ts");
 
-    // Run the certifications seeding script
+    // Run the certifications seeding script with inherited environment
     const { stdout, stderr } = await execAsync(
       `pnpx tsx "${certsScriptPath}"`,
       {
-        env: {
-          ...process.env,
-          DATABASE_URL: process.env.DATABASE_URL ||
-            "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
-        },
+        env: process.env, // Inherit all environment variables
       },
     );
 
@@ -126,15 +114,11 @@ async function seedJobs() {
     const scriptDir = path.dirname(new URL(import.meta.url).pathname);
     const jobsScriptPath = path.join(scriptDir, "seed-jobs.ts");
 
-    // Run the jobs seeding script
+    // Run the jobs seeding script with inherited environment
     const { stdout, stderr } = await execAsync(
       `pnpx tsx "${jobsScriptPath}"`,
       {
-        env: {
-          ...process.env,
-          DATABASE_URL: process.env.DATABASE_URL ||
-            "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
-        },
+        env: process.env, // Inherit all environment variables
       },
     );
 
