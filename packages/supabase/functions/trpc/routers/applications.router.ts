@@ -34,6 +34,7 @@ export const applicationsRouter = router({
 
       // Check for duplicate application
       const { data: existingApp } = await supabase
+        .schema("private")
         .from("applications")
         .select("id")
         .eq("job_id", input.job_id)
@@ -80,6 +81,7 @@ export const applicationsRouter = router({
 
       // Create application
       const { data: application, error } = await supabase
+        .schema("private")
         .from("applications")
         .insert({
           job_id: input.job_id,
@@ -130,6 +132,7 @@ export const applicationsRouter = router({
 
       // Verify ownership
       const { data: application } = await supabase
+        .schema("private")
         .from("applications")
         .select("user_id, completed_steps")
         .eq("id", input.application_id)
@@ -150,6 +153,7 @@ export const applicationsRouter = router({
 
       // Update application
       const { data: updated, error } = await supabase
+        .schema("private")
         .from("applications")
         .update({
           ...input.data,
@@ -254,38 +258,20 @@ export const applicationsRouter = router({
         });
       }
 
-      // Query applications with related data using direct joins
+      // Query applications from private schema
       let query = supabase
+        .schema("private")
         .from("applications")
-        .select(`
-          *,
-          user:users!applications_user_id_fkey(
-            id,
-            slug,
-            username,
-            about,
-            avatar_path
-          ),
-          job:jobs(
-            id,
-            slug,
-            title,
-            employment_type,
-            remote_option,
-            location,
-            status,
-            organization_id
-          )
-        `)
+        .select("*")
         .eq("user_id", user.id)
-        .order("applied_at", { ascending: false })
+        .order("created_at", { ascending: false })
         .range(input.offset, input.offset + input.limit - 1);
 
       if (input.status) {
         query = query.eq("status", input.status);
       }
 
-      const { data, error } = await query;
+      const { data: applications, error } = await query;
 
       if (error) {
         console.error("Applications query error:", error);
@@ -296,7 +282,45 @@ export const applicationsRouter = router({
         });
       }
 
-      return data || [];
+      if (!applications || applications.length === 0) {
+        return [];
+      }
+
+      // Get unique job IDs
+      const jobIds = [...new Set(applications.map((a) => a.job_id))];
+
+      // Fetch jobs separately from public schema
+      const { data: jobs } = await supabase
+        .from("jobs")
+        .select(
+          "id, slug, title, employment_type, remote_option, location, status, organization_id",
+        )
+        .in("id", jobIds);
+
+      // Fetch user data from public.users
+      const { data: userData } = await supabase
+        .from("users")
+        .select("id, slug, username, about, avatar_path")
+        .eq("id", user.id)
+        .single();
+
+      // Create jobs map for lookup
+      const jobsMap = new Map(jobs?.map((j) => [j.id, j]) || []);
+
+      // Combine applications with job and user data
+      const result = applications.map((app) => ({
+        ...app,
+        user: userData || {
+          id: user.id,
+          slug: "",
+          username: "",
+          about: "",
+          avatar_path: "",
+        },
+        job: jobsMap.get(app.job_id) || null,
+      }));
+
+      return result;
     }),
 
   /**
@@ -315,6 +339,7 @@ export const applicationsRouter = router({
       }
 
       const { data: application, error } = await supabase
+        .schema("private")
         .from("applications")
         .select(
           `
@@ -387,6 +412,7 @@ export const applicationsRouter = router({
       }
 
       const { data: updated, error } = await supabase
+        .schema("private")
         .from("applications")
         .update({
           status: "withdrawn",

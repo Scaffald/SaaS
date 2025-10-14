@@ -244,12 +244,41 @@ async function verifyCertifications() {
 async function verifyIndustries() {
   console.log("\n🏭 Verifying Industries Data...");
 
+  // First, test basic connectivity
+  console.log("   Testing database connectivity...");
+  const { error: testError } = await supabase
+    .from("industries")
+    .select("id")
+    .limit(1);
+
+  if (testError) {
+    console.error("❌ Database connectivity error:");
+    console.error("   Error details:", JSON.stringify(testError, null, 2));
+    console.error("   Error code:", testError.code);
+    console.error("   Error message:", testError.message);
+    console.error("   Error hint:", testError.hint);
+    console.error("   Error details:", testError.details);
+    return false;
+  }
+
+  console.log("   ✓ Database connected successfully");
+
+  // Now count industries
   const { count: industryCount, error: industryError } = await supabase
     .from("industries")
     .select("*", { count: "exact", head: true });
 
   if (industryError) {
-    console.error("❌ Error checking industries:", industryError);
+    console.error("❌ Error checking industries:");
+    console.error("   Full error:", JSON.stringify(industryError, null, 2));
+    console.error("   Error code:", industryError.code);
+    console.error("   Error message:", industryError.message);
+    return false;
+  }
+
+  if (!industryCount || industryCount === 0) {
+    console.error("❌ No industries found in database");
+    console.error("   Count returned:", industryCount);
     return false;
   }
 
@@ -262,13 +291,16 @@ async function verifyIndustries() {
     .limit(5);
 
   if (indError) {
-    console.error("❌ Error fetching industries:", indError);
+    console.error("❌ Error fetching industries:");
+    console.error("   Full error:", JSON.stringify(indError, null, 2));
     return false;
   }
 
-  console.log(
-    `   Sample industries: ${industries?.map((i) => i.name).join(", ")}`,
-  );
+  if (industries && industries.length > 0) {
+    console.log(
+      `   Sample industries: ${industries.map((i) => i.name).join(", ")}`,
+    );
+  }
   return true;
 }
 

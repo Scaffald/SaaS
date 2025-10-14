@@ -1,239 +1,194 @@
-# Production Deployment Scripts
+# Deployment Scripts
 
-Automated scripts for deploying SCF-Neue to production.
+This directory contains simplified deployment scripts for the SCF-Neue project.
 
-## 📋 Available Scripts
+## Available Scripts
 
-### `deploy-prod-full.sh`
-**Complete production deployment orchestrator**
+### `pnpm deploy`
 
+**Safe production deployment** - Pushes migrations, deploys functions, and triggers web deployment.
+
+**What it does:**
+- Pushes database migrations (no reset - safe)
+- Deploys Edge Functions (trpc, job-import, news)
+- Triggers web app deployment via GitHub Actions
+
+**When to use:**
+- Regular production deployments
+- After adding new migrations
+- When updating functions or web app
+
+**Usage:**
 ```bash
-./scripts/deploy-prod-full.sh
+pnpm deploy
 ```
 
-Deploys everything:
-- ✅ Database (reset + migrations + seed)
-- ✅ Edge Functions (tRPC, job-import, news)
-- ✅ Web App (via GitHub Actions)
+### `pnpm deploy:reset`
 
-**Options:**
-```bash
-./scripts/deploy-prod-full.sh --skip-db         # Skip database
-./scripts/deploy-prod-full.sh --skip-functions  # Skip functions
-./scripts/deploy-prod-full.sh --skip-web        # Skip web
-./scripts/deploy-prod-full.sh --help            # Show help
-```
+**Destructive production deployment** - Resets database to match local state, then deploys everything.
 
-### `deploy-db-prod.sh`
-**Database-only deployment**
-
-```bash
-./scripts/deploy-db-prod.sh
-```
-
-- Resets production database
-- Applies all migrations (currently 9)
+**What it does:**
+- **DROPS and recreates the entire database** ⚠️
+- Applies all migrations
 - Seeds production data (CSI codes, universities, certifications, jobs)
-- Generates TypeScript types
+- Deploys Edge Functions
+- Triggers web app deployment
 
-### `deploy-functions-prod.sh`
-**Edge Functions-only deployment**
+**When to use:**
+- Initial production setup
+- When database needs to be reset to match local state
+- **Temporary measure** - will be phased out once database is stable
 
+**Usage:**
 ```bash
-./scripts/deploy-functions-prod.sh
+pnpm deploy:reset
 ```
 
-- Deploys tRPC router
-- Deploys job-import function
-- Deploys news function
-- Lists deployed functions
+**Warning:** This command requires typing `RESET` to confirm, as it's destructive.
 
-### `verify-prod-deployment.sh`
-**Deployment health check**
+## Prerequisites
 
+### Required Environment Files
+
+**`.env.production`** - Must contain:
 ```bash
-./scripts/verify-prod-deployment.sh
+EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SECRET=your-service-role-key
+# ... other production configs
 ```
 
-Verifies:
-- Environment variables configured
-- Database connection working
-- Migrations applied
-- Edge Functions responding
-- API endpoints accessible
+### Required Setup
 
-## 🚀 Quick Start
-
-### Prerequisites
-
-1. **Create `.env.production`** (see docs/deployment/PRODUCTION_DEPLOYMENT.md)
-2. **Link Supabase project:**
+1. **Supabase Project Link:**
    ```bash
-   cd packages/supabase
-   pnpx supabase link --project-ref YOUR-PROJECT-REF
-   cd ../..
+   pnpm supa link --project-ref YOUR-PROJECT-REF
    ```
-3. **Configure GitHub secrets** for automatic web deployment
 
-### One-Command Deployment
+2. **GitHub CLI (optional but recommended):**
+   ```bash
+   brew install gh
+   gh auth login
+   ```
 
-```bash
-pnpm deploy:prod:full
-```
+## Deployment Workflow
 
-This runs `deploy-prod-full.sh` with all safety checks and prompts.
-
-## 📦 Package.json Commands
-
-Convenient aliases for the scripts:
+### Standard Deployment
 
 ```bash
-pnpm deploy:prod:full       # Complete deployment
-pnpm deploy:prod:db         # Database only
-pnpm deploy:prod:functions  # Functions only
-pnpm deploy:prod:web        # Web only (triggers GitHub Actions)
-pnpm deploy:verify:prod     # Health check
+# 1. Make your changes
+git add .
+git commit -m "feat: add new feature"
+
+# 2. Run code quality checks
+pnpm check
+
+# 3. Deploy to production
+pnpm deploy
 ```
 
-## 🔒 Safety Features
+### Reset Deployment (Destructive)
 
-### Pre-flight Checks
-- Verifies `.env.production` exists
-- Checks for uncommitted changes
-- Validates Supabase project link
-- Runs code quality checks
-
-### Confirmation Prompts
-- Database reset requires typing 'yes'
-- Functions deployment requires y/n
-- Full deployment requires y/n
-- Option to cancel at any point
-
-### Error Handling
-- Scripts exit on error (`set -e`)
-- Colored output (red/yellow/green)
-- Detailed error messages
-- Rollback instructions
-
-## 📊 Deployment Flow
-
-```
-deploy-prod-full.sh
-    ├── Pre-flight checks
-    │   ├── Git status
-    │   ├── Environment files
-    │   └── Code quality (pnpm check)
-    │
-    ├── Database (deploy-db-prod.sh)
-    │   ├── Confirm reset
-    │   ├── Apply migrations
-    │   ├── Seed data
-    │   └── Generate types
-    │
-    ├── Functions (deploy-functions-prod.sh)
-    │   ├── Deploy tRPC
-    │   ├── Deploy job-import
-    │   ├── Deploy news
-    │   └── List functions
-    │
-    ├── Web (GitHub Actions)
-    │   └── Trigger workflow
-    │
-    └── Summary
-        └── Display results
-```
-
-## 🔍 Debugging
-
-### Script Execution
 ```bash
-# Add debug output
-bash -x ./scripts/deploy-prod-full.sh
+# 1. Ensure local database is in desired state
+pnpm supa:reset
 
-# Check script permissions
-ls -la scripts/*.sh
+# 2. Test locally
+pnpm dev
 
-# Make executable
-chmod +x scripts/*.sh
+# 3. Deploy to production with reset
+pnpm deploy:reset
 ```
 
-### Environment Issues
-```bash
-# Verify .env.production
-cat .env.production
+## What Gets Deployed
 
-# Test Supabase connection
+### Database
+- **`pnpm deploy`**: Pushes new migrations only
+- **`pnpm deploy:reset`**: Full reset + migrations + seed
+
+### Edge Functions
+Both scripts deploy:
+- `trpc` - Main API router
+- `job-import` - Job import function
+- `news` - News aggregation function
+
+### Web App
+- Triggers GitHub Actions workflow
+- Builds and deploys to Netlify
+- Can monitor at: `gh run list --workflow=deploy-web.yml`
+
+## Troubleshooting
+
+### Database Migration Fails
+```bash
+# Check what migrations haven't been applied
+pnpm supa db diff
+
+# If migrations conflict, may need reset
+pnpm deploy:reset
+```
+
+### Function Deployment Fails
+```bash
+# Deploy individual function
 cd packages/supabase
-pnpx supabase db remote --status
+pnpx supabase functions deploy trpc
 ```
 
-### Deployment Issues
+### Seeding Fails
 ```bash
-# Check deployment logs
-pnpm deploy:verify:prod
+# Run seeding manually
+pnpm env-prod pnpm --filter @app/supabase seed
+```
 
-# View GitHub Actions
+### GitHub Actions Not Triggered
+```bash
+# Manual trigger
+gh workflow run deploy-web.yml --ref production
+
+# Or push to production branch
+git push origin production
+```
+
+## Monitoring
+
+### Check Deployment Status
+
+```bash
+# Check Supabase functions
+pnpm supa functions list
+
+# Check GitHub Actions
 gh run list --workflow=deploy-web.yml
 
-# Supabase logs
-# Visit: https://supabase.com/dashboard/project/_/logs
+# Verify production deployment
+pnpm supa status
 ```
 
-## 📖 Documentation
+### View Logs
 
-Full documentation: [docs/deployment/PRODUCTION_DEPLOYMENT.md](../docs/deployment/PRODUCTION_DEPLOYMENT.md)
+- **Supabase Dashboard**: https://supabase.com/dashboard/project/_
+- **Netlify Dashboard**: https://app.netlify.com/
+- **GitHub Actions**: https://github.com/YOUR-ORG/SCF-Neue/actions
 
-## 🆘 Common Issues
+## Migration Path
 
-### Database Connection Failed
-```bash
-cd packages/supabase
-pnpx supabase link --project-ref YOUR-PROJECT-REF
-```
+**Current State:**
+- `pnpm deploy` - Safe, incremental deployments
+- `pnpm deploy:reset` - Temporary, destructive reset
 
-### Functions Deployment Failed
-- Check `import_map.json`
-- Verify Supabase project linked
-- Review function logs in dashboard
+**Future State:**
+- `pnpm deploy` - Only deployment command needed
+- `pnpm deploy:reset` - Will be removed once database is stable
 
-### Web Deployment Failed
-- Check GitHub Actions logs
-- Verify GitHub secrets set
-- Check Netlify configuration
+## Security Notes
 
-## 🎯 Best Practices
+- Never commit `.env.production` to git
+- Store production secrets in GitHub Secrets
+- Use `SUPABASE_SECRET` (service role key) only for deployments
+- Regular users should use `SUPABASE_ANON_KEY`
 
-1. **Test locally first**
-   ```bash
-   pnpm supa:reset          # Test migrations locally
-   pnpm supa:seed           # Test seeding locally
-   pnpm web:build           # Test web build locally
-   ```
+## Additional Resources
 
-2. **Use verification**
-   ```bash
-   pnpm deploy:verify:prod  # After deployment
-   ```
-
-3. **Monitor deployment**
-   - Check Supabase Dashboard
-   - Monitor GitHub Actions
-   - Test production site
-
-4. **Have rollback plan**
-   - Supabase automatic backups
-   - Git revert capability
-   - Netlify rollback option
-
-## 🔗 Related Scripts
-
-- `deploy.sh` - Netlify-only deployment (existing)
-- `build-production.sh` - Production build script (if exists)
-- `seed-production.ts` - Production seeding (if exists)
-
-## 📝 Notes
-
-- Scripts require bash shell (macOS/Linux)
-- Colored output uses ANSI escape codes
-- All scripts are idempotent (safe to run multiple times)
-- Scripts log all operations for debugging
+- [Production Deployment Guide](../docs/deployment/PRODUCTION_DEPLOYMENT.md)
+- [Supabase Cloud Setup](../docs/deployment/supabase-cloud-setup.md)
+- [GitHub Actions Setup](../docs/deployment/github-actions-netlify-setup.md)
