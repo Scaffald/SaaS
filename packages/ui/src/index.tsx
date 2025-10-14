@@ -54,6 +54,7 @@ export { DashboardLayout } from './components/layouts/DashboardLayout'
 
 // Other components
 export * from './components/address'
+export * from './components/certifications'
 export * from './components/chips'
 export * from './components/image-picker'
 export * from './components/inputs'
