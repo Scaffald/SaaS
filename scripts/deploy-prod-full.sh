@@ -177,7 +177,7 @@ if [ "$SKIP_WEB" = false ]; then
     if command -v gh &> /dev/null; then
         echo "Triggering GitHub Actions workflow..."
         
-        if gh workflow run deploy-web.yml --ref main; then
+        if gh workflow run deploy-web.yml --ref production; then
             echo -e "${GREEN}✅ GitHub Actions workflow triggered${NC}"
             echo ""
             echo "Monitor deployment:"
@@ -187,7 +187,7 @@ if [ "$SKIP_WEB" = false ]; then
             echo -e "${YELLOW}⚠️  Failed to trigger GitHub Actions${NC}"
             echo ""
             echo "Manual deployment options:"
-            echo "  1. Push to main branch: git push origin main"
+            echo "  1. Push to production branch: git push origin production"
             echo "  2. Trigger manually in GitHub Actions UI"
             echo "  3. Deploy directly: pnpm deploy"
         fi
@@ -197,7 +197,7 @@ if [ "$SKIP_WEB" = false ]; then
         echo "Install gh CLI: brew install gh"
         echo ""
         echo "Alternative deployment:"
-        echo "  1. Push to main: git push origin main"
+          echo "  1. Push to production: git push origin production"
         echo "  2. Or use GitHub Actions UI to trigger manually"
     fi
 else
