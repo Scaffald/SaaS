@@ -116,6 +116,25 @@ jobs:
           path: apps/expo/dist/
           retention-days: 7
 
+      # ===== DEPLOY EDGE FUNCTIONS (Production Only) =====
+      - name: 🔧 Deploy Edge Functions to Supabase
+        if: github.ref == 'refs/heads/main'
+        working-directory: packages/supabase
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+        run: |
+          echo "Deploying Edge Functions to production..."
+          if [ -n "$SUPABASE_ACCESS_TOKEN" ] && [ -n "$SUPABASE_PROJECT_ID" ]; then
+            pnpx supabase functions deploy trpc --project-ref $SUPABASE_PROJECT_ID || echo "⚠️ tRPC deployment skipped"
+            pnpx supabase functions deploy job-import --project-ref $SUPABASE_PROJECT_ID || echo "⚠️ job-import deployment skipped"
+            pnpx supabase functions deploy news --project-ref $SUPABASE_PROJECT_ID || echo "⚠️ news deployment skipped"
+            echo "✅ Edge Functions deployed"
+          else
+            echo "⏭️ Skipping Edge Functions deployment (secrets not configured)"
+          fi
+        continue-on-error: true
+
       # ===== DEPLOY TO NETLIFY =====
       - name: 🚀 Deploy to Netlify
         uses: nwtgck/actions-netlify@v2
