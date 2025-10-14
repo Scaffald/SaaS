@@ -19,16 +19,7 @@ import {
 } from 'tamagui'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Plus,
-  X,
-  ChevronDown,
-  Briefcase,
-  Calendar,
-  MapPin,
-  Building2,
-  TrendingUp,
-} from '@tamagui/lucide-icons'
+import { Plus, X, ChevronDown, Briefcase, Calendar, MapPin } from '@tamagui/lucide-icons'
 import { ProfileEmptyState } from './components'
 import { formatDateRange } from './utils/date-formatting'
 import { randomUUID } from 'expo-crypto'
@@ -38,7 +29,6 @@ import {
   experienceProfileDefaults,
   createNewExperienceEntry,
   EMPLOYMENT_TYPE_OPTIONS,
-  COMPANY_SIZE_OPTIONS,
   CAREER_LEVEL_OPTIONS,
 } from './config'
 import { DashboardWidget } from '@app/ui'
@@ -90,6 +80,7 @@ export function ProfileExperienceLeft() {
         // biome-ignore lint/suspicious/noExplicitAny: API response type
         experience_entries: experienceQuery.data.map((exp: any) => ({
           id: exp.id,
+          organization_id: exp.organization_id || undefined,
           job_title: exp.job_title,
           company_name: exp.company_name,
           employment_type: exp.employment_type || undefined,
@@ -99,11 +90,6 @@ export function ProfileExperienceLeft() {
           end_date: exp.end_date || undefined,
           is_current: exp.is_current,
           description: exp.description || undefined,
-          key_achievements: exp.key_achievements || undefined,
-          skills_used: exp.skills_used || undefined,
-          industry: exp.industry || undefined,
-          company_size: exp.company_size || undefined,
-          salary_range: exp.salary_range || undefined,
         })),
       })
     }
@@ -452,59 +438,6 @@ export function ProfileExperienceLeft() {
                   )}
                 />
               </YStack>
-
-              {/* Company Size */}
-              <YStack gap="$2">
-                <Text>Company Size</Text>
-                <Controller
-                  name={`experience_entries.${index}.company_size`}
-                  control={control}
-                  render={({ field }) => (
-                    <Select value={field.value || ''} onValueChange={field.onChange}>
-                      <Select.Trigger iconAfter={ChevronDown}>
-                        <Select.Value placeholder="Select company size" />
-                      </Select.Trigger>
-
-                      <Adapt when={isMobile} platform="touch">
-                        <Sheet
-                          native
-                          modal
-                          dismissOnSnapToBottom
-                          animationConfig={{
-                            type: 'spring',
-                            damping: 20,
-                            mass: 1.2,
-                            stiffness: 250,
-                          }}
-                        >
-                          <Sheet.Frame>
-                            <Sheet.ScrollView>
-                              <Adapt.Contents />
-                            </Sheet.ScrollView>
-                          </Sheet.Frame>
-                          <Sheet.Overlay
-                            animation="lazy"
-                            enterStyle={{ opacity: 0 }}
-                            exitStyle={{ opacity: 0 }}
-                          />
-                        </Sheet>
-                      </Adapt>
-
-                      <Select.Content>
-                        <Select.ScrollUpButton />
-                        <Select.Viewport>
-                          {COMPANY_SIZE_OPTIONS.map((size) => (
-                            <Select.Item key={size} value={size} index={0}>
-                              <Select.ItemText>{size}</Select.ItemText>
-                            </Select.Item>
-                          ))}
-                        </Select.Viewport>
-                        <Select.ScrollDownButton />
-                      </Select.Content>
-                    </Select>
-                  )}
-                />
-              </YStack>
             </YStack>
           ))}
 
@@ -604,26 +537,6 @@ export function ProfileExperienceLeft() {
                         </XStack>
                       )}
 
-                      {/* Company Size */}
-                      {exp.company_size && (
-                        <XStack gap="$2" items="center">
-                          <Building2 size={16} color="$color11" />
-                          <Text fontSize="$2" color="$color11">
-                            {exp.company_size}
-                          </Text>
-                        </XStack>
-                      )}
-
-                      {/* Industry */}
-                      {exp.industry && (
-                        <XStack gap="$2" items="center">
-                          <TrendingUp size={16} color="$color11" />
-                          <Text fontSize="$2" color="$color11">
-                            {exp.industry}
-                          </Text>
-                        </XStack>
-                      )}
-
                       {/* Description */}
                       {exp.description && (
                         <YStack gap="$1">
@@ -633,53 +546,6 @@ export function ProfileExperienceLeft() {
                           <Text fontSize="$3" color="$color11">
                             {exp.description}
                           </Text>
-                        </YStack>
-                      )}
-
-                      {/* Key Achievements */}
-                      {exp.key_achievements && exp.key_achievements.length > 0 && (
-                        <YStack gap="$1">
-                          <Text fontSize="$2" fontWeight="600" color="$color11">
-                            Key Achievements:
-                          </Text>
-                          <YStack gap="$1" pl="$2">
-                            {exp.key_achievements.map((achievement: string) => (
-                              <XStack key={randomUUID()} gap="$2">
-                                <Text fontSize="$2" color="$color11">
-                                  •
-                                </Text>
-                                <Text fontSize="$2" color="$color11" flex={1}>
-                                  {achievement}
-                                </Text>
-                              </XStack>
-                            ))}
-                          </YStack>
-                        </YStack>
-                      )}
-
-                      {/* Skills Used */}
-                      {exp.skills_used && exp.skills_used.length > 0 && (
-                        <YStack gap="$1">
-                          <Text fontSize="$2" fontWeight="600" color="$color11">
-                            Skills:
-                          </Text>
-                          <XStack gap="$2" flexWrap="wrap">
-                            {exp.skills_used.map((skill: string) => (
-                              <XStack
-                                key={randomUUID()}
-                                px="$2"
-                                py="$1"
-                                bg="$backgroundHover"
-                                rounded="$2"
-                                borderWidth={1}
-                                borderColor="$borderColor"
-                              >
-                                <Text fontSize="$2" color="$color11">
-                                  {skill}
-                                </Text>
-                              </XStack>
-                            ))}
-                          </XStack>
                         </YStack>
                       )}
                     </YStack>

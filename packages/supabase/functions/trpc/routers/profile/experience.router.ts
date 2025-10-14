@@ -8,6 +8,7 @@ import { protectedProcedure, t } from "../../middleware.ts";
 const experienceEntrySchema = z.object({
   id: z.string().uuid().optional(),
   user_id: z.string().uuid().optional(),
+  organization_id: z.string().uuid().optional().nullable(),
   job_title: z.string().min(1, "Job title is required"),
   company_name: z.string().min(1, "Company name is required"),
   employment_type: z.string().optional().nullable(),
@@ -17,11 +18,6 @@ const experienceEntrySchema = z.object({
   end_date: z.string().optional().nullable(),
   is_current: z.boolean().default(false),
   description: z.string().optional().nullable(),
-  key_achievements: z.array(z.string()).optional().nullable(),
-  skills_used: z.array(z.string()).optional().nullable(),
-  industry: z.string().optional().nullable(),
-  company_size: z.string().optional().nullable(),
-  salary_range: z.string().optional().nullable(),
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
 });
@@ -59,6 +55,7 @@ export const profileExperienceRouter = t.router({
       const { supabase, user } = ctx;
 
       const { data, error } = await supabase
+        .schema("private")
         .from("user_experience")
         .select("*")
         .eq("user_id", user.id)
@@ -143,8 +140,10 @@ export const profileExperienceRouter = t.router({
           if (exp.id) {
             // Update existing experience
             const { data, error } = await supabase
+              .schema("private")
               .from("user_experience")
               .update({
+                organization_id: exp.organization_id || null,
                 job_title: exp.job_title,
                 company_name: exp.company_name,
                 employment_type: exp.employment_type || null,
@@ -154,11 +153,6 @@ export const profileExperienceRouter = t.router({
                 end_date: exp.end_date || null,
                 is_current: exp.is_current,
                 description: exp.description || null,
-                key_achievements: exp.key_achievements || null,
-                skills_used: exp.skills_used || null,
-                industry: exp.industry || null,
-                company_size: exp.company_size || null,
-                salary_range: exp.salary_range || null,
                 updated_at: new Date().toISOString(),
               })
               .eq("id", exp.id)
@@ -177,9 +171,11 @@ export const profileExperienceRouter = t.router({
           } else {
             // Create new experience
             const { data, error } = await supabase
+              .schema("private")
               .from("user_experience")
               .insert({
                 user_id: user.id,
+                organization_id: exp.organization_id || null,
                 job_title: exp.job_title,
                 company_name: exp.company_name,
                 employment_type: exp.employment_type || null,
@@ -189,11 +185,6 @@ export const profileExperienceRouter = t.router({
                 end_date: exp.end_date || null,
                 is_current: exp.is_current,
                 description: exp.description || null,
-                key_achievements: exp.key_achievements || null,
-                skills_used: exp.skills_used || null,
-                industry: exp.industry || null,
-                company_size: exp.company_size || null,
-                salary_range: exp.salary_range || null,
               })
               .select()
               .single();
@@ -236,6 +227,7 @@ export const profileExperienceRouter = t.router({
 
       try {
         const { error } = await supabase
+          .schema("private")
           .from("user_experience")
           .delete()
           .eq("id", input.experienceId)
