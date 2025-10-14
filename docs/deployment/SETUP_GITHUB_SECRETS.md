@@ -1,0 +1,333 @@
+# GitHub Secrets Setup Guide
+
+Complete guide for connecting GitHub Actions to Netlify and Supabase for automatic deployments.
+
+## 🎯 Overview
+
+To enable automatic deployments, you need to configure secrets in your GitHub repository. These secrets allow GitHub Actions to:
+- Deploy your web app to Netlify
+- Deploy Edge Functions to Supabase
+- Access environment variables during build
+
+## 📋 Required Secrets
+
+### 1. Netlify Secrets
+
+#### `NETLIFY_AUTH_TOKEN`
+**Purpose:** Allows GitHub Actions to deploy to your Netlify site
+
+**How to get it:**
+1. Go to [Netlify](https://app.netlify.com)
+2. Click your profile icon (top right) → **User settings**
+3. Navigate to **Applications** → **Personal access tokens**
+4. Click **New access token**
+5. Name it: `GitHub Actions Deployment`
+6. Copy the token (you won't see it again!)
+
+#### `NETLIFY_SITE_ID`
+**Purpose:** Identifies which Netlify site to deploy to
+
+**How to get it:**
+1. Go to your Netlify site dashboard
+2. Navigate to **Site settings** → **General** → **Site details**
+3. Copy the **Site ID** (looks like: `abc123-def456-ghi789`)
+
+### 2. Supabase Secrets (Optional but Recommended)
+
+#### `SUPABASE_ACCESS_TOKEN`
+**Purpose:** Allows GitHub Actions to deploy Edge Functions
+
+**How to get it:**
+1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
+2. Click your profile icon (top right) → **Account Settings**
+3. Navigate to **Access Tokens**
+4. Click **Generate new token**
+5. Name it: `GitHub Actions Deployment`
+6. Copy the token immediately
+
+#### `SUPABASE_PROJECT_ID`
+**Purpose:** Identifies which Supabase project to deploy to
+
+**How to get it:**
+1. Go to your Supabase project
+2. Click **Settings** (gear icon) → **General**
+3. Copy the **Reference ID** (under "General settings")
+
+### 3. Application Environment Variables
+
+These are your actual app configuration values:
+
+#### `EXPO_PUBLIC_SUPABASE_URL`
+- Your Supabase project URL
+- Format: `https://your-project-ref.supabase.co`
+- Find in: Supabase Dashboard → Settings → API → Project URL
+
+#### `EXPO_PUBLIC_SUPABASE_ANON_KEY`
+- Your Supabase anonymous/public key
+- Find in: Supabase Dashboard → Settings → API → anon/public key
+
+#### `EXPO_PUBLIC_URL`
+- Your production website URL
+- Example: `https://your-site.netlify.app` or your custom domain
+
+#### Google OAuth (if using)
+- `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`
+- `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`
+- `EXPO_PUBLIC_GOOGLE_IOS_SCHEME`
+
+#### Mapbox (if using)
+- `EXPO_PUBLIC_MAPBOX_TOKEN`
+- `EXPO_PUBLIC_MAPBOX_STYLE_URL`
+- `EXPO_PUBLIC_MAPBOX_API_URL`
+
+## 🔧 Adding Secrets to GitHub
+
+### Via GitHub Web Interface
+
+1. **Navigate to your repository** on GitHub
+2. Click **Settings** (top menu)
+3. Click **Secrets and variables** → **Actions** (left sidebar)
+4. Click **New repository secret**
+5. Add each secret:
+   - **Name:** Enter the secret name (e.g., `NETLIFY_AUTH_TOKEN`)
+   - **Value:** Paste the secret value
+   - Click **Add secret**
+6. Repeat for all secrets
+
+### Via GitHub CLI (Alternative)
+
+```bash
+# Netlify secrets
+gh secret set NETLIFY_AUTH_TOKEN
+gh secret set NETLIFY_SITE_ID
+
+# Supabase secrets
+gh secret set SUPABASE_ACCESS_TOKEN
+gh secret set SUPABASE_PROJECT_ID
+
+# App environment variables
+gh secret set EXPO_PUBLIC_SUPABASE_URL
+gh secret set EXPO_PUBLIC_SUPABASE_ANON_KEY
+gh secret set EXPO_PUBLIC_URL
+gh secret set EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
+gh secret set EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID
+gh secret set EXPO_PUBLIC_GOOGLE_IOS_SCHEME
+gh secret set EXPO_PUBLIC_MAPBOX_TOKEN
+gh secret set EXPO_PUBLIC_MAPBOX_STYLE_URL
+gh secret set EXPO_PUBLIC_MAPBOX_API_URL
+```
+
+## 📝 Netlify Site Setup
+
+### 1. Create Netlify Site (if not exists)
+
+1. Go to [Netlify](https://app.netlify.com)
+2. Click **Add new site** → **Import an existing project**
+3. Connect your Git provider (GitHub)
+4. **Important:** Do NOT set up automatic deployments
+5. Choose **Skip for now** for build settings
+6. Click **Deploy site**
+
+### 2. Configure Netlify Settings
+
+1. Go to **Site settings** → **Build & deploy**
+2. **Build settings:**
+   - Build command: Leave blank (GitHub Actions handles this)
+   - Publish directory: Leave blank
+3. **Deploy settings:**
+   - **Stop builds:** Yes (GitHub Actions handles deployment)
+4. **Branch deploys:**
+   - Production branch: `production`
+   - Branch deploys: Disable for non-production branches
+
+### 3. Configure Environment Variables (Optional)
+
+If you want Netlify to also have the environment variables:
+
+1. Go to **Site settings** → **Environment variables**
+2. Add the same `EXPO_PUBLIC_*` variables as GitHub secrets
+3. This is optional since GitHub Actions builds with these values
+
+## 🗄️ Supabase Project Setup
+
+### 1. Link Local Project to Production
+
+```bash
+cd packages/supabase
+pnpx supabase link --project-ref YOUR-PROJECT-REF
+pnpx supabase db remote --status
+cd ../..
+```
+
+### 2. Create Production Environment File
+
+Create `.env.production` in project root:
+
+```bash
+# Supabase Production
+EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SECRET=your-service-role-key
+
+# App URL
+EXPO_PUBLIC_URL=https://your-production-domain.com
+
+# OAuth
+EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=your-client-id
+EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID=your-ios-client-id
+EXPO_PUBLIC_GOOGLE_IOS_SCHEME=com.yourapp.scaffald
+
+# Mapbox
+EXPO_PUBLIC_MAPBOX_TOKEN=your-token
+EXPO_PUBLIC_MAPBOX_STYLE_URL=your-style-url
+EXPO_PUBLIC_MAPBOX_API_URL=https://api.mapbox.com
+
+# Database (for local seeding scripts)
+DATABASE_URL=postgresql://postgres:[password]@db.[project].supabase.co:5432/postgres
+```
+
+**⚠️ Important:** Never commit `.env.production` to git!
+
+## ✅ Verification Checklist
+
+### GitHub Secrets
+- [ ] `NETLIFY_AUTH_TOKEN` set
+- [ ] `NETLIFY_SITE_ID` set
+- [ ] `SUPABASE_ACCESS_TOKEN` set (optional)
+- [ ] `SUPABASE_PROJECT_ID` set (optional)
+- [ ] All `EXPO_PUBLIC_*` variables set
+
+### Netlify
+- [ ] Site created
+- [ ] Site ID copied
+- [ ] Auth token generated
+- [ ] Production branch set to `production`
+- [ ] Automatic builds disabled (GitHub Actions handles it)
+
+### Supabase
+- [ ] Project created
+- [ ] Local project linked
+- [ ] `.env.production` created
+- [ ] Access token generated (for Edge Functions)
+
+## 🚀 Testing the Setup
+
+### 1. Test GitHub Actions → Netlify
+
+```bash
+# Make a small change
+echo "# Test deployment" >> README.md
+git add README.md
+git commit -m "test: verify deployment pipeline"
+git push origin production
+```
+
+Watch the GitHub Actions workflow:
+```
+https://github.com/YOUR-USERNAME/SCF-Neue/actions
+```
+
+### 2. Verify Netlify Deployment
+
+1. Check GitHub Actions logs for "Deploy to Netlify" step
+2. Look for deployment URL in logs
+3. Visit your Netlify site
+4. Verify the site is live
+
+### 3. Test Edge Functions Deployment
+
+If you configured Supabase secrets:
+
+1. Check GitHub Actions logs for "Deploy Edge Functions" step
+2. Go to Supabase Dashboard → Edge Functions
+3. Verify functions are deployed (trpc, job-import, news)
+
+## 🔍 Troubleshooting
+
+### "Netlify deployment failed"
+
+**Check:**
+- `NETLIFY_AUTH_TOKEN` is correct
+- `NETLIFY_SITE_ID` is correct
+- Token has deploy permissions
+- Site exists in Netlify
+
+**Fix:**
+1. Regenerate Netlify access token
+2. Update GitHub secret
+3. Re-run workflow
+
+### "Edge Functions deployment failed"
+
+**Check:**
+- `SUPABASE_ACCESS_TOKEN` is correct
+- `SUPABASE_PROJECT_ID` is correct
+- Token has function deployment permissions
+
+**Fix:**
+1. Ensure Supabase project is linked locally
+2. Regenerate access token if needed
+3. The workflow has `continue-on-error: true` so it won't fail the entire deployment
+
+### "Missing environment variables"
+
+**Check:**
+- All required `EXPO_PUBLIC_*` secrets are set in GitHub
+- Secret names match exactly (case-sensitive)
+- No typos in secret names
+
+**Fix:**
+1. Review list of required secrets above
+2. Add missing secrets to GitHub
+3. Re-run workflow
+
+## 📊 Deployment Flow Summary
+
+```
+Developer pushes to production branch
+          ↓
+GitHub Actions triggered
+          ↓
+Install dependencies & build packages
+          ↓
+Build web app (with secrets as env vars)
+          ↓
+Upload artifacts
+          ↓
+Deploy Edge Functions to Supabase (if configured)
+          ↓
+Deploy to Netlify (using auth token)
+          ↓
+✅ Production live!
+```
+
+## 🎉 Next Steps
+
+After secrets are configured:
+
+1. **Test the pipeline:**
+   ```bash
+   git push origin production
+   ```
+
+2. **Deploy database:**
+   ```bash
+   pnpm deploy:prod:db
+   ```
+
+3. **Verify everything:**
+   ```bash
+   pnpm deploy:verify:prod
+   ```
+
+4. **Monitor:**
+   - GitHub Actions: Build logs
+   - Netlify: Deployment logs
+   - Supabase: Function logs
+
+## 🔗 Quick Links
+
+- [GitHub Secrets Documentation](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
+- [Netlify Deploy Tokens](https://docs.netlify.com/cli/get-started/#obtain-a-token-via-the-command-line)
+- [Supabase Access Tokens](https://supabase.com/docs/guides/cli/managing-environments#access-tokens)
+- [Supabase Edge Functions](https://supabase.com/docs/guides/functions)
