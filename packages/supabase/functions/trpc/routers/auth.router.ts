@@ -10,8 +10,9 @@ export const authRouter = t.router({
    */
   getUserRoles: protectedProcedure.query(async ({ ctx }) => {
     console.log("[auth.getUserRoles] Fetching roles for user:", ctx.user.id);
-    
+
     const { data, error } = await ctx.supabase
+      .schema("private")
       .from("role_assignments")
       .select("role:roles(name)")
       .eq("user_id", ctx.user.id);
@@ -22,10 +23,12 @@ export const authRouter = t.router({
       dataLength: data?.length,
     });
 
-    const roles = data?.map((r: { role?: { name?: string } | null }) => {
-      console.log("[auth.getUserRoles] Processing role item:", r);
-      return r.role?.name;
-    }).filter(Boolean) ?? [];
+    const roles = (data as Array<{ role: { name: string } | null }> | null)
+      ?.map((r) => {
+        console.log("[auth.getUserRoles] Processing role item:", r);
+        return r.role?.name;
+      })
+      .filter((name): name is string => Boolean(name)) ?? [];
 
     console.log("[auth.getUserRoles] Final roles:", roles);
 

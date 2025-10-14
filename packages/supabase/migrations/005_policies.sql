@@ -33,6 +33,8 @@ ALTER TABLE private.applications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE private.application_messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE private.application_inquiries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE private.invites ENABLE ROW LEVEL SECURITY;
+ALTER TABLE private.roles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE private.role_assignments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE private.user_certifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE private.user_education ENABLE ROW LEVEL SECURITY;
 
@@ -515,7 +517,25 @@ CREATE POLICY invites_update ON private.invites
   WITH CHECK (issuer_user_id = auth.uid());
 
 -- =========================================================
--- SECTION 23: DATA.CERTIFICATIONS POLICIES
+-- SECTION 23: PRIVATE.ROLES POLICIES
+-- =========================================================
+
+-- Allow all authenticated users to read role definitions
+CREATE POLICY roles_authenticated_read ON private.roles
+  FOR SELECT TO authenticated
+  USING (true);
+
+-- =========================================================
+-- SECTION 24: PRIVATE.ROLE_ASSIGNMENTS POLICIES
+-- =========================================================
+
+-- Allow users to read their own role assignments
+CREATE POLICY role_assignments_own_read ON private.role_assignments
+  FOR SELECT TO authenticated
+  USING (user_id = auth.uid());
+
+-- =========================================================
+-- SECTION 25: DATA.CERTIFICATIONS POLICIES
 -- =========================================================
 
 -- Public read access for certifications catalog
@@ -529,7 +549,7 @@ CREATE POLICY certifications_admin_manage ON data.certifications
   USING (public.user_has_role(auth.uid(), 'admin'));
 
 -- =========================================================
--- SECTION 24: PRIVATE.USER_CERTIFICATIONS POLICIES
+-- SECTION 26: PRIVATE.USER_CERTIFICATIONS POLICIES
 -- =========================================================
 
 CREATE POLICY user_certifications_own_select ON private.user_certifications
@@ -550,7 +570,7 @@ CREATE POLICY user_certifications_own_delete ON private.user_certifications
   USING (auth.uid() = user_id);
 
 -- =========================================================
--- SECTION 25: PRIVATE.USER_EDUCATION POLICIES
+-- SECTION 27: PRIVATE.USER_EDUCATION POLICIES
 -- =========================================================
 
 CREATE POLICY user_education_own_select ON private.user_education
@@ -571,7 +591,7 @@ CREATE POLICY user_education_own_delete ON private.user_education
   USING (auth.uid() = user_id);
 
 -- =========================================================
--- SECTION 26: GRANTS - DATA SCHEMA
+-- SECTION 28: GRANTS - DATA SCHEMA
 -- =========================================================
 
 -- Certifications catalog (reference data)
@@ -579,7 +599,7 @@ GRANT SELECT ON data.certifications TO anon, authenticated;
 GRANT ALL ON data.certifications TO service_role;
 
 -- =========================================================
--- SECTION 26: GRANTS - PUBLIC SCHEMA
+-- SECTION 29: GRANTS - PUBLIC SCHEMA
 -- =========================================================
 
 -- Industries
@@ -642,12 +662,20 @@ GRANT INSERT ON public.review_aspects TO authenticated;
 GRANT ALL ON public.review_aspects TO service_role;
 
 -- =========================================================
--- SECTION 27: GRANTS - PRIVATE SCHEMA
+-- SECTION 30: GRANTS - PRIVATE SCHEMA
 -- =========================================================
 
 -- Private Profile
 GRANT SELECT, INSERT, UPDATE, DELETE ON private.profile TO authenticated;
 GRANT ALL ON private.profile TO service_role;
+
+-- Roles
+GRANT SELECT ON private.roles TO authenticated, service_role;
+GRANT ALL ON private.roles TO service_role;
+
+-- Role Assignments
+GRANT SELECT ON private.role_assignments TO authenticated, service_role;
+GRANT ALL ON private.role_assignments TO service_role;
 
 -- Preferences
 GRANT SELECT, INSERT, UPDATE, DELETE ON private.preferences TO authenticated;
