@@ -4,7 +4,7 @@ import { Drawer } from 'expo-router/drawer'
 import { YStack, Text, Spinner } from 'tamagui'
 
 export default function OfficeLayout() {
-  const { isAuthorized, isLoading } = useRoleProtectedRoute(['super_admin'])
+  const { isAuthorized, isLoading } = useRoleProtectedRoute(['office'])
 
   // Show loading state BEFORE rendering the drawer
   if (isLoading) {
