@@ -104,7 +104,6 @@ export function ProfileExperienceLeft() {
           industry: exp.industry || undefined,
           company_size: exp.company_size || undefined,
           salary_range: exp.salary_range || undefined,
-          is_verified: exp.is_verified,
         })),
       })
     }

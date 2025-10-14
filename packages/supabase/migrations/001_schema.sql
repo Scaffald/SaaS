@@ -389,4 +389,31 @@ CREATE TABLE private.user_certifications (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- User Education (educational background - PII)
+CREATE TABLE private.user_education (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL,  -- FK to users(id) in 003_relations.sql
+  university_id UUID,  -- FK to data.universities(id) in 003_relations.sql
+  institution_name TEXT,  -- Free-form entry (used when university_id is null)
+  degree_type TEXT,
+  field_of_study TEXT,
+  start_date DATE,
+  end_date DATE,
+  is_current BOOLEAN DEFAULT false,
+  gpa NUMERIC(3,2),
+  honors TEXT[] DEFAULT ARRAY[]::TEXT[],
+  activities TEXT,
+  description TEXT,
+  location TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  
+  -- Ensure either university_id OR institution_name is provided
+  CONSTRAINT user_education_id_or_name_check 
+  CHECK (
+    (university_id IS NOT NULL) OR 
+    (institution_name IS NOT NULL)
+  )
+);
+
 COMMIT;

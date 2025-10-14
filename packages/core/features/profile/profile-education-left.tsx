@@ -108,12 +108,8 @@ export function ProfileEducationLeft() {
           start_date: edu.start_date || undefined,
           end_date: edu.end_date || undefined,
           is_current: edu.is_current,
-          gpa: edu.gpa || undefined,
-          honors: edu.honors || undefined,
-          activities: edu.activities || undefined,
           description: edu.description || undefined,
           location: edu.location || undefined,
-          is_verified: edu.is_verified,
         })),
       })
     }
@@ -376,59 +372,7 @@ export function ProfileEducationLeft() {
                 </YStack>
               </XStack>
 
-              {/* GPA and Honors */}
-              <XStack gap="$3">
-                <YStack gap="$2" flex={1}>
-                  <Text>GPA</Text>
-                  <Controller
-                    name={`education_entries.${index}.gpa`}
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        placeholder="e.g. 3.8"
-                        value={field.value?.toString() || ''}
-                        onChangeText={(text) =>
-                          field.onChange(text ? Number.parseFloat(text) : undefined)
-                        }
-                        keyboardType="numeric"
-                      />
-                    )}
-                  />
-                </YStack>
-                <YStack gap="$2" flex={1}>
-                  <Text>Honors</Text>
-                  <Controller
-                    name={`education_entries.${index}.honors`}
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        placeholder="e.g. Magna Cum Laude"
-                        value={
-                          Array.isArray(field.value) ? field.value.join(', ') : field.value || ''
-                        }
-                        onChangeText={(text) => field.onChange(text ? text.split(', ') : [])}
-                      />
-                    )}
-                  />
-                </YStack>
-              </XStack>
-
-              {/* Activities and Description */}
-              <YStack gap="$2">
-                <Text>Activities & Societies</Text>
-                <Controller
-                  name={`education_entries.${index}.activities`}
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      placeholder="e.g. Student Government, Honor Society"
-                      value={field.value || ''}
-                      onChangeText={field.onChange}
-                    />
-                  )}
-                />
-              </YStack>
-
+              {/* Description */}
               <YStack gap="$2">
                 <Text>Description</Text>
                 <Controller

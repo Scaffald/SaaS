@@ -201,4 +201,21 @@ ALTER TABLE private.user_certifications
   ADD CONSTRAINT user_certifications_certification_id_fkey
   FOREIGN KEY (certification_id) REFERENCES data.certifications(id) ON DELETE CASCADE;
 
+-- =========================================================
+-- EDUCATION (private schema, references data.universities)
+-- =========================================================
+
+-- User Education FK
+ALTER TABLE private.user_education
+  ADD CONSTRAINT user_education_user_id_fkey
+  FOREIGN KEY (user_id) 
+  REFERENCES public.users(id) 
+  ON DELETE CASCADE;
+
+ALTER TABLE private.user_education
+  ADD CONSTRAINT user_education_university_id_fkey
+  FOREIGN KEY (university_id) 
+  REFERENCES data.universities(id) 
+  ON DELETE SET NULL;
+
 COMMIT;

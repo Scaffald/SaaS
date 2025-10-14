@@ -34,6 +34,7 @@ ALTER TABLE private.application_messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE private.application_inquiries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE private.invites ENABLE ROW LEVEL SECURITY;
 ALTER TABLE private.user_certifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE private.user_education ENABLE ROW LEVEL SECURITY;
 
 -- Data schema tables
 ALTER TABLE data.certifications ENABLE ROW LEVEL SECURITY;
@@ -549,7 +550,28 @@ CREATE POLICY user_certifications_own_delete ON private.user_certifications
   USING (auth.uid() = user_id);
 
 -- =========================================================
--- SECTION 25: GRANTS - DATA SCHEMA
+-- SECTION 25: PRIVATE.USER_EDUCATION POLICIES
+-- =========================================================
+
+CREATE POLICY user_education_own_select ON private.user_education
+  FOR SELECT TO authenticated
+  USING (auth.uid() = user_id);
+
+CREATE POLICY user_education_own_insert ON private.user_education
+  FOR INSERT TO authenticated
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY user_education_own_update ON private.user_education
+  FOR UPDATE TO authenticated
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY user_education_own_delete ON private.user_education
+  FOR DELETE TO authenticated
+  USING (auth.uid() = user_id);
+
+-- =========================================================
+-- SECTION 26: GRANTS - DATA SCHEMA
 -- =========================================================
 
 -- Certifications catalog (reference data)
@@ -654,5 +676,9 @@ GRANT ALL ON private.invites TO service_role;
 -- User Certifications
 GRANT SELECT, INSERT, UPDATE, DELETE ON private.user_certifications TO authenticated;
 GRANT ALL ON private.user_certifications TO service_role;
+
+-- User Education
+GRANT SELECT, INSERT, UPDATE, DELETE ON private.user_education TO authenticated;
+GRANT ALL ON private.user_education TO service_role;
 
 COMMIT;

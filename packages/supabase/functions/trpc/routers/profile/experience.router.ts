@@ -22,7 +22,6 @@ const experienceEntrySchema = z.object({
   industry: z.string().optional().nullable(),
   company_size: z.string().optional().nullable(),
   salary_range: z.string().optional().nullable(),
-  is_verified: z.boolean().default(false),
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
 });
@@ -160,7 +159,6 @@ export const profileExperienceRouter = t.router({
                 industry: exp.industry || null,
                 company_size: exp.company_size || null,
                 salary_range: exp.salary_range || null,
-                is_verified: exp.is_verified,
                 updated_at: new Date().toISOString(),
               })
               .eq("id", exp.id)
@@ -196,7 +194,6 @@ export const profileExperienceRouter = t.router({
                 industry: exp.industry || null,
                 company_size: exp.company_size || null,
                 salary_range: exp.salary_range || null,
-                is_verified: exp.is_verified,
               })
               .select()
               .single();

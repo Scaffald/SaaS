@@ -31,8 +31,7 @@ export const officeUniversitiesRouter = t.router({
       let query = supabase
         .schema("data")
         .from("universities")
-        .select("*", { count: "exact" })
-        .eq("is_active", true);
+        .select("*", { count: "exact" });
 
       // Apply filters
       if (search) {
@@ -135,11 +134,10 @@ export const officeUniversitiesRouter = t.router({
   getCountries: officeProcedure.query(async ({ ctx }) => {
     const { supabase } = ctx;
 
-    const { data, error } = await supabase
-      .schema("data")
-      .from("universities")
-      .select("country, alpha_two_code")
-      .eq("is_active", true);
+      const { data, error } = await supabase
+        .schema("data")
+        .from("universities")
+        .select("country, alpha_two_code");
 
     if (error) {
       throw new TRPCError({
@@ -221,7 +219,6 @@ export const officeUniversitiesRouter = t.router({
             web_pages: input.web_pages,
             state_province: input.state_province || null,
             metadata: input.metadata,
-            is_active: true,
           })
           .select()
           .single();
@@ -354,14 +351,11 @@ export const officeUniversitiesRouter = t.router({
           });
         }
 
-        // Soft delete by setting is_active to false
+        // Hard delete
         const { error } = await supabase
           .schema("data")
           .from("universities")
-          .update({
-            is_active: false,
-            updated_at: new Date().toISOString(),
-          })
+          .delete()
           .eq("id", input.id);
 
         if (error) {
@@ -394,18 +388,16 @@ export const officeUniversitiesRouter = t.router({
     const { supabase } = ctx;
 
     // Get total count
-    const { count: totalCount } = await supabase
-      .schema("data")
-      .from("universities")
-      .select("*", { count: "exact", head: true })
-      .eq("is_active", true);
+      const { count: totalCount } = await supabase
+        .schema("data")
+        .from("universities")
+        .select("*", { count: "exact", head: true });
 
     // Get country count
-    const { data: countries } = await supabase
-      .schema("data")
-      .from("universities")
-      .select("country")
-      .eq("is_active", true);
+      const { data: countries } = await supabase
+        .schema("data")
+        .from("universities")
+        .select("country");
 
     const uniqueCountries = new Set(countries?.map((c) => c.country) || []);
 
