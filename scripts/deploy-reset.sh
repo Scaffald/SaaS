@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Production Deployment Script
-# Safe deployment: pushes migrations, functions, and web build to production
+# Production Deployment Script with Database Reset
+# DESTRUCTIVE: Resets database to match local state, then deploys everything
 
 set -e  # Exit on any error
 
-echo "🚀 Production Deployment (Safe Mode)"
+echo "🚀 Production Deployment (RESET MODE)"
 echo "========================================"
 
 # Color codes for output
@@ -35,15 +35,21 @@ set +a
 
 echo ""
 echo -e "${BLUE}📋 Deployment Plan:${NC}"
-echo "   ✅ Database (migrations only - no reset)"
+echo "   🔴 Database (RESET + migrations + seed)"
 echo "   ✅ Edge Functions (trpc, job-import, news)"
 echo "   ✅ Web App (via GitHub Actions)"
 echo ""
-echo -e "${YELLOW}⚠️  This is a PRODUCTION deployment!${NC}"
+echo -e "${RED}⚠️  WARNING: This will RESET the production database!${NC}"
+echo "   Database URL: $EXPO_PUBLIC_SUPABASE_URL"
 echo ""
-read -p "Continue with deployment? (y/n): " CONFIRM
+echo "   This will:"
+echo "   1. DROP all tables and data"
+echo "   2. Apply all migrations"
+echo "   3. Seed production data (CSI, universities, certifications, jobs)"
+echo ""
+read -p "   Type 'RESET' to continue: " CONFIRM
 
-if [[ ! "$CONFIRM" =~ ^[Yy]$ ]]; then
+if [ "$CONFIRM" != "RESET" ]; then
     echo -e "${YELLOW}⏹️  Deployment cancelled${NC}"
     exit 0
 fi
@@ -104,23 +110,37 @@ else
     exit 1
 fi
 
-# Push database migrations (safe - doesn't reset)
+# Reset database
 echo ""
 echo "═══════════════════════════════════════"
-echo "📋 Step 2: Pushing Database Migrations"
+echo "📋 Step 2: Resetting Production Database"
+echo "═══════════════════════════════════════"
+echo "This will completely DROP and recreate the database schema..."
+
+if pnpm supa db reset --linked; then
+    echo -e "${GREEN}✅ Database reset and migrations applied successfully${NC}"
+else
+    echo -e "${RED}❌ Database reset failed${NC}"
+    exit 1
+fi
+
+# Seed database
+echo ""
+echo "═══════════════════════════════════════"
+echo "📋 Step 3: Seeding Production Database"
 echo "═══════════════════════════════════════"
 
-if pnpm supa db push --linked; then
-    echo -e "${GREEN}✅ Migrations pushed successfully${NC}"
+if pnpm env-prod pnpm --filter @app/supabase seed; then
+    echo -e "${GREEN}✅ Database seeded successfully${NC}"
 else
-    echo -e "${RED}❌ Migration push failed${NC}"
+    echo -e "${RED}❌ Database seeding failed${NC}"
     exit 1
 fi
 
 # Deploy Edge Functions
 echo ""
 echo "═══════════════════════════════════════"
-echo "📋 Step 3: Deploying Edge Functions"
+echo "📋 Step 4: Deploying Edge Functions"
 echo "═══════════════════════════════════════"
 
 cd packages/supabase
@@ -156,7 +176,7 @@ cd ../..
 # Deploy Web App
 echo ""
 echo "═══════════════════════════════════════"
-echo "📋 Step 4: Deploying Web App"
+echo "📋 Step 5: Deploying Web App"
 echo "═══════════════════════════════════════"
 
 if command -v gh &> /dev/null; then
@@ -194,7 +214,7 @@ echo "   Date: $(date)"
 echo "   Commit: $(git rev-parse --short HEAD)"
 echo "   Branch: $(git branch --show-current)"
 echo ""
-echo -e "${GREEN}✅ Migrations pushed${NC}"
+echo -e "${GREEN}✅ Database reset and seeded${NC}"
 echo -e "${GREEN}✅ Functions deployed${NC}"
 echo -e "${GREEN}✅ Web deployment triggered${NC}"
 echo ""
@@ -202,4 +222,8 @@ echo "🔗 Important Links:"
 echo "   Supabase: https://supabase.com/dashboard/project/_"
 echo "   Netlify: https://app.netlify.com/"
 echo "   GitHub Actions: https://github.com/$(git config --get remote.origin.url | sed 's/.*://;s/.git$//')/actions"
+echo ""
+echo "📋 Note:"
+echo "   This was a RESET deployment. All production data has been replaced."
+echo "   Once the database is stable, use 'pnpm deploy' for safe deployments."
 echo ""

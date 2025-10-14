@@ -19,10 +19,12 @@ export const officeRouter = t.router({
    * Returns paginated list of users with basic profile info
    */
   listUsers: officeProcedure.query(async ({ ctx }) => {
-    const { data, error, count } = await ctx.supabaseAdmin
+    // Get public user data
+    const { data: usersData, error: usersError, count } = await ctx
+      .supabaseAdmin
       .from("users")
       .select(
-        "id, first_name, last_name, avatar_path, created_at, updated_at",
+        "id, username, display_name, avatar_path, created_at, updated_at",
         {
           count: "exact",
         },
@@ -30,14 +32,42 @@ export const officeRouter = t.router({
       .order("created_at", { ascending: false })
       .limit(50);
 
-    if (error) {
+    if (usersError) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
-        message: error.message,
+        message: usersError.message,
       });
     }
 
-    return { users: data ?? [], total: count ?? 0 };
+    // Get private profile data for all users
+    const userIds = usersData?.map((u) => u.id) || [];
+    const { data: profilesData } = await ctx.supabaseAdmin
+      .schema("private")
+      .from("profile")
+      .select("user_id, first_name, last_name")
+      .in("user_id", userIds);
+
+    // Create a map for quick lookup
+    const profilesMap = new Map(
+      profilesData?.map((p) => [p.user_id, p]) || [],
+    );
+
+    // Combine the data
+    const users = (usersData ?? []).map((user) => {
+      const profile = profilesMap.get(user.id);
+      return {
+        id: user.id,
+        username: user.username,
+        display_name: user.display_name,
+        first_name: profile?.first_name || "",
+        last_name: profile?.last_name || "",
+        avatar_path: user.avatar_path,
+        created_at: user.created_at,
+        updated_at: user.updated_at,
+      };
+    });
+
+    return { users, total: count ?? 0 };
   }),
 
   /**
