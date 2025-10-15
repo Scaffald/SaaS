@@ -4,7 +4,7 @@ project_id = "supabase"
 
 [api]
 port = 54321
-schemas = ["public", "private", "storage", "data", "onet"]
+schemas = ["auth", "public", "private", "storage", "data", "onet"]
 extra_search_path = ["public", "private", "data", "onet", "extensions"]
 max_rows = 1000
 
