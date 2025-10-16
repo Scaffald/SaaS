@@ -97,9 +97,10 @@ export const profileGeneralRouter = t.router({
       // Update users table only if there are fields to update
       if (Object.keys(profileUpdate).length > 2) {
         // More than just id and updated_at
-        const { error: profileError } = await supabase.from("users").upsert(
-          profileUpdate,
-        );
+        const { error: profileError } = await supabase
+          .from("users")
+          .update(profileUpdate)
+          .eq("id", user.id);
 
         if (profileError) {
           throw new TRPCError({
