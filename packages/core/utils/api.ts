@@ -6,12 +6,14 @@ import { observable } from "@trpc/server/observable";
 
 import { getBaseUrl } from "./getBaseUrl";
 import { supabase } from "./supabase/client";
+import { clearAllAuthStorage } from "./auth/clearAuthStorage";
+import { getGlobalQueryClient } from "@app/core/provider/react-query";
 
 // Create tRPC React client with proper typing from shared supabase package
 // biome-ignore lint/suspicious/noExplicitAny: Required for cross-environment tRPC compatibility
 export const api = createTRPCReact<AppRouter>() as any;
 
-// Custom error handling link type
+// Custom error handling link for session validation
 const sessionValidationLink: TRPCLink<AppRouter> = () => {
   return ({ next, op }) => {
     return observable((observer) => {
@@ -24,10 +26,21 @@ const sessionValidationLink: TRPCLink<AppRouter> = () => {
             err.data?.code === "UNAUTHORIZED"
           ) {
             console.log(
-              "[tRPC] Invalid session detected (likely after DB reset), signing out",
+              "[tRPC] UNAUTHORIZED error detected - invalid or expired session",
             );
-            // Sign out to clear the invalid session
-            await supabase.auth.signOut();
+            console.log(
+              "[tRPC] Triggering comprehensive auth cleanup and redirect",
+            );
+
+            // Get query client for cache clearing
+            const queryClient = getGlobalQueryClient();
+
+            // Perform comprehensive cleanup
+            await clearAllAuthStorage(queryClient || undefined);
+
+            console.log(
+              "[tRPC] Auth cleanup completed - user will be redirected to /auth",
+            );
           }
           observer.error(err);
         },
