@@ -149,25 +149,18 @@ export const reviewsRouter = t.router({
 
   /**
    * Create a new review draft
-   * Checks for existing draft first to prevent duplicate constraint errors
+   * NOTE: Simplified to work with current schema (no status field or progress tracking yet)
    */
   createDraft: protectedProcedure
     .input(createReviewDraftSchema)
     .mutation(async ({ ctx, input }) => {
-      // Check for existing draft for this user/subject combination
+      // Check for existing draft - simplified without status field
       const { data: existingDraft } = await ctx.supabase
         .from("reviews")
-        .select(`
-          *,
-          review_progress(*),
-          review_skill_ratings(*),
-          review_soft_skill_votes(*),
-          review_category_ratings(*)
-        `)
+        .select("*")
         .eq("author_user_id", ctx.user.id)
         .eq("subject_id", input.subjectId)
         .eq("subject_type", input.subjectType)
-        .eq("status", "draft")
         .maybeSingle();
 
       // If draft exists, return it instead of creating a new one
@@ -175,14 +168,13 @@ export const reviewsRouter = t.router({
         return existingDraft;
       }
 
-      // Create new draft
+      // Create new review (no status field in current schema)
       const { data: review, error } = await ctx.supabase
         .from("reviews")
         .insert({
           author_user_id: ctx.user.id,
           subject_id: input.subjectId,
           subject_type: input.subjectType,
-          status: "draft",
           metadata: input.context ? { context: input.context } : {},
         })
         .select()
@@ -199,18 +191,7 @@ export const reviewsRouter = t.router({
         });
       }
 
-      // Initialize progress tracking
-      const { error: progressError } = await ctx.supabase
-        .from("review_progress")
-        .insert({
-          review_id: review.id,
-          steps_completed: {},
-          current_step: 1,
-        });
-
-      if (progressError) {
-        console.error("Failed to create review progress:", progressError);
-      }
+      // Note: review_progress table doesn't exist in current schema
 
       return review;
     }),
@@ -259,19 +240,14 @@ export const reviewsRouter = t.router({
 
   /**
    * Get review draft by ID
+   * NOTE: Simplified to work with current schema (no related tables yet)
    */
   getDraft: protectedProcedure
     .input(z.object({ reviewId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { data: review, error } = await ctx.supabase
         .from("reviews")
-        .select(`
-          *,
-          review_progress(*),
-          review_skill_ratings(*),
-          review_soft_skill_votes(*),
-          review_category_ratings(*)
-        `)
+        .select("*")
         .eq("id", input.reviewId)
         .eq("author_user_id", ctx.user.id)
         .single();
@@ -476,15 +452,26 @@ export const reviewsRouter = t.router({
 
   /**
    * Update review comment
+   * NOTE: Uses 'body' field for comment text, stores isPublic in metadata
    */
   updateComment: protectedProcedure
     .input(updateReviewCommentSchema)
     .mutation(async ({ ctx, input }) => {
+      // Get existing metadata to preserve it
+      const { data: existingReview } = await ctx.supabase
+        .from("reviews")
+        .select("metadata")
+        .eq("id", input.reviewId)
+        .eq("author_user_id", ctx.user.id)
+        .single();
+
+      const metadata = existingReview?.metadata || {};
+
       const { error } = await ctx.supabase
         .from("reviews")
         .update({
-          comment: input.comment,
-          is_comment_public: input.isPublic,
+          body: input.comment,
+          metadata: { ...metadata, isPublic: input.isPublic },
           updated_at: new Date().toISOString(),
         })
         .eq("id", input.reviewId)
@@ -502,7 +489,9 @@ export const reviewsRouter = t.router({
     }),
 
   /**
-   * Submit review (auto-releases review immediately)
+   * Submit review
+   * NOTE: Simplified to work with current schema (no status/progress tracking)
+   * Maps recommendation (-1, 0, 1) to rating field
    */
   submitReview: protectedProcedure
     .input(submitReviewSchema)
@@ -512,10 +501,7 @@ export const reviewsRouter = t.router({
       const { error } = await ctx.supabase
         .from("reviews")
         .update({
-          status: "released",
-          reaction: input.recommendation,
-          submitted_at: now,
-          revealed_at: now,
+          rating: input.recommendation,
           updated_at: now,
         })
         .eq("id", input.reviewId)
@@ -529,14 +515,7 @@ export const reviewsRouter = t.router({
         });
       }
 
-      // Mark progress as completed
-      await ctx.supabase
-        .from("review_progress")
-        .update({
-          completed_at: now,
-          updated_at: now,
-        })
-        .eq("review_id", input.reviewId);
+      // Note: review_progress table doesn't exist in current schema
 
       return { success: true };
     }),
@@ -569,17 +548,12 @@ export const reviewsRouter = t.router({
 
   /**
    * Get user's own reviews (drafts and submitted)
+   * NOTE: Simplified to work with current schema (no related tables yet)
    */
   getMyReviews: protectedProcedure.query(async ({ ctx }) => {
     const { data, error } = await ctx.supabase
       .from("reviews")
-      .select(`
-        *,
-        review_progress(*),
-        review_skill_ratings(*),
-        review_soft_skill_votes(*),
-        review_category_ratings(*)
-      `)
+      .select("*")
       .eq("author_user_id", ctx.user.id)
       .order("created_at", { ascending: false });
 
@@ -591,11 +565,12 @@ export const reviewsRouter = t.router({
       });
     }
 
-    return data;
+    return data || [];
   }),
 
   /**
    * Delete review draft
+   * NOTE: Simplified - no status field in current schema, just delete if user owns it
    */
   deleteDraft: protectedProcedure
     .input(z.object({ reviewId: z.string().uuid() }))
@@ -604,8 +579,7 @@ export const reviewsRouter = t.router({
         .from("reviews")
         .delete()
         .eq("id", input.reviewId)
-        .eq("author_user_id", ctx.user.id)
-        .eq("status", "draft");
+        .eq("author_user_id", ctx.user.id);
 
       if (error) {
         throw new TRPCError({
