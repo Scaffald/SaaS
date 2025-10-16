@@ -89,9 +89,36 @@ ALTER TABLE public.job_certifications
 
 ALTER TABLE public.job_certifications
   ADD CONSTRAINT job_certifications_certification_id_fkey 
-  FOREIGN KEY (certification_id) REFERENCES data.certifications(id) ON DELETE CASCADE;
+  FOREIGN KEY (certification_id) REFERENCES public.certifications(id) ON DELETE CASCADE;
 
 -- NOTE: job_skills table has its foreign keys defined in 002_data.sql (polymorphic)
+
+-- =========================================================
+-- PUBLIC SCHEMA - External Jobs
+-- =========================================================
+
+-- External Jobs
+ALTER TABLE public.external_jobs
+  ADD CONSTRAINT external_jobs_feed_id_fkey 
+  FOREIGN KEY (feed_id) REFERENCES public.external_job_feeds(id) ON DELETE CASCADE;
+
+-- External Job Industries
+ALTER TABLE public.external_job_industries
+  ADD CONSTRAINT external_job_industries_external_job_id_fkey 
+  FOREIGN KEY (external_job_id) REFERENCES public.external_jobs(id) ON DELETE CASCADE;
+
+ALTER TABLE public.external_job_industries
+  ADD CONSTRAINT external_job_industries_industry_id_fkey 
+  FOREIGN KEY (industry_id) REFERENCES public.industries(id) ON DELETE CASCADE;
+
+-- External Job Skills
+ALTER TABLE public.external_job_skills
+  ADD CONSTRAINT external_job_skills_external_job_id_fkey 
+  FOREIGN KEY (external_job_id) REFERENCES public.external_jobs(id) ON DELETE CASCADE;
+
+ALTER TABLE public.external_job_skills
+  ADD CONSTRAINT external_job_skills_skill_id_fkey 
+  FOREIGN KEY (skill_id) REFERENCES public.skills(id) ON DELETE CASCADE;
 
 -- =========================================================
 -- PUBLIC SCHEMA - Reviews
@@ -197,22 +224,17 @@ ALTER TABLE private.role_assignments
   FOREIGN KEY (scope_team_id) REFERENCES public.teams(id) ON DELETE CASCADE;
 
 -- =========================================================
--- CERTIFICATIONS (data schema)
+-- CERTIFICATIONS (public schema)
 -- =========================================================
 
--- Certifications (self-referencing parent_id in data schema)
-ALTER TABLE data.certifications
-  ADD CONSTRAINT certifications_parent_id_fkey
-  FOREIGN KEY (parent_id) REFERENCES data.certifications(id) ON DELETE CASCADE;
-
--- User Certifications (references data.certifications)
+-- User Certifications (references public.certifications)
 ALTER TABLE private.user_certifications
   ADD CONSTRAINT user_certifications_user_id_fkey
   FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 ALTER TABLE private.user_certifications
   ADD CONSTRAINT user_certifications_certification_id_fkey
-  FOREIGN KEY (certification_id) REFERENCES data.certifications(id) ON DELETE CASCADE;
+  FOREIGN KEY (certification_id) REFERENCES public.certifications(id) ON DELETE CASCADE;
 
 -- =========================================================
 -- EDUCATION (private schema, references data.universities)

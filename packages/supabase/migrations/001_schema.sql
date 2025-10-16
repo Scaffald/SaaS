@@ -198,6 +198,23 @@ CREATE TABLE public.job_skills (
   PRIMARY KEY (job_id, skill_id)
 );
 
+-- Certifications (reference/catalog table for certifications)
+CREATE TABLE public.certifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT UNIQUE NOT NULL,
+  slug CITEXT UNIQUE NOT NULL,
+  issuing_organization TEXT,
+  category TEXT CHECK (category IN ('safety', 'trade', 'equipment', 'license', 'management', 'other')),
+  description TEXT,
+  typical_duration_days INTEGER,
+  requires_renewal BOOLEAN DEFAULT false,
+  renewal_period_months INTEGER,
+  is_active BOOLEAN DEFAULT true,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Job Certifications (junction table for job-certification relationship)
 CREATE TABLE public.job_certifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -240,6 +257,85 @@ CREATE TABLE public.review_aspects (
   score SMALLINT NOT NULL CHECK (score BETWEEN 1 AND 5),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (review_id, key)
+);
+
+-- =========================================================
+-- EXTERNAL JOB FEEDS & AGGREGATION
+-- =========================================================
+
+-- External Job Feeds (RSS/API sources)
+CREATE TABLE public.external_job_feeds (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT UNIQUE NOT NULL,
+  url TEXT NOT NULL,
+  feed_type TEXT NOT NULL CHECK (feed_type IN ('rss', 'api')),
+  parser_config JSONB DEFAULT '{}',
+  is_active BOOLEAN DEFAULT true,
+  fetch_interval_hours INTEGER DEFAULT 3,
+  last_fetched_at TIMESTAMPTZ,
+  last_success_at TIMESTAMPTZ,
+  error_count INTEGER DEFAULT 0,
+  last_error TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- External Jobs (cached external job listings)
+CREATE TABLE public.external_jobs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  feed_id UUID NOT NULL,  -- FK to external_job_feeds(id) in 002_relations.sql
+  external_guid TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  company_name TEXT,
+  company_logo TEXT,
+  company_website TEXT,
+  company_headquarters TEXT,
+  job_location TEXT,
+  job_type TEXT,
+  job_category TEXT,
+  job_tags TEXT[],
+  requirements TEXT[],
+  responsibilities TEXT[],
+  benefits TEXT[],
+  compensation_min INTEGER,
+  compensation_max INTEGER,
+  compensation_currency TEXT DEFAULT 'USD',
+  compensation_period TEXT,
+  application_url TEXT,
+  external_url TEXT,
+  posted_date TIMESTAMPTZ,
+  expires_date TIMESTAMPTZ,
+  is_active BOOLEAN DEFAULT true,
+  featured BOOLEAN DEFAULT false,
+  archived_at TIMESTAMPTZ,
+  content_hash TEXT,
+  raw_data JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  last_processed_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(feed_id, external_guid)
+);
+
+-- External Job Industries (industry mappings for external jobs)
+CREATE TABLE public.external_job_industries (
+  external_job_id UUID NOT NULL,  -- FK to external_jobs(id) in 002_relations.sql
+  industry_id UUID NOT NULL,  -- FK to industries(id) in 002_relations.sql
+  confidence_score DECIMAL(3,2) DEFAULT 0.5 CHECK (confidence_score >= 0 AND confidence_score <= 1),
+  mapped_by TEXT DEFAULT 'rule' CHECK (mapped_by IN ('rule', 'ai', 'manual')),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (external_job_id, industry_id)
+);
+
+-- External Job Skills (skill mappings for external jobs)
+CREATE TABLE public.external_job_skills (
+  external_job_id UUID NOT NULL,  -- FK to external_jobs(id) in 002_relations.sql
+  skill_id UUID NOT NULL,  -- FK to skills(id) in 002_relations.sql
+  required_level SMALLINT CHECK (required_level BETWEEN 0 AND 5),
+  confidence_score DECIMAL(3,2) DEFAULT 0.5 CHECK (confidence_score >= 0 AND confidence_score <= 1),
+  extracted_by TEXT DEFAULT 'rule' CHECK (extracted_by IN ('rule', 'ai', 'manual')),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (external_job_id, skill_id)
 );
 
 -- =========================================================

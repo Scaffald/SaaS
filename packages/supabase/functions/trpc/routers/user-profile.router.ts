@@ -42,7 +42,7 @@ export const userProfileRouter = t.router({
       return profile;
     }),
 
-  // Get user skills with proficiency (polymorphic taxonomy support)
+  // Get user skills with proficiency
   getUserSkills: t.procedure
     .input(
       z.object({
@@ -52,25 +52,37 @@ export const userProfileRouter = t.router({
     .query(async ({ ctx, input }) => {
       const { data: skills, error } = await ctx.supabase
         .from("user_skills")
-        .select("*")
+        .select(`
+          user_id,
+          skill_id,
+          proficiency,
+          source,
+          last_verified_at,
+          created_at,
+          skills (
+            id,
+            name,
+            industry_id,
+            parent_id,
+            active
+          )
+        `)
         .eq("user_id", input.userId)
-        .order("proficiency_level", { ascending: false });
+        .order("proficiency", { ascending: false });
 
       if (error) {
         throw new Error(`Failed to fetch user skills: ${error.message}`);
       }
 
-      // Return simplified structure (detailed skill info would require joining taxonomy tables)
       return (
         skills?.map((skill) => ({
-          id: skill.id,
-          taxonomy: skill.skill_taxonomy,
-          csiSkillId: skill.csi_skill_id,
-          onetOccupationId: skill.onet_occupation_id,
-          proficiency: skill.proficiency_level || 0,
-          yearsExperience: skill.years_experience,
-          verified: skill.verified,
-          verifiedAt: skill.verified_at,
+          skillId: skill.skill_id,
+          name: skill.skills?.name || "",
+          proficiency: skill.proficiency || 0,
+          source: skill.source,
+          verified: skill.source === "verified",
+          verifiedAt: skill.last_verified_at,
+          createdAt: skill.created_at,
         })) || []
       );
     }),
