@@ -39,11 +39,17 @@ ALTER TABLE private.user_certifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE private.user_education ENABLE ROW LEVEL SECURITY;
 ALTER TABLE private.user_experience ENABLE ROW LEVEL SECURITY;
 
--- Data schema tables
-ALTER TABLE data.certifications ENABLE ROW LEVEL SECURITY;
+-- Certifications
+ALTER TABLE public.certifications ENABLE ROW LEVEL SECURITY;
 
 -- Job certifications
 ALTER TABLE public.job_certifications ENABLE ROW LEVEL SECURITY;
+
+-- External jobs tables
+ALTER TABLE public.external_job_feeds ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.external_jobs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.external_job_industries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.external_job_skills ENABLE ROW LEVEL SECURITY;
 
 -- =========================================================
 -- SECTION 2: PUBLIC.USERS POLICIES
@@ -543,18 +549,16 @@ CREATE POLICY role_assignments_own_read ON private.role_assignments
   USING (user_id = auth.uid());
 
 -- =========================================================
--- SECTION 25: DATA.CERTIFICATIONS POLICIES
+-- SECTION 25: PUBLIC.CERTIFICATIONS POLICIES
 -- =========================================================
 
 -- Public read access for certifications catalog
-CREATE POLICY certifications_public_read ON data.certifications
+CREATE POLICY certifications_public_read ON public.certifications
   FOR SELECT TO anon, authenticated
   USING (is_active = true);
 
--- Only admins can manage certifications catalog
-CREATE POLICY certifications_admin_manage ON data.certifications
-  FOR ALL TO authenticated
-  USING (public.user_has_role(auth.uid(), 'admin'));
+-- Service role has full access to certifications
+GRANT ALL ON public.certifications TO service_role;
 
 -- =========================================================
 -- SECTION 26: PRIVATE.USER_CERTIFICATIONS POLICIES
@@ -647,16 +651,52 @@ CREATE POLICY job_certifications_manage ON public.job_certifications
   );
 
 -- =========================================================
--- SECTION 30: GRANTS - DATA SCHEMA
+-- SECTION 30: EXTERNAL JOBS POLICIES
 -- =========================================================
 
--- Certifications catalog (reference data)
-GRANT SELECT ON data.certifications TO anon, authenticated;
-GRANT ALL ON data.certifications TO service_role;
+-- External Job Feeds (admin/service role only)
+CREATE POLICY external_job_feeds_read ON public.external_job_feeds
+  FOR SELECT TO anon, authenticated
+  USING (is_active = true);
+
+-- External Jobs (public read for active jobs)
+CREATE POLICY external_jobs_read ON public.external_jobs
+  FOR SELECT TO anon, authenticated
+  USING (is_active = true);
+
+-- External Job Industries (public read)
+CREATE POLICY external_job_industries_read ON public.external_job_industries
+  FOR SELECT TO anon, authenticated
+  USING (true);
+
+-- External Job Skills (public read)
+CREATE POLICY external_job_skills_read ON public.external_job_skills
+  FOR SELECT TO anon, authenticated
+  USING (true);
 
 -- =========================================================
 -- SECTION 31: GRANTS - PUBLIC SCHEMA
 -- =========================================================
+
+-- Certifications catalog (reference data)
+GRANT SELECT ON public.certifications TO anon, authenticated;
+GRANT ALL ON public.certifications TO service_role;
+
+-- External Job Feeds
+GRANT SELECT ON public.external_job_feeds TO anon, authenticated;
+GRANT ALL ON public.external_job_feeds TO service_role;
+
+-- External Jobs
+GRANT SELECT ON public.external_jobs TO anon, authenticated;
+GRANT ALL ON public.external_jobs TO service_role;
+
+-- External Job Industries
+GRANT SELECT ON public.external_job_industries TO anon, authenticated;
+GRANT ALL ON public.external_job_industries TO service_role;
+
+-- External Job Skills
+GRANT SELECT ON public.external_job_skills TO anon, authenticated;
+GRANT ALL ON public.external_job_skills TO service_role;
 
 -- Industries
 GRANT SELECT ON public.industries TO anon, authenticated;
