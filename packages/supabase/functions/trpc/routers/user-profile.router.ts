@@ -43,6 +43,7 @@ export const userProfileRouter = t.router({
     }),
 
   // Get user skills with proficiency
+  // Note: Uses polymorphic taxonomy (CSI/O*NET) from 002_data.sql
   getUserSkills: t.procedure
     .input(
       z.object({
@@ -52,36 +53,25 @@ export const userProfileRouter = t.router({
     .query(async ({ ctx, input }) => {
       const { data: skills, error } = await ctx.supabase
         .from("user_skills")
-        .select(`
-          user_id,
-          skill_id,
-          proficiency,
-          source,
-          last_verified_at,
-          created_at,
-          skills (
-            id,
-            name,
-            industry_id,
-            parent_id,
-            active
-          )
-        `)
+        .select("*")
         .eq("user_id", input.userId)
-        .order("proficiency", { ascending: false });
+        .order("proficiency_level", { ascending: false });
 
       if (error) {
         throw new Error(`Failed to fetch user skills: ${error.message}`);
       }
 
+      // Map polymorphic skills to response format
       return (
         skills?.map((skill) => ({
-          skillId: skill.skill_id,
-          name: skill.skills?.name || "",
-          proficiency: skill.proficiency || 0,
-          source: skill.source,
-          verified: skill.source === "verified",
-          verifiedAt: skill.last_verified_at,
+          id: skill.id,
+          taxonomy: skill.skill_taxonomy,
+          csiSkillId: skill.csi_skill_id,
+          onetOccupationId: skill.onet_occupation_id,
+          proficiency: skill.proficiency_level || 0,
+          yearsExperience: skill.years_experience,
+          verified: skill.verified,
+          verifiedAt: skill.verified_at,
           createdAt: skill.created_at,
         })) || []
       );
