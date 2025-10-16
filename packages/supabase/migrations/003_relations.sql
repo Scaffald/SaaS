@@ -78,6 +78,19 @@ ALTER TABLE public.jobs
   ADD CONSTRAINT jobs_team_id_fkey 
   FOREIGN KEY (team_id) REFERENCES public.teams(id) ON DELETE SET NULL;
 
+ALTER TABLE public.jobs
+  ADD CONSTRAINT jobs_created_by_user_id_fkey 
+  FOREIGN KEY (created_by_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+-- Job Certifications
+ALTER TABLE public.job_certifications
+  ADD CONSTRAINT job_certifications_job_id_fkey 
+  FOREIGN KEY (job_id) REFERENCES public.jobs(id) ON DELETE CASCADE;
+
+ALTER TABLE public.job_certifications
+  ADD CONSTRAINT job_certifications_certification_id_fkey 
+  FOREIGN KEY (certification_id) REFERENCES data.certifications(id) ON DELETE CASCADE;
+
 -- NOTE: job_skills table has its foreign keys defined in 002_data.sql (polymorphic)
 
 -- =========================================================
@@ -216,6 +229,23 @@ ALTER TABLE private.user_education
   ADD CONSTRAINT user_education_university_id_fkey
   FOREIGN KEY (university_id) 
   REFERENCES data.universities(id) 
+  ON DELETE SET NULL;
+
+-- =========================================================
+-- EXPERIENCE (private schema, references public.organizations)
+-- =========================================================
+
+-- User Experience FK
+ALTER TABLE private.user_experience
+  ADD CONSTRAINT user_experience_user_id_fkey
+  FOREIGN KEY (user_id)
+  REFERENCES public.users(id)
+  ON DELETE CASCADE;
+
+ALTER TABLE private.user_experience
+  ADD CONSTRAINT user_experience_organization_id_fkey
+  FOREIGN KEY (organization_id)
+  REFERENCES public.organizations(id)
   ON DELETE SET NULL;
 
 COMMIT;

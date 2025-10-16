@@ -37,9 +37,13 @@ ALTER TABLE private.roles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE private.role_assignments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE private.user_certifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE private.user_education ENABLE ROW LEVEL SECURITY;
+ALTER TABLE private.user_experience ENABLE ROW LEVEL SECURITY;
 
 -- Data schema tables
 ALTER TABLE data.certifications ENABLE ROW LEVEL SECURITY;
+
+-- Job certifications
+ALTER TABLE public.job_certifications ENABLE ROW LEVEL SECURITY;
 
 -- =========================================================
 -- SECTION 2: PUBLIC.USERS POLICIES
@@ -48,6 +52,10 @@ ALTER TABLE data.certifications ENABLE ROW LEVEL SECURITY;
 CREATE POLICY users_public_read ON public.users
   FOR SELECT TO anon, authenticated
   USING (true);
+
+CREATE POLICY users_own_insert ON public.users
+  FOR INSERT TO authenticated
+  WITH CHECK (auth.uid() = id);
 
 CREATE POLICY users_own_update ON public.users
   FOR UPDATE TO authenticated
@@ -591,7 +599,55 @@ CREATE POLICY user_education_own_delete ON private.user_education
   USING (auth.uid() = user_id);
 
 -- =========================================================
--- SECTION 28: GRANTS - DATA SCHEMA
+-- SECTION 28: PRIVATE.USER_EXPERIENCE POLICIES
+-- =========================================================
+
+CREATE POLICY user_experience_own_select ON private.user_experience
+  FOR SELECT TO authenticated
+  USING (auth.uid() = user_id);
+
+CREATE POLICY user_experience_own_insert ON private.user_experience
+  FOR INSERT TO authenticated
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY user_experience_own_update ON private.user_experience
+  FOR UPDATE TO authenticated
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY user_experience_own_delete ON private.user_experience
+  FOR DELETE TO authenticated
+  USING (auth.uid() = user_id);
+
+-- =========================================================
+-- SECTION 29: PUBLIC.JOB_CERTIFICATIONS POLICIES
+-- =========================================================
+
+-- Public read access for job certifications
+CREATE POLICY job_certifications_read ON public.job_certifications
+  FOR SELECT TO anon, authenticated
+  USING (true);
+
+-- Organization owners can manage job certifications
+CREATE POLICY job_certifications_manage ON public.job_certifications
+  FOR ALL TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.jobs j
+      JOIN public.organizations o ON o.id = j.organization_id
+      WHERE j.id = job_id AND o.owner_user_id = auth.uid()
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.jobs j
+      JOIN public.organizations o ON o.id = j.organization_id
+      WHERE j.id = job_id AND o.owner_user_id = auth.uid()
+    )
+  );
+
+-- =========================================================
+-- SECTION 30: GRANTS - DATA SCHEMA
 -- =========================================================
 
 -- Certifications catalog (reference data)
@@ -599,7 +655,7 @@ GRANT SELECT ON data.certifications TO anon, authenticated;
 GRANT ALL ON data.certifications TO service_role;
 
 -- =========================================================
--- SECTION 29: GRANTS - PUBLIC SCHEMA
+-- SECTION 31: GRANTS - PUBLIC SCHEMA
 -- =========================================================
 
 -- Industries
@@ -608,6 +664,7 @@ GRANT ALL ON public.industries TO service_role;
 
 -- Users
 GRANT SELECT ON public.users TO anon, authenticated;
+GRANT INSERT, UPDATE ON public.users TO authenticated;
 GRANT ALL ON public.users TO service_role;
 
 -- Organizations
@@ -646,6 +703,10 @@ GRANT ALL ON public.jobs TO service_role;
 GRANT SELECT ON public.job_skills TO anon, authenticated;
 GRANT ALL ON public.job_skills TO service_role;
 
+-- Job Certifications
+GRANT SELECT ON public.job_certifications TO anon, authenticated;
+GRANT ALL ON public.job_certifications TO service_role;
+
 -- Reviews
 GRANT SELECT ON public.reviews TO anon, authenticated;
 GRANT INSERT, UPDATE, DELETE ON public.reviews TO authenticated;
@@ -662,7 +723,7 @@ GRANT INSERT ON public.review_aspects TO authenticated;
 GRANT ALL ON public.review_aspects TO service_role;
 
 -- =========================================================
--- SECTION 30: GRANTS - PRIVATE SCHEMA
+-- SECTION 32: GRANTS - PRIVATE SCHEMA
 -- =========================================================
 
 -- Private Profile
@@ -708,5 +769,9 @@ GRANT ALL ON private.user_certifications TO service_role;
 -- User Education
 GRANT SELECT, INSERT, UPDATE, DELETE ON private.user_education TO authenticated;
 GRANT ALL ON private.user_education TO service_role;
+
+-- User Experience
+GRANT SELECT, INSERT, UPDATE, DELETE ON private.user_experience TO authenticated;
+GRANT ALL ON private.user_experience TO service_role;
 
 COMMIT;
