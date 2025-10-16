@@ -1,6 +1,8 @@
 import { supabase } from '@app/core/utils/supabase/client'
 import { createContext, useEffect, useState, type ReactNode, useCallback } from 'react'
 import type { Session } from '@supabase/supabase-js'
+import { getGlobalQueryClient } from '@app/core/provider/react-query'
+import { clearAllAuthStorage } from '@app/core/utils/auth/clearAuthStorage'
 
 import { AuthStateChangeHandler } from './AuthStateChangeHandler'
 
@@ -16,6 +18,7 @@ export type SessionContextHelper = {
   isLoading: boolean
   supabaseClient: typeof supabase
   signOut: () => Promise<void>
+  clearAuth: () => Promise<void>
   refreshSession: () => Promise<void>
 }
 
@@ -31,7 +34,7 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
   const [error, setError] = useState<SupabaseAuthError | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Enhanced signOut function
+  // Basic signOut function - clears Supabase auth only
   const signOut = useCallback(async () => {
     try {
       setIsLoading(true)
@@ -43,6 +46,26 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
       }
     } catch (err) {
       console.error('Unexpected sign out error:', err)
+      setError(err as SupabaseAuthError)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  // Comprehensive clearAuth function - clears ALL auth storage
+  // Use this for complete cleanup (logout, session expiry, unauthorized errors)
+  const clearAuth = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      console.log('[AuthProvider] Performing comprehensive auth cleanup')
+
+      const queryClient = getGlobalQueryClient()
+      await clearAllAuthStorage(queryClient || undefined)
+
+      console.log('[AuthProvider] Auth cleanup completed')
+    } catch (err) {
+      console.error('[AuthProvider] Unexpected error during auth cleanup:', err)
       setError(err as SupabaseAuthError)
     } finally {
       setIsLoading(false)
@@ -127,6 +150,7 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
     isLoading,
     supabaseClient: supabase,
     signOut,
+    clearAuth,
     refreshSession,
   }
 
