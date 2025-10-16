@@ -543,31 +543,17 @@ export const reviewsRouter = t.router({
 
   /**
    * Get reviews by subject (user or organization)
+   * NOTE: Simplified to work with current schema (no status field or related tables yet)
    */
   getBySubject: publicProcedure
     .input(getReviewsBySubjectSchema)
     .query(async ({ ctx, input }) => {
-      let query = ctx.supabase
+      const { data, error } = await ctx.supabase
         .from("reviews")
-        .select(`
-          *,
-          review_skill_ratings(*),
-          review_soft_skill_votes(*),
-          review_category_ratings(*)
-        `)
+        .select("*")
         .eq("subject_id", input.subjectId)
-        .eq("subject_type", input.subjectType);
-
-      if (input.status) {
-        query = query.eq("status", input.status);
-      } else {
-        // Default to only showing released reviews
-        query = query.eq("status", "released");
-      }
-
-      const { data, error } = await query.order("created_at", {
-        ascending: false,
-      });
+        .eq("subject_type", input.subjectType)
+        .order("created_at", { ascending: false });
 
       if (error) {
         throw new TRPCError({
@@ -577,7 +563,8 @@ export const reviewsRouter = t.router({
         });
       }
 
-      return data;
+      // Note: input.status parameter is ignored for now since status field doesn't exist in current schema
+      return data || [];
     }),
 
   /**

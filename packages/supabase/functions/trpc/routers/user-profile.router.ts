@@ -42,7 +42,7 @@ export const userProfileRouter = t.router({
       return profile;
     }),
 
-  // Get user skills with proficiency
+  // Get user skills with proficiency (polymorphic taxonomy support)
   getUserSkills: t.procedure
     .input(
       z.object({
@@ -52,35 +52,25 @@ export const userProfileRouter = t.router({
     .query(async ({ ctx, input }) => {
       const { data: skills, error } = await ctx.supabase
         .from("user_skills")
-        .select(
-          `
-          skill_id,
-          proficiency,
-          last_verified_at,
-          source,
-          skills (
-            id,
-            name,
-            csi_display,
-            industry_id
-          )
-        `,
-        )
+        .select("*")
         .eq("user_id", input.userId)
-        .order("proficiency", { ascending: false });
+        .order("proficiency_level", { ascending: false });
 
       if (error) {
         throw new Error(`Failed to fetch user skills: ${error.message}`);
       }
 
+      // Return simplified structure (detailed skill info would require joining taxonomy tables)
       return (
         skills?.map((skill) => ({
-          id: skill.skill_id,
-          name: skill.skills?.name || "Unknown Skill",
-          csiDisplay: skill.skills?.csi_display,
-          proficiency: skill.proficiency || 0,
-          lastVerifiedAt: skill.last_verified_at,
-          source: skill.source,
+          id: skill.id,
+          taxonomy: skill.skill_taxonomy,
+          csiSkillId: skill.csi_skill_id,
+          onetOccupationId: skill.onet_occupation_id,
+          proficiency: skill.proficiency_level || 0,
+          yearsExperience: skill.years_experience,
+          verified: skill.verified,
+          verifiedAt: skill.verified_at,
         })) || []
       );
     }),
@@ -94,6 +84,7 @@ export const userProfileRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       const { data: certifications, error } = await ctx.supabase
+        .schema("private")
         .from("user_certifications")
         .select("*")
         .eq("user_id", input.userId)
@@ -116,6 +107,7 @@ export const userProfileRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       const { data: experience, error } = await ctx.supabase
+        .schema("private")
         .from("user_experience")
         .select("*")
         .eq("user_id", input.userId)
@@ -138,6 +130,7 @@ export const userProfileRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       const { data: education, error } = await ctx.supabase
+        .schema("private")
         .from("user_education")
         .select("*")
         .eq("user_id", input.userId)
@@ -159,25 +152,12 @@ export const userProfileRouter = t.router({
       }),
     )
     .query(async ({ ctx, input }) => {
-      // Get released reviews for this user
+      // Get reviews for this user (simplified for current schema)
       const { data: reviews, error: reviewsError } = await ctx.supabase
         .from("reviews")
-        .select(
-          `
-          id,
-          reaction,
-          comment,
-          created_at,
-          author_user_id,
-          review_category_ratings (
-            category,
-            rating
-          )
-        `,
-        )
+        .select("*")
         .eq("subject_id", input.userId)
         .eq("subject_type", "user")
-        .eq("status", "released")
         .order("created_at", { ascending: false });
 
       if (reviewsError) {
@@ -189,8 +169,6 @@ export const userProfileRouter = t.router({
           ratings: {},
           strengths: [],
           improvements: [],
-          recommendCount: 0,
-          notRecommendCount: 0,
           reviews: [],
         };
       }
@@ -198,52 +176,30 @@ export const userProfileRouter = t.router({
       const reviewsList = reviews || [];
       const totalReviews = reviewsList.length;
 
-      // Calculate recommendation counts
-      const recommendCount = reviewsList.filter((r) => r.reaction === 1).length;
-      const notRecommendCount = reviewsList.filter((r) => r.reaction === -1)
-        .length;
-
-      // Calculate average ratings by category
-      const categoryRatings: Record<string, number[]> = {};
-      reviewsList.forEach((review) => {
-        review.review_category_ratings?.forEach((rating) => {
-          if (!categoryRatings[rating.category]) {
-            categoryRatings[rating.category] = [];
-          }
-          categoryRatings[rating.category].push(rating.rating);
-        });
-      });
-
-      const ratings: Record<string, number> = {};
-      let totalRating = 0;
-      let categoryCount = 0;
-
-      Object.entries(categoryRatings).forEach(([category, values]) => {
-        const avg = values.reduce((sum, val) => sum + val, 0) / values.length;
-        ratings[category] = Math.round(avg * 10) / 10;
-        totalRating += avg;
-        categoryCount++;
-      });
-
-      const averageRating = categoryCount > 0
-        ? Math.round((totalRating / categoryCount) * 10) / 10
+      // Calculate average rating if rating field exists
+      const ratingsArray = reviewsList
+        .filter((r) => r.rating != null)
+        .map((r) => r.rating);
+      const averageRating = ratingsArray.length > 0
+        ? Math.round(
+          (ratingsArray.reduce((sum, val) => sum + val, 0) /
+            ratingsArray.length) * 10,
+        ) / 10
         : 0;
 
-      // For now, return simplified structure
-      // TODO: Fetch strengths/improvements from soft skills votes
+      // Return simplified structure (full review system not yet implemented in schema)
       return {
         averageRating,
         totalReviews,
-        ratings,
+        ratings: {},
         strengths: [],
         improvements: [],
-        recommendCount,
-        notRecommendCount,
         reviews: reviewsList.slice(0, 10).map((review) => ({
           id: review.id,
-          comment: review.comment || "",
+          headline: review.headline || "",
+          body: review.body || "",
           date: review.created_at,
-          rating: averageRating,
+          rating: review.rating || 0,
           authorId: review.author_user_id,
         })),
       };

@@ -59,8 +59,8 @@ CREATE TABLE public.industries (
 -- Users (public profile data)
 CREATE TABLE public.users (
   id UUID PRIMARY KEY,  -- FK to auth.users(id) in 002_relations.sql
-  username TEXT UNIQUE NOT NULL,
-  slug TEXT UNIQUE NOT NULL,
+  username TEXT UNIQUE,
+  slug TEXT UNIQUE,
   display_name TEXT,
   headline TEXT,
   bio TEXT,
@@ -73,6 +73,7 @@ CREATE TABLE public.users (
   industry_id UUID,  -- FK to industries(id) in 002_relations.sql
   skills_summary JSONB DEFAULT '{"skills":[],"primary_location":{},"travel_radius_miles":0}'::jsonb,
   tsv TSVECTOR,
+  created_by_user_id UUID,  -- FK to users(id) - for tracking who created (used for admin tracking)
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -164,6 +165,7 @@ CREATE TABLE public.jobs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id UUID NOT NULL,  -- FK in 002_relations.sql
   team_id UUID,  -- FK in 002_relations.sql
+  created_by_user_id UUID,  -- FK to users(id) - tracks who created the job
   title TEXT NOT NULL,
   description TEXT,
   status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'open', 'paused', 'closed')),
@@ -173,6 +175,9 @@ CREATE TABLE public.jobs (
   address JSONB,
   geo GEOGRAPHY(POINT, 4326),
   compensation JSONB,
+  pay_range_min_cents INTEGER,
+  pay_range_max_cents INTEGER,
+  pay_range_type TEXT CHECK (pay_range_type IN ('hourly', 'salary', 'contract', 'project')),
   visibility TEXT DEFAULT 'public' CHECK (visibility IN ('public', 'members')),
   slug CITEXT UNIQUE,
   posted_at TIMESTAMPTZ,
@@ -191,6 +196,16 @@ CREATE TABLE public.job_skills (
   required_level SMALLINT CHECK (required_level BETWEEN 0 AND 5),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (job_id, skill_id)
+);
+
+-- Job Certifications (junction table for job-certification relationship)
+CREATE TABLE public.job_certifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  job_id UUID NOT NULL,  -- FK to jobs(id) in 002_relations.sql
+  certification_id UUID NOT NULL,  -- FK to certifications(id) in 002_relations.sql
+  is_required BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(job_id, certification_id)
 );
 
 -- Reviews (unified)
@@ -400,9 +415,6 @@ CREATE TABLE private.user_education (
   start_date DATE,
   end_date DATE,
   is_current BOOLEAN DEFAULT false,
-  gpa NUMERIC(3,2),
-  honors TEXT[] DEFAULT ARRAY[]::TEXT[],
-  activities TEXT,
   description TEXT,
   location TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -414,6 +426,24 @@ CREATE TABLE private.user_education (
     (university_id IS NOT NULL) OR 
     (institution_name IS NOT NULL)
   )
+);
+
+-- User Experience (work experience history - PII)
+CREATE TABLE private.user_experience (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL,  -- FK to users(id) in 002_relations.sql
+  organization_id UUID,  -- Optional FK to public.organizations
+  job_title TEXT NOT NULL,
+  company_name TEXT NOT NULL,
+  employment_type TEXT,
+  location TEXT,
+  is_remote BOOLEAN DEFAULT false,
+  start_date DATE,
+  end_date DATE,
+  is_current BOOLEAN DEFAULT false,
+  description TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 COMMIT;
