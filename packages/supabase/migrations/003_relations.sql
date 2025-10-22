@@ -227,14 +227,14 @@ ALTER TABLE private.role_assignments
 -- CERTIFICATIONS (public schema)
 -- =========================================================
 
--- User Certifications (references public.certifications)
+-- User Certifications (references data.certifications - hierarchical catalog)
 ALTER TABLE private.user_certifications
   ADD CONSTRAINT user_certifications_user_id_fkey
   FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 ALTER TABLE private.user_certifications
   ADD CONSTRAINT user_certifications_certification_id_fkey
-  FOREIGN KEY (certification_id) REFERENCES public.certifications(id) ON DELETE CASCADE;
+  FOREIGN KEY (certification_id) REFERENCES data.certifications(id) ON DELETE CASCADE;
 
 -- =========================================================
 -- EDUCATION (private schema, references data.universities)

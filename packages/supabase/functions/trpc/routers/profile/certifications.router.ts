@@ -351,21 +351,54 @@ export const profileCertificationsRouter = t.router({
         const { supabase, user } = ctx;
 
         if (input.checked) {
-          // Add certification
-          const { data: parentCert } = await supabase
+          // First, ensure the parent category (depth 1) exists
+          // Check if parent already exists
+          const { data: existingParent } = await supabase
             .schema("private")
             .from("user_certifications")
             .select("id")
             .eq("user_id", user.id)
             .eq("certification_id", input.parent_id)
             .eq("is_active", true)
-            .single();
+            .maybeSingle();
 
-          if (!parentCert) {
-            throw new TRPCError({
-              code: "BAD_REQUEST",
-              message: "Parent category not found in your profile",
-            });
+          if (!existingParent) {
+            // Auto-create the parent category if it doesn't exist
+            const { data: parentCatalog, error: parentCatalogError } =
+              await supabase
+                .schema("data")
+                .from("certifications")
+                .select("*")
+                .eq("id", input.parent_id)
+                .eq("depth", 1)
+                .eq("is_active", true)
+                .single();
+
+            if (parentCatalogError || !parentCatalog) {
+              throw new TRPCError({
+                code: "NOT_FOUND",
+                message: "Parent category not found in catalog",
+              });
+            }
+
+            // Create the parent category
+            const { error: createParentError } = await supabase
+              .schema("private")
+              .from("user_certifications")
+              .insert({
+                user_id: user.id,
+                certification_id: input.parent_id,
+                is_active: true,
+                verification_status: "unverified",
+              });
+
+            if (createParentError) {
+              throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message:
+                  `Failed to create parent category: ${createParentError.message}`,
+              });
+            }
           }
 
           const { data: cert, error: certError } = await supabase

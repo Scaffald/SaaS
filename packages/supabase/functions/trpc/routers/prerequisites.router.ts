@@ -35,6 +35,8 @@ export const prerequisitesRouter = t.router({
   check: protectedProcedure.query(async ({ ctx }) => {
     const { supabase, user } = ctx;
 
+    console.log("[prerequisites.check] Starting check for user:", user.id);
+
     // Get private data (first_name, last_name, address)
     const { data: privateData, error: privateError } = await supabase
       .schema("private")
@@ -43,7 +45,13 @@ export const prerequisitesRouter = t.router({
       .eq("user_id", user.id)
       .single();
 
+    console.log("[prerequisites.check] Private data query result:", {
+      hasData: !!privateData,
+      error: privateError?.message,
+    });
+
     if (privateError && privateError.code !== "PGRST116") {
+      console.error("[prerequisites.check] Private data error:", privateError);
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: `Failed to fetch private data: ${privateError.message}`,
@@ -57,7 +65,13 @@ export const prerequisitesRouter = t.router({
       .eq("id", user.id)
       .single();
 
+    console.log("[prerequisites.check] User data query result:", {
+      hasData: !!userData,
+      error: userError?.message,
+    });
+
     if (userError && userError.code !== "PGRST116") {
+      console.error("[prerequisites.check] User data error:", userError);
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: `Failed to fetch user data: ${userError.message}`,
@@ -74,12 +88,20 @@ export const prerequisitesRouter = t.router({
       .eq("user_id", user.id)
       .single();
 
+    console.log("[prerequisites.check] Preferences query result:", {
+      hasData: !!preferences,
+      error: prefsError?.message,
+    });
+
     if (prefsError && prefsError.code !== "PGRST116") {
+      console.error("[prerequisites.check] Preferences error:", prefsError);
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: `Failed to fetch preferences: ${prefsError.message}`,
       });
     }
+
+    console.log("[prerequisites.check] Check complete, building response");
 
     // Check if all required fields are present
     const hasName = privateData?.first_name && privateData?.last_name;

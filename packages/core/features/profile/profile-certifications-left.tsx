@@ -150,26 +150,20 @@ export function ProfileCertificationsLeft({
     const isExpanded = expandedCategories.has(categoryId)
 
     if (!isExpanded) {
-      // Check if already saved
-      const depth1Items = certTree?.depth1ByParent[parentId] || []
-      const alreadySaved = depth1Items.some(
-        (item: UserCertification) => item.certification_id === categoryId
-      )
-
-      if (!alreadySaved) {
-        // First time expanding - save to DB
-        try {
-          await addCategory.mutateAsync({
-            category_id: categoryId,
-            parent_id: parentId,
-          })
-        } catch (error) {
-          console.error('Error adding category:', error)
-          return
-        }
+      // Always try to save to DB when expanding (backend handles duplicates gracefully)
+      try {
+        await addCategory.mutateAsync({
+          category_id: categoryId,
+          parent_id: parentId,
+        })
+        // Wait for refetch to complete before expanding UI
+        await refetchTree()
+      } catch (error) {
+        console.error('Error adding category:', error)
+        return
       }
 
-      // Expand in UI
+      // Expand in UI only after DB save is confirmed
       setExpandedCategories((prev) => new Set([...prev, categoryId]))
     } else {
       // Just collapse UI (don't delete from DB)
