@@ -37,6 +37,8 @@
     "lint:fix": "biome lint --write ./app",
     "typecheck": "tsc --noEmit",
     "check": "pnpm format:fix && pnpm lint:fix",
+    "styleguide:audit": "node ./scripts/generate-styleguide-audit.mjs",
+    "styleguide:check": "node ./scripts/check-styleguide.mjs",
     "adb:reverse": "adb reverse tcp:8081 tcp:8081"
   },
   "dependencies": {

@@ -1,0 +1,218 @@
+{
+  "audit": {
+    "generatedAt": "2025-10-27T16:29:26.342Z",
+    "techStack": {
+      "workspaceManager": "pnpm@10.17.1",
+      "framework": "Expo Router + React Native Web",
+      "runtime": "React 18 (Expo SDK)",
+      "uiSystem": "Tamagui v4 with custom themes",
+      "ssr": false
+    },
+    "languages": [
+      "TypeScript",
+      "TSX",
+      "React Native styling"
+    ],
+    "buildTooling": {
+      "bundler": "Expo CLI (Metro)",
+      "tasks": [
+        "reset",
+        "reset:full",
+        "env-local",
+        "env-prod",
+        "dev",
+        "ios",
+        "android",
+        "web",
+        "web:build",
+        "prebuild",
+        "deploy",
+        "deploy:reset",
+        "deploy:netlify",
+        "deploy:netlify:prod",
+        "secrets:add",
+        "netlify:env:sync",
+        "watch",
+        "format",
+        "format:fix",
+        "postinstall",
+        "build",
+        "check",
+        "check-deps",
+        "check-circular-deps",
+        "ui:check",
+        "ui:optimize",
+        "ui:extract",
+        "tamagui:check",
+        "tamagui:upgrade",
+        "tamagui:upgrade:canary",
+        "supa",
+        "supa:seed",
+        "supa:reset",
+        "supa:generate",
+        "typecheck",
+        "lint",
+        "lint:fix",
+        "generate",
+        "test:build",
+        "test:lint",
+        "test:deps",
+        "test:tamagui",
+        "test:api",
+        "test:integration",
+        "test:all",
+        "test",
+        "test:performance",
+        "validate:migration"
+      ],
+      "workspaceScripts": [
+        "clean",
+        "start",
+        "start:dev-client",
+        "web",
+        "web:build",
+        "web:serve",
+        "prebuild",
+        "android",
+        "ios",
+        "ios:check-xcode-version",
+        "ios:run",
+        "eas:build:dev:simulator:ios:local",
+        "eas:build:dev:simulator:android",
+        "eas:build:dev:android",
+        "eas:submit:dev:android",
+        "eas:update:dev:android",
+        "eas:build:staging:android",
+        "eas:submit:staging:android",
+        "eas:update:staging:android",
+        "eas:build:dev:simulator:ios",
+        "eas:build:dev:ios",
+        "eas:build:dev:device:ios",
+        "eas:build:dev:device:android",
+        "eas:submit:dev:ios",
+        "eas:update:dev:ios",
+        "eas:build:staging:ios",
+        "eas:submit:staging:ios",
+        "eas:update:staging:ios",
+        "format",
+        "format:fix",
+        "lint",
+        "lint:fix",
+        "typecheck",
+        "check",
+        "styleguide:audit",
+        "styleguide:check",
+        "adb:reverse"
+      ],
+      "turbo": true
+    },
+    "entryPoints": {
+      "expoLayout": "apps/expo/app/_layout.tsx",
+      "router": "apps/expo/app",
+      "styleguideBasePath": "/styleguide"
+    },
+    "routing": {
+      "approach": "file-system routes via expo-router",
+      "authGuard": "Provider wrapper in _layout.tsx with Supabase session"
+    },
+    "designSystem": {
+      "tamaguiConfig": "packages/ui/src/tamagui.config.ts",
+      "themes": [
+        "packages/ui/src/themes/earth-theme.ts"
+      ],
+      "fonts": [
+        "packages/ui/src/config/fonts.ts"
+      ],
+      "componentsDir": "packages/ui/src/components",
+      "iconSet": "@tamagui/lucide-icons",
+      "tokensSource": "packages/ui/src/tamagui.config.ts tokens + packages/core/assets/brand-colors.ts"
+    },
+    "brand": {
+      "name": "Scaffald",
+      "logoComponent": "@app/core/assets/ScaffaldLogo.tsx",
+      "tagline": "Career collaboration platform",
+      "colorsFile": "packages/core/assets/brand-colors.ts"
+    },
+    "docsSources": {
+      "existingStyleguide": "apps/expo/app/styleguide",
+      "componentExports": "@app/ui",
+      "stories": null,
+      "mdDocs": "docs/"
+    },
+    "security": {
+      "auth": "Supabase session gating in root layout",
+      "deployment": "Netlify scripts + Expo web export"
+    },
+    "testing": {
+      "lint": true,
+      "typecheck": true,
+      "e2e": false,
+      "visual": false
+    },
+    "ci": {
+      "netlify": true,
+      "github": true,
+      "turboPipelines": true
+    },
+    "hosting": {
+      "target": "Expo web export served via Netlify",
+      "basePath": "/styleguide",
+      "robots": false
+    },
+    "search": {
+      "existingLibrary": null,
+      "recommendation": "Implement lightweight local search index (e.g., FlexSearch)"
+    },
+    "risks": [
+      "Need to ensure styleguide respects authentication requirements when mounted in production.",
+      "Automated prop table extraction not yet wired to build pipeline.",
+      "Search index must stay in sync with rapidly evolving UI package."
+    ]
+  },
+  "approvalQueue": [
+    {
+      "id": "todo-prop-docs",
+      "title": "Automate prop tables for UI components",
+      "context": "Component API tables currently rely on placeholder metadata. We need build-time extraction to stay accurate.",
+      "suggestion": "Add a prebuild script using `react-docgen-typescript` to generate JSON for @app/ui components and hydrate tables in the styleguide.",
+      "links": [
+        "/styleguide/components/button#api"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "todo-search",
+      "title": "Finalize full-text search indexing",
+      "context": "Search currently uses in-memory nav data only. It should index headings and tokens with weighting and highlight support.",
+      "suggestion": "Introduce FlexSearch or MiniSearch and generate an index from MDX content during build.",
+      "links": [
+        "/styleguide/search"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "todo-robots",
+      "title": "Decide on robots.txt policy for styleguide",
+      "context": "Styleguide may be internal-only. Confirm whether to block indexing and add robots rules if needed.",
+      "suggestion": "Add a /styleguide/robots.txt served when APP_ENV !== production or behind auth.",
+      "links": [
+        "/styleguide/approval-queue"
+      ],
+      "status": "pending"
+    }
+  ],
+  "unknowns": [
+    {
+      "item": "Dedicated illustration assets for docs examples",
+      "suggestion": "Commission or adapt existing marketing illustrations for empty states."
+    },
+    {
+      "item": "Accessibility testing tooling integration",
+      "suggestion": "Adopt @testing-library/react-native with axe or integrate Playwright + axe-core for smoke checks."
+    },
+    {
+      "item": "Internationalization strategy for web-only content",
+      "suggestion": "Confirm whether the existing i18n provider should wrap the styleguide and expose locale switcher."
+    }
+  ]
+}
