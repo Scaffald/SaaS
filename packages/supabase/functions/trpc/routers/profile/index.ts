@@ -7,6 +7,7 @@ import { profileEmploymentRouter } from "./employment.router.ts";
 import { profileExperienceRouter } from "./experience.router.ts";
 import { profileGeneralRouter } from "./general.router.ts";
 import { skillsMultiTaxonomyRouter } from "./skills-multi-taxonomy.router.ts";
+import { profileWidgetsRouter } from "./widgets.router.ts";
 
 /**
  * Profile router - merges all profile-related sub-routers
@@ -21,4 +22,5 @@ export const profileRouter = t.mergeRouters(
   profileEducationRouter,
   profileExperienceRouter,
   profileCompletionRouter,
+  t.router({ widgets: profileWidgetsRouter }),
 );
