@@ -37,7 +37,7 @@ export const DrawerContent = ({
   return (
     <YStack flex={1} gap="$4" px="$4" py="$4">
       {/* Top Section - User Profile - Sticky */}
-      <DrawerHeader onNavigate={onNavigate} />
+      <DrawerHeader />
 
       {/* Scrollable Content - Using DrawerContentScrollView for proper gesture handling */}
       <DrawerContentScrollView {...drawerProps} showsVerticalScrollIndicator={false}>
