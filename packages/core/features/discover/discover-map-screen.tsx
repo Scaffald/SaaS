@@ -7,14 +7,15 @@ import { FilterBar } from './components/FilterBar'
 import { FilterPopup } from './components/FilterPopup'
 import { MapSearchInput } from './components/MapSearchInput'
 import { ResultsRail } from './components/ResultsRail'
-import { ProfileSummaryCard } from './components/ProfileSummaryCard'
+import { WorkerPreviewModal } from './components/WorkerPreviewModal'
+import { JobPreviewModal } from './components/JobPreviewModal'
+import { OrganizationPreviewModal } from './components/OrganizationPreviewModal'
 import type { ResultListRef } from './components/ResultList'
 import { defaultCenter } from './data/mockProfiles'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
 import { useOrganizations } from './hooks/useOrganizations'
 import { useJobs } from './hooks/useJobs'
 import { useUserLocation } from './hooks/useUserLocation'
-import type { TalentProfile } from './types'
 
 export const DiscoverMapScreen = () => {
   const { width } = useWindowDimensions()
@@ -27,8 +28,15 @@ export const DiscoverMapScreen = () => {
 
   const [searchCenter, setSearchCenter] = useState<[number, number] | null>(null)
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
-  const [summaryProfileId, setSummaryProfileId] = useState<string | null>(null)
   const [filtersOpen, setFiltersOpen] = useState(false)
+
+  // Modal states
+  const [workerModalOpen, setWorkerModalOpen] = useState(false)
+  const [workerModalUserId, setWorkerModalUserId] = useState<string | null>(null)
+  const [jobModalOpen, setJobModalOpen] = useState(false)
+  const [jobModalId, setJobModalId] = useState<string | null>(null)
+  const [orgModalOpen, setOrgModalOpen] = useState(false)
+  const [orgModalId, setOrgModalId] = useState<string | null>(null)
   const [showSearchInput, setShowSearchInput] = useState(false)
   const [showRail, setShowRail] = useState(true)
   const [showResultsSheet, setShowResultsSheet] = useState(false)
@@ -65,7 +73,8 @@ export const DiscoverMapScreen = () => {
           badges: profile.badges,
           availability: 'available' as const,
           organization: 'Individual' as const,
-          selected: profile.id === summaryProfileId || profile.id === selectedProfileId,
+          selected: profile.id === selectedProfileId,
+          type: 'worker' as const,
         }))
       : []
 
@@ -76,7 +85,8 @@ export const DiscoverMapScreen = () => {
           title: org.name,
           subtitle: org.industry || 'Organization',
           organization: 'Organization' as const,
-          selected: org.id === summaryProfileId || org.id === selectedProfileId,
+          selected: org.id === selectedProfileId,
+          type: 'organization' as const,
         }))
       : []
 
@@ -88,7 +98,8 @@ export const DiscoverMapScreen = () => {
           subtitle: job.organization_name || 'Job Opening',
           organization: 'Job' as const,
           color: '#FFD700', // Yellow for jobs
-          selected: job.id === summaryProfileId || job.id === selectedProfileId,
+          selected: job.id === selectedProfileId,
+          type: 'job' as const,
         }))
       : []
 
@@ -97,78 +108,63 @@ export const DiscoverMapScreen = () => {
     talentProfiles,
     organizations,
     jobs,
-    summaryProfileId,
     selectedProfileId,
     showWorkers,
     showOrganizations,
     showJobs,
   ])
 
-  // Get profile for summary card
-  const summaryProfile = useMemo<TalentProfile | null>(() => {
-    if (!summaryProfileId) return null
-    return talentProfiles.find((p) => p.id === summaryProfileId) || null
-  }, [summaryProfileId, talentProfiles])
-
-  // Handle pin click - show summary card or deselect
+  // Handle pin click - open appropriate modal
   const handleMarkerPress = useCallback(
-    (profileId: string | null) => {
+    (pinId: string | null) => {
       // Hide search input when user interacts with map
       setShowSearchInput(false)
 
-      if (profileId === null) {
+      if (pinId === null) {
         // Clicking empty space - clear selection
-        setSummaryProfileId(null)
         setSelectedProfileId(null)
-      } else {
-        // On mobile: show summary card
-        // On desktop: select in rail and scroll to it
-        if (isSmallScreen) {
-          setSummaryProfileId(profileId)
-        } else {
-          setSelectedProfileId(profileId)
-          // Ensure rail is visible first
-          setShowRail(true)
-          // Scroll to card in rail after ensuring visibility
-          setTimeout(() => {
-            if (resultListRef.current?.scrollToCard) {
-              resultListRef.current.scrollToCard(profileId)
-            }
-          }, 200)
-        }
+        return
+      }
+
+      // Determine entity type by checking which array contains the ID
+      const isWorker = talentProfiles.some((p) => p.id === pinId)
+      const isJob = jobs.some((j) => j.id === pinId)
+      const isOrg = organizations.some((o) => o.id === pinId)
+
+      // Open appropriate modal
+      if (isWorker) {
+        setWorkerModalUserId(pinId)
+        setWorkerModalOpen(true)
+      } else if (isJob) {
+        setJobModalId(pinId)
+        setJobModalOpen(true)
+      } else if (isOrg) {
+        setOrgModalId(pinId)
+        setOrgModalOpen(true)
+      }
+
+      // Also select in rail for desktop view
+      if (!isSmallScreen) {
+        setSelectedProfileId(pinId)
+        setShowRail(true)
+        setTimeout(() => {
+          if (resultListRef.current?.scrollToCard) {
+            resultListRef.current.scrollToCard(pinId)
+          }
+        }, 200)
       }
     },
-    [isSmallScreen, showRail]
+    [isSmallScreen, talentProfiles, jobs, organizations]
   )
-
-  // Handle summary card click - show rail/sheet and highlight profile
-  const handleSummaryCardPress = useCallback(() => {
-    if (summaryProfileId) {
-      setSelectedProfileId(summaryProfileId)
-
-      if (isSmallScreen) {
-        // On mobile, open the results sheet
-        setShowResultsSheet(true)
-      } else {
-        // On desktop, show the rail
-        setShowRail(true)
-      }
-
-      // Scroll to card with slight delay for better UX
-      setTimeout(() => {
-        resultListRef.current?.scrollToCard(summaryProfileId)
-      }, 100)
-
-      // Hide summary card
-      setSummaryProfileId(null)
-    }
-  }, [summaryProfileId, isSmallScreen])
 
   const handleReset = useCallback(() => {
     setSelectedProfileId(null)
-    setSummaryProfileId(null)
     setSearchCenter(null)
     setShowSearchInput(false)
+    // Close any open modals
+    setWorkerModalOpen(false)
+    setJobModalOpen(false)
+    setOrgModalOpen(false)
   }, [])
 
   const handleLocationSelect = useCallback(
@@ -205,26 +201,14 @@ export const DiscoverMapScreen = () => {
       {/* Overlay elements */}
       {isSmallScreen ? (
         <>
-          {/* Profile Summary Card - Mobile Only - Full Width Above FilterBar */}
-          {summaryProfile && (
-            <YStack position="absolute" justify="center" b={100} l={0} r={0} z={45}>
-              <ProfileSummaryCard profile={summaryProfile} onPress={handleSummaryCardPress} />
-            </YStack>
-          )}
           {/* Filter Bar */}
           <FilterBar
             onResultsPress={() => setShowResultsSheet(true)}
             resultsCount={talentProfiles.length + organizations.length + jobs.length}
             onSearchPress={() => {
-              if (!showSearchInput) {
-                setSummaryProfileId(null)
-              }
               setShowSearchInput(!showSearchInput)
             }}
             onFilterPress={() => {
-              if (!filtersOpen) {
-                setSummaryProfileId(null)
-              }
               setFiltersOpen(!filtersOpen)
             }}
             onResetPress={handleReset}
@@ -258,15 +242,9 @@ export const DiscoverMapScreen = () => {
             onResultsPress={() => setShowRail(!showRail)}
             resultsCount={talentProfiles.length + organizations.length + jobs.length}
             onSearchPress={() => {
-              if (!showSearchInput) {
-                setSummaryProfileId(null)
-              }
               setShowSearchInput(!showSearchInput)
             }}
             onFilterPress={() => {
-              if (!filtersOpen) {
-                setSummaryProfileId(null)
-              }
               setFiltersOpen(!filtersOpen)
             }}
             onResetPress={handleReset}
@@ -276,6 +254,19 @@ export const DiscoverMapScreen = () => {
           />
         </>
       )}
+
+      {/* Modals - Rendered for both mobile and desktop */}
+      <WorkerPreviewModal
+        userId={workerModalUserId}
+        open={workerModalOpen}
+        onOpenChange={setWorkerModalOpen}
+      />
+      <JobPreviewModal jobId={jobModalId} open={jobModalOpen} onOpenChange={setJobModalOpen} />
+      <OrganizationPreviewModal
+        organizationId={orgModalId}
+        open={orgModalOpen}
+        onOpenChange={setOrgModalOpen}
+      />
 
       {/* Mobile Results Sheet */}
       <Sheet
