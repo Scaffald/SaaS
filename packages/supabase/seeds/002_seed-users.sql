@@ -56,6 +56,7 @@ FROM (VALUES
   ('00000000-0000-0000-0000-000000000001', 'zach@unicorn.love', 'Zach Servideo', 'Zach', 'Servideo', '+1 (424) 280-2876', 'Ipswich, Massachusetts, United States'),
   ('00000000-0000-0000-0000-000000000002', 'clay@unicorn.love', 'Clay Unicorn', 'Clay', 'Unicorn', '+1 (989) 501-1460', 'Clare, Michigan, United States'),
   ('00000000-0000-0000-0000-000000000003', 'marc@unicorn.love', 'Marc', 'Marc', '', '+1 (978) 569-3642', ''),
+  ('00000000-0000-0000-0000-000000000009', 'mbernier@unicorn.love', 'Matt Bernier', 'Matt', 'Bernier', '', ''),
   
   -- =========================================================
   -- SUPER ADMINS - circleave.com domain (IDs: 00000000-0000-0000-0000-00000000000X)
