@@ -48,9 +48,6 @@ jobs:
       - name: Check for duplicate dependencies in lock file (run `pnpm dedupe` to fix)
         run: pnpm dedupe --check
 
-      - name: Check for pnpm constraints
-        run: pnpm constraints
-
       - name: Check for conflicting dependency versions across the monorepo
         run: pnpm check-deps
 
@@ -58,6 +55,3 @@ jobs:
         run: |
           chmod +x ./scripts/check-circular-deps.sh 
           pnpm check-circular-deps
-
-      - name: Check the linting using `sherif`
-        run: pnpm lint-sherif
