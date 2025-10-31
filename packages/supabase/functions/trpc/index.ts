@@ -10,6 +10,8 @@ export type { AppRouter };
  * Handles all tRPC requests with proper CORS support
  */
 Deno.serve(async (req: Request) => {
+  console.log("[tRPC handler] Request received:", req.method, req.url);
+  
   // CORS headers to be applied to all responses
   const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -20,10 +22,12 @@ Deno.serve(async (req: Request) => {
 
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
+    console.log("[tRPC handler] CORS preflight");
     return new Response("ok", { headers: corsHeaders });
   }
 
   try {
+    console.log("[tRPC handler] Calling fetchRequestHandler");
     const response = await fetchRequestHandler({
       endpoint: "/trpc",
       req,
