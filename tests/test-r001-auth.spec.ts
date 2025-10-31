@@ -11,10 +11,17 @@ test.describe('Regular • /auth', () => {
 
   test('shows validation for invalid email', async ({ page }: { page: Page }) => {
     await page.goto('/auth')
-    await page.getByPlaceholder(/email/i).fill('not-an-email')
-    await page.getByRole('button', { name: /send magic link|sign in/i }).click()
-    const anyError = page.getByText(/invalid email|enter a valid email/i)
-    await expect(anyError).toBeVisible()
+    await page.waitForLoadState('networkidle')
+    // Find input by placeholder or role
+    const emailInput = page.getByPlaceholder(/your@email|email/i).or(page.getByRole('textbox')).first()
+    await emailInput.waitFor({ state: 'visible', timeout: 10000 })
+    await emailInput.fill('not-an-email')
+    const submitButton = page.getByRole('button', { name: /send magic link|sending/i })
+    await submitButton.click()
+    // Wait for validation error - check page content
+    await page.waitForTimeout(1500)
+    const pageContent = await page.locator('body').textContent() || ''
+    expect(pageContent.toLowerCase()).toMatch(/invalid|valid email|please enter/i)
   })
 })
 

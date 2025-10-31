@@ -17,8 +17,8 @@ const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGci
 // Test users from seed data
 export const TEST_USERS = {
   regular: {
-    email: 'testuser1@example.com',
-    password: 'TestUser123!',
+    email: 'lexis.salah@eths.education.com',
+    password: 'password123',
   },
   admin: {
     email: 'ewongagent@gmail.com', // From seed data
@@ -81,6 +81,7 @@ export async function getSession(email: string, password: string) {
 /**
  * Login a user in Playwright and set authentication state
  * Similar to Clerk's `signInAsUser` helper
+ * Uses Supabase's localStorage pattern for React Native Web
  */
 export async function signInAsUser(page: Page, email: string, password: string): Promise<void> {
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
@@ -99,30 +100,49 @@ export async function signInAsUser(page: Page, email: string, password: string):
     throw new Error('No session created')
   }
 
-  // Navigate to the app
+  // Navigate to the app first
   await page.goto('/')
+  
+  // Wait for page to load
+  await page.waitForLoadState('networkidle')
 
-  // Set authentication state in the page
+  // Set authentication state using Supabase's storage key pattern
+  // The key format is: sb-{hostname-with-dashes}-auth-token
   await page.evaluate(
-    ({ token, user }) => {
-      // Store session in localStorage (matching your app's storage strategy)
-      localStorage.setItem('supabase.auth.token', JSON.stringify(token))
-      localStorage.setItem('supabase.auth.user', JSON.stringify(user))
-
-      // Also set in sessionStorage for web compatibility
-      sessionStorage.setItem('supabase.auth.token', JSON.stringify(token))
+    ({ session, user, url }) => {
+      const hostname = new URL(url).hostname.replace(/\./g, '-').replace(/:/g, '-')
+      const storageKey = `sb-${hostname}-auth-token`
       
-      // Emit storage event to trigger app listeners
-      window.dispatchEvent(new StorageEvent('storage', {
-        key: 'supabase.auth.token',
-        newValue: JSON.stringify(token),
+      // Store the full session object (matching Supabase-js format)
+      localStorage.setItem(storageKey, JSON.stringify({
+        access_token: session.access_token,
+        refresh_token: session.refresh_token,
+        expires_at: session.expires_at,
+        expires_in: session.expires_in,
+        token_type: session.token_type,
+        user: user,
       }))
+      
+      // Also set the shorter key (Supabase sometimes uses both)
+      const shortKey = `sb-${new URL(url).hostname.split('.')[0]}-auth-token`
+      if (shortKey !== storageKey) {
+        localStorage.setItem(shortKey, JSON.stringify({
+          access_token: session.access_token,
+          refresh_token: session.refresh_token,
+          expires_at: session.expires_at,
+          expires_in: session.expires_in,
+          token_type: session.token_type,
+          user: user,
+        }))
+      }
     },
-    { token: data.session, user: data.user },
+    { session: data.session, user: data.user, url: SUPABASE_URL },
   )
 
-  // Wait for the app to process the auth state
-  await page.waitForTimeout(500)
+  // Navigate to dashboard to trigger auth state processing
+  await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
+  // Wait a bit for auth to initialize, but don't wait for networkidle (pages may be loading indefinitely)
+  await page.waitForTimeout(2000)
 }
 
 /**

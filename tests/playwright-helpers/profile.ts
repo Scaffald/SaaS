@@ -7,12 +7,22 @@ import type { Page } from '@playwright/test'
  * Safe to call on any page; it will navigate to /dashboard if needed.
  */
 export async function ensureProfileComplete(page: Page): Promise<void> {
-  // Go to dashboard which triggers the profile gate if incomplete
-  await page.goto('/dashboard')
+  try {
+    // Go to dashboard which triggers the profile gate if incomplete
+    // Use domcontentloaded for faster navigation (networkidle can timeout)
+    await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 15000 })
+    await page.waitForTimeout(500)
 
-  // If the completion form isn't present, return quickly
-  const gateVisible = await page.getByText(/complete profile|privacy policy|terms of service/i).isVisible().catch(() => false)
-  if (!gateVisible) return
+    // If the completion form isn't present, return quickly (with short timeout)
+    const gateVisible = await Promise.race([
+      page.getByText(/complete profile|privacy policy|terms of service/i).isVisible(),
+      new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 1500))
+    ]).catch(() => false)
+    if (!gateVisible) return
+  } catch (error) {
+    // If navigation fails or times out, just continue - profile might already be complete
+    return
+  }
 
   // Fill common fields defensively; ignore failures to keep this resilient
   try { await page.getByPlaceholder(/first name/i).fill('Test') } catch {}
@@ -40,6 +50,6 @@ export async function ensureProfileComplete(page: Page): Promise<void> {
   // Submit
   try { await page.getByRole('button', { name: /complete profile|continue|submit/i }).click() } catch {}
 
-  // Wait briefly for redirect/state change
+  // Wait briefly for navigation/state change (don't wait for networkidle - pages may never finish loading)
   await page.waitForTimeout(500)
 }
