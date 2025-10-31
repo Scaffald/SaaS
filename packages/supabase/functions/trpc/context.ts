@@ -24,8 +24,10 @@ console.log("Environment check:", {
  * Create tRPC context with Supabase client and user authentication
  */
 export const createTRPCContext = async (opts: { req: Request }) => {
-  const authorizationHeader = opts.req.headers.get("authorization");
-  console.log("Auth header present:", !!authorizationHeader);
+  try {
+    console.log("[createTRPCContext] Starting context creation");
+    const authorizationHeader = opts.req.headers.get("authorization");
+    console.log("[createTRPCContext] Auth header present:", !!authorizationHeader);
 
   // Create Supabase client with user's auth for permission checks
   const supabase = createClient(supabaseUrl, supabaseServiceKey, {
@@ -74,16 +76,21 @@ export const createTRPCContext = async (opts: { req: Request }) => {
     console.log("No authorization header found");
   }
 
-  console.log(
-    "Final user context:",
-    userId ? { id: userId, email: userEmail } : "undefined",
-  );
-  return {
-    user: userId ? { id: userId, email: userEmail } : undefined,
-    userToken,
-    supabase,
-    supabaseAdmin, // Admin client without user auth
-  };
+    console.log(
+      "[createTRPCContext] Final user context:",
+      userId ? { id: userId, email: userEmail } : "undefined",
+    );
+    return {
+      user: userId ? { id: userId, email: userEmail } : undefined,
+      userToken,
+      supabase,
+      supabaseAdmin, // Admin client without user auth
+    };
+  } catch (error) {
+    console.error("[createTRPCContext] Error creating context:", error);
+    console.error("[createTRPCContext] Error stack:", error instanceof Error ? error.stack : "No stack");
+    throw error;
+  }
 };
 
 // Export environment variables for use in routers
