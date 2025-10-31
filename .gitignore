@@ -51,4 +51,5 @@ packages/supabase/migrations/084_import_onet_full_data.sql
 /plans
 
 # Local context cache for UI audit (never commit)
-CONTEXT_CACHE/
+CONTEXT_CACHE/test-results/
+.playwright/
