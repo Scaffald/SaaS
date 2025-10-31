@@ -10,17 +10,22 @@ export async function ensureProfileComplete(page: Page): Promise<void> {
   try {
     // Go to dashboard which triggers the profile gate if incomplete
     // Use domcontentloaded for faster navigation (networkidle can timeout)
-    await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 15000 })
-    await page.waitForTimeout(500)
+    await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 20000 })
+    await page.waitForTimeout(1000)
 
     // If the completion form isn't present, return quickly (with short timeout)
     const gateVisible = await Promise.race([
       page.getByText(/complete profile|privacy policy|terms of service/i).isVisible(),
-      new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 1500))
+      new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 2000))
     ]).catch(() => false)
-    if (!gateVisible) return
+    if (!gateVisible) {
+      // Profile might already be complete, wait a bit for page to settle
+      await page.waitForTimeout(500)
+      return
+    }
   } catch (error) {
     // If navigation fails or times out, just continue - profile might already be complete
+    console.warn('ensureProfileComplete: Navigation error (assuming profile complete):', error)
     return
   }
 
