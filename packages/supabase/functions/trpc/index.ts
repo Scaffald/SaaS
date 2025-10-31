@@ -46,8 +46,26 @@ Deno.serve(async (req: Request) => {
       headers,
     });
   } catch (error) {
+    // Log the full error for debugging
     console.error("tRPC handler error:", error);
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
+    console.error("Error stack:", error instanceof Error ? error.stack : "No stack trace");
+    console.error("Error details:", JSON.stringify({
+      name: error instanceof Error ? error.name : typeof error,
+      message: error instanceof Error ? error.message : String(error),
+      cause: error instanceof Error && 'cause' in error ? error.cause : undefined,
+    }, null, 2));
+    
+    // Return error details (safe for development, mask in production)
+    const errorMessage = error instanceof Error 
+      ? error.message 
+      : String(error);
+    const errorName = error instanceof Error ? error.name : "UnknownError";
+    
+    return new Response(JSON.stringify({ 
+      error: "Internal server error",
+      message: errorMessage,
+      type: errorName,
+    }), {
       status: 500,
       headers: { 
         "Content-Type": "application/json",
