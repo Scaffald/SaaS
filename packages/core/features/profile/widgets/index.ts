@@ -15,3 +15,4 @@ export { SkillsWidget } from "./SkillsWidget";
 export { CertificationsWidget } from "./CertificationsWidget";
 export { PreferencesWidget } from "./PreferencesWidget";
 export { ProfileSnapshotWidget } from "./ProfileSnapshotWidget";
+export { ReviewsWidget } from "./ReviewsWidget";

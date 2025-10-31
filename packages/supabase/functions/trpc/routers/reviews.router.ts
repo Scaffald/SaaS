@@ -569,6 +569,201 @@ export const reviewsRouter = t.router({
   }),
 
   /**
+   * Get aggregated review analytics for a subject
+   * Returns comprehensive statistics and breakdowns for visualizations
+   */
+  getReviewAnalytics: publicProcedure
+    .input(z.object({
+      subjectId: z.string().uuid(),
+      subjectType: z.enum(["user", "organization"]).default("user"),
+    }))
+    .query(async ({ ctx, input }) => {
+      // Get all reviews for this subject
+      const { data: reviews, error: reviewsError } = await ctx.supabase
+        .from("reviews")
+        .select(`
+          id,
+          rating,
+          body,
+          created_at,
+          review_skill_ratings (
+            skill_id,
+            score,
+            skills (name, id)
+          ),
+          review_category_ratings (
+            category,
+            rating
+          ),
+          review_soft_skill_votes (
+            skill_id,
+            is_strength,
+            rating,
+            soft_skills (name, category, id)
+          )
+        `)
+        .eq("subject_id", input.subjectId)
+        .eq("subject_type", input.subjectType)
+        .not("rating", "is", null)
+        .order("created_at", { ascending: false });
+
+      if (reviewsError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch review analytics",
+          cause: reviewsError,
+        });
+      }
+
+      if (!reviews || reviews.length === 0) {
+        return null;
+      }
+
+      // Calculate overall statistics
+      const totalReviews = reviews.length;
+      const recommendCount = reviews.filter((r) => r.rating === 1).length;
+      const notRecommendCount = reviews.filter((r) => r.rating === -1).length;
+
+      // Aggregate skill ratings
+      const skillRatings = new Map<
+        string,
+        { name: string; total: number; count: number; skillId: string }
+      >();
+      for (const review of reviews) {
+        if (review.review_skill_ratings) {
+          for (const sr of review.review_skill_ratings) {
+            const skillId = sr.skill_id;
+            const skillName = sr.skills?.name || "Unknown Skill";
+            if (!skillRatings.has(skillId)) {
+              skillRatings.set(skillId, {
+                name: skillName,
+                total: 0,
+                count: 0,
+                skillId,
+              });
+            }
+            const skill = skillRatings.get(skillId)!;
+            skill.total += sr.score;
+            skill.count += 1;
+          }
+        }
+      }
+
+      // Aggregate category ratings
+      const categoryRatings = new Map<
+        string,
+        { total: number; count: number }
+      >();
+      for (const review of reviews) {
+        if (review.review_category_ratings) {
+          for (const cr of review.review_category_ratings) {
+            if (!categoryRatings.has(cr.category)) {
+              categoryRatings.set(cr.category, { total: 0, count: 0 });
+            }
+            const cat = categoryRatings.get(cr.category)!;
+            cat.total += cr.rating;
+            cat.count += 1;
+          }
+        }
+      }
+
+      // Aggregate soft skill votes (strengths and improvements)
+      const strengthTags = new Map<
+        string,
+        { name: string; count: number; category: string }
+      >();
+      const improvementTags = new Map<
+        string,
+        { name: string; count: number; category: string }
+      >();
+      for (const review of reviews) {
+        if (review.review_soft_skill_votes) {
+          for (const vote of review.review_soft_skill_votes) {
+            const skillName = vote.soft_skills?.name || "Unknown";
+            const skillCategory = vote.soft_skills?.category || "other";
+            const map = vote.is_strength ? strengthTags : improvementTags;
+
+            if (!map.has(skillName)) {
+              map.set(skillName, {
+                name: skillName,
+                count: 0,
+                category: skillCategory,
+              });
+            }
+            map.get(skillName)!.count += 1;
+          }
+        }
+      }
+
+      // Calculate timeline data (group by month)
+      const timelineData = new Map<
+        string,
+        { month: string; count: number; avgRating: number; totalRating: number }
+      >();
+      for (const review of reviews) {
+        const date = new Date(review.created_at);
+        const monthKey = `${date.getFullYear()}-${
+          String(date.getMonth() + 1).padStart(2, "0")
+        }`;
+
+        if (!timelineData.has(monthKey)) {
+          timelineData.set(monthKey, {
+            month: monthKey,
+            count: 0,
+            avgRating: 0,
+            totalRating: 0,
+          });
+        }
+        const data = timelineData.get(monthKey)!;
+        data.count += 1;
+
+        // Calculate average from category ratings
+        const avgCategoryRating = review.review_category_ratings?.length > 0
+          ? review.review_category_ratings.reduce(
+            (sum: number, cr: { rating: number }) => sum + cr.rating,
+            0,
+          ) / review.review_category_ratings.length
+          : 0;
+        data.totalRating += avgCategoryRating;
+        data.avgRating = data.totalRating / data.count;
+      }
+
+      return {
+        overall: {
+          totalReviews,
+          recommendCount,
+          notRecommendCount,
+          recommendPercentage: totalReviews > 0
+            ? (recommendCount / totalReviews) * 100
+            : 0,
+        },
+        skills: Array.from(skillRatings.entries()).map(([id, data]) => ({
+          skillId: id,
+          skillName: data.name,
+          averageRating: data.total / data.count,
+          frequency: data.count,
+        })).sort((a, b) => b.frequency - a.frequency),
+        categories: Array.from(categoryRatings.entries()).map((
+          [category, data],
+        ) => ({
+          category,
+          averageRating: data.total / data.count,
+          frequency: data.count,
+        })),
+        tags: {
+          strengths: Array.from(strengthTags.values())
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 20),
+          improvements: Array.from(improvementTags.values())
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 20),
+        },
+        timeline: Array.from(timelineData.values())
+          .sort((a, b) => a.month.localeCompare(b.month)),
+      };
+    }),
+
+  /**
    * Delete review draft
    * NOTE: Simplified - no status field in current schema, just delete if user owns it
    */
