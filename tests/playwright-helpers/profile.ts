@@ -4,14 +4,18 @@ import type { Page } from '@playwright/test'
 /**
  * Ensure the regular user's profile gate is completed.
  * This uses the known behavior: clickable Text labels toggle custom checkboxes.
- * Safe to call on any page; it will navigate to /dashboard if needed.
+ * IMPORTANT: Assumes the page is already on /dashboard (called after signInAsUser navigates there).
  */
 export async function ensureProfileComplete(page: Page): Promise<void> {
   try {
-    // Go to dashboard which triggers the profile gate if incomplete
-    // Use domcontentloaded for faster navigation (networkidle can timeout)
-    await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 20000 })
+    // We're already on /dashboard from signInAsUser, just wait for page to settle
     await page.waitForTimeout(1000)
+
+    // Dismiss cookie consent if present
+    try {
+      await page.getByRole('button', { name: /accept|reject/i }).click({ timeout: 2000 })
+      await page.waitForTimeout(500)
+    } catch {}
 
     // If the completion form isn't present, return quickly (with short timeout)
     const gateVisible = await Promise.race([
@@ -24,8 +28,8 @@ export async function ensureProfileComplete(page: Page): Promise<void> {
       return
     }
   } catch (error) {
-    // If navigation fails or times out, just continue - profile might already be complete
-    console.warn('ensureProfileComplete: Navigation error (assuming profile complete):', error)
+    // If there's an error, just continue - profile might already be complete
+    console.warn('ensureProfileComplete: Error (assuming profile complete):', error)
     return
   }
 
@@ -62,13 +66,18 @@ export async function ensureProfileComplete(page: Page): Promise<void> {
 /**
  * Ensure the admin user's profile gate is completed.
  * Similar to ensureProfileComplete but for admin users.
- * Safe to call on any page; it will navigate to /dashboard if needed.
+ * IMPORTANT: Assumes the page is already on /dashboard (called after signInAsUser navigates there).
  */
 export async function ensureAdminProfileComplete(page: Page): Promise<void> {
   try {
-    // Go to dashboard which triggers the profile gate if incomplete
-    await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 20000 })
+    // We're already on /dashboard from signInAsUser, just wait for page to settle
     await page.waitForTimeout(1000)
+
+    // Dismiss cookie consent if present
+    try {
+      await page.getByRole('button', { name: /accept|reject/i }).click({ timeout: 2000 })
+      await page.waitForTimeout(500)
+    } catch {}
 
     // If the completion form isn't present, return quickly
     const gateVisible = await Promise.race([
@@ -80,7 +89,7 @@ export async function ensureAdminProfileComplete(page: Page): Promise<void> {
       return
     }
   } catch (error) {
-    console.warn('ensureAdminProfileComplete: Navigation error (assuming profile complete):', error)
+    console.warn('ensureAdminProfileComplete: Error (assuming profile complete):', error)
     return
   }
 
