@@ -12,6 +12,18 @@ import {
  */
 export const profileGeneralRouter = t.router({
   /**
+   * Get current user basic info
+   * Returns the authenticated user's ID and basic details
+   */
+  useUser: protectedProcedure.query(async ({ ctx }) => {
+    const { user } = ctx;
+    return {
+      id: user.id,
+      email: user.email,
+    };
+  }),
+
+  /**
    * Get general profile information
    * Returns user's basic profile data including name, email, phone, about, and address
    */
@@ -28,9 +40,10 @@ export const profileGeneralRouter = t.router({
     }
 
     // Get profile data from users table (public data only)
+    // Note: about_rich is JSONB, about is legacy text field
     const { data: profile, error: profileError } = await supabase
       .from("users")
-      .select("avatar_path, about")
+      .select("avatar_path, about_rich")
       .eq("id", user.id)
       .single();
 
@@ -64,7 +77,7 @@ export const profileGeneralRouter = t.router({
       avatar_path: profile?.avatar_path || "",
       email: authUser?.user?.email || "",
       phone: authUser?.user?.phone || "",
-      about: profile?.about || "",
+      about: profile?.about_rich || null,
       address: privateData?.address || null,
     };
   }),
@@ -82,7 +95,7 @@ export const profileGeneralRouter = t.router({
       // These fields are read-only and come from the auth system
 
       // Build profile update object with only provided fields (public data)
-      const profileUpdate: ProfileUpdate & { about?: string } = {
+      const profileUpdate: ProfileUpdate & { about_rich?: unknown } = {
         id: user.id,
         updated_at: new Date().toISOString(),
       };
@@ -91,7 +104,9 @@ export const profileGeneralRouter = t.router({
         profileUpdate.avatar_path = input.avatar_path;
       }
       if (input.about !== undefined) {
-        profileUpdate.about = input.about;
+        // Save to about_rich column (JSONB)
+        // Trigger will automatically extract plain text to about_plain
+        profileUpdate.about_rich = input.about;
       }
 
       // Update users table only if there are fields to update

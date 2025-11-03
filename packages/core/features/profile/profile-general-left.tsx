@@ -5,7 +5,6 @@ import {
   Text,
   Button,
   Input,
-  TextArea,
   Avatar,
   H4,
   Spinner,
@@ -20,7 +19,8 @@ import { PhoneNumberInput } from '@app/ui'
 import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
-import { DashboardWidget, AvatarImagePicker } from '@app/ui'
+import { DashboardWidget, AvatarImagePicker, RichTextEditor, plainTextToTipTap } from '@app/ui'
+import type { JSONContent } from '@tiptap/core'
 
 /**
  * Profile General Left Component
@@ -230,27 +230,33 @@ export function ProfileGeneralLeft() {
           </YStack>
         </XStack>
 
-        {/* About Section */}
+        {/* About Section - Rich Text Editor */}
         <YStack gap="$2">
           <Text fontWeight="600">About</Text>
           <Controller
             name="about"
             control={control}
-            render={({ field }) => (
-              <TextArea
-                placeholder="Tell us about yourself..."
-                value={field.value || ''}
-                onChangeText={field.onChange}
-                minH={100}
-                borderColor={errors.about ? '$red8' : '$borderColor'}
-              />
-            )}
+            render={({ field }) => {
+              // Convert plain text to TipTap JSON if needed
+              const value =
+                typeof field.value === 'string'
+                  ? plainTextToTipTap(field.value)
+                  : field.value
+                    ? (field.value as JSONContent)
+                    : null
+
+              return (
+                <RichTextEditor
+                  value={value}
+                  onChange={field.onChange}
+                  fieldType="PROFILE_ABOUT"
+                  showCharacterCount
+                  minHeight={150}
+                  error={errors.about?.message}
+                />
+              )
+            }}
           />
-          {errors.about && (
-            <Text color="$red10" fontSize="$2">
-              {errors.about.message}
-            </Text>
-          )}
         </YStack>
 
         {/* Contact Information */}

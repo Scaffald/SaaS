@@ -45,8 +45,8 @@ export const ProfileAvatar = ({
   ]
   const bgColor = bgColors[colorIndex] as GetThemeValueForKey<'backgroundColor'>
 
-  // If avatar URL exists, show image
-  if (avatarUrl) {
+  // If avatar URL exists and is not empty, show image
+  if (avatarUrl && avatarUrl.trim() !== '') {
     return (
       <XStack
         width={size}

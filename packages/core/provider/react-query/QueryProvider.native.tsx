@@ -9,18 +9,7 @@ import { api, createTrpcClient } from '@app/core/utils/api'
 import { useEffect, useState, type ReactNode } from 'react'
 import type { AppStateStatus } from 'react-native'
 import { AppState, Platform } from 'react-native'
-
-// Global query client instance accessible throughout the app
-let globalQueryClient: QueryClient | null = null
-
-/**
- * Get the global query client instance
- * This allows accessing the query client outside of React components
- * Useful for clearing cache during auth cleanup
- */
-export function getGlobalQueryClient(): QueryClient | null {
-  return globalQueryClient
-}
+import { setGlobalQueryClient } from './queryClient'
 
 onlineManager.setEventListener((setOnline) => {
   return NetInfo.addEventListener((state) => {
@@ -44,7 +33,7 @@ export const QueryClientProvider = ({ children }: { children: ReactNode }) => {
     const client = new QueryClient({
       // native query config
     })
-    globalQueryClient = client
+    setGlobalQueryClient(client)
     return client
   })
   const [trpcClient] = useState(() => createTrpcClient())

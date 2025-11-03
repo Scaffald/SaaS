@@ -7,7 +7,7 @@ import { observable } from "@trpc/server/observable";
 import { getBaseUrl } from "./getBaseUrl";
 import { supabase } from "./supabase/client";
 import { clearAllAuthStorage } from "./auth/clearAuthStorage";
-import { getGlobalQueryClient } from "@app/core/provider/react-query";
+import { getGlobalQueryClient } from "@app/core/provider/react-query/queryClient";
 
 // Create tRPC React client with proper typing from shared supabase package
 // biome-ignore lint/suspicious/noExplicitAny: Required for cross-environment tRPC compatibility

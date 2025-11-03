@@ -51,7 +51,14 @@ export const profileGeneralInputSchema = z.object({
     .optional(),
   email: z.string().email().optional(),
   phone: phoneNumberSchema,
-  about: z.string().max(500).optional(),
+  // About field accepts both string (legacy) and JSONContent (TipTap format)
+  about: z.union([
+    z.string().max(500, "About section must be 500 characters or less"),
+    z.object({
+      type: z.string(),
+      content: z.array(z.any()).optional(),
+    }).passthrough(), // TipTap JSONContent format
+  ]).optional().nullable(),
   address: addressSchema.nullable().optional(),
 });
 

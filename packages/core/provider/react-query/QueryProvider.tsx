@@ -1,25 +1,14 @@
 import { QueryClient, QueryClientProvider as QueryClientProviderOG } from '@tanstack/react-query'
 import { api, createTrpcClient } from '@app/core/utils/api'
 import { useState, type ReactNode } from 'react'
-
-// Global query client instance accessible throughout the app
-let globalQueryClient: QueryClient | null = null
-
-/**
- * Get the global query client instance
- * This allows accessing the query client outside of React components
- * Useful for clearing cache during auth cleanup
- */
-export function getGlobalQueryClient(): QueryClient | null {
-  return globalQueryClient
-}
+import { setGlobalQueryClient } from './queryClient'
 
 export const QueryClientProvider = ({ children }: { children: ReactNode }) => {
   const [queryClient] = useState(() => {
     const client = new QueryClient({
       // web query config
     })
-    globalQueryClient = client
+    setGlobalQueryClient(client)
     return client
   })
   const [trpcClient] = useState(() => createTrpcClient())

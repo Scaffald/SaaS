@@ -25,6 +25,7 @@
     "format:fix": "biome format --write ./src"
   },
   "dependencies": {
+    "@10play/tentap-editor": "^0.7.4",
     "@babel/runtime": "catalog:",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
@@ -45,6 +46,11 @@
     "@tamagui/themes": "catalog:",
     "@tamagui/toast": "catalog:",
     "@tanstack/react-table": "catalog:",
+    "@tiptap/core": "^2.27.1",
+    "@tiptap/extension-placeholder": "^2.27.1",
+    "@tiptap/extension-underline": "^2.27.1",
+    "@tiptap/react": "^2.27.1",
+    "@tiptap/starter-kit": "^2.27.1",
     "@ts-react/form": "catalog:",
     "moti": "catalog:",
     "react": "catalog:",
