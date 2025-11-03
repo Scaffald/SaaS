@@ -58,3 +58,57 @@ export async function ensureProfileComplete(page: Page): Promise<void> {
   // Wait briefly for navigation/state change (don't wait for networkidle - pages may never finish loading)
   await page.waitForTimeout(500)
 }
+
+/**
+ * Ensure the admin user's profile gate is completed.
+ * Similar to ensureProfileComplete but for admin users.
+ * Safe to call on any page; it will navigate to /dashboard if needed.
+ */
+export async function ensureAdminProfileComplete(page: Page): Promise<void> {
+  try {
+    // Go to dashboard which triggers the profile gate if incomplete
+    await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 20000 })
+    await page.waitForTimeout(1000)
+
+    // If the completion form isn't present, return quickly
+    const gateVisible = await Promise.race([
+      page.getByText(/complete profile|privacy policy|terms of service/i).isVisible(),
+      new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 2000))
+    ]).catch(() => false)
+    if (!gateVisible) {
+      await page.waitForTimeout(500)
+      return
+    }
+  } catch (error) {
+    console.warn('ensureAdminProfileComplete: Navigation error (assuming profile complete):', error)
+    return
+  }
+
+  // Fill common fields defensively
+  try { await page.getByPlaceholder(/first name/i).fill('Admin') } catch {}
+  try { await page.getByPlaceholder(/last name/i).fill('User') } catch {}
+
+  // Address
+  try {
+    await page.getByPlaceholder(/address/i).fill('456 Admin Ave')
+  } catch {}
+
+  // Roles: For admin, likely different role selection
+  try { await page.getByText(/employer hiring workers|worker seeking employment/i).click() } catch {}
+
+  // Industry: open combobox and select first option
+  try {
+    await page.getByRole('combobox').first().click()
+    const firstOption = page.locator('[role="option"]').first()
+    await firstOption.click({ timeout: 1000 })
+  } catch {}
+
+  // Privacy/Terms
+  try { await page.getByText(/privacy policy/i).click() } catch {}
+  try { await page.getByText(/terms of service/i).click() } catch {}
+
+  // Submit
+  try { await page.getByRole('button', { name: /complete profile|continue|submit/i }).click() } catch {}
+
+  await page.waitForTimeout(500)
+}

@@ -98,20 +98,36 @@ Purpose: Deeply document one route and backstop discovery for nested/linked rout
 
 ##### Task Prompt: playwright-audit-route (Agent Template)
 
+**⚠️ IMPORTANT**: For detailed templates and improved instructions, see `docs/testing/route-task-review.md`
+
 Inputs
 
 - userLevel: "regular" | "admin" | "super-admin"
 - routePath: normalized path (e.g., "/dashboard/profile/skills")
-- baseUrl: string
-- linkedTestId: string (TEST-*)
+- baseUrl: string (default: http://localhost:8081)
+- linkedTestId: string (TEST-*) - may need to be created
+- userEmail: "zach@unicorn.love" (super-admin) | "ewongagent@gmail.com" (admin) | test user (regular)
 
 Checklist
 
-- Confirm or write `route.txt` for this route.
-- Document elements, interactions, states, and data preconditions.
-- Exercise all sub-navigation (including modal actions) and spawn tickets for newly discovered routes not in cache.
-- Update the linked TEST ticket with a concrete, route-specific coverage checklist and navigation path.
-- Create BUG tickets with repro and severity when defects block coverage.
+- **Use Playwright MCP tools** to explore the route (not standard Playwright API)
+- Authenticate as the specified user email for the user level
+- Confirm or write `route.txt` for this route
+- **Document ALL Playwright MCP commands used** in a command log
+- Fully and comprehensively investigate ALL features:
+  - All UI elements (forms, buttons, links, tables, modals, etc.)
+  - All interactive features (clicks, form submissions, navigation)
+  - All states (empty, loading, error, success)
+  - All edge cases and error handling
+- Exercise all sub-navigation (including modal actions) and spawn tickets for newly discovered routes not in cache
+- **Create TEST ticket** with comprehensive instructions:
+  - File location (`tests/{userLevel}/{normalizedRoutePath}.spec.ts`)
+  - How to run the test
+  - Verification checklist
+  - Branch information (merge into `bernier-playwright`)
+  - Reference to Playwright command log
+- Create BUG tickets with repro and severity when defects block coverage
+- **Set blocking relationships**: BUG tickets block TEST tickets; update TEST ticket to indicate blocking
 
 Required Output (JSON)
 
@@ -215,14 +231,19 @@ Description:
 
 #### AUDIT-ROUTE (Per route)
 
-Title: `Audit • {UserLevel} • {routePath} — UI coverage discovery`
+**⚠️ See `docs/testing/route-task-review.md` for comprehensive template**
 
-Description:
+Title: `AUDIT-###: {UserLevel} • {routePath} — Comprehensive UI exploration using Playwright MCP`
 
-- Purpose & flow
-- UI elements, interactions, states, data needs
-- Sub-route discovery mandate (spawn tickets if missing)
-- Update linked TEST ticket with coverage + dependencies
+Description Must Include:
+
+- **User credential**: zach@unicorn.love (super-admin) | ewongagent@gmail.com (admin) | test user (regular)
+- **Purpose & flow**: What this route does
+- **Comprehensive investigation checklist**: All UI elements, interactions, states, data needs
+- **Playwright MCP command log**: Document every command used during exploration
+- **Sub-route discovery**: Spawn tickets for newly discovered routes
+- **TEST ticket creation**: Create with full instructions (file location, how to run, branch info)
+- **BUG handling**: Create BUG tickets for defects; set blocking relationships
 
 #### BUG-####
 

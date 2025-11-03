@@ -1,6 +1,6 @@
 /**
  * Playwright Authentication Helpers for Supabase
- * 
+ *
  * Provides utilities to authenticate users in Playwright tests using Supabase
  * Similar to Clerk's @clerk/playwright but for Supabase
  */
@@ -9,6 +9,7 @@ import { createClient } from '@supabase/supabase-js'
 import type { Page } from '@playwright/test'
 import { writeFileSync, readFileSync, existsSync } from 'fs'
 import { join } from 'path'
+import { ensureProfileComplete, ensureAdminProfileComplete } from './profile'
 
 // Supabase configuration from environment
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321'
@@ -195,9 +196,20 @@ export async function loadStorageState(path = 'tests/.auth/user.json') {
 /**
  * Login with test users (convenience shortcuts)
  */
-export const signInAsTestUser = (page: Page) => signInAsUser(page, TEST_USERS.regular.email, TEST_USERS.regular.password)
-export const signInAsAdmin = (page: Page) => signInAsUser(page, TEST_USERS.admin.email, TEST_USERS.admin.password)
-export const signInAsSuperAdmin = (page: Page) => signInAsUser(page, TEST_USERS.superAdmin.email, TEST_USERS.superAdmin.password)
+export const signInAsTestUser = async (page: Page) => {
+  await signInAsUser(page, TEST_USERS.regular.email, TEST_USERS.regular.password)
+  await ensureProfileComplete(page)
+}
+
+export const signInAsAdmin = async (page: Page) => {
+  await signInAsUser(page, TEST_USERS.admin.email, TEST_USERS.admin.password)
+  await ensureAdminProfileComplete(page)
+}
+
+export const signInAsSuperAdmin = async (page: Page) => {
+  await signInAsUser(page, TEST_USERS.superAdmin.email, TEST_USERS.superAdmin.password)
+  await ensureAdminProfileComplete(page)
+}
 
 /**
  * Get auth token for API requests (useful for fetch/mocking)
