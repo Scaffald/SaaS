@@ -1,6 +1,6 @@
-export { FileUpload, type FileUploadProps } from "./FileUpload";
-export { ImageUpload, type ImageUploadProps } from "./ImageUpload";
-export { IconSelector } from "./IconSelector";
+export { FileUpload, type FileUploadProps } from './FileUpload'
+export { ImageUpload, type ImageUploadProps } from './ImageUpload'
+export { IconSelector } from './IconSelector'
 export {
   createEmptyDocument,
   extractPlainText,
@@ -9,5 +9,5 @@ export {
   RichTextEditor,
   sanitizeTipTapJSON,
   validateCharacterLimit,
-} from "./rich-text";
-export type { RichTextDisplayProps, RichTextEditorProps } from "./rich-text";
+} from './rich-text'
+export type { RichTextDisplayProps, RichTextEditorProps } from './rich-text'

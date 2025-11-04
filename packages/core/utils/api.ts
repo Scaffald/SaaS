@@ -77,9 +77,14 @@ export const createTrpcClient = () =>
 
           const session = (await supabase.auth.getSession()).data.session;
 
-          // Add auth header for Supabase authentication (if user is logged in)
-          if (session?.access_token) {
+          // Supabase Edge Functions require an Authorization header
+          // Use user's access token if available, otherwise use anon key for public endpoints
+          if (session?.access_token && session.access_token.trim().length > 0) {
             headers.set("Authorization", `Bearer ${session.access_token}`);
+          } else if (anonKey) {
+            // For public endpoints, use anon key as Bearer token
+            // This satisfies Supabase's requirement for Authorization header
+            headers.set("Authorization", `Bearer ${anonKey}`);
           }
 
           return Object.fromEntries(headers);
