@@ -51,6 +51,40 @@ const ToolbarButtonComponent = ({
 )
 
 /**
+ * Editor container styles
+ * Note: We need to inject CSS for .ProseMirror since Tamagui doesn't support nested selectors
+ */
+const editorStyles = `
+  .rich-text-editor-container .ProseMirror {
+    padding: 12px;
+    min-height: 100%;
+    outline: none;
+    cursor: text;
+  }
+
+  .rich-text-editor-container .ProseMirror p.is-editor-empty:first-child::before {
+    color: #adb5bd;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+
+  .rich-text-editor-container.disabled .ProseMirror {
+    background-color: #f1f3f5;
+    cursor: not-allowed;
+  }
+`
+
+// Inject styles if not already present
+if (typeof document !== 'undefined' && !document.getElementById('rich-text-editor-styles')) {
+  const styleTag = document.createElement('style')
+  styleTag.id = 'rich-text-editor-styles'
+  styleTag.textContent = editorStyles
+  document.head.appendChild(styleTag)
+}
+
+/**
  * Character count display
  */
 const CharacterCount = ({
@@ -221,15 +255,17 @@ export function RichTextEditor({
       )}
 
       {/* Editor Content */}
-      <YStack
-        px="$3"
-        py="$3"
-        height={minHeight}
-        cursor={disabled ? 'not-allowed' : 'text'}
-        background={disabled ? '$gray2' : undefined}
+      <div
+        style={{
+          height: minHeight,
+          flex: 1,
+          width: '100%',
+          cursor: disabled ? 'not-allowed' : 'text',
+        }}
+        className={`rich-text-editor-container${disabled ? ' disabled' : ''}`}
       >
         <EditorContent editor={editor} />
-      </YStack>
+      </div>
 
       {/* Character Count */}
       {showCharacterCount && (
