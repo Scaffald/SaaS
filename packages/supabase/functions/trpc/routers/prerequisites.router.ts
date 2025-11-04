@@ -37,7 +37,7 @@ export const prerequisitesRouter = t.router({
 
     // Get private data (first_name, last_name, address)
     const { data: privateData, error: privateError } = await supabase
-      .schema("private")
+      .schema("core")
       .from("profile")
       .select("first_name, last_name, address")
       .eq("user_id", user.id)
@@ -52,6 +52,7 @@ export const prerequisitesRouter = t.router({
 
     // Get public user data (industry_id)
     const { data: userData, error: userError } = await supabase
+      .schema("core")
       .from("users")
       .select("industry_id")
       .eq("id", user.id)
@@ -66,7 +67,7 @@ export const prerequisitesRouter = t.router({
 
     // Get preferences (user_types, prerequisites_completed_at, legal acceptance)
     const { data: preferences, error: prefsError } = await supabase
-      .schema("private")
+      .schema("core")
       .from("preferences")
       .select(
         "user_types, prerequisites_completed_at, accepted_privacy_policy_at, accepted_terms_of_service_at",
@@ -126,7 +127,7 @@ export const prerequisitesRouter = t.router({
 
       // 1. Update private.profile table (first_name, last_name, address)
       const { error: privateError } = await supabase
-        .schema("private")
+        .schema("core")
         .from("profile")
         .upsert({
           user_id: user.id,
@@ -146,6 +147,7 @@ export const prerequisitesRouter = t.router({
       // 2. Update users table (industry_id)
       // Note: User row already exists from auth trigger, so we UPDATE not INSERT
       const { error: userError } = await supabase
+        .schema("core")
         .from("users")
         .update({
           industry_id: input.industry_id,
@@ -163,7 +165,7 @@ export const prerequisitesRouter = t.router({
       // 3. Update private.preferences table (user_types, prerequisites_completed_at, legal acceptance)
       const now = new Date().toISOString();
       const { error: prefsError } = await supabase
-        .schema("private")
+        .schema("core")
         .from("preferences")
         .upsert({
           user_id: user.id,

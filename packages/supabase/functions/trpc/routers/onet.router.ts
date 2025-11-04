@@ -73,7 +73,7 @@ export const onetRouter = t.router({
         const now = new Date().toISOString();
 
         const { error } = await supabase
-          .schema("private")
+          .schema("core")
           .from("preferences")
           .upsert({
             user_id: user.id,
@@ -111,7 +111,7 @@ export const onetRouter = t.router({
 
     try {
       const { data, error } = await supabase
-        .schema("private")
+        .schema("core")
         .from("preferences")
         .select(
           "riasec_scores, current_occupation_code, target_occupation_codes, career_assessment_completed_at",

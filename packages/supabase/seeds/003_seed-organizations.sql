@@ -6,7 +6,7 @@
 begin;
 
 with industry_lookup as (
-  select id, slug from public.industries
+  select id, slug from core.industries
 ),
 org_data as (
   select * from (values
@@ -91,7 +91,7 @@ org_data as (
   ) as t(slug, name, industry_slug, street, city, state, postal, lat, lon, website, description)
 ),
 org_inserts as (
-  insert into public.organizations (owner_user_id, name, slug, industry_id, address, geo, website, description)
+  insert into core.organizations (owner_user_id, name, slug, industry_id, address, geo, website, description)
   select 
     null, -- No owner for seed data
     od.name,
@@ -106,7 +106,17 @@ org_inserts as (
     ),
     st_setsrid(st_makepoint(od.lon, od.lat), 4326)::geography,
     od.website,
-    od.description
+    jsonb_build_object(
+      'type', 'doc',
+      'content', jsonb_build_array(
+        jsonb_build_object(
+          'type', 'paragraph',
+          'content', jsonb_build_array(
+            jsonb_build_object('type', 'text', 'text', od.description)
+          )
+        )
+      )
+    ) as description
   from org_data od
   join industry_lookup il on il.slug = od.industry_slug
   on conflict (slug) do nothing

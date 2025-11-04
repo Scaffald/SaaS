@@ -55,7 +55,7 @@ export const profileExperienceRouter = t.router({
       const { supabase, user } = ctx;
 
       const { data, error } = await supabase
-        .schema("private")
+        .schema("core")
         .from("user_experience")
         .select("*")
         .eq("user_id", user.id)
@@ -84,7 +84,7 @@ export const profileExperienceRouter = t.router({
       const { supabase, user } = ctx;
 
       const { data, error } = await supabase
-        .schema("private")
+        .schema("core")
         .from("profile")
         .select("career_level")
         .eq("user_id", user.id)
@@ -120,7 +120,7 @@ export const profileExperienceRouter = t.router({
           };
 
           const { error: summaryError } = await supabase
-            .schema("private")
+            .schema("core")
             .from("profile")
             .update(updateData)
             .eq("user_id", user.id);
@@ -140,7 +140,7 @@ export const profileExperienceRouter = t.router({
           if (exp.id) {
             // Update existing experience
             const { data, error } = await supabase
-              .schema("private")
+              .schema("core")
               .from("user_experience")
               .update({
                 organization_id: exp.organization_id || null,
@@ -171,7 +171,7 @@ export const profileExperienceRouter = t.router({
           } else {
             // Create new experience
             const { data, error } = await supabase
-              .schema("private")
+              .schema("core")
               .from("user_experience")
               .insert({
                 user_id: user.id,
@@ -227,7 +227,7 @@ export const profileExperienceRouter = t.router({
 
       try {
         const { error } = await supabase
-          .schema("private")
+          .schema("core")
           .from("user_experience")
           .delete()
           .eq("id", input.experienceId)

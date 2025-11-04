@@ -1,9 +1,10 @@
 import { YStack, XStack, Text, Button, Separator, Spinner } from 'tamagui'
-import { ResponsiveModal } from '@app/ui'
+import { ResponsiveModal, extractPlainText } from '@app/ui'
 import { MapPin, Building2, Users, Briefcase, ExternalLink } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 import { ROUTES } from '@app/core/constants/routes'
+import type { JSONContent } from '@tiptap/core'
 
 interface OrganizationPreviewModalProps {
   organizationId: string | null
@@ -147,7 +148,9 @@ export function OrganizationPreviewModal({
                   About
                 </Text>
                 <Text fontSize="$4" color="$color11" lineHeight="$1" numberOfLines={4}>
-                  {organization.description}
+                  {typeof organization.description === 'string'
+                    ? organization.description
+                    : extractPlainText(organization.description as JSONContent)}
                 </Text>
               </YStack>
             </>

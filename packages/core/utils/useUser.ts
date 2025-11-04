@@ -22,6 +22,7 @@ function useProfile() {
     queryFn: async (): Promise<Profile | null> => {
       if (!user?.id) return null;
       const { data, error } = await supabase
+        .schema("core")
         .from("users")
         .select("id, display_name, about, avatar_path, created_at, updated_at")
         .eq("id", user.id)

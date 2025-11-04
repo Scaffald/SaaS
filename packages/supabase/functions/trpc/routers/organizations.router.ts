@@ -17,6 +17,7 @@ export const organizationsRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       const { count, error } = await ctx.supabase
+        .schema("core")
         .from("jobs")
         .select("*", { count: "exact", head: true })
         .eq("organization_id", input.organizationId)
@@ -43,6 +44,7 @@ export const organizationsRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       const { data: organization, error } = await ctx.supabase
+        .schema("core")
         .from("organizations")
         .select(
           `

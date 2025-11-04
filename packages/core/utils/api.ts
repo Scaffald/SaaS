@@ -69,9 +69,15 @@ export const createTrpcClient = () =>
             Platform.OS === "web" ? "expo-web" : "expo-react",
           );
 
+          // Always include apikey header for Supabase Edge Functions
+          const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+          if (anonKey) {
+            headers.set("apikey", anonKey);
+          }
+
           const session = (await supabase.auth.getSession()).data.session;
 
-          // Add auth header for Supabase authentication
+          // Add auth header for Supabase authentication (if user is logged in)
           if (session?.access_token) {
             headers.set("Authorization", `Bearer ${session.access_token}`);
           }

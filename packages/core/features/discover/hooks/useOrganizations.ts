@@ -33,6 +33,7 @@ export const useOrganizations = () => {
     queryFn: async (): Promise<OrganizationMapPin[]> => {
       // Get organizations with coordinates extracted from PostGIS geography
       const { data: organizations, error: orgsError } = await supabase
+        .schema("core")
         .rpc("get_organizations_with_coords")
         .returns<OrgWithCoords[]>();
 

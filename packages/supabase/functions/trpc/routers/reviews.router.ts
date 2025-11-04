@@ -156,6 +156,8 @@ export const reviewsRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       // Check for existing draft - simplified without status field
       const { data: existingDraft } = await ctx.supabase
+        .schema("core")
+        .schema("core")
         .from("reviews")
         .select("*")
         .eq("author_user_id", ctx.user.id)
@@ -170,6 +172,8 @@ export const reviewsRouter = t.router({
 
       // Create new review (no status field in current schema)
       const { data: review, error } = await ctx.supabase
+        .schema("core")
+        .schema("core")
         .from("reviews")
         .insert({
           author_user_id: ctx.user.id,
@@ -204,6 +208,7 @@ export const reviewsRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       // Verify user owns this review
       const { data: review } = await ctx.supabase
+        .schema("core")
         .from("reviews")
         .select("id")
         .eq("id", input.reviewId)
@@ -219,6 +224,7 @@ export const reviewsRouter = t.router({
 
       // Update the metadata with draft data
       const { error } = await ctx.supabase
+        .schema("core")
         .from("reviews")
         .update({
           metadata: input.draft,
@@ -246,6 +252,7 @@ export const reviewsRouter = t.router({
     .input(z.object({ reviewId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { data: review, error } = await ctx.supabase
+        .schema("core")
         .from("reviews")
         .select("*")
         .eq("id", input.reviewId)
@@ -271,6 +278,7 @@ export const reviewsRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       // Verify user owns this review
       const { data: review } = await ctx.supabase
+        .schema("core")
         .from("reviews")
         .select("id")
         .eq("id", input.reviewId)
@@ -310,6 +318,7 @@ export const reviewsRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       // Verify user owns this review
       const { data: review } = await ctx.supabase
+        .schema("core")
         .from("reviews")
         .select("id")
         .eq("id", input.reviewId)
@@ -360,6 +369,7 @@ export const reviewsRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       // Verify user owns this review
       const { data: review } = await ctx.supabase
+        .schema("core")
         .from("reviews")
         .select("id")
         .eq("id", input.reviewId)
@@ -406,6 +416,7 @@ export const reviewsRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       // Verify user owns this review
       const { data: review } = await ctx.supabase
+        .schema("core")
         .from("reviews")
         .select("id")
         .eq("id", input.reviewId)
@@ -459,6 +470,7 @@ export const reviewsRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       // Get existing metadata to preserve it
       const { data: existingReview } = await ctx.supabase
+        .schema("core")
         .from("reviews")
         .select("metadata")
         .eq("id", input.reviewId)
@@ -468,6 +480,7 @@ export const reviewsRouter = t.router({
       const metadata = existingReview?.metadata || {};
 
       const { error } = await ctx.supabase
+        .schema("core")
         .from("reviews")
         .update({
           body: input.comment,
@@ -499,6 +512,7 @@ export const reviewsRouter = t.router({
       const now = new Date().toISOString();
 
       const { error } = await ctx.supabase
+        .schema("core")
         .from("reviews")
         .update({
           rating: input.recommendation,
@@ -528,6 +542,7 @@ export const reviewsRouter = t.router({
     .input(getReviewsBySubjectSchema)
     .query(async ({ ctx, input }) => {
       const { data, error } = await ctx.supabase
+        .schema("core")
         .from("reviews")
         .select("*")
         .eq("subject_id", input.subjectId)
@@ -580,6 +595,7 @@ export const reviewsRouter = t.router({
     .query(async ({ ctx, input }) => {
       // Get all reviews for this subject
       const { data: reviews, error: reviewsError } = await ctx.supabase
+        .schema("core")
         .from("reviews")
         .select(`
           id,
@@ -771,6 +787,7 @@ export const reviewsRouter = t.router({
     .input(z.object({ reviewId: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const { error } = await ctx.supabase
+        .schema("core")
         .from("reviews")
         .delete()
         .eq("id", input.reviewId)

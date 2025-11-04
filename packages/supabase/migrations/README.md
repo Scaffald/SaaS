@@ -1,35 +1,53 @@
-# Consolidated Migrations
+# Supabase Migrations
 
-**Created:** October 12, 2025  
-**Status:** Ready for testing
+**Last Major Refactor:** January 2025  
+**Status:** Migration-only development (resets prohibited)
 
 ## Overview
 
-This directory contains the completely reorganized and consolidated migration structure for SCF-Neue. All migrations have been consolidated from 26+ scattered files into 7 clean, organized files.
+This directory contains the consolidated migration structure for SCF-Neue. All application tables are organized in the `core` schema, with reference data in separate schemas (`data`, `cms`, `onet`).
 
 ## Migration Structure
 
 ```
-001_schema.sql       - Pure database schema (tables, types, enums)
-002_relations.sql    - Foreign key constraints only
-003_data.sql         - O*NET + CSI + Universities + skill associations
-004_functions.sql    - Stored procedures and helper functions
-005_policies.sql     - RLS policies and grants
-006_storage.sql      - Storage buckets (avatars, certifications)
-007_indexes.sql      - Performance indexes
+001_schema.sql       - Pure database schema (tables, types, enums, core + cms schemas)
+002_data.sql         - Reference data schemas (data, onet) and polymorphic skill tables
+003_relations.sql    - Foreign key constraints (all referencing core.* tables)
+004_functions.sql    - Stored procedures and helper functions (core schema)
+005_policies.sql     - RLS policies and grants (core.* tables)
+006_storage.sql      - Storage buckets (avatars, certifications, cms-media)
+007_indexes.sql      - Performance indexes (function-based for rich text search)
 ```
+
+## Schema Organization
+
+### Core Schema (`core.*`)
+- **ALL application tables** live in `core` schema
+- Application tables: `core.users`, `core.organizations`, `core.jobs`, etc.
+- Private/PII tables: `core.profile`, `core.preferences`, `core.applications`, etc.
+  - **NO `private_` prefix** - RLS handles privacy
+- Review enhancements: `core.soft_skills`, `core.review_category_ratings`, etc.
+
+### Reference Data Schemas (Separate)
+- **`data.*`**: Reference data (universities, masterformat, certifications) - remains separate
+- **`cms.*`**: CMS content (welcome_slides, etc.) - remains separate
+- **`onet.*`**: O*NET external reference data - remains separate
+
+### Column Naming
+- Rich text fields: `description` or `about` (NOT `*_rich`) - stored as JSONB
+- NO `*_plain` columns - use `extract_tiptap_plain_text()` function for search
 
 ## Migration Order
 
 **Critical:** These migrations MUST be run in numerical order:
 
-1. **001_schema.sql** - Creates all tables without foreign keys or RLS
-2. **002_relations.sql** - Adds all foreign key constraints
-3. **003_data.sql** - Creates O*NET, CSI, and polymorphic skill schemas
-4. **004_functions.sql** - Creates all stored procedures and triggers
-5. **005_policies.sql** - Enables RLS and creates security policies
-6. **006_storage.sql** - Sets up Supabase Storage buckets
-7. **007_indexes.sql** - Creates performance indexes
+1. **001_schema.sql** - Creates `core` and `cms` schemas, all tables (no foreign keys, no RLS, no indexes)
+2. **002_data.sql** - Creates `data` and `onet` schemas, polymorphic skill tables
+3. **003_relations.sql** - Adds all foreign key constraints (all reference `core.*` tables)
+4. **004_functions.sql** - Creates functions and triggers (moved to `core` schema)
+5. **005_policies.sql** - Enables RLS and creates security policies (for `core.*` tables)
+6. **006_storage.sql** - Sets up Supabase Storage buckets (avatars, certifications, cms-media)
+7. **007_indexes.sql** - Creates performance indexes (function-based for rich text search)
 
 ## Data Import Requirements
 
@@ -55,34 +73,43 @@ pnpm tsx packages/supabase/scripts/seed-universities.ts
 After O*NET data is imported, add foreign key constraints:
 
 ```sql
-ALTER TABLE public.user_skills
+ALTER TABLE core.user_skills
   ADD CONSTRAINT user_skills_onet_occupation_id_fkey 
   FOREIGN KEY (onet_occupation_id) 
   REFERENCES onet.occupation_data(onetsoc_code) ON DELETE CASCADE;
 
-ALTER TABLE public.job_skills
+ALTER TABLE core.job_skills
   ADD CONSTRAINT job_skills_onet_occupation_id_fkey 
   FOREIGN KEY (onet_occupation_id) 
   REFERENCES onet.occupation_data(onetsoc_code) ON DELETE CASCADE;
 
-ALTER TABLE public.organization_skills
+ALTER TABLE core.organization_skills
   ADD CONSTRAINT org_skills_onet_occupation_id_fkey 
   FOREIGN KEY (onet_occupation_id) 
   REFERENCES onet.occupation_data(onetsoc_code) ON DELETE CASCADE;
 ```
 
+## Migration-Only Development
+
+**⚠️ IMPORTANT: Database resets are PROHIBITED**
+
+- All schema changes must be made through migrations
+- Never use `pnpm supa reset` - create migrations instead
+- See `../docs/MIGRATION_GUIDELINES.md` for full guidelines
+
 ## Testing
 
-To test these migrations:
+To test migrations:
 
 ```bash
-# Reset database and run new migrations
-pnpm supa db reset
+# After schema changes, regenerate types
+pnpm supa:generate
 
 # Check for errors
-# Verify all tables exist
+# Verify all tables exist in correct schemas (core.*, data.*, cms.*)
 # Test RLS policies
 # Verify functions work
+# Test application functionality
 ```
 
 ## Key Features
@@ -99,9 +126,11 @@ pnpm supa db reset
 - **Partial indexes** for frequently filtered columns
 
 ### Data Organization
-- **Clear separation** between public and private data
+- **Core schema** for all application tables (clear separation from extensions)
+- **Private tables** in core schema (no prefix, RLS handles privacy)
 - **Polymorphic skill associations** supporting multiple taxonomies
-- **Dedicated schemas** for O*NET and reference data
+- **Dedicated schemas** for reference data (data, cms, onet)
+- **Rich text fields** as JSONB (no `*_rich` suffix, no `*_plain` fallbacks)
 
 ## Benefits Over Old Structure
 
@@ -149,6 +178,6 @@ After successful migration:
 ## Documentation
 
 For more details, see:
-- `../docs/MIGRATION_REORGANIZATION_PLAN.md` - Full reorganization plan
-- `../docs/MIGRATION_AUDIT.md` - What was consolidated
-- `../docs/SCHEMA_DECISIONS.md` - Schema design decisions
+- `../docs/MIGRATION_GUIDELINES.md` - Migration-only workflow and best practices
+- `../docs/MIGRATION_REORGANIZATION_PLAN.md` - Full reorganization plan (historical)
+- Schema organization: All tables in `core.*` schema, reference data in `data.*`, `cms.*`, `onet.*`

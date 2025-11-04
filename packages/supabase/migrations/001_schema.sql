@@ -8,10 +8,17 @@ BEGIN;
 -- =========================================================
 -- SCHEMAS
 -- =========================================================
-CREATE SCHEMA IF NOT EXISTS private;
-COMMENT ON SCHEMA private IS 'Private schema for sensitive user data (PII)';
+-- Core schema for all application tables
+CREATE SCHEMA IF NOT EXISTS core;
+COMMENT ON SCHEMA core IS 'Core application schema - all application and private tables';
 
-GRANT USAGE ON SCHEMA private TO authenticated, service_role;
+GRANT USAGE ON SCHEMA core TO authenticated, service_role, anon;
+
+-- CMS schema for content management
+CREATE SCHEMA IF NOT EXISTS cms;
+COMMENT ON SCHEMA cms IS 'CMS content management schema for welcome slides and future CMS features';
+
+GRANT USAGE ON SCHEMA cms TO authenticated, service_role, anon;
 
 -- =========================================================
 -- EXTENSIONS
@@ -40,11 +47,11 @@ CREATE TYPE public.application_status AS ENUM (
 );
 
 -- =========================================================
--- CORE TABLES (PUBLIC SCHEMA)
+-- CORE SCHEMA TABLES
 -- =========================================================
 
 -- Industries
-CREATE TABLE public.industries (
+CREATE TABLE core.industries (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   slug TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
@@ -57,37 +64,37 @@ CREATE TABLE public.industries (
 );
 
 -- Users (public profile data)
-CREATE TABLE public.users (
-  id UUID PRIMARY KEY,  -- FK to auth.users(id) in 002_relations.sql
+CREATE TABLE core.users (
+  id UUID PRIMARY KEY,  -- FK to auth.users(id) in 003_relations.sql
   username TEXT UNIQUE,
   slug TEXT UNIQUE,
   display_name TEXT,
   headline TEXT,
   bio TEXT,
-  about TEXT,
+  about JSONB,  -- Rich text profile description in TipTap JSON format
   avatar_url TEXT,
   avatar_path TEXT,
   avatar_media_id UUID,
   open_to_work BOOLEAN DEFAULT false,
   years_of_experience INTEGER DEFAULT 0,
-  industry_id UUID,  -- FK to industries(id) in 002_relations.sql
+  industry_id UUID,  -- FK to core.industries(id) in 003_relations.sql
   skills_summary JSONB DEFAULT '{"skills":[],"primary_location":{},"travel_radius_miles":0}'::jsonb,
   tsv TSVECTOR,
-  created_by_user_id UUID,  -- FK to users(id) - for tracking who created (used for admin tracking)
+  created_by_user_id UUID,  -- FK to core.users(id) - for tracking who created (used for admin tracking)
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Organizations
-CREATE TABLE public.organizations (
+CREATE TABLE core.organizations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  owner_user_id UUID,  -- FK to users(id) in 002_relations.sql
+  owner_user_id UUID,  -- FK to core.users(id) in 003_relations.sql
   name TEXT NOT NULL,
   slug CITEXT UNIQUE NOT NULL,
-  industry_id UUID,  -- FK to industries(id) in 002_relations.sql
+  industry_id UUID,  -- FK to core.industries(id) in 003_relations.sql
   logo_url TEXT,
   website TEXT,
-  description TEXT,
+  description JSONB,  -- Rich text organization description in TipTap JSON format
   address JSONB,
   geo GEOGRAPHY(POINT, 4326),
   visibility TEXT DEFAULT 'public' CHECK (visibility IN ('public', 'private')),
@@ -97,60 +104,41 @@ CREATE TABLE public.organizations (
 );
 
 -- Teams
-CREATE TABLE public.teams (
+CREATE TABLE core.teams (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  organization_id UUID NOT NULL,  -- FK in 002_relations.sql
+  organization_id UUID NOT NULL,  -- FK in 003_relations.sql
   name TEXT NOT NULL,
   slug CITEXT UNIQUE,
   image_url TEXT,
-  created_by UUID,  -- FK to users(id) in 002_relations.sql
+  created_by UUID,  -- FK to core.users(id) in 003_relations.sql
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- Team Members
-CREATE TABLE public.team_members (
+CREATE TABLE core.team_members (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  team_id UUID NOT NULL,  -- FK in 002_relations.sql
-  user_id UUID NOT NULL,  -- FK in 002_relations.sql
+  team_id UUID NOT NULL,  -- FK in 003_relations.sql
+  user_id UUID NOT NULL,  -- FK in 003_relations.sql
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE (team_id, user_id)
 );
 
 -- Skills Taxonomy
-CREATE TABLE public.skills (
+CREATE TABLE core.skills (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT UNIQUE NOT NULL,
-  industry_id UUID,  -- FK in 002_relations.sql
-  parent_id UUID,  -- FK in 002_relations.sql (self-reference)
+  industry_id UUID,  -- FK in 003_relations.sql
+  parent_id UUID,  -- FK in 003_relations.sql (self-reference)
   active BOOLEAN DEFAULT true,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- User Skills
-CREATE TABLE public.user_skills (
-  user_id UUID NOT NULL,  -- FK in 002_relations.sql
-  skill_id UUID NOT NULL,  -- FK in 002_relations.sql
-  proficiency SMALLINT DEFAULT 0 CHECK (proficiency BETWEEN 0 AND 5),
-  source TEXT DEFAULT 'self' CHECK (source IN ('self', 'assessed', 'verified')),
-  last_verified_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  PRIMARY KEY (user_id, skill_id)
-);
-
--- Organization Skills
-CREATE TABLE public.organization_skills (
-  organization_id UUID NOT NULL,  -- FK in 002_relations.sql
-  skill_id UUID NOT NULL,  -- FK in 002_relations.sql
-  required_level SMALLINT CHECK (required_level BETWEEN 0 AND 5),
-  priority SMALLINT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  PRIMARY KEY (organization_id, skill_id)
-);
+-- NOTE: User Skills, Organization Skills, and Job Skills are created as polymorphic tables in 002_data.sql
 
 -- Follows (polymorphic)
-CREATE TABLE public.follows (
+CREATE TABLE core.follows (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   follower_type TEXT NOT NULL CHECK (follower_type IN ('user', 'organization', 'team')),
   follower_id UUID NOT NULL,
@@ -161,13 +149,13 @@ CREATE TABLE public.follows (
 );
 
 -- Jobs
-CREATE TABLE public.jobs (
+CREATE TABLE core.jobs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  organization_id UUID NOT NULL,  -- FK in 002_relations.sql
-  team_id UUID,  -- FK in 002_relations.sql
-  created_by_user_id UUID,  -- FK to users(id) - tracks who created the job
+  organization_id UUID NOT NULL,  -- FK in 003_relations.sql
+  team_id UUID,  -- FK in 003_relations.sql
+  created_by_user_id UUID,  -- FK to core.users(id) - tracks who created the job
   title TEXT NOT NULL,
-  description TEXT,
+  description JSONB,  -- Rich text job description in TipTap JSON format
   status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'open', 'paused', 'closed')),
   employment_type TEXT CHECK (employment_type IN ('full_time', 'part_time', 'contract', 'temp', 'intern')),
   remote_option TEXT CHECK (remote_option IN ('on_site', 'hybrid', 'remote')),
@@ -189,17 +177,9 @@ CREATE TABLE public.jobs (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Job Skills
-CREATE TABLE public.job_skills (
-  job_id UUID NOT NULL,  -- FK in 002_relations.sql
-  skill_id UUID NOT NULL,  -- FK in 002_relations.sql
-  required_level SMALLINT CHECK (required_level BETWEEN 0 AND 5),
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  PRIMARY KEY (job_id, skill_id)
-);
 
 -- Certifications (reference/catalog table for certifications)
-CREATE TABLE public.certifications (
+CREATE TABLE core.certifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT UNIQUE NOT NULL,
   slug CITEXT UNIQUE NOT NULL,
@@ -216,22 +196,22 @@ CREATE TABLE public.certifications (
 );
 
 -- Job Certifications (junction table for job-certification relationship)
-CREATE TABLE public.job_certifications (
+CREATE TABLE core.job_certifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  job_id UUID NOT NULL,  -- FK to jobs(id) in 002_relations.sql
-  certification_id UUID NOT NULL,  -- FK to certifications(id) in 002_relations.sql
+  job_id UUID NOT NULL,  -- FK to core.jobs(id) in 003_relations.sql
+  certification_id UUID NOT NULL,  -- FK to core.certifications(id) in 003_relations.sql
   is_required BOOLEAN DEFAULT true,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(job_id, certification_id)
 );
 
 -- Reviews (unified)
-CREATE TABLE public.reviews (
+CREATE TABLE core.reviews (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   kind TEXT NOT NULL DEFAULT 'review' CHECK (kind IN ('review', 'recommendation', 'endorsement', 'rating')),
   subject_type TEXT NOT NULL,
   subject_id UUID NOT NULL,
-  author_user_id UUID NOT NULL,  -- FK in 002_relations.sql
+  author_user_id UUID NOT NULL,  -- FK in 003_relations.sql
   rating SMALLINT,
   headline TEXT,
   body TEXT,
@@ -242,17 +222,17 @@ CREATE TABLE public.reviews (
 );
 
 -- Review Skill Ratings
-CREATE TABLE public.review_skill_ratings (
-  review_id UUID NOT NULL,  -- FK in 002_relations.sql
-  skill_id UUID NOT NULL,  -- FK in 002_relations.sql
+CREATE TABLE core.review_skill_ratings (
+  review_id UUID NOT NULL,  -- FK in 003_relations.sql
+  skill_id UUID NOT NULL,  -- FK in 003_relations.sql
   score SMALLINT NOT NULL CHECK (score BETWEEN 1 AND 5),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (review_id, skill_id)
 );
 
 -- Review Aspects
-CREATE TABLE public.review_aspects (
-  review_id UUID NOT NULL,  -- FK in 002_relations.sql
+CREATE TABLE core.review_aspects (
+  review_id UUID NOT NULL,  -- FK in 003_relations.sql
   key TEXT NOT NULL,
   score SMALLINT NOT NULL CHECK (score BETWEEN 1 AND 5),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -264,7 +244,7 @@ CREATE TABLE public.review_aspects (
 -- =========================================================
 
 -- External Job Feeds (RSS/API sources)
-CREATE TABLE public.external_job_feeds (
+CREATE TABLE core.external_job_feeds (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT UNIQUE NOT NULL,
   url TEXT NOT NULL,
@@ -281,9 +261,9 @@ CREATE TABLE public.external_job_feeds (
 );
 
 -- External Jobs (cached external job listings)
-CREATE TABLE public.external_jobs (
+CREATE TABLE core.external_jobs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  feed_id UUID NOT NULL,  -- FK to external_job_feeds(id) in 002_relations.sql
+  feed_id UUID NOT NULL,  -- FK to core.external_job_feeds(id) in 003_relations.sql
   external_guid TEXT NOT NULL,
   title TEXT NOT NULL,
   description TEXT,
@@ -318,9 +298,9 @@ CREATE TABLE public.external_jobs (
 );
 
 -- External Job Industries (industry mappings for external jobs)
-CREATE TABLE public.external_job_industries (
-  external_job_id UUID NOT NULL,  -- FK to external_jobs(id) in 002_relations.sql
-  industry_id UUID NOT NULL,  -- FK to industries(id) in 002_relations.sql
+CREATE TABLE core.external_job_industries (
+  external_job_id UUID NOT NULL,  -- FK to core.external_jobs(id) in 003_relations.sql
+  industry_id UUID NOT NULL,  -- FK to core.industries(id) in 003_relations.sql
   confidence_score DECIMAL(3,2) DEFAULT 0.5 CHECK (confidence_score >= 0 AND confidence_score <= 1),
   mapped_by TEXT DEFAULT 'rule' CHECK (mapped_by IN ('rule', 'ai', 'manual')),
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -328,9 +308,9 @@ CREATE TABLE public.external_job_industries (
 );
 
 -- External Job Skills (skill mappings for external jobs)
-CREATE TABLE public.external_job_skills (
-  external_job_id UUID NOT NULL,  -- FK to external_jobs(id) in 002_relations.sql
-  skill_id UUID NOT NULL,  -- FK to skills(id) in 002_relations.sql
+CREATE TABLE core.external_job_skills (
+  external_job_id UUID NOT NULL,  -- FK to core.external_jobs(id) in 003_relations.sql
+  skill_id UUID NOT NULL,  -- FK to core.skills(id) in 003_relations.sql
   required_level SMALLINT CHECK (required_level BETWEEN 0 AND 5),
   confidence_score DECIMAL(3,2) DEFAULT 0.5 CHECK (confidence_score >= 0 AND confidence_score <= 1),
   extracted_by TEXT DEFAULT 'rule' CHECK (extracted_by IN ('rule', 'ai', 'manual')),
@@ -339,13 +319,84 @@ CREATE TABLE public.external_job_skills (
 );
 
 -- =========================================================
--- PRIVATE SCHEMA TABLES (PII)
+-- REVIEW ENHANCEMENTS TABLES
+-- =========================================================
+
+-- Soft Skills Catalog
+CREATE TABLE core.soft_skills (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
+  category TEXT NOT NULL CHECK (category IN ('reliability', 'collaboration', 'professionalism', 'technical')),
+  description TEXT,
+  order_index INTEGER DEFAULT 0,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Review Category Ratings
+CREATE TABLE core.review_category_ratings (
+  review_id UUID NOT NULL,  -- FK to core.reviews(id) in 003_relations.sql
+  category TEXT NOT NULL CHECK (category IN ('skills', 'reliability', 'collaboration', 'professionalism', 'technical')),
+  rating SMALLINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (review_id, category)
+);
+
+-- Review Soft Skill Votes (Strengths & Improvements)
+CREATE TABLE core.review_soft_skill_votes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  review_id UUID NOT NULL,  -- FK to core.reviews(id) in 003_relations.sql
+  skill_id UUID NOT NULL,  -- FK to core.soft_skills(id) in 003_relations.sql
+  rating SMALLINT CHECK (rating BETWEEN 1 AND 5),
+  is_strength BOOLEAN NOT NULL,
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (review_id, skill_id, is_strength)
+);
+
+-- Seed Soft Skills Data
+INSERT INTO core.soft_skills (name, slug, category, description, order_index) VALUES
+  -- Reliability Skills
+  ('Deadline Management', 'deadline-management', 'reliability', 'Consistently meets deadlines and commitments', 1),
+  ('Prioritization', 'prioritization', 'reliability', 'Effectively prioritizes tasks and responsibilities', 2),
+  ('Time Management', 'time-management', 'reliability', 'Manages time efficiently and effectively', 3),
+  ('Task Delegation', 'task-delegation', 'reliability', 'Delegates tasks appropriately when needed', 4),
+  ('Accountability', 'accountability', 'reliability', 'Takes responsibility for work and outcomes', 5),
+  ('Consistency', 'consistency', 'reliability', 'Delivers consistent quality of work', 6),
+  -- Collaboration Skills
+  ('Communication', 'communication', 'collaboration', 'Communicates clearly and effectively', 1),
+  ('Teamwork', 'teamwork', 'collaboration', 'Works well with others in team settings', 2),
+  ('Active Listening', 'active-listening', 'collaboration', 'Listens attentively and responds thoughtfully', 3),
+  ('Conflict Resolution', 'conflict-resolution', 'collaboration', 'Resolves disagreements constructively', 4),
+  ('Empathy', 'empathy', 'collaboration', 'Shows understanding and consideration for others', 5),
+  ('Cooperation', 'cooperation', 'collaboration', 'Cooperates willingly with team members', 6),
+  ('Feedback Reception', 'feedback-reception', 'collaboration', 'Accepts and acts on feedback constructively', 7),
+  -- Professionalism Skills
+  ('Work Ethic', 'work-ethic', 'professionalism', 'Demonstrates strong dedication to work', 1),
+  ('Adaptability', 'adaptability', 'professionalism', 'Adapts well to changing circumstances', 2),
+  ('Problem Solving', 'problem-solving', 'professionalism', 'Effectively solves problems', 3),
+  ('Initiative', 'initiative', 'professionalism', 'Takes initiative without being asked', 4),
+  ('Professionalism', 'professionalism', 'professionalism', 'Maintains professional demeanor and standards', 5),
+  ('Attention to Detail', 'attention-to-detail', 'professionalism', 'Pays close attention to details', 6),
+  -- Technical Skills
+  ('Technical Knowledge', 'technical-knowledge', 'technical', 'Demonstrates strong technical expertise', 1),
+  ('Learning Ability', 'learning-ability', 'technical', 'Quickly learns new skills and technologies', 2),
+  ('Innovation', 'innovation', 'technical', 'Brings innovative ideas and solutions', 3),
+  ('Best Practices', 'best-practices', 'technical', 'Follows industry best practices', 4),
+  ('Code Quality', 'code-quality', 'technical', 'Writes clean, maintainable code', 5),
+  ('Documentation', 'documentation', 'technical', 'Creates clear and helpful documentation', 6)
+ON CONFLICT (slug) DO NOTHING;
+
+-- =========================================================
+-- CORE SCHEMA PRIVATE TABLES (PII) - moved from private schema
 -- =========================================================
 
 -- User Private Profile Data
 -- Note: phone is stored in auth.users, not here
-CREATE TABLE private.profile (
-  user_id UUID PRIMARY KEY,  -- FK to users(id) in 002_relations.sql
+CREATE TABLE core.profile (
+  user_id UUID PRIMARY KEY,  -- FK to core.users(id) in 003_relations.sql
   first_name TEXT,
   last_name TEXT,
   address JSONB,
@@ -373,8 +424,8 @@ CREATE TABLE private.profile (
 );
 
 -- User Preferences
-CREATE TABLE private.preferences (
-  user_id UUID PRIMARY KEY,  -- FK to users(id) in 002_relations.sql
+CREATE TABLE core.preferences (
+  user_id UUID PRIMARY KEY,  -- FK to core.users(id) in 003_relations.sql
   user_types TEXT[] DEFAULT ARRAY[]::TEXT[] NOT NULL,
   prerequisites_completed_at TIMESTAMPTZ,
   notification_preferences JSONB DEFAULT '{}'::jsonb,
@@ -392,10 +443,10 @@ CREATE TABLE private.preferences (
 );
 
 -- Connections (social graph - sensitive)
-CREATE TABLE private.connections (
+CREATE TABLE core.connections (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  requester_user_id UUID NOT NULL,  -- FK in 002_relations.sql
-  addressee_user_id UUID NOT NULL,  -- FK in 002_relations.sql
+  requester_user_id UUID NOT NULL,  -- FK in 003_relations.sql
+  addressee_user_id UUID NOT NULL,  -- FK in 003_relations.sql
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'declined', 'blocked')),
   requester_type TEXT DEFAULT 'peer' CHECK (requester_type IN ('peer', 'boss', 'report', 'mentor', 'mentee', 'client', 'contractor', 'other')),
   addressee_type TEXT DEFAULT 'peer' CHECK (addressee_type IN ('peer', 'boss', 'report', 'mentor', 'mentee', 'client', 'contractor', 'other')),
@@ -406,10 +457,10 @@ CREATE TABLE private.connections (
 );
 
 -- Applications (sensitive application data)
-CREATE TABLE private.applications (
+CREATE TABLE core.applications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  job_id UUID NOT NULL,  -- FK in 002_relations.sql
-  user_id UUID NOT NULL,  -- FK in 002_relations.sql
+  job_id UUID NOT NULL,  -- FK in 003_relations.sql
+  user_id UUID NOT NULL,  -- FK in 003_relations.sql
   status TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'screen', 'interview', 'offer', 'hired', 'rejected', 'withdrawn')),
   resume_url TEXT,
   cover_letter_url TEXT,
@@ -425,18 +476,18 @@ CREATE TABLE private.applications (
 );
 
 -- Application Messages
-CREATE TABLE private.application_messages (
+CREATE TABLE core.application_messages (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  application_id UUID NOT NULL,  -- FK in 002_relations.sql
-  author_user_id UUID NOT NULL,  -- FK in 002_relations.sql
+  application_id UUID NOT NULL,  -- FK in 003_relations.sql
+  author_user_id UUID NOT NULL,  -- FK in 003_relations.sql
   body TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- Application Inquiries
-CREATE TABLE private.application_inquiries (
+CREATE TABLE core.application_inquiries (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  application_id UUID NOT NULL,  -- FK in 002_relations.sql
+  application_id UUID NOT NULL,  -- FK in 003_relations.sql
   status TEXT DEFAULT 'open' CHECK (status IN ('open', 'accepted', 'declined', 'expired', 'replaced')),
   terms JSONB,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -444,9 +495,9 @@ CREATE TABLE private.application_inquiries (
 );
 
 -- Invites (contains email addresses and tokens)
-CREATE TABLE private.invites (
+CREATE TABLE core.invites (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  issuer_user_id UUID NOT NULL,  -- FK in 002_relations.sql
+  issuer_user_id UUID NOT NULL,  -- FK in 003_relations.sql
   target_type TEXT NOT NULL CHECK (target_type IN ('organization', 'team')),
   target_id UUID NOT NULL,
   invitee_email CITEXT NOT NULL,
@@ -459,7 +510,7 @@ CREATE TABLE private.invites (
 );
 
 -- Roles (RBAC system)
-CREATE TABLE private.roles (
+CREATE TABLE core.roles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   scope TEXT CHECK (scope IN ('platform', 'organization', 'team')) NOT NULL,
   name TEXT UNIQUE NOT NULL,
@@ -468,12 +519,12 @@ CREATE TABLE private.roles (
 );
 
 -- Role Assignments
-CREATE TABLE private.role_assignments (
+CREATE TABLE core.role_assignments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  role_id UUID NOT NULL,  -- FK to private.roles in 002_relations.sql
-  user_id UUID NOT NULL,  -- FK to public.users in 002_relations.sql
-  scope_org_id UUID,  -- FK to public.organizations in 002_relations.sql
-  scope_team_id UUID,  -- FK to public.teams in 002_relations.sql
+  role_id UUID NOT NULL,  -- FK to core.roles in 003_relations.sql
+  user_id UUID NOT NULL,  -- FK to core.users in 003_relations.sql
+  scope_org_id UUID,  -- FK to core.organizations in 003_relations.sql
+  scope_team_id UUID,  -- FK to core.teams in 003_relations.sql
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(role_id, user_id, scope_org_id, scope_team_id),
   CHECK (
@@ -484,10 +535,10 @@ CREATE TABLE private.role_assignments (
 );
 
 -- User Certifications (personal certification data - PII)
-CREATE TABLE private.user_certifications (
+CREATE TABLE core.user_certifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL,  -- FK to users(id) in 002_relations.sql
-  certification_id UUID NOT NULL,  -- FK to certifications(id) in 002_relations.sql
+  user_id UUID NOT NULL,  -- FK to core.users(id) in 003_relations.sql
+  certification_id UUID NOT NULL,  -- FK to core.certifications(id) in 003_relations.sql
   issue_date DATE,
   expiration_date DATE,
   credential_id TEXT,
@@ -501,9 +552,9 @@ CREATE TABLE private.user_certifications (
 );
 
 -- User Education (educational background - PII)
-CREATE TABLE private.user_education (
+CREATE TABLE core.user_education (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL,  -- FK to users(id) in 003_relations.sql
+  user_id UUID NOT NULL,  -- FK to core.users(id) in 003_relations.sql
   university_id UUID,  -- FK to data.universities(id) in 003_relations.sql
   institution_name TEXT,  -- Free-form entry (used when university_id is null)
   degree_type TEXT,
@@ -511,7 +562,7 @@ CREATE TABLE private.user_education (
   start_date DATE,
   end_date DATE,
   is_current BOOLEAN DEFAULT false,
-  description TEXT,
+  description JSONB,  -- Rich text education description in TipTap JSON format
   location TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
@@ -525,10 +576,10 @@ CREATE TABLE private.user_education (
 );
 
 -- User Experience (work experience history - PII)
-CREATE TABLE private.user_experience (
+CREATE TABLE core.user_experience (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL,  -- FK to users(id) in 002_relations.sql
-  organization_id UUID,  -- Optional FK to public.organizations
+  user_id UUID NOT NULL,  -- FK to core.users(id) in 003_relations.sql
+  organization_id UUID,  -- Optional FK to core.organizations
   job_title TEXT NOT NULL,
   company_name TEXT NOT NULL,
   employment_type TEXT,
@@ -537,9 +588,55 @@ CREATE TABLE private.user_experience (
   start_date DATE,
   end_date DATE,
   is_current BOOLEAN DEFAULT false,
-  description TEXT,
+  description JSONB,  -- Rich text experience description in TipTap JSON format
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- =========================================================
+-- CMS SCHEMA TABLES
+-- =========================================================
+
+-- Welcome Slides
+CREATE TABLE cms.welcome_slides (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  icon_name TEXT NOT NULL,
+  background_image_url TEXT NOT NULL,
+  display_order INTEGER NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+COMMENT ON TABLE cms.welcome_slides IS 'Welcome screen slides shown during onboarding';
+COMMENT ON COLUMN cms.welcome_slides.icon_name IS 'Lucide icon name (e.g., UserSearch, Share2, Sprout)';
+COMMENT ON COLUMN cms.welcome_slides.display_order IS 'Order in which slides are displayed';
+
+-- Seed Welcome Slides Data
+INSERT INTO cms.welcome_slides (title, description, icon_name, background_image_url, display_order) VALUES
+  (
+    'Discover',
+    'Explore tailored content that matches your interests and goals.',
+    'UserSearch',
+    'https://images.pexels.com/photos/271667/pexels-photo-271667.jpeg',
+    1
+  ),
+  (
+    'Connect',
+    'Engage with experts and peers to grow your knowledge and network.',
+    'Share2',
+    'https://images.pexels.com/photos/574073/pexels-photo-574073.jpeg',
+    2
+  ),
+  (
+    'Grow',
+    'Track your progress and unlock new opportunities as you learn.',
+    'Sprout',
+    'https://images.pexels.com/photos/40568/medical-appointment-doctor-healthcare-40568.jpeg',
+    3
+  )
+ON CONFLICT DO NOTHING;
 
 COMMIT;

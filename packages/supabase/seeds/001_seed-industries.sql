@@ -5,7 +5,7 @@
 
 begin;
 
-insert into public.industries (slug, name, description) values
+insert into core.industries (slug, name, description) values
   ('construction', 'Construction', 'Residential and commercial building trades'),
   ('manufacturing', 'Manufacturing', 'Industrial fabrication and assembly'),
   ('transportation', 'Transportation', 'Transportation, warehousing, and supply chain'),

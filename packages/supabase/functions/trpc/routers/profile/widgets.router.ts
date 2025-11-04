@@ -31,6 +31,7 @@ export const profileWidgetsRouter = t.router({
 
       // Get public profile data with industry name
       const { data: profile, error: profileError } = await supabase
+        .schema("core")
         .from("users")
         .select(
           "id, username, slug, avatar_path, avatar_url, about, headline, display_name, industry_id, years_of_experience, open_to_work, industries(id, name, slug)",
@@ -49,7 +50,7 @@ export const profileWidgetsRouter = t.router({
       let privateData = null;
       if (user && targetUserId === user.id) {
         const { data, error: privateError } = await supabase
-          .schema("private")
+          .schema("core")
           .from("profile")
           .select("first_name, last_name, address, location")
           .eq("user_id", targetUserId)
@@ -99,7 +100,7 @@ export const profileWidgetsRouter = t.router({
       }
 
       const { data, error } = await supabase
-        .schema("private")
+        .schema("core")
         .from("user_experience")
         .select("*")
         .eq("user_id", targetUserId)
@@ -133,7 +134,7 @@ export const profileWidgetsRouter = t.router({
       }
 
       const { data, error } = await supabase
-        .schema("private")
+        .schema("core")
         .from("user_education")
         .select("*")
         .eq("user_id", targetUserId)
@@ -167,6 +168,7 @@ export const profileWidgetsRouter = t.router({
       }
 
       const { data, error } = await supabase
+        .schema("core")
         .from("user_skills")
         .select("*")
         .eq("user_id", targetUserId)
@@ -200,7 +202,7 @@ export const profileWidgetsRouter = t.router({
       }
 
       const { data, error } = await supabase
-        .schema("private")
+        .schema("core")
         .from("user_certifications")
         .select("*")
         .eq("user_id", targetUserId)
@@ -224,7 +226,7 @@ export const profileWidgetsRouter = t.router({
     const { supabase, user } = ctx;
 
     const { data, error } = await supabase
-      .schema("private")
+      .schema("core")
       .from("profile")
       .select(
         "availability, preferred_work_locations, open_to_travel, travel_distance_miles, career_level, hourly_rate_cents, us_resident, us_passport, authorized_countries, veteran, military_status, drivers_license_classes",

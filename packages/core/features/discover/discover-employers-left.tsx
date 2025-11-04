@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { YStack, ScrollView, Text, Spinner } from 'tamagui'
 import { EmployerCard, type Employer } from './components/EmployerCard'
 import { api } from '@app/core/utils/api'
+import type { JSONContent } from '@tiptap/core'
+import { extractPlainText } from '@app/ui'
 
 interface DiscoverEmployersLeftProps {
   searchQuery: string
@@ -27,9 +29,14 @@ export function DiscoverEmployersLeft({
     // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
+      const descriptionText = employer.description
+        ? typeof employer.description === 'string'
+          ? employer.description
+          : extractPlainText(employer.description as JSONContent)
+        : ''
       const matchesSearch =
         employer.name.toLowerCase().includes(query) ||
-        employer.description?.toLowerCase().includes(query) ||
+        descriptionText.toLowerCase().includes(query) ||
         employer.industries?.name.toLowerCase().includes(query)
 
       if (!matchesSearch) return false

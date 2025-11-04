@@ -16,6 +16,30 @@ import {
  */
 export const cmsRouter = t.router({
   /**
+   * Get active welcome slides (public endpoint)
+   * Returns only active slides for public display
+   */
+  getActiveWelcomeSlides: publicProcedure.query(async ({ ctx }) => {
+    const { data, error } = await ctx.supabase
+      .schema("cms")
+      .from("welcome_slides")
+      .select("*")
+      .eq("is_active", true)
+      .order("display_order", { ascending: true });
+
+    if (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: `Failed to fetch welcome slides: ${error.message}`,
+      });
+    }
+
+    return {
+      slides: data as WelcomeSlide[],
+    };
+  }),
+
+  /**
    * List welcome slides
    * Public: Returns only active slides
    * Admin: Can include inactive slides with parameter
@@ -26,6 +50,7 @@ export const cmsRouter = t.router({
       const includeInactive = input?.include_inactive ?? false;
 
       let query = ctx.supabase
+        .schema("cms")
         .from("welcome_slides")
         .select("*")
         .order("display_order", { ascending: true });
@@ -57,6 +82,7 @@ export const cmsRouter = t.router({
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { data, error } = await ctx.supabaseAdmin
+        .schema("cms")
         .from("welcome_slides")
         .select("*")
         .eq("id", input.id)
@@ -80,6 +106,7 @@ export const cmsRouter = t.router({
     .input(welcomeSlideCreateSchema)
     .mutation(async ({ ctx, input }) => {
       const { data, error } = await ctx.supabaseAdmin
+        .schema("cms")
         .from("welcome_slides")
         .insert(input)
         .select()
@@ -105,6 +132,7 @@ export const cmsRouter = t.router({
       const { id, ...updateData } = input;
 
       const { data, error } = await ctx.supabaseAdmin
+        .schema("cms")
         .from("welcome_slides")
         .update(updateData)
         .eq("id", id)
@@ -129,6 +157,7 @@ export const cmsRouter = t.router({
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const { error } = await ctx.supabaseAdmin
+        .schema("cms")
         .from("welcome_slides")
         .delete()
         .eq("id", input.id);
@@ -156,6 +185,7 @@ export const cmsRouter = t.router({
         slide: { id: string; display_order: number },
       ) =>
         ctx.supabaseAdmin
+          .schema("cms")
           .from("welcome_slides")
           .update({ display_order: slide.display_order })
           .eq("id", slide.id)

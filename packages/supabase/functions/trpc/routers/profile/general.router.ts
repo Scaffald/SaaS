@@ -15,7 +15,7 @@ export const profileGeneralRouter = t.router({
    * Get current user basic info
    * Returns the authenticated user's ID and basic details
    */
-  useUser: protectedProcedure.query(async ({ ctx }) => {
+  useUser: protectedProcedure.query(({ ctx }) => {
     const { user } = ctx;
     return {
       id: user.id,
@@ -39,11 +39,12 @@ export const profileGeneralRouter = t.router({
       console.error("Error fetching auth user:", authError.message);
     }
 
-    // Get profile data from users table (public data only)
-    // Note: about_rich is JSONB, about is legacy text field
+    // Get profile data from users table (core schema)
+    // Note: about is JSONB (rich text field)
     const { data: profile, error: profileError } = await supabase
+      .schema("core")
       .from("users")
-      .select("avatar_path, about_rich")
+      .select("avatar_path, about")
       .eq("id", user.id)
       .single();
 
@@ -56,7 +57,7 @@ export const profileGeneralRouter = t.router({
 
     // Get PII data from private.profile table (first_name, last_name, address)
     const { data: privateData, error: privateError } = await supabase
-      .schema("private")
+      .schema("core")
       .from("profile")
       .select("first_name, last_name, address")
       .eq("user_id", user.id)
@@ -77,7 +78,7 @@ export const profileGeneralRouter = t.router({
       avatar_path: profile?.avatar_path || "",
       email: authUser?.user?.email || "",
       phone: authUser?.user?.phone || "",
-      about: profile?.about_rich || null,
+      about: profile?.about || null,
       address: privateData?.address || null,
     };
   }),
@@ -95,7 +96,7 @@ export const profileGeneralRouter = t.router({
       // These fields are read-only and come from the auth system
 
       // Build profile update object with only provided fields (public data)
-      const profileUpdate: ProfileUpdate & { about_rich?: unknown } = {
+      const profileUpdate: ProfileUpdate & { about?: unknown } = {
         id: user.id,
         updated_at: new Date().toISOString(),
       };
@@ -104,15 +105,15 @@ export const profileGeneralRouter = t.router({
         profileUpdate.avatar_path = input.avatar_path;
       }
       if (input.about !== undefined) {
-        // Save to about_rich column (JSONB)
-        // Trigger will automatically extract plain text to about_plain
-        profileUpdate.about_rich = input.about;
+        // Save to about column (JSONB rich text)
+        profileUpdate.about = input.about;
       }
 
       // Update users table only if there are fields to update
       if (Object.keys(profileUpdate).length > 2) {
         // More than just id and updated_at
         const { error: profileError } = await supabase
+          .schema("core")
           .from("users")
           .update(profileUpdate)
           .eq("id", user.id);
@@ -164,7 +165,7 @@ export const profileGeneralRouter = t.router({
       if (Object.keys(privateUpdate).length > 2) {
         // More than just user_id and updated_at
         const { error: privateError } = await supabase
-          .schema("private")
+          .schema("core")
           .from("profile")
           .upsert(privateUpdate);
 

@@ -19,7 +19,7 @@ export const profileEmploymentRouter = t.router({
 
     // Get employment data from private.profile table
     const { data: employmentData, error: employmentError } = await supabase
-      .schema("private")
+      .schema("core")
       .from("profile")
       .select(`
         preferred_work_locations,
@@ -117,7 +117,7 @@ export const profileEmploymentRouter = t.router({
       if (Object.keys(employmentUpdate).length > 2) {
         // More than just user_id and updated_at
         const { error: employmentError } = await supabase
-          .schema("private")
+          .schema("core")
           .from("profile")
           .upsert(employmentUpdate);
 

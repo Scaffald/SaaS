@@ -16,7 +16,7 @@ export const profileCompletionRouter = t.router({
       // Get private.profile data directly (includes first_name, last_name)
       // Note: phone is stored in auth.users, not in private.profile
       const { data: privateData, error: privateError } = await supabase
-        .schema("private")
+        .schema("core")
         .from("profile")
         .select(`
           first_name,
@@ -41,6 +41,7 @@ export const profileCompletionRouter = t.router({
       let skillsData: unknown[] = [];
       try {
         const { data, error: skillsError } = await supabase
+          .schema("core")
           .from("user_skills")
           .select("skill_id")
           .eq("user_id", user.id);
@@ -61,6 +62,7 @@ export const profileCompletionRouter = t.router({
       let certificationsData: unknown[] = [];
       try {
         const { data, error: certificationsError } = await supabase
+          .schema("core")
           .from("user_certifications")
           .select("name, issuing_organization")
           .eq("user_id", user.id);
@@ -84,6 +86,7 @@ export const profileCompletionRouter = t.router({
       let educationData: unknown[] = [];
       try {
         const { data, error: educationError } = await supabase
+          .schema("core")
           .from("user_education")
           .select("institution_name")
           .eq("user_id", user.id);
@@ -104,6 +107,7 @@ export const profileCompletionRouter = t.router({
       let experienceData: unknown[] = [];
       try {
         const { data, error: experienceError } = await supabase
+          .schema("core")
           .from("user_experience")
           .select("job_title, company_name")
           .eq("user_id", user.id);

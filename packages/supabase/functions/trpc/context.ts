@@ -27,8 +27,10 @@ export const createTRPCContext = async (opts: { req: Request }) => {
   const authorizationHeader = opts.req.headers.get("authorization");
   console.log("Auth header present:", !!authorizationHeader);
 
-  // Create Supabase client with user's auth for permission checks
-  const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+  // Create Supabase client - use anon key for public access (respects RLS)
+  // Use service_role key for authenticated requests (bypasses RLS when needed)
+  const supabaseKey = authorizationHeader ? supabaseServiceKey : supabaseAnonKey;
+  const supabase = createClient(supabaseUrl, supabaseKey, {
     global: {
       headers: authorizationHeader
         ? { Authorization: authorizationHeader }
@@ -44,31 +46,37 @@ export const createTRPCContext = async (opts: { req: Request }) => {
   let userToken: string | undefined;
 
   if (authorizationHeader) {
-    const token = authorizationHeader.replace("Bearer ", "");
-    userToken = token;
-    console.log("Token extracted:", !!token);
+    // Validate Authorization header format
+    if (!authorizationHeader.startsWith("Bearer ")) {
+      console.error("Invalid authorization header format");
+      // Don't throw - just log and continue without user context
+    } else {
+      const token = authorizationHeader.replace("Bearer ", "");
+      userToken = token;
+      console.log("Token extracted:", !!token);
 
-    try {
-      // Use Supabase's built-in user verification
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser(token);
+      try {
+        // Use Supabase's built-in user verification
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser(token);
 
-      if (error) {
-        console.error("Auth error:", error.message);
-      } else if (user) {
-        userId = user.id;
-        userEmail = user.email;
-        console.log("User authenticated:", user.id);
-      } else {
-        console.log("No user found");
+        if (error) {
+          console.error("Auth error:", error.message);
+        } else if (user) {
+          userId = user.id;
+          userEmail = user.email;
+          console.log("User authenticated:", user.id);
+        } else {
+          console.log("No user found");
+        }
+      } catch (error) {
+        const errorMessage = error instanceof Error
+          ? error.message
+          : String(error);
+        console.error("Error getting user:", errorMessage);
       }
-    } catch (error) {
-      const errorMessage = error instanceof Error
-        ? error.message
-        : String(error);
-      console.error("Error getting user:", errorMessage);
     }
   } else {
     console.log("No authorization header found");

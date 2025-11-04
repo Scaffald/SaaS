@@ -22,6 +22,7 @@ export const employersRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       let query = ctx.supabase
+        .schema("core")
         .from("organizations")
         .select(
           `
@@ -72,6 +73,7 @@ export const employersRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       const { data: organization, error } = await ctx.supabase
+        .schema("core")
         .from("organizations")
         .select(
           `
@@ -114,6 +116,7 @@ export const employersRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       const { data: organization, error } = await ctx.supabase
+        .schema("core")
         .from("organizations")
         .select(
           `

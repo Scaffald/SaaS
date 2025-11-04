@@ -5,7 +5,7 @@ import type { TalentProfile } from "../types";
 
 // Type for the v_profile_search view with additional fields we select
 type ProfileSearchRow =
-  & Database["public"]["Views"]["v_profile_search"]["Row"]
+  & Database["core"]["Views"]["v_profile_search"]["Row"]
   & {
     certifications?: string[] | null;
     hourly_rate_cents?: number | null;
@@ -20,6 +20,7 @@ export const useTalentProfiles = () => {
     queryFn: async (): Promise<TalentProfile[]> => {
       // Get profiles from the v_profile_search view
       const { data: profiles, error: profilesError } = await supabase
+        .schema("core")
         .from("v_profile_search")
         .select("*")
         .order("gamified_score", { ascending: false })

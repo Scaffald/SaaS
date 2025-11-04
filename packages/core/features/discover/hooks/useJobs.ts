@@ -43,6 +43,7 @@ export const useJobs = () => {
     queryFn: async (): Promise<JobMapPin[]> => {
       // Fetch jobs with coordinates from address JSONB field
       const { data: jobs, error: jobsError } = await supabase
+        .schema("core")
         .from('jobs')
         .select(
           `

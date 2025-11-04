@@ -11,6 +11,7 @@ export const userProfileRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       const { data: profile, error } = await ctx.supabase
+        .schema("core")
         .from("v_profile_search")
         .select(
           `
@@ -52,6 +53,7 @@ export const userProfileRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       const { data: skills, error } = await ctx.supabase
+        .schema("core")
         .from("user_skills")
         .select("*")
         .eq("user_id", input.userId)
@@ -86,7 +88,7 @@ export const userProfileRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       const { data: certifications, error } = await ctx.supabase
-        .schema("private")
+        .schema("core")
         .from("user_certifications")
         .select("*")
         .eq("user_id", input.userId)
@@ -109,7 +111,7 @@ export const userProfileRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       const { data: experience, error } = await ctx.supabase
-        .schema("private")
+        .schema("core")
         .from("user_experience")
         .select("*")
         .eq("user_id", input.userId)
@@ -132,7 +134,7 @@ export const userProfileRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       const { data: education, error } = await ctx.supabase
-        .schema("private")
+        .schema("core")
         .from("user_education")
         .select("*")
         .eq("user_id", input.userId)
@@ -156,6 +158,7 @@ export const userProfileRouter = t.router({
     .query(async ({ ctx, input }) => {
       // Get reviews for this user (simplified for current schema)
       const { data: reviews, error: reviewsError } = await ctx.supabase
+        .schema("core")
         .from("reviews")
         .select("*")
         .eq("subject_id", input.userId)
@@ -217,7 +220,7 @@ export const userProfileRouter = t.router({
     .query(async ({ ctx, input }) => {
       // TODO: Add permission check - should only return if user has permission
       const { data: contactInfo, error } = await ctx.supabase
-        .schema("private")
+        .schema("core")
         .from("profile")
         .select(
           `

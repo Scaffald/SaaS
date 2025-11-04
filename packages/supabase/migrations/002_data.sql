@@ -700,14 +700,14 @@ CREATE TABLE data.certifications (
 -- =========================================================
 
 -- Drop old simple tables if they exist (from 001_schema.sql)
-DROP TABLE IF EXISTS public.user_skills CASCADE;
-DROP TABLE IF EXISTS public.job_skills CASCADE;
-DROP TABLE IF EXISTS public.organization_skills CASCADE;
+DROP TABLE IF EXISTS core.user_skills CASCADE;
+DROP TABLE IF EXISTS core.job_skills CASCADE;
+DROP TABLE IF EXISTS core.organization_skills CASCADE;
 
 -- User Skills (Polymorphic)
-CREATE TABLE public.user_skills (
+CREATE TABLE core.user_skills (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES core.users(id) ON DELETE CASCADE,
   
   -- Polymorphic skill reference
   skill_taxonomy TEXT NOT NULL CHECK (skill_taxonomy IN ('csi', 'onet')),
@@ -719,7 +719,7 @@ CREATE TABLE public.user_skills (
   
   -- Verification
   verified BOOLEAN DEFAULT false,
-  verified_by UUID REFERENCES public.users(id),
+  verified_by UUID REFERENCES core.users(id),
   verified_at TIMESTAMPTZ,
   
   -- Metadata
@@ -742,16 +742,16 @@ CREATE TABLE public.user_skills (
 );
 
 -- Add foreign keys for polymorphic references
-ALTER TABLE public.user_skills
+ALTER TABLE core.user_skills
   ADD CONSTRAINT user_skills_csi_skill_id_fkey 
   FOREIGN KEY (csi_skill_id) REFERENCES data.masterformat(id) ON DELETE CASCADE;
 
 -- Note: onet_occupation_id FK will be added after O*NET data import (in 004_functions.sql)
 
 -- Job Skills (Polymorphic)
-CREATE TABLE public.job_skills (
+CREATE TABLE core.job_skills (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  job_id UUID NOT NULL REFERENCES public.jobs(id) ON DELETE CASCADE,
+  job_id UUID NOT NULL REFERENCES core.jobs(id) ON DELETE CASCADE,
   
   -- Polymorphic skill reference
   skill_taxonomy TEXT NOT NULL CHECK (skill_taxonomy IN ('csi', 'onet')),
@@ -783,14 +783,14 @@ CREATE TABLE public.job_skills (
 );
 
 -- Add foreign keys
-ALTER TABLE public.job_skills
+ALTER TABLE core.job_skills
   ADD CONSTRAINT job_skills_csi_skill_id_fkey 
   FOREIGN KEY (csi_skill_id) REFERENCES data.masterformat(id) ON DELETE CASCADE;
 
 -- Organization Skills (Polymorphic)
-CREATE TABLE public.organization_skills (
+CREATE TABLE core.organization_skills (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  organization_id UUID NOT NULL REFERENCES public.organizations(id) ON DELETE CASCADE,
+  organization_id UUID NOT NULL REFERENCES core.organizations(id) ON DELETE CASCADE,
   
   -- Polymorphic skill reference
   skill_taxonomy TEXT NOT NULL CHECK (skill_taxonomy IN ('csi', 'onet')),
@@ -819,7 +819,7 @@ CREATE TABLE public.organization_skills (
 );
 
 -- Add foreign keys
-ALTER TABLE public.organization_skills
+ALTER TABLE core.organization_skills
   ADD CONSTRAINT org_skills_csi_skill_id_fkey 
   FOREIGN KEY (csi_skill_id) REFERENCES data.masterformat(id) ON DELETE CASCADE;
 
@@ -839,7 +839,7 @@ GRANT SELECT ON ALL TABLES IN SCHEMA data TO authenticated, anon;
 -- =========================================================
 
 -- Insert default platform roles
-INSERT INTO private.roles (scope, name, description) VALUES
+INSERT INTO core.roles (scope, name, description) VALUES
   ('platform', 'worker', 'Default role for all platform users'),
   ('platform', 'office', 'Office staff with administrative access')
 ON CONFLICT (name) DO NOTHING;

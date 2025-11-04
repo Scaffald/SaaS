@@ -54,7 +54,7 @@ export const profileEducationRouter = t.router({
       const { supabase, user } = ctx;
 
       const { data, error } = await supabase
-        .schema("private")
+        .schema("core")
         .from("user_education")
         .select("*")
         .eq("user_id", user.id)
@@ -99,7 +99,7 @@ export const profileEducationRouter = t.router({
       const { supabase, user } = ctx;
 
       const { data, error } = await supabase
-        .schema("private")
+        .schema("core")
         .from("profile")
         .select("education_level")
         .eq("user_id", user.id)
@@ -128,7 +128,7 @@ export const profileEducationRouter = t.router({
         // Update education level in private.profile if provided
         if (input.education_level !== undefined) {
           const { error: levelError } = await supabase
-            .schema("private")
+            .schema("core")
             .from("profile")
             .update({
               education_level: input.education_level,
@@ -151,7 +151,7 @@ export const profileEducationRouter = t.router({
           if (edu.id) {
             // Update existing education
             const { data, error } = await supabase
-              .schema("private")
+              .schema("core")
               .from("user_education")
               .update({
                 university_id: edu.university_id,
@@ -181,7 +181,7 @@ export const profileEducationRouter = t.router({
           } else {
             // Create new education
             const { data, error } = await supabase
-              .schema("private")
+              .schema("core")
               .from("user_education")
               .insert({
                 user_id: user.id,
@@ -236,7 +236,7 @@ export const profileEducationRouter = t.router({
 
       try {
         const { error } = await supabase
-          .schema("private")
+          .schema("core")
           .from("user_education")
           .delete()
           .eq("id", input.educationId)
