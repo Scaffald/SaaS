@@ -53,6 +53,11 @@ export const generateDashboardDrawerItems = (options?: {
         title: ROUTES.OFFICE_ORGANIZATIONS.title,
         href: ROUTES.OFFICE_ORGANIZATIONS.path,
       },
+      {
+        key: "office-cms",
+        title: ROUTES.OFFICE_CMS.title,
+        href: ROUTES.OFFICE_CMS.path,
+      },
     ];
 
     items.push({

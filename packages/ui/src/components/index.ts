@@ -1,4 +1,5 @@
 export { FileUpload, type FileUploadProps } from './FileUpload'
+export { IconSelector } from './IconSelector'
 export {
   createEmptyDocument,
   extractPlainText,

@@ -227,6 +227,21 @@ const ROUTES_CONFIG = {
     title: "Edit Organization",
     isProtected: true,
   },
+  OFFICE_CMS: {
+    path: "/office/cms",
+    title: "CMS",
+    isProtected: true,
+  },
+  OFFICE_CMS_CREATE: {
+    path: "/office/cms/create",
+    title: "Create Slide",
+    isProtected: true,
+  },
+  OFFICE_CMS_EDIT: {
+    path: "/office/cms/:id/edit",
+    title: "Edit Slide",
+    isProtected: true,
+  },
 } as const satisfies Record<string, RouteConfig>;
 
 // ============================================================================

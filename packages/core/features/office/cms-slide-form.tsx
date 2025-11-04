@@ -1,0 +1,124 @@
+import { useState } from 'react'
+import { Button, Form, Input, Label, TextArea, XStack, YStack, Text, Switch, H4 } from 'tamagui'
+import { Save } from '@tamagui/lucide-icons'
+import { IconSelector } from '@app/ui'
+import type { WelcomeSlideCreate, WelcomeSlideUpdate } from '@app/schemas'
+
+interface CMSSlideFormProps {
+  initialData?: WelcomeSlideUpdate
+  onSubmit: (data: WelcomeSlideCreate | WelcomeSlideUpdate) => Promise<void>
+  isLoading?: boolean
+}
+
+export function CMSSlideForm({ initialData, onSubmit, isLoading }: CMSSlideFormProps) {
+  const [title, setTitle] = useState(initialData?.title || '')
+  const [description, setDescription] = useState(initialData?.description || '')
+  const [iconName, setIconName] = useState(initialData?.icon_name || 'UserSearch')
+  const [backgroundImageUrl, setBackgroundImageUrl] = useState(
+    initialData?.background_image_url || ''
+  )
+  const [displayOrder, setDisplayOrder] = useState(initialData?.display_order?.toString() || '1')
+  const [isActive, setIsActive] = useState(initialData?.is_active ?? true)
+
+  const handleSubmit = async () => {
+    if (initialData?.id) {
+      // Edit mode - include id
+      const data: WelcomeSlideUpdate = {
+        id: initialData.id,
+        title,
+        description,
+        icon_name: iconName,
+        background_image_url: backgroundImageUrl,
+        display_order: Number.parseInt(displayOrder, 10),
+        is_active: isActive,
+      }
+      await onSubmit(data)
+    } else {
+      // Create mode - no id
+      const data: WelcomeSlideCreate = {
+        title,
+        description,
+        icon_name: iconName,
+        background_image_url: backgroundImageUrl,
+        display_order: Number.parseInt(displayOrder, 10),
+        is_active: isActive,
+      }
+      await onSubmit(data)
+    }
+  }
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      <YStack gap="$4">
+        <H4>{initialData?.id ? 'Edit' : 'Create'} Welcome Slide</H4>
+
+        <YStack gap="$2">
+          <Label htmlFor="title">Title *</Label>
+          <Input
+            id="title"
+            value={title}
+            onChangeText={setTitle}
+            placeholder="Enter slide title"
+            disabled={isLoading}
+          />
+        </YStack>
+
+        <YStack gap="$2">
+          <Label htmlFor="description">Description *</Label>
+          <TextArea
+            id="description"
+            value={description}
+            onChangeText={setDescription}
+            placeholder="Enter slide description"
+            disabled={isLoading}
+            numberOfLines={4}
+          />
+        </YStack>
+
+        <IconSelector value={iconName} onChange={setIconName} disabled={isLoading} />
+
+        <YStack gap="$2">
+          <Label htmlFor="image">Background Image URL *</Label>
+          <Input
+            id="image"
+            value={backgroundImageUrl}
+            onChangeText={setBackgroundImageUrl}
+            placeholder="https://example.com/image.jpg"
+            disabled={isLoading}
+          />
+          <Text fontSize="$2" opacity={0.6}>
+            Use a high-quality image URL (Pexels, Unsplash, etc.)
+          </Text>
+        </YStack>
+
+        <YStack gap="$2">
+          <Label htmlFor="order">Display Order *</Label>
+          <Input
+            id="order"
+            value={displayOrder}
+            onChangeText={setDisplayOrder}
+            placeholder="1"
+            keyboardType="numeric"
+            disabled={isLoading}
+          />
+          <Text fontSize="$2" opacity={0.6}>
+            Slides are shown in ascending order (1, 2, 3...)
+          </Text>
+        </YStack>
+
+        <XStack gap="$3" items="center">
+          <Switch checked={isActive} onCheckedChange={setIsActive} disabled={isLoading}>
+            <Switch.Thumb animation="quick" />
+          </Switch>
+          <Label htmlFor="active">Active (visible to users)</Label>
+        </XStack>
+
+        <XStack gap="$2" justify="flex-end">
+          <Button onPress={handleSubmit} icon={Save} disabled={isLoading || !title || !description}>
+            {isLoading ? 'Saving...' : 'Save Slide'}
+          </Button>
+        </XStack>
+      </YStack>
+    </Form>
+  )
+}

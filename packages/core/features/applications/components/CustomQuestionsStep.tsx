@@ -194,7 +194,7 @@ export function CustomQuestionsStep({
                     p="$3"
                     rounded="$4"
                     borderWidth={1}
-                    borderColor={
+                    bc={
                       getAnswer(question.id) === option
                         ? '$blue9'
                         : errors[question.id]
@@ -214,7 +214,7 @@ export function CustomQuestionsStep({
                       height={20}
                       rounded="$12"
                       borderWidth={2}
-                      borderColor={getAnswer(question.id) === option ? '$blue9' : '$borderColor'}
+                      bc={getAnswer(question.id) === option ? '$blue9' : '$borderColor'}
                       justify="center"
                       items="center"
                       bg="$background"
