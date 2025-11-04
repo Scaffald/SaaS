@@ -133,7 +133,7 @@ async function clearNativeStorage(): Promise<void> {
 
     // Filter for auth-related keys
     const authKeys = allKeys.filter(
-      (key) =>
+      (key: string) =>
         key.startsWith("sb-") ||
         key.includes("supabase") ||
         key.includes("auth") ||
