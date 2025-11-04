@@ -33,6 +33,7 @@ export { ToastProvider, ToastViewport } from '@tamagui/toast'
 // Re-export our custom components
 export { FieldError } from './components/FieldError'
 export { FileUpload, type FileUploadProps } from './components/FileUpload'
+export { ImageUpload, type ImageUploadProps } from './components/ImageUpload'
 export { FormWrapper } from './components/FormWrapper'
 export { IconSelector } from './components/IconSelector'
 export * from './components/rich-text'

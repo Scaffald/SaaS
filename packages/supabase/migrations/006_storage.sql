@@ -120,7 +120,7 @@ ON storage.objects FOR SELECT
 TO public
 USING (bucket_id = 'cms-media');
 
--- Admin upload access for CMS media
+-- Admin upload access for CMS media (office role or super_admin)
 DROP POLICY IF EXISTS "Admin upload access for cms-media" ON storage.objects;
 CREATE POLICY "Admin upload access for cms-media"
 ON storage.objects FOR INSERT
@@ -131,11 +131,12 @@ WITH CHECK (
     SELECT 1 FROM core.role_assignments ra
     JOIN core.roles r ON r.id = ra.role_id
     WHERE ra.user_id = auth.uid()
-    AND r.name = 'super_admin'
+    AND r.scope = 'platform'
+    AND (r.name = 'office' OR r.name = 'super_admin')
   )
 );
 
--- Admin update access for CMS media
+-- Admin update access for CMS media (office role or super_admin)
 DROP POLICY IF EXISTS "Admin update access for cms-media" ON storage.objects;
 CREATE POLICY "Admin update access for cms-media"
 ON storage.objects FOR UPDATE
@@ -146,11 +147,12 @@ USING (
     SELECT 1 FROM core.role_assignments ra
     JOIN core.roles r ON r.id = ra.role_id
     WHERE ra.user_id = auth.uid()
-    AND r.name = 'super_admin'
+    AND r.scope = 'platform'
+    AND (r.name = 'office' OR r.name = 'super_admin')
   )
 );
 
--- Admin delete access for CMS media
+-- Admin delete access for CMS media (office role or super_admin)
 DROP POLICY IF EXISTS "Admin delete access for cms-media" ON storage.objects;
 CREATE POLICY "Admin delete access for cms-media"
 ON storage.objects FOR DELETE
@@ -161,7 +163,8 @@ USING (
     SELECT 1 FROM core.role_assignments ra
     JOIN core.roles r ON r.id = ra.role_id
     WHERE ra.user_id = auth.uid()
-    AND r.name = 'super_admin'
+    AND r.scope = 'platform'
+    AND (r.name = 'office' OR r.name = 'super_admin')
   )
 );
 

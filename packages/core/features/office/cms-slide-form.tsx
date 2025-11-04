@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Button, Form, Input, Label, TextArea, XStack, YStack, Text, Switch, H4 } from 'tamagui'
 import { Save } from '@tamagui/lucide-icons'
-import { IconSelector } from '@app/ui'
+import { IconSelector, ImageUpload } from '@app/ui'
 import type { WelcomeSlideCreate, WelcomeSlideUpdate } from '@app/schemas'
 
 interface CMSSlideFormProps {
@@ -77,19 +77,16 @@ export function CMSSlideForm({ initialData, onSubmit, isLoading }: CMSSlideFormP
 
         <IconSelector value={iconName} onChange={setIconName} disabled={isLoading} />
 
-        <YStack gap="$2">
-          <Label htmlFor="image">Background Image URL *</Label>
-          <Input
-            id="image"
-            value={backgroundImageUrl}
-            onChangeText={setBackgroundImageUrl}
-            placeholder="https://example.com/image.jpg"
-            disabled={isLoading}
-          />
-          <Text fontSize="$2" opacity={0.6}>
-            Use a high-quality image URL (Pexels, Unsplash, etc.)
-          </Text>
-        </YStack>
+        <ImageUpload
+          label="Background Image *"
+          value={backgroundImageUrl || undefined}
+          onChange={(url: string | null) => setBackgroundImageUrl(url || '')}
+          bucket="cms-media"
+          pathPrefix={initialData?.id ? `welcome-slides/${initialData.id}` : 'welcome-slides/new'}
+          maxSizeMB={5}
+          disabled={isLoading}
+          helperText="Upload a high-quality background image for the slide"
+        />
 
         <YStack gap="$2">
           <Label htmlFor="order">Display Order *</Label>
