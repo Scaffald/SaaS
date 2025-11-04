@@ -40,8 +40,23 @@ export default function ListsPage() {
         >
           <YStack gap="$3">
             {items.map((item) => (
-              <XStack key={item.id} gap="$3" alignItems="center" borderWidth={1} borderColor="$color6" borderRadius="$4" padding="$3">
-                <YStack width={48} height={48} borderRadius={999} backgroundColor="$color4" alignItems="center" justifyContent="center">
+              <XStack
+                key={item.id}
+                gap="$3"
+                alignItems="center"
+                borderWidth={1}
+                borderColor="$color6"
+                borderRadius="$4"
+                padding="$3"
+              >
+                <YStack
+                  width={48}
+                  height={48}
+                  borderRadius={999}
+                  backgroundColor="$color4"
+                  alignItems="center"
+                  justifyContent="center"
+                >
                   <Text fontSize={18} fontWeight="600" color="$color11">
                     {item.name[0]}
                   </Text>

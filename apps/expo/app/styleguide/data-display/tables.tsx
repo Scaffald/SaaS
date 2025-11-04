@@ -12,7 +12,7 @@ const rows = [
   { id: 3, name: 'Equipment Audit', status: 'In progress', owner: 'Reese' },
 ]
 
-const columns: DataTableColumn<typeof rows[number]>[] = [
+const columns: DataTableColumn<(typeof rows)[number]>[] = [
   { header: 'Program', accessorKey: 'name' },
   { header: 'Status', accessorKey: 'status' },
   { header: 'Owner', accessorKey: 'owner' },
@@ -25,10 +25,15 @@ export default function TablesPage() {
       description="Striped, bordered, and condensed table variations backed by DataTable component."
     >
       <YStack gap="$6">
-        <AnchorHeading id="tables-default" title="Default table" description="DataTable with alternating row colors." />
+        <AnchorHeading
+          id="tables-default"
+          title="Default table"
+          description="DataTable with alternating row colors."
+        />
         <DataTable data={rows} columns={columns} striped bordered caption="Compliance programs" />
         <Paragraph fontSize={12} color="$color10">
-          DataTable lives in packages/ui/src/components/table and supports virtualization for large data sets.
+          DataTable lives in packages/ui/src/components/table and supports virtualization for large
+          data sets.
         </Paragraph>
       </YStack>
     </StyleguidePage>

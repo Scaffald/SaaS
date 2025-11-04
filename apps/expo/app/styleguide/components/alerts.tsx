@@ -14,10 +14,7 @@ const ALERTS = [
 
 export default function AlertsPage() {
   return (
-    <StyleguidePage
-      title="Alerts"
-      description="Bootstrap-style contextual feedback messages."
-    >
+    <StyleguidePage title="Alerts" description="Bootstrap-style contextual feedback messages.">
       <YStack gap="$6">
         <AnchorHeading
           id="alerts-basic"

@@ -40,7 +40,11 @@ export default function ChartsPage() {
       description="Charts provided by @app/ui for dashboards and reports."
     >
       <YStack gap="$6">
-        <AnchorHeading id="charts-bar" title="Bar chart" description="Single-series bar chart with gradient tokens." />
+        <AnchorHeading
+          id="charts-bar"
+          title="Bar chart"
+          description="Single-series bar chart with gradient tokens."
+        />
         <ExampleCard
           title="Monthly signups"
           description="Bar chart using brand palette colors."
@@ -48,7 +52,11 @@ export default function ChartsPage() {
         >
           <BarChart data={barData} width={320} height={220} />
         </ExampleCard>
-        <AnchorHeading id="charts-line" title="Line chart" description="Line chart for trends over time." />
+        <AnchorHeading
+          id="charts-line"
+          title="Line chart"
+          description="Line chart for trends over time."
+        />
         <ExampleCard
           title="Weekly retention"
           description="Line chart with points enabled."
@@ -56,7 +64,11 @@ export default function ChartsPage() {
         >
           <LineChart data={lineData} width={320} height={220} />
         </ExampleCard>
-        <AnchorHeading id="charts-pie" title="Pie chart" description="Distribution breakdown using brand colors." />
+        <AnchorHeading
+          id="charts-pie"
+          title="Pie chart"
+          description="Distribution breakdown using brand colors."
+        />
         <ExampleCard
           title="Platform traffic"
           description="Pie chart with legend labels."

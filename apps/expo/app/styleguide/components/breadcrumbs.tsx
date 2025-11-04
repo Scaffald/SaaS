@@ -10,10 +10,7 @@ const trail = ['Home', 'Teams', 'Compliance', 'Training']
 
 export default function BreadcrumbsPage() {
   return (
-    <StyleguidePage
-      title="Breadcrumbs"
-      description="Hierarchy trails with responsive truncation."
-    >
+    <StyleguidePage title="Breadcrumbs" description="Hierarchy trails with responsive truncation.">
       <YStack gap="$6">
         <AnchorHeading
           id="breadcrumbs-basic"

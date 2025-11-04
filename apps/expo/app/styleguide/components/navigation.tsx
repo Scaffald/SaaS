@@ -17,7 +17,11 @@ export default function NavigationPage() {
       description="Tabs and pill navigation inspired by Bootstrap 2 nav components."
     >
       <YStack gap="$6">
-        <AnchorHeading id="navigation-tabs" title="Tabs" description="Use Tamagui Tabs for horizontal navigation." />
+        <AnchorHeading
+          id="navigation-tabs"
+          title="Tabs"
+          description="Use Tamagui Tabs for horizontal navigation."
+        />
         <ExampleCard
           title="Card tabs"
           description="Tabs with underline indicator and responsive stacking."
@@ -57,7 +61,11 @@ export default function NavigationPage() {
             ))}
           </Tabs>
         </ExampleCard>
-        <AnchorHeading id="navigation-pills" title="Pills" description="Use XStack with Button tokens for pill navigation." />
+        <AnchorHeading
+          id="navigation-pills"
+          title="Pills"
+          description="Use XStack with Button tokens for pill navigation."
+        />
         <ExampleCard
           title="Pill nav"
           description="Bootstrap-style pill nav built with Buttons."

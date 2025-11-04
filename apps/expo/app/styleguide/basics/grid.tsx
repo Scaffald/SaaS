@@ -53,7 +53,11 @@ export default function GridPage() {
           description="Media tokens defined in packages/ui/src/config/media.ts map to Bootstrap’s xs/sm/md/lg ranges."
         />
         <Paragraph fontSize={13} color="$color10">
-          Use props like <Text fontFamily="monospace">$gtSm</Text> or <Text fontFamily="monospace">$sm</Text> to override flex directions at specific breakpoints. Example: <Text fontFamily="monospace">$sm={{ flexDirection: 'column' }}</Text> mirrors Bootstrap’s stacked columns on mobile.
+          Use props like <Text fontFamily="monospace">$gtSm</Text> or{' '}
+          <Text fontFamily="monospace">$sm</Text> to override flex directions at specific
+          breakpoints. Example:{' '}
+          <Text fontFamily="monospace">$sm={{ flexDirection: 'column' }}</Text> mirrors Bootstrap’s
+          stacked columns on mobile.
         </Paragraph>
       </YStack>
     </StyleguidePage>

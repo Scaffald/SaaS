@@ -43,7 +43,8 @@ export default function ColorsPage() {
           ))}
         </YStack>
         <Paragraph fontSize={12} color="$color10">
-          ScaffaldLogo exports gradient tokens for hero components — see packages/core/assets/ScaffaldLogo.tsx.
+          ScaffaldLogo exports gradient tokens for hero components — see
+          packages/core/assets/ScaffaldLogo.tsx.
         </Paragraph>
       </YStack>
     </StyleguidePage>

@@ -5,10 +5,26 @@ import { StyleguidePage } from '../_components/StyleguidePage'
 import { AnchorHeading } from '../_components/AnchorHeading'
 
 const utilities = [
-  { name: 'Padding', usage: "px='$4' py='$5'", description: 'Maps to spacing tokens for consistent gutters.' },
-  { name: 'Display', usage: "$sm={{ display: 'none' }}", description: 'Hide blocks at mobile breakpoints similar to Bootstrap’s hidden-* classes.' },
-  { name: 'Text alignment', usage: "textAlign='center' $gtSm={{ textAlign: 'left' }}", description: 'Responsive text alignment.' },
-  { name: 'Color', usage: "color='$color11'", description: 'Semantic text colors referencing Tamagui tokens.' },
+  {
+    name: 'Padding',
+    usage: "px='$4' py='$5'",
+    description: 'Maps to spacing tokens for consistent gutters.',
+  },
+  {
+    name: 'Display',
+    usage: "$sm={{ display: 'none' }}",
+    description: 'Hide blocks at mobile breakpoints similar to Bootstrap’s hidden-* classes.',
+  },
+  {
+    name: 'Text alignment',
+    usage: "textAlign='center' $gtSm={{ textAlign: 'left' }}",
+    description: 'Responsive text alignment.',
+  },
+  {
+    name: 'Color',
+    usage: "color='$color11'",
+    description: 'Semantic text colors referencing Tamagui tokens.',
+  },
 ]
 
 export default function UtilitiesPage() {
@@ -56,7 +72,8 @@ export default function UtilitiesPage() {
             <YStack key={token} alignItems="center" gap={4}>
               <YStack width={48} height={token * 4} backgroundColor="$color5" borderRadius="$2" />
               <Text fontSize={12} color="$color10">
-                {'$'}{token}
+                {'$'}
+                {token}
               </Text>
             </YStack>
           ))}

@@ -16,7 +16,10 @@ export default function FormSelectsPage() {
   const [team, setTeam] = useState('engineering')
 
   return (
-    <StyleguidePage title="Select menus" description="Tamagui Select paired with Adapt + Sheet for mobile fallbacks.">
+    <StyleguidePage
+      title="Select menus"
+      description="Tamagui Select paired with Adapt + Sheet for mobile fallbacks."
+    >
       <YStack gap="$6">
         <AnchorHeading
           id="selects-default"

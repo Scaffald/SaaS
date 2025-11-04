@@ -72,29 +72,34 @@ Verify:
 pnpm supa db remote --status
 ```
 
-### Step 3: Configure API Exposed Schemas
+### Step 3: Configure API Exposed Schemas and Auth URLs
 
-**IMPORTANT:** After creating the `core` and `cms` schemas, you must configure PostgREST to expose them.
+**IMPORTANT:** After creating the `core` and `cms` schemas, you must configure PostgREST to expose them. Also ensure auth URLs use production values.
 
-The `config.toml` file already includes the correct schema configuration. Push it to remote:
+The `config.toml` file uses environment variables (e.g., `env(EXPO_PUBLIC_URL)`). Use the appropriate command:
 
+**For Production:**
 ```bash
-pnpm supa config push
+pnpm supa:config:push:prod --yes
 ```
+This loads `.env.production` and pushes config with production URLs (e.g., `https://preview.scaffald.com`).
 
-This will:
-- Update remote API exposed schemas: `auth`, `public`, `core`, `cms`, `storage`, `data`, `onet`
-- Update `extra_search_path` to match
-- Show a diff of changes before applying
-- Ask for confirmation (or use `--yes` flag for automated deployments)
+**For Local Development:**
+```bash
+pnpm supa:config:push --yes
+```
+This loads `.env` and pushes config with local URLs (e.g., `http://localhost:8081`).
 
-**Alternative (Manual):** If you prefer to configure via dashboard:
-1. Go to Supabase Dashboard → Project Settings → API
-2. Scroll to **Exposed Schemas** section
-3. Add `core` and `cms` to the exposed list
-4. Click **Save**
+**What gets updated:**
+- API exposed schemas: `auth`, `public`, `core`, `cms`, `storage`, `data`, `onet`
+- `extra_search_path` to match
+- Auth `site_url` and `additional_redirect_urls` (uses `EXPO_PUBLIC_URL` from env file)
+- Shows a diff of changes before applying
 
-**Note:** Without this step, API calls to `core.*` or `cms.*` tables will fail with "schema must be one of..." errors.
+**Note:** 
+- Always use `supa:config:push:prod` for production deployments to avoid pushing localhost URLs
+- Without this step, API calls to `core.*` or `cms.*` tables will fail with "schema must be one of..." errors
+- Auth redirect URLs must match your production domain for OAuth to work correctly
 
 ### Step 4: Push Database Migrations
 

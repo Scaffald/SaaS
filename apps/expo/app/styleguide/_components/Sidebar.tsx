@@ -91,7 +91,11 @@ export function StyleguideSidebar({
             onPress={onItemSelect}
           >
             <YStack gap={4}>
-              <Text fontSize={13} fontWeight={isActive || isAncestor ? '700' : '500'} color="$color11">
+              <Text
+                fontSize={13}
+                fontWeight={isActive || isAncestor ? '700' : '500'}
+                color="$color11"
+              >
                 {item.title}
               </Text>
               {item.description ? (

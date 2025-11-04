@@ -36,7 +36,11 @@ export default function PaginationPage() {
 </XStack>`}
         >
           <XStack gap="$2" alignItems="center">
-            <Button icon={ChevronLeft} disabled={current === 1} onPress={() => setCurrent(Math.max(1, current - 1))} />
+            <Button
+              icon={ChevronLeft}
+              disabled={current === 1}
+              onPress={() => setCurrent(Math.max(1, current - 1))}
+            />
             {pages.map((page) => (
               <Button
                 key={page}
@@ -47,7 +51,11 @@ export default function PaginationPage() {
                 {page}
               </Button>
             ))}
-            <Button icon={ChevronRight} disabled={current === pages.length} onPress={() => setCurrent(Math.min(pages.length, current + 1))} />
+            <Button
+              icon={ChevronRight}
+              disabled={current === pages.length}
+              onPress={() => setCurrent(Math.min(pages.length, current + 1))}
+            />
           </XStack>
         </ExampleCard>
       </YStack>

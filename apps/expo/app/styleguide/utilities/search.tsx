@@ -18,12 +18,13 @@ export default function SearchUtilityPage() {
           description="Press / anywhere in the styleguide to focus the search input."
         />
         <Paragraph fontSize={13} color="$color10">
-          The search component lives in TopNav and filters navigation items by title, description, and tags.
+          The search component lives in TopNav and filters navigation items by title, description,
+          and tags.
         </Paragraph>
         <AnchorHeading
           id="search-roadmap"
           title="Roadmap"
-          description="Planned enhancements for production." 
+          description="Planned enhancements for production."
         />
         <TodoCallout id="search-index" />
       </YStack>

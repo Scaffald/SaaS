@@ -24,7 +24,11 @@ export default function TypographyPage() {
       description="Map Bootstrap’s typography scale to the Inter font loaded via Expo."
     >
       <YStack gap="$6">
-        <AnchorHeading id="typography-headings" title="Headings" description="Use Inter Bold for display styles." />
+        <AnchorHeading
+          id="typography-headings"
+          title="Headings"
+          description="Use Inter Bold for display styles."
+        />
         <YStack gap="$4">
           {headings.map((item) => (
             <YStack key={item.token} gap={8}>
@@ -37,7 +41,11 @@ export default function TypographyPage() {
             </YStack>
           ))}
         </YStack>
-        <AnchorHeading id="typography-body" title="Body copy" description="Regular Inter for paragraphs and captions." />
+        <AnchorHeading
+          id="typography-body"
+          title="Body copy"
+          description="Regular Inter for paragraphs and captions."
+        />
         <YStack gap="$3">
           {bodyCopy.map((item) => (
             <YStack key={item.label} gap={6}>

@@ -31,7 +31,11 @@ export default function DesignTokensPage() {
             {Object.entries(BRAND_COLORS).map(([name, value]) => {
               if (typeof value === 'object') {
                 return Object.entries(value).map(([shade, hex]) => (
-                  <ColorSwatch key={`${name}-${shade}`} label={`${name}.${shade}`} value={hex as string} />
+                  <ColorSwatch
+                    key={`${name}-${shade}`}
+                    label={`${name}.${shade}`}
+                    value={hex as string}
+                  />
                 ))
               }
               return <ColorSwatch key={name} label={name} value={value as string} />
@@ -46,14 +50,27 @@ export default function DesignTokensPage() {
             ))}
           </XStack>
           <Paragraph fontSize={12} color="$color10">
-            Tokens source: packages/ui/src/tamagui.config.ts & packages/ui/src/themes/earth-theme.ts.
+            Tokens source: packages/ui/src/tamagui.config.ts &
+            packages/ui/src/themes/earth-theme.ts.
           </Paragraph>
         </YStack>
-        <AnchorHeading id="tokens-space" title="Spacing scale" description="Map spacing tokens to rem sizes." />
+        <AnchorHeading
+          id="tokens-space"
+          title="Spacing scale"
+          description="Map spacing tokens to rem sizes."
+        />
         <TokenTable tokens={spaceTokens} unit="px" />
-        <AnchorHeading id="tokens-radius" title="Radii" description="Rounded corners derived from Tamagui defaults." />
+        <AnchorHeading
+          id="tokens-radius"
+          title="Radii"
+          description="Rounded corners derived from Tamagui defaults."
+        />
         <TokenTable tokens={radiusTokens} unit="px" />
-        <AnchorHeading id="tokens-size" title="Size scale" description="Sizing tokens for icons, avatars, and controls." />
+        <AnchorHeading
+          id="tokens-size"
+          title="Size scale"
+          description="Sizing tokens for icons, avatars, and controls."
+        />
         <TokenTable tokens={sizeTokens} unit="px" />
       </YStack>
     </StyleguidePage>

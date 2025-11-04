@@ -46,7 +46,8 @@ export const NAV_SECTIONS: NavSection[] = [
       {
         title: 'Design Tokens',
         href: '/styleguide/basics/design-tokens',
-        description: 'Color, spacing, radius, and typography primitives derived from Tamagui config.',
+        description:
+          'Color, spacing, radius, and typography primitives derived from Tamagui config.',
         tags: ['tokens', 'foundations'],
       },
       {

@@ -1,16 +1,7 @@
 // @ts-nocheck
 import React, { useCallback, useEffect, useRef } from 'react'
 import { Link } from 'expo-router'
-import {
-  Button,
-  Input,
-  Text,
-  Theme,
-  View,
-  XStack,
-  YStack,
-  isWeb,
-} from '@app/ui'
+import { Button, Input, Text, Theme, View, XStack, YStack, isWeb } from '@app/ui'
 import { Github, Search } from '@tamagui/lucide-icons'
 import { ScaffaldLogo } from '@app/core/assets/ScaffaldLogo'
 
@@ -173,12 +164,7 @@ const SearchField = React.forwardRef<unknown, SearchFieldProps>(
         returnKeyType="search"
       />
       {isWeb ? (
-        <View
-          backgroundColor="$color5"
-          paddingHorizontal={8}
-          paddingVertical={2}
-          borderRadius={6}
-        >
+        <View backgroundColor="$color5" paddingHorizontal={8} paddingVertical={2} borderRadius={6}>
           <Text fontSize={11} color="$color10">
             /
           </Text>

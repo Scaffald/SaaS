@@ -31,12 +31,7 @@ export default function FormInputsPage() {
 </YStack>`}
         >
           <YStack gap="$3">
-            <Input
-              size="$3"
-              placeholder="Full name"
-              value={value}
-              onChangeText={setValue}
-            />
+            <Input size="$3" placeholder="Full name" value={value} onChangeText={setValue} />
             <Input size="$2" placeholder="Small input" />
             <Input size="$5" placeholder="Large input" disabled />
             <YStack gap="$2">
@@ -63,12 +58,7 @@ export default function FormInputsPage() {
 />`}
         >
           <YStack gap="$2">
-            <Input
-              multiline
-              numberOfLines={4}
-              value={multiline}
-              onChangeText={setMultiline}
-            />
+            <Input multiline numberOfLines={4} value={multiline} onChangeText={setMultiline} />
             <Paragraph fontSize={12} color="$color10">
               {multiline.length}/280 characters
             </Paragraph>

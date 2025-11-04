@@ -28,7 +28,14 @@ export default function MediaObjectPage() {
   </YStack>
 </XStack>`}
         >
-          <XStack gap="$3" alignItems="flex-start" borderWidth={1} borderColor="$color6" borderRadius="$4" padding="$3">
+          <XStack
+            gap="$3"
+            alignItems="flex-start"
+            borderWidth={1}
+            borderColor="$color6"
+            borderRadius="$4"
+            padding="$3"
+          >
             <YStack width={64} height={64} borderRadius={12} backgroundColor="$color4" />
             <YStack gap={6} flex={1}>
               <Text fontSize={14} fontWeight="600" color="$color11">

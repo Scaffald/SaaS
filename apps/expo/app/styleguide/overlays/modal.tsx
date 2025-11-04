@@ -15,7 +15,11 @@ export default function ModalPage() {
       description="ResponsiveModal from @app/ui provides Bootstrap-style dialogs with focus trap support."
     >
       <YStack gap="$6">
-        <AnchorHeading id="modal-basic" title="Basic modal" description="Desktop centers the dialog while mobile slides up." />
+        <AnchorHeading
+          id="modal-basic"
+          title="Basic modal"
+          description="Desktop centers the dialog while mobile slides up."
+        />
         <ExampleCard
           title="Invite member"
           description="Trigger button opens ResponsiveModal."

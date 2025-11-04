@@ -6,8 +6,16 @@ import { AnchorHeading } from '../_components/AnchorHeading'
 
 const plans = [
   { name: 'Starter', price: '$49', features: ['Up to 25 users', 'Email support', '1 workflow'] },
-  { name: 'Growth', price: '$99', features: ['Up to 100 users', 'Priority support', 'Unlimited workflows'] },
-  { name: 'Enterprise', price: 'Contact us', features: ['Unlimited users', 'Dedicated CSM', 'Custom SLAs'] },
+  {
+    name: 'Growth',
+    price: '$99',
+    features: ['Up to 100 users', 'Priority support', 'Unlimited workflows'],
+  },
+  {
+    name: 'Enterprise',
+    price: 'Contact us',
+    features: ['Unlimited users', 'Dedicated CSM', 'Custom SLAs'],
+  },
 ]
 
 export default function PricingExamplePage() {
@@ -17,7 +25,11 @@ export default function PricingExamplePage() {
       description="Three-column pricing table using Bootstrap-like cards."
     >
       <YStack gap="$6">
-        <AnchorHeading id="pricing-grid" title="Plans" description="Responsive stack of pricing cards." />
+        <AnchorHeading
+          id="pricing-grid"
+          title="Plans"
+          description="Responsive stack of pricing cards."
+        />
         <YStack gap="$3" flexWrap="wrap" flexDirection="row">
           {plans.map((plan) => (
             <YStack

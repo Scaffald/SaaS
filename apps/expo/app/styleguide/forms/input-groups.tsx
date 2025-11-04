@@ -42,9 +42,7 @@ export default function FormInputGroupsPage() {
                 </Text>
               </XStack>
               <Input flex={1} placeholder="domain" borderWidth={0} />
-              <Button borderRadius={0}>
-                .com
-              </Button>
+              <Button borderRadius={0}>.com</Button>
             </XStack>
             <XStack borderWidth={1} borderColor="$color6" borderRadius="$4" overflow="hidden">
               <Input flex={1} placeholder="Amount" borderWidth={0} keyboardType="numeric" />

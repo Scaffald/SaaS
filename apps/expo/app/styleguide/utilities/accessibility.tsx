@@ -17,7 +17,8 @@ export default function AccessibilityPage() {
           description="Buttons, links, and form fields inherit Tamagui focus outlines to maintain 3:1 contrast."
         />
         <Paragraph fontSize={13} color="$color10">
-          Use <Text fontFamily="monospace">focusStyle</Text> props or rely on the default focus theme provided by @app/ui.
+          Use <Text fontFamily="monospace">focusStyle</Text> props or rely on the default focus
+          theme provided by @app/ui.
         </Paragraph>
         <AnchorHeading
           id="a11y-aria"
@@ -25,7 +26,8 @@ export default function AccessibilityPage() {
           description="Leverage aria-* props for tabs, modals, and tables."
         />
         <Paragraph fontSize={13} color="$color10">
-          Tabs automatically set <Text fontFamily="monospace">role="tablist"</Text> while ResponsiveModal uses aria-modal and traps focus.
+          Tabs automatically set <Text fontFamily="monospace">role="tablist"</Text> while
+          ResponsiveModal uses aria-modal and traps focus.
         </Paragraph>
       </YStack>
     </StyleguidePage>

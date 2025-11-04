@@ -19,7 +19,11 @@ export default function LabelsBadgesPage() {
       description="Status chips used across tables, cards, and timelines."
     >
       <YStack gap="$6">
-        <AnchorHeading id="badges" title="Badges" description="Use YStack with borderRadius to mirror Bootstrap pill badges." />
+        <AnchorHeading
+          id="badges"
+          title="Badges"
+          description="Use YStack with borderRadius to mirror Bootstrap pill badges."
+        />
         <ExampleCard
           title="Status chips"
           description="Mapping of semantic states to brand palette."

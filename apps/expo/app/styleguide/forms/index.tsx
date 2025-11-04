@@ -73,13 +73,17 @@ export default function FormsShowcasePage() {
         />
         <YStack gap="$3">
           <Paragraph fontSize={14} color="$color10">
-            • Use Tamagui’s <Text fontFamily="monospace">Stack</Text> spacing tokens (<Text fontFamily="monospace">$4</Text>, <Text fontFamily="monospace">$5</Text>) to maintain visual rhythm.
+            • Use Tamagui’s <Text fontFamily="monospace">Stack</Text> spacing tokens (
+            <Text fontFamily="monospace">$4</Text>, <Text fontFamily="monospace">$5</Text>) to
+            maintain visual rhythm.
           </Paragraph>
           <Paragraph fontSize={14} color="$color10">
-            • Align validation feedback with <Text fontFamily="monospace">FieldError</Text> to reuse accessible messaging patterns.
+            • Align validation feedback with <Text fontFamily="monospace">FieldError</Text> to reuse
+            accessible messaging patterns.
           </Paragraph>
           <Paragraph fontSize={14} color="$color10">
-            • When embedding in Bootstrap-like columns, wrap each control in a <Text fontFamily="monospace">YStack</Text> to preserve label spacing.
+            • When embedding in Bootstrap-like columns, wrap each control in a{' '}
+            <Text fontFamily="monospace">YStack</Text> to preserve label spacing.
           </Paragraph>
         </YStack>
       </YStack>

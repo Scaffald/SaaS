@@ -30,13 +30,29 @@ export const enforceOfficeRole = t.middleware(async ({ ctx, next }) => {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  const { data, error } = await ctx.supabase.rpc("user_has_role", {
-    p_user_id: ctx.user.id,
-    p_role_name: "office",
-    p_org_id: null,
-  });
+  // Query role_assignments directly to check for office role
+  // This avoids RPC schema resolution issues with functions in custom schemas
+  const { data, error } = await ctx.supabase
+    .schema("core")
+    .from("role_assignments")
+    .select("role:roles(name, scope)")
+    .eq("user_id", ctx.user.id);
 
-  if (error || !data) {
+  if (error) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Office access required",
+    });
+  }
+
+  // Check if user has office role with platform scope
+  const hasOfficeRole = data?.some(
+    (assignment) =>
+      assignment.role?.name === "office" &&
+      assignment.role?.scope === "platform",
+  );
+
+  if (!hasOfficeRole) {
     throw new TRPCError({
       code: "FORBIDDEN",
       message: "Office access required",

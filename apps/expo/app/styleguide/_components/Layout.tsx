@@ -22,9 +22,7 @@ export function StyleguideLayout({ initialQuery = '' }: StyleguideLayoutProps) {
 
     const normalized = searchQuery.trim().toLowerCase()
     return FLAT_NAV_ITEMS.filter((item) => {
-      const haystack = [item.title, item.description, ...(item.tags ?? [])]
-        .join(' ')
-        .toLowerCase()
+      const haystack = [item.title, item.description, ...(item.tags ?? [])].join(' ').toLowerCase()
       return haystack.includes(normalized)
     })
   }, [searchQuery])

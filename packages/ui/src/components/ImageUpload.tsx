@@ -36,10 +36,10 @@ const DEFAULT_ACCEPT = 'image/jpeg,image/jpg,image/png,image/webp,image/gif'
 
 /**
  * ImageUpload Component
- * 
+ *
  * A reusable image upload component that integrates with Supabase storage.
  * Supports drag & drop on web and native file picker on mobile.
- * 
+ *
  * @param value - Current image URL
  * @param onChange - Callback with uploaded URL or null if removed
  * @param onError - Error callback
@@ -75,7 +75,7 @@ export function ImageUpload({
       // Check file type
       const acceptedTypes = accept.split(',').map((type) => type.trim())
       const fileType = file.type.toLowerCase()
-      
+
       if (!acceptedTypes.some((type) => fileType.includes(type.split('/')[1] || ''))) {
         return `File type not supported. Accepted types: ${accept}`
       }
@@ -97,7 +97,7 @@ export function ImageUpload({
       const extension = fileName.split('.').pop() || 'jpg'
       // Generate unique filename with timestamp
       const uniqueFileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${extension}`
-      
+
       if (pathPrefix) {
         return `${pathPrefix}/${uniqueFileName}`
       }
@@ -143,7 +143,7 @@ export function ImageUpload({
 
         // Get public URL
         const publicUrl = getStorageUrl(bucket, uploadData.path)
-        
+
         if (!publicUrl) {
           throw new Error('Failed to get public URL for uploaded image')
         }
@@ -204,9 +204,7 @@ export function ImageUpload({
       }
 
       // Delete from storage
-      const { error: deleteError } = await supabase.storage
-        .from(bucket)
-        .remove([filePath])
+      const { error: deleteError } = await supabase.storage.from(bucket).remove([filePath])
 
       if (deleteError) {
         throw new Error(`Delete failed: ${deleteError.message}`)
@@ -238,11 +236,11 @@ export function ImageUpload({
             // Fetch the file from the URI
             const response = await fetch(nativeFile.uri)
             const blob = await response.blob()
-            
+
             // Determine file type from native file or blob
             const fileType = nativeFile.type || blob.type || 'image/jpeg'
             const fileName = nativeFile.name || `image-${Date.now()}.jpg`
-            
+
             // Create a File-like object for validation and upload
             // On web, we can use File constructor; on native, we'll use the blob directly
             let fileToUpload: File | Blob
@@ -252,7 +250,7 @@ export function ImageUpload({
               // For React Native, use blob directly
               fileToUpload = blob
             }
-            
+
             // Validate file size (blob.size is available)
             const fileSizeMB = blob.size / (1024 * 1024)
             if (fileSizeMB > maxSizeMB) {
@@ -261,15 +259,15 @@ export function ImageUpload({
               onError?.(errorMsg)
               return
             }
-            
+
             // Generate file path
             const filePath = generateFilePath(fileName)
-            
+
             // Upload to Supabase storage
             setError(undefined)
             setIsUploading(true)
             setUploadProgress(0)
-            
+
             try {
               const { data: uploadData, error: uploadError } = await supabase.storage
                 .from(bucket)
@@ -284,7 +282,7 @@ export function ImageUpload({
 
               // Get public URL
               const publicUrl = getStorageUrl(bucket, uploadData.path)
-              
+
               if (!publicUrl) {
                 throw new Error('Failed to get public URL for uploaded image')
               }
@@ -337,7 +335,9 @@ export function ImageUpload({
       {/* Upload Area */}
       <YStack
         borderWidth={2}
-        borderColor={isDragActive ? '$blue8' : error ? '$red8' : hasImage ? '$borderColor' : '$borderColor'}
+        borderColor={
+          isDragActive ? '$blue8' : error ? '$red8' : hasImage ? '$borderColor' : '$borderColor'
+        }
         borderStyle={isDragActive ? 'solid' : 'dashed'}
         rounded="$4"
         p="$4"
@@ -404,11 +404,7 @@ export function ImageUpload({
           <YStack gap="$3" items="center">
             {/* Icon */}
             <YStack width={64} height={64} items="center" justify="center" rounded="$4" bg="$blue3">
-              {isUploading ? (
-                <Spinner size="large" />
-              ) : (
-                <ImageIcon size={32} color="$blue10" />
-              )}
+              {isUploading ? <Spinner size="large" /> : <ImageIcon size={32} color="$blue10" />}
             </YStack>
 
             {/* Text */}
@@ -473,4 +469,3 @@ export function ImageUpload({
     </YStack>
   )
 }
-

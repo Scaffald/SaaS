@@ -20,8 +20,19 @@ export default function DashboardExamplePage() {
       description="Composed page demonstrating cards, charts, tables, and buttons."
     >
       <YStack gap="$6">
-        <AnchorHeading id="dashboard-overview" title="Overview" description="Hero metrics with quick actions." />
-        <YStack gap="$4" borderWidth={1} borderColor="$color6" borderRadius="$4" padding="$4" backgroundColor="$color2">
+        <AnchorHeading
+          id="dashboard-overview"
+          title="Overview"
+          description="Hero metrics with quick actions."
+        />
+        <YStack
+          gap="$4"
+          borderWidth={1}
+          borderColor="$color6"
+          borderRadius="$4"
+          padding="$4"
+          backgroundColor="$color2"
+        >
           <Text fontSize={18} fontWeight="600" color="$color11">
             Compliance health
           </Text>
@@ -35,8 +46,19 @@ export default function DashboardExamplePage() {
             </Button>
           </XStack>
         </YStack>
-        <AnchorHeading id="dashboard-charts" title="Charts" description="Use @app/ui charts inside cards." />
-        <YStack borderWidth={1} borderColor="$color6" borderRadius="$4" padding="$4" backgroundColor="$color1" gap="$3">
+        <AnchorHeading
+          id="dashboard-charts"
+          title="Charts"
+          description="Use @app/ui charts inside cards."
+        />
+        <YStack
+          borderWidth={1}
+          borderColor="$color6"
+          borderRadius="$4"
+          padding="$4"
+          backgroundColor="$color1"
+          gap="$3"
+        >
           <Text fontSize={14} fontWeight="600" color="$color11">
             Training completion
           </Text>

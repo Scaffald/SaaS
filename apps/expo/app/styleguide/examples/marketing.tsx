@@ -16,12 +16,7 @@ export default function MarketingExamplePage() {
           title="Hero"
           description="Full-width hero with gradient background and call to action."
         />
-        <YStack
-          borderRadius="$4"
-          padding="$6"
-          backgroundColor="$color3"
-          gap="$4"
-        >
+        <YStack borderRadius="$4" padding="$6" backgroundColor="$color3" gap="$4">
           <Text fontSize={32} fontWeight="700" color="$color12">
             Compliance operations, simplified.
           </Text>
@@ -35,10 +30,24 @@ export default function MarketingExamplePage() {
             </Button>
           </XStack>
         </YStack>
-        <AnchorHeading id="marketing-features" title="Feature grid" description="Three column grid using YStack." />
+        <AnchorHeading
+          id="marketing-features"
+          title="Feature grid"
+          description="Three column grid using YStack."
+        />
         <XStack gap="$3" flexWrap="wrap">
           {['Automated workflows', 'Real-time status', 'Audit-ready exports'].map((feature) => (
-            <YStack key={feature} flex={1} minWidth={220} borderWidth={1} borderColor="$color6" borderRadius="$4" padding="$4" backgroundColor="$color1" gap={6}>
+            <YStack
+              key={feature}
+              flex={1}
+              minWidth={220}
+              borderWidth={1}
+              borderColor="$color6"
+              borderRadius="$4"
+              padding="$4"
+              backgroundColor="$color1"
+              gap={6}
+            >
               <Text fontSize={16} fontWeight="600" color="$color11">
                 {feature}
               </Text>

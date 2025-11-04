@@ -59,7 +59,9 @@ export default function FormValidationPage() {
           description="Show optimistic loading indicators while validating with backend services."
         />
         <Paragraph fontSize={13} color="$color10">
-          Tie tamagui <Text fontFamily="monospace">Spinner</Text> components to TRPC mutations for consistent loading states. Toasts from <Text fontFamily="monospace">@tamagui/toast</Text> provide global confirmation for success and failure flows.
+          Tie tamagui <Text fontFamily="monospace">Spinner</Text> components to TRPC mutations for
+          consistent loading states. Toasts from <Text fontFamily="monospace">@tamagui/toast</Text>{' '}
+          provide global confirmation for success and failure flows.
         </Paragraph>
       </YStack>
     </StyleguidePage>

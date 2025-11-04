@@ -50,7 +50,11 @@ export default function ButtonsPage() {
             </Button>
           </XStack>
         </ExampleCard>
-        <AnchorHeading id="buttons-sizing" title="Sizing" description="Bootstrap’s mini/small/large mapped to $2-$5 tokens." />
+        <AnchorHeading
+          id="buttons-sizing"
+          title="Sizing"
+          description="Bootstrap’s mini/small/large mapped to $2-$5 tokens."
+        />
         <XStack gap="$3" alignItems="center" flexWrap="wrap">
           <Button size="$2">Small</Button>
           <Button size="$3">Default</Button>
