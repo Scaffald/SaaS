@@ -18,8 +18,30 @@ type AccordionSection = 'show'
 
 /**
  * Filter Popup Component
- * 300px wide x 250px high popup with accordion sections for filters
- * Animates in above the filter bar, similar to search input
+ * 
+ * A 300px wide x 250px high popup that appears above the filter bar with
+ * accordion sections for controlling what appears on the map.
+ * 
+ * Features:
+ * - Toggle visibility of Workers, Employers, and Jobs on the map
+ * - Dynamic section header showing active filter count
+ * - Descriptive helper text for each toggle option
+ * - Full accessibility support with ARIA labels
+ * - Smooth animations when opening/closing
+ * 
+ * @example
+ * ```tsx
+ * <FilterPopup
+ *   isOpen={filtersOpen}
+ *   onClose={() => setFiltersOpen(false)}
+ *   showWorkers={showWorkers}
+ *   showOrganizations={showOrganizations}
+ *   showJobs={showJobs}
+ *   onShowWorkersChange={setShowWorkers}
+ *   onShowOrganizationsChange={setShowOrganizations}
+ *   onShowJobsChange={setShowJobs}
+ * />
+ * ```
  */
 export const FilterPopup = ({
   isOpen,
@@ -32,6 +54,7 @@ export const FilterPopup = ({
   onShowOrganizationsChange,
   onShowJobsChange,
 }: FilterPopupProps) => {
+  // Track which accordion sections are expanded (currently only 'show' section exists)
   const [openSections, setOpenSections] = useState<Set<AccordionSection>>(new Set(['show']))
 
   const toggleSection = (section: AccordionSection) => {
@@ -44,6 +67,27 @@ export const FilterPopup = ({
       }
       return newSet
     })
+  }
+
+  // Calculate how many filter types are currently active
+  const activeFilterCount = [
+    showWorkers,
+    showOrganizations,
+    showJobs,
+  ].filter(Boolean).length
+
+  /**
+   * Generate section header text with active filter indicators
+   * Shows "None" if no filters active, "All" if all active, or lists active filters
+   */
+  const getSectionHeaderText = () => {
+    if (activeFilterCount === 0) return 'Display on Map (None)'
+    if (activeFilterCount === 3) return 'Display on Map (All)'
+    const activeFilters: string[] = []
+    if (showWorkers) activeFilters.push('Workers')
+    if (showOrganizations) activeFilters.push('Employers')
+    if (showJobs) activeFilters.push('Jobs')
+    return `Display on Map (${activeFilters.join(', ')})`
   }
 
   return (
@@ -116,7 +160,7 @@ export const FilterPopup = ({
                   >
                     <XStack justify="space-between" items="center" flex={1}>
                       <Text fontSize="$4" fontWeight="600">
-                        Show
+                        {getSectionHeaderText()}
                       </Text>
                       {openSections.has('show') ? (
                         <ChevronDown size={16} />
@@ -129,49 +173,73 @@ export const FilterPopup = ({
                   {openSections.has('show') && (
                     <YStack gap="$3" px="$3" py="$3">
                       {/* Workers Toggle */}
-                      <XStack justify="space-between" items="center">
-                        <Label htmlFor="workers-toggle" fontSize="$3">
-                          Workers
-                        </Label>
-                        <Switch
-                          id="workers-toggle"
-                          size="$3"
-                          checked={showWorkers}
-                          onCheckedChange={onShowWorkersChange}
-                        >
-                          <Switch.Thumb animation="quick" />
-                        </Switch>
-                      </XStack>
+                      <YStack gap="$1">
+                        <XStack justify="space-between" items="center">
+                          <Label htmlFor="workers-toggle" fontSize="$3">
+                            Workers
+                          </Label>
+                          <Switch
+                            id="workers-toggle"
+                            size="$3"
+                            checked={showWorkers}
+                            onCheckedChange={onShowWorkersChange}
+                            aria-label={showWorkers ? 'Showing workers on map' : 'Hiding workers on map'}
+                            accessibilityRole="switch"
+                            accessibilityState={{ checked: showWorkers }}
+                          >
+                            <Switch.Thumb animation="quick" />
+                          </Switch>
+                        </XStack>
+                        <Text fontSize="$1" color="$color10" pl="$1">
+                          Show worker profiles on the map
+                        </Text>
+                      </YStack>
 
-                      {/* Organizations Toggle */}
-                      <XStack justify="space-between" items="center">
-                        <Label htmlFor="organizations-toggle" fontSize="$3">
-                          Organizations
-                        </Label>
-                        <Switch
-                          id="organizations-toggle"
-                          size="$3"
-                          checked={showOrganizations}
-                          onCheckedChange={onShowOrganizationsChange}
-                        >
-                          <Switch.Thumb animation="quick" />
-                        </Switch>
-                      </XStack>
+                      {/* Employers Toggle */}
+                      <YStack gap="$1">
+                        <XStack justify="space-between" items="center">
+                          <Label htmlFor="employers-toggle" fontSize="$3">
+                            Employers
+                          </Label>
+                          <Switch
+                            id="employers-toggle"
+                            size="$3"
+                            checked={showOrganizations}
+                            onCheckedChange={onShowOrganizationsChange}
+                            aria-label={showOrganizations ? 'Showing employers on map' : 'Hiding employers on map'}
+                            accessibilityRole="switch"
+                            accessibilityState={{ checked: showOrganizations }}
+                          >
+                            <Switch.Thumb animation="quick" />
+                          </Switch>
+                        </XStack>
+                        <Text fontSize="$1" color="$color10" pl="$1">
+                          Show employer organizations on the map
+                        </Text>
+                      </YStack>
 
                       {/* Jobs Toggle */}
-                      <XStack justify="space-between" items="center">
-                        <Label htmlFor="jobs-toggle" fontSize="$3">
-                          Jobs
-                        </Label>
-                        <Switch
-                          id="jobs-toggle"
-                          size="$3"
-                          checked={showJobs}
-                          onCheckedChange={onShowJobsChange}
-                        >
-                          <Switch.Thumb animation="quick" />
-                        </Switch>
-                      </XStack>
+                      <YStack gap="$1">
+                        <XStack justify="space-between" items="center">
+                          <Label htmlFor="jobs-toggle" fontSize="$3">
+                            Jobs
+                          </Label>
+                          <Switch
+                            id="jobs-toggle"
+                            size="$3"
+                            checked={showJobs}
+                            onCheckedChange={onShowJobsChange}
+                            aria-label={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
+                            accessibilityRole="switch"
+                            accessibilityState={{ checked: showJobs }}
+                          >
+                            <Switch.Thumb animation="quick" />
+                          </Switch>
+                        </XStack>
+                        <Text fontSize="$1" color="$color10" pl="$1">
+                          Show job openings on the map
+                        </Text>
+                      </YStack>
                     </YStack>
                   )}
                 </YStack>
