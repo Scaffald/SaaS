@@ -169,7 +169,7 @@ export const DiscoverMapScreen = () => {
       // Also select in rail for desktop view
       if (!isSmallScreen) {
         setSelectedProfileId(pinId)
-        setShowRail(true)
+        updateResultsRailVisible(true)
         setTimeout(() => {
           if (resultListRef.current?.scrollToCard) {
             resultListRef.current.scrollToCard(pinId)
@@ -177,7 +177,7 @@ export const DiscoverMapScreen = () => {
         }, 200)
       }
     },
-    [isSmallScreen, talentProfiles, jobs, organizations]
+    [isSmallScreen, talentProfiles, jobs, organizations, updateResultsRailVisible]
   )
 
   const handleReset = useCallback(() => {
