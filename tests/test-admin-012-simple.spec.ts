@@ -10,7 +10,7 @@ test.describe('Admin Discover Workers', () => {
     test.setTimeout(60000) // 60 second timeout
 
     // Use the working auth helper
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     console.log('✓ Authenticated as admin and profile complete')
 
     // Navigate to worker discovery

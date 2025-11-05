@@ -5,7 +5,7 @@ import { signInAsAdmin } from './playwright-helpers/auth'
 test.describe('Admin • /dashboard/discover', () => {
   test('explore discover route UI elements', async ({ page }: { page: Page }) => {
     // Sign in as admin
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
 
     // Navigate to discover route
     await page.goto('/dashboard/discover')

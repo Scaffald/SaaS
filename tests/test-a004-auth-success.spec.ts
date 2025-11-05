@@ -55,7 +55,7 @@ test.describe('Admin • /auth/success', () => {
   // See ticket description for expected behavior
   test.skip('shows success page even for authenticated admin (no redirect implemented)', async ({ page }: { page: Page }) => {
     // Sign in as admin (auto-handles profile completion)
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
 
     // Verify we're on dashboard after sign in
     await page.waitForURL('**/dashboard**', { timeout: 15000 })

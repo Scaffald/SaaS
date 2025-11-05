@@ -4,7 +4,7 @@ import { signInAsAdmin } from './playwright-helpers/auth'
 
 test.describe('Admin • /', () => {
   test('navigates to dashboard and page loads correctly', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
 
     // Verify we're on dashboard
     expect(page.url()).toContain('/dashboard')
@@ -22,7 +22,7 @@ test.describe('Admin • /', () => {
   })
 
   test('displays main UI structure with navigation bar', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.waitForTimeout(1000)
 
     // Verify top navigation bar elements - use heading role for specificity
@@ -34,7 +34,7 @@ test.describe('Admin • /', () => {
   })
 
   test('displays profile completion widget with correct structure', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.waitForTimeout(1500)
 
     // Verify widget title
@@ -65,7 +65,7 @@ test.describe('Admin • /', () => {
   })
 
   test('displays career assessment widget with RIASEC dimensions', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.waitForTimeout(1500)
 
     // Check if Career Assessment widget is visible
@@ -93,7 +93,7 @@ test.describe('Admin • /', () => {
   })
 
   test('displays news feed section', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.waitForTimeout(1500)
 
     // Verify news section header
@@ -107,7 +107,7 @@ test.describe('Admin • /', () => {
   })
 
   test('sidebar drawer exists and can be accessed', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.waitForTimeout(1500)
 
     // Check if navigation link to Dashboard exists in the drawer (drawer is open by default on desktop)
@@ -122,7 +122,7 @@ test.describe('Admin • /', () => {
   })
 
   test('navigation menu structure exists', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.waitForTimeout(1500)
 
     // Check for menu items (they may be in drawer or elsewhere)
@@ -134,7 +134,7 @@ test.describe('Admin • /', () => {
   })
 
   test('verifies dashboard page has expected sections', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.waitForTimeout(1500)
 
     const pageText = await page.locator('body').textContent() || ''
@@ -146,7 +146,7 @@ test.describe('Admin • /', () => {
   })
 
   test('verifies page responsiveness and layout stability', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.waitForTimeout(1500)
 
     // Get initial page height
@@ -163,7 +163,7 @@ test.describe('Admin • /', () => {
   })
 
   test('handles direct navigation to dashboard route', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
 
     // Verify we're on dashboard
     expect(page.url()).toContain('/dashboard')

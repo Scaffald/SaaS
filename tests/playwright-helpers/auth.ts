@@ -107,42 +107,48 @@ export async function signInAsUser(page: Page, email: string, password: string):
   // Wait for page to load
   await page.waitForLoadState('networkidle')
 
-  // Set authentication state using Supabase's storage key pattern
-  // The key format is: sb-{hostname-with-dashes}-auth-token
+  // Navigate to root to initialize the app
+  await page.goto('/', { waitUntil: 'domcontentloaded' })
+
+  // Set authentication in localStorage with correct Supabase key format
+  // Supabase JS SDK v2 uses: sb-<hostname-normalized>-auth-token
+  // where hostname has dots and colons replaced with dashes
   await page.evaluate(
     ({ session, user, url }) => {
-      const hostname = new URL(url).hostname.replace(/\./g, '-').replace(/:/g, '-')
+      // Normalize hostname: replace dots and colons with dashes
+      const hostname = new URL(url).hostname.replace(/\./g, '-')
       const storageKey = `sb-${hostname}-auth-token`
-      
-      // Store the full session object (matching Supabase-js format)
-      localStorage.setItem(storageKey, JSON.stringify({
+
+      console.log('[TEST AUTH] Setting localStorage key:', storageKey)
+
+      // Create the session object matching Supabase's expected format
+      const authData = {
         access_token: session.access_token,
         refresh_token: session.refresh_token,
         expires_at: session.expires_at,
         expires_in: session.expires_in,
         token_type: session.token_type,
         user: user,
-      }))
-      
-      // Also set the shorter key (Supabase sometimes uses both)
-      const shortKey = `sb-${new URL(url).hostname.split('.')[0]}-auth-token`
-      if (shortKey !== storageKey) {
-        localStorage.setItem(shortKey, JSON.stringify({
-          access_token: session.access_token,
-          refresh_token: session.refresh_token,
-          expires_at: session.expires_at,
-          expires_in: session.expires_in,
-          token_type: session.token_type,
-          user: user,
-        }))
       }
+
+      localStorage.setItem(storageKey, JSON.stringify(authData))
+      console.log('[TEST AUTH] Session stored in localStorage')
     },
     { session: data.session, user: data.user, url: SUPABASE_URL },
   )
 
-  // Navigate to dashboard to trigger auth state processing
-  await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
-  // Wait a bit for auth to initialize, but don't wait for networkidle (pages may be loading indefinitely)
+  // Reload the page to let Supabase read the session from localStorage
+  // This triggers Supabase's initialization which reads from localStorage
+  console.log('[TEST AUTH] Reloading page to initialize Supabase session')
+  await page.reload({ waitUntil: 'domcontentloaded' })
+
+  // Wait for Supabase to initialize the session
+  await page.waitForTimeout(2000)
+
+  // Now navigate to dashboard - Supabase should have the session
+  await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 30000 })
+
+  // Wait for dashboard to fully load
   await page.waitForTimeout(2000)
 }
 

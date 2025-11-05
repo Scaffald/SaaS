@@ -5,7 +5,7 @@ import { signInAsAdmin } from './playwright-helpers/auth'
 test.describe('Admin • /dashboard/profile', () => {
   // Test 1: Profile page loads (no index page - shows subsection content)
   test('loads /dashboard/profile and displays profile content', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(2000)
 
@@ -20,7 +20,7 @@ test.describe('Admin • /dashboard/profile', () => {
 
   // Test 2: General profile subsection
   test('loads and renders /dashboard/profile/general correctly', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
     expect(page.url()).toContain('/dashboard/profile/general')
 
@@ -40,7 +40,7 @@ test.describe('Admin • /dashboard/profile', () => {
 
   // Test 3: Employment subsection
   test('loads and renders /dashboard/profile/employment correctly', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
     expect(page.url()).toContain('/dashboard/profile/employment')
 
@@ -59,7 +59,7 @@ test.describe('Admin • /dashboard/profile', () => {
 
   // Test 4: Education subsection
   test('loads and renders /dashboard/profile/education correctly', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
     expect(page.url()).toContain('/dashboard/profile/education')
 
@@ -78,7 +78,7 @@ test.describe('Admin • /dashboard/profile', () => {
 
   // Test 5: Skills subsection
   test('loads and renders /dashboard/profile/skills correctly', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
     expect(page.url()).toContain('/dashboard/profile/skills')
 
@@ -97,7 +97,7 @@ test.describe('Admin • /dashboard/profile', () => {
 
   // Test 6: Certifications subsection
   test('loads and renders /dashboard/profile/certifications correctly', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/certifications', { waitUntil: 'domcontentloaded' })
     expect(page.url()).toContain('/dashboard/profile/certifications')
 
@@ -116,7 +116,7 @@ test.describe('Admin • /dashboard/profile', () => {
 
   // Test 7: Experience subsection
   test('loads and renders /dashboard/profile/experience correctly', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
     expect(page.url()).toContain('/dashboard/profile/experience')
 

@@ -13,7 +13,7 @@ import { signInAsAdmin } from './playwright-helpers/auth'
 test.describe('Admin: Discover Workers Interface Exploration', () => {
   test.beforeEach(async ({ page }) => {
     // Sign in as admin - auto-handles profile completion
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
   })
 
   test('should load worker discovery page and capture UI layout', async ({ page }) => {

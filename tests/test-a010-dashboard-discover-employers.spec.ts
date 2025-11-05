@@ -10,7 +10,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 1: Route navigation and loading
   test('navigates to employers discovery page and page loads correctly', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
 
     // Navigate to employers discovery route
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
@@ -26,7 +26,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 2: Page header
   test('displays "Search & Filter" section header', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -38,7 +38,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 3: Search input
   test('displays search input with correct placeholder', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -50,7 +50,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 4: Search subtitle
   test('displays search subtitle with helpful text', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -62,7 +62,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 5: Industry filter section
   test('displays Industries filter section header', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -74,7 +74,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 6: Industry filter buttons
   test('displays industry filter buttons', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -91,7 +91,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 7: Clear filters button
   test('displays Clear button when filters are available', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -106,7 +106,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 8: Empty state
   test('displays empty state when no employers found', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -122,7 +122,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 9: Empty state instruction text
   test('displays empty state instruction text when no results', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -140,7 +140,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 10: Loading state
   test('displays loading state during employer fetch', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1000)
 
@@ -154,7 +154,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 11: Result count display
   test('displays employer count when results are shown', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -168,7 +168,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 12: Employer card components
   test('displays employer cards with company information', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -190,7 +190,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 13: View Details button
   test('displays View Details buttons on employer cards', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -210,7 +210,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 14: Search input is interactive
   test('search input is interactive and accepts text', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -223,7 +223,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 15: Industry filter buttons are clickable
   test('industry filter buttons are clickable', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -234,7 +234,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 16: Active Filters section
   test('displays Active Filters section when filters are applied', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -249,7 +249,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 17: Employer card location information
   test('displays location information on employer cards', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -269,7 +269,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 18: Employer card employee count
   test('displays employee count information when available', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -289,7 +289,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 19: Employer card website information
   test('displays website information when available', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -311,7 +311,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 20: Page contains expected employer discovery keywords
   test('page contains expected employer discovery keywords', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -324,7 +324,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 21: Navigation drawer with Discover submenu
   test('displays navigation drawer with Discover submenu', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -336,7 +336,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 22: Current route highlighted in navigation
   test('highlights Employers route in navigation', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -348,7 +348,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 23: Related Discover routes
   test('navigation includes other Discover routes', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -365,7 +365,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 24: Two-panel layout structure
   test('verifies two-panel layout structure exists', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -382,7 +382,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 25: Responsive layout dimensions
   test('verifies responsive layout structure', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -396,7 +396,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 26: UI element inventory
   test('UI element inventory matches expected structure', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -411,7 +411,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 27: Layout stability during loading
   test('page maintains layout stability during loading', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1000)
 
@@ -439,7 +439,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
       }
     })
 
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -460,7 +460,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 29: Navigation from dashboard
   test('can access employers discovery from dashboard navigation', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     // Already on /dashboard after signInAsAdmin
 
     // Navigate to employers discovery
@@ -477,7 +477,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 30: Search icon present
   test('displays search icon with search label', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -489,7 +489,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 31: Filter icon present
   test('displays filter icon with Industries section', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -501,7 +501,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 32: Scrollable employer list
   test('employer list is scrollable when results exceed viewport', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -520,7 +520,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 33: Employer card hover states
   test('employer cards support hover interactions', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -539,7 +539,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 34: Industry badge styling
   test('employer cards display industry badges with proper styling', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -564,7 +564,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 35: Real-time search filtering
   test('search input provides real-time filtering functionality', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -575,7 +575,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 36: Multiple industry selection
   test('supports multiple industry selection with OR logic', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -597,7 +597,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 37: Separators between sections
   test('displays visual separators between major sections', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -613,7 +613,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 38: Company description truncation
   test('employer cards truncate long descriptions properly', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -632,7 +632,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 39: Combined search and industry filters
   test('supports combined search and industry filters with AND logic', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -647,7 +647,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 40: Profile update banner in navigation
   test('verifies profile update banner in navigation drawer', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 

@@ -5,7 +5,7 @@ import { signInAsAdmin } from './playwright-helpers/auth'
 test.describe('Admin • /dashboard/profile/general', () => {
   // Test 1: Route navigation and initial loading
   test('navigates to general profile page and loads correctly', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -21,7 +21,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 2: Page displays general information content
   test('displays general information content', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -36,7 +36,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 3: Right panel help text
   test('displays right panel with general information help text', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -51,7 +51,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 4: First name field
   test('displays first name input field', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -66,7 +66,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 5: Last name field
   test('displays last name input field', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -81,7 +81,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 6: Email field (read-only)
   test('displays email field as read-only', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -96,7 +96,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 7: Phone number field
   test('displays phone number input field', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -111,7 +111,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 8: About/Bio textarea
   test('displays about/bio textarea field', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -126,7 +126,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 9: Avatar/profile photo section
   test('displays avatar/profile photo upload section', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -145,7 +145,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 10: Address section presence
   test('displays address input section', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -160,7 +160,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 11: Save button presence
   test('displays save changes button', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -180,7 +180,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 12: First name accepts text input
   test('allows entering first name', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -205,7 +205,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 13: Last name accepts text input
   test('allows entering last name', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -230,7 +230,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 14: About textarea accepts multiline text
   test('allows entering about/bio text', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -255,7 +255,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 15: Form validation - first name required
   test('validates first name as required field', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -284,7 +284,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 16: Form validation - last name required
   test('validates last name as required field', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -311,7 +311,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 17: Form validation - name max length (50 chars)
   test('validates first name max length (50 characters)', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -345,7 +345,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 18: Form validation - about max length (500 chars)
   test('validates about section max length (500 characters)', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -374,7 +374,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 19: Phone number format validation
   test('displays phone number with formatting', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -389,7 +389,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 20: Save button disabled when form is clean
   test('save button is disabled when no changes are made', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -404,7 +404,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 21: Form dirty state tracking
   test('form tracks dirty state when changes are made', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -432,7 +432,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 22: Address components (city, state, zip)
   test('displays address component fields', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -455,7 +455,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 23: Country field
   test('displays country selector field', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -474,7 +474,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 24: Right panel educational tips
   test('displays educational tips in right panel', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -497,7 +497,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 25: Form data persistence
   test('loads existing profile data if available', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -516,7 +516,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 26: Multiple input fields present
   test('displays all required form fields', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -539,7 +539,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 27: Page responsiveness and layout
   test('maintains responsive layout with form sections', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -557,7 +557,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 28: Error display for invalid inputs
   test('displays validation errors inline', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -585,7 +585,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 29: Avatar upload interaction
   test('avatar section allows interaction', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -604,7 +604,7 @@ test.describe('Admin • /dashboard/profile/general', () => {
 
   // Test 30: Form has proper structure
   test('form has proper structure and accessibility', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(

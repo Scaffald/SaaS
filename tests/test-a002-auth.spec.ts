@@ -164,7 +164,7 @@ test.describe('Admin • /auth', () => {
   })
 
   test('navigation from auth page after sign in', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
 
     // Navigate back to auth page
     await page.goto('/auth', { waitUntil: 'domcontentloaded' })

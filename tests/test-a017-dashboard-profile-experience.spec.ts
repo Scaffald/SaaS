@@ -8,7 +8,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   // =============================================================================
 
   test('navigates to experience page and loads correctly', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -23,7 +23,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('displays work experience content after loading', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -37,7 +37,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('displays right panel help text', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -56,7 +56,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   // =============================================================================
 
   test('displays job title input field', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -70,7 +70,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('displays company name input field', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -84,7 +84,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('displays employment type selector', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -98,7 +98,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('shows employment type options', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -119,7 +119,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('displays start date input field', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -133,7 +133,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('displays end date input field', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -147,7 +147,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('displays "currently working here" checkbox', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -161,7 +161,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('displays career level selector', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -175,7 +175,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('shows career level options', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -196,7 +196,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('displays location input field', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -210,7 +210,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('displays remote work checkbox', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -224,7 +224,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('displays job description textarea', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -238,7 +238,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('displays add experience button', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -252,7 +252,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('shows total years experience field', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -271,7 +271,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   // =============================================================================
 
   test('displays save button', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -291,7 +291,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('save button exists in form', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -305,7 +305,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('can interact with form fields', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -331,7 +331,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('shows validation for required fields', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -346,7 +346,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('has checkboxes for boolean fields', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -362,7 +362,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('can click add experience button', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -384,7 +384,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('shows remove button for experience entries', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -404,7 +404,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   // =============================================================================
 
   test('displays saved experience entries if they exist', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -424,7 +424,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('shows date range formatting for saved entries', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -445,7 +445,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('displays location with remote indicator', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -461,7 +461,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('shows current position badge when applicable', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -482,7 +482,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('displays employment type in saved entries', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -502,7 +502,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   // =============================================================================
 
   test('maintains responsive layout with form sections', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -523,7 +523,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('shows form fields in organized card layout', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -539,7 +539,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('displays page with proper two-column layout', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -559,7 +559,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   // =============================================================================
 
   test('shows empty state when no experience entries exist', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(
@@ -580,7 +580,7 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('loads page without errors', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
     await page.waitForFunction(

@@ -16,7 +16,7 @@ test.describe('Admin • Employer Discovery (Simplified)', () => {
   // Setup: Sign in as admin and navigate to employer discovery route before each test
   test.beforeEach(async ({ page }: { page: Page }) => {
     console.log('Starting admin sign in...')
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     console.log('Admin signed in successfully, now on /dashboard')
 
     console.log('Navigating to employer discovery route...')

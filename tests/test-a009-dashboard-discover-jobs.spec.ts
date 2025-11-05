@@ -9,7 +9,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('navigates to job discovery page and page loads correctly', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
 
     // Navigate to job discovery route
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
@@ -24,7 +24,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('displays page header with "Search Jobs" title', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -33,7 +33,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('displays search input with correct placeholder', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -44,7 +44,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('displays Filters section with filter icon', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -55,7 +55,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('displays Job Source filter section', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -66,7 +66,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('displays all three job source filter buttons', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -79,7 +79,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('displays "Scaffald" designation for internal jobs', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -90,7 +90,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('displays empty state when no jobs found', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -101,7 +101,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('displays empty state instruction text', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -112,7 +112,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('search input is interactive and accepts text', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -124,7 +124,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('job source filter buttons are clickable', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -134,7 +134,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('displays Clear button when filters are available', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -149,7 +149,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('displays Active Filters section when filters are applied', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -164,7 +164,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('page contains expected job discovery keywords', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -176,7 +176,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('displays navigation drawer with Discover submenu', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -187,7 +187,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('highlights current route in navigation', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -198,7 +198,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('displays hamburger menu button in header', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -208,7 +208,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('displays notification bell in header', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -224,7 +224,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('verifies responsive layout structure', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -237,7 +237,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('UI element inventory matches expected structure', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -253,7 +253,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('page maintains layout stability during loading', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1000)
 
@@ -280,7 +280,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
       }
     })
 
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -301,7 +301,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('can access job discovery from dashboard navigation', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     // Already on /dashboard after signInAsAdmin
 
     // Navigate to job discovery
@@ -317,7 +317,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('displays search section header with search icon context', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -328,7 +328,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('verifies two-panel layout structure exists', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -342,7 +342,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('displays loading state during search', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1000)
 
@@ -355,7 +355,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('verifies profile update banner in navigation drawer', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -368,7 +368,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('displays Scaffald logo in navigation drawer', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -379,7 +379,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('displays theme toggle in navigation drawer footer', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -396,7 +396,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('displays sign out option in navigation drawer', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -409,7 +409,7 @@ test.describe('Admin • /dashboard/discover/jobs', () => {
   })
 
   test('navigation includes other Discover routes', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 

@@ -19,7 +19,7 @@ test.describe('Admin • /dashboard/discover/employers - Employer Discovery', ()
 
   // Setup: Sign in as admin and navigate to employer discovery route before each test
   test.beforeEach(async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     // signInAsAdmin leaves us on /dashboard, now navigate to the employer discovery route
     await page.goto(ROUTE_PATH, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(2000)

@@ -9,7 +9,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('navigates to worker discovery page and page loads correctly', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
 
     // Navigate to worker discovery route
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
@@ -24,7 +24,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('displays page header with correct title', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -33,7 +33,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('displays worker result count', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -43,7 +43,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('displays worker cards with correct structure', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -59,7 +59,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('displays worker card with experience information', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -70,7 +70,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('displays worker card with location information', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -85,7 +85,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('displays worker profile scores', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -99,7 +99,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('displays professional titles for workers', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -110,7 +110,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('displays search input field', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -123,7 +123,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('displays filter controls', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -139,7 +139,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('has interactive buttons for UI controls', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -149,7 +149,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('displays multiple worker cards in scrollable list', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -162,7 +162,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('page contains expected content keywords', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -174,7 +174,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('UI element inventory matches expected structure', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -190,7 +190,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('verifies responsive layout for mobile optimization', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -204,7 +204,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('displays navigation elements in header', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -222,7 +222,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
       }
     })
 
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -240,7 +240,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('page maintains layout stability during loading', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1000)
 
@@ -259,7 +259,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('can access worker discovery from dashboard navigation', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     // Already on /dashboard after signInAsAdmin
 
     // Navigate to worker discovery
@@ -275,7 +275,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('displays worker cards with consistent structure', async ({ page }: { page: Page }) => {
-    await signInAsAdmin(page)
+  // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
