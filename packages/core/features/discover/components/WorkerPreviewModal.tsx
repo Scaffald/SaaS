@@ -8,10 +8,13 @@ import {
   ExternalLink,
   User,
   DollarSign,
+  Briefcase,
+  GraduationCap,
 } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { api } from '@app/core/utils/api'
 import { RouteBuilder } from '@app/core/constants/routes'
+import { formatDateRange } from '@app/core/features/profile/utils/date-formatting'
 
 interface WorkerPreviewModalProps {
   userId: string | null
@@ -45,7 +48,22 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
       { enabled: !!userId && open }
     )
 
-  const isLoading = profileLoading || skillsLoading || certsLoading
+  // Fetch work experience
+  const { data: experience = [], isLoading: experienceLoading } =
+    api.userProfile.getUserExperience.useQuery(
+      { userId: userId || '' },
+      { enabled: !!userId && open }
+    )
+
+  // Fetch education
+  const { data: education = [], isLoading: educationLoading } =
+    api.userProfile.getUserEducation.useQuery(
+      { userId: userId || '' },
+      { enabled: !!userId && open }
+    )
+
+  const isLoading =
+    profileLoading || skillsLoading || certsLoading || experienceLoading || educationLoading
 
   const handleViewFullProfile = () => {
     if (userId) {
@@ -60,8 +78,10 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
     return `$${dollars.toFixed(2)}/hr`
   }
 
-  const topSkills = skills.slice(0, 5)
-  const topCertifications = certifications.slice(0, 3)
+  const topSkills = skills.slice(0, 10)
+  const topCertifications = certifications.slice(0, 5)
+  const recentExperience = experience.slice(0, 3)
+  const topEducation = education.slice(0, 1)
 
   return (
     <ResponsiveModal
@@ -86,7 +106,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
       ) : (
         <>
           {/* Profile Header */}
-          <YStack gap="$3" items="center">
+          <YStack gap="$2" items="center">
             {profile.avatar_url ? (
               <YStack width={96} height={96} rounded="$10" overflow="hidden" bg="$color3">
                 <img
@@ -145,7 +165,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           <Separator />
 
           {/* Quick Info */}
-          <YStack gap="$3">
+          <YStack gap="$2">
             {profile.location && (
               <XStack gap="$2" items="center">
                 <MapPin size={18} color="$color10" />
@@ -201,12 +221,23 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           {topSkills.length > 0 && (
             <>
               <Separator />
-              <YStack gap="$3">
-                <XStack items="center" gap="$2">
-                  <Award size={18} color="$color12" />
-                  <Text fontSize="$5" fontWeight="600" color="$color12">
-                    Top Skills
-                  </Text>
+              <YStack gap="$2">
+                <XStack items="center" gap="$2" justify="space-between">
+                  <XStack items="center" gap="$2">
+                    <Award size={18} color="$color12" />
+                    <Text fontSize="$5" fontWeight="600" color="$color12">
+                      Top Skills
+                    </Text>
+                  </XStack>
+                  {skills.length > 10 && (
+                    <Button
+                      size="$2"
+                      variant="outlined"
+                      onPress={handleViewFullProfile}
+                    >
+                      View All ({skills.length})
+                    </Button>
+                  )}
                 </XStack>
                 <YStack gap="$2">
                   {/* biome-ignore lint/suspicious/noExplicitAny: API response type */}
@@ -236,12 +267,23 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           {topCertifications.length > 0 && (
             <>
               <Separator />
-              <YStack gap="$3">
-                <XStack items="center" gap="$2">
-                  <BadgeCheck size={18} color="$color12" />
-                  <Text fontSize="$5" fontWeight="600" color="$color12">
-                    Certifications
-                  </Text>
+              <YStack gap="$2">
+                <XStack items="center" gap="$2" justify="space-between">
+                  <XStack items="center" gap="$2">
+                    <BadgeCheck size={18} color="$color12" />
+                    <Text fontSize="$5" fontWeight="600" color="$color12">
+                      Certifications
+                    </Text>
+                  </XStack>
+                  {certifications.length > 5 && (
+                    <Button
+                      size="$2"
+                      variant="outlined"
+                      onPress={handleViewFullProfile}
+                    >
+                      View All ({certifications.length})
+                    </Button>
+                  )}
                 </XStack>
                 <YStack gap="$2">
                   {/* biome-ignore lint/suspicious/noExplicitAny: API response type */}
@@ -252,6 +294,75 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                       </Text>
                       <Text fontSize="$3" color="$color10">
                         {cert.issuing_organization}
+                        {cert.issue_date && ` • ${new Date(cert.issue_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}`}
+                      </Text>
+                    </YStack>
+                  ))}
+                </YStack>
+              </YStack>
+            </>
+          )}
+
+          {/* Work Experience */}
+          {recentExperience.length > 0 && (
+            <>
+              <Separator />
+              <YStack gap="$2">
+                <XStack items="center" gap="$2" justify="space-between">
+                  <XStack items="center" gap="$2">
+                    <Briefcase size={18} color="$color12" />
+                    <Text fontSize="$5" fontWeight="600" color="$color12">
+                      Recent Experience
+                    </Text>
+                  </XStack>
+                  {experience.length > 3 && (
+                    <Button
+                      size="$2"
+                      variant="outlined"
+                      onPress={handleViewFullProfile}
+                    >
+                      View All ({experience.length})
+                    </Button>
+                  )}
+                </XStack>
+                <YStack gap="$2">
+                  {/* biome-ignore lint/suspicious/noExplicitAny: API response type */}
+                  {recentExperience.map((exp: any) => (
+                    <YStack key={exp.id} gap="$1">
+                      <Text fontSize="$4" fontWeight="600" color="$color12">
+                        {exp.job_title} at {exp.company_name}
+                      </Text>
+                      <Text fontSize="$3" color="$color10">
+                        {formatDateRange(exp.start_date, exp.end_date, exp.is_current)}
+                      </Text>
+                    </YStack>
+                  ))}
+                </YStack>
+              </YStack>
+            </>
+          )}
+
+          {/* Education */}
+          {topEducation.length > 0 && (
+            <>
+              <Separator />
+              <YStack gap="$2">
+                <XStack items="center" gap="$2">
+                  <GraduationCap size={18} color="$color12" />
+                  <Text fontSize="$5" fontWeight="600" color="$color12">
+                    Education
+                  </Text>
+                </XStack>
+                <YStack gap="$2">
+                  {/* biome-ignore lint/suspicious/noExplicitAny: API response type */}
+                  {topEducation.map((edu: any) => (
+                    <YStack key={edu.id} gap="$1">
+                      <Text fontSize="$4" fontWeight="600" color="$color12">
+                        {edu.degree_type} {edu.degree_name}
+                      </Text>
+                      <Text fontSize="$3" color="$color10">
+                        {edu.university_name}
+                        {edu.graduation_year && ` • ${edu.graduation_year}`}
                       </Text>
                     </YStack>
                   ))}
