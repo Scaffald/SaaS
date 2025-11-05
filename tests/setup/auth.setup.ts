@@ -1,14 +1,38 @@
 import { test as setup, expect } from '@playwright/test'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
 
 const authFile = 'tests/.auth/admin.json'
 const userFile = 'tests/.auth/user.json'
 const superAdminFile = 'tests/.auth/super-admin.json'
 
 /**
+ * Check if auth file exists and is recent (less than 7 days old)
+ */
+function authFileIsValid(filePath: string): boolean {
+  try {
+    const stat = fs.statSync(filePath)
+    const ageInDays = (Date.now() - stat.mtimeMs) / (1000 * 60 * 60 * 24)
+    return ageInDays < 7
+  } catch {
+    return false
+  }
+}
+
+/**
  * Setup: Authenticate as admin and save storage state
  * This runs once before all tests to create a reusable authentication state
+ *
+ * NOTE: Skips if auth file already exists and is recent (< 7 days old)
  */
 setup('authenticate as admin', async ({ page }) => {
+  // Skip if auth file already exists and is valid
+  if (authFileIsValid(authFile)) {
+    console.log(`✅ Using existing admin auth file: ${authFile}`)
+    console.log('   (File is less than 7 days old, skipping setup)')
+    return
+  }
+
   console.log('🔐 Setting up admin authentication...')
 
   // Navigate to auth page
@@ -83,8 +107,17 @@ setup('authenticate as admin', async ({ page }) => {
 
 /**
  * Setup: Authenticate as regular user and save storage state
+ *
+ * NOTE: Skips if auth file already exists and is recent (< 7 days old)
  */
 setup('authenticate as user', async ({ page }) => {
+  // Skip if auth file already exists and is valid
+  if (authFileIsValid(userFile)) {
+    console.log(`✅ Using existing user auth file: ${userFile}`)
+    console.log('   (File is less than 7 days old, skipping setup)')
+    return
+  }
+
   console.log('🔐 Setting up user authentication...')
 
   const email = 'testuser1@example.com'
@@ -121,8 +154,17 @@ setup('authenticate as user', async ({ page }) => {
 
 /**
  * Setup: Authenticate as super admin and save storage state
+ *
+ * NOTE: Skips if auth file already exists and is recent (< 7 days old)
  */
 setup('authenticate as super admin', async ({ page }) => {
+  // Skip if auth file already exists and is valid
+  if (authFileIsValid(superAdminFile)) {
+    console.log(`✅ Using existing super admin auth file: ${superAdminFile}`)
+    console.log('   (File is less than 7 days old, skipping setup)')
+    return
+  }
+
   console.log('🔐 Setting up super admin authentication...')
 
   const email = 'zach@unicorn.love'
