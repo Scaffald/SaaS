@@ -45,7 +45,7 @@ export const educationProfileSchema = z.object({
           .optional(),
         custom_degree_type: z.string().optional(),
         field_of_study: z.string().optional(),
-        start_date: z.string().min(1, "Start date is required"),
+        start_date: z.string().optional(),
         end_date: z.string().optional(),
         expected_graduation_date: z.string().optional(),
         is_current: z.boolean().default(false),

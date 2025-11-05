@@ -26,7 +26,7 @@ import {
   DEGREE_TYPE_OPTIONS,
   createNewEducationEntry,
 } from './config'
-import { DashboardWidget, UniversityAutocomplete, ConfirmationDialog } from '@app/ui'
+import { DashboardWidget, UniversityAutocomplete, ConfirmationDialog, MonthYearPicker } from '@app/ui'
 import { api } from '@app/core/utils/api'
 
 // University type definition
@@ -90,6 +90,7 @@ export function ProfileEducationLeft() {
     handleSubmit,
     reset,
     setValue,
+    watch,
     formState: { errors, isDirty },
   } = useForm<EducationProfileFormData>({
     resolver: zodResolver(educationProfileSchema),
@@ -480,31 +481,40 @@ export function ProfileEducationLeft() {
               <YStack gap="$2">
                 <XStack gap="$3">
                   <YStack gap="$2" flex={1}>
-                    <Text>Start Date *</Text>
                     <Controller
                       name={`education_entries.${index}.start_date`}
                       control={control}
                       render={({ field }) => (
-                        <Input
-                          placeholder="YYYY-MM-DD"
-                          value={field.value || ''}
-                          onChangeText={field.onChange}
+                        <MonthYearPicker
+                          value={field.value ? new Date(field.value) : null}
+                          onChange={(date) => {
+                            // Store as YYYY-MM-DD format (first day of month)
+                            const dateStr = date ? date.toISOString().split('T')[0] : null
+                            field.onChange(dateStr || undefined)
+                          }}
+                          placeholder="Select start date"
                           error={errors.education_entries?.[index]?.start_date?.message}
+                          label="Start Date"
                         />
                       )}
                     />
                   </YStack>
                   <YStack gap="$2" flex={1}>
-                    <Text>End Date</Text>
                     <Controller
                       name={`education_entries.${index}.end_date`}
                       control={control}
                       render={({ field }) => (
-                        <Input
-                          placeholder="YYYY-MM-DD"
-                          value={field.value || ''}
-                          onChangeText={field.onChange}
+                        <MonthYearPicker
+                          value={field.value ? new Date(field.value) : null}
+                          onChange={(date) => {
+                            // Store as YYYY-MM-DD format (first day of month)
+                            const dateStr = date ? date.toISOString().split('T')[0] : null
+                            field.onChange(dateStr || undefined)
+                          }}
+                          placeholder="Select end date"
+                          disabled={watch(`education_entries.${index}.is_current`)}
                           error={errors.education_entries?.[index]?.end_date?.message}
+                          label="End Date"
                         />
                       )}
                     />
@@ -554,20 +564,23 @@ export function ProfileEducationLeft() {
                   control={control}
                   render={({ field: isCurrentField }) => {
                     return isCurrentField.value ? (
-                      <YStack gap="$2">
-                        <Text>Expected Graduation Date</Text>
-                        <Controller
-                          name={`education_entries.${index}.expected_graduation_date`}
-                          control={control}
-                          render={({ field: expectedField }) => (
-                            <Input
-                              placeholder="YYYY-MM-DD"
-                              value={expectedField.value || ''}
-                              onChangeText={expectedField.onChange}
-                            />
-                          )}
-                        />
-                      </YStack>
+                      <Controller
+                        name={`education_entries.${index}.expected_graduation_date`}
+                        control={control}
+                        render={({ field: expectedField }) => (
+                          <MonthYearPicker
+                            value={expectedField.value ? new Date(expectedField.value) : null}
+                            onChange={(date) => {
+                              // Store as YYYY-MM-DD format (first day of month)
+                              const dateStr = date ? date.toISOString().split('T')[0] : null
+                              expectedField.onChange(dateStr || undefined)
+                            }}
+                            placeholder="Select expected graduation date"
+                            error={errors.education_entries?.[index]?.expected_graduation_date?.message}
+                            label="Expected Graduation Date"
+                          />
+                        )}
+                      />
                     ) : null
                   }}
                 />
