@@ -18,17 +18,17 @@ type AccordionSection = 'show'
 
 /**
  * Filter Popup Component
- * 
+ *
  * A 300px wide x 250px high popup that appears above the filter bar with
  * accordion sections for controlling what appears on the map.
- * 
+ *
  * Features:
  * - Toggle visibility of Workers, Employers, and Jobs on the map
  * - Dynamic section header showing active filter count
  * - Descriptive helper text for each toggle option
  * - Full accessibility support with ARIA labels
  * - Smooth animations when opening/closing
- * 
+ *
  * @example
  * ```tsx
  * <FilterPopup
@@ -70,11 +70,7 @@ export const FilterPopup = ({
   }
 
   // Calculate how many filter types are currently active
-  const activeFilterCount = [
-    showWorkers,
-    showOrganizations,
-    showJobs,
-  ].filter(Boolean).length
+  const activeFilterCount = [showWorkers, showOrganizations, showJobs].filter(Boolean).length
 
   /**
    * Generate section header text with active filter indicators
@@ -183,7 +179,9 @@ export const FilterPopup = ({
                             size="$3"
                             checked={showWorkers}
                             onCheckedChange={onShowWorkersChange}
-                            aria-label={showWorkers ? 'Showing workers on map' : 'Hiding workers on map'}
+                            aria-label={
+                              showWorkers ? 'Showing workers on map' : 'Hiding workers on map'
+                            }
                             accessibilityRole="switch"
                             accessibilityState={{ checked: showWorkers }}
                           >
@@ -206,7 +204,11 @@ export const FilterPopup = ({
                             size="$3"
                             checked={showOrganizations}
                             onCheckedChange={onShowOrganizationsChange}
-                            aria-label={showOrganizations ? 'Showing employers on map' : 'Hiding employers on map'}
+                            aria-label={
+                              showOrganizations
+                                ? 'Showing employers on map'
+                                : 'Hiding employers on map'
+                            }
                             accessibilityRole="switch"
                             accessibilityState={{ checked: showOrganizations }}
                           >

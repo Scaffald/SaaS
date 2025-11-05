@@ -38,7 +38,7 @@ function validateMapboxToken(token: string | undefined): { valid: boolean; error
  * Animated search input that appears at the top of the map
  * Provides Mapbox geocoding autocomplete for city, county, region searches
  * Centered above the filter bar with 250px minimum width
- * 
+ *
  * Features:
  * - Validates Mapbox API key before enabling search
  * - Shows user-friendly error messages when API key is missing or invalid
