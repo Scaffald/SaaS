@@ -157,6 +157,7 @@ export const skillsMultiTaxonomyRouter = t.router({
     const { supabase, user } = ctx;
 
     const { data, error } = await supabase
+      .schema("core")
       .from("user_skills")
       .select(`
         id,
@@ -389,9 +390,9 @@ export const skillsMultiTaxonomyRouter = t.router({
   getPrimaryIndustry: protectedProcedure.query(async ({ ctx }) => {
     const { supabase, user } = ctx;
 
-      const { data, error } = await supabase
-        .schema("core")
-        .from("users")
+    const { data, error } = await supabase
+      .schema("core")
+      .from("users")
       .select("industry_id, industries(id, name, slug)")
       .eq("id", user.id)
       .single();

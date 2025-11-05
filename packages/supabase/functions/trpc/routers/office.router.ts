@@ -377,10 +377,11 @@ export const officeRouter = t.router({
       // Update certifications if provided
       if (certification_ids !== undefined) {
         // Delete existing certifications
-        await supabaseAdmin.schema("core").from("job_certifications").delete().eq(
-          "job_id",
-          id,
-        );
+        await supabaseAdmin.schema("core").from("job_certifications").delete()
+          .eq(
+            "job_id",
+            id,
+          );
 
         // Insert new certifications
         if (certification_ids.length > 0) {
@@ -880,7 +881,10 @@ export const officeRouter = t.router({
       // Note: Many tables have ON DELETE CASCADE, but we'll be explicit
 
       // Delete user skills
-      await supabaseAdmin.from("user_skills").delete().eq("user_id", input.id);
+      await supabaseAdmin.schema("core").from("user_skills").delete().eq(
+        "user_id",
+        input.id,
+      );
 
       // Delete user certifications
       await supabaseAdmin.from("user_certifications").delete().eq(
