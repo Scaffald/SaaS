@@ -16,6 +16,7 @@ import { useTalentProfiles } from './hooks/useTalentProfiles'
 import { useOrganizations } from './hooks/useOrganizations'
 import { useJobs } from './hooks/useJobs'
 import { useUserLocation } from './hooks/useUserLocation'
+import { useMapState } from './providers/MapStateProvider'
 
 export const DiscoverMapScreen = () => {
   const { width } = useWindowDimensions()
@@ -26,7 +27,16 @@ export const DiscoverMapScreen = () => {
   // Location functionality
   const { location } = useUserLocation()
 
-  const [searchCenter, setSearchCenter] = useState<[number, number] | null>(null)
+  // Map state from context (persisted)
+  const {
+    state,
+    updateSearchLocation,
+    updateFilters,
+    updateResultsRailVisible,
+    updateViewport,
+    clearState,
+  } = useMapState()
+
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [viewportBounds, setViewportBounds] = useState<ViewportBounds | null>(null)
@@ -39,11 +49,13 @@ export const DiscoverMapScreen = () => {
   const [orgModalOpen, setOrgModalOpen] = useState(false)
   const [orgModalId, setOrgModalId] = useState<string | null>(null)
   const [showSearchInput, setShowSearchInput] = useState(false)
-  const [showRail, setShowRail] = useState(true)
   const [showResultsSheet, setShowResultsSheet] = useState(false)
-  const [showWorkers, setShowWorkers] = useState(true)
-  const [showOrganizations, setShowOrganizations] = useState(true)
-  const [showJobs, setShowJobs] = useState(true)
+
+  // Use persisted state from context
+  const showRail = state.resultsRailVisible
+  const showWorkers = state.activeFilters.showWorkers
+  const showOrganizations = state.activeFilters.showOrganizations
+  const showJobs = state.activeFilters.showJobs
 
   // Fetch data with viewport bounds filtering
   const { data: talentProfiles = [], isLoading } = useTalentProfiles({
@@ -61,14 +73,14 @@ export const DiscoverMapScreen = () => {
 
   // Determine map center based on search location, user location, or default
   const mapCenter: [number, number] = useMemo(() => {
-    if (searchCenter) {
-      return searchCenter
+    if (state.lastSearchLocation?.coordinates) {
+      return state.lastSearchLocation.coordinates
     }
     if (location) {
       return [location.longitude, location.latitude]
     }
     return defaultCenter
-  }, [searchCenter, location])
+  }, [state.lastSearchLocation, location])
 
   // Convert profiles, organizations, and jobs to map pins with selected state
   const mapPins: MapPinType[] = useMemo(() => {
@@ -170,32 +182,45 @@ export const DiscoverMapScreen = () => {
 
   const handleReset = useCallback(() => {
     setSelectedProfileId(null)
-    setSearchCenter(null)
     setShowSearchInput(false)
     // Close any open modals
     setWorkerModalOpen(false)
     setJobModalOpen(false)
     setOrgModalOpen(false)
-  }, [])
+    // Clear persisted state
+    clearState()
+  }, [clearState])
 
   const handleLocationSelect = useCallback(
     (location: { longitude: number; latitude: number; label: string }) => {
-      setSearchCenter([location.longitude, location.latitude])
+      // Update persisted search location
+      updateSearchLocation({
+        coordinates: [location.longitude, location.latitude],
+        label: location.label,
+        zoomLevel: 12,
+        timestamp: Date.now(),
+      })
       // Center the map on the new location
       if (mapRef.current?.flyTo) {
         mapRef.current.flyTo([location.longitude, location.latitude], 12)
       }
     },
-    []
+    [updateSearchLocation]
   )
 
   // Handle viewport changes from map (debounced by 500ms in MapContainer)
   const handleViewportChange = useCallback(
-    (bounds: ViewportBounds, _zoom: number) => {
+    (bounds: ViewportBounds, zoom: number) => {
       setViewportBounds(bounds)
+      // Update persisted viewport state
+      updateViewport({
+        center: mapCenter,
+        zoom,
+        bounds,
+      })
       // Viewport bounds will trigger re-fetch of data via query key dependency
     },
-    []
+    [mapCenter, updateViewport]
   )
 
   return (
@@ -260,7 +285,7 @@ export const DiscoverMapScreen = () => {
 
           {/* Filter Bar */}
           <FilterBar
-            onResultsPress={() => setShowRail(!showRail)}
+            onResultsPress={() => updateResultsRailVisible(!showRail)}
             resultsCount={talentProfiles.length + organizations.length + jobs.length}
             onSearchPress={() => {
               setShowSearchInput(!showSearchInput)
@@ -325,9 +350,9 @@ export const DiscoverMapScreen = () => {
         showWorkers={showWorkers}
         showOrganizations={showOrganizations}
         showJobs={showJobs}
-        onShowWorkersChange={setShowWorkers}
-        onShowOrganizationsChange={setShowOrganizations}
-        onShowJobsChange={setShowJobs}
+        onShowWorkersChange={(value) => updateFilters({ showWorkers: value })}
+        onShowOrganizationsChange={(value) => updateFilters({ showOrganizations: value })}
+        onShowJobsChange={(value) => updateFilters({ showJobs: value })}
       />
     </YStack>
   )
