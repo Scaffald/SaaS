@@ -19,7 +19,13 @@ import { PhoneNumberInput } from '@app/ui'
 import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
-import { DashboardWidget, AvatarImagePicker, RichTextEditor, plainTextToTipTap, ConfirmationDialog } from '@app/ui'
+import {
+  DashboardWidget,
+  AvatarImagePicker,
+  RichTextEditor,
+  plainTextToTipTap,
+  ConfirmationDialog,
+} from '@app/ui'
 import type { JSONContent } from '@tiptap/core'
 
 /**

@@ -230,11 +230,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     </Text>
                   </XStack>
                   {skills.length > 10 && (
-                    <Button
-                      size="$2"
-                      variant="outlined"
-                      onPress={handleViewFullProfile}
-                    >
+                    <Button size="$2" variant="outlined" onPress={handleViewFullProfile}>
                       View All ({skills.length})
                     </Button>
                   )}
@@ -276,11 +272,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     </Text>
                   </XStack>
                   {certifications.length > 5 && (
-                    <Button
-                      size="$2"
-                      variant="outlined"
-                      onPress={handleViewFullProfile}
-                    >
+                    <Button size="$2" variant="outlined" onPress={handleViewFullProfile}>
                       View All ({certifications.length})
                     </Button>
                   )}
@@ -294,7 +286,8 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                       </Text>
                       <Text fontSize="$3" color="$color10">
                         {cert.issuing_organization}
-                        {cert.issue_date && ` • ${new Date(cert.issue_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}`}
+                        {cert.issue_date &&
+                          ` • ${new Date(cert.issue_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}`}
                       </Text>
                     </YStack>
                   ))}
@@ -316,11 +309,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                     </Text>
                   </XStack>
                   {experience.length > 3 && (
-                    <Button
-                      size="$2"
-                      variant="outlined"
-                      onPress={handleViewFullProfile}
-                    >
+                    <Button size="$2" variant="outlined" onPress={handleViewFullProfile}>
                       View All ({experience.length})
                     </Button>
                   )}

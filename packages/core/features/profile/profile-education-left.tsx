@@ -464,9 +464,7 @@ export function ProfileEducationLeft() {
                   control={control}
                   render={({ field }) => {
                     // Use local state to track raw input for better decimal handling
-                    const [localValue, setLocalValue] = useState(
-                      field.value?.toString() || ''
-                    )
+                    const [localValue, setLocalValue] = useState(field.value?.toString() || '')
 
                     // Sync local value when field value changes externally (e.g., form reset)
                     useEffect(() => {

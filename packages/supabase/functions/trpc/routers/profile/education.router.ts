@@ -159,13 +159,16 @@ export const profileEducationRouter = t.router({
         if (fetchError) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: `Failed to fetch existing education: ${fetchError.message}`,
+            message:
+              `Failed to fetch existing education: ${fetchError.message}`,
           });
         }
 
         const existingIds = new Set((existingEducation || []).map((e) => e.id));
         const inputIds = new Set(
-          input.education_entries.filter((e) => e.id).map((e) => e.id as string)
+          input.education_entries.filter((e) => e.id).map((e) =>
+            e.id as string
+          ),
         );
 
         const savedEducation = [];
@@ -173,9 +176,9 @@ export const profileEducationRouter = t.router({
         for (const edu of input.education_entries) {
           // Determine is_verified: true if university_id is provided, false otherwise
           const isVerified = !!edu.university_id;
-          
+
           // Use custom_degree_type if degree_type is "Other", otherwise use degree_type
-          const finalDegreeType = edu.degree_type === "Other" 
+          const finalDegreeType = edu.degree_type === "Other"
             ? (edu.custom_degree_type || null)
             : (edu.degree_type || null);
 
@@ -247,7 +250,9 @@ export const profileEducationRouter = t.router({
         }
 
         // Delete entries that exist in DB but are not in the input array
-        const idsToDelete = Array.from(existingIds).filter((id) => !inputIds.has(id));
+        const idsToDelete = Array.from(existingIds).filter((id) =>
+          !inputIds.has(id)
+        );
         if (idsToDelete.length > 0) {
           const { error: deleteError } = await supabase
             .schema("core")
@@ -259,7 +264,8 @@ export const profileEducationRouter = t.router({
           if (deleteError) {
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
-              message: `Failed to delete removed education entries: ${deleteError.message}`,
+              message:
+                `Failed to delete removed education entries: ${deleteError.message}`,
             });
           }
         }
