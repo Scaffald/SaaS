@@ -88,6 +88,7 @@ export const profileEmploymentSchema = z
           "Class A",
           "Class B",
           "Class C",
+          "Class D",
           "CDL A",
           "CDL B",
           "CDL C",
