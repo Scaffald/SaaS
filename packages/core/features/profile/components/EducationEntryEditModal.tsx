@@ -18,7 +18,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChevronDown } from '@tamagui/lucide-icons'
 import {
-  educationProfileSchema,
+  singleEducationEntrySchema,
   type EducationProfileFormData,
   DEGREE_TYPE_OPTIONS,
 } from '../config'
@@ -115,9 +115,7 @@ export function EducationEntryEditModal({
     watch,
     formState: { errors, isDirty },
   } = useForm<EducationProfileFormData['education_entries'][0]>({
-    resolver: zodResolver(
-      educationProfileSchema.shape.education_entries.element
-    ),
+    resolver: zodResolver(singleEducationEntrySchema),
     mode: 'onChange',
   })
 
@@ -313,7 +311,7 @@ export function EducationEntryEditModal({
                     </Sheet>
                   </Adapt>
 
-                  <Select.Content>
+                  <Select.Content zIndex={200000}>
                     <Select.ScrollUpButton />
                     <Select.Viewport>
                       {DEGREE_TYPE_OPTIONS.map((type, idx) => (
