@@ -63,7 +63,7 @@ export function ProfileEducationLeft() {
 
   // University search state
   const [searchQuery, setSearchQuery] = useState('')
-  
+
   // Track manual entry mode for each education entry (by index)
   const [manualEntryMode, setManualEntryMode] = useState<Record<number, boolean>>({})
 
@@ -89,6 +89,7 @@ export function ProfileEducationLeft() {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isDirty },
   } = useForm<EducationProfileFormData>({
     resolver: zodResolver(educationProfileSchema),
@@ -108,16 +109,17 @@ export function ProfileEducationLeft() {
       const entries = educationQuery.data.map((edu: EducationData, index: number) => {
         // Set manual entry mode if no university_id
         if (!edu.university_id) {
-          setManualEntryMode(prev => ({ ...prev, [index]: true }))
+          setManualEntryMode((prev) => ({ ...prev, [index]: true }))
         }
-        
+
         // Determine if degree_type needs to be "Other" (if it's not in the standard list)
-        const isStandardDegreeType = edu.degree_type 
+        const isStandardDegreeType = edu.degree_type
           ? (DEGREE_TYPE_OPTIONS as readonly string[]).includes(edu.degree_type)
           : false
         const degreeType = isStandardDegreeType ? edu.degree_type : undefined
-        const customDegreeType = !isStandardDegreeType && edu.degree_type ? edu.degree_type : undefined
-        
+        const customDegreeType =
+          !isStandardDegreeType && edu.degree_type ? edu.degree_type : undefined
+
         return {
           id: edu.id,
           university_id: edu.university_id || undefined,
@@ -135,7 +137,7 @@ export function ProfileEducationLeft() {
           location: edu.location || undefined,
         }
       })
-      
+
       const formData = {
         education_level: educationLevelQuery.data.education_level || undefined,
         education_entries: entries,
@@ -281,7 +283,7 @@ export function ProfileEducationLeft() {
                       name={`education_entries.${index}.institution_name`}
                       control={control}
                       render={({ field: nameField }) => {
-                        const isManualMode = manualEntryMode[index] ?? false;
+                        const isManualMode = manualEntryMode[index] ?? false
                         return (
                           <YStack gap="$2">
                             {!isManualMode ? (
@@ -289,26 +291,33 @@ export function ProfileEducationLeft() {
                                 <UniversityAutocomplete
                                   value={nameField.value || ''}
                                   onChange={nameField.onChange}
-                          onUniversitySelect={(university: University) => {
-                            universityField.onChange(university.id)
-                            nameField.onChange(university.name)
-                            setValue(`education_entries.${index}.is_verified`, true, { shouldValidate: false })
-                            setManualEntryMode(prev => ({ ...prev, [index]: false }))
-                          }}
+                                  onUniversitySelect={(university: University) => {
+                                    universityField.onChange(university.id)
+                                    nameField.onChange(university.name)
+                                    setValue(`education_entries.${index}.is_verified`, true, {
+                                      shouldValidate: false,
+                                    })
+                                    setManualEntryMode((prev) => ({ ...prev, [index]: false }))
+                                  }}
                                   onSearch={handleUniversitySearch}
                                   results={searchUniversitiesQuery.data?.universities || []}
                                   loading={searchUniversitiesQuery.isLoading}
                                   searchError={searchUniversitiesQuery.error?.message}
                                   placeholder="Search for institution..."
-                                  error={errors.education_entries?.[index]?.institution_name?.message || errors.education_entries?.[index]?.university_id?.message}
+                                  error={
+                                    errors.education_entries?.[index]?.institution_name?.message ||
+                                    errors.education_entries?.[index]?.university_id?.message
+                                  }
                                 />
                                 <Button
                                   size="$2"
                                   variant="outlined"
                                   onPress={() => {
-                                    setManualEntryMode(prev => ({ ...prev, [index]: true }))
+                                    setManualEntryMode((prev) => ({ ...prev, [index]: true }))
                                     universityField.onChange(null)
-                                    setValue(`education_entries.${index}.is_verified`, false, { shouldValidate: false })
+                                    setValue(`education_entries.${index}.is_verified`, false, {
+                                      shouldValidate: false,
+                                    })
                                   }}
                                   alignSelf="flex-start"
                                 >
@@ -324,13 +333,15 @@ export function ProfileEducationLeft() {
                                     nameField.onChange(text)
                                     universityField.onChange(null)
                                   }}
-                                  error={errors.education_entries?.[index]?.institution_name?.message}
+                                  error={
+                                    errors.education_entries?.[index]?.institution_name?.message
+                                  }
                                 />
                                 <Button
                                   size="$2"
                                   variant="outlined"
                                   onPress={() => {
-                                    setManualEntryMode(prev => ({ ...prev, [index]: false }))
+                                    setManualEntryMode((prev) => ({ ...prev, [index]: false }))
                                     nameField.onChange('')
                                     universityField.onChange(undefined)
                                   }}
@@ -341,7 +352,7 @@ export function ProfileEducationLeft() {
                               </>
                             )}
                           </YStack>
-                        );
+                        )
                       }}
                     />
                   )}
@@ -404,7 +415,7 @@ export function ProfileEducationLeft() {
                   name={`education_entries.${index}.degree_type`}
                   control={control}
                   render={({ field: degreeTypeField }) => {
-                    const isOther = degreeTypeField.value === 'Other';
+                    const isOther = degreeTypeField.value === 'Other'
                     return isOther ? (
                       <Controller
                         name={`education_entries.${index}.custom_degree_type`}
@@ -418,7 +429,7 @@ export function ProfileEducationLeft() {
                           />
                         )}
                       />
-                    ) : null;
+                    ) : null
                   }}
                 />
               </YStack>
@@ -451,7 +462,10 @@ export function ProfileEducationLeft() {
                       value={field.value?.toString() || ''}
                       onChangeText={(text) => {
                         const numValue = Number.parseFloat(text)
-                        if (text === '' || (!Number.isNaN(numValue) && numValue >= 0 && numValue <= 4.0)) {
+                        if (
+                          text === '' ||
+                          (!Number.isNaN(numValue) && numValue >= 0 && numValue <= 4.0)
+                        ) {
                           field.onChange(text === '' ? undefined : numValue)
                         }
                       }}
@@ -496,7 +510,7 @@ export function ProfileEducationLeft() {
                     />
                   </YStack>
                 </XStack>
-                
+
                 {/* Currently Enrolled Checkbox */}
                 <Controller
                   name={`education_entries.${index}.is_current`}
@@ -509,7 +523,9 @@ export function ProfileEducationLeft() {
                           field.onChange(checked === true)
                           // Clear end_date when checking current
                           if (checked === true) {
-                            setValue(`education_entries.${index}.end_date`, undefined, { shouldValidate: true })
+                            setValue(`education_entries.${index}.end_date`, undefined, {
+                              shouldValidate: true,
+                            })
                           }
                         }}
                       >
@@ -520,7 +536,9 @@ export function ProfileEducationLeft() {
                           const newValue = !field.value
                           field.onChange(newValue)
                           if (newValue) {
-                            setValue(`education_entries.${index}.end_date`, undefined, { shouldValidate: true })
+                            setValue(`education_entries.${index}.end_date`, undefined, {
+                              shouldValidate: true,
+                            })
                           }
                         }}
                       >
@@ -529,7 +547,7 @@ export function ProfileEducationLeft() {
                     </XStack>
                   )}
                 />
-                
+
                 {/* Expected Graduation Date (shown when is_current is true) */}
                 <Controller
                   name={`education_entries.${index}.is_current`}
@@ -550,7 +568,7 @@ export function ProfileEducationLeft() {
                           )}
                         />
                       </YStack>
-                    ) : null;
+                    ) : null
                   }}
                 />
               </YStack>
