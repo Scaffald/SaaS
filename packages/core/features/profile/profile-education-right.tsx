@@ -1,7 +1,7 @@
 import { YStack, XStack, Text, Spinner, H4, Button, Dialog } from 'tamagui'
 import { GraduationCap, Calendar, Award, MapPin, Pencil, Trash2, CheckCircle, AlertCircle } from '@tamagui/lucide-icons'
 import { DashboardWidget } from '@app/ui'
-import { ProfileEmptyState } from './components'
+import { ProfileEmptyState, EducationEntryEditModal } from './components'
 import { formatDateRange } from './utils/date-formatting'
 import { api } from '@app/core/utils/api'
 import { useState } from 'react'
@@ -12,6 +12,8 @@ import { useState } from 'react'
  */
 export function ProfileEducationRight() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<string | null>(null)
+  // biome-ignore lint/suspicious/noExplicitAny: tRPC types not yet generated
+  const [editingEntry, setEditingEntry] = useState<any | null>(null)
   
   // Query saved education data
   const educationQuery = api.profile.getEducation.useQuery()
@@ -137,10 +139,7 @@ export function ProfileEducationRight() {
                     size="$2"
                     variant="outlined"
                     icon={Pencil}
-                    onPress={() => {
-                      // TODO: Implement edit mode (will be done in task 14)
-                      console.log('Edit education:', edu.id)
-                    }}
+                    onPress={() => setEditingEntry(edu)}
                   >
                     Edit
                   </Button>
@@ -229,6 +228,16 @@ export function ProfileEducationRight() {
           ))}
         </YStack>
       )}
+
+      {/* Edit Modal */}
+      <EducationEntryEditModal
+        open={!!editingEntry}
+        onOpenChange={(open) => !open && setEditingEntry(null)}
+        educationEntry={editingEntry}
+        onSuccess={() => {
+          educationQuery.refetch()
+        }}
+      />
     </DashboardWidget>
   )
 }
