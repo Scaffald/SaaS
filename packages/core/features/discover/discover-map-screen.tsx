@@ -201,6 +201,19 @@ export const DiscoverMapScreen = () => {
         zoomLevel: 12,
         timestamp: Date.now(),
       })
+      
+      // Calculate viewport bounds immediately based on target location and zoom level
+      // This triggers data fetching before the map animation completes
+      // At zoom level 12, approximate bounds are ±0.1 degrees (roughly 10km radius)
+      const boundsDelta = 0.1
+      const immediateBounds: ViewportBounds = {
+        north: location.latitude + boundsDelta,
+        south: location.latitude - boundsDelta,
+        east: location.longitude + boundsDelta,
+        west: location.longitude - boundsDelta,
+      }
+      setViewportBounds(immediateBounds)
+      
       // Center the map on the new location
       if (mapRef.current?.flyTo) {
         mapRef.current.flyTo([location.longitude, location.latitude], 12)
