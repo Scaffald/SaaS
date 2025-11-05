@@ -1,7 +1,7 @@
 -- =========================================================
 -- 001_seed-users.sql - Phase 2: User Seeding with Metadata
 -- Seeds auth.users with email, password, and user metadata
--- Trigger automatically creates public.users, private.profile, private.preferences
+-- Trigger automatically creates core.users, core.profile, core.preferences
 -- =========================================================
 
 BEGIN;

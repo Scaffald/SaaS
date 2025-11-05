@@ -247,6 +247,7 @@ async function verifyIndustries() {
   // First, test basic connectivity
   console.log("   Testing database connectivity...");
   const { error: testError } = await supabase
+    .schema("core")
     .from("industries")
     .select("id")
     .limit(1);
@@ -265,6 +266,7 @@ async function verifyIndustries() {
 
   // Now count industries
   const { count: industryCount, error: industryError } = await supabase
+    .schema("core")
     .from("industries")
     .select("*", { count: "exact", head: true });
 
@@ -286,6 +288,7 @@ async function verifyIndustries() {
 
   // Check for some industries
   const { data: industries, error: indError } = await supabase
+    .schema("core")
     .from("industries")
     .select("id, name")
     .limit(5);
@@ -336,6 +339,7 @@ async function displayStats() {
 
   // Skills stats
   const { count: skillCount, error: skillError } = await supabase
+    .schema("core")
     .from("skills")
     .select("*", { count: "exact", head: true });
 
@@ -345,6 +349,7 @@ async function displayStats() {
 
   // Industries stats
   const { count: industryCount } = await supabase
+    .schema("core")
     .from("industries")
     .select("*", { count: "exact", head: true });
 

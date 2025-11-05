@@ -115,9 +115,9 @@ pnpm supa db seed --file seeds/seed.sql
   - Geographic distribution across 29 cities
   - Phone numbers with proper area codes
   - Complete auth.users entries with encrypted passwords
-  - Full public.users profiles
-  - public.profiles entries
-  - public.user_private with sensitive data
+  - Full core.users profiles
+  - core.profile entries
+  - core.preferences with user settings
 - 29 geographic hubs spanning midwest/northeast US
 - Realistic certifications (OSHA, CDL, etc.)
 - Industry assignments

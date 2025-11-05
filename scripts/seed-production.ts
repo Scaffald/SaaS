@@ -41,7 +41,8 @@ async function executeSqlFile(filePath: string) {
     for (const statement of statements) {
       if (statement.toLowerCase().startsWith("insert") || statement.toLowerCase().startsWith("update")) {
         // For DML, we can use the REST API directly
-        const match = statement.match(/into\s+(?:public\.)?(\w+)/i);
+        // Match schema.table or just table (supports core, public, data, cms, onet schemas)
+        const match = statement.match(/into\s+(?:(?:core|public|data|cms|onet)\.)?(\w+)/i);
         if (match) {
           const tableName = match[1];
           console.log(`   Inserting into ${tableName}...`);
