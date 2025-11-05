@@ -33,7 +33,6 @@ export const DiscoverMapScreen = () => {
     updateSearchLocation,
     updateFilters,
     updateResultsRailVisible,
-    updateViewport,
     clearState,
   } = useMapState()
 
@@ -58,16 +57,18 @@ export const DiscoverMapScreen = () => {
   const showJobs = state.activeFilters.showJobs
 
   // Fetch data with viewport bounds filtering
+  // Only apply bounds filtering after initial load (when viewportBounds is set)
+  // This prevents refetching on every pan and ensures initial data loads
   const { data: talentProfiles = [], isLoading } = useTalentProfiles({
-    bounds: viewportBounds,
+    bounds: viewportBounds || null, // Pass null if no bounds yet (will fetch all initially)
     limit: 500,
   })
   const { data: organizations = [], isLoading: isLoadingOrgs } = useOrganizations({
-    bounds: viewportBounds,
+    bounds: viewportBounds || null,
     limit: 200,
   })
   const { data: jobs = [], isLoading: isLoadingJobs } = useJobs({
-    bounds: viewportBounds,
+    bounds: viewportBounds || null,
     limit: 500,
   })
 
@@ -209,18 +210,28 @@ export const DiscoverMapScreen = () => {
   )
 
   // Handle viewport changes from map (debounced by 500ms in MapContainer)
+  // Only update viewport bounds for data fetching, not persisted state (to avoid excessive updates)
   const handleViewportChange = useCallback(
-    (bounds: ViewportBounds, zoom: number) => {
-      setViewportBounds(bounds)
-      // Update persisted viewport state
-      updateViewport({
-        center: mapCenter,
-        zoom,
-        bounds,
+    (bounds: ViewportBounds, _zoom: number) => {
+      // Only update bounds if they've changed significantly (avoid unnecessary refetches)
+      setViewportBounds((prevBounds) => {
+        if (!prevBounds) {
+          return bounds // First bounds update
+        }
+        // Check if bounds changed significantly (more than 10% difference)
+        const latDiff = Math.abs(bounds.north - bounds.south) - Math.abs(prevBounds.north - prevBounds.south)
+        const lngDiff = Math.abs(bounds.east - bounds.west) - Math.abs(prevBounds.east - prevBounds.west)
+        const latRange = Math.abs(prevBounds.north - prevBounds.south)
+        const lngRange = Math.abs(prevBounds.east - prevBounds.west)
+        
+        // Only update if bounds changed by more than 10%
+        if (Math.abs(latDiff) / latRange > 0.1 || Math.abs(lngDiff) / lngRange > 0.1) {
+          return bounds
+        }
+        return prevBounds // Keep previous bounds to avoid unnecessary refetch
       })
-      // Viewport bounds will trigger re-fetch of data via query key dependency
     },
-    [mapCenter, updateViewport]
+    []
   )
 
   return (

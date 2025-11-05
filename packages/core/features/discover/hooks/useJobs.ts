@@ -149,5 +149,6 @@ export const useJobs = (options: UseJobsOptions = {}) => {
         .filter((job): job is JobMapPin => job !== null)
     },
     staleTime: 5 * 60 * 1000, // 5 minutes - jobs change frequently
+    keepPreviousData: true, // Keep previous data visible while refetching new bounds
   })
 }

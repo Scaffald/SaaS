@@ -118,5 +118,6 @@ export const useTalentProfiles = (options: UseTalentProfilesOptions = {}) => {
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     enabled: true, // Always enabled, but query key changes with bounds
+    keepPreviousData: true, // Keep previous data visible while refetching new bounds
   });
 };
