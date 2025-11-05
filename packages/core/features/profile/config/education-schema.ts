@@ -55,16 +55,6 @@ export const educationProfileSchema = z.object({
       })
         .refine(
           (data) => {
-            // End date is required unless is_current is true
-            if (!data.is_current && !data.end_date) {
-              return false;
-            }
-            return true;
-          },
-          { message: "End date is required unless currently enrolled", path: ["end_date"] }
-        )
-        .refine(
-          (data) => {
             // End date must be after start date when both are provided
             if (
               !data.is_current &&
