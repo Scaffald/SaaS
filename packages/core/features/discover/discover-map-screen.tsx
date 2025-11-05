@@ -10,6 +10,7 @@ import { ResultsRail } from './components/ResultsRail'
 import { WorkerPreviewModal } from './components/WorkerPreviewModal'
 import { JobPreviewModal } from './components/JobPreviewModal'
 import { OrganizationPreviewModal } from './components/OrganizationPreviewModal'
+import { UserProfilePanel } from './components/UserProfilePanel'
 import type { ResultListRef } from './components/ResultList'
 import { defaultCenter } from './data/mockProfiles'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
@@ -49,6 +50,8 @@ export const DiscoverMapScreen = () => {
   const [orgModalId, setOrgModalId] = useState<string | null>(null)
   const [showSearchInput, setShowSearchInput] = useState(false)
   const [showResultsSheet, setShowResultsSheet] = useState(false)
+  const [userPanelOpen, setUserPanelOpen] = useState(false)
+  const [userPanelUserId, setUserPanelUserId] = useState<string | null>(null)
 
   // Use persisted state from context
   const showRail = state.resultsRailVisible
@@ -155,8 +158,12 @@ export const DiscoverMapScreen = () => {
       const isJob = jobs.some((j) => j.id === pinId)
       const isOrg = organizations.some((o) => o.id === pinId)
 
-      // Open appropriate modal
+      // Open appropriate modal or panel
       if (isWorker) {
+        // For workers, show UserProfilePanel on map (lightweight preview)
+        setUserPanelUserId(pinId)
+        setUserPanelOpen(true)
+        // Also open full modal for detailed view (optional - can be removed if only panel is desired)
         setWorkerModalUserId(pinId)
         setWorkerModalOpen(true)
       } else if (isJob) {
@@ -184,10 +191,12 @@ export const DiscoverMapScreen = () => {
   const handleReset = useCallback(() => {
     setSelectedProfileId(null)
     setShowSearchInput(false)
-    // Close any open modals
+    // Close any open modals and panels
     setWorkerModalOpen(false)
     setJobModalOpen(false)
     setOrgModalOpen(false)
+    setUserPanelOpen(false)
+    setUserPanelUserId(null)
     // Clear persisted state
     clearState()
   }, [clearState])
@@ -394,6 +403,14 @@ export const DiscoverMapScreen = () => {
         onShowWorkersChange={(value) => updateFilters({ showWorkers: value })}
         onShowOrganizationsChange={(value) => updateFilters({ showOrganizations: value })}
         onShowJobsChange={(value) => updateFilters({ showJobs: value })}
+      />
+
+      {/* User Profile Panel (map overlay) */}
+      <UserProfilePanel
+        userId={userPanelUserId}
+        open={userPanelOpen}
+        onOpenChange={setUserPanelOpen}
+        position={isSmallScreen ? { top: 16, left: 16, right: 16 } : { top: 16, right: showRail ? 460 : 16 }}
       />
     </YStack>
   )

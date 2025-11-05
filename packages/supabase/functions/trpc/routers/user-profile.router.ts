@@ -1,7 +1,79 @@
 import { z } from "zod";
 import { t } from "../middleware.ts";
+import { TRPCError } from "@trpc/server";
 
 export const userProfileRouter = t.router({
+  /**
+   * Get lightweight user profile preview for map view
+   * Returns optimized data for quick loading in map context
+   */
+  getPreview: t.procedure
+    .input(
+      z.object({
+        userId: z.string().uuid(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      // Get basic user info
+      const { data: user, error: userError } = await ctx.supabase
+        .schema("core")
+        .from("users")
+        .select("id, display_name, username, avatar_path, avatar_url, headline")
+        .eq("id", input.userId)
+        .single();
+
+      if (userError || !user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `User profile not found: ${userError?.message || "Unknown error"}`,
+        });
+      }
+
+      // Get top 3-5 skills
+      const { data: skills } = await ctx.supabase
+        .schema("core")
+        .from("user_skills")
+        .select("proficiency_level, skill_taxonomy, csi_skill_id, onet_occupation_id")
+        .eq("user_id", input.userId)
+        .order("proficiency_level", { ascending: false })
+        .limit(5);
+
+      // Get location from profile
+      const { data: profile } = await ctx.supabase
+        .schema("core")
+        .from("profile")
+        .select("location, employment_city, employment_state")
+        .eq("user_id", input.userId)
+        .single();
+
+      // Build location string
+      const locationParts = [];
+      if (profile?.employment_city) {
+        locationParts.push(profile.employment_city);
+      }
+      if (profile?.employment_state) {
+        locationParts.push(profile.employment_state);
+      }
+      const location = locationParts.length > 0 ? locationParts.join(", ") : profile?.location || null;
+
+      // Build display name
+      const displayName = user.display_name || user.username || "User";
+
+      return {
+        id: user.id,
+        displayName,
+        avatarUrl: user.avatar_url,
+        avatarPath: user.avatar_path,
+        headline: user.headline,
+        location,
+        topSkills: (skills || []).slice(0, 5).map((skill) => ({
+          proficiency: skill.proficiency_level || 0,
+          taxonomy: skill.skill_taxonomy,
+          csiSkillId: skill.csi_skill_id,
+          onetOccupationId: skill.onet_occupation_id,
+        })),
+      };
+    }),
   // Get comprehensive user profile
   getUserProfile: t.procedure
     .input(

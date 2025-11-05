@@ -52,7 +52,7 @@ export { LoadingOverlay } from './components/LoadingOverlay'
 export * from './components/Onboarding'
 export { OnboardingControls } from './components/OnboardingControls'
 export { StepContent } from './components/OnboardingStepContent'
-export { NotificationsActionSheet } from './components/NotificationsActionSheet'
+export { NotificationDropdown, type NotificationItem } from './components/NotificationDropdown'
 export { ResponsiveModal, type ResponsiveModalProps } from './components/ResponsiveModal'
 
 // Layout components

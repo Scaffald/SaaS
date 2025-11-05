@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import {
   YStack,
   XStack,
@@ -83,17 +83,36 @@ export function InlineSkillSearch({
   const [searchCSI, setSearchCSI] = useState(true)
   const [searchONET, setSearchONET] = useState(false)
 
-  // Search skills with debounce
+  // Search skills with debounce and query cancellation
+  const abortControllerRef = useRef<AbortController | null>(null)
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   const handleSearchChange = useCallback(
     (text: string) => {
       setSearchQuery(text)
 
+      // Clear existing debounce timer
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
+
+      // Cancel previous search if in progress
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+
       if (text.trim().length < 2) {
         setSearchResults([])
+        setIsLoading(false)
         return
       }
 
-      const timeoutId = setTimeout(async () => {
+      // Create new abort controller for this search
+      abortControllerRef.current = new AbortController()
+      const currentAbortController = abortControllerRef.current
+
+      // Debounce the search
+      debounceTimerRef.current = setTimeout(async () => {
         setIsLoading(true)
         try {
           const taxonomies: string[] = []
@@ -101,19 +120,36 @@ export function InlineSkillSearch({
           if (searchONET) taxonomies.push('onet')
 
           const results = await onSearchSkills(text, taxonomies)
-          setSearchResults(results)
+
+          // Only update if not aborted
+          if (!currentAbortController.signal.aborted) {
+            setSearchResults(results)
+            setIsLoading(false)
+          }
         } catch (error) {
-          console.error('Search error:', error)
-          setSearchResults([])
-        } finally {
-          setIsLoading(false)
+          // Only update error if not aborted
+          if (!currentAbortController.signal.aborted) {
+            console.error('Search error:', error)
+            setSearchResults([])
+            setIsLoading(false)
+          }
         }
       }, 300)
-
-      return () => clearTimeout(timeoutId)
     },
-    [onSearchSkills, searchCSI, searchONET]
+    [onSearchSkills, searchCSI, searchONET],
   )
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+    }
+  }, [])
 
   // Handle skill selection
   const handleSkillSelect = useCallback((skill: ParentSkill, taxonomy: string) => {

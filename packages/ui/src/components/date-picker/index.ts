@@ -1,2 +1,1 @@
 export { MonthYearPicker } from './MonthYearPicker'
-

@@ -1,2 +1,1 @@
 export { ConfirmationDialog } from './ConfirmationDialog'
-

@@ -13,6 +13,8 @@ import { reviewsRouter } from "./reviews.router.ts";
 import { userProfileRouter } from "./user-profile.router.ts";
 import { workersRouter } from "./workers.router.ts";
 import { mapRouter } from "./map.router.ts";
+import { notificationsRouter } from "./notifications.router.ts";
+import { portfolioRouter } from "./portfolio.router.ts";
 
 /**
  * Main application router
@@ -33,6 +35,8 @@ export const appRouter = t.router({
   prerequisites: prerequisitesRouter,
   onet: onetRouter,
   map: mapRouter,
+  notifications: notificationsRouter,
+  portfolio: portfolioRouter,
 });
 
 // Export the router type for client-side usage

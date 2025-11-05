@@ -16,3 +16,6 @@ export { CertificationsWidget } from "./CertificationsWidget";
 export { PreferencesWidget } from "./PreferencesWidget";
 export { ProfileSnapshotWidget } from "./ProfileSnapshotWidget";
 export { ReviewsWidget } from "./ReviewsWidget";
+export { ProfileCompletionWidget } from "./ProfileCompletionWidget";
+export { PortfolioManager } from "./PortfolioManager";
+export { PortfolioGallery } from "./PortfolioGallery";

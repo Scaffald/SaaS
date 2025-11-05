@@ -58,7 +58,11 @@ export function ProfileCertificationsLeft({
   const { data: topLevelResults, isLoading: isLoadingSearch } =
     api.profile.certifications.getTopLevelCertifications.useQuery(
       { search: searchQuery },
-      { enabled: searchQuery.length > 0 }
+      {
+        enabled: searchQuery.length > 0,
+        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+        gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes (formerly cacheTime)
+      },
     )
 
   // Mutations
