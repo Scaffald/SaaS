@@ -500,7 +500,8 @@ COMMENT ON FUNCTION core.search_all_skills IS 'Search across all skill taxonomie
 -- SECTION 8: MAP DISPLAY FUNCTIONS
 -- =========================================================
 
--- Privacy function: jitter coordinates for user privacy
+-- Privacy function: jitter coordinates for user privacy (DEPRECATED - use deterministic version)
+-- This function uses random() which causes coordinates to change on every query
 CREATE OR REPLACE FUNCTION core.jitter_coordinate(
   coord double precision,
   max_offset_degrees double precision DEFAULT 0.03
@@ -516,7 +517,35 @@ AS $$
 $$;
 
 COMMENT ON FUNCTION core.jitter_coordinate IS 
-  'Adds random offset to coordinate for privacy. Default ±0.03° (≈2-3km depending on latitude).';
+  'DEPRECATED: Adds random offset to coordinate for privacy. Use jitter_coordinate_deterministic instead. Default ±0.03° (≈2-3km depending on latitude).';
+
+-- Deterministic privacy function: jitter coordinates using user ID hash for stable but private coordinates
+-- This ensures coordinates remain consistent across queries while maintaining privacy
+CREATE OR REPLACE FUNCTION core.jitter_coordinate_deterministic(
+  coord double precision,
+  user_id uuid,
+  coord_type text DEFAULT 'lng',
+  max_offset_degrees double precision DEFAULT 0.03
+)
+RETURNS double precision
+LANGUAGE sql
+STABLE
+AS $$
+  -- Generate deterministic offset using MD5 hash of user ID
+  -- Use different parts of hash for longitude vs latitude to ensure independent offsets
+  -- Convert 8 hex characters to a number between 0 and 1, then map to range [-max_offset, +max_offset]
+  -- This ensures same user always gets same offset, but offset is unpredictable
+  SELECT coord + (
+    ('x' || substr(
+      md5(user_id::text || coord_type), 
+      1, 
+      8
+    ))::bit(32)::bigint::double precision / 4294967295.0 * 2 - 1
+  ) * max_offset_degrees;
+$$;
+
+COMMENT ON FUNCTION core.jitter_coordinate_deterministic IS 
+  'Adds deterministic offset to coordinate for privacy using user ID hash. Coordinates remain stable across queries while maintaining privacy. Use coord_type ''lng'' for longitude, ''lat'' for latitude. Default ±0.03° (≈2-3km depending on latitude).';
 
 -- Get organizations with extracted coordinates for map display
 CREATE OR REPLACE FUNCTION core.get_organizations_with_coords()
@@ -575,8 +604,9 @@ SELECT
   pp.open_to_travel,
   pp.education_level,
   -- Jittered coordinates for privacy (not exact location)
-  core.jitter_coordinate(ST_X(pp.geo::public.geometry)) AS longitude,
-  core.jitter_coordinate(ST_Y(pp.geo::public.geometry)) AS latitude,
+  -- Uses deterministic jitter so coordinates remain stable across queries
+  core.jitter_coordinate_deterministic(ST_X(pp.geo::public.geometry), u.id, 'lng') AS longitude,
+  core.jitter_coordinate_deterministic(ST_Y(pp.geo::public.geometry), u.id, 'lat') AS latitude,
   -- Gamified score calculation
   LEAST(
     COALESCE(u.years_of_experience, 0) * 3 + 

@@ -214,18 +214,35 @@ export const DiscoverMapScreen = () => {
   const handleViewportChange = useCallback(
     (bounds: ViewportBounds, _zoom: number) => {
       // Only update bounds if they've changed significantly (avoid unnecessary refetches)
+      // Check both center position and bounds size to determine if viewport changed meaningfully
       setViewportBounds((prevBounds) => {
         if (!prevBounds) {
           return bounds // First bounds update
         }
-        // Check if bounds changed significantly (more than 10% difference)
-        const latDiff = Math.abs(bounds.north - bounds.south) - Math.abs(prevBounds.north - prevBounds.south)
-        const lngDiff = Math.abs(bounds.east - bounds.west) - Math.abs(prevBounds.east - prevBounds.west)
-        const latRange = Math.abs(prevBounds.north - prevBounds.south)
-        const lngRange = Math.abs(prevBounds.east - prevBounds.west)
         
-        // Only update if bounds changed by more than 10%
-        if (Math.abs(latDiff) / latRange > 0.1 || Math.abs(lngDiff) / lngRange > 0.1) {
+        // Calculate center points
+        const prevCenterLat = (prevBounds.north + prevBounds.south) / 2
+        const prevCenterLng = (prevBounds.east + prevBounds.west) / 2
+        const centerLat = (bounds.north + bounds.south) / 2
+        const centerLng = (bounds.east + bounds.west) / 2
+        
+        // Calculate bounds size (width and height)
+        const prevLatRange = Math.abs(prevBounds.north - prevBounds.south)
+        const prevLngRange = Math.abs(prevBounds.east - prevBounds.west)
+        const latRange = Math.abs(bounds.north - bounds.south)
+        const lngRange = Math.abs(bounds.east - bounds.west)
+        
+        // Check if center moved significantly (more than 20% of viewport size)
+        const centerLatDiff = Math.abs(centerLat - prevCenterLat) / prevLatRange
+        const centerLngDiff = Math.abs(centerLng - prevCenterLng) / prevLngRange
+        
+        // Check if bounds size changed significantly (more than 15% change in zoom)
+        const latRangeDiff = Math.abs(latRange - prevLatRange) / prevLatRange
+        const lngRangeDiff = Math.abs(lngRange - prevLngRange) / prevLngRange
+        
+        // Only update if center moved significantly OR bounds size changed significantly
+        // This prevents refetching on small pans while still updating on zoom changes
+        if (centerLatDiff > 0.2 || centerLngDiff > 0.2 || latRangeDiff > 0.15 || lngRangeDiff > 0.15) {
           return bounds
         }
         return prevBounds // Keep previous bounds to avoid unnecessary refetch
