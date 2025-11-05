@@ -36,6 +36,7 @@ export { FileUpload, type FileUploadProps } from './components/FileUpload'
 export { ImageUpload, type ImageUploadProps } from './components/ImageUpload'
 export { FormWrapper } from './components/FormWrapper'
 export { IconSelector } from './components/IconSelector'
+export { Breadcrumb, type BreadcrumbItem, type BreadcrumbProps } from './components/Breadcrumb'
 export * from './components/rich-text'
 
 // Individual component exports to avoid circular dependencies
