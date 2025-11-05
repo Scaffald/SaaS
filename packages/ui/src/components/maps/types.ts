@@ -23,6 +23,13 @@ export interface MapRegion {
   longitudeDelta: number
 }
 
+export interface ViewportBounds {
+  north: number // Maximum latitude
+  south: number // Minimum latitude
+  east: number // Maximum longitude
+  west: number // Minimum longitude
+}
+
 export interface MapTooltipData {
   title: string
   location?: string
@@ -43,6 +50,7 @@ export interface MapContainerProps {
   radiusMeters?: number
   selectedPinId?: string | null
   onPinPress?: (pinId: string | null) => void
+  onViewportChange?: (bounds: ViewportBounds, zoom: number) => void
   showControls?: boolean
   style?: object
 }
