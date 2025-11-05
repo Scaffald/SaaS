@@ -27,21 +27,20 @@ export interface ResultListRef {
   scrollToCard: (profileId: string) => void
 }
 
-export const ResultList = memo(
-  forwardRef<ResultListRef, ResultListProps>(
-    ({ profiles, organizations = [], jobs = [], selectedId, onSelect, isLoading }, ref) => {
-      const scrollViewRef = useRef<ScrollView>(null)
+const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
+  ({ profiles, organizations = [], jobs = [], selectedId, onSelect, isLoading }, ref) => {
+    const scrollViewRef = useRef<ScrollView>(null)
 
-      // Combine profiles, organizations, and jobs into a single list
-      // Use useMemo to prevent recreating array on every render
-      const allResults: ResultItem[] = useMemo(
-        () => [
-          ...profiles.map((profile) => ({ type: 'profile' as const, ...profile })),
-          ...organizations.map((org) => ({ type: 'organization' as const, ...org })),
-          ...jobs.map((job) => ({ type: 'job' as const, ...job })),
-        ],
-        [profiles, organizations, jobs]
-      )
+    // Combine profiles, organizations, and jobs into a single list
+    // Use useMemo to prevent recreating array on every render
+    const allResults: ResultItem[] = useMemo(
+      () => [
+        ...profiles.map((profile) => ({ type: 'profile' as const, ...profile })),
+        ...organizations.map((org) => ({ type: 'organization' as const, ...org })),
+        ...jobs.map((job) => ({ type: 'job' as const, ...job })),
+      ],
+      [profiles, organizations, jobs]
+    )
     const cardRefs = useRef<
       Map<
         string,
@@ -178,5 +177,6 @@ export const ResultList = memo(
       </YStack>
     )
   }
-  )
 )
+
+export const ResultList = memo(ResultListComponent)
