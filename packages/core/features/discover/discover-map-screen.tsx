@@ -1,6 +1,6 @@
 import { useMemo, useState, useRef, useCallback } from 'react'
 import { Sheet, YStack } from 'tamagui'
-import { MapContainer, type MapContainerRef, type MapPinType } from '@app/ui'
+import { MapContainer, type MapContainerRef, type MapPinType, type ViewportBounds } from '@app/ui'
 import { useWindowDimensions } from 'react-native'
 
 import { FilterBar } from './components/FilterBar'
@@ -29,6 +29,7 @@ export const DiscoverMapScreen = () => {
   const [searchCenter, setSearchCenter] = useState<[number, number] | null>(null)
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [viewportBounds, setViewportBounds] = useState<ViewportBounds | null>(null)
 
   // Modal states
   const [workerModalOpen, setWorkerModalOpen] = useState(false)
@@ -44,9 +45,19 @@ export const DiscoverMapScreen = () => {
   const [showOrganizations, setShowOrganizations] = useState(true)
   const [showJobs, setShowJobs] = useState(true)
 
-  const { data: talentProfiles = [], isLoading } = useTalentProfiles()
-  const { data: organizations = [], isLoading: isLoadingOrgs } = useOrganizations()
-  const { data: jobs = [], isLoading: isLoadingJobs } = useJobs()
+  // Fetch data with viewport bounds filtering
+  const { data: talentProfiles = [], isLoading } = useTalentProfiles({
+    bounds: viewportBounds,
+    limit: 500,
+  })
+  const { data: organizations = [], isLoading: isLoadingOrgs } = useOrganizations({
+    bounds: viewportBounds,
+    limit: 200,
+  })
+  const { data: jobs = [], isLoading: isLoadingJobs } = useJobs({
+    bounds: viewportBounds,
+    limit: 500,
+  })
 
   // Determine map center based on search location, user location, or default
   const mapCenter: [number, number] = useMemo(() => {
@@ -178,6 +189,15 @@ export const DiscoverMapScreen = () => {
     []
   )
 
+  // Handle viewport changes from map (debounced by 500ms in MapContainer)
+  const handleViewportChange = useCallback(
+    (bounds: ViewportBounds, _zoom: number) => {
+      setViewportBounds(bounds)
+      // Viewport bounds will trigger re-fetch of data via query key dependency
+    },
+    []
+  )
+
   return (
     <YStack flex={1} height="100vh" overflow="hidden" position="relative">
       {/* Map as base layer */}
@@ -187,6 +207,7 @@ export const DiscoverMapScreen = () => {
         center={mapCenter}
         zoom={7}
         onPinPress={handleMarkerPress}
+        onViewportChange={handleViewportChange}
         style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
       />
 

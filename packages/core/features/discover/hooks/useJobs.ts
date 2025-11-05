@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@app/core/utils/supabase/client'
+import type { ViewportBounds } from '@app/ui/src/components/maps/types'
 
 // Type for job data on map
 export interface JobMapPin {
@@ -37,12 +38,19 @@ interface JobWithCoords {
   } | null
 }
 
-export const useJobs = () => {
+interface UseJobsOptions {
+  bounds?: ViewportBounds | null;
+  limit?: number;
+}
+
+export const useJobs = (options: UseJobsOptions = {}) => {
+  const { bounds, limit = 500 } = options;
+
   return useQuery({
-    queryKey: ['map-jobs'],
+    queryKey: ['map-jobs', bounds],
     queryFn: async (): Promise<JobMapPin[]> => {
       // Fetch jobs with coordinates from address JSONB field
-      const { data: jobs, error: jobsError } = await supabase
+      let query = supabase
         .schema("core")
         .from('jobs')
         .select(
@@ -65,6 +73,13 @@ export const useJobs = () => {
         `
         )
         .eq('status', 'open') // Only show open jobs on map
+
+      // Note: We can't filter by JSONB coordinates directly in Supabase query
+      // We'll filter in memory after fetching (with a reasonable limit)
+      // Apply limit before filtering (max 500 jobs per viewport)
+      query = query.limit(Math.min(limit, 500))
+
+      const { data: jobs, error: jobsError } = await query
         .returns<JobWithCoords[]>()
 
       if (jobsError) {
@@ -77,10 +92,10 @@ export const useJobs = () => {
         return []
       }
 
-      console.log(`Found ${jobs.length} jobs from database`)
+      console.log(`Found ${jobs?.length || 0} jobs from database`)
 
-      // Transform to JobMapPin format
-      return jobs
+      // Transform to JobMapPin format and filter by viewport bounds if provided
+      return (jobs || [])
         .map((job): JobMapPin | null => {
           // Extract coordinates from address JSONB
           const address = job.address as
@@ -99,6 +114,20 @@ export const useJobs = () => {
             typeof address.longitude !== 'number'
           ) {
             return null
+          }
+
+          // Filter by viewport bounds if provided
+          if (bounds) {
+            const lng = address.longitude
+            const lat = address.latitude
+            if (
+              lng < bounds.west ||
+              lng > bounds.east ||
+              lat < bounds.south ||
+              lat > bounds.north
+            ) {
+              return null
+            }
           }
 
           return {

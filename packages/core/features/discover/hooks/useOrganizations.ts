@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@app/core/utils/supabase/client";
+import type { ViewportBounds } from "@app/ui/src/components/maps/types";
 
 // Type for organization data
 export interface OrganizationMapPin {
@@ -27,11 +28,20 @@ interface OrgWithCoords {
   industry_name: string | null;
 }
 
-export const useOrganizations = () => {
+interface UseOrganizationsOptions {
+  bounds?: ViewportBounds | null;
+  limit?: number;
+}
+
+export const useOrganizations = (options: UseOrganizationsOptions = {}) => {
+  const { bounds, limit = 200 } = options;
+
   return useQuery({
-    queryKey: ["map-organizations"],
+    queryKey: ["map-organizations", bounds],
     queryFn: async (): Promise<OrganizationMapPin[]> => {
       // Get organizations with coordinates extracted from PostGIS geography
+      // Note: RPC function doesn't support bounds filtering yet
+      // We'll fetch all and filter in memory (with a reasonable limit)
       const { data: organizations, error: orgsError } = await supabase
         .schema("core")
         .rpc("get_organizations_with_coords")
@@ -49,8 +59,8 @@ export const useOrganizations = () => {
 
       console.log(`Found ${organizations.length} organizations from database`);
 
-      // Transform to OrganizationMapPin format
-      return organizations
+      // Transform to OrganizationMapPin format and filter by viewport bounds if provided
+      const filtered = organizations
         .map((org): OrganizationMapPin | null => {
           // Skip organizations without valid coordinates
           if (
@@ -60,6 +70,18 @@ export const useOrganizations = () => {
             typeof org.latitude !== "number"
           ) {
             return null;
+          }
+
+          // Filter by viewport bounds if provided
+          if (bounds) {
+            if (
+              org.longitude < bounds.west ||
+              org.longitude > bounds.east ||
+              org.latitude < bounds.south ||
+              org.latitude > bounds.north
+            ) {
+              return null;
+            }
           }
 
           const address = org.address as
@@ -76,6 +98,9 @@ export const useOrganizations = () => {
           };
         })
         .filter((org): org is OrganizationMapPin => org !== null);
+
+      // Apply limit (max 200 employers per viewport)
+      return filtered.slice(0, Math.min(limit, 200));
     },
     staleTime: 10 * 60 * 1000, // 10 minutes - organizations change less frequently
   });
