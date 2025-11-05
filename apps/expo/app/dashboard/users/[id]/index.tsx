@@ -2,7 +2,7 @@ import { useLocalSearchParams } from 'expo-router'
 import { useNavigation } from '@react-navigation/native'
 import { useEffect } from 'react'
 import { YStack } from 'tamagui'
-import { DashboardLayout } from '@app/ui'
+import { DashboardLayout, Breadcrumb } from '@app/ui'
 import {
   GeneralInfoWidget,
   ExperienceWidget,
@@ -73,22 +73,35 @@ export default function UserProfilePage() {
     return null
   }
 
+  // Build breadcrumb items
+  const breadcrumbItems = [
+    { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Discover Workers', href: '/dashboard/discover/workers' },
+    {
+      label: isOwnProfile ? 'My Profile' : displayName || 'Loading...',
+      isActive: true,
+    },
+  ]
+
   return (
-    <DashboardLayout
-      leftContent={
-        <YStack gap="$4">
-          <GeneralInfoWidget userId={id} showEdit={false} />
-          <ExperienceWidget userId={id} showEdit={false} />
-          <EducationWidget userId={id} showEdit={false} />
-        </YStack>
-      }
-      rightContent={
-        <YStack gap="$4">
-          <SkillsWidget userId={id} showEdit={false} />
-          <CertificationsWidget userId={id} showEdit={false} />
-          <ReviewsWidget userId={id} showEdit={true} />
-        </YStack>
-      }
-    />
+    <YStack gap="$4" flex={1}>
+      <Breadcrumb items={breadcrumbItems} />
+      <DashboardLayout
+        leftContent={
+          <YStack gap="$4">
+            <GeneralInfoWidget userId={id} showEdit={false} />
+            <ExperienceWidget userId={id} showEdit={false} />
+            <EducationWidget userId={id} showEdit={false} />
+          </YStack>
+        }
+        rightContent={
+          <YStack gap="$4">
+            <SkillsWidget userId={id} showEdit={false} />
+            <CertificationsWidget userId={id} showEdit={false} />
+            <ReviewsWidget userId={id} showEdit={true} />
+          </YStack>
+        }
+      />
+    </YStack>
   )
 }
