@@ -1,11 +1,9 @@
-import { useState } from 'react'
-import { YStack, XStack, Text, Select, Adapt, Sheet } from 'tamagui'
+import { YStack, Text, Select, Adapt, Sheet } from 'tamagui'
 import { Calendar } from '@tamagui/lucide-icons'
 
 interface MonthYearPickerProps {
   value: Date | null | undefined
   onChange: (date: Date | null) => void
-  placeholder?: string
   disabled?: boolean
   error?: string
   label?: string
@@ -45,10 +43,10 @@ const YEAR_OPTIONS = generateYearOptions()
 
 /**
  * MonthYearPicker Component
- * 
+ *
  * A simple month/year picker using Select dropdowns for cross-platform compatibility.
  * Stores dates with day=1 (first day of selected month).
- * 
+ *
  * @example
  * ```tsx
  * <MonthYearPicker
@@ -62,7 +60,6 @@ const YEAR_OPTIONS = generateYearOptions()
 export function MonthYearPicker({
   value,
   onChange,
-  placeholder = 'Select date',
   disabled = false,
   error,
   label,
@@ -99,13 +96,12 @@ export function MonthYearPicker({
           {label}
         </Text>
       )}
-      <XStack gap="$2" items="center">
+      <YStack gap="$2">
         <Select
           value={selectedMonth}
           onValueChange={handleMonthChange}
           disabled={disabled}
           size="$4"
-          flex={1}
         >
           <Select.Trigger
             icon={Calendar}
@@ -139,13 +135,7 @@ export function MonthYearPicker({
           </Select.Content>
         </Select>
 
-        <Select
-          value={selectedYear}
-          onValueChange={handleYearChange}
-          disabled={disabled}
-          size="$4"
-          flex={1}
-        >
+        <Select value={selectedYear} onValueChange={handleYearChange} disabled={disabled} size="$4">
           <Select.Trigger
             icon={Calendar}
             borderColor={error ? '$red10' : '$borderColor'}
@@ -177,7 +167,7 @@ export function MonthYearPicker({
             </Select.Viewport>
           </Select.Content>
         </Select>
-      </XStack>
+      </YStack>
       {error && (
         <Text fontSize="$2" color="$red10">
           {error}
@@ -186,4 +176,3 @@ export function MonthYearPicker({
     </YStack>
   )
 }
-
