@@ -188,5 +188,193 @@ export const mapRouter = t.router({
         };
       }
     }),
+
+  /**
+   * Find nearest location with results from a given search location
+   * Used for no-results scenarios to suggest nearby locations
+   */
+  findNearestResults: t.procedure
+    .input(
+      z.object({
+        coordinates: z.object({
+          lat: z.number(),
+          lng: z.number(),
+        }),
+        radius: z.number().min(1).max(200).default(50), // radius in miles
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { coordinates, radius } = input;
+
+      // Convert miles to approximate degrees (rough approximation: 1 degree ≈ 69 miles)
+      const radiusDegrees = radius / 69;
+
+      // Calculate bounding box for search area
+      const bounds = {
+        north: coordinates.lat + radiusDegrees,
+        south: coordinates.lat - radiusDegrees,
+        east: coordinates.lng + radiusDegrees,
+        west: coordinates.lng - radiusDegrees,
+      };
+
+      // Query for workers, jobs, and employers within radius
+      // We'll find the nearest one by calculating distance
+      const [workersResult, jobsResult, orgsResult] = await Promise.all([
+        // Workers
+        ctx.supabase
+          .schema("core")
+          .from("v_profile_search")
+          .select("id, latitude, longitude, location")
+          .gte("longitude", bounds.west)
+          .lte("longitude", bounds.east)
+          .gte("latitude", bounds.south)
+          .lte("latitude", bounds.north)
+          .limit(50), // Get more to find nearest
+
+        // Jobs (we'll filter in memory since coordinates are in JSONB)
+        ctx.supabase
+          .schema("core")
+          .from("jobs")
+          .select("id, address, location")
+          .eq("status", "open")
+          .limit(100), // Get more to filter in memory
+
+        // Organizations
+        ctx.supabase
+          .schema("core")
+          .rpc("get_organizations_with_coords")
+          .limit(100),
+      ]);
+
+      // Find nearest result from all types
+      let nearestResult: {
+        coordinates: { lat: number; lng: number };
+        label: string;
+        distance: number;
+      } | null = null;
+      let minDistance = Infinity;
+
+      // Helper function to calculate distance (Haversine formula approximation)
+      const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
+        const R = 3959; // Earth radius in miles
+        const dLat = ((lat2 - lat1) * Math.PI) / 180;
+        const dLng = ((lng2 - lng1) * Math.PI) / 180;
+        const a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos((lat1 * Math.PI) / 180) *
+            Math.cos((lat2 * Math.PI) / 180) *
+            Math.sin(dLng / 2) *
+            Math.sin(dLng / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+      };
+
+      // Check workers
+      if (workersResult.data && workersResult.data.length > 0) {
+        for (const worker of workersResult.data) {
+          if (worker.latitude && worker.longitude) {
+            const distance = calculateDistance(
+              coordinates.lat,
+              coordinates.lng,
+              worker.latitude,
+              worker.longitude,
+            );
+            if (distance < minDistance && distance <= radius) {
+              minDistance = distance;
+              nearestResult = {
+                coordinates: { lat: worker.latitude, lng: worker.longitude },
+                label: worker.location || "Worker location",
+                distance,
+              };
+            }
+          }
+        }
+      }
+
+      // Check jobs (filter in memory)
+      if (jobsResult.data && jobsResult.data.length > 0) {
+        for (const job of jobsResult.data) {
+          const address = job.address as { latitude?: number; longitude?: number } | null;
+          if (address?.latitude && address?.longitude) {
+            const distance = calculateDistance(
+              coordinates.lat,
+              coordinates.lng,
+              address.latitude,
+              address.longitude,
+            );
+            if (distance < minDistance && distance <= radius) {
+              minDistance = distance;
+              nearestResult = {
+                coordinates: { lat: address.latitude, lng: address.longitude },
+                label: job.location || "Job location",
+                distance,
+              };
+            }
+          }
+        }
+      }
+
+      // Check organizations
+      if (orgsResult.data && orgsResult.data.length > 0) {
+        for (const org of orgsResult.data) {
+          if (org.latitude && org.longitude) {
+            const distance = calculateDistance(
+              coordinates.lat,
+              coordinates.lng,
+              org.latitude,
+              org.longitude,
+            );
+            if (distance < minDistance && distance <= radius) {
+              minDistance = distance;
+              nearestResult = {
+                coordinates: { lat: org.latitude, lng: org.longitude },
+                label: org.name || "Organization location",
+                distance,
+              };
+            }
+          }
+        }
+      }
+
+      if (!nearestResult) {
+        return null;
+      }
+
+      // Get counts for the nearest location (using approximate bounds)
+      const nearestBounds = {
+        north: nearestResult.coordinates.lat + 0.1,
+        south: nearestResult.coordinates.lat - 0.1,
+        east: nearestResult.coordinates.lng + 0.1,
+        west: nearestResult.coordinates.lng - 0.1,
+      };
+
+      const [workerCount, jobCount, orgCount] = await Promise.all([
+        ctx.supabase
+          .schema("core")
+          .from("v_profile_search")
+          .select("*", { count: "exact", head: true })
+          .gte("longitude", nearestBounds.west)
+          .lte("longitude", nearestBounds.east)
+          .gte("latitude", nearestBounds.south)
+          .lte("latitude", nearestBounds.north),
+        ctx.supabase
+          .schema("core")
+          .from("jobs")
+          .select("*", { count: "exact", head: true })
+          .eq("status", "open"),
+        ctx.supabase.schema("core").rpc("get_organizations_with_coords"),
+      ]);
+
+      return {
+        location: nearestResult.coordinates,
+        label: nearestResult.label,
+        distance: Math.round(nearestResult.distance),
+        counts: {
+          workers: workerCount.count || 0,
+          jobs: jobCount.count || 0,
+          employers: (orgCount.data?.length || 0) > 0 ? orgCount.data?.length || 0 : 0,
+        },
+      };
+    }),
 });
 
