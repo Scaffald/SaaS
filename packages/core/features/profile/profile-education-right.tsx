@@ -1,6 +1,6 @@
-import { YStack, XStack, Text, Spinner, H4, Button } from 'tamagui'
+import { YStack, XStack, Text, Spinner, H4, Button, Dialog } from 'tamagui'
 import { GraduationCap, Calendar, Award, MapPin, Pencil, Trash2, CheckCircle, AlertCircle } from '@tamagui/lucide-icons'
-import { DashboardWidget, Dialog } from '@app/ui'
+import { DashboardWidget } from '@app/ui'
 import { ProfileEmptyState } from './components'
 import { formatDateRange } from './utils/date-formatting'
 import { api } from '@app/core/utils/api'
