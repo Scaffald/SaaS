@@ -19,14 +19,22 @@ export function formatDate(dateStr: string | null | undefined): string {
  * @param startDate - Start date string
  * @param endDate - End date string
  * @param isCurrent - Whether the entry is currently ongoing
+ * @param expectedGraduationDate - Expected graduation date for current education
  * @returns Formatted date range string
  */
 export function formatDateRange(
   startDate: string | null | undefined,
   endDate: string | null | undefined,
   isCurrent: boolean,
+  expectedGraduationDate?: string | null | undefined,
 ): string {
   const start = formatDate(startDate);
-  const end = isCurrent ? "Present" : formatDate(endDate);
+  if (isCurrent) {
+    const expected = expectedGraduationDate ? formatDate(expectedGraduationDate) : null;
+    return expected 
+      ? `${start} - Present (Expected: ${expected})`
+      : `${start} - Present`;
+  }
+  const end = formatDate(endDate);
   return `${start} - ${end}`;
 }

@@ -8,13 +8,17 @@ import { protectedProcedure, t } from "../../middleware.ts";
 const educationEntrySchema = z.object({
   id: z.string().uuid().optional(),
   user_id: z.string().uuid().optional(),
-  university_id: z.string().uuid(),
-  institution_name: z.string().optional().nullable(),
+  university_id: z.string().uuid().nullable().optional(),
+  institution_name: z.string().min(1, "Institution name is required"),
+  is_verified: z.boolean().default(false),
   degree_type: z.string().optional().nullable(),
+  custom_degree_type: z.string().optional().nullable(),
   field_of_study: z.string().optional().nullable(),
   start_date: z.string().optional().nullable(),
   end_date: z.string().optional().nullable(),
+  expected_graduation_date: z.string().optional().nullable(),
   is_current: z.boolean().default(false),
+  gpa: z.number().min(0).max(4.0).optional().nullable(),
   description: z.string().optional().nullable(),
   location: z.string().optional().nullable(),
   created_at: z.string().optional(),
@@ -148,19 +152,30 @@ export const profileEducationRouter = t.router({
         const savedEducation = [];
 
         for (const edu of input.education_entries) {
+          // Determine is_verified: true if university_id is provided, false otherwise
+          const isVerified = !!edu.university_id;
+          
+          // Use custom_degree_type if degree_type is "Other", otherwise use degree_type
+          const finalDegreeType = edu.degree_type === "Other" 
+            ? (edu.custom_degree_type || null)
+            : (edu.degree_type || null);
+
           if (edu.id) {
             // Update existing education
             const { data, error } = await supabase
               .schema("core")
               .from("user_education")
               .update({
-                university_id: edu.university_id,
-                institution_name: edu.institution_name || null,
-                degree_type: edu.degree_type || null,
+                university_id: edu.university_id || null,
+                institution_name: edu.institution_name,
+                is_verified: isVerified,
+                degree_type: finalDegreeType,
                 field_of_study: edu.field_of_study || null,
                 start_date: edu.start_date || null,
                 end_date: edu.end_date || null,
+                expected_graduation_date: edu.expected_graduation_date || null,
                 is_current: edu.is_current,
+                gpa: edu.gpa || null,
                 description: edu.description || null,
                 location: edu.location || null,
                 updated_at: new Date().toISOString(),
@@ -185,13 +200,16 @@ export const profileEducationRouter = t.router({
               .from("user_education")
               .insert({
                 user_id: user.id,
-                university_id: edu.university_id,
-                institution_name: edu.institution_name || null,
-                degree_type: edu.degree_type || null,
+                university_id: edu.university_id || null,
+                institution_name: edu.institution_name,
+                is_verified: isVerified,
+                degree_type: finalDegreeType,
                 field_of_study: edu.field_of_study || null,
                 start_date: edu.start_date || null,
                 end_date: edu.end_date || null,
+                expected_graduation_date: edu.expected_graduation_date || null,
                 is_current: edu.is_current,
+                gpa: edu.gpa || null,
                 description: edu.description || null,
                 location: edu.location || null,
               })
