@@ -149,6 +149,25 @@ export const profileEducationRouter = t.router({
           }
         }
 
+        // Get all existing education entries to identify which ones to delete
+        const { data: existingEducation, error: fetchError } = await supabase
+          .schema("core")
+          .from("user_education")
+          .select("id")
+          .eq("user_id", user.id);
+
+        if (fetchError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to fetch existing education: ${fetchError.message}`,
+          });
+        }
+
+        const existingIds = new Set((existingEducation || []).map((e) => e.id));
+        const inputIds = new Set(
+          input.education_entries.filter((e) => e.id).map((e) => e.id as string)
+        );
+
         const savedEducation = [];
 
         for (const edu of input.education_entries) {
@@ -224,6 +243,24 @@ export const profileEducationRouter = t.router({
             }
 
             savedEducation.push(data);
+          }
+        }
+
+        // Delete entries that exist in DB but are not in the input array
+        const idsToDelete = Array.from(existingIds).filter((id) => !inputIds.has(id));
+        if (idsToDelete.length > 0) {
+          const { error: deleteError } = await supabase
+            .schema("core")
+            .from("user_education")
+            .delete()
+            .eq("user_id", user.id)
+            .in("id", idsToDelete);
+
+          if (deleteError) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: `Failed to delete removed education entries: ${deleteError.message}`,
+            });
           }
         }
 
