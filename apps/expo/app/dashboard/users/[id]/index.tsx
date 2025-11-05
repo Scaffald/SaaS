@@ -1,4 +1,6 @@
 import { useLocalSearchParams } from 'expo-router'
+import { useNavigation } from '@react-navigation/native'
+import { useEffect } from 'react'
 import { YStack } from 'tamagui'
 import { DashboardLayout } from '@app/ui'
 import {
@@ -9,6 +11,8 @@ import {
   CertificationsWidget,
   ReviewsWidget,
 } from '@app/core/features/profile/widgets'
+import { api } from '@app/core/utils/api'
+import { useAuth } from '@app/core/provider/auth/useAuth'
 
 /**
  * Dynamic User Profile Route
@@ -17,6 +21,53 @@ import {
  */
 export default function UserProfilePage() {
   const { id } = useLocalSearchParams<{ id: string }>()
+  const navigation = useNavigation()
+  const { session } = useAuth()
+  const currentUserId = session?.user?.id
+
+  // Fetch user profile data for title
+  const { data: profileData, isLoading: isProfileLoading } =
+    api.profile.widgets.getGeneralInfo.useQuery(
+      { userId: id || '' },
+      {
+        enabled: !!id,
+        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+      }
+    )
+
+  // Calculate display name using the same logic as GeneralInfoWidget
+  const displayName = profileData
+    ? profileData.display_name ||
+      (profileData.privateData?.first_name && profileData.privateData?.last_name
+        ? `${profileData.privateData.first_name} ${profileData.privateData.last_name}`
+        : profileData.username)
+    : null
+
+  // Determine if viewing own profile
+  const isOwnProfile = currentUserId === id
+
+  // Update header title dynamically
+  useEffect(() => {
+    if (isProfileLoading) {
+      navigation.setOptions({
+        title: 'User Profile',
+      })
+      return
+    }
+
+    if (!profileData) {
+      navigation.setOptions({
+        title: 'User Profile',
+      })
+      return
+    }
+
+    // Show "My Profile" for own profile, otherwise show display name
+    const title = isOwnProfile ? 'My Profile' : displayName || 'User Profile'
+    navigation.setOptions({
+      title,
+    })
+  }, [profileData, displayName, isOwnProfile, isProfileLoading, navigation])
 
   if (!id) {
     return null
