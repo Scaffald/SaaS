@@ -26,7 +26,12 @@ import {
   DEGREE_TYPE_OPTIONS,
   createNewEducationEntry,
 } from './config'
-import { DashboardWidget, UniversityAutocomplete, ConfirmationDialog, MonthYearPicker } from '@app/ui'
+import {
+  DashboardWidget,
+  UniversityAutocomplete,
+  ConfirmationDialog,
+  MonthYearPicker,
+} from '@app/ui'
 import { api } from '@app/core/utils/api'
 
 // University type definition
@@ -457,23 +462,73 @@ export function ProfileEducationLeft() {
                 <Controller
                   name={`education_entries.${index}.gpa`}
                   control={control}
-                  render={({ field }) => (
-                    <Input
-                      placeholder="e.g. 3.5 (0.0 - 4.0)"
-                      value={field.value?.toString() || ''}
-                      onChangeText={(text) => {
-                        const numValue = Number.parseFloat(text)
-                        if (
-                          text === '' ||
-                          (!Number.isNaN(numValue) && numValue >= 0 && numValue <= 4.0)
-                        ) {
-                          field.onChange(text === '' ? undefined : numValue)
-                        }
-                      }}
-                      keyboardType="numeric"
-                      error={errors.education_entries?.[index]?.gpa?.message}
-                    />
-                  )}
+                  render={({ field }) => {
+                    // Use local state to track raw input for better decimal handling
+                    const [localValue, setLocalValue] = useState(
+                      field.value?.toString() || ''
+                    )
+
+                    // Sync local value when field value changes externally (e.g., form reset)
+                    useEffect(() => {
+                      setLocalValue(field.value?.toString() || '')
+                    }, [field.value])
+
+                    return (
+                      <Input
+                        placeholder="e.g. 3.5 (0.0 - 4.0)"
+                        value={localValue}
+                        onChangeText={(text) => {
+                          // Allow empty string
+                          if (text === '') {
+                            setLocalValue('')
+                            field.onChange(undefined)
+                            return
+                          }
+
+                          // Allow decimal point and digits
+                          // Match pattern: optional digits, optional decimal point, optional single digit after decimal
+                          const decimalPattern = /^\d*\.?\d?$/
+                          if (!decimalPattern.test(text)) {
+                            return // Don't update if invalid pattern
+                          }
+
+                          // Update local display value
+                          setLocalValue(text)
+
+                          // Parse as float
+                          const numValue = Number.parseFloat(text)
+
+                          // Validate range and that it's a valid number
+                          if (
+                            !Number.isNaN(numValue) &&
+                            numValue >= 0 &&
+                            numValue <= 4.0 &&
+                            // Ensure max 1 decimal place
+                            (text.split('.')[1]?.length ?? 0) <= 1
+                          ) {
+                            // Only update form field if we have a complete number (not just "3.")
+                            if (!text.endsWith('.')) {
+                              field.onChange(numValue)
+                            }
+                          }
+                        }}
+                        onBlur={() => {
+                          // On blur, ensure we have a valid number
+                          const currentValue = field.value
+                          if (currentValue !== undefined && currentValue !== null) {
+                            // Round to 1 decimal place
+                            const rounded = Math.round(currentValue * 10) / 10
+                            field.onChange(rounded)
+                            setLocalValue(rounded.toString())
+                          } else {
+                            setLocalValue('')
+                          }
+                        }}
+                        keyboardType="decimal-pad"
+                        error={errors.education_entries?.[index]?.gpa?.message}
+                      />
+                    )
+                  }}
                 />
               </YStack>
 
@@ -576,7 +631,9 @@ export function ProfileEducationLeft() {
                               expectedField.onChange(dateStr || undefined)
                             }}
                             placeholder="Select expected graduation date"
-                            error={errors.education_entries?.[index]?.expected_graduation_date?.message}
+                            error={
+                              errors.education_entries?.[index]?.expected_graduation_date?.message
+                            }
                             label="Expected Graduation Date"
                           />
                         )}
