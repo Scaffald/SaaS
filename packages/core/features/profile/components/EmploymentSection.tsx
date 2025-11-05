@@ -304,12 +304,15 @@ export function EmploymentSection({
                 <ToggleCard
                   icon={<Car size="$2" color="$color11" />}
                   title="I have a valid driver's license"
-                  description="Select all license classes that apply"
+                  description="Class D (standard license) is automatically selected. Add any additional classes below."
                   checked={isExpanded}
                   onCheckedChange={(checked) => {
                     if (readOnly) return
                     setIsExpanded(checked)
-                    if (!checked) {
+                    if (checked) {
+                      // Auto-select Class D when toggle is checked
+                      field.onChange(["Class D"])
+                    } else {
                       field.onChange([])
                     }
                   }}
@@ -345,7 +348,9 @@ export function EmploymentSection({
                               }
                             }}
                           >
-                            Class {license}
+                            {license === "Class D"
+                              ? "Class D (standard driver's license)"
+                              : `Class ${license}`}
                           </Text>
                         </XStack>
                       ))}
