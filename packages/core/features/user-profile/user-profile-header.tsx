@@ -82,7 +82,7 @@ export function UserProfileHeader({
               )}
             </YStack>
 
-            {/* Elevate Score */}
+            {/* Scaffald Score */}
             {profile.gamified_score !== null && (
               <XStack
                 bg="$blue2"
@@ -100,7 +100,7 @@ export function UserProfileHeader({
                     {profile.gamified_score}
                   </Text>
                   <Text fontSize="$2" color="$blue10">
-                    Elevate Score
+                    Scaffald Score
                   </Text>
                 </YStack>
               </XStack>

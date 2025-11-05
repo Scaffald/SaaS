@@ -119,7 +119,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
               )}
             </YStack>
 
-            {/* Elevate Score Badge */}
+            {/* Scaffald Score Badge */}
             {profile.gamified_score !== null && (
               <XStack
                 bg="$blue2"
@@ -136,7 +136,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                   {profile.gamified_score}
                 </Text>
                 <Text fontSize="$3" color="$blue10">
-                  Elevate Score
+                  Scaffald Score
                 </Text>
               </XStack>
             )}
