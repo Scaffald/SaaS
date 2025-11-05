@@ -42,6 +42,7 @@ export * from './components/rich-text'
 // Individual component exports to avoid circular dependencies
 export { CustomToast } from './components/CustomToast'
 export * from './components/cookie-consent'
+export * from './components/dialog'
 export * from './components/cards'
 export * from './components/charts'
 export * from './components/checklist'

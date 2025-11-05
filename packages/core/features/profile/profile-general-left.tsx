@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   YStack,
   XStack,
@@ -19,7 +19,7 @@ import { PhoneNumberInput } from '@app/ui'
 import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
-import { DashboardWidget, AvatarImagePicker, RichTextEditor, plainTextToTipTap } from '@app/ui'
+import { DashboardWidget, AvatarImagePicker, RichTextEditor, plainTextToTipTap, ConfirmationDialog } from '@app/ui'
 import type { JSONContent } from '@tiptap/core'
 
 /**
@@ -28,6 +28,8 @@ import type { JSONContent } from '@tiptap/core'
  */
 export function ProfileGeneralLeft() {
   const [isLoading, setIsLoading] = useState(false)
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const originalDataRef = useRef<GeneralProfileFormData | null>(null)
   const toast = useToastController()
 
   // Use tRPC to fetch and update profile data
@@ -91,6 +93,7 @@ export function ProfileGeneralLeft() {
   useEffect(() => {
     if (profileData) {
       reset(profileData)
+      originalDataRef.current = profileData
     }
   }, [profileData, reset])
 
@@ -312,8 +315,16 @@ export function ProfileGeneralLeft() {
           error={errors.address?.street?.message || errors.address?.city?.message}
         />
 
-        {/* Save Button */}
-        <XStack justify="flex-end" pt="$4">
+        {/* Action Buttons */}
+        <XStack justify="flex-end" gap="$3" pt="$4">
+          <Button
+            variant="outlined"
+            disabled={!isDirty}
+            onPress={() => setShowCancelDialog(true)}
+            opacity={!isDirty ? 0.5 : 1}
+          >
+            Cancel
+          </Button>
           <Button
             onPress={handleSubmit(onSubmit, onError)}
             disabled={!isDirty || isLoading}
@@ -338,6 +349,23 @@ export function ProfileGeneralLeft() {
             <Button.Text>{isLoading ? 'Saving...' : 'Save Changes'}</Button.Text>
           </Button>
         </XStack>
+
+        {/* Cancel Confirmation Dialog */}
+        <ConfirmationDialog
+          open={showCancelDialog}
+          onOpenChange={setShowCancelDialog}
+          title="Discard Changes?"
+          message="You have unsaved changes. Are you sure you want to discard them?"
+          confirmLabel="Discard Changes"
+          cancelLabel="Keep Editing"
+          confirmTheme="red"
+          onConfirm={() => {
+            if (originalDataRef.current) {
+              reset(originalDataRef.current)
+              setShowCancelDialog(false)
+            }
+          }}
+        />
       </YStack>
     </DashboardWidget>
   )

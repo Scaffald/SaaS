@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import {
   YStack,
   XStack,
@@ -26,7 +26,7 @@ import {
   DEGREE_TYPE_OPTIONS,
   createNewEducationEntry,
 } from './config'
-import { DashboardWidget, UniversityAutocomplete } from '@app/ui'
+import { DashboardWidget, UniversityAutocomplete, ConfirmationDialog } from '@app/ui'
 import { api } from '@app/core/utils/api'
 
 // University type definition
@@ -44,6 +44,8 @@ interface University {
  */
 export function ProfileEducationLeft() {
   const [isLoading, setIsLoading] = useState(false)
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const originalDataRef = useRef<EducationProfileFormData | null>(null)
   const { width } = useWindowDimensions()
   const isMobile = width < 640
 
@@ -134,10 +136,12 @@ export function ProfileEducationLeft() {
         }
       })
       
-      reset({
+      const formData = {
         education_level: educationLevelQuery.data.education_level || undefined,
         education_entries: entries,
-      })
+      }
+      reset(formData)
+      originalDataRef.current = formData
     }
   }, [educationQuery.data, educationLevelQuery.data, reset])
 
@@ -577,8 +581,16 @@ export function ProfileEducationLeft() {
           )}
         </YStack>
 
-        {/* Save Button */}
-        <XStack justify="flex-end" pt="$4">
+        {/* Action Buttons */}
+        <XStack justify="flex-end" gap="$3" pt="$4">
+          <Button
+            variant="outlined"
+            disabled={!isDirty}
+            onPress={() => setShowCancelDialog(true)}
+            opacity={!isDirty ? 0.5 : 1}
+          >
+            Cancel
+          </Button>
           <Button
             onPress={handleSubmit(onSubmit)}
             disabled={!isDirty || isLoading}
@@ -587,6 +599,23 @@ export function ProfileEducationLeft() {
             {isLoading ? 'Saving...' : 'Save Changes'}
           </Button>
         </XStack>
+
+        {/* Cancel Confirmation Dialog */}
+        <ConfirmationDialog
+          open={showCancelDialog}
+          onOpenChange={setShowCancelDialog}
+          title="Discard Changes?"
+          message="You have unsaved changes. Are you sure you want to discard them?"
+          confirmLabel="Discard Changes"
+          cancelLabel="Keep Editing"
+          confirmTheme="red"
+          onConfirm={() => {
+            if (originalDataRef.current) {
+              reset(originalDataRef.current)
+              setShowCancelDialog(false)
+            }
+          }}
+        />
       </YStack>
     </DashboardWidget>
   )
