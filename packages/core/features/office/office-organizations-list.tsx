@@ -58,6 +58,7 @@ const createColumns = (
       return (
         <XStack gap="$2">
           <Button
+            data-testid={`org-edit-button-${org.id}`}
             size="$2"
             variant="outlined"
             icon={Pencil}
@@ -66,6 +67,7 @@ const createColumns = (
             Edit
           </Button>
           <DeleteButton
+            data-testid={`org-delete-button-${org.id}`}
             itemName={org.name}
             itemType="organization"
             onDelete={() => onDelete(org.id)}
@@ -117,6 +119,7 @@ export function OfficeOrganizationsList() {
       isLoading={isLoading}
       pageSize={50}
       emptyMessage="No organizations found"
+      tableTestId="organizations-table"
     />
   )
 }

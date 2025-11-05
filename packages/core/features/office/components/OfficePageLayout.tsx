@@ -16,6 +16,7 @@ interface OfficePageLayoutProps<TData> {
   onRowClick?: (row: TData) => void
   pageSize?: number
   emptyMessage?: string
+  tableTestId?: string
 }
 
 export function OfficePageLayout<TData>({
@@ -31,6 +32,7 @@ export function OfficePageLayout<TData>({
   onRowClick,
   pageSize = 50,
   emptyMessage = 'No data found',
+  tableTestId,
 }: OfficePageLayoutProps<TData>) {
   return (
     <YStack flex={1} bg="$background" p="$4" gap="$4">
@@ -50,6 +52,7 @@ export function OfficePageLayout<TData>({
         onRowClick={onRowClick}
         pageSize={pageSize}
         emptyMessage={emptyMessage}
+        testID={tableTestId}
       />
     </YStack>
   )
