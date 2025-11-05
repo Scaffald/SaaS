@@ -82,6 +82,7 @@ export const DRIVERS_LICENSE_OPTIONS = [
   "Class A",
   "Class B",
   "Class C",
+  "Class D",
   "CDL A",
   "CDL B",
   "CDL C",
