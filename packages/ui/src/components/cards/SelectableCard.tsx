@@ -1,17 +1,31 @@
 import { memo, forwardRef } from 'react'
 import type { TamaguiElement } from 'tamagui'
-import { YStack } from 'tamagui'
+import { YStack, useTheme } from 'tamagui'
+import { cardShadows, borderRadius, spacing } from '../../tokens/design-tokens'
 import type { SelectableCardProps } from './types'
 
 /**
- * SelectableCard - Base card component with selection states
+ * SelectableCard - Professional card component with teal selection states
  *
- * This is the foundation for all card variants in the application.
- * It provides consistent selection, hover, and press states while
- * remaining flexible through composition.
+ * Foundation card component featuring Scaffald's teal brand color for selections.
+ * Provides consistent selection, hover, and press states with smooth animations.
+ *
+ * Design Tokens Used:
+ * - Colors: $teal7 (primary), $teal2 (selected bg), $teal3 (hover), $teal8 (hover border)
+ * - Shadows: cardShadows.light, cardShadows.dark
+ * - Border radius: borderRadius.md
+ * - Spacing: spacing.md, spacing.sm (defaults)
+ *
+ * States:
+ * - Default: Light background with subtle border
+ * - Selected: Teal accent with 2px border, light teal background
+ * - Hover: Enhanced shadow, darker border (teal if selected)
+ * - Press: Slight scale reduction with pressed shadow
+ * - Disabled: 50% opacity, not-allowed cursor
  *
  * @example
  * ```tsx
+ * // Basic selectable card
  * <SelectableCard
  *   id="card-1"
  *   isSelected={selectedId === "card-1"}
@@ -20,6 +34,16 @@ import type { SelectableCardProps } from './types'
  * >
  *   <CardHeader title="Example" />
  *   <CardMetadata items={[...]} />
+ * </SelectableCard>
+ *
+ * // With custom padding and gap
+ * <SelectableCard
+ *   id="card-2"
+ *   isSelected={false}
+ *   padding={spacing.lg}
+ *   gap={spacing.md}
+ * >
+ *   <Text>Custom spacing</Text>
  * </SelectableCard>
  * ```
  */
@@ -32,23 +56,36 @@ export const SelectableCard = memo(
         onPress,
         disabled = false,
         selection,
-        padding = '$3',
-        gap = '$2',
+        padding = spacing.md,
+        gap = spacing.sm,
         children,
         ...rest
       },
       forwardedRef
     ) => {
+      const theme = useTheme()
       const isSelectionEnabled = selection?.enabled ?? false
 
-      // Determine colors based on selection state
-      const borderColor = isSelected ? (selection?.selectedBorderColor ?? '$blue9') : '$color5'
+      // Determine if we're in dark mode
+      const isDark = theme.background.val.includes('8%')
 
-      const bgColor = isSelected ? (selection?.selectedBgColor ?? '$blue9') : '$background'
+      // Use teal theme tokens for selection (matching Scaffald brand)
+      const borderColor = isSelected
+        ? (selection?.selectedBorderColor ?? '$teal7') // Primary teal
+        : '$borderColor'
 
-      const shadowStyle = isSelected
-        ? (selection?.selectedShadow ?? '0 4px 8px rgba(59, 130, 246, 0.2)')
-        : undefined
+      const bgColor = isSelected
+        ? (selection?.selectedBgColor ?? '$teal2') // Light teal background
+        : '$background'
+
+      // Use design token shadows
+      const shadow = isSelected
+        ? isDark
+          ? cardShadows.dark
+          : cardShadows.light
+        : isDark
+          ? cardShadows.dark
+          : cardShadows.light
 
       return (
         <YStack
@@ -60,26 +97,35 @@ export const SelectableCard = memo(
               forwardedRef.current = node
             }
           }}
-          borderWidth={1}
+          borderWidth={isSelected ? 2 : 1}
           borderColor={borderColor}
-          rounded="$3"
+          rounded={borderRadius.md}
           p={padding}
           bg={bgColor}
           gap={gap}
           opacity={disabled ? 0.5 : 1}
           cursor={disabled ? 'not-allowed' : 'pointer'}
-          pressStyle={!disabled ? { scale: 0.98 } : undefined}
+          boxShadow={shadow}
+          animation="quick"
+          animateOnly={['backgroundColor', 'borderColor', 'transform']}
+          pressStyle={
+            !disabled
+              ? {
+                  scale: 0.98,
+                  boxShadow: isDark ? cardShadows.darkPress : cardShadows.lightPress,
+                }
+              : undefined
+          }
           hoverStyle={
             !disabled
               ? {
-                  bg: isSelected ? bgColor : '$color2',
+                  bg: isSelected ? '$teal3' : '$backgroundHover',
+                  borderColor: isSelected ? '$teal8' : '$borderColorHover',
+                  boxShadow: isDark ? cardShadows.darkHover : cardShadows.lightHover,
                 }
               : undefined
           }
           onPress={!disabled ? onPress : undefined}
-          animation={isSelectionEnabled && isSelected ? 'bouncy' : undefined}
-          animateOnly={['backgroundColor', 'borderColor']}
-          style={shadowStyle ? { boxShadow: shadowStyle } : undefined}
           {...rest}
         >
           {children}

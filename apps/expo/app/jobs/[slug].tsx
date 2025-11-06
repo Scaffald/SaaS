@@ -15,7 +15,11 @@ export default function PublicJobDetailPage() {
   const { slug } = useLocalSearchParams<{ slug: string }>()
 
   // Fetch job by slug
-  const { data: jobData, isLoading, error } = api.jobs.bySlug.useQuery(
+  const {
+    data: jobData,
+    isLoading,
+    error,
+  } = api.jobs.bySlug.useQuery(
     { slug: slug || '' },
     {
       enabled: !!slug,
@@ -73,6 +77,7 @@ export default function PublicJobDetailPage() {
   // Use existing job detail screen component
   const { left, right } = DiscoverJobDetailScreen({ jobId: jobData.id })
 
-  return <DashboardLayout breadcrumbItems={breadcrumbItems} leftContent={left} rightContent={right} />
+  return (
+    <DashboardLayout breadcrumbItems={breadcrumbItems} leftContent={left} rightContent={right} />
+  )
 }
-
