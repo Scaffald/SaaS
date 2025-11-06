@@ -41,7 +41,7 @@ export const DashboardWidget = ({
       p={isSmallScreen ? '$4' : '$5'}
       gap={gap}
       rounded="$7"
-      bg="$color1"
+      bg="$color1" // Lightest gray (eggshell white) - maps to earthGray.gray1 in light mode
       {...props}
     >
       {children}

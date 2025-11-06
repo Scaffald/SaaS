@@ -20,28 +20,61 @@ export interface UseBreadcrumbsReturn {
 }
 
 /**
- * Hook for managing breadcrumb navigation items
+ * Hook for managing breadcrumb navigation items with automatic route-based generation
  *
- * Supports both auto-generation from routes and manual override.
- * When autoGenerate is true, breadcrumbs are generated from the current pathname.
- * When customItems are provided, they take precedence over auto-generated items.
+ * Features:
+ * - Auto-generation: Automatically generates breadcrumbs from the current route path
+ * - Route matching: Uses ROUTES configuration to match paths and build hierarchy
+ * - Dashboard-first: Dashboard routes use "Dashboard" as apex instead of "Home"
+ * - Intermediate segments: Automatically detects and creates intermediate path segments
+ * - Manual override: Supports custom breadcrumb items for special cases
+ * - Memoized: Optimized with useMemo and useCallback for performance
+ *
+ * The hook automatically:
+ * - Parses the current pathname against the ROUTES configuration
+ * - Finds parent routes and builds the hierarchy
+ * - Creates intermediate segments (e.g., "Discover" in /dashboard/discover/workers)
+ * - Uses Dashboard as the apex for all dashboard routes
+ * - Handles terminal routes (plain text) vs non-terminal routes (clickable links)
+ *
+ * @param options - Configuration options for breadcrumb generation
+ * @param options.autoGenerate - Whether to auto-generate breadcrumbs from route (default: false)
+ * @param options.customItems - Manual breadcrumb items to override auto-generation
+ *
+ * @returns Breadcrumb data and update functions
+ * @returns breadcrumbs - Array of breadcrumb items for the current route
+ * @returns updateBreadcrumb - Function to update a specific breadcrumb item by index
+ * @returns resetBreadcrumbs - Function to reset breadcrumbs to auto-generated state
  *
  * @example
  * ```tsx
+ * // Auto-generate from current route
  * const { breadcrumbs } = useBreadcrumbs({ autoGenerate: true })
+ * <Breadcrumb items={breadcrumbs} />
  * ```
  *
  * @example
  * ```tsx
- * const { breadcrumbs, updateBreadcrumb } = useBreadcrumbs({
+ * // Manual override with custom items
+ * const { breadcrumbs } = useBreadcrumbs({
  *   customItems: [
- *     { label: 'Home', href: '/' },
- *     { label: 'Page', href: '/page' }
+ *     { label: 'Dashboard', href: '/dashboard' },
+ *     { label: 'Custom Page', isActive: true }
  *   ]
  * })
+ * <Breadcrumb items={breadcrumbs} />
+ * ```
  *
- * // Update a specific breadcrumb
- * updateBreadcrumb(1, { label: 'Updated Page' })
+ * @example
+ * ```tsx
+ * // Update breadcrumb dynamically
+ * const { breadcrumbs, updateBreadcrumb } = useBreadcrumbs({ autoGenerate: true })
+ *
+ * useEffect(() => {
+ *   if (userName) {
+ *     updateBreadcrumb(2, { label: userName })
+ *   }
+ * }, [userName, updateBreadcrumb])
  * ```
  */
 export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcrumbsReturn {

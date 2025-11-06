@@ -21,37 +21,18 @@ import {
 export const lightTransparent = 'hsla(42, 28%, 96%, 0)' // bg transparent
 export const darkTransparent = 'hsla(30, 9%, 17%, 0)' // ink transparent
 
-export const lightColor = 'hsl(30, 9%, 17%)' // ink: #2F2A26
-const lightPalette = [
-  lightTransparent,
-  'hsla(42, 28%, 99%, 1)', // bg: #F7F4EF
-  'hsla(42, 25%, 94%, 1)',
-  'hsla(38, 20%, 91%, 1)', // bgWeak: #EFEAE2
-  'hsla(45, 33%, 89%, 1)',
-  'hsla(45, 30%, 85%, 1)',
-  'hsla(30, 9%, 50%, 1)',
-  'hsla(30, 9%, 38%, 1)', // inkMuted: #6F665F
-  'hsla(30, 9%, 30%, 1)',
-  'hsla(30, 9%, 25%, 1)',
-  'hsla(30, 9%, 20%, 1)',
-  lightColor, // ink: #2F2A26
-  darkTransparent,
-]
+// Helper to convert HSL to HSLA with alpha=1 for palette values
+const hslToHsla = (hsl: string): string => {
+  return hsl.replace('hsl(', 'hsla(').replace(')', ', 1)')
+}
 
-export const darkColor = 'hsl(42, 28%, 96%)' // bg for dark mode
+// Build palette from earthGray colors (removes duplication)
+// Tamagui expects: [transparent, color1, color2, ..., color12, transparent]
+const lightPalette = [lightTransparent, ...Object.values(earthGray).map(hslToHsla), darkTransparent]
+
 const darkPalette = [
   darkTransparent,
-  'hsla(30, 9%, 12%, 1)',
-  'hsla(30, 9%, 16%, 1)',
-  'hsla(30, 9%, 20%, 1)',
-  'hsla(30, 9%, 25%, 1)',
-  'hsla(30, 9%, 30%, 1)',
-  'hsla(30, 9%, 42%, 1)',
-  'hsla(30, 9%, 50%, 1)',
-  'hsla(35, 12%, 70%, 1)',
-  'hsla(40, 18%, 85%, 1)',
-  'hsla(42, 25%, 92%, 1)',
-  darkColor,
+  ...Object.values(earthGrayDark).map(hslToHsla),
   lightTransparent,
 ]
 
@@ -114,56 +95,30 @@ const builtThemes = createThemes({
 
   accent: {
     palette: {
-      dark: [
-        'hsla(30, 34%, 12%, 1)',
-        'hsla(30, 34%, 16%, 1)',
-        'hsla(30, 34%, 20%, 1)',
-        'hsla(30, 34%, 25%, 1)',
-        'hsla(30, 34%, 30%, 1)',
-        'hsla(30, 34%, 36%, 1)',
-        'hsla(30, 34%, 40%, 1)',
-        'hsla(30, 34%, 42%, 1)', // primary: #8C6A43
-        'hsla(30, 35%, 48%, 1)',
-        'hsla(30, 36%, 55%, 1)',
-        'hsla(30, 38%, 70%, 1)',
-        'hsla(30, 42%, 88%, 1)',
-      ],
-      light: [
-        'hsla(30, 45%, 97%, 1)',
-        'hsla(30, 42%, 94%, 1)',
-        'hsla(30, 38%, 88%, 1)',
-        'hsla(30, 36%, 80%, 1)',
-        'hsla(30, 35%, 70%, 1)',
-        'hsla(30, 34%, 60%, 1)',
-        'hsla(30, 34%, 51%, 1)',
-        'hsla(30, 34%, 42%, 1)', // primary: #8C6A43
-        'hsla(30, 35%, 36%, 1)',
-        'hsla(30, 36%, 30%, 1)',
-        'hsla(30, 38%, 22%, 1)',
-        'hsla(30, 42%, 16%, 1)',
-      ],
+      dark: Object.values(earthOrangeDark).map(hslToHsla),
+      light: Object.values(earthOrange).map(hslToHsla),
     },
   },
 
   childrenThemes: {
     warning: {
       palette: {
-        dark: Object.values(earthYellowDark),
-        light: Object.values(earthYellow),
+        dark: Object.values(earthYellowDark).map(hslToHsla),
+        light: Object.values(earthYellow).map(hslToHsla),
       },
     },
 
     error: {
       palette: {
-        dark: Object.values(earthRedDark),
-        light: Object.values(earthRed),
+        dark: Object.values(earthRedDark).map(hslToHsla),
+        light: Object.values(earthRed).map(hslToHsla),
       },
     },
 
     success: {
       palette: {
-        dark: Object.values(earthGreenDark),
-        light: Object.values(earthGreen),
+        dark: Object.values(earthGreenDark).map(hslToHsla),
+        light: Object.values(earthGreen).map(hslToHsla),
       },
     },
   },

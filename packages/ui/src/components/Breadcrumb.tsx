@@ -44,17 +44,17 @@ export interface BreadcrumbProps {
  * - Responsive: Shows last N items on mobile, full path on desktop
  * - Desktop collapse: Shows up to 4 tiers before collapsing with ellipsis
  * - Mobile collapse: Shows only last 2 tiers
- * - Interactive dropdowns: Click any tier with siblings to see related pages
  * - Ellipsis dropdown: Click ellipsis to see hidden middle tiers
- * - Keyboard navigation: Arrow keys, Enter, Escape for dropdowns
- * - Clickable navigation segments
+ * - Clickable navigation segments (non-terminal items are links)
+ * - Terminal items displayed as plain text (not clickable)
  * - Theme-aware styling
  * - Supports custom navigation via onItemPress callback
  * - Accessibility: WCAG 2.1 Level AA compliant with ARIA labels
+ * - Memoized for performance optimization
  *
  * @example
  * ```tsx
- * // Basic usage (backward compatible)
+ * // Basic usage - simple breadcrumb trail
  * <Breadcrumb
  *   items={[
  *     { label: 'Dashboard', href: '/dashboard' },
@@ -66,22 +66,9 @@ export interface BreadcrumbProps {
  *
  * @example
  * ```tsx
- * // With sibling routes (shows dropdown on hover/click)
- * <Breadcrumb
- *   items={[
- *     { label: 'Dashboard', href: '/dashboard' },
- *     {
- *       label: 'Office',
- *       href: '/office',
- *       siblings: [
- *         { label: 'Users', href: '/office/users' },
- *         { label: 'Jobs', href: '/office/jobs' },
- *         { label: 'Organizations', href: '/office/organizations' },
- *       ],
- *     },
- *     { label: 'Edit Organization', isActive: true },
- *   ]}
- * />
+ * // With auto-generation from route
+ * const { breadcrumbs } = useBreadcrumbs({ autoGenerate: true });
+ * <Breadcrumb items={breadcrumbs} />
  * ```
  *
  * @example
@@ -95,7 +82,7 @@ export interface BreadcrumbProps {
  * />
  * ```
  */
-export function Breadcrumb({
+export const Breadcrumb = React.memo(function Breadcrumb({
   items,
   maxItemsMobile = 2,
   maxItemsDesktop = 4,
@@ -342,4 +329,4 @@ export function Breadcrumb({
       </XStack>
     </nav>
   )
-}
+})
