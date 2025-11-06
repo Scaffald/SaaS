@@ -1,22 +1,20 @@
 import { YStack, Spinner, Text } from 'tamagui'
-import { ProfileCompletionWidget } from './completion'
+import { ProfileSnapshotWidget } from '../profile/widgets'
 import { PrerequisiteWidget } from '../prerequisites/PrerequisiteWidget'
-import { CareerAssessmentWidget } from '../career-assessment'
-import { useRouter } from 'expo-router'
+import { LuscherTest1Widget } from '../luscher-test-1'
+import { IPIPAssessmentWidget } from '../ipip-assessment'
+import { LuscherTest2Widget } from '../luscher-test-2'
+import { RIASECAssessmentWidget } from '../riasec-assessment'
+import { OccupationAssessmentWidget } from '../occupation-assessment'
 import { api } from '@app/core/utils/api'
 
 /**
  * Dashboard Index Left Component
  * Shows PrerequisiteWidget when prerequisites are incomplete,
- * otherwise shows ProfileCompletionWidget
+ * otherwise shows ProfileSnapshotWidget, CareerAssessmentWidget, and PersonalityAssessmentWidget
  */
 export function DashboardIndexLeft() {
-  const router = useRouter()
   const { data: statusData, isLoading } = api.prerequisites.check.useQuery()
-
-  const handleNavigate = (route: string) => {
-    router.push(route)
-  }
 
   // Show loading state while checking prerequisites
   if (isLoading) {
@@ -33,11 +31,15 @@ export function DashboardIndexLeft() {
     return <PrerequisiteWidget />
   }
 
-  // Show ProfileCompletionWidget and CareerAssessmentWidget if prerequisites are complete
+  // Show ProfileSnapshotWidget and individual assessment widgets if prerequisites are complete
   return (
     <YStack gap="$4">
-      <ProfileCompletionWidget onNavigate={handleNavigate} />
-      <CareerAssessmentWidget />
+      <ProfileSnapshotWidget />
+      <LuscherTest1Widget />
+      <IPIPAssessmentWidget />
+      <LuscherTest2Widget />
+      <RIASECAssessmentWidget />
+      <OccupationAssessmentWidget />
     </YStack>
   )
 }

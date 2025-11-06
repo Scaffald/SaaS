@@ -1,0 +1,87 @@
+---
+description: "Supabase-specific development guidelines and commands"
+globs: ["supabase/**/*", "**/*supabase*", "**/*.sql"]
+alwaysApply: false
+---
+
+# Supabase Development Rules
+
+## Command Usage
+- **ALWAYS use `pnpm supa`** instead of global supabase CLI
+- **NEVER use `supabase` directly** - always go through pnpm workspace
+
+## Common Supabase Commands
+- Start local Supabase: `pnpm supa start`
+- Stop local Supabase: `pnpm supa stop`
+- Generate types: `pnpm supa:generate` (local) or `pnpm supa:generate:remote`
+- Create migration: `pnpm supa migration:new <name>`
+- Apply migrations: `pnpm supa migration:up`
+- **PROHIBITED**: `pnpm supa reset` - **NO DATABASE RESETS** - use migrations only
+- Check status: `pnpm supa status`
+- Open Studio: `pnpm supa:studio` (http://127.0.0.1:54323)
+- Open Mailpit: `pnpm supa:mailpit` (http://127.0.0.1:54324)
+
+## Schema Organization
+
+### Core Schema (`core.*`)
+- **ALL application tables** are in the `core` schema
+- Application tables: `core.users`, `core.organizations`, `core.jobs`, etc.
+- Private/PII tables: `core.profile`, `core.preferences`, `core.applications`, etc.
+  - **NO `private_` prefix** - RLS handles privacy
+- Review enhancements: `core.soft_skills`, `core.review_category_ratings`, etc.
+
+### Reference Data Schemas (Separate)
+- **`data.*`**: Reference data (universities, masterformat, certifications) - DO NOT move to core
+- **`cms.*`**: CMS content (welcome_slides, etc.) - DO NOT move to core
+- **`onet.*`**: O*NET external reference data - DO NOT move to core
+
+### Column Naming Conventions
+- **Rich text fields**: Use `description` or `about` (NOT `*_rich`) - stored as JSONB
+- **NO plain text fallbacks**: `*_plain` columns are prohibited - use `extract_tiptap_plain_text()` function for search
+- **Search indexes**: Use function-based extraction: `to_tsvector('english', core.extract_tiptap_plain_text(column))`
+
+## Migration Workflow
+
+### Prohibited Practices
+- ❌ **NO database resets** - All changes must be migrations
+- ❌ **NO direct schema modifications** - Always use migrations
+- ❌ **NO manual table edits** - All changes go through migrations
+- ❌ **NO `*_plain` columns** - Use function-based extraction for search
+- ❌ **NO `*_rich` suffix** - Rich text columns are just `description` or `about`
+
+### Migration Structure
+Migrations follow numbered convention (001-007):
+- **001_schema.sql**: Pure schema (tables, types, enums) - NO foreign keys, NO RLS, NO indexes
+- **002_data.sql**: Reference data schemas and polymorphic skill tables
+- **003_relations.sql**: Foreign key relationships
+- **004_functions.sql**: Functions, triggers (moved to `core` schema)
+- **005_policies.sql**: RLS policies (reference `core.*` tables)
+- **006_storage.sql**: Storage buckets and policies
+- **007_indexes.sql**: Performance indexes (function-based for rich text)
+
+### Creating New Migrations
+- Create numbered migrations after 007: `008_feature_name.sql`
+- Never modify existing 001-007 migrations unless absolutely necessary
+- Use transactions: `BEGIN;` / `COMMIT;`
+- Use `IF NOT EXISTS` for idempotent runs
+- Use `DROP POLICY IF EXISTS` before `CREATE POLICY`
+
+## Development Workflow
+- **ASSUME Supabase is running** on `http://localhost:54321` unless told otherwise
+- **Check `pnpm supa status`** before suggesting database operations
+- **Use local types generation** (`pnpm supa:generate`) after schema changes
+- **Test API endpoints** using browser extensions or curl, not by starting servers
+- **Always regenerate types** after migration changes
+
+## tRPC Router Updates
+When working with database tables:
+- Use `.schema("core")` for all application tables (NOT `"private"` or `"public"`)
+- Use `.schema("data")` for reference data tables (universities, masterformat)
+- Use `.schema("cms")` for CMS tables (welcome_slides)
+- Rich text columns: Use `description` or `about` (not `*_rich`)
+
+## File Locations
+- Supabase config: `packages/supabase/config.toml`
+- Migrations: `packages/supabase/migrations/`
+- Types: `packages/supabase/types.ts`
+- Migration guidelines: `packages/supabase/docs/MIGRATION_GUIDELINES.md`

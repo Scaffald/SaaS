@@ -2,10 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@app/core/utils/supabase/client";
 import type { Database } from "@app/supabase/types";
 import type { TalentProfile } from "../types";
+import type { ViewportBounds } from "@app/ui/src/components/maps/types";
 
 // Type for the v_profile_search view with additional fields we select
 type ProfileSearchRow =
-  & Database["public"]["Views"]["v_profile_search"]["Row"]
+  & Database["core"]["Views"]["v_profile_search"]["Row"]
   & {
     certifications?: string[] | null;
     hourly_rate_cents?: number | null;
@@ -14,16 +15,37 @@ type ProfileSearchRow =
     location?: string | null;
   };
 
-export const useTalentProfiles = () => {
+interface UseTalentProfilesOptions {
+  bounds?: ViewportBounds | null;
+  limit?: number;
+}
+
+export const useTalentProfiles = (options: UseTalentProfilesOptions = {}) => {
+  const { bounds, limit = 500 } = options;
+
   return useQuery({
-    queryKey: ["talent-profiles"],
+    queryKey: ["talent-profiles", bounds],
     queryFn: async (): Promise<TalentProfile[]> => {
       // Get profiles from the v_profile_search view
-      const { data: profiles, error: profilesError } = await supabase
+      let query = supabase
+        .schema("core")
         .from("v_profile_search")
         .select("*")
-        .order("gamified_score", { ascending: false })
-        .limit(50);
+        .order("gamified_score", { ascending: false });
+
+      // Apply viewport bounds filtering if provided
+      if (bounds) {
+        query = query
+          .gte("longitude", bounds.west)
+          .lte("longitude", bounds.east)
+          .gte("latitude", bounds.south)
+          .lte("latitude", bounds.north);
+      }
+
+      // Apply limit (max 500 workers per viewport)
+      query = query.limit(Math.min(limit, 500));
+
+      const { data: profiles, error: profilesError } = await query;
 
       if (profilesError) {
         console.error(
@@ -95,5 +117,6 @@ export const useTalentProfiles = () => {
       });
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: true, // Always enabled, but query key changes with bounds
   });
 };

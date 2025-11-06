@@ -20,9 +20,14 @@ export const generalProfileSchema = z.object({
     "Last name too long",
   ),
 
-  // About section - optional
-  about: z.string().max(500, "About section must be 500 characters or less")
-    .optional(),
+  // About section - accepts both string (legacy) and JSONContent (TipTap format)
+  about: z.union([
+    z.string().max(500, "About section must be 500 characters or less"),
+    z.object({
+      type: z.string(),
+      content: z.array(z.any()).optional(),
+    }).passthrough(), // TipTap JSONContent format
+  ]).optional().nullable(),
 
   // Contact information - optional
   phone: phoneNumberSchema,
@@ -51,7 +56,7 @@ export const generalProfileDefaults: GeneralProfileFormData = {
   avatar_path: "",
   first_name: "",
   last_name: "",
-  about: "",
+  about: null,
   phone: "",
   email: "",
   address: {

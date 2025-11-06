@@ -6,3 +6,5 @@ export { ProfileResultCard } from "./ProfileResultCard";
 export { InlineSkillSearch } from "./InlineSkillSearch";
 export { GeneralProfileSection } from "./GeneralProfileSection";
 export { EmploymentSection } from "./EmploymentSection";
+export { EducationEntryEditModal } from "./EducationEntryEditModal";
+export { VanityUrlSection } from "./VanityUrlSection";

@@ -22,3 +22,6 @@ export * from './applications'
 
 // Organization schemas
 export * from './organizations'
+
+// CMS schemas
+export * from './cms/welcome-slides.schema'

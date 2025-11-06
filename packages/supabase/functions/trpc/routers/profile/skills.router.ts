@@ -24,6 +24,7 @@ export const profileSkillsRouter = t.router({
     const { supabase } = ctx;
 
     const { data, error } = await supabase
+      .schema("core")
       .from("industries")
       .select("id, name, slug")
       .order("name");
@@ -213,7 +214,7 @@ export const profileSkillsRouter = t.router({
         authError: authError?.message,
       });
 
-      const { data, error } = await userScopedClient.from("user_skills").insert(
+      const { data, error } = await userScopedClient.schema("core").from("user_skills").insert(
         {
           user_id: user.id,
           skill_id: input.skillId,
@@ -283,6 +284,7 @@ export const profileSkillsRouter = t.router({
       });
 
       const { error } = await userScopedClient
+        .schema("core")
         .from("user_skills")
         .update(updateData)
         .eq("user_id", user.id)
@@ -320,6 +322,7 @@ export const profileSkillsRouter = t.router({
       });
 
       const { error } = await userScopedClient
+        .schema("core")
         .from("user_skills")
         .delete()
         .eq("user_id", user.id)
@@ -342,15 +345,17 @@ export const profileSkillsRouter = t.router({
     const { supabase, user } = ctx;
 
     // Get user's primary industry from users table
-    const { data: userData } = await supabase
-      .from("users")
+      const { data: userData } = await supabase
+        .schema("core")
+        .from("users")
       .select("industry_id")
       .eq("id", user.id)
       .single();
 
     // Get user's explicit skills
-    const { data: skillsData } = await supabase
-      .from("user_skills")
+      const { data: skillsData } = await supabase
+        .schema("core")
+        .from("user_skills")
       .select(`
         skill_id,
         proficiency,
@@ -399,8 +404,9 @@ export const profileSkillsRouter = t.router({
 
       // Update primary industry if provided
       if (input.industry_id !== undefined) {
-        const { error: industryError } = await supabase
-          .from("users")
+          const { error: industryError } = await supabase
+            .schema("core")
+            .from("users")
           .update({
             industry_id: input.industry_id,
             updated_at: new Date().toISOString(),

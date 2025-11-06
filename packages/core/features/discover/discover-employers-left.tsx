@@ -1,7 +1,10 @@
-import { useState } from 'react'
 import { YStack, ScrollView, Text, Spinner } from 'tamagui'
+import { useRouter } from 'expo-router'
 import { EmployerCard, type Employer } from './components/EmployerCard'
 import { api } from '@app/core/utils/api'
+import { RouteBuilder } from '@app/core/constants/routes'
+import type { JSONContent } from '@tiptap/core'
+import { extractPlainText } from '@app/ui'
 
 interface DiscoverEmployersLeftProps {
   searchQuery: string
@@ -16,7 +19,7 @@ export function DiscoverEmployersLeft({
   searchQuery,
   selectedIndustries,
 }: DiscoverEmployersLeftProps) {
-  const [_selectedEmployer, _setSelectedEmployer] = useState<Employer | null>(null)
+  const router = useRouter()
 
   // Fetch employers from API
   const { data, isLoading } = api.employers.getEmployers.useQuery()
@@ -27,9 +30,14 @@ export function DiscoverEmployersLeft({
     // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
+      const descriptionText = employer.description
+        ? typeof employer.description === 'string'
+          ? employer.description
+          : extractPlainText(employer.description as JSONContent)
+        : ''
       const matchesSearch =
         employer.name.toLowerCase().includes(query) ||
-        employer.description?.toLowerCase().includes(query) ||
+        descriptionText.toLowerCase().includes(query) ||
         employer.industries?.name.toLowerCase().includes(query)
 
       if (!matchesSearch) return false
@@ -46,9 +54,7 @@ export function DiscoverEmployersLeft({
   })
 
   const handleViewDetails = (employer: Employer) => {
-    _setSelectedEmployer(employer)
-    // TODO: Open detail modal or navigate to detail page
-    console.log('View employer details:', employer)
+    router.push(RouteBuilder.dashboardEmployer(employer.id))
   }
 
   if (isLoading) {

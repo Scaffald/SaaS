@@ -37,6 +37,8 @@
     "tamagui:upgrade": "pnpm up '*tamagui*'@latest '@tamagui/*'@latest",
     "tamagui:upgrade:canary": "pnpm up '*tamagui*'@canary '@tamagui/*'@canary",
     "supa": "pnpm env-local pnpx supabase --workdir packages",
+    "supa:config:push": "pnpm env-local pnpx supabase --workdir packages config push",
+    "supa:config:push:prod": "pnpm env-prod pnpx supabase --workdir packages config push",
     "supa:seed": "pnpm env-local pnpm --filter @app/supabase seed",
     "supa:reset": "pnpm supa db reset && pnpm supa seed && pnpm test",
     "supa:generate": "dotenv -e .env -- pnpx supabase --workdir packages gen types typescript --local > packages/supabase/types.ts",

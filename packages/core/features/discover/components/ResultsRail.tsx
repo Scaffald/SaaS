@@ -1,4 +1,5 @@
 import { YStack } from 'tamagui'
+import { memo } from 'react'
 import type { RefObject } from 'react'
 import type { TalentProfile } from '../types'
 import type { OrganizationMapPin } from '../hooks/useOrganizations'
@@ -16,7 +17,7 @@ interface ResultsRailProps {
   resultListRef?: RefObject<ResultListRef | null>
 }
 
-export function ResultsRail({
+export const ResultsRail = memo(function ResultsRail({
   isVisible,
   profiles,
   organizations,
@@ -60,4 +61,4 @@ export function ResultsRail({
       />
     </YStack>
   )
-}
+})

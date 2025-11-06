@@ -53,3 +53,22 @@ export function getStorageUrl(bucket: string, filePath: string | null | undefine
 
   return `${supabaseUrl}/storage/v1/object/public/${bucket}/${filePath}`
 }
+
+/**
+ * Constructs a full CMS media URL from a file path
+ * Convenience function for CMS media uploads
+ * @param mediaPath - The file path stored in the database (e.g., "welcome-slides/{id}/{filename}")
+ * @returns Full URL to the CMS media file, or null if no path provided
+ */
+export function getCMSMediaUrl(mediaPath: string | null | undefined): string | null {
+  if (!mediaPath || mediaPath.trim() === '') {
+    return null
+  }
+
+  // If it's already a full URL, return as-is (for backwards compatibility)
+  if (mediaPath.startsWith('http://') || mediaPath.startsWith('https://')) {
+    return mediaPath
+  }
+
+  return getStorageUrl('cms-media', mediaPath)
+}

@@ -72,26 +72,55 @@ Verify:
 pnpm supa db remote --status
 ```
 
-### Step 3: Push Database Migrations
+### Step 3: Configure API Exposed Schemas and Auth URLs
 
-#### 3.1 Review Migrations
+**IMPORTANT:** After creating the `core` and `cms` schemas, you must configure PostgREST to expose them. Also ensure auth URLs use production values.
+
+The `config.toml` file uses environment variables (e.g., `env(EXPO_PUBLIC_URL)`). Use the appropriate command:
+
+**For Production:**
+```bash
+pnpm supa:config:push:prod --yes
+```
+This loads `.env.production` and pushes config with production URLs (e.g., `https://preview.scaffald.com`).
+
+**For Local Development:**
+```bash
+pnpm supa:config:push --yes
+```
+This loads `.env` and pushes config with local URLs (e.g., `http://localhost:8081`).
+
+**What gets updated:**
+- API exposed schemas: `auth`, `public`, `core`, `cms`, `storage`, `data`, `onet`
+- `extra_search_path` to match
+- Auth `site_url` and `additional_redirect_urls` (uses `EXPO_PUBLIC_URL` from env file)
+- Shows a diff of changes before applying
+
+**Note:** 
+- Always use `supa:config:push:prod` for production deployments to avoid pushing localhost URLs
+- Without this step, API calls to `core.*` or `cms.*` tables will fail with "schema must be one of..." errors
+- Auth redirect URLs must match your production domain for OAuth to work correctly
+
+### Step 4: Push Database Migrations
+
+#### 4.1 Review Migrations
 
 Check what will be applied:
 ```bash
 pnpm supa db diff --linked
 ```
 
-#### 3.2 Push All Migrations
+#### 4.2 Push All Migrations
 
 ```bash
 pnpm supa db push
 ```
 
-This applies all 78+ migrations in order. Watch for:
+This applies all migrations in order. Watch for:
 - ✅ Success messages for each migration
 - ❌ Any errors (address immediately)
 
-#### 3.3 Verify Tables
+#### 4.3 Verify Tables
 
 ```bash
 # List all tables
@@ -101,27 +130,27 @@ pnpm supa db remote --list
 # Project → Database → Tables
 ```
 
-### Step 4: Deploy Edge Functions
+### Step 5: Deploy Edge Functions
 
-#### 4.1 Deploy tRPC Router
+#### 5.1 Deploy tRPC Router
 
 ```bash
 pnpm supa functions deploy trpc --project-ref YOUR-PROJECT-REF
 ```
 
-#### 4.2 Deploy Job Import Function
+#### 5.2 Deploy Job Import Function
 
 ```bash
 pnpm supa functions deploy job-import --project-ref YOUR-PROJECT-REF
 ```
 
-#### 4.3 Deploy News Function
+#### 5.3 Deploy News Function
 
 ```bash
 pnpm supa functions deploy news --project-ref YOUR-PROJECT-REF
 ```
 
-#### 4.4 Verify Deployments
+#### 5.4 Verify Deployments
 
 ```bash
 pnpm supa functions list
@@ -132,9 +161,9 @@ Or check dashboard:
 Project → Edge Functions
 ```
 
-### Step 5: Configure Storage Buckets
+### Step 6: Configure Storage Buckets
 
-#### 5.1 Create Buckets
+#### 6.1 Create Buckets
 
 In Supabase Dashboard:
 ```
@@ -146,7 +175,7 @@ Create these buckets:
 - `certifications` (private)
 - `application-attachments` (private)
 
-#### 5.2 Configure Bucket Policies
+#### 6.2 Configure Bucket Policies
 
 For each bucket, set up RLS policies matching your migrations:
 
@@ -174,15 +203,15 @@ TO authenticated
 USING (bucket_id = 'certifications' AND auth.uid()::text = (storage.foldername(name))[1]);
 ```
 
-#### 5.3 Configure File Size Limits
+#### 6.3 Configure File Size Limits
 
 In each bucket settings:
 - Max file size: 50MB (or adjust as needed)
 - Allowed MIME types: Configure as needed
 
-### Step 6: Configure Authentication
+### Step 7: Configure Authentication
 
-#### 6.1 Google OAuth Setup
+#### 7.1 Google OAuth Setup
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com)
 2. Navigate to APIs & Services → Credentials
@@ -204,7 +233,7 @@ Configure:
 - **Client Secret**: From Google Console
 - **Redirect URL**: Pre-filled by Supabase
 
-#### 6.2 Apple Sign In Setup
+#### 7.2 Apple Sign In Setup
 
 1. Go to [Apple Developer](https://developer.apple.com)
 2. Configure Sign in with Apple
@@ -220,7 +249,7 @@ Configure:
 - **Client ID** (Services ID): From Apple Developer
 - **Client Secret**: Generated from Apple key
 
-#### 6.3 Auth Settings
+#### 7.3 Auth Settings
 
 In Supabase Dashboard:
 ```
@@ -234,7 +263,7 @@ Configure:
 - **Enable email confirmations**: Yes
 - **Minimum password length**: 8
 
-### Step 7: Set Function Secrets
+### Step 8: Set Function Secrets
 
 Edge Functions need environment variables:
 
@@ -249,7 +278,7 @@ pnpm supa secrets set APPLE_SECRET=your-apple-secret
 pnpm supa secrets list
 ```
 
-### Step 8: Generate TypeScript Types
+### Step 9: Generate TypeScript Types
 
 After all migrations are applied:
 
@@ -266,9 +295,9 @@ git add packages/supabase/types.ts
 git commit -m "Update Supabase types from production"
 ```
 
-### Step 9: Test Database Connection
+### Step 10: Test Database Connection
 
-#### 9.1 Test from Local App
+#### 10.1 Test from Local App
 
 Update your `.env.production`:
 ```bash
@@ -285,7 +314,7 @@ source .env.production
 pnpm dev
 ```
 
-#### 9.2 Test Authentication
+#### 10.2 Test Authentication
 
 1. Try signing up a new user
 2. Check user appears in:
@@ -294,13 +323,13 @@ pnpm dev
    ```
 3. Verify user record created in `profiles` table
 
-#### 9.3 Test Storage
+#### 10.3 Test Storage
 
 1. Try uploading an avatar
 2. Check file appears in Storage bucket
 3. Verify access permissions work
 
-### Step 10: Configure Database Backups
+### Step 11: Configure Database Backups
 
 In Supabase Dashboard:
 ```

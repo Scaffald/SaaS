@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { View } from 'tamagui'
-import type { MapContainerProps, MapContainerRef } from './types'
+import type { MapContainerProps, MapContainerRef, ViewportBounds } from './types'
 import { MapFallback } from './MapFallback'
 
 import 'mapbox-gl/dist/mapbox-gl.css'
@@ -8,13 +8,29 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 // Import mapboxgl with proper typing
 import mapboxgl from 'mapbox-gl'
 
+/**
+ * Extract viewport bounds from a Mapbox map instance
+ */
+function extractViewportBounds(map: mapboxgl.Map): ViewportBounds {
+  const bounds = map.getBounds()
+  return {
+    north: bounds.getNorth(),
+    south: bounds.getSouth(),
+    east: bounds.getEast(),
+    west: bounds.getWest(),
+  }
+}
+
 export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
-  ({ pins, center = [-84.5555, 42.7325], zoom = 7, onPinPress, style }, ref) => {
+  ({ pins, center = [-84.5555, 42.7325], zoom = 7, onPinPress, onViewportChange, style }, ref) => {
     const mapContainerRef = useRef<HTMLDivElement | null>(null)
     const mapRef = useRef<mapboxgl.Map | null>(null)
     const markersRef = useRef(new Map<string, mapboxgl.Marker>())
     const cardMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const [isMapReady, setIsMapReady] = useState(false)
+
+    // Viewport change handler ref for debouncing
+    const viewportChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
     // Expose map methods to parent
     useImperativeHandle(ref, () => ({
@@ -302,19 +318,46 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           map.getCanvas().style.cursor = ''
         })
 
+        // Track viewport changes (pan and zoom) with debouncing (500ms)
+        // Use 'moveend' and 'zoomend' events which fire after pan/zoom completes
+        if (onViewportChange) {
+          const handleViewportChangeDebounced = () => {
+            // Clear existing timeout
+            if (viewportChangeTimeoutRef.current) {
+              clearTimeout(viewportChangeTimeoutRef.current)
+            }
+
+            // Set new timeout
+            viewportChangeTimeoutRef.current = setTimeout(() => {
+              const bounds = extractViewportBounds(map)
+              const currentZoom = map.getZoom()
+              onViewportChange(bounds, currentZoom)
+            }, 500)
+          }
+
+          map.on('moveend', handleViewportChangeDebounced)
+          map.on('zoomend', handleViewportChangeDebounced)
+        }
+
         setIsMapReady(true)
       })
 
       mapRef.current = map
 
       return () => {
+        // Clear any pending viewport change timeout
+        if (viewportChangeTimeoutRef.current) {
+          clearTimeout(viewportChangeTimeoutRef.current)
+          viewportChangeTimeoutRef.current = null
+        }
+
         if (map) {
           map.remove()
           mapRef.current = null
           markersRef.current.clear()
         }
       }
-    }, [center, zoom])
+    }, [center, zoom, onViewportChange])
 
     // Handle pin clicks and empty map clicks
     useEffect(() => {

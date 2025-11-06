@@ -6,7 +6,7 @@
 
 -- 1. INDUSTRIES
 -- =========================================================
-INSERT INTO public.industries (slug, name, description) VALUES
+INSERT INTO core.industries (slug, name, description) VALUES
   ('construction', 'Construction', 'Residential and commercial building trades'),
   ('manufacturing', 'Manufacturing', 'Industrial fabrication and assembly'),
   ('transportation', 'Transportation', 'Transportation, warehousing, and supply chain'),
@@ -14,4 +14,4 @@ INSERT INTO public.industries (slug, name, description) VALUES
 ON CONFLICT (slug) DO NOTHING;
 
 -- Verify industries
-SELECT COUNT(*) as industry_count FROM public.industries;
+SELECT COUNT(*) as industry_count FROM core.industries;

@@ -4,7 +4,6 @@ import {
   LoadingOverlay,
   Paragraph,
   Text,
-  Theme,
   YStack,
   isWeb,
   Input,
@@ -120,15 +119,18 @@ export const LoginScreen = () => {
               </Text>
             )}
 
-            <Theme inverse>
-              <Button
-                onPress={handleSubmit}
-                disabled={isSubmitting}
-                opacity={isSubmitting ? 0.5 : 1}
-              >
-                {isSubmitting ? 'Sending...' : 'Send Magic Link'}
-              </Button>
-            </Theme>
+            <Button
+              onPress={handleSubmit}
+              disabled={isSubmitting}
+              opacity={isSubmitting ? 0.5 : 1}
+              bg="$blue9"
+              color="$blue1"
+              animation="quick"
+              hoverStyle={{ scale: 1.02, bg: '$blue9' }}
+              pressStyle={{ scale: 0.98 }}
+            >
+              {isSubmitting ? 'Sending...' : 'Send Magic Link'}
+            </Button>
 
             <SocialLogin />
           </YStack>

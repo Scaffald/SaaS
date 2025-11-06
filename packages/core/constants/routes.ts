@@ -133,6 +133,11 @@ const ROUTES_CONFIG = {
     title: "Employers",
     isProtected: true,
   },
+  DASHBOARD_DISCOVER_EMPLOYER_DETAIL: {
+    path: "/dashboard/discover/employers/:id",
+    title: "Employer Details",
+    isProtected: true,
+  },
   DASHBOARD_DISCOVER_JOBS: {
     path: "/dashboard/discover/jobs",
     title: "Jobs",
@@ -148,6 +153,46 @@ const ROUTES_CONFIG = {
   DASHBOARD_USER: {
     path: "/dashboard/users/:userId",
     title: "User Profile",
+    isProtected: true,
+  },
+
+  // Dashboard > Assessments
+  DASHBOARD_ASSESSMENTS: {
+    path: "/dashboard/assessments",
+    title: "Assessments",
+    isProtected: true,
+  },
+  // Dashboard > Assessments > Personality Tests
+  DASHBOARD_ASSESSMENT_LUSCHER_1: {
+    path: "/dashboard/assessments/pulse",
+    title: "Weekly Pulse",
+    isProtected: true,
+  },
+  DASHBOARD_ASSESSMENT_IPIP: {
+    path: "/dashboard/assessments/ipip",
+    title: "Personality Questions",
+    isProtected: true,
+  },
+  DASHBOARD_ASSESSMENT_LUSCHER_2: {
+    path: "/dashboard/assessments/luscher-2",
+    title: "Aspirational Color Test",
+    isProtected: true,
+  },
+  // Dashboard > Assessments > Career Tests
+  DASHBOARD_ASSESSMENT_RIASEC: {
+    path: "/dashboard/assessments/riasec",
+    title: "Career Interests",
+    isProtected: true,
+  },
+  DASHBOARD_ASSESSMENT_OCCUPATION: {
+    path: "/dashboard/assessments/occupation",
+    title: "Occupation Preferences",
+    isProtected: true,
+  },
+  // Dashboard > Assessment (Legacy - keep for backward compatibility)
+  DASHBOARD_ASSESSMENT_PERSONALITY: {
+    path: "/dashboard/assessment/personality",
+    title: "Personality Assessment",
     isProtected: true,
   },
 
@@ -227,6 +272,21 @@ const ROUTES_CONFIG = {
     title: "Edit Organization",
     isProtected: true,
   },
+  OFFICE_CMS: {
+    path: "/office/cms",
+    title: "CMS",
+    isProtected: true,
+  },
+  OFFICE_CMS_CREATE: {
+    path: "/office/cms/create",
+    title: "Create Slide",
+    isProtected: true,
+  },
+  OFFICE_CMS_EDIT: {
+    path: "/office/cms/:id/edit",
+    title: "Edit Slide",
+    isProtected: true,
+  },
 } as const satisfies Record<string, RouteConfig>;
 
 // ============================================================================
@@ -273,6 +333,8 @@ export const RouteBuilder = {
     buildRoute(ROUTES.DASHBOARD_USER, { userId }),
   discoverJobDetail: (id: string | number) =>
     buildRoute(ROUTES.DASHBOARD_DISCOVER_JOB_DETAIL, { id }),
+  dashboardEmployer: (id: string | number) =>
+    buildRoute(ROUTES.DASHBOARD_DISCOVER_EMPLOYER_DETAIL, { id }),
 } as const;
 
 // ============================================================================

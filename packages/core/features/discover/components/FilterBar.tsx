@@ -39,18 +39,23 @@ export const FilterBar = ({
     >
       <XStack
         bg="$background"
+        opacity={0.95}
         px="$3"
         py="$2"
         rounded="$12"
         gap="$2"
         items="center"
         justify="center"
-        borderWidth={1}
+        borderWidth={2}
         borderColor="$borderColor"
         shadowColor="$shadowColor"
         shadowOffset={{ width: 0, height: 4 }}
-        shadowOpacity={0.15}
-        shadowRadius={12}
+        shadowOpacity={0.25}
+        shadowRadius={16}
+        // @ts-expect-error - backdropFilter is a web CSS property, not in Tamagui types
+        backdropFilter="blur(10px)"
+        // @ts-expect-error - WebkitBackdropFilter for Safari support
+        WebkitBackdropFilter="blur(10px)"
       >
         <Button
           size="$4"

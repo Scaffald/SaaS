@@ -92,7 +92,7 @@ export const profileCertificationsRouter = t.router({
 
       // Get all user certifications
       const { data: userCerts, error } = await supabase
-        .schema("private")
+            .schema("core")
         .from("user_certifications")
         .select(`
         id,
@@ -209,7 +209,7 @@ export const profileCertificationsRouter = t.router({
 
         // Check if already exists
         const { data: existing } = await supabase
-          .schema("private")
+          .schema("core")
           .from("user_certifications")
           .select("id")
           .eq("user_id", user.id)
@@ -226,7 +226,7 @@ export const profileCertificationsRouter = t.router({
 
         // Create user certification
         const { data, error } = await supabase
-          .schema("private")
+          .schema("core")
           .from("user_certifications")
           .insert({
             user_id: user.id,
@@ -262,7 +262,7 @@ export const profileCertificationsRouter = t.router({
 
         // Verify parent exists in user's certifications
         const { data: parentCert } = await supabase
-          .schema("private")
+          .schema("core")
           .from("user_certifications")
           .select("id")
           .eq("user_id", user.id)
@@ -297,7 +297,7 @@ export const profileCertificationsRouter = t.router({
 
         // Check if already exists
         const { data: existing } = await supabase
-          .schema("private")
+          .schema("core")
           .from("user_certifications")
           .select("id")
           .eq("user_id", user.id)
@@ -315,7 +315,7 @@ export const profileCertificationsRouter = t.router({
 
         // Create user certification
         const { data, error } = await supabase
-          .schema("private")
+          .schema("core")
           .from("user_certifications")
           .insert({
             user_id: user.id,
@@ -353,7 +353,7 @@ export const profileCertificationsRouter = t.router({
         if (input.checked) {
           // Add certification
           const { data: parentCert } = await supabase
-            .schema("private")
+            .schema("core")
             .from("user_certifications")
             .select("id")
             .eq("user_id", user.id)
@@ -386,7 +386,7 @@ export const profileCertificationsRouter = t.router({
           }
 
           const { data: existing } = await supabase
-            .schema("private")
+            .schema("core")
             .from("user_certifications")
             .select("id")
             .eq("user_id", user.id)
@@ -399,7 +399,7 @@ export const profileCertificationsRouter = t.router({
           }
 
           const { data, error } = await supabase
-            .schema("private")
+            .schema("core")
             .from("user_certifications")
             .insert({
               user_id: user.id,
@@ -422,7 +422,7 @@ export const profileCertificationsRouter = t.router({
 
         // Remove certification (soft delete)
         const { error } = await supabase
-          .schema("private")
+          .schema("core")
           .from("user_certifications")
           .update({ is_active: false })
           .eq("user_id", user.id)
@@ -477,7 +477,7 @@ export const profileCertificationsRouter = t.router({
         const allIdsToRemove = [input.top_level_id, ...descendantIds];
 
         const { data: affectedCerts, error: countError } = await supabase
-          .schema("private")
+          .schema("core")
           .from("user_certifications")
           .select("id, certification_id")
           .eq("user_id", user.id)
@@ -506,7 +506,7 @@ export const profileCertificationsRouter = t.router({
         }
 
         const { error: deleteError } = await supabase
-          .schema("private")
+          .schema("core")
           .from("user_certifications")
           .update({ is_active: false })
           .eq("user_id", user.id)
@@ -544,7 +544,7 @@ export const profileCertificationsRouter = t.router({
         const { supabase, user } = ctx;
 
         const { data: userCert, error: certError } = await supabase
-          .schema("private")
+          .schema("core")
           .from("user_certifications")
           .select("*")
           .eq("id", input.user_certification_id)
@@ -560,7 +560,7 @@ export const profileCertificationsRouter = t.router({
 
         if (input.proof_type === "url") {
           const { error } = await supabase
-            .schema("private")
+            .schema("core")
             .from("user_certifications")
             .update({
               credential_url: input.credential_url,
@@ -613,7 +613,7 @@ export const profileCertificationsRouter = t.router({
         }
 
         const { error: updateError } = await supabase
-          .schema("private")
+          .schema("core")
           .from("user_certifications")
           .update({
             certificate_file_path: uniqueFileName,
@@ -648,7 +648,7 @@ export const profileCertificationsRouter = t.router({
         const { supabase, user } = ctx;
 
         const { data, error } = await supabase
-          .schema("private")
+          .schema("core")
           .from("user_certifications")
           .select("*")
           .eq("user_id", user.id)
@@ -680,7 +680,7 @@ export const profileCertificationsRouter = t.router({
           for (const cert of input.certifications) {
             if (cert.id) {
               const { data, error } = await supabase
-                .schema("private")
+                .schema("core")
                 .from("user_certifications")
                 .update({
                   name: cert.name,
@@ -709,7 +709,7 @@ export const profileCertificationsRouter = t.router({
               savedCertifications.push(data);
             } else {
               const { data, error } = await supabase
-                .schema("private")
+                .schema("core")
                 .from("user_certifications")
                 .insert({
                   user_id: user.id,
@@ -764,7 +764,7 @@ export const profileCertificationsRouter = t.router({
 
         try {
           const { data: certification, error: certError } = await supabase
-            .schema("private")
+            .schema("core")
             .from("user_certifications")
             .select("id, user_id")
             .eq("id", input.certificationId)
@@ -807,7 +807,7 @@ export const profileCertificationsRouter = t.router({
           }
 
           const { error: updateError } = await supabase
-            .schema("private")
+            .schema("core")
             .from("user_certifications")
             .update({
               certificate_file_path: uniqueFileName,
@@ -855,7 +855,7 @@ export const profileCertificationsRouter = t.router({
 
         try {
           const { data: certification, error: certError } = await supabase
-            .schema("private")
+            .schema("core")
             .from("user_certifications")
             .select("id, user_id, certificate_file_path")
             .eq("id", input.certificationId)
@@ -885,7 +885,7 @@ export const profileCertificationsRouter = t.router({
           }
 
           const { error: updateError } = await supabase
-            .schema("private")
+            .schema("core")
             .from("user_certifications")
             .update({
               certificate_file_path: null,
@@ -928,7 +928,7 @@ export const profileCertificationsRouter = t.router({
 
         try {
           const { data: cert, error: fetchError } = await supabase
-            .schema("private")
+            .schema("core")
             .from("user_certifications")
             .select("certificate_file_path")
             .eq("id", input.certificationId)
@@ -949,7 +949,7 @@ export const profileCertificationsRouter = t.router({
           }
 
           const { error: deleteError } = await supabase
-            .schema("private")
+            .schema("core")
             .from("user_certifications")
             .delete()
             .eq("id", input.certificationId)

@@ -1,4 +1,4 @@
-import { Button } from 'tamagui'
+import { Button, Theme } from 'tamagui'
 import { supabase } from '@app/core/utils/supabase/client'
 
 import { IconGoogle } from './IconGoogle'
@@ -19,16 +19,21 @@ export function GoogleSignIn() {
   }
 
   return (
-    <Button
-      rounded="$10"
-      flex={1}
-      bg="$color1"
-      color="$color12"
-      borderColor="$borderColor"
-      onPress={() => handleOAuthSignIn()}
-      icon={IconGoogle}
-    >
-      Login with Google
-    </Button>
+    <Theme inverse>
+      <Button
+        rounded="$10"
+        flex={1}
+        bg="$background"
+        color="$color"
+        borderColor="$borderColor"
+        animation="quick"
+        hoverStyle={{ scale: 1.02, bg: '$background' }}
+        pressStyle={{ scale: 0.98 }}
+        onPress={() => handleOAuthSignIn()}
+        icon={IconGoogle}
+      >
+        Login with Google
+      </Button>
+    </Theme>
   )
 }

@@ -6,11 +6,11 @@
 BEGIN;
 
 -- =========================================================
--- SECTION 1: UTILITY FUNCTIONS
+-- SECTION 1: UTILITY FUNCTIONS (CORE SCHEMA)
 -- =========================================================
 
 -- Updated at trigger function
-CREATE OR REPLACE FUNCTION public.set_updated_at()
+CREATE OR REPLACE FUNCTION core.set_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
   NEW.updated_at = NOW();
@@ -18,18 +18,64 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-COMMENT ON FUNCTION public.set_updated_at IS 'Automatically updates updated_at timestamp on row updates';
+COMMENT ON FUNCTION core.set_updated_at IS 'Automatically updates updated_at timestamp on row updates';
+
+-- Plain text extraction function for rich text JSONB fields
+CREATE OR REPLACE FUNCTION core.extract_tiptap_plain_text(content JSONB)
+RETURNS TEXT AS $$
+DECLARE
+  result TEXT := '';
+  node JSONB;
+  text_node JSONB;
+BEGIN
+  IF content IS NULL OR content->'content' IS NULL THEN
+    RETURN '';
+  END IF;
+
+  -- Iterate through content nodes
+  FOR node IN SELECT * FROM jsonb_array_elements(content->'content')
+  LOOP
+    -- Handle paragraph nodes
+    IF node->>'type' = 'paragraph' AND node->'content' IS NOT NULL THEN
+      FOR text_node IN SELECT * FROM jsonb_array_elements(node->'content')
+      LOOP
+        IF text_node->>'type' = 'text' THEN
+          result := result || COALESCE(text_node->>'text', '');
+        END IF;
+      END LOOP;
+      result := result || E'\n';
+    
+    -- Handle list items
+    ELSIF node->>'type' = 'bulletList' OR node->>'type' = 'orderedList' THEN
+      result := result || core.extract_tiptap_plain_text(node) || E'\n';
+    
+    ELSIF node->>'type' = 'listItem' AND node->'content' IS NOT NULL THEN
+      result := result || core.extract_tiptap_plain_text(node);
+    
+    -- Handle text nodes at root level
+    ELSIF node->>'type' = 'text' THEN
+      result := result || COALESCE(node->>'text', '');
+    END IF;
+  END LOOP;
+
+  RETURN TRIM(result);
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+COMMENT ON FUNCTION core.extract_tiptap_plain_text IS 'Extracts plain text from TipTap JSON for search indexing';
 
 -- =========================================================
 -- SECTION 2: USER MANAGEMENT FUNCTIONS
 -- =========================================================
 
 -- Handle new user creation
-CREATE OR REPLACE FUNCTION public.handle_new_user()
+CREATE OR REPLACE FUNCTION core.handle_new_user()
 RETURNS TRIGGER AS $$
 DECLARE
   username_base TEXT;
   final_username TEXT;
+  slug_base TEXT;
+  final_slug TEXT;
   counter INTEGER := 0;
 BEGIN
   -- Extract username from email
@@ -37,25 +83,49 @@ BEGIN
   final_username := username_base;
   
   -- Ensure unique username
-  WHILE EXISTS (SELECT 1 FROM public.users WHERE username = final_username) LOOP
+  WHILE EXISTS (SELECT 1 FROM core.users WHERE username = final_username) LOOP
     counter := counter + 1;
     final_username := username_base || counter;
   END LOOP;
   
-  -- Create user record (public profile data)
-  INSERT INTO public.users (id, username, slug, display_name, created_at, updated_at)
+  -- Generate valid slug from username (lowercase, alphanumeric and dashes only, 3-50 chars)
+  slug_base := LOWER(REGEXP_REPLACE(final_username, '[^a-z0-9]+', '-', 'g'));
+  slug_base := REGEXP_REPLACE(slug_base, '-+', '-', 'g'); -- Replace multiple dashes with single
+  slug_base := REGEXP_REPLACE(slug_base, '^-+|-+$', '', 'g'); -- Remove leading/trailing dashes
+  slug_base := SUBSTRING(slug_base, 1, 50); -- Max 50 chars
+  
+  -- Ensure slug is at least 3 characters (pad if needed)
+  IF LENGTH(slug_base) < 3 THEN
+    slug_base := slug_base || '-' || SUBSTRING(MD5(RANDOM()::TEXT), 1, 3 - LENGTH(slug_base));
+  END IF;
+  
+  final_slug := slug_base;
+  counter := 0;
+  
+  -- Ensure unique slug
+  WHILE EXISTS (SELECT 1 FROM core.users WHERE slug = final_slug) LOOP
+    counter := counter + 1;
+    final_slug := slug_base || '-' || counter;
+    -- Ensure we don't exceed 50 chars
+    IF LENGTH(final_slug) > 50 THEN
+      final_slug := SUBSTRING(slug_base, 1, 47) || '-' || counter;
+    END IF;
+  END LOOP;
+  
+  -- Create user record (core.users)
+  INSERT INTO core.users (id, username, slug, display_name, created_at, updated_at)
   VALUES (
     NEW.id,
     final_username,
-    final_username,
+    final_slug,
     COALESCE(NEW.raw_user_meta_data->>'name', final_username),
     NEW.created_at,
     NEW.updated_at
   );
   
   -- Create private profile record (PII)
-  -- Note: email and phone are stored in auth.users, not private.profile
-  INSERT INTO private.profile (
+  -- Note: email and phone are stored in auth.users, not core.profile
+  INSERT INTO core.profile (
     user_id, 
     first_name, 
     last_name, 
@@ -73,38 +143,38 @@ BEGIN
   );
   
   -- Create preferences record
-  INSERT INTO private.preferences (user_id, created_at, updated_at)
+  INSERT INTO core.preferences (user_id, created_at, updated_at)
   VALUES (NEW.id, NEW.created_at, NEW.updated_at);
   
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-COMMENT ON FUNCTION public.handle_new_user IS 'Automatically creates user profile records when a new auth user is created';
+COMMENT ON FUNCTION core.handle_new_user IS 'Automatically creates user profile records when a new auth user is created';
 
 -- Attach trigger to auth.users
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+  FOR EACH ROW EXECUTE FUNCTION core.handle_new_user();
 
 -- =========================================================
 -- SECTION 2B: ROLE MANAGEMENT FUNCTIONS
 -- =========================================================
 
 -- Check if user has a specific role
-CREATE OR REPLACE FUNCTION public.user_has_role(
+CREATE OR REPLACE FUNCTION core.user_has_role(
   p_user_id UUID,
   p_role_name TEXT,
   p_org_id UUID DEFAULT NULL
 ) RETURNS BOOLEAN
 LANGUAGE sql STABLE
 SECURITY DEFINER
-SET search_path = public, private
+SET search_path = core
 AS $$
   SELECT EXISTS (
     SELECT 1
-    FROM private.role_assignments ra
-    JOIN private.roles r ON r.id = ra.role_id
+    FROM core.role_assignments ra
+    JOIN core.roles r ON r.id = ra.role_id
     WHERE ra.user_id = p_user_id
       AND r.name = p_role_name
       AND (
@@ -118,20 +188,20 @@ AS $$
   );
 $$;
 
-COMMENT ON FUNCTION public.user_has_role IS 'Check if a user has a specific role, with optional org/team scoping';
+COMMENT ON FUNCTION core.user_has_role IS 'Check if a user has a specific role, with optional org/team scoping';
 
 -- Auto-assign 'worker' role to new users
-CREATE OR REPLACE FUNCTION private.assign_default_role()
+CREATE OR REPLACE FUNCTION core.assign_default_role()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, private
+SET search_path = core
 AS $$
 BEGIN
   -- Assign the 'worker' role to new users
-  INSERT INTO private.role_assignments (role_id, user_id)
+  INSERT INTO core.role_assignments (role_id, user_id)
   SELECT r.id, NEW.id
-  FROM private.roles r
+  FROM core.roles r
   WHERE r.name = 'worker'
   ON CONFLICT DO NOTHING;
   
@@ -139,14 +209,14 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION private.assign_default_role IS 'Automatically assigns the worker role to new users';
+COMMENT ON FUNCTION core.assign_default_role IS 'Automatically assigns the worker role to new users';
 
 -- Trigger to auto-assign worker role
-DROP TRIGGER IF EXISTS assign_default_role_trigger ON public.users;
+DROP TRIGGER IF EXISTS assign_default_role_trigger ON core.users;
 CREATE TRIGGER assign_default_role_trigger
-  AFTER INSERT ON public.users
+  AFTER INSERT ON core.users
   FOR EACH ROW
-  EXECUTE FUNCTION private.assign_default_role();
+  EXECUTE FUNCTION core.assign_default_role();
 
 -- =========================================================
 -- SECTION 3: UPDATED_AT TRIGGERS
@@ -154,78 +224,104 @@ CREATE TRIGGER assign_default_role_trigger
 
 -- Users table
 CREATE TRIGGER trg_users_updated_at
-  BEFORE UPDATE ON public.users
-  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  BEFORE UPDATE ON core.users
+  FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
 
 -- Private profile
 CREATE TRIGGER trg_profile_updated_at
-  BEFORE UPDATE ON private.profile
-  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  BEFORE UPDATE ON core.profile
+  FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
 
 -- Preferences
 CREATE TRIGGER trg_preferences_updated_at
-  BEFORE UPDATE ON private.preferences
-  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  BEFORE UPDATE ON core.preferences
+  FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
 
 -- Industries
 CREATE TRIGGER trg_industries_updated_at
-  BEFORE UPDATE ON public.industries
-  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  BEFORE UPDATE ON core.industries
+  FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
 
 -- Organizations
 CREATE TRIGGER trg_organizations_updated_at
-  BEFORE UPDATE ON public.organizations
-  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  BEFORE UPDATE ON core.organizations
+  FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
 
 -- Teams
 CREATE TRIGGER trg_teams_updated_at
-  BEFORE UPDATE ON public.teams
-  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  BEFORE UPDATE ON core.teams
+  FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
 
 -- Jobs
 CREATE TRIGGER trg_jobs_updated_at
-  BEFORE UPDATE ON public.jobs
-  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  BEFORE UPDATE ON core.jobs
+  FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
 
 -- Skills
 CREATE TRIGGER trg_skills_updated_at
-  BEFORE UPDATE ON public.skills
-  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  BEFORE UPDATE ON core.skills
+  FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
 
 -- Reviews
 CREATE TRIGGER trg_reviews_updated_at
-  BEFORE UPDATE ON public.reviews
-  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  BEFORE UPDATE ON core.reviews
+  FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
+
+-- Soft Skills
+CREATE TRIGGER trg_soft_skills_updated_at
+  BEFORE UPDATE ON core.soft_skills
+  FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
+
+-- User Experience
+CREATE TRIGGER trg_user_experience_updated_at
+  BEFORE UPDATE ON core.user_experience
+  FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
+
+-- User Education
+CREATE TRIGGER trg_user_education_updated_at
+  BEFORE UPDATE ON core.user_education
+  FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
+
+-- User Certifications
+CREATE TRIGGER trg_user_certifications_updated_at
+  BEFORE UPDATE ON core.user_certifications
+  FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
+
+-- Welcome Slides
+CREATE TRIGGER trg_welcome_slides_updated_at
+  BEFORE UPDATE ON cms.welcome_slides
+  FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
 
 -- =========================================================
 -- SECTION 4: SEARCH/TSV FUNCTIONS
 -- =========================================================
 
 -- Organizations search TSV update
-CREATE OR REPLACE FUNCTION public.organizations_tsv_update() 
+CREATE OR REPLACE FUNCTION core.organizations_tsv_update() 
 RETURNS TRIGGER
 LANGUAGE plpgsql AS $$
 BEGIN
   NEW.search_tsv :=
     setweight(to_tsvector('simple', coalesce(NEW.name,'')), 'A') ||
-    setweight(to_tsvector('simple', coalesce(NEW.slug::text,'')), 'C');
+    setweight(to_tsvector('simple', coalesce(NEW.slug::text,'')), 'C') ||
+    setweight(to_tsvector('english', coalesce(core.extract_tiptap_plain_text(NEW.description),'')), 'B');
   RETURN NEW;
 END;
 $$;
 
 CREATE TRIGGER trg_orgs_tsv
-  BEFORE INSERT OR UPDATE OF name, slug
-  ON public.organizations
-  FOR EACH ROW EXECUTE PROCEDURE public.organizations_tsv_update();
+  BEFORE INSERT OR UPDATE OF name, slug, description
+  ON core.organizations
+  FOR EACH ROW EXECUTE FUNCTION core.organizations_tsv_update();
 
 -- Jobs search TSV update
-CREATE OR REPLACE FUNCTION public.jobs_tsv_update() 
+CREATE OR REPLACE FUNCTION core.jobs_tsv_update() 
 RETURNS TRIGGER
 LANGUAGE plpgsql AS $$
 BEGIN
   NEW.search_tsv :=
     setweight(to_tsvector('simple', coalesce(NEW.title,'')), 'A') ||
-    setweight(to_tsvector('simple', coalesce(NEW.description,'')), 'B') ||
+    setweight(to_tsvector('english', coalesce(core.extract_tiptap_plain_text(NEW.description),'')), 'B') ||
     setweight(to_tsvector('simple', coalesce(NEW.position_level,'')), 'C') ||
     setweight(to_tsvector('simple', coalesce(NEW.location,'')), 'C');
   RETURN NEW;
@@ -234,8 +330,8 @@ $$;
 
 CREATE TRIGGER trg_jobs_tsv
   BEFORE INSERT OR UPDATE OF title, description, position_level, location
-  ON public.jobs
-  FOR EACH ROW EXECUTE PROCEDURE public.jobs_tsv_update();
+  ON core.jobs
+  FOR EACH ROW EXECUTE FUNCTION core.jobs_tsv_update();
 
 -- =========================================================
 -- SECTION 5: DATA SCHEMA FUNCTIONS (CSI/UNIVERSITIES)
@@ -359,7 +455,7 @@ COMMENT ON FUNCTION data.search_universities IS 'Search universities by name wit
 -- =========================================================
 
 -- Unified skill search across all taxonomies
-CREATE OR REPLACE FUNCTION public.search_all_skills(
+CREATE OR REPLACE FUNCTION core.search_all_skills(
   search_term TEXT,
   taxonomy_filter TEXT DEFAULT NULL
 )
@@ -424,14 +520,15 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE;
 
-COMMENT ON FUNCTION public.search_all_skills IS 'Search across all skill taxonomies (CSI and O*NET)';
+COMMENT ON FUNCTION core.search_all_skills IS 'Search across all skill taxonomies (CSI and O*NET)';
 
 -- =========================================================
 -- SECTION 8: MAP DISPLAY FUNCTIONS
 -- =========================================================
 
--- Privacy function: jitter coordinates for user privacy
-CREATE OR REPLACE FUNCTION public.jitter_coordinate(
+-- Privacy function: jitter coordinates for user privacy (DEPRECATED - use deterministic version)
+-- This function uses random() which causes coordinates to change on every query
+CREATE OR REPLACE FUNCTION core.jitter_coordinate(
   coord double precision,
   max_offset_degrees double precision DEFAULT 0.03
 )
@@ -445,11 +542,39 @@ AS $$
   SELECT coord + (random() * 2 - 1) * max_offset_degrees;
 $$;
 
-COMMENT ON FUNCTION public.jitter_coordinate IS 
-  'Adds random offset to coordinate for privacy. Default ±0.03° (≈2-3km depending on latitude).';
+COMMENT ON FUNCTION core.jitter_coordinate IS 
+  'DEPRECATED: Adds random offset to coordinate for privacy. Use jitter_coordinate_deterministic instead. Default ±0.03° (≈2-3km depending on latitude).';
+
+-- Deterministic privacy function: jitter coordinates using user ID hash for stable but private coordinates
+-- This ensures coordinates remain consistent across queries while maintaining privacy
+CREATE OR REPLACE FUNCTION core.jitter_coordinate_deterministic(
+  coord double precision,
+  user_id uuid,
+  coord_type text DEFAULT 'lng',
+  max_offset_degrees double precision DEFAULT 0.03
+)
+RETURNS double precision
+LANGUAGE sql
+STABLE
+AS $$
+  -- Generate deterministic offset using MD5 hash of user ID
+  -- Use different parts of hash for longitude vs latitude to ensure independent offsets
+  -- Convert 8 hex characters to a number between 0 and 1, then map to range [-max_offset, +max_offset]
+  -- This ensures same user always gets same offset, but offset is unpredictable
+  SELECT coord + (
+    ('x' || substr(
+      md5(user_id::text || coord_type), 
+      1, 
+      8
+    ))::bit(32)::bigint::double precision / 4294967295.0 * 2 - 1
+  ) * max_offset_degrees;
+$$;
+
+COMMENT ON FUNCTION core.jitter_coordinate_deterministic IS 
+  'Adds deterministic offset to coordinate for privacy using user ID hash. Coordinates remain stable across queries while maintaining privacy. Use coord_type ''lng'' for longitude, ''lat'' for latitude. Default ±0.03° (≈2-3km depending on latitude).';
 
 -- Get organizations with extracted coordinates for map display
-CREATE OR REPLACE FUNCTION public.get_organizations_with_coords()
+CREATE OR REPLACE FUNCTION core.get_organizations_with_coords()
 RETURNS TABLE (
   id uuid,
   name text,
@@ -461,7 +586,7 @@ RETURNS TABLE (
 )
 LANGUAGE sql
 SECURITY DEFINER
-SET search_path = public, extensions
+SET search_path = core, extensions, public
 AS $$
   SELECT 
     o.id,
@@ -471,14 +596,14 @@ AS $$
     ST_Y(o.geo::geometry) AS latitude,
     o.address,
     i.name AS industry_name
-  FROM public.organizations o
-  LEFT JOIN public.industries i ON i.id = o.industry_id
+  FROM core.organizations o
+  LEFT JOIN core.industries i ON i.id = o.industry_id
   WHERE o.visibility = 'public'
     AND o.geo IS NOT NULL
   LIMIT 100;
 $$;
 
-COMMENT ON FUNCTION public.get_organizations_with_coords IS 
+COMMENT ON FUNCTION core.get_organizations_with_coords IS 
   'Returns public organizations with lat/lon coordinates for map display';
 
 -- =========================================================
@@ -486,7 +611,7 @@ COMMENT ON FUNCTION public.get_organizations_with_coords IS
 -- =========================================================
 
 -- Profile search view with jittered coordinates for privacy
-CREATE OR REPLACE VIEW public.v_profile_search AS
+CREATE OR REPLACE VIEW core.v_profile_search AS
 SELECT 
   u.id,
   u.display_name AS name,
@@ -505,8 +630,9 @@ SELECT
   pp.open_to_travel,
   pp.education_level,
   -- Jittered coordinates for privacy (not exact location)
-  public.jitter_coordinate(ST_X(pp.geo::geometry)) AS longitude,
-  public.jitter_coordinate(ST_Y(pp.geo::geometry)) AS latitude,
+  -- Uses deterministic jitter so coordinates remain stable across queries
+  core.jitter_coordinate_deterministic(ST_X(pp.geo::public.geometry), u.id, 'lng') AS longitude,
+  core.jitter_coordinate_deterministic(ST_Y(pp.geo::public.geometry), u.id, 'lat') AS latitude,
   -- Gamified score calculation
   LEAST(
     COALESCE(u.years_of_experience, 0) * 3 + 
@@ -517,12 +643,12 @@ SELECT
   )::integer AS gamified_score,
   u.created_at,
   u.updated_at
-FROM public.users u
-LEFT JOIN private.profile pp ON pp.user_id = u.id
-LEFT JOIN public.industries i ON i.id = u.industry_id
+FROM core.users u
+LEFT JOIN core.profile pp ON pp.user_id = u.id
+LEFT JOIN core.industries i ON i.id = u.industry_id
 WHERE pp.geo IS NOT NULL;  -- Only include users with coordinates
 
-COMMENT ON VIEW public.v_profile_search IS 
+COMMENT ON VIEW core.v_profile_search IS 
   'Public view for searching worker/talent profiles. Coordinates are jittered (±3km) for privacy. Excludes sensitive PII.';
 
 -- =========================================================
@@ -530,15 +656,17 @@ COMMENT ON VIEW public.v_profile_search IS
 -- =========================================================
 
 -- Grant execute on all functions
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO authenticated;
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO anon;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA core TO authenticated;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA core TO anon;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA data TO authenticated;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA data TO anon;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA onet TO authenticated;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA onet TO anon;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA cms TO authenticated;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA cms TO anon;
 
 -- Grant access to views
-GRANT SELECT ON public.v_profile_search TO authenticated, anon;
+GRANT SELECT ON core.v_profile_search TO authenticated, anon;
 
 -- =========================================================
 -- SECTION 11: CERTIFICATIONS - INDEXES AND TRIGGERS
@@ -552,20 +680,16 @@ CREATE INDEX IF NOT EXISTS certifications_slug_idx ON data.certifications(slug);
 CREATE INDEX IF NOT EXISTS certifications_hierarchy_path_idx ON data.certifications(hierarchy_path);
 CREATE INDEX IF NOT EXISTS certifications_sort_order_idx ON data.certifications(parent_id, sort_order);
 
--- Indexes for user_certifications (private)
-CREATE INDEX IF NOT EXISTS user_certifications_user_id_idx ON private.user_certifications(user_id);
-CREATE INDEX IF NOT EXISTS user_certifications_certification_id_idx ON private.user_certifications(certification_id);
-CREATE INDEX IF NOT EXISTS user_certifications_user_active_idx ON private.user_certifications(user_id, is_active) WHERE is_active = true;
-CREATE INDEX IF NOT EXISTS user_certifications_file_path_idx ON private.user_certifications(user_id, certificate_file_path) WHERE certificate_file_path IS NOT NULL;
+-- Indexes for user_certifications (core schema)
+CREATE INDEX IF NOT EXISTS user_certifications_user_id_idx ON core.user_certifications(user_id);
+CREATE INDEX IF NOT EXISTS user_certifications_certification_id_idx ON core.user_certifications(certification_id);
+CREATE INDEX IF NOT EXISTS user_certifications_user_active_idx ON core.user_certifications(user_id, is_active) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS user_certifications_file_path_idx ON core.user_certifications(user_id, certificate_file_path) WHERE certificate_file_path IS NOT NULL;
 
 -- Updated_at triggers
 CREATE TRIGGER trg_certifications_updated_at
   BEFORE UPDATE ON data.certifications
-  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
-
-CREATE TRIGGER trg_user_certifications_updated_at
-  BEFORE UPDATE ON private.user_certifications
-  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
 
 COMMIT;
 
@@ -576,17 +700,17 @@ COMMIT;
 -- IMPORTANT: After O*NET data is imported, you should add
 -- foreign key constraints for O*NET references:
 --
--- ALTER TABLE public.user_skills
+-- ALTER TABLE core.user_skills
 --   ADD CONSTRAINT user_skills_onet_occupation_id_fkey 
 --   FOREIGN KEY (onet_occupation_id) 
 --   REFERENCES onet.occupation_data(onetsoc_code) ON DELETE CASCADE;
 --
--- ALTER TABLE public.job_skills
+-- ALTER TABLE core.job_skills
 --   ADD CONSTRAINT job_skills_onet_occupation_id_fkey 
 --   FOREIGN KEY (onet_occupation_id) 
 --   REFERENCES onet.occupation_data(onetsoc_code) ON DELETE CASCADE;
 --
--- ALTER TABLE public.organization_skills
+-- ALTER TABLE core.organization_skills
 --   ADD CONSTRAINT org_skills_onet_occupation_id_fkey 
 --   FOREIGN KEY (onet_occupation_id) 
 --   REFERENCES onet.occupation_data(onetsoc_code) ON DELETE CASCADE;

@@ -24,15 +24,85 @@ console.log("Environment check:", {
  * Create tRPC context with Supabase client and user authentication
  */
 export const createTRPCContext = async (opts: { req: Request }) => {
-  try {
-    console.log("[createTRPCContext] Starting context creation");
-    const authorizationHeader = opts.req.headers.get("authorization");
-    console.log("[createTRPCContext] Auth header present:", !!authorizationHeader);
+  const authorizationHeader = opts.req.headers.get("authorization");
 
-  // Create Supabase client with user's auth for permission checks
-  const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+  let userId: string | undefined;
+  let userEmail: string | undefined;
+  let userToken: string | undefined;
+  let isAnonKey = false;
+
+  // Extract token if present
+  if (authorizationHeader) {
+    // Validate Authorization header format
+    // Only process if it's properly formatted as "Bearer {token}"
+    if (!authorizationHeader.startsWith("Bearer ")) {
+      console.error(
+        "Invalid authorization header format:",
+        authorizationHeader.substring(0, 20),
+      );
+      // Don't throw - just log and continue without user context
+      // This allows public endpoints to work even with malformed headers
+    } else {
+      const token = authorizationHeader.replace("Bearer ", "").trim();
+
+      // Only process if token is not empty
+      if (!token || token.length === 0) {
+        console.error("Empty token in Authorization header");
+      } else {
+        // Check if this is the anon key (used for public endpoints)
+        // Supabase Edge Functions require an Authorization header, so clients send anon key for public requests
+        isAnonKey = token === supabaseAnonKey;
+
+        if (isAnonKey) {
+          console.log(
+            "Anon key detected - treating as public/unauthenticated request",
+          );
+        } else {
+          // This looks like a user token, try to authenticate
+          userToken = token;
+          console.log("Token extracted:", !!token);
+
+          try {
+            // Create a temporary client to verify the token
+            const tempClient = createClient(supabaseUrl, supabaseAnonKey);
+            const {
+              data: { user },
+              error,
+            } = await tempClient.auth.getUser(token);
+
+            if (error) {
+              console.error("Auth error:", error.message);
+              // Don't throw - just log and continue without user context
+              // This allows public endpoints to work even with invalid tokens
+            } else if (user) {
+              userId = user.id;
+              userEmail = user.email;
+              console.log("User authenticated:", user.id);
+            } else {
+              console.log("No user found");
+            }
+          } catch (error) {
+            const errorMessage = error instanceof Error
+              ? error.message
+              : String(error);
+            console.error("Error getting user:", errorMessage);
+            // Don't throw - just log and continue without user context
+          }
+        }
+      }
+    }
+  } else {
+    console.log("No authorization header found");
+  }
+
+  // Create Supabase client - use anon key for public access (respects RLS)
+  // Use service_role key only for authenticated user requests
+  const supabaseKey = (userId && !isAnonKey)
+    ? supabaseServiceKey
+    : supabaseAnonKey;
+  const supabase = createClient(supabaseUrl, supabaseKey, {
     global: {
-      headers: authorizationHeader
+      headers: authorizationHeader && !isAnonKey && userId
         ? { Authorization: authorizationHeader }
         : {},
     },
@@ -41,56 +111,16 @@ export const createTRPCContext = async (opts: { req: Request }) => {
   // Create admin client without auth header for elevated operations
   const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
-  let userId: string | undefined;
-  let userEmail: string | undefined;
-  let userToken: string | undefined;
-
-  if (authorizationHeader) {
-    const token = authorizationHeader.replace("Bearer ", "");
-    userToken = token;
-    console.log("Token extracted:", !!token);
-
-    try {
-      // Use Supabase's built-in user verification
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser(token);
-
-      if (error) {
-        console.error("Auth error:", error.message);
-      } else if (user) {
-        userId = user.id;
-        userEmail = user.email;
-        console.log("User authenticated:", user.id);
-      } else {
-        console.log("No user found");
-      }
-    } catch (error) {
-      const errorMessage = error instanceof Error
-        ? error.message
-        : String(error);
-      console.error("Error getting user:", errorMessage);
-    }
-  } else {
-    console.log("No authorization header found");
-  }
-
-    console.log(
-      "[createTRPCContext] Final user context:",
-      userId ? { id: userId, email: userEmail } : "undefined",
-    );
-    return {
-      user: userId ? { id: userId, email: userEmail } : undefined,
-      userToken,
-      supabase,
-      supabaseAdmin, // Admin client without user auth
-    };
-  } catch (error) {
-    console.error("[createTRPCContext] Error creating context:", error);
-    console.error("[createTRPCContext] Error stack:", error instanceof Error ? error.stack : "No stack");
-    throw error;
-  }
+  console.log(
+    "Final user context:",
+    userId ? { id: userId, email: userEmail } : "undefined",
+  );
+  return {
+    user: userId ? { id: userId, email: userEmail } : undefined,
+    userToken,
+    supabase,
+    supabaseAdmin, // Admin client without user auth
+  };
 };
 
 // Export environment variables for use in routers

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useWindowDimensions } from 'react-native'
 import {
   YStack,
@@ -25,7 +25,7 @@ import {
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
 } from '@app/core/utils/api'
-import { DashboardWidget, LocationListInput, ToggleCard } from '@app/ui'
+import { DashboardWidget, LocationListInput, ToggleCard, ConfirmationDialog } from '@app/ui'
 import {
   Flag,
   MapPin,
@@ -43,6 +43,8 @@ import {
  */
 export function ProfileEmploymentLeft() {
   const [isLoading, setIsLoading] = useState(false)
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const originalDataRef = useRef<EmploymentProfileFormData | null>(null)
   const toast = useToastController()
 
   // Use tRPC to fetch and update employment data
@@ -85,6 +87,7 @@ export function ProfileEmploymentLeft() {
   useEffect(() => {
     if (employmentData) {
       reset(employmentData)
+      originalDataRef.current = employmentData
     }
   }, [employmentData, reset])
 
@@ -470,8 +473,16 @@ export function ProfileEmploymentLeft() {
               />
             </YStack>
 
-            {/* Save Button */}
-            <XStack justify="flex-end" pt="$4">
+            {/* Action Buttons */}
+            <XStack justify="flex-end" gap="$3" pt="$4">
+              <Button
+                variant="outlined"
+                disabled={!isDirty}
+                onPress={() => setShowCancelDialog(true)}
+                opacity={!isDirty ? 0.5 : 1}
+              >
+                Cancel
+              </Button>
               <Button
                 onPress={handleSubmit(onSubmit, onFormError)}
                 disabled={!isDirty || isLoading}
@@ -496,6 +507,23 @@ export function ProfileEmploymentLeft() {
                 <Button.Text>{isLoading ? 'Saving...' : 'Save Changes'}</Button.Text>
               </Button>
             </XStack>
+
+            {/* Cancel Confirmation Dialog */}
+            <ConfirmationDialog
+              open={showCancelDialog}
+              onOpenChange={setShowCancelDialog}
+              title="Discard Changes?"
+              message="You have unsaved changes. Are you sure you want to discard them?"
+              confirmLabel="Discard Changes"
+              cancelLabel="Keep Editing"
+              confirmTheme="red"
+              onConfirm={() => {
+                if (originalDataRef.current) {
+                  reset(originalDataRef.current)
+                  setShowCancelDialog(false)
+                }
+              }}
+            />
           </YStack>
         </YStack>
       </DashboardWidget>

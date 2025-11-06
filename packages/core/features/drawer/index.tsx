@@ -2,8 +2,8 @@
 export type { DrawerItemConfig, DrawerSectionConfig, DrawerContentProps } from './types'
 export { drawerSections } from './config'
 export { normalizePath } from './utils'
-export { DrawerFooter } from './DrawerFooter'
 export { DrawerLayout } from './DrawerLayout'
+export { UserMenuAvatar } from './UserMenuAvatar'
 
 // Re-export drawer components from DrawerMenu.tsx to avoid circular dependency
 export { UnifiedDrawer, DrawerMenu, StaticDrawer } from './DrawerMenu'

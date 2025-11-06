@@ -1,6 +1,6 @@
 import { ProfileGeneralLeft } from '@app/core/features/profile/profile-general-left'
 import { ProfileGeneralRight } from '@app/core/features/profile/profile-general-right'
-import { DashboardLayout } from '@app/ui/src/components/layouts/DashboardLayout'
+import { DashboardLayout } from '@app/ui'
 
 export default function ProfileGeneralPage() {
   return (

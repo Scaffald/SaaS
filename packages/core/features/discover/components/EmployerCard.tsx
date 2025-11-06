@@ -1,11 +1,13 @@
 import { Card, XStack, YStack, Text, Button } from 'tamagui'
 import { Building2, MapPin, Users, ExternalLink } from '@tamagui/lucide-icons'
+import type { JSONContent } from '@tiptap/core'
+import { extractPlainText } from '@app/ui'
 
 export interface Employer {
   id: string
   name: string
   slug: string
-  description: string | null
+  description: JSONContent | string | null
   website_url: string | null
   employee_count_range: string | null
   annual_revenue_range: string | null
@@ -65,7 +67,9 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
         {/* Description */}
         {employer.description && (
           <Text fontSize="$4" color="$color11" numberOfLines={3}>
-            {employer.description}
+            {typeof employer.description === 'string'
+              ? employer.description
+              : extractPlainText(employer.description as JSONContent)}
           </Text>
         )}
 

@@ -1,17 +1,5 @@
 import { useState } from 'react'
-import {
-  YStack,
-  XStack,
-  Text,
-  Button,
-  Input,
-  Separator,
-  ScrollView,
-  Slider,
-  AnimatePresence,
-  Switch,
-  Label,
-} from 'tamagui'
+import { YStack, XStack, Text, Button, ScrollView, AnimatePresence, Switch, Label } from 'tamagui'
 import { ChevronDown, ChevronRight, X } from '@tamagui/lucide-icons'
 
 type FilterPopupProps = {
@@ -26,12 +14,34 @@ type FilterPopupProps = {
   onShowJobsChange?: (value: boolean) => void
 }
 
-type AccordionSection = 'show' | 'score' | 'skills' | 'certifications'
+type AccordionSection = 'show'
 
 /**
  * Filter Popup Component
- * 300px wide x 400px high popup with accordion sections for filters
- * Animates in above the filter bar, similar to search input
+ *
+ * A 300px wide x 250px high popup that appears above the filter bar with
+ * accordion sections for controlling what appears on the map.
+ *
+ * Features:
+ * - Toggle visibility of Workers, Employers, and Jobs on the map
+ * - Dynamic section header showing active filter count
+ * - Descriptive helper text for each toggle option
+ * - Full accessibility support with ARIA labels
+ * - Smooth animations when opening/closing
+ *
+ * @example
+ * ```tsx
+ * <FilterPopup
+ *   isOpen={filtersOpen}
+ *   onClose={() => setFiltersOpen(false)}
+ *   showWorkers={showWorkers}
+ *   showOrganizations={showOrganizations}
+ *   showJobs={showJobs}
+ *   onShowWorkersChange={setShowWorkers}
+ *   onShowOrganizationsChange={setShowOrganizations}
+ *   onShowJobsChange={setShowJobs}
+ * />
+ * ```
  */
 export const FilterPopup = ({
   isOpen,
@@ -44,18 +54,8 @@ export const FilterPopup = ({
   onShowOrganizationsChange,
   onShowJobsChange,
 }: FilterPopupProps) => {
+  // Track which accordion sections are expanded (currently only 'show' section exists)
   const [openSections, setOpenSections] = useState<Set<AccordionSection>>(new Set(['show']))
-  const [scoreValue, setScoreValue] = useState(40)
-  const [skillsSearch, setSkillsSearch] = useState('')
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([
-    'Hardwood',
-    'Exterior',
-    'Interior',
-  ])
-  const [certificationsSearch, setCertificationsSearch] = useState('')
-  const [selectedCertifications, setSelectedCertifications] = useState<string[]>([
-    'OSHA Outreach · Construction',
-  ])
 
   const toggleSection = (section: AccordionSection) => {
     setOpenSections((prev) => {
@@ -69,12 +69,21 @@ export const FilterPopup = ({
     })
   }
 
-  const removeSkill = (skill: string) => {
-    setSelectedSkills((prev) => prev.filter((s) => s !== skill))
-  }
+  // Calculate how many filter types are currently active
+  const activeFilterCount = [showWorkers, showOrganizations, showJobs].filter(Boolean).length
 
-  const removeCertification = (cert: string) => {
-    setSelectedCertifications((prev) => prev.filter((c) => c !== cert))
+  /**
+   * Generate section header text with active filter indicators
+   * Shows "None" if no filters active, "All" if all active, or lists active filters
+   */
+  const getSectionHeaderText = () => {
+    if (activeFilterCount === 0) return 'Display on Map (None)'
+    if (activeFilterCount === 3) return 'Display on Map (All)'
+    const activeFilters: string[] = []
+    if (showWorkers) activeFilters.push('Workers')
+    if (showOrganizations) activeFilters.push('Employers')
+    if (showJobs) activeFilters.push('Jobs')
+    return `Display on Map (${activeFilters.join(', ')})`
   }
 
   return (
@@ -97,7 +106,7 @@ export const FilterPopup = ({
         >
           <YStack
             width={300}
-            height={400}
+            height={250}
             flex={1}
             borderWidth={1}
             borderColor="$borderColor"
@@ -147,7 +156,7 @@ export const FilterPopup = ({
                   >
                     <XStack justify="space-between" items="center" flex={1}>
                       <Text fontSize="$4" fontWeight="600">
-                        Show
+                        {getSectionHeaderText()}
                       </Text>
                       {openSections.has('show') ? (
                         <ChevronDown size={16} />
@@ -160,229 +169,79 @@ export const FilterPopup = ({
                   {openSections.has('show') && (
                     <YStack gap="$3" px="$3" py="$3">
                       {/* Workers Toggle */}
-                      <XStack justify="space-between" items="center">
-                        <Label htmlFor="workers-toggle" fontSize="$3">
-                          Workers
-                        </Label>
-                        <Switch
-                          id="workers-toggle"
-                          size="$3"
-                          checked={showWorkers}
-                          onCheckedChange={onShowWorkersChange}
-                        >
-                          <Switch.Thumb animation="quick" />
-                        </Switch>
-                      </XStack>
+                      <YStack gap="$1">
+                        <XStack justify="space-between" items="center">
+                          <Label htmlFor="workers-toggle" fontSize="$3">
+                            Workers
+                          </Label>
+                          <Switch
+                            id="workers-toggle"
+                            size="$3"
+                            checked={showWorkers}
+                            onCheckedChange={onShowWorkersChange}
+                            aria-label={
+                              showWorkers ? 'Showing workers on map' : 'Hiding workers on map'
+                            }
+                            accessibilityRole="switch"
+                            accessibilityState={{ checked: showWorkers }}
+                          >
+                            <Switch.Thumb animation="quick" />
+                          </Switch>
+                        </XStack>
+                        <Text fontSize="$1" color="$color10" pl="$1">
+                          Show worker profiles on the map
+                        </Text>
+                      </YStack>
 
-                      {/* Organizations Toggle */}
-                      <XStack justify="space-between" items="center">
-                        <Label htmlFor="organizations-toggle" fontSize="$3">
-                          Organizations
-                        </Label>
-                        <Switch
-                          id="organizations-toggle"
-                          size="$3"
-                          checked={showOrganizations}
-                          onCheckedChange={onShowOrganizationsChange}
-                        >
-                          <Switch.Thumb animation="quick" />
-                        </Switch>
-                      </XStack>
+                      {/* Employers Toggle */}
+                      <YStack gap="$1">
+                        <XStack justify="space-between" items="center">
+                          <Label htmlFor="employers-toggle" fontSize="$3">
+                            Employers
+                          </Label>
+                          <Switch
+                            id="employers-toggle"
+                            size="$3"
+                            checked={showOrganizations}
+                            onCheckedChange={onShowOrganizationsChange}
+                            aria-label={
+                              showOrganizations
+                                ? 'Showing employers on map'
+                                : 'Hiding employers on map'
+                            }
+                            accessibilityRole="switch"
+                            accessibilityState={{ checked: showOrganizations }}
+                          >
+                            <Switch.Thumb animation="quick" />
+                          </Switch>
+                        </XStack>
+                        <Text fontSize="$1" color="$color10" pl="$1">
+                          Show employer organizations on the map
+                        </Text>
+                      </YStack>
 
                       {/* Jobs Toggle */}
-                      <XStack justify="space-between" items="center">
-                        <Label htmlFor="jobs-toggle" fontSize="$3">
-                          Jobs
-                        </Label>
-                        <Switch
-                          id="jobs-toggle"
-                          size="$3"
-                          checked={showJobs}
-                          onCheckedChange={onShowJobsChange}
-                        >
-                          <Switch.Thumb animation="quick" />
-                        </Switch>
-                      </XStack>
-                    </YStack>
-                  )}
-                </YStack>
-
-                <Separator />
-
-                {/* Elevate Score Section */}
-                <YStack>
-                  <Button
-                    unstyled
-                    onPress={() => toggleSection('score')}
-                    px="$3"
-                    py="$2"
-                    hoverStyle={{ bg: '$color3' }}
-                    pressStyle={{ bg: '$color4' }}
-                    rounded="$3"
-                  >
-                    <XStack justify="space-between" items="center" flex={1}>
-                      <Text fontSize="$4" fontWeight="600">
-                        Elevate Score
-                      </Text>
-                      {openSections.has('score') ? (
-                        <ChevronDown size={16} />
-                      ) : (
-                        <ChevronRight size={16} />
-                      )}
-                    </XStack>
-                  </Button>
-
-                  {openSections.has('score') && (
-                    <YStack gap="$3" px="$3" py="$3">
-                      <XStack justify="space-between" items="center">
-                        <Text fontSize="$3" color="$color11">
-                          Minimum Score
-                        </Text>
-                        <Text fontSize="$4" fontWeight="600">
-                          {scoreValue}
-                        </Text>
-                      </XStack>
-                      <Slider
-                        value={[scoreValue]}
-                        onValueChange={([val]) => setScoreValue(val)}
-                        min={0}
-                        max={100}
-                        step={5}
-                        width="100%"
-                      >
-                        <Slider.Track>
-                          <Slider.TrackActive />
-                        </Slider.Track>
-                        <Slider.Thumb circular index={0} />
-                      </Slider>
-                    </YStack>
-                  )}
-                </YStack>
-
-                <Separator />
-
-                {/* Skills Section */}
-                <YStack>
-                  <Button
-                    unstyled
-                    onPress={() => toggleSection('skills')}
-                    px="$3"
-                    py="$2"
-                    hoverStyle={{ bg: '$color3' }}
-                    pressStyle={{ bg: '$color4' }}
-                    rounded="$3"
-                  >
-                    <XStack justify="space-between" items="center" flex={1}>
-                      <Text fontSize="$4" fontWeight="600">
-                        Skills
-                      </Text>
-                      {openSections.has('skills') ? (
-                        <ChevronDown size={16} />
-                      ) : (
-                        <ChevronRight size={16} />
-                      )}
-                    </XStack>
-                  </Button>
-
-                  {openSections.has('skills') && (
-                    <YStack gap="$2" px="$3" py="$3">
-                      <Input
-                        placeholder="Search skills..."
-                        value={skillsSearch}
-                        onChangeText={setSkillsSearch}
-                        size="$3"
-                      />
-                      {selectedSkills.length > 0 && (
-                        <XStack gap="$2" flexWrap="wrap">
-                          {selectedSkills.map((skill) => (
-                            <XStack
-                              key={skill}
-                              bg="$blue3"
-                              px="$2"
-                              py="$1"
-                              rounded="$3"
-                              gap="$1"
-                              items="center"
-                            >
-                              <Text fontSize="$2" color="$blue11">
-                                {skill}
-                              </Text>
-                              <Button
-                                size="$1"
-                                circular
-                                unstyled
-                                onPress={() => removeSkill(skill)}
-                              >
-                                <X size={12} color="$blue11" />
-                              </Button>
-                            </XStack>
-                          ))}
+                      <YStack gap="$1">
+                        <XStack justify="space-between" items="center">
+                          <Label htmlFor="jobs-toggle" fontSize="$3">
+                            Jobs
+                          </Label>
+                          <Switch
+                            id="jobs-toggle"
+                            size="$3"
+                            checked={showJobs}
+                            onCheckedChange={onShowJobsChange}
+                            aria-label={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
+                            accessibilityRole="switch"
+                            accessibilityState={{ checked: showJobs }}
+                          >
+                            <Switch.Thumb animation="quick" />
+                          </Switch>
                         </XStack>
-                      )}
-                    </YStack>
-                  )}
-                </YStack>
-
-                <Separator />
-
-                {/* Certifications Section */}
-                <YStack>
-                  <Button
-                    unstyled
-                    onPress={() => toggleSection('certifications')}
-                    px="$3"
-                    py="$2"
-                    hoverStyle={{ bg: '$color3' }}
-                    pressStyle={{ bg: '$color4' }}
-                    rounded="$3"
-                  >
-                    <XStack justify="space-between" items="center" flex={1}>
-                      <Text fontSize="$4" fontWeight="600">
-                        Certifications
-                      </Text>
-                      {openSections.has('certifications') ? (
-                        <ChevronDown size={16} />
-                      ) : (
-                        <ChevronRight size={16} />
-                      )}
-                    </XStack>
-                  </Button>
-
-                  {openSections.has('certifications') && (
-                    <YStack gap="$2" px="$3" py="$3">
-                      <Input
-                        placeholder="Search certifications..."
-                        value={certificationsSearch}
-                        onChangeText={setCertificationsSearch}
-                        size="$3"
-                      />
-                      {selectedCertifications.length > 0 && (
-                        <XStack gap="$2" flexWrap="wrap">
-                          {selectedCertifications.map((cert) => (
-                            <XStack
-                              key={cert}
-                              bg="$green3"
-                              px="$2"
-                              py="$1"
-                              rounded="$3"
-                              gap="$1"
-                              items="center"
-                            >
-                              <Text fontSize="$2" color="$green11">
-                                {cert}
-                              </Text>
-                              <Button
-                                size="$1"
-                                circular
-                                unstyled
-                                onPress={() => removeCertification(cert)}
-                              >
-                                <X size={12} color="$green11" />
-                              </Button>
-                            </XStack>
-                          ))}
-                        </XStack>
-                      )}
+                        <Text fontSize="$1" color="$color10" pl="$1">
+                          Show job openings on the map
+                        </Text>
+                      </YStack>
                     </YStack>
                   )}
                 </YStack>

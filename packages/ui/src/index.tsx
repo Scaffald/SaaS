@@ -33,11 +33,23 @@ export { ToastProvider, ToastViewport } from '@tamagui/toast'
 // Re-export our custom components
 export { FieldError } from './components/FieldError'
 export { FileUpload, type FileUploadProps } from './components/FileUpload'
+export { ImageUpload, type ImageUploadProps } from './components/ImageUpload'
 export { FormWrapper } from './components/FormWrapper'
+export { IconSelector } from './components/IconSelector'
+export {
+  Breadcrumb,
+  type BreadcrumbItem,
+  type BreadcrumbProps,
+  type BreadcrumbSibling,
+} from './components/Breadcrumb'
+export { useBreadcrumbs } from './hooks/useBreadcrumbs'
+export * from './components/rich-text'
 
 // Individual component exports to avoid circular dependencies
 export { CustomToast } from './components/CustomToast'
 export * from './components/cookie-consent'
+export * from './components/dialog'
+export * from './components/date-picker'
 export * from './components/cards'
 export * from './components/charts'
 export * from './components/checklist'
@@ -46,7 +58,7 @@ export { LoadingOverlay } from './components/LoadingOverlay'
 export * from './components/Onboarding'
 export { OnboardingControls } from './components/OnboardingControls'
 export { StepContent } from './components/OnboardingStepContent'
-export { NotificationsActionSheet } from './components/NotificationsActionSheet'
+export { NotificationDropdown, type NotificationItem } from './components/NotificationDropdown'
 export { ResponsiveModal, type ResponsiveModalProps } from './components/ResponsiveModal'
 
 // Layout components
@@ -61,6 +73,7 @@ export * from './components/inputs'
 export * from './components/maps'
 export * from './components/skills'
 export * from './components/university'
+export * from './components/user'
 
 // Hooks
 export * from './hooks/useUniversitySearch'

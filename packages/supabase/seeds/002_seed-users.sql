@@ -1,7 +1,7 @@
 -- =========================================================
 -- 001_seed-users.sql - Phase 2: User Seeding with Metadata
 -- Seeds auth.users with email, password, and user metadata
--- Trigger automatically creates public.users, private.profile, private.preferences
+-- Trigger automatically creates core.users, core.profile, core.preferences
 -- =========================================================
 
 BEGIN;
@@ -117,11 +117,11 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Assign 'office' role to core team members
 -- (They already have 'worker' role from trigger)
-INSERT INTO private.role_assignments (role_id, user_id)
+INSERT INTO core.role_assignments (role_id, user_id)
 SELECT 
   r.id as role_id,
   u.id as user_id
-FROM private.roles r
+FROM core.roles r
 CROSS JOIN auth.users u
 WHERE r.name = 'office'
   AND r.scope = 'platform'
@@ -134,7 +134,7 @@ ON CONFLICT DO NOTHING; -- Skip if role assignment already exists
 
 -- Update geo coordinates for users based on their location
 -- This populates the PostGIS geography field for the v_profile_search view
-UPDATE private.profile
+UPDATE core.profile
 SET geo = ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography
 FROM (VALUES
   -- Massachusetts locations
@@ -152,7 +152,7 @@ FROM (VALUES
   ('Danvers, Massachusetts, United States', -70.9300, 42.5751),
   ('Massachusetts, United States', -71.3824, 42.4072)
 ) AS coords(location_text, longitude, latitude)
-WHERE private.profile.location = coords.location_text;
+WHERE core.profile.location = coords.location_text;
 
 COMMIT;
 
@@ -162,9 +162,9 @@ COMMIT;
 -- 1. All users have password: password123
 -- 2. Phone is stored in auth.users.phone (native Supabase field)
 -- 3. The handle_new_user() trigger automatically creates:
---    - public.users record (public profile with display_name)
---    - private.profile record (PII: first_name, last_name, location)
---    - private.preferences record (settings)
+--    - core.users record (public profile with display_name)
+--    - core.profile record (PII: first_name, last_name, location)
+--    - core.preferences record (settings)
 -- 4. Usernames are auto-generated from email prefix
 -- 5. ON CONFLICT (id) makes this seed idempotent
 -- 6. Admin users: IDs starting with 00000000-0000-0000-0000-00000000000X

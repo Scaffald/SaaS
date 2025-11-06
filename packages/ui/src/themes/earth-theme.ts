@@ -1,38 +1,38 @@
 import { createThemes, defaultComponentThemes } from '@tamagui/theme-builder'
-import * as Colors from '@tamagui/colors'
+import {
+  earthBlue,
+  earthBlueDark,
+  earthGray,
+  earthGrayDark,
+  earthGreen,
+  earthGreenDark,
+  earthOrange,
+  earthOrangeDark,
+  earthPink,
+  earthPinkDark,
+  earthPurple,
+  earthPurpleDark,
+  earthRed,
+  earthRedDark,
+  earthYellow,
+  earthYellowDark,
+} from './earth-colors'
 
-export const lightTransparent = 'hsla(23, 5%, 99%, 0)'
-export const darkTransparent = 'hsla(23, 5%, 9%, 0)'
+export const lightTransparent = 'hsla(42, 28%, 96%, 0)' // bg transparent
+export const darkTransparent = 'hsla(30, 9%, 17%, 0)' // ink transparent
 
-export const lightColor = 'hsl(207, 22%, 9%)'
-const lightPalette = [
-  lightTransparent,
-  'hsla(23, 7%, 93%, 1)',
-  'hsla(23, 10%, 67%, 1)',
-  'hsla(23, 12%, 58%, 1)',
-  'hsla(23, 14%, 48%, 1)',
-  'hsla(23, 15%, 39%, 1)',
-  'hsla(23, 17%, 29%, 1)',
-  'hsla(23, 18%, 20%, 1)',
-  'hsla(23, 20%, 15%, 1)',
-  'hsla(23, 20%, 5%, 1)',
-  lightColor,
-  darkTransparent,
-]
+// Helper to convert HSL to HSLA with alpha=1 for palette values
+const hslToHsla = (hsl: string): string => {
+  return hsl.replace('hsl(', 'hsla(').replace(')', ', 1)')
+}
 
-export const darkColor = 'hsl(23, 20%, 99.0%)'
+// Build palette from earthGray colors (removes duplication)
+// Tamagui expects: [transparent, color1, color2, ..., color12, transparent]
+const lightPalette = [lightTransparent, ...Object.values(earthGray).map(hslToHsla), darkTransparent]
+
 const darkPalette = [
   darkTransparent,
-  'hsla(30, 4%, 33%, 1)',
-  'hsla(29, 8%, 45%, 1)',
-  'hsla(29, 10%, 51%, 1)',
-  'hsla(29, 12%, 56%, 1)',
-  'hsla(29, 16%, 68%, 1)',
-  'hsla(29, 18%, 74%, 1)',
-  'hsla(28, 20%, 80%, 1)',
-  'hsla(23, 20%, 75%, 1)',
-  'hsla(23, 20%, 90%, 1)',
-  darkColor,
+  ...Object.values(earthGrayDark).map(hslToHsla),
   lightTransparent,
 ]
 
@@ -67,26 +67,26 @@ const builtThemes = createThemes({
 
     extra: {
       light: {
-        ...Colors.blue,
-        ...Colors.gray,
-        ...Colors.green,
-        ...Colors.orange,
-        ...Colors.pink,
-        ...Colors.purple,
-        ...Colors.red,
-        ...Colors.yellow,
+        ...earthBlue,
+        ...earthGray,
+        ...earthGreen,
+        ...earthOrange,
+        ...earthPink,
+        ...earthPurple,
+        ...earthRed,
+        ...earthYellow,
         ...lightShadows,
         shadowColor: lightShadows.shadow1,
       },
       dark: {
-        ...Colors.blueDark,
-        ...Colors.grayDark,
-        ...Colors.greenDark,
-        ...Colors.orangeDark,
-        ...Colors.pinkDark,
-        ...Colors.purpleDark,
-        ...Colors.redDark,
-        ...Colors.yellowDark,
+        ...earthBlueDark,
+        ...earthGrayDark,
+        ...earthGreenDark,
+        ...earthOrangeDark,
+        ...earthPinkDark,
+        ...earthPurpleDark,
+        ...earthRedDark,
+        ...earthYellowDark,
         ...darkShadows,
         shadowColor: darkShadows.shadow1,
       },
@@ -95,60 +95,33 @@ const builtThemes = createThemes({
 
   accent: {
     palette: {
-      dark: [
-        'hsla(180, 4%, 28%, 1)',
-        'hsla(180, 7%, 30%, 1)',
-        'hsla(180, 10%, 32%, 1)',
-        'hsla(180, 13%, 34%, 1)',
-        'hsla(180, 16%, 36%, 1)',
-        'hsla(180, 18%, 37%, 1)',
-        'hsla(180, 21%, 39%, 1)',
-        'hsla(180, 24%, 41%, 1)',
-        'hsla(180, 27%, 43%, 1)',
-        'hsla(180, 30%, 45%, 1)',
-        'hsla(140, 40%, 60%, 1)',
-        'hsla(140, 40%, 80%, 1)',
-      ],
-      light: [
-        'hsla(180, 20%, 100%, 1)',
-        'hsla(180, 21%, 94%, 1)',
-        'hsla(180, 22%, 88%, 1)',
-        'hsla(180, 23%, 82%, 1)',
-        'hsla(180, 24%, 76%, 1)',
-        'hsla(180, 25%, 69%, 1)',
-        'hsla(180, 27%, 63%, 1)',
-        'hsla(180, 28%, 57%, 1)',
-        'hsla(180, 29%, 51%, 1)',
-        'hsla(180, 30%, 45%, 1)',
-        'hsla(140, 40%, 25%, 1)',
-        'hsla(140, 40%, 10%, 1)',
-      ],
+      dark: Object.values(earthOrangeDark).map(hslToHsla),
+      light: Object.values(earthOrange).map(hslToHsla),
     },
   },
 
   childrenThemes: {
     warning: {
       palette: {
-        dark: Object.values(Colors.yellowDark),
-        light: Object.values(Colors.yellow),
+        dark: Object.values(earthYellowDark).map(hslToHsla),
+        light: Object.values(earthYellow).map(hslToHsla),
       },
     },
 
     error: {
       palette: {
-        dark: Object.values(Colors.redDark),
-        light: Object.values(Colors.red),
+        dark: Object.values(earthRedDark).map(hslToHsla),
+        light: Object.values(earthRed).map(hslToHsla),
       },
     },
 
     success: {
       palette: {
-        dark: Object.values(Colors.greenDark),
-        light: Object.values(Colors.green),
+        dark: Object.values(earthGreenDark).map(hslToHsla),
+        light: Object.values(earthGreen).map(hslToHsla),
       },
     },
   },
-
   // optionally add more, can pass palette or template
 
   // grandChildrenThemes: {

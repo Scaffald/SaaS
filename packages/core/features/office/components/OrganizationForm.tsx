@@ -32,7 +32,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
   useEffect(() => {
     const fetchIndustries = async () => {
       try {
-        const { data, error } = await supabase.from('industries').select('id, name').order('name')
+        const { data, error } = await supabase.schema('core').from('industries').select('id, name').order('name')
 
         if (error) throw error
         setIndustries(data || [])

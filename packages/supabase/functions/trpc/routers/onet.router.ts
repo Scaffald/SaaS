@@ -50,6 +50,7 @@ export const onetRouter = t.router({
 
   /**
    * Save user's RIASEC assessment
+   * Can save RIASEC scores, occupations, or both independently
    */
   saveCareerAssessment: protectedProcedure
     .input(
@@ -61,7 +62,7 @@ export const onetRouter = t.router({
           social: z.number().min(1).max(5),
           enterprising: z.number().min(1).max(5),
           conventional: z.number().min(1).max(5),
-        }),
+        }).optional(),
         current_occupation_code: z.string().optional(),
         target_occupation_codes: z.array(z.string()).optional(),
       }),
@@ -70,19 +71,85 @@ export const onetRouter = t.router({
       const { supabase, user } = ctx;
 
       try {
+        // Get existing preferences to merge with
+        const { data: existing, error: fetchError } = await supabase
+          .schema("core")
+          .from("preferences")
+          .select(
+            "riasec_scores, current_occupation_code, target_occupation_codes",
+          )
+          .eq("user_id", user.id)
+          .single();
+
         const now = new Date().toISOString();
 
+        // Merge with existing data - only update provided fields
+        const updateData: {
+          user_id: string;
+          riasec_scores?: unknown;
+          current_occupation_code?: string | null;
+          target_occupation_codes?: string[];
+          career_assessment_completed_at?: string;
+          updated_at: string;
+        } = {
+          user_id: user.id,
+          updated_at: now,
+        };
+
+        // Only update RIASEC scores if provided
+        if (input.riasec_scores) {
+          updateData.riasec_scores = input.riasec_scores;
+          // Mark as completed if RIASEC scores are provided
+          updateData.career_assessment_completed_at = now;
+        } else if (existing?.riasec_scores) {
+          updateData.riasec_scores = existing.riasec_scores;
+        }
+
+        // Only update occupations if provided
+        if (input.current_occupation_code !== undefined) {
+          updateData.current_occupation_code = input.current_occupation_code ||
+            null;
+        } else if (existing?.current_occupation_code !== undefined) {
+          updateData.current_occupation_code = existing.current_occupation_code;
+        }
+
+        if (input.target_occupation_codes !== undefined) {
+          updateData.target_occupation_codes = input.target_occupation_codes ||
+            [];
+        } else if (existing?.target_occupation_codes !== undefined) {
+          updateData.target_occupation_codes =
+            existing.target_occupation_codes || [];
+        }
+
+        // If preferences don't exist and we're creating new, include all fields
+        if (fetchError && fetchError.code === "PGRST116") {
+          // Create new preferences record
+          const { error: createError } = await supabase
+            .schema("core")
+            .from("preferences")
+            .insert({
+              user_id: user.id,
+              riasec_scores: input.riasec_scores || null,
+              current_occupation_code: input.current_occupation_code || null,
+              target_occupation_codes: input.target_occupation_codes || [],
+              career_assessment_completed_at: input.riasec_scores ? now : null,
+              updated_at: now,
+            });
+
+          if (createError) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: `Failed to create preferences: ${createError.message}`,
+            });
+          }
+
+          return { success: true };
+        }
+
         const { error } = await supabase
-          .schema("private")
+          .schema("core")
           .from("preferences")
-          .upsert({
-            user_id: user.id,
-            riasec_scores: input.riasec_scores,
-            current_occupation_code: input.current_occupation_code || null,
-            target_occupation_codes: input.target_occupation_codes || [],
-            career_assessment_completed_at: now,
-            updated_at: now,
-          });
+          .upsert(updateData);
 
         if (error) {
           console.error("Error saving career assessment:", error);
@@ -111,7 +178,7 @@ export const onetRouter = t.router({
 
     try {
       const { data, error } = await supabase
-        .schema("private")
+        .schema("core")
         .from("preferences")
         .select(
           "riasec_scores, current_occupation_code, target_occupation_codes, career_assessment_completed_at",
@@ -185,4 +252,104 @@ export const onetRouter = t.router({
         });
       }
     }),
+
+  /**
+   * Get RIASEC assessment completion status
+   */
+  getRIASECStatus: protectedProcedure.query(async ({ ctx }) => {
+    const { supabase, user } = ctx;
+
+    try {
+      const { data, error } = await supabase
+        .schema("core")
+        .from("preferences")
+        .select("riasec_scores")
+        .eq("user_id", user.id)
+        .single();
+
+      if (error && error.code !== "PGRST116") {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch status: ${error.message}`,
+        });
+      }
+
+      const riasecScores = data?.riasec_scores as {
+        realistic?: number;
+        investigative?: number;
+        artistic?: number;
+        social?: number;
+        enterprising?: number;
+        conventional?: number;
+      } | null;
+
+      const isCompleted = !!(
+        riasecScores &&
+        typeof riasecScores.realistic === "number" &&
+        typeof riasecScores.investigative === "number" &&
+        typeof riasecScores.artistic === "number" &&
+        typeof riasecScores.social === "number" &&
+        typeof riasecScores.enterprising === "number" &&
+        typeof riasecScores.conventional === "number"
+      );
+
+      return {
+        isCompleted,
+        scores: riasecScores,
+      };
+    } catch (error) {
+      if (error instanceof TRPCError) throw error;
+      console.error("Error in getRIASECStatus:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to get RIASEC status",
+      });
+    }
+  }),
+
+  /**
+   * Get occupation assessment completion status
+   */
+  getOccupationStatus: protectedProcedure.query(async ({ ctx }) => {
+    const { supabase, user } = ctx;
+
+    try {
+      const { data, error } = await supabase
+        .schema("core")
+        .from("preferences")
+        .select("current_occupation_code, target_occupation_codes")
+        .eq("user_id", user.id)
+        .single();
+
+      if (error && error.code !== "PGRST116") {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch status: ${error.message}`,
+        });
+      }
+
+      const hasCurrentOccupation = !!data?.current_occupation_code;
+      const hasTargetOccupations = !!(
+        data?.target_occupation_codes &&
+        Array.isArray(data.target_occupation_codes) &&
+        data.target_occupation_codes.length > 0
+      );
+      const isCompleted = hasCurrentOccupation || hasTargetOccupations;
+
+      return {
+        isCompleted,
+        hasCurrentOccupation,
+        hasTargetOccupations,
+        currentOccupationCode: data?.current_occupation_code || null,
+        targetOccupationCodes: data?.target_occupation_codes || [],
+      };
+    } catch (error) {
+      if (error instanceof TRPCError) throw error;
+      console.error("Error in getOccupationStatus:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to get occupation status",
+      });
+    }
+  }),
 });

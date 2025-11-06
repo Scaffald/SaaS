@@ -3,9 +3,9 @@ import { DrawerContentScrollView } from '@react-navigation/drawer'
 import { getDrawerSections } from './config'
 import { DrawerHeader } from './DrawerHeader'
 import { DrawerSection } from './DrawerSection'
-import { DrawerFooter } from './DrawerFooter'
 import type { DrawerContentProps } from './types'
 import { useUserRoles } from '@app/core/utils/auth/useUserRoles'
+import { useAssessmentStatus } from '@app/core/features/assessments/hooks/useAssessmentStatus'
 
 /**
  * DrawerContent component renders the main content area of the drawer
@@ -20,6 +20,7 @@ export const DrawerContent = ({
   drawerProps,
 }: DrawerContentProps) => {
   const { hasOfficeRole, roles, isLoading } = useUserRoles()
+  const assessmentStatus = useAssessmentStatus()
 
   // Debug logging
   console.log('[DrawerContent] Role status:', {
@@ -29,15 +30,16 @@ export const DrawerContent = ({
     willShowOffice: hasOfficeRole,
   })
 
-  // Get drawer sections with Office link if user has office role
+  // Get drawer sections with Office link if user has office role and assessment status
   const drawerSections = getDrawerSections({
     includeOfficeLink: hasOfficeRole,
+    assessmentStatus,
   })
 
   return (
     <YStack flex={1} gap="$4" px="$4" py="$4">
       {/* Top Section - User Profile - Sticky */}
-      <DrawerHeader onNavigate={onNavigate} />
+      <DrawerHeader />
 
       {/* Scrollable Content - Using DrawerContentScrollView for proper gesture handling */}
       <DrawerContentScrollView {...drawerProps} showsVerticalScrollIndicator={false}>
@@ -54,9 +56,6 @@ export const DrawerContent = ({
           ))}
         </YStack>
       </DrawerContentScrollView>
-
-      {/* Bottom Section - Fixed Action Buttons */}
-      <DrawerFooter />
     </YStack>
   )
 }

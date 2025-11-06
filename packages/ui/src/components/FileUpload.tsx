@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, type ChangeEvent, type DragEvent } from 'react'
 import { YStack, XStack, Text, Button, Spinner } from 'tamagui'
 import { Upload, X, FileText, Image as ImageIcon, AlertCircle } from '@tamagui/lucide-icons'
 
@@ -87,7 +87,7 @@ export function FileUpload({
   )
 
   const handleInputChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0]
       if (file) {
         handleFileChange(file)
@@ -99,7 +99,7 @@ export function FileUpload({
   )
 
   const handleDragOver = useCallback(
-    (e: React.DragEvent) => {
+    (e: DragEvent) => {
       e.preventDefault()
       if (!disabled) {
         setIsDragging(true)
@@ -108,13 +108,13 @@ export function FileUpload({
     [disabled]
   )
 
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
+  const handleDragLeave = useCallback((e: DragEvent) => {
     e.preventDefault()
     setIsDragging(false)
   }, [])
 
   const handleDrop = useCallback(
-    (e: React.DragEvent) => {
+    (e: DragEvent) => {
       e.preventDefault()
       setIsDragging(false)
 

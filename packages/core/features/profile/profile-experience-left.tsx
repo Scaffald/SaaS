@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useMemo } from 'react'
 import {
   YStack,
   XStack,
@@ -31,7 +31,7 @@ import {
   EMPLOYMENT_TYPE_OPTIONS,
   CAREER_LEVEL_OPTIONS,
 } from './config'
-import { DashboardWidget } from '@app/ui'
+import { DashboardWidget, ConfirmationDialog, MonthYearPicker, AddressAutocomplete } from '@app/ui'
 import { api } from '@app/core/utils/api'
 
 /**
@@ -40,6 +40,8 @@ import { api } from '@app/core/utils/api'
  */
 export function ProfileExperienceLeft() {
   const [isLoading, setIsLoading] = useState(false)
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const originalDataRef = useRef<ExperienceProfileFormData | null>(null)
   const { width } = useWindowDimensions()
   const isMobile = width < 640
 
@@ -75,7 +77,7 @@ export function ProfileExperienceLeft() {
   // Load data when queries succeed
   useEffect(() => {
     if (experienceQuery.data && experienceSummaryQuery.data) {
-      reset({
+      const formData = {
         career_level: experienceSummaryQuery.data.career_level || undefined,
         // biome-ignore lint/suspicious/noExplicitAny: API response type
         experience_entries: experienceQuery.data.map((exp: any) => ({
@@ -91,7 +93,9 @@ export function ProfileExperienceLeft() {
           is_current: exp.is_current,
           description: exp.description || undefined,
         })),
-      })
+      }
+      reset(formData)
+      originalDataRef.current = formData
     }
   }, [experienceQuery.data, experienceSummaryQuery.data, reset])
 
@@ -112,6 +116,28 @@ export function ProfileExperienceLeft() {
   const addExperienceEntry = () => {
     append(createNewExperienceEntry())
   }
+
+  // Calculate total years of experience
+  const totalExperience = useMemo(() => {
+    const entries = watch('experience_entries') || []
+    let totalMonths = 0
+
+    for (const entry of entries) {
+      if (!entry.start_date) continue
+
+      const start = new Date(entry.start_date)
+      const end = entry.is_current || !entry.end_date ? new Date() : new Date(entry.end_date)
+
+      const months =
+        (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth())
+      totalMonths += Math.max(0, months)
+    }
+
+    const years = Math.floor(totalMonths / 12)
+    const remainingMonths = totalMonths % 12
+
+    return { years, months: remainingMonths }
+  }, [watch('experience_entries')])
 
   // Show loading state
   if (experienceQuery.isLoading || experienceSummaryQuery.isLoading) {
@@ -146,7 +172,9 @@ export function ProfileExperienceLeft() {
         <XStack gap="$3">
           <YStack gap="$2" flex={1}>
             <Text fontWeight="600">Total Years Experience</Text>
-            <Input placeholder="e.g. 5" keyboardType="numeric" disabled opacity={0.5} />
+            <Text fontSize="$6" fontWeight="700" color="$blue10">
+              {totalExperience.years} years {totalExperience.months} months
+            </Text>
           </YStack>
 
           <YStack gap="$2" flex={1}>
@@ -155,7 +183,7 @@ export function ProfileExperienceLeft() {
               name="career_level"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || ''} onValueChange={field.onChange}>
+                <Select value={field.value || ''} onValueChange={field.onChange} placement="bottom">
                   <Select.Trigger iconAfter={ChevronDown}>
                     <Select.Value placeholder="Select career level" />
                   </Select.Trigger>
@@ -286,7 +314,11 @@ export function ProfileExperienceLeft() {
                     name={`experience_entries.${index}.employment_type`}
                     control={control}
                     render={({ field }) => (
-                      <Select value={field.value || ''} onValueChange={field.onChange}>
+                      <Select
+                        value={field.value || ''}
+                        onValueChange={field.onChange}
+                        placement="bottom"
+                      >
                         <Select.Trigger iconAfter={ChevronDown}>
                           <Select.Value placeholder="Select type" />
                         </Select.Trigger>
@@ -338,13 +370,31 @@ export function ProfileExperienceLeft() {
                     name={`experience_entries.${index}.location`}
                     control={control}
                     render={({ field }) => (
-                      <Input
-                        placeholder="e.g. San Francisco, CA"
+                      <AddressAutocomplete
                         value={field.value || ''}
-                        onChangeText={field.onChange}
+                        onChange={(value) => field.onChange(value)}
+                        onAddressSelect={(address) => {
+                          // Format address and store as string
+                          const parts = [
+                            address.streetAddress,
+                            address.locality,
+                            address.stateAbbreviation,
+                            address.postalCode,
+                          ].filter(Boolean)
+                          const formattedAddress = parts.join(', ')
+                          field.onChange(formattedAddress)
+                        }}
+                        placeholder="Search for work location..."
+                        zoomLevel="city"
+                        error={errors.experience_entries?.[index]?.location?.message}
                       />
                     )}
                   />
+                  {errors.experience_entries?.[index]?.location && (
+                    <Text color="$red10" fontSize="$2">
+                      {errors.experience_entries[index]?.location?.message}
+                    </Text>
+                  )}
                 </YStack>
               </XStack>
 
@@ -371,31 +421,41 @@ export function ProfileExperienceLeft() {
               {/* Start and End Dates */}
               <XStack gap="$3">
                 <YStack gap="$2" flex={1}>
-                  <Text>Start Date</Text>
                   <Controller
                     name={`experience_entries.${index}.start_date`}
                     control={control}
                     render={({ field }) => (
-                      <Input
-                        placeholder="YYYY-MM-DD"
-                        value={field.value || ''}
-                        onChangeText={field.onChange}
+                      <MonthYearPicker
+                        value={field.value ? new Date(field.value) : null}
+                        onChange={(date) => {
+                          // Store as YYYY-MM-DD format (first day of month)
+                          const dateStr = date ? date.toISOString().split('T')[0] : null
+                          field.onChange(dateStr || undefined)
+                        }}
+                        placeholder="Select start date"
+                        error={errors.experience_entries?.[index]?.start_date?.message}
+                        label="Start Date"
                       />
                     )}
                   />
                 </YStack>
 
                 <YStack gap="$2" flex={1}>
-                  <Text>End Date</Text>
                   <Controller
                     name={`experience_entries.${index}.end_date`}
                     control={control}
                     render={({ field }) => (
-                      <Input
-                        placeholder="YYYY-MM-DD or 'Present'"
-                        value={field.value || ''}
-                        onChangeText={field.onChange}
+                      <MonthYearPicker
+                        value={field.value ? new Date(field.value) : null}
+                        onChange={(date) => {
+                          // Store as YYYY-MM-DD format (first day of month)
+                          const dateStr = date ? date.toISOString().split('T')[0] : null
+                          field.onChange(dateStr || undefined)
+                        }}
+                        placeholder="Select end date"
                         disabled={watch(`experience_entries.${index}.is_current`)}
+                        error={errors.experience_entries?.[index]?.end_date?.message}
+                        label="End Date"
                       />
                     )}
                   />
@@ -448,8 +508,16 @@ export function ProfileExperienceLeft() {
           )}
         </YStack>
 
-        {/* Save Button */}
-        <XStack justify="flex-end" pt="$4">
+        {/* Action Buttons */}
+        <XStack justify="flex-end" gap="$3" pt="$4">
+          <Button
+            variant="outlined"
+            disabled={!isDirty}
+            onPress={() => setShowCancelDialog(true)}
+            opacity={!isDirty ? 0.5 : 1}
+          >
+            Cancel
+          </Button>
           <Button
             onPress={handleSubmit(onSubmit)}
             disabled={!isDirty || isLoading}
@@ -458,6 +526,23 @@ export function ProfileExperienceLeft() {
             {isLoading ? 'Saving...' : 'Save Changes'}
           </Button>
         </XStack>
+
+        {/* Cancel Confirmation Dialog */}
+        <ConfirmationDialog
+          open={showCancelDialog}
+          onOpenChange={setShowCancelDialog}
+          title="Discard Changes?"
+          message="You have unsaved changes. Are you sure you want to discard them?"
+          confirmLabel="Discard Changes"
+          cancelLabel="Keep Editing"
+          confirmTheme="red"
+          onConfirm={() => {
+            if (originalDataRef.current) {
+              reset(originalDataRef.current)
+              setShowCancelDialog(false)
+            }
+          }}
+        />
 
         <Separator />
 

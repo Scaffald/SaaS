@@ -37,11 +37,11 @@ export const DashboardWidget = ({
   const isSmallScreen = width < 640
   return (
     <Card
-      boxShadow="inset 1px 1px .5px #fff8, inset 2px 5px 25px #0000000f, inset -1px -1px 0 .5px #ddd2, 2px 2px 25px #0001"
+      boxShadow="inset 1px 1px .5px #fff8, inset 2px 5px 25px #00000004, inset -1px -1px 0 .5px #ddd2, 2px 2px 25px #0001"
       p={isSmallScreen ? '$4' : '$5'}
       gap={gap}
       rounded="$7"
-      bg="$color1"
+      bg="$color1" // Lightest gray (eggshell white) - maps to earthGray.gray1 in light mode
       {...props}
     >
       {children}

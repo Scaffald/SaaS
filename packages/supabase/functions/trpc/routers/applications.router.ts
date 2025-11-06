@@ -34,7 +34,7 @@ export const applicationsRouter = router({
 
       // Check for duplicate application
       const { data: existingApp } = await supabase
-        .schema("private")
+        .schema("core")
         .from("applications")
         .select("id")
         .eq("job_id", input.job_id)
@@ -50,6 +50,7 @@ export const applicationsRouter = router({
 
       // Verify job exists and is accepting applications
       const { data: job, error: jobError } = await supabase
+        .schema("core")
         .from("jobs")
         .select("id, status, application_deadline")
         .eq("id", input.job_id)
@@ -81,7 +82,7 @@ export const applicationsRouter = router({
 
       // Create application
       const { data: application, error } = await supabase
-        .schema("private")
+        .schema("core")
         .from("applications")
         .insert({
           job_id: input.job_id,
@@ -132,7 +133,7 @@ export const applicationsRouter = router({
 
       // Verify ownership
       const { data: application } = await supabase
-        .schema("private")
+        .schema("core")
         .from("applications")
         .select("user_id, completed_steps")
         .eq("id", input.application_id)
@@ -153,7 +154,7 @@ export const applicationsRouter = router({
 
       // Update application
       const { data: updated, error } = await supabase
-        .schema("private")
+        .schema("core")
         .from("applications")
         .update({
           ...input.data,
@@ -192,6 +193,7 @@ export const applicationsRouter = router({
 
       // Verify ownership
       const { data: application } = await supabase
+        .schema("core")
         .from("applications")
         .select("user_id")
         .eq("id", input.application_id)
@@ -207,6 +209,7 @@ export const applicationsRouter = router({
       const { application_id, ...updateData } = input;
 
       const { data: updated, error } = await supabase
+        .schema("core")
         .from("applications")
         .update({
           ...updateData,
@@ -260,7 +263,7 @@ export const applicationsRouter = router({
 
       // Query applications from private schema
       let query = supabase
-        .schema("private")
+        .schema("core")
         .from("applications")
         .select("*")
         .eq("user_id", user.id)
@@ -289,16 +292,18 @@ export const applicationsRouter = router({
       // Get unique job IDs
       const jobIds = [...new Set(applications.map((a) => a.job_id))];
 
-      // Fetch jobs separately from public schema
+      // Fetch jobs separately from core schema
       const { data: jobs } = await supabase
+        .schema("core")
         .from("jobs")
         .select(
           "id, slug, title, employment_type, remote_option, location, status, organization_id",
         )
         .in("id", jobIds);
 
-      // Fetch user data from public.users
+      // Fetch user data from core.users
       const { data: userData } = await supabase
+        .schema("core")
         .from("users")
         .select("id, slug, username, about, avatar_path")
         .eq("id", user.id)
@@ -339,7 +344,7 @@ export const applicationsRouter = router({
       }
 
       const { data: application, error } = await supabase
-        .schema("private")
+        .schema("core")
         .from("applications")
         .select(
           `
@@ -385,6 +390,7 @@ export const applicationsRouter = router({
 
       // Verify ownership
       const { data: application } = await supabase
+        .schema("core")
         .from("applications")
         .select("user_id, status")
         .eq("id", input.id)
@@ -412,7 +418,7 @@ export const applicationsRouter = router({
       }
 
       const { data: updated, error } = await supabase
-        .schema("private")
+        .schema("core")
         .from("applications")
         .update({
           status: "withdrawn",
@@ -450,6 +456,7 @@ export const applicationsRouter = router({
 
       // Verify ownership
       const { data: application } = await supabase
+        .schema("core")
         .from("applications")
         .select("user_id")
         .eq("id", input.id)
@@ -498,6 +505,7 @@ export const applicationsRouter = router({
 
       // Verify ownership
       const { data: application } = await supabase
+        .schema("core")
         .from("applications")
         .select("user_id, job_id")
         .eq("id", input.application_id)
@@ -566,6 +574,7 @@ export const applicationsRouter = router({
 
       // Verify ownership
       const { data: application } = await supabase
+        .schema("core")
         .from("applications")
         .select("user_id, attachments")
         .eq("id", input.application_id)
@@ -590,6 +599,7 @@ export const applicationsRouter = router({
       };
 
       const { data: updated, error } = await supabase
+        .schema("core")
         .from("applications")
         .update({ attachments })
         .eq("id", input.application_id)

@@ -1,11 +1,14 @@
-import { type ReactNode, useState } from 'react'
-import { Button, useTheme, YStack, Text } from 'tamagui'
+import type { ReactNode } from 'react'
+import { Button, useTheme, YStack, Text, XStack } from 'tamagui'
 import { DrawerActions } from '@react-navigation/native'
-import { Bell, Menu } from '@tamagui/lucide-icons'
+import { Menu } from '@tamagui/lucide-icons'
 import { Drawer } from 'expo-router/drawer'
 import { useWindowDimensions } from 'tamagui'
-import { NotificationsActionSheet } from '@app/ui'
+import { NotificationDropdown } from '@app/ui'
+import { UserMenuAvatar } from './UserMenuAvatar'
 import { DrawerMenu } from './DrawerMenu'
+import { api } from '@app/core/utils/api'
+import type { NotificationItem } from '@app/ui'
 
 interface DrawerLayoutProps {
   /**
@@ -32,10 +35,61 @@ export function DrawerLayout({
   children,
   hideDrawer = false,
 }: DrawerLayoutProps) {
-  const [notificationsOpen, setNotificationsOpen] = useState(false)
   const { width } = useWindowDimensions()
   const theme = useTheme()
   const isSmall = width < 1400
+
+  // Fetch notifications
+  const { data: notifications = [], isLoading: isLoadingNotifications } =
+    api.notifications.list.useQuery({ limit: 50 })
+
+  // Fetch unread count
+  const { data: unreadCountData } = api.notifications.getUnreadCount.useQuery()
+  const unreadCount = unreadCountData?.count || 0
+
+  // Mark as read mutation
+  const utils = api.useUtils()
+  const markAsReadMutation = api.notifications.markAsRead.useMutation({
+    onSuccess: () => {
+      // Invalidate and refetch notifications and unread count
+      utils.notifications.list.invalidate()
+      utils.notifications.getUnreadCount.invalidate()
+    },
+  })
+
+  // Handle notification click
+  const handleNotificationClick = (notification: NotificationItem) => {
+    // Mark as read if unread
+    if (!notification.read) {
+      markAsReadMutation.mutate({ id: notification.id })
+    }
+  }
+
+  // Handle mark as read
+  const handleMarkAsRead = (notificationId: string) => {
+    markAsReadMutation.mutate({ id: notificationId })
+  }
+
+  // Transform notifications to match NotificationItem interface
+  const transformedNotifications: NotificationItem[] = notifications.map(
+    (n: {
+      id: string
+      type: string
+      title: string
+      message: string
+      created_at: string
+      read: boolean
+      destination_url: string | null
+    }) => ({
+      id: n.id,
+      type: n.type as 'success' | 'warning' | 'info',
+      title: n.title,
+      message: n.message,
+      timestamp: n.created_at,
+      read: n.read,
+      destination_url: n.destination_url,
+    })
+  )
 
   return (
     <>
@@ -74,16 +128,16 @@ export function DrawerLayout({
                   </Button>
                 ),
                 headerRight: () => (
-                  <Button
-                    borderStyle="unset"
-                    borderWidth={0}
-                    mr="$5"
-                    bg="transparent"
-                    height={30}
-                    onPress={() => setNotificationsOpen(true)}
-                  >
-                    <Bell size={20} />
-                  </Button>
+                  <XStack gap="$3" items="center" px="$4">
+                    <NotificationDropdown
+                      notifications={transformedNotifications}
+                      unreadCount={unreadCount}
+                      isLoading={isLoadingNotifications}
+                      onNotificationClick={handleNotificationClick}
+                      onMarkAsRead={handleMarkAsRead}
+                    />
+                    <UserMenuAvatar />
+                  </XStack>
                 ),
               }),
           overlayColor: hideDrawer ? 'transparent' : 'rgba(0, 0, 0, 0.15)',
@@ -93,8 +147,6 @@ export function DrawerLayout({
       >
         {children}
       </Drawer>
-
-      <NotificationsActionSheet open={notificationsOpen} onOpenChange={setNotificationsOpen} />
     </>
   )
 }

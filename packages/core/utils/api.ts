@@ -7,7 +7,7 @@ import { observable } from "@trpc/server/observable";
 import { getBaseUrl } from "./getBaseUrl";
 import { supabase } from "./supabase/client";
 import { clearAllAuthStorage } from "./auth/clearAuthStorage";
-import { getGlobalQueryClient } from "@app/core/provider/react-query";
+import { getGlobalQueryClient } from "@app/core/provider/react-query/queryClient";
 
 // Create tRPC React client with proper typing from shared supabase package
 // biome-ignore lint/suspicious/noExplicitAny: Required for cross-environment tRPC compatibility
@@ -69,11 +69,22 @@ export const createTrpcClient = () =>
             Platform.OS === "web" ? "expo-web" : "expo-react",
           );
 
+          // Always include apikey header for Supabase Edge Functions
+          const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+          if (anonKey) {
+            headers.set("apikey", anonKey);
+          }
+
           const session = (await supabase.auth.getSession()).data.session;
 
-          // Add auth header for Supabase authentication
-          if (session?.access_token) {
+          // Supabase Edge Functions require an Authorization header
+          // Use user's access token if available, otherwise use anon key for public endpoints
+          if (session?.access_token && session.access_token.trim().length > 0) {
             headers.set("Authorization", `Bearer ${session.access_token}`);
+          } else if (anonKey) {
+            // For public endpoints, use anon key as Bearer token
+            // This satisfies Supabase's requirement for Authorization header
+            headers.set("Authorization", `Bearer ${anonKey}`);
           }
 
           return Object.fromEntries(headers);

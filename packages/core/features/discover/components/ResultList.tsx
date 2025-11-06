@@ -1,5 +1,5 @@
 import { ScrollView, Separator, Text, XStack, YStack, Spinner } from 'tamagui'
-import { forwardRef, useImperativeHandle, useRef } from 'react'
+import { forwardRef, useImperativeHandle, useRef, useMemo, memo } from 'react'
 import { Platform } from 'react-native'
 
 import type { TalentProfile } from '../types'
@@ -27,16 +27,20 @@ export interface ResultListRef {
   scrollToCard: (profileId: string) => void
 }
 
-export const ResultList = forwardRef<ResultListRef, ResultListProps>(
+const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
   ({ profiles, organizations = [], jobs = [], selectedId, onSelect, isLoading }, ref) => {
     const scrollViewRef = useRef<ScrollView>(null)
 
     // Combine profiles, organizations, and jobs into a single list
-    const allResults: ResultItem[] = [
-      ...profiles.map((profile) => ({ type: 'profile' as const, ...profile })),
-      ...organizations.map((org) => ({ type: 'organization' as const, ...org })),
-      ...jobs.map((job) => ({ type: 'job' as const, ...job })),
-    ]
+    // Use useMemo to prevent recreating array on every render
+    const allResults: ResultItem[] = useMemo(
+      () => [
+        ...profiles.map((profile) => ({ type: 'profile' as const, ...profile })),
+        ...organizations.map((org) => ({ type: 'organization' as const, ...org })),
+        ...jobs.map((job) => ({ type: 'job' as const, ...job })),
+      ],
+      [profiles, organizations, jobs]
+    )
     const cardRefs = useRef<
       Map<
         string,
@@ -174,3 +178,5 @@ export const ResultList = forwardRef<ResultListRef, ResultListProps>(
     )
   }
 )
+
+export const ResultList = memo(ResultListComponent)

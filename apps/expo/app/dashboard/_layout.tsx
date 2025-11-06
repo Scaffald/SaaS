@@ -48,12 +48,30 @@ export default function Layout() {
       <Drawer.Screen name="discover/workers/index" options={{ title: 'Search Workers' }} />
       <Drawer.Screen name="discover/employers/index" options={{ title: 'Search Employers' }} />
       <Drawer.Screen name="discover/jobs/index" options={{ title: 'Search Jobs' }} />
+      <Drawer.Screen name="users/[id]/index" options={{ title: 'User Profile' }} />
       <Drawer.Screen name="profile/general/index" options={{ title: 'General Information' }} />
       <Drawer.Screen name="profile/education/index" options={{ title: 'Education' }} />
       <Drawer.Screen name="profile/employment/index" options={{ title: 'Employment' }} />
       <Drawer.Screen name="profile/experience/index" options={{ title: 'Experience' }} />
       <Drawer.Screen name="profile/skills/index" options={{ title: 'Skills' }} />
       <Drawer.Screen name="profile/certifications/index" options={{ title: 'Certifications' }} />
+      {/* Legacy personality assessment route (backward compatibility) */}
+      <Drawer.Screen
+        name="assessment/personality/index"
+        options={{ title: 'Personality Assessment' }}
+      />
+      {/* New isolated assessment routes */}
+      <Drawer.Screen name="assessments/pulse/index" options={{ title: 'Weekly Pulse' }} />
+      <Drawer.Screen name="assessments/ipip/index" options={{ title: 'Personality Questions' }} />
+      <Drawer.Screen
+        name="assessments/luscher-2/index"
+        options={{ title: 'Aspirational Color Test' }}
+      />
+      <Drawer.Screen name="assessments/riasec/index" options={{ title: 'Career Interests' }} />
+      <Drawer.Screen
+        name="assessments/occupation/index"
+        options={{ title: 'Occupation Preferences' }}
+      />
     </DrawerLayout>
   )
 }

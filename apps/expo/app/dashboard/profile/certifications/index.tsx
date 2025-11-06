@@ -1,6 +1,6 @@
 import { ProfileCertificationsLeft } from '@app/core/features/profile/profile-certifications-left'
 import { ProfileCertificationsRight } from '@app/core/features/profile/profile-certifications-right'
-import { DashboardLayout } from '@app/ui/src/components/layouts/DashboardLayout'
+import { DashboardLayout } from '@app/ui'
 
 export default function ProfileCertificationsPage() {
   return (

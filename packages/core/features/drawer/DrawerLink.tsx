@@ -1,4 +1,4 @@
-import { ChevronRight, ChevronDown, ChevronUp, ChevronLeft } from '@tamagui/lucide-icons'
+import { ChevronRight, ChevronDown, ChevronUp, Check, Clock } from '@tamagui/lucide-icons'
 import type { GestureResponderEvent } from 'react-native'
 import { XStack, Paragraph, YStack } from 'tamagui'
 import { Link } from 'expo-router'
@@ -54,6 +54,11 @@ export const DrawerLink = ({
           <Paragraph size="$4" fontWeight="500" color={active ? '$blue9' : '$color12'}>
             {item.title}
           </Paragraph>
+          {item.isOnCooldown ? (
+            <Clock size={16} color="$blue9" />
+          ) : item.isCompleted ? (
+            <Check size={16} color="$green9" />
+          ) : null}
         </XStack>
       </Link>
     )
@@ -96,7 +101,7 @@ export const DrawerLink = ({
         isExpanded ? (
           <ChevronDown size={16} color={active ? '$color1' : '$color10'} />
         ) : (
-          <ChevronLeft size={16} color={active ? '$color11' : '$color10'} />
+          <ChevronRight size={16} color="$color10" />
         )
       ) : (
         item.hasChevron && <ChevronRight size={16} color="$color10" />
@@ -139,6 +144,44 @@ export const DrawerLink = ({
             ))}
           </YStack>
         )}
+      </YStack>
+    )
+  }
+
+  // If item has subItems but is not expandable, render parent as link with always-visible subItems
+  if (item.subItems && item.subItems.length > 0) {
+    return (
+      <YStack flex={1}>
+        <Link href={item.href} asChild>
+          <XStack
+            items="center"
+            justify="space-between"
+            px="$3"
+            py="$3"
+            rounded="$4"
+            my="$1"
+            bg={active ? '$blue9' : 'transparent'}
+            hoverStyle={{ bg: active ? '$blue9' : '$color3' }}
+            pressStyle={{ bg: active ? '$blue9' : '$color3' }}
+            cursor="pointer"
+          >
+            {renderContent()}
+            {renderRightSide()}
+          </XStack>
+        </Link>
+        <YStack rounded="$4" my="$2" gap="$2" flex={1}>
+          {item.subItems.map((subItem) => (
+            <DrawerLink
+              key={subItem.key}
+              item={subItem}
+              pathname={pathname}
+              depth={1}
+              onNavigate={onNavigate}
+              expandedItems={expandedItems}
+              onToggleExpanded={onToggleExpanded}
+            />
+          ))}
+        </YStack>
       </YStack>
     )
   }

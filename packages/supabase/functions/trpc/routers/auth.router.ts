@@ -12,7 +12,7 @@ export const authRouter = t.router({
     console.log("[auth.getUserRoles] Fetching roles for user:", ctx.user.id);
 
     const { data, error } = await ctx.supabase
-      .schema("private")
+      .schema("core")
       .from("role_assignments")
       .select("role:roles(name)")
       .eq("user_id", ctx.user.id);

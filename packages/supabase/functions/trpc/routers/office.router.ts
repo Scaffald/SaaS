@@ -22,6 +22,7 @@ export const officeRouter = t.router({
     // Get public user data
     const { data: usersData, error: usersError, count } = await ctx
       .supabaseAdmin
+      .schema("core")
       .from("users")
       .select(
         "id, username, display_name, avatar_path, created_at, updated_at",
@@ -42,7 +43,7 @@ export const officeRouter = t.router({
     // Get private profile data for all users
     const userIds = usersData?.map((u) => u.id) || [];
     const { data: profilesData } = await ctx.supabaseAdmin
-      .schema("private")
+      .schema("core")
       .from("profile")
       .select("user_id, first_name, last_name")
       .in("user_id", userIds);
@@ -78,6 +79,7 @@ export const officeRouter = t.router({
     .query(async ({ ctx, input }) => {
       // Get profile data
       const { data: profile, error: profileError } = await ctx.supabaseAdmin
+        .schema("core")
         .from("users")
         .select("*")
         .eq("id", input.id)
@@ -92,7 +94,7 @@ export const officeRouter = t.router({
 
       // Get private data
       const { data: privateData, error: privateError } = await ctx.supabaseAdmin
-        .schema("private")
+        .schema("core")
         .from("profile")
         .select("*")
         .eq("user_id", input.id)
@@ -143,6 +145,7 @@ export const officeRouter = t.router({
       // Update profile if data provided
       if (profile) {
         const { error: profileError } = await ctx.supabaseAdmin
+          .schema("core")
           .from("users")
           .update(profile)
           .eq("id", id);
@@ -158,7 +161,7 @@ export const officeRouter = t.router({
       // Update private data if provided
       if (privateData) {
         const { error: privateError } = await ctx.supabaseAdmin
-          .schema("private")
+          .schema("core")
           .from("profile")
           .update(privateData)
           .eq("user_id", id);
@@ -189,6 +192,7 @@ export const officeRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       let query = ctx.supabaseAdmin
+        .schema("core")
         .from("jobs")
         .select(
           `
@@ -243,6 +247,7 @@ export const officeRouter = t.router({
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { data, error } = await ctx.supabaseAdmin
+        .schema("core")
         .from("jobs")
         .select(
           `
@@ -298,6 +303,7 @@ export const officeRouter = t.router({
 
       // Insert job using admin client to bypass RLS
       const { data: job, error: jobError } = await supabaseAdmin
+        .schema("core")
         .from("jobs")
         .insert({
           ...jobData,
@@ -316,6 +322,7 @@ export const officeRouter = t.router({
       // Insert certifications if provided
       if (certification_ids && certification_ids.length > 0) {
         const { error: certError } = await supabaseAdmin
+          .schema("core")
           .from("job_certifications")
           .insert(
             certification_ids.map((cert_id) => ({
@@ -353,6 +360,7 @@ export const officeRouter = t.router({
 
       // Update job
       const { data: job, error: jobError } = await supabaseAdmin
+        .schema("core")
         .from("jobs")
         .update(jobData)
         .eq("id", id)
@@ -369,14 +377,16 @@ export const officeRouter = t.router({
       // Update certifications if provided
       if (certification_ids !== undefined) {
         // Delete existing certifications
-        await supabaseAdmin.from("job_certifications").delete().eq(
-          "job_id",
-          id,
-        );
+        await supabaseAdmin.schema("core").from("job_certifications").delete()
+          .eq(
+            "job_id",
+            id,
+          );
 
         // Insert new certifications
         if (certification_ids.length > 0) {
           const { error: certError } = await supabaseAdmin
+            .schema("core")
             .from("job_certifications")
             .insert(
               certification_ids.map((cert_id) => ({
@@ -416,6 +426,7 @@ export const officeRouter = t.router({
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const { data: job, error } = await ctx.supabaseAdmin
+        .schema("core")
         .from("jobs")
         .update({
           status: "open",
@@ -442,6 +453,7 @@ export const officeRouter = t.router({
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const { data: job, error } = await ctx.supabaseAdmin
+        .schema("core")
         .from("jobs")
         .update({ status: "closed" })
         .eq("id", input.id)
@@ -502,6 +514,7 @@ export const officeRouter = t.router({
    */
   getOrganizations: officeProcedure.query(async ({ ctx }) => {
     const { data, error } = await ctx.supabaseAdmin
+      .schema("core")
       .from("organizations")
       .select("id, name, slug, owner_user_id")
       .order("name", { ascending: true });
@@ -529,6 +542,7 @@ export const officeRouter = t.router({
     )
     .query(async ({ ctx, input }) => {
       let query = ctx.supabaseAdmin
+        .schema("core")
         .from("organizations")
         .select(
           `
@@ -582,6 +596,7 @@ export const officeRouter = t.router({
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { data, error } = await ctx.supabaseAdmin
+        .schema("core")
         .from("organizations")
         .select(
           `
@@ -628,6 +643,7 @@ export const officeRouter = t.router({
 
       // Check if slug is unique
       const { data: existing } = await ctx.supabaseAdmin
+        .schema("core")
         .from("organizations")
         .select("id")
         .eq("slug", input.slug)
@@ -641,6 +657,7 @@ export const officeRouter = t.router({
       }
 
       const { data: organization, error } = await ctx.supabaseAdmin
+        .schema("core")
         .from("organizations")
         .insert({
           ...input,
@@ -683,6 +700,7 @@ export const officeRouter = t.router({
 
       // Check if slug is unique (excluding current organization)
       const { data: existing } = await ctx.supabaseAdmin
+        .schema("core")
         .from("organizations")
         .select("id")
         .eq("slug", input.slug)
@@ -698,6 +716,7 @@ export const officeRouter = t.router({
 
       // Update organization including locations in JSONB column
       const { data: organization, error } = await ctx.supabaseAdmin
+        .schema("core")
         .from("organizations")
         .update(updateData)
         .eq("id", id)
@@ -727,6 +746,7 @@ export const officeRouter = t.router({
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const { error } = await ctx.supabaseAdmin
+        .schema("core")
         .from("organizations")
         .delete()
         .eq("id", input.id);
@@ -861,7 +881,10 @@ export const officeRouter = t.router({
       // Note: Many tables have ON DELETE CASCADE, but we'll be explicit
 
       // Delete user skills
-      await supabaseAdmin.from("user_skills").delete().eq("user_id", input.id);
+      await supabaseAdmin.schema("core").from("user_skills").delete().eq(
+        "user_id",
+        input.id,
+      );
 
       // Delete user certifications
       await supabaseAdmin.from("user_certifications").delete().eq(
@@ -891,13 +914,14 @@ export const officeRouter = t.router({
       );
 
       // Delete private data
-      await supabaseAdmin.schema("private").from("profile").delete().eq(
+      await supabaseAdmin.schema("core").from("profile").delete().eq(
         "user_id",
         input.id,
       );
 
       // Delete profile
       const { error: profileError } = await supabaseAdmin
+        .schema("core")
         .from("users")
         .delete()
         .eq("id", input.id);
@@ -1120,6 +1144,7 @@ export const officeRouter = t.router({
     .input(z.object({ userId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { data: profile, error: profileError } = await ctx.supabaseAdmin
+        .schema("core")
         .from("users")
         .select("first_name, last_name, about, avatar_path")
         .eq("id", input.userId)
@@ -1141,7 +1166,7 @@ export const officeRouter = t.router({
       }
 
       const { data: privateData, error: privateError } = await ctx.supabaseAdmin
-        .schema("private")
+        .schema("core")
         .from("profile")
         .select(
           "street_address, city, state, zip_code, country, latitude, longitude",
@@ -1197,6 +1222,7 @@ export const officeRouter = t.router({
 
       if (Object.keys(profileUpdate).length > 0) {
         const { error: profileError } = await ctx.supabaseAdmin
+          .schema("core")
           .from("users")
           .update(profileUpdate)
           .eq("id", userId);
@@ -1237,7 +1263,7 @@ export const officeRouter = t.router({
 
       if (Object.keys(privateUpdate).length > 0) {
         const { error: privateError } = await ctx.supabaseAdmin
-          .schema("private")
+          .schema("core")
           .from("profile")
           .update(privateUpdate)
           .eq("user_id", userId);
@@ -1261,7 +1287,7 @@ export const officeRouter = t.router({
     .input(z.object({ userId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { data, error } = await ctx.supabaseAdmin
-        .schema("private")
+        .schema("core")
         .from("profile")
         .select(
           "preferred_work_locations, open_to_travel, travel_distance_miles, us_resident, us_passport, drivers_license_classes, military_status, availability, hourly_rate",
@@ -1304,7 +1330,7 @@ export const officeRouter = t.router({
       const { userId, data } = input;
 
       const { error } = await ctx.supabaseAdmin
-        .schema("private")
+        .schema("core")
         .from("profile")
         .update({
           preferred_work_locations: data.preferred_work_locations,

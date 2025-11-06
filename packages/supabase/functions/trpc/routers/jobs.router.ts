@@ -164,6 +164,7 @@ export const jobsRouter = t.router({
       const { supabase } = ctx;
 
       let query = supabase
+        .schema("core")
         .from("jobs")
         .select(
           `
@@ -281,6 +282,7 @@ export const jobsRouter = t.router({
       const { supabase, user } = ctx;
 
       const { data, error } = await supabase
+        .schema("core")
         .from("jobs")
         .select(
           `
@@ -322,6 +324,7 @@ export const jobsRouter = t.router({
       let hasApplied = false;
       if (user) {
         const { data: application } = await supabase
+          .schema("core")
           .from("applications")
           .select("id")
           .eq("job_id", input.id)
@@ -373,6 +376,7 @@ export const jobsRouter = t.router({
 
       // Check if job exists and is open
       const { data: job, error: jobError } = await supabase
+        .schema("core")
         .from("jobs")
         .select("id, status, title")
         .eq("id", input.job_id)
@@ -394,6 +398,7 @@ export const jobsRouter = t.router({
 
       // Check if user has already applied
       const { data: existingApp } = await supabase
+        .schema("core")
         .from("applications")
         .select("id")
         .eq("job_id", input.job_id)
@@ -409,6 +414,7 @@ export const jobsRouter = t.router({
 
       // Create application
       const { data: application, error: appError } = await supabase
+        .schema("core")
         .from("applications")
         .insert({
           job_id: input.job_id,
@@ -463,6 +469,7 @@ export const jobsRouter = t.router({
       }
 
       let query = supabase
+        .schema("core")
         .from("applications")
         .select(
           `
@@ -525,6 +532,7 @@ export const jobsRouter = t.router({
       }
 
       const { data: application, error } = await supabase
+        .schema("core")
         .from("applications")
         .select("*")
         .eq("job_id", input.job_id)
@@ -573,6 +581,7 @@ export const jobsRouter = t.router({
 
       // Verify ownership
       const { data: application, error: fetchError } = await supabase
+        .schema("core")
         .from("applications")
         .select("user_id, job_id, status")
         .eq("id", input.id)
@@ -594,6 +603,7 @@ export const jobsRouter = t.router({
 
       // Check if job is still open
       const { data: job } = await supabase
+        .schema("core")
         .from("jobs")
         .select("status")
         .eq("id", application.job_id)
@@ -609,6 +619,7 @@ export const jobsRouter = t.router({
       // Update application
       const { id, ...updateData } = input;
       const { data: updated, error: updateError } = await supabase
+        .schema("core")
         .from("applications")
         .update({
           ...updateData,
@@ -646,6 +657,7 @@ export const jobsRouter = t.router({
 
       // Verify ownership
       const { data: application, error: fetchError } = await supabase
+        .schema("core")
         .from("applications")
         .select("user_id, status")
         .eq("id", input.id)
@@ -674,6 +686,7 @@ export const jobsRouter = t.router({
 
       // Update status
       const { error: updateError } = await supabase
+        .schema("core")
         .from("applications")
         .update({ status: "withdrawn" })
         .eq("id", input.id);
@@ -696,6 +709,7 @@ export const jobsRouter = t.router({
     const { supabase } = ctx;
 
     const { data, error } = await supabase
+      .schema("core")
       .from("jobs")
       .select(
         `
@@ -754,4 +768,54 @@ export const jobsRouter = t.router({
       skills: Array.from(skills).sort(),
     };
   }),
+
+  /**
+   * Get job by slug (public endpoint for vanity URLs)
+   * Returns public job data for slug-based access
+   */
+  bySlug: t.procedure
+    .input(z.object({ slug: z.string().min(3).max(50) }))
+    .query(async ({ ctx, input }) => {
+      const { supabase } = ctx;
+
+      // Find job by slug
+      const { data: job, error: jobError } = await supabase
+        .schema("core")
+        .from("jobs")
+        .select(
+          `
+          id,
+          title,
+          slug,
+          description,
+          employment_type,
+          location,
+          is_remote,
+          compensation_min,
+          compensation_max,
+          compensation_currency,
+          status,
+          created_at,
+          updated_at,
+          organization:organizations(
+            id,
+            name,
+            slug,
+            logo_url
+          )
+        `
+        )
+        .eq("slug", input.slug.toLowerCase())
+        .eq("status", "open") // Only return open jobs
+        .single();
+
+      if (jobError || !job) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `Job with slug "${input.slug}" not found or not available`,
+        });
+      }
+
+      return job;
+    }),
 });

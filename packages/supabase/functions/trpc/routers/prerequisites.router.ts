@@ -35,121 +35,85 @@ export const prerequisitesRouter = t.router({
   check: protectedProcedure.query(async ({ ctx }) => {
     const { supabase, user } = ctx;
 
-    try {
-      // Get private data (first_name, last_name, address)
-      const { data: privateData, error: privateError } = await supabase
-        .schema("private")
-        .from("profile")
-        .select("first_name, last_name, address")
-        .eq("user_id", user.id)
-        .single();
+    // Get private data (first_name, last_name, address)
+    const { data: privateData, error: privateError } = await supabase
+      .schema("core")
+      .from("profile")
+      .select("first_name, last_name, address")
+      .eq("user_id", user.id)
+      .single();
 
-      console.log("[prerequisites.check] Private data query:", {
-        hasData: !!privateData,
-        error: privateError?.message,
-        errorCode: privateError?.code,
+    if (privateError && privateError.code !== "PGRST116") {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: `Failed to fetch private data: ${privateError.message}`,
       });
-
-      if (privateError && privateError.code !== "PGRST116") {
-        console.error("[prerequisites.check] Private data error:", privateError);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to fetch private data: ${privateError.message}`,
-        });
-      }
-
-      // Get public user data (industry_id)
-      const { data: userData, error: userError } = await supabase
-        .from("users")
-        .select("industry_id")
-        .eq("id", user.id)
-        .single();
-
-      console.log("[prerequisites.check] User data query:", {
-        hasData: !!userData,
-        error: userError?.message,
-        errorCode: userError?.code,
-      });
-
-      if (userError && userError.code !== "PGRST116") {
-        console.error("[prerequisites.check] User data error:", userError);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to fetch user data: ${userError.message}`,
-        });
-      }
-
-      // Get preferences (user_types, prerequisites_completed_at, legal acceptance)
-      const { data: preferences, error: prefsError } = await supabase
-        .schema("private")
-        .from("preferences")
-        .select(
-          "user_types, prerequisites_completed_at, accepted_privacy_policy_at, accepted_terms_of_service_at",
-        )
-        .eq("user_id", user.id)
-        .single();
-
-      console.log("[prerequisites.check] Preferences query:", {
-        hasData: !!preferences,
-        error: prefsError?.message,
-        errorCode: prefsError?.code,
-      });
-
-      if (prefsError && prefsError.code !== "PGRST116") {
-        console.error("[prerequisites.check] Preferences error:", prefsError);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to fetch preferences: ${prefsError.message}`,
-        });
-      }
-
-      // Check if all required fields are present
-      const hasName = privateData?.first_name && privateData?.last_name;
-      const hasAddress = privateData?.address?.street &&
-        privateData?.address?.city &&
-        privateData?.address?.state &&
-        privateData?.address?.zip;
-      const hasUserTypes = preferences?.user_types &&
-        preferences.user_types.length > 0;
-      const hasIndustry = userData?.industry_id;
-      const hasAcceptedPrivacy = !!preferences?.accepted_privacy_policy_at;
-      const hasAcceptedTerms = !!preferences?.accepted_terms_of_service_at;
-
-      const isComplete = hasName && hasAddress && hasUserTypes && hasIndustry &&
-        hasAcceptedPrivacy && hasAcceptedTerms;
-
-      console.log("[prerequisites.check] Completion status:", {
-        isComplete,
-        hasName,
-        hasAddress,
-        hasUserTypes,
-        hasIndustry,
-        hasAcceptedPrivacy,
-        hasAcceptedTerms,
-      });
-
-      return {
-        isComplete: !!isComplete,
-        hasName: !!hasName,
-        hasAddress: !!hasAddress,
-        hasUserTypes: !!hasUserTypes,
-        hasIndustry: !!hasIndustry,
-        hasAcceptedPrivacy,
-        hasAcceptedTerms,
-        completedAt: preferences?.prerequisites_completed_at || null,
-        data: {
-          first_name: privateData?.first_name || "",
-          last_name: privateData?.last_name || "",
-          address: privateData?.address || null,
-          user_types: preferences?.user_types || [],
-          industry_id: userData?.industry_id || "",
-        },
-      };
-    } catch (error) {
-      console.error("[prerequisites.check] Unexpected error:", error);
-      console.error("[prerequisites.check] Error stack:", error instanceof Error ? error.stack : "No stack");
-      throw error; // Re-throw to let tRPC handle it
     }
+
+    // Get public user data (industry_id)
+    const { data: userData, error: userError } = await supabase
+      .schema("core")
+      .from("users")
+      .select("industry_id")
+      .eq("id", user.id)
+      .single();
+
+    if (userError && userError.code !== "PGRST116") {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: `Failed to fetch user data: ${userError.message}`,
+      });
+    }
+
+    // Get preferences (user_types, prerequisites_completed_at, legal acceptance)
+    const { data: preferences, error: prefsError } = await supabase
+      .schema("core")
+      .from("preferences")
+      .select(
+        "user_types, prerequisites_completed_at, accepted_privacy_policy_at, accepted_terms_of_service_at",
+      )
+      .eq("user_id", user.id)
+      .single();
+
+    if (prefsError && prefsError.code !== "PGRST116") {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: `Failed to fetch preferences: ${prefsError.message}`,
+      });
+    }
+
+    // Check if all required fields are present
+    const hasName = privateData?.first_name && privateData?.last_name;
+    const hasAddress = privateData?.address?.street &&
+      privateData?.address?.city &&
+      privateData?.address?.state &&
+      privateData?.address?.zip;
+    const hasUserTypes = preferences?.user_types &&
+      preferences.user_types.length > 0;
+    const hasIndustry = userData?.industry_id;
+    const hasAcceptedPrivacy = !!preferences?.accepted_privacy_policy_at;
+    const hasAcceptedTerms = !!preferences?.accepted_terms_of_service_at;
+
+    const isComplete = hasName && hasAddress && hasUserTypes && hasIndustry &&
+      hasAcceptedPrivacy && hasAcceptedTerms;
+
+    return {
+      isComplete: !!isComplete,
+      hasName: !!hasName,
+      hasAddress: !!hasAddress,
+      hasUserTypes: !!hasUserTypes,
+      hasIndustry: !!hasIndustry,
+      hasAcceptedPrivacy,
+      hasAcceptedTerms,
+      completedAt: preferences?.prerequisites_completed_at || null,
+      data: {
+        first_name: privateData?.first_name || "",
+        last_name: privateData?.last_name || "",
+        address: privateData?.address || null,
+        user_types: preferences?.user_types || [],
+        industry_id: userData?.industry_id || "",
+      },
+    };
   }),
 
   /**
@@ -163,7 +127,7 @@ export const prerequisitesRouter = t.router({
 
       // 1. Update private.profile table (first_name, last_name, address)
       const { error: privateError } = await supabase
-        .schema("private")
+        .schema("core")
         .from("profile")
         .upsert({
           user_id: user.id,
@@ -183,6 +147,7 @@ export const prerequisitesRouter = t.router({
       // 2. Update users table (industry_id)
       // Note: User row already exists from auth trigger, so we UPDATE not INSERT
       const { error: userError } = await supabase
+        .schema("core")
         .from("users")
         .update({
           industry_id: input.industry_id,
@@ -200,7 +165,7 @@ export const prerequisitesRouter = t.router({
       // 3. Update private.preferences table (user_types, prerequisites_completed_at, legal acceptance)
       const now = new Date().toISOString();
       const { error: prefsError } = await supabase
-        .schema("private")
+        .schema("core")
         .from("preferences")
         .upsert({
           user_id: user.id,

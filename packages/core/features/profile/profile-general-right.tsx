@@ -1,5 +1,6 @@
 import { YStack, Text, H3, H4 } from 'tamagui'
 import { DashboardWidget, StackedCards } from '@app/ui'
+import { VanityUrlSection } from './components/VanityUrlSection'
 
 /**
  * Profile General Right Component
@@ -64,6 +65,8 @@ export function ProfileGeneralRight() {
           Update your basic profile information including your name, photo, and contact details.
         </Text>
       </DashboardWidget>
+
+      <VanityUrlSection />
 
       <StackedCards
         cards={profileTipCards}

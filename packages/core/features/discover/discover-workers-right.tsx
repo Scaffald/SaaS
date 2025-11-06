@@ -114,11 +114,11 @@ export function DiscoverWorkersRight({
 
         <Separator />
 
-        {/* Elevate Score Filter */}
+        {/* Scaffald Score Filter */}
         <YStack gap="$3">
           <XStack justify="space-between" items="center">
             <Text fontSize="$4" fontWeight="600" color="$color12">
-              Score
+              Scaffald Score
             </Text>
             <Text fontSize="$5" fontWeight="700" color="$blue10">
               {minScore}

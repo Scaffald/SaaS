@@ -44,6 +44,7 @@ export const skillsMultiTaxonomyRouter = t.router({
     const { supabase } = ctx;
 
     const { data, error } = await supabase
+      .schema("core")
       .from("industries")
       .select("id, name, slug")
       .order("name");
@@ -156,6 +157,7 @@ export const skillsMultiTaxonomyRouter = t.router({
     const { supabase, user } = ctx;
 
     const { data, error } = await supabase
+      .schema("core")
       .from("user_skills")
       .select(`
         id,
@@ -272,6 +274,7 @@ export const skillsMultiTaxonomyRouter = t.router({
       }
 
       const { error } = await userScopedClient
+        .schema("core")
         .from("user_skills")
         .insert(insertData);
 
@@ -328,6 +331,7 @@ export const skillsMultiTaxonomyRouter = t.router({
       }
 
       const { error } = await userScopedClient
+        .schema("core")
         .from("user_skills")
         .update(updateData)
         .eq("id", input.userSkillId)
@@ -364,6 +368,7 @@ export const skillsMultiTaxonomyRouter = t.router({
       });
 
       const { error } = await userScopedClient
+        .schema("core")
         .from("user_skills")
         .delete()
         .eq("id", input.userSkillId)
@@ -386,6 +391,7 @@ export const skillsMultiTaxonomyRouter = t.router({
     const { supabase, user } = ctx;
 
     const { data, error } = await supabase
+      .schema("core")
       .from("users")
       .select("industry_id, industries(id, name, slug)")
       .eq("id", user.id)
@@ -413,6 +419,7 @@ export const skillsMultiTaxonomyRouter = t.router({
       const { supabase, user } = ctx;
 
       const { error } = await supabase
+        .schema("core")
         .from("users")
         .update({
           industry_id: input.industryId,

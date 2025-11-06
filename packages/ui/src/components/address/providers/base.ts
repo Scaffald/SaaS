@@ -109,11 +109,40 @@ export abstract class BaseGeocodingProvider implements GeocodingProvider {
       })
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+        // Create error object with status code for proper error handling
+        const error = new Error(`HTTP ${response.status}: ${response.statusText}`) as Error & {
+          status?: number
+          code?: string
+        }
+        error.status = response.status
+        error.code = `HTTP_${response.status}`
+
+        // Handle rate limiting
+        if (response.status === 429) {
+          error.code = 'RATE_LIMIT_EXCEEDED'
+        }
+
+        // Handle authentication errors
+        if (response.status === 401 || response.status === 403) {
+          error.code = 'INVALID_API_KEY'
+        }
+
+        throw error
       }
 
       return response
     } catch (error) {
+      // Check if it's a network error (fetch failure)
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        const networkError = new Error('Network error occurred') as Error & {
+          name?: string
+          code?: string
+        }
+        networkError.name = 'NetworkError'
+        networkError.code = 'NETWORK_ERROR'
+        throw networkError
+      }
+
       this.handleError(error, 'API request')
     }
   }

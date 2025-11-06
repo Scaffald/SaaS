@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { YStack, XStack, Text, Input } from '@app/ui'
+import { YStack, XStack, Text, Input, UserSearch } from '@app/ui'
 import { Adapt, Sheet, Select, Label, Switch } from 'tamagui'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
 
@@ -125,6 +125,36 @@ export function JobMetadataSection({
           placeholder="e.g. CC-1234"
           value={localState.cost_center || ''}
           onChangeText={(text) => handleChange('cost_center', text || undefined)}
+        />
+      </YStack>
+
+      {/* Hiring Manager */}
+      <YStack gap="$2">
+        <Label>Hiring manager</Label>
+        <UserSearch
+          value={localState.hiring_manager_id}
+          onUserSelect={(userId, _userName) => {
+            handleChange('hiring_manager_id', userId)
+          }}
+          onChange={(userId) => {
+            handleChange('hiring_manager_id', userId || undefined)
+          }}
+          placeholder="Search for hiring manager..."
+        />
+      </YStack>
+
+      {/* Recruiter */}
+      <YStack gap="$2">
+        <Label>Recruiter</Label>
+        <UserSearch
+          value={localState.recruiter_id}
+          onUserSelect={(userId, _userName) => {
+            handleChange('recruiter_id', userId)
+          }}
+          onChange={(userId) => {
+            handleChange('recruiter_id', userId || undefined)
+          }}
+          placeholder="Search for recruiter..."
         />
       </YStack>
 

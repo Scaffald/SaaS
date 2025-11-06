@@ -5,6 +5,7 @@ import { Button, Circle, Image, Label, Text, View, XStack, YStack } from 'tamagu
 import type { AvatarImagePickerProps } from './types'
 import { useFilePicker } from './hooks/useFilePicker'
 import { MediaTypeOptions } from './types'
+import { AvatarCropModal } from './AvatarCropModal'
 
 /**
  * Avatar Image Picker Component
@@ -27,6 +28,8 @@ export function AvatarImagePicker({
 }: AvatarImagePickerProps) {
   const id = useId()
   const [isLoading, setIsLoading] = useState(false)
+  const [cropModalOpen, setCropModalOpen] = useState(false)
+  const [selectedImageUri, setSelectedImageUri] = useState<string>('')
 
   const { open, getInputProps, getRootProps, dragStatus } = useFilePicker({
     typeOfPicker: 'image',
@@ -38,10 +41,12 @@ export function AvatarImagePicker({
       try {
         if (webFiles?.length) {
           const imageUri = URL.createObjectURL(webFiles[0])
-          onImageSelect(imageUri)
+          setSelectedImageUri(imageUri)
+          setCropModalOpen(true)
         } else if (nativeFiles?.length) {
           const imageUri = nativeFiles[0].uri
-          onImageSelect(imageUri)
+          setSelectedImageUri(imageUri)
+          setCropModalOpen(true)
         }
       } catch (error) {
         console.error('Error selecting image:', error)
@@ -50,6 +55,12 @@ export function AvatarImagePicker({
       }
     },
   })
+
+  const handleCropComplete = (croppedImageUri: string) => {
+    onImageSelect(croppedImageUri)
+    setCropModalOpen(false)
+    setSelectedImageUri('')
+  }
 
   const { isDragActive } = dragStatus || {}
 
@@ -166,6 +177,17 @@ export function AvatarImagePicker({
       >
         <Text>Drag & drop an image or click to select</Text>
       </Label>
+
+      {/* Crop Modal */}
+      {selectedImageUri && (
+        <AvatarCropModal
+          open={cropModalOpen}
+          onOpenChange={setCropModalOpen}
+          imageUri={selectedImageUri}
+          onCropComplete={handleCropComplete}
+          cropSize={size * 2}
+        />
+      )}
     </YStack>
   )
 }

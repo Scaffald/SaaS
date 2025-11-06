@@ -50,6 +50,7 @@ export const profileAvatarRouter = t.router({
         // Store only the file path, not the full URL
         // Client will construct the full URL using their environment variables
         const { error: updateError } = await supabase
+          .schema("core")
           .from("users")
           .update({
             avatar_path: uniqueFileName, // Store just the file path

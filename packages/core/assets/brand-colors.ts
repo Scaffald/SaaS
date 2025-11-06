@@ -6,37 +6,37 @@
 
 export const BRAND_COLORS = {
   // Primary Colors
-  primary: '#034550',
-  secondary: '#2A7F8E',
+  primary: '#8C6A43',
+  secondary: '#6F8B6D',
 
   // Gradient Colors
-  gradientStart: '#76EAFF',
-  gradientEnd: '#239CB2',
+  gradientStart: '#B58E6C',
+  gradientEnd: '#8C6A43',
 
   // Alternative Gradients
   gradientAlt: {
-    start: '#4FD1C7',
-    end: '#2D3748',
+    start: '#6F8B6D',
+    end: '#5F8F6B',
   },
 
   // Semantic Colors
-  success: '#38A169',
-  warning: '#D69E2E',
-  error: '#E53E3E',
-  info: '#3182CE',
+  success: '#5F8F6B',
+  warning: '#D4A574',
+  error: '#B16A5B',
+  info: '#6B7C8E',
 
-  // Neutral Colors
+  // Neutral Colors (Earth-tone grays)
   gray: {
-    50: '#F7FAFC',
-    100: '#EDF2F7',
-    200: '#E2E8F0',
-    300: '#CBD5E0',
-    400: '#A0AEC0',
-    500: '#718096',
-    600: '#4A5568',
-    700: '#2D3748',
-    800: '#1A202C',
-    900: '#171923',
+    50: '#FAF8F3', // surface
+    100: '#F7F4EF', // bg
+    200: '#EFEAE2', // bgWeak
+    300: '#E0D8C8',
+    400: '#C9BFB0',
+    500: '#A89E8F',
+    600: '#8B8170',
+    700: '#6F665F', // inkMuted
+    800: '#4A433D',
+    900: '#2F2A26', // ink
   },
 } as const
 
