@@ -40,9 +40,6 @@ export function VanityUrlSection() {
   // Get slug history
   const { data: slugHistory, refetch: refetchHistory } = api.profile.vanity.getSlugHistory.useQuery()
 
-  // Check slug availability
-  const checkSlugMutation = api.profile.vanity.checkSlug.useMutation()
-
   // Update slug
   const updateSlugMutation = api.profile.vanity.updateSlug.useMutation({
     onSuccess: (data) => {
@@ -107,7 +104,8 @@ export function VanityUrlSection() {
     setIsChecking(true)
     const timeoutId = setTimeout(async () => {
       try {
-        const result = await checkSlugMutation.mutateAsync({ slug: normalized })
+        // Use fetchQuery to call the query imperatively
+        const result = await utils.profile.vanity.checkSlug.fetch({ slug: normalized })
         setAvailabilityStatus({
           available: result.available,
           checking: false,

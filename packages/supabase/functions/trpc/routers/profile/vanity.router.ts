@@ -63,21 +63,28 @@ export const profileVanityRouter = t.router({
   /**
    * Check if a slug is available
    * Public endpoint for real-time availability checking
+   * Excludes current user's slug if authenticated
    */
   checkSlug: publicProcedure
     .input(slugInputSchema)
     .query(async ({ ctx, input }) => {
-      const { supabase } = ctx;
+      const { supabase, user } = ctx;
 
       const slug = input.slug.toLowerCase().trim();
 
-      // Check if slug is already taken
-      const { data: existingUser, error } = await supabase
+      // Build query - exclude current user's slug if authenticated
+      let query = supabase
         .schema("core")
         .from("users")
         .select("id, slug")
-        .eq("slug", slug)
-        .maybeSingle();
+        .eq("slug", slug);
+
+      // If user is authenticated, exclude their own slug from the check
+      if (user?.id) {
+        query = query.neq("id", user.id);
+      }
+
+      const { data: existingUser, error } = await query.maybeSingle();
 
       if (error && error.code !== "PGRST116") {
         throw new TRPCError({
