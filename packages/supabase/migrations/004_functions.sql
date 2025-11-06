@@ -74,6 +74,8 @@ RETURNS TRIGGER AS $$
 DECLARE
   username_base TEXT;
   final_username TEXT;
+  slug_base TEXT;
+  final_slug TEXT;
   counter INTEGER := 0;
 BEGIN
   -- Extract username from email
@@ -86,12 +88,36 @@ BEGIN
     final_username := username_base || counter;
   END LOOP;
   
+  -- Generate valid slug from username (lowercase, alphanumeric and dashes only, 3-50 chars)
+  slug_base := LOWER(REGEXP_REPLACE(final_username, '[^a-z0-9]+', '-', 'g'));
+  slug_base := REGEXP_REPLACE(slug_base, '-+', '-', 'g'); -- Replace multiple dashes with single
+  slug_base := REGEXP_REPLACE(slug_base, '^-+|-+$', '', 'g'); -- Remove leading/trailing dashes
+  slug_base := SUBSTRING(slug_base, 1, 50); -- Max 50 chars
+  
+  -- Ensure slug is at least 3 characters (pad if needed)
+  IF LENGTH(slug_base) < 3 THEN
+    slug_base := slug_base || '-' || SUBSTRING(MD5(RANDOM()::TEXT), 1, 3 - LENGTH(slug_base));
+  END IF;
+  
+  final_slug := slug_base;
+  counter := 0;
+  
+  -- Ensure unique slug
+  WHILE EXISTS (SELECT 1 FROM core.users WHERE slug = final_slug) LOOP
+    counter := counter + 1;
+    final_slug := slug_base || '-' || counter;
+    -- Ensure we don't exceed 50 chars
+    IF LENGTH(final_slug) > 50 THEN
+      final_slug := SUBSTRING(slug_base, 1, 47) || '-' || counter;
+    END IF;
+  END LOOP;
+  
   -- Create user record (core.users)
   INSERT INTO core.users (id, username, slug, display_name, created_at, updated_at)
   VALUES (
     NEW.id,
     final_username,
-    final_username,
+    final_slug,
     COALESCE(NEW.raw_user_meta_data->>'name', final_username),
     NEW.created_at,
     NEW.updated_at
