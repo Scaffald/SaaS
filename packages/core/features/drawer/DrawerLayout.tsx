@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react'
-import { Button, useTheme, YStack, Text } from 'tamagui'
+import { Button, useTheme, YStack, Text, XStack } from 'tamagui'
 import { DrawerActions } from '@react-navigation/native'
 import { Menu } from '@tamagui/lucide-icons'
 import { Drawer } from 'expo-router/drawer'
 import { useWindowDimensions } from 'tamagui'
 import { NotificationDropdown } from '@app/ui'
+import { UserMenuAvatar } from './UserMenuAvatar'
 import { DrawerMenu } from './DrawerMenu'
 import { api } from '@app/core/utils/api'
 import type { NotificationItem } from '@app/ui'
@@ -70,15 +71,25 @@ export function DrawerLayout({
   }
 
   // Transform notifications to match NotificationItem interface
-  const transformedNotifications: NotificationItem[] = notifications.map((n) => ({
-    id: n.id,
-    type: n.type as 'success' | 'warning' | 'info',
-    title: n.title,
-    message: n.message,
-    timestamp: n.created_at,
-    read: n.read,
-    destination_url: n.destination_url,
-  }))
+  const transformedNotifications: NotificationItem[] = notifications.map(
+    (n: {
+      id: string
+      type: string
+      title: string
+      message: string
+      created_at: string
+      read: boolean
+      destination_url: string | null
+    }) => ({
+      id: n.id,
+      type: n.type as 'success' | 'warning' | 'info',
+      title: n.title,
+      message: n.message,
+      timestamp: n.created_at,
+      read: n.read,
+      destination_url: n.destination_url,
+    })
+  )
 
   return (
     <>
@@ -117,13 +128,16 @@ export function DrawerLayout({
                   </Button>
                 ),
                 headerRight: () => (
-                  <NotificationDropdown
-                    notifications={transformedNotifications}
-                    unreadCount={unreadCount}
-                    isLoading={isLoadingNotifications}
-                    onNotificationClick={handleNotificationClick}
-                    onMarkAsRead={handleMarkAsRead}
-                  />
+                  <XStack gap="$3" items="center" px="$4">
+                    <NotificationDropdown
+                      notifications={transformedNotifications}
+                      unreadCount={unreadCount}
+                      isLoading={isLoadingNotifications}
+                      onNotificationClick={handleNotificationClick}
+                      onMarkAsRead={handleMarkAsRead}
+                    />
+                    <UserMenuAvatar />
+                  </XStack>
                 ),
               }),
           overlayColor: hideDrawer ? 'transparent' : 'rgba(0, 0, 0, 0.15)',

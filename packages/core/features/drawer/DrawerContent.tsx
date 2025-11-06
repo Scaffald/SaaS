@@ -3,7 +3,6 @@ import { DrawerContentScrollView } from '@react-navigation/drawer'
 import { getDrawerSections } from './config'
 import { DrawerHeader } from './DrawerHeader'
 import { DrawerSection } from './DrawerSection'
-import { DrawerFooter } from './DrawerFooter'
 import type { DrawerContentProps } from './types'
 import { useUserRoles } from '@app/core/utils/auth/useUserRoles'
 
@@ -54,9 +53,6 @@ export const DrawerContent = ({
           ))}
         </YStack>
       </DrawerContentScrollView>
-
-      {/* Bottom Section - Fixed Action Buttons */}
-      <DrawerFooter />
     </YStack>
   )
 }
