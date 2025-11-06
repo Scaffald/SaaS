@@ -1,6 +1,6 @@
 import { animations, defaultConfig } from '@tamagui/config/v4'
 import { createTamagui, setupDev } from 'tamagui'
-// import { themes } from './themes/scaffald-theme'
+import { themes } from './themes/earth-theme'
 
 // Development setup - only in development
 if (process.env.NODE_ENV === 'development') {
@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === 'development') {
 
 export const config = createTamagui({
   ...defaultConfig,
-  // themes,
+  themes,
   disableSSR: true,
   onlyAllowShorthands: false,
 
