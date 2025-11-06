@@ -568,6 +568,9 @@ importers:
       hast-util-to-html:
         specifier: ^9.0.0
         version: 9.0.5
+      luscher-test:
+        specifier: ^1.0.0
+        version: 1.2.0
       mapbox-gl:
         specifier: 'catalog:'
         version: 3.15.0
@@ -7149,6 +7152,9 @@ packages:
   lru-cache@7.18.3:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
     engines: {node: '>=12'}
+
+  luscher-test@1.2.0:
+    resolution: {integrity: sha512-SxQJBtYTVwZb0+38r3i+GRqrFN4Sm+crFfwf88+K+gya25f29DxwVZLuuvIankY7UcW1jvoY/RnfTAhEJtBFfA==}
 
   luxon@3.7.2:
     resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
@@ -19698,6 +19704,8 @@ snapshots:
       yallist: 3.1.1
 
   lru-cache@7.18.3: {}
+
+  luscher-test@1.2.0: {}
 
   luxon@3.7.2: {}
 

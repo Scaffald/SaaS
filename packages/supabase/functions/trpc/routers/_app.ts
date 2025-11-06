@@ -15,6 +15,7 @@ import { workersRouter } from "./workers.router.ts";
 import { mapRouter } from "./map.router.ts";
 import { notificationsRouter } from "./notifications.router.ts";
 import { portfolioRouter } from "./portfolio.router.ts";
+import { personalityAssessmentRouter } from "./personality-assessment.router.ts";
 
 /**
  * Main application router
@@ -37,6 +38,7 @@ export const appRouter = t.router({
   map: mapRouter,
   notifications: notificationsRouter,
   portfolio: portfolioRouter,
+  personalityAssessment: personalityAssessmentRouter,
 });
 
 // Export the router type for client-side usage

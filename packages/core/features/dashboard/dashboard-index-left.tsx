@@ -2,12 +2,13 @@ import { YStack, Spinner, Text } from 'tamagui'
 import { ProfileSnapshotWidget } from '../profile/widgets'
 import { PrerequisiteWidget } from '../prerequisites/PrerequisiteWidget'
 import { CareerAssessmentWidget } from '../career-assessment'
+import { PersonalityAssessmentWidget } from '../personality-assessment'
 import { api } from '@app/core/utils/api'
 
 /**
  * Dashboard Index Left Component
  * Shows PrerequisiteWidget when prerequisites are incomplete,
- * otherwise shows ProfileSnapshotWidget and CareerAssessmentWidget
+ * otherwise shows ProfileSnapshotWidget, CareerAssessmentWidget, and PersonalityAssessmentWidget
  */
 export function DashboardIndexLeft() {
   const { data: statusData, isLoading } = api.prerequisites.check.useQuery()
@@ -27,11 +28,12 @@ export function DashboardIndexLeft() {
     return <PrerequisiteWidget />
   }
 
-  // Show ProfileSnapshotWidget and CareerAssessmentWidget if prerequisites are complete
+  // Show ProfileSnapshotWidget, CareerAssessmentWidget, and PersonalityAssessmentWidget if prerequisites are complete
   return (
     <YStack gap="$4">
       <ProfileSnapshotWidget />
       <CareerAssessmentWidget />
+      <PersonalityAssessmentWidget />
     </YStack>
   )
 }

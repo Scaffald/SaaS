@@ -156,6 +156,13 @@ const ROUTES_CONFIG = {
     isProtected: true,
   },
 
+  // Dashboard > Assessment
+  DASHBOARD_ASSESSMENT_PERSONALITY: {
+    path: "/dashboard/assessment/personality",
+    title: "Personality Assessment",
+    isProtected: true,
+  },
+
   // Office Routes
   OFFICE: {
     path: "/office",

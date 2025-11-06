@@ -1,5 +1,5 @@
 -- =========================================================
--- 009_portfolio.sql - Portfolio System
+-- 013_portfolio.sql - Portfolio System
 -- Creates portfolio_items table, policies, indexes, triggers, and storage bucket
 -- =========================================================
 

@@ -1,5 +1,5 @@
 -- =========================================================
--- 008_update_cms_media_policies.sql - Update CMS media RLS policies
+-- 012_update_cms_media_policies.sql - Update CMS media RLS policies
 -- Updates storage policies to allow office role (not just super_admin)
 -- =========================================================
 
