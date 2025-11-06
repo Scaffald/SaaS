@@ -59,3 +59,37 @@ alwaysApply: true
 3. **Test changes in actual clients** rather than assuming they work
 4. **Check git history** for context on bugs or issues
 5. **Use pnpm workspace commands** for package-specific operations
+
+## BrainGrid Integration (CRITICAL)
+
+### Mandatory Task Status Updates
+**⚠️ NON-NEGOTIABLE**: When working on BrainGrid REQs and tasks, IMMEDIATELY update statuses using MCP tools. This is NOT optional.
+
+### Required Actions
+1. **Starting Task**: Mark as `IN_PROGRESS` via `mcp__braingrid__update_project_task`
+2. **Completing Task**: Mark as `COMPLETED` BEFORE committing code
+3. **Completing REQ**: Update requirement status when all tasks done
+4. **Creating Blockers**: File new REQ for issues found, add dependencies
+
+### Quick Reference
+```bash
+# Read project ID
+cat .braingrid/project.json
+
+# Update task status (REQUIRED after completion)
+mcp__braingrid__update_project_task({
+  project_id: "...",
+  requirement_id: "REQ-XXX",
+  task_id: "...",
+  status: "COMPLETED"
+})
+
+# Update requirement status
+mcp__braingrid__update_project_requirement({
+  project_id: "...",
+  requirement_id: "REQ-XXX",
+  status: "COMPLETED"
+})
+```
+
+**CRITICAL**: Task status updates are paramount importance. Update BrainGrid BEFORE committing code.
