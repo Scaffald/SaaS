@@ -1,8 +1,8 @@
 import { useLocalSearchParams } from 'expo-router'
 import { useNavigation } from '@react-navigation/native'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { YStack } from 'tamagui'
-import { DashboardLayout, Breadcrumb } from '@app/ui'
+import { DashboardLayout } from '@app/ui'
 import {
   GeneralInfoWidget,
   ExperienceWidget,
@@ -13,6 +13,7 @@ import {
 } from '@app/core/features/profile/widgets'
 import { api } from '@app/core/utils/api'
 import { useAuth } from '@app/core/provider/auth/useAuth'
+import type { BreadcrumbItem } from '@app/ui'
 
 /**
  * Dynamic User Profile Route
@@ -69,39 +70,40 @@ export default function UserProfilePage() {
     })
   }, [profileData, displayName, isOwnProfile, isProfileLoading, navigation])
 
+  // Build custom breadcrumb items with dynamic user name
+  const breadcrumbItems = useMemo<BreadcrumbItem[]>(
+    () => [
+      { label: 'Dashboard', href: '/dashboard' },
+      { label: 'Discover Workers', href: '/dashboard/discover/workers' },
+      {
+        label: isOwnProfile ? 'My Profile' : displayName || 'Loading...',
+        isActive: true,
+      },
+    ],
+    [isOwnProfile, displayName]
+  )
+
   if (!id) {
     return null
   }
 
-  // Build breadcrumb items
-  const breadcrumbItems = [
-    { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Discover Workers', href: '/dashboard/discover/workers' },
-    {
-      label: isOwnProfile ? 'My Profile' : displayName || 'Loading...',
-      isActive: true,
-    },
-  ]
-
   return (
-    <YStack gap="$4" flex={1}>
-      <Breadcrumb items={breadcrumbItems} />
-      <DashboardLayout
-        leftContent={
-          <YStack gap="$4">
-            <GeneralInfoWidget userId={id} showEdit={false} />
-            <ExperienceWidget userId={id} showEdit={false} />
-            <EducationWidget userId={id} showEdit={false} />
-          </YStack>
-        }
-        rightContent={
-          <YStack gap="$4">
-            <SkillsWidget userId={id} showEdit={false} />
-            <CertificationsWidget userId={id} showEdit={false} />
-            <ReviewsWidget userId={id} showEdit={true} />
-          </YStack>
-        }
-      />
-    </YStack>
+    <DashboardLayout
+      breadcrumbItems={breadcrumbItems}
+      leftContent={
+        <YStack gap="$4">
+          <GeneralInfoWidget userId={id} showEdit={false} />
+          <ExperienceWidget userId={id} showEdit={false} />
+          <EducationWidget userId={id} showEdit={false} />
+        </YStack>
+      }
+      rightContent={
+        <YStack gap="$4">
+          <SkillsWidget userId={id} showEdit={false} />
+          <CertificationsWidget userId={id} showEdit={false} />
+          <ReviewsWidget userId={id} showEdit={true} />
+        </YStack>
+      }
+    />
   )
 }

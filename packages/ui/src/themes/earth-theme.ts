@@ -2,20 +2,20 @@ import { createThemes, defaultComponentThemes } from '@tamagui/theme-builder'
 import {
   earthBlue,
   earthBlueDark,
-  earthGreen,
-  earthGreenDark,
-  earthRed,
-  earthRedDark,
-  earthOrange,
-  earthOrangeDark,
-  earthYellow,
-  earthYellowDark,
-  earthPurple,
-  earthPurpleDark,
-  earthPink,
-  earthPinkDark,
   earthGray,
   earthGrayDark,
+  earthGreen,
+  earthGreenDark,
+  earthOrange,
+  earthOrangeDark,
+  earthPink,
+  earthPinkDark,
+  earthPurple,
+  earthPurpleDark,
+  earthRed,
+  earthRedDark,
+  earthYellow,
+  earthYellowDark,
 } from './earth-colors'
 
 export const lightTransparent = 'hsla(42, 28%, 96%, 0)' // bg transparent
@@ -24,7 +24,7 @@ export const darkTransparent = 'hsla(30, 9%, 17%, 0)' // ink transparent
 export const lightColor = 'hsl(30, 9%, 17%)' // ink: #2F2A26
 const lightPalette = [
   lightTransparent,
-  'hsla(42, 28%, 96%, 1)', // bg: #F7F4EF
+  'hsla(42, 28%, 99%, 1)', // bg: #F7F4EF
   'hsla(42, 25%, 94%, 1)',
   'hsla(38, 20%, 91%, 1)', // bgWeak: #EFEAE2
   'hsla(45, 33%, 89%, 1)',
@@ -167,7 +167,6 @@ const builtThemes = createThemes({
       },
     },
   },
-
   // optionally add more, can pass palette or template
 
   // grandChildrenThemes: {
