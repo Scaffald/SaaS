@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Button, Text, XStack, YStack } from 'tamagui'
-import { colorChoices, type Color, type MainColor } from '../lib/luscher/utils'
+import type { MainColor } from 'luscher-test'
+import { colorChoices, type Color } from '../lib/luscher/utils'
 
 export interface LuscherTestStepProps {
   step: 'luscher1' | 'luscher2'
@@ -64,15 +65,15 @@ export function LuscherTestStep({
   const remaining = 8 - selectedOrder.length
 
   return (
-    <YStack gap="$6" maxWidth={800} width="100%" alignSelf="center">
+    <YStack gap="$6" maxW={800} width="100%" mx="auto">
       <YStack gap="$2" items="center">
-        <Text fontSize="$6" fontWeight="600" color="$color12" textAlign="center">
+        <Text fontSize="$6" fontWeight="600" color="$color12" text="center">
           {step === 'luscher1' ? 'First Color Test' : 'Second Color Test (Aspirational)'}
         </Text>
-        <Text fontSize="$4" color="$color11" textAlign="center">
+        <Text fontSize="$4" color="$color11" text="center">
           Click the colors in order based on what makes you feel the best.
         </Text>
-        <Text fontSize="$3" color="$color10" textAlign="center">
+        <Text fontSize="$3" color="$color10" text="center">
           {isComplete
             ? 'All 8 colors selected!'
             : `Select ${remaining} more color${remaining > 1 ? 's' : ''}`}
@@ -86,7 +87,7 @@ export function LuscherTestStep({
 
           return (
             <YStack
-              key={color.key}
+              key={String(color.key)}
               gap="$2"
               items="center"
               cursor={isSelected ? 'default' : 'pointer'}
@@ -95,19 +96,20 @@ export function LuscherTestStep({
               onPress={() => !isSelected && handleColorPress(color.value)}
               disabled={isSelected || isLoading}
               // Responsive width: 2 columns on mobile (xs), 4 columns on desktop (gtXs)
-              flexBasis={{ xs: '48%', gtXs: '23%' }}
-              maxWidth={{ xs: 200, gtXs: 250 }}
-              minWidth={120}
-              flexShrink={1}
-              flexGrow={0}
+              flexBasis="48%"
+              $gtXs={{ flexBasis: '23%' }}
+              maxW={250}
+              $xs={{ maxW: 200 }}
+              minW={120}
               pointerEvents={isSelected ? 'none' : 'auto'}
             >
               <YStack
                 width="100%"
                 aspectRatio={1}
-                maxWidth={{ xs: 200, gtXs: 250 }}
-                maxHeight={{ xs: 200, gtXs: 250 }}
-                backgroundColor={color.hex}
+                maxW={250}
+                maxH={250}
+                $xs={{ maxW: 200, maxH: 200 }}
+                bg={color.hex}
                 rounded="$4"
                 borderWidth={2}
                 borderColor="$color7"

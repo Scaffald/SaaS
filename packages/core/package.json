@@ -41,7 +41,7 @@
     "expo-secure-store": "catalog:",
     "fast-xml-parser": "catalog:",
     "hast-util-to-html": "^9.0.0",
-    "luscher-test": "^1.0.0",
+    "luscher-test": "^2.2.1",
     "mapbox-gl": "catalog:",
     "parse-numeric-range": "^1.0.0",
     "react": "catalog:",

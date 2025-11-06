@@ -4,6 +4,10 @@ import { DashboardIndexRight } from '@app/core/features/dashboard/dashboard-inde
 
 export default function Screen() {
   return (
-    <DashboardLayout leftContent={<DashboardIndexLeft />} rightContent={<DashboardIndexRight />} />
+    <DashboardLayout
+      showBreadcrumb={false}
+      leftContent={<DashboardIndexLeft />}
+      rightContent={<DashboardIndexRight />}
+    />
   )
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Button, Text, YStack, XStack, Spinner } from 'tamagui'
+import { TwoStageTest, InterpretationLanguage, type MainColor } from 'luscher-test'
 import { getScore, getResults, type IPIPScores } from '../lib/ipip'
 import type { IPIPAnswer } from '../lib/ipip'
 
@@ -48,14 +49,16 @@ export function ResultsStep({
 
     setGeneratingReport(true)
     try {
-      // Generate results on the server side
-      // We need to get the raw interpretation first, then send it to OpenAI
-      // For now, we'll use a placeholder - the server should handle this
-      // The server will use SingleStageTest to generate the interpretation
-      const resultsString = JSON.stringify({
-        luscher1: assessment.luscher1_choices,
-        luscher2: assessment.luscher2_choices,
-      })
+      // Generate raw interpretation using TwoStageTest
+      const test = new TwoStageTest(
+        assessment.luscher1_choices as MainColor[],
+        assessment.luscher2_choices as MainColor[]
+      )
+      const lang = InterpretationLanguage.ENGLISH
+      const interpretation = await test.getInterpretation(lang)
+
+      // Convert interpretation to JSON string for OpenAI
+      const resultsString = JSON.stringify(interpretation)
 
       onGenerateReport?.(resultsString)
     } catch (error) {
