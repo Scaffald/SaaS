@@ -1,8 +1,9 @@
 import { YStack, XStack, Text, H4, Spinner, Avatar, Button, Progress } from 'tamagui'
-import { DashboardWidget } from '@app/ui'
+import { DashboardWidget, Button as StyledButton } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
+import { spacing } from '@/tokens/design-tokens'
 
 /**
  * ProfileSnapshotWidget
@@ -49,8 +50,8 @@ export function ProfileSnapshotWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
-          <Spinner size="large" />
+        <YStack gap={spacing.md} items="center" py={spacing['2xl']}>
+          <Spinner size="large" color="$teal7" />
           <Text color="$color11">Loading profile...</Text>
         </YStack>
       </DashboardWidget>
@@ -60,7 +61,7 @@ export function ProfileSnapshotWidget() {
   if (!generalInfo) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
+        <YStack gap={spacing.md} items="center" py={spacing['2xl']}>
           <Text color="$color11">Profile data unavailable</Text>
         </YStack>
       </DashboardWidget>
@@ -111,11 +112,11 @@ export function ProfileSnapshotWidget() {
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
+      <YStack gap={spacing.md}>
         {/* Header */}
         <XStack justify="space-between" items="center">
           <H4>Profile</H4>
-          <Button size="$2" chromeless onPress={() => router.push('/dashboard/profile')}>
+          <Button size="$2" chromeless color="$teal7" onPress={() => router.push('/dashboard/profile')}>
             View Full Profile
           </Button>
         </XStack>
@@ -193,14 +194,14 @@ export function ProfileSnapshotWidget() {
               </Text>
             </XStack>
             <Progress value={completion} max={100}>
-              <Progress.Indicator animation="bouncy" bg="$green9" />
+              <Progress.Indicator animation="bouncy" bg="$teal7" />
             </Progress>
           </YStack>
 
           {/* Stats Row */}
-          <XStack gap="$3" flexWrap="wrap">
-            <YStack gap="$1" flex={1} minW={80} bg="$color2" p="$3" rounded="$3" items="center">
-              <Text fontSize="$6" fontWeight="700" color="$blue10">
+          <XStack gap={spacing.sm} flexWrap="wrap">
+            <YStack gap="$1" flex={1} minW={80} bg="$color2" p={spacing.sm} rounded="$3" items="center">
+              <Text fontSize="$6" fontWeight="700" color="$teal8">
                 {skills?.length || 0}
               </Text>
               <Text fontSize="$1" color="$color11">
@@ -208,7 +209,7 @@ export function ProfileSnapshotWidget() {
               </Text>
             </YStack>
 
-            <YStack gap="$1" flex={1} minW={80} bg="$color2" p="$3" rounded="$3" items="center">
+            <YStack gap="$1" flex={1} minW={80} bg="$color2" p={spacing.sm} rounded="$3" items="center">
               <Text fontSize="$6" fontWeight="700" color="$green10">
                 {certifications?.length || 0}
               </Text>
@@ -217,8 +218,8 @@ export function ProfileSnapshotWidget() {
               </Text>
             </YStack>
 
-            <YStack gap="$1" flex={1} minW={80} bg="$color2" p="$3" rounded="$3" items="center">
-              <Text fontSize="$6" fontWeight="700" color="$color10">
+            <YStack gap="$1" flex={1} minW={80} bg="$color2" p={spacing.sm} rounded="$3" items="center">
+              <Text fontSize="$6" fontWeight="700" color="$teal7">
                 {generalInfo.years_of_experience || 0}
               </Text>
               <Text fontSize="$1" color="$color11">
@@ -263,15 +264,15 @@ export function ProfileSnapshotWidget() {
         )}
 
         {/* Quick Actions */}
-        <YStack gap="$2">
-          <Button
+        <YStack gap={spacing.xs}>
+          <StyledButton
+            variant="primary"
             size="$3"
-            theme="blue"
             onPress={() => router.push('/dashboard/profile')}
             width="100%"
           >
             Edit Profile
-          </Button>
+          </StyledButton>
           {completion < 100 && (
             <YStack items="center">
               <Text fontSize="$1" color="$color11">

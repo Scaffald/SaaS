@@ -3,8 +3,9 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { YStack, XStack, Text, Button, Spinner, Separator } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
-import { DashboardWidget } from '@app/ui'
+import { DashboardWidget, Button as StyledButton } from '@app/ui'
 import { api } from '@app/core/utils/api'
+import { spacing } from '@/tokens/design-tokens'
 import { RiasecQuickAssessment } from './components/RiasecQuickAssessment'
 import { OccupationSearch } from './components/OccupationSearch'
 import {
@@ -77,8 +78,8 @@ export function CareerAssessmentWidget() {
   if (isCheckingStatus) {
     return (
       <DashboardWidget>
-        <YStack gap="$3" items="center" py="$8">
-          <Spinner size="large" />
+        <YStack gap={spacing.sm} items="center" py={spacing['2xl']}>
+          <Spinner size="large" color="$teal7" />
           <Text color="$color11">Loading...</Text>
         </YStack>
       </DashboardWidget>
@@ -92,8 +93,8 @@ export function CareerAssessmentWidget() {
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
-        <YStack gap="$2">
+      <YStack gap={spacing.md}>
+        <YStack gap={spacing.xs}>
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Career Assessment
           </Text>
@@ -147,23 +148,23 @@ export function CareerAssessmentWidget() {
         </YStack>
 
         {/* Submit Button */}
-        <Button
+        <StyledButton
+          variant="primary"
           onPress={handleSubmit(onSubmit)}
           disabled={isSubmitting}
           opacity={isSubmitting ? 0.5 : 1}
           size="$5"
-          themeInverse
-          mt="$2"
+          mt={spacing.xs}
         >
           {isSubmitting ? (
-            <XStack gap="$2" items="center">
-              <Spinner size="small" color="$color12" />
+            <XStack gap={spacing.xs} items="center">
+              <Spinner size="small" color="white" />
               <Button.Text>Saving Assessment...</Button.Text>
             </XStack>
           ) : (
             <Button.Text>Complete Assessment</Button.Text>
           )}
-        </Button>
+        </StyledButton>
 
         <Text fontSize="$2" color="$color11">
           This assessment takes about 2 minutes and helps us recommend careers that fit your
