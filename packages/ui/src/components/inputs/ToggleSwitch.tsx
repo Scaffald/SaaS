@@ -22,12 +22,12 @@ const CustomToggle = styled(View, {
   borderColor: '$color6',
   position: 'relative',
   cursor: 'pointer',
-  animation: '200ms',
+  animation: 'quick',
   variants: {
     checked: {
       true: {
-        bg: '$color10',
-        borderColor: '$color10',
+        bg: '$teal7',
+        borderColor: '$teal7',
       },
       false: {
         bg: '$color5',
@@ -64,6 +64,15 @@ const CustomToggle = styled(View, {
       },
     },
   } as const,
+  focusStyle: {
+    borderColor: '$teal7',
+    outlineColor: '$teal7',
+    outlineWidth: 2,
+    outlineStyle: 'solid',
+  },
+  hoverStyle: {
+    borderColor: '$teal8',
+  },
 })
 
 const ToggleThumb = styled(View, {

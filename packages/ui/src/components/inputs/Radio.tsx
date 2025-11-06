@@ -18,7 +18,7 @@ export interface RadioProps {
 const RadioContainer = styled(View, {
   position: 'relative',
   cursor: 'pointer',
-  animation: '100ms',
+  animation: 'quick',
   variants: {
     size: {
       small: {
@@ -36,10 +36,10 @@ const RadioContainer = styled(View, {
     },
     checked: {
       true: {
-        borderColor: '$color10',
+        borderColor: '$teal7',
       },
       false: {
-        borderColor: '$color10',
+        borderColor: '$borderColor',
       },
     },
     disabled: {
@@ -53,8 +53,15 @@ const RadioContainer = styled(View, {
       },
     },
   } as const,
+  focusStyle: {
+    borderColor: '$teal7',
+    outlineColor: '$teal7',
+    outlineWidth: 2,
+    outlineStyle: 'solid',
+  },
   hoverStyle: {
     scale: 1.05,
+    borderColor: '$teal8',
   },
   pressStyle: {
     scale: 0.95,
@@ -63,7 +70,7 @@ const RadioContainer = styled(View, {
 
 const RadioDot = styled(View, {
   position: 'absolute',
-  bg: '$color10',
+  bg: '$teal7',
   rounded: 50,
   variants: {
     size: {
