@@ -83,20 +83,67 @@ export const personalityAssessmentRouter = t.router({
 
       try {
         const now = new Date();
+
+        // Get existing assessment to preserve other fields
+        const { error: fetchError } = await supabase
+          .schema("core")
+          .from("personality_assessments")
+          .select("*")
+          .eq("user_id", user.id)
+          .single();
+
+        // Create assessment if it doesn't exist
+        if (fetchError && fetchError.code === "PGRST116") {
+          const cooldownEndTime = new Date(now.getTime() + 60 * 1000); // 60 seconds from now
+
+          const { error: createError } = await supabase
+            .schema("core")
+            .from("personality_assessments")
+            .insert({
+              user_id: user.id,
+              luscher1_choices: input.choices,
+              luscher1_completed_at: now.toISOString(),
+              current_step: "cooldown",
+              completion_score: 25,
+              cooldown_end_time: cooldownEndTime.toISOString(),
+              started_at: now.toISOString(),
+              last_updated_at: now.toISOString(),
+            });
+
+          if (createError) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: `Failed to create assessment: ${createError.message}`,
+            });
+          }
+
+          return { success: true };
+        }
+
         const cooldownEndTime = new Date(now.getTime() + 60 * 1000); // 60 seconds from now
+
+        const updateData: {
+          luscher1_choices: number[];
+          luscher1_completed_at: string;
+          completion_score: number;
+          last_updated_at: string;
+          updated_at: string;
+          current_step: string;
+          cooldown_end_time: string;
+        } = {
+          luscher1_choices: input.choices,
+          luscher1_completed_at: now.toISOString(),
+          completion_score: 25, // 25% after completing luscher1
+          last_updated_at: now.toISOString(),
+          updated_at: now.toISOString(),
+          current_step: "cooldown",
+          cooldown_end_time: cooldownEndTime.toISOString(),
+        };
 
         const { error } = await supabase
           .schema("core")
           .from("personality_assessments")
-          .update({
-            luscher1_choices: input.choices,
-            luscher1_completed_at: now.toISOString(),
-            cooldown_end_time: cooldownEndTime.toISOString(),
-            current_step: "cooldown",
-            completion_score: 25, // 25% after completing luscher1
-            last_updated_at: now.toISOString(),
-            updated_at: now.toISOString(),
-          })
+          .update(updateData)
           .eq("user_id", user.id);
 
         if (error) {
@@ -176,7 +223,16 @@ export const personalityAssessmentRouter = t.router({
 
         if (isComplete) {
           updateData.ipip_completed_at = now;
-          updateData.current_step = "luscher2";
+          // Only update step if part of combined flow
+          const { data: existing } = await supabase
+            .schema("core")
+            .from("personality_assessments")
+            .select("current_step")
+            .eq("user_id", user.id)
+            .single();
+          if (existing?.current_step && existing.current_step !== "completed") {
+            updateData.current_step = "luscher2";
+          }
           updateData.completion_score = Math.round(luscher1Progress + 25); // 25% for completed IPIP
         }
 
@@ -240,19 +296,29 @@ export const personalityAssessmentRouter = t.router({
         const updateData: {
           luscher2_choices: number[];
           luscher2_completed_at: string;
-          current_step: string;
           completion_score: number;
           last_updated_at: string;
           updated_at: string;
+          current_step?: string;
           luscher2_results?: string;
         } = {
           luscher2_choices: input.choices,
           luscher2_completed_at: now,
-          current_step: "acute",
           completion_score: completionScore,
           last_updated_at: now,
           updated_at: now,
         };
+
+        // Only update step if part of combined flow
+        const { data: existing } = await supabase
+          .schema("core")
+          .from("personality_assessments")
+          .select("current_step")
+          .eq("user_id", user.id)
+          .single();
+        if (existing?.current_step && existing.current_step !== "completed") {
+          updateData.current_step = "acute";
+        }
 
         if (input.results) {
           updateData.luscher2_results = input.results;
@@ -478,6 +544,379 @@ export const personalityAssessmentRouter = t.router({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to update step",
+        });
+      }
+    }),
+
+  /**
+   * Get Luscher Test 1 completion status
+   */
+  getLuscherTest1Status: protectedProcedure.query(async ({ ctx }) => {
+    const { supabase, user } = ctx;
+
+    try {
+      const { data, error } = await supabase
+        .schema("core")
+        .from("personality_assessments")
+        .select("luscher1_choices, luscher1_completed_at")
+        .eq("user_id", user.id)
+        .single();
+
+      if (error && error.code !== "PGRST116") {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch status: ${error.message}`,
+        });
+      }
+
+      return {
+        isCompleted: !!(data?.luscher1_completed_at &&
+          data?.luscher1_choices?.length === 8),
+        completedAt: data?.luscher1_completed_at || null,
+      };
+    } catch (error) {
+      if (error instanceof TRPCError) throw error;
+      console.error("Error in getLuscherTest1Status:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to get Luscher Test 1 status",
+      });
+    }
+  }),
+
+  /**
+   * Get IPIP assessment completion status
+   */
+  getIPIPStatus: protectedProcedure.query(async ({ ctx }) => {
+    const { supabase, user } = ctx;
+
+    try {
+      const { data, error } = await supabase
+        .schema("core")
+        .from("personality_assessments")
+        .select("ipip_answers, ipip_completed_at")
+        .eq("user_id", user.id)
+        .single();
+
+      if (error && error.code !== "PGRST116") {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch status: ${error.message}`,
+        });
+      }
+
+      const answers = (data?.ipip_answers as Array<unknown>) || [];
+      return {
+        isCompleted: !!(data?.ipip_completed_at && answers.length >= 120),
+        completedAt: data?.ipip_completed_at || null,
+        progress: answers.length,
+      };
+    } catch (error) {
+      if (error instanceof TRPCError) throw error;
+      console.error("Error in getIPIPStatus:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to get IPIP status",
+      });
+    }
+  }),
+
+  /**
+   * Get Luscher Test 2 completion status
+   */
+  getLuscherTest2Status: protectedProcedure.query(async ({ ctx }) => {
+    const { supabase, user } = ctx;
+
+    try {
+      const { data, error } = await supabase
+        .schema("core")
+        .from("personality_assessments")
+        .select("luscher2_choices, luscher2_completed_at")
+        .eq("user_id", user.id)
+        .single();
+
+      if (error && error.code !== "PGRST116") {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch status: ${error.message}`,
+        });
+      }
+
+      return {
+        isCompleted: !!(data?.luscher2_completed_at &&
+          data?.luscher2_choices?.length === 8),
+        completedAt: data?.luscher2_completed_at || null,
+      };
+    } catch (error) {
+      if (error instanceof TRPCError) throw error;
+      console.error("Error in getLuscherTest2Status:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to get Luscher Test 2 status",
+      });
+    }
+  }),
+
+  /**
+   * Get Luscher Test availability (cooldown status)
+   */
+  getLuscherTestAvailability: protectedProcedure.query(async ({ ctx }) => {
+    const { supabase, user } = ctx;
+
+    try {
+      const { data, error } = await supabase
+        .schema("core")
+        .from("personality_assessments")
+        .select(
+          "luscher1_completed_at, luscher2_completed_at, next_luscher_test_available_at",
+        )
+        .eq("user_id", user.id)
+        .single();
+
+      if (error && error.code !== "PGRST116") {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch availability: ${error.message}`,
+        });
+      }
+
+      const isCompleted =
+        !!(data?.luscher1_completed_at && data?.luscher2_completed_at);
+      const nextAvailableAt = data?.next_luscher_test_available_at || null;
+      const now = new Date();
+
+      // Check if on cooldown
+      let isOnCooldown = false;
+      if (nextAvailableAt) {
+        const availableDate = new Date(nextAvailableAt);
+        isOnCooldown = availableDate > now;
+      }
+
+      return {
+        isCompleted,
+        isOnCooldown,
+        nextAvailableAt,
+      };
+    } catch (error) {
+      if (error instanceof TRPCError) throw error;
+      console.error("Error in getLuscherTestAvailability:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to get test availability",
+      });
+    }
+  }),
+
+  /**
+   * Save unified Luscher test session (both parts + diary + XP + cooldown)
+   */
+  saveLuscherTestSession: protectedProcedure
+    .input(
+      z.object({
+        luscher1Choices: z.array(z.number()).length(
+          8,
+          "Must select exactly 8 colors",
+        ),
+        luscher2Choices: z.array(z.number()).length(
+          8,
+          "Must select exactly 8 colors",
+        ),
+        diaryResponse: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      try {
+        const now = new Date();
+        const nextAvailableAt = new Date(
+          now.getTime() + 7 * 24 * 60 * 60 * 1000,
+        ); // 7 days from now
+
+        // Get existing assessment
+        const { error: fetchError } = await supabase
+          .schema("core")
+          .from("personality_assessments")
+          .select("*")
+          .eq("user_id", user.id)
+          .single();
+
+        // Generate results using TwoStageTest (for future use)
+        // For now, we'll just store the choices
+
+        const updateData: {
+          luscher1_choices: number[];
+          luscher1_completed_at: string;
+          luscher2_choices: number[];
+          luscher2_completed_at: string;
+          diary_response?: string;
+          current_step: string;
+          completion_score: number;
+          completed_at: string;
+          next_luscher_test_available_at: string;
+          last_updated_at: string;
+          updated_at: string;
+        } = {
+          luscher1_choices: input.luscher1Choices,
+          luscher1_completed_at: now.toISOString(),
+          luscher2_choices: input.luscher2Choices,
+          luscher2_completed_at: now.toISOString(),
+          current_step: "completed",
+          completion_score: 100,
+          completed_at: now.toISOString(),
+          next_luscher_test_available_at: nextAvailableAt.toISOString(),
+          last_updated_at: now.toISOString(),
+          updated_at: now.toISOString(),
+        };
+
+        if (input.diaryResponse) {
+          updateData.diary_response = input.diaryResponse;
+        }
+
+        // Create or update assessment
+        if (fetchError && fetchError.code === "PGRST116") {
+          // Create new
+          const { error: createError } = await supabase
+            .schema("core")
+            .from("personality_assessments")
+            .insert({
+              user_id: user.id,
+              ...updateData,
+              started_at: now.toISOString(),
+            });
+
+          if (createError) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: `Failed to create assessment: ${createError.message}`,
+            });
+          }
+        } else {
+          // Update existing
+          const { error: updateError } = await supabase
+            .schema("core")
+            .from("personality_assessments")
+            .update(updateData)
+            .eq("user_id", user.id);
+
+          if (updateError) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: `Failed to update assessment: ${updateError.message}`,
+            });
+          }
+        }
+
+        // Award +5 Frequency XP
+        const { error: xpError } = await supabase.rpc(
+          "increment_frequency_xp",
+          {
+            user_id_param: user.id,
+            xp_amount: 5,
+          },
+        );
+
+        // If RPC doesn't exist, update directly
+        if (xpError) {
+          const { data: userData } = await supabase
+            .schema("core")
+            .from("users")
+            .select("frequency_xp")
+            .eq("id", user.id)
+            .single();
+
+          const currentXP = (userData?.frequency_xp as number) || 0;
+          const newXP = currentXP + 5;
+
+          await supabase
+            .schema("core")
+            .from("users")
+            .update({ frequency_xp: newXP })
+            .eq("id", user.id);
+        }
+
+        // Create assessment session record
+        await supabase
+          .schema("core")
+          .from("assessment_sessions")
+          .insert({
+            user_id: user.id,
+            assessment_type: "personality",
+            session_data: {
+              luscher1_choices: input.luscher1Choices,
+              luscher2_choices: input.luscher2Choices,
+              diary_response: input.diaryResponse || null,
+            },
+            completed_at: now.toISOString(),
+            next_available_at: nextAvailableAt.toISOString(),
+          });
+
+        return {
+          success: true,
+          nextAvailableAt: nextAvailableAt.toISOString(),
+        };
+      } catch (error) {
+        if (error instanceof TRPCError) throw error;
+        console.error("Error in saveLuscherTestSession:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to save test session",
+        });
+      }
+    }),
+
+  /**
+   * Award Frequency XP to user
+   */
+  awardFrequencyXP: protectedProcedure
+    .input(
+      z.object({
+        amount: z.number().int().min(1).max(100),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      try {
+        // Get current XP
+        const { data: userData, error: fetchError } = await supabase
+          .schema("core")
+          .from("users")
+          .select("frequency_xp")
+          .eq("id", user.id)
+          .single();
+
+        if (fetchError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to fetch user: ${fetchError.message}`,
+          });
+        }
+
+        const currentXP = (userData?.frequency_xp as number) || 0;
+        const newXP = currentXP + input.amount;
+
+        // Update XP
+        const { error: updateError } = await supabase
+          .schema("core")
+          .from("users")
+          .update({ frequency_xp: newXP })
+          .eq("id", user.id);
+
+        if (updateError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to update XP: ${updateError.message}`,
+          });
+        }
+
+        return { success: true, newXP };
+      } catch (error) {
+        if (error instanceof TRPCError) throw error;
+        console.error("Error in awardFrequencyXP:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to award XP",
         });
       }
     }),

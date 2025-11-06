@@ -5,6 +5,7 @@ import { DrawerHeader } from './DrawerHeader'
 import { DrawerSection } from './DrawerSection'
 import type { DrawerContentProps } from './types'
 import { useUserRoles } from '@app/core/utils/auth/useUserRoles'
+import { useAssessmentStatus } from '@app/core/features/assessments/hooks/useAssessmentStatus'
 
 /**
  * DrawerContent component renders the main content area of the drawer
@@ -19,6 +20,7 @@ export const DrawerContent = ({
   drawerProps,
 }: DrawerContentProps) => {
   const { hasOfficeRole, roles, isLoading } = useUserRoles()
+  const assessmentStatus = useAssessmentStatus()
 
   // Debug logging
   console.log('[DrawerContent] Role status:', {
@@ -28,9 +30,10 @@ export const DrawerContent = ({
     willShowOffice: hasOfficeRole,
   })
 
-  // Get drawer sections with Office link if user has office role
+  // Get drawer sections with Office link if user has office role and assessment status
   const drawerSections = getDrawerSections({
     includeOfficeLink: hasOfficeRole,
+    assessmentStatus,
   })
 
   return (

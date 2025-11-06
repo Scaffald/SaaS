@@ -8,20 +8,36 @@ import {
   BarChart3,
   Briefcase,
   Building2,
+  ClipboardCheck,
   Map as MapIcon,
   User,
   Users,
 } from "@tamagui/lucide-icons";
 import type { DrawerItemConfig, DrawerSectionConfig } from "./types";
 
+export interface AssessmentStatus {
+  luscher1: {
+    isCompleted: boolean;
+    isLoading: boolean;
+    isOnCooldown?: boolean;
+    nextAvailableAt?: string | null;
+  };
+  ipip: { isCompleted: boolean; isLoading: boolean };
+  luscher2: { isCompleted: boolean; isLoading: boolean };
+  riasec: { isCompleted: boolean; isLoading: boolean };
+  occupation: { isCompleted: boolean; isLoading: boolean };
+}
+
 /**
  * Generates drawer items dynamically from dashboard routes
  * @param options - Optional configuration for drawer items
  * @param options.includeOfficeLink - Whether to include the Office link (for admin users)
+ * @param options.assessmentStatus - Assessment completion status for checkmarks
  * @returns Array of drawer item configurations
  */
 export const generateDashboardDrawerItems = (options?: {
   includeOfficeLink?: boolean;
+  assessmentStatus?: AssessmentStatus;
 }): DrawerItemConfig[] => {
   const items: DrawerItemConfig[] = [];
 
@@ -148,6 +164,44 @@ export const generateDashboardDrawerItems = (options?: {
     ],
   });
 
+  // Assessments route - Expandable with sub-items for each assessment
+  const assessmentSubItems: DrawerItemConfig[] = [
+    {
+      key: "assessment-luscher-1",
+      title: ROUTES.DASHBOARD_ASSESSMENT_LUSCHER_1.title,
+      href: ROUTES.DASHBOARD_ASSESSMENT_LUSCHER_1.path,
+      isCompleted: options?.assessmentStatus?.luscher1.isCompleted,
+      isOnCooldown: options?.assessmentStatus?.luscher1.isOnCooldown,
+    },
+    {
+      key: "assessment-ipip",
+      title: ROUTES.DASHBOARD_ASSESSMENT_IPIP.title,
+      href: ROUTES.DASHBOARD_ASSESSMENT_IPIP.path,
+      isCompleted: options?.assessmentStatus?.ipip.isCompleted,
+    },
+    {
+      key: "assessment-riasec",
+      title: ROUTES.DASHBOARD_ASSESSMENT_RIASEC.title,
+      href: ROUTES.DASHBOARD_ASSESSMENT_RIASEC.path,
+      isCompleted: options?.assessmentStatus?.riasec.isCompleted,
+    },
+    {
+      key: "assessment-occupation",
+      title: ROUTES.DASHBOARD_ASSESSMENT_OCCUPATION.title,
+      href: ROUTES.DASHBOARD_ASSESSMENT_OCCUPATION.path,
+      isCompleted: options?.assessmentStatus?.occupation.isCompleted,
+    },
+  ];
+
+  items.push({
+    key: "assessments",
+    title: "Assessments",
+    href: ROUTES.DASHBOARD_ASSESSMENTS.path,
+    icon: ClipboardCheck,
+    isExpandable: true,
+    subItems: assessmentSubItems,
+  });
+
   return items;
 };
 
@@ -155,10 +209,12 @@ export const generateDashboardDrawerItems = (options?: {
  * Main drawer sections configuration
  * @param options - Optional configuration for drawer sections
  * @param options.includeOfficeLink - Whether to include the Office link (for admin users)
+ * @param options.assessmentStatus - Assessment completion status for checkmarks
  * @returns Array of drawer section configurations
  */
 export const getDrawerSections = (options?: {
   includeOfficeLink?: boolean;
+  assessmentStatus?: AssessmentStatus;
 }): DrawerSectionConfig[] => [
   {
     key: "main",

@@ -25,67 +25,69 @@ This document outlines the plan to enrich the REQ-76 documentation that has been
 
 ## Enrichment Priorities
 
-### Priority 1: Core Definitions (Week 1)
+### Priority 1: Core Definitions (Week 1) ✅ COMPLETE
 
 **Archetypes (`archetypes.md`)**
-- [ ] Define 8 archetype names (brainstorming session recommended)
-- [ ] Write 200-300 word lore for each archetype
-- [ ] Document 3-5 core traits per archetype
-- [ ] Map archetypes to psychometric dimensions (Big Five, RIASEC, VIA)
-- [ ] Define visual identity elements (color palettes, symbols, environments)
+- [x] Define 10 archetype names (The Builder, The Designer, The Maker, The Connector, The Analyst, The Visionary, The Guardian, The Navigator, The Storyteller, The Synthesizer)
+- [x] Write 200-300 word lore for each archetype
+- [x] Document 3-5 core traits per archetype
+- [x] Map archetypes to psychometric dimensions (Big Five, RIASEC, VIA)
+- [x] Define visual identity elements (color palettes, symbols, environments)
 
 **Why Priority 1:** Archetypes are the foundation of the entire system. All other documentation depends on clear archetype definitions.
 
-**Estimated Effort:** 2-3 days for creative work + 1 day for psychometric mapping
+**Status:** ✅ **COMPLETE** - All 10 archetypes defined with lore, traits, psychometric mappings, and visual identity. Ready to proceed to Priority 2.
 
-### Priority 2: Assessment Framework (Week 1-2)
+### Priority 2: Assessment Framework (Week 1-2) ✅ ENRICHED
 
 **Assessment Framework (`assessment-framework.md`)**
-- [ ] Select IPIP vs HEXACO (or document both options)
-- [ ] Identify specific 50-60 question set from IPIP
-- [ ] Document exact scoring algorithms and formulas
-- [ ] Create trait matrix (raw scores → archetype profiles)
-- [ ] Define Lüscher color palette and mood mappings
-- [ ] Document Z-score normalization formula
-- [ ] Define closest match algorithm for archetype assignment
+- [x] Select IPIP vs HEXACO (support both, IPIP primary, modular structure)
+- [x] Identify structure: ~10 modules of ~10 items each (~100 questions total)
+- [x] Document modular approach and scoring structure
+- [x] Define Lüscher color palette and weekly cadence
+- [x] Document engagement model (Depth, Frequency, Consistency, Completeness)
+- [x] Define cooldown mechanisms and frequency caps
 
 **Why Priority 2:** Assessment framework is needed for backend implementation. Scoring algorithms must be deterministic and well-documented.
 
-**Estimated Effort:** 3-4 days for research and documentation
+**Status:** ✅ **ENRICHED** - Modular assessment structure defined. Implementation spec integrated. Ready for Priority 2 completion (trait matrix and archetype assignment algorithm).
 
-### Priority 3: Data Schemas (Week 2)
+### Priority 3: Data Schemas (Week 2) ✅ ENRICHED
 
 **Data Schemas (`data-schemas.md`)**
-- [ ] Review existing `core.preferences` schema
-- [ ] Define JSONB structure for `ipip_scores`, `hexaco_scores`, `via_strengths`
-- [ ] Define JSONB structure for `luscher_history` array
-- [ ] Define JSONB structure for `archetypes.traits`, `visual_identity`, `psychometric_profile`
-- [ ] Define JSONB structure for `assessment_sessions.responses` and `scores`
-- [ ] Define JSONB structure for `personality_achievements.metadata`
+- [x] Review existing `core.preferences` schema
+- [x] Define Scaffald Score schema (score, level, components, weights)
+- [x] Define JSONB structure for `scaffald_score_components` and `scaffald_score_weights`
+- [x] Extend `assessment_sessions` with module_id, mission_id, xp_earned, cooldown_until
+- [x] Add indexes for frequency calculations (8-week rolling window)
+- [x] Update API contracts with Scaffald Score response fields
+- [x] Define assessment tracking fields (ipip_modules_completed, via_missions_completed, etc.)
 - [ ] Create actual migration scripts (not just outlines)
-- [ ] Create seed data for 8 archetypes
-- [ ] Document performance indexes and query patterns
-- [ ] Define exact API request/response formats
+- [ ] Create seed data for 10 archetypes
+- [ ] Complete JSONB structure definitions for all fields
 
 **Why Priority 3:** Backend team needs exact schemas to begin implementation. Migration scripts must be production-ready.
 
-**Estimated Effort:** 2-3 days for schema design + 1 day for migrations
+**Status:** ✅ **ENRICHED** - Schema extensions for Scaffald Score system complete. API contracts updated. Ready for migration script creation.
 
-### Priority 4: Gamification Details (Week 2-3)
+### Priority 4: Gamification Details (Week 2-3) ✅ ENRICHED
 
 **Gamification (`gamification.md`)**
-- [ ] Design 5 badge icons (or provide icon references)
-- [ ] Define badge metadata structure with complete examples
-- [ ] Create 10 Mirror Quest question sets (3-5 questions each)
+- [x] Define Scaffald Score system (0-1000 score, 12+ levels)
+- [x] Document component normalization formulas (Depth, Frequency, Consistency, Completeness, Other)
+- [x] Define base weights (tunable via config)
+- [x] Document XP economy with all actions and rewards
+- [x] Define level thresholds (1-12+)
+- [x] Document streak calculation logic
+- [x] Define badge metadata structure (7 initial badges)
+- [x] Document ethical considerations and transparency
+- [ ] Design badge icons (or provide icon references)
+- [ ] Create Mirror Quest question sets (if still needed)
 - [ ] Design insight card format
-- [ ] Document achievement notification system UI/UX
-- [ ] Validate XP amounts are balanced (may need calculations)
-- [ ] Define streak calculation logic
-- [ ] Document stage transition animations
 
 **Why Priority 4:** Gamification adds engagement but needs careful design. Badge and quest content requires creative work.
 
-**Estimated Effort:** 2-3 days for creative work + 1 day for validation
+**Status:** ✅ **ENRICHED** - Scaffald Score & Leveling System fully documented. XP economy defined. Badge structure complete. Ready for UI/UX design work.
 
 ### Priority 5: Roadmap Refinement (Week 3)
 

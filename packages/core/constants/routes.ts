@@ -156,7 +156,40 @@ const ROUTES_CONFIG = {
     isProtected: true,
   },
 
-  // Dashboard > Assessment
+  // Dashboard > Assessments
+  DASHBOARD_ASSESSMENTS: {
+    path: "/dashboard/assessments",
+    title: "Assessments",
+    isProtected: true,
+  },
+  // Dashboard > Assessments > Personality Tests
+  DASHBOARD_ASSESSMENT_LUSCHER_1: {
+    path: "/dashboard/assessments/pulse",
+    title: "Weekly Pulse",
+    isProtected: true,
+  },
+  DASHBOARD_ASSESSMENT_IPIP: {
+    path: "/dashboard/assessments/ipip",
+    title: "Personality Questions",
+    isProtected: true,
+  },
+  DASHBOARD_ASSESSMENT_LUSCHER_2: {
+    path: "/dashboard/assessments/luscher-2",
+    title: "Aspirational Color Test",
+    isProtected: true,
+  },
+  // Dashboard > Assessments > Career Tests
+  DASHBOARD_ASSESSMENT_RIASEC: {
+    path: "/dashboard/assessments/riasec",
+    title: "Career Interests",
+    isProtected: true,
+  },
+  DASHBOARD_ASSESSMENT_OCCUPATION: {
+    path: "/dashboard/assessments/occupation",
+    title: "Occupation Preferences",
+    isProtected: true,
+  },
+  // Dashboard > Assessment (Legacy - keep for backward compatibility)
   DASHBOARD_ASSESSMENT_PERSONALITY: {
     path: "/dashboard/assessment/personality",
     title: "Personality Assessment",

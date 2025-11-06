@@ -1,8 +1,11 @@
 import { YStack, Spinner, Text } from 'tamagui'
 import { ProfileSnapshotWidget } from '../profile/widgets'
 import { PrerequisiteWidget } from '../prerequisites/PrerequisiteWidget'
-import { CareerAssessmentWidget } from '../career-assessment'
-import { PersonalityAssessmentWidget } from '../personality-assessment'
+import { LuscherTest1Widget } from '../luscher-test-1'
+import { IPIPAssessmentWidget } from '../ipip-assessment'
+import { LuscherTest2Widget } from '../luscher-test-2'
+import { RIASECAssessmentWidget } from '../riasec-assessment'
+import { OccupationAssessmentWidget } from '../occupation-assessment'
 import { api } from '@app/core/utils/api'
 
 /**
@@ -28,12 +31,15 @@ export function DashboardIndexLeft() {
     return <PrerequisiteWidget />
   }
 
-  // Show ProfileSnapshotWidget, CareerAssessmentWidget, and PersonalityAssessmentWidget if prerequisites are complete
+  // Show ProfileSnapshotWidget and individual assessment widgets if prerequisites are complete
   return (
     <YStack gap="$4">
       <ProfileSnapshotWidget />
-      <CareerAssessmentWidget />
-      <PersonalityAssessmentWidget />
+      <LuscherTest1Widget />
+      <IPIPAssessmentWidget />
+      <LuscherTest2Widget />
+      <RIASECAssessmentWidget />
+      <OccupationAssessmentWidget />
     </YStack>
   )
 }

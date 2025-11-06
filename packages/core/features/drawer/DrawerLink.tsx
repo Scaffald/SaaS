@@ -1,4 +1,4 @@
-import { ChevronRight, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
+import { ChevronRight, ChevronDown, ChevronUp, Check, Clock } from '@tamagui/lucide-icons'
 import type { GestureResponderEvent } from 'react-native'
 import { XStack, Paragraph, YStack } from 'tamagui'
 import { Link } from 'expo-router'
@@ -54,6 +54,11 @@ export const DrawerLink = ({
           <Paragraph size="$4" fontWeight="500" color={active ? '$blue9' : '$color12'}>
             {item.title}
           </Paragraph>
+          {item.isOnCooldown ? (
+            <Clock size={16} color="$blue9" />
+          ) : item.isCompleted ? (
+            <Check size={16} color="$green9" />
+          ) : null}
         </XStack>
       </Link>
     )

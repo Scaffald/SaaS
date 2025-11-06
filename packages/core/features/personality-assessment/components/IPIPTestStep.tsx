@@ -134,7 +134,7 @@ export function IPIPTestStep({
 
       {/* Choices */}
       <YStack gap="$3">
-        {currentChoices.map((choice) => (
+        {[...currentChoices].reverse().map((choice) => (
           <Button
             key={`${currentQuestion.id}-${choice.score}`}
             size="$5"

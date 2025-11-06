@@ -238,6 +238,112 @@ Phase 4.3 (Launch)
 - Beta feedback positive
 - Production deployment successful
 
+## Implementation Checklist
+
+### Phase 1: Foundation
+
+- [ ] Create database tables (schemas in data-schemas.md)
+  - [ ] `core.preferences` extensions
+  - [ ] `core.archetypes` table
+  - [ ] `core.assessment_sessions` table
+  - [ ] `core.personality_achievements` table
+  - [ ] `streaks` table
+  - [ ] `xp_ledger` table
+  - [ ] `score_snapshots` table
+  - [ ] `feature_flags` table
+  - [ ] `motivators_state` table
+- [ ] Implement XP ledger + award hooks for all actions
+- [ ] Implement normalization functions and scoring service
+- [ ] Create seed data for 10 archetypes
+- [ ] Build basic archetype assignment algorithm
+
+### Phase 2: Core Features
+
+- [ ] Implement CTA decision service with cooldown awareness
+- [ ] Build Dashboard Widget (props in gamification.md)
+- [ ] Implement modular IPIP assessment flow
+- [ ] Implement Lüscher weekly mood check
+- [ ] Implement VIA/RIASEC mission flow
+- [ ] Build streak tracking system
+- [ ] Implement score recalculation service
+
+### Phase 3: Admin & Configuration
+
+- [ ] Add admin config UI for weights, thresholds, motivators
+- [ ] Implement feature flags system
+- [ ] Build config YAML parser/loader
+- [ ] Create admin dashboard for score analytics
+
+### Phase 4: Analytics & Optimization
+
+- [ ] Instrument analytics + A/B test toggles
+- [ ] Track conversion to next action, average time-to-level, streak retention
+- [ ] Implement periodic calibration system
+- [ ] Build analytics dashboard
+
+### Phase 5: Privacy & Accessibility
+
+- [ ] Add privacy controls + transparency panel
+- [ ] Implement data export functionality
+- [ ] Add localization support (language packs)
+- [ ] QA with accessibility checks (keyboard navigation, high-contrast, motion-reduced)
+- [ ] Implement plain-language questions with scenario-based items
+
+### Phase 6: Testing & Launch
+
+- [ ] Unit tests for scoring algorithms
+- [ ] Integration tests for assessment flows
+- [ ] E2E tests for dashboard widget
+- [ ] Beta testing with internal team
+- [ ] Performance testing (score calculation < 100ms)
+- [ ] Load testing for API endpoints
+
+## Localization & Accessibility
+
+### Localization
+
+- **Plain-language questions:** Scenario-based items for cultural neutrality
+- **Language packs:** Support for archetype names, descriptions, and UI strings
+- **Cultural adaptation:** Ensure questions and scenarios are culturally appropriate
+- **Translation workflow:** Define process for adding new languages
+
+### Accessibility
+
+- **Motion-reduced mode:** Disable animations for users with motion sensitivity
+- **High-contrast variant:** High-contrast color scheme for visual accessibility
+- **Keyboard operable:** All actions must be keyboard accessible
+- **Screen reader support:** ARIA labels and semantic HTML
+- **Focus management:** Clear focus indicators and logical tab order
+- **Text alternatives:** Alt text for all images and icons
+
+## Tuning & Analytics
+
+### A/B Testing
+
+- **Weights:** Test different component weight configurations
+- **CTA selection:** Test different CTA selection strategies
+- **XP amounts:** Test optimal XP values for engagement
+- **Level thresholds:** Test threshold ranges for progression feel
+- **Badge designs:** Test badge unlock criteria and messaging
+
+### Metrics to Track
+
+- **Conversion to next action:** % of users who complete recommended CTA
+- **Average time-to-level:** Time taken to reach each level
+- **Streak retention:** % of users maintaining streaks
+- **Assessment completion rates:** Completion rates by assessment type
+- **Score distribution:** Distribution of Scaffald Scores across user base
+- **Component breakdown:** Average component values
+- **Archetype distribution:** Distribution of assigned archetypes
+- **Engagement patterns:** User engagement frequency and patterns
+
+### Periodic Calibration
+
+- **Trait stability validation:** Ensure trait stability measures are predictive of behavior
+- **Content engagement correlation:** Validate that personality traits predict content engagement
+- **Completion prediction:** Use trait data to predict assessment completion
+- **Score accuracy:** Validate that Scaffald Score correlates with meaningful engagement
+
 ## Open Questions
 
 - [ ] Exact timeline for each phase (may need adjustment)
