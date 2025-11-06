@@ -56,19 +56,69 @@ COMMENT ON COLUMN core.preferences.profile_visibility IS 'Controls which profile
 -- =========================================================
 -- Populate Existing User Slugs
 -- =========================================================
--- Generate slugs from username for users who don't have one
+-- Generate valid slugs from username for users who don't have one
 UPDATE core.users
-SET slug = LOWER(REGEXP_REPLACE(username, '[^a-z0-9]+', '-', 'g'))
+SET slug = LOWER(
+  REGEXP_REPLACE(
+    REGEXP_REPLACE(
+      REGEXP_REPLACE(username, '[^a-z0-9]+', '-', 'g'),
+      '-+', '-', 'g'
+    ),
+    '^-+|-+$', '', 'g'
+  )
+)
 WHERE slug IS NULL 
   AND username IS NOT NULL
-  AND LENGTH(REGEXP_REPLACE(username, '[^a-z0-9]+', '-', 'g')) >= 3;
+  AND LENGTH(
+    REGEXP_REPLACE(
+      REGEXP_REPLACE(
+        REGEXP_REPLACE(username, '[^a-z0-9]+', '-', 'g'),
+        '-+', '-', 'g'
+      ),
+      '^-+|-+$', '', 'g'
+    )
+  ) >= 3
+  AND LENGTH(
+    REGEXP_REPLACE(
+      REGEXP_REPLACE(
+        REGEXP_REPLACE(username, '[^a-z0-9]+', '-', 'g'),
+        '-+', '-', 'g'
+      ),
+      '^-+|-+$', '', 'g'
+    )
+  ) <= 50;
 
 -- For users without username, generate from display_name
 UPDATE core.users
-SET slug = LOWER(REGEXP_REPLACE(display_name, '[^a-z0-9]+', '-', 'g'))
+SET slug = LOWER(
+  REGEXP_REPLACE(
+    REGEXP_REPLACE(
+      REGEXP_REPLACE(display_name, '[^a-z0-9]+', '-', 'g'),
+      '-+', '-', 'g'
+    ),
+    '^-+|-+$', '', 'g'
+  )
+)
 WHERE slug IS NULL 
   AND display_name IS NOT NULL
-  AND LENGTH(REGEXP_REPLACE(display_name, '[^a-z0-9]+', '-', 'g')) >= 3;
+  AND LENGTH(
+    REGEXP_REPLACE(
+      REGEXP_REPLACE(
+        REGEXP_REPLACE(display_name, '[^a-z0-9]+', '-', 'g'),
+        '-+', '-', 'g'
+      ),
+      '^-+|-+$', '', 'g'
+    )
+  ) >= 3
+  AND LENGTH(
+    REGEXP_REPLACE(
+      REGEXP_REPLACE(
+        REGEXP_REPLACE(display_name, '[^a-z0-9]+', '-', 'g'),
+        '-+', '-', 'g'
+      ),
+      '^-+|-+$', '', 'g'
+    )
+  ) <= 50;
 
 -- =========================================================
 -- Indexes for Performance
