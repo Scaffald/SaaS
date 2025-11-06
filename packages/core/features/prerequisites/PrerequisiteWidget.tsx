@@ -136,6 +136,7 @@ export function PrerequisiteWidget() {
                     control={control}
                     render={({ field }) => (
                       <Input
+                        data-testid="prereq-first-name-input"
                         placeholder="First name"
                         value={field.value}
                         onChangeText={field.onChange}
@@ -144,7 +145,7 @@ export function PrerequisiteWidget() {
                     )}
                   />
                   {errors.first_name && (
-                    <Text color="$red10" fontSize="$2">
+                    <Text data-testid="first-name-error" color="$red10" fontSize="$2">
                       {errors.first_name.message}
                     </Text>
                   )}
@@ -157,6 +158,7 @@ export function PrerequisiteWidget() {
                     control={control}
                     render={({ field }) => (
                       <Input
+                        data-testid="prereq-last-name-input"
                         placeholder="Last name"
                         value={field.value}
                         onChangeText={field.onChange}
@@ -165,7 +167,7 @@ export function PrerequisiteWidget() {
                     )}
                   />
                   {errors.last_name && (
-                    <Text color="$red10" fontSize="$2">
+                    <Text data-testid="last-name-error" color="$red10" fontSize="$2">
                       {errors.last_name.message}
                     </Text>
                   )}
@@ -190,7 +192,7 @@ export function PrerequisiteWidget() {
                 error={errors.address?.street?.message || errors.address?.city?.message}
               />
               {errors.address && (
-                <Text color="$red10" fontSize="$2">
+                <Text data-testid="address-error" color="$red10" fontSize="$2">
                   {errors.address.street?.message ||
                     errors.address.city?.message ||
                     errors.address.state?.message ||
@@ -215,6 +217,7 @@ export function PrerequisiteWidget() {
                         gap="$3"
                         items="center"
                         pressStyle={{ opacity: 0.7 }}
+                        data-testid={`prereq-user-type-${option.value}-checkbox`}
                       >
                         <CustomCheckbox
                           checked={field.value?.includes(option.value as UserType)}
@@ -248,7 +251,7 @@ export function PrerequisiteWidget() {
                 )}
               />
               {errors.user_types && (
-                <Text color="$red10" fontSize="$2">
+                <Text data-testid="user-types-error" color="$red10" fontSize="$2">
                   {errors.user_types.message}
                 </Text>
               )}
@@ -270,7 +273,7 @@ export function PrerequisiteWidget() {
                         <Text color="$color11">Loading industries...</Text>
                       </XStack>
                     ) : (
-                      <Select value={field.value} onValueChange={field.onChange} size="$4">
+                      <Select data-testid="prereq-industry-select" value={field.value} onValueChange={field.onChange} size="$4">
                         <Select.Trigger width="100%">
                           <Select.Value placeholder="Select your industry" />
                         </Select.Trigger>
@@ -319,7 +322,7 @@ export function PrerequisiteWidget() {
                 )}
               />
               {errors.industry_id && (
-                <Text color="$red10" fontSize="$2">
+                <Text data-testid="industry-error" color="$red10" fontSize="$2">
                   {errors.industry_id.message}
                 </Text>
               )}
@@ -337,7 +340,7 @@ export function PrerequisiteWidget() {
                 control={control}
                 render={({ field }) => (
                   <YStack gap="$2">
-                    <XStack gap="$3" items="center" pressStyle={{ opacity: 0.7 }}>
+                    <XStack gap="$3" items="center" pressStyle={{ opacity: 0.7 }} data-testid="prereq-privacy-checkbox">
                       <CustomCheckbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
@@ -360,7 +363,7 @@ export function PrerequisiteWidget() {
                       </Text>
                     </XStack>
                     {errors.accepts_privacy_policy && (
-                      <Text color="$red10" fontSize="$2">
+                      <Text data-testid="privacy-error" color="$red10" fontSize="$2">
                         {errors.accepts_privacy_policy.message}
                       </Text>
                     )}
@@ -374,7 +377,7 @@ export function PrerequisiteWidget() {
                 control={control}
                 render={({ field }) => (
                   <YStack gap="$2">
-                    <XStack gap="$3" items="center" pressStyle={{ opacity: 0.7 }}>
+                    <XStack gap="$3" items="center" pressStyle={{ opacity: 0.7 }} data-testid="prereq-terms-checkbox">
                       <CustomCheckbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
@@ -397,7 +400,7 @@ export function PrerequisiteWidget() {
                       </Text>
                     </XStack>
                     {errors.accepts_terms_of_service && (
-                      <Text color="$red10" fontSize="$2">
+                      <Text data-testid="terms-error" color="$red10" fontSize="$2">
                         {errors.accepts_terms_of_service.message}
                       </Text>
                     )}
@@ -408,6 +411,7 @@ export function PrerequisiteWidget() {
 
             {/* Submit Button */}
             <Button
+              data-testid="prereq-submit-button"
               onPress={handleSubmit(onSubmit)}
               disabled={isSubmitting}
               opacity={isSubmitting ? 0.5 : 1}

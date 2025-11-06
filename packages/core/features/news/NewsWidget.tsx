@@ -117,7 +117,7 @@ export function NewsWidget({
         <XStack gap="$2" items="center">
           {/* Feed Selector */}
           {showFeedSelector && (
-            <Select value={selectedFeedIds[0] || ''} onValueChange={handleFeedChange} size="$3">
+            <Select data-testid="news-feed-select" value={selectedFeedIds[0] || ''} onValueChange={handleFeedChange} size="$3">
               <Select.Trigger width={140} iconAfter={ChevronDown}>
                 <Select.Value placeholder="Select feed" />
               </Select.Trigger>
@@ -225,6 +225,7 @@ export function NewsWidget({
 
           {/* Refresh Button */}
           <Button
+            data-testid="news-refresh-button"
             size="$3"
             variant="outlined"
             onPress={handleRefresh}
@@ -256,7 +257,7 @@ export function NewsWidget({
             <Text color="$color11" fontSize="$3" text="center">
               {error?.message || 'Please check your internet connection'}
             </Text>
-            <Button onPress={handleRefresh} size="$3">
+            <Button data-testid="news-try-again-button" onPress={handleRefresh} size="$3">
               Try Again
             </Button>
           </YStack>
