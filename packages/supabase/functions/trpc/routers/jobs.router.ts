@@ -768,4 +768,54 @@ export const jobsRouter = t.router({
       skills: Array.from(skills).sort(),
     };
   }),
+
+  /**
+   * Get job by slug (public endpoint for vanity URLs)
+   * Returns public job data for slug-based access
+   */
+  bySlug: t.procedure
+    .input(z.object({ slug: z.string().min(3).max(50) }))
+    .query(async ({ ctx, input }) => {
+      const { supabase } = ctx;
+
+      // Find job by slug
+      const { data: job, error: jobError } = await supabase
+        .schema("core")
+        .from("jobs")
+        .select(
+          `
+          id,
+          title,
+          slug,
+          description,
+          employment_type,
+          location,
+          is_remote,
+          compensation_min,
+          compensation_max,
+          compensation_currency,
+          status,
+          created_at,
+          updated_at,
+          organization:organizations(
+            id,
+            name,
+            slug,
+            logo_url
+          )
+        `
+        )
+        .eq("slug", input.slug.toLowerCase())
+        .eq("status", "open") // Only return open jobs
+        .single();
+
+      if (jobError || !job) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `Job with slug "${input.slug}" not found or not available`,
+        });
+      }
+
+      return job;
+    }),
 });
