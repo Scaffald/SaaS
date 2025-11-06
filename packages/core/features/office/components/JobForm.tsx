@@ -167,6 +167,8 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     pay_range_max_cents: initialData?.pay_range_max_cents,
     pay_range_type: initialData?.pay_range_type,
     position_level: initialData?.position_level || '',
+    hiring_manager_id: initialData?.hiring_manager_id,
+    recruiter_id: initialData?.recruiter_id,
   })
 
   // Auto-select organization if only one available
@@ -563,6 +565,8 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           internalJobCode={formData.internal_job_code}
           department={formData.department}
           costCenter={formData.cost_center}
+          hiringManagerId={formData.hiring_manager_id}
+          recruiterId={formData.recruiter_id}
           numberOfOpenings={formData.number_of_openings}
           priorityLevel={formData.priority_level}
           requisitionNumber={formData.requisition_number}

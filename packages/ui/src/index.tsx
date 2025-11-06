@@ -73,6 +73,7 @@ export * from './components/inputs'
 export * from './components/maps'
 export * from './components/skills'
 export * from './components/university'
+export * from './components/user'
 
 // Hooks
 export * from './hooks/useUniversitySearch'
