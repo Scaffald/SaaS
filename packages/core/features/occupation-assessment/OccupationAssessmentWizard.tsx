@@ -113,7 +113,11 @@ export function OccupationAssessmentWizard() {
             </Text>
           </YStack>
           {targetOccupations.map((occupation, index) => (
-            <XStack key={`target-occupation-${index}-${occupation || 'empty'}`} gap="$2" items="center">
+            <XStack
+              key={`target-occupation-${index}-${occupation || 'empty'}`}
+              gap="$2"
+              items="center"
+            >
               <YStack flex={1}>
                 <OccupationSearch
                   value={occupation}
@@ -142,16 +146,10 @@ export function OccupationAssessmentWizard() {
           </Button>
         </YStack>
 
-        <Button
-          size="$5"
-          themeInverse
-          onPress={handleComplete}
-          disabled={saveMutation.isPending}
-        >
+        <Button size="$5" themeInverse onPress={handleComplete} disabled={saveMutation.isPending}>
           <Button.Text>Save Preferences</Button.Text>
         </Button>
       </YStack>
     </AssessmentWizard>
   )
 }
-

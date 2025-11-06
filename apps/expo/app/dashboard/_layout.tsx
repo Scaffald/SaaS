@@ -61,7 +61,7 @@ export default function Layout() {
         options={{ title: 'Personality Assessment' }}
       />
       {/* New isolated assessment routes */}
-      <Drawer.Screen name="assessments/luscher-1/index" options={{ title: 'Weekly Pulse' }} />
+      <Drawer.Screen name="assessments/pulse/index" options={{ title: 'Weekly Pulse' }} />
       <Drawer.Screen name="assessments/ipip/index" options={{ title: 'Personality Questions' }} />
       <Drawer.Screen
         name="assessments/luscher-2/index"

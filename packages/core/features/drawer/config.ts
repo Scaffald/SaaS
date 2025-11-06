@@ -167,7 +167,7 @@ export const generateDashboardDrawerItems = (options?: {
   // Assessments route - Expandable with sub-items for each assessment
   const assessmentSubItems: DrawerItemConfig[] = [
     {
-      key: "assessment-luscher-1",
+      key: "assessment-pulse",
       title: ROUTES.DASHBOARD_ASSESSMENT_LUSCHER_1.title,
       href: ROUTES.DASHBOARD_ASSESSMENT_LUSCHER_1.path,
       isCompleted: options?.assessmentStatus?.luscher1.isCompleted,
