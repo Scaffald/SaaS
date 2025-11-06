@@ -78,13 +78,12 @@ export const generateDashboardDrawerItems = (options?: {
     icon: BarChart3,
   });
 
-  // Discover route - Make expandable with children
+  // Discover route - Always show subItems, parent is clickable
   items.push({
     key: "discover",
     title: "Discover",
     href: ROUTES.DASHBOARD_DISCOVER_MAP.path,
     icon: MapIcon,
-    isExpandable: true,
     subItems: [
       {
         key: "discover-map",
@@ -109,13 +108,12 @@ export const generateDashboardDrawerItems = (options?: {
     ],
   });
 
-  // Profile route - Make expandable with children
+  // Profile route - Always show subItems, parent is clickable
   items.push({
     key: "profile",
     title: "Profile",
     href: ROUTES.DASHBOARD_PROFILE.path,
     icon: User,
-    isExpandable: true,
     subItems: [
       {
         key: "profile-general",
