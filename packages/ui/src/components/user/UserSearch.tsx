@@ -74,9 +74,7 @@ export function UserSearch({
   })
 
   // Get selected user details when value is provided (for edit mode)
-  const selectedUser = value
-    ? (data?.users || []).find((u: User) => u.id === value)
-    : null
+  const selectedUser = value ? (data?.users || []).find((u: User) => u.id === value) : null
 
   // Update display name when value changes (edit mode)
   useEffect(() => {
@@ -140,9 +138,7 @@ export function UserSearch({
   }
 
   const showDropdown =
-    showResults &&
-    debouncedSearch.length >= 2 &&
-    (filteredUsers.length > 0 || isLoading)
+    showResults && debouncedSearch.length >= 2 && (filteredUsers.length > 0 || isLoading)
 
   return (
     <YStack gap="$2" position="relative" width="100%">
@@ -173,13 +169,7 @@ export function UserSearch({
         />
         {isLoading && <Spinner size="small" />}
         {searchTerm && !isLoading && (
-          <Text
-            fontSize="$3"
-            color="$color10"
-            cursor="pointer"
-            onPress={handleClear}
-            px="$2"
-          >
+          <Text fontSize="$3" color="$color10" cursor="pointer" onPress={handleClear} px="$2">
             ✕
           </Text>
         )}
@@ -242,28 +232,25 @@ export function UserSearch({
         </YStack>
       )}
 
-      {debouncedSearch.length >= 2 &&
-        !isLoading &&
-        filteredUsers.length === 0 &&
-        showResults && (
-          <YStack
-            position="absolute"
-            t="100%"
-            l={0}
-            r={0}
-            mt="$1"
-            borderWidth={1}
-            borderColor="$borderColor"
-            rounded="$3"
-            bg="$background"
-            p="$3"
-            z={1000}
-          >
-            <Text fontSize="$3" color="$color11">
-              No users found for "{debouncedSearch}"
-            </Text>
-          </YStack>
-        )}
+      {debouncedSearch.length >= 2 && !isLoading && filteredUsers.length === 0 && showResults && (
+        <YStack
+          position="absolute"
+          t="100%"
+          l={0}
+          r={0}
+          mt="$1"
+          borderWidth={1}
+          borderColor="$borderColor"
+          rounded="$3"
+          bg="$background"
+          p="$3"
+          z={1000}
+        >
+          <Text fontSize="$3" color="$color11">
+            No users found for "{debouncedSearch}"
+          </Text>
+        </YStack>
+      )}
 
       {error && (
         <Text fontSize="$2" color="$red10">
@@ -273,4 +260,3 @@ export function UserSearch({
     </YStack>
   )
 }
-

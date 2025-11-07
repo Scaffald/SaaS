@@ -8,9 +8,23 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const ONET_DIR = path.join(process.cwd(), "packages/supabase/onet");
+// Get the project root directory
+// When running from packages/supabase, process.cwd() is the package dir, so go up 2 levels
+// When running from root, process.cwd() is root
+const getProjectRoot = () => {
+  const cwd = process.cwd();
+  // Check if we're in packages/supabase directory
+  if (cwd.endsWith("packages/supabase")) {
+    return path.resolve(cwd, "../..");
+  }
+  // Otherwise assume we're at root
+  return cwd;
+};
+
+const PROJECT_ROOT = getProjectRoot();
+const ONET_DIR = path.join(PROJECT_ROOT, "packages/supabase/onet");
 const OUTPUT_FILE = path.join(
-  process.cwd(),
+  PROJECT_ROOT,
   "packages/supabase/migrations/084_import_onet_full_data.sql",
 );
 
@@ -65,6 +79,38 @@ function convertCreateTable(sql: string): string {
   return converted;
 }
 
+function appendOnConflictDoNothing(sql: string): string {
+  let result = "";
+  let current = "";
+  let inSingleQuote = false;
+
+  for (let i = 0; i < sql.length; i++) {
+    const char = sql[i];
+    const prevChar = i > 0 ? sql[i - 1] : "";
+    current += char;
+
+    if (char === "'" && prevChar !== "\\") {
+      inSingleQuote = !inSingleQuote;
+    }
+
+    if (char === ";" && !inSingleQuote) {
+      const trimmed = current.trim();
+      if (/^INSERT INTO onet\./i.test(trimmed) && !trimmed.includes("ON CONFLICT")) {
+        const withoutSemicolon = current.slice(0, -1).trimEnd();
+        current = `${withoutSemicolon} ON CONFLICT DO NOTHING;\n`;
+      }
+      result += current;
+      current = "";
+    }
+  }
+
+  if (current.length > 0) {
+    result += current;
+  }
+
+  return result;
+}
+
 /**
  * Convert MySQL INSERT statements to PostgreSQL
  */
@@ -77,9 +123,23 @@ function convertInsert(sql: string): string {
     "INSERT INTO onet.$1 (",
   );
 
-  // Handle escaped single quotes (MySQL uses '' or \', PostgreSQL uses '')
+  // Handle escaped single quotes (MySQL uses '' or \", PostgreSQL uses '')
   // Already handles '' correctly, so just remove backslash escapes
   converted = converted.replace(/\\'/g, "''");
+
+  // Ensure inserts are idempotent
+  converted = appendOnConflictDoNothing(converted);
+
+  // Final safety pass: ensure every INSERT INTO onet.* statement ends with ON CONFLICT DO NOTHING;
+  converted = converted.replace(
+    /(INSERT INTO onet\.[\s\S]*?)(;)/gi,
+    (match, statement, terminator) => {
+      if (statement.includes("ON CONFLICT")) {
+        return `${statement}${terminator}`;
+      }
+      return `${statement} ON CONFLICT DO NOTHING${terminator}`;
+    },
+  );
 
   return converted;
 }

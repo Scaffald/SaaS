@@ -26,7 +26,11 @@ export default function PublicUserProfilePage() {
   const currentUserId = session?.user?.id
 
   // Fetch profile by slug
-  const { data: profileData, isLoading, error } = api.profile.vanity.bySlug.useQuery(
+  const {
+    data: profileData,
+    isLoading,
+    error,
+  } = api.profile.vanity.bySlug.useQuery(
     { slug: slug || '' },
     {
       enabled: !!slug,
@@ -112,25 +116,18 @@ export default function PublicUserProfilePage() {
           {visibility.work_experience && (
             <ExperienceWidget userId={profileData.id} showEdit={false} />
           )}
-          {visibility.education && (
-            <EducationWidget userId={profileData.id} showEdit={false} />
-          )}
+          {visibility.education && <EducationWidget userId={profileData.id} showEdit={false} />}
         </YStack>
       }
       rightContent={
         <YStack gap="$4">
-          {visibility.skills && (
-            <SkillsWidget userId={profileData.id} showEdit={false} />
-          )}
+          {visibility.skills && <SkillsWidget userId={profileData.id} showEdit={false} />}
           {visibility.certifications && (
             <CertificationsWidget userId={profileData.id} showEdit={false} />
           )}
-          {visibility.reviews && (
-            <ReviewsWidget userId={profileData.id} showEdit={false} />
-          )}
+          {visibility.reviews && <ReviewsWidget userId={profileData.id} showEdit={false} />}
         </YStack>
       }
     />
   )
 }
-
