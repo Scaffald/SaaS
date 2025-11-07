@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@10play/tentap-editor": "^0.7.4",
+    "@app/schemas": "workspace:*",
     "@babel/runtime": "catalog:",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",

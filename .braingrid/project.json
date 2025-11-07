@@ -13,4 +13,19 @@
   },
   "created_at": "2025-11-03T21:57:43.925Z"
 }
+{
+  "organization_id": "default",
+  "project_id": "0f70d273-f528-4cc4-a1fa-8daab9111973",
+  "project_short_id": "PROJ-2",
+  "project_name": "SCF-Neue",
+  "project_description": null,
+  "repository": {
+    "id": "2766c9e3-7abb-42c5-b527-8e6b70341b85",
+    "owner": "Unicorn",
+    "name": "SCF-Neue",
+    "full_name": "Unicorn/SCF-Neue",
+    "url": "git@github.com:Unicorn/SCF-Neue.git"
+  },
+  "created_at": "2025-11-03T21:57:43.925Z"
+}
 

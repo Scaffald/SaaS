@@ -1,13 +1,6 @@
 import { z } from "zod";
-
-/**
- * Phone number validation for Edge Functions
- */
-const phoneNumberSchema = z
-  .string()
-  .regex(/^\+?[1-9]\d{1,14}$/, "Please enter a valid phone number")
-  .optional()
-  .or(z.literal(""));
+// @ts-ignore - Deno requires .ts extension for relative imports
+import { phoneNumberSchema } from "../../../../schemas/src/common/phone.ts";
 
 /**
  * General Profile Form Schema

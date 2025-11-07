@@ -27,6 +27,7 @@ import {
   ConfirmationDialog,
 } from '@app/ui'
 import type { JSONContent } from '@tiptap/core'
+import { isValidPhoneNumber } from '@app/schemas/common/phone'
 
 /**
  * Profile General Left Component
@@ -87,6 +88,8 @@ export function ProfileGeneralLeft() {
     reset,
     setValue,
     trigger,
+    setError,
+    clearErrors,
   } = useForm<GeneralProfileFormData>({
     resolver: zodResolver(generalProfileSchema),
     defaultValues: generalProfileDefaults,
@@ -100,8 +103,32 @@ export function ProfileGeneralLeft() {
     if (profileData) {
       reset(profileData)
       originalDataRef.current = profileData
+
+      if (profileData.phone && !isValidPhoneNumber(profileData.phone)) {
+        setError('phone', {
+          type: 'manual',
+          message: 'Your current phone number is invalid. Please enter a valid phone number.',
+        })
+      } else {
+        clearErrors('phone')
+      }
+
+      void trigger('phone')
     }
-  }, [profileData, reset])
+  }, [profileData, reset, setError, clearErrors, trigger])
+
+  const phoneValue = watch('phone')
+
+  useEffect(() => {
+    if (!phoneValue) {
+      clearErrors('phone')
+      return
+    }
+
+    if (isValidPhoneNumber(phoneValue)) {
+      clearErrors('phone')
+    }
+  }, [phoneValue, clearErrors])
 
   // Debug: Log form state changes
   useEffect(() => {
@@ -333,8 +360,8 @@ export function ProfileGeneralLeft() {
           </Button>
           <Button
             onPress={handleSubmit(onSubmit, onError)}
-            disabled={!isDirty || isLoading}
-            opacity={!isDirty || isLoading ? 0.5 : 1}
+            disabled={!isDirty || isLoading || Object.keys(errors).length > 0}
+            opacity={!isDirty || isLoading || Object.keys(errors).length > 0 ? 0.5 : 1}
             space={isLoading ? '$2' : 0}
           >
             <AnimatePresence>

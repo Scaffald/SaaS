@@ -1,22 +1,11 @@
 import { z } from "zod";
+// @ts-ignore - Deno requires .ts extension for relative imports
+import {
+  phoneNumberSchema,
+} from "../../../../schemas/src/common/phone.ts";
 
 // Phone validation helper (matches frontend validation)
-const phoneNumberSchema = z
-  .string()
-  .optional()
-  .refine(
-    (phone) => {
-      if (!phone) return true; // Optional field
-      // Remove all formatting characters for validation
-      const digitsOnly = phone.replace(/[^\d]/g, "");
-      // Must have at least 10 digits (for US/international numbers)
-      // and no more than 15 digits (E.164 standard max)
-      return digitsOnly.length >= 10 && digitsOnly.length <= 15;
-    },
-    {
-      message: "Please enter a valid phone number",
-    },
-  );
+const optionalPhoneNumberSchema = phoneNumberSchema;
 
 /**
  * Consolidated schemas for tRPC operations
@@ -50,7 +39,7 @@ export const profileGeneralInputSchema = z.object({
   avatar_path: z.union([z.string().url(), z.string().min(1), z.literal("")])
     .optional(),
   email: z.string().email().optional(),
-  phone: phoneNumberSchema,
+  phone: optionalPhoneNumberSchema,
   // About field accepts both string (legacy) and JSONContent (TipTap format)
   about: z.union([
     z.string().max(500, "About section must be 500 characters or less"),
@@ -67,7 +56,7 @@ export const profileGeneralOutputSchema = z.object({
   last_name: z.string(),
   avatar_path: z.string(),
   email: z.string(),
-  phone: z.string(),
+  phone: optionalPhoneNumberSchema,
   about: z.string(),
   address: addressSchema.nullable(),
 });

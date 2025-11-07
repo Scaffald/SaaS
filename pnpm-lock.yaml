@@ -656,6 +656,9 @@ importers:
 
   packages/schemas:
     dependencies:
+      awesome-phonenumber:
+        specifier: 'catalog:'
+        version: 7.5.0
       zod:
         specifier: 'catalog:'
         version: 3.23.8

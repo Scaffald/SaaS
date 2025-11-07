@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { XStack, YStack, Text, Select, Input, Adapt, Sheet, useWindowDimensions } from 'tamagui'
 import { FieldError } from '../FieldError'
 import {
@@ -7,7 +7,15 @@ import {
   findCountryByCode,
   getDefaultCountry,
 } from '../../config/countries'
-import { parsePhoneNumber } from 'awesome-phonenumber'
+import {
+  formatPhoneNumber,
+  getE164Format,
+  getPhoneRegionCode,
+  isValidPhoneNumber,
+} from '@app/schemas/common/phone'
+
+const DEBOUNCE_DELAY_MS = 500
+const PHONE_INVALID_MESSAGE = 'Please enter a valid phone number'
 
 export interface PhoneNumberInputProps {
   /** Current phone number value */
@@ -63,82 +71,72 @@ export const PhoneNumberInput = ({
 
   // Helper function to format phone number for display
   const formatPhoneForDisplay = useCallback((phoneValue: string, countryCode: string) => {
-    if (!phoneValue) return phoneValue
-
-    // If the value is already formatted (contains parentheses or spaces), return as-is
-    if (
-      /\+1\s*\(\d{3}\)\s*\d{3}-\d{4}/.test(phoneValue) ||
-      /\+1\s+\d{3}\s+\d{3}\s+\d{4}/.test(phoneValue)
-    ) {
-      return phoneValue
+    if (!phoneValue) {
+      return ''
     }
 
-    try {
-      // First try to parse as-is
-      let phone = parsePhoneNumber(phoneValue)
+    const trimmed = phoneValue.trim()
+    const detectedRegion = getPhoneRegionCode(trimmed) ?? countryCode
 
-      // If that fails and it's a US number without country code, try adding +1
-      if (!phone.valid && countryCode === 'US' && /^\d{10}$/.test(phoneValue)) {
-        phone = parsePhoneNumber(`+1${phoneValue}`)
-      }
-
-      // If it's a 10-digit number for US, assume it's US
-      if (!phone.valid && countryCode === 'US' && /^\d{10}$/.test(phoneValue)) {
-        phone = parsePhoneNumber(phoneValue, { regionCode: 'US' })
-      }
-
-      if (phone.valid) {
-        if (countryCode === 'US') {
-          const national = phone.number?.national || phoneValue
-          return `+1 ${national}`
-        }
-        return phone.number?.international || phoneValue
-      }
-    } catch {
-      // If parsing fails, return original value
+    if (isValidPhoneNumber(trimmed, detectedRegion)) {
+      return formatPhoneNumber(trimmed, detectedRegion)
     }
-    return phoneValue
+
+    if (detectedRegion === 'US' && /^\d{10}$/.test(trimmed)) {
+      const area = trimmed.slice(0, 3)
+      const exchange = trimmed.slice(3, 6)
+      const line = trimmed.slice(6)
+      return `+1 (${area}) ${exchange}-${line}`
+    }
+
+    return trimmed
   }, [])
 
   const [selectedCountry, setSelectedCountry] = useState<Country>(
     findCountryByCode(defaultCountry) || getDefaultCountry()
   )
-  const [phoneNumber, setPhoneNumber] = useState(() => formatPhoneForDisplay(value, defaultCountry))
+  const [phoneNumber, setPhoneNumber] = useState(() =>
+    formatPhoneForDisplay(value ?? '', defaultCountry)
+  )
+  const [internalError, setInternalError] = useState<string | undefined>(undefined)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const lastSubmittedValue = useRef<string>('')
+  const resolvedError = error ?? internalError
 
   // Update internal state when external value changes
   useEffect(() => {
-    if (value !== phoneNumber) {
-      // Try to detect country from the phone number and format it properly
-      if (value) {
-        try {
-          let phone = parsePhoneNumber(value)
-          let detectedCountry: Country | undefined = undefined
-
-          // If parsing fails and it's a 10-digit number, assume it's US
-          if (!phone.valid && /^\d{10}$/.test(value)) {
-            phone = parsePhoneNumber(value, { regionCode: 'US' })
-            detectedCountry = findCountryByCode('US')
-          } else if (phone.valid) {
-            detectedCountry = findCountryByCode(phone.regionCode)
-          }
-
-          if (detectedCountry) {
-            setSelectedCountry(detectedCountry)
-            setPhoneNumber(formatPhoneForDisplay(value, detectedCountry.code))
-          } else if (phone.valid) {
-            setPhoneNumber(formatPhoneForDisplay(value, selectedCountry.code))
-          } else {
-            setPhoneNumber(value)
-          }
-        } catch {
-          // If parsing fails, just use the raw value
-          setPhoneNumber(value)
-        }
-      } else {
-        setPhoneNumber(value)
-      }
+    if (value === undefined) {
+      return
     }
-  }, [value, phoneNumber, formatPhoneForDisplay, selectedCountry.code])
+
+    const detectedRegion = getPhoneRegionCode(value ?? '') ?? selectedCountry.code
+    const detectedCountry = findCountryByCode(detectedRegion)
+
+    if (detectedCountry && detectedCountry.code !== selectedCountry.code) {
+      setSelectedCountry(detectedCountry)
+    }
+
+    const formattedValue = formatPhoneForDisplay(value ?? '', detectedRegion)
+
+    if (formattedValue !== phoneNumber) {
+      setPhoneNumber(formattedValue)
+    }
+
+    if (!value) {
+      setInternalError(undefined)
+      lastSubmittedValue.current = ''
+      return
+    }
+
+    if (isValidPhoneNumber(value, detectedRegion)) {
+      setInternalError(undefined)
+      const outbound = storeFormatted ? formattedValue : getE164Format(value, detectedRegion)
+      lastSubmittedValue.current = outbound
+    } else {
+      setInternalError(PHONE_INVALID_MESSAGE)
+      lastSubmittedValue.current = value
+    }
+  }, [value, phoneNumber, formatPhoneForDisplay, selectedCountry.code, storeFormatted])
 
   const handleCountryChange = useCallback(
     (countryCode: string) => {
@@ -148,6 +146,12 @@ export const PhoneNumberInput = ({
         // Clear phone number when country changes to avoid confusion
         setPhoneNumber('')
         onChange?.('')
+        setInternalError(undefined)
+        lastSubmittedValue.current = ''
+        if (debounceRef.current) {
+          clearTimeout(debounceRef.current)
+          debounceRef.current = null
+        }
       }
     },
     [onChange]
@@ -155,30 +159,59 @@ export const PhoneNumberInput = ({
 
   const handlePhoneChange = useCallback(
     (text: string) => {
-      // Remove non-numeric characters except +
-      const cleaned = text.replace(/[^\d+]/g, '')
+      setPhoneNumber(text)
 
-      try {
-        // Try to format the phone number using awesome-phonenumber
-        const phone = parsePhoneNumber(cleaned, { regionCode: selectedCountry.code })
-
-        if (phone.valid) {
-          const formatted = formatPhoneForDisplay(cleaned, selectedCountry.code)
-          setPhoneNumber(formatted)
-          onChange?.(storeFormatted ? formatted : phone.number?.e164 || cleaned)
-        } else {
-          // If not valid yet, still allow typing
-          setPhoneNumber(cleaned)
-          onChange?.(cleaned)
-        }
-      } catch {
-        // If parsing fails, just store the cleaned input
-        setPhoneNumber(cleaned)
-        onChange?.(cleaned)
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current)
       }
+
+      debounceRef.current = setTimeout(() => {
+        const trimmed = text.trim()
+
+        if (!trimmed) {
+          setInternalError(undefined)
+          lastSubmittedValue.current = ''
+          onChange?.('')
+          return
+        }
+
+        const detectedRegion = getPhoneRegionCode(trimmed) ?? selectedCountry.code
+        const detectedCountry = findCountryByCode(detectedRegion)
+
+        if (detectedCountry && detectedCountry.code !== selectedCountry.code) {
+          setSelectedCountry(detectedCountry)
+        }
+
+        if (isValidPhoneNumber(trimmed, detectedRegion)) {
+          const formatted = formatPhoneForDisplay(trimmed, detectedRegion)
+          setPhoneNumber(formatted)
+          setInternalError(undefined)
+          const outbound = storeFormatted ? formatted : getE164Format(trimmed, detectedRegion)
+
+          if (lastSubmittedValue.current !== outbound) {
+            lastSubmittedValue.current = outbound
+            onChange?.(outbound)
+          }
+        } else {
+          setInternalError(PHONE_INVALID_MESSAGE)
+
+          if (lastSubmittedValue.current !== trimmed) {
+            lastSubmittedValue.current = trimmed
+            onChange?.(trimmed)
+          }
+        }
+      }, DEBOUNCE_DELAY_MS)
     },
-    [selectedCountry.code, onChange, storeFormatted, formatPhoneForDisplay]
+    [formatPhoneForDisplay, onChange, selectedCountry.code, storeFormatted]
   )
+
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current)
+      }
+    }
+  }, [])
 
   return (
     <YStack gap="$2">
@@ -190,7 +223,7 @@ export const PhoneNumberInput = ({
           value={phoneNumber}
           onChangeText={handlePhoneChange}
           keyboardType="phone-pad"
-          borderColor={error ? '$red8' : '$borderColor'}
+          borderColor={resolvedError ? '$red8' : '$borderColor'}
           disabled={disabled}
           inputMode="tel"
           pl={50} // Make space for country selector
@@ -266,7 +299,7 @@ export const PhoneNumberInput = ({
         </YStack>
       </YStack>
 
-      <FieldError message={error} />
+      <FieldError message={resolvedError} />
     </YStack>
   )
 }
