@@ -145,6 +145,25 @@ WHERE slug IS NOT NULL;
 -- =========================================================
 -- Constraints
 -- =========================================================
+-- Clean up existing invalid slugs before enforcing constraints
+UPDATE core.users
+SET slug = NULL
+WHERE slug IS NOT NULL
+  AND (
+    slug !~ '^[a-z0-9-]+$' OR
+    LENGTH(slug) < 3 OR
+    LENGTH(slug) > 50
+  );
+
+UPDATE core.jobs
+SET slug = NULL
+WHERE slug IS NOT NULL
+  AND (
+    slug !~ '^[a-z0-9-]+$' OR
+    LENGTH(slug) < 3 OR
+    LENGTH(slug) > 50
+  );
+
 -- Ensure slug format is valid (alphanumeric and dashes only, 3-50 chars)
 ALTER TABLE core.users
 ADD CONSTRAINT users_slug_format_check 

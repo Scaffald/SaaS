@@ -1,7 +1,10 @@
 {
   "name": "scaffald",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "reset": "rm -rf node_modules apps/*/node_modules packages/*/node_modules .turbo apps/*/.turbo packages/*/.turbo apps/expo/.expo apps/expo/.netlify apps/expo/.tamagui apps/expo/dist apps/expo/android/build apps/expo/ios/build apps/expo/.next **/tsconfig.tsbuildinfo **/.DS_Store && pnpm store prune && echo '✅ Cache cleared! Run pnpm install to reinstall dependencies.'",
     "reset:full": "pnpm reset && rm -rf apps/expo/android apps/expo/ios && echo '✅ Full reset complete! Run pnpm prebuild to regenerate native directories.'",
@@ -54,7 +57,7 @@
     "test:performance": "cd apps/expo && time pnpm web:build",
     "validate:migration": "pnpm test:all && echo '✅ Migration validation complete'"
   },
-  "packageManager": "pnpm@10.17.1",
+  "packageManager": "pnpm@10.20.0",
   "devDependencies": {
     "@biomejs/biome": "catalog:",
     "@tamagui/cli": "catalog:",
