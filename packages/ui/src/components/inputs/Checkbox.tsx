@@ -19,7 +19,7 @@ export interface CheckboxProps {
 const CheckboxContainer = styled(View, {
   position: 'relative',
   cursor: 'pointer',
-  animation: '100ms',
+  animation: 'quick',
   variants: {
     size: {
       small: {
@@ -37,12 +37,12 @@ const CheckboxContainer = styled(View, {
     },
     checked: {
       true: {
-        bg: '$color10',
-        borderColor: '$color10',
+        bg: '$teal7',
+        borderColor: '$teal7',
       },
       false: {
         bg: 'transparent',
-        borderColor: '$color10',
+        borderColor: '$borderColor',
       },
     },
     disabled: {
@@ -56,8 +56,15 @@ const CheckboxContainer = styled(View, {
       },
     },
   } as const,
+  focusStyle: {
+    borderColor: '$teal7',
+    outlineColor: '$teal7',
+    outlineWidth: 2,
+    outlineStyle: 'solid',
+  },
   hoverStyle: {
     scale: 1.05,
+    borderColor: '$teal8',
   },
   pressStyle: {
     scale: 0.95,

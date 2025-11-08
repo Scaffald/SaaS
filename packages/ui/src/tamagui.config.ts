@@ -1,6 +1,6 @@
 import { animations, defaultConfig } from '@tamagui/config/v4'
 import { createTamagui, setupDev } from 'tamagui'
-import { themes } from './themes/earth-theme'
+import { themes } from './themes/scaffald-theme'
 
 // Development setup - only in development
 if (process.env.NODE_ENV === 'development') {

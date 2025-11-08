@@ -1,6 +1,18 @@
 import { type ReactNode, useState, type ElementRef } from 'react'
-import { Card, Image, View, Text, YStack, XStack, Button, Anchor, type CardProps } from 'tamagui'
+import {
+  Card,
+  Image,
+  View,
+  Text,
+  YStack,
+  XStack,
+  Button,
+  Anchor,
+  type CardProps,
+  useTheme,
+} from 'tamagui'
 import * as Linking from 'expo-linking'
+import { cardShadows, borderRadius } from '../../tokens/design-tokens'
 
 /**
  * NewsCard - A reusable news card component with image overlay
@@ -58,6 +70,8 @@ export const NewsCard = ({
   ...props
 }: NewsCardProps) => {
   const [imageError, setImageError] = useState(false)
+  const theme = useTheme()
+  const isDark = theme.background.val.includes('8%')
 
   // Generate random abstract image as fallback
   const fallbackImage = `https://picsum.photos/800/600?random=${Math.floor(Math.random() * 1000)}`
@@ -77,22 +91,33 @@ export const NewsCard = ({
 
   const cardContent = (
     <Card
-      boxShadow="inset 1px 1px .5px #fff8, inset 2px 5px 25px #0000000f, inset -1px -1px 0 .5px #ddd2, 2px 2px 25px #0001"
+      boxShadow={isDark ? cardShadows.dark : cardShadows.elevated}
       size="$4"
       p="$0"
-      rounded="$7"
+      rounded={borderRadius['3xl']}
       bg="$color1"
       minH={minHeight}
       overflow="hidden"
       position="relative"
       cursor={fullCardClickable && isInteractive ? 'pointer' : 'default'}
       onPress={fullCardClickable && isInteractive ? handlePress : undefined}
-      pressStyle={fullCardClickable && isInteractive ? { scale: 0.98 } : undefined}
-      hoverStyle={fullCardClickable && isInteractive ? { scale: 1.02 } : undefined}
-      $sm={{
-        boxShadow:
-          'inset 1px 1px .5px #fff8, inset 2px 5px 25px #0000000f, inset -1px -1px 0 .5px #ddd2',
-      }}
+      animation="quick"
+      pressStyle={
+        fullCardClickable && isInteractive
+          ? {
+              scale: 0.98,
+              boxShadow: isDark ? cardShadows.darkPress : cardShadows.lightPress,
+            }
+          : undefined
+      }
+      hoverStyle={
+        fullCardClickable && isInteractive
+          ? {
+              scale: 1.02,
+              boxShadow: isDark ? cardShadows.darkHover : cardShadows.elevatedHover,
+            }
+          : undefined
+      }
       {...props}
     >
       {/* Background Image */}
@@ -161,15 +186,16 @@ export const NewsCard = ({
                 <Button
                   size="$3"
                   variant="outlined"
-                  borderColor="$color8"
+                  borderColor="$teal7"
                   color="$color12"
                   fontWeight="600"
                   onPress={handlePress}
                   disabled={disabled}
+                  animation="quick"
                   pressStyle={{ scale: 0.95 }}
                   hoverStyle={{
-                    bg: '$color3',
-                    borderColor: '$color9',
+                    bg: '$teal2',
+                    borderColor: '$teal8',
                   }}
                 >
                   {readMoreText}
