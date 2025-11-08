@@ -10,6 +10,8 @@ import path from "node:path";
 import { exec } from "node:child_process";
 import { promisify } from "node:util";
 
+import AdmZip from "adm-zip";
+
 const execAsync = promisify(exec);
 
 // Get the project root directory
@@ -27,7 +29,15 @@ const getProjectRoot = () => {
 
 const PROJECT_ROOT = getProjectRoot();
 const ONET_DIR = path.join(PROJECT_ROOT, "packages/supabase/onet");
+const TEXT_ROOT_DIR = path.join(
+  PROJECT_ROOT,
+  "packages/supabase/seed-data/onet"
+);
+const TEXT_RAW_DIR = path.join(TEXT_ROOT_DIR, "raw");
+const TEXT_ZIP_PATH = path.join(TEXT_ROOT_DIR, "db_30_0_text.zip");
 const BASE_URL = "https://www.onetcenter.org/dl_files/database/db_30_0_mysql";
+const TEXT_ZIP_URL =
+  "https://www.onetcenter.org/dl_files/database/db_30_0_text.zip";
 
 // Map O*NET file names (from website) to our expected local file names (for convert-onet-sql.ts)
 // O*NET uses numbered files, but we need to rename them to match convert-onet-sql.ts expectations
@@ -142,6 +152,15 @@ const stats: DownloadStats = {
   failed: 0,
   errors: [],
 };
+
+function ensureDirectory(directory: string, label?: string): void {
+  if (!fs.existsSync(directory)) {
+    fs.mkdirSync(directory, { recursive: true });
+    if (label) {
+      console.log(`📁 Created ${label}: ${directory}`);
+    }
+  }
+}
 
 /**
  * Download a file from URL to local path
@@ -263,6 +282,124 @@ async function downloadOnetFile(
   return success;
 }
 
+function textBundleExists(): boolean {
+  return fileExists(TEXT_ZIP_PATH);
+}
+
+function textRawPopulated(): boolean {
+  if (!fs.existsSync(TEXT_RAW_DIR)) {
+    return false;
+  }
+  return fs
+    .readdirSync(TEXT_RAW_DIR, { withFileTypes: true })
+    .some(
+      (entry) =>
+        entry.isFile() &&
+        (entry.name.toLowerCase().endsWith(".txt") ||
+          entry.name.toLowerCase().endsWith(".tsv"))
+    );
+}
+
+async function downloadTextBundle(
+  forceDownload: boolean
+): Promise<boolean> {
+  if (textBundleExists() && !forceDownload) {
+    const fileSize = (
+      fs.statSync(TEXT_ZIP_PATH).size /
+      1024 /
+      1024
+    ).toFixed(2);
+    console.log(
+      `⏭️  Skipping text bundle download (already exists: ${fileSize} MB)`
+    );
+    return true;
+  }
+
+  console.log("⬇️  Downloading O*NET text bundle (db_30_0_text.zip)...");
+  const success = await downloadFile(TEXT_ZIP_URL, TEXT_ZIP_PATH);
+  if (success) {
+    const fileSize = (
+      fs.statSync(TEXT_ZIP_PATH).size /
+      1024 /
+      1024
+    ).toFixed(2);
+    console.log(`   ✅ Downloaded text bundle (${fileSize} MB)`);
+  } else {
+    console.error("   ❌ Failed to download O*NET text bundle");
+  }
+  return success;
+}
+
+function extractTextBundle(forceExtract: boolean): void {
+  ensureDirectory(TEXT_RAW_DIR, "raw data directory");
+
+  if (!forceExtract && textRawPopulated()) {
+    console.log(
+      "⏭️  Skipping extraction (raw O*NET text files already present)"
+    );
+    return;
+  }
+
+  if (!textBundleExists()) {
+    throw new Error(
+      "Text bundle not found. Download it first with --with-text or remove --skip-text."
+    );
+  }
+
+  console.log("📦 Extracting O*NET text bundle...");
+  const zip = new AdmZip(TEXT_ZIP_PATH);
+
+  if (forceExtract && fs.existsSync(TEXT_RAW_DIR)) {
+    for (const entry of fs.readdirSync(TEXT_RAW_DIR)) {
+      const entryPath = path.join(TEXT_RAW_DIR, entry);
+      fs.rmSync(entryPath, { recursive: true, force: true });
+    }
+  }
+
+  zip.extractAllTo(TEXT_RAW_DIR, true);
+
+  const extractedCount = flattenExtractedTextFiles();
+  console.log(
+    `   ✅ Extracted ${extractedCount} text files into ${TEXT_RAW_DIR}`
+  );
+}
+
+function flattenExtractedTextFiles(): number {
+  if (!fs.existsSync(TEXT_RAW_DIR)) {
+    return 0;
+  }
+
+  const entries = fs.readdirSync(TEXT_RAW_DIR, { withFileTypes: true });
+
+  const hasTopLevelTxt = entries.some(
+    (entry) => entry.isFile() && entry.name.toLowerCase().endsWith(".txt")
+  );
+
+  if (!hasTopLevelTxt) {
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      const sourceDir = path.join(TEXT_RAW_DIR, entry.name);
+      for (const nested of fs.readdirSync(sourceDir, {
+        withFileTypes: true,
+      })) {
+        const sourcePath = path.join(sourceDir, nested.name);
+        const targetPath = path.join(TEXT_RAW_DIR, nested.name);
+        fs.renameSync(sourcePath, targetPath);
+      }
+      fs.rmSync(sourceDir, { recursive: true, force: true });
+    }
+  }
+
+  return fs
+    .readdirSync(TEXT_RAW_DIR, { withFileTypes: true })
+    .filter(
+      (entry) =>
+        entry.isFile() &&
+        (entry.name.toLowerCase().endsWith(".txt") ||
+          entry.name.toLowerCase().endsWith(".tsv"))
+    ).length;
+}
+
 /**
  * Run conversion script
  */
@@ -301,9 +438,16 @@ async function runConversion(): Promise<boolean> {
  */
 async function main() {
   const args = process.argv.slice(2);
-  const skipDownload = args.includes("--skip-download");
-  const skipConvert = args.includes("--skip-convert");
+  const textOnly = args.includes("--text-only");
+  const skipSqlDownload =
+    args.includes("--skip-download") || textOnly;
+  const skipConvertFlag =
+    args.includes("--skip-convert") || textOnly;
   const autoConvert = args.includes("--convert");
+  const forceText = args.includes("--force-text");
+  const forceExtract = args.includes("--force-extract") || forceText;
+  const fetchText =
+    textOnly || args.includes("--with-text") || !args.includes("--skip-text");
 
   console.log("📥 O*NET 30.0 Database Download\n");
   console.log("=".repeat(50));
@@ -314,7 +458,7 @@ async function main() {
     console.log(`📁 Created directory: ${ONET_DIR}\n`);
   }
 
-  if (skipDownload) {
+  if (skipSqlDownload) {
     console.log("⏭️  Skipping download (--skip-download flag)\n");
   } else {
     console.log(`📂 Target directory: ${ONET_DIR}\n`);
@@ -366,14 +510,35 @@ async function main() {
     }
   }
 
+  if (fetchText) {
+    console.log("\n📦 Synchronising O*NET text bundle...\n");
+    ensureDirectory(TEXT_ROOT_DIR, "text bundle directory");
+    ensureDirectory(TEXT_RAW_DIR);
+
+    const downloadSuccess = await downloadTextBundle(forceText || textOnly);
+    if (!downloadSuccess) {
+      console.error("\n❌ Failed to download O*NET text bundle.");
+      process.exit(1);
+    }
+
+    try {
+      extractTextBundle(forceExtract || textOnly);
+    } catch (error) {
+      console.error("\n❌ Failed to extract O*NET text bundle:", error);
+      process.exit(1);
+    }
+  } else {
+    console.log("\n⏭️  Skipping O*NET text bundle (use --with-text to enable)");
+  }
+
   // Run conversion if requested
-  if (!skipConvert && (autoConvert || !skipDownload)) {
+  if (!skipConvertFlag && !textOnly && (autoConvert || !skipSqlDownload)) {
     const conversionSuccess = await runConversion();
     if (!conversionSuccess) {
       console.error("\n❌ Conversion failed.");
       process.exit(1);
     }
-  } else if (skipConvert) {
+  } else if (skipConvertFlag && !textOnly) {
     console.log("\n⏭️  Skipping conversion (--skip-convert flag)");
     console.log(
       "💡 Run conversion manually: pnpm tsx packages/supabase/scripts/convert-onet-sql.ts",

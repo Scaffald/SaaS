@@ -30,6 +30,8 @@ pnpm supa:reset           # Reset database (runs migrations + seed.sql)
 pnpm supa:seed            # Seed CSI codes and external jobs
 pnpm supa:reset:seed      # Full reset + seed (one command)
 pnpm supa:setup           # Full setup (reset + seed + permission tests)
+pnpm supa:seed:onet       # Load O*NET reference data from CSV bundle
+pnpm supa:seed:onet:prod  # Load O*NET reference data using production env vars
 
 # Development
 pnpm supa:start           # Start local Supabase
@@ -109,6 +111,27 @@ See `packages/supabase/seeds/README.md` for detailed documentation on all seed f
 - Uses deterministic UUIDs for consistency
 
 ### 3. External Jobs (`seed-all.ts`)
+### 4. O*NET Reference Data (`seed-onet.ts`)
+
+**Location:** `packages/supabase/scripts/seed-onet.ts`  
+**Runs:** Via `pnpm supa:seed:onet` (local) or `pnpm supa:seed:onet:prod` (remote)  
+**Inputs:** Tab-delimited files contained in the official O\*NET Database ZIP (`db_30_0_text.zip`)
+
+**Setup:**
+
+1. Download the latest O\*NET database archive from [onetcenter.org](https://www.onetcenter.org/database.html).
+2. Extract the `.txt` files into `packages/supabase/seed-data/onet/raw/`.  
+   Alternatively, set `ONET_SOURCE_DIR=/absolute/path/to/db_30_0_text` before running the seed command.
+
+**What it does:**
+
+- Truncates all `onet.*` tables defined in `085_onet_schema.sql`.
+- Batch-loads each CSV via `pg` with 500-row inserts.
+- Normalises month/year values into `YYYY-MM-01` dates.
+- Ignores optional crosswalk files (e.g. “Abilities to Work Activities”) for now; see `ONET_CSV_MAPPING.md` for the complete mapping.
+
+**Re-run safety:** The pipeline truncates then repopulates the tables, so it is safe to re-run for data refreshes.
+
 
 **Location:** `packages/supabase/scripts/seed-all.ts`  
 **Runs:** Via `pnpm supa:seed`  
@@ -249,7 +272,25 @@ pnpm supa:seed
 ```bash
 # Automated pipeline
 pnpm supa:reset:seed && pnpm supa:test:permissions
+
+# Validate O*NET load (after pnpm supa:seed:onet)
+psql "$DATABASE_URL" <<'SQL'
+SELECT 'content_model_reference' AS table, COUNT(*) FROM onet.content_model_reference
+UNION ALL SELECT 'occupation_data', COUNT(*) FROM onet.occupation_data
+UNION ALL SELECT 'abilities', COUNT(*) FROM onet.abilities
+UNION ALL SELECT 'skills', COUNT(*) FROM onet.skills
+UNION ALL SELECT 'knowledge', COUNT(*) FROM onet.knowledge
+UNION ALL SELECT 'work_activities', COUNT(*) FROM onet.work_activities
+UNION ALL SELECT 'task_statements', COUNT(*) FROM onet.task_statements
+UNION ALL SELECT 'task_ratings', COUNT(*) FROM onet.task_ratings
+UNION ALL SELECT 'tools_used', COUNT(*) FROM onet.tools_used
+UNION ALL SELECT 'technology_skills', COUNT(*) FROM onet.technology_skills
+UNION ALL SELECT 'related_occupations', COUNT(*) FROM onet.related_occupations
+ORDER BY table;
+SQL
 ```
+
+> ℹ️ The legacy `084_import_onet_full_data.sql` generator is now ignored by git. Remove any local copy before running migrations so the new CSV-driven pipeline remains the single source of truth.
 
 ### Adding New Seed Data
 
