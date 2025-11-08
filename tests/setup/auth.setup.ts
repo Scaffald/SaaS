@@ -120,8 +120,8 @@ setup('authenticate as user', async ({ page }) => {
 
   console.log('🔐 Setting up user authentication...')
 
-  const email = 'testuser1@example.com'
-  const password = 'TestUser123!'
+  const email = 'lexis.salah@eths.education.com'
+  const password = 'password123'
   const supabaseUrl = 'http://127.0.0.1:54321'
   const supabaseKey = 'sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH'
 
