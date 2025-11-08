@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useToastController } from '@tamagui/toast'
-import { AssessmentWizard } from '@app/core/features/assessments'
+import { AssessmentWizard, AssessmentProgress } from '@app/core/features/assessments'
 import { LuscherTestStep } from '@app/core/features/personality-assessment/components/LuscherTestStep'
 import { IntroductionStep, CooldownStep, ResultsStep } from './components'
 import { api } from '@app/core/utils/api'
+import { DashboardLayout } from '@app/ui'
+import { Text, YStack } from 'tamagui'
 
 type TestStep = 'intro' | 'luscher1' | 'cooldown' | 'luscher2' | 'results'
 
@@ -151,97 +153,129 @@ export function LuscherTestWizard() {
     { id: 'results', label: 'Results', order: 5 },
   ]
 
-  // If on cooldown, show results view only
-  if (availability?.isOnCooldown && currentStep === 'results') {
-    return (
-      <AssessmentWizard
+  const completionScore =
+    currentStep === 'results'
+      ? 100
+      : currentStep === 'luscher2'
+        ? 75
+        : currentStep === 'cooldown'
+          ? 50
+          : currentStep === 'luscher1'
+            ? 25
+            : 0
+
+  const currentStepOrder = steps.find((step) => step.id === currentStep)?.order ?? 0
+  const completedSteps = new Set(
+    steps.filter((step) => step.order < currentStepOrder).map((step) => step.id)
+  )
+
+  const isCooldownResultsView = availability?.isOnCooldown && currentStep === 'results'
+  const effectiveCurrentStep = isCooldownResultsView ? 'results' : currentStep
+  const effectiveCompletionScore = isCooldownResultsView ? 100 : completionScore
+
+  const wizardIsLoading = isCooldownResultsView
+    ? isLoadingAvailability
+    : isLoadingAvailability || savePart1Mutation.isPending || savePart2Mutation.isPending
+
+  const showPrevious =
+    !isCooldownResultsView &&
+    currentStep !== 'intro' &&
+    currentStep !== 'cooldown' &&
+    currentStep !== 'results'
+
+  const handlePrevious = () => {
+    if (currentStep === 'luscher2') {
+      setCurrentStep('luscher1')
+    } else if (currentStep === 'luscher1') {
+      setCurrentStep('intro')
+    }
+  }
+
+  const railContent = (
+    <YStack gap="$4" p="$2" $gtSm={{ p: '$1' }}>
+      <YStack gap="$1">
+        <Text fontSize="$5" fontWeight="700" color="$color12">
+          Weekly Pulse
+        </Text>
+        <Text fontSize="$3" color="$color10">
+          Track your focus and readiness through five quick moments.
+        </Text>
+      </YStack>
+      <AssessmentProgress
         steps={steps}
-        currentStep="results"
-        completionScore={100}
-        isLoading={isLoadingAvailability}
-        showNext={false}
-        showPrevious={false}
-      >
+        currentStep={effectiveCurrentStep}
+        completedSteps={completedSteps}
+        completionScore={effectiveCompletionScore}
+        orientation="vertical"
+      />
+    </YStack>
+  )
+
+  const wizardContent = (
+    <AssessmentWizard
+      steps={steps}
+      currentStep={effectiveCurrentStep}
+      completionScore={effectiveCompletionScore}
+      isLoading={wizardIsLoading}
+      showNext={false}
+      showPrevious={showPrevious}
+      onPrevious={showPrevious ? handlePrevious : undefined}
+      completedSteps={completedSteps}
+      showHeader={false}
+      showProgressIndicator={false}
+    >
+      {isCooldownResultsView ? (
         <ResultsStep
-          nextAvailableAt={availability.nextAvailableAt || null}
+          nextAvailableAt={availability?.nextAvailableAt || null}
           xpAwarded={5}
           feedbackMessage="You're showing signs of balanced focus — ideal for steady progress today."
           luscher1Choices={assessment?.luscher1_choices || []}
           luscher2Choices={assessment?.luscher2_choices || []}
         />
-      </AssessmentWizard>
-    )
-  }
-
-  // Render appropriate step
-  return (
-    <AssessmentWizard
-      steps={steps}
-      currentStep={currentStep}
-      completionScore={
-        currentStep === 'results'
-          ? 100
-          : currentStep === 'luscher2'
-            ? 75
-            : currentStep === 'cooldown'
-              ? 50
-              : currentStep === 'luscher1'
-                ? 25
-                : 0
-      }
-      isLoading={
-        isLoadingAvailability || savePart1Mutation.isPending || savePart2Mutation.isPending
-      }
-      showNext={false}
-      showPrevious={
-        currentStep !== 'intro' && currentStep !== 'cooldown' && currentStep !== 'results'
-      }
-      onPrevious={() => {
-        if (currentStep === 'luscher2') {
-          setCurrentStep('luscher1')
-        } else if (currentStep === 'luscher1') {
-          setCurrentStep('intro')
-        }
-      }}
-    >
-      {currentStep === 'intro' && <IntroductionStep onBegin={handleBegin} />}
-      {currentStep === 'luscher1' && (
-        <LuscherTestStep
-          step="luscher1"
-          initialChoices={luscher1Choices}
-          onSave={handlePart1Save}
-          isLoading={savePart1Mutation.isPending}
-        />
-      )}
-      {currentStep === 'cooldown' && (
-        <CooldownStep
-          cooldownEndTime={cooldownEndTime}
-          onCooldownComplete={handleCooldownComplete}
-          onSaveDiary={handleSaveDiary}
-          isLoading={savePart1Mutation.isPending}
-        />
-      )}
-      {currentStep === 'luscher2' && (
-        <LuscherTestStep
-          step="luscher2"
-          initialChoices={luscher2Choices}
-          onSave={handlePart2Save}
-          isLoading={savePart2Mutation.isPending}
-        />
-      )}
-      {currentStep === 'results' && (
-        <ResultsStep
-          nextAvailableAt={availability?.nextAvailableAt || null}
-          xpAwarded={5}
-          feedbackMessage="You're showing signs of balanced focus — ideal for steady progress today."
-          luscher1Choices={
-            luscher1Choices.length === 8 ? luscher1Choices : assessment?.luscher1_choices || []
-          }
-          luscher2Choices={
-            luscher2Choices.length === 8 ? luscher2Choices : assessment?.luscher2_choices || []
-          }
-        />
+      ) : (
+        <>
+          {currentStep === 'intro' && <IntroductionStep onBegin={handleBegin} />}
+          {currentStep === 'luscher1' && (
+            <LuscherTestStep
+              step="luscher1"
+              initialChoices={luscher1Choices}
+              onSave={handlePart1Save}
+              isLoading={savePart1Mutation.isPending}
+            />
+          )}
+          {currentStep === 'cooldown' && (
+            <CooldownStep
+              cooldownEndTime={cooldownEndTime}
+              onCooldownComplete={handleCooldownComplete}
+              onSaveDiary={handleSaveDiary}
+              isLoading={savePart1Mutation.isPending}
+            />
+          )}
+          {currentStep === 'luscher2' && (
+            <LuscherTestStep
+              step="luscher2"
+              initialChoices={luscher2Choices}
+              onSave={handlePart2Save}
+              isLoading={savePart2Mutation.isPending}
+            />
+          )}
+          {currentStep === 'results' && (
+            <ResultsStep
+              nextAvailableAt={availability?.nextAvailableAt || null}
+              xpAwarded={5}
+              feedbackMessage="You're showing signs of balanced focus — ideal for steady progress today."
+              luscher1Choices={
+                luscher1Choices.length === 8 ? luscher1Choices : assessment?.luscher1_choices || []
+              }
+              luscher2Choices={
+                luscher2Choices.length === 8 ? luscher2Choices : assessment?.luscher2_choices || []
+              }
+            />
+          )}
+        </>
       )}
     </AssessmentWizard>
   )
+
+  return <DashboardLayout leftContent={wizardContent} rightContent={railContent} />
 }
