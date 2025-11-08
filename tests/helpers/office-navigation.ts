@@ -112,10 +112,12 @@ export async function waitForLoadingComplete(
 
   try {
     // Wait for common loading indicators to disappear
+    // Only target specific loading UI elements, not all text containing "loading"
     await page.locator('[role="progressbar"]')
-      .or(page.locator('[class*="loading"]'))
+      .or(page.locator('[aria-busy="true"]'))
+      .or(page.locator('[data-loading="true"]'))
       .or(page.locator('[class*="spinner"]'))
-      .or(page.getByText(/loading/i))
+      .or(page.locator('[class*="loading"][role="status"]'))
       .first()
       .waitFor({ state: 'hidden', timeout })
   } catch {
