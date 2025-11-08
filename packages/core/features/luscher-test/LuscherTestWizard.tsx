@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useToastController } from '@tamagui/toast'
 import { AssessmentWizard, AssessmentProgress } from '@app/core/features/assessments'
 import { LuscherTestStep } from '@app/core/features/personality-assessment/components/LuscherTestStep'
-import { IntroductionStep, CooldownStep, ResultsStep } from './components'
+import { IntroductionStep, CooldownStep, ResultsStep, ResultsSidebar } from './components'
 import { api } from '@app/core/utils/api'
 import { DashboardLayout } from '@app/ui'
 import { Text, YStack } from 'tamagui'
@@ -191,8 +191,10 @@ export function LuscherTestWizard() {
     }
   }
 
+  const showResultsSidebar = effectiveCurrentStep === 'results'
+
   const railContent = (
-    <YStack gap="$4" p="$2" $gtSm={{ p: '$1' }}>
+    <YStack gap="$5" p="$2" $gtSm={{ p: '$1' }}>
       <YStack gap="$1">
         <Text fontSize="$5" fontWeight="700" color="$color12">
           Weekly Pulse
@@ -201,13 +203,20 @@ export function LuscherTestWizard() {
           Track your focus and readiness through five quick moments.
         </Text>
       </YStack>
-      <AssessmentProgress
-        steps={steps}
-        currentStep={effectiveCurrentStep}
-        completedSteps={completedSteps}
-        completionScore={effectiveCompletionScore}
-        orientation="vertical"
-      />
+
+      {!showResultsSidebar && (
+        <AssessmentProgress
+          steps={steps}
+          currentStep={effectiveCurrentStep}
+          completedSteps={completedSteps}
+          completionScore={effectiveCompletionScore}
+          orientation="vertical"
+        />
+      )}
+
+      {showResultsSidebar && (
+        <ResultsSidebar xpAwarded={5} nextAvailableAt={availability?.nextAvailableAt || null} />
+      )}
     </YStack>
   )
 
@@ -226,8 +235,6 @@ export function LuscherTestWizard() {
     >
       {isCooldownResultsView ? (
         <ResultsStep
-          nextAvailableAt={availability?.nextAvailableAt || null}
-          xpAwarded={5}
           feedbackMessage="You're showing signs of balanced focus — ideal for steady progress today."
           luscher1Choices={assessment?.luscher1_choices || []}
           luscher2Choices={assessment?.luscher2_choices || []}
@@ -261,8 +268,6 @@ export function LuscherTestWizard() {
           )}
           {currentStep === 'results' && (
             <ResultsStep
-              nextAvailableAt={availability?.nextAvailableAt || null}
-              xpAwarded={5}
               feedbackMessage="You're showing signs of balanced focus — ideal for steady progress today."
               luscher1Choices={
                 luscher1Choices.length === 8 ? luscher1Choices : assessment?.luscher1_choices || []
