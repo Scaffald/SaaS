@@ -137,13 +137,13 @@ async function seedOnet() {
 
   try {
     const scriptDir = path.dirname(new URL(import.meta.url).pathname);
-    const onetScriptPath = path.join(scriptDir, "download-onet.ts");
+    const onetScriptPath = path.join(scriptDir, "seed-onet.ts");
 
-    // Run the O*NET download/convert script with inherited environment
-    // This will check for existing files and skip download if they exist
-    // It will also run conversion automatically
+    // Run the O*NET seeding script with inherited environment
+    // This uses PostgreSQL COPY protocol for fast bulk loading from CSV files
+    // It will skip if data already exists unless ONET_FORCE_RELOAD=1 is set
     const { stdout, stderr } = await execAsync(
-      `pnpx tsx "${onetScriptPath}" --convert`,
+      `pnpx tsx "${onetScriptPath}"`,
       {
         env: process.env, // Inherit all environment variables
       },
