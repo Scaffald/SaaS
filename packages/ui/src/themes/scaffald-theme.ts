@@ -145,6 +145,7 @@ const builtThemes = createThemes({
       light: {
         // Add Tamagui's semantic colors
         ...Colors.blue,
+        ...Colors.teal,
         ...Colors.gray,
         ...Colors.green,
         ...Colors.orange,
@@ -157,6 +158,7 @@ const builtThemes = createThemes({
       },
       dark: {
         ...Colors.blueDark,
+        ...Colors.tealDark,
         ...Colors.grayDark,
         ...Colors.greenDark,
         ...Colors.orangeDark,
