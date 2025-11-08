@@ -1,13 +1,3 @@
-
-> scaffald@ supa /Users/clay/Development/SCF-Neue
-> pnpm env-local pnpx supabase --workdir packages gen types typescript --linked
-
-
-> scaffald@ env-local /Users/clay/Development/SCF-Neue
-> dotenv -e .env -- pnpx supabase --workdir packages gen types typescript --linked
-
-Using workdir packages
-Initialising login role...
 export type Json =
   | string
   | number
@@ -17,11 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
-  }
   auth: {
     Tables: {
       audit_log_entries: {
@@ -1104,6 +1089,54 @@ export type Database = {
           },
         ]
       }
+      assessment_sessions: {
+        Row: {
+          assessment_type: string
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          next_available_at: string | null
+          session_data: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          assessment_type: string
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          next_available_at?: string | null
+          session_data?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          assessment_type?: string
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          next_available_at?: string | null
+          session_data?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessment_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       certifications: {
         Row: {
           category: string | null
@@ -1778,6 +1811,57 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string | null
+          destination_url: string | null
+          id: string
+          message: string
+          read: boolean | null
+          title: string
+          type: Database["core"]["Enums"]["notification_type"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          destination_url?: string | null
+          id?: string
+          message: string
+          read?: boolean | null
+          title: string
+          type?: Database["core"]["Enums"]["notification_type"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          destination_url?: string | null
+          id?: string
+          message?: string
+          read?: boolean | null
+          title?: string
+          type?: Database["core"]["Enums"]["notification_type"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organization_skills: {
         Row: {
           created_at: string | null
@@ -1898,6 +1982,156 @@ export type Database = {
           },
         ]
       }
+      personality_assessments: {
+        Row: {
+          ai_report: string | null
+          ai_report_generated_at: string | null
+          completed_at: string | null
+          completion_score: number | null
+          cooldown_end_time: string | null
+          created_at: string | null
+          current_step: string | null
+          diary_response: string | null
+          diary_response_sentiment: string | null
+          id: string
+          ipip_answers: Json | null
+          ipip_completed_at: string | null
+          ipip_current_index: number | null
+          ipip_language: string | null
+          ipip_scores: Json | null
+          last_updated_at: string | null
+          luscher1_choices: number[] | null
+          luscher1_completed_at: string | null
+          luscher2_choices: number[] | null
+          luscher2_completed_at: string | null
+          luscher2_results: string | null
+          next_luscher_test_available_at: string | null
+          started_at: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_report?: string | null
+          ai_report_generated_at?: string | null
+          completed_at?: string | null
+          completion_score?: number | null
+          cooldown_end_time?: string | null
+          created_at?: string | null
+          current_step?: string | null
+          diary_response?: string | null
+          diary_response_sentiment?: string | null
+          id?: string
+          ipip_answers?: Json | null
+          ipip_completed_at?: string | null
+          ipip_current_index?: number | null
+          ipip_language?: string | null
+          ipip_scores?: Json | null
+          last_updated_at?: string | null
+          luscher1_choices?: number[] | null
+          luscher1_completed_at?: string | null
+          luscher2_choices?: number[] | null
+          luscher2_completed_at?: string | null
+          luscher2_results?: string | null
+          next_luscher_test_available_at?: string | null
+          started_at?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_report?: string | null
+          ai_report_generated_at?: string | null
+          completed_at?: string | null
+          completion_score?: number | null
+          cooldown_end_time?: string | null
+          created_at?: string | null
+          current_step?: string | null
+          diary_response?: string | null
+          diary_response_sentiment?: string | null
+          id?: string
+          ipip_answers?: Json | null
+          ipip_completed_at?: string | null
+          ipip_current_index?: number | null
+          ipip_language?: string | null
+          ipip_scores?: Json | null
+          last_updated_at?: string | null
+          luscher1_choices?: number[] | null
+          luscher1_completed_at?: string | null
+          luscher2_choices?: number[] | null
+          luscher2_completed_at?: string | null
+          luscher2_results?: string | null
+          next_luscher_test_available_at?: string | null
+          started_at?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "personality_assessments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "personality_assessments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portfolio_items: {
+        Row: {
+          created_at: string | null
+          description: Json | null
+          display_order: number | null
+          file_path: string | null
+          id: string
+          image_url: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: Json | null
+          display_order?: number | null
+          file_path?: string | null
+          id?: string
+          image_url?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: Json | null
+          display_order?: number | null
+          file_path?: string | null
+          id?: string
+          image_url?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "portfolio_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       preferences: {
         Row: {
           accepted_privacy_policy_at: string | null
@@ -1908,6 +2142,7 @@ export type Database = {
           notification_preferences: Json | null
           prerequisites_completed_at: string | null
           privacy_policy_version: string | null
+          profile_visibility: Json | null
           riasec_scores: Json | null
           target_occupation_codes: string[] | null
           terms_of_service_version: string | null
@@ -1925,6 +2160,7 @@ export type Database = {
           notification_preferences?: Json | null
           prerequisites_completed_at?: string | null
           privacy_policy_version?: string | null
+          profile_visibility?: Json | null
           riasec_scores?: Json | null
           target_occupation_codes?: string[] | null
           terms_of_service_version?: string | null
@@ -1942,6 +2178,7 @@ export type Database = {
           notification_preferences?: Json | null
           prerequisites_completed_at?: string | null
           privacy_policy_version?: string | null
+          profile_visibility?: Json | null
           riasec_scores?: Json | null
           target_occupation_codes?: string[] | null
           terms_of_service_version?: string | null
@@ -1985,6 +2222,7 @@ export type Database = {
           location: string | null
           military_status: string[] | null
           open_to_travel: boolean | null
+          phone: string | null
           phone_os: string[] | null
           preferred_work_locations: string[] | null
           travel_distance_miles: number | null
@@ -2012,6 +2250,7 @@ export type Database = {
           location?: string | null
           military_status?: string[] | null
           open_to_travel?: boolean | null
+          phone?: string | null
           phone_os?: string[] | null
           preferred_work_locations?: string[] | null
           travel_distance_miles?: number | null
@@ -2039,6 +2278,7 @@ export type Database = {
           location?: string | null
           military_status?: string[] | null
           open_to_travel?: boolean | null
+          phone?: string | null
           phone_os?: string[] | null
           preferred_work_locations?: string[] | null
           travel_distance_miles?: number | null
@@ -2394,6 +2634,45 @@ export type Database = {
           },
         ]
       }
+      slug_change_history: {
+        Row: {
+          changed_at: string
+          id: string
+          new_slug: string
+          old_slug: string | null
+          user_id: string
+        }
+        Insert: {
+          changed_at?: string
+          id?: string
+          new_slug: string
+          old_slug?: string | null
+          user_id: string
+        }
+        Update: {
+          changed_at?: string
+          id?: string
+          new_slug?: string
+          old_slug?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "slug_change_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "slug_change_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       soft_skills: {
         Row: {
           category: string
@@ -2604,10 +2883,13 @@ export type Database = {
           degree_type: string | null
           description: Json | null
           end_date: string | null
+          expected_graduation_date: string | null
           field_of_study: string | null
+          gpa: number | null
           id: string
           institution_name: string | null
           is_current: boolean | null
+          is_verified: boolean | null
           location: string | null
           start_date: string | null
           university_id: string | null
@@ -2619,10 +2901,13 @@ export type Database = {
           degree_type?: string | null
           description?: Json | null
           end_date?: string | null
+          expected_graduation_date?: string | null
           field_of_study?: string | null
+          gpa?: number | null
           id?: string
           institution_name?: string | null
           is_current?: boolean | null
+          is_verified?: boolean | null
           location?: string | null
           start_date?: string | null
           university_id?: string | null
@@ -2634,10 +2919,13 @@ export type Database = {
           degree_type?: string | null
           description?: Json | null
           end_date?: string | null
+          expected_graduation_date?: string | null
           field_of_study?: string | null
+          gpa?: number | null
           id?: string
           institution_name?: string | null
           is_current?: boolean | null
+          is_verified?: boolean | null
           location?: string | null
           start_date?: string | null
           university_id?: string | null
@@ -2824,6 +3112,7 @@ export type Database = {
           created_at: string | null
           created_by_user_id: string | null
           display_name: string | null
+          frequency_xp: number
           headline: string | null
           id: string
           industry_id: string | null
@@ -2844,6 +3133,7 @@ export type Database = {
           created_at?: string | null
           created_by_user_id?: string | null
           display_name?: string | null
+          frequency_xp?: number
           headline?: string | null
           id: string
           industry_id?: string | null
@@ -2864,6 +3154,7 @@ export type Database = {
           created_at?: string | null
           created_by_user_id?: string | null
           display_name?: string | null
+          frequency_xp?: number
           headline?: string | null
           id?: string
           industry_id?: string | null
@@ -2884,6 +3175,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      vanity_url_analytics: {
+        Row: {
+          country_code: string | null
+          created_at: string
+          device_type: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          ip_hash: string | null
+          referrer: string | null
+          user_agent: string | null
+          visited_at: string
+        }
+        Insert: {
+          country_code?: string | null
+          created_at?: string
+          device_type?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          ip_hash?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+          visited_at?: string
+        }
+        Update: {
+          country_code?: string | null
+          created_at?: string
+          device_type?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          ip_hash?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+          visited_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -2932,6 +3262,15 @@ export type Database = {
         Args: { coord: number; max_offset_degrees?: number }
         Returns: number
       }
+      jitter_coordinate_deterministic: {
+        Args: {
+          coord: number
+          coord_type?: string
+          max_offset_degrees?: number
+          user_id: string
+        }
+        Returns: number
+      }
       search_all_skills: {
         Args: { search_term: string; taxonomy_filter?: string }
         Returns: {
@@ -2949,7 +3288,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      notification_type: "success" | "warning" | "info"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -5822,6 +6161,83 @@ export type Database = {
         }
         Relationships: []
       }
+      iceberg_namespaces: {
+        Row: {
+          bucket_id: string
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          bucket_id: string
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          bucket_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "iceberg_namespaces_bucket_id_fkey"
+            columns: ["bucket_id"]
+            isOneToOne: false
+            referencedRelation: "buckets_analytics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      iceberg_tables: {
+        Row: {
+          bucket_id: string
+          created_at: string
+          id: string
+          location: string
+          name: string
+          namespace_id: string
+          updated_at: string
+        }
+        Insert: {
+          bucket_id: string
+          created_at?: string
+          id?: string
+          location: string
+          name: string
+          namespace_id: string
+          updated_at?: string
+        }
+        Update: {
+          bucket_id?: string
+          created_at?: string
+          id?: string
+          location?: string
+          name?: string
+          namespace_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "iceberg_tables_bucket_id_fkey"
+            columns: ["bucket_id"]
+            isOneToOne: false
+            referencedRelation: "buckets_analytics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "iceberg_tables_namespace_id_fkey"
+            columns: ["namespace_id"]
+            isOneToOne: false
+            referencedRelation: "iceberg_namespaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       migrations: {
         Row: {
           executed_at: string | null
@@ -6332,7 +6748,9 @@ export const Constants = {
     Enums: {},
   },
   core: {
-    Enums: {},
+    Enums: {
+      notification_type: ["success", "warning", "info"],
+    },
   },
   data: {
     Enums: {},
@@ -6362,3 +6780,4 @@ export const Constants = {
     },
   },
 } as const
+
