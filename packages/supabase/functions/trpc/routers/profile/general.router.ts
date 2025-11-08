@@ -11,7 +11,7 @@ import {
   formatPhoneNumber,
   getPhoneRegionCode,
   isValidPhoneNumber,
-} from "../../../../schemas/src/common/phone.ts";
+} from "../../../_shared/phone.ts";
 
 /**
  * Profile General router - handles basic profile information

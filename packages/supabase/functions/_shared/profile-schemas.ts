@@ -1,6 +1,6 @@
 import { z } from "zod";
 // @ts-ignore - Deno requires .ts extension for relative imports
-import { phoneNumberSchema } from "../../../../schemas/src/common/phone.ts";
+import { phoneNumberSchema } from "./phone.ts";
 
 /**
  * General Profile Form Schema

@@ -41,6 +41,7 @@
     "supa:seed:prod": "pnpm env-prod pnpm --filter @app/supabase seed",
     "supa:seed:onet": "pnpm env-local pnpm --filter @app/supabase seed:onet",
     "supa:seed:onet:prod": "pnpm env-prod pnpm --filter @app/supabase seed:onet",
+    "supa:functions:prod": "pnpm supa:prod functions deploy trpc --project-ref qmfmpcyxsihhfttvqpbw",
     "supa:reset": "pnpm supa db reset && pnpm supa seed && pnpm test",
     "supa:generate": "dotenv -e .env -- pnpx supabase --workdir packages gen types typescript --local > packages/supabase/types.ts",
     "typecheck": "turbo typecheck",

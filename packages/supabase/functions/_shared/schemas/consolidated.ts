@@ -2,7 +2,7 @@ import { z } from "zod";
 // @ts-ignore - Deno requires .ts extension for relative imports
 import {
   phoneNumberSchema,
-} from "../../../../schemas/src/common/phone.ts";
+} from "../phone.ts";
 
 // Phone validation helper (matches frontend validation)
 const optionalPhoneNumberSchema = phoneNumberSchema;
