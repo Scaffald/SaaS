@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@app/core/utils/api";
-import type { ViewportBounds } from "@app/ui/src/components/maps/types";
+import type { ViewportBounds } from "@app/ui";
 
 /**
  * Calculate approximate viewport bounds from a location point
@@ -115,4 +115,3 @@ export function formatLocationWithCounts(
 
   return `${location} - ${parts.join(", ")}`;
 }
-

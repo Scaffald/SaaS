@@ -141,7 +141,7 @@ export const ProfileCard = memo(
         ...skills.slice(0, 3).map((skill, idx) => ({
           key: `skill-${idx}`,
           label: skill,
-          bg: '$blue10',
+          bg: '$blue8',
           color: '$color1',
         })),
       ]
@@ -165,9 +165,9 @@ export const ProfileCard = memo(
           onPress={() => onSelect(id)}
           selection={{
             enabled: true,
-            selectedBorderColor: '$blue9',
-            selectedBgColor: '$blue9',
-            selectedShadow: '0 4px 8px rgba(59, 130, 246, 0.2)',
+            selectedBorderColor: '$blue7',
+            selectedBgColor: '$blue2',
+            selectedShadow: '0 4px 8px rgba(35, 156, 178, 0.2)',
           }}
         >
           {/* Header with score badge */}

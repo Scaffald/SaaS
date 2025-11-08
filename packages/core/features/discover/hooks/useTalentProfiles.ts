@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@app/core/utils/supabase/client";
 import type { Database } from "@app/supabase/types";
 import type { TalentProfile } from "../types";
-import type { ViewportBounds } from "@app/ui/src/components/maps/types";
+import type { ViewportBounds } from "@app/ui";
 
 // Type for the v_profile_search view with additional fields we select
 type ProfileSearchRow =

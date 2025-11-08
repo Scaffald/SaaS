@@ -86,9 +86,9 @@ export const OrganizationCard = memo(
           onPress={() => onSelect(id)}
           selection={{
             enabled: true,
-            selectedBorderColor: '$blue9',
-            selectedBgColor: '$blue9',
-            selectedShadow: '0 4px 8px rgba(168, 85, 247, 0.2)',
+            selectedBorderColor: '$blue7',
+            selectedBgColor: '$blue2',
+            selectedShadow: '0 4px 8px rgba(35, 156, 178, 0.2)',
           }}
         >
           {/* Header with building icon */}

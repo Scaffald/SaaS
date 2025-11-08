@@ -14,7 +14,7 @@ import {
   Separator,
 } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
-import { DashboardWidget, CustomCheckbox } from '@app/ui'
+import { DashboardWidget, CustomCheckbox, Button as StyledButton, spacing } from '@app/ui'
 import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
 import {
@@ -109,8 +109,8 @@ export function PrerequisiteWidget() {
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
-        <YStack gap="$2">
+      <YStack gap={spacing.md}>
+        <YStack gap={spacing.xs}>
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Complete Your Profile
           </Text>
@@ -120,8 +120,8 @@ export function PrerequisiteWidget() {
         </YStack>
 
         {isCheckingStatus ? (
-          <YStack gap="$3" items="center" py="$8">
-            <Spinner size="large" />
+          <YStack gap={spacing.sm} items="center" py={spacing['2xl']}>
+            <Spinner size="large" color="$blue7" />
             <Text color="$color11">Loading...</Text>
           </YStack>
         ) : (
@@ -346,7 +346,7 @@ export function PrerequisiteWidget() {
                       <Text flex={1} onPress={() => field.onChange(!field.value)}>
                         I accept the{' '}
                         <Text
-                          color="$blue10"
+                          color="$blue7"
                           textDecorationLine="underline"
                           onPress={(e) => {
                             e.stopPropagation()
@@ -383,7 +383,7 @@ export function PrerequisiteWidget() {
                       <Text flex={1} onPress={() => field.onChange(!field.value)}>
                         I accept the{' '}
                         <Text
-                          color="$blue10"
+                          color="$blue7"
                           textDecorationLine="underline"
                           onPress={(e) => {
                             e.stopPropagation()
@@ -407,23 +407,23 @@ export function PrerequisiteWidget() {
             </YStack>
 
             {/* Submit Button */}
-            <Button
+            <StyledButton
+              variant="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={isSubmitting}
               opacity={isSubmitting ? 0.5 : 1}
               size="$5"
-              themeInverse
-              mt="$2"
+              mt={spacing.xs}
             >
               {isSubmitting ? (
-                <XStack gap="$2" items="center">
-                  <Spinner size="small" color="$color12" />
+                <XStack gap={spacing.xs} items="center">
+                  <Spinner size="small" color="white" />
                   <Button.Text>Completing...</Button.Text>
                 </XStack>
               ) : (
                 <Button.Text>Complete Profile</Button.Text>
               )}
-            </Button>
+            </StyledButton>
           </>
         )}
       </YStack>

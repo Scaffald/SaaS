@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router'
 import { YStack, Text, Button, Spinner } from 'tamagui'
-import { DashboardWidget } from '@app/ui'
+import { DashboardWidget, Button as StyledButton, spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
 
@@ -15,8 +15,8 @@ export function IPIPAssessmentWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap="$3" items="center" py="$8">
-          <Spinner size="large" />
+        <YStack gap={spacing.sm} items="center" py={spacing['2xl']}>
+          <Spinner size="large" color="$blue7" />
           <Text color="$color11">Loading...</Text>
         </YStack>
       </DashboardWidget>
@@ -36,19 +36,20 @@ export function IPIPAssessmentWidget() {
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
-        <YStack gap="$2">
+      <YStack gap={spacing.md}>
+        <YStack gap={spacing.xs}>
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Personality Questions
           </Text>
           <Text fontSize="$3" color="$color11">
-            Answer 120 questions to discover your personality traits using the Big Five personality model.
+            Answer 120 questions to discover your personality traits using the Big Five personality
+            model.
           </Text>
         </YStack>
 
-        <Button onPress={handleStart} size="$5" themeInverse>
+        <StyledButton variant="primary" onPress={handleStart} size="$5">
           <Button.Text>{hasStarted ? 'Continue Questions' : 'Start Questions'}</Button.Text>
-        </Button>
+        </StyledButton>
 
         <Text fontSize="$2" color="$color11">
           {hasStarted ? `${progress}/120 questions answered` : 'Takes about 10-15 minutes'}
@@ -57,4 +58,3 @@ export function IPIPAssessmentWidget() {
     </DashboardWidget>
   )
 }
-

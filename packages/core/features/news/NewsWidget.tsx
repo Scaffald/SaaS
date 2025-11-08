@@ -11,7 +11,7 @@ import {
   useWindowDimensions,
 } from 'tamagui'
 import { ChevronDown, RefreshCw, AlertCircle } from '@tamagui/lucide-icons'
-import { NewsCard } from '@app/ui'
+import { NewsCard, Button as StyledButton, spacing } from '@app/ui'
 import { useAggregatedNews } from './hooks/useNewsFeed'
 import { getFeedsByIndustry, getDefaultFeeds, findFeedById } from './config/news-feeds'
 import { redirect } from '@app/core/utils/redirect'
@@ -97,7 +97,7 @@ export function NewsWidget({
       case 'equipment':
         return '$yellow8'
       default:
-        return '$color8'
+        return '$blue7'
     }
   }
 
@@ -107,14 +107,14 @@ export function NewsWidget({
   }
 
   return (
-    <YStack gap="$4">
+    <YStack gap={spacing.md}>
       {/* Header with title and controls */}
-      <XStack justify="space-between" items="center" px="$5" pt="$3">
-        <Text fontSize="$6" fontWeight="600">
+      <XStack justify="space-between" items="center" px={spacing.lg} pt={spacing.sm}>
+        <Text fontSize="$6" fontWeight="600" color="$color12">
           News
         </Text>
 
-        <XStack gap="$2" items="center">
+        <XStack gap={spacing.xs} items="center">
           {/* Feed Selector */}
           {showFeedSelector && (
             <Select value={selectedFeedIds[0] || ''} onValueChange={handleFeedChange} size="$3">
@@ -224,7 +224,7 @@ export function NewsWidget({
           )}
 
           {/* Refresh Button */}
-          <Button
+          <StyledButton
             size="$3"
             variant="outlined"
             onPress={handleRefresh}
@@ -235,11 +235,11 @@ export function NewsWidget({
       </XStack>
 
       {/* News Content */}
-      <YStack gap="$3">
+      <YStack gap={spacing.sm}>
         {/* Loading State */}
         {isLoading && newsItems.length === 0 && (
-          <YStack items="center" p="$6" gap="$3">
-            <Spinner size="large" />
+          <YStack items="center" p={spacing.xl} gap={spacing.sm}>
+            <Spinner size="large" color="$blue7" />
             <Text color="$color11" fontSize="$4">
               Loading news...
             </Text>
@@ -248,7 +248,7 @@ export function NewsWidget({
 
         {/* Error State */}
         {isError && (
-          <YStack items="center" p="$6" gap="$3">
+          <YStack items="center" p={spacing.xl} gap={spacing.sm}>
             <AlertCircle size={24} color="$red10" />
             <Text color="$red11" fontSize="$4" text="center">
               Failed to load news feed
@@ -256,9 +256,9 @@ export function NewsWidget({
             <Text color="$color11" fontSize="$3" text="center">
               {error?.message || 'Please check your internet connection'}
             </Text>
-            <Button onPress={handleRefresh} size="$3">
+            <StyledButton variant="primary" onPress={handleRefresh} size="$3">
               Try Again
-            </Button>
+            </StyledButton>
           </YStack>
         )}
 
@@ -317,8 +317,8 @@ export function NewsWidget({
 
         {/* Empty State */}
         {!isLoading && !isError && newsItems.length === 0 && (
-          <YStack items="center" p="$6" gap="$3">
-            <Text color="$color11" fontSize="$4">
+          <YStack items="center" p={spacing.xl} gap={spacing.sm}>
+            <Text color="$color11" fontSize="$4" fontWeight="600">
               No news available
             </Text>
             <Text color="$color10" fontSize="$3" text="center">

@@ -9,7 +9,7 @@ export default function OfficeLayout() {
   // Show loading state BEFORE rendering the drawer
   if (isLoading) {
     return (
-      <YStack flex={1} justify="center" items="center" bg="$background">
+      <YStack flex={1} justify="center" items="center">
         <Spinner size="large" />
         <Text mt="$4">Loading...</Text>
       </YStack>

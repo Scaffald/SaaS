@@ -1,12 +1,14 @@
-import { animations, defaultConfig } from '@tamagui/config/v4'
-import { createTamagui, setupDev } from 'tamagui'
-import { themes } from './themes/earth-theme'
+import { defaultConfig } from "@tamagui/config/v4";
+import { createTamagui, setupDev } from "tamagui";
+import { animations } from "./config/animations";
+import { media } from "./config/media";
+import { themes } from "./themes/scaffald-theme";
 
 // Development setup - only in development
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === "development") {
   setupDev({
     visualizer: true,
-  })
+  });
 }
 
 export const config = createTamagui({
@@ -17,26 +19,13 @@ export const config = createTamagui({
 
   animations,
 
-  media: {
-    xs: { maxWidth: 660 },
-    gtXs: { minWidth: 660 + 1 },
-    sm: { maxWidth: 860 },
-    gtSm: { minWidth: 860 + 1 },
-    md: { maxWidth: 980 },
-    gtMd: { minWidth: 980 + 1 },
-    lg: { maxWidth: 1120 },
-    gtLg: { minWidth: 1120 + 1 },
-    short: { maxHeight: 820 },
-    tall: { minHeight: 820 },
-    hoverNone: { hover: 'none' },
-    pointerCoarse: { pointer: 'coarse' },
-  },
-})
+  media,
+});
 
-export default config
+export default config;
 
-export type Conf = typeof config
+export type Conf = typeof config;
 
-declare module 'tamagui' {
+declare module "tamagui" {
   interface TamaguiCustomConfig extends Conf {}
 }

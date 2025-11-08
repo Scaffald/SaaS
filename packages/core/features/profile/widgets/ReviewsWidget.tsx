@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { YStack, XStack, Text, H4, Card, Button, Spinner } from 'tamagui'
+import { YStack, XStack, Text, Card, Spinner } from 'tamagui'
 import { Star, ThumbsUp, ThumbsDown, MessageSquarePlus, Shield } from '@tamagui/lucide-icons'
 import { randomUUID } from 'expo-crypto'
-import { DashboardWidget, ResponsiveModal } from '@app/ui'
+import { DashboardWidget, ResponsiveModal, Button, Heading, LoadingState, spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useUser } from '@app/core/utils/useUser'
 import { ReviewWizard } from '../../reviews/components/ReviewWizard'
@@ -69,10 +69,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
-          <Spinner size="large" />
-          <Text color="$color11">Loading reviews...</Text>
-        </YStack>
+        <LoadingState message="Loading reviews..." />
       </DashboardWidget>
     )
   }
@@ -81,11 +78,16 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
     return (
       <>
         <DashboardWidget>
-          <YStack gap="$4">
+          <YStack gap={spacing.md}>
             <XStack justify="space-between" items="center">
-              <H4>Reviews & Ratings</H4>
+              <Heading variant="h4">Reviews & Ratings</Heading>
               {canLeaveReview && (
-                <Button size="$2" theme="blue" icon={MessageSquarePlus} onPress={handleLeaveReview}>
+                <Button
+                  variant="primary"
+                  size="small"
+                  icon={<MessageSquarePlus size={16} />}
+                  onPress={handleLeaveReview}
+                >
                   Leave Review
                 </Button>
               )}
@@ -152,12 +154,17 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
   return (
     <>
       <DashboardWidget>
-        <YStack gap="$4">
+        <YStack gap={spacing.md}>
           {/* Header */}
           <XStack justify="space-between" items="center">
-            <H4>Reviews & Ratings</H4>
+            <Heading variant="h4">Reviews & Ratings</Heading>
             {canLeaveReview && (
-              <Button size="$2" theme="blue" icon={MessageSquarePlus} onPress={handleLeaveReview}>
+              <Button
+                variant="primary"
+                size="small"
+                icon={<MessageSquarePlus size={16} />}
+                onPress={handleLeaveReview}
+              >
                 Leave Review
               </Button>
             )}
@@ -248,7 +255,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                         <Text fontSize="$5" fontWeight="700" color="$color12">
                           Anonymous Reviewer
                         </Text>
-                        <XStack gap="$1" items="center" px="$2" py="$0.5" bg="$blue3" rounded="$2">
+                        <XStack gap="$1" items="center" px="$2" py="$0.5" bg="$blue2" rounded="$2">
                           <Shield size={12} color="$blue11" />
                           <Text fontSize="$1" color="$blue11" fontWeight="600">
                             VERIFIED
@@ -314,7 +321,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
             ))}
 
             {showCompact && reviews.length > 2 && (
-              <Text fontSize="$3" color="$blue10" fontWeight="600">
+              <Text fontSize="$3" color="$blue7" fontWeight="600" cursor="pointer">
                 + {reviews.length - 2} more reviews
               </Text>
             )}

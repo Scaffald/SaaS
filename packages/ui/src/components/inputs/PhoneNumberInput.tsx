@@ -229,6 +229,11 @@ export const PhoneNumberInput = ({
           pl={50} // Make space for country selector
           pr="$3"
           py="$3"
+          focusStyle={{
+            borderColor: '$blue7',
+            outlineColor: '$blue7',
+            outlineWidth: 2,
+          }}
         />
 
         {/* Country Selector - absolutely positioned */}

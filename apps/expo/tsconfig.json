@@ -30,9 +30,11 @@
       "@app/core": ["packages/core"],
       "@app/core/*": ["packages/core/*"],
       "@app/ui": ["packages/ui"],
-      "@app/ui/*": ["packages/ui/*"],
+      "@app/ui/*": ["packages/ui/src/*"],
       "@app/supabase": ["packages/supabase"],
-      "@app/supabase/*": ["packages/supabase/*"]
+      "@app/supabase/*": ["packages/supabase/*"],
+      "@app/schemas": ["packages/schemas/src"],
+      "@app/schemas/*": ["packages/schemas/src/*"]
     }
   },
   "references": []

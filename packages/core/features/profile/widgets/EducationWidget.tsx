@@ -1,7 +1,8 @@
-import { YStack, XStack, Text, H4, Spinner, Button, Separator } from 'tamagui'
-import { DashboardWidget } from '@app/ui'
+import { YStack, XStack, Text, Spinner, Separator } from 'tamagui'
+import { DashboardWidget, Button, EmptyState, Heading, LoadingState, spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
+import { GraduationCap } from '@tamagui/lucide-icons'
 import type { ProfileWidgetProps } from './types'
 import { formatDate } from '../utils/date-formatting'
 
@@ -41,10 +42,7 @@ export function EducationWidget({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
-          <Spinner size="large" />
-          <Text color="$color11">Loading education...</Text>
-        </YStack>
+        <LoadingState message="Loading education..." />
       </DashboardWidget>
     )
   }
@@ -67,14 +65,14 @@ export function EducationWidget({
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
+      <YStack gap={spacing.md}>
         {/* Header */}
         <XStack justify="space-between" items="center">
-          <H4>Education</H4>
+          <Heading variant="h4">Education</Heading>
           {showEdit && (
             <Button
-              size="$2"
-              chromeless
+              variant="outlined"
+              size="small"
               onPress={() => router.push('/dashboard/profile/education')}
             >
               Edit
@@ -83,14 +81,21 @@ export function EducationWidget({
         </XStack>
 
         {education.length === 0 ? (
-          <YStack gap="$2" items="center" py="$4">
-            <Text color="$color11">No education added yet</Text>
-            {showEdit && (
-              <Button size="$2" onPress={() => router.push('/dashboard/profile/education')}>
-                Add Education
-              </Button>
-            )}
-          </YStack>
+          <EmptyState
+            icon={<GraduationCap />}
+            title="No education added yet"
+            description="Add your education history to complete your profile"
+            action={
+              showEdit ? (
+                <Button
+                  variant="primary"
+                  onPress={() => router.push('/dashboard/profile/education')}
+                >
+                  Add Education
+                </Button>
+              ) : undefined
+            }
+          />
         ) : (
           <YStack gap="$4">
             {education
@@ -121,7 +126,7 @@ export function EducationWidget({
                     </Text>
                     {edu.is_current && (
                       <XStack
-                        bg="$blue3"
+                        bg="$blue2"
                         px="$2"
                         py="$0.5"
                         rounded="$2"
@@ -156,13 +161,17 @@ export function EducationWidget({
 
             {/* Show More link for compact view */}
             {showCompact && education.length > 2 && (
-              <Button
-                size="$2"
-                chromeless
+              <Text
+                color="$blue7"
+                fontSize="$3"
+                fontWeight="600"
+                cursor="pointer"
+                hoverStyle={{ color: '$blue8' }}
+                pressStyle={{ color: '$blue9' }}
                 onPress={() => router.push('/dashboard/profile/education')}
               >
-                View all {education.length} entries
-              </Button>
+                View all {education.length} entries →
+              </Text>
             )}
           </YStack>
         )}

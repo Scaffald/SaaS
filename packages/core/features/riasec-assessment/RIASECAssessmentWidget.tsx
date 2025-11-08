@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router'
 import { YStack, Text, Button, Spinner } from 'tamagui'
-import { DashboardWidget } from '@app/ui'
+import { DashboardWidget, Button as StyledButton, spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
 
@@ -15,8 +15,8 @@ export function RIASECAssessmentWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap="$3" items="center" py="$8">
-          <Spinner size="large" />
+        <YStack gap={spacing.sm} items="center" py={spacing['2xl']}>
+          <Spinner size="large" color="$blue7" />
           <Text color="$color11">Loading...</Text>
         </YStack>
       </DashboardWidget>
@@ -33,8 +33,8 @@ export function RIASECAssessmentWidget() {
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
-        <YStack gap="$2">
+      <YStack gap={spacing.md}>
+        <YStack gap={spacing.xs}>
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Career Interests
           </Text>
@@ -43,9 +43,9 @@ export function RIASECAssessmentWidget() {
           </Text>
         </YStack>
 
-        <Button onPress={handleStart} size="$5" themeInverse>
+        <StyledButton variant="primary" onPress={handleStart} size="$5">
           <Button.Text>Start Interest Assessment</Button.Text>
-        </Button>
+        </StyledButton>
 
         <Text fontSize="$2" color="$color11">
           Takes about 2-3 minutes
@@ -54,4 +54,3 @@ export function RIASECAssessmentWidget() {
     </DashboardWidget>
   )
 }
-

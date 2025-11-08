@@ -25,6 +25,7 @@ module.exports = (api) => {
             '@app/core': '../../packages/core',
             '@app/ui': '../../packages/ui',
             '@app/supabase': '../../packages/supabase',
+            '@app/schemas': '../../packages/schemas/src',
           },
           extensions: ['.js', '.jsx', '.tsx', '.ios.js', '.android.js'],
         },

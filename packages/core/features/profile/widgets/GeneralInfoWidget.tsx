@@ -1,5 +1,5 @@
-import { YStack, XStack, Text, H4, Spinner, Avatar, Button } from 'tamagui'
-import { DashboardWidget } from '@app/ui'
+import { YStack, XStack, Text, Spinner, Avatar } from 'tamagui'
+import { DashboardWidget, Button, Heading, LoadingState, spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
@@ -29,10 +29,7 @@ export function GeneralInfoWidget({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
-          <Spinner size="large" />
-          <Text color="$color11">Loading profile...</Text>
-        </YStack>
+        <LoadingState message="Loading profile..." />
       </DashboardWidget>
     )
   }
@@ -70,12 +67,16 @@ export function GeneralInfoWidget({
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
+      <YStack gap={spacing.md}>
         {/* Header */}
         <XStack justify="space-between" items="center">
-          <H4>General Information</H4>
+          <Heading variant="h4">General Information</Heading>
           {showEdit && (
-            <Button size="$2" chromeless onPress={() => router.push('/dashboard/profile/general')}>
+            <Button
+              variant="outlined"
+              size="small"
+              onPress={() => router.push('/dashboard/profile/general')}
+            >
               Edit
             </Button>
           )}
@@ -111,14 +112,14 @@ export function GeneralInfoWidget({
           {/* Status Badges */}
           {data.open_to_work && (
             <XStack
-              bg="$green3"
+              bg="$blue2"
               px="$3"
               py="$1.5"
               rounded="$10"
               borderWidth={1}
-              borderColor="$green7"
+              borderColor="$blue7"
             >
-              <Text color="$green11" fontSize="$2" fontWeight="600">
+              <Text color="$blue11" fontSize="$2" fontWeight="600">
                 Open to Work
               </Text>
             </XStack>
