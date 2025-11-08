@@ -141,29 +141,29 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                     .map((skill: UserSkill) => (
                       <XStack
                         key={skill.id}
-                        bg="$teal2"
+                        bg="$blue2"
                         px="$3"
                         py="$2"
                         rounded="$3"
                         borderWidth={1}
-                        borderColor={skill.verified ? '$teal7' : '$teal5'}
+                        borderColor={skill.verified ? '$blue7' : '$blue5'}
                         gap="$2"
                         items="center"
                       >
-                        {skill.verified && <CheckCircle size={14} color="$teal11" />}
+                        {skill.verified && <CheckCircle size={14} color="$blue11" />}
                         <YStack gap="$0.5">
-                          <Text fontSize="$2" fontWeight="500" color="$teal11">
+                          <Text fontSize="$2" fontWeight="500" color="$blue11">
                             {getSkillName(skill)}
                           </Text>
                           {!showCompact && (
                             <XStack gap="$2">
                               {skill.proficiency_level !== null && (
-                                <Text fontSize="$1" color="$teal10">
+                                <Text fontSize="$1" color="$blue10">
                                   {getProficiencyLabel(skill.proficiency_level)}
                                 </Text>
                               )}
                               {skill.years_experience !== null && skill.years_experience > 0 && (
-                                <Text fontSize="$1" color="$teal10">
+                                <Text fontSize="$1" color="$blue10">
                                   • {skill.years_experience}y
                                 </Text>
                               )}
@@ -179,12 +179,12 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
             {/* Show More link for compact view */}
             {showCompact && skills.length > 5 && (
               <Text
-                color="$teal7"
+                color="$blue7"
                 fontSize="$3"
                 fontWeight="600"
                 cursor="pointer"
-                hoverStyle={{ color: '$teal8' }}
-                pressStyle={{ color: '$teal9' }}
+                hoverStyle={{ color: '$blue8' }}
+                pressStyle={{ color: '$blue9' }}
                 onPress={() => router.push('/dashboard/profile/skills')}
               >
                 View all {skills.length} skills →

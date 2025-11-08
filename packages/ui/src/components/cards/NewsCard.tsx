@@ -187,7 +187,7 @@ export const NewsCard = ({
                 <Button
                   size="$3"
                   variant="outlined"
-                  borderColor="$teal7"
+                  borderColor="$blue7"
                   color="$color12"
                   fontWeight="600"
                   onPress={handlePress}
@@ -195,8 +195,8 @@ export const NewsCard = ({
                   animation="quick"
                   pressStyle={{ scale: 0.95 }}
                   hoverStyle={{
-                    bg: '$teal2',
-                    borderColor: '$teal8',
+                    bg: '$blue2',
+                    borderColor: '$blue8',
                   }}
                 >
                   {readMoreText}

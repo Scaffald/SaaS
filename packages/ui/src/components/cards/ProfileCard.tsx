@@ -141,7 +141,7 @@ export const ProfileCard = memo(
         ...skills.slice(0, 3).map((skill, idx) => ({
           key: `skill-${idx}`,
           label: skill,
-          bg: '$teal8',
+          bg: '$blue8',
           color: '$color1',
         })),
       ]
@@ -165,8 +165,8 @@ export const ProfileCard = memo(
           onPress={() => onSelect(id)}
           selection={{
             enabled: true,
-            selectedBorderColor: '$teal7',
-            selectedBgColor: '$teal2',
+            selectedBorderColor: '$blue7',
+            selectedBgColor: '$blue2',
             selectedShadow: '0 4px 8px rgba(35, 156, 178, 0.2)',
           }}
         >
@@ -174,9 +174,9 @@ export const ProfileCard = memo(
           <XStack justify="space-between" items="center">
             <CardHeader title={name} isSelected={isSelected} icon={avatar} />
             {score && (
-              <XStack items="center" gap="$1" bg="$teal3" rounded="$4" px="$2" py="$1">
-                <Star size={12} color="$teal11" />
-                <Text color="$teal11" fontWeight="700" fontSize="$2">
+              <XStack items="center" gap="$1" bg="$blue3" rounded="$4" px="$2" py="$1">
+                <Star size={12} color="$blue11" />
+                <Text color="$blue11" fontWeight="700" fontSize="$2">
                   {score}
                 </Text>
               </XStack>

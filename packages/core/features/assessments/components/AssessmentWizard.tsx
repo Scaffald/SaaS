@@ -122,16 +122,10 @@ export function AssessmentWizard({
   }
 
   return (
-    <YStack flex={1} bg="$background">
+    <YStack flex={1}>
       {/* Header */}
       {(title || description || steps.length > 1) && (
-        <YStack
-          p="$4"
-          bg="$background"
-          borderBottomWidth={1}
-          borderBottomColor="$borderColor"
-          gap="$3"
-        >
+        <YStack p="$4" gap="$3">
           {(title || description) && (
             <YStack gap="$1">
               {title && (
@@ -170,7 +164,7 @@ export function AssessmentWizard({
 
       {/* Navigation Footer */}
       {(showPrevious || showNext) && (
-        <YStack p="$4" bg="$background" borderTopWidth={1} borderTopColor="$borderColor">
+        <YStack p="$4" borderTopWidth={1} borderTopColor="$borderColor">
           <XStack gap="$3" justify="space-between">
             {showPrevious && (
               <Button size="$4" variant="outlined" icon={ChevronLeft} onPress={onPrevious}>

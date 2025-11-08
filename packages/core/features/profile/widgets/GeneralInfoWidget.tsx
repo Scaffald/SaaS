@@ -112,14 +112,14 @@ export function GeneralInfoWidget({
           {/* Status Badges */}
           {data.open_to_work && (
             <XStack
-              bg="$teal2"
+              bg="$blue2"
               px="$3"
               py="$1.5"
               rounded="$10"
               borderWidth={1}
-              borderColor="$teal7"
+              borderColor="$blue7"
             >
-              <Text color="$teal11" fontSize="$2" fontWeight="600">
+              <Text color="$blue11" fontSize="$2" fontWeight="600">
                 Open to Work
               </Text>
             </XStack>

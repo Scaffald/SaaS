@@ -188,7 +188,7 @@ export const JobCard = memo(
         ...skills.slice(0, 2).map((skill) => ({
           key: skill.id,
           label: skill.name,
-          bg: '$teal8',
+          bg: '$blue8',
           color: '$color1',
         })),
       ]
@@ -203,8 +203,8 @@ export const JobCard = memo(
             onSelect
               ? {
                   enabled: true,
-                  selectedBorderColor: '$teal7',
-                  selectedBgColor: '$teal2',
+                  selectedBorderColor: '$blue7',
+                  selectedBgColor: '$blue2',
                   selectedShadow: '0 4px 8px rgba(35, 156, 178, 0.2)',
                 }
               : undefined
@@ -244,7 +244,7 @@ export const JobCard = memo(
           {/* Remote option chip */}
           {remoteOption && (
             <XStack gap="$2">
-              <XStack bg="$teal8" px="$2" py="$1" rounded="$2">
+              <XStack bg="$blue8" px="$2" py="$1" rounded="$2">
                 <Text color="white" fontSize="$2" fontWeight="600">
                   {remoteOption === 'on_site'
                     ? 'On-site'

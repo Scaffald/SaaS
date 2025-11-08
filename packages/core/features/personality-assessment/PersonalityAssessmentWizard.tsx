@@ -237,7 +237,7 @@ export function PersonalityAssessmentWizard() {
 
       {/* Navigation Footer */}
       {currentStep !== 'completed' && (
-        <YStack p="$4" bg="$background" borderTopWidth={1} borderTopColor="$borderColor">
+        <YStack p="$4" borderTopWidth={1} borderTopColor="$borderColor">
           <XStack gap="$3" justify="space-between">
             <Button
               size="$4"

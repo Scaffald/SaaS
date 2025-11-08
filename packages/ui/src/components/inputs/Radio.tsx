@@ -36,7 +36,7 @@ const RadioContainer = styled(View, {
     },
     checked: {
       true: {
-        borderColor: '$teal7',
+        borderColor: '$blue7',
       },
       false: {
         borderColor: '$borderColor',
@@ -54,14 +54,14 @@ const RadioContainer = styled(View, {
     },
   } as const,
   focusStyle: {
-    borderColor: '$teal7',
-    outlineColor: '$teal7',
+    borderColor: '$blue7',
+    outlineColor: '$blue7',
     outlineWidth: 2,
     outlineStyle: 'solid',
   },
   hoverStyle: {
     scale: 1.05,
-    borderColor: '$teal8',
+    borderColor: '$blue8',
   },
   pressStyle: {
     scale: 0.95,
@@ -70,7 +70,7 @@ const RadioContainer = styled(View, {
 
 const RadioDot = styled(View, {
   position: 'absolute',
-  bg: '$teal7',
+  bg: '$blue7',
   rounded: 50,
   variants: {
     size: {

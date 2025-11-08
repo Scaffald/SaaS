@@ -126,14 +126,14 @@ export function ExperienceWidget({
                     </Text>
                     {exp.is_current && (
                       <XStack
-                        bg="$teal2"
+                        bg="$blue2"
                         px="$2"
                         py="$0.5"
                         rounded="$2"
                         borderWidth={1}
-                        borderColor="$teal7"
+                        borderColor="$blue7"
                       >
-                        <Text color="$teal11" fontSize="$1" fontWeight="600">
+                        <Text color="$blue11" fontSize="$1" fontWeight="600">
                           Current
                         </Text>
                       </XStack>
@@ -176,12 +176,12 @@ export function ExperienceWidget({
             {/* Show More link for compact view */}
             {showCompact && experiences.length > 3 && (
               <Text
-                color="$teal7"
+                color="$blue7"
                 fontSize="$3"
                 fontWeight="600"
                 cursor="pointer"
-                hoverStyle={{ color: '$teal8' }}
-                pressStyle={{ color: '$teal9' }}
+                hoverStyle={{ color: '$blue8' }}
+                pressStyle={{ color: '$blue9' }}
                 onPress={() => router.push('/dashboard/profile/experience')}
               >
                 View all {experiences.length} positions →

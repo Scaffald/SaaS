@@ -9,7 +9,7 @@ interface MapFallbackProps {
 
 export function MapFallback({ pinsCount, message, style }: MapFallbackProps) {
   return (
-    <View flex={1} bg="$background" items="center" justify="center" style={style}>
+    <View flex={1} items="center" justify="center" style={style}>
       <YStack bg="$backgroundHover" rounded="$4" p="$4" items="center" gap="$2">
         <Text fontSize="$6" fontWeight="bold" color="$color12">
           📍

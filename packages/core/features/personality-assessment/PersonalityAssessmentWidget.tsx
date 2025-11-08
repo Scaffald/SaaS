@@ -23,7 +23,7 @@ export function PersonalityAssessmentWidget() {
     return (
       <DashboardWidget>
         <YStack gap={spacing.sm} items="center" py={spacing['2xl']}>
-          <Spinner size="large" color="$teal7" />
+          <Spinner size="large" color="$blue7" />
           <Text color="$color11">Loading...</Text>
         </YStack>
       </DashboardWidget>
@@ -78,12 +78,12 @@ export function PersonalityAssessmentWidget() {
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 {getStepLabel(currentStep)}
               </Text>
-              <Text fontSize="$4" fontWeight="bold" color="$teal8">
+              <Text fontSize="$4" fontWeight="bold" color="$blue8">
                 {completionScore}%
               </Text>
             </XStack>
             <Progress value={completionScore} max={100}>
-              <Progress.Indicator animation="bouncy" bg="$teal7" />
+              <Progress.Indicator animation="bouncy" bg="$blue7" />
             </Progress>
             <Text fontSize="$2" color="$color11">
               {hasStarted ? 'Continue where you left off' : 'Start your assessment'}

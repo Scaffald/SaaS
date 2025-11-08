@@ -51,7 +51,7 @@ export default function DesignTokensPage() {
           </XStack>
           <Paragraph fontSize={12} color="$color10">
             Tokens source: packages/ui/src/tamagui.config.ts &
-            packages/ui/src/themes/earth-theme.ts.
+            packages/ui/src/themes/scaffald-theme.ts.
           </Paragraph>
         </YStack>
         <AnchorHeading

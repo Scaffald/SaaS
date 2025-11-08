@@ -16,7 +16,7 @@ export function RIASECAssessmentWidget() {
     return (
       <DashboardWidget>
         <YStack gap={spacing.sm} items="center" py={spacing['2xl']}>
-          <Spinner size="large" color="$teal7" />
+          <Spinner size="large" color="$blue7" />
           <Text color="$color11">Loading...</Text>
         </YStack>
       </DashboardWidget>

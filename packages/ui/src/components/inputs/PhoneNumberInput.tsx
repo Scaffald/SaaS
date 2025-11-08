@@ -230,8 +230,8 @@ export const PhoneNumberInput = ({
           pr="$3"
           py="$3"
           focusStyle={{
-            borderColor: '$teal7',
-            outlineColor: '$teal7',
+            borderColor: '$blue7',
+            outlineColor: '$blue7',
             outlineWidth: 2,
           }}
         />

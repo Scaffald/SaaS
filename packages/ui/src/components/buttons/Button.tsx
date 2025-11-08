@@ -15,7 +15,7 @@ import { Button as TamaguiButton, type ButtonProps as TamaguiButtonProps } from 
  * - danger: Red background, white text - for destructive actions
  *
  * Design Tokens Used:
- * - Colors: $teal7, $teal8, $teal9 (primary), $red8, $red9, $red10 (danger)
+ * - Colors: $blue7, $blue8, $blue9 (primary), $red8, $red9, $red10 (danger)
  * - Animations: quick (150ms)
  * - Font weight: 600 (semibold)
  *
@@ -75,14 +75,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
        */
       primary: {
         theme: 'primary',
-        bg: '$teal7', // Primary teal (#239CB2)
+        bg: '$blue7', // Primary teal (#239CB2)
         color: 'white',
         borderWidth: 0,
         hoverStyle: {
-          bg: '$teal8', // Darker teal on hover
+          bg: '$blue8', // Darker teal on hover
         },
         pressStyle: {
-          bg: '$teal9', // Even darker on press
+          bg: '$blue9', // Even darker on press
           scale: 0.97, // Slight scale reduction
         },
       },

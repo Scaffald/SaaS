@@ -16,7 +16,7 @@ export function IPIPAssessmentWidget() {
     return (
       <DashboardWidget>
         <YStack gap={spacing.sm} items="center" py={spacing['2xl']}>
-          <Spinner size="large" color="$teal7" />
+          <Spinner size="large" color="$blue7" />
           <Text color="$color11">Loading...</Text>
         </YStack>
       </DashboardWidget>
@@ -42,7 +42,8 @@ export function IPIPAssessmentWidget() {
             Personality Questions
           </Text>
           <Text fontSize="$3" color="$color11">
-            Answer 120 questions to discover your personality traits using the Big Five personality model.
+            Answer 120 questions to discover your personality traits using the Big Five personality
+            model.
           </Text>
         </YStack>
 

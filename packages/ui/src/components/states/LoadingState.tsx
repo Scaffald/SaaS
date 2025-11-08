@@ -64,7 +64,7 @@ export function LoadingState({ message, size = 'medium', fullScreen = false }: L
       zIndex={fullScreen ? 9999 : undefined}
     >
       {/* Spinner with teal color */}
-      <Spinner size={spinnerSize} color="$teal7" />
+      <Spinner size={spinnerSize} color="$blue7" />
 
       {/* Optional message */}
       {message && (

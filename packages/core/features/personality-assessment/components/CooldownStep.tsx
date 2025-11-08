@@ -99,7 +99,10 @@ export function CooldownStep({
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
-  const cooldownProgress = Math.max(0, ((COOLDOWN_DURATION - timeRemaining) / COOLDOWN_DURATION) * 100)
+  const cooldownProgress = Math.max(
+    0,
+    ((COOLDOWN_DURATION - timeRemaining) / COOLDOWN_DURATION) * 100
+  )
 
   return (
     <YStack gap="$6" maxWidth={800} width="100%" alignSelf="center">
@@ -133,7 +136,7 @@ export function CooldownStep({
         </YStack>
 
         {currentQuestion && (
-          <YStack gap="$4" p="$4" bg="$background" rounded="$4" borderWidth={1} borderColor="$borderColor">
+          <YStack gap="$4" p="$4" rounded="$4" borderWidth={1} borderColor="$borderColor">
             <Text fontSize="$5" fontWeight="500" color="$color12">
               {currentQuestion.text}
             </Text>
@@ -155,7 +158,6 @@ export function CooldownStep({
           </YStack>
         )}
 
-
         {!currentQuestion && !isCooldownActive && (
           <YStack gap="$2" items="center" p="$4">
             <Text fontSize="$4" color="$green10" fontWeight="600" textAlign="center">
@@ -167,4 +169,3 @@ export function CooldownStep({
     </YStack>
   )
 }
-

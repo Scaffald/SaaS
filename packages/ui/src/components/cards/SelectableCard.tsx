@@ -13,7 +13,7 @@ import type { SelectableCardProps } from './types'
  * Provides consistent selection, hover, and press states with smooth animations.
  *
  * Design Tokens Used:
- * - Colors: $teal7 (primary), $teal2 (selected bg), $teal3 (hover), $teal8 (hover border)
+ * - Colors: $blue7 (primary), $blue2 (selected bg), $blue3 (hover), $blue8 (hover border)
  * - Shadows: cardShadows.light, cardShadows.dark
  * - Border radius: borderRadius.md
  * - Spacing: spacing.md, spacing.sm (defaults)
@@ -73,11 +73,11 @@ export const SelectableCard = memo(
 
       // Use teal theme tokens for selection (matching Scaffald brand)
       const borderColor = isSelected
-        ? (selection?.selectedBorderColor ?? '$teal7') // Primary teal
+        ? (selection?.selectedBorderColor ?? '$blue7') // Primary teal
         : '$borderColor'
 
       const bgColor = isSelected
-        ? (selection?.selectedBgColor ?? '$teal2') // Light teal background
+        ? (selection?.selectedBgColor ?? '$blue2') // Light teal background
         : '$background'
 
       // Use design token shadows
@@ -121,8 +121,8 @@ export const SelectableCard = memo(
           hoverStyle={
             !disabled
               ? {
-                  bg: isSelected ? '$teal3' : '$backgroundHover',
-                  borderColor: isSelected ? '$teal8' : '$borderColorHover',
+                  bg: isSelected ? '$blue3' : '$backgroundHover',
+                  borderColor: isSelected ? '$blue8' : '$borderColorHover',
                   boxShadow: isDark ? cardShadows.darkHover : cardShadows.lightHover,
                 }
               : undefined

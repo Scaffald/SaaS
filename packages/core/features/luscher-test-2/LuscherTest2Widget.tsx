@@ -16,7 +16,7 @@ export function LuscherTest2Widget() {
     return (
       <DashboardWidget>
         <YStack gap={spacing.sm} items="center" py={spacing['2xl']}>
-          <Spinner size="large" color="$teal7" />
+          <Spinner size="large" color="$blue7" />
           <Text color="$color11">Loading...</Text>
         </YStack>
       </DashboardWidget>
@@ -39,7 +39,8 @@ export function LuscherTest2Widget() {
             Aspirational Color Test
           </Text>
           <Text fontSize="$3" color="$color11">
-            Select 8 colors again, this time based on your aspirational preferences - the colors you'd like to prefer.
+            Select 8 colors again, this time based on your aspirational preferences - the colors
+            you'd like to prefer.
           </Text>
         </YStack>
 

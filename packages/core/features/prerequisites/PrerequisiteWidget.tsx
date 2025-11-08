@@ -121,7 +121,7 @@ export function PrerequisiteWidget() {
 
         {isCheckingStatus ? (
           <YStack gap={spacing.sm} items="center" py={spacing['2xl']}>
-            <Spinner size="large" color="$teal7" />
+            <Spinner size="large" color="$blue7" />
             <Text color="$color11">Loading...</Text>
           </YStack>
         ) : (
@@ -346,7 +346,7 @@ export function PrerequisiteWidget() {
                       <Text flex={1} onPress={() => field.onChange(!field.value)}>
                         I accept the{' '}
                         <Text
-                          color="$teal7"
+                          color="$blue7"
                           textDecorationLine="underline"
                           onPress={(e) => {
                             e.stopPropagation()
@@ -383,7 +383,7 @@ export function PrerequisiteWidget() {
                       <Text flex={1} onPress={() => field.onChange(!field.value)}>
                         I accept the{' '}
                         <Text
-                          color="$teal7"
+                          color="$blue7"
                           textDecorationLine="underline"
                           onPress={(e) => {
                             e.stopPropagation()

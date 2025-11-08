@@ -125,14 +125,14 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
                   {data.preferred_work_locations.map((location: string) => (
                     <XStack
                       key={location}
-                      bg="$teal2"
+                      bg="$blue2"
                       px="$3"
                       py="$1.5"
                       rounded="$3"
                       borderWidth={1}
-                      borderColor="$teal7"
+                      borderColor="$blue7"
                     >
-                      <Text fontSize="$2" color="$teal11">
+                      <Text fontSize="$2" color="$blue11">
                         {location}
                       </Text>
                     </XStack>
@@ -204,14 +204,14 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
                   {data.drivers_license_classes.map((license: string) => (
                     <XStack
                       key={license}
-                      bg="$teal2"
+                      bg="$blue2"
                       px="$3"
                       py="$1.5"
                       rounded="$3"
                       borderWidth={1}
-                      borderColor="$teal7"
+                      borderColor="$blue7"
                     >
-                      <Text fontSize="$2" color="$teal11" fontWeight="600">
+                      <Text fontSize="$2" color="$blue11" fontWeight="600">
                         Class {license}
                       </Text>
                     </XStack>

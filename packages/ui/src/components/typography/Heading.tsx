@@ -83,7 +83,7 @@ const headingVariants: Record<
  * <Heading variant="h2">Recent Jobs</Heading>
  *
  * // Subsection
- * <Heading variant="h3" color="$teal11">
+ * <Heading variant="h3" color="$blue11">
  *   Skills Required
  * </Heading>
  *

@@ -26,8 +26,8 @@ const CustomToggle = styled(View, {
   variants: {
     checked: {
       true: {
-        bg: '$teal7',
-        borderColor: '$teal7',
+        bg: '$blue7',
+        borderColor: '$blue7',
       },
       false: {
         bg: '$color5',
@@ -65,13 +65,13 @@ const CustomToggle = styled(View, {
     },
   } as const,
   focusStyle: {
-    borderColor: '$teal7',
-    outlineColor: '$teal7',
+    borderColor: '$blue7',
+    outlineColor: '$blue7',
     outlineWidth: 2,
     outlineStyle: 'solid',
   },
   hoverStyle: {
-    borderColor: '$teal8',
+    borderColor: '$blue8',
   },
 })
 

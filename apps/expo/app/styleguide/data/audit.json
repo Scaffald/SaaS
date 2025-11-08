@@ -13,7 +13,7 @@
     "library": "Tamagui",
     "tokens": [
       "packages/ui/src/tamagui.config.ts",
-      "packages/ui/src/themes/earth-theme.ts",
+      "packages/ui/src/themes/scaffald-theme.ts",
       "packages/core/assets/brand-colors.ts"
     ],
     "css": "Tamagui theme runtime generating CSS-in-JS for web",

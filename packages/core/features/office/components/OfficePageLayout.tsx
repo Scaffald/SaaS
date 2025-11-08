@@ -33,7 +33,7 @@ export function OfficePageLayout<TData>({
   emptyMessage = 'No data found',
 }: OfficePageLayoutProps<TData>) {
   return (
-    <YStack flex={1} bg="$background" p="$4" gap="$4">
+    <YStack flex={1} p="$4" gap="$4">
       <XStack justify="space-between" items="center">
         <H2>{title}</H2>
         <Button icon={Plus} onPress={onCreateClick}>

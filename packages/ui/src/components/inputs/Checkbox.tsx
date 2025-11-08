@@ -37,8 +37,8 @@ const CheckboxContainer = styled(View, {
     },
     checked: {
       true: {
-        bg: '$teal7',
-        borderColor: '$teal7',
+        bg: '$blue7',
+        borderColor: '$blue7',
       },
       false: {
         bg: 'transparent',
@@ -57,14 +57,14 @@ const CheckboxContainer = styled(View, {
     },
   } as const,
   focusStyle: {
-    borderColor: '$teal7',
-    outlineColor: '$teal7',
+    borderColor: '$blue7',
+    outlineColor: '$blue7',
     outlineWidth: 2,
     outlineStyle: 'solid',
   },
   hoverStyle: {
     scale: 1.05,
-    borderColor: '$teal8',
+    borderColor: '$blue8',
   },
   pressStyle: {
     scale: 0.95,

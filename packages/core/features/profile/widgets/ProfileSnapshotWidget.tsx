@@ -50,7 +50,7 @@ export function ProfileSnapshotWidget() {
     return (
       <DashboardWidget>
         <YStack gap={spacing.md} items="center" py={spacing['2xl']}>
-          <Spinner size="large" color="$teal7" />
+          <Spinner size="large" color="$blue7" />
           <Text color="$color11">Loading profile...</Text>
         </YStack>
       </DashboardWidget>
@@ -115,7 +115,12 @@ export function ProfileSnapshotWidget() {
         {/* Header */}
         <XStack justify="space-between" items="center">
           <H4>Profile</H4>
-          <Button size="$2" chromeless color="$teal7" onPress={() => router.push('/dashboard/profile')}>
+          <Button
+            size="$2"
+            chromeless
+            color="$blue7"
+            onPress={() => router.push('/dashboard/profile')}
+          >
             View Full Profile
           </Button>
         </XStack>
@@ -193,14 +198,22 @@ export function ProfileSnapshotWidget() {
               </Text>
             </XStack>
             <Progress value={completion} max={100}>
-              <Progress.Indicator animation="bouncy" bg="$teal7" />
+              <Progress.Indicator animation="bouncy" bg="$blue7" />
             </Progress>
           </YStack>
 
           {/* Stats Row */}
           <XStack gap={spacing.sm} flexWrap="wrap">
-            <YStack gap="$1" flex={1} minW={80} bg="$color2" p={spacing.sm} rounded="$3" items="center">
-              <Text fontSize="$6" fontWeight="700" color="$teal8">
+            <YStack
+              gap="$1"
+              flex={1}
+              minW={80}
+              bg="$color2"
+              p={spacing.sm}
+              rounded="$3"
+              items="center"
+            >
+              <Text fontSize="$6" fontWeight="700" color="$blue8">
                 {skills?.length || 0}
               </Text>
               <Text fontSize="$1" color="$color11">
@@ -208,7 +221,15 @@ export function ProfileSnapshotWidget() {
               </Text>
             </YStack>
 
-            <YStack gap="$1" flex={1} minW={80} bg="$color2" p={spacing.sm} rounded="$3" items="center">
+            <YStack
+              gap="$1"
+              flex={1}
+              minW={80}
+              bg="$color2"
+              p={spacing.sm}
+              rounded="$3"
+              items="center"
+            >
               <Text fontSize="$6" fontWeight="700" color="$green10">
                 {certifications?.length || 0}
               </Text>
@@ -217,8 +238,16 @@ export function ProfileSnapshotWidget() {
               </Text>
             </YStack>
 
-            <YStack gap="$1" flex={1} minW={80} bg="$color2" p={spacing.sm} rounded="$3" items="center">
-              <Text fontSize="$6" fontWeight="700" color="$teal7">
+            <YStack
+              gap="$1"
+              flex={1}
+              minW={80}
+              bg="$color2"
+              p={spacing.sm}
+              rounded="$3"
+              items="center"
+            >
+              <Text fontSize="$6" fontWeight="700" color="$blue7">
                 {generalInfo.years_of_experience || 0}
               </Text>
               <Text fontSize="$1" color="$color11">

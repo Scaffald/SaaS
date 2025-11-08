@@ -13,7 +13,7 @@ export default function EditUserPage() {
 
   if (!id) {
     return (
-      <YStack flex={1} bg="$background" items="center" justify="center">
+      <YStack flex={1} items="center" justify="center">
         <Text>Invalid user ID</Text>
       </YStack>
     )

@@ -255,9 +255,9 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                         <Text fontSize="$5" fontWeight="700" color="$color12">
                           Anonymous Reviewer
                         </Text>
-                        <XStack gap="$1" items="center" px="$2" py="$0.5" bg="$teal2" rounded="$2">
-                          <Shield size={12} color="$teal11" />
-                          <Text fontSize="$1" color="$teal11" fontWeight="600">
+                        <XStack gap="$1" items="center" px="$2" py="$0.5" bg="$blue2" rounded="$2">
+                          <Shield size={12} color="$blue11" />
+                          <Text fontSize="$1" color="$blue11" fontWeight="600">
                             VERIFIED
                           </Text>
                         </XStack>
@@ -321,7 +321,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
             ))}
 
             {showCompact && reviews.length > 2 && (
-              <Text fontSize="$3" color="$teal7" fontWeight="600" cursor="pointer">
+              <Text fontSize="$3" color="$blue7" fontWeight="600" cursor="pointer">
                 + {reviews.length - 2} more reviews
               </Text>
             )}

@@ -87,17 +87,17 @@ export function NewsWidget({
       case 'safety':
         return '$red8'
       case 'technology':
-        return '$teal8'
+        return '$blue8'
       case 'sustainability':
         return '$green8'
       case 'finance':
         return '$yellow8'
       case 'workforce':
-        return '$teal8'
+        return '$blue8'
       case 'equipment':
         return '$yellow8'
       default:
-        return '$teal7'
+        return '$blue7'
     }
   }
 
@@ -239,7 +239,7 @@ export function NewsWidget({
         {/* Loading State */}
         {isLoading && newsItems.length === 0 && (
           <YStack items="center" p={spacing.xl} gap={spacing.sm}>
-            <Spinner size="large" color="$teal7" />
+            <Spinner size="large" color="$blue7" />
             <Text color="$color11" fontSize="$4">
               Loading news...
             </Text>

@@ -86,8 +86,8 @@ export const OrganizationCard = memo(
           onPress={() => onSelect(id)}
           selection={{
             enabled: true,
-            selectedBorderColor: '$teal7',
-            selectedBgColor: '$teal2',
+            selectedBorderColor: '$blue7',
+            selectedBgColor: '$blue2',
             selectedShadow: '0 4px 8px rgba(35, 156, 178, 0.2)',
           }}
         >
@@ -95,7 +95,7 @@ export const OrganizationCard = memo(
           <CardHeader
             title={name}
             isSelected={isSelected}
-            icon={<Building size={20} color={isSelected ? '$color1' : '$teal11'} />}
+            icon={<Building size={20} color={isSelected ? '$color1' : '$blue11'} />}
           />
 
           {/* Industry badge */}
@@ -104,12 +104,12 @@ export const OrganizationCard = memo(
               <XStack
                 items="center"
                 gap="$1"
-                bg={isSelected ? '$teal3' : '$teal3'}
+                bg={isSelected ? '$blue3' : '$blue3'}
                 rounded="$4"
                 px="$2"
                 py="$1"
               >
-                <Text color={isSelected ? '$color1' : '$teal11'} fontWeight="600" fontSize="$2">
+                <Text color={isSelected ? '$color1' : '$blue11'} fontWeight="600" fontSize="$2">
                   {industry}
                 </Text>
               </XStack>

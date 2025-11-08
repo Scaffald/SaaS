@@ -123,15 +123,15 @@ export function CertificationsWidget({
                             {cert.name}
                           </Text>
                           <XStack
-                            bg="$teal2"
+                            bg="$blue2"
                             px="$2"
                             py="$0.5"
                             rounded="$2"
                             borderWidth={1}
-                            borderColor="$teal7"
+                            borderColor="$blue7"
                           >
-                            <CheckCircle size={12} color="$teal11" />
-                            <Text color="$teal11" fontSize="$1" fontWeight="600" ml="$1">
+                            <CheckCircle size={12} color="$blue11" />
+                            <Text color="$blue11" fontSize="$1" fontWeight="600" ml="$1">
                               Active
                             </Text>
                           </XStack>
@@ -189,10 +189,10 @@ export function CertificationsWidget({
                               </Text>
                               <Text
                                 fontSize="$2"
-                                color="$teal7"
+                                color="$blue7"
                                 textDecorationLine="underline"
                                 cursor="pointer"
-                                hoverStyle={{ color: '$teal8' }}
+                                hoverStyle={{ color: '$blue8' }}
                                 onPress={() => Linking.openURL(cert.credential_url || '')}
                               >
                                 View Certificate →
@@ -247,12 +247,12 @@ export function CertificationsWidget({
             {/* Show More link for compact view */}
             {showCompact && certifications.length > 3 && (
               <Text
-                color="$teal7"
+                color="$blue7"
                 fontSize="$3"
                 fontWeight="600"
                 cursor="pointer"
-                hoverStyle={{ color: '$teal8' }}
-                pressStyle={{ color: '$teal9' }}
+                hoverStyle={{ color: '$blue8' }}
+                pressStyle={{ color: '$blue9' }}
                 onPress={() => router.push('/dashboard/profile/certifications')}
               >
                 View all {certifications.length} certifications →
