@@ -11,11 +11,10 @@ import {
   useWindowDimensions,
 } from 'tamagui'
 import { ChevronDown, RefreshCw, AlertCircle } from '@tamagui/lucide-icons'
-import { NewsCard, Button as StyledButton } from '@app/ui'
+import { NewsCard, Button as StyledButton, spacing } from '@app/ui'
 import { useAggregatedNews } from './hooks/useNewsFeed'
 import { getFeedsByIndustry, getDefaultFeeds, findFeedById } from './config/news-feeds'
 import { redirect } from '@app/core/utils/redirect'
-import { spacing } from '@/tokens/design-tokens'
 import type { NewsWidgetProps, NewsItem } from './config/types'
 
 /**

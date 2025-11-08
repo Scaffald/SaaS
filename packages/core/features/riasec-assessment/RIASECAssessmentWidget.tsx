@@ -1,9 +1,8 @@
 import { useRouter } from 'expo-router'
 import { YStack, Text, Button, Spinner } from 'tamagui'
-import { DashboardWidget, Button as StyledButton } from '@app/ui'
+import { DashboardWidget, Button as StyledButton, spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
-import { spacing } from '@/tokens/design-tokens'
 
 /**
  * RIASECAssessmentWidget - Dashboard widget CTA for RIASEC Career Interests

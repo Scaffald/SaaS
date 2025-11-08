@@ -1,7 +1,9 @@
 import { memo, forwardRef } from 'react'
 import type { TamaguiElement } from 'tamagui'
 import { YStack, useTheme } from 'tamagui'
-import { cardShadows, borderRadius, spacing } from '../../tokens/design-tokens'
+import { borderRadius } from '../../config/radii'
+import { cardShadows } from '../../config/shadows'
+import { spacing } from '../../config/spacing'
 import type { SelectableCardProps } from './types'
 
 /**

@@ -1,5 +1,6 @@
 import { YStack, Text, Spinner } from 'tamagui'
-import { spacing, typography } from '../../tokens/design-tokens'
+import { spacing } from '../../config/spacing'
+import { typography } from '../../config/typography'
 
 /**
  * LoadingState component props

@@ -1,11 +1,8 @@
 import { YStack, XStack, Text, Spinner, Avatar } from 'tamagui'
-import { DashboardWidget, Button } from '@app/ui'
-import { Heading } from '@app/ui/components/typography/Heading'
-import { LoadingState } from '@app/ui/components/states/LoadingState'
+import { DashboardWidget, Button, Heading, LoadingState, spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
-import { spacing } from '@/tokens/design-tokens'
 import type { ProfileWidgetProps } from './types'
 
 /**

@@ -1,9 +1,8 @@
 import { useRouter } from 'expo-router'
 import { YStack, Text, Button, Spinner } from 'tamagui'
-import { DashboardWidget, Button as StyledButton } from '@app/ui'
+import { DashboardWidget, Button as StyledButton, spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
-import { spacing } from '@/tokens/design-tokens'
 
 /**
  * OccupationAssessmentWidget - Dashboard widget CTA for Occupation Preferences
@@ -40,7 +39,8 @@ export function OccupationAssessmentWidget() {
             Occupation Preferences
           </Text>
           <Text fontSize="$3" color="$color11">
-            Tell us about your current occupation and target occupations to help us recommend relevant opportunities.
+            Tell us about your current occupation and target occupations to help us recommend
+            relevant opportunities.
           </Text>
         </YStack>
 

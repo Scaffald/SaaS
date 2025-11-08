@@ -1,11 +1,7 @@
 import { YStack, XStack, Text, Spinner } from 'tamagui'
-import { DashboardWidget, Button } from '@app/ui'
-import { Heading } from '@app/ui/components/typography/Heading'
-import { LoadingState } from '@app/ui/components/states/LoadingState'
-import { EmptyState } from '@app/ui/components/states/EmptyState'
+import { DashboardWidget, Button, EmptyState, Heading, LoadingState, spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
-import { spacing } from '@/tokens/design-tokens'
 import { CheckCircle } from '@tamagui/lucide-icons'
 import type { ProfileWidgetProps } from './types'
 

@@ -1,5 +1,12 @@
 import { createAnimations } from '@tamagui/animations-moti'
 
+export const animationDurations = {
+  fast: 150,
+  normal: 250,
+  slow: 350,
+  slower: 500,
+} as const
+
 export const animations = createAnimations({
   '100ms': {
     type: 'timing',
@@ -41,3 +48,5 @@ export const animations = createAnimations({
     stiffness: 100,
   },
 })
+
+export type AnimationDurationName = keyof typeof animationDurations

@@ -1,6 +1,6 @@
 import { forwardRef } from 'react'
 import { Text, type TextProps } from 'tamagui'
-import { typography } from '../../tokens/design-tokens'
+import { typography } from '../../config/typography'
 
 /**
  * Heading variant types

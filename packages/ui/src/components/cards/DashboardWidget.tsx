@@ -1,6 +1,8 @@
 import type { ReactNode, ComponentProps } from 'react'
 import { Card, useTheme, useWindowDimensions, type CardProps } from 'tamagui'
-import { cardShadows, borderRadius, spacing } from '../../tokens/design-tokens'
+import { borderRadius } from '../../config/radii'
+import { cardShadows } from '../../config/shadows'
+import { spacing } from '../../config/spacing'
 
 /**
  * DashboardWidget - Refined card component with Scaffald design system
@@ -88,11 +90,6 @@ export const DashboardWidget = ({
       animation="quick"
       hoverStyle={{
         boxShadow: shadowHover,
-        borderColor: '$borderColorHover',
-      }}
-      pressStyle={{
-        scale: 0.99,
-        boxShadow: isDark ? cardShadows.darkPress : cardShadows.lightPress,
       }}
       {...props}
     >

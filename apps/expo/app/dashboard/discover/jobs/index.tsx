@@ -1,5 +1,5 @@
 import { DiscoverJobsScreen } from '@app/core/features/discover/discover-jobs-screen'
-import { DashboardLayout } from '@app/ui/src/components/layouts/DashboardLayout'
+import { DashboardLayout } from '@app/ui'
 
 export default function DiscoverJobsPage() {
   const { left, right } = DiscoverJobsScreen()

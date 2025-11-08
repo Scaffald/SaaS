@@ -12,7 +12,8 @@ import {
   useTheme,
 } from 'tamagui'
 import * as Linking from 'expo-linking'
-import { cardShadows, borderRadius } from '../../tokens/design-tokens'
+import { borderRadius } from '../../config/radii'
+import { cardShadows } from '../../config/shadows'
 
 /**
  * NewsCard - A reusable news card component with image overlay

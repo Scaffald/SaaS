@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
 import { YStack, Text } from 'tamagui'
 import { Inbox } from '@tamagui/lucide-icons'
-import { spacing, typography } from '../../tokens/design-tokens'
+import { spacing } from '../../config/spacing'
+import { typography } from '../../config/typography'
 
 /**
  * EmptyState component props

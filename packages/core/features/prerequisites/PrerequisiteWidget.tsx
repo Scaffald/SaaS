@@ -14,10 +14,9 @@ import {
   Separator,
 } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
-import { DashboardWidget, CustomCheckbox, Button as StyledButton } from '@app/ui'
+import { DashboardWidget, CustomCheckbox, Button as StyledButton, spacing } from '@app/ui'
 import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
-import { spacing } from '@/tokens/design-tokens'
 import {
   prerequisitesSchema,
   prerequisitesDefaults,
