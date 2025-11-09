@@ -1,11 +1,16 @@
-import { useState } from 'react'
 import { ScrollView, Text, Input, Label, Button, XStack, Separator, YStack } from 'tamagui'
 import { Search, Filter, X } from '@tamagui/lucide-icons'
+import { FilterChip } from '@app/ui'
 import { AddOrganizationWidget } from './components/AddOrganizationWidget'
 
 interface DiscoverEmployersRightProps {
+  searchQuery: string
+  industries: string[]
+  industryCounts: Record<string, number>
+  selectedIndustries: string[]
   onSearchChange: (query: string) => void
   onIndustriesChange: (industries: string[]) => void
+  onClearFilters: () => void
 }
 
 /**
@@ -13,14 +18,16 @@ interface DiscoverEmployersRightProps {
  * Right panel content for the employers discovery page - displays search and filters
  */
 export function DiscoverEmployersRight({
+  searchQuery,
+  industries,
+  industryCounts,
+  selectedIndustries,
   onSearchChange,
   onIndustriesChange,
+  onClearFilters,
 }: DiscoverEmployersRightProps) {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
-
-  // Mock industries - in real app, fetch from API
-  const industries = [
+  // Mock industries - fallback when API data is not yet available
+  const fallbackIndustries = [
     'Construction',
     'Manufacturing',
     'Engineering',
@@ -29,25 +36,22 @@ export function DiscoverEmployersRight({
     'Education',
   ]
 
+  const industryOptions = industries.length > 0 ? industries : fallbackIndustries
+
   const handleSearchChange = (value: string) => {
-    setSearchQuery(value)
     onSearchChange(value)
   }
 
   const handleIndustryToggle = (industry: string) => {
-    const newIndustries = selectedIndustries.includes(industry)
+    const nextIndustries = selectedIndustries.includes(industry)
       ? selectedIndustries.filter((i) => i !== industry)
       : [...selectedIndustries, industry]
 
-    setSelectedIndustries(newIndustries)
-    onIndustriesChange(newIndustries)
+    onIndustriesChange(nextIndustries)
   }
 
   const handleClearFilters = () => {
-    setSearchQuery('')
-    setSelectedIndustries([])
-    onSearchChange('')
-    onIndustriesChange([])
+    onClearFilters()
   }
 
   const hasActiveFilters = searchQuery.length > 0 || selectedIndustries.length > 0
@@ -103,7 +107,7 @@ export function DiscoverEmployersRight({
           </XStack>
 
           <YStack gap="$2">
-            {industries.map((industry) => {
+            {industryOptions.map((industry) => {
               const isSelected = selectedIndustries.includes(industry)
               return (
                 <Button
@@ -139,16 +143,36 @@ export function DiscoverEmployersRight({
                 </XStack>
               )}
               {selectedIndustries.length > 0 && (
-                <XStack gap="$2" items="center" flexWrap="wrap">
+                <YStack gap="$2">
                   <Text fontSize="$3" color="$color11">
                     Industries:
                   </Text>
-                  {selectedIndustries.map((industry) => (
-                    <Text key={industry} fontSize="$3" fontWeight="600" color="$blue10">
-                      {industry}
-                    </Text>
-                  ))}
-                </XStack>
+                  <XStack gap="$2" flexWrap="wrap">
+                    {selectedIndustries.map((industry) => {
+                      const count = industryCounts[industry] ?? 0
+                      const isInteractive = count > 0
+
+                      return (
+                        <YStack
+                          key={industry}
+                          onPress={isInteractive ? () => handleIndustryToggle(industry) : undefined}
+                          pointerEvents={isInteractive ? 'auto' : 'none'}
+                          cursor={isInteractive ? 'pointer' : 'not-allowed'}
+                          opacity={isInteractive ? 1 : 0.6}
+                          hoverStyle={isInteractive ? { opacity: 0.9 } : undefined}
+                          pressStyle={isInteractive ? { opacity: 0.85 } : undefined}
+                          aria-disabled={!isInteractive}
+                        >
+                          <FilterChip
+                            label={`${industry} (${count})`}
+                            color={isInteractive ? 'blue' : 'gray'}
+                            removable={false}
+                          />
+                        </YStack>
+                      )
+                    })}
+                  </XStack>
+                </YStack>
               )}
             </YStack>
           </>

@@ -23,6 +23,8 @@ export interface ToggleCardProps {
   theme?: ThemeName
   /** Optional test ID for testing */
   testID?: string
+  /** Disable press-to-toggle behavior on the card container */
+  cardPressDisabled?: boolean
 }
 
 const AnimatedExpandedContent = styled(YStack, {
@@ -79,9 +81,10 @@ export function ToggleCard({
   width = 300,
   theme,
   testID,
+  cardPressDisabled = false,
 }: ToggleCardProps) {
   const handlePress = () => {
-    if (!disabled) {
+    if (!disabled && !cardPressDisabled) {
       onCheckedChange(!checked)
     }
   }
@@ -102,7 +105,7 @@ export function ToggleCard({
         gap="$2.5"
         theme={theme}
         animation="medium"
-        onPress={handlePress}
+        onPress={cardPressDisabled ? undefined : handlePress}
         disabled={disabled}
         opacity={disabled ? 0.5 : 1}
         cursor={disabled ? 'not-allowed' : 'pointer'}
@@ -137,7 +140,7 @@ export function ToggleCard({
             onCheckedChange={onCheckedChange}
             disabled={disabled}
             size="medium"
-            testID={`${testID}-toggle`}
+            testID={testID ? `${testID}-toggle` : undefined}
           />
         </View>
       </XStack>

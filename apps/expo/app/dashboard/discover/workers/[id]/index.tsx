@@ -10,4 +10,3 @@ export default function DiscoverWorkerProfilePage() {
     <DashboardLayout leftContent={left} rightContent={right} breadcrumbItems={breadcrumbItems} />
   )
 }
-

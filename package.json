@@ -61,6 +61,8 @@
   },
   "packageManager": "pnpm@10.20.0",
   "devDependencies": {
+    "@testing-library/jest-native": "^5.4.3",
+    "@testing-library/react-native": "^12.5.2",
     "@biomejs/biome": "catalog:",
     "@tamagui/cli": "catalog:",
     "@tamagui/config": "catalog:",

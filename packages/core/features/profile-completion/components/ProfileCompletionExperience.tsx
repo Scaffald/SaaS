@@ -64,7 +64,7 @@ export function ProfileCompletionExperience() {
   )
 
   const dismissModal = useCallback(
-    (reason: string = 'user_dismissed_modal') => {
+    (reason = 'user_dismissed_modal') => {
       setIsModalOpen(false)
       if (typeof sessionStorage !== 'undefined') {
         sessionStorage.setItem(SESSION_MODAL_KEY, 'true')

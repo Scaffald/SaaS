@@ -130,7 +130,39 @@ export const profileEmploymentInputSchema = z
     // Hourly Rate (no minimum, max 200)
     hourly_rate: z.number().max(200).optional(),
   })
-  .partial();
+  .partial()
+  .superRefine((data, ctx) => {
+    const residencyFieldsProvided =
+      typeof data.us_resident !== 'undefined' ||
+      typeof data.us_passport !== 'undefined' ||
+      typeof data.authorized_countries !== 'undefined';
+
+    if (residencyFieldsProvided) {
+      const hasResidencyStatus =
+        Boolean(data.us_resident) ||
+        Boolean(data.us_passport) ||
+        (Array.isArray(data.authorized_countries) && data.authorized_countries.length > 0);
+
+      if (!hasResidencyStatus) {
+        ctx.addIssue({
+          path: ['us_resident'],
+          code: z.ZodIssueCode.custom,
+          message: 'Please indicate your work authorization status',
+        });
+      }
+    }
+
+    if (
+      data.open_to_travel === true &&
+      (data.travel_distance_miles === undefined || data.travel_distance_miles === null)
+    ) {
+      ctx.addIssue({
+        path: ['travel_distance_miles'],
+        code: z.ZodIssueCode.custom,
+        message: 'Please select a travel distance',
+      });
+    }
+  });
 
 export const profileEmploymentOutputSchema = z.object({
   preferred_work_locations: z.array(z.string()),
