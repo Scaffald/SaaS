@@ -9,6 +9,10 @@ import { UserMenuAvatar } from './UserMenuAvatar'
 import { DrawerMenu } from './DrawerMenu'
 import { api } from '@app/core/utils/api'
 import type { NotificationItem } from '@app/ui'
+import { useRouter } from 'expo-router'
+import type { Href } from 'expo-router'
+
+const NOTIFICATIONS_ROUTE: Href = '/dashboard/notifications'
 
 interface DrawerLayoutProps {
   /**
@@ -38,13 +42,18 @@ export function DrawerLayout({
   const { width } = useWindowDimensions()
   const theme = useTheme()
   const isSmall = width < 1400
+  const router = useRouter()
 
   // Fetch notifications
-  const { data: notifications = [], isLoading: isLoadingNotifications } =
-    api.notifications.list.useQuery({ limit: 50 })
+  const {
+    data: notificationsData,
+    isLoading: isLoadingNotifications,
+    refetch: refetchNotifications,
+  } = api.notifications.list.useQuery({ limit: 25 })
 
   // Fetch unread count
-  const { data: unreadCountData } = api.notifications.getUnreadCount.useQuery()
+  const { data: unreadCountData, refetch: refetchUnread } =
+    api.notifications.getUnreadCount.useQuery()
   const unreadCount = unreadCountData?.count || 0
 
   // Mark as read mutation
@@ -71,23 +80,18 @@ export function DrawerLayout({
   }
 
   // Transform notifications to match NotificationItem interface
-  const transformedNotifications: NotificationItem[] = notifications.map(
-    (n: {
-      id: string
-      type: string
-      title: string
-      message: string
-      created_at: string
-      read: boolean
-      destination_url: string | null
-    }) => ({
+  const transformedNotifications: NotificationItem[] = (notificationsData?.items ?? []).map(
+    (n) => ({
       id: n.id,
-      type: n.type as 'success' | 'warning' | 'info',
+      type: n.type,
+      severity: n.severity ?? 'info',
       title: n.title,
-      message: n.message,
-      timestamp: n.created_at,
-      read: n.read,
-      destination_url: n.destination_url,
+      preview: typeof n.body?.preview === 'string' ? n.body.preview : n.preview ?? n.message ?? '',
+      createdAt: n.created_at,
+      read: n.read ?? false,
+      ctaUrl: n.cta_url ?? undefined,
+      ctaLabel: n.cta_label ?? undefined,
+      channels: Array.isArray(n.routed_channels) ? n.routed_channels : [],
     })
   )
 
@@ -135,6 +139,13 @@ export function DrawerLayout({
                       isLoading={isLoadingNotifications}
                       onNotificationClick={handleNotificationClick}
                       onMarkAsRead={handleMarkAsRead}
+                      onViewAll={() => {
+                        router.push(NOTIFICATIONS_ROUTE)
+                        setTimeout(() => {
+                          refetchNotifications()
+                          refetchUnread()
+                        }, 250)
+                      }}
                     />
                     <UserMenuAvatar />
                   </XStack>

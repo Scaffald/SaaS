@@ -9,19 +9,24 @@ import {
   Card,
   Separator,
   Spinner,
+  Badge,
 } from 'tamagui'
-import { Bell, CheckCircle, AlertCircle, Info, X } from '@tamagui/lucide-icons'
+import { Bell, AlertCircle, Info, ShieldAlert, X, ExternalLink } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
+import type { Href } from 'expo-router'
 import { useWindowDimensions } from 'tamagui'
 
 export interface NotificationItem {
   id: string
-  type: 'success' | 'warning' | 'info'
+  type: string
+  severity: 'info' | 'important' | 'critical'
   title: string
-  message: string
-  timestamp: string
+  preview: string
+  createdAt: string
   read: boolean
-  destination_url?: string | null
+  ctaUrl?: string | null
+  ctaLabel?: string | null
+  channels: string[]
 }
 
 interface NotificationDropdownProps {
@@ -45,6 +50,10 @@ interface NotificationDropdownProps {
    * Callback to mark notification as read
    */
   onMarkAsRead?: (notificationId: string) => void
+  /**
+   * Callback when "View all" is pressed
+   */
+  onViewAll?: () => void
 }
 
 /**
@@ -81,11 +90,11 @@ function formatRelativeTime(dateString: string): string {
 /**
  * Get notification icon based on type
  */
-function getNotificationIcon(type: string) {
-  switch (type) {
-    case 'success':
-      return CheckCircle
-    case 'warning':
+function getNotificationIcon(severity: NotificationItem['severity']) {
+  switch (severity) {
+    case 'critical':
+      return ShieldAlert
+    case 'important':
       return AlertCircle
     default:
       return Info
@@ -95,12 +104,12 @@ function getNotificationIcon(type: string) {
 /**
  * Get notification color based on type
  */
-function getNotificationColor(type: string) {
-  switch (type) {
-    case 'success':
-      return '$green10'
-    case 'warning':
+function getNotificationColor(severity: NotificationItem['severity']) {
+  switch (severity) {
+    case 'critical':
       return '$red10'
+    case 'important':
+      return '$orange10'
     default:
       return '$blue10'
   }
@@ -117,6 +126,7 @@ export function NotificationDropdown({
   isLoading = false,
   onNotificationClick,
   onMarkAsRead,
+  onViewAll,
 }: NotificationDropdownProps) {
   const [open, setOpen] = useState(false)
   const router = useRouter()
@@ -142,8 +152,8 @@ export function NotificationDropdown({
       }
 
       // Navigate to destination if provided
-      if (notification.destination_url) {
-        router.push(notification.destination_url as any)
+      if (notification.ctaUrl) {
+        router.push(notification.ctaUrl as Href)
       }
 
       // Close dropdown
@@ -250,15 +260,31 @@ export function NotificationDropdown({
               Notifications
             </Text>
           </XStack>
-          <Button
-            size="$2"
-            circular
-            icon={X}
-            onPress={() => handleOpenChange(false)}
-            bg="transparent"
-            borderWidth={0}
-            aria-label="Close notifications"
-          />
+          <XStack gap="$2">
+            {onViewAll && (
+              <Button
+                size="$2"
+                theme="blue"
+                bg="$accentBg"
+                icon={ExternalLink}
+                onPress={() => {
+                  setOpen(false)
+                  onViewAll()
+                }}
+              >
+                View all
+              </Button>
+            )}
+            <Button
+              size="$2"
+              circular
+              icon={X}
+              onPress={() => handleOpenChange(false)}
+              bg="transparent"
+              borderWidth={0}
+              aria-label="Close notifications"
+            />
+          </XStack>
         </XStack>
 
         {/* Content */}
@@ -296,8 +322,8 @@ export function NotificationDropdown({
                   </XStack>
                   <YStack>
                     {unreadNotifications.map((notification, index) => {
-                      const IconComponent = getNotificationIcon(notification.type)
-                      const iconColor = getNotificationColor(notification.type)
+                      const IconComponent = getNotificationIcon(notification.severity)
+                      const iconColor = getNotificationColor(notification.severity)
 
                       return (
                         <YStack key={notification.id}>
@@ -313,7 +339,7 @@ export function NotificationDropdown({
                             hoverStyle={{ bg: '$color4' }}
                             onPress={() => handleNotificationClick(notification)}
                             cursor="pointer"
-                            aria-label={`${notification.title}. ${notification.message}. ${formatRelativeTime(notification.timestamp)}`}
+                            aria-label={`${notification.title}. ${notification.preview}. ${formatRelativeTime(notification.createdAt)}`}
                           >
                             <XStack gap="$3" items="flex-start">
                               <IconComponent size={18} color={iconColor} />
@@ -336,11 +362,40 @@ export function NotificationDropdown({
                                   lineHeight="$3"
                                   numberOfLines={2}
                                 >
-                                  {notification.message}
+                                  {notification.preview}
                                 </Text>
-                                <Text fontSize="$1" color="$color10" mt="$1">
-                                  {formatRelativeTime(notification.timestamp)}
-                                </Text>
+                                <XStack gap="$2" items="center" mt="$1">
+                                  <Text fontSize="$1" color="$color10">
+                                    {formatRelativeTime(notification.createdAt)}
+                                  </Text>
+                                  <Badge
+                                    size="$1"
+                                    theme={
+                                      notification.severity === 'critical'
+                                        ? 'red'
+                                        : notification.severity === 'important'
+                                          ? 'yellow'
+                                          : 'blue'
+                                    }
+                                  >
+                                    {notification.severity.toUpperCase()}
+                                  </Badge>
+                                  {notification.channels?.length > 0 && (
+                                    <Badge size="$1" theme="gray">
+                                      {notification.channels.join(', ')}
+                                    </Badge>
+                                  )}
+                                </XStack>
+                                {notification.ctaLabel && (
+                                  <Button
+                                    size="$2"
+                                    mt="$2"
+                                    theme="blue"
+                                    onPress={() => handleNotificationClick(notification)}
+                                  >
+                                    {notification.ctaLabel}
+                                  </Button>
+                                )}
                               </YStack>
                             </XStack>
                           </Card>
@@ -375,8 +430,8 @@ export function NotificationDropdown({
                   </XStack>
                   <YStack>
                     {readNotifications.map((notification, index) => {
-                      const IconComponent = getNotificationIcon(notification.type)
-                      const iconColor = getNotificationColor(notification.type)
+                      const IconComponent = getNotificationIcon(notification.severity)
+                      const iconColor = getNotificationColor(notification.severity)
 
                       return (
                         <YStack key={notification.id}>
@@ -392,7 +447,7 @@ export function NotificationDropdown({
                             hoverStyle={{ bg: '$color3', opacity: 1 }}
                             onPress={() => handleNotificationClick(notification)}
                             cursor="pointer"
-                            aria-label={`${notification.title}. ${notification.message}. ${formatRelativeTime(notification.timestamp)}`}
+                            aria-label={`${notification.title}. ${notification.preview}. ${formatRelativeTime(notification.createdAt)}`}
                           >
                             <XStack gap="$3" items="flex-start">
                               <IconComponent size={18} color={iconColor} />
@@ -411,11 +466,40 @@ export function NotificationDropdown({
                                   lineHeight="$3"
                                   numberOfLines={2}
                                 >
-                                  {notification.message}
+                                  {notification.preview}
                                 </Text>
-                                <Text fontSize="$1" color="$color10" mt="$1">
-                                  {formatRelativeTime(notification.timestamp)}
-                                </Text>
+                                <XStack gap="$2" items="center" mt="$1">
+                                  <Text fontSize="$1" color="$color10">
+                                    {formatRelativeTime(notification.createdAt)}
+                                  </Text>
+                                  <Badge
+                                    size="$1"
+                                    theme={
+                                      notification.severity === 'critical'
+                                        ? 'red'
+                                        : notification.severity === 'important'
+                                          ? 'yellow'
+                                          : 'blue'
+                                    }
+                                  >
+                                    {notification.severity.toUpperCase()}
+                                  </Badge>
+                                  {notification.channels?.length > 0 && (
+                                    <Badge size="$1" theme="gray">
+                                      {notification.channels.join(', ')}
+                                    </Badge>
+                                  )}
+                                </XStack>
+                                {notification.ctaLabel && (
+                                  <Button
+                                    size="$2"
+                                    mt="$2"
+                                    theme="blue"
+                                    onPress={() => handleNotificationClick(notification)}
+                                  >
+                                    {notification.ctaLabel}
+                                  </Button>
+                                )}
                               </YStack>
                             </XStack>
                           </Card>
