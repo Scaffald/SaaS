@@ -146,9 +146,11 @@ export function AvatarCropModal({
       return
     }
 
-    const ImageCtor = (globalThis as {
-      Image?: new () => HTMLImageElement
-    }).Image
+    const ImageCtor = (
+      globalThis as {
+        Image?: new () => HTMLImageElement
+      }
+    ).Image
 
     if (!ImageCtor) {
       setError(ERROR_MESSAGES.loadFailed)
@@ -574,7 +576,7 @@ export function AvatarCropModal({
           accessibilityLabel="Preview of cropped avatar"
           aria-label="Preview of cropped avatar"
         >
-                  <TamaguiImage
+          <TamaguiImage
             source={{ uri: imageUri }}
             width={previewImageWidth}
             height={previewImageHeight}

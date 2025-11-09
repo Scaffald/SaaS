@@ -62,8 +62,6 @@
   "packageManager": "pnpm@10.20.0",
   "devDependencies": {
     "@biomejs/biome": "catalog:",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.1.0",
     "@tamagui/cli": "catalog:",
     "@tamagui/config": "catalog:",
     "@turbo/gen": "^2.5.8",
