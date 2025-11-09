@@ -24,6 +24,7 @@ import {
   DEGREE_TYPE_OPTIONS,
   createNewEducationEntry,
 } from './config'
+import type { EducationEntry, EducationEntryFormValues } from './types/education'
 import {
   CustomCheckbox,
   DashboardWidget,
@@ -41,6 +42,22 @@ import {
   failProfileSync,
   resetProfileSyncError,
 } from './utils/profile-sync-store'
+import { normalizeEducationEntry } from './utils/education-entry'
+
+interface SaveEducationInput {
+  education_level?: string | null
+  education_entries?: EducationEntryFormValues[]
+}
+
+interface SaveEducationContext {
+  previousEducation?: EducationEntry[] | undefined
+  previousLevel?: { education_level: string | null } | undefined
+}
+
+interface SaveEducationOutput {
+  success: boolean
+  education_entries: EducationEntry[]
+}
 
 // University type definition
 interface University {
@@ -82,10 +99,11 @@ export function ProfileEducationLeft() {
   const educationQuery = api.profile.getEducation.useQuery()
   const educationLevelQuery = api.profile.getEducationLevel.useQuery()
   const utils = api.useContext()
+  const educationEntries = (educationQuery.data ?? []) as EducationEntry[]
 
   // Mutations
   const saveEducationMutation = api.profile.saveEducation.useMutation({
-    async onMutate(input) {
+    async onMutate(input: SaveEducationInput): Promise<SaveEducationContext> {
       resetProfileSyncError()
       startProfileSync()
       await Promise.all([
@@ -103,7 +121,7 @@ export function ProfileEducationLeft() {
 
       return { previousEducation, previousLevel }
     },
-    onError: (error, _input, context) => {
+    onError: (error: unknown, _input: SaveEducationInput, context?: SaveEducationContext) => {
       console.error('Error saving education:', error)
       if (context?.previousEducation) {
         utils.profile.getEducation.setData(undefined, context.previousEducation)
@@ -124,7 +142,7 @@ export function ProfileEducationLeft() {
         message: 'Your education history has been updated successfully!',
       })
     },
-    onSettled: (_data, error) => {
+    onSettled: (_data: SaveEducationOutput | undefined, error: unknown) => {
       if (!error) {
         completeProfileSync()
       }
@@ -247,37 +265,13 @@ export function ProfileEducationLeft() {
   // Load data when queries succeed
   useEffect(() => {
     if (educationQuery.data && educationLevelQuery.data) {
-      type EducationData = NonNullable<typeof educationQuery.data>[number]
-      const entries = educationQuery.data.map((edu: EducationData, index: number) => {
+      const entries = educationEntries.map((edu, index) => {
         // Set manual entry mode if no university_id
         if (!edu.university_id) {
           setManualEntryMode((prev) => ({ ...prev, [index]: true }))
         }
 
-        // Determine if degree_type needs to be "Other" (if it's not in the standard list)
-        const isStandardDegreeType = edu.degree_type
-          ? (DEGREE_TYPE_OPTIONS as readonly string[]).includes(edu.degree_type)
-          : false
-        const degreeType = isStandardDegreeType ? edu.degree_type : undefined
-        const customDegreeType =
-          !isStandardDegreeType && edu.degree_type ? edu.degree_type : undefined
-
-        return {
-          id: edu.id,
-          university_id: edu.university_id || undefined,
-          institution_name: edu.institution_name || '',
-          is_verified: edu.is_verified ?? false,
-          degree_type: degreeType || (customDegreeType ? 'Other' : undefined),
-          custom_degree_type: customDegreeType,
-          field_of_study: edu.field_of_study || undefined,
-          start_date: edu.start_date || '',
-          end_date: edu.end_date || undefined,
-          expected_graduation_date: edu.expected_graduation_date || undefined,
-          is_current: edu.is_current ?? false,
-          gpa: edu.gpa || undefined,
-          description: edu.description || undefined,
-          location: edu.location || undefined,
-        }
+        return normalizeEducationEntry(edu)
       })
 
       const formData = {

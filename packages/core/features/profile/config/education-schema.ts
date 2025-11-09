@@ -100,6 +100,8 @@ export const educationProfileSchema = z.object({
 // Export the single entry schema for use in edit modal
 export const singleEducationEntrySchema = educationEntrySchema;
 
+export type EducationEntryFormValues = z.infer<typeof educationEntrySchema>;
+
 export type EducationProfileFormData = z.infer<typeof educationProfileSchema>;
 
 export const educationProfileDefaults: Partial<EducationProfileFormData> = {
