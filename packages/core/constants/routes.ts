@@ -34,6 +34,11 @@ const ROUTES_CONFIG = {
     title: "Home",
   },
 
+  STYLEGUIDE: {
+    path: "/styleguide",
+    title: "Styleguide",
+  },
+
   // Auth Routes
   AUTH: {
     path: "/auth",
@@ -55,6 +60,11 @@ const ROUTES_CONFIG = {
   DASHBOARD: {
     path: "/dashboard",
     title: "Dashboard",
+    isProtected: true,
+  },
+  DASHBOARD_NOTIFICATIONS: {
+    path: "/dashboard/notifications",
+    title: "Notifications",
     isProtected: true,
   },
 
@@ -274,7 +284,12 @@ const ROUTES_CONFIG = {
   },
   OFFICE_ORGANIZATIONS: {
     path: "/office/organizations",
-    title: "Manage Organizations",
+    title: "Organizations",
+    isProtected: true,
+  },
+  OFFICE_NOTIFICATIONS: {
+    path: "/office/notifications",
+    title: "Notifications",
     isProtected: true,
   },
   OFFICE_ORGANIZATIONS_CREATE: {
@@ -376,6 +391,7 @@ export const DASHBOARD_ROUTES = {
   INDEX: ROUTES.DASHBOARD,
   PROFILE: ROUTES.DASHBOARD_PROFILE,
   SETTINGS: ROUTES.DASHBOARD_SETTINGS,
+  NOTIFICATIONS: ROUTES.DASHBOARD_NOTIFICATIONS,
 } as const;
 
 /**
@@ -386,6 +402,7 @@ export const OFFICE_ROUTES = {
   USERS: ROUTES.OFFICE_USERS,
   JOBS: ROUTES.OFFICE_JOBS,
   UNIVERSITIES: ROUTES.OFFICE_UNIVERSITIES,
+  NOTIFICATIONS: ROUTES.OFFICE_NOTIFICATIONS,
 } as const;
 
 // ============================================================================
