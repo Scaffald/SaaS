@@ -29,17 +29,7 @@ export const ProgressIndicator = memo(function ProgressIndicator({
         </Text>
       </XStack>
 
-      <Progress
-        size="$2"
-        value={completionPercentage}
-        max={100}
-        bg="$color3"
-        role="progressbar"
-        aria-label="Profile completion"
-        aria-valuenow={completionPercentage}
-        aria-valuemin={0}
-        aria-valuemax={100}
-      >
+      <Progress size="$2" value={completionPercentage} max={100} bg="$color3">
         <Progress.Indicator animation="bouncy" bg="$blue10" />
       </Progress>
 
@@ -59,6 +49,9 @@ export const ProgressIndicator = memo(function ProgressIndicator({
                   items="center"
                   justify="center"
                   rounded="$3"
+                  role="img"
+                  aria-label={`${meta.title} ${isCurrent ? '(current step)' : isCompleted ? '(completed)' : '(not completed)'}`}
+                  aria-current={isCurrent ? 'step' : undefined}
                 >
                   <Text fontWeight="600" color="$color1">
                     {index + 1}
@@ -72,7 +65,7 @@ export const ProgressIndicator = memo(function ProgressIndicator({
                     {meta.estimatedTimeMinutes} min
                   </Text>
                 </YStack>
-                {index < orderedSteps.length - 1 && <Separator vertical />}
+                {index < orderedSteps.length - 1 && <Separator vertical aria-hidden="true" />}
               </XStack>
             )
           })}

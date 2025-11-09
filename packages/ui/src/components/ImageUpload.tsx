@@ -239,7 +239,8 @@ export function ImageUpload({
 
             // Determine file type from native file or blob
             const fileType = nativeFile.type || blob.type || 'image/jpeg'
-            const fileName = nativeFile.name || `image-${Date.now()}.jpg`
+            const extension = fileType.split('/').pop() || 'jpg'
+            const fileName = `image-${Date.now()}.${extension}`
 
             // Create a File-like object for validation and upload
             // On web, we can use File constructor; on native, we'll use the blob directly
@@ -362,15 +363,12 @@ export function ImageUpload({
               {isUploading && (
                 <YStack
                   position="absolute"
-                  top={0}
-                  left={0}
-                  right={0}
-                  bottom={0}
                   bg="$background"
                   opacity={0.8}
                   items="center"
                   justify="center"
                   rounded="$4"
+                  style={{ top: 0, left: 0, right: 0, bottom: 0 }}
                 >
                   <Spinner size="large" />
                 </YStack>

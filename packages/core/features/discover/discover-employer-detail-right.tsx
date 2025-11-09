@@ -5,6 +5,45 @@ import { DashboardWidget } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { Separator, Text, XStack, YStack, Button } from 'tamagui'
 
+type OrganizationIdentifier = { organizationId: string }
+
+type FollowStatusSnapshot = {
+  isFollowing: boolean
+  followId: string | null
+  createdAt: string | null
+}
+
+type FollowMutationResult = {
+  alreadyFollowing: boolean
+  follow: { id: string; created_at: string | null }
+}
+
+type FollowMutationContext = { previous?: FollowStatusSnapshot }
+
+type EmploymentStatusSnapshot = {
+  isLinked: boolean
+  experienceId: string | null
+  source: string | null
+  isCurrent: boolean
+  claimedAt: string | null
+  createdAt: string | null
+}
+
+type ClaimMutationResult = {
+  alreadyLinked: boolean
+  experience: {
+    id: string
+    source: string | null
+    is_current: boolean | null
+    claimed_at: string | null
+    created_at: string | null
+  } | null
+}
+
+type EmploymentMutationContext = { previous?: EmploymentStatusSnapshot }
+
+type MutationError = { message?: string }
+
 type DiscoverEmployerDetailRightProps = {
   employerId: string
 }
@@ -43,7 +82,12 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
     { enabled: Boolean(employerId) }
   )
 
-  const followMutation = api.employers.followOrganization.useMutation({
+  const followMutation = api.employers.followOrganization.useMutation<
+    FollowMutationResult,
+    MutationError,
+    OrganizationIdentifier,
+    FollowMutationContext
+  >({
     onMutate: async (variables) => {
       await utils.employers.getOrganizationFollowStatus.cancel(variables)
       const previous = utils.employers.getOrganizationFollowStatus.getData(variables)
@@ -82,7 +126,12 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
     },
   })
 
-  const unfollowMutation = api.employers.unfollowOrganization.useMutation({
+  const unfollowMutation = api.employers.unfollowOrganization.useMutation<
+    { success: boolean },
+    MutationError,
+    OrganizationIdentifier,
+    FollowMutationContext
+  >({
     onMutate: async (variables) => {
       await utils.employers.getOrganizationFollowStatus.cancel(variables)
       const previous = utils.employers.getOrganizationFollowStatus.getData(variables)
@@ -132,7 +181,12 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         ? 'Following'
         : 'Follow Organization'
 
-  const claimEmploymentMutation = api.employers.claimOrganizationEmployment.useMutation({
+  const claimEmploymentMutation = api.employers.claimOrganizationEmployment.useMutation<
+    ClaimMutationResult,
+    MutationError,
+    OrganizationIdentifier,
+    EmploymentMutationContext
+  >({
     onMutate: async (variables) => {
       await utils.employers.getOrganizationEmploymentStatus.cancel(variables)
       const previous = utils.employers.getOrganizationEmploymentStatus.getData(variables)
@@ -181,7 +235,12 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
     },
   })
 
-  const removeEmploymentMutation = api.employers.removeOrganizationEmployment.useMutation({
+  const removeEmploymentMutation = api.employers.removeOrganizationEmployment.useMutation<
+    { removed: boolean },
+    MutationError,
+    OrganizationIdentifier,
+    EmploymentMutationContext
+  >({
     onMutate: async (variables) => {
       await utils.employers.getOrganizationEmploymentStatus.cancel(variables)
       const previous = utils.employers.getOrganizationEmploymentStatus.getData(variables)

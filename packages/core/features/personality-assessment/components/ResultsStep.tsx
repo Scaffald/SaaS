@@ -71,7 +71,7 @@ export function ResultsStep({
   const hasReport = assessment.ai_report && assessment.ai_report.length > 0
 
   return (
-    <YStack gap="$6" width="100%" alignSelf="center" style={{ maxWidth: 900 }}>
+    <YStack gap="$6" width="100%" style={{ maxWidth: 900, alignSelf: 'center' }}>
       {/* AI Report Section */}
       {hasReport && (
         <YStack

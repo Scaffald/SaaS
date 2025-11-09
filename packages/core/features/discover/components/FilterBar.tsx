@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { XStack, Button } from 'tamagui'
 import { Search, SlidersHorizontal, RotateCcw, List } from '@tamagui/lucide-icons'
 
@@ -52,10 +53,12 @@ export const FilterBar = ({
         shadowOffset={{ width: 0, height: 4 }}
         shadowOpacity={0.25}
         shadowRadius={16}
-        // @ts-expect-error - backdropFilter is a web CSS property, not in Tamagui types
-        backdropFilter="blur(10px)"
-        // @ts-expect-error - WebkitBackdropFilter for Safari support
-        WebkitBackdropFilter="blur(10px)"
+        style={
+          {
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+          } satisfies CSSProperties
+        }
       >
         <Button
           size="$4"

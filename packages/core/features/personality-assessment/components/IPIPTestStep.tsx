@@ -87,7 +87,13 @@ export function IPIPTestStep({
 
   if (isComplete) {
     return (
-      <YStack gap="$6" width="100%" alignSelf="center" items="center" p="$8" style={{ maxWidth: 800 }}>
+      <YStack
+        gap="$6"
+        width="100%"
+        items="center"
+        p="$8"
+        style={{ maxWidth: 800, alignSelf: 'center' }}
+      >
         <Text fontSize="$8" fontWeight="bold" color="$green10">
           ✓ All Questions Complete!
         </Text>
@@ -109,7 +115,7 @@ export function IPIPTestStep({
   }
 
   return (
-    <YStack gap="$6" width="100%" alignSelf="center" style={{ maxWidth: 800 }}>
+    <YStack gap="$6" width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
       {/* Progress Bar */}
       <YStack gap="$2">
         <XStack justify="space-between" items="center">

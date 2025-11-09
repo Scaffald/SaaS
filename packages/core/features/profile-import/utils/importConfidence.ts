@@ -1,10 +1,12 @@
+import type { GetThemeValueForKey } from 'tamagui'
+
 export type ConfidenceLevel = 'high' | 'medium' | 'low'
 
 export interface ConfidenceBadgeConfig {
   level: ConfidenceLevel
   label: string
   description: string
-  colorToken: string
+  colorToken: GetThemeValueForKey<'color'>
 }
 
 export const CONFIDENCE_BADGES: Record<ConfidenceLevel, ConfidenceBadgeConfig> = {

@@ -1,5 +1,14 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { YStack, XStack, Text, Button, Popover, Separator, type GetThemeValueForKey } from 'tamagui'
+import {
+  YStack,
+  XStack,
+  Text,
+  Button,
+  Popover,
+  Separator,
+  type GetThemeValueForKey,
+  type TamaguiElement,
+} from 'tamagui'
 import { Image } from 'expo-image'
 import { User, Settings, Sun, Moon, LogOut, Eye, Pencil } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
@@ -39,7 +48,7 @@ export function UserMenuAvatar() {
   const router = useRouter()
   const { width } = useWindowDimensions()
   const isMobile = width < 768
-  const triggerRef = useRef<{ focus?: () => void } | null>(null)
+  const triggerRef = useRef<TamaguiElement | null>(null)
 
   const { user } = useUser()
   // const { profile } = useUser() // Will uncomment when we add avatar display
@@ -195,7 +204,6 @@ export function UserMenuAvatar() {
         role="menu"
         rounded="$4"
         p={0}
-        w={isMobile ? 'calc(100vw - 32px)' : 240}
         elevate
         borderWidth={1}
         borderColor="$borderColor"
@@ -203,6 +211,7 @@ export function UserMenuAvatar() {
         animation="quick"
         enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
         exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
+        style={{ width: isMobile ? 'calc(100vw - 32px)' as const : 240 }}
       >
         {/* Header */}
         <YStack p="$4" borderBottomWidth={1} borderBottomColor="$borderColor" gap="$2">

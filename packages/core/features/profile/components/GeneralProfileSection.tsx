@@ -222,7 +222,7 @@ export function GeneralProfileSection({
             />
             {errors.first_name && (
               <Text color="$red10" fontSize="$2">
-                {errors.first_name.message}
+                {getErrorMessage(errors.first_name.message) ?? 'First name is required'}
               </Text>
             )}
           </YStack>
@@ -245,7 +245,7 @@ export function GeneralProfileSection({
             />
             {errors.last_name && (
               <Text color="$red10" fontSize="$2">
-                {errors.last_name.message}
+                {getErrorMessage(errors.last_name.message) ?? 'Last name is required'}
               </Text>
             )}
           </YStack>
@@ -271,7 +271,7 @@ export function GeneralProfileSection({
           />
           {errors.about && (
             <Text color="$red10" fontSize="$2">
-              {errors.about.message}
+              {getErrorMessage(errors.about.message) ?? 'Please provide a short bio'}
             </Text>
           )}
         </YStack>
@@ -286,7 +286,7 @@ export function GeneralProfileSection({
               <PhoneNumberInput
                 value={field.value || ''}
                 onChange={field.onChange}
-                error={errors.phone?.message}
+                error={getErrorMessage(errors.phone?.message)}
                 defaultCountry="US"
                 storeFormatted={true}
                 disabled={readOnly}

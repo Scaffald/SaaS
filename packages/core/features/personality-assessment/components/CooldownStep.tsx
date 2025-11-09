@@ -105,7 +105,7 @@ export function CooldownStep({
   )
 
   return (
-    <YStack gap="$6" width="100%" alignSelf="center" style={{ maxWidth: 800 }}>
+    <YStack gap="$6" width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
       {/* Cooldown Timer */}
       <YStack gap="$4" p="$6" bg="$color3" rounded="$4" borderWidth={1} borderColor="$color7">
         <YStack gap="$2" items="center">

@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { ChevronRight, ChevronDown } from '@tamagui/lucide-icons'
-import { Text, XStack, YStack, Popover, Sheet, Adapt, Button, ScrollView } from 'tamagui'
+import { Text, XStack, YStack, Popover, Sheet, Adapt, ScrollView } from 'tamagui'
 import { Link, useRouter } from 'expo-router'
 import { useWindowDimensions } from 'tamagui'
+import { Button as UIButton } from './buttons/Button'
 
 export interface BreadcrumbSibling {
   /** Label text for the sibling breadcrumb */
@@ -168,7 +169,7 @@ export const Breadcrumb = React.memo(function Breadcrumb({
             const actualIndex = hiddenStartIndex + idx
             const isActive = item.isActive ?? false
             return (
-              <Button
+      <UIButton
                 key={`ellipsis-${actualIndex}`}
                 size="$3"
                 variant={isActive ? 'outlined' : 'ghost'}
@@ -184,7 +185,7 @@ export const Breadcrumb = React.memo(function Breadcrumb({
                 >
                   {item.label}
                 </Text>
-              </Button>
+      </UIButton>
             )
           })}
         </ScrollView>

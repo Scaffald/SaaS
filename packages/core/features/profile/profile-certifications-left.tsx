@@ -603,7 +603,7 @@ export function ProfileCertificationsLeft({
                 </YStack>
 
                 <XStack gap="$3" flexWrap="wrap">
-                  <YStack flex={1} minWidth={200} gap="$2">
+                  <YStack flex={1} gap="$2" style={{ minWidth: 200 }}>
                     <Text fontWeight="600">Issue Date</Text>
                     <MonthYearPicker
                       value={customForm.issueDate}
@@ -612,7 +612,7 @@ export function ProfileCertificationsLeft({
                       error={customErrors.issueDate}
                     />
                   </YStack>
-                  <YStack flex={1} minWidth={200} gap="$2">
+                  <YStack flex={1} gap="$2" style={{ minWidth: 200 }}>
                     <Text fontWeight="600">Expiration Date</Text>
                     <MonthYearPicker
                       value={customForm.expirationDate}
@@ -624,7 +624,7 @@ export function ProfileCertificationsLeft({
                 </XStack>
 
                 <XStack gap="$3" flexWrap="wrap">
-                  <YStack flex={1} minWidth={200} gap="$2">
+                  <YStack flex={1} gap="$2" style={{ minWidth: 200 }}>
                     <Text fontWeight="600">Credential ID</Text>
                     <Input
                       placeholder="Credential ID or number"
@@ -633,7 +633,7 @@ export function ProfileCertificationsLeft({
                       disabled={isSavingCustom}
                     />
                   </YStack>
-                  <YStack flex={1} minWidth={200} gap="$2">
+                  <YStack flex={1} gap="$2" style={{ minWidth: 200 }}>
                     <Text fontWeight="600">Credential URL</Text>
                     <Input
                       placeholder="https://..."
@@ -875,7 +875,7 @@ function Depth2Certifications({
           <YStack
             key={cert.id}
             p="$3"
-            borderRadius="$4"
+            rounded="$4"
             borderWidth={1}
             animation="quick"
             backgroundColor={
@@ -895,7 +895,7 @@ function Depth2Certifications({
             mt="$2"
           >
             <CertificationCheckbox
-                certification={sanitizedCert}
+              certification={sanitizedCert}
               checked={isChecked}
               onCheckedChange={(checked: boolean) =>
                 onCheck(cert.id, parentId, checked, categoryId, cert.title)
@@ -907,7 +907,6 @@ function Depth2Certifications({
                   : undefined
               }
               disabled={toggleMutation.isLoading}
-                description={certificationDescription}
             />
             {changeStatus === 'added' && (
               <Text mt="$2" fontSize="$2" color="$green11">

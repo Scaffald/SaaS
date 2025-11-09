@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Button, Input, Text, XStack, YStack, Paragraph, Card } from 'tamagui'
+import { useEffect, useMemo, useState, useId } from 'react'
+import { Button, Input, Text, XStack, YStack, Paragraph, Card, Label } from 'tamagui'
 import { StepNavigation } from '../StepNavigation'
 import type { WizardStepComponentProps } from './types'
 import type { CertificationEntry, CertificationsStepData } from '../../hooks/useProfileWizard'
@@ -21,6 +21,9 @@ export function CertificationsStep({
   const [issuer, setIssuer] = useState('')
   const [issuedOn, setIssuedOn] = useState<Date | null>(null)
   const [expiresOn, setExpiresOn] = useState<Date | null>(null)
+  const guidanceId = useId()
+  const certNameId = useId()
+  const issuerId = useId()
 
   useEffect(() => {
     if (initialData?.certifications) {
@@ -95,12 +98,18 @@ export function CertificationsStep({
         <Text fontSize="$6" fontWeight="700">
           Add certifications & licenses
         </Text>
-        <Paragraph color="$color11">{helperCopy}</Paragraph>
+        <Paragraph id={guidanceId} color="$color11" aria-live="polite">
+          {helperCopy}
+        </Paragraph>
       </YStack>
 
       <YStack gap="$3">
         {certifications.map((cert) => (
-          <Card key={cert.id ?? cert.name} bordered bg="$color2">
+          <Card
+            key={cert.id ?? cert.name}
+            bordered
+            bg="$color2"
+          >
             <Card.Header padded gap="$2">
               <XStack justify="space-between" items="center">
                 <YStack gap="$1">
@@ -123,7 +132,12 @@ export function CertificationsStep({
                     )}
                   </XStack>
                 </YStack>
-                <Button size="$2" variant="outlined" onPress={() => removeCertification(cert.id)}>
+                <Button
+                  size="$2"
+                  variant="outlined"
+                  onPress={() => removeCertification(cert.id)}
+                  aria-label={`Remove ${cert.name}`}
+                >
                   Remove
                 </Button>
               </XStack>
@@ -134,12 +148,26 @@ export function CertificationsStep({
 
       <YStack gap="$3">
         <YStack gap="$2">
-          <Text fontWeight="600">Certification name</Text>
-          <Input placeholder="OSHA 30-Hour Construction Safety" value={name} onChangeText={setName} />
+          <Label htmlFor={certNameId} fontWeight="600">
+            Certification name
+          </Label>
+          <Input
+            id={certNameId}
+            placeholder="OSHA 30-Hour Construction Safety"
+            value={name}
+            onChangeText={setName}
+          />
         </YStack>
         <YStack gap="$2">
-          <Text fontWeight="600">Issuing organization</Text>
-          <Input placeholder="Occupational Safety and Health Administration" value={issuer} onChangeText={setIssuer} />
+          <Label htmlFor={issuerId} fontWeight="600">
+            Issuing organization
+          </Label>
+          <Input
+            id={issuerId}
+            placeholder="Occupational Safety and Health Administration"
+            value={issuer}
+            onChangeText={setIssuer}
+          />
         </YStack>
         <XStack gap="$3">
           <YStack flex={1} gap="$2">

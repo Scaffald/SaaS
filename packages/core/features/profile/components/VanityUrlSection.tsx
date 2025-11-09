@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react'
-import {
-  YStack,
-  XStack,
-  Text,
-  Input,
-  Button,
-  Spinner,
-  H4,
-} from 'tamagui'
+import { YStack, XStack, Text, Input, Button, Spinner, H4 } from 'tamagui'
 import { Copy, Check, AlertCircle, Clock } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { api } from '@app/core/utils/api'
 import { isSlugValid, isReservedSlug } from '@app/core/utils/slugify'
 import { copyToClipboard } from '@app/core/utils/clipboard'
 import { DashboardWidget } from '@app/ui'
+
+type UpdateSlugResult = {
+  success: boolean
+  slug: string
+  nextChangeAllowed: string
+}
+
+type VanityMutationError = { message?: string }
 
 /**
  * Vanity URL Section Component
@@ -41,7 +41,11 @@ export function VanityUrlSection() {
   const { data: slugHistory, refetch: refetchHistory } = api.profile.vanity.getSlugHistory.useQuery()
 
   // Update slug
-  const updateSlugMutation = api.profile.vanity.updateSlug.useMutation({
+  const updateSlugMutation = api.profile.vanity.updateSlug.useMutation<
+    UpdateSlugResult,
+    VanityMutationError,
+    { slug: string }
+  >({
     onSuccess: (data) => {
       toast.show('Slug Updated', {
         message: `Your profile URL has been updated to /u/${data.slug}`,

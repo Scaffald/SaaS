@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, useId } from 'react'
 import { Button, Card, Paragraph, Text, XStack, YStack } from 'tamagui'
 import type { WizardStepComponentProps } from './types'
 import type { SkillEntry, SkillsStepData } from '../../hooks/useProfileWizard'
@@ -169,6 +169,7 @@ export function SkillsStep({
   }, [skills.length])
 
   const existingSkillIds = useMemo(() => skills.map((skill) => skill.id), [skills])
+  const guidanceId = useId()
 
   return (
     <YStack gap="$4">
@@ -204,7 +205,12 @@ export function SkillsStep({
                         {skill.taxonomy.toUpperCase()} • Proficiency {skill.proficiency}/5
                       </Text>
                     </YStack>
-                    <Button size="$2" variant="outlined" onPress={() => handleRemoveSkill(skill.id)}>
+                    <Button
+                      size="$2"
+                      variant="outlined"
+                      onPress={() => handleRemoveSkill(skill.id)}
+                      aria-label={`Remove ${skill.name}`}
+                    >
                       Remove
                     </Button>
                   </XStack>
@@ -213,7 +219,7 @@ export function SkillsStep({
             ))}
           </YStack>
         )}
-        <Paragraph fontSize="$2" color="$color10">
+        <Paragraph id={guidanceId} fontSize="$2" color="$color10" aria-live="polite">
           {guidance}
         </Paragraph>
       </YStack>
@@ -226,7 +232,7 @@ export function SkillsStep({
           isSearching={searchSkillsMutation.isPending}
         />
         {skills.length >= MAX_SKILLS && (
-          <Paragraph fontSize="$2" color="$color11">
+          <Paragraph fontSize="$2" color="$color11" aria-live="polite">
             You&apos;ve reached the maximum of {MAX_SKILLS} skills for the quick wizard. You can add more
             later from your full profile.
           </Paragraph>

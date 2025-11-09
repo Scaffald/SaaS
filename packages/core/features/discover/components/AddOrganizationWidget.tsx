@@ -78,14 +78,14 @@ export function AddOrganizationWidget() {
     Boolean(submittedRequest)
 
   const createOrganizationRequestMutation = api.organizations.createOrganizationRequest.useMutation({
-    onSuccess: ({ request }) => {
+    onSuccess: ({ request }: { request: SubmissionSummaryProps['request'] }) => {
       setSubmittedRequest(request)
       toast.show('Request submitted', {
         message:
           'Thanks for the submission! Our team will review your organization and follow up shortly.',
       })
     },
-    onError: (error) => {
+    onError: (error: { message?: string }) => {
       toast.show('Unable to submit organization', {
         message: error.message ?? 'Please try again in a moment.',
       })

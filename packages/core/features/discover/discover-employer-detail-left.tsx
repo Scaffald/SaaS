@@ -1,16 +1,9 @@
-import {
-  ArrowLeft,
-  Building2,
-  ExternalLink,
-  MapPin,
-  Spinner,
-  Users,
-} from '@tamagui/lucide-icons'
+import { ArrowLeft, Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import type { JSONContent } from '@tiptap/core'
 import { DashboardWidget, extractPlainText } from '@app/ui'
 import { api } from '@app/core/utils/api'
-import { Button, Separator, Text, XStack, YStack } from 'tamagui'
+import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type DiscoverEmployerDetailLeftProps = {
   employerId: string

@@ -6,6 +6,13 @@ import { api } from '@app/core/utils/api'
 import { RouteBuilder } from '@app/core/constants/routes'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
 
+type PreviewSkill = {
+  csiSkillId?: string | null
+  onetOccupationId?: string | null
+  taxonomy?: string | null
+  proficiency: number
+}
+
 interface UserProfilePanelProps {
   /** User ID to display */
   userId: string | null
@@ -65,6 +72,7 @@ export function UserProfilePanel({
   const avatarUrl = preview?.avatarPath
     ? getStorageUrl('avatars', preview.avatarPath)
     : preview?.avatarUrl || null
+  const topSkills = (preview?.topSkills ?? []) as PreviewSkill[]
 
   return (
     <Card
@@ -148,13 +156,13 @@ export function UserProfilePanel({
           </XStack>
 
           {/* Top Skills */}
-          {preview.topSkills && preview.topSkills.length > 0 && (
+          {topSkills.length > 0 && (
             <YStack gap="$2">
               <Text fontSize="$2" fontWeight="600" color="$color11" textTransform="uppercase">
                 Top Skills
               </Text>
               <XStack gap="$2" flexWrap="wrap">
-                {preview.topSkills.slice(0, 3).map((skill) => (
+                {topSkills.slice(0, 3).map((skill) => (
                   <YStack
                     key={skill.csiSkillId || skill.onetOccupationId || skill.taxonomy}
                     bg="$color3"
@@ -169,7 +177,7 @@ export function UserProfilePanel({
                     </Text>
                   </YStack>
                 ))}
-                {preview.topSkills.length > 3 && (
+                {topSkills.length > 3 && (
                   <YStack
                     bg="$color3"
                     px="$2"
@@ -179,7 +187,7 @@ export function UserProfilePanel({
                     borderColor="$borderColor"
                   >
                     <Text fontSize="$2" color="$color11">
-                      +{preview.topSkills.length - 3} more
+                      +{topSkills.length - 3} more
                     </Text>
                   </YStack>
                 )}
