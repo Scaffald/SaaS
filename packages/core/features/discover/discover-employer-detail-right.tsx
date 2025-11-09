@@ -15,6 +15,7 @@ type DiscoverEmployerDetailRightProps = {
  */
 export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDetailRightProps) {
   const toast = useToastController()
+  const utils = api.useContext()
 
   const { data: employer, isLoading } = api.employers.getEmployerById.useQuery(
     { id: employerId },
@@ -26,6 +27,223 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
     { enabled: Boolean(employerId) }
   )
 
+  const {
+    data: followStatus,
+    isLoading: followStatusLoading,
+  } = api.employers.getOrganizationFollowStatus.useQuery(
+    { organizationId: employerId },
+    { enabled: Boolean(employerId) }
+  )
+
+  const {
+    data: employmentStatus,
+    isLoading: employmentStatusLoading,
+  } = api.employers.getOrganizationEmploymentStatus.useQuery(
+    { organizationId: employerId },
+    { enabled: Boolean(employerId) }
+  )
+
+  const followMutation = api.employers.followOrganization.useMutation({
+    onMutate: async (variables) => {
+      await utils.employers.getOrganizationFollowStatus.cancel(variables)
+      const previous = utils.employers.getOrganizationFollowStatus.getData(variables)
+
+      utils.employers.getOrganizationFollowStatus.setData(variables, {
+        isFollowing: true,
+        followId: previous?.followId ?? null,
+        createdAt: previous?.createdAt ?? new Date().toISOString(),
+      })
+
+      return { previous }
+    },
+    onError: (error, variables, context) => {
+      if (context?.previous) {
+        utils.employers.getOrganizationFollowStatus.setData(variables, context.previous)
+      }
+      toast.show('Unable to follow', {
+        message: error.message ?? 'Please try again in a moment.',
+      })
+    },
+    onSuccess: (data, variables) => {
+      utils.employers.getOrganizationFollowStatus.setData(variables, {
+        isFollowing: true,
+        followId: data.follow.id,
+        createdAt: data.follow.created_at ?? new Date().toISOString(),
+      })
+
+      toast.show(
+        data.alreadyFollowing ? 'Already following' : 'Following organization',
+        {
+          message: data.alreadyFollowing
+            ? 'You were already following this organization.'
+            : 'We will keep you updated as new activity rolls in.',
+        }
+      )
+    },
+  })
+
+  const unfollowMutation = api.employers.unfollowOrganization.useMutation({
+    onMutate: async (variables) => {
+      await utils.employers.getOrganizationFollowStatus.cancel(variables)
+      const previous = utils.employers.getOrganizationFollowStatus.getData(variables)
+
+      utils.employers.getOrganizationFollowStatus.setData(variables, {
+        isFollowing: false,
+        followId: null,
+        createdAt: null,
+      })
+
+      return { previous }
+    },
+    onError: (error, variables, context) => {
+      if (context?.previous) {
+        utils.employers.getOrganizationFollowStatus.setData(variables, context.previous)
+      }
+      toast.show('Unable to unfollow', {
+        message: error.message ?? 'Please try again in a moment.',
+      })
+    },
+    onSuccess: (_data, variables) => {
+      utils.employers.getOrganizationFollowStatus.setData(variables, {
+        isFollowing: false,
+        followId: null,
+        createdAt: null,
+      })
+
+      toast.show('Unfollowed', {
+        message: 'We removed this organization from your followed list.',
+      })
+    },
+  })
+
+  const isFollowing = Boolean(followStatus?.isFollowing)
+  const isFollowMutating = followMutation.isLoading || unfollowMutation.isLoading
+  const isFollowButtonDisabled = isFollowMutating || followStatusLoading
+  const followButtonIcon = isFollowButtonDisabled
+    ? Loader2
+    : isFollowing
+      ? CheckCircle2
+      : UserPlus
+  const followButtonLabel = followStatusLoading
+    ? 'Checking status...'
+    : isFollowMutating
+      ? 'Updating...'
+      : isFollowing
+        ? 'Following'
+        : 'Follow Organization'
+
+  const claimEmploymentMutation = api.employers.claimOrganizationEmployment.useMutation({
+    onMutate: async (variables) => {
+      await utils.employers.getOrganizationEmploymentStatus.cancel(variables)
+      const previous = utils.employers.getOrganizationEmploymentStatus.getData(variables)
+
+      utils.employers.getOrganizationEmploymentStatus.setData(variables, {
+        isLinked: true,
+        experienceId: previous?.experienceId ?? null,
+        source: previous?.source ?? 'claim',
+        isCurrent: true,
+        claimedAt: previous?.claimedAt ?? new Date().toISOString(),
+        createdAt: previous?.createdAt ?? new Date().toISOString(),
+      })
+
+      return { previous }
+    },
+    onError: (error, variables, context) => {
+      if (context?.previous) {
+        utils.employers.getOrganizationEmploymentStatus.setData(variables, context.previous)
+      }
+      toast.show('Unable to link employment', {
+        message: error.message ?? 'Please try again shortly.',
+      })
+    },
+    onSuccess: (data, variables) => {
+      const experience = data.experience ?? null
+      utils.employers.getOrganizationEmploymentStatus.setData(variables, {
+        isLinked: true,
+        experienceId: experience?.id ?? null,
+        source: experience?.source ?? 'claim',
+        isCurrent: experience?.is_current ?? true,
+        claimedAt: experience?.claimed_at ?? new Date().toISOString(),
+        createdAt: experience?.created_at ?? new Date().toISOString(),
+      })
+
+      toast.show(
+        data.alreadyLinked ? 'Already linked' : 'Employment linked',
+        {
+          message: data.alreadyLinked
+            ? 'Your profile is already connected to this organization.'
+            : 'We created a connection to this organization on your profile.',
+        }
+      )
+    },
+    onSettled: async (_data, _error, variables) => {
+      await utils.employers.getOrganizationEmploymentStatus.invalidate(variables)
+    },
+  })
+
+  const removeEmploymentMutation = api.employers.removeOrganizationEmployment.useMutation({
+    onMutate: async (variables) => {
+      await utils.employers.getOrganizationEmploymentStatus.cancel(variables)
+      const previous = utils.employers.getOrganizationEmploymentStatus.getData(variables)
+
+      utils.employers.getOrganizationEmploymentStatus.setData(variables, {
+        isLinked: false,
+        experienceId: null,
+        source: null,
+        isCurrent: false,
+        claimedAt: null,
+        createdAt: null,
+      })
+
+      return { previous }
+    },
+    onError: (error, variables, context) => {
+      if (context?.previous) {
+        utils.employers.getOrganizationEmploymentStatus.setData(variables, context.previous)
+      }
+      toast.show('Unable to remove link', {
+        message: error.message ?? 'Please try again shortly.',
+      })
+    },
+    onSuccess: (data, variables) => {
+      if (!data.removed) {
+        // Nothing to remove, restore to neutral state
+        utils.employers.getOrganizationEmploymentStatus.setData(variables, {
+          isLinked: false,
+          experienceId: null,
+          source: null,
+          isCurrent: false,
+          claimedAt: null,
+          createdAt: null,
+        })
+      }
+
+      toast.show('Employment link removed', {
+        message: 'You are no longer connected to this organization.',
+      })
+    },
+    onSettled: async (_data, _error, variables) => {
+      await utils.employers.getOrganizationEmploymentStatus.invalidate(variables)
+    },
+  })
+
+  const isEmploymentLinked = Boolean(employmentStatus?.isLinked)
+  const isEmploymentMutating =
+    claimEmploymentMutation.isLoading || removeEmploymentMutation.isLoading
+  const isEmploymentButtonDisabled = isEmploymentMutating || employmentStatusLoading
+  const employmentButtonIcon = isEmploymentButtonDisabled
+    ? Loader2
+    : isEmploymentLinked
+      ? CheckCircle2
+      : Briefcase
+  const employmentButtonLabel = employmentStatusLoading
+    ? 'Checking status...'
+    : isEmploymentMutating
+      ? 'Updating...'
+      : isEmploymentLinked
+        ? 'Linked to Organization'
+        : 'I Work Here'
+
   const organizationName = employer?.name ?? 'this organization'
   const createdAt = useMemo(() => {
     if (!employer?.created_at) return null
@@ -33,15 +251,19 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
   }, [employer?.created_at])
 
   const handleFollow = () => {
-    toast.show('Follow coming soon', {
-      message: 'We are wiring up organization follows with notifications in REQ-92.',
-    })
+    if (isFollowing) {
+      unfollowMutation.mutate({ organizationId: employerId })
+    } else {
+      followMutation.mutate({ organizationId: employerId })
+    }
   }
 
   const handleWorkHere = () => {
-    toast.show('Claim in progress', {
-      message: 'Worker-to-organization associations will be available once the new flow ships.',
-    })
+    if (isEmploymentLinked) {
+      removeEmploymentMutation.mutate({ organizationId: employerId })
+    } else {
+      claimEmploymentMutation.mutate({ organizationId: employerId })
+    }
   }
 
   return (
@@ -80,11 +302,17 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
       <Separator />
 
       <YStack gap="$2">
-        <Button size="$4" icon={UserPlus} onPress={handleFollow}>
-          Follow Organization
+        <Button size="$4" icon={followButtonIcon} onPress={handleFollow} disabled={isFollowButtonDisabled}>
+          {followButtonLabel}
         </Button>
-        <Button size="$4" theme="green" icon={Briefcase} onPress={handleWorkHere}>
-          I Work Here
+        <Button
+          size="$4"
+          theme="green"
+          icon={employmentButtonIcon}
+          onPress={handleWorkHere}
+          disabled={isEmploymentButtonDisabled}
+        >
+          {employmentButtonLabel}
         </Button>
       </YStack>
 
@@ -98,8 +326,9 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
           </Text>
         </XStack>
         <Text fontSize="$2" color="$color10">
-          These actions will soon drive notifications and profile updates. For now, use them to
-          preview the upcoming workflow—we&apos;ll promote them in REQ-92.
+          Following keeps you updated as teams post new opportunities or updates. Linking your
+          employment adds the organization to your profile immediately so recruiters can see your
+          affiliation right away.
         </Text>
       </YStack>
     </DashboardWidget>

@@ -35,6 +35,7 @@ import { ComponentC } from './components/ComponentC'
 ```
 
 ### When Barrel Files Are Acceptable
+- **In Packages** - When using or updating @app/ui or @app/core packages, in which case these should always use barrel files
 - **Single module exports** - Only export one main component/function per barrel file
 - **Public API boundaries** - At package boundaries where you need to control what's exported
 - **Legacy compatibility** - When migrating existing codebases gradually

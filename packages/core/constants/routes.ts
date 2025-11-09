@@ -148,6 +148,11 @@ const ROUTES_CONFIG = {
     title: "Job Details",
     isProtected: true,
   },
+  DASHBOARD_ORGANIZATIONS_CREATE: {
+    path: "/dashboard/organizations/create",
+    title: "Request Organization",
+    isProtected: true,
+  },
 
   // Dashboard > Users (dynamic)
   DASHBOARD_USER: {
@@ -335,6 +340,8 @@ export const RouteBuilder = {
     buildRoute(ROUTES.DASHBOARD_DISCOVER_JOB_DETAIL, { id }),
   dashboardEmployer: (id: string | number) =>
     buildRoute(ROUTES.DASHBOARD_DISCOVER_EMPLOYER_DETAIL, { id }),
+  dashboardOrganizationCreate: () =>
+    ROUTES.DASHBOARD_ORGANIZATIONS_CREATE.path,
 } as const;
 
 // ============================================================================

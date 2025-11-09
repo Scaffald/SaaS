@@ -1,46 +1,29 @@
 # REQ-34: Avatar Cropping Implementation Summary
 
-## 🚧 Current Status
+## ✅ Current Status
 
-Implementation is **in progress**. Core cropping mechanics exist, but several acceptance criteria and technical requirements for REQ-34 remain incomplete.
+REQ-34 is functionally complete and ready for focused QA. The crop editor now delivers the full set of required capabilities across web and native, schema validation is hardened, and the profile integration supports both new uploads and editing existing avatars.
 
-## ✅ Implemented So Far
+## Highlights
 
-- Cross-platform modal (`AvatarCropModal.tsx`) with zoom controls, drag/pan gestures, and square overlay mask.
-- Basic error messaging, image dimension validation, and crop boundary constraints.
-- Initial integration with `AvatarImagePicker` for cropping newly selected photos.
-- Added `expo-image-manipulator` native dependency to support cropping on iOS/Android.
+- **Crop Modal:** `AvatarCropModal.tsx` now exposes zoom, pan, horizontal/vertical flips, live circular preview, responsive layouts, keyboard shortcuts (`+`, `-`, `Esc`), and improved error handling. Crops are processed into base64 data URLs with size/quality controls (≤512×512, ≤500 KB, no upscaling of smaller sources).
+- **Processing Utilities:** New shared helpers (`imageProcessing.ts` / `.native.ts`) centralize crop/resize/compression logic for web canvas and Expo native paths.
+- **Schema Hardening:** `uploadAvatarInputSchema` enforces MIME, filename extension, and data-length limits with user-friendly messages.
+- **Profile Workflow:** `AvatarImagePicker.tsx` now supports editing existing avatars, shows immediate previews, exposes accessible controls, and surfaces crop errors back to parent components. `ProfileGeneralLeft.tsx` consumes the processed base64 payload directly.
+- **Accessibility:** Added ARIA/accessibility labels, live region updates, focus management on open, and button state announcements to satisfy Task 10.
+- **Automated Tests:** Added Vitest suites for helper transforms and schema validation (`helpers.test.ts`, `uploadAvatarInputSchema.test.ts`) to guard critical logic.
 
-## ❗️ Outstanding Gaps
+## Validation Performed
 
-- **Schema validation**: `uploadAvatarInputSchema` still accepts any string input (no size/MIME/file-name guards).
-- **Image processing pipeline**: Cropper returns blob/object URLs (web) or file URIs (native) without enforcing 512×512 output, compression, or base64 conversion.
-- **Flip controls & live preview**: UI lacks horizontal/vertical flip buttons and real-time circular preview required by FR2/FR5/FR6.
-- **Edit existing avatar**: `AvatarImagePicker` only opens the cropper for new selections; no “Edit Photo” flow for existing avatars.
-- **Accessibility**: Missing aria/accessibility labels, focus handling, keyboard shortcuts, and announcements outlined in Task 10.
-- **Automated tests**: No unit/integration coverage for cropper utilities or profile workflow.
-- **Responsive polish**: Layout does not yet adapt per UX2/UX1 guidelines (mobile landscape vs desktop parity).
+- Unit tests: `pnpm vitest run packages/ui/src/components/image-picker/__tests__/helpers.test.ts packages/supabase/functions/_shared/schemas/__tests__/uploadAvatarInputSchema.test.ts`
+- Quality gate: `pnpm check`
+- Build attempt: `pnpm build` (fails because `tamagui build` cannot locate `@tamagui/cli/dist/build`; see follow-ups)
 
-## Files Reviewed
+## Follow-ups / Watchouts
 
-- `packages/ui/src/components/image-picker/AvatarCropModal.tsx`
-- `packages/ui/src/components/image-picker/AvatarImagePicker.tsx`
-- `packages/core/features/profile/profile-general-left.tsx`
-- `packages/supabase/functions/_shared/schemas/consolidated.ts`
+- Investigate the Tamagui CLI resolution issue so the `@app/ui build` task can succeed under CI (`Cannot find module ... @tamagui/cli/dist/build`).
+- Perform end-to-end manual QA on mobile platforms (iOS/Android) to confirm gesture parity and performance with large images.
+- Once CLI issue is addressed, re-run `pnpm build` to confirm the monorepo build passes without manual intervention.
 
-## Recommended Next Actions
-
-1. Harden Supabase schema validation (Task 2).
-2. Introduce shared image-processing utilities that output compressed 512×512 base64 strings with flip support (Task 6).
-3. Extend cropper UI for flip controls, live preview, accessibility, and responsive layouts (Tasks 3–5, 7, 10).
-4. Integrate edit flow + improved messaging in `AvatarImagePicker` and `ProfileGeneralLeft` (Task 8 & 9).
-5. Backfill automated tests and run `pnpm check`/`pnpm build` before moving REQ-34 to review (Task 11).
-
-## Testing Coverage (Pending)
-
-- Web: drag, zoom, crop, error states.
-- Native: pinch/zoom, pan, crop completion.
-- Edge cases: small/large images, invalid formats, corrupted data.
-
-These scenarios are outstanding and should be addressed once the remaining functionality is implemented.
+With these final verifications, REQ-34 can transition to review.
 

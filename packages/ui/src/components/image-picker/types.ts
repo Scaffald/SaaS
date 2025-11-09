@@ -62,6 +62,8 @@ export type AvatarImagePickerProps = {
   value?: string
   /** Callback when image is selected */
   onImageSelect: (imageUri: string) => void
+  /** Optional callback when cropper encounters an error */
+  onCropError?: (message: string) => void
   /** Size of the avatar picker */
   size?: number
   /** Whether the picker is disabled */

@@ -223,18 +223,21 @@ export function ProfileGeneralLeft() {
               if (imageUri) {
                 // Convert image to base64 for upload
                 try {
-                  const response = await fetch(imageUri)
-                  const blob = await response.blob()
-                  const reader = new FileReader()
-                  reader.onloadend = () => {
-                    const base64data = reader.result as string
-                    uploadAvatarMutation.mutate({
-                      file: base64data,
-                      fileName: `avatar-${Date.now()}.jpg`,
-                      contentType: blob.type || 'image/jpeg',
-                    })
-                  }
-                  reader.readAsDataURL(blob)
+                  const [metadata] = imageUri.split(',')
+                  const mimeMatch = metadata?.match(/^data:(image\/[a-zA-Z+]+);base64$/)
+                  const contentType = mimeMatch ? mimeMatch[1] : 'image/jpeg'
+
+                  const extension = (() => {
+                    if (contentType === 'image/png') return 'png'
+                    if (contentType === 'image/webp') return 'webp'
+                    return 'jpg'
+                  })()
+
+                  uploadAvatarMutation.mutate({
+                    file: imageUri,
+                    fileName: `avatar-${Date.now()}.${extension}`,
+                    contentType,
+                  })
                 } catch (error) {
                   console.error('Error processing image:', error)
                   toast.show('Error', {
@@ -248,6 +251,11 @@ export function ProfileGeneralLeft() {
             }}
             size={120}
             disabled={uploadAvatarMutation.isPending}
+            onCropError={(message) =>
+              toast.show('Error', {
+                message,
+              })
+            }
             placeholder="Upload Avatar"
           />
           {uploadAvatarMutation.isPending && (

@@ -62,14 +62,18 @@
   "packageManager": "pnpm@10.20.0",
   "devDependencies": {
     "@biomejs/biome": "catalog:",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
     "@tamagui/cli": "catalog:",
     "@tamagui/config": "catalog:",
     "@turbo/gen": "^2.5.8",
     "check-dependency-version-consistency": "^3.3.0",
     "fs-extra": "^11.2.0",
+    "jsdom": "^24.1.1",
     "netlify-cli": "^23.9.1",
     "turbo": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "^1.6.0"
   },
   "dependencies": {
     "date-fns": "^4.1.0"

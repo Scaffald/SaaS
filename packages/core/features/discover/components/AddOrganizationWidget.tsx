@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useRouter } from 'expo-router'
+import { useToastController } from '@tamagui/toast'
 import { DashboardWidget } from '@app/ui'
-import { AlertTriangle, ArrowRight, Building2, CheckCircle2, Loader2 } from '@tamagui/lucide-icons'
+import { AlertTriangle, ArrowRight, Building2, CheckCircle2, Loader2, Pencil } from '@tamagui/lucide-icons'
 import {
   Button,
   Input,
@@ -15,15 +16,9 @@ import {
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { useDebounce } from '@app/core/utils/useDebounce'
+import { normalizeOrganizationSlug } from '../utils/normalizeOrganizationSlug'
 
 const MIN_QUERY_LENGTH = 2
-
-const normalizeSlug = (value: string) =>
-  value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
 
 /**
  * AddOrganizationWidget
@@ -31,10 +26,17 @@ const normalizeSlug = (value: string) =>
  */
 export function AddOrganizationWidget() {
   const router = useRouter()
+  const toast = useToastController()
   const [organizationName, setOrganizationName] = useState('')
   const debouncedQuery = useDebounce(organizationName, 300)
   const trimmedQuery = debouncedQuery.trim()
-  const candidateSlug = normalizeSlug(trimmedQuery)
+  const candidateSlug = normalizeOrganizationSlug(trimmedQuery)
+  const [submittedRequest, setSubmittedRequest] = useState<{
+    id: string
+    name: string
+    slug: string
+    created_at: string
+  } | null>(null)
 
   const {
     data: searchResults,
@@ -68,11 +70,38 @@ export function AddOrganizationWidget() {
   const hasDuplicate = matchingEmployers.length > 0
   const isQueryReady = trimmedQuery.length >= MIN_QUERY_LENGTH
   const isSubmitDisabled =
-    !isQueryReady || isFetching || isLoading || hasDuplicate || candidateSlug.length === 0
+    !isQueryReady ||
+    isFetching ||
+    isLoading ||
+    hasDuplicate ||
+    candidateSlug.length === 0 ||
+    Boolean(submittedRequest)
+
+  const createOrganizationRequestMutation = api.organizations.createOrganizationRequest.useMutation({
+    onSuccess: ({ request }) => {
+      setSubmittedRequest(request)
+      toast.show('Request submitted', {
+        message:
+          'Thanks for the submission! Our team will review your organization and follow up shortly.',
+      })
+    },
+    onError: (error) => {
+      toast.show('Unable to submit organization', {
+        message: error.message ?? 'Please try again in a moment.',
+      })
+    },
+  })
 
   const handleCreatePress = () => {
-    router.push(ROUTES.OFFICE_ORGANIZATIONS_CREATE.path)
+    if (!isQueryReady || candidateSlug.length === 0) return
+
+    createOrganizationRequestMutation.mutate({
+      name: trimmedQuery,
+      slug: candidateSlug,
+    })
   }
+
+  const isSubmitting = createOrganizationRequestMutation.isLoading
 
   return (
     <DashboardWidget gap="$4">
@@ -104,7 +133,20 @@ export function AddOrganizationWidget() {
 
       <Separator />
 
-      {isFetching || isLoading ? (
+      {submittedRequest ? (
+        <SubmissionSummary
+          request={submittedRequest}
+          onAddDetails={() =>
+            router.push({
+              pathname: ROUTES.DASHBOARD_ORGANIZATIONS_CREATE.path,
+              params: {
+                name: submittedRequest.name ?? trimmedQuery,
+                slug: submittedRequest.slug,
+              },
+            })
+          }
+        />
+      ) : isFetching || isLoading ? (
         <XStack gap="$2" items="center">
           <Loader2 size={16} color="$blue10" />
           <Text fontSize="$3" color="$color11">
@@ -123,11 +165,22 @@ export function AddOrganizationWidget() {
       <Button
         size="$4"
         theme="blue"
-        iconAfter={ArrowRight}
-        disabled={isSubmitDisabled}
+        iconAfter={!isSubmitting ? ArrowRight : undefined}
+        disabled={isSubmitDisabled || isSubmitting}
         onPress={handleCreatePress}
       >
-        Continue to Create Organization
+        {isSubmitting ? (
+          <XStack gap="$2" items="center">
+            <Loader2 size={16} color="$color1" />
+            <Text fontSize="$4" fontWeight="600" color="$color1">
+              Submitting...
+            </Text>
+          </XStack>
+        ) : submittedRequest ? (
+          'Request Submitted'
+        ) : (
+          'Submit for Review'
+        )}
       </Button>
     </DashboardWidget>
   )
@@ -215,4 +268,43 @@ function DuplicateLink({ id, name }: DuplicateLinkProps) {
     </Button>
   )
 }
+
+type SubmissionSummaryProps = {
+  request: {
+    id: string
+    name: string
+    slug: string
+    created_at: string
+  }
+  onAddDetails?: () => void
+}
+
+function SubmissionSummary({ request, onAddDetails }: SubmissionSummaryProps) {
+  return (
+    <YStack gap="$2">
+      <XStack gap="$2" items="center">
+        <CheckCircle2 size={16} color="$green10" />
+        <Text fontSize="$3" fontWeight="600" color="$green10">
+          Request submitted for {request.name}
+        </Text>
+      </XStack>
+      <Text fontSize="$2" color="$color10">
+        We&apos;ll review <Text fontWeight="600">{request.slug}</Text> and notify you once it&apos;s
+        approved. You can keep browsing employers while we take a look.
+      </Text>
+      {onAddDetails ? (
+        <Button
+          size="$3"
+          variant="outlined"
+          icon={Pencil}
+          onPress={onAddDetails}
+          alignSelf="flex-start"
+        >
+          Add more details
+        </Button>
+      ) : null}
+    </YStack>
+  )
+}
+
 

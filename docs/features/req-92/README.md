@@ -10,32 +10,28 @@ This document captures the foundational changes and the remaining follow-up item
   - **Left column:** Primary organization details displayed via `DiscoverEmployerDetailLeft`.
   - **Right column:** Engagement CTA widget (`DiscoverEmployerDetailRight`) that previews follow and “I Work Here” actions.
 - Documented and fixed a Biome lint warning in `profile-education-left.tsx` that surfaced while running `pnpm check`.
+- Added a moderated `organizations.createOrganizationRequest` flow, dashboard widget integration, and review form for non-office users.
+- Delivered live follow/unfollow endpoints with optimistic React Query state in `DiscoverEmployerDetailRight`.
+- Wired “I Work Here” to create lightweight employment claims backed by `core.user_experience`.
 
 ## Follow-Up Work for REQ-92
 
-1. **Expose organization creation for dashboard context**
-   - The `office.createOrganization` mutation still requires office-level permissions.
-   - Design a moderated or request-based flow so standard dashboard users can submit new orgs.
-   - Pre-fill the creation form (name + slug) based on the widget’s validated input.
+1. ✅ **Expose organization creation for dashboard context**
+   - Dashboard users can now submit requests via `organizations.createOrganizationRequest`, including a dedicated form pre-filled from discovery.
 
-2. **Implement follow/unfollow APIs and UI state**
-   - Build tRPC procedures around the `core.follows` table for user→organization relationships.
-   - Store follow state in React Query and reflect current status in `DiscoverEmployerDetailRight`.
-   - Hook the button up to real mutations + optimistic updates once APIs land.
+2. ✅ **Implement follow/unfollow APIs and UI state**
+   - `core.follows` is surfaced through new tRPC procedures with optimistic UI updates in `DiscoverEmployerDetailRight`.
 
-3. **Connect “I Work Here” to employment data**
-   - Decide on the source of truth (likely `core.user_experience` or a new join table).
-   - Provide mutations to request verification or directly link the worker to the organization.
-   - Update the widget copy and disable states once the workflow is functional.
+3. ✅ **Connect “I Work Here” to employment data**
+   - Employment claims create lightweight `core.user_experience` rows and update the CTA to reflect real-time status.
 
 4. **Notifications and onboarding CTA polish**
    - Plan how follows trigger notifications or digest emails (Supabase functions/cron).
-   - Update the CTA messaging to reflect live functionality (remove “coming soon” toasts).
+   - Expand onboarding messaging to highlight new follow + employment flows across dashboard entry points.
 
 5. **Testing & QA**
-   - Add frontend tests for the widget duplicate detection flows.
-   - Ensure new APIs have integration coverage (supabase edge tests or e2e).
-   - Verify responsive layout on web/mobile for the new two-column experience.
+   - Added `req-92-engagement` tRPC integration coverage to validate organization requests, follows, and employment claims end to end.
+   - Next: expand widget duplicate detection tests and responsive layout checks across web + native surfaces.
 
 ## Getting Started
 
