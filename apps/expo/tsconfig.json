@@ -7,11 +7,13 @@
     "../../packages/ui",
     "../../packages/api",
     "../../packages/core",
+    "../../packages/schemas/src/**/*.ts",
+    "../../packages/schemas/src/**/*.tsx",
     "../../packages/supabase/types.ts",
     "../../packages/supabase/client-types.ts",
     "../../packages/supabase/app-router-type.ts",
     "../../packages/supabase/helpers.ts",
-    "../../packages/supabase/functions/_shared/schemas/consolidated.ts"
+    "../../packages/supabase/functions/_shared/**/*.ts"
   ],
   "exclude": [
     "../../packages/supabase/functions/trpc/**/*",
