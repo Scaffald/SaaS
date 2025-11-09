@@ -287,7 +287,7 @@ export function ProfileExperienceLeft() {
               name="career_level"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || ''} onValueChange={field.onChange} placement="bottom">
+                <Select value={field.value || ''} onValueChange={field.onChange}>
                   <Select.Trigger iconAfter={ChevronDown}>
                     <Select.Value placeholder="Select career level" />
                   </Select.Trigger>
@@ -321,7 +321,7 @@ export function ProfileExperienceLeft() {
                     <Select.ScrollUpButton />
                     <Select.Viewport>
                       {CAREER_LEVEL_OPTIONS.map((level) => (
-                        <Select.Item key={level} value={level} index={0}>
+                    <Select.Item key={level} value={level} index={0}>
                           <Select.ItemText>{level}</Select.ItemText>
                         </Select.Item>
                       ))}
@@ -418,11 +418,7 @@ export function ProfileExperienceLeft() {
                     name={`experience_entries.${index}.employment_type`}
                     control={control}
                     render={({ field }) => (
-                      <Select
-                        value={field.value || ''}
-                        onValueChange={field.onChange}
-                        placement="bottom"
-                      >
+                      <Select value={field.value || ''} onValueChange={field.onChange}>
                         <Select.Trigger iconAfter={ChevronDown}>
                           <Select.Value placeholder="Select type" />
                         </Select.Trigger>
@@ -538,7 +534,6 @@ export function ProfileExperienceLeft() {
                           const dateStr = date ? date.toISOString().split('T')[0] : null
                           field.onChange(dateStr || undefined)
                         }}
-                        placeholder="Select start date"
                         error={errors.experience_entries?.[index]?.start_date?.message}
                         label="Start Date"
                       />
@@ -558,7 +553,6 @@ export function ProfileExperienceLeft() {
                           const dateStr = date ? date.toISOString().split('T')[0] : null
                           field.onChange(dateStr || undefined)
                         }}
-                        placeholder="Select end date"
                         disabled={watch(`experience_entries.${index}.is_current`)}
                         error={errors.experience_entries?.[index]?.end_date?.message}
                         label="End Date"

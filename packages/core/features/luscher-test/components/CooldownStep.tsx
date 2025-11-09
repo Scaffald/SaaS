@@ -82,15 +82,10 @@ export function CooldownStep({
       <YStack gap="$4" p="$6" bg="$color3" rounded="$4" borderWidth={1} borderColor="$color7">
         <YStack gap="$2" items="center">
           <Clock size={48} color="$blue10" />
-          <Text
-            fontSize="$6"
-            fontWeight="600"
-            color="$color12"
-            style={{ textAlign: 'center' }}
-          >
+          <Text fontSize="$6" fontWeight="600" color="$color12">
             Take a short pause
           </Text>
-          <Text fontSize="$4" color="$color11" style={{ textAlign: 'center' }}>
+          <Text fontSize="$4" color="$color11">
             Please wait 60 seconds before taking the second color test
           </Text>
           <Text fontSize="$10" fontWeight="bold" color="$blue10">

@@ -655,7 +655,6 @@ export function ProfileEducationLeft() {
                               const dateStr = date ? date.toISOString().split('T')[0] : null
                               field.onChange(dateStr || undefined)
                             }}
-                            placeholder="Select start date"
                             error={errors.education_entries?.[index]?.start_date?.message}
                             label="Start Date"
                           />
@@ -674,7 +673,6 @@ export function ProfileEducationLeft() {
                               const dateStr = date ? date.toISOString().split('T')[0] : null
                               field.onChange(dateStr || undefined)
                             }}
-                            placeholder="Select end date"
                             disabled={watch(`education_entries.${index}.is_current`)}
                             error={errors.education_entries?.[index]?.end_date?.message}
                             label="End Date"
@@ -736,7 +734,6 @@ export function ProfileEducationLeft() {
                                 const dateStr = date ? date.toISOString().split('T')[0] : null
                                 expectedField.onChange(dateStr || undefined)
                               }}
-                              placeholder="Select expected graduation date"
                               error={
                                 errors.education_entries?.[index]?.expected_graduation_date?.message
                               }

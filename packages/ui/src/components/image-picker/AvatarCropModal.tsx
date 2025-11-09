@@ -634,7 +634,10 @@ export function AvatarCropModal({
         <XStack gap="$2">
           <Button
             size="$2"
-            variant={flipHorizontal ? 'solid' : 'outlined'}
+            variant="outlined"
+            theme={flipHorizontal ? 'info' : undefined}
+            bg={flipHorizontal ? '$blue4' : '$background'}
+            borderColor={flipHorizontal ? '$blue7' : '$borderColor'}
             onPress={toggleFlipHorizontal}
             icon={FlipHorizontal}
             disabled={isProcessing}
@@ -643,7 +646,10 @@ export function AvatarCropModal({
           />
           <Button
             size="$2"
-            variant={flipVertical ? 'solid' : 'outlined'}
+            variant="outlined"
+            theme={flipVertical ? 'info' : undefined}
+            bg={flipVertical ? '$blue4' : '$background'}
+            borderColor={flipVertical ? '$blue7' : '$borderColor'}
             onPress={toggleFlipVertical}
             icon={FlipVertical}
             disabled={isProcessing}

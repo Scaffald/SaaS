@@ -1,8 +1,14 @@
 import { Theme, XStack, Text } from 'tamagui'
-import type { ThemeName, SizeTokens, XStackProps } from 'tamagui'
+import type {
+  ThemeName,
+  SpaceTokens,
+  FontSizeTokens,
+  ColorTokens,
+  XStackProps,
+} from 'tamagui'
 import type { ComponentProps } from 'react'
 
-const badgeSizing: Record<'sm' | 'md', { px: SizeTokens; py: SizeTokens; fontSize: SizeTokens }> = {
+const badgeSizing: Record<'sm' | 'md', { px: SpaceTokens; py: SpaceTokens; fontSize: FontSizeTokens }> = {
   sm: { px: '$2', py: '$1', fontSize: '$1' },
   md: { px: '$3', py: '$1', fontSize: '$2' },
 }
@@ -10,7 +16,7 @@ const badgeSizing: Record<'sm' | 'md', { px: SizeTokens; py: SizeTokens; fontSiz
 export type NotificationTagProps = {
   themeName: ThemeName
   size?: 'sm' | 'md'
-  textColorToken?: `$${string}`
+  textColorToken?: ColorTokens
   textProps?: ComponentProps<typeof Text>
 } & XStackProps
 

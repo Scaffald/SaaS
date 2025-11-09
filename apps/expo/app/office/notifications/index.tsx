@@ -186,8 +186,8 @@ export default function OfficeNotificationsConsole() {
                         size="md"
                         themeName={delivery.status === 'failed' ? 'error' : 'gray'}
                         flex={1}
+                        justify="center"
                         textColorToken="$color12"
-                        textProps={{ style: { textAlign: 'center' as const } }}
                       >
                         {delivery.status}
                       </NotificationTag>
