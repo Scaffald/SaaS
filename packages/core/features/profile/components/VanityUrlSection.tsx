@@ -253,7 +253,7 @@ export function VanityUrlSection() {
 
         {/* Slug Input */}
         <YStack gap="$2">
-          <XStack items="center" justifyContent="space-between">
+          <XStack items="center" justify="space-between">
             <Text fontWeight="600" fontSize="$3">
               Profile Slug
             </Text>
@@ -348,7 +348,7 @@ export function VanityUrlSection() {
               )}
 
               {/* Action Buttons */}
-              <XStack gap="$2" justifyContent="flex-end">
+              <XStack gap="$2" justify="flex-end">
                 <Button
                   size="$3"
                   variant="outlined"
@@ -419,7 +419,15 @@ export function VanityUrlSection() {
               Change History
             </Text>
             <YStack gap="$1">
-              {slugHistory.history.slice(0, 5).map((entry) => (
+              {(
+                slugHistory.history as Array<{
+                  changed_at: string
+                  new_slug: string
+                  old_slug: string | null
+                }>
+              )
+                .slice(0, 5)
+                .map((entry) => (
                 <XStack
                   key={`${entry.changed_at}-${entry.new_slug}`}
                   gap="$2"

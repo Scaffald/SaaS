@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { forwardRef, type ReactElement } from 'react'
 import { Button as TamaguiButton, type ButtonProps as TamaguiButtonProps } from 'tamagui'
 
 /**
@@ -62,122 +62,127 @@ export interface ButtonProps extends Omit<TamaguiButtonProps, 'variant' | 'theme
   variant?: 'primary' | 'secondary' | 'outlined' | 'ghost' | 'danger'
 }
 
-const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(({ variant = 'primary', ...props }, ref) => {
-  /**
-   * Variant style definitions
-   * Each variant has specific colors, borders, and interaction states
-   */
-  const variantStyles = {
+const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ variant = 'primary', ...props }, ref) => {
     /**
-     * Primary variant - Teal brand color
-     * Use for main actions (submit, confirm, save)
+     * Variant style definitions
+     * Each variant has specific colors, borders, and interaction states
      */
-    primary: {
-      theme: 'primary',
-      bg: '$blue7', // Primary teal (#239CB2)
-      color: 'white',
-      borderWidth: 0,
-      hoverStyle: {
-        bg: '$blue8', // Darker teal on hover
+    const variantStyles: Record<
+      NonNullable<ButtonProps['variant']>,
+      Partial<TamaguiButtonProps>
+    > = {
+      /**
+       * Primary variant - Teal brand color
+       * Use for main actions (submit, confirm, save)
+       */
+      primary: {
+        theme: 'primary',
+        backgroundColor: '$blue7',
+        color: '$color1',
+        borderWidth: 0,
+        hoverStyle: {
+          backgroundColor: '$blue8',
+        },
+        pressStyle: {
+          backgroundColor: '$blue9',
+          scale: 0.97,
+        },
       },
-      pressStyle: {
-        bg: '$blue9', // Even darker on press
-        scale: 0.97, // Slight scale reduction
-      },
-    },
 
-    /**
-     * Secondary variant - Neutral grey
-     * Use for secondary actions (back, skip)
-     */
-    secondary: {
-      bg: '$color3', // Light grey
-      color: '$color11', // Dark text
-      borderWidth: 0,
-      hoverStyle: {
-        bg: '$color4', // Slightly darker grey
+      /**
+       * Secondary variant - Neutral grey
+       * Use for secondary actions (back, skip)
+       */
+      secondary: {
+        theme: 'alt1',
+        backgroundColor: '$color3',
+        color: '$color11',
+        borderWidth: 0,
+        hoverStyle: {
+          backgroundColor: '$color4',
+        },
+        pressStyle: {
+          backgroundColor: '$color5',
+          scale: 0.97,
+        },
       },
-      pressStyle: {
-        bg: '$color5', // Even darker on press
-        scale: 0.97,
-      },
-    },
 
-    /**
-     * Outlined variant - Border only
-     * Use for tertiary actions (cancel, optional)
-     */
-    outlined: {
-      bg: 'transparent',
-      borderWidth: 1,
-      borderColor: '$borderColor',
-      color: '$color11',
-      hoverStyle: {
-        bg: '$backgroundHover',
-        borderColor: '$borderColorHover',
+      /**
+       * Outlined variant - Border only
+       * Use for tertiary actions (cancel, optional)
+       */
+      outlined: {
+        backgroundColor: 'transparent',
+        borderWidth: 1,
+        borderColor: '$borderColor',
+        color: '$color11',
+        hoverStyle: {
+          backgroundColor: '$backgroundHover',
+          borderColor: '$borderColorHover',
+        },
+        pressStyle: {
+          backgroundColor: '$backgroundPress',
+          scale: 0.97,
+        },
       },
-      pressStyle: {
-        bg: '$backgroundPress',
-        scale: 0.97,
-      },
-    },
 
-    /**
-     * Ghost variant - No visual boundaries
-     * Use for subtle actions (show more, collapse)
-     */
-    ghost: {
-      bg: 'transparent',
-      borderWidth: 0,
-      color: '$color11',
-      hoverStyle: {
-        bg: '$backgroundHover',
+      /**
+       * Ghost variant - No visual boundaries
+       * Use for subtle actions (show more, collapse)
+       */
+      ghost: {
+        backgroundColor: 'transparent',
+        borderWidth: 0,
+        color: '$color11',
+        hoverStyle: {
+          backgroundColor: '$backgroundHover',
+        },
+        pressStyle: {
+          backgroundColor: '$backgroundPress',
+          scale: 0.97,
+        },
       },
-      pressStyle: {
-        bg: '$backgroundPress',
-        scale: 0.97,
-      },
-    },
 
-    /**
-     * Danger variant - Red for destructive actions
-     * Use for irreversible actions (delete, remove)
-     */
-    danger: {
-      bg: '$red8', // Red background
-      color: 'white',
-      borderWidth: 0,
-      hoverStyle: {
-        bg: '$red9', // Darker red on hover
+      /**
+       * Danger variant - Red for destructive actions
+       * Use for irreversible actions (delete, remove)
+       */
+      danger: {
+        theme: 'red',
+        backgroundColor: '$red8',
+        color: '$color1',
+        borderWidth: 0,
+        hoverStyle: {
+          backgroundColor: '$red9',
+        },
+        pressStyle: {
+          backgroundColor: '$red10',
+          scale: 0.97,
+        },
       },
-      pressStyle: {
-        bg: '$red10', // Even darker on press
-        scale: 0.97,
-      },
-    },
+    }
+
+    return (
+      <TamaguiButton
+        ref={ref}
+        fontWeight="600" // Semibold for all buttons
+        animation="quick" // Fast, responsive animations
+        {...variantStyles[variant]}
+        {...props}
+      />
+    )
   }
-
-  return (
-    <TamaguiButton
-      ref={ref}
-      fontWeight="600" // Semibold for all buttons
-      animation="quick" // Fast, responsive animations
-      {...variantStyles[variant]}
-      {...props}
-    />
-  )
-})
+)
 
 ButtonBase.displayName = 'UIButton'
 
-type UIButtonComponent = ((props: ButtonProps) => JSX.Element) & {
+type UIButtonComponent = ((props: ButtonProps) => ReactElement) & {
   Text: typeof TamaguiButton.Text
   Icon: typeof TamaguiButton.Icon
-  Circular: typeof TamaguiButton.Circular
 }
 
 export const Button: UIButtonComponent = Object.assign(ButtonBase, {
   Text: TamaguiButton.Text,
   Icon: TamaguiButton.Icon,
-  Circular: TamaguiButton.Circular,
 })
