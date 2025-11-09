@@ -709,8 +709,11 @@ export function AvatarCropModal({
                 {(() => {
                   const liveRegionProps =
                     Platform.OS === 'web'
-                      ? { 'aria-live': 'polite', 'aria-atomic': 'true' }
-                      : { accessibilityLiveRegion: 'polite' as const }
+                      ? ({
+                          'aria-live': 'polite',
+                          'aria-atomic': 'true',
+                        } as const)
+                      : ({ accessibilityLiveRegion: 'polite' } as const)
 
                   const liveRegion = (
                     <View

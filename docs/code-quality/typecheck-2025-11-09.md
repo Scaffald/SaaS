@@ -8,8 +8,6 @@
 ## Quick Win Tasks
 - [ ] Quick Win – Harden form hooks against implicit `any` values  
   Files: `.../profile/profile-education-left.tsx`, `packages/core/features/profile/profile-employment-left.tsx`, `packages/core/features/profile/components/EducationEntryEditModal.tsx`, `packages/core/features/profile/__tests__/profile-employment-left.test.tsx`, `packages/core/features/profile/profile-education-right.tsx`, `packages/core/features/personality-assessment/components/ResultsStep.tsx`.
-- [ ] Quick Win – Fix accessibility prop typings (`aria-hidden`, `aria-live`, `aria-atomic`) to use booleans and the allowed literal unions  
-  Files: `packages/core/features/profile-wizard/components/ProgressIndicator.tsx`, `packages/ui/src/components/image-picker/AvatarCropModal.tsx`.
 - [ ] Quick Win – Update Tamagui variant unions to include `ghost` / `solid` where needed or swap to supported tokens  
   Files: `packages/core/features/profile-import/components/ImportReviewScreen.tsx`, `packages/ui/src/components/image-picker/AvatarCropModal.tsx`.
 - [ ] Quick Win – Resolve test utility typing conflicts (duplicate `beforeEach`/`describe` etc.) by scoping Vitest/Jest globals  
