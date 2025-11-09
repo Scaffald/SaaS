@@ -7,6 +7,7 @@ import { LuscherTest2Widget } from '../luscher-test-2'
 import { RIASECAssessmentWidget } from '../riasec-assessment'
 import { OccupationAssessmentWidget } from '../occupation-assessment'
 import { api } from '@app/core/utils/api'
+import { ProfileCompletionExperience } from '../profile-completion/components/ProfileCompletionExperience'
 
 /**
  * Dashboard Index Left Component
@@ -34,6 +35,7 @@ export function DashboardIndexLeft() {
   // Show ProfileSnapshotWidget and individual assessment widgets if prerequisites are complete
   return (
     <YStack gap="$4">
+      <ProfileCompletionExperience />
       <ProfileSnapshotWidget />
       <LuscherTest1Widget />
       <IPIPAssessmentWidget />
