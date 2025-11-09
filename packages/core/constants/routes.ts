@@ -84,6 +84,11 @@ const ROUTES_CONFIG = {
     title: "Certifications",
     isProtected: true,
   },
+  DASHBOARD_PROFILE_IMPORT_REVIEW: {
+    path: "/dashboard/profile/import-review",
+    title: "Import Review",
+    isProtected: true,
+  },
   DASHBOARD_PROFILE_EDUCATION: {
     path: "/dashboard/profile/education",
     title: "Education",

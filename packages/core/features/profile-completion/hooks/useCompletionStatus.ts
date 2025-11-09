@@ -1,13 +1,17 @@
 import { useMemo } from 'react'
 import { api } from '@app/core/utils/api'
 import { useUser } from '@app/core/utils/useUser'
+import type { ProfileWizardStepId } from '@app/supabase/client-types'
+import { resolveSectionMetadata } from '../constants/sectionMetadata'
 
 export interface CompletionSection {
-  id: string
+  id: ProfileWizardStepId
   title: string
   description: string
   completed: boolean
-  actionRoute?: string
+  weight: number
+  missingFields: string[]
+  actionRoute: string
 }
 
 export interface CompletionMilestone {
@@ -15,28 +19,34 @@ export interface CompletionMilestone {
   label: string
   threshold: number
   achieved: boolean
+  reachedAt: string | null
 }
 
 export interface CompletionStatus {
   sections: CompletionSection[]
   completionPercentage: number
   milestoneBadges: CompletionMilestone[]
-  incompleteSections: string[]
-  lastCompletedAt?: string | null
-  lastPromptedAt?: string | null
+  incompleteSections: ProfileWizardStepId[]
+  lastCompletedAt: string | null
+  lastPromptedAt: string | null
   shouldShowWizard: boolean
-  modalMode: 'first-login' | 'progress-reminder' | null
+  modalMode: 'first-login' | 'progress-reminder'
+  milestoneHistory: Record<string, string>
+  summary: {
+    completedWeight: number
+    remainingWeight: number
+    nextMilestone: number | null
+  }
+  updatedAt: string
+  nudgeStatus: {
+    dismissed: Record<string, { dismissedAt: string; reason?: string }>
+    lastDismissedAt: string | null
+    shouldPrompt: boolean
+  }
 }
 
-const MILESTONE_THRESHOLDS: Array<{ id: string; label: string; threshold: number }> = [
-  { id: 'milestone-25', label: '25% Complete', threshold: 25 },
-  { id: 'milestone-50', label: '50% Complete', threshold: 50 },
-  { id: 'milestone-75', label: '75% Complete', threshold: 75 },
-  { id: 'milestone-100', label: 'Profile Complete', threshold: 100 },
-]
-
 export function useCompletionStatus() {
-  const { data: rawStatus, isLoading, isError, refetch } = api.profile.getCompletionStatus.useQuery()
+  const { data: rawStatus, isLoading, isError, refetch } = api.profile.getStatus.useQuery()
   const { user } = useUser()
 
   const userType: 'worker' | 'employer' =
@@ -47,118 +57,58 @@ export function useCompletionStatus() {
       return null
     }
 
-    const sections: CompletionSection[] = [
-      {
-        id: 'general',
-        title: 'Basic Information',
-        description: 'Add your name and contact information',
-        completed: Boolean(rawStatus.first_name && rawStatus.last_name),
-        actionRoute: '/dashboard/profile/general',
-      },
-      {
-        id: 'employment',
-        title: 'Employment Preferences',
-        description: 'Set your work location, rate, and availability',
-        completed: Boolean(
-          rawStatus.user_private?.location ||
-            rawStatus.user_private?.availability?.length ||
-            rawStatus.user_private?.address,
-        ),
-        actionRoute: '/dashboard/profile/employment',
-      },
-      {
-        id: 'skills',
-        title: 'Skills & Expertise',
-        description: 'Highlight what you do best',
-        completed: Boolean(rawStatus.user_skills?.length),
-        actionRoute: '/dashboard/profile/skills',
-      },
-      {
-        id: 'experience',
-        title: 'Work Experience',
-        description: 'Share your recent roles',
-        completed: Boolean(
-          rawStatus.user_experience?.length &&
-            rawStatus.user_experience.some(
-              (exp: unknown) =>
-                exp &&
-                typeof exp === 'object' &&
-                'job_title' in exp &&
-                'company_name' in exp &&
-                Boolean(exp.job_title) &&
-                Boolean(exp.company_name),
-            ),
-        ),
-        actionRoute: '/dashboard/profile/experience',
-      },
-      {
-        id: 'certifications',
-        title: 'Certifications & Licenses',
-        description: 'Show employers your credentials',
-        completed: Boolean(
-          rawStatus.user_certifications?.length &&
-            rawStatus.user_certifications.some(
-              (cert: unknown) =>
-                cert &&
-                typeof cert === 'object' &&
-                'name' in cert &&
-                'issuing_organization' in cert &&
-                Boolean(cert.name) &&
-                Boolean(cert.issuing_organization),
-            ),
-        ),
-        actionRoute: '/dashboard/profile/certifications',
-      },
-      {
-        id: 'education',
-        title: 'Education',
-        description: 'List your training and education',
-        completed: Boolean(
-          rawStatus.user_education?.length &&
-            rawStatus.user_education.some(
-              (edu: unknown) =>
-                edu &&
-                typeof edu === 'object' &&
-                'institution_name' in edu &&
-                Boolean(edu.institution_name),
-            ),
-        ),
-        actionRoute: '/dashboard/profile/education',
-      },
-    ]
+    const sections: CompletionSection[] = rawStatus.sectionProgress.map((section) => {
+      const sectionId = section.id as ProfileWizardStepId
+      const metadata = resolveSectionMetadata(sectionId)
 
-    const totalComplete = sections.filter((section) => section.completed).length
-    const totalSections = sections.length
-    const completionPercentage = Math.round((totalComplete / totalSections) * 100)
+      return {
+        id: sectionId,
+        title: section.title,
+        description: metadata.description,
+        completed: section.completed,
+        weight: section.weight,
+        missingFields: section.missingFields ?? [],
+        actionRoute: metadata.route,
+      }
+    })
 
-    const milestoneBadges: CompletionMilestone[] = MILESTONE_THRESHOLDS.map((milestone) => ({
-      ...milestone,
-      achieved: completionPercentage >= milestone.threshold,
+    const milestoneBadges: CompletionMilestone[] = rawStatus.milestoneBadges.map((milestone) => ({
+      id: milestone.id,
+      label: `${milestone.threshold}% Complete`,
+      threshold: milestone.threshold,
+      achieved: milestone.achieved,
+      reachedAt: milestone.reachedAt ?? null,
     }))
 
-    const incompleteSections = sections.filter((section) => !section.completed).map((section) => section.id)
+    const milestoneHistory = rawStatus.milestoneHistory ?? {}
+    const lastCompletedAt = milestoneHistory['100'] ?? null
+    const lastPromptedAt = rawStatus.nudgeStatus.lastDismissedAt ?? null
+    const modalMode: 'first-login' | 'progress-reminder' =
+      rawStatus.completionPercentage === 0 ? 'first-login' : 'progress-reminder'
 
-    const wizardStatus = (rawStatus as Record<string, unknown>).wizard_status as
-      | {
-          should_show_modal?: boolean
-          modal_mode?: 'first-login' | 'progress-reminder'
-          last_completed_at?: string | null
-          last_prompted_at?: string | null
-        }
-      | undefined
-
-    const shouldShowWizard =
-      wizardStatus?.should_show_modal ?? (completionPercentage < 50 && incompleteSections.length > 0)
+    const totalWeight = sections.reduce((total, section) => total + section.weight, 0)
+    const completedWeight = sections.reduce(
+      (total, section) => (section.completed ? total + section.weight : total),
+      0,
+    )
 
     return {
       sections,
-      completionPercentage,
+      completionPercentage: rawStatus.completionPercentage,
       milestoneBadges,
-      incompleteSections,
-      lastCompletedAt: wizardStatus?.last_completed_at ?? null,
-      lastPromptedAt: wizardStatus?.last_prompted_at ?? null,
-      shouldShowWizard,
-      modalMode: wizardStatus?.modal_mode ?? (completionPercentage === 0 ? 'first-login' : 'progress-reminder'),
+      incompleteSections: rawStatus.incompleteSections as ProfileWizardStepId[],
+      lastCompletedAt,
+      lastPromptedAt,
+      shouldShowWizard: rawStatus.nudgeStatus.shouldPrompt,
+      modalMode,
+      milestoneHistory,
+      summary: rawStatus.summary ?? {
+        completedWeight,
+        remainingWeight: Math.max(totalWeight - completedWeight, 0),
+        nextMilestone: null,
+      },
+      updatedAt: rawStatus.updatedAt,
+      nudgeStatus: rawStatus.nudgeStatus,
     }
   }, [rawStatus])
 
@@ -170,5 +120,3 @@ export function useCompletionStatus() {
     userType,
   }
 }
-
-

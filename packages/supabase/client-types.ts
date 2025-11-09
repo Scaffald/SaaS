@@ -17,7 +17,16 @@ export type {
   ProfileSkillsOutput,
   UploadAvatarInput,
   UploadAvatarOutput,
+  ProfileWizardProgress,
+  ProfileWizardSaveStepInput,
+  ProfileWizardStepData,
+  ProfileWizardStepId,
 } from "./functions/_shared/schemas/consolidated";
+
+export type {
+  ImportPayload,
+  ResumeParseInput,
+} from "./functions/_shared/schemas/profileImport";
 
 // Re-export constants and schemas
 export {
@@ -26,4 +35,18 @@ export {
   MILITARY_STATUS_OPTIONS,
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
+  PROFILE_WIZARD_STEPS,
+  PROFILE_WIZARD_OPTIONAL_STEPS,
+  PROFILE_WIZARD_REQUIRED_STEPS,
+  PROFILE_WIZARD_STEP_WEIGHTS,
+  profileWizardDefaultProgress,
+  profileWizardProgressSchema,
+  profileWizardSaveStepInputSchema,
 } from "./functions/_shared/schemas/consolidated";
+
+export {
+  importPayloadSchema,
+  resumeParseInputSchema,
+  saveImportDataInputSchema,
+  validateJsonInputSchema,
+} from "./functions/_shared/schemas/profileImport";

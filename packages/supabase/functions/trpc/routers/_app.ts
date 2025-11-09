@@ -9,6 +9,7 @@ import { onetRouter } from "./onet.router.ts";
 import { organizationsRouter } from "./organizations.router.ts";
 import { prerequisitesRouter } from "./prerequisites.router.ts";
 import { profileRouter } from "./profile/index.ts";
+import { profileWizardRouter } from "./profile/profileWizard.router.ts";
 import { reviewsRouter } from "./reviews.router.ts";
 import { userProfileRouter } from "./user-profile.router.ts";
 import { workersRouter } from "./workers.router.ts";
@@ -23,6 +24,7 @@ import { personalityAssessmentRouter } from "./personality-assessment.router.ts"
  */
 export const appRouter = t.router({
   profile: profileRouter,
+  profileWizard: profileWizardRouter,
   auth: authRouter,
   cms: cmsRouter,
   office: officeRouter,

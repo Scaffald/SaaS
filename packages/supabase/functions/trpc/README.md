@@ -84,7 +84,9 @@ trpc.profile.updateEmployment.mutate()
 trpc.profile.getUserSkills.query()
 trpc.profile.addUserSkill.mutate()
 trpc.profile.uploadAvatar.mutate()
-trpc.profile.getCompletionStatus.query()
+trpc.profile.getStatus.query()
+trpc.profile.dismissNudge.mutate()
+trpc.profile.getPersonalizedBenefits.query()
 
 // Auth endpoints
 trpc.auth.getUserRoles.query()

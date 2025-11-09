@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Button, Card, ScrollView, Separator, Text, XStack, YStack } from 'tamagui'
 import { CheckCircle2, FileWarning, Loader2, RotateCcw } from '@tamagui/lucide-icons'
+import { api } from '@app/core/utils/api'
 import { useImportData } from '../hooks/useImportData'
 import { ConfidenceBadge } from './ConfidenceBadge'
 import { ImportSectionTabs } from './ImportSectionTabs'
@@ -12,7 +13,7 @@ interface SelectedState {
 }
 
 export function ImportReviewScreen() {
-  const { importData, isLoading, isError, refetch } = useImportData()
+  const { importData, metadata, isLoading, isError, refetch } = useImportData()
   const [selectedItems, setSelectedItems] = useState<SelectedState>({})
   const [activeSection, setActiveSection] = useState<string>('experience')
   const [isImporting, setIsImporting] = useState(false)
@@ -20,6 +21,10 @@ export function ImportReviewScreen() {
     completed: 0,
     total: 0,
   })
+
+  const utils = api.useUtils()
+  const saveImportMutation = api.profile.import.saveImportData.useMutation()
+  const clearImportMutation = api.profile.import.clearImportData.useMutation()
 
   const sections = useMemo(() => {
     if (!importData) return []
@@ -79,13 +84,121 @@ export function ImportReviewScreen() {
   }, 0)
 
   const handleImportSelected = async () => {
+    if (!importData) return
+
+    const buildSectionPayload = <T extends { id: string; raw?: Record<string, unknown> }>(
+      sectionId: string,
+      items: T[],
+      mapper: (item: T) => Record<string, unknown>,
+    ) => {
+      return items
+        .filter((item) => selectedItems[sectionId]?.[item.id])
+        .map((item) => {
+          const base = item.raw ?? mapper(item)
+          return Object.fromEntries(
+            Object.entries(base).filter(([, value]) => value !== undefined && value !== null && value !== ''),
+          )
+        })
+    }
+
+    const generalPayload = buildSectionPayload(
+      importData.general.id,
+      importData.general.items,
+      (item) => ({
+        first_name: item.firstName,
+        last_name: item.lastName,
+        headline: item.headline,
+        summary: item.summary,
+        confidence_score: item.confidenceScore,
+      }),
+    )
+
+    const experiencePayload = buildSectionPayload(
+      importData.experience.id,
+      importData.experience.items,
+      (item) => ({
+        job_title: item.jobTitle,
+        company_name: item.companyName,
+        start_date: item.startDate,
+        end_date: item.endDate,
+        is_current: item.isCurrent,
+        confidence_score: item.confidenceScore,
+      }),
+    )
+
+    const educationPayload = buildSectionPayload(
+      importData.education.id,
+      importData.education.items,
+      (item) => ({
+        degree: item.degree,
+        institution: item.institution,
+        start_date: item.startDate,
+        end_date: item.endDate,
+        confidence_score: item.confidenceScore,
+      }),
+    )
+
+    const skillsPayload = buildSectionPayload(
+      importData.skills.id,
+      importData.skills.items,
+      (item) => ({
+        name: item.name,
+        taxonomy: item.taxonomy,
+        confidence_score: item.confidenceScore,
+      }),
+    )
+
+    const certificationsPayload = buildSectionPayload(
+      importData.certifications.id,
+      importData.certifications.items,
+      (item) => ({
+        name: item.name,
+        issuer: item.issuer,
+        issue_date: item.issueDate,
+        confidence_score: item.confidenceScore,
+      }),
+    )
+
+    if (
+      generalPayload.length === 0 &&
+      experiencePayload.length === 0 &&
+      educationPayload.length === 0 &&
+      skillsPayload.length === 0 &&
+      certificationsPayload.length === 0
+    ) {
+      return
+    }
+
+    const payload = {
+      general: generalPayload,
+      experience: experiencePayload,
+      education: educationPayload,
+      skills: skillsPayload,
+      certifications: certificationsPayload,
+    }
+
+    const totalSelected =
+      payload.general.length +
+      payload.experience.length +
+      payload.education.length +
+      payload.skills.length +
+      payload.certifications.length
+
     setIsImporting(true)
-    setImportProgress({ completed: 0, total: selectedCount })
+    setImportProgress({ completed: 0, total: totalSelected })
 
     try {
-      // TODO: call profile import save endpoints for selected data
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      setImportProgress({ completed: selectedCount, total: selectedCount })
+      await saveImportMutation.mutateAsync({
+        source: metadata?.source ?? 'resume',
+        payload,
+      })
+      await utils.profile.import.getImportData.invalidate()
+      setSelectedItems({})
+      void refetch()
+
+      setImportProgress({ completed: totalSelected, total: totalSelected })
+    } catch (error) {
+      console.error('[profile-import] Failed to save selected data', error)
     } finally {
       setIsImporting(false)
     }
@@ -201,6 +314,18 @@ export function ImportReviewScreen() {
           Clear Selections
         </Button>
         <XStack gap="$3" items="center">
+          <Button
+            size="$3"
+            variant="outlined"
+            disabled={clearImportMutation.isPending}
+            onPress={async () => {
+              await clearImportMutation.mutateAsync({})
+              await utils.profile.import.getImportData.invalidate()
+              void refetch()
+            }}
+          >
+            Clear Import
+          </Button>
           {isImporting && (
             <Text color="$color10">
               Importing {importProgress.completed} of {importProgress.total}...

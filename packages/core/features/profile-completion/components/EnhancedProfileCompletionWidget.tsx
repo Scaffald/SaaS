@@ -1,7 +1,8 @@
 import { memo } from 'react'
-import { Button, Card, LinearGradient, Progress, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Progress, Text, XStack, YStack } from 'tamagui'
 import { DashboardWidget } from '@app/ui'
 import { Sparkles, UploadCloud, ChevronRight } from '@tamagui/lucide-icons'
+import { LinearGradient } from '@tamagui/linear-gradient'
 import { useCompletionStatus } from '../hooks/useCompletionStatus'
 import { useCompletionNudges } from '../hooks/useCompletionNudges'
 import { MilestoneBadge } from './MilestoneBadge'
@@ -84,14 +85,15 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
               {status.incompleteSections.length} sections remaining
             </Text>
           </XStack>
-          <Progress size="$3" backgroundColor="$color4" borderRadius="$5" height={18} value={status.completionPercentage}>
+          <Progress
+            size="$3"
+            bg="$color4"
+            rounded="$5"
+            height={18}
+            value={status.completionPercentage}
+          >
             <Progress.Indicator asChild>
-              <LinearGradient
-                start={[0, 1]}
-                end={[1, 0]}
-                colors={gradient}
-                borderRadius="$5"
-              />
+              <LinearGradient start={[0, 1]} end={[1, 0]} colors={gradient} rounded="$5" />
             </Progress.Indicator>
           </Progress>
         </YStack>
@@ -141,5 +143,3 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
     </DashboardWidget>
   )
 })
-
-
