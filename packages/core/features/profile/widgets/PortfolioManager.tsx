@@ -1,32 +1,146 @@
 import { useState, useCallback } from 'react'
+import { YStack, XStack, Text, Input, Image, H4 } from 'tamagui'
+import { Plus, Edit3, ArrowUp, ArrowDown, Image as ImageIcon } from '@tamagui/lucide-icons'
 import {
-  YStack,
-  XStack,
-  Text,
-  Button,
-  Input,
-  Card,
-  Image,
-  H4,
-  Separator,
-} from 'tamagui'
-import { Plus, Edit, Trash2, ArrowUp, ArrowDown, Image as ImageIcon } from '@tamagui/lucide-icons'
-import { DashboardWidget } from '@app/ui'
+  UIButton,
+  ImageUpload,
+  RichTextEditor,
+  extractPlainText,
+  plainTextToTipTap,
+} from '@app/ui'
 import { ProfileFormPanel, ProfileResultsPanel, ProfileResultCard } from '../components'
 import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
-import { ImageUpload } from '@app/ui'
-import { RichTextEditor } from '@app/ui'
 import type { ProfileWidgetProps } from './types'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
+import type { JSONContent } from '@tiptap/core'
+
+type PortfolioDescription = JSONContent | string | null
 
 interface PortfolioItem {
   id: string
   title: string
-  description: unknown | null // JSONB for rich text
+  description: PortfolioDescription // JSONB for rich text
   image_url: string | null
   file_path: string | null
   display_order: number
+}
+
+interface PortfolioFormState {
+  title: string
+  description: JSONContent | null
+  imageUrl: string | null
+  filePath: string | null
+}
+
+interface UploadImageResponse {
+  imageUrl: string
+  filePath: string
+}
+
+const createDefaultFormState = (): PortfolioFormState => ({
+  title: '',
+  description: null,
+  imageUrl: null,
+  filePath: null,
+})
+
+const PortfolioEmptyStateIcon = ({ size }: { size?: number; color?: string }) => (
+  <ImageIcon size={size} />
+)
+
+const isJsonContent = (value: unknown): value is JSONContent =>
+  typeof value === 'object' && value !== null && 'type' in value
+
+const normalizeDescriptionForEditor = (description: PortfolioDescription): JSONContent | null => {
+  if (!description) {
+    return null
+  }
+
+  if (typeof description === 'string') {
+    return plainTextToTipTap(description)
+  }
+
+  return isJsonContent(description) ? description : null
+}
+
+const getDescriptionPreview = (description: PortfolioDescription): string => {
+  if (!description) {
+    return ''
+  }
+
+  if (typeof description === 'string') {
+    return description
+  }
+
+  return extractPlainText(description)
+}
+
+const isUploadImageResponse = (value: unknown): value is UploadImageResponse =>
+  typeof value === 'object' &&
+  value !== null &&
+  typeof (value as UploadImageResponse).imageUrl === 'string' &&
+  typeof (value as UploadImageResponse).filePath === 'string'
+
+const getErrorMessage = (error: unknown, fallback: string): string => {
+  if (error instanceof Error && error.message) {
+    return error.message
+  }
+
+  if (typeof error === 'string' && error.trim().length > 0) {
+    return error
+  }
+
+  return fallback
+}
+
+const normalizePortfolioDescription = (
+  description: PortfolioDescription | unknown,
+): PortfolioDescription => {
+  if (typeof description === 'string' || description === null) {
+    return description
+  }
+
+  if (isJsonContent(description)) {
+    return description
+  }
+
+  return null
+}
+
+const parsePortfolioItems = (data: unknown): PortfolioItem[] => {
+  if (!Array.isArray(data)) {
+    return []
+  }
+
+  const normalized: PortfolioItem[] = []
+
+  for (const item of data) {
+    if (!item || typeof item !== 'object') {
+      continue
+    }
+
+    const candidate = item as Record<string, unknown>
+
+    if (
+      typeof candidate.id !== 'string' ||
+      typeof candidate.title !== 'string' ||
+      typeof candidate.display_order !== 'number'
+    ) {
+      continue
+    }
+
+    normalized.push({
+      id: candidate.id,
+      title: candidate.title,
+      description: normalizePortfolioDescription(candidate.description),
+      image_url: typeof candidate.image_url === 'string' ? candidate.image_url : null,
+      file_path: typeof candidate.file_path === 'string' ? candidate.file_path : null,
+      display_order: candidate.display_order,
+    })
+  }
+
+  return normalized
 }
 
 /**
@@ -45,38 +159,29 @@ export function PortfolioManager({
   const toast = useToastController()
   const [editingId, setEditingId] = useState<string | null>(null)
   const [isAdding, setIsAdding] = useState(false)
-  const [formData, setFormData] = useState<{
-    title: string
-    description: unknown | null
-    imageUrl: string | null
-    filePath: string | null
-  }>({
-    title: '',
-    description: null,
-    imageUrl: null,
-    filePath: null,
-  })
+  const [formData, setFormData] = useState<PortfolioFormState>(() => createDefaultFormState())
 
   // Fetch portfolio items
   const utils = api.useUtils()
-  const { data: portfolioItems = [], isLoading } = api.portfolio.list.useQuery(
+  const { data: rawPortfolioItems, isLoading } = api.portfolio.list.useQuery(
     userId ? { userId } : undefined,
     { enabled: !!userId },
   )
+  const portfolioItems = parsePortfolioItems(rawPortfolioItems)
 
   // Mutations
   const createMutation = api.portfolio.create.useMutation({
     onSuccess: () => {
       utils.portfolio.list.invalidate()
       setIsAdding(false)
-      setFormData({ title: '', description: null, imageUrl: null, filePath: null })
+      setFormData(createDefaultFormState())
       toast.show('Portfolio Item Added', {
         message: 'Your portfolio item has been added successfully.',
       })
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
       toast.show('Error', {
-        message: error.message || 'Failed to add portfolio item',
+        message: getErrorMessage(error, 'Failed to add portfolio item'),
       })
     },
   })
@@ -85,14 +190,14 @@ export function PortfolioManager({
     onSuccess: () => {
       utils.portfolio.list.invalidate()
       setEditingId(null)
-      setFormData({ title: '', description: null, imageUrl: null, filePath: null })
+      setFormData(createDefaultFormState())
       toast.show('Portfolio Item Updated', {
         message: 'Your portfolio item has been updated successfully.',
       })
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
       toast.show('Error', {
-        message: error.message || 'Failed to update portfolio item',
+        message: getErrorMessage(error, 'Failed to update portfolio item'),
       })
     },
   })
@@ -104,9 +209,9 @@ export function PortfolioManager({
         message: 'Your portfolio item has been removed.',
       })
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
       toast.show('Error', {
-        message: error.message || 'Failed to delete portfolio item',
+        message: getErrorMessage(error, 'Failed to delete portfolio item'),
       })
     },
   })
@@ -120,9 +225,9 @@ export function PortfolioManager({
         message: 'Your portfolio items have been reordered.',
       })
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
       toast.show('Error', {
-        message: error.message || 'Failed to reorder portfolio items',
+        message: getErrorMessage(error, 'Failed to reorder portfolio items'),
       })
     },
   })
@@ -133,7 +238,7 @@ export function PortfolioManager({
       setEditingId(item.id)
       setFormData({
         title: item.title,
-        description: item.description,
+        description: normalizeDescriptionForEditor(item.description),
         imageUrl: item.image_url || null,
         filePath: item.file_path || null,
       })
@@ -146,7 +251,7 @@ export function PortfolioManager({
   const handleCancel = useCallback(() => {
     setEditingId(null)
     setIsAdding(false)
-    setFormData({ title: '', description: null, imageUrl: null, filePath: null })
+    setFormData(createDefaultFormState())
   }, [])
 
   // Handle save
@@ -240,6 +345,10 @@ export function PortfolioManager({
               contentType: blob.type || 'image/jpeg',
             })
 
+            if (!isUploadImageResponse(uploadResult)) {
+              throw new Error('Unexpected response from image upload')
+            }
+
             setFormData((prev) => ({
               ...prev,
               imageUrl: uploadResult.imageUrl,
@@ -248,7 +357,7 @@ export function PortfolioManager({
           } catch (error) {
             console.error('Error uploading image:', error)
             toast.show('Error', {
-              message: 'Failed to upload image. Please try again.',
+              message: getErrorMessage(error, 'Failed to upload image. Please try again.'),
             })
           }
         }
@@ -256,7 +365,7 @@ export function PortfolioManager({
       } catch (error) {
         console.error('Error processing image:', error)
         toast.show('Error', {
-          message: 'Failed to process image. Please try again.',
+          message: getErrorMessage(error, 'Failed to process image. Please try again.'),
         })
       }
     },
@@ -276,25 +385,24 @@ export function PortfolioManager({
             <Text fontSize="$3" color="$color11">
               Add projects, work samples, or achievements to showcase your skills and experience.
             </Text>
-            <Button
-              theme="info"
+            <UIButton
               icon={Plus}
               onPress={() => {
                 setIsAdding(true)
                 setEditingId(null)
-                setFormData({ title: '', description: null, imageUrl: null, filePath: null })
+                setFormData(createDefaultFormState())
               }}
             >
               Add Portfolio Item
-            </Button>
+            </UIButton>
           </YStack>
         ) : (
           <YStack gap="$4">
             <XStack justify="space-between" items="center">
               <H4>{editingId ? 'Edit Portfolio Item' : 'Add Portfolio Item'}</H4>
-              <Button size="$2" variant="outlined" onPress={handleCancel}>
+              <UIButton size="$2" variant="outlined" onPress={handleCancel}>
                 Cancel
-              </Button>
+              </UIButton>
             </XStack>
 
             {/* Title */}
@@ -316,6 +424,7 @@ export function PortfolioManager({
               </Text>
               <RichTextEditor
                 value={formData.description}
+                fieldType="EXPERIENCE_DESCRIPTION"
                 onChange={(content) => setFormData((prev) => ({ ...prev, description: content }))}
                 placeholder="Describe your project, work sample, or achievement..."
               />
@@ -337,16 +446,15 @@ export function PortfolioManager({
 
             {/* Save Button */}
             <XStack gap="$2" justify="flex-end">
-              <Button variant="outlined" onPress={handleCancel}>
+              <UIButton variant="outlined" onPress={handleCancel}>
                 Cancel
-              </Button>
-              <Button
-                theme="info"
+              </UIButton>
+              <UIButton
                 onPress={handleSave}
                 disabled={createMutation.isPending || updateMutation.isPending}
               >
                 {editingId ? 'Update' : 'Add'} Portfolio Item
-              </Button>
+              </UIButton>
             </XStack>
           </YStack>
         )}
@@ -357,7 +465,7 @@ export function PortfolioManager({
         title="Your Portfolio"
         isLoading={isLoading}
         isEmpty={portfolioItems.length === 0}
-        emptyIcon={ImageIcon}
+        emptyIcon={PortfolioEmptyStateIcon}
         emptyMessage="No portfolio items yet. Add your first item to showcase your work."
       >
         <YStack gap="$3">
@@ -378,14 +486,14 @@ export function PortfolioManager({
                 actions={
                   <XStack gap="$2">
                     {/* Reorder buttons */}
-                    <Button
+                    <UIButton
                       size="$2"
                       variant="outlined"
                       icon={ArrowUp}
                       onPress={() => handleMoveUp(index)}
                       disabled={index === 0 || reorderMutation.isPending}
                     />
-                    <Button
+                    <UIButton
                       size="$2"
                       variant="outlined"
                       icon={ArrowDown}
@@ -393,10 +501,10 @@ export function PortfolioManager({
                       disabled={index === portfolioItems.length - 1 || reorderMutation.isPending}
                     />
                     {/* Edit button */}
-                    <Button
+                    <UIButton
                       size="$2"
                       variant="outlined"
-                      icon={Edit}
+                      icon={Edit3}
                       onPress={() => handleEdit(item)}
                       disabled={isEditing}
                     />
@@ -409,7 +517,7 @@ export function PortfolioManager({
                       source={{ uri: imageUrl }}
                       width="100%"
                       height={200}
-                      contentFit="cover"
+                      objectFit="cover"
                       borderRadius="$3"
                     />
                   )}
@@ -419,10 +527,7 @@ export function PortfolioManager({
                     </Text>
                     {item.description && (
                       <Text fontSize="$3" color="$color11" numberOfLines={3}>
-                        {/* Render rich text description - simplified for now */}
-                        {typeof item.description === 'string'
-                          ? item.description
-                          : 'Rich text description'}
+                        {getDescriptionPreview(item.description)}
                       </Text>
                     )}
                   </YStack>

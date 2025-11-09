@@ -242,9 +242,11 @@ export function ProfileEducationLeft() {
         : undefined
     )
 
-    const educationEntries = errors.education_entries ?? []
-    for (let idx = 0; idx < educationEntries.length; idx += 1) {
-      const entryErrors = educationEntries[idx]
+    const educationEntryErrors = Array.isArray(errors.education_entries)
+      ? errors.education_entries
+      : []
+    for (let idx = 0; idx < educationEntryErrors.length; idx += 1) {
+      const entryErrors = educationEntryErrors[idx]
       if (!entryErrors) {
         continue
       }
@@ -254,6 +256,10 @@ export function ProfileEducationLeft() {
 
     return messages.length > 1 ? messages : []
   }, [errors])
+
+  const educationEntryFieldErrors = Array.isArray(errors.education_entries)
+    ? errors.education_entries
+    : []
 
   // Load data when queries succeed
   useEffect(() => {
@@ -381,7 +387,7 @@ export function ProfileEducationLeft() {
           </XStack>
 
           {fields.map((field, index) => {
-            const entryErrors = errors.education_entries?.[index]
+            const entryErrors = educationEntryFieldErrors[index]
             const hasEntryErrors = entryErrors !== undefined && entryErrors !== null
 
             return (
@@ -434,9 +440,8 @@ export function ProfileEducationLeft() {
                                     searchError={searchUniversitiesQuery.error?.message}
                                     placeholder="Search for institution..."
                                     error={
-                                      errors.education_entries?.[index]?.institution_name
-                                        ?.message ||
-                                      errors.education_entries?.[index]?.university_id?.message
+                                      entryErrors?.institution_name?.message ||
+                                      entryErrors?.university_id?.message
                                     }
                                   />
                                   <Button
@@ -449,7 +454,6 @@ export function ProfileEducationLeft() {
                                         shouldValidate: false,
                                       })
                                     }}
-                                    self="flex-start"
                                   >
                                     Can't find your institution? Enter it manually
                                   </Button>
@@ -464,11 +468,7 @@ export function ProfileEducationLeft() {
                                       universityField.onChange(null)
                                     }}
                                   />
-                                  <FieldError
-                                    message={
-                                      errors.education_entries?.[index]?.institution_name?.message
-                                    }
-                                  />
+                                  <FieldError message={entryErrors?.institution_name?.message} />
                                   <Button
                                     size="$2"
                                     variant="outlined"
@@ -477,7 +477,6 @@ export function ProfileEducationLeft() {
                                       nameField.onChange('')
                                       universityField.onChange(undefined)
                                     }}
-                                    self="flex-start"
                                   >
                                     Search from catalog instead
                                   </Button>
@@ -514,7 +513,7 @@ export function ProfileEducationLeft() {
                         }))}
                         placeholder="Select degree type"
                         allowClear
-                        error={errors.education_entries?.[index]?.degree_type?.message}
+                        error={entryErrors?.degree_type?.message}
                       />
                     )}
                   />
@@ -524,26 +523,26 @@ export function ProfileEducationLeft() {
                     control={control}
                     render={({ field: degreeTypeField }) => {
                       const isOther = degreeTypeField.value === 'Other'
-                      return isOther ? (
-                        <Controller
-                          name={`education_entries.${index}.custom_degree_type`}
-                          control={control}
-                          render={({ field: customField }) => (
-                            <>
-                              <Input
-                                placeholder="Specify degree type"
-                                value={customField.value || ''}
-                                onChangeText={customField.onChange}
-                              />
-                              <FieldError
-                                message={
-                                  errors.education_entries?.[index]?.custom_degree_type?.message
-                                }
-                              />
-                            </>
+                      return (
+                        <>
+                          {isOther && (
+                            <Controller
+                              name={`education_entries.${index}.custom_degree_type`}
+                              control={control}
+                              render={({ field: customField }) => (
+                                <>
+                                  <Input
+                                    placeholder="Specify degree type"
+                                    value={customField.value || ''}
+                                    onChangeText={customField.onChange}
+                                  />
+                                  <FieldError message={entryErrors?.custom_degree_type?.message} />
+                                </>
+                              )}
+                            />
                           )}
-                        />
-                      ) : null
+                        </>
+                      )
                     }}
                   />
                 </YStack>
@@ -633,7 +632,7 @@ export function ProfileEducationLeft() {
                             }}
                             keyboardType="decimal-pad"
                           />
-                          <FieldError message={errors.education_entries?.[index]?.gpa?.message} />
+                          <FieldError message={entryErrors?.gpa?.message} />
                         </>
                       )
                     }}
@@ -655,7 +654,7 @@ export function ProfileEducationLeft() {
                               const dateStr = date ? date.toISOString().split('T')[0] : null
                               field.onChange(dateStr || undefined)
                             }}
-                            error={errors.education_entries?.[index]?.start_date?.message}
+                            error={entryErrors?.start_date?.message}
                             label="Start Date"
                           />
                         )}
@@ -674,7 +673,7 @@ export function ProfileEducationLeft() {
                               field.onChange(dateStr || undefined)
                             }}
                             disabled={watch(`education_entries.${index}.is_current`)}
-                            error={errors.education_entries?.[index]?.end_date?.message}
+                            error={entryErrors?.end_date?.message}
                             label="End Date"
                           />
                         )}
@@ -721,28 +720,28 @@ export function ProfileEducationLeft() {
                   <Controller
                     name={`education_entries.${index}.is_current`}
                     control={control}
-                    render={({ field: isCurrentField }) => {
-                      return isCurrentField.value ? (
-                        <Controller
-                          name={`education_entries.${index}.expected_graduation_date`}
-                          control={control}
-                          render={({ field: expectedField }) => (
-                            <MonthYearPicker
-                              value={expectedField.value ? new Date(expectedField.value) : null}
-                              onChange={(date) => {
-                                // Store as YYYY-MM-DD format (first day of month)
-                                const dateStr = date ? date.toISOString().split('T')[0] : null
-                                expectedField.onChange(dateStr || undefined)
-                              }}
-                              error={
-                                errors.education_entries?.[index]?.expected_graduation_date?.message
-                              }
-                              label="Expected Graduation Date"
-                            />
-                          )}
-                        />
-                      ) : null
-                    }}
+                    render={({ field: isCurrentField }) => (
+                      <>
+                        {isCurrentField.value && (
+                          <Controller
+                            name={`education_entries.${index}.expected_graduation_date`}
+                            control={control}
+                            render={({ field: expectedField }) => (
+                              <MonthYearPicker
+                                value={expectedField.value ? new Date(expectedField.value) : null}
+                                onChange={(date) => {
+                                  // Store as YYYY-MM-DD format (first day of month)
+                                  const dateStr = date ? date.toISOString().split('T')[0] : null
+                                  expectedField.onChange(dateStr || undefined)
+                                }}
+                                error={entryErrors?.expected_graduation_date?.message}
+                                label="Expected Graduation Date"
+                              />
+                            )}
+                          />
+                        )}
+                      </>
+                    )}
                   />
                 </YStack>
 
@@ -760,9 +759,7 @@ export function ProfileEducationLeft() {
                           onChangeText={field.onChange}
                           minH={80}
                         />
-                        <FieldError
-                          message={errors.education_entries?.[index]?.description?.message}
-                        />
+                        <FieldError message={entryErrors?.description?.message} />
                       </>
                     )}
                   />

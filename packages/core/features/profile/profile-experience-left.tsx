@@ -56,6 +56,18 @@ import {
   resetProfileSyncError,
 } from './utils/profile-sync-store'
 
+type ExperienceEntries = NonNullable<ExperienceProfileFormData['experience_entries']>
+
+interface SaveExperienceInput {
+  career_level: ExperienceProfileFormData['career_level'] | null
+  experience_entries: ExperienceEntries
+}
+
+interface SaveExperienceContext {
+  previousExperience?: ExperienceEntries | undefined
+  previousSummary?: { career_level: ExperienceProfileFormData['career_level'] | null } | undefined
+}
+
 /**
  * Profile Experience Left Component
  * Form for managing work experience history
@@ -73,7 +85,7 @@ export function ProfileExperienceLeft() {
 
   // Mutations
   const saveExperienceMutation = api.profile.saveExperience.useMutation({
-    async onMutate(input) {
+    async onMutate(input: SaveExperienceInput): Promise<SaveExperienceContext> {
       resetProfileSyncError()
       startProfileSync()
       await Promise.all([
@@ -84,14 +96,15 @@ export function ProfileExperienceLeft() {
       const previousExperience = utils.profile.getExperience.getData()
       const previousSummary = utils.profile.getExperienceSummary.getData()
 
-      utils.profile.getExperience.setData(undefined, input.experience_entries ?? [])
+      utils.profile.getExperience.setData(undefined, input.experience_entries)
       utils.profile
         .getExperienceSummary
         .setData(undefined, { career_level: input.career_level ?? null })
 
       return { previousExperience, previousSummary }
     },
-    onError: (_error, _input, context) => {
+    onError: (error: unknown, _input: SaveExperienceInput, context?: SaveExperienceContext) => {
+      console.error('Error saving experience:', error)
       if (context?.previousExperience) {
         utils.profile.getExperience.setData(undefined, context.previousExperience)
       }
@@ -100,7 +113,7 @@ export function ProfileExperienceLeft() {
       }
       failProfileSync()
     },
-    onSettled: (_data, error) => {
+    onSettled: (_data: { success: boolean } | undefined, error: unknown) => {
       if (!error) {
         completeProfileSync()
       }
@@ -111,8 +124,8 @@ export function ProfileExperienceLeft() {
   const [saveBanner, setSaveBanner] = useState<{ type: 'success' | 'error'; message: string } | null>(
     null
   )
-  const bannerTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const buttonTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const bannerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const buttonTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const {
     control,
@@ -199,9 +212,11 @@ export function ProfileExperienceLeft() {
     setSaveBanner(null)
     setSaveState('saving')
     try {
+      const experienceEntries = (data.experience_entries ?? []) as ExperienceEntries
+
       await saveExperienceMutation.mutateAsync({
-        career_level: data.career_level || null,
-        experience_entries: data.experience_entries || [],
+        career_level: data.career_level ?? null,
+        experience_entries: experienceEntries,
       })
       showSuccessFeedback()
     } catch (error) {

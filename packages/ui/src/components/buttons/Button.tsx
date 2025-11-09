@@ -1,4 +1,4 @@
-import { forwardRef, type ReactElement } from 'react'
+import { forwardRef, type ForwardRefExoticComponent, type RefAttributes } from 'react'
 import { Button as TamaguiButton, type ButtonProps as TamaguiButtonProps } from 'tamagui'
 
 /**
@@ -174,7 +174,9 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
 
 ButtonBase.displayName = 'UIButton'
 
-type UIButtonComponent = ((props: ButtonProps) => ReactElement | null) & {
+type UIButtonComponent = ForwardRefExoticComponent<
+  ButtonProps & RefAttributes<HTMLButtonElement>
+> & {
   Text: typeof TamaguiButton.Text
   Icon: typeof TamaguiButton.Icon
 }

@@ -36,6 +36,12 @@ import {
   resetProfileSyncError,
 } from './utils/profile-sync-store'
 
+type UpdateGeneralInput = GeneralProfileFormData
+
+interface UpdateGeneralContext {
+  previousGeneral?: GeneralProfileFormData | undefined
+}
+
 /**
  * Profile General Left Component
  * Form for editing general profile information
@@ -53,18 +59,18 @@ export function ProfileGeneralLeft() {
     isLoading: isLoadingProfile,
   } = api.profile.getGeneral.useQuery()
   const updateProfileMutation = api.profile.updateGeneral.useMutation({
-    async onMutate(input) {
+    async onMutate(input: UpdateGeneralInput): Promise<UpdateGeneralContext> {
       resetProfileSyncError()
       startProfileSync()
       await utils.profile.getGeneral.cancel()
       const previousGeneral = utils.profile.getGeneral.getData()
-      utils.profile.getGeneral.setData(undefined, (current) => ({
+      utils.profile.getGeneral.setData(undefined, (current: GeneralProfileFormData | undefined) => ({
         ...(current ?? {}),
         ...input,
       }))
       return { previousGeneral }
     },
-    onError: (error, _input, context) => {
+    onError: (error: unknown, _input: UpdateGeneralInput, context?: UpdateGeneralContext) => {
       console.error('Error saving profile:', error)
       if (context?.previousGeneral) {
         utils.profile.getGeneral.setData(undefined, context.previousGeneral)
@@ -79,7 +85,7 @@ export function ProfileGeneralLeft() {
         message: 'Your profile has been saved successfully!',
       })
     },
-    onSettled: (_data, error) => {
+    onSettled: (_data: { success: boolean } | undefined, error: unknown) => {
       if (!error) {
         completeProfileSync()
       }
@@ -92,24 +98,22 @@ export function ProfileGeneralLeft() {
       resetProfileSyncError()
       startProfileSync()
     },
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC response type
-    onSuccess: async (data: any) => {
+    onSuccess: async (data: { avatarPath: string }) => {
       toast.show('Avatar Uploaded', {
         message: 'Your avatar has been uploaded successfully!',
       })
-      // Update the form with the new avatar path
       setValue('avatar_path', data.avatarPath)
       await invalidateProfileQueries(utils)
     },
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error('Error uploading avatar:', error)
       failProfileSync()
       toast.show('Upload Error', {
-        message: error.message || 'Failed to upload avatar. Please try again.',
+        message:
+          error instanceof Error ? error.message : 'Failed to upload avatar. Please try again.',
       })
     },
-    onSettled: (_data, error) => {
+    onSettled: (_data: { avatarPath: string } | undefined, error: unknown) => {
       if (!error) {
         completeProfileSync()
       }

@@ -89,9 +89,13 @@ export function EducationEntryEditModal({
       onSuccess?.()
       onOpenChange(false)
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Failed to update education entry. Please try again.'
       toast.show('Error', {
-        message: error.message || 'Failed to update education entry. Please try again.',
+        message,
       })
     },
   })
@@ -132,17 +136,19 @@ export function EducationEntryEditModal({
       }
 
       // Get all existing education entries
-      const allEntries = (educationQuery.data ?? []).map(normalizeEducationEntry)
+      const allEntries: EducationEntryFormValues[] = (educationQuery.data ?? []).map(
+        normalizeEducationEntry
+      )
 
       // Update the entry being edited
-      const updatedEntries = allEntries.map((entry) =>
+      const updatedEntries = allEntries.map((entry: EducationEntryFormValues) =>
         entry.id === educationEntry.id ? data : entry
       )
 
       await saveEducationMutation.mutateAsync({
         education_entries: updatedEntries,
       })
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error updating education:', error)
     } finally {
       setIsLoading(false)
@@ -209,7 +215,6 @@ export function EducationEntryEditModal({
                                 universityField.onChange(null)
                                 setValue('is_verified', false, { shouldValidate: false })
                               }}
-                              self="flex-start"
                             >
                               Can't find your institution? Enter it manually
                             </Button>
@@ -233,7 +238,6 @@ export function EducationEntryEditModal({
                                 nameField.onChange('')
                                 universityField.onChange(undefined)
                               }}
-                              self="flex-start"
                             >
                               Search from catalog instead
                             </Button>
@@ -500,8 +504,8 @@ export function EducationEntryEditModal({
             <Controller
               name="is_current"
               control={control}
-              render={({ field: isCurrentField }) => {
-                return isCurrentField.value ? (
+              render={({ field: isCurrentField }) =>
+                isCurrentField.value ? (
                   <Controller
                     name="expected_graduation_date"
                     control={control}
@@ -517,8 +521,10 @@ export function EducationEntryEditModal({
                       />
                     )}
                   />
-                ) : null
-              }}
+                ) : (
+                  <></>
+                )
+              }
             />
           </YStack>
 

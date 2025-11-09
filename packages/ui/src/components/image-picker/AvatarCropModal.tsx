@@ -1,5 +1,13 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { Platform, Image as RNImage } from 'react-native'
+import {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo,
+  type ComponentRef,
+  type CSSProperties,
+} from 'react'
+import { Platform, Image as RNImage, type ImageStyle } from 'react-native'
 import { GestureDetector, Gesture } from 'react-native-gesture-handler'
 import {
   Dialog,
@@ -79,7 +87,7 @@ export function AvatarCropModal({
   const [flipHorizontal, setFlipHorizontal] = useState(false)
   const [flipVertical, setFlipVertical] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
-  const firstControlRef = useRef<any>(null)
+  const firstControlRef = useRef<ComponentRef<typeof Button> | null>(null)
   const [liveAnnouncement, setLiveAnnouncement] = useState('')
 
   const resolvedMimeType = useMemo(() => detectMimeTypeFromSrc(imageUri), [imageUri])
@@ -542,9 +550,12 @@ export function AvatarCropModal({
   }, [open, onOpenChange, isProcessing, handleZoomIn, handleZoomOut])
 
   const renderControls = () => {
-    const previewTransformStyle =
+    const previewStyle: CSSProperties | ImageStyle =
       Platform.OS === 'web'
         ? {
+            position: 'absolute',
+            left: previewLeft,
+            top: previewTop,
             transform: getWebTransform(
               previewImageWidth,
               previewImageHeight,
@@ -553,6 +564,9 @@ export function AvatarCropModal({
             ),
           }
         : {
+            position: 'absolute',
+            left: previewLeft,
+            top: previewTop,
             transform: getNativeTransform(
               previewImageWidth,
               previewImageHeight,
@@ -579,10 +593,7 @@ export function AvatarCropModal({
             source={{ uri: imageUri }}
             width={previewImageWidth}
             height={previewImageHeight}
-            position="absolute"
-            l={previewLeft}
-            t={previewTop}
-            style={previewTransformStyle as any}
+            style={previewStyle}
           />
           <View
             position="absolute"
@@ -731,90 +742,95 @@ export function AvatarCropModal({
 
                   const controls = renderControls()
 
-                  const cropper = (
-                    <GestureDetector gesture={combinedGesture || undefined}>
+                  const cropContent = (
+                    <View
+                      position="relative"
+                      width={displaySize}
+                      height={displaySize}
+                      bg="$color2"
+                      rounded="$4"
+                      overflow="hidden"
+                      aria-role="image"
+                      aria-label="Avatar crop area. Drag to reposition and pinch to zoom."
+                    >
+                      <TamaguiImage
+                        source={{ uri: imageUri }}
+                        width={scaledImageWidth}
+                        height={scaledImageHeight}
+                        style={{
+                          position: 'absolute',
+                          left: cropAreaTopLeft.x - cropPosition.x * scale,
+                          top: cropAreaTopLeft.y - cropPosition.y * scale,
+                          transform: getNativeTransform(
+                            scaledImageWidth,
+                            scaledImageHeight,
+                            flipHorizontal,
+                            flipVertical
+                          ),
+                        }}
+                      />
+
                       <View
-                        position="relative"
+                        position="absolute"
+                        t={0}
+                        l={0}
                         width={displaySize}
-                        height={displaySize}
-                        bg="$color2"
-                        rounded="$4"
-                        overflow="hidden"
-                        aria-role="image"
-                        aria-label="Avatar crop area. Drag to reposition and pinch to zoom."
-                      >
-                        <TamaguiImage
-                          source={{ uri: imageUri }}
-                          width={scaledImageWidth}
-                          height={scaledImageHeight}
-                          position="absolute"
-                          left={cropAreaTopLeft.x - cropPosition.x * scale}
-                          top={cropAreaTopLeft.y - cropPosition.y * scale}
-                          style={{
-                            transform: getNativeTransform(
-                              scaledImageWidth,
-                              scaledImageHeight,
-                              flipHorizontal,
-                              flipVertical
-                            ),
-                          }}
-                        />
+                        height={(displaySize - cropDisplaySize) / 2}
+                        bg="rgba(0, 0, 0, 0.5)"
+                        pointerEvents="none"
+                      />
+                      <View
+                        position="absolute"
+                        b={0}
+                        l={0}
+                        width={displaySize}
+                        height={(displaySize - cropDisplaySize) / 2}
+                        bg="rgba(0, 0, 0, 0.5)"
+                        pointerEvents="none"
+                      />
+                      <View
+                        position="absolute"
+                        t={(displaySize - cropDisplaySize) / 2}
+                        l={0}
+                        width={(displaySize - cropDisplaySize) / 2}
+                        height={cropDisplaySize}
+                        bg="rgba(0, 0, 0, 0.5)"
+                        pointerEvents="none"
+                      />
+                      <View
+                        position="absolute"
+                        t={(displaySize - cropDisplaySize) / 2}
+                        r={0}
+                        width={(displaySize - cropDisplaySize) / 2}
+                        height={cropDisplaySize}
+                        bg="rgba(0, 0, 0, 0.5)"
+                        pointerEvents="none"
+                      />
 
-                        <View
-                          position="absolute"
-                          t={0}
-                          l={0}
-                          width={displaySize}
-                          height={(displaySize - cropDisplaySize) / 2}
-                          bg="rgba(0, 0, 0, 0.5)"
-                          pointerEvents="none"
-                        />
-                        <View
-                          position="absolute"
-                          b={0}
-                          l={0}
-                          width={displaySize}
-                          height={(displaySize - cropDisplaySize) / 2}
-                          bg="rgba(0, 0, 0, 0.5)"
-                          pointerEvents="none"
-                        />
-                        <View
-                          position="absolute"
-                          t={(displaySize - cropDisplaySize) / 2}
-                          l={0}
-                          width={(displaySize - cropDisplaySize) / 2}
-                          height={cropDisplaySize}
-                          bg="rgba(0, 0, 0, 0.5)"
-                          pointerEvents="none"
-                        />
-                        <View
-                          position="absolute"
-                          t={(displaySize - cropDisplaySize) / 2}
-                          r={0}
-                          width={(displaySize - cropDisplaySize) / 2}
-                          height={cropDisplaySize}
-                          bg="rgba(0, 0, 0, 0.5)"
-                          pointerEvents="none"
-                        />
-
-                        <View
-                          position="absolute"
-                          l={(displaySize - cropDisplaySize) / 2}
-                          t={(displaySize - cropDisplaySize) / 2}
-                          width={cropDisplaySize}
-                          height={cropDisplaySize}
-                          borderWidth={2}
-                          borderColor="$blue10"
-                          rounded="$2"
-                          shadowColor="$shadowColor"
-                          shadowOffset={{ width: 0, height: 2 }}
-                          shadowOpacity={0.3}
-                          shadowRadius={8}
-                          pointerEvents="none"
-                        />
-                      </View>
-                    </GestureDetector>
+                      <View
+                        position="absolute"
+                        l={(displaySize - cropDisplaySize) / 2}
+                        t={(displaySize - cropDisplaySize) / 2}
+                        width={cropDisplaySize}
+                        height={cropDisplaySize}
+                        borderWidth={2}
+                        borderColor="$blue10"
+                        rounded="$2"
+                        shadowColor="$shadowColor"
+                        shadowOffset={{ width: 0, height: 2 }}
+                        shadowOpacity={0.3}
+                        shadowRadius={8}
+                        pointerEvents="none"
+                      />
+                    </View>
                   )
+
+                  const cropper =
+                    combinedGesture !== null ? (
+                      <GestureDetector gesture={combinedGesture}>{cropContent}</GestureDetector>
+                    ) : (
+                      cropContent
+                    )
 
                   if (isLandscape) {
                     return (

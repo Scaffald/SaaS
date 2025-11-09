@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useEffect, useRef, type ElementRef } from 'react'
 import {
   YStack,
   XStack,
@@ -9,12 +9,13 @@ import {
   Card,
   Separator,
   Spinner,
-  Badge,
+  useWindowDimensions,
+  type StackProps,
+  type TextProps,
 } from 'tamagui'
 import { Bell, AlertCircle, Info, ShieldAlert, X, ExternalLink } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import type { Href } from 'expo-router'
-import { useWindowDimensions } from 'tamagui'
 
 export interface NotificationItem {
   id: string
@@ -27,6 +28,38 @@ export interface NotificationItem {
   ctaUrl?: string | null
   ctaLabel?: string | null
   channels: string[]
+}
+
+type ButtonRef = ElementRef<typeof Button>
+
+const SEVERITY_PILL_STYLES = {
+  critical: { bg: '$red4', color: '$red11' },
+  important: { bg: '$yellow4', color: '$yellow11' },
+  info: { bg: '$blue4', color: '$blue11' },
+} as const satisfies Record<
+  NotificationItem['severity'],
+  { bg: StackProps['bg']; color: TextProps['color'] }
+>
+
+interface PillProps {
+  label: string
+  bg: StackProps['bg']
+  color: TextProps['color']
+}
+
+const CHANNEL_PILL_STYLE = {
+  bg: '$color3',
+  color: '$color11',
+} as const satisfies Pick<PillProps, 'bg' | 'color'>
+
+function Pill({ label, bg, color }: PillProps) {
+  return (
+    <XStack bg={bg} px="$2" py="$1" rounded="$3" items="center">
+      <Text fontSize="$1" fontWeight="600" color={color}>
+        {label}
+      </Text>
+    </XStack>
+  )
 }
 
 interface NotificationDropdownProps {
@@ -132,7 +165,7 @@ export function NotificationDropdown({
   const router = useRouter()
   const { width } = useWindowDimensions()
   const isMobile = width < 768
-  const triggerRef = useRef<any>(null)
+  const triggerRef = useRef<ButtonRef>(null)
 
   // Separate notifications into unread and read
   const unreadNotifications = notifications.filter((n) => !n.read)
@@ -367,22 +400,17 @@ export function NotificationDropdown({
                                   <Text fontSize="$1" color="$color10">
                                     {formatRelativeTime(notification.createdAt)}
                                   </Text>
-                                  <Badge
-                                    size="$1"
-                                    theme={
-                                      notification.severity === 'critical'
-                                        ? 'red'
-                                        : notification.severity === 'important'
-                                          ? 'yellow'
-                                          : 'blue'
-                                    }
-                                  >
-                                    {notification.severity.toUpperCase()}
-                                  </Badge>
+                                  <Pill
+                                    label={notification.severity.toUpperCase()}
+                                    bg={SEVERITY_PILL_STYLES[notification.severity].bg}
+                                    color={SEVERITY_PILL_STYLES[notification.severity].color}
+                                  />
                                   {notification.channels?.length > 0 && (
-                                    <Badge size="$1" theme="gray">
-                                      {notification.channels.join(', ')}
-                                    </Badge>
+                                    <Pill
+                                      label={notification.channels.join(', ')}
+                                      bg={CHANNEL_PILL_STYLE.bg}
+                                      color={CHANNEL_PILL_STYLE.color}
+                                    />
                                   )}
                                 </XStack>
                                 {notification.ctaLabel && (
@@ -471,22 +499,17 @@ export function NotificationDropdown({
                                   <Text fontSize="$1" color="$color10">
                                     {formatRelativeTime(notification.createdAt)}
                                   </Text>
-                                  <Badge
-                                    size="$1"
-                                    theme={
-                                      notification.severity === 'critical'
-                                        ? 'red'
-                                        : notification.severity === 'important'
-                                          ? 'yellow'
-                                          : 'blue'
-                                    }
-                                  >
-                                    {notification.severity.toUpperCase()}
-                                  </Badge>
+                                  <Pill
+                                    label={notification.severity.toUpperCase()}
+                                    bg={SEVERITY_PILL_STYLES[notification.severity].bg}
+                                    color={SEVERITY_PILL_STYLES[notification.severity].color}
+                                  />
                                   {notification.channels?.length > 0 && (
-                                    <Badge size="$1" theme="gray">
-                                      {notification.channels.join(', ')}
-                                    </Badge>
+                                    <Pill
+                                      label={notification.channels.join(', ')}
+                                      bg={CHANNEL_PILL_STYLE.bg}
+                                      color={CHANNEL_PILL_STYLE.color}
+                                    />
                                   )}
                                 </XStack>
                                 {notification.ctaLabel && (

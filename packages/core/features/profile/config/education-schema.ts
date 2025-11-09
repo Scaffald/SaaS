@@ -110,7 +110,7 @@ export const educationProfileDefaults: Partial<EducationProfileFormData> = {
 };
 
 // Helper function to create new education entry
-export const createNewEducationEntry = () => ({
+export const createNewEducationEntry = (): EducationEntryFormValues => ({
   id: undefined,
   university_id: undefined,
   institution_name: "",
@@ -118,9 +118,9 @@ export const createNewEducationEntry = () => ({
   degree_type: undefined,
   custom_degree_type: undefined,
   field_of_study: "",
-  start_date: undefined,
-  end_date: undefined,
-  expected_graduation_date: undefined,
+  start_date: "",
+  end_date: "",
+  expected_graduation_date: "",
   is_current: false,
   gpa: undefined,
   description: "",

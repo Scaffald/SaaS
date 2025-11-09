@@ -65,7 +65,7 @@ export const ProgressIndicator = memo(function ProgressIndicator({
                     {meta.estimatedTimeMinutes} min
                   </Text>
                 </YStack>
-                {index < orderedSteps.length - 1 && <Separator vertical aria-hidden />}
+                {index < orderedSteps.length - 1 && <Separator vertical aria-hidden={true} />}
               </XStack>
             )
           })}

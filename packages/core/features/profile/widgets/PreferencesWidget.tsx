@@ -1,5 +1,5 @@
-import { YStack, XStack, Text, Spinner } from 'tamagui'
-import { DashboardWidget, Button, Heading, LoadingState, spacing } from '@app/ui'
+import { YStack, XStack, Text } from 'tamagui'
+import { DashboardWidget, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 
@@ -66,13 +66,13 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
         <XStack justify="space-between" items="center">
           <Heading variant="h4">Work Preferences</Heading>
           {showEdit && (
-            <Button
+            <UIButton
               variant="outlined"
-              size="small"
+              size="$2"
               onPress={() => router.push('/dashboard/profile/employment')}
             >
               Edit
-            </Button>
+            </UIButton>
           )}
         </XStack>
 

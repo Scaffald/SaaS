@@ -1,11 +1,24 @@
 import * as React from 'react'
 import { render, fireEvent, waitFor, cleanup } from '@testing-library/react-native'
 import { describe, beforeEach, afterEach, it, expect, vi } from 'vitest'
+import type { Mock } from 'vitest'
 import type { EmploymentProfileFormData } from '@app/core/utils/api'
 import type { ComponentProps, ElementRef, ReactElement, ReactNode } from 'react'
 
-const mockUseQuery = vi.fn()
-const mockMutateAsync = vi.fn<[EmploymentProfileFormData], Promise<{ success: boolean }>>()
+type NativeExports = typeof import('react-native')
+type NativeView = NativeExports['View']
+type NativeText = NativeExports['Text']
+type NativeTextInput = NativeExports['TextInput']
+
+const mockUseQuery: Mock<
+  [],
+  {
+    data: EmploymentProfileFormData
+    isLoading: boolean
+    isFetching: boolean
+  }
+> = vi.fn()
+const mockMutateAsync: Mock<[EmploymentProfileFormData], Promise<{ success: boolean }>> = vi.fn()
 const mockToastShow = vi.fn()
 const mockInvalidateProfileQueries = vi.fn()
 
@@ -123,10 +136,10 @@ vi.mock('@app/ui', () => {
 
 vi.mock('tamagui', () => {
   const React = require('react') as typeof import('react')
-  const { View, Text, TextInput, TouchableOpacity } = require('react-native') as typeof import('react-native')
+  const { View, Text, TextInput, TouchableOpacity } = require('react-native') as NativeExports
 
   const createView = () =>
-    React.forwardRef<ElementRef<typeof View>, ComponentProps<typeof View>>((props, ref) => {
+    React.forwardRef<ElementRef<NativeView>, ComponentProps<NativeView>>((props, ref) => {
       const { children, ...rest } = props
       return (
         <View ref={ref} {...rest}>
@@ -135,14 +148,16 @@ vi.mock('tamagui', () => {
       )
     })
 
-  const TextComponent = React.forwardRef<ElementRef<typeof Text>, ComponentProps<typeof Text>>((props, ref) => {
-    const { children, ...rest } = props
-    return (
-      <Text ref={ref} {...rest}>
-        {children}
-      </Text>
-    )
-  })
+  const TextComponent = React.forwardRef<ElementRef<NativeText>, ComponentProps<NativeText>>(
+    (props, ref) => {
+      const { children, ...rest } = props
+      return (
+        <Text ref={ref} {...rest}>
+          {children}
+        </Text>
+      )
+    }
+  )
 
   type ButtonProps = {
     children: ReactNode
@@ -171,7 +186,7 @@ vi.mock('tamagui', () => {
     }
   )
 
-  const Input = React.forwardRef<ElementRef<typeof TextInput>, ComponentProps<typeof TextInput>>(
+  const Input = React.forwardRef<ElementRef<NativeTextInput>, ComponentProps<NativeTextInput>>(
     ({ value, onChangeText, ...props }, ref) => (
       <TextInput ref={ref} value={value} onChangeText={onChangeText} {...props} />
     )
@@ -251,7 +266,7 @@ vi.mock('tamagui', () => {
   }
 })
 
-let employmentData: EmploymentProfileFormData
+let employmentData: EmploymentProfileFormData = { ...profileEmploymentDefaults }
 
 vi.mock('@app/core/utils/api', async () => {
   const actual = await vi.importActual<typeof import('@app/core/utils/api')>('@app/core/utils/api')
@@ -421,10 +436,11 @@ describe('ProfileEmploymentLeft', () => {
     const slider = getByLabelText(/travel slider/i)
     fireEvent.press(slider)
 
-    mockMutateAsync.mockImplementation(async (input) => {
-      employmentData = {
+    mockMutateAsync.mockImplementation(async (input: EmploymentProfileFormData) => {
+      const nextEmployment: EmploymentProfileFormData = {
         ...input,
       }
+      employmentData = nextEmployment
       return { success: true }
     })
 

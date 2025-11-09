@@ -1,4 +1,4 @@
-import { YStack, XStack, Text, Spinner, Separator } from 'tamagui'
+import { YStack, XStack, Text, Separator } from 'tamagui'
 import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
@@ -61,16 +61,16 @@ export function EducationWidget({
           <Text color="$color11" fontSize="$2">
             {error.message}
           </Text>
-          <Button
+          <UIButton
             variant="primary"
-            size="small"
+            size="$2"
             onPress={() => {
               void refetch()
             }}
             disabled={isFetching}
           >
             Retry
-          </Button>
+          </UIButton>
         </YStack>
       </DashboardWidget>
     )

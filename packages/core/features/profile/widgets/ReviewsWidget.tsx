@@ -95,16 +95,16 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
           <Text color="$color11" fontSize="$2">
             {error.message}
           </Text>
-          <Button
+          <UIButton
             variant="primary"
-            size="small"
+            size="$2"
             onPress={() => {
               void refetch()
             }}
             disabled={isFetching}
           >
             Retry
-          </Button>
+          </UIButton>
         </YStack>
       </DashboardWidget>
     )

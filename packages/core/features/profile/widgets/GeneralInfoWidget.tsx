@@ -1,5 +1,5 @@
-import { YStack, XStack, Text, Spinner, Avatar } from 'tamagui'
-import { DashboardWidget, Button, Heading, LoadingState, spacing } from '@app/ui'
+import { YStack, XStack, Text, Avatar } from 'tamagui'
+import { DashboardWidget, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
@@ -48,7 +48,7 @@ export function GeneralInfoWidget({
           <Text color="$color11" fontSize="$2">
             {error.message}
           </Text>
-          <Button
+          <UIButton
             variant="primary"
             size="$2"
             onPress={() => {
@@ -57,7 +57,7 @@ export function GeneralInfoWidget({
             disabled={isFetching}
           >
             Retry
-          </Button>
+          </UIButton>
         </YStack>
       </DashboardWidget>
     )
@@ -88,13 +88,13 @@ export function GeneralInfoWidget({
         <XStack justify="space-between" items="center">
           <Heading variant="h4">General Information</Heading>
           {showEdit && (
-          <Button
-            variant="outlined"
-            size="$2"
-            onPress={() => router.push('/dashboard/profile/general')}
-          >
+            <UIButton
+              variant="outlined"
+              size="$2"
+              onPress={() => router.push('/dashboard/profile/general')}
+            >
               Edit
-            </Button>
+            </UIButton>
           )}
         </XStack>
 

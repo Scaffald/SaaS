@@ -26,6 +26,12 @@ import { Flag, MapPin, Plane, DollarSign, Car, Shield, Calendar } from '@tamagui
 
 type MultiSelectFieldName = 'drivers_license_classes' | 'military_status' | 'availability'
 
+type UpdateEmploymentInput = EmploymentProfileFormData
+
+interface UpdateEmploymentContext {
+  previousEmployment?: EmploymentProfileFormData | undefined
+}
+
 interface MultiSelectToggleFieldProps {
   control: Control<EmploymentProfileFormData>
   name: MultiSelectFieldName
@@ -137,18 +143,18 @@ export function ProfileEmploymentLeft() {
     isFetching: isFetchingEmployment,
   } = api.profile.getEmployment.useQuery()
   const updateEmploymentMutation = api.profile.updateEmployment.useMutation({
-    async onMutate(input) {
+    async onMutate(input: UpdateEmploymentInput): Promise<UpdateEmploymentContext> {
       resetProfileSyncError()
       startProfileSync()
       await utils.profile.getEmployment.cancel()
       const previousEmployment = utils.profile.getEmployment.getData()
-      utils.profile.getEmployment.setData(undefined, (current) => ({
+      utils.profile.getEmployment.setData(undefined, (current: EmploymentProfileFormData | undefined) => ({
         ...(current ?? profileEmploymentDefaults),
         ...input,
       }))
       return { previousEmployment }
     },
-    onError: (error, _input, context) => {
+    onError: (error: unknown, _input: UpdateEmploymentInput, context?: UpdateEmploymentContext) => {
       console.error('Error saving employment:', error)
       if (context?.previousEmployment) {
         utils.profile.getEmployment.setData(undefined, context.previousEmployment)
@@ -167,7 +173,7 @@ export function ProfileEmploymentLeft() {
       })
       await utils.profile.getEmployment.invalidate()
     },
-    onSettled: async (_data, error) => {
+    onSettled: async (_data: { success: boolean } | undefined, error: unknown) => {
       if (!error) {
         completeProfileSync()
       }

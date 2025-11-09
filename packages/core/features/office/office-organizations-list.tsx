@@ -152,7 +152,7 @@ export function OfficeOrganizationsList() {
     onSuccess: async () => {
       await Promise.all([refetch(), refetchRequests()])
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast.show('Unable to review request', {
         message: error.message ?? 'Please try again shortly.',
       })
@@ -405,7 +405,7 @@ export function OfficeOrganizationsList() {
               </Text>
               {isRequestsLoading ? (
                 <XStack justify="center" py="$4">
-                  <Spinner size="$4" />
+                  <Spinner size="large" />
                 </XStack>
               ) : pendingRequests.length === 0 ? (
                 <Text fontSize="$3" color="$color11">

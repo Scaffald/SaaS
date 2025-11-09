@@ -23,7 +23,7 @@ export function ProfileEducationRight() {
   
   // Delete mutation
   const deleteEducationMutation = api.profile.deleteEducation.useMutation({
-    onError: (error) => {
+    onError: (error: unknown) => {
       toast.show('Delete Failed', {
         message: error instanceof Error ? error.message : 'Failed to delete education entry. Please try again.',
       })
@@ -37,7 +37,13 @@ export function ProfileEducationRight() {
     },
   })
   
-  const handleDelete = (educationId: string) => {
+  const handleDelete = (educationId: string | null | undefined) => {
+    if (!educationId) {
+      toast.show('Delete Failed', {
+        message: 'Missing education identifier. Please try again.',
+      })
+      return
+    }
     deleteEducationMutation.mutate({ educationId })
   }
 
@@ -163,7 +169,7 @@ export function ProfileEducationRight() {
                     size="$2"
                     variant="outlined"
                     icon={Trash2}
-                    onPress={() => setDeleteDialogOpen(edu.id)}
+                    onPress={() => setDeleteDialogOpen(edu.id ?? null)}
                   >
                     Delete
                   </Button>
@@ -209,9 +215,9 @@ export function ProfileEducationRight() {
                     <Calendar size={16} color="$color11" />
                     <Text fontSize="$2" color="$color11">
                       {formatDateRange(
-                        edu.start_date, 
-                        edu.end_date, 
-                        edu.is_current,
+                        edu.start_date,
+                        edu.end_date,
+                        Boolean(edu.is_current),
                         edu.expected_graduation_date
                       )}
                     </Text>

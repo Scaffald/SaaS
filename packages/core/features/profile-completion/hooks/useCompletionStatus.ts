@@ -113,7 +113,7 @@ export function useCompletionStatus() {
 
         return {
           id: sectionId,
-          title: section.title,
+          title: metadata.title ?? section.title,
           description: metadata.description,
           completed: section.completed,
           weight: section.weight,
@@ -135,7 +135,12 @@ export function useCompletionStatus() {
 
     const milestoneHistory = rawStatus.milestoneHistory ?? {}
     const lastCompletedAt = milestoneHistory['100'] ?? null
-    const lastPromptedAt = rawStatus.nudgeStatus.lastDismissedAt ?? null
+    const normalizedNudgeStatus = {
+      dismissed: rawStatus.nudgeStatus.dismissed ?? {},
+      lastDismissedAt: rawStatus.nudgeStatus.lastDismissedAt ?? null,
+      shouldPrompt: rawStatus.nudgeStatus.shouldPrompt,
+    }
+    const lastPromptedAt = normalizedNudgeStatus.lastDismissedAt
     const modalMode: 'first-login' | 'progress-reminder' =
       rawStatus.completionPercentage === 0 ? 'first-login' : 'progress-reminder'
 
@@ -152,7 +157,7 @@ export function useCompletionStatus() {
       incompleteSections: rawStatus.incompleteSections as ProfileWizardStepId[],
       lastCompletedAt,
       lastPromptedAt,
-      shouldShowWizard: rawStatus.nudgeStatus.shouldPrompt,
+      shouldShowWizard: normalizedNudgeStatus.shouldPrompt,
       modalMode,
       milestoneHistory,
       summary: rawStatus.summary ?? {
@@ -161,7 +166,7 @@ export function useCompletionStatus() {
         nextMilestone: null,
       },
       updatedAt: rawStatus.updatedAt,
-      nudgeStatus: rawStatus.nudgeStatus,
+      nudgeStatus: normalizedNudgeStatus,
     }
   }, [rawStatus])
 

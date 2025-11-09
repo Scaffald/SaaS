@@ -42,6 +42,10 @@ type JobFormData = {
   pay_range_type?: string
   position_level?: string
 
+  // Hiring Team
+  hiring_manager_id?: string
+  recruiter_id?: string
+
   // Application Screening
   require_current_location?: boolean
   require_relocation_willingness?: boolean

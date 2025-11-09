@@ -123,7 +123,11 @@ export function OfficeUsersList() {
   const columnVisibilityOptions = useMemo<TableColumnVisibilityOption[]>(() => {
     return columns
       .map((column) => {
-        const columnId = (column as ColumnDef<User>).id ?? column.accessorKey
+        const columnId =
+          column.id ??
+          (typeof (column as { accessorKey?: string }).accessorKey === 'string'
+            ? (column as { accessorKey?: string }).accessorKey
+            : undefined)
         if (!columnId) {
           return null
         }

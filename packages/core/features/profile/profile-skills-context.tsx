@@ -83,7 +83,7 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
       })
       failProfileSync()
     },
-    onSettled: (_data, error) => {
+    onSettled: (_data: unknown, error: unknown) => {
       if (!error) {
         completeProfileSync()
       }
@@ -107,7 +107,7 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
       })
       failProfileSync()
     },
-    onSettled: (_data, error) => {
+    onSettled: (_data: unknown, error: unknown) => {
       if (!error) {
         completeProfileSync()
       }
@@ -128,13 +128,22 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
     }
 
     return industriesData.industries
-      .filter(
-        (industry): industry is ProfileIndustry =>
-          typeof industry.id === 'string' &&
-          typeof industry.name === 'string' &&
-          typeof industry.slug === 'string'
-      )
-      .map((industry) => ({
+      .filter((industry: unknown): industry is ProfileIndustry => {
+        if (!industry || typeof industry !== 'object') {
+          return false
+        }
+        const candidate = industry as {
+          id?: unknown
+          name?: unknown
+          slug?: unknown
+        }
+        return (
+          typeof candidate.id === 'string' &&
+          typeof candidate.name === 'string' &&
+          typeof candidate.slug === 'string'
+        )
+      })
+      .map((industry: ProfileIndustry) => ({
         id: industry.id,
         name: industry.name,
         slug: industry.slug,
@@ -142,7 +151,9 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
   }, [industriesData])
 
   const selectedIndustrySlug = useMemo(() => {
-    const matchingIndustry = industries.find((industry) => industry.id === selectedIndustryId)
+    const matchingIndustry = industries.find(
+      (industry: ProfileIndustry) => industry.id === selectedIndustryId
+    )
     return matchingIndustry?.slug ?? DEFAULT_INDUSTRY_SLUG
   }, [industries, selectedIndustryId])
 

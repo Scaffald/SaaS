@@ -38,7 +38,9 @@ export function getNativeTransform(
   flipHorizontal: boolean,
   flipVertical: boolean
 ) {
-  const transforms: Array<{ [key: string]: number }> = []
+  const transforms: Array<
+    { translateX: number } | { translateY: number } | { scaleX: number } | { scaleY: number }
+  > = []
 
   if (flipHorizontal) {
     transforms.push({ translateX: width })

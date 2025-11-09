@@ -41,8 +41,16 @@ export function GeneralProfileSection({
   const [isLoading, setIsLoading] = useState(false)
   const toast = useToastController()
 
-  const getErrorMessage = (value: unknown): string | undefined =>
-    typeof value === 'string' ? value : undefined
+  const getErrorMessage = (value: unknown): string | undefined => {
+    if (typeof value === 'string') {
+      return value
+    }
+    if (value && typeof value === 'object' && 'message' in value) {
+      const message = (value as { message?: unknown }).message
+      return typeof message === 'string' ? message : undefined
+    }
+    return undefined
+  }
 
   // Determine which tRPC endpoints to use based on mode
   const useQuery =
@@ -260,7 +268,7 @@ export function GeneralProfileSection({
             render={({ field }) => (
               <TextArea
                 placeholder="Tell us about yourself..."
-                value={field.value || ''}
+                value={typeof field.value === 'string' ? field.value : ''}
                 onChangeText={field.onChange}
                 minH={100}
                 borderColor={errors.about ? '$red8' : '$borderColor'}

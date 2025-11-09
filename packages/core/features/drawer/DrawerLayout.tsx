@@ -93,18 +93,38 @@ export function DrawerLayout({
 
   // Transform notifications to match NotificationItem interface
   const transformedNotifications: NotificationItem[] = (notificationsData?.items ?? []).map(
-    (n) => ({
-      id: n.id,
-      type: n.type,
-      severity: n.severity ?? 'info',
-      title: n.title,
-      preview: typeof n.body?.preview === 'string' ? n.body.preview : n.preview ?? n.message ?? '',
-      createdAt: n.created_at,
-      read: n.read ?? false,
-      ctaUrl: n.cta_url ?? undefined,
-      ctaLabel: n.cta_label ?? undefined,
-      channels: Array.isArray(n.routed_channels) ? n.routed_channels : [],
-    })
+    (notification: unknown): NotificationItem => {
+      const item = notification as {
+        id: string
+        type: NotificationItem['type']
+        severity?: NotificationItem['severity'] | null
+        title: string
+        body?: { preview?: string | null } | null
+        preview?: string | null
+        message?: string | null
+        created_at: string
+        read?: boolean | null
+        cta_url?: string | null
+        cta_label?: string | null
+        routed_channels?: string[] | null
+      }
+
+      return {
+        id: item.id,
+        type: item.type,
+        severity: item.severity ?? 'info',
+        title: item.title,
+        preview:
+          typeof item.body?.preview === 'string'
+            ? item.body.preview
+            : item.preview ?? item.message ?? '',
+        createdAt: item.created_at,
+        read: item.read ?? false,
+        ctaUrl: item.cta_url ?? undefined,
+        ctaLabel: item.cta_label ?? undefined,
+        channels: Array.isArray(item.routed_channels) ? item.routed_channels : [],
+      }
+    }
   )
 
   return (

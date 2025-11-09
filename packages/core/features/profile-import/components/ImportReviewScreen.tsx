@@ -349,7 +349,7 @@ export function ImportReviewScreen() {
                     <ConfidenceBadge level={confidenceLevel} />
                     <Button
                       size="$2"
-                      variant={isSelected ? 'outlined' : 'ghost'}
+                      variant={isSelected ? 'outlined' : undefined}
                       onPress={() => handleToggleItem(currentSection.id, item.id)}
                     >
                       {isSelected ? 'Selected' : 'Select'}
