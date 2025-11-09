@@ -217,7 +217,7 @@ export default function FormChoicePage() {
 />
 
 <YStack borderWidth={1} borderColor="$borderColor" rounded="$3" px="$4" py="$3">
-  <XStack justifyContent="space-between" alignItems="center">
+  <XStack justify="space-between" alignItems="center">
     <Text fontWeight="600">Equipment stipend</Text>
     <Switch checked={value} onCheckedChange={setValue}>
       <Switch.Thumb />
@@ -251,7 +251,7 @@ export default function FormChoicePage() {
                 py="$3"
                 gap="$2"
               >
-                <XStack justifyContent="space-between" alignItems="center">
+                <XStack justify="space-between" alignItems="center">
                   <YStack gap="$1">
                     <Text fontSize={14} fontWeight="600" color="$color11">
                       Equipment stipend

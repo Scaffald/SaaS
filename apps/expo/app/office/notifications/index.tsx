@@ -104,7 +104,7 @@ export default function OfficeNotificationsConsole() {
             </Button>
           </XStack>
 
-          <XStack gap="$2" wrap="wrap">
+          <XStack gap="$2" flexWrap="wrap">
             {DELIVERY_STATUSES.map((value) => {
               const isActive = status === value
 
@@ -187,7 +187,7 @@ export default function OfficeNotificationsConsole() {
                         themeName={delivery.status === 'failed' ? 'error' : 'gray'}
                         flex={1}
                         textColorToken="$color12"
-                        textProps={{ ta: 'center' }}
+                        textProps={{ style: { textAlign: 'center' as const } }}
                       >
                         {delivery.status}
                       </NotificationTag>

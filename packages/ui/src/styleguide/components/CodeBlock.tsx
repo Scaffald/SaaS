@@ -36,7 +36,7 @@ export function CodeBlock({ code, language = 'tsx', filename }: CodeBlockProps) 
         borderBottomWidth={1}
         borderColor="$color6"
         alignItems="center"
-        justifyContent="space-between"
+        justify="space-between"
         flexDirection="row"
         gap="$3"
       >

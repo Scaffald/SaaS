@@ -55,7 +55,7 @@ export default function ListsPage() {
                   borderRadius={999}
                   bg="$color4"
                   alignItems="center"
-                  justifyContent="center"
+                  justify="center"
                 >
                   <Text fontSize={18} fontWeight="600" color="$color11">
                     {item.name[0]}

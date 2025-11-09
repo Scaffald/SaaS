@@ -132,7 +132,7 @@ export function StyleguideSidebar({
           return (
             <YStack key={section.id} gap={8}>
               <XStack
-                justifyContent="space-between"
+                justify="space-between"
                 alignItems="center"
                 paddingHorizontal={12}
                 paddingVertical={4}

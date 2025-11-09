@@ -51,7 +51,7 @@ export function StyleguideTopNav({
         <XStack
           gap="$4"
           alignItems="center"
-          justifyContent="space-between"
+          justify="space-between"
           $sm={{ flexDirection: 'column', alignItems: 'stretch', gap: '$3' }}
         >
           <XStack alignItems="center" gap="$3">

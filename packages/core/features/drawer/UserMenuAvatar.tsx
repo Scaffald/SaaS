@@ -157,7 +157,7 @@ export function UserMenuAvatar() {
               bg="$color2"
               items="center"
               justify="center"
-              borderRadius={avatarSize / 2}
+              style={{ borderRadius: avatarSize / 2 }}
             >
               <Image
                 source={{ uri: avatarUri }}

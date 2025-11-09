@@ -115,9 +115,9 @@ export function ProfileEducationLeft() {
       const previousLevel = utils.profile.getEducationLevel.getData()
 
       utils.profile.getEducation.setData(undefined, input.education_entries ?? [])
-      utils.profile
-        .getEducationLevel
-        .setData(undefined, { education_level: input.education_level ?? null })
+      utils.profile.getEducationLevel.setData(undefined, {
+        education_level: input.education_level ?? null,
+      })
 
       return { previousEducation, previousLevel }
     },
@@ -205,9 +205,7 @@ export function ProfileEducationLeft() {
       if (ERROR_FIELD_LABELS[key]) {
         return ERROR_FIELD_LABELS[key]
       }
-      return key
-        .replace(/_/g, ' ')
-        .replace(/\b\w/g, (char) => char.toUpperCase())
+      return key.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
     }
 
     const traverse = (errorNode: unknown, prefix?: string) => {
@@ -232,12 +230,7 @@ export function ProfileEducationLeft() {
 
         for (const [key, value] of Object.entries(errorNode as Record<string, unknown>)) {
           const label = formatLabel(key)
-          const nextPrefix =
-            key === '_root'
-              ? prefix
-              : prefix
-                ? `${prefix} • ${label}`
-                : label
+          const nextPrefix = key === '_root' ? prefix : prefix ? `${prefix} • ${label}` : label
           traverse(value, nextPrefix)
         }
       }
@@ -401,387 +394,384 @@ export function ProfileEducationLeft() {
                 bg={hasEntryErrors ? '$red2' : '$background'}
                 rounded="$4"
               >
-              <XStack justify="space-between" items="center">
-                <Text fontWeight="600">Education {index + 1}</Text>
-                <Button size="$2" variant="outlined" onPress={() => remove(index)} icon={X}>
-                  Remove
-                </Button>
-              </XStack>
+                <XStack justify="space-between" items="center">
+                  <Text fontWeight="600">Education {index + 1}</Text>
+                  <Button size="$2" variant="outlined" onPress={() => remove(index)} icon={X}>
+                    Remove
+                  </Button>
+                </XStack>
 
-              {/* Institution */}
-              <YStack gap="$2">
-                <Text>Institution *</Text>
-                <Controller
-                  name={`education_entries.${index}.university_id`}
-                  control={control}
-                  render={({ field: universityField }) => (
-                    <Controller
-                      name={`education_entries.${index}.institution_name`}
-                      control={control}
-                      render={({ field: nameField }) => {
-                        const isManualMode = manualEntryMode[index] ?? false
-                        return (
-                          <YStack gap="$2">
-                            {!isManualMode ? (
-                              <>
-                                <UniversityAutocomplete
-                                  value={nameField.value || ''}
-                                  onChange={nameField.onChange}
-                                  onUniversitySelect={(university: University) => {
-                                    universityField.onChange(university.id)
-                                    nameField.onChange(university.name)
-                                    setValue(`education_entries.${index}.is_verified`, true, {
-                                      shouldValidate: false,
-                                    })
-                                    setManualEntryMode((prev) => ({ ...prev, [index]: false }))
-                                  }}
-                                  onSearch={handleUniversitySearch}
-                                  results={searchUniversitiesQuery.data?.universities || []}
-                                  loading={searchUniversitiesQuery.isLoading}
-                                  searchError={searchUniversitiesQuery.error?.message}
-                                  placeholder="Search for institution..."
-                                  error={
-                                    errors.education_entries?.[index]?.institution_name?.message ||
-                                    errors.education_entries?.[index]?.university_id?.message
-                                  }
-                                />
-                                <Button
-                                  size="$2"
-                                  variant="outlined"
-                                  onPress={() => {
-                                    setManualEntryMode((prev) => ({ ...prev, [index]: true }))
-                                    universityField.onChange(null)
-                                    setValue(`education_entries.${index}.is_verified`, false, {
-                                      shouldValidate: false,
-                                    })
-                                  }}
-                                  self="flex-start"
-                                >
-                                  Can't find your institution? Enter it manually
-                                </Button>
-                              </>
-                            ) : (
-                              <>
-                                <Input
-                                  placeholder="Enter institution name"
-                                  value={nameField.value || ''}
-                                  onChangeText={(text) => {
-                                    nameField.onChange(text)
-                                    universityField.onChange(null)
-                                  }}
-                                />
-                                <FieldError
-                                  message={
-                                    errors.education_entries?.[index]?.institution_name?.message
-                                  }
-                                />
-                                <Button
-                                  size="$2"
-                                  variant="outlined"
-                                  onPress={() => {
-                                    setManualEntryMode((prev) => ({ ...prev, [index]: false }))
-                                    nameField.onChange('')
-                                    universityField.onChange(undefined)
-                                  }}
-                                  self="flex-start"
-                                >
-                                  Search from catalog instead
-                                </Button>
-                              </>
-                            )}
-                          </YStack>
-                        )
-                      }}
-                    />
-                  )}
-                />
-              </YStack>
+                {/* Institution */}
+                <YStack gap="$2">
+                  <Text>Institution *</Text>
+                  <Controller
+                    name={`education_entries.${index}.university_id`}
+                    control={control}
+                    render={({ field: universityField }) => (
+                      <Controller
+                        name={`education_entries.${index}.institution_name`}
+                        control={control}
+                        render={({ field: nameField }) => {
+                          const isManualMode = manualEntryMode[index] ?? false
+                          return (
+                            <YStack gap="$2">
+                              {!isManualMode ? (
+                                <>
+                                  <UniversityAutocomplete
+                                    value={nameField.value || ''}
+                                    onChange={nameField.onChange}
+                                    onUniversitySelect={(university: University) => {
+                                      universityField.onChange(university.id)
+                                      nameField.onChange(university.name)
+                                      setValue(`education_entries.${index}.is_verified`, true, {
+                                        shouldValidate: false,
+                                      })
+                                      setManualEntryMode((prev) => ({ ...prev, [index]: false }))
+                                    }}
+                                    onSearch={handleUniversitySearch}
+                                    results={searchUniversitiesQuery.data?.universities || []}
+                                    loading={searchUniversitiesQuery.isLoading}
+                                    searchError={searchUniversitiesQuery.error?.message}
+                                    placeholder="Search for institution..."
+                                    error={
+                                      errors.education_entries?.[index]?.institution_name
+                                        ?.message ||
+                                      errors.education_entries?.[index]?.university_id?.message
+                                    }
+                                  />
+                                  <Button
+                                    size="$2"
+                                    variant="outlined"
+                                    onPress={() => {
+                                      setManualEntryMode((prev) => ({ ...prev, [index]: true }))
+                                      universityField.onChange(null)
+                                      setValue(`education_entries.${index}.is_verified`, false, {
+                                        shouldValidate: false,
+                                      })
+                                    }}
+                                    self="flex-start"
+                                  >
+                                    Can't find your institution? Enter it manually
+                                  </Button>
+                                </>
+                              ) : (
+                                <>
+                                  <Input
+                                    placeholder="Enter institution name"
+                                    value={nameField.value || ''}
+                                    onChangeText={(text) => {
+                                      nameField.onChange(text)
+                                      universityField.onChange(null)
+                                    }}
+                                  />
+                                  <FieldError
+                                    message={
+                                      errors.education_entries?.[index]?.institution_name?.message
+                                    }
+                                  />
+                                  <Button
+                                    size="$2"
+                                    variant="outlined"
+                                    onPress={() => {
+                                      setManualEntryMode((prev) => ({ ...prev, [index]: false }))
+                                      nameField.onChange('')
+                                      universityField.onChange(undefined)
+                                    }}
+                                    self="flex-start"
+                                  >
+                                    Search from catalog instead
+                                  </Button>
+                                </>
+                              )}
+                            </YStack>
+                          )
+                        }}
+                      />
+                    )}
+                  />
+                </YStack>
 
-              {/* Degree Type */}
-              <YStack gap="$2">
-                <Text>Degree Type</Text>
-                <Controller
-                  name={`education_entries.${index}.degree_type`}
-                  control={control}
-                  render={({ field }) => (
-                    <SmartSelect
-                      value={field.value}
-                      onValueChange={(value) => {
-                        field.onChange(value)
-                        if (value !== 'Other') {
+                {/* Degree Type */}
+                <YStack gap="$2">
+                  <Text>Degree Type</Text>
+                  <Controller
+                    name={`education_entries.${index}.degree_type`}
+                    control={control}
+                    render={({ field }) => (
+                      <SmartSelect
+                        value={field.value}
+                        onValueChange={(value) => {
+                          field.onChange(value)
+                          if (value !== 'Other') {
+                            setValue(`education_entries.${index}.custom_degree_type`, undefined, {
+                              shouldValidate: true,
+                            })
+                          }
+                        }}
+                        options={DEGREE_TYPE_OPTIONS.map((type) => ({
+                          label: type,
+                          value: type,
+                        }))}
+                        placeholder="Select degree type"
+                        allowClear
+                        error={errors.education_entries?.[index]?.degree_type?.message}
+                      />
+                    )}
+                  />
+                  {/* Custom Degree Type Input (shown when "Other" is selected) */}
+                  <Controller
+                    name={`education_entries.${index}.degree_type`}
+                    control={control}
+                    render={({ field: degreeTypeField }) => {
+                      const isOther = degreeTypeField.value === 'Other'
+                      return isOther ? (
+                        <Controller
+                          name={`education_entries.${index}.custom_degree_type`}
+                          control={control}
+                          render={({ field: customField }) => (
+                            <>
+                              <Input
+                                placeholder="Specify degree type"
+                                value={customField.value || ''}
+                                onChangeText={customField.onChange}
+                              />
+                              <FieldError
+                                message={
+                                  errors.education_entries?.[index]?.custom_degree_type?.message
+                                }
+                              />
+                            </>
+                          )}
+                        />
+                      ) : null
+                    }}
+                  />
+                </YStack>
+
+                {/* Field of Study */}
+                <YStack gap="$2">
+                  <Text>Field of Study</Text>
+                  <Controller
+                    name={`education_entries.${index}.field_of_study`}
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        placeholder="e.g. Computer Science"
+                        value={field.value || ''}
+                        onChangeText={field.onChange}
+                      />
+                    )}
+                  />
+                </YStack>
+
+                {/* GPA */}
+                <YStack gap="$2">
+                  <Text>GPA (Optional)</Text>
+                  <Controller
+                    name={`education_entries.${index}.gpa`}
+                    control={control}
+                    render={({ field }) => {
+                      // Use local state to track raw input for better decimal handling
+                      const [localValue, setLocalValue] = useState(field.value?.toString() || '')
+
+                      // Sync local value when field value changes externally (e.g., form reset)
+                      useEffect(() => {
+                        setLocalValue(field.value?.toString() || '')
+                      }, [field.value])
+
+                      return (
+                        <>
+                          <Input
+                            placeholder="e.g. 3.5 (0.0 - 4.0)"
+                            value={localValue}
+                            onChangeText={(text) => {
+                              // Allow empty string
+                              if (text === '') {
+                                setLocalValue('')
+                                field.onChange(undefined)
+                                return
+                              }
+
+                              // Allow decimal point and digits
+                              // Match pattern: optional digits, optional decimal point, optional single digit after decimal
+                              const decimalPattern = /^\d*\.?\d?$/
+                              if (!decimalPattern.test(text)) {
+                                return // Don't update if invalid pattern
+                              }
+
+                              // Update local display value
+                              setLocalValue(text)
+
+                              // Parse as float
+                              const numValue = Number.parseFloat(text)
+
+                              // Validate range and that it's a valid number
+                              if (
+                                !Number.isNaN(numValue) &&
+                                numValue >= 0 &&
+                                numValue <= 4.0 &&
+                                // Ensure max 1 decimal place
+                                (text.split('.')[1]?.length ?? 0) <= 1
+                              ) {
+                                // Only update form field if we have a complete number (not just "3.")
+                                if (!text.endsWith('.')) {
+                                  field.onChange(numValue)
+                                }
+                              }
+                            }}
+                            onBlur={() => {
+                              // On blur, ensure we have a valid number
+                              const currentValue = field.value
+                              if (currentValue !== undefined && currentValue !== null) {
+                                // Round to 1 decimal place
+                                const rounded = Math.round(currentValue * 10) / 10
+                                field.onChange(rounded)
+                                setLocalValue(rounded.toString())
+                              } else {
+                                setLocalValue('')
+                              }
+                            }}
+                            keyboardType="decimal-pad"
+                          />
+                          <FieldError message={errors.education_entries?.[index]?.gpa?.message} />
+                        </>
+                      )
+                    }}
+                  />
+                </YStack>
+
+                {/* Start and End Dates */}
+                <YStack gap="$2">
+                  <XStack gap="$3">
+                    <YStack gap="$2" flex={1}>
+                      <Controller
+                        name={`education_entries.${index}.start_date`}
+                        control={control}
+                        render={({ field }) => (
+                          <MonthYearPicker
+                            value={field.value ? new Date(field.value) : null}
+                            onChange={(date) => {
+                              // Store as YYYY-MM-DD format (first day of month)
+                              const dateStr = date ? date.toISOString().split('T')[0] : null
+                              field.onChange(dateStr || undefined)
+                            }}
+                            placeholder="Select start date"
+                            error={errors.education_entries?.[index]?.start_date?.message}
+                            label="Start Date"
+                          />
+                        )}
+                      />
+                    </YStack>
+                    <YStack gap="$2" flex={1}>
+                      <Controller
+                        name={`education_entries.${index}.end_date`}
+                        control={control}
+                        render={({ field }) => (
+                          <MonthYearPicker
+                            value={field.value ? new Date(field.value) : null}
+                            onChange={(date) => {
+                              // Store as YYYY-MM-DD format (first day of month)
+                              const dateStr = date ? date.toISOString().split('T')[0] : null
+                              field.onChange(dateStr || undefined)
+                            }}
+                            placeholder="Select end date"
+                            disabled={watch(`education_entries.${index}.is_current`)}
+                            error={errors.education_entries?.[index]?.end_date?.message}
+                            label="End Date"
+                          />
+                        )}
+                      />
+                    </YStack>
+                  </XStack>
+
+                  {/* Currently Enrolled Checkbox */}
+                  <Controller
+                    name={`education_entries.${index}.is_current`}
+                    control={control}
+                    render={({ field }) => {
+                      const isCurrent = Boolean(field.value)
+                      const handleChange = (next: boolean) => {
+                        field.onChange(next)
+                        if (next) {
+                          setValue(`education_entries.${index}.end_date`, undefined, {
+                            shouldValidate: true,
+                          })
+                        } else {
                           setValue(
-                            `education_entries.${index}.custom_degree_type`,
+                            `education_entries.${index}.expected_graduation_date`,
                             undefined,
                             { shouldValidate: true }
                           )
                         }
-                      }}
-                      options={DEGREE_TYPE_OPTIONS.map((type) => ({
-                        label: type,
-                        value: type,
-                      }))}
-                      placeholder="Select degree type"
-                      allowClear
-                      error={
-                        errors.education_entries?.[index]?.degree_type?.message
                       }
-                    />
-                  )}
-                />
-                {/* Custom Degree Type Input (shown when "Other" is selected) */}
-                <Controller
-                  name={`education_entries.${index}.degree_type`}
-                  control={control}
-                  render={({ field: degreeTypeField }) => {
-                    const isOther = degreeTypeField.value === 'Other'
-                    return isOther ? (
-                      <Controller
-                        name={`education_entries.${index}.custom_degree_type`}
-                        control={control}
-                        render={({ field: customField }) => (
-                          <>
-                            <Input
-                              placeholder="Specify degree type"
-                              value={customField.value || ''}
-                              onChangeText={customField.onChange}
-                            />
-                            <FieldError
-                              message={
-                                errors.education_entries?.[index]?.custom_degree_type?.message
-                              }
-                            />
-                          </>
-                        )}
-                      />
-                    ) : null
-                  }}
-                />
-              </YStack>
 
-              {/* Field of Study */}
-              <YStack gap="$2">
-                <Text>Field of Study</Text>
-                <Controller
-                  name={`education_entries.${index}.field_of_study`}
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      placeholder="e.g. Computer Science"
-                      value={field.value || ''}
-                      onChangeText={field.onChange}
-                    />
-                  )}
-                />
-              </YStack>
-
-              {/* GPA */}
-              <YStack gap="$2">
-                <Text>GPA (Optional)</Text>
-                <Controller
-                  name={`education_entries.${index}.gpa`}
-                  control={control}
-                  render={({ field }) => {
-                    // Use local state to track raw input for better decimal handling
-                    const [localValue, setLocalValue] = useState(field.value?.toString() || '')
-
-                    // Sync local value when field value changes externally (e.g., form reset)
-                    useEffect(() => {
-                      setLocalValue(field.value?.toString() || '')
-                    }, [field.value])
-
-                    return (
-                      <>
-                        <Input
-                          placeholder="e.g. 3.5 (0.0 - 4.0)"
-                          value={localValue}
-                          onChangeText={(text) => {
-                            // Allow empty string
-                            if (text === '') {
-                              setLocalValue('')
-                              field.onChange(undefined)
-                              return
-                            }
-
-                            // Allow decimal point and digits
-                            // Match pattern: optional digits, optional decimal point, optional single digit after decimal
-                            const decimalPattern = /^\d*\.?\d?$/
-                            if (!decimalPattern.test(text)) {
-                              return // Don't update if invalid pattern
-                            }
-
-                            // Update local display value
-                            setLocalValue(text)
-
-                            // Parse as float
-                            const numValue = Number.parseFloat(text)
-
-                            // Validate range and that it's a valid number
-                            if (
-                              !Number.isNaN(numValue) &&
-                              numValue >= 0 &&
-                              numValue <= 4.0 &&
-                              // Ensure max 1 decimal place
-                              (text.split('.')[1]?.length ?? 0) <= 1
-                            ) {
-                              // Only update form field if we have a complete number (not just "3.")
-                              if (!text.endsWith('.')) {
-                                field.onChange(numValue)
-                              }
-                            }
-                          }}
-                          onBlur={() => {
-                            // On blur, ensure we have a valid number
-                            const currentValue = field.value
-                            if (currentValue !== undefined && currentValue !== null) {
-                              // Round to 1 decimal place
-                              const rounded = Math.round(currentValue * 10) / 10
-                              field.onChange(rounded)
-                              setLocalValue(rounded.toString())
-                            } else {
-                              setLocalValue('')
-                            }
-                          }}
-                          keyboardType="decimal-pad"
-                        />
-                        <FieldError message={errors.education_entries?.[index]?.gpa?.message} />
-                      </>
-                    )
-                  }}
-                />
-              </YStack>
-
-              {/* Start and End Dates */}
-              <YStack gap="$2">
-                <XStack gap="$3">
-                  <YStack gap="$2" flex={1}>
-                    <Controller
-                      name={`education_entries.${index}.start_date`}
-                      control={control}
-                      render={({ field }) => (
-                        <MonthYearPicker
-                          value={field.value ? new Date(field.value) : null}
-                          onChange={(date) => {
-                            // Store as YYYY-MM-DD format (first day of month)
-                            const dateStr = date ? date.toISOString().split('T')[0] : null
-                            field.onChange(dateStr || undefined)
-                          }}
-                          placeholder="Select start date"
-                          error={errors.education_entries?.[index]?.start_date?.message}
-                          label="Start Date"
-                        />
-                      )}
-                    />
-                  </YStack>
-                  <YStack gap="$2" flex={1}>
-                    <Controller
-                      name={`education_entries.${index}.end_date`}
-                      control={control}
-                      render={({ field }) => (
-                        <MonthYearPicker
-                          value={field.value ? new Date(field.value) : null}
-                          onChange={(date) => {
-                            // Store as YYYY-MM-DD format (first day of month)
-                            const dateStr = date ? date.toISOString().split('T')[0] : null
-                            field.onChange(dateStr || undefined)
-                          }}
-                          placeholder="Select end date"
-                          disabled={watch(`education_entries.${index}.is_current`)}
-                          error={errors.education_entries?.[index]?.end_date?.message}
-                          label="End Date"
-                        />
-                      )}
-                    />
-                  </YStack>
-                </XStack>
-
-                {/* Currently Enrolled Checkbox */}
-                <Controller
-                  name={`education_entries.${index}.is_current`}
-                  control={control}
-                  render={({ field }) => {
-                    const isCurrent = Boolean(field.value)
-                    const handleChange = (next: boolean) => {
-                      field.onChange(next)
-                      if (next) {
-                        setValue(`education_entries.${index}.end_date`, undefined, {
-                          shouldValidate: true,
-                        })
-                      } else {
-                        setValue(
-                          `education_entries.${index}.expected_graduation_date`,
-                          undefined,
-                          { shouldValidate: true }
-                        )
-                      }
-                    }
-
-                    return (
-                      <XStack gap="$2" items="center">
-                        <CustomCheckbox
-                          checked={isCurrent}
-                          onCheckedChange={handleChange}
-                          testID={`education-current-${index}`}
-                          aria-label="Currently enrolled"
-                        />
-                        <Label onPress={() => handleChange(!isCurrent)}>Currently enrolled</Label>
-                      </XStack>
-                    )
-                  }}
-                />
-
-                {/* Expected Graduation Date (shown when is_current is true) */}
-                <Controller
-                  name={`education_entries.${index}.is_current`}
-                  control={control}
-                  render={({ field: isCurrentField }) => {
-                    return isCurrentField.value ? (
-                      <Controller
-                        name={`education_entries.${index}.expected_graduation_date`}
-                        control={control}
-                        render={({ field: expectedField }) => (
-                          <MonthYearPicker
-                            value={expectedField.value ? new Date(expectedField.value) : null}
-                            onChange={(date) => {
-                              // Store as YYYY-MM-DD format (first day of month)
-                              const dateStr = date ? date.toISOString().split('T')[0] : null
-                              expectedField.onChange(dateStr || undefined)
-                            }}
-                            placeholder="Select expected graduation date"
-                            error={
-                              errors.education_entries?.[index]?.expected_graduation_date?.message
-                            }
-                            label="Expected Graduation Date"
+                      return (
+                        <XStack gap="$2" items="center">
+                          <CustomCheckbox
+                            checked={isCurrent}
+                            onCheckedChange={handleChange}
+                            testID={`education-current-${index}`}
+                            aria-label="Currently enrolled"
                           />
-                        )}
-                      />
-                    ) : null
-                  }}
-                />
-              </YStack>
+                          <Label onPress={() => handleChange(!isCurrent)}>Currently enrolled</Label>
+                        </XStack>
+                      )
+                    }}
+                  />
 
-              {/* Description */}
-              <YStack gap="$2">
-                <Text>Description</Text>
-                <Controller
-                  name={`education_entries.${index}.description`}
-                  control={control}
-                  render={({ field }) => (
-                    <>
-                      <TextArea
-                        placeholder="Describe your education experience, achievements, relevant coursework..."
-                        value={field.value || ''}
-                        onChangeText={field.onChange}
-                        minH={80}
-                      />
-                      <FieldError
-                        message={errors.education_entries?.[index]?.description?.message}
-                      />
-                    </>
-                  )}
-                />
+                  {/* Expected Graduation Date (shown when is_current is true) */}
+                  <Controller
+                    name={`education_entries.${index}.is_current`}
+                    control={control}
+                    render={({ field: isCurrentField }) => {
+                      return isCurrentField.value ? (
+                        <Controller
+                          name={`education_entries.${index}.expected_graduation_date`}
+                          control={control}
+                          render={({ field: expectedField }) => (
+                            <MonthYearPicker
+                              value={expectedField.value ? new Date(expectedField.value) : null}
+                              onChange={(date) => {
+                                // Store as YYYY-MM-DD format (first day of month)
+                                const dateStr = date ? date.toISOString().split('T')[0] : null
+                                expectedField.onChange(dateStr || undefined)
+                              }}
+                              placeholder="Select expected graduation date"
+                              error={
+                                errors.education_entries?.[index]?.expected_graduation_date?.message
+                              }
+                              label="Expected Graduation Date"
+                            />
+                          )}
+                        />
+                      ) : null
+                    }}
+                  />
+                </YStack>
+
+                {/* Description */}
+                <YStack gap="$2">
+                  <Text>Description</Text>
+                  <Controller
+                    name={`education_entries.${index}.description`}
+                    control={control}
+                    render={({ field }) => (
+                      <>
+                        <TextArea
+                          placeholder="Describe your education experience, achievements, relevant coursework..."
+                          value={field.value || ''}
+                          onChangeText={field.onChange}
+                          minH={80}
+                        />
+                        <FieldError
+                          message={errors.education_entries?.[index]?.description?.message}
+                        />
+                      </>
+                    )}
+                  />
+                </YStack>
               </YStack>
-            </YStack>
-              )
+            )
           })}
 
           {fields.length === 0 && (
@@ -856,7 +846,7 @@ function SmartSelect({
   allowClear = false,
 }: SmartSelectProps) {
   const [open, setOpen] = useState(false)
-  const [placement, setPlacement] = useState<'top' | 'bottom'>('bottom')
+  const [_placement, setPlacement] = useState<'top' | 'bottom'>('bottom')
   const [contentWidth, setContentWidth] = useState<number | undefined>()
   const triggerRef = useRef<HTMLButtonElement | null>(null)
 
@@ -931,7 +921,7 @@ function SmartSelect({
           <Button
             ref={triggerRef}
             variant="outlined"
-            justifyContent="space-between"
+            justify="space-between"
             iconAfter={ChevronDown}
             disabled={disabled}
             borderColor={error ? '$red9' : '$borderColor'}
@@ -943,10 +933,6 @@ function SmartSelect({
         </Popover.Trigger>
 
         <Popover.Content
-          placement={placement}
-          w={contentWidth}
-          minWidth={contentWidth ?? 220}
-          maxWidth={320}
           elevate
           animation="quick"
           enterStyle={{ opacity: 0, scale: 0.96 }}
@@ -954,18 +940,23 @@ function SmartSelect({
           borderWidth={1}
           borderColor="$borderColor"
           bg="$color2"
-          padding="$2"
+          p="$2"
+          style={{
+            width: contentWidth,
+            minWidth: contentWidth ?? 220,
+            maxWidth: 320,
+          }}
         >
-          <ScrollView maxHeight={280}>
+          <ScrollView style={{ maxHeight: 280 }}>
             <YStack gap="$1">
               {allowClear && (
                 <Button
                   size="$2"
                   chromeless
-                  justifyContent="flex-start"
+                  justify="flex-start"
                   onPress={() => handleSelect(undefined)}
                   disabled={disabled}
-                  hoverStyle={{ backgroundColor: '$color3' }}
+                  hoverStyle={{ bg: '$color3' }}
                 >
                   Clear selection
                 </Button>
@@ -978,12 +969,12 @@ function SmartSelect({
                     key={option.value}
                     size="$3"
                     chromeless
-                    justifyContent="flex-start"
+                    justify="flex-start"
                     onPress={() => handleSelect(option.value)}
                     disabled={disabled}
                     bg={isSelected ? '$blue3' : 'transparent'}
-                    hoverStyle={{ backgroundColor: '$blue4' }}
-                    borderRadius="$3"
+                    hoverStyle={{ bg: '$blue4' }}
+                    rounded="$3"
                     color={isSelected ? '$blue12' : '$color12'}
                   >
                     {option.label}

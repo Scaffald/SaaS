@@ -38,7 +38,7 @@ export default function GridPage() {
                 borderRadius="$3"
                 padding="$2"
                 alignItems="center"
-                justifyContent="center"
+                justify="center"
               >
                 <Text fontSize={12} color="$color11">
                   {column}

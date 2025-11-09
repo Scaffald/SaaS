@@ -89,7 +89,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
             <YStack
               px="$3"
               py="$2"
-              borderRadius="$4"
+              rounded="$4"
               borderWidth={1}
               bg={
                 syncStatus === 'syncing'
@@ -105,8 +105,8 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
                     ? '$red7'
                     : '$green6'
               }
-              maxWidth={200}
               gap="$1"
+              style={{ maxWidth: 200 }}
             >
               <XStack gap="$2" items="center">
                 {syncStatus === 'syncing' ? (
