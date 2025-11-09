@@ -1,10 +1,11 @@
-import React from 'react'
+import * as React from 'react'
 import { render, fireEvent, waitFor, cleanup } from '@testing-library/react-native'
 import { describe, beforeEach, afterEach, it, expect, vi } from 'vitest'
 import type { EmploymentProfileFormData } from '@app/core/utils/api'
+import type { ComponentProps, ElementRef, ReactElement, ReactNode } from 'react'
 
 const mockUseQuery = vi.fn()
-const mockMutateAsync = vi.fn<(input: EmploymentProfileFormData) => Promise<{ success: boolean }>>()
+const mockMutateAsync = vi.fn<[EmploymentProfileFormData], Promise<{ success: boolean }>>()
 const mockToastShow = vi.fn()
 const mockInvalidateProfileQueries = vi.fn()
 
@@ -37,8 +38,8 @@ vi.mock('@tamagui/lucide-icons', () => ({
 }))
 
 vi.mock('@app/ui', () => {
-  const React = require('react')
-  const { View, Text, TouchableOpacity } = require('react-native')
+  const React = require('react') as typeof import('react')
+  const { View, Text, TouchableOpacity } = require('react-native') as typeof import('react-native')
   return {
     DashboardWidget: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
     CustomCheckbox: ({
@@ -121,59 +122,58 @@ vi.mock('@app/ui', () => {
 })
 
 vi.mock('tamagui', () => {
-  const React = require('react')
-  const { View, Text, TextInput, TouchableOpacity } = require('react-native')
+  const React = require('react') as typeof import('react')
+  const { View, Text, TextInput, TouchableOpacity } = require('react-native') as typeof import('react-native')
 
   const createView = () =>
-    React.forwardRef(({ children, ...props }: { children?: React.ReactNode }, ref) => (
-      <View ref={ref as React.Ref<View>} {...props}>
-        {children}
-      </View>
-    ))
+    React.forwardRef<ElementRef<typeof View>, ComponentProps<typeof View>>((props, ref) => {
+      const { children, ...rest } = props
+      return (
+        <View ref={ref} {...rest}>
+          {children}
+        </View>
+      )
+    })
 
-  const TextComponent = React.forwardRef(
-    ({ children, ...props }: { children?: React.ReactNode }, ref) => (
-      <Text ref={ref as React.Ref<Text>} {...props}>
+  const TextComponent = React.forwardRef<ElementRef<typeof Text>, ComponentProps<typeof Text>>((props, ref) => {
+    const { children, ...rest } = props
+    return (
+      <Text ref={ref} {...rest}>
         {children}
       </Text>
     )
-  )
+  })
 
-  const Button = ({
-    children,
-    onPress,
-    disabled,
-  }: {
-    children: React.ReactNode
+  type ButtonProps = {
+    children: ReactNode
     onPress?: () => void
     disabled?: boolean
-  }) => (
-    <TouchableOpacity
-      aria-role="button"
-      accessibilityState={{ disabled: Boolean(disabled) }}
-      onPress={disabled ? undefined : onPress}
-    >
-      {typeof children === 'string' ? <Text>{children}</Text> : children}
-    </TouchableOpacity>
-  )
-  Button.Text = ({ children }: { children: React.ReactNode }) => <Text>{children}</Text>
-  Button.Icon = ({ children }: { children: React.ReactNode }) => <View>{children}</View>
+  }
 
-  const Input = React.forwardRef(
-    (
-      {
-        value,
-        onChangeText,
-        ...props
-      }: { value?: string; onChangeText?: (value: string) => void; [key: string]: unknown },
-      ref
-    ) => (
-      <TextInput
-        ref={ref as React.Ref<TextInput>}
-        value={value}
-        onChangeText={onChangeText}
-        {...props}
-      />
+  type ButtonComponent = ((props: ButtonProps) => ReactElement | null) & {
+    Text: (props: { children: ReactNode }) => ReactElement | null
+    Icon: (props: { children: ReactNode }) => ReactElement | null
+  }
+
+  const Button: ButtonComponent = Object.assign(
+    ({ children, onPress, disabled }: ButtonProps) => (
+      <TouchableOpacity
+        aria-role="button"
+        accessibilityState={{ disabled: Boolean(disabled) }}
+        onPress={disabled ? undefined : onPress}
+      >
+        {typeof children === 'string' ? <Text>{children}</Text> : children}
+      </TouchableOpacity>
+    ),
+    {
+      Text: ({ children }: { children: ReactNode }) => <Text>{children}</Text>,
+      Icon: ({ children }: { children: ReactNode }) => <View>{children}</View>,
+    }
+  )
+
+  const Input = React.forwardRef<ElementRef<typeof TextInput>, ComponentProps<typeof TextInput>>(
+    ({ value, onChangeText, ...props }, ref) => (
+      <TextInput ref={ref} value={value} onChangeText={onChangeText} {...props} />
     )
   )
 
