@@ -1,20 +1,31 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { getNextNudgeMessage, type NudgeMessage } from '../utils/nudgeMessages'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { api } from '@app/core/utils/api'
 
-interface UseCompletionNudgesOptions {
-  userType: 'worker' | 'employer'
-  incompleteSections: string[]
+export interface PersonalizedBenefit {
+  id: string
+  title: string
+  description: string
+  relatedSection: string
+  userType: 'worker' | 'employer' | 'customer' | 'general'
+  opportunityCount: number
 }
 
 interface UseCompletionNudgesReturn {
-  currentMessage: NudgeMessage | null
+  currentBenefit: PersonalizedBenefit | null
   advanceMessage: () => void
+  hasMultiple: boolean
+  isLoading: boolean
+  refetch: () => Promise<unknown>
 }
 
-const SESSION_STORAGE_KEY = 'profile_completion_last_message_id'
+const SESSION_STORAGE_KEY = 'profile_completion_last_benefit_id'
 
-export function useCompletionNudges({ userType, incompleteSections }: UseCompletionNudgesOptions): UseCompletionNudgesReturn {
-  const [currentMessage, setCurrentMessage] = useState<NudgeMessage | null>(null)
+export function useCompletionNudges(): UseCompletionNudgesReturn {
+  const { data, isLoading, refetch } = api.profile.getPersonalizedBenefits.useQuery(undefined, {
+    staleTime: 2 * 60 * 1000,
+  })
+  const benefits = useMemo<PersonalizedBenefit[]>(() => data?.benefits ?? [], [data?.benefits])
+  const [currentIndex, setCurrentIndex] = useState<number>(0)
   const storedIdRef = useRef<string | null>(null)
 
   useEffect(() => {
@@ -22,38 +33,43 @@ export function useCompletionNudges({ userType, incompleteSections }: UseComplet
       storedIdRef.current = sessionStorage.getItem(SESSION_STORAGE_KEY)
     }
 
-    const next = getNextNudgeMessage({
-      lastMessageId: storedIdRef.current,
-      userType,
-      incompleteSections,
-    })
+    if (benefits.length === 0) {
+      setCurrentIndex(0)
+      return
+    }
 
-    setCurrentMessage(next)
-  }, [userType, incompleteSections])
+    const storedId = storedIdRef.current
+    if (storedId) {
+      const storedIndex = benefits.findIndex((benefit) => benefit.id === storedId)
+      if (storedIndex >= 0) {
+        setCurrentIndex(storedIndex)
+        return
+      }
+    }
+
+    setCurrentIndex(0)
+  }, [benefits])
 
   const advanceMessage = useCallback(() => {
-    setCurrentMessage((previous) => {
-      const lastId = previous?.id ?? storedIdRef.current
+    if (benefits.length === 0) return
+    setCurrentIndex((previous) => (previous + 1) % benefits.length)
+  }, [benefits])
 
-      const next = getNextNudgeMessage({
-        lastMessageId: lastId,
-        userType,
-        incompleteSections,
-      })
+  const currentBenefit = benefits.length > 0 ? benefits[currentIndex] : null
 
-      if (next && typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem(SESSION_STORAGE_KEY, next.id)
-        storedIdRef.current = next.id
-      }
-
-      return next
-    })
-  }, [userType, incompleteSections])
+  useEffect(() => {
+    if (!currentBenefit) return
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem(SESSION_STORAGE_KEY, currentBenefit.id)
+    }
+  }, [currentBenefit])
 
   return {
-    currentMessage,
+    currentBenefit,
     advanceMessage,
+    hasMultiple: benefits.length > 1,
+    isLoading,
+    refetch,
   }
 }
-
 

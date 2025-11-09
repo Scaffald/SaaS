@@ -4,12 +4,18 @@ import { DashboardWidget } from '@app/ui'
 import { Sparkles, UploadCloud, ChevronRight } from '@tamagui/lucide-icons'
 import { LinearGradient } from '@tamagui/linear-gradient'
 import { useCompletionStatus } from '../hooks/useCompletionStatus'
-import { useCompletionNudges } from '../hooks/useCompletionNudges'
+import type { PersonalizedBenefit } from '../hooks/useCompletionNudges'
+import { resolveSectionMetadata } from '../constants/sectionMetadata'
+import type { ProfileWizardStepId } from '@app/supabase/client-types'
 import { MilestoneBadge } from './MilestoneBadge'
 
 export interface EnhancedProfileCompletionWidgetProps {
   onStartWizard: () => void
   onOpenImport: () => void
+  currentBenefit: PersonalizedBenefit | null
+  advanceBenefit: () => void
+  hasMultipleBenefits: boolean
+  isBenefitLoading: boolean
 }
 
 const PROGRESS_GRADIENTS: Array<{ threshold: number; colors: [string, string] }> = [
@@ -31,12 +37,12 @@ function resolveProgressGradient(percentage: number): [string, string] {
 export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileCompletionWidget({
   onStartWizard,
   onOpenImport,
+  currentBenefit,
+  advanceBenefit,
+  hasMultipleBenefits,
+  isBenefitLoading,
 }: EnhancedProfileCompletionWidgetProps) {
-  const { status, isLoading, userType } = useCompletionStatus()
-  const { currentMessage, advanceMessage } = useCompletionNudges({
-    userType,
-    incompleteSections: status?.incompleteSections ?? [],
-  })
+  const { status, isLoading } = useCompletionStatus()
 
   if (isLoading) {
     return (
@@ -107,16 +113,46 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
               </Text>
             </XStack>
 
-            {currentMessage && (
-              <YStack gap="$2">
-                <Text fontSize="$2" color="$color11">
-                  {currentMessage.message}
+            <YStack gap="$2">
+              {isBenefitLoading ? (
+                <Text fontSize="$2" color="$color10">
+                  Gathering personalized suggestions…
                 </Text>
-                <Button size="$2" variant="outlined" onPress={advanceMessage}>
-                  Show another tip
-                </Button>
-              </YStack>
-            )}
+              ) : currentBenefit ? (
+                <>
+                  <Text fontSize="$3" fontWeight="600" color="$color12">
+                    {currentBenefit.title}
+                  </Text>
+                  <Text fontSize="$2" color="$color11">
+                    {currentBenefit.description}
+                  </Text>
+                  <Text fontSize="$2" color="$color10">
+                    Suggested section:{' '}
+                    {(() => {
+                      try {
+                        const sectionId = currentBenefit.relatedSection as ProfileWizardStepId
+                        const metadata = resolveSectionMetadata(sectionId)
+                        return metadata.title
+                      } catch {
+                        return currentBenefit.relatedSection
+                      }
+                    })()}
+                    {currentBenefit.opportunityCount > 0
+                      ? ` • Unlock ${currentBenefit.opportunityCount} new opportunity${currentBenefit.opportunityCount === 1 ? '' : 'ies'}`
+                      : ''}
+                  </Text>
+                  {hasMultipleBenefits && (
+                    <Button size="$2" variant="outlined" onPress={advanceBenefit}>
+                      Show another tip
+                    </Button>
+                  )}
+                </>
+              ) : (
+                <Text fontSize="$2" color="$color11">
+                  Stay on track by finishing your remaining sections. We’ll surface targeted ideas here once more data is available.
+                </Text>
+              )}
+            </YStack>
           </Card.Header>
         </Card>
 

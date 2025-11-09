@@ -4,6 +4,8 @@ import { EnhancedProfileCompletionWidget } from './EnhancedProfileCompletionWidg
 import { ProfileCompletionModal } from './ProfileCompletionModal'
 import { ProfileWizard } from '@app/core/features/profile-wizard/components/ProfileWizard'
 import { useCompletionStatus } from '../hooks/useCompletionStatus'
+import { useCompletionNudges } from '../hooks/useCompletionNudges'
+import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 import { ROUTES } from '@app/core/constants/routes'
 
@@ -11,6 +13,13 @@ const SESSION_MODAL_KEY = 'profile_completion_modal_dismissed'
 
 export function ProfileCompletionExperience() {
   const { status, isLoading, refetch } = useCompletionStatus()
+  const {
+    currentBenefit,
+    advanceMessage,
+    hasMultiple,
+    isLoading: isBenefitLoading,
+  } = useCompletionNudges()
+  const dismissNudgeMutation = api.profile.dismissNudge.useMutation()
   const [isWizardOpen, setIsWizardOpen] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<'first-login' | 'progress-reminder'>('progress-reminder')
@@ -33,6 +42,7 @@ export function ProfileCompletionExperience() {
   }, [status, isLoading])
 
   const benefitMessage = useMemo(() => {
+    if (currentBenefit) return currentBenefit.description
     if (!status) return 'Complete your profile to unlock more opportunities.'
     if (status.incompleteSections.includes('skills')) {
       return 'Add at least five skills to surface in more recruiter searches.'
@@ -41,17 +51,31 @@ export function ProfileCompletionExperience() {
       return 'Share your latest experience so employers can see your impact.'
     }
     return 'Complete your profile to unlock badges and appear in featured searches.'
-  }, [status])
+  }, [currentBenefit, status])
 
-  const dismissModal = useCallback(() => {
-    setIsModalOpen(false)
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem(SESSION_MODAL_KEY, 'true')
-    }
-  }, [])
+  const recordDismiss = useCallback(
+    (reason: string) => {
+      dismissNudgeMutation.mutate({
+        nudgeId: 'profile-wizard-modal',
+        reason,
+      })
+    },
+    [dismissNudgeMutation],
+  )
+
+  const dismissModal = useCallback(
+    (reason: string = 'user_dismissed_modal') => {
+      setIsModalOpen(false)
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.setItem(SESSION_MODAL_KEY, 'true')
+      }
+      recordDismiss(reason)
+    },
+    [recordDismiss],
+  )
 
   const handleStartWizard = useCallback(() => {
-    dismissModal()
+    dismissModal('started_wizard')
     setIsWizardOpen(true)
   }, [dismissModal])
 
@@ -63,7 +87,7 @@ export function ProfileCompletionExperience() {
   }, [])
 
   const navigateToImportReview = useCallback(() => {
-    dismissModal()
+    dismissModal('opened_import_review')
     setIsWizardOpen(false)
     router.push(ROUTES.DASHBOARD_PROFILE_IMPORT_REVIEW.path)
   }, [dismissModal, router])
@@ -82,6 +106,10 @@ export function ProfileCompletionExperience() {
       <EnhancedProfileCompletionWidget
         onStartWizard={handleWidgetStart}
         onOpenImport={navigateToImportReview}
+        currentBenefit={currentBenefit}
+        advanceBenefit={advanceMessage}
+        hasMultipleBenefits={hasMultiple}
+        isBenefitLoading={isBenefitLoading}
       />
 
       <ProfileCompletionModal
@@ -91,7 +119,7 @@ export function ProfileCompletionExperience() {
         benefitMessage={benefitMessage}
         onStartWizard={handleStartWizard}
         onUploadResume={navigateToImportReview}
-        onDismiss={dismissModal}
+        onDismiss={() => dismissModal('user_dismissed_modal')}
       />
 
       <Sheet
