@@ -1,14 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import {
-  YStack,
-  XStack,
-  Text,
-  Button,
-  Popover,
-  Separator,
-  type GetThemeValueForKey,
-  type TamaguiElement,
-} from 'tamagui'
+import { YStack, XStack, Text, Button, Popover, Separator, type TamaguiElement } from 'tamagui'
 import { Image } from 'expo-image'
 import { User, Settings, Sun, Moon, LogOut, Eye, Pencil } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
@@ -50,8 +41,7 @@ export function UserMenuAvatar() {
   const isMobile = width < 768
   const triggerRef = useRef<TamaguiElement | null>(null)
 
-  const { user } = useUser()
-  // const { profile } = useUser() // Will uncomment when we add avatar display
+  const { user, profile } = useUser()
 
   // Fetch general profile data to get first_name and last_name
   const { data: generalProfile } = api.profile.getGeneral.useQuery(undefined, {
@@ -66,36 +56,11 @@ export function UserMenuAvatar() {
     return user?.email || 'User'
   })()
 
-  // Get avatar URL
-  // const avatarUrl = getAvatarUrl(profile?.avatar_path || '')
-
-  // Get user ID for profile viewing
-  // const userId = user?.id || ''
-
-  // Get initials for fallback
-  // const initials = displayName ? getInitials(displayName) : '?'
-
-  // Generate a consistent color based on the name
-  // const getColorIndex = (str: string): number => {
-  //   let hash = 0
-  //   for (let i = 0; i < str.length; i++) {
-  //     hash = str.charCodeAt(i) + ((hash << 5) - hash)
-  //   }
-  //   return Math.abs(hash) % 8
-  // }
-
-  // const colorIndex = getColorIndex(displayName)
-  // const bgColors = [
-  //   '$blue10',
-  //   '$green10',
-  //   '$blue10',
-  //   '$red10',
-  //   '$pink10',
-  //   '$red10',
-  //   '$yellow10',
-  //   '$color10',
-  // ]
-  // const bgColor = bgColors[colorIndex] as GetThemeValueForKey<'backgroundColor'>
+  const avatarUri =
+    getAvatarUrl(profile?.avatar_path) ??
+    (typeof user?.user_metadata?.avatar_url === 'string' ? user.user_metadata.avatar_url : null)
+  const fallbackInitial =
+    displayName && displayName.trim().length > 0 ? displayName.trim().charAt(0).toUpperCase() : 'U'
 
   // Handle escape key to close
   useEffect(() => {
@@ -182,21 +147,40 @@ export function UserMenuAvatar() {
           aria-label="User menu"
           onPress={() => setOpen(!open)}
         >
-          {/* Minimal avatar - just a colored box */}
-          <YStack
-            width={avatarSize}
-            height={avatarSize}
-            rounded="$2"
-            bg="$blue10"
-            items="center"
-            justify="center"
-            borderWidth={1}
-            borderColor="$borderColor"
-          >
-            <Text color="white" fontSize={12} fontWeight="700">
-              U
-            </Text>
-          </YStack>
+          {avatarUri ? (
+            <YStack
+              width={avatarSize}
+              height={avatarSize}
+              overflow="hidden"
+              borderWidth={1}
+              borderColor="$borderColor"
+              bg="$color2"
+              alignItems="center"
+              justifyContent="center"
+              borderRadius={avatarSize / 2}
+            >
+              <Image
+                source={{ uri: avatarUri }}
+                style={{ width: '100%', height: '100%' }}
+                contentFit="cover"
+              />
+            </YStack>
+          ) : (
+            <YStack
+              width={avatarSize}
+              height={avatarSize}
+              rounded="$2"
+              bg="$blue10"
+              items="center"
+              justify="center"
+              borderWidth={1}
+              borderColor="$borderColor"
+            >
+              <Text color="white" fontSize={12} fontWeight="700">
+                {fallbackInitial}
+              </Text>
+            </YStack>
+          )}
         </Button>
       </Popover.Trigger>
 
