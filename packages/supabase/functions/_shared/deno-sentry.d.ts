@@ -60,4 +60,9 @@ declare module 'jsr:@sentry/deno@7.120.3' {
   export type { Event } from 'https://deno.land/x/sentry@8.55.0/types.ts'
 }
 
+declare module 'https://esm.sh/@sentry/deno@7.120.3' {
+  export * from 'https://deno.land/x/sentry@8.55.0/mod.ts'
+  export type { Event } from 'https://deno.land/x/sentry@8.55.0/types.ts'
+}
+
 

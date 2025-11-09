@@ -17,6 +17,12 @@ Deno.test("O*NET - searchOccupations returns matching results", async () => {
   assertEquals(Array.isArray(response), true);
 
   const result = response[0]?.result?.data;
+  if (!result) {
+    console.log(
+      "⚠️  O*NET search response payload",
+      JSON.stringify(response, null, 2),
+    );
+  }
   assertExists(result, "TRPC response should include data");
 
   if (result.length > 0) {

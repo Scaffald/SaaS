@@ -105,9 +105,14 @@ interface CallTRPCEndpointOptions {
 export async function callTRPCEndpoint(
   path: string,
   input?: unknown,
-  options: CallTRPCEndpointOptions = {},
+  optionsOrToken: CallTRPCEndpointOptions | string = {},
 ) {
-  const { authToken, type = "query", headers: extraHeaders } = options;
+  const normalizedOptions: CallTRPCEndpointOptions = typeof optionsOrToken ===
+      "string"
+    ? { authToken: optionsOrToken }
+    : optionsOrToken;
+
+  const { authToken, type = "query", headers: extraHeaders } = normalizedOptions;
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -143,7 +148,8 @@ export async function callTRPCEndpoint(
     headers,
   });
 
-  return response.json();
+  const data = await response.json();
+  return Array.isArray(data) ? data : [data];
 }
 
 /**
