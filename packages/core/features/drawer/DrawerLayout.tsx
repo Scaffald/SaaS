@@ -11,6 +11,7 @@ import { api } from '@app/core/utils/api'
 import type { NotificationItem } from '@app/ui'
 import { useRouter } from 'expo-router'
 import type { Href } from 'expo-router'
+import { useNotificationDeviceRegistration } from '@app/core/hooks/useNotificationDeviceRegistration'
 
 const NOTIFICATIONS_ROUTE: Href = '/dashboard/notifications'
 
@@ -43,6 +44,17 @@ export function DrawerLayout({
   const theme = useTheme()
   const isSmall = width < 1400
   const router = useRouter()
+
+  const { data: preferencesData } = api.notifications.preferences.get.useQuery(undefined, {
+    staleTime: 5 * 60 * 1000,
+    refetchOnMount: false,
+  })
+
+  const pushEnabled = preferencesData
+    ? preferencesData.globalEnabled && preferencesData.channelEnabled.push
+    : true
+
+  useNotificationDeviceRegistration(pushEnabled)
 
   // Fetch notifications
   const {

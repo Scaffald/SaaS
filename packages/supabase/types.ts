@@ -1813,33 +1813,60 @@ export type Database = {
       }
       notifications: {
         Row: {
+          archived_at: string | null
+          body: Json
           created_at: string | null
-          destination_url: string | null
+          cta_label: string | null
+          cta_url: string | null
+          dedupe_key: string | null
           id: string
           message: string
+          metadata: Json
+          preview: string | null
           read: boolean | null
+          read_at: string | null
+          routed_channels: Database["core"]["Enums"]["notification_channel"][]
+          severity: Database["core"]["Enums"]["notification_severity"]
           title: string
           type: Database["core"]["Enums"]["notification_type"]
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          archived_at?: string | null
+          body?: Json
           created_at?: string | null
-          destination_url?: string | null
+          cta_label?: string | null
+          cta_url?: string | null
+          dedupe_key?: string | null
           id?: string
           message: string
+          metadata?: Json
+          preview?: string | null
           read?: boolean | null
+          read_at?: string | null
+          routed_channels?: Database["core"]["Enums"]["notification_channel"][]
+          severity?: Database["core"]["Enums"]["notification_severity"]
           title: string
           type?: Database["core"]["Enums"]["notification_type"]
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          archived_at?: string | null
+          body?: Json
           created_at?: string | null
-          destination_url?: string | null
+          cta_label?: string | null
+          cta_url?: string | null
+          dedupe_key?: string | null
           id?: string
           message?: string
+          metadata?: Json
+          preview?: string | null
           read?: boolean | null
+          read_at?: string | null
+          routed_channels?: Database["core"]["Enums"]["notification_channel"][]
+          severity?: Database["core"]["Enums"]["notification_severity"]
           title?: string
           type?: Database["core"]["Enums"]["notification_type"]
           updated_at?: string | null
@@ -1857,6 +1884,257 @@ export type Database = {
             foreignKeyName: "notifications_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_deliveries: {
+        Row: {
+          attempts: number
+          channel: Database["core"]["Enums"]["notification_channel"]
+          created_at: string
+          id: number
+          last_error: string | null
+          metadata: Json
+          next_attempt_at: string | null
+          notification_id: string
+          provider: string | null
+          provider_msg_id: string | null
+          status: Database["core"]["Enums"]["notification_delivery_status"]
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          channel: Database["core"]["Enums"]["notification_channel"]
+          created_at?: string
+          id?: number
+          last_error?: string | null
+          metadata?: Json
+          next_attempt_at?: string | null
+          notification_id: string
+          provider?: string | null
+          provider_msg_id?: string | null
+          status?: Database["core"]["Enums"]["notification_delivery_status"]
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          channel?: Database["core"]["Enums"]["notification_channel"]
+          created_at?: string
+          id?: number
+          last_error?: string | null
+          metadata?: Json
+          next_attempt_at?: string | null
+          notification_id?: string
+          provider?: string | null
+          provider_msg_id?: string | null
+          status?: Database["core"]["Enums"]["notification_delivery_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_deliveries_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_devices: {
+        Row: {
+          created_at: string
+          id: number
+          last_seen_at: string | null
+          metadata: Json
+          platform: string
+          token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          last_seen_at?: string | null
+          metadata?: Json
+          platform: string
+          token: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          last_seen_at?: string | null
+          metadata?: Json
+          platform?: string
+          token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_devices_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_devices_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_digest_queue: {
+        Row: {
+          bucket: string
+          count: number
+          created_at: string
+          examples: Json
+          id: number
+          last_event_at: string
+          processed_at: string | null
+          type: Database["core"]["Enums"]["notification_type"]
+          updated_at: string
+          user_id: string
+          channels: Database["core"]["Enums"]["notification_channel"][]
+        }
+        Insert: {
+          bucket: string
+          count?: number
+          created_at?: string
+          examples?: Json
+          id?: number
+          last_event_at?: string
+          processed_at?: string | null
+          type: Database["core"]["Enums"]["notification_type"]
+          updated_at?: string
+          user_id: string
+          channels?: Database["core"]["Enums"]["notification_channel"][]
+        }
+        Update: {
+          bucket?: string
+          count?: number
+          created_at?: string
+          examples?: Json
+          id?: number
+          last_event_at?: string
+          processed_at?: string | null
+          type?: Database["core"]["Enums"]["notification_type"]
+          updated_at?: string
+          user_id?: string
+          channels?: Database["core"]["Enums"]["notification_channel"][]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_digest_queue_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_digest_queue_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_events: {
+        Row: {
+          channel: Database["core"]["Enums"]["notification_channel"] | null
+          delivery_id: number | null
+          event: Database["core"]["Enums"]["notification_event_kind"]
+          id: number
+          meta: Json | null
+          notification_id: string | null
+          occurred_at: string
+        }
+        Insert: {
+          channel?: Database["core"]["Enums"]["notification_channel"] | null
+          delivery_id?: number | null
+          event: Database["core"]["Enums"]["notification_event_kind"]
+          id?: number
+          meta?: Json | null
+          notification_id?: string | null
+          occurred_at?: string
+        }
+        Update: {
+          channel?: Database["core"]["Enums"]["notification_channel"] | null
+          delivery_id?: number | null
+          event?: Database["core"]["Enums"]["notification_event_kind"]
+          id?: number
+          meta?: Json | null
+          notification_id?: string | null
+          occurred_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_events_delivery_id_fkey"
+            columns: ["delivery_id"]
+            isOneToOne: false
+            referencedRelation: "notification_deliveries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_events_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_preferences: {
+        Row: {
+          channel_enabled: Json
+          created_at: string | null
+          digest_frequency: Database["core"]["Enums"]["notification_frequency"]
+          global_enabled: boolean
+          quiet_hours: Json | null
+          type_overrides: Json
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          channel_enabled?: Json
+          created_at?: string | null
+          digest_frequency?: Database["core"]["Enums"]["notification_frequency"]
+          global_enabled?: boolean
+          quiet_hours?: Json | null
+          type_overrides?: Json
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          channel_enabled?: Json
+          created_at?: string | null
+          digest_frequency?: Database["core"]["Enums"]["notification_frequency"]
+          global_enabled?: boolean
+          quiet_hours?: Json | null
+          type_overrides?: Json
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "v_profile_search"
             referencedColumns: ["id"]
           },
@@ -3289,6 +3567,27 @@ export type Database = {
     }
     Enums: {
       notification_type: "success" | "warning" | "info"
+      notification_channel: ["in_app", "email", "push", "sms"]
+      notification_delivery_status: [
+        "queued",
+        "sending",
+        "sent",
+        "delivered",
+        "failed",
+        "bounce",
+        "blocked",
+      ]
+      notification_event_kind: [
+        "accepted",
+        "delivered",
+        "opened",
+        "clicked",
+        "failed",
+        "bounce",
+        "complaint",
+      ]
+      notification_frequency: ["immediate", "digest_daily", "digest_weekly", "mute"]
+      notification_severity: ["info", "important", "critical"]
     }
     CompositeTypes: {
       [_ in never]: never
@@ -6750,6 +7049,58 @@ export const Constants = {
   core: {
     Enums: {
       notification_type: ["success", "warning", "info"],
+      notification_channel: ["in_app", "email", "push", "sms"],
+      notification_delivery_status: [
+        "queued",
+        "sending",
+        "sent",
+        "delivered",
+        "failed",
+        "bounce",
+        "blocked",
+      ],
+      notification_event_kind: [
+        "accepted",
+        "delivered",
+        "opened",
+        "clicked",
+        "failed",
+        "bounce",
+        "complaint",
+      ],
+      notification_frequency: ["immediate", "digest_daily", "digest_weekly", "mute"],
+      notification_severity: ["info", "important", "critical"],
+      notification_type: [
+        "success",
+        "warning",
+        "info",
+        "job.match",
+        "app.submitted",
+        "app.status_changed",
+        "interview.scheduled",
+        "offer.extended",
+        "hiring.decision",
+        "team.invite",
+        "team.assigned",
+        "team.commented",
+        "team.role_changed",
+        "profile.viewed",
+        "profile.unlocked",
+        "review.new",
+        "review.reply",
+        "skill.endorse",
+        "acct.verify",
+        "acct.password_reset",
+        "payment.success",
+        "payment.failed",
+        "sub.renewal",
+        "bgcheck.completed",
+        "profile.reminder",
+        "reengage",
+        "feature.announcement",
+        "platform.update",
+        "message.received",
+      ],
     },
   },
   data: {
