@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Caption, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from 'tamagui'
 import { ShieldAlert, ShieldCheck, ShieldQuestion } from '@tamagui/lucide-icons'
 import { CONFIDENCE_BADGES, type ConfidenceLevel } from '../utils/importConfidence'
 
@@ -22,13 +22,13 @@ export const ConfidenceBadge = memo(function ConfidenceBadge({ level, showDescri
     <XStack gap="$2" items="center">
       <Icon size={16} color={config.colorToken} />
       <YStack>
-        <Caption color={config.colorToken} fontWeight="600">
+        <Text color={config.colorToken} fontSize="$2" fontWeight="600">
           {config.label}
-        </Caption>
+        </Text>
         {showDescription && (
-          <Caption color="$color10">
+          <Text color="$color10" fontSize="$1">
             {config.description}
-          </Caption>
+          </Text>
         )}
       </YStack>
     </XStack>

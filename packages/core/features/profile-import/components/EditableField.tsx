@@ -44,7 +44,7 @@ export const EditableField = memo(function EditableField({
           value={inputValue}
           onChangeText={onChange}
           placeholder={placeholder}
-          minHeight={120}
+          style={{ minHeight: 120 }}
         />
       ) : (
         <Input

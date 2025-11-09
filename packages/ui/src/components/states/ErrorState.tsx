@@ -72,7 +72,7 @@ export function ErrorState({
       items="center"
       justify="center"
       gap={spacing.md}
-      padding={spacing['2xl']}
+      p={spacing['2xl']}
       style={{ minHeight: 300 }}
     >
       {/* Icon */}
@@ -104,7 +104,7 @@ export function ErrorState({
       {errorMessage && (
         <XStack
           bg="$red2"
-          padding={spacing.md}
+          p={spacing.md}
           rounded={borderRadius.md}
           style={{ maxWidth: 500 }}
           borderWidth={1}

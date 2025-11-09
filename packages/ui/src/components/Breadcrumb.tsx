@@ -234,11 +234,11 @@ export const Breadcrumb = React.memo(function Breadcrumb({
         </Adapt>
         <Adapt.Contents>
           <Popover.Content
-            p={0}
-            bw={1}
-            bc="$borderColor"
-            bg="$background"
-            elevate
+            padding={0}
+            borderWidth={1}
+            borderColor="$borderColor"
+            backgroundColor="$background"
+            elevation={4}
             enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
             exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
             animation="quick"

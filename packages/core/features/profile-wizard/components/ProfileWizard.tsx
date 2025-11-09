@@ -118,7 +118,7 @@ export function ProfileWizard({
   const [hasAcknowledgedStart, setHasAcknowledgedStart] = useState(false)
 
   const currentStep = state.currentStep
-  const StepComponent = STEP_COMPONENTS[currentStep]
+  const StepComponent = STEP_COMPONENTS[currentStep] as ComponentType<WizardStepComponentProps<ProfileWizardStepId>>
   const isLastStep = currentStep === orderedSteps[orderedSteps.length - 1]
 
   const initialDataForStep = useMemo(() => {
@@ -316,22 +316,17 @@ export function ProfileWizard({
         />
 
         <StepComponent
-          initialData={initialDataForStep as WizardStepPayloads[ProfileWizardStepId]}
+          initialData={initialDataForStep}
           isSaving={state.isSaving}
           isLastStep={isLastStep}
           onBack={handleBack}
           onContinue={async (data) => {
-            await handleContinue(currentStep, data as WizardStepPayloads[ProfileWizardStepId])
+            await handleContinue(currentStep, data)
           }}
-          onSaveForLater={(payload) =>
-            handleSaveForLater(currentStep, payload as WizardStepPayloads[ProfileWizardStepId])
-          }
+          onSaveForLater={(payload) => handleSaveForLater(currentStep, payload)}
           onSkip={PROFILE_WIZARD_STEPS.includes(currentStep) ? () => handleSkip(currentStep) : undefined}
           onStepStateChange={(snapshot) =>
-            handleStepStateChange(
-              currentStep,
-              snapshot as StepStateChangePayload<ProfileWizardStepId>,
-            )
+            handleStepStateChange(currentStep, snapshot as StepStateChangePayload<ProfileWizardStepId>)
           }
         />
 

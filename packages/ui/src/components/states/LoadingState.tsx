@@ -66,7 +66,7 @@ export function LoadingState({ message, size = 'medium', fullScreen = false }: L
       items="center"
       justify="center"
       gap={spacing.md}
-      padding={spacing.xl}
+      p={spacing.xl}
       bg={fullScreen ? '$background' : 'transparent'}
       style={containerStyles}
     >

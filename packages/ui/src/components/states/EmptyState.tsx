@@ -58,7 +58,7 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
       items="center"
       justify="center"
       gap={spacing.md}
-      padding={spacing['2xl']}
+      p={spacing['2xl']}
       style={{ minHeight: 300 }}
     >
       {/* Icon */}
