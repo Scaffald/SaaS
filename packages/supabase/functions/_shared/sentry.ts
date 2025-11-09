@@ -1,5 +1,4 @@
-import type { Event } from "@sentry/types";
-import * as Sentry from "@sentry/deno";
+import { Sentry, type Event } from "./deps.ts";
 import { TRPCError } from "@trpc/server";
 
 const APP_ENV = Deno.env.get("APP_ENV") ?? "development";

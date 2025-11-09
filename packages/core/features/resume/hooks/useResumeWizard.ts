@@ -14,6 +14,8 @@ export interface ResumeWizardStep {
   label: string
 }
 
+export type ResumeMergeStrategy = 'replace' | 'append' | 'keepExisting'
+
 const BASE_STEPS: ResumeWizardStep[] = [
   { id: 'general', label: 'General Information' },
   { id: 'experience', label: 'Work Experience' },
@@ -66,7 +68,7 @@ export function useResumeWizard(resumeId: string) {
   const handleSaveSection = async (
     section: ResumeWizardSection,
     data: unknown,
-    mergeStrategy: 'replace' | 'append' | 'keepExisting' = 'replace',
+    mergeStrategy: ResumeMergeStrategy = 'replace',
   ) => {
     await saveSectionMutation.mutateAsync({
       section,
@@ -85,7 +87,7 @@ export function useResumeWizard(resumeId: string) {
 
   const handleSkipSection = async () => {
     const nextIndex = Math.min(currentIndex + 1, steps.length - 1)
-    const completed = new Set(wizardQuery.data?.completedSteps ?? [])
+    const completed = new Set<number>(wizardQuery.data?.completedSteps ?? [])
     completed.add(currentIndex)
 
     await updateProgressMutation.mutateAsync({

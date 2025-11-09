@@ -1,14 +1,14 @@
 import { Button, type ButtonProps } from 'tamagui'
 import { UploadCloud } from '@tamagui/lucide-icons'
 
-export interface ResumeUploadButtonProps extends Omit<ButtonProps, 'children'> {
+export interface ResumeUploadButtonProps extends Omit<ButtonProps, 'children' | 'text'> {
   onPress: () => void
-  text?: string
+  label?: string
 }
 
 export function ResumeUploadButton({
   onPress,
-  text = 'Import from Resume',
+  label = 'Import from Resume',
   size = '$4',
   variant = 'outlined',
   icon = UploadCloud,
@@ -20,10 +20,9 @@ export function ResumeUploadButton({
       variant={variant}
       icon={icon}
       onPress={onPress}
-      alignSelf="flex-start"
       {...rest}
     >
-      {text}
+      {label}
     </Button>
   )
 }

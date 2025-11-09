@@ -88,9 +88,18 @@ Deno.test({
         email: trpcEmail,
         redirectTo: TEST_SUPABASE_URL,
       },
+      {
+        type: "mutation",
+      },
     );
 
     const signupData = signupResponse[0]?.result?.data;
+    if (!signupData) {
+      console.log(
+        "Signup magic link response payload",
+        JSON.stringify(signupResponse, null, 2),
+      );
+    }
     assertExists(signupData, "Signup magic link response should exist");
     assertEquals(signupData.mode, "signup");
 
@@ -104,6 +113,9 @@ Deno.test({
       {
         email: trpcEmail,
         redirectTo: TEST_SUPABASE_URL,
+      },
+      {
+        type: "mutation",
       },
     );
 

@@ -67,10 +67,10 @@ export const initSentry = () => {
   initialized = true
 }
 
-const sentryNative = SentryExpo.Native
+type NativeModule = typeof SentryExpo.Native
 
 type ForwardedNativeMethods = Pick<
-  typeof sentryNative,
+  NativeModule,
   | 'captureException'
   | 'configureScope'
   | 'getCurrentHub'
@@ -80,20 +80,85 @@ type ForwardedNativeMethods = Pick<
   | 'withScope'
 >
 
+const isDevEnvironment = process.env.NODE_ENV !== 'production'
+
+const resolveSentryBridge = (): ForwardedNativeMethods | undefined => {
+  if (SentryExpo.Native) {
+    return SentryExpo.Native
+  }
+
+  const browserCandidate = (SentryExpo as {
+    Browser?: unknown
+  }).Browser as ForwardedNativeMethods | undefined
+
+  if (browserCandidate) {
+    return browserCandidate
+  }
+
+  return undefined
+}
+
+const fallbackBridge: ForwardedNativeMethods = {
+  captureException: (...args: Parameters<ForwardedNativeMethods['captureException']>) => {
+    if (isDevEnvironment) {
+      console.warn('[Sentry] captureException called without an available Sentry bridge', args[0])
+    }
+    return undefined as unknown as ReturnType<ForwardedNativeMethods['captureException']>
+  },
+  configureScope: (..._args: Parameters<ForwardedNativeMethods['configureScope']>) => {
+    if (isDevEnvironment) {
+      console.warn('[Sentry] configureScope called without an available Sentry bridge')
+    }
+    return undefined as unknown as ReturnType<ForwardedNativeMethods['configureScope']>
+  },
+  getCurrentHub: (..._args: Parameters<ForwardedNativeMethods['getCurrentHub']>) => {
+    if (isDevEnvironment) {
+      console.warn('[Sentry] getCurrentHub called without an available Sentry bridge')
+    }
+    return undefined as unknown as ReturnType<ForwardedNativeMethods['getCurrentHub']>
+  },
+  setContext: (...args: Parameters<ForwardedNativeMethods['setContext']>) => {
+    if (isDevEnvironment) {
+      console.warn('[Sentry] setContext called without an available Sentry bridge', args[0], args[1])
+    }
+    return undefined as unknown as ReturnType<ForwardedNativeMethods['setContext']>
+  },
+  setUser: (...args: Parameters<ForwardedNativeMethods['setUser']>) => {
+    if (isDevEnvironment) {
+      console.warn('[Sentry] setUser called without an available Sentry bridge', args[0])
+    }
+    return undefined as unknown as ReturnType<ForwardedNativeMethods['setUser']>
+  },
+  startTransaction: (...args: Parameters<ForwardedNativeMethods['startTransaction']>) => {
+    if (isDevEnvironment) {
+      console.warn('[Sentry] startTransaction called without an available Sentry bridge', args[0])
+    }
+    return undefined as unknown as ReturnType<ForwardedNativeMethods['startTransaction']>
+  },
+  withScope: (..._args: Parameters<ForwardedNativeMethods['withScope']>) => {
+    if (isDevEnvironment) {
+      console.warn('[Sentry] withScope called without an available Sentry bridge')
+    }
+    return undefined as unknown as ReturnType<ForwardedNativeMethods['withScope']>
+  },
+}
+
+const sentryBridge = resolveSentryBridge() ?? fallbackBridge
+
 export const Sentry: ForwardedNativeMethods & {
   init: typeof SentryExpo.init
-  Native: typeof sentryNative
+  Native: ForwardedNativeMethods
 } = {
-  captureException: sentryNative.captureException,
-  configureScope: sentryNative.configureScope,
-  getCurrentHub: sentryNative.getCurrentHub,
-  setContext: sentryNative.setContext,
-  setUser: sentryNative.setUser,
-  startTransaction: sentryNative.startTransaction,
-  withScope: sentryNative.withScope,
+  captureException: (...args) => sentryBridge.captureException(...args),
+  configureScope: (...args) => sentryBridge.configureScope(...args),
+  getCurrentHub: (...args) => sentryBridge.getCurrentHub(...args),
+  setContext: (...args) => sentryBridge.setContext(...args),
+  setUser: (...args) => sentryBridge.setUser(...args),
+  startTransaction: (...args) => sentryBridge.startTransaction(...args),
+  withScope: (...args) => sentryBridge.withScope(...args),
   init: (options) => {
     SentryExpo.init(options)
   },
-  Native: sentryNative,
+  Native: sentryBridge,
 }
 

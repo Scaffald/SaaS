@@ -65,7 +65,7 @@ function ResumeImportContent() {
             <ResumeUploadButton
               onPress={() => setModalOpen(true)}
               size="$4"
-              text="Upload New Resume"
+              label="Upload New Resume"
             />
           </XStack>
         </YStack>

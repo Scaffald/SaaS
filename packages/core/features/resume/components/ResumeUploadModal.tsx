@@ -117,29 +117,22 @@ export function ResumeUploadModal({
   const handleNativePick = useCallback(async () => {
     try {
       setStatus('selecting')
-      const DocumentPicker = await import('expo-document-picker')
-      const result = await DocumentPicker.getDocumentAsync({
+      const { getDocumentAsync } = await import('expo-document-picker')
+      const result = await getDocumentAsync({
         type: ACCEPTED_MIME_TYPES as unknown as string[],
         multiple: false,
         copyToCacheDirectory: true,
       })
 
-      if (result.type !== 'success') {
+      if (result.canceled) {
         setStatus('idle')
         return
       }
 
-      const normalized = result as unknown as {
-        assets?: Array<{ uri: string; name?: string; size?: number; mimeType?: string }>
-        name?: string
-        size?: number
-        mimeType?: string
-        uri?: string
-      }
-      const asset = normalized.assets?.[0]
-      const uri = asset?.uri ?? normalized.uri
-      const name = asset?.name ?? normalized.name ?? 'resume'
-      const mimeType = asset?.mimeType ?? normalized.mimeType ?? 'application/pdf'
+      const asset = result.assets?.[0]
+      const uri = asset?.uri
+      const name = asset?.name ?? 'resume'
+      const mimeType = asset?.mimeType ?? 'application/pdf'
 
       if (!uri) {
         handleUploadError('Unable to access selected file. Please try again.')
@@ -149,7 +142,9 @@ export function ResumeUploadModal({
 
       const FileSystem = await import('expo-file-system')
       const info = await FileSystem.getInfoAsync(uri)
-      const size = asset?.size ?? normalized.size ?? info.size ?? 0
+      const infoSize =
+        info.exists && 'size' in info && typeof info.size === 'number' ? info.size : undefined
+      const size = typeof asset?.size === 'number' ? asset.size : infoSize ?? 0
 
       if (!validateFileSize(size)) {
         setStatus('idle')
@@ -158,7 +153,7 @@ export function ResumeUploadModal({
 
       const getBase64 = async () => {
         const contents = await FileSystem.readAsStringAsync(uri, {
-          encoding: FileSystem.EncodingType.Base64,
+          encoding: 'base64',
         })
         return `data:${mimeType};base64,${contents}`
       }
@@ -320,9 +315,12 @@ export function ResumeUploadModal({
           </Button>
           <Button
             size="$3"
-            theme={status === 'error' ? 'red' : 'blue'}
             disabled
             icon={showProgress ? Loader2 : undefined}
+            bg={status === 'error' ? '$red4' : '$blue4'}
+            color={status === 'error' ? '$red11' : '$blue11'}
+            borderColor={status === 'error' ? '$red7' : '$blue7'}
+            borderWidth={1}
           >
             {showProgress ? 'Working...' : status === 'error' ? 'Upload Failed' : 'Waiting for file'}
           </Button>

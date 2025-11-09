@@ -59,7 +59,7 @@ export function ResumeImportWidget() {
 
           <ResumeUploadButton
             onPress={() => setModalOpen(true)}
-            text="Upload Resume"
+            label="Upload Resume"
             size="$4"
           />
         </YStack>
