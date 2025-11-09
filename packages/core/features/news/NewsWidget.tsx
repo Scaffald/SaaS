@@ -1,17 +1,7 @@
 import { useState } from 'react'
-import {
-  Text,
-  YStack,
-  XStack,
-  Button,
-  Spinner,
-  Select,
-  Adapt,
-  Sheet,
-  useWindowDimensions,
-} from 'tamagui'
+import { Text, YStack, XStack, Button, Spinner, Select, Adapt, Sheet, useWindowDimensions } from 'tamagui'
 import { ChevronDown, RefreshCw, AlertCircle } from '@tamagui/lucide-icons'
-import { NewsCard, Button as StyledButton, spacing } from '@app/ui'
+import { NewsCard, UIButton as StyledButton, spacing } from '@app/ui'
 import { useAggregatedNews } from './hooks/useNewsFeed'
 import { getFeedsByIndustry, getDefaultFeeds, findFeedById } from './config/news-feeds'
 import { redirect } from '@app/core/utils/redirect'

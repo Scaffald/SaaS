@@ -12,7 +12,7 @@ import mapboxgl from 'mapbox-gl'
  * Extract viewport bounds from a Mapbox map instance
  */
 function extractViewportBounds(map: mapboxgl.Map): ViewportBounds {
-  const bounds = map.getBounds()
+  const bounds = map.getBounds() as mapboxgl.LngLatBounds
   return {
     north: bounds.getNorth(),
     south: bounds.getSouth(),
@@ -30,7 +30,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
     const [isMapReady, setIsMapReady] = useState(false)
 
     // Viewport change handler ref for debouncing
-    const viewportChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+    const viewportChangeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
     // Expose map methods to parent
     useImperativeHandle(ref, () => ({

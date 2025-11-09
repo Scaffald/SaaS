@@ -133,6 +133,11 @@ const ROUTES_CONFIG = {
     title: "Workers",
     isProtected: true,
   },
+  DASHBOARD_DISCOVER_WORKER_DETAIL: {
+    path: "/dashboard/discover/workers/:id",
+    title: "Worker Details",
+    isProtected: true,
+  },
   DASHBOARD_DISCOVER_EMPLOYERS: {
     path: "/dashboard/discover/employers",
     title: "Employers",
@@ -341,6 +346,8 @@ export const RouteBuilder = {
   // Dashboard routes
   dashboardUser: (userId: string | number) =>
     buildRoute(ROUTES.DASHBOARD_USER, { userId }),
+  discoverWorkerDetail: (id: string | number) =>
+    buildRoute(ROUTES.DASHBOARD_DISCOVER_WORKER_DETAIL, { id }),
   discoverJobDetail: (id: string | number) =>
     buildRoute(ROUTES.DASHBOARD_DISCOVER_JOB_DETAIL, { id }),
   dashboardEmployer: (id: string | number) =>

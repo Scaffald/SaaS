@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router'
-import { YStack, Text, Button, Spinner, XStack, Progress } from 'tamagui'
-import { DashboardWidget, Button as StyledButton, spacing } from '@app/ui'
+import { YStack, Text, Spinner, XStack, Progress } from 'tamagui'
+import { DashboardWidget, UIButton as StyledButton, spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
 
@@ -98,7 +98,9 @@ export function PersonalityAssessmentWidget() {
           size="$5"
           mt={hasStarted ? spacing.xs : spacing.md}
         >
-          <Button.Text>{hasStarted ? 'Continue Assessment' : 'Start Assessment'}</Button.Text>
+          <StyledButton.Text>
+            {hasStarted ? 'Continue Assessment' : 'Start Assessment'}
+          </StyledButton.Text>
         </StyledButton>
 
         {!hasStarted && (

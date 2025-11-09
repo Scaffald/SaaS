@@ -177,7 +177,7 @@ export function CustomQuestionsStep({
                   updateAnswer(question.id, question.question, 'long_text', text)
                 }
                 placeholder="Your answer"
-                height={120}
+                style={{ height: 120 }}
                 borderColor={errors[question.id] ? '$red9' : '$borderColor'}
                 disabled={isSubmitting}
               />
@@ -194,7 +194,7 @@ export function CustomQuestionsStep({
                     p="$3"
                     rounded="$4"
                     borderWidth={1}
-                    bc={
+                    borderColor={
                       getAnswer(question.id) === option
                         ? '$blue9'
                         : errors[question.id]
@@ -214,7 +214,7 @@ export function CustomQuestionsStep({
                       height={20}
                       rounded="$12"
                       borderWidth={2}
-                      bc={getAnswer(question.id) === option ? '$blue9' : '$borderColor'}
+                      borderColor={getAnswer(question.id) === option ? '$blue9' : '$borderColor'}
                       justify="center"
                       items="center"
                       bg="$background"

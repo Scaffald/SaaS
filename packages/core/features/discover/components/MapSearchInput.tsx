@@ -103,9 +103,7 @@ export const MapSearchInput = ({
               maxResults={5}
               debounceMs={300}
               containerProps={{
-                minW: 250,
-                maxW: 600,
-                w: '100%',
+                style: { minWidth: 250, maxWidth: 600, width: '100%' },
                 rounded: '$8',
                 shadowColor: '$shadowColor',
                 shadowOffset: { width: 0, height: 4 },
@@ -115,9 +113,7 @@ export const MapSearchInput = ({
             />
           ) : (
             <YStack
-              minW={250}
-              maxW={600}
-              w="100%"
+              style={{ minWidth: 250, maxWidth: 600, width: '100%' }}
               bg="$background"
               p="$4"
               rounded="$8"

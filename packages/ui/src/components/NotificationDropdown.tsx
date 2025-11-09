@@ -211,7 +211,7 @@ export function NotificationDropdown({
               minW={20}
               items="center"
               justify="center"
-              zIndex={1}
+              style={{ zIndex: 1 }}
             >
               <Text fontSize="$1" fontWeight="600" color="white">
                 {unreadCount > 99 ? '99+' : unreadCount}

@@ -19,7 +19,13 @@ export function GeneralInfoWidget({
   variant = 'full',
 }: ProfileWidgetProps) {
   const router = useRouter()
-  const { data, isLoading, error } = api.profile.widgets.getGeneralInfo.useQuery(
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+    isFetching,
+  } = api.profile.widgets.getGeneralInfo.useQuery(
     { userId },
     {
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
@@ -42,6 +48,16 @@ export function GeneralInfoWidget({
           <Text color="$color11" fontSize="$2">
             {error.message}
           </Text>
+          <Button
+            variant="primary"
+            size="small"
+            onPress={() => {
+              void refetch()
+            }}
+            disabled={isFetching}
+          >
+            Retry
+          </Button>
         </YStack>
       </DashboardWidget>
     )

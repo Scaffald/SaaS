@@ -2,7 +2,14 @@ import { useState } from 'react'
 import { YStack, XStack, Text, Card, Spinner } from 'tamagui'
 import { Star, ThumbsUp, ThumbsDown, MessageSquarePlus, Shield } from '@tamagui/lucide-icons'
 import { randomUUID } from 'expo-crypto'
-import { DashboardWidget, ResponsiveModal, Button, Heading, LoadingState, spacing } from '@app/ui'
+import {
+  DashboardWidget,
+  ResponsiveModal,
+  Heading,
+  LoadingState,
+  spacing,
+  UIButton,
+} from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useUser } from '@app/core/utils/useUser'
 import { ReviewWizard } from '../../reviews/components/ReviewWizard'
@@ -40,7 +47,13 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
   )
 
   // Fetch reviews
-  const { data: reviews, isLoading } = api.reviews.getBySubject.useQuery(
+  const {
+    data: reviews,
+    isLoading,
+    error,
+    refetch,
+    isFetching,
+  } = api.reviews.getBySubject.useQuery(
     {
       subjectId: userId || '',
       subjectType: 'user',
@@ -74,6 +87,29 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
     )
   }
 
+  if (error) {
+    return (
+      <DashboardWidget>
+        <YStack gap={spacing.md} items="center" py="$6">
+          <Text color="$red10">Failed to load reviews</Text>
+          <Text color="$color11" fontSize="$2">
+            {error.message}
+          </Text>
+          <Button
+            variant="primary"
+            size="small"
+            onPress={() => {
+              void refetch()
+            }}
+            disabled={isFetching}
+          >
+            Retry
+          </Button>
+        </YStack>
+      </DashboardWidget>
+    )
+  }
+
   if (!reviews || reviews.length === 0) {
     return (
       <>
@@ -82,14 +118,14 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
             <XStack justify="space-between" items="center">
               <Heading variant="h4">Reviews & Ratings</Heading>
               {canLeaveReview && (
-                <Button
+                <UIButton
                   variant="primary"
-                  size="small"
+                  size="$2"
                   icon={<MessageSquarePlus size={16} />}
                   onPress={handleLeaveReview}
                 >
                   Leave Review
-                </Button>
+                </UIButton>
               )}
             </XStack>
             <YStack items="center" justify="center" minH={150} gap="$2">
@@ -159,14 +195,14 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
           <XStack justify="space-between" items="center">
             <Heading variant="h4">Reviews & Ratings</Heading>
             {canLeaveReview && (
-              <Button
+              <UIButton
                 variant="primary"
-                size="small"
+                size="$2"
                 icon={<MessageSquarePlus size={16} />}
                 onPress={handleLeaveReview}
               >
                 Leave Review
-              </Button>
+              </UIButton>
             )}
           </XStack>
 

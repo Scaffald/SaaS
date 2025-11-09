@@ -1,5 +1,5 @@
 import { YStack, XStack, Text, Spinner } from 'tamagui'
-import { DashboardWidget, Button, EmptyState, Heading, LoadingState, spacing } from '@app/ui'
+import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 import { CheckCircle } from '@tamagui/lucide-icons'
@@ -25,7 +25,13 @@ interface UserSkill {
  */
 export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: ProfileWidgetProps) {
   const router = useRouter()
-  const { data, isLoading, error } = api.profile.widgets.getSkills.useQuery(
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+    isFetching,
+  } = api.profile.widgets.getSkills.useQuery(
     { userId },
     {
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
@@ -48,6 +54,16 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
           <Text color="$color11" fontSize="$2">
             {error.message}
           </Text>
+          <UIButton
+            variant="primary"
+            size="$2"
+            onPress={() => {
+              void refetch()
+            }}
+            disabled={isFetching}
+          >
+            Retry
+          </UIButton>
         </YStack>
       </DashboardWidget>
     )
@@ -103,13 +119,9 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
         <XStack justify="space-between" items="center">
           <Heading variant="h4">Skills</Heading>
           {showEdit && (
-            <Button
-              variant="outlined"
-              size="small"
-              onPress={() => router.push('/dashboard/profile/skills')}
-            >
+            <UIButton variant="outlined" size="$2" onPress={() => router.push('/dashboard/profile/skills')}>
               Edit
-            </Button>
+            </UIButton>
           )}
         </XStack>
 
@@ -119,9 +131,9 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
             description="Add your skills to showcase your expertise"
             action={
               showEdit ? (
-                <Button variant="primary" onPress={() => router.push('/dashboard/profile/skills')}>
+                <UIButton variant="primary" onPress={() => router.push('/dashboard/profile/skills')}>
                   Add Skills
-                </Button>
+                </UIButton>
               ) : undefined
             }
           />

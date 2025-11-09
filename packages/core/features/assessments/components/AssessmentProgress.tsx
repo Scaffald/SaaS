@@ -68,7 +68,7 @@ export function AssessmentProgress({
 
             return (
               <XStack key={step.id} gap="$3" items="flex-start">
-                <YStack items="center" gap="$1" minWidth={32}>
+                <YStack items="center" gap="$1" style={{ minWidth: 32 }}>
                   <Circle
                     size={32}
                     bg={isCompleted ? '$green9' : isCurrent ? '$blue9' : '$color6'}
@@ -87,11 +87,9 @@ export function AssessmentProgress({
                   </Circle>
                   {!isLast && (
                     <YStack
-                      width={2}
-                      flexGrow={1}
                       bg={isCompleted || isPast ? '$blue8' : '$color6'}
                       opacity={isCompleted || isPast ? 0.85 : 0.4}
-                      minHeight={24}
+                      style={{ width: 2, flexGrow: 1, minHeight: 24 }}
                     />
                   )}
                 </YStack>

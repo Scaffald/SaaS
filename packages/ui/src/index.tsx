@@ -27,6 +27,8 @@ export {
   useIsomorphicLayoutEffect,
 } from 'tamagui'
 
+export { Button as UIButton } from './components/buttons/Button'
+
 // Re-export Toast components
 export { ToastProvider, ToastViewport } from '@tamagui/toast'
 

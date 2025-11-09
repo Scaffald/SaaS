@@ -62,112 +62,122 @@ export interface ButtonProps extends Omit<TamaguiButtonProps, 'variant' | 'theme
   variant?: 'primary' | 'secondary' | 'outlined' | 'ghost' | 'danger'
 }
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', ...props }, ref) => {
+const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(({ variant = 'primary', ...props }, ref) => {
+  /**
+   * Variant style definitions
+   * Each variant has specific colors, borders, and interaction states
+   */
+  const variantStyles = {
     /**
-     * Variant style definitions
-     * Each variant has specific colors, borders, and interaction states
+     * Primary variant - Teal brand color
+     * Use for main actions (submit, confirm, save)
      */
-    const variantStyles = {
-      /**
-       * Primary variant - Teal brand color
-       * Use for main actions (submit, confirm, save)
-       */
-      primary: {
-        theme: 'primary',
-        bg: '$blue7', // Primary teal (#239CB2)
-        color: 'white',
-        borderWidth: 0,
-        hoverStyle: {
-          bg: '$blue8', // Darker teal on hover
-        },
-        pressStyle: {
-          bg: '$blue9', // Even darker on press
-          scale: 0.97, // Slight scale reduction
-        },
+    primary: {
+      theme: 'primary',
+      bg: '$blue7', // Primary teal (#239CB2)
+      color: 'white',
+      borderWidth: 0,
+      hoverStyle: {
+        bg: '$blue8', // Darker teal on hover
       },
-
-      /**
-       * Secondary variant - Neutral grey
-       * Use for secondary actions (back, skip)
-       */
-      secondary: {
-        bg: '$color3', // Light grey
-        color: '$color11', // Dark text
-        borderWidth: 0,
-        hoverStyle: {
-          bg: '$color4', // Slightly darker grey
-        },
-        pressStyle: {
-          bg: '$color5', // Even darker on press
-          scale: 0.97,
-        },
+      pressStyle: {
+        bg: '$blue9', // Even darker on press
+        scale: 0.97, // Slight scale reduction
       },
+    },
 
-      /**
-       * Outlined variant - Border only
-       * Use for tertiary actions (cancel, optional)
-       */
-      outlined: {
-        bg: 'transparent',
-        borderWidth: 1,
-        borderColor: '$borderColor',
-        color: '$color11',
-        hoverStyle: {
-          bg: '$backgroundHover',
-          borderColor: '$borderColorHover',
-        },
-        pressStyle: {
-          bg: '$backgroundPress',
-          scale: 0.97,
-        },
+    /**
+     * Secondary variant - Neutral grey
+     * Use for secondary actions (back, skip)
+     */
+    secondary: {
+      bg: '$color3', // Light grey
+      color: '$color11', // Dark text
+      borderWidth: 0,
+      hoverStyle: {
+        bg: '$color4', // Slightly darker grey
       },
-
-      /**
-       * Ghost variant - No visual boundaries
-       * Use for subtle actions (show more, collapse)
-       */
-      ghost: {
-        bg: 'transparent',
-        borderWidth: 0,
-        color: '$color11',
-        hoverStyle: {
-          bg: '$backgroundHover',
-        },
-        pressStyle: {
-          bg: '$backgroundPress',
-          scale: 0.97,
-        },
+      pressStyle: {
+        bg: '$color5', // Even darker on press
+        scale: 0.97,
       },
+    },
 
-      /**
-       * Danger variant - Red for destructive actions
-       * Use for irreversible actions (delete, remove)
-       */
-      danger: {
-        bg: '$red8', // Red background
-        color: 'white',
-        borderWidth: 0,
-        hoverStyle: {
-          bg: '$red9', // Darker red on hover
-        },
-        pressStyle: {
-          bg: '$red10', // Even darker on press
-          scale: 0.97,
-        },
+    /**
+     * Outlined variant - Border only
+     * Use for tertiary actions (cancel, optional)
+     */
+    outlined: {
+      bg: 'transparent',
+      borderWidth: 1,
+      borderColor: '$borderColor',
+      color: '$color11',
+      hoverStyle: {
+        bg: '$backgroundHover',
+        borderColor: '$borderColorHover',
       },
-    }
+      pressStyle: {
+        bg: '$backgroundPress',
+        scale: 0.97,
+      },
+    },
 
-    return (
-      <TamaguiButton
-        ref={ref}
-        fontWeight="600" // Semibold for all buttons
-        animation="quick" // Fast, responsive animations
-        {...variantStyles[variant]}
-        {...props}
-      />
-    )
+    /**
+     * Ghost variant - No visual boundaries
+     * Use for subtle actions (show more, collapse)
+     */
+    ghost: {
+      bg: 'transparent',
+      borderWidth: 0,
+      color: '$color11',
+      hoverStyle: {
+        bg: '$backgroundHover',
+      },
+      pressStyle: {
+        bg: '$backgroundPress',
+        scale: 0.97,
+      },
+    },
+
+    /**
+     * Danger variant - Red for destructive actions
+     * Use for irreversible actions (delete, remove)
+     */
+    danger: {
+      bg: '$red8', // Red background
+      color: 'white',
+      borderWidth: 0,
+      hoverStyle: {
+        bg: '$red9', // Darker red on hover
+      },
+      pressStyle: {
+        bg: '$red10', // Even darker on press
+        scale: 0.97,
+      },
+    },
   }
-)
 
-Button.displayName = 'Button'
+  return (
+    <TamaguiButton
+      ref={ref}
+      fontWeight="600" // Semibold for all buttons
+      animation="quick" // Fast, responsive animations
+      {...variantStyles[variant]}
+      {...props}
+    />
+  )
+})
+
+ButtonBase.displayName = 'UIButton'
+
+type UIButtonComponent = ((props: ButtonProps) => JSX.Element) & {
+  Text: typeof TamaguiButton.Text
+  Icon: typeof TamaguiButton.Icon
+  Circular: typeof TamaguiButton.Circular
+}
+
+export const Button: UIButtonComponent = Object.assign(ButtonBase, {
+  Text: TamaguiButton.Text,
+  Icon: TamaguiButton.Icon,
+  Circular: TamaguiButton.Circular,
+})

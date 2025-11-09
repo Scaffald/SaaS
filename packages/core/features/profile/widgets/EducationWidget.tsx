@@ -1,5 +1,5 @@
 import { YStack, XStack, Text, Spinner, Separator } from 'tamagui'
-import { DashboardWidget, Button, EmptyState, Heading, LoadingState, spacing } from '@app/ui'
+import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 import { GraduationCap } from '@tamagui/lucide-icons'
@@ -32,7 +32,13 @@ export function EducationWidget({
   variant = 'full',
 }: ProfileWidgetProps) {
   const router = useRouter()
-  const { data, isLoading, error } = api.profile.widgets.getEducation.useQuery(
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+    isFetching,
+  } = api.profile.widgets.getEducation.useQuery(
     { userId },
     {
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
@@ -55,6 +61,16 @@ export function EducationWidget({
           <Text color="$color11" fontSize="$2">
             {error.message}
           </Text>
+          <Button
+            variant="primary"
+            size="small"
+            onPress={() => {
+              void refetch()
+            }}
+            disabled={isFetching}
+          >
+            Retry
+          </Button>
         </YStack>
       </DashboardWidget>
     )
@@ -70,13 +86,13 @@ export function EducationWidget({
         <XStack justify="space-between" items="center">
           <Heading variant="h4">Education</Heading>
           {showEdit && (
-            <Button
+            <UIButton
               variant="outlined"
-              size="small"
+              size="$2"
               onPress={() => router.push('/dashboard/profile/education')}
             >
               Edit
-            </Button>
+            </UIButton>
           )}
         </XStack>
 
@@ -87,12 +103,12 @@ export function EducationWidget({
             description="Add your education history to complete your profile"
             action={
               showEdit ? (
-                <Button
+                <UIButton
                   variant="primary"
                   onPress={() => router.push('/dashboard/profile/education')}
                 >
                   Add Education
-                </Button>
+                </UIButton>
               ) : undefined
             }
           />

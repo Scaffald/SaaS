@@ -1,8 +1,10 @@
 import { memo, forwardRef, Ref } from 'react'
 import type { TamaguiElement } from 'tamagui'
 import { Button, Paragraph, SizableText, Text, XStack, YStack } from 'tamagui'
-import { Chip } from '@app/ui'
-import { Award, BadgeCheck, Building, Clock3, DollarSign, Star } from '@tamagui/lucide-icons'
+import { useRouter } from 'expo-router'
+import { useToastController } from '@tamagui/toast'
+import { RouteBuilder } from '@app/core/constants/routes'
+import { Award, BadgeCheck, Clock3, DollarSign, ExternalLink, Star } from '@tamagui/lucide-icons'
 
 import type { TalentProfile } from '../types'
 
@@ -14,6 +16,21 @@ type ResultCardProps = {
 
 export const ResultCard = memo(
   forwardRef<TamaguiElement, ResultCardProps>(({ profile, isSelected, onSelect }, forwardedRef) => {
+    const router = useRouter()
+    const toast = useToastController()
+
+    const handleViewFullProfile = () => {
+      onSelect(profile.id)
+      try {
+        router.push(RouteBuilder.discoverWorkerDetail(profile.id))
+      } catch (navigationError) {
+        console.error('Failed to navigate to worker profile', navigationError)
+        toast.show('Unable to load profile', {
+          message: 'Please try again.',
+        })
+      }
+    }
+
     return (
       <YStack
         ref={(node) => {
@@ -142,6 +159,16 @@ export const ResultCard = memo(
             </Text>
           )}
         </XStack>
+
+        <Button
+          mt="$2"
+          theme="blue"
+          size="$2"
+          iconAfter={ExternalLink}
+          onPress={handleViewFullProfile}
+        >
+          View Full Profile
+        </Button>
       </YStack>
     )
   })

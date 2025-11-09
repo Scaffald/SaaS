@@ -258,7 +258,7 @@ function DuplicateLink({ id, name }: DuplicateLinkProps) {
       size="$3"
       onPress={() => router.push(RouteBuilder.dashboardEmployer(id))}
       iconAfter={ArrowRight}
-      justifyContent="space-between"
+      justify="space-between"
     >
       <Stack flex={1}>
         <Text fontSize="$3" color="$color12" numberOfLines={1}>
@@ -298,7 +298,7 @@ function SubmissionSummary({ request, onAddDetails }: SubmissionSummaryProps) {
           variant="outlined"
           icon={Pencil}
           onPress={onAddDetails}
-          alignSelf="flex-start"
+          style={{ alignSelf: 'flex-start' }}
         >
           Add more details
         </Button>

@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router'
-import { YStack, Text, Button, Spinner } from 'tamagui'
-import { DashboardWidget, Button as StyledButton, spacing } from '@app/ui'
+import { YStack, Text, Spinner } from 'tamagui'
+import { DashboardWidget, UIButton as StyledButton, spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
 
@@ -48,7 +48,9 @@ export function IPIPAssessmentWidget() {
         </YStack>
 
         <StyledButton variant="primary" onPress={handleStart} size="$5">
-          <Button.Text>{hasStarted ? 'Continue Questions' : 'Start Questions'}</Button.Text>
+          <StyledButton.Text>
+            {hasStarted ? 'Continue Questions' : 'Start Questions'}
+          </StyledButton.Text>
         </StyledButton>
 
         <Text fontSize="$2" color="$color11">

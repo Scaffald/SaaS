@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { YStack, XStack, Text, Button, Spinner, Separator } from 'tamagui'
+import { YStack, XStack, Text, Spinner, Separator } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
-import { DashboardWidget, Button as StyledButton, spacing } from '@app/ui'
+import { DashboardWidget, UIButton as StyledButton, spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { RiasecQuickAssessment } from './components/RiasecQuickAssessment'
 import { OccupationSearch } from './components/OccupationSearch'
@@ -158,10 +158,10 @@ export function CareerAssessmentWidget() {
           {isSubmitting ? (
             <XStack gap={spacing.xs} items="center">
               <Spinner size="small" color="white" />
-              <Button.Text>Saving Assessment...</Button.Text>
+              <StyledButton.Text>Saving Assessment...</StyledButton.Text>
             </XStack>
           ) : (
-            <Button.Text>Complete Assessment</Button.Text>
+            <StyledButton.Text>Complete Assessment</StyledButton.Text>
           )}
         </StyledButton>
 

@@ -14,7 +14,7 @@ import {
   Separator,
 } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
-import { DashboardWidget, CustomCheckbox, Button as StyledButton, spacing } from '@app/ui'
+import { DashboardWidget, CustomCheckbox, UIButton as StyledButton, spacing } from '@app/ui'
 import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
 import {
@@ -418,10 +418,10 @@ export function PrerequisiteWidget() {
               {isSubmitting ? (
                 <XStack gap={spacing.xs} items="center">
                   <Spinner size="small" color="white" />
-                  <Button.Text>Completing...</Button.Text>
+                  <StyledButton.Text>Completing...</StyledButton.Text>
                 </XStack>
               ) : (
-                <Button.Text>Complete Profile</Button.Text>
+                <StyledButton.Text>Complete Profile</StyledButton.Text>
               )}
             </StyledButton>
           </>

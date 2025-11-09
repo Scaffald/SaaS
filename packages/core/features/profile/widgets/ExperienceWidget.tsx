@@ -1,5 +1,5 @@
 import { YStack, XStack, Text, Spinner, Separator } from 'tamagui'
-import { DashboardWidget, Button, EmptyState, Heading, LoadingState, spacing } from '@app/ui'
+import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 import { Briefcase } from '@tamagui/lucide-icons'
@@ -33,7 +33,13 @@ export function ExperienceWidget({
   variant = 'full',
 }: ProfileWidgetProps) {
   const router = useRouter()
-  const { data, isLoading, error } = api.profile.widgets.getExperience.useQuery(
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+    isFetching,
+  } = api.profile.widgets.getExperience.useQuery(
     { userId },
     {
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
@@ -56,6 +62,16 @@ export function ExperienceWidget({
           <Text color="$color11" fontSize="$2">
             {error.message}
           </Text>
+          <Button
+            variant="primary"
+            size="small"
+            onPress={() => {
+              void refetch()
+            }}
+            disabled={isFetching}
+          >
+            Retry
+          </Button>
         </YStack>
       </DashboardWidget>
     )
@@ -71,13 +87,13 @@ export function ExperienceWidget({
         <XStack justify="space-between" items="center">
           <Heading variant="h4">Work Experience</Heading>
           {showEdit && (
-            <Button
+            <UIButton
               variant="outlined"
-              size="small"
+              size="$2"
               onPress={() => router.push('/dashboard/profile/experience')}
             >
               Edit
-            </Button>
+            </UIButton>
           )}
         </XStack>
 
@@ -88,12 +104,12 @@ export function ExperienceWidget({
             description="Add your work experience to showcase your career history"
             action={
               showEdit ? (
-                <Button
+                <UIButton
                   variant="primary"
                   onPress={() => router.push('/dashboard/profile/experience')}
                 >
                   Add Experience
-                </Button>
+                </UIButton>
               ) : undefined
             }
           />

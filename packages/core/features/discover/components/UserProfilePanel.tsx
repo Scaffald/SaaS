@@ -1,6 +1,7 @@
 import { YStack, XStack, Text, Button, Card, Avatar, Spinner } from 'tamagui'
 import { MapPin, X, ExternalLink, User } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
+import { useToastController } from '@tamagui/toast'
 import { api } from '@app/core/utils/api'
 import { RouteBuilder } from '@app/core/constants/routes'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
@@ -30,6 +31,7 @@ export function UserProfilePanel({
   position = { top: 16, right: 16 },
 }: UserProfilePanelProps) {
   const router = useRouter()
+  const toast = useToastController()
 
   // Fetch lightweight preview data
   const { data: preview, isLoading } = api.userProfile.getPreview.useQuery(
@@ -42,9 +44,16 @@ export function UserProfilePanel({
   }
 
   const handleViewProfile = () => {
-    if (userId) {
-      router.push(RouteBuilder.dashboardUser(userId))
+    if (!userId) return
+
+    try {
+      router.push(RouteBuilder.discoverWorkerDetail(userId))
       onOpenChange(false)
+    } catch (navigationError) {
+      console.error('Failed to navigate to worker profile', navigationError)
+      toast.show('Unable to load profile', {
+        message: 'Please try again.',
+      })
     }
   }
 

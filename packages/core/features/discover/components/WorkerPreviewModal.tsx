@@ -1,4 +1,5 @@
 import { YStack, XStack, Text, Button, Separator, Spinner } from 'tamagui'
+import { useToastController } from '@tamagui/toast'
 import { ResponsiveModal } from '@app/ui'
 import {
   MapPin,
@@ -28,6 +29,7 @@ interface WorkerPreviewModalProps {
  */
 export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreviewModalProps) {
   const router = useRouter()
+  const toast = useToastController()
 
   // Fetch worker profile data
   const { data: profile, isLoading: profileLoading } = api.userProfile.getUserProfile.useQuery(
@@ -66,9 +68,16 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
     profileLoading || skillsLoading || certsLoading || experienceLoading || educationLoading
 
   const handleViewFullProfile = () => {
-    if (userId) {
-      router.push(RouteBuilder.dashboardUser(userId))
+    if (!userId) return
+
+    try {
+      router.push(RouteBuilder.discoverWorkerDetail(userId))
       onOpenChange(false)
+    } catch (navigationError) {
+      console.error('Failed to navigate to worker profile', navigationError)
+      toast.show('Unable to load profile', {
+        message: 'Please try again.',
+      })
     }
   }
 

@@ -1,5 +1,5 @@
 import { YStack, XStack, Text, H4, Spinner, Avatar, Button, Progress } from 'tamagui'
-import { DashboardWidget, Button as StyledButton, spacing } from '@app/ui'
+import { DashboardWidget, UIButton as StyledButton, spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
