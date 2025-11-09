@@ -6,8 +6,8 @@
  * The actual implementation runs in Deno edge functions.
  */
 
-// Import type only to avoid pulling in Deno-specific runtime code
-import type { AppRouter } from "./functions/trpc/index";
+// Import the shared placeholder type that mirrors the edge router structure
+import type { AppRouter } from "./app-router-type";
 
 // Re-export for client usage
 export type { AppRouter };
