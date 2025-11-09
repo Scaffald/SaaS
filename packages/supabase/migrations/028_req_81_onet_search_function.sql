@@ -5,6 +5,9 @@
 
 BEGIN;
 
+-- Ensure the trigram operator class is resolvable (extensions first, fallback to public)
+SET LOCAL search_path TO onet, extensions, public;
+
 -- Ensure trigram extension is available for similarity search
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 

@@ -139,6 +139,31 @@ END;
 $$;
 
 -- =====================================================================
+-- Deterministic coordinate jitter function (ensure updated signature)
+-- =====================================================================
+CREATE OR REPLACE FUNCTION core.jitter_coordinate_deterministic(
+  coord double precision,
+  user_id uuid,
+  coord_type text DEFAULT 'lng',
+  max_offset_degrees double precision DEFAULT 0.03
+)
+RETURNS double precision
+LANGUAGE sql
+STABLE
+AS $$
+  SELECT coord + (
+    ('x' || substr(
+      md5(user_id::text || coord_type),
+      1,
+      8
+    ))::bit(32)::bigint::double precision / 4294967295.0 * 2 - 1
+  ) * max_offset_degrees;
+$$;
+
+COMMENT ON FUNCTION core.jitter_coordinate_deterministic IS 
+  'Adds deterministic offset to coordinate for privacy using user ID hash. Coordinates remain stable across queries while maintaining privacy. Use coord_type ''lng'' for longitude, ''lat'' for latitude. Default ±0.03° (≈2-3km depending on latitude).';
+
+-- =====================================================================
 -- Search view update with ghost penalty
 -- =====================================================================
 CREATE OR REPLACE VIEW core.v_profile_search AS
