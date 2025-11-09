@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { YStack, ScrollView, Text, Input, Label, Button, XStack, Separator } from 'tamagui'
+import { ScrollView, Text, Input, Label, Button, XStack, Separator, YStack } from 'tamagui'
 import { Search, Filter, X } from '@tamagui/lucide-icons'
+import { AddOrganizationWidget } from './components/AddOrganizationWidget'
 
 interface DiscoverEmployersRightProps {
   onSearchChange: (query: string) => void
@@ -54,6 +55,8 @@ export function DiscoverEmployersRight({
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
       <YStack gap="$4" p="$4">
+        <AddOrganizationWidget />
+
         {/* Header */}
         <YStack gap="$2">
           <XStack justify="space-between" items="center">

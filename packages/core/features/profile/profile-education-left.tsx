@@ -30,9 +30,11 @@ import {
   UniversityAutocomplete,
   ConfirmationDialog,
   MonthYearPicker,
+  FieldError,
 } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { invalidateProfileQueries } from './utils/profile-sync'
+import { useToastController } from '@tamagui/toast'
 import {
   startProfileSync,
   completeProfileSync,
@@ -49,6 +51,23 @@ interface University {
   slug: string
 }
 
+const ERROR_FIELD_LABELS: Record<string, string> = {
+  education_level: 'Highest Education Level',
+  institution_name: 'Institution Name',
+  university_id: 'Institution Selection',
+  is_verified: 'Verification Status',
+  degree_type: 'Degree Type',
+  custom_degree_type: 'Custom Degree Type',
+  field_of_study: 'Field of Study',
+  start_date: 'Start Date',
+  end_date: 'End Date',
+  expected_graduation_date: 'Expected Graduation Date',
+  is_current: 'Current Enrollment Status',
+  gpa: 'GPA',
+  description: 'Description',
+  location: 'Location',
+}
+
 /**
  * Profile Education Right Component
  * Form for managing education background
@@ -57,6 +76,7 @@ export function ProfileEducationLeft() {
   const [isLoading, setIsLoading] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<EducationProfileFormData | null>(null)
+  const toast = useToastController()
 
   // Queries
   const educationQuery = api.profile.getEducation.useQuery()
@@ -92,6 +112,17 @@ export function ProfileEducationLeft() {
         utils.profile.getEducationLevel.setData(undefined, context.previousLevel)
       }
       failProfileSync()
+      toast.show('Save Failed', {
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Failed to save education entry. Please try again.',
+      })
+    },
+    onSuccess: () => {
+      toast.show('Education Saved', {
+        message: 'Your education history has been updated successfully!',
+      })
     },
     onSettled: (_data, error) => {
       if (!error) {
@@ -142,6 +173,76 @@ export function ProfileEducationLeft() {
     control,
     name: 'education_entries',
   })
+
+  const errorSummary = useMemo(() => {
+    const messages: string[] = []
+
+    const ensurePush = (message: string | undefined) => {
+      if (message && !messages.includes(message)) {
+        messages.push(message)
+      }
+    }
+
+    const formatLabel = (key: string) => {
+      if (ERROR_FIELD_LABELS[key]) {
+        return ERROR_FIELD_LABELS[key]
+      }
+      return key
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    }
+
+    const traverse = (errorNode: unknown, prefix?: string) => {
+      if (!errorNode) {
+        return
+      }
+
+      if (Array.isArray(errorNode)) {
+        for (const [idx, item] of errorNode.entries()) {
+          const nextPrefix = prefix ? `${prefix} • Item ${idx + 1}` : `Item ${idx + 1}`
+          traverse(item, nextPrefix)
+        }
+        return
+      }
+
+      if (typeof errorNode === 'object') {
+        const maybeMessage = (errorNode as { message?: unknown }).message
+        if (typeof maybeMessage === 'string' && maybeMessage.length > 0) {
+          ensurePush(prefix ? `${prefix}: ${maybeMessage}` : maybeMessage)
+          return
+        }
+
+        for (const [key, value] of Object.entries(errorNode as Record<string, unknown>)) {
+          const label = formatLabel(key)
+          const nextPrefix =
+            key === '_root'
+              ? prefix
+              : prefix
+                ? `${prefix} • ${label}`
+                : label
+          traverse(value, nextPrefix)
+        }
+      }
+    }
+
+    ensurePush(
+      errors.education_level?.message
+        ? `Highest Education Level: ${errors.education_level.message}`
+        : undefined
+    )
+
+    const educationEntries = errors.education_entries ?? []
+    for (let idx = 0; idx < educationEntries.length; idx += 1) {
+      const entryErrors = educationEntries[idx]
+      if (!entryErrors) {
+        continue
+      }
+      const entryPrefix = `Education ${idx + 1}`
+      traverse(entryErrors, entryPrefix)
+    }
+
+    return messages.length > 1 ? messages : []
+  }, [errors])
 
   // Load data when queries succeed
   useEffect(() => {
@@ -234,6 +335,31 @@ export function ProfileEducationLeft() {
     <DashboardWidget>
       <H4>Education Background</H4>
 
+      {errorSummary.length > 0 && (
+        <YStack
+          role="alert"
+          mt="$2"
+          mb="$2"
+          p="$3"
+          gap="$2"
+          borderWidth={1}
+          borderColor="$red7"
+          backgroundColor="$red3"
+          rounded="$4"
+        >
+          <Text fontWeight="600" color="$red11">
+            Please resolve the following issues:
+          </Text>
+          <YStack gap="$1">
+            {errorSummary.map((message) => (
+              <Text key={message} color="$red11" fontSize="$3">
+                • {message}
+              </Text>
+            ))}
+          </YStack>
+        </YStack>
+      )}
+
       <YStack gap="$4">
         {/* Education Level */}
         <YStack gap="$2">
@@ -267,15 +393,20 @@ export function ProfileEducationLeft() {
             </Button>
           </XStack>
 
-          {fields.map((field, index) => (
-            <YStack
-              key={field.id}
-              gap="$3"
-              p="$3"
-              borderWidth={1}
-              borderColor="$borderColor"
-              rounded="$4"
-            >
+          {fields.map((field, index) => {
+            const entryErrors = errors.education_entries?.[index]
+            const hasEntryErrors = entryErrors !== undefined && entryErrors !== null
+
+            return (
+              <YStack
+                key={field.id}
+                gap="$3"
+                p="$3"
+                borderWidth={1}
+                borderColor={hasEntryErrors ? '$red7' : '$borderColor'}
+                backgroundColor={hasEntryErrors ? '$red2' : '$background'}
+                rounded="$4"
+              >
               <XStack justify="space-between" items="center">
                 <Text fontWeight="600">Education {index + 1}</Text>
                 <Button size="$2" variant="outlined" onPress={() => remove(index)} icon={X}>
@@ -344,7 +475,9 @@ export function ProfileEducationLeft() {
                                     nameField.onChange(text)
                                     universityField.onChange(null)
                                   }}
-                                  error={
+                                />
+                                <FieldError
+                                  message={
                                     errors.education_entries?.[index]?.institution_name?.message
                                   }
                                 />
@@ -395,6 +528,9 @@ export function ProfileEducationLeft() {
                       }))}
                       placeholder="Select degree type"
                       allowClear
+                      error={
+                        errors.education_entries?.[index]?.degree_type?.message
+                      }
                     />
                   )}
                 />
@@ -409,12 +545,18 @@ export function ProfileEducationLeft() {
                         name={`education_entries.${index}.custom_degree_type`}
                         control={control}
                         render={({ field: customField }) => (
-                          <Input
-                            placeholder="Specify degree type"
-                            value={customField.value || ''}
-                            onChangeText={customField.onChange}
-                            error={errors.education_entries?.[index]?.custom_degree_type?.message}
-                          />
+                          <>
+                            <Input
+                              placeholder="Specify degree type"
+                              value={customField.value || ''}
+                              onChangeText={customField.onChange}
+                            />
+                            <FieldError
+                              message={
+                                errors.education_entries?.[index]?.custom_degree_type?.message
+                              }
+                            />
+                          </>
                         )}
                       />
                     ) : null
@@ -454,59 +596,61 @@ export function ProfileEducationLeft() {
                     }, [field.value])
 
                     return (
-                      <Input
-                        placeholder="e.g. 3.5 (0.0 - 4.0)"
-                        value={localValue}
-                        onChangeText={(text) => {
-                          // Allow empty string
-                          if (text === '') {
-                            setLocalValue('')
-                            field.onChange(undefined)
-                            return
-                          }
-
-                          // Allow decimal point and digits
-                          // Match pattern: optional digits, optional decimal point, optional single digit after decimal
-                          const decimalPattern = /^\d*\.?\d?$/
-                          if (!decimalPattern.test(text)) {
-                            return // Don't update if invalid pattern
-                          }
-
-                          // Update local display value
-                          setLocalValue(text)
-
-                          // Parse as float
-                          const numValue = Number.parseFloat(text)
-
-                          // Validate range and that it's a valid number
-                          if (
-                            !Number.isNaN(numValue) &&
-                            numValue >= 0 &&
-                            numValue <= 4.0 &&
-                            // Ensure max 1 decimal place
-                            (text.split('.')[1]?.length ?? 0) <= 1
-                          ) {
-                            // Only update form field if we have a complete number (not just "3.")
-                            if (!text.endsWith('.')) {
-                              field.onChange(numValue)
+                      <>
+                        <Input
+                          placeholder="e.g. 3.5 (0.0 - 4.0)"
+                          value={localValue}
+                          onChangeText={(text) => {
+                            // Allow empty string
+                            if (text === '') {
+                              setLocalValue('')
+                              field.onChange(undefined)
+                              return
                             }
-                          }
-                        }}
-                        onBlur={() => {
-                          // On blur, ensure we have a valid number
-                          const currentValue = field.value
-                          if (currentValue !== undefined && currentValue !== null) {
-                            // Round to 1 decimal place
-                            const rounded = Math.round(currentValue * 10) / 10
-                            field.onChange(rounded)
-                            setLocalValue(rounded.toString())
-                          } else {
-                            setLocalValue('')
-                          }
-                        }}
-                        keyboardType="decimal-pad"
-                        error={errors.education_entries?.[index]?.gpa?.message}
-                      />
+
+                            // Allow decimal point and digits
+                            // Match pattern: optional digits, optional decimal point, optional single digit after decimal
+                            const decimalPattern = /^\d*\.?\d?$/
+                            if (!decimalPattern.test(text)) {
+                              return // Don't update if invalid pattern
+                            }
+
+                            // Update local display value
+                            setLocalValue(text)
+
+                            // Parse as float
+                            const numValue = Number.parseFloat(text)
+
+                            // Validate range and that it's a valid number
+                            if (
+                              !Number.isNaN(numValue) &&
+                              numValue >= 0 &&
+                              numValue <= 4.0 &&
+                              // Ensure max 1 decimal place
+                              (text.split('.')[1]?.length ?? 0) <= 1
+                            ) {
+                              // Only update form field if we have a complete number (not just "3.")
+                              if (!text.endsWith('.')) {
+                                field.onChange(numValue)
+                              }
+                            }
+                          }}
+                          onBlur={() => {
+                            // On blur, ensure we have a valid number
+                            const currentValue = field.value
+                            if (currentValue !== undefined && currentValue !== null) {
+                              // Round to 1 decimal place
+                              const rounded = Math.round(currentValue * 10) / 10
+                              field.onChange(rounded)
+                              setLocalValue(rounded.toString())
+                            } else {
+                              setLocalValue('')
+                            }
+                          }}
+                          keyboardType="decimal-pad"
+                        />
+                        <FieldError message={errors.education_entries?.[index]?.gpa?.message} />
+                      </>
                     )
                   }}
                 />
@@ -571,6 +715,12 @@ export function ProfileEducationLeft() {
                             setValue(`education_entries.${index}.end_date`, undefined, {
                               shouldValidate: true,
                             })
+                          } else {
+                            setValue(
+                              `education_entries.${index}.expected_graduation_date`,
+                              undefined,
+                              { shouldValidate: true }
+                            )
                           }
                         }}
                       >
@@ -584,6 +734,12 @@ export function ProfileEducationLeft() {
                             setValue(`education_entries.${index}.end_date`, undefined, {
                               shouldValidate: true,
                             })
+                          } else {
+                            setValue(
+                              `education_entries.${index}.expected_graduation_date`,
+                              undefined,
+                              { shouldValidate: true }
+                            )
                           }
                         }}
                       >
@@ -630,17 +786,23 @@ export function ProfileEducationLeft() {
                   name={`education_entries.${index}.description`}
                   control={control}
                   render={({ field }) => (
-                    <TextArea
-                      placeholder="Describe your education experience, achievements, relevant coursework..."
-                      value={field.value || ''}
-                      onChangeText={field.onChange}
-                      minH={80}
-                    />
+                    <>
+                      <TextArea
+                        placeholder="Describe your education experience, achievements, relevant coursework..."
+                        value={field.value || ''}
+                        onChangeText={field.onChange}
+                        minH={80}
+                      />
+                      <FieldError
+                        message={errors.education_entries?.[index]?.description?.message}
+                      />
+                    </>
                   )}
                 />
               </YStack>
             </YStack>
-          ))}
+              )
+          })}
 
           {fields.length === 0 && (
             <YStack p="$4" items="center" gap="$2">

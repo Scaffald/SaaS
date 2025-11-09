@@ -45,6 +45,14 @@ export const employersRouter = t.router({
         .eq("visibility", "public")
         .order("created_at", { ascending: false });
 
+      // Apply search filter
+      if (input?.search && input.search.trim().length > 0) {
+        const searchTerm = input.search.trim();
+        query = query.or(
+          `name.ilike.%${searchTerm}%,slug.ilike.%${searchTerm}%,website.ilike.%${searchTerm}%`,
+        );
+      }
+
       // Apply industry filter
       if (input?.industryIds && input.industryIds.length > 0) {
         query = query.in("industry_id", input.industryIds);
