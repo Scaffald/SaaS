@@ -95,10 +95,7 @@ export const LoginScreen = () => {
         <YStack gap="$4" mb="$3" items="center">
           <ScaffaldLogo width={200} height={33} />
           <YStack gap="$2" items="center">
-            <Paragraph text="center">
-              Enter your email and we&apos;ll send a sign-in link. You can also use this to register
-              a new account.
-            </Paragraph>
+            <Paragraph text="center">Email works for both login and signup</Paragraph>
           </YStack>
         </YStack>
 
@@ -129,10 +126,15 @@ export const LoginScreen = () => {
               hoverStyle={{ scale: 1.02, bg: '$blue9' }}
               pressStyle={{ scale: 0.98 }}
             >
-              {isSubmitting ? 'Sending...' : 'Send Magic Link'}
+              {isSubmitting ? 'Sending...' : 'Sign In or Register'}
             </Button>
 
             <SocialLogin />
+            <Paragraph text="center">
+              If you login with Apple or Google and already have an account with the same email we
+              will link it for you. If you don&apos;t currently have an account, this will register
+              one.
+            </Paragraph>
           </YStack>
         </Form>
       </YStack>
