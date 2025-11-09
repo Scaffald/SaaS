@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { Button, Paragraph, Text, XStack, YStack } from 'tamagui'
 import { ResponsiveModal } from '@app/ui'
-import { Celebration, UploadCloud } from '@tamagui/lucide-icons'
+import { PartyPopper, UploadCloud } from '@tamagui/lucide-icons'
 
 type ModalMode = 'first-login' | 'progress-reminder'
 
@@ -38,7 +38,7 @@ export const ProfileCompletionModal = memo(function ProfileCompletionModal({
       <YStack gap="$4">
         <YStack gap="$2">
           <XStack gap="$2" items="center">
-            <Celebration size={24} color="$blue10" />
+            <PartyPopper size={24} color="$blue10" />
             <Text fontSize="$5" fontWeight="700">
               {isFirstTime ? 'Finish in 5 minutes' : `You’re ${completionPercentage}% complete`}
             </Text>
