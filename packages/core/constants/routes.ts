@@ -63,7 +63,7 @@ const ROUTES_CONFIG = {
     isProtected: true,
   },
   DASHBOARD_NOTIFICATIONS: {
-    path: "/dashboard/notifications",
+    path: "/dashboard/settings/notifications",
     title: "Notifications",
     isProtected: true,
   },

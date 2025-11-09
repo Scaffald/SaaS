@@ -299,15 +299,8 @@ Return JSON with keys general, experience, education, skills, certifications, em
 
 async function callOpenAIForResume(
   resumeText: string,
+  openAiKey: string,
 ): Promise<z.infer<typeof parsedResumeSchema>> {
-  const openAiKey = Deno.env.get("OPENAI_API_KEY");
-  if (!openAiKey) {
-    throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "OpenAI API key is not configured",
-    });
-  }
-
   const response = await fetch(
     "https://api.openai.com/v1/chat/completions",
     {
@@ -978,6 +971,8 @@ export const resumeRouter = t.router({
     .output(parseResumeOutputSchema)
     .mutation(async ({ ctx, input }) => {
       const { supabase, user } = ctx;
+      const openAiKey = Deno.env.get("OPENAI_API_KEY")?.trim();
+      const openAiConfigured = Boolean(openAiKey);
 
       await updateResumeParsingStatus(supabase, input.resumeId, "processing");
 
@@ -1005,7 +1000,15 @@ export const resumeRouter = t.router({
           });
         }
 
-        const parsed = await callOpenAIForResume(resumeText);
+        if (!openAiConfigured) {
+          console.warn(
+            "[resume] OpenAI API key is not configured; skipping AI-driven resume parsing.",
+          );
+        }
+
+        const parsed = openAiKey
+          ? await callOpenAIForResume(resumeText, openAiKey)
+          : parsedResumeSchema.parse({});
 
         const skillMatches = parsed.skills
           ? await Promise.all(
@@ -1016,6 +1019,10 @@ export const resumeRouter = t.router({
           : [];
 
         const errors: Array<z.infer<typeof parseErrorSchema>> = [];
+        const missingSectionMessage = (section: ResumeSection): string =>
+          openAiConfigured
+            ? `No ${section} information found in resume.`
+            : "Resume parsing is disabled because the OpenAI API key is not configured. Please fill in this section manually.";
 
         const parsedData: z.infer<typeof parsedResumeSchema> = {
           ...parsed,
@@ -1038,7 +1045,7 @@ export const resumeRouter = t.router({
           ) {
             errors.push({
               section,
-              message: `No ${section} information found in resume.`,
+              message: missingSectionMessage(section),
             });
           }
         }

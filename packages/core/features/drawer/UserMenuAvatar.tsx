@@ -125,6 +125,7 @@ export function UserMenuAvatar() {
   const userId = user?.id || ''
   const viewProfileHref = userId ? RouteBuilder.dashboardUser(userId) : undefined
   const editProfileHref = ROUTES.DASHBOARD_PROFILE_GENERAL.path
+  const settingsHref = ROUTES.DASHBOARD_SETTINGS.path
 
   // Avatar size (matches notification icon height)
   const avatarSize = 30
@@ -251,6 +252,27 @@ export function UserMenuAvatar() {
               <Pencil size={18} color="$color10" />
               <Text fontSize="$3" color="$color12">
                 Edit Profile
+              </Text>
+            </XStack>
+          </YStack>
+
+          {/* Settings */}
+          <YStack
+            role="menuitem"
+            tabIndex={0}
+            p="$3"
+            bg="transparent"
+            pressStyle={{ bg: '$color3' }}
+            hoverStyle={{ bg: '$color3' }}
+            onPress={() => handleMenuItemClick(settingsHref)}
+            cursor="pointer"
+            width="100%"
+            aria-label="Open settings"
+          >
+            <XStack gap="$3" items="center">
+              <Settings size={18} color="$color10" />
+              <Text fontSize="$3" color="$color12">
+                Settings
               </Text>
             </XStack>
           </YStack>

@@ -12,8 +12,9 @@ import type { NotificationItem } from '@app/ui'
 import { useRouter } from 'expo-router'
 import type { Href } from 'expo-router'
 import { useNotificationDeviceRegistration } from '@app/core/hooks/useNotificationDeviceRegistration'
+import { ROUTES } from '@app/core/constants/routes'
 
-const NOTIFICATIONS_ROUTE: Href = '/dashboard/notifications'
+const NOTIFICATIONS_ROUTE: Href = ROUTES.DASHBOARD_NOTIFICATIONS.path as Href
 
 interface DrawerLayoutProps {
   /**

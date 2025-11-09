@@ -20,23 +20,23 @@ const CheckboxContainer = styled(View, {
   overflow: 'hidden',
   items: 'center',
   justify: 'center',
-  borderWidth: 2,
+  borderWidth: 1,
   variants: {
     size: {
       small: {
-        width: '$3',
-        height: '$3',
+        width: '$1',
+        height: '$1',
         borderRadius: '$1',
       },
       medium: {
-        width: '$4',
-        height: '$4',
+        width: '$1',
+        height: '$1',
         borderRadius: '$2',
       },
       large: {
-        width: '$5',
-        height: '$5',
-        borderRadius: '$3',
+        width: '$2',
+        height: '$2',
+        borderRadius: '$2',
       },
     },
     checked: {
@@ -137,7 +137,7 @@ export function Checkbox({
       testID={testID}
     >
       <CheckboxIcon checked={checked}>
-        <Check size={size === 'small' ? 10 : size === 'medium' ? 12 : 14} color="white" />
+        <Check size={size === 'small' ? 12 : size === 'medium' ? 12 : 12} color="white" />
       </CheckboxIcon>
     </CheckboxContainer>
   )

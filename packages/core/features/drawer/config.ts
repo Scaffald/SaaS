@@ -9,7 +9,6 @@ import {
   Briefcase,
   Building2,
   ClipboardCheck,
-  Bell,
   Map as MapIcon,
   User,
   Users,
@@ -103,13 +102,6 @@ export const generateDashboardDrawerItems = (options?: {
     title: ROUTES.DASHBOARD.title,
     href: ROUTES.DASHBOARD.path,
     icon: BarChart3,
-  });
-
-  items.push({
-    key: "notifications",
-    title: ROUTES.DASHBOARD_NOTIFICATIONS.title,
-    href: ROUTES.DASHBOARD_NOTIFICATIONS.path,
-    icon: Bell,
   });
 
   // Discover route - Always show subItems, parent is clickable
