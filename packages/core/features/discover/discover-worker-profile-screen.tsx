@@ -64,10 +64,13 @@ function SkeletonBlock({
     <YStack
       position="relative"
       overflow="hidden"
-      borderRadius={radius}
       bg="$color4"
       height={height}
-      width={width}
+      width={typeof width === 'number' ? width : undefined}
+      style={{
+        borderRadius: radius,
+        width: typeof width === 'string' ? width : undefined,
+      }}
     >
       <Animated.View
         pointerEvents="none"
@@ -104,7 +107,7 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
             <SkeletonBlock height={96} width={96} radius={48} />
             <SkeletonBlock height={24} width="60%" />
             <SkeletonBlock height={18} width="40%" />
-            <XStack gap="$2" flexWrap="wrap" justifyContent="center">
+            <XStack gap="$2" flexWrap="wrap" justify="center">
               {headlineWidths.map((width) => (
                 <SkeletonBlock key={`headline-${width}`} height={16} width={width} radius={8} />
               ))}
@@ -242,7 +245,7 @@ export function DiscoverWorkerProfileScreen({
           <Text fontSize="$6" fontWeight="700" color="$red10">
             Profile unavailable
           </Text>
-          <Text color="$color11" textAlign="center">
+          <Text color="$color11" style={{ textAlign: 'center' }}>
             We couldn&apos;t load this worker profile. Please try another worker.
           </Text>
         </YStack>

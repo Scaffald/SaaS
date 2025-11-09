@@ -41,12 +41,8 @@ export function VanityUrlSection() {
   const { data: slugHistory, refetch: refetchHistory } = api.profile.vanity.getSlugHistory.useQuery()
 
   // Update slug
-  const updateSlugMutation = api.profile.vanity.updateSlug.useMutation<
-    UpdateSlugResult,
-    VanityMutationError,
-    { slug: string }
-  >({
-    onSuccess: (data) => {
+  const updateSlugMutation = api.profile.vanity.updateSlug.useMutation({
+    onSuccess: (data: UpdateSlugResult) => {
       toast.show('Slug Updated', {
         message: `Your profile URL has been updated to /u/${data.slug}`,
       })
@@ -60,7 +56,7 @@ export function VanityUrlSection() {
       utils.profile.widgets.getGeneralInfo.invalidate()
       utils.profile.vanity.getSlugHistory.invalidate()
     },
-    onError: (error) => {
+    onError: (error: VanityMutationError) => {
       toast.show('Error', {
         message: error.message || 'Failed to update slug. Please try again.',
       })

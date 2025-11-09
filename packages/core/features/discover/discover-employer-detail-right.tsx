@@ -82,15 +82,11 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
     { enabled: Boolean(employerId) }
   )
 
-  const followMutation = api.employers.followOrganization.useMutation<
-    FollowMutationResult,
-    MutationError,
-    OrganizationIdentifier,
-    FollowMutationContext
-  >({
-    onMutate: async (variables) => {
+  const followMutation = api.employers.followOrganization.useMutation({
+    onMutate: async (variables: OrganizationIdentifier) => {
       await utils.employers.getOrganizationFollowStatus.cancel(variables)
-      const previous = utils.employers.getOrganizationFollowStatus.getData(variables)
+      const previous: FollowStatusSnapshot | undefined =
+        utils.employers.getOrganizationFollowStatus.getData(variables)
 
       utils.employers.getOrganizationFollowStatus.setData(variables, {
         isFollowing: true,
@@ -98,9 +94,13 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         createdAt: previous?.createdAt ?? new Date().toISOString(),
       })
 
-      return { previous }
+      return { previous } as FollowMutationContext
     },
-    onError: (error, variables, context) => {
+    onError: (
+      error: MutationError,
+      variables: OrganizationIdentifier,
+      context?: FollowMutationContext,
+    ) => {
       if (context?.previous) {
         utils.employers.getOrganizationFollowStatus.setData(variables, context.previous)
       }
@@ -108,7 +108,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         message: error.message ?? 'Please try again in a moment.',
       })
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (data: FollowMutationResult, variables: OrganizationIdentifier) => {
       utils.employers.getOrganizationFollowStatus.setData(variables, {
         isFollowing: true,
         followId: data.follow.id,
@@ -126,15 +126,11 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
     },
   })
 
-  const unfollowMutation = api.employers.unfollowOrganization.useMutation<
-    { success: boolean },
-    MutationError,
-    OrganizationIdentifier,
-    FollowMutationContext
-  >({
-    onMutate: async (variables) => {
+  const unfollowMutation = api.employers.unfollowOrganization.useMutation({
+    onMutate: async (variables: OrganizationIdentifier) => {
       await utils.employers.getOrganizationFollowStatus.cancel(variables)
-      const previous = utils.employers.getOrganizationFollowStatus.getData(variables)
+      const previous: FollowStatusSnapshot | undefined =
+        utils.employers.getOrganizationFollowStatus.getData(variables)
 
       utils.employers.getOrganizationFollowStatus.setData(variables, {
         isFollowing: false,
@@ -142,9 +138,13 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         createdAt: null,
       })
 
-      return { previous }
+      return { previous } as FollowMutationContext
     },
-    onError: (error, variables, context) => {
+    onError: (
+      error: MutationError,
+      variables: OrganizationIdentifier,
+      context?: FollowMutationContext,
+    ) => {
       if (context?.previous) {
         utils.employers.getOrganizationFollowStatus.setData(variables, context.previous)
       }
@@ -152,7 +152,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         message: error.message ?? 'Please try again in a moment.',
       })
     },
-    onSuccess: (_data, variables) => {
+    onSuccess: (_data: { success: boolean }, variables: OrganizationIdentifier) => {
       utils.employers.getOrganizationFollowStatus.setData(variables, {
         isFollowing: false,
         followId: null,
@@ -181,15 +181,11 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         ? 'Following'
         : 'Follow Organization'
 
-  const claimEmploymentMutation = api.employers.claimOrganizationEmployment.useMutation<
-    ClaimMutationResult,
-    MutationError,
-    OrganizationIdentifier,
-    EmploymentMutationContext
-  >({
-    onMutate: async (variables) => {
+  const claimEmploymentMutation = api.employers.claimOrganizationEmployment.useMutation({
+    onMutate: async (variables: OrganizationIdentifier) => {
       await utils.employers.getOrganizationEmploymentStatus.cancel(variables)
-      const previous = utils.employers.getOrganizationEmploymentStatus.getData(variables)
+      const previous: EmploymentStatusSnapshot | undefined =
+        utils.employers.getOrganizationEmploymentStatus.getData(variables)
 
       utils.employers.getOrganizationEmploymentStatus.setData(variables, {
         isLinked: true,
@@ -200,9 +196,13 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         createdAt: previous?.createdAt ?? new Date().toISOString(),
       })
 
-      return { previous }
+      return { previous } as EmploymentMutationContext
     },
-    onError: (error, variables, context) => {
+    onError: (
+      error: MutationError,
+      variables: OrganizationIdentifier,
+      context?: EmploymentMutationContext,
+    ) => {
       if (context?.previous) {
         utils.employers.getOrganizationEmploymentStatus.setData(variables, context.previous)
       }
@@ -210,7 +210,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         message: error.message ?? 'Please try again shortly.',
       })
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (data: ClaimMutationResult, variables: OrganizationIdentifier) => {
       const experience = data.experience ?? null
       utils.employers.getOrganizationEmploymentStatus.setData(variables, {
         isLinked: true,
@@ -230,20 +230,20 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         }
       )
     },
-    onSettled: async (_data, _error, variables) => {
+    onSettled: async (
+      _data: ClaimMutationResult | undefined,
+      _error: MutationError | null,
+      variables: OrganizationIdentifier,
+    ) => {
       await utils.employers.getOrganizationEmploymentStatus.invalidate(variables)
     },
   })
 
-  const removeEmploymentMutation = api.employers.removeOrganizationEmployment.useMutation<
-    { removed: boolean },
-    MutationError,
-    OrganizationIdentifier,
-    EmploymentMutationContext
-  >({
-    onMutate: async (variables) => {
+  const removeEmploymentMutation = api.employers.removeOrganizationEmployment.useMutation({
+    onMutate: async (variables: OrganizationIdentifier) => {
       await utils.employers.getOrganizationEmploymentStatus.cancel(variables)
-      const previous = utils.employers.getOrganizationEmploymentStatus.getData(variables)
+      const previous: EmploymentStatusSnapshot | undefined =
+        utils.employers.getOrganizationEmploymentStatus.getData(variables)
 
       utils.employers.getOrganizationEmploymentStatus.setData(variables, {
         isLinked: false,
@@ -254,9 +254,13 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         createdAt: null,
       })
 
-      return { previous }
+      return { previous } as EmploymentMutationContext
     },
-    onError: (error, variables, context) => {
+    onError: (
+      error: MutationError,
+      variables: OrganizationIdentifier,
+      context?: EmploymentMutationContext,
+    ) => {
       if (context?.previous) {
         utils.employers.getOrganizationEmploymentStatus.setData(variables, context.previous)
       }
@@ -264,7 +268,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         message: error.message ?? 'Please try again shortly.',
       })
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (data: { removed: boolean }, variables: OrganizationIdentifier) => {
       if (!data.removed) {
         // Nothing to remove, restore to neutral state
         utils.employers.getOrganizationEmploymentStatus.setData(variables, {
@@ -281,7 +285,11 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         message: 'You are no longer connected to this organization.',
       })
     },
-    onSettled: async (_data, _error, variables) => {
+    onSettled: async (
+      _data: { removed: boolean } | undefined,
+      _error: MutationError | null,
+      variables: OrganizationIdentifier,
+    ) => {
       await utils.employers.getOrganizationEmploymentStatus.invalidate(variables)
     },
   })

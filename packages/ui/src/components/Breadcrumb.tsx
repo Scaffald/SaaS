@@ -169,7 +169,7 @@ export const Breadcrumb = React.memo(function Breadcrumb({
             const actualIndex = hiddenStartIndex + idx
             const isActive = item.isActive ?? false
             return (
-      <UIButton
+              <UIButton
                 key={`ellipsis-${actualIndex}`}
                 size="$3"
                 variant={isActive ? 'outlined' : 'ghost'}
@@ -185,7 +185,7 @@ export const Breadcrumb = React.memo(function Breadcrumb({
                 >
                   {item.label}
                 </Text>
-      </UIButton>
+              </UIButton>
             )
           })}
         </ScrollView>
@@ -233,20 +233,18 @@ export const Breadcrumb = React.memo(function Breadcrumb({
             </Sheet.Frame>
           </Sheet>
         </Adapt>
-        <Adapt.Contents>
-          <Popover.Content
-            padding={0}
-            borderWidth={1}
-            borderColor="$borderColor"
-            backgroundColor="$background"
-            elevation={4}
-            enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
-            exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
-            animation="quick"
-          >
-            {dropdownContent}
-          </Popover.Content>
-        </Adapt.Contents>
+        <Popover.Content
+          p={0}
+          borderWidth={1}
+          borderColor="$borderColor"
+          bg="$background"
+          elevation={4}
+          enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
+          exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
+          animation="quick"
+        >
+          {dropdownContent}
+        </Popover.Content>
       </Popover>
     )
   }
