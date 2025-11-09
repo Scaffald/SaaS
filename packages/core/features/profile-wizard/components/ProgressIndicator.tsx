@@ -19,7 +19,7 @@ export const ProgressIndicator = memo(function ProgressIndicator({
   const orderedSteps = useMemo(() => PROFILE_WIZARD_STEPS, [])
 
   return (
-    <YStack gap="$3">
+    <YStack gap="$3" aria-live="polite">
       <XStack justify="space-between" items="center">
         <Text fontSize="$4" fontWeight="700">
           Step {orderedSteps.indexOf(currentStep) + 1} of {orderedSteps.length}
@@ -29,8 +29,18 @@ export const ProgressIndicator = memo(function ProgressIndicator({
         </Text>
       </XStack>
 
-      <Progress size="$2" value={completionPercentage} max={100} backgroundColor="$color3">
-        <Progress.Indicator animation="bouncy" backgroundColor="$blue10" />
+      <Progress
+        size="$2"
+        value={completionPercentage}
+        max={100}
+        bg="$color3"
+        role="progressbar"
+        aria-label="Profile completion"
+        aria-valuenow={completionPercentage}
+        aria-valuemin={0}
+        aria-valuemax={100}
+      >
+        <Progress.Indicator animation="bouncy" bg="$blue10" />
       </Progress>
 
       {showStepLabels && (
@@ -43,8 +53,8 @@ export const ProgressIndicator = memo(function ProgressIndicator({
             return (
               <XStack key={stepId} gap="$2" items="center">
                 <YStack
-                  minWidth={32}
-                  minHeight={32}
+                  width={32}
+                  height={32}
                   bg={isCurrent ? '$blue10' : isCompleted ? '$green9' : '$color5'}
                   items="center"
                   justify="center"
@@ -54,7 +64,7 @@ export const ProgressIndicator = memo(function ProgressIndicator({
                     {index + 1}
                   </Text>
                 </YStack>
-                <YStack maxWidth={160}>
+                <YStack style={{ maxWidth: 160 }}>
                   <Text fontSize="$3" fontWeight={isCurrent ? '700' : '600'} color="$color12">
                     {meta.title}
                   </Text>

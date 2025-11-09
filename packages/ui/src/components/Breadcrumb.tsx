@@ -162,8 +162,8 @@ export const Breadcrumb = React.memo(function Breadcrumb({
     }
 
     const dropdownContent = (
-      <YStack gap="$2" p="$2" minWidth={200} maxHeight={300}>
-        <ScrollView maxHeight={300}>
+      <YStack gap="$2" p="$2" minW={200} maxH={300}>
+        <ScrollView maxH={300}>
           {hiddenItems.map((item, idx) => {
             const actualIndex = hiddenStartIndex + idx
             const isActive = item.isActive ?? false
@@ -173,7 +173,7 @@ export const Breadcrumb = React.memo(function Breadcrumb({
                 size="$3"
                 variant={isActive ? 'outlined' : 'ghost'}
                 onPress={() => handleHiddenItemPress(item, actualIndex)}
-                justifyContent="flex-start"
+                justify="flex-start"
                 aria-label={`Navigate to ${item.label}`}
                 role="menuitem"
               >
@@ -202,7 +202,7 @@ export const Breadcrumb = React.memo(function Breadcrumb({
           <XStack
             cursor="pointer"
             pressStyle={{ opacity: 0.7 }}
-            alignItems="center"
+            items="center"
             gap="$1"
             aria-label="Show hidden breadcrumb items"
             aria-expanded={ellipsisOpen}
@@ -221,10 +221,10 @@ export const Breadcrumb = React.memo(function Breadcrumb({
             snapPoints={[50]}
           >
             <Sheet.Overlay />
-            <Sheet.Frame padding="$4">
+            <Sheet.Frame p="$4">
               <Sheet.Handle />
-              <YStack gap="$2" paddingTop="$2">
-                <Text fontSize={16} fontWeight="600" marginBottom="$2">
+              <YStack gap="$2" pt="$2">
+                <Text fontSize={16} fontWeight="600" mb="$2">
                   Hidden Breadcrumb Items
                 </Text>
                 {dropdownContent}
@@ -234,11 +234,11 @@ export const Breadcrumb = React.memo(function Breadcrumb({
         </Adapt>
         <Adapt.Contents>
           <Popover.Content
-            padding={0}
-            borderWidth={1}
-            borderColor="$borderColor"
-            backgroundColor="$background"
-            elevation={4}
+            p={0}
+            bw={1}
+            bc="$borderColor"
+            bg="$background"
+            elevate
             enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
             exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
             animation="quick"
@@ -252,7 +252,7 @@ export const Breadcrumb = React.memo(function Breadcrumb({
 
   return (
     <nav aria-label="Breadcrumb navigation">
-      <XStack alignItems="center" gap="$2" flexWrap="wrap">
+      <XStack items="center" gap="$2" flexWrap="wrap">
         {showEllipsis && showEllipsisDropdown && hiddenItems.length > 0 ? (
           <>
             {renderEllipsisDropdown()}

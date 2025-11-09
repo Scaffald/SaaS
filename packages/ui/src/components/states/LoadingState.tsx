@@ -44,7 +44,21 @@ export interface LoadingStateProps {
  * ```
  */
 export function LoadingState({ message, size = 'medium', fullScreen = false }: LoadingStateProps) {
-  const spinnerSize = size === 'small' ? 'small' : size === 'large' ? 'large' : 'medium'
+  const spinnerSize = size === 'small' ? 'small' : 'large'
+  const containerStyles = fullScreen
+    ? {
+        minHeight: '100vh',
+        width: '100vw',
+        position: 'fixed' as const,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 9999,
+      }
+    : {
+        minHeight: 200,
+      }
 
   return (
     <YStack
@@ -52,16 +66,9 @@ export function LoadingState({ message, size = 'medium', fullScreen = false }: L
       items="center"
       justify="center"
       gap={spacing.md}
-      p={spacing.xl}
-      minHeight={fullScreen ? '100vh' : 200}
-      width={fullScreen ? '100vw' : undefined}
-      position={fullScreen ? 'fixed' : 'relative'}
-      t={fullScreen ? 0 : undefined}
-      l={fullScreen ? 0 : undefined}
-      r={fullScreen ? 0 : undefined}
-      b={fullScreen ? 0 : undefined}
+      padding={spacing.xl}
       bg={fullScreen ? '$background' : 'transparent'}
-      zIndex={fullScreen ? 9999 : undefined}
+      style={containerStyles}
     >
       {/* Spinner with teal color */}
       <Spinner size={spinnerSize} color="$blue7" />
@@ -71,7 +78,7 @@ export function LoadingState({ message, size = 'medium', fullScreen = false }: L
         <Text
           fontSize={size === 'large' ? typography.lg : typography.base}
           color="$color11"
-          textAlign="center"
+          style={{ textAlign: 'center' }}
           fontWeight={typography.fontWeightMedium}
         >
           {message}

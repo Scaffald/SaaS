@@ -6,9 +6,19 @@ import { Input, Select, Text, XStack, YStack, Paragraph, Adapt, Sheet, Button } 
 import type { WizardStepComponentProps } from './types'
 import type { EmploymentPreferencesStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
+import { ControlledAddressForm } from '@app/core/forms'
 
 const employmentSchema = z.object({
   locationPreference: z.string().optional(),
+  location: z
+    .object({
+      street: z.string().optional(),
+      city: z.string().optional(),
+      state: z.string().optional(),
+      zip: z.string().optional(),
+      country: z.string().optional(),
+    })
+    .optional(),
   hourlyRate: z.string().optional(),
   availability: z.string().optional(),
   remotePreference: z.enum(['remote', 'hybrid', 'onsite']).optional(),
@@ -18,6 +28,13 @@ type EmploymentFormValues = z.infer<typeof employmentSchema>
 
 const DEFAULT_VALUES: EmploymentFormValues = {
   locationPreference: '',
+  location: {
+    street: '',
+    city: '',
+    state: '',
+    zip: '',
+    country: '',
+  },
   hourlyRate: '',
   availability: '',
   remotePreference: undefined,
@@ -50,8 +67,10 @@ export function EmploymentPrefsStep({
     handleSubmit,
     reset,
     formState: { isDirty },
+    setValue,
+    trigger,
   } = useForm<EmploymentFormValues>({
-    defaultValues: initialData ?? DEFAULT_VALUES,
+    defaultValues: toEmploymentFormValues(initialData),
     resolver: zodResolver(employmentSchema),
     mode: 'onChange',
   })
@@ -59,40 +78,39 @@ export function EmploymentPrefsStep({
   const values = useWatch({ control })
 
   useEffect(() => {
-    if (initialData) {
-      reset(initialData, { keepDefaultValues: false })
-    }
+    if (!initialData) return
+    reset(toEmploymentFormValues(initialData), { keepDefaultValues: false })
   }, [initialData, reset])
 
   useEffect(() => {
     const payload: EmploymentPreferencesStepData = {
-      locationPreference: values.locationPreference || null,
-      hourlyRate: values.hourlyRate || null,
-      availability: values.availability || null,
+      locationPreference: normalizeText(values.locationPreference),
+      hourlyRate: normalizeText(values.hourlyRate),
+      availability: normalizeText(values.availability),
       remotePreference: (values.remotePreference as EmploymentPreferencesStepData['remotePreference']) ?? null,
     }
 
     onStepStateChange?.({
       data: payload,
       isValid: true,
-      isDirty,
+      isDirty: computeDirty(initialData, payload) || isDirty,
     })
-  }, [values, isDirty, onStepStateChange])
+  }, [initialData, values, isDirty, onStepStateChange])
 
   const submit = handleSubmit(async (data) => {
     await onContinue({
-      locationPreference: data.locationPreference || null,
-      hourlyRate: data.hourlyRate || null,
-      availability: data.availability || null,
+      locationPreference: normalizeText(data.locationPreference),
+      hourlyRate: normalizeText(data.hourlyRate),
+      availability: normalizeText(data.availability),
       remotePreference: (data.remotePreference as EmploymentPreferencesStepData['remotePreference']) ?? null,
     })
   })
 
   const handleSaveForLater = handleSubmit(async (data) => {
     await onSaveForLater?.({
-      locationPreference: data.locationPreference || null,
-      hourlyRate: data.hourlyRate || null,
-      availability: data.availability || null,
+      locationPreference: normalizeText(data.locationPreference),
+      hourlyRate: normalizeText(data.hourlyRate),
+      availability: normalizeText(data.availability),
       remotePreference: (data.remotePreference as EmploymentPreferencesStepData['remotePreference']) ?? null,
     })
   })
@@ -118,13 +136,40 @@ export function EmploymentPrefsStep({
           control={control}
           name="locationPreference"
           render={({ field }) => (
-            <Input {...field} placeholder="e.g., Seattle, WA or Within 25 miles of 98101" onChangeText={field.onChange} />
+            <Input
+              {...field}
+              placeholder="e.g., Seattle, WA or Within 25 miles of 98101"
+              onChangeText={field.onChange}
+            />
           )}
         />
       </YStack>
 
+      <YStack gap="$2">
+        <ControlledAddressForm
+          control={control}
+          name="location"
+          setValue={setValue}
+          trigger={trigger}
+          label="Or pick a location"
+          placeholder="Search for a city or address"
+          required={false}
+          onAddressSelect={(address) => {
+            const formatted = [
+              address.locality,
+              address.administrativeAreaLevel1 ?? address.stateAbbreviation,
+            ]
+              .filter(Boolean)
+              .join(', ')
+            if (formatted) {
+              setValue('locationPreference', formatted, { shouldDirty: true })
+            }
+          }}
+        />
+      </YStack>
+
       <XStack gap="$3" flexWrap="wrap">
-        <YStack flex={1} gap="$2" minWidth={160}>
+        <YStack flex={1} gap="$2" minW={160}>
           <Text fontWeight="600">Availability</Text>
           <Controller
             control={control}
@@ -145,8 +190,8 @@ export function EmploymentPrefsStep({
                 <Select.Content>
                   <Select.ScrollUpButton />
                   <Select.Viewport>
-                    {AVAILABILITY_OPTIONS.map((option) => (
-                      <Select.Item key={option.value} value={option.value}>
+                    {AVAILABILITY_OPTIONS.map((option, index) => (
+                      <Select.Item key={option.value} value={option.value} index={index}>
                         <Select.ItemText>{option.label}</Select.ItemText>
                       </Select.Item>
                     ))}
@@ -158,7 +203,7 @@ export function EmploymentPrefsStep({
           />
         </YStack>
 
-        <YStack flex={1} gap="$2" minWidth={160}>
+        <YStack flex={1} gap="$2" minW={160}>
           <Text fontWeight="600">Preferred hourly rate</Text>
           <Controller
             control={control}
@@ -191,8 +236,8 @@ export function EmploymentPrefsStep({
               <Select.Content>
                 <Select.ScrollUpButton />
                 <Select.Viewport>
-                  {WORK_MODE_OPTIONS.map((option) => (
-                    <Select.Item key={option.value} value={option.value}>
+                  {WORK_MODE_OPTIONS.map((option, index) => (
+                    <Select.Item key={option.value} value={option.value} index={index}>
                       <Select.ItemText>{option.label}</Select.ItemText>
                     </Select.Item>
                   ))}
@@ -217,6 +262,48 @@ export function EmploymentPrefsStep({
       />
     </YStack>
   )
+}
+
+function normalizeText(value?: string | null): string | null {
+  const trimmed = value?.trim()
+  if (!trimmed) {
+    return null
+  }
+  return trimmed
+}
+
+function computeDirty(initialData: EmploymentPreferencesStepData | undefined, current: EmploymentPreferencesStepData) {
+  if (!initialData) {
+    return Boolean(
+      current.locationPreference || current.hourlyRate || current.availability || current.remotePreference,
+    )
+  }
+
+  return (
+    normalizeText(initialData.locationPreference) !== normalizeText(current.locationPreference) ||
+    normalizeText(initialData.hourlyRate) !== normalizeText(current.hourlyRate) ||
+    normalizeText(initialData.availability) !== normalizeText(current.availability) ||
+    (initialData.remotePreference ?? null) !== (current.remotePreference ?? null)
+  )
+}
+
+function toEmploymentFormValues(
+  data?: EmploymentPreferencesStepData | null,
+): EmploymentFormValues {
+  if (!data) {
+    return {
+      ...DEFAULT_VALUES,
+      location: { ...DEFAULT_VALUES.location },
+    }
+  }
+
+  return {
+    locationPreference: data.locationPreference ?? '',
+    location: { ...DEFAULT_VALUES.location },
+    hourlyRate: data.hourlyRate ?? '',
+    availability: data.availability ?? '',
+    remotePreference: data.remotePreference ?? undefined,
+  }
 }
 
 

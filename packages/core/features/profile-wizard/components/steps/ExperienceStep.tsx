@@ -6,6 +6,7 @@ import { Input, Switch, Text, XStack, YStack, Paragraph } from 'tamagui'
 import { StepNavigation } from '../StepNavigation'
 import type { WizardStepComponentProps } from './types'
 import type { ExperienceStepData } from '../../hooks/useProfileWizard'
+import { MonthYearPicker } from '@app/ui'
 
 const experienceSchema = z.object({
   jobTitle: z.string().min(1, 'Job title is required'),
@@ -43,7 +44,7 @@ export function ExperienceStep({
     formState: { errors, isValid, isDirty },
     reset,
   } = useForm<ExperienceFormValues>({
-    defaultValues: initialData ?? DEFAULT_VALUES,
+    defaultValues: toExperienceFormValues(initialData),
     resolver: zodResolver(experienceSchema),
     mode: 'onChange',
   })
@@ -51,17 +52,19 @@ export function ExperienceStep({
   const values = useWatch({ control })
 
   useEffect(() => {
-    if (initialData) {
-      reset(initialData, { keepDefaultValues: false })
+    if (!initialData) {
+      return
     }
+
+    reset(toExperienceFormValues(initialData), { keepDefaultValues: false })
   }, [initialData, reset])
 
   useEffect(() => {
     const payload: ExperienceStepData = {
       jobTitle: values.jobTitle ?? '',
       companyName: values.companyName ?? '',
-      startDate: values.startDate || null,
-      endDate: values.isCurrent ? null : values.endDate || null,
+      startDate: normalizeWizardDate(values.startDate),
+      endDate: values.isCurrent ? null : normalizeWizardDate(values.endDate),
       isCurrent: values.isCurrent ?? true,
       summary: values.summary ?? '',
     }
@@ -77,8 +80,8 @@ export function ExperienceStep({
     await onContinue({
       jobTitle: data.jobTitle.trim(),
       companyName: data.companyName.trim(),
-      startDate: data.startDate,
-      endDate: data.isCurrent ? null : data.endDate || null,
+      startDate: normalizeWizardDate(data.startDate),
+      endDate: data.isCurrent ? null : normalizeWizardDate(data.endDate),
       isCurrent: data.isCurrent,
       summary: data.summary?.trim(),
     })
@@ -88,8 +91,8 @@ export function ExperienceStep({
     await onSaveForLater?.({
       jobTitle: data.jobTitle.trim(),
       companyName: data.companyName.trim(),
-      startDate: data.startDate,
-      endDate: data.isCurrent ? null : data.endDate || null,
+      startDate: normalizeWizardDate(data.startDate),
+      endDate: data.isCurrent ? null : normalizeWizardDate(data.endDate),
       isCurrent: data.isCurrent,
       summary: data.summary?.trim(),
     })
@@ -144,33 +147,31 @@ export function ExperienceStep({
 
       <XStack gap="$3">
         <YStack flex={1} gap="$2">
-          <Text fontWeight="600">Start Date *</Text>
           <Controller
             control={control}
             name="startDate"
             render={({ field }) => (
-              <Input {...field} placeholder="2021-01" onChangeText={field.onChange} />
+              <MonthYearPicker
+                label="Start Date *"
+                value={parseWizardDate(field.value)}
+                onChange={(date) => field.onChange(date ? formatWizardDate(date) : '')}
+                error={errors.startDate?.message}
+              />
             )}
           />
-          {errors.startDate && (
-            <Text fontSize="$2" color="$red10">
-              {errors.startDate.message}
-            </Text>
-          )}
         </YStack>
 
         <YStack flex={1} gap="$2">
-          <Text fontWeight="600">End Date</Text>
           <Controller
             control={control}
             name="endDate"
             render={({ field }) => (
-              <Input
-                {...field}
-                placeholder="2024-06"
-                onChangeText={field.onChange}
-                editable={!values.isCurrent}
-                opacity={values.isCurrent ? 0.4 : 1}
+              <MonthYearPicker
+                label="End Date"
+                value={parseWizardDate(field.value)}
+                onChange={(date) => field.onChange(date ? formatWizardDate(date) : '')}
+                disabled={values.isCurrent}
+                error={errors.endDate?.message}
               />
             )}
           />
@@ -218,6 +219,43 @@ export function ExperienceStep({
       />
     </YStack>
   )
+}
+
+function parseWizardDate(value?: string | null): Date | null {
+  if (!value) return null
+  const [yearPart, monthPart] = value.split('-')
+  const year = Number.parseInt(yearPart ?? '', 10)
+  const month = Number.parseInt(monthPart ?? '', 10)
+  if (Number.isNaN(year) || Number.isNaN(month)) {
+    return null
+  }
+  return new Date(year, month - 1, 1)
+}
+
+function formatWizardDate(date: Date): string {
+  const year = date.getFullYear()
+  const month = `${date.getMonth() + 1}`.padStart(2, '0')
+  return `${year}-${month}-01`
+}
+
+function normalizeWizardDate(value?: string | null): string | null {
+  if (!value) return null
+  return value || null
+}
+
+function toExperienceFormValues(data?: ExperienceStepData | null): ExperienceFormValues {
+  if (!data) {
+    return DEFAULT_VALUES
+  }
+
+  return {
+    jobTitle: data.jobTitle ?? '',
+    companyName: data.companyName ?? '',
+    startDate: data.startDate ?? '',
+    endDate: data.endDate ?? '',
+    isCurrent: data.isCurrent ?? true,
+    summary: data.summary ?? '',
+  }
 }
 
 

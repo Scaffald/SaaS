@@ -1,11 +1,29 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Button, Input, Text, XStack, YStack, Paragraph, Tag, ScrollView } from 'tamagui'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Button, Card, Paragraph, Text, XStack, YStack } from 'tamagui'
 import type { WizardStepComponentProps } from './types'
 import type { SkillEntry, SkillsStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
+import { InlineSkillSearch, type ParentSkill } from '@app/core/features/profile/components/InlineSkillSearch'
+import { api } from '@app/core/utils/api'
+
+interface SearchSkillResult {
+  skill_id: string
+  name: string
+  display_code?: string | null
+  code?: string | null
+  hierarchy_level?: number | null
+  taxonomy?: string | null
+}
 
 const MIN_SKILLS = 3
 const MAX_SKILLS = 5
+
+function serializeSkills(items: SkillEntry[]): string {
+  return items
+    .map((item) => `${item.id}:${item.proficiency}:${item.taxonomy}`)
+    .sort()
+    .join('|')
+}
 
 export function SkillsStep({
   initialData,
@@ -18,7 +36,10 @@ export function SkillsStep({
   onStepStateChange,
 }: WizardStepComponentProps<'skills'>) {
   const [skills, setSkills] = useState<SkillEntry[]>(initialData?.skills ?? [])
-  const [pendingSkill, setPendingSkill] = useState('')
+  const searchResultsRef = useRef<Map<string, ParentSkill & { taxonomy: SkillEntry['taxonomy'] }>>(new Map())
+
+  const searchSkillsMutation = api.profile.skillsMultiTaxonomy.searchSkills.useMutation()
+  const { data: primaryIndustryData } = api.profile.skillsMultiTaxonomy.getPrimaryIndustry.useQuery()
 
   useEffect(() => {
     if (initialData?.skills) {
@@ -26,6 +47,9 @@ export function SkillsStep({
     }
   }, [initialData])
 
+  const baselineKey = useMemo(() => serializeSkills(initialData?.skills ?? []), [initialData?.skills])
+  const currentKey = useMemo(() => serializeSkills(skills), [skills])
+  const isDirty = currentKey !== baselineKey
   const hasMinimumSkills = skills.length >= MIN_SKILLS
 
   useEffect(() => {
@@ -35,39 +59,106 @@ export function SkillsStep({
     onStepStateChange?.({
       data: payload,
       isValid: hasMinimumSkills,
-      isDirty: true,
+      isDirty,
     })
-  }, [skills, hasMinimumSkills, onStepStateChange])
+  }, [skills, hasMinimumSkills, isDirty, onStepStateChange])
 
-  const addSkill = () => {
-    if (!pendingSkill.trim()) return
-    if (skills.length >= MAX_SKILLS) return
+  const industrySlug = primaryIndustryData?.industry?.slug ?? 'construction'
 
-    const newSkill: SkillEntry = {
-      id: pendingSkill.trim().toLowerCase(),
-      name: pendingSkill.trim(),
-      taxonomy: 'onet',
-      proficiency: 3,
-    }
-    setSkills((prev) => [...prev, newSkill])
-    setPendingSkill('')
-  }
+  const handleSearchSkills = useCallback(
+    async (query: string, taxonomies: string[]) => {
+      if (!query.trim()) {
+        return []
+      }
 
-  const removeSkill = (id: string) => {
-    setSkills((prev) => prev.filter((skill) => skill.id !== id))
-  }
+      try {
+        const taxonomyInput =
+          taxonomies.length === 0
+            ? 'both'
+            : taxonomies.length === 1
+              ? (taxonomies[0] as 'csi' | 'onet')
+              : 'both'
 
-  const handleContinue = async () => {
+        const result = await searchSkillsMutation.mutateAsync({
+          query,
+          industrySlug,
+          taxonomy: taxonomyInput,
+          limit: 25,
+        })
+
+        const parentSkills: ParentSkill[] = result.skills.map(
+          (skill: SearchSkillResult): ParentSkill => {
+          const mapped: ParentSkill = {
+            id: skill.skill_id,
+            name: skill.name,
+            code: skill.display_code || skill.code || skill.skill_id,
+            depth: skill.hierarchy_level ?? 0,
+          }
+          searchResultsRef.current.set(skill.skill_id, {
+            ...mapped,
+            taxonomy: (skill.taxonomy as SkillEntry['taxonomy']) ?? 'onet',
+          })
+          return mapped
+        })
+
+        return parentSkills
+      } catch (error) {
+        console.error('Failed to search skills for wizard step', error)
+        return []
+      }
+    },
+    [industrySlug, searchSkillsMutation],
+  )
+
+  const handleSelectSkill = useCallback(
+    (skillId: string, proficiency: number, taxonomy: string) => {
+      const dictionaryEntry = searchResultsRef.current.get(skillId)
+      if (!dictionaryEntry) return
+
+      const normalizedTaxonomy: SkillEntry['taxonomy'] =
+        taxonomy === 'csi' || taxonomy === 'onet'
+          ? taxonomy
+          : dictionaryEntry.taxonomy ?? 'onet'
+
+      setSkills((previous) => {
+        const existing = previous.find((skill) => skill.id === skillId)
+        if (existing) {
+          return previous.map((skill) =>
+            skill.id === skillId ? { ...skill, proficiency, taxonomy: normalizedTaxonomy } : skill,
+          )
+        }
+        if (previous.length >= MAX_SKILLS) {
+          return previous
+        }
+        return [
+          ...previous,
+          {
+            id: skillId,
+            name: dictionaryEntry.name,
+            taxonomy: normalizedTaxonomy,
+            proficiency,
+          },
+        ]
+      })
+    },
+    [],
+  )
+
+  const handleRemoveSkill = useCallback((skillId: string) => {
+    setSkills((prev) => prev.filter((skill) => skill.id !== skillId))
+  }, [])
+
+  const handleContinue = useCallback(async () => {
     await onContinue({ skills })
-  }
+  }, [onContinue, skills])
 
-  const handleSaveForLater = async () => {
+  const handleSaveForLater = useCallback(async () => {
     await onSaveForLater?.({ skills })
-  }
+  }, [onSaveForLater, skills])
 
-  const handleSkip = async () => {
+  const handleSkip = useCallback(async () => {
     await onSkip?.()
-  }
+  }, [onSkip])
 
   const guidance = useMemo(() => {
     if (skills.length >= MIN_SKILLS) {
@@ -76,6 +167,8 @@ export function SkillsStep({
     const remaining = MIN_SKILLS - skills.length
     return `Add ${remaining} more ${remaining === 1 ? 'skill' : 'skills'} to hit the recommended minimum.`
   }, [skills.length])
+
+  const existingSkillIds = useMemo(() => skills.map((skill) => skill.id), [skills])
 
   return (
     <YStack gap="$4">
@@ -89,43 +182,56 @@ export function SkillsStep({
         </Paragraph>
       </YStack>
 
-      <YStack gap="$2">
-        <Text fontWeight="600">Skills ({skills.length}/{MAX_SKILLS})</Text>
-        <XStack gap="$2" flexWrap="wrap">
-          {skills.map((skill) => (
-            <Tag key={skill.id} size="$2" theme="blue" onPress={() => removeSkill(skill.id)}>
-              {skill.name}
-            </Tag>
-          ))}
-        </XStack>
+      <YStack gap="$3">
+        <Text fontWeight="600">Selected Skills ({skills.length}/{MAX_SKILLS})</Text>
+        {skills.length === 0 ? (
+          <Card bordered bg="$color2">
+            <Card.Header>
+              <Paragraph color="$color11">
+                Start by selecting your signature skills. We recommend adding at least three.
+              </Paragraph>
+            </Card.Header>
+          </Card>
+        ) : (
+          <YStack gap="$2">
+            {skills.map((skill) => (
+              <Card key={skill.id} bordered bg="$color2">
+                <Card.Header gap="$2">
+                  <XStack justify="space-between" items="center">
+                    <YStack gap="$1">
+                      <Text fontWeight="600">{skill.name}</Text>
+                      <Text fontSize="$2" color="$color11">
+                        {skill.taxonomy.toUpperCase()} • Proficiency {skill.proficiency}/5
+                      </Text>
+                    </YStack>
+                    <Button size="$2" variant="outlined" onPress={() => handleRemoveSkill(skill.id)}>
+                      Remove
+                    </Button>
+                  </XStack>
+                </Card.Header>
+              </Card>
+            ))}
+          </YStack>
+        )}
         <Paragraph fontSize="$2" color="$color10">
           {guidance}
         </Paragraph>
       </YStack>
 
-      <XStack gap="$2">
-        <Input
-          flex={1}
-          placeholder="e.g., Electrical Troubleshooting"
-          value={pendingSkill}
-          onChangeText={setPendingSkill}
+      <YStack gap="$3">
+        <InlineSkillSearch
+          onSearchSkills={handleSearchSkills}
+          onSelectSkill={handleSelectSkill}
+          existingSkillIds={existingSkillIds}
+          isSearching={searchSkillsMutation.isPending}
         />
-        <Button onPress={addSkill} disabled={!pendingSkill.trim() || skills.length >= MAX_SKILLS}>
-          Add
-        </Button>
-      </XStack>
-
-      <ScrollView maxHeight={160} bg="$color2" p="$3" rounded="$3">
-        <YStack gap="$2">
-          <Text fontSize="$3" fontWeight="600" color="$color12">
-            Tips for selecting skills
-          </Text>
+        {skills.length >= MAX_SKILLS && (
           <Paragraph fontSize="$2" color="$color11">
-            Choose skills that reflect your day-to-day work. Mix technical skills (e.g., HVAC Repair) with
-            soft skills (e.g., Team Leadership) for better matches. You can refine these later.
+            You&apos;ve reached the maximum of {MAX_SKILLS} skills for the quick wizard. You can add more
+            later from your full profile.
           </Paragraph>
-        </YStack>
-      </ScrollView>
+        )}
+      </YStack>
 
       <StepNavigation
         canGoBack

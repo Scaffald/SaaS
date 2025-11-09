@@ -1,6 +1,18 @@
 import { memo } from 'react'
 import { Button, Card, H3, Paragraph, Text, XStack, YStack } from 'tamagui'
-import { Clock, Upload, Zap, ChevronRight } from '@tamagui/lucide-icons'
+import {
+  Award,
+  Briefcase,
+  ChevronRight,
+  Clock,
+  GraduationCap,
+  SlidersHorizontal,
+  Sparkles,
+  Upload,
+  UserRound,
+  Zap,
+} from '@tamagui/lucide-icons'
+import type { IconProps } from '@tamagui/helpers-icon'
 import { PROFILE_WIZARD_STEP_META, PROFILE_WIZARD_STEPS } from '../utils/wizardSteps'
 
 export interface WizardStartScreenProps {
@@ -27,6 +39,15 @@ export const WizardStartScreen = memo(function WizardStartScreen({
       0,
     )
 
+  const STEP_ICONS: Record<string, React.ComponentType<IconProps>> = {
+    general: UserRound,
+    skills: Sparkles,
+    experience: Briefcase,
+    certifications: Award,
+    preferences: SlidersHorizontal,
+    education: GraduationCap,
+  }
+
   return (
     <YStack gap="$5" testID="profile-wizard-start-screen">
       <YStack gap="$3">
@@ -37,18 +58,59 @@ export const WizardStartScreen = memo(function WizardStartScreen({
         </Paragraph>
       </YStack>
 
-      <Card bordered elevated bg="$color2">
-        <Card.Header padded gap="$3">
-          <XStack gap="$2" items="center">
-            <Zap size={20} color="$yellow10" />
-            <Text fontSize="$3" fontWeight="600" color="$color12">
-              Fast-Track Your Profile
+      <Card bordered elevate bg="$color2">
+        <Card.Header padded gap="$4">
+          <YStack gap="$3">
+            <XStack gap="$2" items="center">
+              <Zap size={20} color="$yellow10" />
+              <Text fontSize="$3" fontWeight="600" color="$color12">
+                Fast-Track Your Profile
+              </Text>
+            </XStack>
+            <Paragraph color="$color11">
+              You&apos;re {completionPercentage}% complete. Finish the wizard to unlock profile visibility,
+              milestone badges, and curated job recommendations.
+            </Paragraph>
+          </YStack>
+
+          <YStack gap="$3">
+            <Text fontWeight="600" color="$color12">
+              What you&apos;ll cover
             </Text>
-          </XStack>
-          <Paragraph color="$color11">
-            You&apos;re {completionPercentage}% complete. Finish the wizard to unlock profile
-            visibility, milestone badges, and curated job recommendations.
-          </Paragraph>
+            <YStack gap="$3">
+              {PROFILE_WIZARD_STEPS.map((stepId) => {
+                const meta = PROFILE_WIZARD_STEP_META[stepId]
+                const StepIcon = STEP_ICONS[stepId] ?? Sparkles
+                return (
+                  <XStack key={stepId} gap="$3" items="center">
+                    <Card
+                      bg="$color3"
+                      borderColor="$color5"
+                      borderWidth={1}
+                      width={44}
+                      height={44}
+                      items="center"
+                      justify="center"
+                      rounded="$4"
+                    >
+                      <StepIcon size={20} color="$blue10" />
+                    </Card>
+                    <YStack flex={1}>
+                      <Text fontSize="$3" fontWeight="600" color="$color12">
+                        {meta.title}
+                      </Text>
+                      <Text fontSize="$2" color="$color11">
+                        {meta.description}
+                      </Text>
+                    </YStack>
+                    <Text fontSize="$2" color="$color10">
+                      {meta.estimatedTimeMinutes} min
+                    </Text>
+                  </XStack>
+                )
+              })}
+            </YStack>
+          </YStack>
         </Card.Header>
       </Card>
 

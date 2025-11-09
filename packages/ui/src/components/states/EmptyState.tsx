@@ -58,8 +58,8 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
       items="center"
       justify="center"
       gap={spacing.md}
-      p={spacing['2xl']}
-      minHeight={300}
+      padding={spacing['2xl']}
+      style={{ minHeight: 300 }}
     >
       {/* Icon */}
       <YStack items="center" opacity={0.6}>
@@ -71,7 +71,7 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
         fontSize={typography.xl}
         fontWeight={typography.fontWeightSemibold}
         color="$color11"
-        textAlign="center"
+        style={{ textAlign: 'center' }}
       >
         {title}
       </Text>
@@ -81,8 +81,7 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
         <Text
           fontSize={typography.base}
           color="$color10"
-          textAlign="center"
-          maxWidth={400}
+          style={{ textAlign: 'center', maxWidth: 400 }}
           lineHeight={typography.lineHeightRelaxed}
         >
           {description}

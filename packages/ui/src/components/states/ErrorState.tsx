@@ -72,8 +72,8 @@ export function ErrorState({
       items="center"
       justify="center"
       gap={spacing.md}
-      p={spacing['2xl']}
-      minHeight={300}
+      padding={spacing['2xl']}
+      style={{ minHeight: 300 }}
     >
       {/* Icon */}
       <YStack items="center">{icon || <AlertCircle size={48} color="$red9" />}</YStack>
@@ -83,7 +83,7 @@ export function ErrorState({
         fontSize={typography.xl}
         fontWeight={typography.fontWeightSemibold}
         color="$red10"
-        textAlign="center"
+        style={{ textAlign: 'center' }}
       >
         {title}
       </Text>
@@ -93,8 +93,7 @@ export function ErrorState({
         <Text
           fontSize={typography.base}
           color="$color11"
-          textAlign="center"
-          maxWidth={400}
+          style={{ textAlign: 'center', maxWidth: 400 }}
           lineHeight={typography.lineHeightRelaxed}
         >
           {description}
@@ -105,13 +104,13 @@ export function ErrorState({
       {errorMessage && (
         <XStack
           bg="$red2"
-          p={spacing.md}
+          padding={spacing.md}
           rounded={borderRadius.md}
-          maxWidth={500}
+          style={{ maxWidth: 500 }}
           borderWidth={1}
           borderColor="$red5"
         >
-          <Text fontSize={typography.sm} color="$red11" fontFamily="$mono">
+          <Text fontSize={typography.sm} color="$red11" style={{ fontFamily: 'monospace' }}>
             {errorMessage}
           </Text>
         </XStack>

@@ -101,7 +101,7 @@ export function GeneralInfoStep({
       </YStack>
 
       <XStack gap="$3" flexWrap="wrap">
-        <YStack flex={1} minWidth={150} gap="$2">
+        <YStack flex={1} minW={150} gap="$2">
           <Text fontWeight="600">First Name *</Text>
           <Controller
             control={control}
@@ -123,7 +123,7 @@ export function GeneralInfoStep({
           )}
         </YStack>
 
-        <YStack flex={1} minWidth={150} gap="$2">
+        <YStack flex={1} minW={150} gap="$2">
           <Text fontWeight="600">Last Name *</Text>
           <Controller
             control={control}
@@ -178,7 +178,7 @@ export function GeneralInfoStep({
               value={field.value}
               placeholder="Share a quick summary of your experience, strengths, and goals."
               onChangeText={field.onChange}
-              minHeight={120}
+              minH={120}
               numberOfLines={5}
             />
           )}

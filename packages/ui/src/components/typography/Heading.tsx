@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { forwardRef, type ReactNode } from 'react'
 import { Text, type TextProps } from 'tamagui'
 import { typography } from '../../config/typography'
 
@@ -14,21 +14,17 @@ export interface HeadingProps extends Omit<TextProps, 'children'> {
   /** Heading variant (h1-h4) */
   variant?: HeadingVariant
   /** Heading text content */
-  children: React.ReactNode
+  children: ReactNode
 }
 
 /**
  * Variant configuration for heading styles
  */
-const headingVariants: Record<
-  HeadingVariant,
-  {
-    fontSize: string
-    fontWeight: string
-    lineHeight: number
-    tag: 'h1' | 'h2' | 'h3' | 'h4'
-  }
-> = {
+type HeadingConfig = Pick<TextProps, 'fontSize' | 'fontWeight' | 'lineHeight'> & {
+  tag: 'h1' | 'h2' | 'h3' | 'h4'
+}
+
+const headingVariants = {
   h1: {
     fontSize: typography['4xl'],
     fontWeight: typography.fontWeightBold,
@@ -53,7 +49,7 @@ const headingVariants: Record<
     lineHeight: typography.lineHeightSnug,
     tag: 'h4',
   },
-}
+} as const satisfies Record<HeadingVariant, HeadingConfig>
 
 /**
  * Heading - Typography component with consistent heading styles
