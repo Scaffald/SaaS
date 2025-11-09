@@ -39,9 +39,11 @@ export const pushAdapter: ChannelAdapter = {
       ? metadata.body
       : notification.message ?? notification.preview ?? notification.title;
 
-    const data = isPlainObject(metadata.data)
-      ? metadata.data as Record<string, unknown>
-      : notification.body ?? {};
+    const data: Record<string, unknown> = isPlainObject(metadata.data)
+      ? metadata.data
+      : isPlainObject(notification.body)
+      ? notification.body
+      : {};
 
     const sound = typeof metadata.sound === "string" ? metadata.sound : "default";
 

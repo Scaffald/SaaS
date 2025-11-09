@@ -17,12 +17,43 @@ import type {
   NotificationSeverity,
   NotificationEventPayload,
 } from "./types.ts";
+import type { Json } from "../database.types.ts";
 
 export interface DigestProcessSummary {
   processed: number;
   notificationsCreated: number;
   deliveriesQueued: number;
   skipped: number;
+}
+
+type DigestExample = {
+  id?: string;
+  title?: string;
+  preview?: string;
+  created_at?: string;
+} & Record<string, Json | undefined>;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function coerceDigestExamples(raw: unknown): DigestExample[] {
+  if (!Array.isArray(raw)) {
+    return [];
+  }
+
+  return raw
+    .map((item) => {
+      if (!isRecord(item)) return null;
+
+      const example: DigestExample = {};
+      if (typeof item.id === "string") example.id = item.id;
+      if (typeof item.title === "string") example.title = item.title;
+      if (typeof item.preview === "string") example.preview = item.preview;
+      if (typeof item.created_at === "string") example.created_at = item.created_at;
+      return example;
+    })
+    .filter((example): example is DigestExample => example !== null);
 }
 
 function defaultDigestTitle(
@@ -66,9 +97,13 @@ export async function processDigestQueue(
 
     const digestChannels = ensureChannelArray(
       Array.isArray(entry.channels) ? entry.channels as NotificationChannel[] : [],
-    ).filter((channel) => channel !== "in_app");
+    );
 
-    if (digestChannels.length === 0) {
+    const availableChannels = digestChannels.filter(
+      (channel): channel is Exclude<NotificationChannel, "in_app"> => channel !== "in_app",
+    );
+
+    if (availableChannels.length === 0) {
       summary.skipped += 1;
       await supabase
         .schema("core")
@@ -86,7 +121,7 @@ export async function processDigestQueue(
     const contacts = await getUserContacts(supabase, entry.user_id);
     const devices = await getDeviceTokens(supabase, entry.user_id);
 
-    const permittedChannels = digestChannels.filter((channel) => {
+    const permittedChannels = availableChannels.filter((channel) => {
       if (channel === "email") return Boolean(contacts.email) && (preferences.channelEnabled.email ?? true);
       if (channel === "sms") return Boolean(contacts.phone) && (preferences.channelEnabled.sms ?? false);
       if (channel === "push") return devices.length > 0 && (preferences.channelEnabled.push ?? true);
@@ -106,11 +141,13 @@ export async function processDigestQueue(
     const title = defaultDigestTitle(frequency, entry.count ?? 0);
     const message = `${entry.count ?? 0} notification${(entry.count ?? 0) === 1 ? "" : "s"} were batched for you.`;
 
+    const examples = coerceDigestExamples(entry.examples);
+
     const bodyPayload = {
       digest: {
         bucket: entry.bucket,
         count: entry.count,
-        items: entry.examples ?? [],
+        items: examples,
       },
     };
 
@@ -118,9 +155,7 @@ export async function processDigestQueue(
       digest_frequency: frequency,
     };
 
-    const preview = entry.examples && Array.isArray(entry.examples) && entry.examples[0]?.title
-      ? String(entry.examples[0].title)
-      : message;
+    const preview = examples[0]?.title ? String(examples[0].title) : message;
 
     const notification = await insertNotification(supabase, {
       user_id: entry.user_id,
@@ -131,10 +166,10 @@ export async function processDigestQueue(
       preview,
       body: bodyPayload,
       metadata: metadataPayload,
-      routed_channels: ensureChannelArray([
-        ...permittedChannels,
-        "in_app",
-      ]),
+        routed_channels: ensureChannelArray([
+          ...permittedChannels,
+          "in_app",
+        ]),
     });
 
     if (!notification) {
@@ -171,7 +206,9 @@ export async function processDigestQueue(
       new Date(),
     );
 
-    const immediateChannels = filterImmediateChannels(routes).filter((channel) => permittedChannels.includes(channel));
+    const immediateChannels = filterImmediateChannels(routes)
+      .filter((channel): channel is Exclude<NotificationChannel, "in_app"> => channel !== "in_app")
+      .filter((channel) => permittedChannels.includes(channel));
 
     for (const channel of immediateChannels) {
       if (channel === "email" && contacts.email) {
