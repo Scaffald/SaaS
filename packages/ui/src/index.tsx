@@ -105,3 +105,6 @@ export * from './components/table/DataTable'
 
 // Kanban components
 export * from './components/kanban'
+
+// Styleguide
+export * from './styleguide'

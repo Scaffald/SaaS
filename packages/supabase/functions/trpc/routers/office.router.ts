@@ -590,6 +590,247 @@ export const officeRouter = t.router({
     }),
 
   /**
+   * List organization requests for moderation
+   */
+  listOrganizationRequests: officeProcedure
+    .input(
+      z
+        .object({
+          status: z.enum(["pending", "approved", "rejected"]).optional(),
+          limit: z.number().min(1).max(100).default(25),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const appliedStatus = input?.status;
+      const limit = input?.limit ?? 25;
+
+      let query = ctx.supabaseAdmin
+        .schema("core")
+        .from("organization_requests")
+        .select(
+          `
+          id,
+          name,
+          slug,
+          website,
+          notes,
+          status,
+          metadata,
+          created_at,
+          created_by_user_id,
+          reviewed_at,
+          reviewed_by_user_id,
+          rejection_reason,
+          organization_id
+        `,
+        )
+        .order("created_at", { ascending: true })
+        .limit(limit);
+
+      if (appliedStatus) {
+        query = query.eq("status", appliedStatus);
+      }
+
+      const { data: requests, error } = await query;
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch organization requests: ${error.message}`,
+        });
+      }
+
+      const [
+        { count: pendingCount = 0 } = {},
+        { count: approvedCount = 0 } = {},
+        { count: rejectedCount = 0 } = {},
+      ] = await Promise.all([
+        ctx.supabaseAdmin
+          .schema("core")
+          .from("organization_requests")
+          .select("*", { head: true, count: "exact" })
+          .eq("status", "pending"),
+        ctx.supabaseAdmin
+          .schema("core")
+          .from("organization_requests")
+          .select("*", { head: true, count: "exact" })
+          .eq("status", "approved"),
+        ctx.supabaseAdmin
+          .schema("core")
+          .from("organization_requests")
+          .select("*", { head: true, count: "exact" })
+          .eq("status", "rejected"),
+      ]);
+
+      return {
+        requests: requests ?? [],
+        counts: {
+          pending: pendingCount ?? 0,
+          approved: approvedCount ?? 0,
+          rejected: rejectedCount ?? 0,
+        },
+      };
+    }),
+
+  /**
+   * Review an organization request (approve or reject)
+   */
+  reviewOrganizationRequest: officeProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        action: z.enum(["approve", "reject"]),
+        rejectionReason: z.string().trim().max(1000).optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { user, supabaseAdmin } = ctx;
+
+      if (!user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not authenticated",
+        });
+      }
+
+      const { data: request, error: requestError } = await supabaseAdmin
+        .schema("core")
+        .from("organization_requests")
+        .select("*")
+        .eq("id", input.id)
+        .single();
+
+      if (requestError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to load organization request: ${requestError.message}`,
+        });
+      }
+
+      if (!request) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization request not found",
+        });
+      }
+
+      if (request.status !== "pending") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Only pending requests can be reviewed",
+        });
+      }
+
+      const moderationTimestamp = new Date().toISOString();
+
+      if (input.action === "reject") {
+        if (!input.rejectionReason || input.rejectionReason.trim().length === 0) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Rejection reason is required when rejecting a request",
+          });
+        }
+
+        const { data: updatedRequest, error: updateError } = await supabaseAdmin
+          .schema("core")
+          .from("organization_requests")
+          .update({
+            status: "rejected",
+            reviewed_by_user_id: user.id,
+            reviewed_at: moderationTimestamp,
+            rejection_reason: input.rejectionReason.trim(),
+          })
+          .eq("id", input.id)
+          .select()
+          .single();
+
+        if (updateError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to reject organization request: ${updateError.message}`,
+          });
+        }
+
+        return { request: updatedRequest, organization: null };
+      }
+
+      // Approve flow
+      const { data: existingOrg, error: existingOrgError } = await supabaseAdmin
+        .schema("core")
+        .from("organizations")
+        .select("id")
+        .eq("slug", request.slug)
+        .maybeSingle();
+
+      if (existingOrgError && existingOrgError.code !== "PGRST116") {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to validate organization slug: ${existingOrgError.message}`,
+        });
+      }
+
+      if (existingOrg) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "An organization with this slug already exists",
+        });
+      }
+
+      const { data: organization, error: createOrgError } = await supabaseAdmin
+        .schema("core")
+        .from("organizations")
+        .insert({
+          name: request.name,
+          slug: request.slug,
+          visibility: "public",
+          website: request.website ?? null,
+          owner_user_id: request.created_by_user_id,
+        })
+        .select()
+        .single();
+
+      if (createOrgError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to create organization: ${createOrgError.message}`,
+        });
+      }
+
+      const { data: approvedRequest, error: approveError } = await supabaseAdmin
+        .schema("core")
+        .from("organization_requests")
+        .update({
+          status: "approved",
+          reviewed_by_user_id: user.id,
+          reviewed_at: moderationTimestamp,
+          organization_id: organization?.id ?? null,
+          rejection_reason: null,
+        })
+        .eq("id", input.id)
+        .select()
+        .single();
+
+      if (approveError) {
+        // Attempt to clean up the organization if request update fails
+        if (organization?.id) {
+          await supabaseAdmin
+            .schema("core")
+            .from("organizations")
+            .delete()
+            .eq("id", organization.id);
+        }
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to update organization request: ${approveError.message}`,
+        });
+      }
+
+      return { request: approvedRequest, organization };
+    }),
+
+  /**
    * Get single organization with full details
    */
   getOrganization: officeProcedure

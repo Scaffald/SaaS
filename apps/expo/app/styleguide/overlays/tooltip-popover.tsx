@@ -1,9 +1,9 @@
 // @ts-nocheck
 import React, { useState } from 'react'
 import { Button, Text, YStack } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
-import { ExampleCard } from '../_components/ExampleCard'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
+import { ExampleCard } from '@app/styleguide'
 
 export default function TooltipPopoverPage() {
   const [visible, setVisible] = useState(false)

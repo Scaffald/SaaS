@@ -1,7 +1,8 @@
 // @ts-nocheck
 import React, { useCallback } from 'react'
-import { Button, H2, H3, Paragraph, Text, XStack, YStack, isWeb } from '@app/ui'
+import { H2, H3, Paragraph, Text, XStack, YStack, isWeb } from 'tamagui'
 import { Link2 } from '@tamagui/lucide-icons'
+import { Button } from '../../components/buttons/Button'
 
 type AnchorHeadingProps = {
   id: string

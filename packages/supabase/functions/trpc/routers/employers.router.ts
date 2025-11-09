@@ -328,7 +328,7 @@ export const employersRouter = t.router({
   /**
    * Get all organizations with filtering
    */
-  getEmployers: t.procedure
+  getEmployers: protectedProcedure
     .input(
       z
         .object({
@@ -340,57 +340,143 @@ export const employersRouter = t.router({
         .optional(),
     )
     .query(async ({ ctx, input }) => {
-      let query = ctx.supabase
-        .schema("core")
-        .from("organizations")
-        .select(
-          `
+      type EmployerRecord = {
+        id: string;
+        name: string;
+        slug: string;
+        description: unknown;
+        website: string | null;
+        visibility: string;
+        address: unknown;
+        industry_id: string | null;
+        industries?: {
+          id: string;
+          name: string;
+        } | null;
+        owner_user_id: string | null;
+        created_at: string;
+        updated_at: string;
+      };
+
+      const selectFields = `
+        id,
+        name,
+        slug,
+        description,
+        website,
+        visibility,
+        address,
+        industry_id,
+        industries (
           id,
-          name,
-          slug,
-          description,
-          website,
-          visibility,
-          address,
-          industry_id,
-          industries (
-            id,
-            name
-          ),
-          created_at,
-          updated_at
-        `,
-        )
-        .eq("visibility", "public")
-        .order("created_at", { ascending: false });
+          name
+        ),
+        owner_user_id,
+        created_at,
+        updated_at
+      `;
 
-      // Apply search filter
-      if (input?.search && input.search.trim().length > 0) {
-        const searchTerm = input.search.trim();
-        query = query.or(
-          `name.ilike.%${searchTerm}%,slug.ilike.%${searchTerm}%,website.ilike.%${searchTerm}%`,
+      const createOrganizationsQuery = () =>
+        ctx.supabase
+          .schema("core")
+          .from("organizations")
+          .select(selectFields)
+          .order("created_at", { ascending: false });
+
+      type OrganizationsQueryBuilder = ReturnType<typeof createOrganizationsQuery>;
+
+      const applyFilters = (query: OrganizationsQueryBuilder, options: { applyLimit?: boolean } = {}) => {
+        let filteredQuery = query;
+
+        if (input?.search && input.search.trim().length > 0) {
+          const searchTerm = input.search.trim();
+          filteredQuery = filteredQuery.or(
+            `name.ilike.%${searchTerm}%,slug.ilike.%${searchTerm}%,website.ilike.%${searchTerm}%`,
+          );
+        }
+
+        if (input?.industryIds && input.industryIds.length > 0) {
+          filteredQuery = filteredQuery.in("industry_id", input.industryIds);
+        }
+
+        if (options.applyLimit && input?.limit) {
+          filteredQuery = filteredQuery.limit(input.limit);
+        }
+
+        return filteredQuery;
+      };
+
+      // Always fetch public organizations first (respecting limit for performance)
+      const { data: publicOrganizations, error: publicError } = await applyFilters(
+        createOrganizationsQuery().eq("visibility", "public"),
+        { applyLimit: true },
+      );
+
+      if (publicError) {
+        throw new Error(`Failed to fetch organizations: ${publicError.message}`);
+      }
+
+      const organizationAccumulator = new Map<string, EmployerRecord>();
+
+      for (const org of publicOrganizations ?? []) {
+        organizationAccumulator.set(org.id, org as EmployerRecord);
+      }
+
+      if (ctx.user) {
+        const userId = ctx.user.id;
+
+        const { data: ownedOrgs, error: ownedError } = await applyFilters(
+          createOrganizationsQuery().eq("owner_user_id", userId),
         );
+
+        if (ownedError) {
+          throw new Error(`Failed to fetch owned organizations: ${ownedError.message}`);
+        }
+
+        ownedOrgs?.forEach((org) => {
+          organizationAccumulator.set(org.id, org as EmployerRecord);
+        });
+
+        const { data: teamMemberships, error: membershipsError } = await ctx.supabase
+          .schema("core")
+          .from("team_members")
+          .select("teams!inner(organization_id)")
+          .eq("user_id", userId);
+
+        if (membershipsError) {
+          throw new Error(`Failed to load team memberships: ${membershipsError.message}`);
+        }
+
+        const memberOrgIds =
+          teamMemberships
+            ?.map((entry) => entry.teams?.organization_id)
+            .filter((id): id is string => Boolean(id)) ?? [];
+
+        if (memberOrgIds.length > 0) {
+          const { data: memberOrgs, error: memberError } = await applyFilters(
+            createOrganizationsQuery().in("id", memberOrgIds),
+          );
+
+          if (memberError) {
+            throw new Error(`Failed to fetch member organizations: ${memberError.message}`);
+          }
+
+          memberOrgs?.forEach((org) => {
+            organizationAccumulator.set(org.id, org as EmployerRecord);
+          });
+        }
       }
 
-      // Apply industry filter
-      if (input?.industryIds && input.industryIds.length > 0) {
-        query = query.in("industry_id", input.industryIds);
-      }
+      const organizations = Array.from(organizationAccumulator.values());
 
-      // Apply limit
-      if (input?.limit) {
-        query = query.limit(input.limit);
-      }
-
-      const { data: organizations, error } = await query;
-
-      if (error) {
-        throw new Error(`Failed to fetch organizations: ${error.message}`);
-      }
+      const limitedResults =
+        input?.limit && organizations.length > input.limit
+          ? organizations.slice(0, input.limit)
+          : organizations;
 
       return {
-        employers: organizations || [],
-        total: organizations?.length || 0,
+        employers: limitedResults,
+        total: organizations.length,
       };
     }),
 

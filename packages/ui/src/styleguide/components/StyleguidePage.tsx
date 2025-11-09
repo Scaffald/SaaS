@@ -1,6 +1,6 @@
 // @ts-nocheck
 import type { ReactNode } from 'react'
-import { Paragraph, Text, YStack } from '@app/ui'
+import { Paragraph, Text, YStack } from 'tamagui'
 
 export type StyleguidePageProps = {
   title: string

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
-import { YStack, XStack, ScrollView, useWindowDimensions } from 'tamagui'
-import { Breadcrumb, useBreadcrumbs, type BreadcrumbItem } from '@app/ui'
+import { useWindowDimensions, ScrollView, XStack, YStack } from 'tamagui'
+import { Breadcrumb, type BreadcrumbItem } from '../Breadcrumb'
+import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
 type DashboardLayoutProps = {
   rightContent?: ReactNode

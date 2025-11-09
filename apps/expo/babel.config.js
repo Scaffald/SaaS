@@ -23,9 +23,12 @@ module.exports = (api) => {
           root: ['../..'],
           alias: {
             '@app/core': '../../packages/core',
-            '@app/ui': '../../packages/ui',
+            '@app/ui': '../../packages/ui/src',
+            '@app/ui/*': '../../packages/ui/src/*',
             '@app/supabase': '../../packages/supabase',
             '@app/schemas': '../../packages/schemas/src',
+            '@app/styleguide': '../../packages/ui/src/styleguide',
+            '@app/styleguide/*': '../../packages/ui/src/styleguide/*',
           },
           extensions: ['.js', '.jsx', '.tsx', '.ios.js', '.android.js'],
         },

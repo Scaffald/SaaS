@@ -3,8 +3,8 @@ import React from 'react'
 import { Paragraph, YStack } from '@app/ui'
 import { DataTable } from '@app/ui'
 import type { DataTableColumn } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
 
 const rows = [
   { id: 1, name: 'Safety Training', status: 'Complete', owner: 'Morgan' },

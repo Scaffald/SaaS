@@ -16,6 +16,7 @@ interface OfficePageLayoutProps<TData> {
   onRowClick?: (row: TData) => void
   pageSize?: number
   emptyMessage?: string
+  hideCreateButton?: boolean
 }
 
 export function OfficePageLayout<TData>({
@@ -31,14 +32,17 @@ export function OfficePageLayout<TData>({
   onRowClick,
   pageSize = 50,
   emptyMessage = 'No data found',
+  hideCreateButton = false,
 }: OfficePageLayoutProps<TData>) {
   return (
     <YStack flex={1} p="$4" gap="$4">
       <XStack justify="space-between" items="center">
         <H2>{title}</H2>
-        <Button icon={Plus} onPress={onCreateClick}>
-          {createButtonLabel}
-        </Button>
+        {!hideCreateButton && (
+          <Button icon={Plus} onPress={onCreateClick}>
+            {createButtonLabel}
+          </Button>
+        )}
       </XStack>
 
       <Input placeholder={searchPlaceholder} value={searchValue} onChangeText={onSearchChange} />

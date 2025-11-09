@@ -2,9 +2,9 @@
 import React, { useState } from 'react'
 import { Button, Text, YStack } from '@app/ui'
 import { ChevronDown } from '@tamagui/lucide-icons'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
-import { ExampleCard } from '../_components/ExampleCard'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
+import { ExampleCard } from '@app/styleguide'
 
 const menuItems = ['Edit profile', 'Duplicate', 'Archive', 'Delete']
 

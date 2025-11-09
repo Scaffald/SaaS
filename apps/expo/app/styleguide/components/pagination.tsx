@@ -2,9 +2,9 @@
 import React, { useState } from 'react'
 import { Button, XStack, YStack } from '@app/ui'
 import { ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
-import { ExampleCard } from '../_components/ExampleCard'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
+import { ExampleCard } from '@app/styleguide'
 
 const pages = [1, 2, 3, 4, 5]
 

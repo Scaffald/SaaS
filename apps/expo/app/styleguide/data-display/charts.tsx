@@ -9,9 +9,9 @@ import {
   type LineChartData,
   type PieChartData,
 } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
-import { ExampleCard } from '../_components/ExampleCard'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
+import { ExampleCard } from '@app/styleguide'
 
 const barData: BarChartData[] = [
   { value: 50, label: 'Jan', frontColor: '#1B6B93' },

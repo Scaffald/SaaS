@@ -12,17 +12,20 @@
     "src"
   ],
   "exports": {
-    ".": "./src/index.tsx"
+    ".": "./src/index.tsx",
+    "./styleguide": "./src/styleguide/index.ts",
+    "./styleguide/*": "./src/styleguide/*"
   },
   "scripts": {
     "build": "tamagui build",
     "watch": "tamagui build --debug",
-    "check": "tamagui check",
+    "check": "pnpm run check-circular-deps && tamagui check",
     "check:type": "tsc --outDir /tmp",
     "lint": "biome lint ./src",
     "lint:fix": "biome lint --write ./src",
     "format": "biome format ./src",
-    "format:fix": "biome format --write ./src"
+    "format:fix": "biome format --write ./src",
+    "check-circular-deps": "../../scripts/check-circular-deps.sh ./src"
   },
   "dependencies": {
     "@10play/tentap-editor": "^0.7.4",
@@ -53,6 +56,7 @@
     "@tiptap/react": "^2.27.1",
     "@tiptap/starter-kit": "^2.27.1",
     "@ts-react/form": "catalog:",
+    "expo-router": "catalog:",
     "moti": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",

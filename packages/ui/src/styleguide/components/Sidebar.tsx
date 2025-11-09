@@ -1,7 +1,8 @@
 // @ts-nocheck
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'expo-router'
-import { Button, ScrollView, Separator, Text, View, XStack, YStack, isWeb } from '@app/ui'
+import { ScrollView, Separator, Text, View, XStack, YStack, isWeb } from 'tamagui'
+import { Button } from '../../components/buttons/Button'
 import type { NavItem, NavSection } from '../navigation/sections'
 
 type SidebarProps = {

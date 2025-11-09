@@ -2,9 +2,9 @@
 import React, { useState } from 'react'
 import { Button } from '@app/ui'
 import { Tabs, Text, XStack, YStack } from 'tamagui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
-import { ExampleCard } from '../_components/ExampleCard'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
+import { ExampleCard } from '@app/styleguide'
 
 const TAB_ITEMS = ['Overview', 'Activity', 'Settings']
 

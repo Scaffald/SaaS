@@ -79,12 +79,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
     <DashboardWidget gap="$4">
       {/* Header with Back Button */}
       <XStack items="center" gap="$3">
-        <Button
-          size="$3"
-          variant="outlined"
-          icon={<ArrowLeft size={18} />}
-          onPress={() => router.back()}
-        >
+        <Button size="$3" variant="outlined" icon={ArrowLeft} onPress={() => router.back()}>
           Back
         </Button>
         <XStack items="center" gap="$2" flex={1}>
@@ -147,7 +142,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
           <Button
             size="$4"
             variant="outlined"
-            icon={<ExternalLink size={18} />}
+            icon={ExternalLink}
             onPress={() => {
               if (typeof window !== 'undefined') {
                 window.open(websiteUrl, '_blank')

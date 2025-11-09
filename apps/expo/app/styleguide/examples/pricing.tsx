@@ -1,8 +1,8 @@
 // @ts-nocheck
 import React from 'react'
 import { Button, Paragraph, Text, YStack } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
 
 const plans = [
   { name: 'Starter', price: '$49', features: ['Up to 25 users', 'Email support', '1 workflow'] },

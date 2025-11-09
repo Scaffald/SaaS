@@ -2,9 +2,9 @@
 import React, { useState } from 'react'
 import { Button, Paragraph, Text, YStack } from '@app/ui'
 import { ResponsiveModal } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
-import { ExampleCard } from '../_components/ExampleCard'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
+import { ExampleCard } from '@app/styleguide'
 
 export default function ModalPage() {
   const [open, setOpen] = useState(false)

@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base",
   "include": [
     "app",
+    "src",
     "types.d.ts",
     "../../packages/ui",
     "../../packages/api",
@@ -34,7 +35,9 @@
       "@app/supabase": ["packages/supabase"],
       "@app/supabase/*": ["packages/supabase/*"],
       "@app/schemas": ["packages/schemas/src"],
-      "@app/schemas/*": ["packages/schemas/src/*"]
+      "@app/schemas/*": ["packages/schemas/src/*"],
+      "@app/styleguide": ["packages/ui/src/styleguide/index.ts"],
+      "@app/styleguide/*": ["packages/ui/src/styleguide/*"]
     }
   },
   "references": []

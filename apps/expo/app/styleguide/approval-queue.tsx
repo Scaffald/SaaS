@@ -2,8 +2,8 @@
 import React from 'react'
 import { Link } from 'expo-router'
 import { Button, Paragraph, Text, View, XStack, YStack } from '@app/ui'
-import { TODO_ITEMS } from './data/todos'
-import { StyleguidePage } from './_components/StyleguidePage'
+import { TODO_ITEMS } from '@app/styleguide'
+import { StyleguidePage } from '@app/styleguide'
 
 export default function ApprovalQueuePage() {
   return (

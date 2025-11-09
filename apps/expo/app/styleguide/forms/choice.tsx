@@ -1,9 +1,9 @@
 // @ts-nocheck
 import React, { useState } from 'react'
 import { Checkbox, Label, Paragraph, RadioGroup, Text, XStack, YStack } from 'tamagui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
-import { ExampleCard } from '../_components/ExampleCard'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
+import { ExampleCard } from '@app/styleguide'
 
 export default function FormChoicePage() {
   const [checked, setChecked] = useState(true)

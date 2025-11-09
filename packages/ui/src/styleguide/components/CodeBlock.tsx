@@ -1,7 +1,8 @@
 // @ts-nocheck
 import React, { useCallback, useMemo } from 'react'
-import { Button, ScrollView, Text, View, YStack, isWeb } from '@app/ui'
+import { ScrollView, Text, View, YStack, isWeb } from 'tamagui'
 import { Copy } from '@tamagui/lucide-icons'
+import { Button } from '../../components/buttons/Button'
 
 type CodeBlockProps = {
   code: string

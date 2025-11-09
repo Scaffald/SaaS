@@ -2,9 +2,9 @@
 import React, { useState } from 'react'
 import { Paragraph, Text, YStack } from '@app/ui'
 import { AddressAutocomplete, AvatarImagePicker, PhoneNumberInput } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
-import { ExampleCard } from '../_components/ExampleCard'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
+import { ExampleCard } from '@app/styleguide'
 
 export default function FormsShowcasePage() {
   const [phone, setPhone] = useState('')

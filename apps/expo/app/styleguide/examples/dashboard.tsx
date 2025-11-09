@@ -2,8 +2,8 @@
 import React from 'react'
 import { Button, Paragraph, Text, XStack, YStack } from '@app/ui'
 import { BarChart, type BarChartData } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
 
 const barData: BarChartData[] = [
   { value: 45, label: 'Mon', frontColor: '#4FC3F7' },

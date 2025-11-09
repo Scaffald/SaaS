@@ -101,39 +101,47 @@ export function DataTable<TData>({
                     borderTopRightRadius="$4"
                     borderTopLeftRadius="$4"
                   >
-                    {headerGroup.headers.map((header, idx) => (
-                      <Table.HeaderCell
-                        key={header.id}
-                        pl="$3"
-                        cellLocation={
-                          idx === 0
-                            ? 'first'
-                            : idx === headerGroup.headers.length - 1
-                              ? 'last'
-                              : 'middle'
-                        }
-                      >
-                        <View
-                          flexDirection="row"
-                          cursor={header.column.getCanSort() ? 'pointer' : 'default'}
-                          onPress={header.column.getToggleSortingHandler()}
-                          gap="$2"
-                          items="center"
+                    {headerGroup.headers.map((header, idx) => {
+                      const columnMeta = header.column.columnDef.meta as
+                        | { width?: string | number }
+                        | undefined
+                      const columnWidth = columnMeta?.width ?? cellWidth
+
+                      return (
+                        <Table.HeaderCell
+                          key={header.id}
+                          pl="$3"
+                          cellWidth={columnWidth as never}
+                          cellLocation={
+                            idx === 0
+                              ? 'first'
+                              : idx === headerGroup.headers.length - 1
+                                ? 'last'
+                                : 'middle'
+                          }
                         >
-                          <Text fontSize="$4" selectable={false}>
-                            {flexRender(header.column.columnDef.header, header.getContext())}
-                          </Text>
-                          {header.column.getCanSort() &&
-                            (header.column.getIsSorted() === 'asc' ? (
-                              <ChevronUp size="$1" />
-                            ) : header.column.getIsSorted() === 'desc' ? (
-                              <ChevronDown size="$1" />
-                            ) : (
-                              <ChevronsUpDown size="$1" />
-                            ))}
-                        </View>
-                      </Table.HeaderCell>
-                    ))}
+                          <View
+                            flexDirection="row"
+                            cursor={header.column.getCanSort() ? 'pointer' : 'default'}
+                            onPress={header.column.getToggleSortingHandler()}
+                            gap="$2"
+                            items="center"
+                          >
+                            <Text fontSize="$4" selectable={false}>
+                              {flexRender(header.column.columnDef.header, header.getContext())}
+                            </Text>
+                            {header.column.getCanSort() &&
+                              (header.column.getIsSorted() === 'asc' ? (
+                                <ChevronUp size="$1" />
+                              ) : header.column.getIsSorted() === 'desc' ? (
+                                <ChevronDown size="$1" />
+                              ) : (
+                                <ChevronsUpDown size="$1" />
+                              ))}
+                          </View>
+                        </Table.HeaderCell>
+                      )
+                    })}
                   </Table.Row>
                 ))}
               </Table.Head>
@@ -149,23 +157,31 @@ export function DataTable<TData>({
                     onPress={() => onRowClick?.(row.original)}
                     rowLocation={rowIdx === tableRows.length - 1 ? 'last' : 'middle'}
                   >
-                    {row.getVisibleCells().map((cell, cellIdx) => (
-                      <Table.Cell
-                        key={cell.id}
-                        pl="$3"
-                        cellLocation={
-                          cellIdx === 0
-                            ? 'first'
-                            : cellIdx === row.getVisibleCells().length - 1
-                              ? 'last'
-                              : 'middle'
-                        }
-                      >
-                        <Text fontSize="$4" color="$color11">
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </Text>
-                      </Table.Cell>
-                    ))}
+                    {row.getVisibleCells().map((cell, cellIdx) => {
+                      const columnMeta = cell.column.columnDef.meta as
+                        | { width?: string | number }
+                        | undefined
+                      const columnWidth = columnMeta?.width ?? cellWidth
+
+                      return (
+                        <Table.Cell
+                          key={cell.id}
+                          pl="$3"
+                          cellWidth={columnWidth as never}
+                          cellLocation={
+                            cellIdx === 0
+                              ? 'first'
+                              : cellIdx === row.getVisibleCells().length - 1
+                                ? 'last'
+                                : 'middle'
+                          }
+                        >
+                          <Text fontSize="$4" color="$color11">
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </Text>
+                        </Table.Cell>
+                      )
+                    })}
                   </Table.Row>
                 ))}
               </Table.Body>

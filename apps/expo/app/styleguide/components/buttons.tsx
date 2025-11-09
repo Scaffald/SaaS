@@ -1,11 +1,11 @@
 // @ts-nocheck
 import React from 'react'
 import { Button, Text, XStack, YStack } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
-import { ExampleCard } from '../_components/ExampleCard'
-import { PropsTable } from '../_components/PropsTable'
-import { TodoCallout } from '../_components/TodoCallout'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
+import { ExampleCard } from '@app/styleguide'
+import { PropsTable } from '@app/styleguide'
+import { TodoCallout } from '@app/styleguide'
 
 export default function ButtonsPage() {
   return (
