@@ -199,7 +199,7 @@ export function UserProfilePanel({
           <XStack gap="$2" pt="$2">
             <Button
               flex={1}
-              theme="blue"
+              theme="info"
               onPress={handleViewProfile}
               icon={ExternalLink}
             >

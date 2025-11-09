@@ -11,7 +11,7 @@ export type StyleguidePageProps = {
 
 export function StyleguidePage({ title, description, children, leadIn }: StyleguidePageProps) {
   return (
-    <YStack gap="$5" maxWidth={960} alignSelf="center" width="100%">
+    <YStack gap="$5" width="100%" self="center" style={{ maxWidth: 960 }}>
       <YStack gap="$3">
         <Text fontSize={40} fontWeight="700" color="$color12">
           {title}

@@ -28,7 +28,7 @@ export default function LabelsBadgesPage() {
           title="Status chips"
           description="Mapping of semantic states to brand palette."
           code={`<XStack gap="$2">
-  <YStack backgroundColor="$color9" borderRadius={999} paddingHorizontal="$3" paddingVertical="$1">
+  <YStack bg="$color9" borderRadius={999} paddingHorizontal="$3" paddingVertical="$1">
     <Text color="$color1">New</Text>
   </YStack>
 </XStack>`}
@@ -37,7 +37,7 @@ export default function LabelsBadgesPage() {
             {BADGES.map((badge) => (
               <YStack
                 key={badge.label}
-                backgroundColor={badge.color}
+                bg={badge.color}
                 borderRadius={999}
                 paddingHorizontal="$3"
                 paddingVertical="$1"

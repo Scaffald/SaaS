@@ -53,7 +53,7 @@ export default function ListsPage() {
                   width={48}
                   height={48}
                   borderRadius={999}
-                  backgroundColor="$color4"
+                  bg="$color4"
                   alignItems="center"
                   justifyContent="center"
                 >

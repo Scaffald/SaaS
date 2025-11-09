@@ -155,8 +155,8 @@ export function UserMenuAvatar() {
               borderWidth={1}
               borderColor="$borderColor"
               bg="$color2"
-              alignItems="center"
-              justifyContent="center"
+              items="center"
+              justify="center"
               borderRadius={avatarSize / 2}
             >
               <Image

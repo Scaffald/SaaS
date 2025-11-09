@@ -162,7 +162,7 @@ export const ResultCard = memo(
 
         <Button
           mt="$2"
-          theme="blue"
+          theme="info"
           size="$2"
           iconAfter={ExternalLink}
           onPress={handleViewFullProfile}

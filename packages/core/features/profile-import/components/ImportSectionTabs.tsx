@@ -24,7 +24,7 @@ export const ImportSectionTabs = memo(function ImportSectionTabs({
         orientation="horizontal"
         borderBottomWidth={1}
         borderBottomColor="$borderColor"
-        backgroundColor="$background"
+        bg="$background"
         scrollable
       >
         <XStack gap="$3" px="$2">

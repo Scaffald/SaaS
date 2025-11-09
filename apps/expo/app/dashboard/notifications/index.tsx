@@ -569,7 +569,7 @@ export default function NotificationsCenterScreen() {
                     {!notification.read ? (
                       <Button
                         size="$2"
-                        theme="blue"
+                        theme="info"
                         onPress={() => markReadMutation.mutate({ ids: [notification.id] })}
                       >
                         Mark as read
@@ -603,7 +603,7 @@ export default function NotificationsCenterScreen() {
                     )}
 
                     {notification.ctaUrl && (
-                      <Button size="$2" theme="blue" onPress={() => handleNavigate(notification)}>
+                      <Button size="$2" theme="info" onPress={() => handleNavigate(notification)}>
                         <XStack gap="$2" items="center">
                           <Text fontSize="$2" fontWeight="600" color="$color12">
                             {notification.ctaLabel ?? 'Open'}
@@ -620,7 +620,7 @@ export default function NotificationsCenterScreen() {
             {notificationsQuery.hasNextPage && (
               <Button
                 mt="$4"
-                theme="blue"
+                theme="info"
                 disabled={notificationsQuery.isFetchingNextPage}
                 onPress={() => notificationsQuery.fetchNextPage()}
               >

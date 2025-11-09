@@ -325,7 +325,7 @@ export function OfficeOrganizationsList() {
                 </Button>
               </Dialog.Close>
               <Button
-                theme="red"
+                theme="error"
                 icon={isProcessingAction(rejectDialog.requestId) ? Loader2 : XIcon}
                 disabled={reviewMutation.isLoading}
                 onPress={handleRejectConfirm}
@@ -439,7 +439,7 @@ export function OfficeOrganizationsList() {
                       <XStack gap="$2">
                         <Button
                           size="$2"
-                          theme="green"
+                          theme="success"
                           icon={isProcessingAction(request.id) ? Loader2 : Check}
                           disabled={reviewMutation.isLoading}
                           onPress={() => handleApprove(request)}
@@ -449,7 +449,7 @@ export function OfficeOrganizationsList() {
                         <Button
                           size="$2"
                           variant="outlined"
-                          theme="red"
+                          theme="error"
                           icon={XIcon}
                           disabled={reviewMutation.isLoading}
                           onPress={() => openRejectDialog(request)}
@@ -470,7 +470,7 @@ export function OfficeOrganizationsList() {
               </Text>
               <YStack gap="$2">
                 <Button
-                  theme="blue"
+                  theme="info"
                   icon={ArrowRightCircle}
                   onPress={() => router.push(ROUTES.OFFICE_ORGANIZATIONS_CREATE.path)}
                 >

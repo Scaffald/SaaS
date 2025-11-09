@@ -66,10 +66,10 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
 
       {/* Quick Actions */}
       <XStack gap="$2">
-        <Button theme="green" flex={1} size="$4">
+        <Button theme="success" flex={1} size="$4">
           Advance to Interview
         </Button>
-        <Button theme="red" flex={1} size="$4">
+        <Button theme="error" flex={1} size="$4">
           Reject
         </Button>
       </XStack>

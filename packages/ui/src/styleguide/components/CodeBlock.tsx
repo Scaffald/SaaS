@@ -22,7 +22,7 @@ export function CodeBlock({ code, language = 'tsx', filename }: CodeBlockProps) 
 
   return (
     <YStack
-      backgroundColor="$color3"
+      bg="$color3"
       borderWidth={1}
       borderColor="$color6"
       borderRadius="$4"
@@ -32,7 +32,7 @@ export function CodeBlock({ code, language = 'tsx', filename }: CodeBlockProps) 
       <YStack
         paddingHorizontal="$3"
         paddingVertical="$2"
-        backgroundColor="$color4"
+        bg="$color4"
         borderBottomWidth={1}
         borderColor="$color6"
         alignItems="center"

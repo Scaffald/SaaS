@@ -43,7 +43,7 @@ export function StyleguideTopNav({
       <YStack
         paddingHorizontal="$4"
         paddingVertical="$3"
-        backgroundColor="$color2"
+        bg="$color2"
         borderBottomWidth={1}
         borderColor="$color6"
         zIndex={10}
@@ -73,7 +73,7 @@ export function StyleguideTopNav({
               </Button>
             </Link>
             <View
-              backgroundColor="$color8"
+              bg="$color8"
               borderRadius="$3"
               paddingHorizontal="$2"
               paddingVertical="$1"
@@ -97,7 +97,7 @@ export function StyleguideTopNav({
                 size="$3"
                 iconAfter={() => (
                   <View
-                    backgroundColor="$color9"
+                    bg="$color9"
                     paddingHorizontal={8}
                     paddingVertical={2}
                     borderRadius={999}
@@ -140,7 +140,7 @@ const SearchField = React.forwardRef<unknown, SearchFieldProps>(
   ({ value, onValueChange, placeholder }, ref) => (
     <XStack
       alignItems="center"
-      backgroundColor="$color3"
+      bg="$color3"
       borderRadius="$4"
       paddingHorizontal="$3"
       borderWidth={1}
@@ -157,7 +157,7 @@ const SearchField = React.forwardRef<unknown, SearchFieldProps>(
         onChangeText={onValueChange}
         placeholder={placeholder}
         fontSize={14}
-        backgroundColor="transparent"
+        bg="transparent"
         color="$color11"
         aria-label="Search the styleguide"
         autoCapitalize="none"
@@ -165,7 +165,7 @@ const SearchField = React.forwardRef<unknown, SearchFieldProps>(
         returnKeyType="search"
       />
       {isWeb ? (
-        <View backgroundColor="$color5" paddingHorizontal={8} paddingVertical={2} borderRadius={6}>
+        <View bg="$color5" paddingHorizontal={8} paddingVertical={2} borderRadius={6}>
           <Text fontSize={11} color="$color10">
             /
           </Text>

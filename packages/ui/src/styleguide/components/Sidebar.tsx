@@ -86,7 +86,7 @@ export function StyleguideSidebar({
             paddingVertical={10}
             paddingHorizontal={16}
             borderRadius={8}
-            backgroundColor={isActive ? '$color5' : 'transparent'}
+            bg={isActive ? '$color5' : 'transparent'}
             hoverStyle={{ backgroundColor: '$color4' }}
             pressStyle={{ backgroundColor: '$color5' }}
             onPress={onItemSelect}
@@ -116,7 +116,7 @@ export function StyleguideSidebar({
     <View
       width={320}
       maxWidth={360}
-      backgroundColor="$color2"
+      bg="$color2"
       borderRightWidth={1}
       borderColor="$color6"
       $sm={{ display: 'none' }}
@@ -137,7 +137,7 @@ export function StyleguideSidebar({
                 paddingHorizontal={12}
                 paddingVertical={4}
                 borderRadius={6}
-                backgroundColor="$color3"
+                bg="$color3"
                 hoverStyle={{ backgroundColor: '$color4' }}
                 pressStyle={{ backgroundColor: '$color5' }}
                 cursor="pointer"

@@ -38,10 +38,10 @@ export default function ApprovalQueuePage() {
             </Link>
             <XStack gap="$3">
               <Button size="$3">Approve</Button>
-              <Button size="$3" backgroundColor="$color3" color="$color11">
+              <Button size="$3" bg="$color3" color="$color11">
                 Defer
               </Button>
-              <Button size="$3" backgroundColor="$color3" color="$color11">
+              <Button size="$3" bg="$color3" color="$color11">
                 Reject
               </Button>
             </XStack>
@@ -53,7 +53,7 @@ export default function ApprovalQueuePage() {
             borderWidth={1}
             borderColor="$color6"
             borderRadius="$4"
-            backgroundColor="$color3"
+            bg="$color3"
           >
             <Text fontSize={14} color="$color10">
               No pending approvals. 🎉

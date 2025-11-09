@@ -134,7 +134,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                       uri: getAvatarUrl(generalInfo.avatar_path) || generalInfo.avatar_url || '',
                     }}
                   />
-                  <Avatar.Fallback backgroundColor="$color6" />
+                  <Avatar.Fallback bg="$color6" />
                 </Avatar>
 
                 <YStack gap="$1" items="center">

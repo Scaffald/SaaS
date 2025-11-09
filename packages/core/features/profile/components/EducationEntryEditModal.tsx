@@ -159,7 +159,7 @@ export function EducationEntryEditModal({
     try {
       // Get all existing education entries
       const allEntries = educationQuery.data || []
-      
+
       // Update the entry being edited
       // biome-ignore lint/suspicious/noExplicitAny: tRPC types not yet generated
       const updatedEntries = allEntries.map((entry: any) =>
@@ -225,8 +225,7 @@ export function EducationEntryEditModal({
                               searchError={searchUniversitiesQuery.error?.message}
                               placeholder="Search for institution..."
                               error={
-                                errors.institution_name?.message ||
-                                errors.university_id?.message
+                                errors.institution_name?.message || errors.university_id?.message
                               }
                             />
                             <Button
@@ -237,7 +236,7 @@ export function EducationEntryEditModal({
                                 universityField.onChange(null)
                                 setValue('is_verified', false, { shouldValidate: false })
                               }}
-                              alignSelf="flex-start"
+                              self="flex-start"
                             >
                               Can't find your institution? Enter it manually
                             </Button>
@@ -252,7 +251,7 @@ export function EducationEntryEditModal({
                                 universityField.onChange(null)
                               }}
                             />
-                          <FieldError message={errors.institution_name?.message} />
+                            <FieldError message={errors.institution_name?.message} />
                             <Button
                               size="$2"
                               variant="outlined"
@@ -261,7 +260,7 @@ export function EducationEntryEditModal({
                                 nameField.onChange('')
                                 universityField.onChange(undefined)
                               }}
-                              alignSelf="flex-start"
+                              self="flex-start"
                             >
                               Search from catalog instead
                             </Button>
@@ -376,9 +375,7 @@ export function EducationEntryEditModal({
               control={control}
               render={({ field }) => {
                 // Use local state to track raw input for better decimal handling
-                const [localValue, setLocalValue] = useState(
-                  field.value?.toString() || ''
-                )
+                const [localValue, setLocalValue] = useState(field.value?.toString() || '')
 
                 // Sync local value when field value changes externally (e.g., form reset)
                 useEffect(() => {
@@ -611,4 +608,3 @@ export function EducationEntryEditModal({
     </>
   )
 }
-

@@ -40,7 +40,7 @@ export default function PricingExamplePage() {
               borderColor="$color6"
               borderRadius="$4"
               padding="$4"
-              backgroundColor="$color1"
+              bg="$color1"
               gap="$3"
             >
               <Text fontSize={16} fontWeight="600" color="$color11">

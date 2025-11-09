@@ -147,7 +147,7 @@ export function UserProfileHeaderEnhanced({
           {/* Action Buttons */}
           <XStack gap="$2" flexWrap="wrap">
             {isOwnProfile && onEdit && (
-              <Button size={isMobile ? '$3' : '$4'} theme="blue" icon={Edit} onPress={onEdit}>
+              <Button size={isMobile ? '$3' : '$4'} theme="info" icon={Edit} onPress={onEdit}>
                 Edit Profile
               </Button>
             )}
@@ -157,7 +157,7 @@ export function UserProfileHeaderEnhanced({
               </Button>
             )}
             {canLeaveReview && onLeaveReview && (
-              <Button size={isMobile ? '$3' : '$4'} theme="blue" icon={MessageSquare} onPress={onLeaveReview}>
+              <Button size={isMobile ? '$3' : '$4'} theme="info" icon={MessageSquare} onPress={onLeaveReview}>
                 Leave Review
               </Button>
             )}

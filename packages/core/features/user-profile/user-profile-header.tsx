@@ -109,7 +109,7 @@ export function UserProfileHeader({
 
           {/* Leave Review Button */}
           {canLeaveReview && onLeaveReview && (
-            <Button size="$4" theme="blue" icon={MessageSquare} onPress={onLeaveReview}>
+            <Button size="$4" theme="info" icon={MessageSquare} onPress={onLeaveReview}>
               Leave Review
             </Button>
           )}

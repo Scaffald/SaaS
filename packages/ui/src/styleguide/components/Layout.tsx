@@ -29,7 +29,7 @@ export function StyleguideLayout({ initialQuery = '' }: StyleguideLayoutProps) {
 
   return (
     <Theme name="light">
-      <YStack flex={1} backgroundColor="$color1">
+      <YStack flex={1} bg="$color1">
         <StyleguideTopNav
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -45,7 +45,7 @@ export function StyleguideLayout({ initialQuery = '' }: StyleguideLayoutProps) {
               setSearchQuery('')
             }}
           />
-          <View flex={1} backgroundColor="$color2" borderLeftWidth={1} borderColor="$color6">
+          <View flex={1} bg="$color2" borderLeftWidth={1} borderColor="$color6">
             <ScrollView
               testID="styleguide-content"
               aria-label="Styleguide content"

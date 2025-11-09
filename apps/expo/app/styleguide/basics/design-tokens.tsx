@@ -93,7 +93,7 @@ const TokenTable = ({ tokens, unit = '' }: TokenTableProps) => (
           borderColor="$color6"
           borderRadius="$4"
           width={140}
-          backgroundColor="$color2"
+          bg="$color2"
           gap={4}
         >
           <Text fontSize={13} fontWeight="600" color="$color11">
@@ -120,9 +120,9 @@ const ColorSwatch = ({ label, value }: ColorSwatchProps) => (
     borderWidth={1}
     borderColor="$color6"
     overflow="hidden"
-    backgroundColor="$color2"
+    bg="$color2"
   >
-    <View height={72} backgroundColor={value} />
+    <View height={72} bg={value} />
     <YStack padding="$3" gap={4}>
       <Text fontSize={13} fontWeight="600" color="$color11">
         {label}

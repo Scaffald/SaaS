@@ -20,13 +20,13 @@ export function TodoCallout({ id }: TodoCalloutProps) {
       borderWidth={1}
       borderColor="$color9"
       borderRadius="$4"
-      backgroundColor="$color3"
+      bg="$color3"
       padding="$4"
       gap="$3"
       nativeID={`todo-${id}`}
     >
       <XStack gap="$3" alignItems="center">
-        <View backgroundColor="$color9" borderRadius={999} padding={8}>
+        <View bg="$color9" borderRadius={999} padding={8}>
           <AlertTriangle size={18} color="var(--color1)" />
         </View>
         <Text fontSize={15} fontWeight="600" color="$color11">

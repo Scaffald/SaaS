@@ -59,7 +59,7 @@ const QuickLinks = () => (
               borderRadius={10}
               borderWidth={1}
               borderColor="$color6"
-              backgroundColor="$color2"
+              bg="$color2"
               hoverStyle={{ backgroundColor: '$color3' }}
               pressStyle={{ backgroundColor: '$color4' }}
             >

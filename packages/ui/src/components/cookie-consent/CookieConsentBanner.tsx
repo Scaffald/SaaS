@@ -69,7 +69,7 @@ export const CookieConsentBanner = ({ containerProps, ...cardProps }: CookieCons
                 </Button>
 
                 <Button
-                  theme="green"
+                  theme="success"
                   size="$3"
                   onPress={async () => {
                     setPendingAction('accept')
@@ -85,7 +85,7 @@ export const CookieConsentBanner = ({ containerProps, ...cardProps }: CookieCons
                   Accept
                 </Button>
                 <Button
-                  theme="red"
+                  theme="error"
                   size="$3"
                   onPress={async () => {
                     setPendingAction('reject')

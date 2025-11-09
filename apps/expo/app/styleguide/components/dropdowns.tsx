@@ -32,7 +32,7 @@ export default function DropdownsPage() {
             <Button
               iconAfter={ChevronDown}
               onPress={() => setOpen((previous) => !previous)}
-              backgroundColor="$color3"
+              bg="$color3"
               color="$color11"
             >
               Actions
@@ -42,7 +42,7 @@ export default function DropdownsPage() {
                 borderWidth={1}
                 borderColor="$color6"
                 borderRadius="$4"
-                backgroundColor="$color1"
+                bg="$color1"
                 shadowColor="rgba(0,0,0,0.1)"
                 shadowRadius={12}
                 width={200}

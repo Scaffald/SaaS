@@ -101,9 +101,9 @@ export function ProfileSkillsRight() {
                   {completionPercent}%
                 </Text>
               </XStack>
-              <Progress value={completionPercent} max={100} backgroundColor="$blue3" size="$2">
+              <Progress value={completionPercent} max={100} bg="$blue3" size="$2">
                 <Progress.Indicator
-                  backgroundColor={completionPercent >= 100 ? '$green10' : '$blue9'}
+                  bg={completionPercent >= 100 ? '$green10' : '$blue9'}
                 />
               </Progress>
             </YStack>
@@ -119,7 +119,7 @@ export function ProfileSkillsRight() {
                     size="$2"
                     variant="outlined"
                     borderColor="$blue6"
-                    backgroundColor="$blue1"
+                    bg="$blue1"
                     onPress={() => handleSuggestionSelect(suggestion)}
                   >
                     {suggestion.label}
@@ -136,7 +136,7 @@ export function ProfileSkillsRight() {
                     key={suggestion.label}
                     size="$2"
                     variant="outlined"
-                    backgroundColor="$color2"
+                    bg="$color2"
                     onPress={() => handleSuggestionSelect(suggestion)}
                   >
                     {suggestion.label}

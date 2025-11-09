@@ -224,7 +224,7 @@ export function ReviewStep({
       {/* Submit Button */}
       <Button
         size="$5"
-        theme="blue"
+        theme="info"
         onPress={onSubmit}
         disabled={isSubmitting}
         icon={isSubmitting ? undefined : Check}

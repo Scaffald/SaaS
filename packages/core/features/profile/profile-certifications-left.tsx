@@ -693,7 +693,7 @@ export function ProfileCertificationsLeft({
                   >
                     Cancel
                   </Button>
-                  <Button theme="blue" onPress={handleCustomFormSubmit} disabled={isSavingCustom}>
+                  <Button theme="info" onPress={handleCustomFormSubmit} disabled={isSavingCustom}>
                     {isSavingCustom ? 'Saving...' : 'Save Certification'}
                   </Button>
                 </XStack>
@@ -878,7 +878,7 @@ function Depth2Certifications({
             rounded="$4"
             borderWidth={1}
             animation="quick"
-            backgroundColor={
+            bg={
               changeStatus === 'added'
                 ? '$green2'
                 : changeStatus === 'removed'

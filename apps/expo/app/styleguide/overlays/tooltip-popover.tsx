@@ -27,13 +27,13 @@ export default function TooltipPopoverPage() {
             <Button
               onHoverIn={() => setVisible(true)}
               onHoverOut={() => setVisible(false)}
-              backgroundColor="$color3"
+              bg="$color3"
               color="$color11"
             >
               Hover me
             </Button>
             {visible ? (
-              <YStack padding="$2" borderRadius="$3" backgroundColor="$color11">
+              <YStack padding="$2" borderRadius="$3" bg="$color11">
                 <Text fontSize={12} color="$color1">
                   Tooltip placeholder
                 </Text>

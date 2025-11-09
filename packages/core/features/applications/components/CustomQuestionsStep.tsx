@@ -344,7 +344,7 @@ export function CustomQuestionsStep({
         >
           Previous
         </Button>
-        <Button size="$4" theme="blue" onPress={validateAndContinue} disabled={isSubmitting}>
+        <Button size="$4" theme="info" onPress={validateAndContinue} disabled={isSubmitting}>
           {isSubmitting ? 'Saving...' : 'Continue'}
         </Button>
       </XStack>

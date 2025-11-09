@@ -49,7 +49,7 @@ export function PropsTable({ title, props, note }: PropsTableProps) {
 }
 
 const HeaderRow = () => (
-  <XStack backgroundColor="$color3" paddingVertical={12} paddingHorizontal={16} gap={16}>
+  <XStack bg="$color3" paddingVertical={12} paddingHorizontal={16} gap={16}>
     <Text fontSize={12} fontWeight="600" width={140} color="$color11" textTransform="uppercase">
       Prop
     </Text>
@@ -66,7 +66,7 @@ const HeaderRow = () => (
 )
 
 const PropRow = ({ name, type, description, defaultValue, required }: PropRow) => (
-  <XStack paddingVertical={12} paddingHorizontal={16} gap={16} backgroundColor="$color1">
+  <XStack paddingVertical={12} paddingHorizontal={16} gap={16} bg="$color1">
     <Text fontSize={13} width={140} color="$color11" fontFamily="monospace">
       {name}
       {required ? <Text color="$color9">*</Text> : null}

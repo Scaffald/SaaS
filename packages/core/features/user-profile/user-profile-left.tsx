@@ -91,7 +91,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
               py="$2"
               borderRadius="$4"
               borderWidth={1}
-              backgroundColor={
+              bg={
                 syncStatus === 'syncing'
                   ? '$blue3'
                   : syncStatus === 'error'

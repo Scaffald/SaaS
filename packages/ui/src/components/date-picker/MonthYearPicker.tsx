@@ -107,7 +107,7 @@ export function MonthYearPicker({
           <Select.Trigger
             icon={Calendar}
             borderColor={error ? '$red10' : '$borderColor'}
-            backgroundColor={disabled ? '$color3' : '$background'}
+            bg={disabled ? '$color3' : '$background'}
             disabled={disabled}
           >
             <Select.Value placeholder="Month" />
@@ -141,7 +141,7 @@ export function MonthYearPicker({
           <Select.Trigger
             icon={Calendar}
             borderColor={error ? '$red10' : '$borderColor'}
-            backgroundColor={disabled ? '$color3' : '$background'}
+            bg={disabled ? '$color3' : '$background'}
             disabled={disabled}
           >
             <Select.Value placeholder="Year" />

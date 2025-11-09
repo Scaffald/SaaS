@@ -502,7 +502,7 @@ export function AttachmentsStep({
         </Button>
         <Button
           size="$4"
-          theme="blue"
+          theme="info"
           onPress={validateAndContinue}
           disabled={isSubmitting || Object.values(uploading).some((v) => v)}
         >

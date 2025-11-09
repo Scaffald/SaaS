@@ -33,7 +33,7 @@ export const MessagesTab = ({ messages, applicationId }: MessagesTabProps) => {
               key={message.id}
               p="$4"
               bg={message.sender === 'recruiter' ? '$blue3' : '$color2'}
-              alignSelf={message.sender === 'recruiter' ? 'flex-end' : 'flex-start'}
+              self={message.sender === 'recruiter' ? 'flex-end' : 'flex-start'}
               maxWidth="80%"
             >
               <XStack justify="space-between" items="center" mb="$2" gap="$3">
@@ -78,7 +78,7 @@ export const MessagesTab = ({ messages, applicationId }: MessagesTabProps) => {
           mb="$3"
         />
 
-        <Button onPress={handleSend} disabled={!newMessage.trim()} theme="blue" icon={Send}>
+        <Button onPress={handleSend} disabled={!newMessage.trim()} theme="info" icon={Send}>
           Send Message
         </Button>
       </Card>

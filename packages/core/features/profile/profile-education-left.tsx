@@ -344,7 +344,7 @@ export function ProfileEducationLeft() {
           gap="$2"
           borderWidth={1}
           borderColor="$red7"
-          backgroundColor="$red3"
+          bg="$red3"
           rounded="$4"
         >
           <Text fontWeight="600" color="$red11">
@@ -404,7 +404,7 @@ export function ProfileEducationLeft() {
                 p="$3"
                 borderWidth={1}
                 borderColor={hasEntryErrors ? '$red7' : '$borderColor'}
-                backgroundColor={hasEntryErrors ? '$red2' : '$background'}
+                bg={hasEntryErrors ? '$red2' : '$background'}
                 rounded="$4"
               >
               <XStack justify="space-between" items="center">
@@ -461,7 +461,7 @@ export function ProfileEducationLeft() {
                                       shouldValidate: false,
                                     })
                                   }}
-                                  alignSelf="flex-start"
+                                  self="flex-start"
                                 >
                                   Can't find your institution? Enter it manually
                                 </Button>
@@ -489,7 +489,7 @@ export function ProfileEducationLeft() {
                                     nameField.onChange('')
                                     universityField.onChange(undefined)
                                   }}
-                                  alignSelf="flex-start"
+                                  self="flex-start"
                                 >
                                   Search from catalog instead
                                 </Button>
@@ -959,7 +959,7 @@ function SmartSelect({
           exitStyle={{ opacity: 0, scale: 0.96 }}
           borderWidth={1}
           borderColor="$borderColor"
-          backgroundColor="$color2"
+          bg="$color2"
           padding="$2"
         >
           <ScrollView maxHeight={280}>
@@ -987,7 +987,7 @@ function SmartSelect({
                     justifyContent="flex-start"
                     onPress={() => handleSelect(option.value)}
                     disabled={disabled}
-                    backgroundColor={isSelected ? '$blue3' : 'transparent'}
+                    bg={isSelected ? '$blue3' : 'transparent'}
                     hoverStyle={{ backgroundColor: '$blue4' }}
                     borderRadius="$3"
                     color={isSelected ? '$blue12' : '$color12'}

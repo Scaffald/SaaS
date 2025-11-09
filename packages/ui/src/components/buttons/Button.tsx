@@ -77,15 +77,14 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
        * Use for main actions (submit, confirm, save)
        */
       primary: {
-        theme: 'primary',
-        backgroundColor: '$blue7',
+        bg: '$blue7',
         color: '$color1',
         borderWidth: 0,
         hoverStyle: {
-          backgroundColor: '$blue8',
+          bg: '$blue8',
         },
         pressStyle: {
-          backgroundColor: '$blue9',
+          bg: '$blue9',
           scale: 0.97,
         },
       },
@@ -95,15 +94,14 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
        * Use for secondary actions (back, skip)
        */
       secondary: {
-        theme: 'alt1',
-        backgroundColor: '$color3',
+        bg: '$color3',
         color: '$color11',
         borderWidth: 0,
         hoverStyle: {
-          backgroundColor: '$color4',
+          bg: '$color4',
         },
         pressStyle: {
-          backgroundColor: '$color5',
+          bg: '$color5',
           scale: 0.97,
         },
       },
@@ -113,16 +111,16 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
        * Use for tertiary actions (cancel, optional)
        */
       outlined: {
-        backgroundColor: 'transparent',
+        bg: 'transparent',
         borderWidth: 1,
         borderColor: '$borderColor',
         color: '$color11',
         hoverStyle: {
-          backgroundColor: '$backgroundHover',
+          bg: '$backgroundHover',
           borderColor: '$borderColorHover',
         },
         pressStyle: {
-          backgroundColor: '$backgroundPress',
+          bg: '$backgroundPress',
           scale: 0.97,
         },
       },
@@ -132,14 +130,14 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
        * Use for subtle actions (show more, collapse)
        */
       ghost: {
-        backgroundColor: 'transparent',
+        bg: 'transparent',
         borderWidth: 0,
         color: '$color11',
         hoverStyle: {
-          backgroundColor: '$backgroundHover',
+          bg: '$backgroundHover',
         },
         pressStyle: {
-          backgroundColor: '$backgroundPress',
+          bg: '$backgroundPress',
           scale: 0.97,
         },
       },
@@ -149,15 +147,14 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
        * Use for irreversible actions (delete, remove)
        */
       danger: {
-        theme: 'red',
-        backgroundColor: '$red8',
+        bg: '$red8',
         color: '$color1',
         borderWidth: 0,
         hoverStyle: {
-          backgroundColor: '$red9',
+          bg: '$red9',
         },
         pressStyle: {
-          backgroundColor: '$red10',
+          bg: '$red10',
           scale: 0.97,
         },
       },
@@ -177,7 +174,7 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
 
 ButtonBase.displayName = 'UIButton'
 
-type UIButtonComponent = ((props: ButtonProps) => ReactElement) & {
+type UIButtonComponent = ((props: ButtonProps) => ReactElement | null) & {
   Text: typeof TamaguiButton.Text
   Icon: typeof TamaguiButton.Icon
 }

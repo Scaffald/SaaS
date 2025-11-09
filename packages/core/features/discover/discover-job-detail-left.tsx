@@ -96,7 +96,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
 
         <Button
           size="$5"
-          theme="blue"
+          theme="info"
           icon={ExternalLink}
           onPress={() => {
             if (job.url) {
@@ -132,7 +132,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
         </Text>
         <Button
           size="$4"
-          theme="blue"
+          theme="info"
           onPress={() => {
             router.push(ROUTES.DASHBOARD_DISCOVER_JOBS.path)
           }}

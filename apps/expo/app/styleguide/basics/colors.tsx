@@ -62,9 +62,9 @@ const VariantRow = ({ label, hex }: VariantRowProps) => (
     borderColor="$color6"
     borderRadius="$4"
     overflow="hidden"
-    backgroundColor="$color2"
+    bg="$color2"
   >
-    <YStack height={60} backgroundColor={hex} />
+    <YStack height={60} bg={hex} />
     <YStack padding="$3" gap={4}>
       <Text fontSize={13} fontWeight="600" color="$color11">
         {label}

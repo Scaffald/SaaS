@@ -288,7 +288,7 @@ export function InternalJobCard({ job, hasApplied }: InternalJobCardProps) {
         {/* Action button */}
         <Button
           size="$3"
-          theme="blue"
+          theme="info"
           onPress={() => router.push(RouteBuilder.discoverJobDetail(job.id))}
           mt="$2"
         >

@@ -189,7 +189,7 @@ export function OrganizationPreviewModal({
             {jobsCount > 0 ? (
               <Button
                 size="$5"
-                theme="blue"
+                theme="info"
                 iconAfter={<Briefcase size={18} />}
                 onPress={handleViewJobs}
               >

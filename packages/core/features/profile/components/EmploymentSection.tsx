@@ -220,8 +220,8 @@ export function EmploymentSection({
                             size="$1"
                             disabled={readOnly}
                           >
-                            <Slider.Track backgroundColor="$color4">
-                              <Slider.TrackActive backgroundColor="$blue9" />
+                            <Slider.Track bg="$color4">
+                              <Slider.TrackActive bg="$blue9" />
                             </Slider.Track>
                             <Slider.Thumb index={0} circular />
                           </Slider>

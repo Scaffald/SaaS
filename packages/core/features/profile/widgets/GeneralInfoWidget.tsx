@@ -104,7 +104,7 @@ export function GeneralInfoWidget({
             <Avatar.Image
               source={{ uri: getAvatarUrl(data.avatar_path) || data.avatar_url || '' }}
             />
-            <Avatar.Fallback backgroundColor="$color6" />
+            <Avatar.Fallback bg="$color6" />
           </Avatar>
 
           <YStack gap="$1" items="center">

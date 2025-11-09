@@ -277,7 +277,7 @@ export function PortfolioManager({
               Add projects, work samples, or achievements to showcase your skills and experience.
             </Text>
             <Button
-              theme="blue"
+              theme="info"
               icon={Plus}
               onPress={() => {
                 setIsAdding(true)
@@ -341,7 +341,7 @@ export function PortfolioManager({
                 Cancel
               </Button>
               <Button
-                theme="blue"
+                theme="info"
                 onPress={handleSave}
                 disabled={createMutation.isPending || updateMutation.isPending}
               >

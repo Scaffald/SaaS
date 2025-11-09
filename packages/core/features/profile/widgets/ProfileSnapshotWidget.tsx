@@ -133,7 +133,7 @@ export function ProfileSnapshotWidget() {
                 uri: getAvatarUrl(generalInfo.avatar_path) || generalInfo.avatar_url || '',
               }}
             />
-            <Avatar.Fallback backgroundColor="$color6" />
+            <Avatar.Fallback bg="$color6" />
           </Avatar>
 
           <YStack gap="$1" items="center">

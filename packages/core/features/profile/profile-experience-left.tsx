@@ -624,7 +624,7 @@ export function ProfileExperienceLeft() {
             gap="$2"
             borderWidth={1}
             borderColor={saveBanner.type === 'success' ? '$green7' : '$red7'}
-            backgroundColor={saveBanner.type === 'success' ? '$green3' : '$red3'}
+            bg={saveBanner.type === 'success' ? '$green3' : '$red3'}
             rounded="$4"
           >
             <XStack gap="$2" items="center">

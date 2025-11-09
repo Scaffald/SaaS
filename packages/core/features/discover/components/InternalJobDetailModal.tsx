@@ -543,7 +543,7 @@ export function InternalJobDetailModal({
                   <Separator />
                   <Button
                     size="$4"
-                    theme="blue"
+                    theme="info"
                     onPress={() => setShowApplicationWizard(true)}
                     mt="$2"
                   >
@@ -698,7 +698,7 @@ export function InternalJobDetailModal({
                       <Button
                         flex={1}
                         size="$4"
-                        theme="blue"
+                        theme="info"
                         onPress={handleApply}
                         disabled={applyMutation.isPending || !isFormValid()}
                         icon={applyMutation.isPending ? <Spinner /> : undefined}

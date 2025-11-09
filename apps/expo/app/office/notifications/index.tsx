@@ -104,7 +104,7 @@ export default function OfficeNotificationsConsole() {
             </Button>
           </XStack>
 
-          <XStack gap="$2" fw="wrap">
+          <XStack gap="$2" wrap="wrap">
             {DELIVERY_STATUSES.map((value) => {
               const isActive = status === value
 
@@ -112,7 +112,7 @@ export default function OfficeNotificationsConsole() {
                 <Button
                   key={value}
                   size="$2"
-                  theme={isActive ? 'blue' : 'gray'}
+                  theme={isActive ? 'info' : 'gray'}
                   {...(!isActive ? { variant: 'outlined' as const } : {})}
                   onPress={() => {
                     setStatus(value)
@@ -187,7 +187,7 @@ export default function OfficeNotificationsConsole() {
                         themeName={delivery.status === 'failed' ? 'error' : 'gray'}
                         flex={1}
                         textColorToken="$color12"
-                        textProps={{ textAlign: 'center' }}
+                        textProps={{ ta: 'center' }}
                       >
                         {delivery.status}
                       </NotificationTag>
@@ -217,7 +217,7 @@ export default function OfficeNotificationsConsole() {
             </Text>
             <Button
               size="$2"
-              theme="blue"
+              theme="info"
               icon={RefreshCw}
               onPress={() => digestQuery.refetch()}
               disabled={digestQuery.isRefetching}

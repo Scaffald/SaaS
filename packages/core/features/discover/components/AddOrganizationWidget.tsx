@@ -164,7 +164,7 @@ export function AddOrganizationWidget() {
 
       <Button
         size="$4"
-        theme="blue"
+        theme="info"
         iconAfter={!isSubmitting ? ArrowRight : undefined}
         disabled={isSubmitDisabled || isSubmitting}
         onPress={handleCreatePress}

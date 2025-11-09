@@ -76,7 +76,7 @@ export function DeleteButton({
       <Button
         size={size}
         variant={variant}
-        theme="red"
+        theme="error"
         icon={Trash2}
         onPress={() => setIsOpen(true)}
         disabled={isDeleting}
@@ -132,7 +132,7 @@ export function DeleteButton({
               </Dialog.Close>
 
               <Button
-                theme="red"
+                theme="error"
                 onPress={handleDelete}
                 disabled={isDeleting}
                 icon={isDeleting ? <Spinner /> : Trash2}

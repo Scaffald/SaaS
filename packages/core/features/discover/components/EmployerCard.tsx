@@ -105,7 +105,7 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
 
         {/* Actions */}
         <XStack gap="$2" pt="$2">
-          <Button flex={1} size="$3" theme="blue" onPress={() => onViewDetails(employer)}>
+          <Button flex={1} size="$3" theme="info" onPress={() => onViewDetails(employer)}>
             View Details
           </Button>
         </XStack>

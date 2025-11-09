@@ -34,7 +34,7 @@ export default function GridPage() {
                 key={column}
                 width="8.33%"
                 minWidth={88}
-                backgroundColor="$color5"
+                bg="$color5"
                 borderRadius="$3"
                 padding="$2"
                 alignItems="center"

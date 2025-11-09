@@ -190,7 +190,7 @@ export function ProfileEducationRight() {
                         Cancel
                       </Button>
                       <Button
-                        theme="red"
+                        theme="error"
                         onPress={() => handleDelete(edu.id)}
                         disabled={deleteEducationMutation.isLoading}
                       >

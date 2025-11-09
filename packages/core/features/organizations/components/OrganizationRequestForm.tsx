@@ -220,7 +220,7 @@ export function OrganizationRequestForm({
 
       <Button
         size="$4"
-        theme="blue"
+        theme="info"
         icon={isSubmitting ? Loader2 : undefined}
         disabled={isSubmitting}
         onPress={onSubmit}
@@ -229,7 +229,7 @@ export function OrganizationRequestForm({
       </Button>
 
       {submissionSucceeded ? (
-        <Card bordered theme="green" padding="$4" gap="$3">
+        <Card bordered theme="success" padding="$4" gap="$3">
           <XStack gap="$3" items="center">
             <CheckCircle2 size={20} color="$green10" />
             <Text fontSize="$4" fontWeight="700" color="$green10">

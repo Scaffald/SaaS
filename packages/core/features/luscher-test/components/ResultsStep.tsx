@@ -169,7 +169,7 @@ export function ResultsStep({
   }, [canViewResults, interpretation, isLoadingInterpretation, loadError, loadInterpretation])
 
   return (
-    <YStack gap="$6" width="100%" alignSelf="center" p="$4" style={{ maxWidth: 800 }}>
+    <YStack gap="$6" width="100%" self="center" p="$4" style={{ maxWidth: 800 }}>
       {/* Feedback Message */}
       <YStack gap="$4" p="$6" bg="$color2" rounded="$4" borderWidth={1} borderColor="$borderColor">
         <Text fontSize="$6" fontWeight="bold" color="$color12">

@@ -116,7 +116,7 @@ export function ResultsStep({
           </Text>
           <Button
             size="$4"
-            theme="blue"
+            theme="info"
             onPress={handleGenerateReport}
             disabled={generatingReport || isLoading}
             icon={generatingReport || isLoading ? <Spinner size="small" /> : undefined}

@@ -264,7 +264,7 @@ export function NotificationDropdown({
             {onViewAll && (
               <Button
                 size="$2"
-                theme="blue"
+                theme="info"
                 icon={ExternalLink}
                 onPress={() => {
                   setOpen(false)
@@ -389,7 +389,7 @@ export function NotificationDropdown({
                                   <Button
                                     size="$2"
                                     mt="$2"
-                                    theme="blue"
+                                    theme="info"
                                     onPress={() => handleNotificationClick(notification)}
                                   >
                                     {notification.ctaLabel}
@@ -493,7 +493,7 @@ export function NotificationDropdown({
                                   <Button
                                     size="$2"
                                     mt="$2"
-                                    theme="blue"
+                                    theme="info"
                                     onPress={() => handleNotificationClick(notification)}
                                   >
                                     {notification.ctaLabel}

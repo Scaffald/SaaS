@@ -28,8 +28,8 @@ export default function ProgressPage() {
           description="Progress track with percentage labels."
           code={`<YStack>
   <Text>Deployment readiness</Text>
-  <YStack height={12} borderRadius={999} backgroundColor="$color4">
-    <YStack width="65%" backgroundColor="$color9" />
+  <YStack height={12} borderRadius={999} bg="$color4">
+    <YStack width="65%" bg="$color9" />
   </YStack>
 </YStack>`}
         >
@@ -55,8 +55,8 @@ const ProgressTrack = ({ label, percent, color }: ProgressTrackProps) => (
     <Text fontSize={13} color="$color11" fontWeight="600">
       {label} — {percent}%
     </Text>
-    <YStack height={12} borderRadius={999} backgroundColor="$color4" overflow="hidden">
-      <YStack width={`${percent}%`} height="100%" backgroundColor={color} borderRadius={999} />
+    <YStack height={12} borderRadius={999} bg="$color4" overflow="hidden">
+      <YStack width={`${percent}%`} height="100%" bg={color} borderRadius={999} />
     </YStack>
   </YStack>
 )

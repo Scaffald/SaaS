@@ -845,7 +845,7 @@ export function AvatarCropModal({
                   </Button>
                   <Button
                     flex={1}
-                    theme="blue"
+                    theme="info"
                     onPress={handleSave}
                     icon={Check}
                     disabled={saveButtonDisabled}
@@ -1061,7 +1061,7 @@ export function AvatarCropModal({
                   </Dialog.Close>
                   <Button
                     flex={1}
-                    theme="blue"
+                    theme="info"
                     onPress={handleSave}
                     icon={Check}
                     disabled={saveButtonDisabled}

@@ -196,7 +196,7 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
       <XStack gap="$2" justify="flex-end">
         <Button
           size="$3"
-          theme="blue"
+          theme="info"
           onPress={() => router.push(RouteBuilder.discoverJobDetail(job.id))}
         >
           View Details

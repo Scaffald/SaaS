@@ -42,7 +42,7 @@ export default function NavigationPage() {
               borderWidth={1}
               borderColor="$color6"
               borderRadius="$4"
-              backgroundColor="$color2"
+              bg="$color2"
               gap="$2"
             >
               {TAB_ITEMS.map((item) => (
@@ -71,17 +71,17 @@ export default function NavigationPage() {
           description="Bootstrap-style pill nav built with Buttons."
           code={`<XStack gap="$2">
   <Button borderRadius={999}>Active</Button>
-  <Button borderRadius={999} backgroundColor="$color3">Link</Button>
+  <Button borderRadius={999} bg="$color3">Link</Button>
 </XStack>`}
         >
           <XStack gap="$2">
-            <Button borderRadius={999} backgroundColor="$color9" color="$color1">
+            <Button borderRadius={999} bg="$color9" color="$color1">
               Active
             </Button>
-            <Button borderRadius={999} backgroundColor="$color3" color="$color11">
+            <Button borderRadius={999} bg="$color3" color="$color11">
               Link
             </Button>
-            <Button borderRadius={999} backgroundColor="$color3" color="$color11">
+            <Button borderRadius={999} bg="$color3" color="$color11">
               Disabled
             </Button>
           </XStack>
