@@ -1,2 +1,5 @@
-// TODO: Add tests for ImportReviewScreen when API contracts are finalized
+import { describe, test } from 'vitest'
 
+describe.skip('ImportReviewScreen', () => {
+  test.todo('renders review state')
+})

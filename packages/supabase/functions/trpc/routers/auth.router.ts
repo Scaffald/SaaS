@@ -1,11 +1,97 @@
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 
-import { protectedProcedure, t } from "../middleware.ts";
+import { protectedProcedure, publicProcedure, t } from "../middleware.ts";
+
+const MAGIC_LINK_REDIRECT_FALLBACK =
+  Deno.env.get("MAGIC_LINK_REDIRECT_URL") ??
+  Deno.env.get("EXPO_PUBLIC_URL") ??
+  Deno.env.get("SUPABASE_SITE_URL") ??
+  Deno.env.get("SITE_URL") ??
+  null;
+
+const requestMagicLinkInput = z.object({
+  email: z.string().email().transform((value) => value.trim().toLowerCase()),
+  redirectTo: z.string().url().optional(),
+});
 
 /**
  * Auth router - handles authentication-related operations
  */
 export const authRouter = t.router({
+  /**
+   * Request a magic link email for login/signup.
+   * Determines whether the email belongs to an existing user and calls
+   * Supabase OTP flow with the appropriate `shouldCreateUser` flag so
+   * Supabase sends the correct email template (signup vs login).
+   */
+  requestMagicLink: publicProcedure
+    .input(requestMagicLinkInput)
+    .mutation(async ({ ctx, input }) => {
+      const email = input.email;
+
+      const redirectTarget = input.redirectTo ?? MAGIC_LINK_REDIRECT_FALLBACK;
+      if (!redirectTarget) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Magic link redirect target is not configured",
+        });
+      }
+
+      const { data: existingUsers, error: lookupError } = await ctx.supabaseAdmin
+        .auth
+        .admin
+        .listUsers({
+          email,
+          page: 1,
+          perPage: 1,
+        });
+
+      if (lookupError) {
+        console.error("[auth.requestMagicLink] Failed to lookup user", {
+          email,
+          error: lookupError.message,
+        });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Unable to request magic link",
+          cause: lookupError,
+        });
+      }
+
+      const isExistingUser = Boolean(
+        existingUsers?.users?.some((user) =>
+          (user.email ?? "").toLowerCase() === email
+        ),
+      );
+
+      const { error: otpError } = await ctx.supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: redirectTarget,
+          shouldCreateUser: !isExistingUser,
+        },
+      });
+
+      if (otpError) {
+        console.error("[auth.requestMagicLink] OTP request failed", {
+          email,
+          error: otpError.message,
+        });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to send magic link email",
+          cause: otpError,
+        });
+      }
+
+      return {
+        mode: isExistingUser ? "login" : "signup",
+        email,
+        redirectTo: redirectTarget,
+      };
+    }),
+
   /**
    * Get user roles
    * Returns list of roles assigned to the authenticated user

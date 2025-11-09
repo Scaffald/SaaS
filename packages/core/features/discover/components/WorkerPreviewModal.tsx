@@ -14,6 +14,7 @@ import {
 } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { api } from '@app/core/utils/api'
+import { useAdaptiveLoading } from '@app/core/utils/useAdaptiveLoading'
 import { RouteBuilder } from '@app/core/constants/routes'
 import { formatDateRange } from '@app/core/features/profile/utils/date-formatting'
 
@@ -66,6 +67,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
 
   const isLoading =
     profileLoading || skillsLoading || certsLoading || experienceLoading || educationLoading
+  const showLoading = useAdaptiveLoading(isLoading, 300)
 
   const handleViewFullProfile = () => {
     if (!userId) return
@@ -87,6 +89,13 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
     return `$${dollars.toFixed(2)}/hr`
   }
 
+  const resolveYearsOfExperience = (years: number | null | undefined) => {
+    if (typeof years !== 'number' || Number.isNaN(years)) {
+      return null
+    }
+    return years % 1 !== 0 ? years.toFixed(1) : years
+  }
+
   const topSkills = skills.slice(0, 10)
   const topCertifications = certifications.slice(0, 5)
   const recentExperience = experience.slice(0, 3)
@@ -99,14 +108,14 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
       title={profile?.name || 'Worker Profile'}
       size="medium"
     >
-      {isLoading ? (
+      {showLoading ? (
         <YStack py="$8" items="center" justify="center">
           <Spinner size="large" color="$blue10" />
           <Text mt="$4" color="$color11">
             Loading profile...
           </Text>
         </YStack>
-      ) : !profile ? (
+      ) : isLoading ? null : !profile ? (
         <YStack py="$8" items="center">
           <Text color="$red10" fontSize="$5" fontWeight="600">
             Profile not found
@@ -193,11 +202,20 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
               </XStack>
             )}
 
-            {profile.years_of_experience !== null && (
+            {resolveYearsOfExperience(
+              typeof profile?.calculatedYearsOfExperience === 'number'
+                ? profile.calculatedYearsOfExperience
+                : profile.years_of_experience ?? null
+            ) !== null && (
               <XStack gap="$2" items="center">
                 <Award size={18} color="$color10" />
                 <Text fontSize="$4" color="$color11">
-                  {profile.years_of_experience} years experience
+                  {resolveYearsOfExperience(
+                    typeof profile?.calculatedYearsOfExperience === 'number'
+                      ? profile.calculatedYearsOfExperience
+                      : profile.years_of_experience ?? null
+                  )}{' '}
+                  years experience
                 </Text>
               </XStack>
             )}
@@ -246,23 +264,31 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 </XStack>
                 <YStack gap="$2">
                   {/* biome-ignore lint/suspicious/noExplicitAny: API response type */}
-                  {topSkills.map((skill: any) => (
-                    <XStack key={skill.id} justify="space-between" items="center">
-                      <Text fontSize="$4" color="$color11">
-                        {skill.name}
-                      </Text>
-                      <XStack gap="$2" items="center">
-                        <YStack width={100} height={8} bg="$color4" rounded="$2" overflow="hidden">
-                          <YStack width={`${skill.proficiency}%`} height="100%" bg="$blue10" />
-                        </YStack>
-                        <YStack minW={30}>
-                          <Text fontSize="$3" color="$color10">
-                            {skill.proficiency}%
-                          </Text>
-                        </YStack>
+                  {topSkills.map((skill: any) => {
+                    const label =
+                      typeof skill.label === 'string'
+                        ? skill.label
+                        : skill.displayCode
+                          ? `${skill.displayCode} · ${skill.name}`
+                          : skill.name
+                    return (
+                      <XStack key={skill.id} justify="space-between" items="center">
+                        <Text fontSize="$4" color="$color11">
+                          {label}
+                        </Text>
+                        <XStack gap="$2" items="center">
+                          <YStack width={100} height={8} bg="$color4" rounded="$2" overflow="hidden">
+                            <YStack width={`${skill.proficiency}%`} height="100%" bg="$blue10" />
+                          </YStack>
+                          <YStack minW={30}>
+                            <Text fontSize="$3" color="$color10">
+                              {skill.proficiency}%
+                            </Text>
+                          </YStack>
+                        </XStack>
                       </XStack>
-                    </XStack>
-                  ))}
+                    )
+                  })}
                 </YStack>
               </YStack>
             </>

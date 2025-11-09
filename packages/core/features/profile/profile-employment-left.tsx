@@ -20,6 +20,7 @@ import {
   completeProfileSync,
   failProfileSync,
   resetProfileSyncError,
+  useAdaptiveProfileSync,
 } from './utils/profile-sync-store'
 import { CustomCheckbox, DashboardWidget, LocationListInput, ToggleCard, ConfirmationDialog } from '@app/ui'
 import { Flag, MapPin, Plane, DollarSign, Car, Shield, Calendar } from '@tamagui/lucide-icons'
@@ -135,6 +136,8 @@ export function ProfileEmploymentLeft() {
   const originalDataRef = useRef<EmploymentProfileFormData | null>(null)
   const toast = useToastController()
   const utils = api.useContext()
+  const syncStatus = useAdaptiveProfileSync(300)
+  const isSyncing = syncStatus === 'syncing'
 
   // Use tRPC to fetch and update employment data
   const {
@@ -559,10 +562,10 @@ export function ProfileEmploymentLeft() {
                 onPress={handleSubmit(onSubmit, onFormError)}
                 disabled={!isDirty || isLoading}
                 opacity={!isDirty || isLoading ? 0.5 : 1}
-                space={isLoading ? '$2' : 0}
+                space={isSyncing ? '$2' : 0}
               >
                 <AnimatePresence>
-                  {isLoading && (
+                  {isSyncing && (
                     <Button.Icon>
                       <Spinner
                         animation="bouncy"
@@ -576,7 +579,7 @@ export function ProfileEmploymentLeft() {
                     </Button.Icon>
                   )}
                 </AnimatePresence>
-                <Button.Text>{isLoading ? 'Saving...' : 'Save Changes'}</Button.Text>
+                <Button.Text>{isSyncing ? 'Saving...' : 'Save Changes'}</Button.Text>
               </Button>
             </XStack>
 

@@ -4,6 +4,7 @@ export type ProfileSyncStatus = 'idle' | 'syncing' | 'error'
 
 let status: ProfileSyncStatus = 'idle'
 let inFlight = 0
+let syncStartTime: number | null = null
 const listeners = new Set<(next: ProfileSyncStatus) => void>()
 
 const notify = () => {
@@ -18,8 +19,12 @@ const setStatus = (next: ProfileSyncStatus) => {
 }
 
 export const startProfileSync = () => {
+  const isFirstInFlight = inFlight === 0
   inFlight += 1
   if (status !== 'error') {
+    if (isFirstInFlight) {
+      syncStartTime = Date.now()
+    }
     setStatus('syncing')
   }
 }
@@ -27,12 +32,14 @@ export const startProfileSync = () => {
 export const completeProfileSync = () => {
   inFlight = Math.max(0, inFlight - 1)
   if (inFlight === 0 && status !== 'error') {
+    syncStartTime = null
     setStatus('idle')
   }
 }
 
 export const failProfileSync = () => {
   inFlight = Math.max(0, inFlight - 1)
+  syncStartTime = null
   setStatus('error')
 }
 
@@ -53,5 +60,42 @@ export const useProfileSyncStatus = (): ProfileSyncStatus => {
   }, [])
 
   return current
+}
+
+export const useAdaptiveProfileSync = (delayMs = 300): ProfileSyncStatus => {
+  const actualStatus = useProfileSyncStatus()
+  const [displayStatus, setDisplayStatus] = useState<ProfileSyncStatus>(() => {
+    if (actualStatus === 'syncing') {
+      const elapsed = syncStartTime ? Date.now() - syncStartTime : 0
+      if (elapsed >= delayMs) {
+        return 'syncing'
+      }
+    }
+    return actualStatus
+  })
+
+  useEffect(() => {
+    if (actualStatus === 'syncing') {
+      const elapsed = syncStartTime ? Date.now() - syncStartTime : 0
+      if (elapsed >= delayMs) {
+        setDisplayStatus('syncing')
+        return
+      }
+
+      const remaining = delayMs - elapsed
+      const timer = setTimeout(() => {
+        setDisplayStatus('syncing')
+      }, remaining)
+
+      return () => {
+        clearTimeout(timer)
+      }
+    }
+
+    setDisplayStatus(actualStatus)
+    return undefined
+  }, [actualStatus, delayMs])
+
+  return displayStatus
 }
 

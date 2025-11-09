@@ -5,7 +5,11 @@ interface Skill {
   id: string
   name: string
   proficiency: number
-  csiDisplay?: string | null
+  displayCode?: string | null
+  taxonomy?: 'csi' | 'onet'
+  yearsExperience?: number | null
+  verified?: boolean
+  label?: string | null
 }
 
 interface UserProfileSkillsProps {
@@ -29,11 +33,15 @@ export function UserProfileSkills({ skills }: UserProfileSkillsProps) {
               <XStack justify="space-between" items="center">
                 <YStack flex={1}>
                   <Text fontSize="$5" fontWeight="600" color="$color12">
-                    {skill.name}
+                    {typeof skill.label === 'string' && skill.label.length > 0
+                      ? skill.label
+                      : skill.displayCode
+                        ? `${skill.displayCode} · ${skill.name}`
+                        : skill.name}
                   </Text>
-                  {skill.csiDisplay && (
+                  {typeof skill.yearsExperience === 'number' && (
                     <Text fontSize="$3" color="$color10">
-                      {skill.csiDisplay}
+                      {skill.yearsExperience} years experience
                     </Text>
                   )}
                 </YStack>

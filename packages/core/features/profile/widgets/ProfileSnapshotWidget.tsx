@@ -85,23 +85,21 @@ export function ProfileSnapshotWidget() {
 
   const completion = calculateCompletion()
 
+  const resolvedYearsOfExperience =
+    typeof generalInfo.calculatedYearsOfExperience === 'number'
+      ? generalInfo.calculatedYearsOfExperience
+      : generalInfo.years_of_experience ?? 0
+
+  const formattedYearsOfExperience =
+    Number.isFinite(resolvedYearsOfExperience) && resolvedYearsOfExperience % 1 !== 0
+      ? resolvedYearsOfExperience.toFixed(1)
+      : resolvedYearsOfExperience ?? 0
+
   // Get current role from experience
   const currentRole = experience?.find((exp: Record<string, unknown>) => exp.is_current)
 
   // Get top skills
   const topSkills = skills?.slice(0, 5) || []
-
-  // Helper to get skill name
-  const getSkillName = (skill: Record<string, unknown>): string => {
-    if (skill.metadata && typeof skill.metadata === 'object') {
-      const metadata = skill.metadata as Record<string, unknown>
-      const name = metadata.name
-      const title = metadata.title
-      if (typeof name === 'string') return name
-      if (typeof title === 'string') return title
-    }
-    return 'Skill'
-  }
 
   const displayName =
     generalInfo.display_name ||
@@ -248,7 +246,7 @@ export function ProfileSnapshotWidget() {
               items="center"
             >
               <Text fontSize="$6" fontWeight="700" color="$blue7">
-                {generalInfo.years_of_experience || 0}
+                    {formattedYearsOfExperience}
               </Text>
               <Text fontSize="$1" color="$color11">
                 Years
@@ -269,7 +267,18 @@ export function ProfileSnapshotWidget() {
               </Button>
             </XStack>
             <XStack gap="$2" flexWrap="wrap">
-              {topSkills.map((skill: Record<string, unknown>) => (
+              {topSkills.map((skill: Record<string, unknown>) => {
+                const displayCode =
+                  typeof skill.displayCode === 'string' ? skill.displayCode : null
+                const skillName = typeof skill.name === 'string' ? skill.name : 'Skill'
+                const chipLabel =
+                  typeof skill.label === 'string'
+                    ? skill.label
+                    : displayCode
+                      ? `${displayCode} · ${skillName}`
+                      : skillName
+
+                return (
                 <XStack
                   key={skill.id as string}
                   bg="$color3"
@@ -284,9 +293,10 @@ export function ProfileSnapshotWidget() {
                       ✓
                     </Text>
                   )}
-                  <Text fontSize="$2">{getSkillName(skill)}</Text>
+                    <Text fontSize="$2">{chipLabel}</Text>
                 </XStack>
-              ))}
+                )
+              })}
             </XStack>
           </YStack>
         )}

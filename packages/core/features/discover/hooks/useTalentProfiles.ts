@@ -13,6 +13,7 @@ type ProfileSearchRow =
     longitude?: number | null;
     latitude?: number | null;
     location?: string | null;
+    calculatedYearsOfExperience?: number | null;
   };
 
 interface UseTalentProfilesOptions {
@@ -95,11 +96,16 @@ export const useTalentProfiles = (options: UseTalentProfilesOptions = {}) => {
           profile.latitude || 42.7325,
         ];
 
+        const yearsOfExperience =
+          typeof profile.calculatedYearsOfExperience === 'number'
+            ? profile.calculatedYearsOfExperience
+            : profile.years_of_experience || 0
+
         return {
           id: profile.id || "",
           name: profile.name || "Anonymous Worker",
           title: profile.headline || "Skilled Trades Professional",
-          experienceYears: profile.years_of_experience || 0,
+          experienceYears: yearsOfExperience,
           hourlyRate,
           score: Math.min(profile.gamified_score || 0, 100),
           scoreLabel: profile.gamified_score && profile.gamified_score > 80

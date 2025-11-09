@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure, publicProcedure, t } from "../../middleware.ts";
+import { enrichUserSkills } from "../utils/skill-enrichment.ts";
 
 /**
  * Profile Widgets router - provides data queries for profile widget components
@@ -46,6 +47,21 @@ export const profileWidgetsRouter = t.router({
         });
       }
 
+      const { data: calculatedYears, error: yearsError } = await supabase.rpc(
+        "calculate_years_of_experience",
+        { p_user_id: targetUserId },
+      );
+
+      if (yearsError) {
+        console.warn(
+          "[profile.widgets.getGeneralInfo] Failed to calculate years of experience",
+          {
+            userId: targetUserId,
+            error: yearsError.message,
+          },
+        );
+      }
+
       // Get private data only if viewing own profile and authenticated
       let privateData = null;
       if (user && targetUserId === user.id) {
@@ -78,6 +94,7 @@ export const profileWidgetsRouter = t.router({
 
       return {
         ...profile,
+        calculatedYearsOfExperience: calculatedYears ?? profile?.years_of_experience ?? 0,
         privateData,
       };
     }),
@@ -181,7 +198,7 @@ export const profileWidgetsRouter = t.router({
         });
       }
 
-      return data || [];
+      return await enrichUserSkills(supabase, data ?? []);
     }),
 
   /**

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { t } from "../middleware.ts";
+import { enrichUserSkills } from "./utils/skill-enrichment.ts";
 import { TRPCError } from "@trpc/server";
 
 export const userProfileRouter = t.router({
@@ -112,7 +113,22 @@ export const userProfileRouter = t.router({
         throw new Error(`Failed to fetch user profile: ${error.message}`);
       }
 
-      return profile;
+      const { data: calculatedYears, error: yearsError } = await ctx.supabase.rpc(
+        "calculate_years_of_experience",
+        { p_user_id: input.userId },
+      );
+
+      if (yearsError) {
+        console.warn("[userProfile.getUserProfile] Unable to calculate years of experience", {
+          userId: input.userId,
+          error: yearsError.message,
+        });
+      }
+
+      return {
+        ...profile,
+        calculatedYearsOfExperience: calculatedYears ?? profile?.years_of_experience ?? 0,
+      };
     }),
 
   // Get user skills with proficiency
@@ -135,20 +151,7 @@ export const userProfileRouter = t.router({
         throw new Error(`Failed to fetch user skills: ${error.message}`);
       }
 
-      // Map polymorphic skills to response format
-      return (
-        skills?.map((skill) => ({
-          id: skill.id,
-          taxonomy: skill.skill_taxonomy,
-          csiSkillId: skill.csi_skill_id,
-          onetOccupationId: skill.onet_occupation_id,
-          proficiency: skill.proficiency_level || 0,
-          yearsExperience: skill.years_experience,
-          verified: skill.verified,
-          verifiedAt: skill.verified_at,
-          createdAt: skill.created_at,
-        })) || []
-      );
+      return await enrichUserSkills(ctx.supabase, skills ?? []);
     }),
 
   // Get user certifications

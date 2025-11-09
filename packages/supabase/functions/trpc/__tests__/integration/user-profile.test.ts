@@ -1,5 +1,9 @@
-import { assertEquals } from "jsr:@std/assert";
-import { loadCachedTokens } from "../setup.ts";
+import {
+  assertEquals,
+  assertExists,
+  assertStringIncludes,
+} from "jsr:@std/assert";
+import { createAdminClient, loadCachedTokens } from "../setup.ts";
 
 const TRPC_URL = "http://127.0.0.1:54321/functions/v1/trpc";
 
@@ -39,6 +43,173 @@ Deno.test("User Profile - Get user skills (tests user_skills join)", async () =>
   } else {
     console.log(
       "✅ User skills endpoint works (no skills found for test user)",
+    );
+  }
+});
+
+Deno.test("User Profile - Skill enrichment includes taxonomy metadata", async () => {
+  const tokens = await loadCachedTokens();
+  if (!tokens) {
+    console.log("⚠️  Skipping skill enrichment test - no cached tokens");
+    return;
+  }
+
+  const admin = createAdminClient();
+  const TEST_USER_ID = tokens.regular.userId;
+
+  const { data: csiSkill, error: csiError } = await admin
+    .schema("data")
+    .from("masterformat")
+    .select("id, code_display")
+    .limit(1)
+    .maybeSingle();
+
+  if (csiError || !csiSkill) {
+    console.log(
+      "⚠️  Skipping skill enrichment test - CSI data not available",
+      csiError?.message,
+    );
+    return;
+  }
+
+  const { data: insertedSkill, error: insertError } = await admin
+    .schema("core")
+    .from("user_skills")
+    .insert({
+      user_id: TEST_USER_ID,
+      skill_taxonomy: "csi",
+      csi_skill_id: csiSkill.id,
+      proficiency_level: 75,
+    })
+    .select()
+    .maybeSingle();
+
+  if (insertError || !insertedSkill) {
+    console.log(
+      "⚠️  Skipping skill enrichment test - unable to insert test skill",
+      insertError?.message,
+    );
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${TRPC_URL}/userProfile.getUserSkills?batch=1&input=${
+        encodeURIComponent(JSON.stringify({
+          "0": { userId: TEST_USER_ID },
+        }))
+      }`,
+      {
+        headers: {
+          Authorization: `Bearer ${tokens.regular.token}`,
+        },
+      },
+    );
+
+    assertEquals(response.status, 200);
+    const payload = await response.json();
+    const resultData = payload[0]?.result?.data ?? [];
+    assertEquals(Array.isArray(resultData), true);
+
+    const enriched = resultData.find((skill: { id: string }) =>
+      skill.id === insertedSkill.id
+    );
+
+    assertExists(enriched, "Inserted skill should be returned by API");
+    assertEquals(enriched.taxonomy, "csi");
+    assertEquals(
+      enriched.displayCode,
+      csiSkill.code_display,
+    );
+    assertEquals(enriched.taxonomyLabel, "CSI MasterFormat");
+    assertStringIncludes(
+      enriched.label ?? "",
+      enriched.displayCode ?? "",
+      "Label should include display code",
+    );
+    assertStringIncludes(
+      enriched.label ?? "",
+      enriched.name ?? "",
+      "Label should include skill name",
+    );
+  } finally {
+    await admin.schema("core").from("user_skills").delete().eq(
+      "id",
+      insertedSkill.id,
+    );
+  }
+});
+
+Deno.test("User Profile - Years of experience calculation merges overlapping periods", async () => {
+  const tokens = await loadCachedTokens();
+  if (!tokens) {
+    console.log("⚠️  Skipping experience calculation test - no cached tokens");
+    return;
+  }
+
+  const admin = createAdminClient();
+  const TEST_USER_ID = tokens.regular.userId;
+
+  const { data: insertedRows, error: insertError } = await admin
+    .schema("core")
+    .from("user_experience")
+    .insert([
+      {
+        user_id: TEST_USER_ID,
+        job_title: "Test Role A",
+        company_name: "Overlap Inc",
+        start_date: "2020-01-01",
+        end_date: "2021-01-01",
+      },
+      {
+        user_id: TEST_USER_ID,
+        job_title: "Test Role B",
+        company_name: "Overlap Inc",
+        start_date: "2020-06-01",
+        end_date: "2021-06-01",
+      },
+    ])
+    .select();
+
+  if (insertError || !insertedRows || insertedRows.length === 0) {
+    console.log(
+      "⚠️  Skipping experience calculation test - unable to insert experience rows",
+      insertError?.message,
+    );
+    return;
+  }
+
+  try {
+    const { data: calculatedYears, error: calcError } = await admin.rpc(
+      "calculate_years_of_experience",
+      { p_user_id: TEST_USER_ID },
+    );
+
+    if (calcError) {
+      throw calcError;
+    }
+
+    assertExists(calculatedYears, "Calculated years of experience should not be null");
+    assertEquals(Number(calculatedYears?.toFixed(1)), 1.5, "Overlapping periods should be merged");
+
+    const { data: userRecord, error: userError } = await admin
+      .schema("core")
+      .from("users")
+      .select("years_of_experience")
+      .eq("id", TEST_USER_ID)
+      .maybeSingle();
+
+    if (!userError && userRecord) {
+      assertEquals(
+        userRecord.years_of_experience,
+        2,
+        "Rounded years_of_experience column should be updated via trigger",
+      );
+    }
+  } finally {
+    await admin.schema("core").from("user_experience").delete().in(
+      "id",
+      insertedRows.map((row: { id: string }) => row.id),
     );
   }
 });

@@ -1,38 +1,140 @@
-import { useState } from 'react'
-import { Text, YStack, XStack, Button, Spinner, Select, Adapt, Sheet, useWindowDimensions } from 'tamagui'
-import { ChevronDown, RefreshCw, AlertCircle } from '@tamagui/lucide-icons'
-import { NewsCard, UIButton as StyledButton, spacing } from '@app/ui'
+import { useMemo, useState } from 'react'
+import { Platform, Pressable } from 'react-native'
+import { Text, YStack, XStack, Spinner, Switch, Paragraph, Sheet } from 'tamagui'
+import { Settings2, RefreshCw, AlertCircle, ExternalLink } from '@tamagui/lucide-icons'
+import { UIButton as StyledButton, spacing } from '@app/ui'
+import { useRouter } from 'expo-router'
+import * as WebBrowser from 'expo-web-browser'
+import { api } from '@app/core/utils/api'
 import { useAggregatedNews } from './hooks/useNewsFeed'
-import { getFeedsByIndustry, getDefaultFeeds, findFeedById } from './config/news-feeds'
-import { redirect } from '@app/core/utils/redirect'
+import { getDefaultFeeds, findFeedById } from './config/news-feeds'
 import type { NewsWidgetProps, NewsItem } from './config/types'
+import { redirect } from '@app/core/utils/redirect'
 
-/**
- * NewsWidget - A comprehensive news widget for industry-specific feeds
- *
- * Features:
- * - Industry-specific RSS feed aggregation
- * - Feed selection dropdown
- * - Loading states and error handling
- * - Integration with existing NewsCard component
- * - Cross-platform compatibility
- */
+const HEADLINE_LIMIT_DEFAULT = 10
+const FETCH_MULTIPLIER = 4
+const RECENT_CUTOFF_HOURS = 48
+
+type NewsPreferences = {
+  prioritizeTrending: boolean
+  matchSkills: boolean
+  matchIndustry: boolean
+  recentOnly: boolean
+}
+
+type EnrichedNewsItem = NewsItem & {
+  relevanceScore: number
+  reasons: string[]
+  hoursSincePublished: number
+}
+
+interface RelevanceContext {
+  skillKeywords: string[]
+  industryKeyword: string | null
+  occupationKeyword: string | null
+}
+
+const sanitize = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+const getHoursSince = (date: Date) => {
+  const diffMs = Date.now() - date.getTime()
+  return diffMs / (1000 * 60 * 60)
+}
+
+const formatTimeAgo = (date: Date) => {
+  const hours = Math.floor(getHoursSince(date))
+  const days = Math.floor(hours / 24)
+
+  if (hours < 1) return 'Just now'
+  if (hours < 24) return `${hours}h ago`
+  if (days === 1) return '1 day ago'
+  if (days < 7) return `${days} days ago`
+  return date.toLocaleDateString()
+}
+
+const capitalise = (value?: string | null) => {
+  if (!value) return ''
+  return value.charAt(0).toUpperCase() + value.slice(1)
+}
+
+function computeRelevance(
+  article: NewsItem,
+  context: RelevanceContext,
+  preferences: NewsPreferences,
+): { score: number; reasons: string[]; hoursSincePublished: number } {
+  const articleText = sanitize(`${article.title ?? ''} ${article.description ?? ''}`)
+
+  let score = preferences.prioritizeTrending ? 5 : 3
+  const reasons: string[] = []
+
+  if (preferences.matchSkills && context.skillKeywords.length > 0) {
+    const matches = context.skillKeywords.filter((keyword) =>
+      keyword.length > 2 && articleText.includes(keyword)
+    )
+    if (matches.length > 0) {
+      score += 4 + Math.min(matches.length, 3)
+      reasons.push(matches.length > 1 ? 'Matches multiple skills' : 'Matches your skills')
+    }
+  }
+
+  if (preferences.matchIndustry && context.industryKeyword) {
+    if (articleText.includes(context.industryKeyword)) {
+      score += 3
+      reasons.push('Relevant to your industry')
+    }
+  }
+
+  if (context.occupationKeyword && articleText.includes(context.occupationKeyword)) {
+    score += 2
+    reasons.push('Matches your role')
+  }
+
+  const hoursSincePublished = getHoursSince(article.pubDate)
+  if (preferences.recentOnly && hoursSincePublished > RECENT_CUTOFF_HOURS) {
+    score -= 5
+  }
+
+  if (hoursSincePublished < 6) {
+    score += 2
+    reasons.push('Fresh update')
+  } else if (hoursSincePublished < 24) {
+    score += 1
+    reasons.push('Published today')
+  }
+
+  if (article.category) {
+    score += 0.5
+  }
+
+  return {
+    score,
+    reasons: Array.from(new Set(reasons)),
+    hoursSincePublished,
+  }
+}
+
 export function NewsWidget({
   industry = 'construction',
-  maxItems = 5,
-  showFeedSelector = true,
+  maxItems = HEADLINE_LIMIT_DEFAULT,
   onArticleClick,
 }: NewsWidgetProps) {
-  const { width } = useWindowDimensions()
-  const isMobile = width < 640
-  const industryFeeds = getFeedsByIndustry(industry)
-  const defaultFeeds = getDefaultFeeds(industry)
-  const [selectedFeedIds, setSelectedFeedIds] = useState<string[]>(defaultFeeds)
+  const router = useRouter()
+  const headlineLimit = Math.max(1, maxItems)
+  const fetchCount = headlineLimit * FETCH_MULTIPLIER
 
-  // Get URLs for selected feeds
-  const selectedFeedUrls = selectedFeedIds
-    .map((feedId) => findFeedById(industry, feedId)?.url)
-    .filter(Boolean) as string[]
+  const defaultFeedIds = useMemo(() => getDefaultFeeds(industry), [industry])
+  const selectedFeedUrls = useMemo(
+    () =>
+      defaultFeedIds
+        .map((feedId) => findFeedById(industry, feedId)?.url)
+        .filter((url): url is string => Boolean(url)),
+    [defaultFeedIds, industry]
+  )
 
   const {
     data: newsItems = [],
@@ -40,283 +142,360 @@ export function NewsWidget({
     isError,
     error,
     refetch,
-  } = useAggregatedNews(selectedFeedUrls, maxItems)
+  } = useAggregatedNews(selectedFeedUrls, fetchCount)
 
-  const handleFeedChange = (feedId: string) => {
-    setSelectedFeedIds([feedId])
-  }
+  const [preferences, setPreferences] = useState<NewsPreferences>({
+    prioritizeTrending: true,
+    matchSkills: true,
+    matchIndustry: true,
+    recentOnly: false,
+  })
+  const [preferencesOpen, setPreferencesOpen] = useState(false)
 
-  const handleRefresh = () => {
-    refetch()
-  }
+  const { data: user } = api.profile.useUser.useQuery()
+  const userId = user?.id
 
-  const handleNewsClick = (article: NewsItem) => {
+  const { data: generalInfo } = api.profile.widgets.getGeneralInfo.useQuery(
+    { userId },
+    { enabled: !!userId, staleTime: 5 * 60 * 1000 }
+  )
+
+  const { data: userSkills } = api.profile.widgets.getSkills.useQuery(
+    { userId },
+    { enabled: !!userId, staleTime: 5 * 60 * 1000 }
+  )
+
+  const skillKeywords = useMemo(() => {
+    if (!userSkills) return [] as string[]
+    const keywords = new Set<string>()
+    for (const skill of userSkills as Array<Record<string, unknown>>) {
+      const label =
+        typeof skill.label === 'string'
+          ? sanitize(skill.label)
+          : typeof skill.name === 'string'
+            ? sanitize(skill.name)
+            : null
+      if (label && label.length > 2) {
+        keywords.add(label)
+      }
+      const displayCode =
+        typeof skill.displayCode === 'string' ? sanitize(skill.displayCode) : null
+      if (displayCode && displayCode.length > 1) {
+        keywords.add(displayCode)
+      }
+    }
+    return Array.from(keywords).slice(0, 20)
+  }, [userSkills])
+
+  const industryKeyword = useMemo(() => {
+    const industryFromRelation =
+      typeof generalInfo?.industries === 'object' &&
+      generalInfo?.industries !== null &&
+      'name' in generalInfo.industries &&
+      typeof (generalInfo.industries as { name?: unknown }).name === 'string'
+        ? (generalInfo.industries as { name?: string }).name
+        : null
+
+    const fallbackIndustry =
+      typeof generalInfo?.industry_name === 'string' ? generalInfo.industry_name : null
+
+    const resolved = industryFromRelation ?? fallbackIndustry
+
+    return resolved ? sanitize(resolved) : null
+  }, [generalInfo])
+
+  const occupationKeyword = useMemo(() => {
+    if (generalInfo?.headline) {
+      return sanitize(generalInfo.headline)
+    }
+    return null
+  }, [generalInfo])
+
+  const relevanceContext = useMemo<RelevanceContext>(
+    () => ({
+      skillKeywords,
+      industryKeyword,
+      occupationKeyword,
+    }),
+    [skillKeywords, industryKeyword, occupationKeyword]
+  )
+
+  const enrichedNews = useMemo(() => {
+    if (!newsItems.length) return [] as EnrichedNewsItem[]
+
+    const scored = newsItems.map((item) => {
+      const { score, reasons, hoursSincePublished } = computeRelevance(
+        item,
+        relevanceContext,
+        preferences
+      )
+      return {
+        ...item,
+        relevanceScore: score,
+        reasons,
+        hoursSincePublished,
+      }
+    })
+
+    const filtered = preferences.recentOnly
+      ? scored.filter((item) => item.hoursSincePublished <= RECENT_CUTOFF_HOURS)
+      : scored
+
+    const sorted = filtered
+      .sort((a, b) => {
+        if (b.relevanceScore === a.relevanceScore) {
+          return b.pubDate.getTime() - a.pubDate.getTime()
+        }
+        return b.relevanceScore - a.relevanceScore
+      })
+      .slice(0, headlineLimit)
+
+    if (sorted.length >= headlineLimit) {
+      return sorted
+    }
+
+    const fallback = newsItems
+      .filter((item) => !sorted.some((existing) => existing.id === item.id))
+      .sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime())
+      .slice(0, headlineLimit - sorted.length)
+      .map((item) => ({
+        ...item,
+        relevanceScore: 0,
+        reasons: [],
+        hoursSincePublished: getHoursSince(item.pubDate),
+      }))
+
+    return [...sorted, ...fallback]
+  }, [headlineLimit, newsItems, preferences, relevanceContext])
+
+  const handleNewsClick = async (article: NewsItem) => {
     if (onArticleClick) {
       onArticleClick(article)
-    } else {
-      // Default behavior - open in external browser/app
+      return
+    }
+
+    try {
+      if (Platform.OS === 'web') {
+        window.open(article.link, '_blank', 'noopener,noreferrer')
+      } else {
+        await WebBrowser.openBrowserAsync(article.link, {
+          enableBarCollapsing: true,
+          dismissButtonStyle: 'close',
+          toolbarColor: '#0f172a',
+          controlsColor: '#2563eb',
+        })
+      }
+    } catch (browserError) {
+      console.warn('Failed to open article in web browser, redirecting:', browserError)
       redirect(article.link)
     }
   }
 
-  const formatTimeAgo = (date: Date) => {
-    const now = new Date()
-    const diffMs = now.getTime() - date.getTime()
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-    const diffDays = Math.floor(diffHours / 24)
-
-    if (diffHours < 1) return 'Just now'
-    if (diffHours < 24) return `${diffHours}h ago`
-    if (diffDays === 1) return '1 day ago'
-    if (diffDays < 7) return `${diffDays} days ago`
-    return date.toLocaleDateString()
+  const handleViewAll = () => {
+    router.push('/dashboard/news')
   }
 
-  const getCategoryColor = (category?: string) => {
-    switch (category?.toLowerCase()) {
-      case 'safety':
-        return '$red8'
-      case 'technology':
-        return '$blue8'
-      case 'sustainability':
-        return '$green8'
-      case 'finance':
-        return '$yellow8'
-      case 'workforce':
-        return '$blue8'
-      case 'equipment':
-        return '$yellow8'
-      default:
-        return '$blue7'
-    }
+  const updatePreference = (key: keyof NewsPreferences, value: boolean) => {
+    setPreferences((prev) => ({ ...prev, [key]: value }))
   }
 
-  const getCategoryName = (category?: string) => {
-    if (!category) return 'General'
-    return category.charAt(0).toUpperCase() + category.slice(1)
+  const relevanceLabel = (score: number) => {
+    if (score >= 10) return 'High relevance'
+    if (score >= 7) return 'Relevant'
+    if (score >= 4) return 'General interest'
+    return 'From your feeds'
   }
 
   return (
     <YStack gap={spacing.md}>
-      {/* Header with title and controls */}
       <XStack justify="space-between" items="center" px={spacing.lg} pt={spacing.sm}>
         <Text fontSize="$6" fontWeight="600" color="$color12">
           News
         </Text>
 
         <XStack gap={spacing.xs} items="center">
-          {/* Feed Selector */}
-          {showFeedSelector && (
-            <Select value={selectedFeedIds[0] || ''} onValueChange={handleFeedChange} size="$3">
-              <Select.Trigger width={140} iconAfter={ChevronDown}>
-                <Select.Value placeholder="Select feed" />
-              </Select.Trigger>
-
-              <Adapt when={isMobile} platform="touch">
-                <Sheet
-                  native
-                  modal
-                  dismissOnSnapToBottom
-                  animationConfig={{
-                    type: 'spring',
-                    damping: 20,
-                    mass: 1.2,
-                    stiffness: 250,
-                  }}
-                >
-                  <Sheet.Frame>
-                    <Sheet.ScrollView>
-                      <Adapt.Contents />
-                    </Sheet.ScrollView>
-                  </Sheet.Frame>
-                  <Sheet.Overlay
-                    animation="lazy"
-                    enterStyle={{ opacity: 0 }}
-                    exitStyle={{ opacity: 0 }}
-                  />
-                </Sheet>
-              </Adapt>
-
-              <Select.Content zIndex={200000}>
-                <Select.ScrollUpButton
-                  items="center"
-                  justify="center"
-                  position="relative"
-                  flex={1}
-                  height="$3"
-                >
-                  <YStack z={10}>
-                    <ChevronDown size={20} />
-                  </YStack>
-                </Select.ScrollUpButton>
-
-                <Select.Viewport minW={200}>
-                  {/* National Feeds */}
-                  <Select.Group>
-                    <Select.Label>National</Select.Label>
-                    {industryFeeds.national.map((feed, index) => (
-                      <Select.Item key={feed.id} index={index} value={feed.id}>
-                        <Select.ItemText>{feed.name}</Select.ItemText>
-                      </Select.Item>
-                    ))}
-                  </Select.Group>
-
-                  {/* Regional Feeds */}
-                  {industryFeeds.regional.length > 0 && (
-                    <Select.Group>
-                      <Select.Label>Regional</Select.Label>
-                      {industryFeeds.regional.slice(0, 5).map((feed, index) => (
-                        <Select.Item
-                          key={feed.id}
-                          index={index + industryFeeds.national.length}
-                          value={feed.id}
-                        >
-                          <Select.ItemText>{feed.name}</Select.ItemText>
-                        </Select.Item>
-                      ))}
-                    </Select.Group>
-                  )}
-
-                  {/* Topical Feeds */}
-                  {industryFeeds.topical.length > 0 && (
-                    <Select.Group>
-                      <Select.Label>Topics</Select.Label>
-                      {industryFeeds.topical.slice(0, 8).map((feed, index) => (
-                        <Select.Item
-                          key={feed.id}
-                          index={
-                            index +
-                            industryFeeds.national.length +
-                            Math.min(industryFeeds.regional.length, 5)
-                          }
-                          value={feed.id}
-                        >
-                          <Select.ItemText>{feed.name}</Select.ItemText>
-                        </Select.Item>
-                      ))}
-                    </Select.Group>
-                  )}
-                </Select.Viewport>
-
-                <Select.ScrollDownButton
-                  items="center"
-                  justify="center"
-                  position="relative"
-                  flex={1}
-                  height="$3"
-                >
-                  <YStack z={10}>
-                    <ChevronDown size={20} />
-                  </YStack>
-                </Select.ScrollDownButton>
-              </Select.Content>
-            </Select>
-          )}
-
-          {/* Refresh Button */}
           <StyledButton
             size="$3"
             variant="outlined"
-            onPress={handleRefresh}
+            icon={<Settings2 size={16} />}
+            onPress={() => setPreferencesOpen(true)}
+          />
+          <StyledButton
+            size="$3"
+            variant="outlined"
+            onPress={() => {
+              void refetch()
+            }}
             disabled={isLoading}
             icon={isLoading ? <Spinner size="small" /> : <RefreshCw size={16} />}
           />
         </XStack>
       </XStack>
 
-      {/* News Content */}
-      <YStack gap={spacing.sm}>
-        {/* Loading State */}
-        {isLoading && newsItems.length === 0 && (
-          <YStack items="center" p={spacing.xl} gap={spacing.sm}>
-            <Spinner size="large" color="$blue7" />
-            <Text color="$color11" fontSize="$4">
-              Loading news...
-            </Text>
-          </YStack>
-        )}
+      {isLoading && enrichedNews.length === 0 ? (
+        <YStack items="center" p={spacing.xl} gap={spacing.sm}>
+          <Spinner size="large" color="$blue7" />
+          <Text color="$color11" fontSize="$4">
+            Loading personalised news...
+          </Text>
+        </YStack>
+      ) : null}
 
-        {/* Error State */}
-        {isError && (
-          <YStack items="center" p={spacing.xl} gap={spacing.sm}>
-            <AlertCircle size={24} color="$red10" />
-            <Text color="$red11" fontSize="$4" text="center">
-              Failed to load news feed
-            </Text>
-            <Text color="$color11" fontSize="$3" text="center">
-              {error?.message || 'Please check your internet connection'}
-            </Text>
-            <StyledButton variant="primary" onPress={handleRefresh} size="$3">
-              Try Again
-            </StyledButton>
-          </YStack>
-        )}
+      {isError ? (
+        <YStack items="center" p={spacing.xl} gap={spacing.sm}>
+          <AlertCircle size={24} color="$red10" />
+          <Text color="$red11" fontSize="$4" style={{ textAlign: 'center' }}>
+            Failed to load news feed
+          </Text>
+          <Text color="$color11" fontSize="$3" style={{ textAlign: 'center' }}>
+            {error?.message || 'Please check your connection and try again.'}
+          </Text>
+          <StyledButton
+            variant="primary"
+            onPress={() => {
+              void refetch()
+            }}
+            size="$3"
+          >
+            Try Again
+          </StyledButton>
+        </YStack>
+      ) : null}
 
-        {/* News Items */}
-        {newsItems.length > 0 &&
-          newsItems.map((item) => (
-            <NewsCard
-              key={item.id}
-              title={item.title}
-              description={item.description}
-              image={item.image}
-              onPress={() => handleNewsClick(item)}
-              fullCardClickable
-              minH={200}
-              header={
-                item.category ? (
-                  <Button
-                    size="$2"
-                    bg={getCategoryColor(item.category)}
-                    color="white"
-                    rounded="$10"
-                  >
-                    {getCategoryName(item.category)}
-                  </Button>
-                ) : undefined
-              }
-              footer={
-                <XStack gap="$3" items="center">
-                  <Text fontSize="$2" color="$color11">
-                    {formatTimeAgo(item.pubDate)}
-                  </Text>
-                  {item.readTime && (
-                    <>
-                      <Text fontSize="$2" color="$color11">
-                        •
+      {!isLoading && !isError && enrichedNews.length === 0 ? (
+        <YStack items="center" p={spacing.xl} gap={spacing.sm}>
+          <Text color="$color11" fontSize="$4" fontWeight="600">
+            No relevant news found
+          </Text>
+          <Text color="$color10" fontSize="$3" style={{ textAlign: 'center' }}>
+            We’ll keep looking for updates that match your profile.
+          </Text>
+        </YStack>
+      ) : null}
+
+      {enrichedNews.length > 0 && (
+        <YStack gap="$3" px={spacing.lg} pb={spacing.sm}>
+          {enrichedNews.map((item) => (
+            <Pressable key={item.id} onPress={() => handleNewsClick(item)}>
+              {({ pressed }) => (
+                <YStack
+                  gap="$2"
+                  p="$3"
+                  bg="$color2"
+                  borderRadius="$3"
+                  borderWidth={1}
+                  borderColor="$color4"
+                  opacity={pressed ? 0.7 : 1}
+                >
+                  <XStack justify="space-between" items="flex-start" gap="$3">
+                    <Text fontSize="$4" fontWeight="600" color="$color12" flex={1} numberOfLines={2}>
+                      {item.title}
+                    </Text>
+                    <ExternalLink size={16} color="$color10" />
+                  </XStack>
+                  <XStack gap="$2" items="center" flexWrap="wrap">
+                    <Text fontSize="$2" color="$color11">
+                      {formatTimeAgo(item.pubDate)}
+                    </Text>
+                    {item.category && (
+                      <Text fontSize="$2" color="$color10">
+                        • {capitalise(item.category)}
                       </Text>
-                      <Text fontSize="$2" color="$color11">
-                        {item.readTime}
-                      </Text>
-                    </>
+                    )}
+                    <Text fontSize="$2" color="$color10">
+                      • {relevanceLabel(item.relevanceScore)}
+                    </Text>
+                  </XStack>
+                  {item.reasons.length > 0 && (
+                    <XStack gap="$2" flexWrap="wrap">
+                      {item.reasons.slice(0, 2).map((reason, index) => (
+                        <YStack
+                          key={`${item.id}-reason-${index}`}
+                          px="$2"
+                          py="$1"
+                          bg="$blue3"
+                          borderRadius="$2"
+                        >
+                          <Text fontSize="$1" color="$blue11">
+                            {reason}
+                          </Text>
+                        </YStack>
+                      ))}
+                    </XStack>
                   )}
-                  {item.author && (
-                    <>
-                      <Text fontSize="$2" color="$color11">
-                        •
-                      </Text>
-                      <Text fontSize="$2" color="$color11">
-                        {item.author}
-                      </Text>
-                    </>
-                  )}
-                </XStack>
-              }
-            />
+                </YStack>
+              )}
+            </Pressable>
           ))}
 
-        {/* Empty State */}
-        {!isLoading && !isError && newsItems.length === 0 && (
-          <YStack items="center" p={spacing.xl} gap={spacing.sm}>
-            <Text color="$color11" fontSize="$4" fontWeight="600">
-              No news available
-            </Text>
-            <Text color="$color10" fontSize="$3" text="center">
-              Try selecting a different feed or check back later
-            </Text>
+          <StyledButton
+            size="$3"
+            variant="outlined"
+            onPress={handleViewAll}
+            iconAfter={<ExternalLink size={16} />}
+          >
+            View All News
+          </StyledButton>
+        </YStack>
+      )}
+
+      <Sheet
+        modal
+        open={preferencesOpen}
+        onOpenChange={setPreferencesOpen}
+        snapPoints={[60]}
+        dismissOnSnapToBottom
+      >
+        <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
+        <Sheet.Frame p="$4" gap="$3">
+          <Sheet.Handle />
+          <Text fontSize="$5" fontWeight="600">
+            Customise Recommendations
+          </Text>
+          <Paragraph color="$color11" size="$3">
+            Tailor the news feed using your profile information.
+          </Paragraph>
+
+          <YStack gap="$3">
+            <XStack justify="space-between" items="center">
+              <Paragraph size="$3">Match my skills</Paragraph>
+              <Switch
+                size="$2"
+                checked={preferences.matchSkills}
+                onCheckedChange={(value) => updatePreference('matchSkills', value)}
+              />
+            </XStack>
+
+            <XStack justify="space-between" items="center">
+              <Paragraph size="$3">Match my industry</Paragraph>
+              <Switch
+                size="$2"
+                checked={preferences.matchIndustry}
+                onCheckedChange={(value) => updatePreference('matchIndustry', value)}
+              />
+            </XStack>
+
+            <XStack justify="space-between" items="center">
+              <Paragraph size="$3">Boost trending stories</Paragraph>
+              <Switch
+                size="$2"
+                checked={preferences.prioritizeTrending}
+                onCheckedChange={(value) => updatePreference('prioritizeTrending', value)}
+              />
+            </XStack>
+
+            <XStack justify="space-between" items="center">
+              <Paragraph size="$3">Show recent stories only</Paragraph>
+              <Switch
+                size="$2"
+                checked={preferences.recentOnly}
+                onCheckedChange={(value) => updatePreference('recentOnly', value)}
+              />
+            </XStack>
           </YStack>
-        )}
-      </YStack>
+        </Sheet.Frame>
+      </Sheet>
     </YStack>
   )
 }
+

@@ -13,7 +13,8 @@
     "../../packages/supabase/client-types.ts",
     "../../packages/supabase/app-router-type.ts",
     "../../packages/supabase/helpers.ts",
-    "../../packages/supabase/functions/_shared/**/*.ts"
+    "../../packages/supabase/functions/_shared/**/*.ts",
+    "../../vitest.config.ts"
   ],
   "exclude": [
     "../../packages/supabase/functions/trpc/**/*",

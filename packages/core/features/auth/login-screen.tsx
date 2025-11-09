@@ -9,14 +9,17 @@ import {
   Input,
   Form,
 } from '@app/ui'
-import { supabase } from '@app/core/utils/supabase/client'
 import { useUser } from '@app/core/utils/useUser'
 import { ScaffaldLogo } from '@app/core/assets'
 import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocalSearchParams, useRouter } from 'expo-router'
+import type { AuthChangeEvent } from '@supabase/supabase-js'
+import { supabase } from '@app/core/utils/supabase/client'
 import { z } from 'zod'
 import { SocialLogin } from './components/SocialLogin'
+import { api } from '@app/core/utils/api'
+import { TRPCClientError } from '@trpc/client'
 
 const LoginSchema = z.object({
   email: z
@@ -32,6 +35,7 @@ export const LoginScreen = () => {
   useRedirectAfterSignIn()
   const { isLoadingSession } = useUser()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const requestMagicLink = api.auth.requestMagicLink.useMutation()
 
   useEffect(() => {
     // remove the persisted email from the url, mostly to not leak user's email in case they share it
@@ -57,31 +61,40 @@ export const LoginScreen = () => {
         return
       }
 
-      const { error } = await supabase.auth.signInWithOtp({
-        email: data.email.trim(),
-        options: {
-          emailRedirectTo: `${process.env.EXPO_PUBLIC_URL}`,
-          shouldCreateUser: true, // Allow both sign-in and sign-up
-        },
-      })
+      const normalizedEmail = data.email.trim().toLowerCase()
 
-      if (error) {
-        console.error('Magic link error:', error)
-        const errorMessage = error?.message.toLowerCase()
-        if (errorMessage.includes('email')) {
-          form.setError('email', { type: 'custom', message: errorMessage })
-        }
-        throw error
-      }
+      const redirectTo = process.env.EXPO_PUBLIC_URL
+
+      const result = await requestMagicLink.mutateAsync({
+        email: normalizedEmail,
+        redirectTo,
+      })
 
       console.log('Magic link sent successfully!')
       // Navigate to verify screen with email
       router.push({
         pathname: '/auth/verify',
-        params: { email: data.email },
+        params: { email: normalizedEmail, mode: result?.mode },
       })
     } catch (error) {
       console.error('Error sending magic link:', error)
+      if (error instanceof TRPCClientError) {
+        const lowerMessage = error.message.toLowerCase()
+        if (lowerMessage.includes('email')) {
+          form.setError('email', { type: 'custom', message: error.message })
+          return
+        }
+      }
+      form.setError(
+        'email',
+        {
+          type: 'custom',
+          message:
+            error instanceof Error
+              ? error.message
+              : 'Something went wrong while sending your magic link.',
+        }
+      )
     } finally {
       setIsSubmitting(false)
     }
@@ -118,15 +131,15 @@ export const LoginScreen = () => {
 
             <Button
               onPress={handleSubmit}
-              disabled={isSubmitting}
-              opacity={isSubmitting ? 0.5 : 1}
+              disabled={isSubmitting || requestMagicLink.isLoading}
+              opacity={isSubmitting || requestMagicLink.isLoading ? 0.5 : 1}
               bg="$blue9"
               color="$blue1"
               animation="quick"
               hoverStyle={{ scale: 1.02, bg: '$blue9' }}
               pressStyle={{ scale: 0.98 }}
             >
-              {isSubmitting ? 'Sending...' : 'Sign In or Register'}
+              {isSubmitting || requestMagicLink.isLoading ? 'Sending...' : 'Sign In or Register'}
             </Button>
 
             <SocialLogin />
@@ -150,7 +163,7 @@ function useRedirectAfterSignIn() {
   // Using supabase directly from import
   const router = useRouter()
   useEffect(() => {
-    const signOutListener = supabase.auth.onAuthStateChange((event) => {
+    const signOutListener = supabase.auth.onAuthStateChange((event: AuthChangeEvent) => {
       if (event === 'SIGNED_IN') {
         router.replace('/')
       }
@@ -158,5 +171,5 @@ function useRedirectAfterSignIn() {
     return () => {
       signOutListener.data.subscription.unsubscribe()
     }
-  }, [supabase, router])
+  }, [router])
 }

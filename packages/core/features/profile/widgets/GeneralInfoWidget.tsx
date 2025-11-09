@@ -198,16 +198,29 @@ export function GeneralInfoWidget({
             </Text>
 
             <XStack gap="$4" flexWrap="wrap">
-              {data.years_of_experience !== null && data.years_of_experience !== undefined && (
-                <YStack gap="$1" flex={1} minW={120}>
-                  <Text fontSize="$2" color="$color10">
-                    Experience
-                  </Text>
-                  <Text fontSize="$3">
-                    {data.years_of_experience} {data.years_of_experience === 1 ? 'year' : 'years'}
-                  </Text>
-                </YStack>
-              )}
+              {(() => {
+                const yearsValue =
+                  typeof data.calculatedYearsOfExperience === 'number'
+                    ? data.calculatedYearsOfExperience
+                    : data.years_of_experience
+                const formattedYears =
+                  typeof yearsValue === 'number' && !Number.isNaN(yearsValue)
+                    ? yearsValue % 1 !== 0
+                      ? yearsValue.toFixed(1)
+                      : yearsValue
+                    : null
+                if (formattedYears === null) return null
+                return (
+                  <YStack gap="$1" flex={1} minW={120}>
+                    <Text fontSize="$2" color="$color10">
+                      Experience
+                    </Text>
+                    <Text fontSize="$3">
+                      {formattedYears} {Number(formattedYears) === 1 ? 'year' : 'years'}
+                    </Text>
+                  </YStack>
+                )
+              })()}
 
               {data.industries && (
                 <YStack gap="$1" flex={1} minW={120}>

@@ -19,7 +19,10 @@
     "lint:fix": "biome lint --write ./src",
     "format": "biome format ./src",
     "format:fix": "biome format --write ./src",
-    "check-circular-deps": "../../scripts/check-circular-deps.sh ./src"
+    "check-circular-deps": "../../scripts/check-circular-deps.sh ./src",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@10play/tentap-editor": "^0.7.4",

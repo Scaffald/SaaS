@@ -23,6 +23,8 @@ export const DashboardLayout = ({
 }: DashboardLayoutProps) => {
   const { width } = useWindowDimensions()
   const isSmallScreen = width < 640
+  const isTablet = width >= 640 && width < 1024
+  const isDesktop = width >= 1024
 
   // Auto-generate breadcrumbs if enabled and no manual override
   const { breadcrumbs } = useBreadcrumbs({
@@ -37,8 +39,15 @@ export const DashboardLayout = ({
   const hasRightContent = Boolean(rightContent)
   const hasBothColumns = hasLeftContent && hasRightContent
 
-  const leftColumnWidth = isSmallScreen || !hasBothColumns ? '100%' : '60%'
-  const rightColumnWidth = isSmallScreen || !hasBothColumns ? '100%' : '40%'
+  const leftColumnWidth = !hasBothColumns ? '100%' : isDesktop ? '70%' : isTablet ? '60%' : '100%'
+  const rightColumnWidth = !hasBothColumns ? '100%' : isDesktop ? '30%' : isTablet ? '40%' : '100%'
+  const rightColumnMaxHeight = hasBothColumns
+    ? isDesktop
+      ? 620
+      : isTablet
+        ? 540
+        : undefined
+    : undefined
 
   return (
     <ScrollView flex={1} bg="$color2" pt="$3" pb="$5" showsVerticalScrollIndicator={false}>
@@ -62,6 +71,7 @@ export const DashboardLayout = ({
               width={leftColumnWidth}
               maxW={leftColumnWidth}
               flexBasis={leftColumnWidth}
+              flex={1}
             >
               {leftContent}
             </YStack>
@@ -72,8 +82,15 @@ export const DashboardLayout = ({
               width={rightColumnWidth}
               maxW={rightColumnWidth}
               flexBasis={rightColumnWidth}
+              style={rightColumnMaxHeight ? { maxHeight: rightColumnMaxHeight } : undefined}
             >
-              {rightContent}
+              {rightColumnMaxHeight ? (
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  <YStack pb="$4">{rightContent}</YStack>
+                </ScrollView>
+              ) : (
+                rightContent
+              )}
             </YStack>
           )}
         </XStack>

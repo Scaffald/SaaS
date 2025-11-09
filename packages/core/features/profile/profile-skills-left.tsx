@@ -1,4 +1,5 @@
 import { YStack, Text, Select, Adapt, Sheet, Separator, Spinner } from 'tamagui'
+import { ChevronDown } from '@tamagui/lucide-icons'
 import { ProfileFormPanel, InlineSkillSearch } from './components'
 import { useProfileSkillsContext } from './profile-skills-context'
 
@@ -40,7 +41,15 @@ export function ProfileSkillsLeft() {
           Select your industry to search for relevant skills
         </Text>
         <Select value={selectedIndustryId} onValueChange={handleIndustryChange} size="$4">
-          <Select.Trigger width="100%">
+          <Select.Trigger
+            width="100%"
+            iconAfter={ChevronDown}
+            cursor="pointer"
+            hoverStyle={{
+              borderColor: '$borderColorHover',
+              bg: '$backgroundHover',
+            }}
+          >
             <Select.Value placeholder="Select an industry" />
           </Select.Trigger>
 

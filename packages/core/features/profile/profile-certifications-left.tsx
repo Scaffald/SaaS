@@ -24,6 +24,7 @@ import {
   completeProfileSync,
   failProfileSync,
   resetProfileSyncError,
+  useAdaptiveProfileSync,
 } from './utils/profile-sync-store'
 
 interface Certification {
@@ -198,6 +199,8 @@ export function ProfileCertificationsLeft({
   const uploadCustomFileMutation = api.profile.certifications.uploadCertificationFile.useMutation()
 
   const isSavingCustom = saveCustomCertMutation.isPending || uploadCustomFileMutation.isPending
+  const syncStatus = useAdaptiveProfileSync(300)
+  const showAdaptiveCustomSaving = isSavingCustom && syncStatus === 'syncing'
 
   const handleCustomFormSubmit = useCallback(async () => {
     const errors: Record<string, string> = {}
@@ -694,7 +697,7 @@ export function ProfileCertificationsLeft({
                     Cancel
                   </Button>
                   <Button theme="info" onPress={handleCustomFormSubmit} disabled={isSavingCustom}>
-                    {isSavingCustom ? 'Saving...' : 'Save Certification'}
+                    {showAdaptiveCustomSaving ? 'Saving...' : 'Save Certification'}
                   </Button>
                 </XStack>
               </YStack>

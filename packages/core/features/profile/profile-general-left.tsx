@@ -34,6 +34,7 @@ import {
   completeProfileSync,
   failProfileSync,
   resetProfileSyncError,
+  useAdaptiveProfileSync,
 } from './utils/profile-sync-store'
 
 type UpdateGeneralInput = GeneralProfileFormData
@@ -52,6 +53,8 @@ export function ProfileGeneralLeft() {
   const originalDataRef = useRef<GeneralProfileFormData | null>(null)
   const toast = useToastController()
   const utils = api.useContext()
+  const syncStatus = useAdaptiveProfileSync(300)
+  const isSyncing = syncStatus === 'syncing'
 
   // Use tRPC to fetch and update profile data
   const {
@@ -410,10 +413,10 @@ export function ProfileGeneralLeft() {
             onPress={handleSubmit(onSubmit, onError)}
             disabled={!isDirty || isLoading || Object.keys(errors).length > 0}
             opacity={!isDirty || isLoading || Object.keys(errors).length > 0 ? 0.5 : 1}
-            space={isLoading ? '$2' : 0}
+            space={isSyncing ? '$2' : 0}
           >
             <AnimatePresence>
-              {isLoading && (
+              {isSyncing && (
                 <Button.Icon>
                   <Spinner
                     animation="bouncy"
@@ -427,7 +430,7 @@ export function ProfileGeneralLeft() {
                 </Button.Icon>
               )}
             </AnimatePresence>
-            <Button.Text>{isLoading ? 'Saving...' : 'Save Changes'}</Button.Text>
+            <Button.Text>{isSyncing ? 'Saving...' : 'Save Changes'}</Button.Text>
           </Button>
         </XStack>
 

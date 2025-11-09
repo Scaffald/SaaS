@@ -3,12 +3,7 @@ import { render, fireEvent, waitFor, cleanup } from '@testing-library/react-nati
 import { describe, beforeEach, afterEach, it, expect, vi } from 'vitest'
 import type { Mock } from 'vitest'
 import type { EmploymentProfileFormData } from '@app/core/utils/api'
-import type { ComponentProps, ElementRef, ReactElement, ReactNode } from 'react'
-
-type NativeExports = typeof import('react-native')
-type NativeView = NativeExports['View']
-type NativeText = NativeExports['Text']
-type NativeTextInput = NativeExports['TextInput']
+import type { ComponentProps, ReactElement, ReactNode } from 'react'
 
 const mockUseQuery: Mock<
   [],
@@ -51,8 +46,8 @@ vi.mock('@tamagui/lucide-icons', () => ({
 }))
 
 vi.mock('@app/ui', () => {
-  const React = require('react') as typeof import('react')
-  const { View, Text, TouchableOpacity } = require('react-native') as typeof import('react-native')
+  const React = require('react')
+  const { View, Text, TouchableOpacity } = require('react-native')
   return {
     DashboardWidget: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
     CustomCheckbox: ({
@@ -135,11 +130,15 @@ vi.mock('@app/ui', () => {
 })
 
 vi.mock('tamagui', () => {
-  const React = require('react') as typeof import('react')
-  const { View, Text, TextInput, TouchableOpacity } = require('react-native') as NativeExports
+  const React = require('react')
+  const { View, Text, TextInput, TouchableOpacity } = require('react-native')
+
+  type BasicViewProps = ComponentProps<typeof View>
+  type BasicTextProps = ComponentProps<typeof Text>
+  type BasicTextInputProps = ComponentProps<typeof TextInput>
 
   const createView = () =>
-    React.forwardRef<ElementRef<NativeView>, ComponentProps<NativeView>>((props, ref) => {
+    React.forwardRef<unknown, BasicViewProps>((props, ref) => {
       const { children, ...rest } = props
       return (
         <View ref={ref} {...rest}>
@@ -148,16 +147,14 @@ vi.mock('tamagui', () => {
       )
     })
 
-  const TextComponent = React.forwardRef<ElementRef<NativeText>, ComponentProps<NativeText>>(
-    (props, ref) => {
-      const { children, ...rest } = props
-      return (
-        <Text ref={ref} {...rest}>
-          {children}
-        </Text>
-      )
-    }
-  )
+  const TextComponent = React.forwardRef<unknown, BasicTextProps>((props, ref) => {
+    const { children, ...rest } = props
+    return (
+      <Text ref={ref} {...rest}>
+        {children}
+      </Text>
+    )
+  })
 
   type ButtonProps = {
     children: ReactNode
@@ -186,7 +183,7 @@ vi.mock('tamagui', () => {
     }
   )
 
-  const Input = React.forwardRef<ElementRef<NativeTextInput>, ComponentProps<NativeTextInput>>(
+  const Input = React.forwardRef<unknown, BasicTextInputProps>(
     ({ value, onChangeText, ...props }, ref) => (
       <TextInput ref={ref} value={value} onChangeText={onChangeText} {...props} />
     )
@@ -269,10 +266,10 @@ vi.mock('tamagui', () => {
 let employmentData: EmploymentProfileFormData = { ...profileEmploymentDefaults }
 
 vi.mock('@app/core/utils/api', async () => {
-  const actual = await vi.importActual<typeof import('@app/core/utils/api')>('@app/core/utils/api')
+  const actualModule = (await vi.importActual('@app/core/utils/api')) as Record<string, unknown>
 
   return {
-    ...actual,
+    ...actualModule,
     api: {
       profile: {
         getEmployment: {

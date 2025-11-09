@@ -1,9 +1,21 @@
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
+import { initSentry, Sentry } from "../_shared/sentry.ts";
 import { createTRPCContext } from "./context.ts";
 import { type AppRouter, appRouter } from "./routers/_app.ts";
 
 // Export the router type for client-side usage
 export type { AppRouter };
+
+initSentry();
+
+const releaseVersion = Deno.env.get("SENTRY_RELEASE") ??
+  Deno.env.get("RELEASE_VERSION");
+
+if (releaseVersion) {
+  Sentry.configureScope((scope) => {
+    scope.setTag("release", releaseVersion);
+  });
+}
 
 /**
  * Supabase Edge Function for tRPC

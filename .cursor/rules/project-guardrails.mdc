@@ -59,3 +59,7 @@ alwaysApply: true
 3. **Test changes in actual clients** rather than assuming they work
 4. **Check git history** for context on bugs or issues
 5. **Use pnpm workspace commands** for package-specific operations
+
+## BrainGrid Requirement Workflow
+- **RUN `pnpm check` immediately after implementing changes for any BrainGrid requirement** so that formatting, linting, and type checks complete before additional commands
+- **DO NOT bypass or defer `pnpm check`** when working on BrainGrid requirements—even when iterating quickly or responding to review feedback

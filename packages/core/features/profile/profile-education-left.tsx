@@ -41,6 +41,7 @@ import {
   completeProfileSync,
   failProfileSync,
   resetProfileSyncError,
+  useAdaptiveProfileSync,
 } from './utils/profile-sync-store'
 import { normalizeEducationEntry } from './utils/education-entry'
 
@@ -94,6 +95,8 @@ export function ProfileEducationLeft() {
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<EducationProfileFormData | null>(null)
   const toast = useToastController()
+  const syncStatus = useAdaptiveProfileSync(300)
+  const isSyncing = syncStatus === 'syncing'
 
   // Queries
   const educationQuery = api.profile.getEducation.useQuery()
@@ -790,7 +793,7 @@ export function ProfileEducationLeft() {
             disabled={!isDirty || isLoading}
             opacity={!isDirty || isLoading ? 0.5 : 1}
           >
-            {isLoading ? 'Saving...' : 'Save Changes'}
+            {isSyncing ? 'Saving...' : 'Save Changes'}
           </Button>
         </XStack>
 

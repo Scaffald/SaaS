@@ -9,7 +9,10 @@
     "watch": "tsc --watch",
     "check:type": "tsc --noEmit",
     "lint": "biome lint .",
-    "lint:fix": "biome lint --write ."
+    "lint:fix": "biome lint --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@app/schemas": "workspace:*",

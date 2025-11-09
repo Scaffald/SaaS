@@ -10,7 +10,7 @@ import { UserProfileCertifications } from './user-profile-certifications'
 import { UserProfileExperience } from './user-profile-experience'
 import { UserProfileEducation } from './user-profile-education'
 import { ReviewWizard } from '../reviews/components/ReviewWizard'
-import { useProfileSyncStatus, resetProfileSyncError } from '../profile/utils/profile-sync-store'
+import { useAdaptiveProfileSync, resetProfileSyncError } from '../profile/utils/profile-sync-store'
 import { AlertTriangle, CheckCircle } from '@tamagui/lucide-icons'
 
 interface UserProfileLeftProps {
@@ -24,7 +24,7 @@ interface UserProfileLeftProps {
 export function UserProfileLeft({ userId }: UserProfileLeftProps) {
   const [showReviewModal, setShowReviewModal] = useState(false)
   const { user: currentUser } = useUser()
-  const syncStatus = useProfileSyncStatus()
+  const syncStatus = useAdaptiveProfileSync(300)
 
   // Fetch all profile data
   const { data: profile, isLoading: profileLoading } = api.userProfile.getUserProfile.useQuery({

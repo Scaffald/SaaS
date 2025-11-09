@@ -15,7 +15,10 @@
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
     "format": "biome format .",
-    "format:fix": "biome format --write ."
+    "format:fix": "biome format --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "zod": "catalog:",

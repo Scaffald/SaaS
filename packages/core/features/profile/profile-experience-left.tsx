@@ -54,6 +54,7 @@ import {
   completeProfileSync,
   failProfileSync,
   resetProfileSyncError,
+  useAdaptiveProfileSync,
 } from './utils/profile-sync-store'
 
 type ExperienceEntries = NonNullable<ExperienceProfileFormData['experience_entries']>
@@ -77,6 +78,8 @@ export function ProfileExperienceLeft() {
   const originalDataRef = useRef<ExperienceProfileFormData | null>(null)
   const { width } = useWindowDimensions()
   const isMobile = width < 640
+  const syncStatus = useAdaptiveProfileSync(300)
+  const isSyncing = syncStatus === 'syncing'
 
   // Queries
   const experienceQuery = api.profile.getExperience.useQuery()
@@ -667,15 +670,15 @@ export function ProfileExperienceLeft() {
             disabled={!isDirty || saveState === 'saving'}
             opacity={!isDirty || saveState === 'saving' ? 0.5 : 1}
           >
-            {saveState === 'saving' ? (
-              <XStack gap="$2" items="center">
-                <Spinner size="small" color="$color12" />
-                <Text>Saving...</Text>
-              </XStack>
-            ) : saveState === 'success' ? (
+            {saveState === 'success' ? (
               <XStack gap="$2" items="center">
                 <Check size={18} color="$green10" />
                 <Text color="$green10">Saved!</Text>
+              </XStack>
+            ) : isSyncing && saveState === 'saving' ? (
+              <XStack gap="$2" items="center">
+                <Spinner size="small" color="$color12" />
+                <Text>Saving...</Text>
               </XStack>
             ) : (
               'Save Changes'

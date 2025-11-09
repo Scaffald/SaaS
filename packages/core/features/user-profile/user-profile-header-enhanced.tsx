@@ -12,6 +12,7 @@ interface UserProfileHeaderEnhancedProps {
     headline: string | null
     industry_name: string | null
     years_of_experience: number | null
+    calculatedYearsOfExperience?: number | null
     gamified_score: number | null
     location: string | null
     hourly_rate_cents: number | null
@@ -62,6 +63,18 @@ export function UserProfileHeaderEnhanced({
 
   // Banner height - responsive
   const bannerHeight = isMobile ? 160 : 200
+
+  const resolvedYears =
+    typeof profile.calculatedYearsOfExperience === 'number'
+      ? profile.calculatedYearsOfExperience
+      : profile.years_of_experience
+
+  const formattedYears =
+    typeof resolvedYears === 'number' && !Number.isNaN(resolvedYears)
+      ? resolvedYears % 1 !== 0
+        ? resolvedYears.toFixed(1)
+        : resolvedYears
+      : null
 
   return (
     <Card elevate bordered overflow="hidden" p={0}>
@@ -191,11 +204,11 @@ export function UserProfileHeaderEnhanced({
           )}
 
           {/* Years of Experience */}
-          {profile.years_of_experience !== null && (
+          {formattedYears !== null && (
             <XStack gap="$2" items="center" px="$3" py="$2" bg="$color2" rounded="$3">
               <Award size={18} color="$color11" />
               <Text fontSize="$3" color="$color11" fontWeight="600">
-                {profile.years_of_experience} years experience
+                {formattedYears} years experience
               </Text>
             </XStack>
           )}

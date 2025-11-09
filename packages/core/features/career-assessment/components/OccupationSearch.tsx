@@ -38,7 +38,7 @@ export function OccupationSearch({
   const debouncedSearch = useDebounce(searchTerm, 300)
 
   // Search occupations
-  const { data, isLoading } = api.onet.searchOccupations.useQuery(
+  const { data, isLoading, error: queryError } = api.onet.searchOccupations.useQuery(
     {
       query: debouncedSearch,
       limit: 10,
@@ -88,7 +88,8 @@ export function OccupationSearch({
   }
 
   const occupations = data?.occupations || []
-  const showDropdown = showResults && debouncedSearch.length >= 2 && occupations.length > 0
+  const showDropdown =
+    showResults && debouncedSearch.length >= 2 && occupations.length > 0 && !queryError
 
   return (
     <YStack gap="$2" position="relative" width="100%">
@@ -148,6 +149,26 @@ export function OccupationSearch({
               </YStack>
             </XStack>
           ))}
+        </YStack>
+      )}
+
+      {debouncedSearch.length >= 2 && queryError && (
+        <YStack
+          position="absolute"
+          t="100%"
+          l={0}
+          r={0}
+          mt="$1"
+          borderWidth={1}
+          borderColor="$borderColor"
+          rounded="$3"
+          bg="$background"
+          p="$3"
+          z={1000}
+        >
+          <Text fontSize="$3" color="$red10">
+            {queryError.message || 'Unable to load occupations. Please try again.'}
+          </Text>
         </YStack>
       )}
 

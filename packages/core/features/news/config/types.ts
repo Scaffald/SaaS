@@ -32,8 +32,6 @@ export interface IndustryFeeds {
 export interface NewsWidgetProps {
   industry?: string
   maxItems?: number
-  showFeedSelector?: boolean
-  refreshInterval?: number
   onArticleClick?: (article: NewsItem) => void
 }
 

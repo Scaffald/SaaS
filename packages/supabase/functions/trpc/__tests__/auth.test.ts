@@ -14,6 +14,7 @@
 import {
   assertEquals,
   assertExists,
+  assertNotEquals,
 } from "https://deno.land/std@0.208.0/assert/mod.ts";
 import {
   completeMagicLinkAuth,
@@ -25,6 +26,8 @@ import {
   registerUserWithMagicLink,
   saveCachedTokens,
   TEST_MAILPIT_URL,
+  TEST_SUPABASE_URL,
+  callTRPCEndpoint,
 } from "./setup.ts";
 
 // Test users
@@ -69,6 +72,57 @@ Deno.test({
     assertExists(emailData?.body?.html, "Email should have HTML body");
 
     console.log("✅ Magic link email received successfully");
+  },
+  sanitizeResources: false,
+  sanitizeOps: false,
+});
+
+Deno.test({
+  name: "Auth - Request magic link via tRPC selects correct mode",
+  async fn() {
+    const trpcEmail = `trpc-auth-${Date.now()}@example.com`;
+
+    const signupResponse = await callTRPCEndpoint(
+      "auth.requestMagicLink",
+      {
+        email: trpcEmail,
+        redirectTo: TEST_SUPABASE_URL,
+      },
+    );
+
+    const signupData = signupResponse[0]?.result?.data;
+    assertExists(signupData, "Signup magic link response should exist");
+    assertEquals(signupData.mode, "signup");
+
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const signupEmail = await getLatestEmail(trpcEmail);
+    assertExists(signupEmail, "Signup email should be delivered");
+    const signupSubject = signupEmail?.subject ?? "";
+
+    const loginResponse = await callTRPCEndpoint(
+      "auth.requestMagicLink",
+      {
+        email: trpcEmail,
+        redirectTo: TEST_SUPABASE_URL,
+      },
+    );
+
+    const loginData = loginResponse[0]?.result?.data;
+    assertExists(loginData, "Login magic link response should exist");
+    assertEquals(loginData.mode, "login");
+
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const loginEmail = await getLatestEmail(trpcEmail);
+    assertExists(loginEmail, "Login email should be delivered");
+    const loginSubject = loginEmail?.subject ?? "";
+
+    if (signupSubject && loginSubject) {
+      assertNotEquals(
+        signupSubject,
+        loginSubject,
+        "Signup and login emails should use different subjects",
+      );
+    }
   },
   sanitizeResources: false,
   sanitizeOps: false,

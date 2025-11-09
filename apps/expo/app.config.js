@@ -4,6 +4,8 @@ import 'dotenv/config'
 const IS_DEV = process.env.APP_ENV === 'development'
 const IS_STAGING = process.env.APP_ENV === 'staging'
 const IS_PRODUCTION = process.env.APP_ENV === 'production'
+const APP_VERSION = process.env.APP_VERSION || '1.0.0'
+const SENTRY_RELEASE = process.env.SENTRY_RELEASE || `scf-neue@${APP_VERSION}`
 
 // Load production environment variables if in production mode
 if (IS_PRODUCTION) {
@@ -115,6 +117,13 @@ export default {
       'expo-build-properties',
       'expo-font',
       [
+        'sentry-expo',
+        {
+          organization: process.env.SENTRY_ORG,
+          project: process.env.SENTRY_PROJECT,
+        },
+      ],
+      [
         '@rnmapbox/maps',
         {
           RNMapboxMapsDownloadToken: process.env.EXPO_PUBLIC_MAPBOX_TOKEN,
@@ -133,6 +142,19 @@ export default {
         styleURL: process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL,
         apiBaseUrl: process.env.EXPO_PUBLIC_MAPBOX_API_URL,
       },
+      sentryRelease: SENTRY_RELEASE,
+    },
+    hooks: {
+      postPublish: [
+        {
+          file: 'sentry-expo/upload-sourcemaps',
+          config: {
+            organization: process.env.SENTRY_ORG,
+            project: process.env.SENTRY_PROJECT,
+            authToken: process.env.SENTRY_AUTH_TOKEN,
+          },
+        },
+      ],
     },
     runtimeVersion: {
       policy: 'appVersion',
