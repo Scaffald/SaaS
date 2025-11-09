@@ -33,10 +33,10 @@ export function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
           bg="$red2"
           borderColor="$red6"
           borderWidth={1}
-          borderRadius="$4"
           px="$4"
           py="$3"
           gap="$2"
+          style={{ borderRadius: 12 }}
         >
           <Text fontSize="$3" color="$red11" style={{ fontFamily: 'monospace' }}>
             {error.message}

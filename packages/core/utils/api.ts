@@ -18,23 +18,45 @@ export const api = createTRPCReact<AppRouter>() as any;
 const sentryPerformanceLink: TRPCLink<AppRouter> = () => {
   return ({ next, op }) => {
     return observable((observer) => {
-      const hub = Sentry.getCurrentHub();
-      const client = hub.getClient();
+      const sentryWithInternals = Sentry as unknown as {
+        getCurrentHub?: () => {
+          getClient?: () => unknown;
+        };
+        startTransaction?: (context: {
+          name: string;
+          op?: string;
+        }) => {
+          setContext?: (key: string, context: Record<string, unknown>) => void;
+          setStatus?: (status: string) => void;
+          startChild?: (context: {
+            op?: string;
+            description?: string;
+          }) => {
+            setStatus?: (status: string) => void;
+            finish?: () => void;
+          };
+          finish?: () => void;
+        };
+      };
+
+      const hub = sentryWithInternals.getCurrentHub?.();
+      const client = hub?.getClient?.();
       let finished = false;
 
-      const transaction = client
-        ? Sentry.startTransaction({
-          name: `trpc.${op.path}`,
-          op: `trpc.${op.type}`,
-        })
-        : null;
+      const transaction =
+        client && typeof sentryWithInternals.startTransaction === "function"
+          ? sentryWithInternals.startTransaction({
+            name: `trpc.${op.path}`,
+            op: `trpc.${op.type}`,
+          })
+          : null;
 
-      transaction?.setContext("trpc", {
+      transaction?.setContext?.("trpc", {
         path: op.path,
         type: op.type,
       });
 
-      const span = transaction?.startChild({
+      const span = transaction?.startChild?.({
         op: "trpc.request",
         description: op.path,
       });
@@ -44,17 +66,17 @@ const sentryPerformanceLink: TRPCLink<AppRouter> = () => {
           return;
         }
         if (status === "internal_error") {
-          span?.setStatus("internal_error");
-          transaction?.setStatus("internal_error");
+          span?.setStatus?.("internal_error");
+          transaction?.setStatus?.("internal_error");
         } else if (status === "cancelled") {
-          span?.setStatus("cancelled");
-          transaction?.setStatus("cancelled");
+          span?.setStatus?.("cancelled");
+          transaction?.setStatus?.("cancelled");
         } else {
-          span?.setStatus("ok");
-          transaction?.setStatus("ok");
+          span?.setStatus?.("ok");
+          transaction?.setStatus?.("ok");
         }
-        span?.finish();
-        transaction?.finish();
+        span?.finish?.();
+        transaction?.finish?.();
         finished = true;
       };
 

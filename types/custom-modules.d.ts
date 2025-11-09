@@ -1,7 +1,3 @@
-declare module 'sentry-expo' {
-  export * from '@sentry/react-native'
-}
-
 declare module '@sentry/deno' {
   export function init(options: Record<string, unknown>): void
   export function captureException(error: unknown): void
@@ -26,5 +22,9 @@ declare module 'vite-tsconfig-paths' {
   }
   const tsconfigPaths: (options?: TsconfigPathsOptions) => PluginOption
   export default tsconfigPaths
+}
+
+declare module 'expo-web-browser' {
+  export * from 'expo-web-browser/build/WebBrowser'
 }
 

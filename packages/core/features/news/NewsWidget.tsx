@@ -382,10 +382,10 @@ export function NewsWidget({
                   gap="$2"
                   p="$3"
                   bg="$color2"
-                  borderRadius="$3"
                   borderWidth={1}
                   borderColor="$color4"
                   opacity={pressed ? 0.7 : 1}
+                  style={{ borderRadius: 12 }}
                 >
                   <XStack justify="space-between" items="flex-start" gap="$3">
                     <Text fontSize="$4" fontWeight="600" color="$color12" flex={1} numberOfLines={2}>
@@ -414,7 +414,7 @@ export function NewsWidget({
                           px="$2"
                           py="$1"
                           bg="$blue3"
-                          borderRadius="$2"
+                          style={{ borderRadius: 8 }}
                         >
                           <Text fontSize="$1" color="$blue11">
                             {reason}

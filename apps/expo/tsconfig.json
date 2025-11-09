@@ -4,6 +4,7 @@
     "app",
     "src",
     "types.d.ts",
+    "../../types/custom-modules.d.ts",
     "../../packages/ui",
     "../../packages/api",
     "../../packages/core",

@@ -4,6 +4,6 @@
     // "lib": ["deno.ns", "deno.unstable"],
     "types": ["node"]
   },
-  "include": ["functions/_shared/**/*"],
+  "include": ["functions/_shared/**/*", "../../types/custom-modules.d.ts"],
   "exclude": ["functions/trpc/**/*", "functions.deno/**/*"]
 }

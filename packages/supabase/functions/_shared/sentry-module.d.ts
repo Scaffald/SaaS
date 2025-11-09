@@ -1,10 +1,5 @@
 declare module '@sentry/deno' {
-  type Primitive = string | number | boolean | null | undefined
-  type PrimitiveArray = Primitive[]
-  type JsonRecord = {
-    [key: string]: JsonValue
-  }
-  type JsonValue = Primitive | PrimitiveArray | JsonRecord
+  type JsonValue = unknown
 
   interface Hub {
     getClient(): { flush(timeout?: number): Promise<boolean> } | null

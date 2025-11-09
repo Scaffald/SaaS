@@ -2,11 +2,12 @@ import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
 
 import react from '@vitejs/plugin-react'
-import { defineConfig, type PluginOption } from 'vitest/config'
+import { defineConfig, type UserConfig } from 'vitest/config'
 
 const workspaceRoot = fileURLToPath(new URL('.', import.meta.url))
 
-const plugins: PluginOption[] = [react() as PluginOption]
+type VitestPlugin = NonNullable<UserConfig['plugins']>[number]
+const plugins: VitestPlugin[] = [react() as unknown as VitestPlugin]
 
 export default defineConfig({
   root: workspaceRoot,
@@ -18,6 +19,14 @@ export default defineConfig({
       { find: '@app/ui', replacement: resolve(workspaceRoot, 'packages/ui') },
       { find: '@app/supabase', replacement: resolve(workspaceRoot, 'packages/supabase') },
       { find: '@app/schemas', replacement: resolve(workspaceRoot, 'packages/schemas/src') },
+      {
+        find: '@testing-library/react-native',
+        replacement: resolve(workspaceRoot, 'test/mocks/testing-library-react-native.ts'),
+      },
+      {
+        find: 'expo-constants',
+        replacement: resolve(workspaceRoot, 'test/mocks/expo-constants.ts'),
+      },
       { find: '@app/styleguide', replacement: resolve(workspaceRoot, 'packages/ui/src/styleguide') },
     ],
     conditions: ['browser', 'module', 'import', 'default'],

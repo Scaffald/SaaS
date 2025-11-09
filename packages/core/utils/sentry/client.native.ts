@@ -1,54 +1,52 @@
-import Constants from 'expo-constants'
-import type { Event } from '@sentry/types'
-import * as SentryExpo from 'sentry-expo'
+import Constants from "expo-constants";
+import type { Event } from "@sentry/types";
+import * as SentryExpo from "sentry-expo";
 
-const APP_ENV = process.env.APP_ENV ?? 'development'
-const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN
-const TRACE_SAMPLE_RATE = 0.1
-const SLOW_OPERATION_THRESHOLD_MS = 2000
+const APP_ENV = process.env.APP_ENV ?? "development";
+const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN;
+const TRACE_SAMPLE_RATE = 0.1;
+const SLOW_OPERATION_THRESHOLD_MS = 2000;
 
-let initialized = false
+let initialized = false;
 
 const shouldEnableSentry = () => {
-  return APP_ENV !== 'development' && Boolean(SENTRY_DSN)
-}
+  return APP_ENV !== "development" && Boolean(SENTRY_DSN);
+};
 
 const resolveReleaseInfo = () => {
-  const expoConfig = Constants?.expoConfig
-  const release =
-    expoConfig?.extra?.sentryRelease ??
-    `scf-neue@${expoConfig?.version ?? APP_ENV}`
-  const dist =
-    expoConfig?.ios?.buildNumber ??
-    (typeof expoConfig?.android?.versionCode === 'number'
+  const expoConfig = Constants?.expoConfig;
+  const release = expoConfig?.extra?.sentryRelease ??
+    `scf-neue@${expoConfig?.version ?? APP_ENV}`;
+  const dist = expoConfig?.ios?.buildNumber ??
+    (typeof expoConfig?.android?.versionCode === "number"
       ? String(expoConfig.android.versionCode)
-      : undefined)
+      : undefined);
 
-  return { release, dist }
-}
+  return { release, dist };
+};
 
 const tagSlowOperations = (event: Event) => {
-  const duration = event.contexts?.trace?.duration
-  if (typeof duration === 'number' && duration > SLOW_OPERATION_THRESHOLD_MS) {
+  const duration = event.contexts?.trace?.duration;
+  if (typeof duration === "number" && duration > SLOW_OPERATION_THRESHOLD_MS) {
     event.tags = {
       ...event.tags,
-      slow_operation: 'true',
-    }
+      slow_operation: "true",
+    };
   }
-  return event
-}
+  return event;
+};
 
 export const initSentry = () => {
   if (initialized) {
-    return
+    return;
   }
 
   if (!shouldEnableSentry()) {
     if (__DEV__) {
-      console.log('[Sentry] Disabled in development')
+      console.log("[Sentry] Disabled in development");
     }
-    initialized = true
-    return
+    initialized = true;
+    return;
   }
 
   SentryExpo.init({
@@ -62,29 +60,29 @@ export const initSentry = () => {
     tracesSampleRate: TRACE_SAMPLE_RATE,
     ...resolveReleaseInfo(),
     beforeSend(event) {
-      return tagSlowOperations(event)
+      return tagSlowOperations(event);
     },
-  })
+  });
 
-  initialized = true
-}
+  initialized = true;
+};
 
-const sentryNative = SentryExpo.Native
+const sentryNative = SentryExpo.Native;
 
 type ForwardedNativeMethods = Pick<
   typeof sentryNative,
-  | 'captureException'
-  | 'configureScope'
-  | 'getCurrentHub'
-  | 'setContext'
-  | 'setUser'
-  | 'startTransaction'
-  | 'withScope'
->
+  | "captureException"
+  | "configureScope"
+  | "getCurrentHub"
+  | "setContext"
+  | "setUser"
+  | "startTransaction"
+  | "withScope"
+>;
 
 export const Sentry: ForwardedNativeMethods & {
-  init: typeof SentryExpo.init
-  Native: typeof sentryNative
+  init: typeof SentryExpo.init;
+  Native: typeof sentryNative;
 } = {
   captureException: sentryNative.captureException,
   configureScope: sentryNative.configureScope,
@@ -94,8 +92,7 @@ export const Sentry: ForwardedNativeMethods & {
   startTransaction: sentryNative.startTransaction,
   withScope: sentryNative.withScope,
   init: (options) => {
-    SentryExpo.init(options)
+    SentryExpo.init(options);
   },
   Native: sentryNative,
-}
-
+};

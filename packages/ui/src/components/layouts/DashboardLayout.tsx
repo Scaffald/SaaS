@@ -50,8 +50,8 @@ export const DashboardLayout = ({
     : undefined
 
   return (
-    <ScrollView flex={1} bg="$color2" pt="$3" pb="$5" showsVerticalScrollIndicator={false}>
-      <YStack gap="$3">
+    <ScrollView flex={1} bg="$color2" showsVerticalScrollIndicator={false}>
+      <YStack gap="$3" pt="$3" pb="$5">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
           <XStack px={isSmallScreen ? '$3' : '$7'} pt="$3">

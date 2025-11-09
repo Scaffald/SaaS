@@ -195,6 +195,9 @@ catalogs:
     expo-system-ui:
       specifier: ~6.0.7
       version: 6.0.7
+    expo-web-browser:
+      specifier: ~13.0.0
+      version: 13.0.3
     fast-xml-parser:
       specifier: ~5.2.5
       version: 5.2.5
@@ -474,6 +477,9 @@ importers:
       expo-system-ui:
         specifier: 'catalog:'
         version: 6.0.7(expo@54.0.10)(react-native-web@0.21.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0))
+      expo-web-browser:
+        specifier: 'catalog:'
+        version: 13.0.3(expo@54.0.10)
       react:
         specifier: 'catalog:'
         version: 19.1.0
@@ -6500,6 +6506,11 @@ packages:
 
   expo-updates-interface@2.0.0:
     resolution: {integrity: sha512-pTzAIufEZdVPKql6iMi5ylVSPqV1qbEopz9G6TSECQmnNde2nwq42PxdFBaUEd8IZJ/fdJLQnOT3m6+XJ5s7jg==}
+    peerDependencies:
+      expo: '*'
+
+  expo-web-browser@13.0.3:
+    resolution: {integrity: sha512-HXb7y82ApVJtqk8tManyudtTrCtx8xcUnVzmJECeHCB0SsWSQ+penVLZxJkcyATWoJOsFMnfVSVdrTcpKKGszQ==}
     peerDependencies:
       expo: '*'
 
@@ -19946,6 +19957,10 @@ snapshots:
       - supports-color
 
   expo-updates-interface@2.0.0(expo@54.0.10):
+    dependencies:
+      expo: 54.0.10(@babel/core@7.26.10)(@expo/metro-runtime@5.0.5(react-native@0.81.4(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0)))(expo-router@6.0.8)(graphql@16.12.0)(react-native-webview@13.16.0(react-native@0.81.4(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
+
+  expo-web-browser@13.0.3(expo@54.0.10):
     dependencies:
       expo: 54.0.10(@babel/core@7.26.10)(@expo/metro-runtime@5.0.5(react-native@0.81.4(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0)))(expo-router@6.0.8)(graphql@16.12.0)(react-native-webview@13.16.0(react-native@0.81.4(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
 

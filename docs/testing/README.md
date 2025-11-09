@@ -28,7 +28,7 @@ Vitest results are surfaced inside the terminal; coverage reporting will be adde
 
 ## Known Gaps
 
-* Legacy React Native tests that rely on `require('react-native') as typeof import('react-native')` still throw at runtime because the upstream library ships Flow syntax. The modules are now aliased to `react-native-web`, but the suite needs light refactors (convert CJS mocks to ESM) before they will execute under Vitest.
+* Legacy React Native tests that rely on `require('react-native')` still throw at runtime because the upstream library ships Flow syntax. We've added aliases/stubs so they run under Vitest, but keep an eye out for other Flow artifacts in upstream packages if new failures appear.
 * tRPC/Deno integration tests continue to run via the existing Deno scripts (`pnpm test:api`). A future milestone will decide whether to keep the Deno runner or port them to Vitest.
 * Coverage thresholds are intentionally unset for the first pass while the flaky RN suites are stabilised.
 

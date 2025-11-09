@@ -18,7 +18,7 @@ const mockToastShow = vi.fn()
 const mockInvalidateProfileQueries = vi.fn()
 
 const press = (element: HTMLElement) => {
-  fireEvent.press(element as unknown as Parameters<typeof fireEvent.press>[0])
+  fireEvent.click(element)
 }
 
 const isChecked = (element: HTMLElement) => {
@@ -259,6 +259,7 @@ vi.mock('tamagui', () => {
     <View>
       <button
         type="button"
+        role="slider"
         aria-label="Travel slider"
         aria-valuemin={min}
         aria-valuemax={max}
@@ -453,12 +454,12 @@ describe.skip('ProfileEmploymentLeft', () => {
   })
 
   it('maintains willing to travel toggle when slider moves', () => {
-    const { getByRole, getByLabelText } = renderEmploymentForm()
+    const { getByRole } = renderEmploymentForm()
 
     const travelSwitch = getByRole('switch', { name: /willing to travel/i }) as HTMLElement
     press(travelSwitch)
 
-    const slider = getByLabelText(/travel slider/i) as HTMLElement
+    const slider = getByRole('slider', { name: /travel slider/i }) as HTMLElement
     press(slider)
 
     expect(isChecked(getByRole('switch', { name: /willing to travel/i }) as HTMLElement)).toBe(true)
@@ -470,7 +471,7 @@ describe.skip('ProfileEmploymentLeft', () => {
       us_resident: true,
     }
 
-    const { getByRole, getByLabelText, rerender } = renderEmploymentForm()
+    const { getByRole, rerender } = renderEmploymentForm()
 
     const passportSwitch = getByRole('switch', { name: /us passport/i }) as HTMLElement
     press(passportSwitch)
@@ -484,7 +485,7 @@ describe.skip('ProfileEmploymentLeft', () => {
     const travelSwitch = getByRole('switch', { name: /willing to travel/i }) as HTMLElement
     press(travelSwitch)
 
-    const slider = getByLabelText(/travel slider/i) as HTMLElement
+    const slider = getByRole('slider', { name: /travel slider/i }) as HTMLElement
     press(slider)
 
     mockMutateAsync.mockImplementation(async (input: EmploymentProfileFormData) => {

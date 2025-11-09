@@ -15,7 +15,17 @@ export default mergeConfig(
       watchExclude: ['**/dist/**', '**/.turbo/**', 'apps/expo/.expo/**'],
     },
     resolve: {
-      alias: [{ find: 'react-native', replacement: 'react-native-web' }],
+      alias: [
+        { find: 'react-native', replacement: 'react-native-web' },
+        {
+          find: '@testing-library/react-native',
+          replacement: fileURLToPath(new URL('../../test/mocks/testing-library-react-native.ts', import.meta.url)),
+        },
+        {
+          find: 'expo-constants',
+          replacement: fileURLToPath(new URL('../../test/mocks/expo-constants.ts', import.meta.url)),
+        },
+      ],
     },
   }) as UserConfig,
 )

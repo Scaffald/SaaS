@@ -14,7 +14,8 @@
     "../ui/src",
     "../api/src",
     "../../supabase/types.ts",
-    "../../supabase/helpers.ts"
+    "../../supabase/helpers.ts",
+    "../../types/custom-modules.d.ts"
   ],
   "exclude": [
     "../../supabase/functions/**/*",
