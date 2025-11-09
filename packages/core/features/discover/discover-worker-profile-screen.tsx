@@ -105,8 +105,8 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
             <SkeletonBlock height={24} width="60%" />
             <SkeletonBlock height={18} width="40%" />
             <XStack gap="$2" flexWrap="wrap" justifyContent="center">
-              {headlineWidths.map((width, idx) => (
-                <SkeletonBlock key={`headline-${idx}`} height={16} width={width} radius={8} />
+              {headlineWidths.map((width) => (
+                <SkeletonBlock key={`headline-${width}`} height={16} width={width} radius={8} />
               ))}
             </XStack>
           </YStack>
