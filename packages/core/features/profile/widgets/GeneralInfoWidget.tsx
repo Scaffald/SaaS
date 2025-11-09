@@ -50,7 +50,7 @@ export function GeneralInfoWidget({
           </Text>
           <Button
             variant="primary"
-            size="small"
+            size="$2"
             onPress={() => {
               void refetch()
             }}
@@ -88,11 +88,11 @@ export function GeneralInfoWidget({
         <XStack justify="space-between" items="center">
           <Heading variant="h4">General Information</Heading>
           {showEdit && (
-            <Button
-              variant="outlined"
-              size="small"
-              onPress={() => router.push('/dashboard/profile/general')}
-            >
+          <Button
+            variant="outlined"
+            size="$2"
+            onPress={() => router.push('/dashboard/profile/general')}
+          >
               Edit
             </Button>
           )}
