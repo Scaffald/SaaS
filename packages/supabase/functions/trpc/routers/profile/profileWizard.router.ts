@@ -24,50 +24,50 @@ const TOTAL_WIZARD_WEIGHT = PROFILE_WIZARD_STEPS.reduce(
 /**
  * Return true when a stored step payload satisfies completion requirements.
  */
+type StepCompletionChecks = {
+  [Step in ProfileWizardStepId]: (
+    data: ProfileWizardStepData[Step] | undefined,
+  ) => boolean;
+};
+
+const STEP_COMPLETION_CHECKS: StepCompletionChecks = {
+  general: (data) =>
+    Boolean(
+      data?.firstName?.trim() &&
+        data?.lastName?.trim() &&
+        data?.headline?.trim(),
+    ),
+  skills: (data) => {
+    const skills = data?.skills;
+    return Array.isArray(skills) && skills.length >= 3;
+  },
+  experience: (data) =>
+    Boolean(data?.jobTitle?.trim() && data?.companyName?.trim()),
+  certifications: (data) =>
+    Array.isArray(data?.certifications) &&
+    data.certifications.some(
+      (cert) => Boolean(cert?.name?.trim() && cert?.issuer?.trim()),
+    ),
+  preferences: (data) =>
+    Boolean(
+      data?.locationPreference?.trim() ||
+        data?.hourlyRate?.trim() ||
+        data?.availability?.trim() ||
+        data?.remotePreference,
+    ),
+  education: (data) =>
+    Boolean(
+      data?.degreeType?.trim() ||
+        data?.institutionName?.trim(),
+    ),
+};
+
 function isStepComplete(
   step: ProfileWizardStepId,
   stepData: ProfileWizardStepData,
 ): boolean {
-  const data = stepData[step];
-
-  if (!data) {
-    return false;
-  }
-
-  switch (step) {
-    case "general":
-      return Boolean(
-        data.firstName?.trim() &&
-          data.lastName?.trim() &&
-          data.headline?.trim(),
-      );
-    case "skills":
-      return Array.isArray(data.skills) && data.skills.length >= 3;
-    case "experience":
-      return Boolean(
-        data.jobTitle?.trim() &&
-          data.companyName?.trim(),
-      );
-    case "certifications":
-      return Array.isArray(data.certifications) &&
-        data.certifications.some(
-          (cert) => cert.name?.trim() && cert.issuer?.trim(),
-        );
-    case "preferences":
-      return Boolean(
-        data.locationPreference?.trim() ||
-          data.hourlyRate?.trim() ||
-          data.availability?.trim() ||
-          data.remotePreference,
-      );
-    case "education":
-      return Boolean(
-        data.degreeType?.trim() ||
-          data.institutionName?.trim(),
-      );
-    default:
-      return false;
-  }
+  const completionCheck = STEP_COMPLETION_CHECKS[step];
+  return completionCheck(stepData[step]);
 }
 
 function deriveCompletedSteps(

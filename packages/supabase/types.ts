@@ -7048,7 +7048,6 @@ export const Constants = {
   },
   core: {
     Enums: {
-      notification_type: ["success", "warning", "info"],
       notification_channel: ["in_app", "email", "push", "sms"],
       notification_delivery_status: [
         "queued",
