@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
 
-import type { Database } from "../database.types.ts";
+import type { Database, Json } from "../database.types.ts";
 
 export type NotificationSupabaseClient = SupabaseClient<Database>;
 
@@ -127,4 +127,4 @@ export interface ChannelAdapter {
   send(params: AdapterSendParams): Promise<AdapterSendResult>;
 }
 
-export type DeliveryMetadata = Record<string, unknown>;
+export type DeliveryMetadata = Record<string, Json | undefined>;

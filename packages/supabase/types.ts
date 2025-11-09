@@ -3566,28 +3566,59 @@ export type Database = {
       }
     }
     Enums: {
-      notification_type: "success" | "warning" | "info"
-      notification_channel: ["in_app", "email", "push", "sms"]
-      notification_delivery_status: [
-        "queued",
-        "sending",
-        "sent",
-        "delivered",
-        "failed",
-        "bounce",
-        "blocked",
-      ]
-      notification_event_kind: [
-        "accepted",
-        "delivered",
-        "opened",
-        "clicked",
-        "failed",
-        "bounce",
-        "complaint",
-      ]
-      notification_frequency: ["immediate", "digest_daily", "digest_weekly", "mute"]
-      notification_severity: ["info", "important", "critical"]
+      notification_type:
+        | "success"
+        | "warning"
+        | "info"
+        | "job.match"
+        | "app.submitted"
+        | "app.status_changed"
+        | "interview.scheduled"
+        | "offer.extended"
+        | "hiring.decision"
+        | "team.invite"
+        | "team.assigned"
+        | "team.commented"
+        | "team.role_changed"
+        | "profile.viewed"
+        | "profile.unlocked"
+        | "review.new"
+        | "review.reply"
+        | "skill.endorse"
+        | "acct.verify"
+        | "acct.password_reset"
+        | "payment.success"
+        | "payment.failed"
+        | "sub.renewal"
+        | "bgcheck.completed"
+        | "profile.reminder"
+        | "reengage"
+        | "feature.announcement"
+        | "platform.update"
+        | "message.received"
+      notification_channel: "in_app" | "email" | "push" | "sms"
+      notification_delivery_status:
+        | "queued"
+        | "sending"
+        | "sent"
+        | "delivered"
+        | "failed"
+        | "bounce"
+        | "blocked"
+      notification_event_kind:
+        | "accepted"
+        | "delivered"
+        | "opened"
+        | "clicked"
+        | "failed"
+        | "bounce"
+        | "complaint"
+      notification_frequency:
+        | "immediate"
+        | "digest_daily"
+        | "digest_weekly"
+        | "mute"
+      notification_severity: "info" | "important" | "critical"
     }
     CompositeTypes: {
       [_ in never]: never

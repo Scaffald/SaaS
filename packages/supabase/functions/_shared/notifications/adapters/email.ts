@@ -94,7 +94,9 @@ export const emailAdapter: ChannelAdapter = {
       };
     }
 
-    const metadata = normalizeMetadata(delivery.metadata);
+    const metadata = normalizeMetadata(
+      (delivery.metadata ?? {}) as Record<string, unknown>,
+    );
     const recipient = typeof metadata.email === "string" ? metadata.email : null;
 
     if (!recipient) {
@@ -104,7 +106,7 @@ export const emailAdapter: ChannelAdapter = {
       };
     }
 
-    const bodyPayload = notification.body ?? {};
+    const bodyPayload = normalizeMetadata(notification.body ?? {});
     const messageFallback = notification.message ?? notification.preview ?? notification.title;
 
     const payload = buildEmailPayload(

@@ -1,1 +1,1 @@
-export type { Database } from "../../types.ts";
+export type { Database, Json } from "../../types.ts";
