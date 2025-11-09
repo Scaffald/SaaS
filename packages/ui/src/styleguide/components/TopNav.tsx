@@ -63,7 +63,7 @@ export function StyleguideTopNav({
                 padding={0}
               >
                 <XStack alignItems="center" gap="$2">
-                  <View width={96} height={24} accessibilityRole="image">
+                  <View width={96} height={24} aria-role="image">
                     <ScaffaldLogo width={96} height={24} />
                   </View>
                   <Text fontSize={14} fontWeight="500" color="$color11">
@@ -119,7 +119,7 @@ export function StyleguideTopNav({
                   window.open('https://github.com/Scaffald/scf-neue', '_blank', 'noopener')
                 }
               }}
-              accessibilityLabel="Open repository on GitHub"
+              aria-label="Open repository on GitHub"
             >
               GitHub
             </Button>
@@ -159,7 +159,7 @@ const SearchField = React.forwardRef<unknown, SearchFieldProps>(
         fontSize={14}
         backgroundColor="transparent"
         color="$color11"
-        accessibilityLabel="Search the styleguide"
+        aria-label="Search the styleguide"
         autoCapitalize="none"
         autoCorrect={false}
         returnKeyType="search"

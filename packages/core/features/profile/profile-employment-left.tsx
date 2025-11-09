@@ -1,19 +1,7 @@
 import type React from 'react'
 import { useState, useEffect, useRef } from 'react'
 import { useWindowDimensions } from 'react-native'
-import {
-  YStack,
-  XStack,
-  Text,
-  Button,
-  Input,
-  H4,
-  Spinner,
-  AnimatePresence,
-  Slider,
-  Checkbox,
-  Label,
-} from 'tamagui'
+import { YStack, XStack, Text, Button, Input, H4, Spinner, AnimatePresence, Slider, Label } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { useForm, Controller, useController, type Control } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -33,17 +21,8 @@ import {
   failProfileSync,
   resetProfileSyncError,
 } from './utils/profile-sync-store'
-import { DashboardWidget, LocationListInput, ToggleCard, ConfirmationDialog } from '@app/ui'
-import {
-  Flag,
-  MapPin,
-  Plane,
-  DollarSign,
-  Car,
-  Shield,
-  Calendar,
-  Check,
-} from '@tamagui/lucide-icons'
+import { CustomCheckbox, DashboardWidget, LocationListInput, ToggleCard, ConfirmationDialog } from '@app/ui'
+import { Flag, MapPin, Plane, DollarSign, Car, Shield, Calendar } from '@tamagui/lucide-icons'
 
 type MultiSelectFieldName = 'drivers_license_classes' | 'military_status' | 'availability'
 
@@ -95,7 +74,7 @@ function MultiSelectToggleField({
     onToggleChange?.(checked)
   }
 
-  const handleOptionChange = (option: string, checked: boolean | 'indeterminate') => {
+  const handleOptionChange = (option: string, checked: boolean) => {
     const nextChecked = checked === true
     if (nextChecked) {
       if (!selectedValues.includes(option)) {
@@ -122,17 +101,13 @@ function MultiSelectToggleField({
             const isChecked = selectedValues.includes(option)
             return (
               <XStack key={option} gap="$3" items="center">
-                <Checkbox
-                  id={checkboxId}
-                  accessibilityLabel={option}
+                <CustomCheckbox
+                  aria-label={option}
                   checked={isChecked}
-                  onCheckedChange={(checked) => handleOptionChange(option, checked)}
-                >
-                  <Checkbox.Indicator>
-                    <Check size={16} />
-                  </Checkbox.Indicator>
-                </Checkbox>
-                <Label htmlFor={checkboxId} cursor="pointer">
+                  onCheckedChange={(value) => handleOptionChange(option, value)}
+                  testID={checkboxId}
+                />
+                <Label cursor="pointer" onPress={() => handleOptionChange(option, !isChecked)}>
                   {option}
                 </Label>
               </XStack>

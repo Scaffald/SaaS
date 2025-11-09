@@ -10,7 +10,6 @@ import {
   Select,
   Adapt,
   Sheet,
-  Checkbox,
   Label,
   Spinner,
   useWindowDimensions,
@@ -19,8 +18,8 @@ import { useToastController } from '@tamagui/toast'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Plus, Save, X, Check } from '@tamagui/lucide-icons'
-import { DashboardWidget } from '@app/ui'
+import { Plus, Save, X } from '@tamagui/lucide-icons'
+import { CustomCheckbox, DashboardWidget } from '@app/ui'
 import { api } from '@app/core/utils/api'
 
 const certificationSchema = z.object({
@@ -338,26 +337,26 @@ export function OfficeCertificationsLeft({
 
           {/* Requires Renewal */}
           <YStack gap="$2">
-            <XStack gap="$3" items="center">
-              <Controller
-                name="requires_renewal"
-                control={control}
-                render={({ field }) => (
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    id="requires-renewal"
-                  >
-                    <Checkbox.Indicator>
-                      <Check size={16} />
-                    </Checkbox.Indicator>
-                  </Checkbox>
-                )}
-              />
-              <Label htmlFor="requires-renewal" cursor="pointer">
-                <Text fontWeight="600">Requires Renewal</Text>
-              </Label>
-            </XStack>
+            <Controller
+              name="requires_renewal"
+              control={control}
+              render={({ field }) => {
+                const isChecked = Boolean(field.value)
+                return (
+                  <XStack gap="$3" items="center">
+                    <CustomCheckbox
+                      checked={isChecked}
+                      onCheckedChange={field.onChange}
+                      aria-label="Requires renewal"
+                      testID="requires-renewal"
+                    />
+                    <Label cursor="pointer" onPress={() => field.onChange(!isChecked)}>
+                      <Text fontWeight="600">Requires Renewal</Text>
+                    </Label>
+                  </XStack>
+                )
+              }}
+            />
           </YStack>
 
           {/* Renewal Period (conditional) */}

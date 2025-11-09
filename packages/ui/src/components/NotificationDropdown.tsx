@@ -265,7 +265,6 @@ export function NotificationDropdown({
               <Button
                 size="$2"
                 theme="blue"
-                bg="$accentBg"
                 icon={ExternalLink}
                 onPress={() => {
                   setOpen(false)

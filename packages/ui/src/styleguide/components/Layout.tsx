@@ -48,7 +48,7 @@ export function StyleguideLayout({ initialQuery = '' }: StyleguideLayoutProps) {
           <View flex={1} backgroundColor="$color2" borderLeftWidth={1} borderColor="$color6">
             <ScrollView
               testID="styleguide-content"
-              accessibilityLabel="Styleguide content"
+              aria-label="Styleguide content"
               contentContainerStyle={{
                 padding: 32,
                 gap: 32,

@@ -41,6 +41,24 @@ vi.mock('@app/ui', () => {
   const { View, Text, TouchableOpacity } = require('react-native')
   return {
     DashboardWidget: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
+    CustomCheckbox: ({
+      accessibilityLabel,
+      checked,
+      onCheckedChange,
+    }: {
+      accessibilityLabel?: string
+      checked: boolean
+      onCheckedChange: (checked: boolean) => void
+    }) => (
+      <TouchableOpacity
+        aria-role="checkbox"
+        aria-label={accessibilityLabel}
+        accessibilityState={{ checked }}
+        onPress={() => onCheckedChange(!checked)}
+      >
+        <Text>{checked ? '✓' : '□'}</Text>
+      </TouchableOpacity>
+    ),
     ToggleCard: ({
       title,
       description,
@@ -58,8 +76,8 @@ vi.mock('@app/ui', () => {
     }) => (
       <View>
         <TouchableOpacity
-          accessibilityRole="button"
-          accessibilityLabel={`${title} card`}
+          aria-role="button"
+          aria-label={`${title} card`}
           onPress={() => {
             if (!cardPressDisabled) {
               onCheckedChange(!checked)
@@ -69,8 +87,8 @@ vi.mock('@app/ui', () => {
           <Text>{title}</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          accessibilityRole="switch"
-          accessibilityLabel={title}
+          aria-role="switch"
+          aria-label={title}
           accessibilityState={{ checked }}
           onPress={() => onCheckedChange(!checked)}
         >
@@ -90,8 +108,8 @@ vi.mock('@app/ui', () => {
       <View>
         <Text testID="location-count">Locations: {value.length}</Text>
         <TouchableOpacity
-          accessibilityRole="button"
-          accessibilityLabel="Add location"
+          aria-role="button"
+          aria-label="Add location"
           onPress={() => onChange([...value, `Location ${value.length + 1}`])}
         >
           <Text>Add Location</Text>
@@ -118,7 +136,7 @@ vi.mock('tamagui', () => {
       <Text ref={ref as React.Ref<Text>} {...props}>
         {children}
       </Text>
-    ),
+    )
   )
 
   const Button = ({
@@ -131,7 +149,7 @@ vi.mock('tamagui', () => {
     disabled?: boolean
   }) => (
     <TouchableOpacity
-      accessibilityRole="button"
+      aria-role="button"
       accessibilityState={{ disabled: Boolean(disabled) }}
       onPress={disabled ? undefined : onPress}
     >
@@ -148,7 +166,7 @@ vi.mock('tamagui', () => {
         onChangeText,
         ...props
       }: { value?: string; onChangeText?: (value: string) => void; [key: string]: unknown },
-      ref,
+      ref
     ) => (
       <TextInput
         ref={ref as React.Ref<TextInput>}
@@ -156,7 +174,7 @@ vi.mock('tamagui', () => {
         onChangeText={onChangeText}
         {...props}
       />
-    ),
+    )
   )
 
   const Slider = ({
@@ -176,8 +194,8 @@ vi.mock('tamagui', () => {
   }) => (
     <View>
       <TouchableOpacity
-        accessibilityRole="adjustable"
-        accessibilityLabel="Travel slider"
+        aria-role="adjustable"
+        aria-label="Travel slider"
         onPress={() => {
           const currentValue = value?.[0] ?? min
           const nextValue = Math.min(max, currentValue + step)
@@ -205,8 +223,8 @@ vi.mock('tamagui', () => {
     children?: React.ReactNode
   }) => (
     <TouchableOpacity
-      accessibilityRole="checkbox"
-      accessibilityLabel={accessibilityLabel}
+      aria-role="checkbox"
+      aria-label={accessibilityLabel}
       accessibilityState={{ checked: Boolean(checked) }}
       onPress={() => onCheckedChange(!checked)}
     >
@@ -251,16 +269,16 @@ vi.mock('@app/core/utils/api', async () => {
             onSuccess?: (
               result: { success: boolean },
               input: EmploymentProfileFormData,
-              context: unknown,
+              context: unknown
             ) => Promise<void> | void
             onError?: (
               error: unknown,
               input: EmploymentProfileFormData,
-              context: unknown,
+              context: unknown
             ) => Promise<void> | void
             onSettled?: (
               result: { success: boolean } | undefined,
-              error: unknown,
+              error: unknown
             ) => Promise<void> | void
           }) => ({
             mutateAsync: async (input: EmploymentProfileFormData) => {
@@ -305,10 +323,7 @@ vi.mock('@app/core/utils/api', async () => {
   }
 })
 
-import {
-  profileEmploymentDefaults,
-  DRIVERS_LICENSE_OPTIONS,
-} from '@app/core/utils/api'
+import { profileEmploymentDefaults, DRIVERS_LICENSE_OPTIONS } from '@app/core/utils/api'
 import { ProfileEmploymentLeft } from '../profile-employment-left'
 
 const renderEmploymentForm = () => render(<ProfileEmploymentLeft />)
@@ -378,7 +393,9 @@ describe('ProfileEmploymentLeft', () => {
     const slider = getByLabelText(/travel slider/i)
     fireEvent.press(slider)
 
-    expect(getByRole('switch', { name: /willing to travel/i }).props.accessibilityState.checked).toBe(true)
+    expect(
+      getByRole('switch', { name: /willing to travel/i }).props.accessibilityState.checked
+    ).toBe(true)
   })
 
   it('shows saved values after a successful save', async () => {
@@ -418,8 +435,12 @@ describe('ProfileEmploymentLeft', () => {
 
     rerender(<ProfileEmploymentLeft />)
 
-    expect(getByRole('switch', { name: /us resident/i }).props.accessibilityState.checked).toBe(true)
-    expect(getByRole('switch', { name: /us passport/i }).props.accessibilityState.checked).toBe(true)
+    expect(getByRole('switch', { name: /us resident/i }).props.accessibilityState.checked).toBe(
+      true
+    )
+    expect(getByRole('switch', { name: /us passport/i }).props.accessibilityState.checked).toBe(
+      true
+    )
     expect(getByRole('switch', { name: /driver/i }).props.accessibilityState.checked).toBe(true)
     expect(getByRole('checkbox', { name: /class a/i }).props.accessibilityState.checked).toBe(true)
   })
@@ -452,10 +473,9 @@ describe('ProfileEmploymentLeft', () => {
     fireEvent.press(saveButton)
 
     await waitFor(() =>
-      expect(queryByText(/please select at least one license class/i)).not.toBeNull(),
+      expect(queryByText(/please select at least one license class/i)).not.toBeNull()
     )
 
     expect(mockMutateAsync).not.toHaveBeenCalled()
   })
 })
-

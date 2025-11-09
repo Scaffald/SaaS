@@ -28,7 +28,7 @@ export function AnchorHeading({ id, level = 2, title, description }: AnchorHeadi
   const HeadingComponent = level === 2 ? H2 : H3
 
   return (
-    <YStack gap="$2" nativeID={id} accessibilityLabel={title}>
+    <YStack gap="$2" nativeID={id} aria-label={title}>
       <XStack alignItems="center" gap="$3">
         <HeadingComponent fontSize={level === 2 ? 32 : 24} lineHeight={level === 2 ? 36 : 28}>
           {title}
@@ -43,7 +43,7 @@ export function AnchorHeading({ id, level = 2, title, description }: AnchorHeadi
           hoverStyle={{ backgroundColor: '$color4' }}
           pressStyle={{ backgroundColor: '$color5' }}
           onPress={handleCopy}
-          accessibilityLabel={`Copy link to ${title}`}
+          aria-label={`Copy link to ${title}`}
         >
           <Text fontSize={12} color="$color10">
             Copy

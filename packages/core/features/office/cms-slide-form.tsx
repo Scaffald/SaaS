@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Button, Form, Input, Label, TextArea, XStack, YStack, Text, Switch, H4 } from 'tamagui'
+import { Button, Form, Input, Label, TextArea, XStack, YStack, Text, H4 } from 'tamagui'
 import { Save } from '@tamagui/lucide-icons'
-import { IconSelector, ImageUpload } from '@app/ui'
+import { IconSelector, ImageUpload, ToggleSwitch } from '@app/ui'
 import type { WelcomeSlideCreate, WelcomeSlideUpdate } from '@app/schemas'
 
 interface CMSSlideFormProps {
@@ -104,10 +104,13 @@ export function CMSSlideForm({ initialData, onSubmit, isLoading }: CMSSlideFormP
         </YStack>
 
         <XStack gap="$3" items="center">
-          <Switch checked={isActive} onCheckedChange={setIsActive} disabled={isLoading}>
-            <Switch.Thumb animation="quick" />
-          </Switch>
-          <Label htmlFor="active">Active (visible to users)</Label>
+          <ToggleSwitch
+            checked={isActive}
+            onCheckedChange={setIsActive}
+            disabled={isLoading}
+            aria-label="Slide active"
+          />
+          <Label>Active (visible to users)</Label>
         </XStack>
 
         <XStack gap="$2" justify="flex-end">

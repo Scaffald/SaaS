@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { YStack, XStack, Text, Input } from '@app/ui'
-import { Adapt, Sheet, Select, Label, Switch, TextArea } from 'tamagui'
+import { YStack, XStack, Text, Input, ToggleSwitch } from '@app/ui'
+import { Adapt, Sheet, Select, Label, TextArea } from 'tamagui'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
 
 interface CompensationBenefitsSectionProps {
@@ -101,18 +101,16 @@ export function CompensationBenefitsSection({
       {/* Bonus Structure */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="bonusStructure">Has bonus structure</Label>
+          <Label>Has bonus structure</Label>
           <Text fontSize="$2" color="$color10">
             Performance or other bonus opportunities
           </Text>
         </YStack>
-        <Switch
-          id="bonusStructure"
+        <ToggleSwitch
           checked={localState.has_bonus_structure || false}
           onCheckedChange={(checked) => handleChange('has_bonus_structure', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Has bonus structure"
+        />
       </XStack>
 
       {localState.has_bonus_structure && (
@@ -130,18 +128,16 @@ export function CompensationBenefitsSection({
       {/* Equity */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="equity">Has equity compensation</Label>
+          <Label>Has equity compensation</Label>
           <Text fontSize="$2" color="$color10">
             Stock options, RSUs, or other equity
           </Text>
         </YStack>
-        <Switch
-          id="equity"
+        <ToggleSwitch
           checked={localState.has_equity || false}
           onCheckedChange={(checked) => handleChange('has_equity', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Has equity compensation"
+        />
       </XStack>
 
       {localState.has_equity && (
@@ -175,18 +171,16 @@ export function CompensationBenefitsSection({
       {/* Relocation Package */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="relocation">Has relocation package</Label>
+          <Label>Has relocation package</Label>
           <Text fontSize="$2" color="$color10">
             Relocation assistance available
           </Text>
         </YStack>
-        <Switch
-          id="relocation"
+        <ToggleSwitch
           checked={localState.has_relocation_package || false}
           onCheckedChange={(checked) => handleChange('has_relocation_package', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Has relocation package"
+        />
       </XStack>
 
       {localState.has_relocation_package && (
@@ -204,18 +198,16 @@ export function CompensationBenefitsSection({
       {/* Overtime Eligible */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="overtime">Overtime eligible</Label>
+          <Label>Overtime eligible</Label>
           <Text fontSize="$2" color="$color10">
             Position eligible for overtime pay
           </Text>
         </YStack>
-        <Switch
-          id="overtime"
+        <ToggleSwitch
           checked={localState.overtime_eligible || false}
           onCheckedChange={(checked) => handleChange('overtime_eligible', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Overtime eligible"
+        />
       </XStack>
 
       {/* Pay Frequency */}

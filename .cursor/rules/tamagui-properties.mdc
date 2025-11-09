@@ -1,79 +1,13 @@
 ---
 description: "Tamagui property name mappings and styling guidelines"
 globs: ["**/*.tsx", "**/*.ts"]
-alwaysApply: false
+alwaysApply: true
 ---
 
 # Tamagui Property Mappings
 
-## Core Style Properties
-- **borderColor** → `bc`
-- **backgroundColor** → `bg` (use `$color1` to `$color12` or `$blue1` to `$blue12` variables)
-- **borderRadius** → `rounded` (use `$1` to `$12` for consistent spacing)
-- **alignItems** → `items`
-- **justifyContent** → `justify`
-
-## Positioning Properties
-- **top** → `t`
-- **left** → `l` 
-- **right** → `r`
-- **bottom** → `b`
-- **position** → `pos`
-- **zIndex** → `z`
-
-## Spacing Properties
-### Padding
-- **paddingHorizontal** → `px`
-- **paddingVertical** → `py`
-- **paddingLeft** → `pl`
-- **paddingRight** → `pr`
-- **paddingTop** → `pt`
-- **paddingBottom** → `pb`
-- **padding** → `p`
-
-### Margin
-- **marginHorizontal** → `mx`
-- **marginVertical** → `my`
-- **marginLeft** → `ml`
-- **marginRight** → `mr`
-- **marginTop** → `mt`
-- **marginBottom** → `mb`
-- **margin** → `m`
-
-## Size Properties
-- **width** → `w`
-- **height** → `h`
-- **minWidth** → `minW`
-- **maxWidth** → `maxW`
-- **minHeight** → `minH`
-- **maxHeight** → `maxH`
-
-## Alignment Properties
-- **alignSelf** → `als`
-
-## Shadow Properties
-- **DO NOT use** `shadowColor`, `shadowOffset`, `shadowOpacity`, `shadowRadius`
-- **USE** `boxShadow` property instead
-- Example: `boxShadow="0 4px 12px rgba(0,0,0,0.15)"`
-
-## Color Variables
-- **Theme colors**: `$color1` to `$color12`
-- **Semantic colors**: `$blue1` to `$blue12`, `$green1` to `$green12`, `$red1` to `$red12`, etc.
-- **Surface colors**: `$background`, `$backgroundHover`, `$backgroundPress`
-- **Text colors**: `$color`, `$colorHover`, `$colorPress`
-
-## Typography Properties
-- **fontSize** → `fos`
-- **fontWeight** → `fow`
-- **color** → `col`
-- **textAlign** → `text`
-
-## Border Properties
-- **borderWidth** → `bw`
-- **borderTopWidth** → `btw`
-- **borderBottomWidth** → `bbw`
-- **borderLeftWidth** → `blw`
-- **borderRightWidth** → `brw`
+- **ALWAYS rely on the shorthand tokens from `@tamagui/shorthands` when a matching property exists.**
+- **SOURCE all design tokens from `packages/ui/src/themes/scaffald-theme.ts`; do not invent new colors or spacing values.**
 
 ## Examples
 
@@ -114,3 +48,4 @@ alwaysApply: false
 3. **Leverage spacing tokens** (`$1` to `$12`) for consistency
 4. **Use `boxShadow`** instead of individual shadow properties
 5. **Prefer semantic color names** (`$blue9`, `$green6`) over generic ones
+6. **Verify tokens exist in `packages/ui/src/themes/scaffald-theme.ts` before usage**

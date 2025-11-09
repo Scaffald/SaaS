@@ -2,11 +2,11 @@ import { useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Input, Switch, Text, XStack, YStack, Paragraph } from 'tamagui'
+import { Input, Text, XStack, YStack, Paragraph } from 'tamagui'
 import { StepNavigation } from '../StepNavigation'
 import type { WizardStepComponentProps } from './types'
 import type { EducationStepData } from '../../hooks/useProfileWizard'
-import { MonthYearPicker } from '@app/ui'
+import { MonthYearPicker, ToggleSwitch } from '@app/ui'
 
 const educationSchema = z.object({
   degreeType: z.string().optional(),
@@ -163,9 +163,11 @@ export function EducationStep({
           control={control}
           name="isCurrent"
           render={({ field }) => (
-            <Switch size="$3" checked={field.value} onCheckedChange={field.onChange}>
-              <Switch.Thumb animation="quick" />
-            </Switch>
+            <ToggleSwitch
+              checked={Boolean(field.value)}
+              onCheckedChange={field.onChange}
+              aria-label="I am currently enrolled"
+            />
           )}
         />
         <Text fontSize="$3">I am currently enrolled</Text>

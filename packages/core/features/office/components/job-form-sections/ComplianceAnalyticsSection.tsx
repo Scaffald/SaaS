@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { YStack, XStack, Text, Input } from '@app/ui'
-import { Label, Switch } from 'tamagui'
+import { YStack, XStack, Text, Input, ToggleSwitch } from '@app/ui'
+import { Label } from 'tamagui'
 
 interface ComplianceAnalyticsSectionProps {
   eeoJobCategory?: string
@@ -71,69 +71,61 @@ export function ComplianceAnalyticsSection({
       {/* Veteran Friendly */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="veteranFriendly">Veteran friendly</Label>
+          <Label>Veteran friendly</Label>
           <Text fontSize="$2" color="$color10">
             Position suitable for veterans
           </Text>
         </YStack>
-        <Switch
-          id="veteranFriendly"
+        <ToggleSwitch
           checked={localState.is_veteran_friendly || false}
           onCheckedChange={(checked) => handleChange('is_veteran_friendly', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Veteran friendly"
+        />
       </XStack>
 
       {/* Disability Friendly */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="disabilityFriendly">Disability friendly</Label>
+          <Label>Disability friendly</Label>
           <Text fontSize="$2" color="$color10">
             Accommodations available for disabilities
           </Text>
         </YStack>
-        <Switch
-          id="disabilityFriendly"
+        <ToggleSwitch
           checked={localState.is_disability_friendly || false}
           onCheckedChange={(checked) => handleChange('is_disability_friendly', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Disability friendly"
+        />
       </XStack>
 
       {/* Affirmative Action Plan */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="affirmativeAction">Affirmative action plan</Label>
+          <Label>Affirmative action plan</Label>
           <Text fontSize="$2" color="$color10">
             Part of affirmative action hiring
           </Text>
         </YStack>
-        <Switch
-          id="affirmativeAction"
+        <ToggleSwitch
           checked={localState.affirmative_action_plan || false}
           onCheckedChange={(checked) => handleChange('affirmative_action_plan', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Affirmative action plan"
+        />
       </XStack>
 
       {/* Source Tracking */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="sourceTracking">Source tracking enabled</Label>
+          <Label>Source tracking enabled</Label>
           <Text fontSize="$2" color="$color10">
             Track where applicants find this job
           </Text>
         </YStack>
-        <Switch
-          id="sourceTracking"
+        <ToggleSwitch
           checked={localState.source_tracking_enabled || false}
           onCheckedChange={(checked) => handleChange('source_tracking_enabled', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Source tracking enabled"
+        />
       </XStack>
     </YStack>
   )

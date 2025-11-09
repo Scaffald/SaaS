@@ -9,7 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from '@tamagui/lucide-icons'
-import type { ColumnDef } from '@tanstack/react-table'
+import type { ColumnDef, Updater, VisibilityState } from '@tanstack/react-table'
 import {
   useReactTable,
   getCoreRowModel,
@@ -18,6 +18,8 @@ import {
   flexRender,
 } from '@tanstack/react-table'
 import { Table } from './TableParts'
+
+const HEADER_ROW_HEIGHT = 48
 
 export interface DataTableProps<TData> {
   columns: ColumnDef<TData, unknown>[]
@@ -29,6 +31,8 @@ export interface DataTableProps<TData> {
   cellWidth?: string
   cellHeight?: string
   hidePagination?: boolean
+  columnVisibility?: VisibilityState
+  onColumnVisibilityChange?: (updater: Updater<VisibilityState>) => void
 }
 
 export function DataTable<TData>({
@@ -41,6 +45,8 @@ export function DataTable<TData>({
   cellWidth = '$15',
   cellHeight = '$5',
   hidePagination = false,
+  columnVisibility,
+  onColumnVisibilityChange,
 }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
@@ -53,6 +59,16 @@ export function DataTable<TData>({
         pageSize,
       },
     },
+    ...(columnVisibility
+      ? {
+          state: {
+            columnVisibility,
+          },
+          onColumnVisibilityChange,
+        }
+      : onColumnVisibilityChange
+        ? { onColumnVisibilityChange }
+        : {}),
   })
 
   const headerGroups = table.getHeaderGroups()
@@ -91,8 +107,8 @@ export function DataTable<TData>({
               borderBottomRightRadius="$2"
             >
               {/* Header */}
-              <Table.Head>
-                {headerGroups.map((headerGroup) => (
+              <Table.Head position="absolute" t={0} z={5} bg="$background">
+                {headerGroups.map((headerGroup, groupIndex) => (
                   <Table.Row
                     key={headerGroup.id}
                     backgrounded
@@ -100,8 +116,29 @@ export function DataTable<TData>({
                     rowLocation="first"
                     borderTopRightRadius="$4"
                     borderTopLeftRadius="$4"
+                    position="absolute"
+                    t={groupIndex * HEADER_ROW_HEIGHT}
+                    z={5 + groupIndex}
                   >
                     {headerGroup.headers.map((header, idx) => {
+                      const cellLocation =
+                        idx === 0
+                          ? 'first'
+                          : idx === headerGroup.headers.length - 1
+                            ? 'last'
+                            : 'middle'
+
+                      if (header.isPlaceholder) {
+                        return (
+                          <Table.HeaderCell
+                            key={header.id}
+                            pl="$3"
+                            cellWidth={cellWidth as never}
+                            cellLocation={cellLocation}
+                          />
+                        )
+                      }
+
                       const columnMeta = header.column.columnDef.meta as
                         | { width?: string | number }
                         | undefined
@@ -112,18 +149,16 @@ export function DataTable<TData>({
                           key={header.id}
                           pl="$3"
                           cellWidth={columnWidth as never}
-                          cellLocation={
-                            idx === 0
-                              ? 'first'
-                              : idx === headerGroup.headers.length - 1
-                                ? 'last'
-                                : 'middle'
-                          }
+                          cellLocation={cellLocation}
                         >
                           <View
                             flexDirection="row"
                             cursor={header.column.getCanSort() ? 'pointer' : 'default'}
-                            onPress={header.column.getToggleSortingHandler()}
+                            onPress={
+                              header.column.getCanSort()
+                                ? header.column.getToggleSortingHandler()
+                                : undefined
+                            }
                             gap="$2"
                             items="center"
                           >

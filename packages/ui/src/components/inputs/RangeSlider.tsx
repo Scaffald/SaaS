@@ -34,8 +34,6 @@ export interface RangeSliderProps {
   size?: 'small' | 'medium' | 'large'
   /** Optional test ID for testing */
   testID?: string
-  /** Optional label for accessibility */
-  accessibilityLabel?: string
 }
 
 const SliderTrack = styled(View, {
@@ -169,7 +167,6 @@ export function RangeSlider({
   disabled = false,
   size = 'medium',
   testID,
-  accessibilityLabel,
 }: RangeSliderProps) {
   const [trackWidth, setTrackWidth] = useState(0)
 
@@ -224,8 +221,7 @@ export function RangeSlider({
       onLayout={handleTrackLayout}
       onPress={handleTrackPress}
       testID={testID}
-      accessibilityLabel={accessibilityLabel}
-      accessibilityValue={{
+      aria-value={{
         min,
         max,
         now: clampedValue,
@@ -246,7 +242,7 @@ export function RangeSlider({
         onPress={handleThumbPress}
         onPressIn={handleThumbPress}
         onPressOut={handleThumbRelease}
-        accessibilityLabel={`Slider thumb at ${value}`}
+        aria-label={`Slider thumb at ${value}`}
       />
     </SliderTrack>
   )

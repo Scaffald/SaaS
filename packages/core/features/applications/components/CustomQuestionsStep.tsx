@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { Button, Input, Label, Switch, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Button, Input, Label, Text, TextArea, XStack, YStack } from 'tamagui'
 import { ArrowLeft } from '@tamagui/lucide-icons'
 import type { CustomQuestionAnswer } from '@app/schemas'
+import { ToggleSwitch } from '@app/ui'
 
 export interface CustomQuestion {
   id: string
@@ -288,15 +289,14 @@ export function CustomQuestionsStep({
             {/* Yes/No Toggle */}
             {question.type === 'yes_no' && (
               <XStack gap="$4" items="center">
-                <Switch
+                <ToggleSwitch
                   checked={(getAnswer(question.id) as boolean) || false}
                   onCheckedChange={(checked) =>
                     updateAnswer(question.id, question.question, 'yes_no', checked)
                   }
                   disabled={isSubmitting}
-                >
-                  <Switch.Thumb animation="quick" />
-                </Switch>
+                  aria-label={`${question.question} toggle`}
+                />
                 <Text fontSize="$3" color="$color11">
                   {(getAnswer(question.id) as boolean) ? 'Yes' : 'No'}
                 </Text>

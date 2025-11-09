@@ -10,7 +10,6 @@ import {
   Adapt,
   Sheet,
   useWindowDimensions,
-  Checkbox,
   Label,
   Spinner,
 } from 'tamagui'
@@ -23,6 +22,7 @@ import {
   DEGREE_TYPE_OPTIONS,
 } from '../config'
 import {
+  CustomCheckbox,
   ResponsiveModal,
   UniversityAutocomplete,
   ConfirmationDialog,
@@ -490,40 +490,31 @@ export function EducationEntryEditModal({
             <Controller
               name="is_current"
               control={control}
-              render={({ field }) => (
-                <XStack gap="$2" items="center">
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={(checked) => {
-                      field.onChange(checked === true)
-                      if (checked === true) {
-                        setValue('end_date', undefined, { shouldValidate: true })
-                      } else {
-                        setValue('expected_graduation_date', undefined, {
-                          shouldValidate: true,
-                        })
-                      }
-                    }}
-                  >
-                    <Checkbox.Indicator />
-                  </Checkbox>
-                  <Label
-                    onPress={() => {
-                      const newValue = !field.value
-                      field.onChange(newValue)
-                      if (newValue) {
-                        setValue('end_date', undefined, { shouldValidate: true })
-                      } else {
-                        setValue('expected_graduation_date', undefined, {
-                          shouldValidate: true,
-                        })
-                      }
-                    }}
-                  >
-                    Currently enrolled
-                  </Label>
-                </XStack>
-              )}
+              render={({ field }) => {
+                const isCurrent = Boolean(field.value)
+                const handleChange = (next: boolean) => {
+                  field.onChange(next)
+                  if (next) {
+                    setValue('end_date', undefined, { shouldValidate: true })
+                  } else {
+                    setValue('expected_graduation_date', undefined, {
+                      shouldValidate: true,
+                    })
+                  }
+                }
+
+                return (
+                  <XStack gap="$2" items="center">
+                    <CustomCheckbox
+                      checked={isCurrent}
+                      onCheckedChange={handleChange}
+                      testID="education-modal-current"
+                      aria-label="Currently enrolled"
+                    />
+                    <Label onPress={() => handleChange(!isCurrent)}>Currently enrolled</Label>
+                  </XStack>
+                )
+              }}
             />
 
             {/* Expected Graduation Date */}

@@ -1,18 +1,7 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
-import {
-  YStack,
-  XStack,
-  Text,
-  Button,
-  Input,
-  Spinner,
-  Slider,
-  Card,
-  Separator,
-  Checkbox,
-  Label,
-} from 'tamagui'
-import { Search, Check } from '@tamagui/lucide-icons'
+import { YStack, XStack, Text, Button, Input, Spinner, Slider, Card, Separator, Label } from 'tamagui'
+import { Search } from '@tamagui/lucide-icons'
+import { CustomCheckbox } from '@app/ui'
 
 /**
  * Parent skill from search (multi-taxonomy format)
@@ -332,33 +321,25 @@ export function InlineSkillSearch({
         {/* Taxonomy Checkboxes */}
         <XStack gap="$3" items="center">
           <XStack gap="$2" items="center">
-            <Checkbox
-              id="search-csi"
+            <CustomCheckbox
               checked={searchCSI}
-              onCheckedChange={(checked) => setSearchCSI(checked === true)}
-              size="$3"
-            >
-              <Checkbox.Indicator>
-                <Check size={16} />
-              </Checkbox.Indicator>
-            </Checkbox>
-            <Label htmlFor="search-csi" fontSize="$2">
+              onCheckedChange={(checked) => setSearchCSI(checked)}
+              aria-label="Filter CSI taxonomy"
+              testID="search-csi"
+            />
+            <Label fontSize="$2" onPress={() => setSearchCSI((prev) => !prev)}>
               CSI
             </Label>
           </XStack>
 
           <XStack gap="$2" items="center">
-            <Checkbox
-              id="search-onet"
+            <CustomCheckbox
               checked={searchONET}
-              onCheckedChange={(checked) => setSearchONET(checked === true)}
-              size="$3"
-            >
-              <Checkbox.Indicator>
-                <Check size={16} />
-              </Checkbox.Indicator>
-            </Checkbox>
-            <Label htmlFor="search-onet" fontSize="$2">
+              onCheckedChange={(checked) => setSearchONET(checked)}
+              aria-label="Filter O*NET taxonomy"
+              testID="search-onet"
+            />
+            <Label fontSize="$2" onPress={() => setSearchONET((prev) => !prev)}>
               O*NET
             </Label>
           </XStack>

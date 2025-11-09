@@ -1,23 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
+import type { ComponentType } from 'react'
 import { useRouter } from 'expo-router'
 import type { Href } from 'expo-router'
-import {
-  YStack,
-  XStack,
-  Text,
-  Button,
-  Spinner,
-  Separator,
-  ScrollView,
-  Badge,
-  Switch,
-  Label,
-  Input,
-} from 'tamagui'
+import { YStack, XStack, Text, Button, Spinner, Separator, ScrollView, Label, Input } from 'tamagui'
 import { AlertCircle, Info, ShieldAlert, ExternalLink } from '@tamagui/lucide-icons'
 
 import { api } from '@app/core/utils/api'
-import type { NotificationItem } from '@app/ui'
+import { NotificationTag, ToggleSwitch, type NotificationItem } from '@app/ui'
 
 interface ApiNotification {
   id: string
@@ -40,6 +29,22 @@ const FILTERS: Array<{ label: string; value: 'all' | 'unread' | 'archived' }> = 
   { label: 'Archived', value: 'archived' },
 ]
 
+const severityIconTokens: Record<NotificationItem['severity'], string> = {
+  critical: '$red10',
+  important: '$yellow10',
+  info: '$blue10',
+}
+
+type SeverityIconProps = {
+  IconComponent: ComponentType<{ size?: number; color?: string }>
+  severity: NotificationItem['severity']
+}
+
+const SeverityIcon = ({ IconComponent, severity }: SeverityIconProps) => {
+  const colorToken = severityIconTokens[severity] ?? '$blue10'
+  return <IconComponent size={22} color={colorToken} />
+}
+
 function getSeverityIcon(severity: NotificationItem['severity']) {
   switch (severity) {
     case 'critical':
@@ -54,11 +59,11 @@ function getSeverityIcon(severity: NotificationItem['severity']) {
 function getSeverityTheme(severity: NotificationItem['severity']) {
   switch (severity) {
     case 'critical':
-      return 'red'
+      return 'error'
     case 'important':
-      return 'yellow'
+      return 'warning'
     default:
-      return 'blue'
+      return 'info'
   }
 }
 
@@ -126,7 +131,8 @@ export default function NotificationsCenterScreen() {
   const notificationsQuery = api.notifications.list.useInfiniteQuery(
     { status: filter, limit: 25 },
     {
-      getNextPageParam: (lastPage) => lastPage?.nextCursor ?? undefined,
+      getNextPageParam: (lastPage: { nextCursor?: string | null }) =>
+        lastPage?.nextCursor ?? undefined,
       keepPreviousData: true,
     }
   )
@@ -174,7 +180,9 @@ export default function NotificationsCenterScreen() {
   const notifications: NotificationItem[] = useMemo(
     () =>
       (notificationsQuery.data?.pages ?? [])
-        .flatMap((page) => page?.items ?? [])
+        .flatMap(
+          (page: { items?: ApiNotification[] | null } | null | undefined) => page?.items ?? []
+        )
         .map(mapNotification),
     [notificationsQuery.data]
   )
@@ -221,7 +229,7 @@ export default function NotificationsCenterScreen() {
   }
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 24 }}>
+    <ScrollView px="$6" py="$6">
       <YStack gap="$6">
         <YStack gap="$2">
           <Text fontSize="$9" fontWeight="700">
@@ -262,16 +270,24 @@ export default function NotificationsCenterScreen() {
 
           <YStack gap="$3">
             <XStack items="center" justify="space-between">
-              <Label htmlFor="notif-global" color="$color12" fontWeight="600">
+              <Label
+                color="$color12"
+                fontWeight="600"
+                onPress={() =>
+                  setPreferences((prev) => ({
+                    ...prev,
+                    globalEnabled: !prev.globalEnabled,
+                  }))
+                }
+              >
                 Enable notifications
               </Label>
-              <Switch
-                id="notif-global"
-                size="$3"
+              <ToggleSwitch
                 checked={preferences.globalEnabled}
                 onCheckedChange={(value) =>
-                  setPreferences((prev) => ({ ...prev, globalEnabled: Boolean(value) }))
+                  setPreferences((prev) => ({ ...prev, globalEnabled: value }))
                 }
+                aria-label="Enable notifications"
               />
             </XStack>
 
@@ -285,19 +301,29 @@ export default function NotificationsCenterScreen() {
                 ] as const
               ).map(({ key, label }) => (
                 <XStack key={key} items="center" justify="space-between">
-                  <Label htmlFor={`channel-${key}`} color="$color11">
+                  <Label
+                    color="$color11"
+                    onPress={() =>
+                      setPreferences((prev) => ({
+                        ...prev,
+                        channelEnabled: {
+                          ...prev.channelEnabled,
+                          [key]: !prev.channelEnabled[key],
+                        },
+                      }))
+                    }
+                  >
                     {label}
                   </Label>
-                  <Switch
-                    id={`channel-${key}`}
-                    size="$2"
+                  <ToggleSwitch
                     checked={preferences.channelEnabled[key]}
                     onCheckedChange={(value) =>
                       setPreferences((prev) => ({
                         ...prev,
-                        channelEnabled: { ...prev.channelEnabled, [key]: Boolean(value) },
+                        channelEnabled: { ...prev.channelEnabled, [key]: value },
                       }))
                     }
+                    aria-label={`Enable ${label} notifications`}
                   />
                 </XStack>
               ))}
@@ -352,32 +378,38 @@ export default function NotificationsCenterScreen() {
                 Digest frequency
               </Text>
               <XStack gap="$2" flexWrap="wrap">
-                {[
-                  { label: 'Immediate', value: 'immediate' },
-                  { label: 'Daily summary', value: 'digest_daily' },
-                  { label: 'Weekly summary', value: 'digest_weekly' },
-                  { label: 'Mute', value: 'mute' },
-                ].map((option) => (
-                  <Button
-                    key={option.value}
-                    size="$2"
-                    theme={preferences.digestFrequency === option.value ? 'blue' : 'gray'}
-                    variant={preferences.digestFrequency === option.value ? 'solid' : 'outlined'}
-                    onPress={() =>
-                      setPreferences((prev) => ({
-                        ...prev,
-                        digestFrequency: option.value as typeof prev.digestFrequency,
-                      }))
-                    }
-                  >
-                    {option.label}
-                  </Button>
-                ))}
+                {(
+                  [
+                    { label: 'Immediate', value: 'immediate' },
+                    { label: 'Daily summary', value: 'digest_daily' },
+                    { label: 'Weekly summary', value: 'digest_weekly' },
+                    { label: 'Mute', value: 'mute' },
+                  ] as const
+                ).map((option) => {
+                  const isSelected = preferences.digestFrequency === option.value
+
+                  return (
+                    <Button
+                      key={option.value}
+                      size="$2"
+                      theme={isSelected ? 'blue' : 'gray'}
+                      {...(!isSelected ? { variant: 'outlined' as const } : {})}
+                      onPress={() =>
+                        setPreferences((prev) => ({
+                          ...prev,
+                          digestFrequency: option.value as typeof prev.digestFrequency,
+                        }))
+                      }
+                    >
+                      {option.label}
+                    </Button>
+                  )
+                })}
               </XStack>
             </YStack>
 
             {savePreferencesMutation.isSuccess && (
-              <Text fontSize="$2" color="green">
+              <Text fontSize="$2" color="$green10">
                 Preferences saved.
               </Text>
             )}
@@ -444,24 +476,28 @@ export default function NotificationsCenterScreen() {
         </YStack>
 
         <XStack gap="$3" flexWrap="wrap">
-          {FILTERS.map((item) => (
-            <Button
-              key={item.value}
-              theme={filter === item.value ? 'blue' : 'gray'}
-              variant={filter === item.value ? 'solid' : 'outlined'}
-              onPress={() => {
-                setFilter(item.value)
-                notificationsQuery.refetch()
-              }}
-            >
-              {item.label}
-              {item.value === 'unread' && unreadCount > 0 && (
-                <Badge ml="$2" size="$1" theme="red">
-                  {unreadCount > 99 ? '99+' : unreadCount}
-                </Badge>
-              )}
-            </Button>
-          ))}
+          {FILTERS.map((item) => {
+            const isActive = filter === item.value
+
+            return (
+              <Button
+                key={item.value}
+                theme={isActive ? 'blue' : 'gray'}
+                {...(!isActive ? { variant: 'outlined' as const } : {})}
+                onPress={() => {
+                  setFilter(item.value)
+                  notificationsQuery.refetch()
+                }}
+              >
+                {item.label}
+                {item.value === 'unread' && unreadCount > 0 && (
+                  <NotificationTag ml="$2" themeName="error">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </NotificationTag>
+                )}
+              </Button>
+            )
+          })}
         </XStack>
 
         {notificationsQuery.isLoading ? (
@@ -482,7 +518,10 @@ export default function NotificationsCenterScreen() {
         ) : (
           <YStack gap="$2">
             {notifications.map((notification, _index) => {
-              const IconComponent = getSeverityIcon(notification.severity)
+              const IconComponent = getSeverityIcon(notification.severity) as ComponentType<{
+                size?: number
+                color?: string
+              }>
               const severityTheme = getSeverityTheme(notification.severity)
 
               return (
@@ -494,15 +533,19 @@ export default function NotificationsCenterScreen() {
                   bg="$color1"
                 >
                   <XStack p="$4" gap="$3" items="flex-start">
-                    <IconComponent size={22} color={`$${severityTheme}10`} />
+                    <SeverityIcon IconComponent={IconComponent} severity={notification.severity} />
                     <YStack flex={1} gap="$2">
                       <XStack justify="space-between" items="center">
                         <Text fontSize="$4" fontWeight="700" color="$color12">
                           {notification.title}
                         </Text>
-                        <Badge size="$2" theme={severityTheme}>
+                        <NotificationTag
+                          themeName={severityTheme}
+                          size="md"
+                          textColorToken="$color12"
+                        >
                           {notification.severity.toUpperCase()}
-                        </Badge>
+                        </NotificationTag>
                       </XStack>
                       <Text fontSize="$3" color="$color11">
                         {notification.preview}
@@ -512,9 +555,9 @@ export default function NotificationsCenterScreen() {
                           {formatRelativeTime(notification.createdAt)}
                         </Text>
                         {notification.channels.length > 0 && (
-                          <Badge size="$1" theme="gray">
+                          <NotificationTag themeName="gray">
                             {notification.channels.join(', ')}
-                          </Badge>
+                          </NotificationTag>
                         )}
                       </XStack>
                     </YStack>
@@ -544,7 +587,7 @@ export default function NotificationsCenterScreen() {
                     {filter === 'archived' ? (
                       <Button
                         size="$2"
-                        theme="green"
+                        theme="success"
                         onPress={() => restoreMutation.mutate({ ids: [notification.id] })}
                       >
                         Restore
@@ -560,13 +603,13 @@ export default function NotificationsCenterScreen() {
                     )}
 
                     {notification.ctaUrl && (
-                      <Button
-                        size="$2"
-                        theme="blue"
-                        iconRight={ExternalLink}
-                        onPress={() => handleNavigate(notification)}
-                      >
-                        {notification.ctaLabel ?? 'Open'}
+                      <Button size="$2" theme="blue" onPress={() => handleNavigate(notification)}>
+                        <XStack gap="$2" items="center">
+                          <Text fontSize="$2" fontWeight="600" color="$color12">
+                            {notification.ctaLabel ?? 'Open'}
+                          </Text>
+                          <ExternalLink size={16} color="#ffffff" />
+                        </XStack>
                       </Button>
                     )}
                   </XStack>

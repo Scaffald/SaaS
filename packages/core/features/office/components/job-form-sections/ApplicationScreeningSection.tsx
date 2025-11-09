@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { YStack, XStack, Text, Input } from '@app/ui'
-import { Adapt, Sheet, Select, Label, Switch } from 'tamagui'
+import { YStack, XStack, Text, Input, ToggleSwitch } from '@app/ui'
+import { Adapt, Sheet, Select, Label } from 'tamagui'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
 
 interface ApplicationScreeningSectionProps {
@@ -69,35 +69,31 @@ export function ApplicationScreeningSection({
       {/* Current Location */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="currentLocation">Current location</Label>
+          <Label>Current location</Label>
           <Text fontSize="$2" color="$color10">
             Ask applicants for their current location
           </Text>
         </YStack>
-        <Switch
-          id="currentLocation"
+        <ToggleSwitch
           checked={localState.require_current_location}
           onCheckedChange={(checked) => handleChange('require_current_location', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Require current location"
+        />
       </XStack>
 
       {/* Willing to Relocate */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="relocation">Willing to relocate</Label>
+          <Label>Willing to relocate</Label>
           <Text fontSize="$2" color="$color10">
             Ask if applicants are willing to relocate
           </Text>
         </YStack>
-        <Switch
-          id="relocation"
+        <ToggleSwitch
           checked={localState.require_relocation_willingness}
           onCheckedChange={(checked) => handleChange('require_relocation_willingness', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Require relocation willingness"
+        />
       </XStack>
 
       {/* Minimum Years of Experience */}
@@ -154,35 +150,31 @@ export function ApplicationScreeningSection({
       {/* Work Authorization */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="workAuth">Authorized to work in US</Label>
+          <Label>Authorized to work in US</Label>
           <Text fontSize="$2" color="$color10">
             Require work authorization status
           </Text>
         </YStack>
-        <Switch
-          id="workAuth"
+        <ToggleSwitch
           checked={localState.require_work_authorization}
           onCheckedChange={(checked) => handleChange('require_work_authorization', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Require work authorization"
+        />
       </XStack>
 
       {/* Earliest Start Date */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="startDate">Earliest start date</Label>
+          <Label>Earliest start date</Label>
           <Text fontSize="$2" color="$color10">
             Ask when applicants can start
           </Text>
         </YStack>
-        <Switch
-          id="startDate"
+        <ToggleSwitch
           checked={localState.require_earliest_start_date}
           onCheckedChange={(checked) => handleChange('require_earliest_start_date', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Require earliest start date"
+        />
       </XStack>
     </YStack>
   )

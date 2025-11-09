@@ -11,8 +11,6 @@ export interface RadioProps {
   size?: 'small' | 'medium' | 'large'
   /** Optional test ID for testing */
   testID?: string
-  /** Optional label for accessibility */
-  accessibilityLabel?: string
 }
 
 const RadioContainer = styled(View, {
@@ -130,7 +128,6 @@ export function Radio({
   disabled = false,
   size = 'medium',
   testID,
-  accessibilityLabel,
 }: RadioProps) {
   const handlePress = () => {
     if (!disabled) {
@@ -144,7 +141,6 @@ export function Radio({
       disabled={disabled}
       size={size}
       onPress={handlePress}
-      aria-label={accessibilityLabel}
       testID={testID}
       borderWidth={2}
       rounded={50}

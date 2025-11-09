@@ -155,13 +155,14 @@ export function ToggleSwitch({
   // Calculate thumb position based on size and checked state
   const getThumbPosition = () => {
     const sizeMap = {
-      small: { width: 32, thumbWidth: 12, offset: 2 },
-      medium: { width: 44, thumbWidth: 18, offset: 2 },
-      large: { width: 56, thumbWidth: 24, offset: 2 },
+      small: { width: 32, thumbWidth: 12, offset: 3 },
+      medium: { width: 44, thumbWidth: 18, offset: 3 },
+      large: { width: 56, thumbWidth: 24, offset: 3 },
     }
 
     const { width, thumbWidth, offset } = sizeMap[size]
-    return checked ? width - thumbWidth - offset : offset
+    const endOffsetCompensation = 1
+    return checked ? width - thumbWidth - offset - endOffsetCompensation : offset
   }
 
   return (

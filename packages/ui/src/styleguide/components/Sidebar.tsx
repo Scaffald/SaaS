@@ -123,7 +123,7 @@ export function StyleguideSidebar({
     >
       <ScrollView
         contentContainerStyle={{ paddingVertical: 24, paddingHorizontal: 16, gap: 16 }}
-        accessibilityLabel="Styleguide navigation"
+        aria-label="Styleguide navigation"
       >
         {visibleSections.map((section) => {
           const open = openSections[section.id] ?? true

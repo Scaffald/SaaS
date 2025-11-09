@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Button, Input, Label, Switch, Text, XStack, YStack } from 'tamagui'
+import { Button, Input, Label, Text, XStack, YStack } from 'tamagui'
 import type { ScreeningAnswers } from '@app/schemas'
+import { ToggleSwitch } from '@app/ui'
 
 export interface ScreeningStepProps {
   /**
@@ -93,15 +94,14 @@ export function ScreeningStep({
           Are you willing to relocate for this position?
         </Label>
         <XStack gap="$4" items="center">
-          <Switch
+          <ToggleSwitch
             checked={answers.willing_to_relocate || false}
             onCheckedChange={(checked) => {
               onAnswersChange({ ...answers, willing_to_relocate: checked })
             }}
             disabled={isSubmitting}
-          >
-            <Switch.Thumb animation="quick" />
-          </Switch>
+            aria-label="Willing to relocate"
+          />
           <Text fontSize="$3" color="$color11">
             {answers.willing_to_relocate
               ? 'Yes, I am willing to relocate'
@@ -149,7 +149,7 @@ export function ScreeningStep({
           Are you legally authorized to work in the United States?
         </Label>
         <XStack gap="$4" items="center">
-          <Switch
+          <ToggleSwitch
             checked={answers.is_authorized_to_work || false}
             onCheckedChange={(checked) => {
               onAnswersChange({ ...answers, is_authorized_to_work: checked })
@@ -158,9 +158,8 @@ export function ScreeningStep({
               }
             }}
             disabled={isSubmitting}
-          >
-            <Switch.Thumb animation="quick" />
-          </Switch>
+            aria-label="Authorized to work in the United States"
+          />
           <Text fontSize="$3" color="$color11">
             {answers.is_authorized_to_work
               ? 'Yes, I am authorized to work'

@@ -572,8 +572,7 @@ export function AvatarCropModal({
           shadowOffset={{ width: 0, height: 2 }}
           shadowOpacity={0.3}
           shadowRadius={6}
-          accessibilityRole="image"
-          accessibilityLabel="Preview of cropped avatar"
+          aria-role="image"
           aria-label="Preview of cropped avatar"
         >
           <TamaguiImage
@@ -581,13 +580,13 @@ export function AvatarCropModal({
             width={previewImageWidth}
             height={previewImageHeight}
             position="absolute"
-            left={previewLeft}
-            top={previewTop}
+            l={previewLeft}
+            t={previewTop}
             style={previewTransformStyle as any}
           />
           <View
             position="absolute"
-            borderRadius={PREVIEW_SIZE / 2}
+            rounded={PREVIEW_SIZE / 2}
             borderWidth={1}
             borderColor="rgba(255,255,255,0.35)"
             width="100%"
@@ -604,11 +603,10 @@ export function AvatarCropModal({
             onPress={handleZoomOut}
             disabled={zoom <= MIN_ZOOM || isProcessing}
             variant="outlined"
-            accessibilityRole="button"
-            accessibilityLabel="Zoom out"
+            aria-role="button"
             aria-label="Zoom out"
           />
-          <Text fontSize="$2" color="$color11" minWidth={60} textAlign="center">
+          <Text fontSize="$2" color="$color11" minW={60} text="center">
             {Math.round(zoom * 100)}%
           </Text>
           <Button
@@ -617,8 +615,7 @@ export function AvatarCropModal({
             onPress={handleZoomIn}
             disabled={zoom >= MAX_ZOOM || isProcessing}
             variant="outlined"
-            accessibilityRole="button"
-            accessibilityLabel="Zoom in"
+            aria-role="button"
             aria-label="Zoom in"
           />
           <Button
@@ -627,8 +624,7 @@ export function AvatarCropModal({
             onPress={handleZoomReset}
             disabled={isProcessing}
             variant="outlined"
-            accessibilityRole="button"
-            accessibilityLabel="Reset zoom"
+            aria-role="button"
             aria-label="Reset zoom"
           >
             Reset
@@ -642,10 +638,7 @@ export function AvatarCropModal({
             onPress={toggleFlipHorizontal}
             icon={FlipHorizontal}
             disabled={isProcessing}
-            accessibilityRole="button"
-            accessibilityLabel={
-              flipHorizontal ? 'Disable horizontal flip' : 'Flip image horizontally'
-            }
+            aria-role="button"
             aria-label={flipHorizontal ? 'Disable horizontal flip' : 'Flip image horizontally'}
           />
           <Button
@@ -654,8 +647,7 @@ export function AvatarCropModal({
             onPress={toggleFlipVertical}
             icon={FlipVertical}
             disabled={isProcessing}
-            accessibilityRole="button"
-            accessibilityLabel={flipVertical ? 'Disable vertical flip' : 'Flip image vertically'}
+            aria-role="button"
             aria-label={flipVertical ? 'Disable vertical flip' : 'Flip image vertically'}
           />
         </XStack>
@@ -694,10 +686,10 @@ export function AvatarCropModal({
           <YStack p="$4" gap="$4" flex={1}>
             {error ? (
               <YStack items="center" justify="center" gap="$3" flex={1}>
-                <Text fontSize="$4" color="$red10" textAlign="center" fontWeight="600">
+                <Text fontSize="$4" color="$red10" text="center" fontWeight="600">
                   Error
                 </Text>
-                <Text fontSize="$3" color="$color11" textAlign="center">
+                <Text fontSize="$3" color="$color11" text="center">
                   {error}
                 </Text>
                 <Button variant="outlined" onPress={() => onOpenChange(false)}>
@@ -705,7 +697,7 @@ export function AvatarCropModal({
                 </Button>
               </YStack>
             ) : imageLoaded ? (
-              <YStack flex={1} items="center" justify="center" gap="$4" w="100%">
+              <YStack flex={1} items="center" justify="center" gap="$4" width="100%">
                 {(() => {
                   const liveRegionProps =
                     Platform.OS === 'web'
@@ -740,11 +732,9 @@ export function AvatarCropModal({
                         width={displaySize}
                         height={displaySize}
                         bg="$color2"
-                        borderRadius="$4"
+                        rounded="$4"
                         overflow="hidden"
-                        accessible
-                        accessibilityRole="image"
-                        accessibilityLabel="Avatar crop area. Drag to reposition and pinch to zoom."
+                        aria-role="image"
                         aria-label="Avatar crop area. Drag to reposition and pinch to zoom."
                       >
                         <TamaguiImage
@@ -766,8 +756,8 @@ export function AvatarCropModal({
 
                         <View
                           position="absolute"
-                          top={0}
-                          left={0}
+                          t={0}
+                          l={0}
                           width={displaySize}
                           height={(displaySize - cropDisplaySize) / 2}
                           bg="rgba(0, 0, 0, 0.5)"
@@ -775,8 +765,8 @@ export function AvatarCropModal({
                         />
                         <View
                           position="absolute"
-                          bottom={0}
-                          left={0}
+                          b={0}
+                          l={0}
                           width={displaySize}
                           height={(displaySize - cropDisplaySize) / 2}
                           bg="rgba(0, 0, 0, 0.5)"
@@ -784,8 +774,8 @@ export function AvatarCropModal({
                         />
                         <View
                           position="absolute"
-                          top={(displaySize - cropDisplaySize) / 2}
-                          left={0}
+                          t={(displaySize - cropDisplaySize) / 2}
+                          l={0}
                           width={(displaySize - cropDisplaySize) / 2}
                           height={cropDisplaySize}
                           bg="rgba(0, 0, 0, 0.5)"
@@ -793,8 +783,8 @@ export function AvatarCropModal({
                         />
                         <View
                           position="absolute"
-                          top={(displaySize - cropDisplaySize) / 2}
-                          right={0}
+                          t={(displaySize - cropDisplaySize) / 2}
+                          r={0}
                           width={(displaySize - cropDisplaySize) / 2}
                           height={cropDisplaySize}
                           bg="rgba(0, 0, 0, 0.5)"
@@ -803,13 +793,13 @@ export function AvatarCropModal({
 
                         <View
                           position="absolute"
-                          left={(displaySize - cropDisplaySize) / 2}
-                          top={(displaySize - cropDisplaySize) / 2}
+                          l={(displaySize - cropDisplaySize) / 2}
+                          t={(displaySize - cropDisplaySize) / 2}
                           width={cropDisplaySize}
                           height={cropDisplaySize}
                           borderWidth={2}
                           borderColor="$blue10"
-                          borderRadius="$2"
+                          rounded="$2"
                           shadowColor="$shadowColor"
                           shadowOffset={{ width: 0, height: 2 }}
                           shadowOpacity={0.3}
@@ -824,10 +814,10 @@ export function AvatarCropModal({
                     return (
                       <>
                         {liveRegion}
-                        <XStack gap="$4" w="100%" justify="center" items="center">
+                        <XStack gap="$4" width="100%" justify="center" items="center">
                           {cropper}
-                          <YStack gap="$4" maxWidth={280} items="center">
-                            <Text fontSize="$3" color="$color11" textAlign="center">
+                          <YStack gap="$4" maxW={280} items="center">
+                            <Text fontSize="$3" color="$color11" text="center">
                               Pinch to zoom • Drag to position
                             </Text>
                             {controls}
@@ -840,7 +830,7 @@ export function AvatarCropModal({
                   return (
                     <>
                       {liveRegion}
-                      <Text fontSize="$3" color="$color11" textAlign="center">
+                      <Text fontSize="$3" color="$color11" text="center">
                         Pinch to zoom • Drag to position
                       </Text>
                       {controls}
@@ -925,10 +915,10 @@ export function AvatarCropModal({
           <YStack p="$4" gap="$4" items="center">
             {error ? (
               <YStack items="center" justify="center" gap="$3" minH={displaySize}>
-                <Text fontSize="$4" color="$red10" textAlign="center" fontWeight="600">
+                <Text fontSize="$4" color="$red10" text="center" fontWeight="600">
                   Error
                 </Text>
-                <Text fontSize="$3" color="$color11" textAlign="center">
+                <Text fontSize="$3" color="$color11" text="center">
                   {error}
                 </Text>
                 <Button variant="outlined" onPress={() => onOpenChange(false)}>
@@ -952,7 +942,7 @@ export function AvatarCropModal({
                 >
                   <Text>{liveAnnouncement}</Text>
                 </View>
-                <Text fontSize="$3" color="$color11" textAlign="center">
+                <Text fontSize="$3" color="$color11" text="center">
                   Drag to position • Scroll to zoom
                 </Text>
 

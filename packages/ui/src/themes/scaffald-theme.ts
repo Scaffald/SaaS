@@ -418,6 +418,18 @@ const builtThemes = createThemes({
         light: Object.values(blueLight),
       },
     },
+    blue: {
+      palette: {
+        dark: Object.values(blueDark),
+        light: Object.values(blueLight),
+      },
+    },
+    gray: {
+      palette: {
+        dark: Object.values(grayDark),
+        light: Object.values(grayLight),
+      },
+    },
   },
 })
 

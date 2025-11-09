@@ -73,6 +73,7 @@ export * from './components/chips'
 export * from './components/image-picker'
 export * from './components/inputs'
 export * from './components/maps'
+export * from './components/notifications'
 export * from './components/skills'
 export * from './components/university'
 export * from './components/user'
@@ -104,6 +105,9 @@ export * from './CardStack'
 // Table components
 export * from './components/table/TableParts'
 export * from './components/table/DataTable'
+export * from './components/table/TableActionBar'
+export * from './components/table/TableAddRecordModal'
+export * from './components/table/TableColumnVisibilityModal'
 
 // Kanban components
 export * from './components/kanban'

@@ -8,7 +8,6 @@ import {
   H4,
   TextArea,
   Select,
-  Checkbox,
   Adapt,
   Sheet,
   useWindowDimensions,
@@ -41,7 +40,13 @@ import {
   EMPLOYMENT_TYPE_OPTIONS,
   CAREER_LEVEL_OPTIONS,
 } from './config'
-import { DashboardWidget, ConfirmationDialog, MonthYearPicker, AddressAutocomplete } from '@app/ui'
+import {
+  CustomCheckbox,
+  DashboardWidget,
+  ConfirmationDialog,
+  MonthYearPicker,
+  AddressAutocomplete,
+} from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
@@ -498,24 +503,26 @@ export function ProfileExperienceLeft() {
               </XStack>
 
               {/* Remote Work Checkbox */}
-              <XStack gap="$2" items="center">
-                <Controller
-                  name={`experience_entries.${index}.is_remote`}
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      id={`remote-${index}`}
-                    >
-                      <Checkbox.Indicator>
-                        <X />
-                      </Checkbox.Indicator>
-                    </Checkbox>
-                  )}
-                />
-                <Label htmlFor={`remote-${index}`}>Remote Work</Label>
-              </XStack>
+              <Controller
+                name={`experience_entries.${index}.is_remote`}
+                control={control}
+                render={({ field }) => {
+                  const isRemote = Boolean(field.value)
+                  return (
+                    <XStack gap="$2" items="center">
+                      <CustomCheckbox
+                        checked={isRemote}
+                        onCheckedChange={field.onChange}
+                        testID={`remote-${index}`}
+                        aria-label="Remote work"
+                      />
+                      <Label cursor="pointer" onPress={() => field.onChange(!isRemote)}>
+                        Remote Work
+                      </Label>
+                    </XStack>
+                  )
+                }}
+              />
 
               {/* Start and End Dates */}
               <XStack gap="$3">
@@ -562,24 +569,26 @@ export function ProfileExperienceLeft() {
               </XStack>
 
               {/* Currently Working Checkbox */}
-              <XStack gap="$2" items="center">
-                <Controller
-                  name={`experience_entries.${index}.is_current`}
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      id={`current-${index}`}
-                    >
-                      <Checkbox.Indicator>
-                        <X />
-                      </Checkbox.Indicator>
-                    </Checkbox>
-                  )}
-                />
-                <Label htmlFor={`current-${index}`}>I currently work here</Label>
-              </XStack>
+              <Controller
+                name={`experience_entries.${index}.is_current`}
+                control={control}
+                render={({ field }) => {
+                  const isCurrent = Boolean(field.value)
+                  return (
+                    <XStack gap="$2" items="center">
+                      <CustomCheckbox
+                        checked={isCurrent}
+                        onCheckedChange={field.onChange}
+                        testID={`current-${index}`}
+                        aria-label="Currently work here"
+                      />
+                      <Label cursor="pointer" onPress={() => field.onChange(!isCurrent)}>
+                        I currently work here
+                      </Label>
+                    </XStack>
+                  )
+                }}
+              />
 
               {/* Description */}
               <YStack gap="$2">

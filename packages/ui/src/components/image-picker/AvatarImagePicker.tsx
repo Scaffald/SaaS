@@ -140,8 +140,7 @@ export function AvatarImagePicker({
             borderColor: disabled ? '$color6' : '$blue8',
             bg: disabled ? '$color3' : '$blue2',
           }}
-          accessibilityRole="image"
-          accessibilityLabel={previewUri || value ? 'Current avatar preview' : 'Avatar placeholder'}
+          aria-role="image"
           aria-label={previewUri || value ? 'Current avatar preview' : 'Avatar placeholder'}
         >
           {value ? (
@@ -195,8 +194,7 @@ export function AvatarImagePicker({
           onPress={open}
           disabled={disabled || isLoading || cropModalOpen}
           icon={Camera}
-          accessibilityRole="button"
-          accessibilityLabel={value ? 'Select a new photo' : 'Select a photo'}
+          aria-role="button"
           aria-label={value ? 'Select a new photo' : 'Select a photo'}
         >
           <Button.Text>
@@ -211,8 +209,7 @@ export function AvatarImagePicker({
             onPress={openEditModal}
             disabled={disabled || isLoading || cropModalOpen}
             icon={Edit3}
-            accessibilityRole="button"
-            accessibilityLabel="Edit current photo"
+            aria-role="button"
             aria-label="Edit current photo"
           >
             <Button.Text>Edit Photo</Button.Text>
@@ -227,8 +224,7 @@ export function AvatarImagePicker({
             onPress={() => onImageSelect('')}
             disabled={disabled || isLoading || cropModalOpen}
             icon={Delete}
-            accessibilityRole="button"
-            accessibilityLabel="Remove photo"
+            aria-role="button"
             aria-label="Remove photo"
           >
             <Button.Text>Remove</Button.Text>

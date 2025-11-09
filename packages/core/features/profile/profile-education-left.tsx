@@ -9,7 +9,6 @@ import {
   TextArea,
   ScrollView,
   Spinner,
-  Checkbox,
   Label,
   Popover,
   Separator,
@@ -26,6 +25,7 @@ import {
   createNewEducationEntry,
 } from './config'
 import {
+  CustomCheckbox,
   DashboardWidget,
   UniversityAutocomplete,
   ConfirmationDialog,
@@ -704,49 +704,35 @@ export function ProfileEducationLeft() {
                 <Controller
                   name={`education_entries.${index}.is_current`}
                   control={control}
-                  render={({ field }) => (
-                    <XStack gap="$2" items="center">
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(checked) => {
-                          field.onChange(checked === true)
-                          // Clear end_date when checking current
-                          if (checked === true) {
-                            setValue(`education_entries.${index}.end_date`, undefined, {
-                              shouldValidate: true,
-                            })
-                          } else {
-                            setValue(
-                              `education_entries.${index}.expected_graduation_date`,
-                              undefined,
-                              { shouldValidate: true }
-                            )
-                          }
-                        }}
-                      >
-                        <Checkbox.Indicator />
-                      </Checkbox>
-                      <Label
-                        onPress={() => {
-                          const newValue = !field.value
-                          field.onChange(newValue)
-                          if (newValue) {
-                            setValue(`education_entries.${index}.end_date`, undefined, {
-                              shouldValidate: true,
-                            })
-                          } else {
-                            setValue(
-                              `education_entries.${index}.expected_graduation_date`,
-                              undefined,
-                              { shouldValidate: true }
-                            )
-                          }
-                        }}
-                      >
-                        Currently enrolled
-                      </Label>
-                    </XStack>
-                  )}
+                  render={({ field }) => {
+                    const isCurrent = Boolean(field.value)
+                    const handleChange = (next: boolean) => {
+                      field.onChange(next)
+                      if (next) {
+                        setValue(`education_entries.${index}.end_date`, undefined, {
+                          shouldValidate: true,
+                        })
+                      } else {
+                        setValue(
+                          `education_entries.${index}.expected_graduation_date`,
+                          undefined,
+                          { shouldValidate: true }
+                        )
+                      }
+                    }
+
+                    return (
+                      <XStack gap="$2" items="center">
+                        <CustomCheckbox
+                          checked={isCurrent}
+                          onCheckedChange={handleChange}
+                          testID={`education-current-${index}`}
+                          aria-label="Currently enrolled"
+                        />
+                        <Label onPress={() => handleChange(!isCurrent)}>Currently enrolled</Label>
+                      </XStack>
+                    )
+                  }}
                 />
 
                 {/* Expected Graduation Date (shown when is_current is true) */}

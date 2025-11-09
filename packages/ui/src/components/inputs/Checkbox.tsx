@@ -12,8 +12,6 @@ export interface CheckboxProps {
   size?: 'small' | 'medium' | 'large'
   /** Optional test ID for testing */
   testID?: string
-  /** Optional label for accessibility */
-  accessibilityLabel?: string
 }
 
 const CheckboxContainer = styled(View, {
@@ -121,7 +119,6 @@ export function Checkbox({
   disabled = false,
   size = 'medium',
   testID,
-  accessibilityLabel,
 }: CheckboxProps) {
   const handlePress = () => {
     if (!disabled) {
@@ -135,9 +132,8 @@ export function Checkbox({
       disabled={disabled}
       size={size}
       onPress={handlePress}
-      accessibilityRole="checkbox"
-      accessibilityState={{ checked, disabled }}
-      accessibilityLabel={accessibilityLabel}
+      aria-role="checkbox"
+      aria-state={{ checked, disabled }}
       testID={testID}
     >
       <CheckboxIcon checked={checked}>

@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { YStack, XStack, Text, Button, ScrollView, Separator, Spinner, Badge } from 'tamagui'
+import { YStack, XStack, Text, Button, ScrollView, Separator, Spinner } from 'tamagui'
 import { AlertCircle, RefreshCw } from '@tamagui/lucide-icons'
 
 import { api } from '@app/core/utils/api'
+import { NotificationTag } from '@app/ui'
 
 interface NotificationDelivery {
   id: string
@@ -42,6 +43,12 @@ const DELIVERY_STATUSES = [
 
 type DeliveryStatus = (typeof DELIVERY_STATUSES)[number]
 
+const severityThemeMap: Record<'info' | 'important' | 'critical', 'info' | 'warning' | 'error'> = {
+  info: 'info',
+  important: 'warning',
+  critical: 'error',
+}
+
 function formatDate(value: string | null | undefined) {
   if (!value) return '—'
   return new Date(value).toLocaleString()
@@ -70,7 +77,7 @@ export default function OfficeNotificationsConsole() {
   const digestItems = (digestQuery.data ?? []) as DigestQueueItem[]
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 24 }}>
+    <ScrollView px="$6" py="$6">
       <YStack gap="$6">
         <YStack gap="$2">
           <Text fontSize="$9" fontWeight="700">
@@ -97,21 +104,25 @@ export default function OfficeNotificationsConsole() {
             </Button>
           </XStack>
 
-          <XStack gap="$2" wrap>
-            {DELIVERY_STATUSES.map((value) => (
-              <Button
-                key={value}
-                size="$2"
-                theme={status === value ? 'blue' : 'gray'}
-                variant={status === value ? 'solid' : 'outlined'}
-                onPress={() => {
-                  setStatus(value)
-                  deliveriesQuery.refetch()
-                }}
-              >
-                {value.charAt(0).toUpperCase() + value.slice(1)}
-              </Button>
-            ))}
+          <XStack gap="$2" fw="wrap">
+            {DELIVERY_STATUSES.map((value) => {
+              const isActive = status === value
+
+              return (
+                <Button
+                  key={value}
+                  size="$2"
+                  theme={isActive ? 'blue' : 'gray'}
+                  {...(!isActive ? { variant: 'outlined' as const } : {})}
+                  onPress={() => {
+                    setStatus(value)
+                    deliveriesQuery.refetch()
+                  }}
+                >
+                  {value.charAt(0).toUpperCase() + value.slice(1)}
+                </Button>
+              )
+            })}
           </XStack>
 
           {deliveriesQuery.isLoading ? (
@@ -150,8 +161,7 @@ export default function OfficeNotificationsConsole() {
               {deliveries.map((delivery, index) => {
                 const notification = delivery.notification
                 const severity = notification?.severity ?? 'info'
-                const badgeTheme =
-                  severity === 'critical' ? 'red' : severity === 'important' ? 'yellow' : 'blue'
+                const tagTheme = severityThemeMap[severity]
 
                 return (
                   <YStack key={delivery.id} bg={index % 2 === 0 ? '$color1' : '$color2'} p="$3">
@@ -161,9 +171,9 @@ export default function OfficeNotificationsConsole() {
                           <Text fontWeight="600" color="$color12" numberOfLines={1}>
                             {notification?.title ?? 'Untitled notification'}
                           </Text>
-                          <Badge size="$1" theme={badgeTheme}>
+                          <NotificationTag size="sm" themeName={tagTheme} textColorToken="$color12">
                             {severity.toUpperCase()}
-                          </Badge>
+                          </NotificationTag>
                         </XStack>
                         <Text fontSize="$2" color="$color10" numberOfLines={2}>
                           {notification?.preview ?? notification?.message ?? '—'}
@@ -172,14 +182,15 @@ export default function OfficeNotificationsConsole() {
                       <Text flex={1} color="$color11">
                         {formatChannel(delivery.channel)}
                       </Text>
-                      <Badge
-                        size="$2"
-                        theme={delivery.status === 'failed' ? 'red' : 'gray'}
+                      <NotificationTag
+                        size="md"
+                        themeName={delivery.status === 'failed' ? 'error' : 'gray'}
                         flex={1}
-                        textAlign="center"
+                        textColorToken="$color12"
+                        textProps={{ textAlign: 'center' }}
                       >
                         {delivery.status}
-                      </Badge>
+                      </NotificationTag>
                       <Text flex={1} color="$color11">
                         {delivery.attempts}
                       </Text>

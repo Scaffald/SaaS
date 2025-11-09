@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { YStack, XStack, Text } from '@app/ui'
-import { Switch, Label } from 'tamagui'
+import { YStack, XStack, Text, ToggleSwitch } from '@app/ui'
+import { Label } from 'tamagui'
 
 interface AutoRejectCriteria {
   score_minimum?: number
@@ -55,14 +55,16 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
       {/* Enable Auto-Rejection */}
       <XStack gap="$3">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="autoReject" fontWeight="600">
+          <Label fontWeight="600">
             Enable auto-rejection
           </Label>
           <Text fontSize="$2">Automatically screen out unqualified applicants</Text>
         </YStack>
-        <Switch id="autoReject" checked={localState.enabled} onCheckedChange={handleToggle}>
-          <Switch.Thumb animation="quick" />
-        </Switch>
+        <ToggleSwitch
+          checked={localState.enabled}
+          onCheckedChange={handleToggle}
+          aria-label="Enable auto-rejection"
+        />
       </XStack>
 
       {/* Criteria (only show when enabled) */}
@@ -75,52 +77,46 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
           {/* Work Authorization */}
           <XStack gap="$3">
             <YStack gap="$1" flex={1}>
-              <Label htmlFor="autoRejectAuth">Work authorization required</Label>
+              <Label>Work authorization required</Label>
               <Text fontSize="$1">Reject if not authorized to work</Text>
             </YStack>
-            <Switch
-              id="autoRejectAuth"
+            <ToggleSwitch
               checked={localState.criteria.require_work_authorization || false}
               onCheckedChange={(checked: boolean) =>
                 handleCriteriaChange('require_work_authorization', checked)
               }
-            >
-              <Switch.Thumb animation="quick" />
-            </Switch>
+              aria-label="Work authorization required"
+            />
           </XStack>
 
           {/* All Skills Required */}
           <XStack gap="$3">
             <YStack gap="$1" flex={1}>
-              <Label htmlFor="autoRejectSkills">All skills required</Label>
+              <Label>All skills required</Label>
               <Text fontSize="$1">Reject if missing any required skills</Text>
             </YStack>
-            <Switch
-              id="autoRejectSkills"
+            <ToggleSwitch
               checked={localState.criteria.require_all_skills || false}
               onCheckedChange={(checked: boolean) =>
                 handleCriteriaChange('require_all_skills', checked)
               }
-            >
-              <Switch.Thumb animation="quick" />
-            </Switch>
+              aria-label="All skills required"
+            />
           </XStack>
 
           {/* All Certifications Required */}
           <XStack gap="$3">
             <YStack gap="$1" flex={1}>
-              <Label htmlFor="autoRejectCerts">All certifications required</Label>
+              <Label>All certifications required</Label>
               <Text fontSize="$1">Reject if missing any required certifications</Text>
             </YStack>
-            <Switch
-              id="autoRejectCerts"
+            <ToggleSwitch
               checked={localState.criteria.require_all_certifications || false}
               onCheckedChange={(checked: boolean) =>
                 handleCriteriaChange('require_all_certifications', checked)
               }
-            >
-              <Switch.Thumb animation="quick" />
-            </Switch>
+              aria-label="All certifications required"
+            />
           </XStack>
 
           <YStack gap="$2" p="$3">

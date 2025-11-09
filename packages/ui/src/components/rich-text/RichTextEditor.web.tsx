@@ -45,7 +45,7 @@ const ToolbarButtonComponent = ({
     pressStyle={{
       background: isActive ? '$blue6' : '$gray4',
     }}
-    accessibilityLabel={label}
+    aria-label={label}
     icon={<Icon size="$1" />}
   />
 )
