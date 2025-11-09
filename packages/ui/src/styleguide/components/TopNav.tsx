@@ -72,12 +72,7 @@ export function StyleguideTopNav({
                 </XStack>
               </Button>
             </Link>
-            <View
-              bg="$color8"
-              borderRadius="$3"
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-            >
+            <View bg="$color8" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1">
               <Text fontSize={11} color="$color1" fontWeight="600">
                 BETA
               </Text>
@@ -96,12 +91,7 @@ export function StyleguideTopNav({
               <Button
                 size="$3"
                 iconAfter={() => (
-                  <View
-                    bg="$color9"
-                    paddingHorizontal={8}
-                    paddingVertical={2}
-                    borderRadius={999}
-                  >
+                  <View bg="$color9" paddingHorizontal={8} paddingVertical={2} borderRadius={999}>
                     <Text fontSize={11} color="$color1" fontWeight="700">
                       {approvalCount}
                     </Text>

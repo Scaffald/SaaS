@@ -48,13 +48,7 @@ export default function ApprovalQueuePage() {
           </YStack>
         ))}
         {TODO_ITEMS.length === 0 ? (
-          <View
-            padding="$5"
-            borderWidth={1}
-            borderColor="$color6"
-            borderRadius="$4"
-            bg="$color3"
-          >
+          <View padding="$5" borderWidth={1} borderColor="$color6" borderRadius="$4" bg="$color3">
             <Text fontSize={14} color="$color10">
               No pending approvals. 🎉
             </Text>

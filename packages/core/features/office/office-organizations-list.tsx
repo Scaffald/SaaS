@@ -309,7 +309,7 @@ export function OfficeOrganizationsList() {
                   }
                 }}
                 placeholder="Share why this request cannot be approved right now..."
-                minHeight={120}
+                style={{ minHeight: 120 }}
                 autoFocus
               />
               {rejectError ? (

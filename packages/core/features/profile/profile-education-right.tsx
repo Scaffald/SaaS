@@ -6,6 +6,7 @@ import { formatDateRange } from './utils/date-formatting'
 import { api } from '@app/core/utils/api'
 import { useState } from 'react'
 import { useToastController } from '@tamagui/toast'
+import type { EducationEntry } from './types/education'
 
 /**
  * Profile Education Right Component
@@ -13,12 +14,12 @@ import { useToastController } from '@tamagui/toast'
  */
 export function ProfileEducationRight() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<string | null>(null)
-  // biome-ignore lint/suspicious/noExplicitAny: tRPC types not yet generated
-  const [editingEntry, setEditingEntry] = useState<any | null>(null)
+  const [editingEntry, setEditingEntry] = useState<EducationEntry | null>(null)
   const toast = useToastController()
   
   // Query saved education data
   const educationQuery = api.profile.getEducation.useQuery()
+  const educationEntries = (educationQuery.data ?? []) as EducationEntry[]
   
   // Delete mutation
   const deleteEducationMutation = api.profile.deleteEducation.useMutation({
@@ -71,15 +72,14 @@ export function ProfileEducationRight() {
         Your education history is displayed here. Edit entries in the left panel.
       </Text>
 
-      {!educationQuery.data || educationQuery.data.length === 0 ? (
+      {educationEntries.length === 0 ? (
         <ProfileEmptyState
           icon={GraduationCap}
           message="No education history saved yet. Add your first education entry in the left panel."
         />
       ) : (
         <YStack gap="$3">
-          {/* biome-ignore lint/suspicious/noExplicitAny: tRPC types not yet generated */}
-          {educationQuery.data.map((edu: any) => {
+          {educationEntries.map((edu) => {
             const normalizedGpa =
               typeof edu.gpa === 'number' ? edu.gpa : edu.gpa != null ? Number(edu.gpa) : undefined
             const hasValidGpa =

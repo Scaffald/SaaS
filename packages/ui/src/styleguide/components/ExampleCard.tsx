@@ -12,13 +12,7 @@ type ExampleCardProps = {
 
 export function ExampleCard({ title, description, code, children }: ExampleCardProps) {
   return (
-    <YStack
-      borderWidth={1}
-      borderColor="$color6"
-      borderRadius="$4"
-      overflow="hidden"
-      bg="$color1"
-    >
+    <YStack borderWidth={1} borderColor="$color6" borderRadius="$4" overflow="hidden" bg="$color1">
       <YStack padding="$4" gap="$3">
         <Text fontSize={16} fontWeight="600" color="$color12">
           {title}
@@ -28,13 +22,7 @@ export function ExampleCard({ title, description, code, children }: ExampleCardP
             {description}
           </Text>
         ) : null}
-        <View
-          padding="$4"
-          bg="$color2"
-          borderRadius="$4"
-          borderWidth={1}
-          borderColor="$color5"
-        >
+        <View padding="$4" bg="$color2" borderRadius="$4" borderWidth={1} borderColor="$color5">
           {children}
         </View>
       </YStack>

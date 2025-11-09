@@ -839,7 +839,7 @@ export function AvatarCropModal({
                   )
                 })()}
 
-                <XStack gap="$3" w="100%">
+                <XStack gap="$3" width="100%">
                   <Button flex={1} variant="outlined" onPress={() => onOpenChange(false)}>
                     Cancel
                   </Button>
@@ -1053,7 +1053,7 @@ export function AvatarCropModal({
                   />
                 </div>
 
-                <XStack gap="$3" w="100%">
+                <XStack gap="$3" width="100%">
                   <Dialog.Close asChild>
                     <Button flex={1} variant="outlined" disabled={isProcessing}>
                       Cancel
