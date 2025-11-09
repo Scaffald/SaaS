@@ -20,6 +20,18 @@ import { api } from '@app/core/utils/api'
 import { normalizeOrganizationSlug } from '@app/core/features/discover/utils/normalizeOrganizationSlug'
 import { CheckCircle2, Loader2 } from '@tamagui/lucide-icons'
 
+interface OrganizationRequestSummary {
+  id: string
+  name: string
+  slug: string
+  status: 'pending' | 'approved' | 'rejected'
+  created_at: string
+}
+
+interface CreateOrganizationRequestResult {
+  request: OrganizationRequestSummary | null
+}
+
 type OrganizationRequestFormProps = {
   defaultName?: string
   defaultSlug?: string
@@ -55,7 +67,7 @@ export function OrganizationRequestForm({
 
   const createOrganizationRequestMutation =
     api.organizations.createOrganizationRequest.useMutation({
-      onSuccess: ({ request }) => {
+      onSuccess: ({ request }: CreateOrganizationRequestResult) => {
         toast.show('Request submitted', {
           message:
             'We received your organization details and will follow up after review.',
@@ -64,7 +76,7 @@ export function OrganizationRequestForm({
           setValue('slug', request.slug, { shouldValidate: false })
         }
       },
-      onError: (error) => {
+      onError: (error: { message?: string }) => {
         toast.show('Unable to submit request', {
           message: error.message ?? 'Please try again shortly.',
         })

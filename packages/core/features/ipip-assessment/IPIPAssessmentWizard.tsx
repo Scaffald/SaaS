@@ -6,6 +6,11 @@ import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
 import type { IPIPAnswer } from '@app/core/features/personality-assessment/lib/ipip'
 
+interface SaveIPIPProgressResult {
+  success: boolean
+  isComplete: boolean
+}
+
 /**
  * IPIPAssessmentWizard - Standalone wizard for IPIP Personality Questions
  */
@@ -18,7 +23,7 @@ export function IPIPAssessmentWizard() {
   const utils = api.useUtils()
 
   const saveMutation = api.personalityAssessment.saveIPIPProgress.useMutation({
-    onSuccess: (result) => {
+    onSuccess: (result: SaveIPIPProgressResult) => {
       // Invalidate status queries to update drawer checkmarks
       utils.personalityAssessment.getIPIPStatus.invalidate()
       utils.personalityAssessment.getAssessmentStatus.invalidate()

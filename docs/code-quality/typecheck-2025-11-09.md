@@ -7,7 +7,7 @@
 
 ## Quick Win Tasks
 - [ ] Quick Win – Harden form hooks against implicit `any` values  
-  Files: `packages/core/features/profile-completion/hooks/useCompletionStatus.ts`, `.../ProfileCompletionExperience.tsx`, `packages/core/features/organizations/components/OrganizationRequestForm.tsx`, `.../profile/profile-education-left.tsx`, `packages/core/features/profile/profile-employment-left.tsx`, `packages/core/features/profile/components/EducationEntryEditModal.tsx`, `packages/core/features/profile/__tests__/profile-employment-left.test.tsx`, `packages/core/features/profile/profile-education-right.tsx`, `packages/core/features/personality-assessment/components/ResultsStep.tsx`, `packages/core/features/ipip-assessment/IPIPAssessmentWizard.tsx`.
+  Files: `.../profile/profile-education-left.tsx`, `packages/core/features/profile/profile-employment-left.tsx`, `packages/core/features/profile/components/EducationEntryEditModal.tsx`, `packages/core/features/profile/__tests__/profile-employment-left.test.tsx`, `packages/core/features/profile/profile-education-right.tsx`, `packages/core/features/personality-assessment/components/ResultsStep.tsx`.
 - [ ] Quick Win – Fix accessibility prop typings (`aria-hidden`, `aria-live`, `aria-atomic`) to use booleans and the allowed literal unions  
   Files: `packages/core/features/profile-wizard/components/ProgressIndicator.tsx`, `packages/ui/src/components/image-picker/AvatarCropModal.tsx`.
 - [ ] Quick Win – Update Tamagui variant unions to include `ghost` / `solid` where needed or swap to supported tokens  

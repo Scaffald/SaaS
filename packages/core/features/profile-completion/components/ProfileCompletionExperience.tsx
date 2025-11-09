@@ -124,7 +124,7 @@ export function ProfileCompletionExperience() {
 
       <Sheet
         open={isWizardOpen}
-        onOpenChange={(value) => {
+        onOpenChange={(value: boolean) => {
           setIsWizardOpen(value)
           if (!value) {
             void refetch()
