@@ -29,7 +29,8 @@
       "@app/core": ["."],
       "@app/core/*": ["./*"],
       "@app/supabase": ["../../supabase"],
-      "@app/supabase/*": ["../../supabase/*"]
+      "@app/supabase/*": ["../../supabase/*"],
+      "expo-clipboard": ["../../types/expo-clipboard.d.ts"]
     },
     "plugins": []
   },

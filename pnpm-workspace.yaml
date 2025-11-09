@@ -51,6 +51,7 @@ catalog:
   expo-apple-authentication: ~8.0.7
   expo-build-properties: ~1.0.9
   expo-constants: ~18.0.9
+  expo-clipboard: ~6.0.0
   expo-crypto: ~15.0.7
   expo-dev-client: ~6.0.12
   expo-device: ~8.0.8

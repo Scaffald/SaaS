@@ -6,6 +6,7 @@
  */
 
 import { Platform } from 'react-native'
+import * as ExpoClipboard from 'expo-clipboard'
 
 /**
  * Copy text to clipboard
@@ -52,30 +53,16 @@ export async function copyToClipboard(text: string): Promise<boolean> {
         console.error('copyToClipboard: Fallback method failed', err)
         return false
       }
-    } else {
-      // React Native: Try to use Clipboard API
-      // First try @react-native-clipboard/clipboard if available
-      try {
-        const Clipboard = await import('@react-native-clipboard/clipboard').then(
-          (mod) => mod.default
-        )
-        await Clipboard.setString(text)
-        return true
-      } catch (importError) {
-        // Fallback: Try expo-clipboard if available
-        try {
-          const Clipboard = await import('expo-clipboard')
-          await Clipboard.setStringAsync(text)
-          return true
-        } catch (expoError) {
-          console.error('copyToClipboard: No clipboard library available', {
-            importError,
-            expoError,
-          })
-          return false
-        }
-      }
     }
+
+    // React Native environments: use Expo Clipboard module
+    if (typeof ExpoClipboard.setStringAsync === 'function') {
+      await ExpoClipboard.setStringAsync(text)
+      return true
+    }
+
+    console.error('copyToClipboard: Expo Clipboard module unavailable')
+    return false
   } catch (error) {
     console.error('copyToClipboard: Error copying to clipboard', error)
     return false
@@ -96,23 +83,12 @@ export async function getFromClipboard(): Promise<string> {
       return ''
     }
 
-    try {
-      const Clipboard = await import('@react-native-clipboard/clipboard').then(
-        (mod) => mod.default
-      )
-      return await Clipboard.getString()
-    } catch (importError) {
-      try {
-        const Clipboard = await import('expo-clipboard')
-        return await Clipboard.getStringAsync()
-      } catch (expoError) {
-        console.error('getFromClipboard: No clipboard library available', {
-          importError,
-          expoError,
-        })
-        return ''
-      }
+    if (typeof ExpoClipboard.getStringAsync === 'function') {
+      return await ExpoClipboard.getStringAsync()
     }
+
+    console.error('getFromClipboard: Expo Clipboard module unavailable')
+    return ''
   } catch (error) {
     console.error('getFromClipboard: Error reading from clipboard', error)
     return ''
