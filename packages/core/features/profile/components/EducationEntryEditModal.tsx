@@ -16,11 +16,7 @@ import {
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChevronDown } from '@tamagui/lucide-icons'
-import {
-  singleEducationEntrySchema,
-  type EducationProfileFormData,
-  DEGREE_TYPE_OPTIONS,
-} from '../config'
+import { singleEducationEntrySchema, DEGREE_TYPE_OPTIONS } from '../config'
 import {
   CustomCheckbox,
   ResponsiveModal,
@@ -31,6 +27,8 @@ import {
 } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
+import type { EducationEntry, EducationEntryFormValues } from '../types/education'
+import { normalizeEducationEntry } from '../utils/education-entry'
 
 // University type definition
 interface University {
@@ -41,8 +39,7 @@ interface University {
   slug: string
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: tRPC types not yet generated
-type EducationEntry = any
+type DegreeOption = (typeof DEGREE_TYPE_OPTIONS)[number]
 
 interface EducationEntryEditModalProps {
   open: boolean
@@ -51,10 +48,6 @@ interface EducationEntryEditModalProps {
   onSuccess?: () => void
 }
 
-/**
- * Education Entry Edit Modal
- * Modal form for editing a single education entry
- */
 export function EducationEntryEditModal({
   open,
   onOpenChange,
@@ -63,7 +56,7 @@ export function EducationEntryEditModal({
 }: EducationEntryEditModalProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
-  const originalDataRef = useRef<EducationProfileFormData['education_entries'][0] | null>(null)
+  const originalDataRef = useRef<EducationEntryFormValues | null>(null)
   const { width } = useWindowDimensions()
   const isMobile = width < 640
   const toast = useToastController()
@@ -115,7 +108,7 @@ export function EducationEntryEditModal({
     setValue,
     watch,
     formState: { errors, isDirty },
-  } = useForm<EducationProfileFormData['education_entries'][0]>({
+  } = useForm<EducationEntryFormValues>({
     resolver: zodResolver(singleEducationEntrySchema),
     mode: 'onChange',
   })
@@ -123,30 +116,7 @@ export function EducationEntryEditModal({
   // Load education entry data when modal opens
   useEffect(() => {
     if (open && educationEntry) {
-      // Determine if degree_type needs to be "Other" (if it's not in the standard list)
-      const isStandardDegreeType = educationEntry.degree_type
-        ? (DEGREE_TYPE_OPTIONS as readonly string[]).includes(educationEntry.degree_type)
-        : false
-      const degreeType = isStandardDegreeType ? educationEntry.degree_type : undefined
-      const customDegreeType =
-        !isStandardDegreeType && educationEntry.degree_type ? educationEntry.degree_type : undefined
-
-      const formData = {
-        id: educationEntry.id,
-        university_id: educationEntry.university_id || undefined,
-        institution_name: educationEntry.institution_name || '',
-        is_verified: educationEntry.is_verified || false,
-        degree_type: degreeType || (customDegreeType ? 'Other' : undefined),
-        custom_degree_type: customDegreeType || undefined,
-        field_of_study: educationEntry.field_of_study || undefined,
-        start_date: educationEntry.start_date || undefined,
-        end_date: educationEntry.end_date || undefined,
-        expected_graduation_date: educationEntry.expected_graduation_date || undefined,
-        is_current: educationEntry.is_current || false,
-        gpa: educationEntry.gpa || undefined,
-        description: educationEntry.description || undefined,
-        location: educationEntry.location || undefined,
-      }
+      const formData = normalizeEducationEntry(educationEntry)
 
       reset(formData)
       originalDataRef.current = formData
@@ -154,15 +124,18 @@ export function EducationEntryEditModal({
     }
   }, [open, educationEntry, reset])
 
-  const onSubmit = async (data: EducationProfileFormData['education_entries'][0]) => {
+  const onSubmit = async (data: EducationEntryFormValues) => {
     setIsLoading(true)
     try {
+      if (!educationEntry) {
+        return
+      }
+
       // Get all existing education entries
-      const allEntries = educationQuery.data || []
-      
+      const allEntries = (educationQuery.data ?? []).map(normalizeEducationEntry)
+
       // Update the entry being edited
-      // biome-ignore lint/suspicious/noExplicitAny: tRPC types not yet generated
-      const updatedEntries = allEntries.map((entry: any) =>
+      const updatedEntries = allEntries.map((entry) =>
         entry.id === educationEntry.id ? data : entry
       )
 
@@ -282,7 +255,12 @@ export function EducationEntryEditModal({
               name="degree_type"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || ''} onValueChange={field.onChange} placement="bottom">
+                <Select
+                  value={field.value ?? ''}
+                  onValueChange={(value) =>
+                    field.onChange(value === '' ? undefined : (value as DegreeOption))
+                  }
+                >
                   <Select.Trigger iconAfter={ChevronDown}>
                     <Select.Value placeholder="Select degree type" />
                   </Select.Trigger>
@@ -332,22 +310,26 @@ export function EducationEntryEditModal({
               control={control}
               render={({ field: degreeTypeField }) => {
                 const isOther = degreeTypeField.value === 'Other'
-                return isOther ? (
-                  <Controller
-                    name="custom_degree_type"
-                    control={control}
-                    render={({ field: customField }) => (
-                      <>
-                        <Input
-                          placeholder="Specify degree type"
-                          value={customField.value || ''}
-                          onChangeText={customField.onChange}
-                        />
-                        <FieldError message={errors.custom_degree_type?.message} />
-                      </>
+                return (
+                  <>
+                    {isOther && (
+                      <Controller
+                        name="custom_degree_type"
+                        control={control}
+                        render={({ field: customField }) => (
+                          <>
+                            <Input
+                              placeholder="Specify degree type"
+                              value={customField.value || ''}
+                              onChangeText={customField.onChange}
+                            />
+                            <FieldError message={errors.custom_degree_type?.message} />
+                          </>
+                        )}
+                      />
                     )}
-                  />
-                ) : null
+                  </>
+                )
               }}
             />
           </YStack>
