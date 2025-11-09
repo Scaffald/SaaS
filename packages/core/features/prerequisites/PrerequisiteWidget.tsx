@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
+import { useRouter } from 'expo-router'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   YStack,
@@ -15,6 +16,7 @@ import {
 } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { DashboardWidget, CustomCheckbox, UIButton as StyledButton, spacing } from '@app/ui'
+import { ResumeUploadButton, ResumeUploadModal } from '@app/core/features/resume'
 import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
 import {
@@ -39,6 +41,8 @@ import {
 export function PrerequisiteWidget() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const toast = useToastController()
+  const router = useRouter()
+  const [resumeModalOpen, setResumeModalOpen] = useState(false)
 
   // Check prerequisites status
   const {
@@ -46,6 +50,10 @@ export function PrerequisiteWidget() {
     isLoading: isCheckingStatus,
     refetch: refetchStatus,
   } = api.prerequisites.check.useQuery()
+
+  const { data: resumeStatus } = api.resume.hasUploaded.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  })
 
   // Fetch industries for dropdown
   const { data: industriesData, isLoading: isLoadingIndustries } =
@@ -110,6 +118,14 @@ export function PrerequisiteWidget() {
   return (
     <DashboardWidget>
       <YStack gap={spacing.md}>
+        <ResumeUploadModal
+          open={resumeModalOpen}
+          onOpenChange={setResumeModalOpen}
+          onUploadComplete={(resumeId) => {
+            setResumeModalOpen(false)
+            router.push(`/dashboard/profile/resume/review?resumeId=${resumeId}`)
+          }}
+        />
         <YStack gap={spacing.xs}>
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Complete Your Profile
@@ -174,6 +190,21 @@ export function PrerequisiteWidget() {
             </YStack>
 
             <Separator />
+
+            {!resumeStatus?.hasUploaded && (
+              <>
+                <YStack gap="$3">
+                  <Text fontWeight="600">Optional: Import Your Resume</Text>
+                  <Text fontSize="$2" color="$color11">
+                    Upload your resume to automatically fill in experience, education, and skills. You can skip this step
+                    and continue manually at any time.
+                  </Text>
+                  <ResumeUploadButton onPress={() => setResumeModalOpen(true)} size="$3" />
+                </YStack>
+
+                <Separator />
+              </>
+            )}
 
             {/* 2. Address */}
             <YStack gap="$3">

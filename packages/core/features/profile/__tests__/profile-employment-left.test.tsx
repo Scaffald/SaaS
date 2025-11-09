@@ -18,7 +18,7 @@ const mockToastShow = vi.fn()
 const mockInvalidateProfileQueries = vi.fn()
 
 const press = (element: HTMLElement) => {
-  fireEvent.click(element)
+  fireEvent.press(element)
 }
 
 const isChecked = (element: HTMLElement) => {

@@ -32,7 +32,39 @@ interface EmploymentFormState {
   openToTravel: boolean
   travelDistanceMiles: number | null
   hourlyRate: number | null
-  locations: string[]
+  locations: Array<{ id: string; value: string }>
+}
+
+interface ParsedResumeData {
+  general?: Array<{ firstName?: string; lastName?: string; bio?: string }>
+  experience?: Array<{
+    title?: string
+    company?: string
+    startDate?: string
+    endDate?: string
+    summary?: string
+  }>
+  education?: Array<{
+    school?: string
+    degree?: string
+    fieldOfStudy?: string
+    startDate?: string
+    endDate?: string
+  }>
+  skills?: Array<{ name: string; confidence?: number }>
+  certifications?: Array<{ name?: string; issuer?: string; issuedOn?: string; expiresOn?: string }>
+  employment?: {
+    openToTravel?: boolean
+    travelDistanceMiles?: number
+    hourlyRate?: number
+    locations?: string[]
+  }
+}
+
+interface WizardError {
+  section: ResumeWizardSection | 'review'
+  message: string
+  rawText?: string
 }
 
 export function ResumeWizard({ resumeId }: ResumeWizardProps) {
@@ -41,18 +73,19 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     steps,
     currentIndex,
     currentStep,
-    parsedData,
-    errors,
+    parsedData: rawParsedData,
+    errors: rawErrors,
     wizard,
     isLoading,
-    isRefetching,
     isSaving,
     setCurrentIndex,
-    goNext,
     goPrevious,
     saveSection,
     skipSection,
   } = useResumeWizard(resumeId)
+
+  const parsedData = (rawParsedData ?? {}) as ParsedResumeData
+  const errors = (rawErrors ?? []) as WizardError[]
 
   const [generalForm, setGeneralForm] = useState<GeneralFormState>({
     firstName: '',
@@ -81,12 +114,15 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
   }, [parsedData.general])
 
   useEffect(() => {
-    const employment = parsedData.employment ?? {}
+    const employment = parsedData.employment
     setEmploymentForm({
-      openToTravel: Boolean(employment.openToTravel),
-      travelDistanceMiles: employment.travelDistanceMiles ?? null,
-      hourlyRate: employment.hourlyRate ?? null,
-      locations: employment.locations ?? [],
+      openToTravel: Boolean(employment?.openToTravel),
+      travelDistanceMiles: employment?.travelDistanceMiles ?? null,
+      hourlyRate: employment?.hourlyRate ?? null,
+      locations: (employment?.locations ?? []).map((location, index) => ({
+        id: `${index}-${location ?? 'location'}`,
+        value: location ?? '',
+      })),
     })
   }, [parsedData.employment])
 
@@ -113,38 +149,69 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     )
   }
 
-  const renderStep = () => {
-    switch (currentStep.id) {
-      case 'general':
-        return renderGeneralStep()
-      case 'experience':
-        return renderExperienceStep()
-      case 'education':
-        return renderEducationStep()
-      case 'skills':
-        return renderSkillsStep()
-      case 'certifications':
-        return renderCertificationsStep()
-      case 'employment':
-        return renderEmploymentStep()
-      case 'review':
-        return renderReviewStep()
-      default:
-        return null
-    }
-  }
-
   const mergedErrors = useMemo(() => {
-    if (!errors || errors.length === 0) return null
+    if (!errors?.length) return null
     return errors.filter((error) => error.section === currentStep.id)
   }, [currentStep.id, errors])
 
   const completedSteps = wizard.completedSteps ?? []
 
+  const handleSaveCurrentStep = async () => {
+    switch (currentStep.id) {
+      case 'general': {
+        await saveSection('general', {
+          first_name: generalForm.firstName.trim() || undefined,
+          last_name: generalForm.lastName.trim() || undefined,
+          about: generalForm.summary.trim() || undefined,
+        })
+        return
+      }
+      case 'experience': {
+        const experience = (parsedData.experience ?? []).filter((_entry, index) => experienceSelections[index])
+        await saveSection('experience', experience)
+        return
+      }
+      case 'education': {
+        const education = (parsedData.education ?? []).filter((_entry, index) => educationSelections[index])
+        await saveSection('education', education)
+        return
+      }
+      case 'skills': {
+        const skills = (parsedData.skills ?? []).filter((_entry, index) => skillSelections[index])
+        await saveSection('skills', skills)
+        return
+      }
+      case 'certifications': {
+        const certifications = (parsedData.certifications ?? []).filter((_entry, index) => certificationSelections[index])
+        await saveSection('certifications', certifications)
+        return
+      }
+      case 'employment': {
+        await saveSection('employment', {
+          openToTravel: employmentForm.openToTravel,
+          travelDistanceMiles: employmentForm.travelDistanceMiles ?? undefined,
+          hourlyRate: employmentForm.hourlyRate ?? undefined,
+          locations: employmentForm.locations
+            .map((entry) => entry.value.trim())
+            .filter((location) => location.length > 0),
+        })
+        return
+      }
+      case 'review': {
+        router.push('/dashboard/profile/general')
+        return
+      }
+      default:
+        return
+    }
+  }
+
   return (
     <YStack flex={1} gap={spacing.lg}>
       <YStack gap="$2">
-        <Text fontSize="$7" fontWeight="700">Resume Import</Text>
+        <Text fontSize="$7" fontWeight="700">
+          Resume Import
+        </Text>
         <Text color="$color11">
           Review each section parsed from your resume. Make edits or skip sections you don’t want to import.
         </Text>
@@ -170,9 +237,9 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         </YStack>
       )}
 
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: spacing['2xl'] }}>
-        <YStack gap={spacing.lg}>
-          {renderStep()}
+      <ScrollView flex={1}>
+        <YStack gap={spacing.lg} pb="$8">
+          {renderCurrentStep()}
         </YStack>
       </ScrollView>
 
@@ -196,7 +263,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
               theme="blue"
               icon={SkipForward}
               disabled={isSaving}
-              onPress={() => skipSection()}
+              onPress={() => void skipSection()}
             >
               Skip
             </Button>
@@ -208,13 +275,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           theme="blue"
           icon={isSaving ? Spinner : UploadCloud}
           disabled={isSaving}
-          onPress={() => {
-            if (currentStep.id === 'review') {
-              router.push('/dashboard/profile/general')
-              return
-            }
-            handleSaveCurrentStep()
-          }}
+          onPress={() => void handleSaveCurrentStep()}
         >
           {currentStep.id === 'review' ? 'Finish Import' : 'Save & Continue'}
         </Button>
@@ -222,52 +283,50 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     </YStack>
   )
 
-  function handleSaveCurrentStep() {
+  function renderCurrentStep() {
     switch (currentStep.id) {
       case 'general':
-        return saveSection('general', {
-          first_name: generalForm.firstName.trim() || undefined,
-          last_name: generalForm.lastName.trim() || undefined,
-          about: generalForm.summary.trim() || undefined,
-        })
+        return renderGeneralStep()
       case 'experience':
-        return saveSection('experience', (parsedData.experience ?? []).filter((_, index) => experienceSelections[index]))
+        return renderExperienceStep()
       case 'education':
-        return saveSection('education', (parsedData.education ?? []).filter((_, index) => educationSelections[index]))
+        return renderEducationStep()
       case 'skills':
-        return saveSection('skills', (parsedData.skills ?? []).filter((_, index) => skillSelections[index]))
+        return renderSkillsStep()
       case 'certifications':
-        return saveSection(
-          'certifications',
-          (parsedData.certifications ?? []).filter((_, index) => certificationSelections[index])
-        )
+        return renderCertificationsStep()
       case 'employment':
-        return saveSection('employment', {
-          openToTravel: employmentForm.openToTravel,
-          travelDistanceMiles: employmentForm.travelDistanceMiles ?? undefined,
-          hourlyRate: employmentForm.hourlyRate ?? undefined,
-          locations: employmentForm.locations,
-        })
+        return renderEmploymentStep()
+      case 'review':
+        return renderReviewStep()
       default:
-        return Promise.resolve()
+        return null
     }
   }
 
   function renderGeneralStep() {
     return (
       <YStack gap="$4">
-        <Text fontSize="$6" fontWeight="700">General Information</Text>
+        <Text fontSize="$6" fontWeight="700">
+          General Information
+        </Text>
         <Paragraph color="$color11">
           Update your basic profile details. We only update the fields you confirm.
         </Paragraph>
         <XStack gap="$4" flexWrap="wrap">
-          <YStack gap="$2" flex={1} minWidth={200}>
+          <YStack gap="$2" flex={1}>
             <Text fontWeight="600">First Name</Text>
-            <Input value={generalForm.firstName} onChangeText={(value) => setGeneralForm((prev) => ({ ...prev, firstName: value }))} />
+            <Input
+              value={generalForm.firstName}
+              onChangeText={(value) => setGeneralForm((prev) => ({ ...prev, firstName: value }))}
+            />
           </YStack>
-          <YStack gap="$2" flex={1} minWidth={200}>
+          <YStack gap="$2" flex={1}>
             <Text fontWeight="600">Last Name</Text>
-            <Input value={generalForm.lastName} onChangeText={(value) => setGeneralForm((prev) => ({ ...prev, lastName: value }))} />
+            <Input
+              value={generalForm.lastName}
+              onChangeText={(value) => setGeneralForm((prev) => ({ ...prev, lastName: value }))}
+            />
           </YStack>
         </XStack>
         <YStack gap="$2">
@@ -290,24 +349,25 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     }
     return (
       <YStack gap="$4">
-        <Text fontSize="$6" fontWeight="700">Work Experience</Text>
-        {experience.map((entry, index) => (
-          <SelectableCard
-            key={`${entry.title}-${entry.company}-${index}`}
-            checked={experienceSelections[index]}
-            onCheckedChange={(value) => experienceSelections.set(index, value)}
-            title={entry.title ?? 'Untitled Role'}
-            subtitle={entry.company ?? 'Unknown Company'}
-            details={[
-              entry.startDate && entry.endDate
-                ? `${entry.startDate} – ${entry.endDate}`
-                : entry.startDate
-                  ? `${entry.startDate} – Present`
-                  : undefined,
-              entry.summary ?? undefined,
-            ].filter(Boolean)}
-          />
-        ))}
+        <Text fontSize="$6" fontWeight="700">
+          Work Experience
+        </Text>
+        {experience.map((entry, index) => {
+          const details = buildDetails([
+            entry.startDate && entry.endDate ? `${entry.startDate} – ${entry.endDate}` : undefined,
+            entry.summary,
+          ])
+          return (
+            <SelectableCard
+              key={`${entry.title}-${entry.company}-${index}`}
+              checked={experienceSelections[index]}
+              onCheckedChange={(value) => experienceSelections.set(index, value)}
+              title={entry.title ?? 'Untitled Role'}
+              subtitle={entry.company ?? 'Unknown Company'}
+              details={details}
+            />
+          )
+        })}
       </YStack>
     )
   }
@@ -319,20 +379,25 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     }
     return (
       <YStack gap="$4">
-        <Text fontSize="$6" fontWeight="700">Education</Text>
-        {education.map((entry, index) => (
-          <SelectableCard
-            key={`${entry.school}-${index}`}
-            checked={educationSelections[index]}
-            onCheckedChange={(value) => educationSelections.set(index, value)}
-            title={entry.school ?? 'Institution'}
-            subtitle={entry.degree ?? undefined}
-            details={[
-              entry.startDate && entry.endDate ? `${entry.startDate} – ${entry.endDate}` : undefined,
-              entry.fieldOfStudy ?? undefined,
-            ].filter(Boolean)}
-          />
-        ))}
+        <Text fontSize="$6" fontWeight="700">
+          Education
+        </Text>
+        {education.map((entry, index) => {
+          const details = buildDetails([
+            entry.startDate && entry.endDate ? `${entry.startDate} – ${entry.endDate}` : undefined,
+            entry.fieldOfStudy,
+          ])
+          return (
+            <SelectableCard
+              key={`${entry.school}-${index}`}
+              checked={educationSelections[index]}
+              onCheckedChange={(value) => educationSelections.set(index, value)}
+              title={entry.school ?? 'Institution'}
+              subtitle={entry.degree}
+              details={details}
+            />
+          )
+        })}
       </YStack>
     )
   }
@@ -344,7 +409,9 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     }
     return (
       <YStack gap="$4">
-        <Text fontSize="$6" fontWeight="700">Skills</Text>
+        <Text fontSize="$6" fontWeight="700">
+          Skills
+        </Text>
         {skills.map((skill, index) => (
           <SelectableCard
             key={`${skill.name}-${index}`}
@@ -366,20 +433,25 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     }
     return (
       <YStack gap="$4">
-        <Text fontSize="$6" fontWeight="700">Certifications</Text>
-        {certifications.map((cert, index) => (
-          <SelectableCard
-            key={`${cert.name}-${index}`}
-            checked={certificationSelections[index]}
-            onCheckedChange={(value) => certificationSelections.set(index, value)}
-            title={cert.name ?? 'Certification'}
-            subtitle={cert.issuer ?? undefined}
-            details={[
-              cert.issuedOn ? `Issued ${cert.issuedOn}` : undefined,
-              cert.expiresOn ? `Expires ${cert.expiresOn}` : undefined,
-            ].filter(Boolean)}
-          />
-        ))}
+        <Text fontSize="$6" fontWeight="700">
+          Certifications
+        </Text>
+        {certifications.map((cert, index) => {
+          const details = buildDetails([
+            cert.issuedOn ? `Issued ${cert.issuedOn}` : undefined,
+            cert.expiresOn ? `Expires ${cert.expiresOn}` : undefined,
+          ])
+          return (
+            <SelectableCard
+              key={`${cert.name}-${index}`}
+              checked={certificationSelections[index]}
+              onCheckedChange={(value) => certificationSelections.set(index, value)}
+              title={cert.name ?? 'Certification'}
+              subtitle={cert.issuer}
+              details={details}
+            />
+          )
+        })}
       </YStack>
     )
   }
@@ -387,66 +459,70 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
   function renderEmploymentStep() {
     return (
       <YStack gap="$4">
-        <Text fontSize="$6" fontWeight="700">Employment Preferences</Text>
+        <Text fontSize="$6" fontWeight="700">
+          Employment Preferences
+        </Text>
         <Paragraph color="$color11">
           Tell us about your ideal working conditions. We’ll update your profile with these preferences.
         </Paragraph>
         <CheckboxRow
           label="Open to travel"
           checked={employmentForm.openToTravel}
-          onCheckedChange={(value) => setEmploymentForm((prev) => ({ ...prev, openToTravel: value }))}
+          onCheckedChange={(checked) => setEmploymentForm((prev) => ({ ...prev, openToTravel: checked }))}
         />
         <XStack gap="$3" flexWrap="wrap">
-          <YStack gap="$2" flex={1} minWidth={160}>
+          <YStack gap="$2" flex={1}>
             <Text fontWeight="600">Travel distance (miles)</Text>
             <Input
               keyboardType="numeric"
               value={employmentForm.travelDistanceMiles?.toString() ?? ''}
-              onChangeText={(value) => setEmploymentForm((prev) => ({
-                ...prev,
-                travelDistanceMiles: value ? Number.parseInt(value, 10) : null,
-              }))}
+              onChangeText={(value) =>
+                setEmploymentForm((prev) => ({
+                  ...prev,
+                  travelDistanceMiles: value ? Number.parseInt(value, 10) : null,
+                }))
+              }
             />
           </YStack>
-          <YStack gap="$2" flex={1} minWidth={160}>
+          <YStack gap="$2" flex={1}>
             <Text fontWeight="600">Hourly rate (USD)</Text>
             <Input
               keyboardType="numeric"
               value={employmentForm.hourlyRate?.toString() ?? ''}
-              onChangeText={(value) => setEmploymentForm((prev) => ({
-                ...prev,
-                hourlyRate: value ? Number.parseInt(value, 10) : null,
-              }))}
+              onChangeText={(value) =>
+                setEmploymentForm((prev) => ({
+                  ...prev,
+                  hourlyRate: value ? Number.parseInt(value, 10) : null,
+                }))
+              }
             />
           </YStack>
         </XStack>
         <YStack gap="$2">
           <Text fontWeight="600">Preferred locations</Text>
-          <Paragraph color="$color11">
-            We detected {employmentForm.locations.length} location(s) in your resume. Add or remove locations as needed.
-          </Paragraph>
-          {employmentForm.locations.map((location, index) => (
-            <XStack key={`${location}-${index}`} gap="$2" items="center">
+          {employmentForm.locations.map((entry) => (
+            <XStack key={entry.id} gap="$2" items="center">
               <Input
                 flex={1}
-                value={location}
-                onChangeText={(value) => {
+                value={entry.value}
+                onChangeText={(value) =>
                   setEmploymentForm((prev) => {
-                    const next = [...prev.locations]
-                    next[index] = value
+                    const next = prev.locations.map((item) =>
+                      item.id === entry.id ? { ...item, value } : item,
+                    )
                     return { ...prev, locations: next }
                   })
-                }}
+                }
               />
               <Button
                 size="$3"
                 variant="outlined"
-                onPress={() => {
+                onPress={() =>
                   setEmploymentForm((prev) => ({
                     ...prev,
-                    locations: prev.locations.filter((_, locIndex) => locIndex !== index),
+                    locations: prev.locations.filter((item) => item.id !== entry.id),
                   }))
-                }}
+                }
               >
                 Remove
               </Button>
@@ -455,12 +531,18 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           <Button
             size="$3"
             variant="outlined"
-            onPress={() => {
+            onPress={() =>
               setEmploymentForm((prev) => ({
                 ...prev,
-                locations: [...prev.locations, ''],
+                locations: [
+                  ...prev.locations,
+                  {
+                    id: `new-${Date.now()}`,
+                    value: '',
+                  },
+                ],
               }))
-            }}
+            }
           >
             Add Location
           </Button>
@@ -472,12 +554,14 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
   function renderReviewStep() {
     return (
       <YStack gap="$4">
-        <Text fontSize="$6" fontWeight="700">Review & Confirm</Text>
+        <Text fontSize="$6" fontWeight="700">
+          Review & Confirm
+        </Text>
         <Paragraph color="$color11">
           All set! When you finish, we’ll save the confirmed details to your profile. You can always make further edits
           from the profile sections later on.
         </Paragraph>
-        <MergeComparisonView existingData={wizard} newData={parsedData} />
+        <MergeComparisonView />
         <YStack gap="$2" bg="$green3" p="$3" rounded="$4">
           <XStack gap="$2" items="center">
             <CheckCircle2 color="$green10" />
@@ -513,11 +597,7 @@ function CheckboxRow({
 }) {
   return (
     <XStack gap="$2" items="center">
-      <Checkbox
-        size="$3"
-        checked={checked}
-        onCheckedChange={(value) => onCheckedChange(value === true)}
-      />
+      <Checkbox size="$3" checked={checked} onCheckedChange={(value) => onCheckedChange(value === true)} />
       <Text>{label}</Text>
     </XStack>
   )
@@ -546,30 +626,30 @@ function SelectableCard({
       rounded="$4"
     >
       <XStack gap="$2" items="center">
-        <Checkbox
-          size="$3"
-          checked={checked}
-          onCheckedChange={(value) => onCheckedChange(value === true)}
-        />
+        <Checkbox size="$3" checked={checked} onCheckedChange={(value) => onCheckedChange(value === true)} />
         <YStack gap="$1" flex={1}>
           <Text fontWeight="700">{title}</Text>
           {subtitle ? <Text color="$color11">{subtitle}</Text> : null}
         </YStack>
       </XStack>
-      {details && details.length > 0 ? (
+      {!!details?.length && (
         <YStack gap="$1" pl="$4">
-          {details.map((detail, index) => (
-            <Text key={`${detail}-${index}`} color="$color11">
+          {details.map((detail) => (
+            <Text key={detail} color="$color11">
               • {detail}
             </Text>
           ))}
         </YStack>
-      ) : null}
+      )}
     </YStack>
   )
 }
 
-function useBooleanSelections(count: number) {
+interface BooleanSelections extends Array<boolean> {
+  set: (index: number, value: boolean) => void
+}
+
+function useBooleanSelections(count: number): BooleanSelections {
   const [state, setState] = useState<boolean[]>(() => Array.from({ length: count }, () => true))
 
   useEffect(() => {
@@ -584,6 +664,8 @@ function useBooleanSelections(count: number) {
     })
   }
 
-  return Object.assign(state, { set })
+  const selections = [...state] as BooleanSelections
+  selections.set = set
+  return selections
 }
 

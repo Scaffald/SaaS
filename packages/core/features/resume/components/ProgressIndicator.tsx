@@ -25,14 +25,14 @@ export function ProgressIndicator({
           <Button
             key={step.id}
             size="$3"
-            variant={isActive ? 'solid' : 'outlined'}
-            theme={isActive ? 'blue' : isCompleted ? 'green' : 'gray'}
+            variant="outlined"
+            theme={isActive ? 'blue' : undefined}
             onPress={() => onStepChange?.(index)}
             aria-pressed={isActive}
           >
             <XStack gap="$2" items="center">
-              <Circle size={18} bg={isCompleted ? '$green9' : isActive ? '$blue9' : '$gray7'}>
-                <Text color="$color1" fontSize="$1" fontWeight="700">
+              <Circle size={18} bg={isCompleted ? '$green4' : isActive ? '$blue4' : '$color4'}>
+                <Text color="$color12" fontSize="$1" fontWeight="700">
                   {index + 1}
                 </Text>
               </Circle>
