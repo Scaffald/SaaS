@@ -124,13 +124,12 @@ export async function callTRPCEndpoint(
       method: "POST",
       headers,
       body: JSON.stringify({
-        0: {
-          json: input ?? null,
-        },
+        0: input ?? null,
       }),
     });
 
-    return response.json();
+    const data = await response.json();
+    return Array.isArray(data) ? data : [data];
   }
 
   const url = input === undefined
