@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { useRouter } from 'expo-router'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -89,19 +89,41 @@ export function PrerequisiteWidget() {
     mode: 'onChange',
   })
 
+  const previousPrefillHashRef = useRef<string | null>(null)
+
   // Populate form with existing data when loaded
   useEffect(() => {
-    if (statusData?.data) {
-      const data = statusData.data
-      reset({
-        first_name: data.first_name || '',
-        last_name: data.last_name || '',
-        address: data.address || prerequisitesDefaults.address,
-        user_types: data.user_types || [],
-        industry_id: data.industry_id || '',
-      })
+    if (!statusData?.data) {
+      return
     }
-  }, [statusData, reset])
+
+    const prefillData: PrerequisitesFormData = {
+      first_name: statusData.data.first_name ?? '',
+      last_name: statusData.data.last_name ?? '',
+      address: {
+        street: statusData.data.address?.street ?? prerequisitesDefaults.address.street,
+        city: statusData.data.address?.city ?? prerequisitesDefaults.address.city,
+        state: statusData.data.address?.state ?? prerequisitesDefaults.address.state,
+        zip: statusData.data.address?.zip ?? prerequisitesDefaults.address.zip,
+        country: statusData.data.address?.country ?? prerequisitesDefaults.address.country,
+        latitude: statusData.data.address?.latitude,
+        longitude: statusData.data.address?.longitude,
+      },
+      user_types: statusData.data.user_types ?? [],
+      industry_id: statusData.data.industry_id ?? '',
+      accepts_privacy_policy: statusData.data.accepts_privacy_policy ?? false,
+      accepts_terms_of_service: statusData.data.accepts_terms_of_service ?? false,
+    }
+
+    const prefillHash = JSON.stringify(prefillData)
+
+    if (previousPrefillHashRef.current === prefillHash) {
+      return
+    }
+
+    previousPrefillHashRef.current = prefillHash
+    reset(prefillData)
+  }, [reset, statusData?.data])
 
   // Handle form submission
   const onSubmit = async (data: PrerequisitesFormData) => {
@@ -196,8 +218,8 @@ export function PrerequisiteWidget() {
                 <YStack gap="$3">
                   <Text fontWeight="600">Optional: Import Your Resume</Text>
                   <Text fontSize="$2" color="$color11">
-                    Upload your resume to automatically fill in experience, education, and skills. You can skip this step
-                    and continue manually at any time.
+                    Upload your resume to automatically fill in experience, education, and skills.
+                    You can skip this step and continue manually at any time.
                   </Text>
                   <ResumeUploadButton onPress={() => setResumeModalOpen(true)} size="$3" />
                 </YStack>

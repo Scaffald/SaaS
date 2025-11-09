@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Platform } from 'react-native'
 import { Button, Paragraph, Spinner, Text, XStack, YStack } from 'tamagui'
 import { AlertCircle, CheckCircle2, Loader2, UploadCloud } from '@tamagui/lucide-icons'
@@ -54,10 +54,14 @@ export function ResumeUploadModal({
     parseResumeMutation.reset()
   }, [parseResumeMutation, uploadResumeMutation])
 
+  const wasOpenRef = useRef<boolean>(open)
+
   useEffect(() => {
-    if (!open) {
+    if (wasOpenRef.current && !open) {
       resetState()
     }
+
+    wasOpenRef.current = open
   }, [open, resetState])
 
   const showProgress = status === 'uploading' || status === 'parsing'

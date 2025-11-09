@@ -1,9 +1,7 @@
 import { YStack, Spinner, Text } from 'tamagui'
 import { ProfileSnapshotWidget } from '../profile/widgets'
 import { PrerequisiteWidget } from '../prerequisites/PrerequisiteWidget'
-import { LuscherTest1Widget } from '../luscher-test-1'
 import { IPIPAssessmentWidget } from '../ipip-assessment'
-import { LuscherTest2Widget } from '../luscher-test-2'
 import { RIASECAssessmentWidget } from '../riasec-assessment'
 import { OccupationAssessmentWidget } from '../occupation-assessment'
 import { api } from '@app/core/utils/api'
@@ -39,9 +37,7 @@ export function DashboardIndexLeft() {
       <ResumeImportWidget />
       <ProfileCompletionExperience />
       <ProfileSnapshotWidget />
-      <LuscherTest1Widget />
       <IPIPAssessmentWidget />
-      <LuscherTest2Widget />
       <RIASECAssessmentWidget />
       <OccupationAssessmentWidget />
     </YStack>

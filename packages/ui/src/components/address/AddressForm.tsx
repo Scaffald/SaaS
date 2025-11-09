@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { YStack, XStack, Input, Text, Button } from 'tamagui'
 import { ChevronDown, ChevronRight } from '@tamagui/lucide-icons'
 import { FieldError } from '../FieldError'
@@ -38,6 +38,42 @@ import type { AddressFormProps, AddressResult } from './types'
  * />
  * ```
  */
+const areAddressesEqual = (
+  incoming?: Partial<AddressResult>,
+  current?: Partial<AddressResult>
+): boolean => {
+  if (incoming === current) {
+    return true
+  }
+
+  if (!incoming || !current) {
+    return false
+  }
+
+  const normalizeString = (value?: string) => value ?? ''
+  const normalizeCoordinates = (coords?: { lat: number; lng: number }) => ({
+    lat: coords?.lat ?? null,
+    lng: coords?.lng ?? null,
+  })
+
+  return (
+    normalizeString(incoming.streetNumber) === normalizeString(current.streetNumber) &&
+    normalizeString(incoming.route) === normalizeString(current.route) &&
+    normalizeString(incoming.streetAddress) === normalizeString(current.streetAddress) &&
+    normalizeString(incoming.locality) === normalizeString(current.locality) &&
+    normalizeString(incoming.administrativeAreaLevel1) ===
+      normalizeString(current.administrativeAreaLevel1) &&
+    normalizeString(incoming.stateAbbreviation) === normalizeString(current.stateAbbreviation) &&
+    normalizeString(incoming.postalCode) === normalizeString(current.postalCode) &&
+    normalizeString(incoming.country) === normalizeString(current.country) &&
+    normalizeString(incoming.countryCode) === normalizeString(current.countryCode) &&
+    normalizeString(incoming.formattedAddress) === normalizeString(current.formattedAddress) &&
+    normalizeCoordinates(incoming.coordinates).lat ===
+      normalizeCoordinates(current.coordinates).lat &&
+    normalizeCoordinates(incoming.coordinates).lng === normalizeCoordinates(current.coordinates).lng
+  )
+}
+
 export function AddressForm({
   mode = 'hybrid',
   addressValue,
@@ -79,11 +115,20 @@ export function AddressForm({
   const currentAddress = addressValue || internalAddress
 
   // Update internal state when external address value changes
+  const wasPrefilledRef = useRef(false)
+
   useEffect(() => {
-    if (addressValue && addressValue !== internalAddress) {
-      setInternalAddress(addressValue)
+    if (!addressValue) {
+      return
     }
-  }, [addressValue])
+
+    if (wasPrefilledRef.current && areAddressesEqual(addressValue, internalAddress)) {
+      return
+    }
+
+    wasPrefilledRef.current = true
+    setInternalAddress(addressValue)
+  }, [addressValue, internalAddress])
 
   // Handle autocomplete address selection
   const handleAutocompleteSelect = useCallback(
