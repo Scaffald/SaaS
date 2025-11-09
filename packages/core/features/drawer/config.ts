@@ -164,7 +164,7 @@ export const generateDashboardDrawerItems = (options?: {
     ],
   });
 
-  // Assessments route - Expandable with sub-items for each assessment
+  // Assessments route - Always show sub-items for each assessment
   const assessmentSubItems: DrawerItemConfig[] = [
     {
       key: "assessment-pulse",
@@ -198,7 +198,6 @@ export const generateDashboardDrawerItems = (options?: {
     title: "Assessments",
     href: ROUTES.DASHBOARD_ASSESSMENTS.path,
     icon: ClipboardCheck,
-    isExpandable: true,
     subItems: assessmentSubItems,
   });
 

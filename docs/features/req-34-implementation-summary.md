@@ -105,10 +105,6 @@ All core functionality has been implemented and is ready for testing.
 2. **apps/expo/package.json**
    - Added `expo-image-manipulator` dependency
 
-3. **docs/features/req-34-avatar-cropping-implementation-plan.md**
-   - Updated status to completed
-   - Added implementation status section
-
 ## Testing Checklist
 
 ### Web Testing

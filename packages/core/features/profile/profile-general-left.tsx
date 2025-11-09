@@ -28,6 +28,13 @@ import {
 } from '@app/ui'
 import type { JSONContent } from '@tiptap/core'
 import { isValidPhoneNumber } from '@app/schemas/common/phone'
+import { invalidateProfileQueries } from './utils/profile-sync'
+import {
+  startProfileSync,
+  completeProfileSync,
+  failProfileSync,
+  resetProfileSyncError,
+} from './utils/profile-sync-store'
 
 /**
  * Profile General Left Component
@@ -38,45 +45,74 @@ export function ProfileGeneralLeft() {
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<GeneralProfileFormData | null>(null)
   const toast = useToastController()
+  const utils = api.useContext()
 
   // Use tRPC to fetch and update profile data
   const {
     data: profileData,
     isLoading: isLoadingProfile,
-    refetch,
   } = api.profile.getGeneral.useQuery()
   const updateProfileMutation = api.profile.updateGeneral.useMutation({
+    async onMutate(input) {
+      resetProfileSyncError()
+      startProfileSync()
+      await utils.profile.getGeneral.cancel()
+      const previousGeneral = utils.profile.getGeneral.getData()
+      utils.profile.getGeneral.setData(undefined, (current) => ({
+        ...(current ?? {}),
+        ...input,
+      }))
+      return { previousGeneral }
+    },
+    onError: (error, _input, context) => {
+      console.error('Error saving profile:', error)
+      if (context?.previousGeneral) {
+        utils.profile.getGeneral.setData(undefined, context.previousGeneral)
+      }
+      failProfileSync()
+      toast.show('Error', {
+        message: error instanceof Error ? error.message : 'Failed to save profile. Please try again.',
+      })
+    },
     onSuccess: () => {
       toast.show('Profile Updated', {
         message: 'Your profile has been saved successfully!',
       })
-      refetch()
     },
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
-    onError: (error: any) => {
-      console.error('Error saving profile:', error)
-      toast.show('Error', {
-        message: error.message || 'Failed to save profile. Please try again.',
-      })
+    onSettled: (_data, error) => {
+      if (!error) {
+        completeProfileSync()
+      }
+      void invalidateProfileQueries(utils)
     },
   })
 
   const uploadAvatarMutation = api.profile.uploadAvatar.useMutation({
+    onMutate: () => {
+      resetProfileSyncError()
+      startProfileSync()
+    },
     // biome-ignore lint/suspicious/noExplicitAny: tRPC response type
-    onSuccess: (data: any) => {
+    onSuccess: async (data: any) => {
       toast.show('Avatar Uploaded', {
         message: 'Your avatar has been uploaded successfully!',
       })
       // Update the form with the new avatar path
       setValue('avatar_path', data.avatarPath)
-      refetch()
+      await invalidateProfileQueries(utils)
     },
     // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
     onError: (error: any) => {
       console.error('Error uploading avatar:', error)
+      failProfileSync()
       toast.show('Upload Error', {
         message: error.message || 'Failed to upload avatar. Please try again.',
       })
+    },
+    onSettled: (_data, error) => {
+      if (!error) {
+        completeProfileSync()
+      }
     },
   })
 

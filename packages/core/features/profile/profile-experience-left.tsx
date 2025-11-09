@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from 'react'
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react'
 import {
   YStack,
   XStack,
@@ -19,7 +19,17 @@ import {
 } from 'tamagui'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, X, ChevronDown, Briefcase, Calendar, MapPin } from '@tamagui/lucide-icons'
+import {
+  Plus,
+  X,
+  ChevronDown,
+  Briefcase,
+  Calendar,
+  MapPin,
+  Check,
+  CheckCircle,
+  AlertTriangle,
+} from '@tamagui/lucide-icons'
 import { ProfileEmptyState } from './components'
 import { formatDateRange } from './utils/date-formatting'
 import { randomUUID } from 'expo-crypto'
@@ -33,13 +43,19 @@ import {
 } from './config'
 import { DashboardWidget, ConfirmationDialog, MonthYearPicker, AddressAutocomplete } from '@app/ui'
 import { api } from '@app/core/utils/api'
+import { invalidateProfileQueries } from './utils/profile-sync'
+import {
+  startProfileSync,
+  completeProfileSync,
+  failProfileSync,
+  resetProfileSyncError,
+} from './utils/profile-sync-store'
 
 /**
  * Profile Experience Left Component
  * Form for managing work experience history
  */
 export function ProfileExperienceLeft() {
-  const [isLoading, setIsLoading] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<ExperienceProfileFormData | null>(null)
   const { width } = useWindowDimensions()
@@ -48,14 +64,50 @@ export function ProfileExperienceLeft() {
   // Queries
   const experienceQuery = api.profile.getExperience.useQuery()
   const experienceSummaryQuery = api.profile.getExperienceSummary.useQuery()
+  const utils = api.useContext()
 
   // Mutations
   const saveExperienceMutation = api.profile.saveExperience.useMutation({
-    onSuccess: () => {
-      experienceQuery.refetch()
-      experienceSummaryQuery.refetch()
+    async onMutate(input) {
+      resetProfileSyncError()
+      startProfileSync()
+      await Promise.all([
+        utils.profile.getExperience.cancel(),
+        utils.profile.getExperienceSummary.cancel(),
+      ])
+
+      const previousExperience = utils.profile.getExperience.getData()
+      const previousSummary = utils.profile.getExperienceSummary.getData()
+
+      utils.profile.getExperience.setData(undefined, input.experience_entries ?? [])
+      utils.profile
+        .getExperienceSummary
+        .setData(undefined, { career_level: input.career_level ?? null })
+
+      return { previousExperience, previousSummary }
+    },
+    onError: (_error, _input, context) => {
+      if (context?.previousExperience) {
+        utils.profile.getExperience.setData(undefined, context.previousExperience)
+      }
+      if (context?.previousSummary) {
+        utils.profile.getExperienceSummary.setData(undefined, context.previousSummary)
+      }
+      failProfileSync()
+    },
+    onSettled: (_data, error) => {
+      if (!error) {
+        completeProfileSync()
+      }
+      void invalidateProfileQueries(utils)
     },
   })
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'success'>('idle')
+  const [saveBanner, setSaveBanner] = useState<{ type: 'success' | 'error'; message: string } | null>(
+    null
+  )
+  const bannerTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const buttonTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const {
     control,
@@ -99,17 +151,64 @@ export function ProfileExperienceLeft() {
     }
   }, [experienceQuery.data, experienceSummaryQuery.data, reset])
 
+  const clearTimers = useCallback(() => {
+    if (bannerTimeoutRef.current) {
+      clearTimeout(bannerTimeoutRef.current)
+      bannerTimeoutRef.current = null
+    }
+    if (buttonTimeoutRef.current) {
+      clearTimeout(buttonTimeoutRef.current)
+      buttonTimeoutRef.current = null
+    }
+  }, [])
+
+  const showSuccessFeedback = useCallback(() => {
+    setSaveState('success')
+    setSaveBanner({ type: 'success', message: 'Changes saved successfully' })
+
+    if (bannerTimeoutRef.current) {
+      clearTimeout(bannerTimeoutRef.current)
+    }
+    bannerTimeoutRef.current = setTimeout(() => {
+      setSaveBanner(null)
+      bannerTimeoutRef.current = null
+    }, 3000)
+
+    if (buttonTimeoutRef.current) {
+      clearTimeout(buttonTimeoutRef.current)
+    }
+    buttonTimeoutRef.current = setTimeout(() => {
+      setSaveState('idle')
+      buttonTimeoutRef.current = null
+    }, 2000)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      clearTimers()
+    }
+  }, [clearTimers])
+
   const onSubmit = async (data: ExperienceProfileFormData) => {
-    setIsLoading(true)
+    clearTimers()
+    setSaveBanner(null)
+    setSaveState('saving')
     try {
       await saveExperienceMutation.mutateAsync({
         career_level: data.career_level || null,
         experience_entries: data.experience_entries || [],
       })
+      showSuccessFeedback()
     } catch (error) {
       console.error('Error saving experience:', error)
-    } finally {
-      setIsLoading(false)
+      setSaveState('idle')
+      setSaveBanner({
+        type: 'error',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Failed to save changes. Please try again.',
+      })
     }
   }
 
@@ -508,6 +607,33 @@ export function ProfileExperienceLeft() {
           )}
         </YStack>
 
+        {/* Save Feedback */}
+        {saveBanner && (
+          <YStack
+            mt="$4"
+            p="$3"
+            gap="$2"
+            borderWidth={1}
+            borderColor={saveBanner.type === 'success' ? '$green7' : '$red7'}
+            backgroundColor={saveBanner.type === 'success' ? '$green3' : '$red3'}
+            rounded="$4"
+          >
+            <XStack gap="$2" items="center">
+              {saveBanner.type === 'success' ? (
+                <CheckCircle size={18} color="$green10" />
+              ) : (
+                <AlertTriangle size={18} color="$red10" />
+              )}
+              <Text
+                fontWeight="600"
+                color={saveBanner.type === 'success' ? '$green11' : '$red11'}
+              >
+                {saveBanner.message}
+              </Text>
+            </XStack>
+          </YStack>
+        )}
+
         {/* Action Buttons */}
         <XStack justify="flex-end" gap="$3" pt="$4">
           <Button
@@ -520,10 +646,22 @@ export function ProfileExperienceLeft() {
           </Button>
           <Button
             onPress={handleSubmit(onSubmit)}
-            disabled={!isDirty || isLoading}
-            opacity={!isDirty || isLoading ? 0.5 : 1}
+            disabled={!isDirty || saveState === 'saving'}
+            opacity={!isDirty || saveState === 'saving' ? 0.5 : 1}
           >
-            {isLoading ? 'Saving...' : 'Save Changes'}
+            {saveState === 'saving' ? (
+              <XStack gap="$2" items="center">
+                <Spinner size="small" color="$color12" />
+                <Text>Saving...</Text>
+              </XStack>
+            ) : saveState === 'success' ? (
+              <XStack gap="$2" items="center">
+                <Check size={18} color="$green10" />
+                <Text color="$green10">Saved!</Text>
+              </XStack>
+            ) : (
+              'Save Changes'
+            )}
           </Button>
         </XStack>
 

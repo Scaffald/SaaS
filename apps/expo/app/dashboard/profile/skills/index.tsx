@@ -1,9 +1,14 @@
-import { ProfileSkillsLeft } from '@app/core/features/profile/profile-skills-left'
-import { ProfileSkillsRight } from '@app/core/features/profile/profile-skills-right'
+import {
+  ProfileSkillsLeft,
+  ProfileSkillsProvider,
+  ProfileSkillsRight,
+} from '@app/core/features/profile'
 import { DashboardLayout } from '@app/ui'
 
 export default function ProfileSkillsPage() {
   return (
-    <DashboardLayout leftContent={<ProfileSkillsLeft />} rightContent={<ProfileSkillsRight />} />
+    <ProfileSkillsProvider>
+      <DashboardLayout leftContent={<ProfileSkillsLeft />} rightContent={<ProfileSkillsRight />} />
+    </ProfileSkillsProvider>
   )
 }

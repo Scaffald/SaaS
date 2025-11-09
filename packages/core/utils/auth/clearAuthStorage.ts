@@ -26,11 +26,7 @@ export async function clearAllAuthStorage(
     }
 
     // 2. Sign out from Supabase (this clears Supabase's internal storage)
-    console.log("[clearAuthStorage] Signing out from Supabase");
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error("[clearAuthStorage] Supabase signOut error:", error);
-    }
+    await handleSupabaseSignOut();
 
     // 3. Platform-specific storage cleanup
     if (Platform.OS === "web") {
@@ -43,6 +39,71 @@ export async function clearAllAuthStorage(
   } catch (error) {
     console.error("[clearAuthStorage] Error during cleanup:", error);
     // Don't throw - we want cleanup to be as complete as possible
+  }
+}
+
+async function handleSupabaseSignOut(): Promise<void> {
+  console.log("[clearAuthStorage] Signing out from Supabase");
+
+  try {
+    const {
+      data: { session },
+      error: getSessionError,
+    } = await supabase.auth.getSession();
+
+    if (getSessionError) {
+      console.error(
+        "[clearAuthStorage] Error fetching current session before sign out:",
+        getSessionError,
+      );
+    }
+
+    if (!session) {
+      console.log(
+        "[clearAuthStorage] No active Supabase session detected, performing local sign out",
+      );
+      await performLocalSignOut();
+      return;
+    }
+
+    const { error: signOutError } = await supabase.auth.signOut();
+    if (signOutError) {
+      console.error(
+        "[clearAuthStorage] Supabase signOut error:",
+        signOutError,
+      );
+
+      if (signOutError.name === "AuthSessionMissingError") {
+        console.log(
+          "[clearAuthStorage] Session already missing, ensuring local auth storage is cleared",
+        );
+        await performLocalSignOut();
+      }
+    }
+  } catch (error) {
+    console.error("[clearAuthStorage] Unexpected error during sign out:", error);
+    await performLocalSignOut();
+  }
+}
+
+async function performLocalSignOut(): Promise<void> {
+  try {
+    const { error } = await supabase.auth.signOut({ scope: "local" });
+    if (error) {
+      console.error(
+        "[clearAuthStorage] Local Supabase signOut error:",
+        error,
+      );
+    } else {
+      console.log(
+        "[clearAuthStorage] Local Supabase session cleared successfully",
+      );
+    }
+  } catch (error) {
+    console.error(
+      "[clearAuthStorage] Unexpected error during local sign out:",
+      error,
+    );
   }
 }
 

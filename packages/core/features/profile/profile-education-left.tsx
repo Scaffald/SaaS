@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react'
 import {
   YStack,
   XStack,
@@ -7,13 +7,12 @@ import {
   Input,
   H4,
   TextArea,
-  Select,
-  Adapt,
-  Sheet,
-  useWindowDimensions,
+  ScrollView,
   Spinner,
   Checkbox,
   Label,
+  Popover,
+  Separator,
 } from 'tamagui'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -33,6 +32,13 @@ import {
   MonthYearPicker,
 } from '@app/ui'
 import { api } from '@app/core/utils/api'
+import { invalidateProfileQueries } from './utils/profile-sync'
+import {
+  startProfileSync,
+  completeProfileSync,
+  failProfileSync,
+  resetProfileSyncError,
+} from './utils/profile-sync-store'
 
 // University type definition
 interface University {
@@ -51,18 +57,47 @@ export function ProfileEducationLeft() {
   const [isLoading, setIsLoading] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<EducationProfileFormData | null>(null)
-  const { width } = useWindowDimensions()
-  const isMobile = width < 640
 
   // Queries
   const educationQuery = api.profile.getEducation.useQuery()
   const educationLevelQuery = api.profile.getEducationLevel.useQuery()
+  const utils = api.useContext()
 
   // Mutations
   const saveEducationMutation = api.profile.saveEducation.useMutation({
-    onSuccess: () => {
-      educationQuery.refetch()
-      educationLevelQuery.refetch()
+    async onMutate(input) {
+      resetProfileSyncError()
+      startProfileSync()
+      await Promise.all([
+        utils.profile.getEducation.cancel(),
+        utils.profile.getEducationLevel.cancel(),
+      ])
+
+      const previousEducation = utils.profile.getEducation.getData()
+      const previousLevel = utils.profile.getEducationLevel.getData()
+
+      utils.profile.getEducation.setData(undefined, input.education_entries ?? [])
+      utils.profile
+        .getEducationLevel
+        .setData(undefined, { education_level: input.education_level ?? null })
+
+      return { previousEducation, previousLevel }
+    },
+    onError: (error, _input, context) => {
+      console.error('Error saving education:', error)
+      if (context?.previousEducation) {
+        utils.profile.getEducation.setData(undefined, context.previousEducation)
+      }
+      if (context?.previousLevel) {
+        utils.profile.getEducationLevel.setData(undefined, context.previousLevel)
+      }
+      failProfileSync()
+    },
+    onSettled: (_data, error) => {
+      if (!error) {
+        completeProfileSync()
+      }
+      void invalidateProfileQueries(utils)
     },
   })
 
@@ -207,48 +242,18 @@ export function ProfileEducationLeft() {
             name="education_level"
             control={control}
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <Select.Trigger iconAfter={ChevronDown}>
-                  <Select.Value placeholder="Select education level" />
-                </Select.Trigger>
-
-                <Adapt when={isMobile} platform="touch">
-                  <Sheet
-                    native
-                    modal
-                    dismissOnSnapToBottom
-                    animationConfig={{
-                      type: 'spring',
-                      damping: 20,
-                      mass: 1.2,
-                      stiffness: 250,
-                    }}
-                  >
-                    <Sheet.Frame>
-                      <Sheet.ScrollView>
-                        <Adapt.Contents />
-                      </Sheet.ScrollView>
-                    </Sheet.Frame>
-                    <Sheet.Overlay
-                      animation="lazy"
-                      enterStyle={{ opacity: 0 }}
-                      exitStyle={{ opacity: 0 }}
-                    />
-                  </Sheet>
-                </Adapt>
-
-                <Select.Content>
-                  <Select.ScrollUpButton />
-                  <Select.Viewport>
-                    {EDUCATION_LEVEL_OPTIONS.map((level, idx) => (
-                      <Select.Item key={level} value={level} index={idx}>
-                        <Select.ItemText>{level}</Select.ItemText>
-                      </Select.Item>
-                    ))}
-                  </Select.Viewport>
-                  <Select.ScrollDownButton />
-                </Select.Content>
-              </Select>
+              <SmartSelect
+                value={field.value}
+                onValueChange={field.onChange}
+                options={EDUCATION_LEVEL_OPTIONS.map((level) => ({
+                  label: level,
+                  value: level,
+                }))}
+                placeholder="Select education level"
+                error={errors.education_level?.message}
+                allowClear
+                disabled={isLoading}
+              />
             )}
           />
         </YStack>
@@ -372,48 +377,25 @@ export function ProfileEducationLeft() {
                   name={`education_entries.${index}.degree_type`}
                   control={control}
                   render={({ field }) => (
-                    <Select value={field.value || ''} onValueChange={field.onChange}>
-                      <Select.Trigger iconAfter={ChevronDown}>
-                        <Select.Value placeholder="Select degree type" />
-                      </Select.Trigger>
-
-                      <Adapt when={isMobile} platform="touch">
-                        <Sheet
-                          native
-                          modal
-                          dismissOnSnapToBottom
-                          animationConfig={{
-                            type: 'spring',
-                            damping: 20,
-                            mass: 1.2,
-                            stiffness: 250,
-                          }}
-                        >
-                          <Sheet.Frame>
-                            <Sheet.ScrollView>
-                              <Adapt.Contents />
-                            </Sheet.ScrollView>
-                          </Sheet.Frame>
-                          <Sheet.Overlay
-                            animation="lazy"
-                            enterStyle={{ opacity: 0 }}
-                            exitStyle={{ opacity: 0 }}
-                          />
-                        </Sheet>
-                      </Adapt>
-
-                      <Select.Content>
-                        <Select.ScrollUpButton />
-                        <Select.Viewport>
-                          {DEGREE_TYPE_OPTIONS.map((type, idx) => (
-                            <Select.Item key={type} value={type} index={idx}>
-                              <Select.ItemText>{type}</Select.ItemText>
-                            </Select.Item>
-                          ))}
-                        </Select.Viewport>
-                        <Select.ScrollDownButton />
-                      </Select.Content>
-                    </Select>
+                    <SmartSelect
+                      value={field.value}
+                      onValueChange={(value) => {
+                        field.onChange(value)
+                        if (value !== 'Other') {
+                          setValue(
+                            `education_entries.${index}.custom_degree_type`,
+                            undefined,
+                            { shouldValidate: true }
+                          )
+                        }
+                      }}
+                      options={DEGREE_TYPE_OPTIONS.map((type) => ({
+                        label: type,
+                        value: type,
+                      }))}
+                      placeholder="Select degree type"
+                      allowClear
+                    />
                   )}
                 />
                 {/* Custom Degree Type Input (shown when "Other" is selected) */}
@@ -704,5 +686,177 @@ export function ProfileEducationLeft() {
         />
       </YStack>
     </DashboardWidget>
+  )
+}
+
+interface SmartSelectOption {
+  label: string
+  value: string
+}
+
+interface SmartSelectProps {
+  value?: string
+  onValueChange: (value: string | undefined) => void
+  options: SmartSelectOption[]
+  placeholder?: string
+  disabled?: boolean
+  error?: string
+  allowClear?: boolean
+}
+
+function SmartSelect({
+  value,
+  onValueChange,
+  options,
+  placeholder,
+  disabled = false,
+  error,
+  allowClear = false,
+}: SmartSelectProps) {
+  const [open, setOpen] = useState(false)
+  const [placement, setPlacement] = useState<'top' | 'bottom'>('bottom')
+  const [contentWidth, setContentWidth] = useState<number | undefined>()
+  const triggerRef = useRef<HTMLButtonElement | null>(null)
+
+  const selectedOption = useMemo(
+    () => options.find((option) => option.value === value),
+    [options, value]
+  )
+
+  const evaluatePlacement = useCallback(() => {
+    if (typeof window === 'undefined' || !triggerRef.current) {
+      return
+    }
+
+    const rect = triggerRef.current.getBoundingClientRect()
+    const spaceBelow = window.innerHeight - rect.bottom
+    const spaceAbove = rect.top
+    const preferredHeight = 280
+
+    if (spaceBelow < preferredHeight && spaceAbove > spaceBelow) {
+      setPlacement('top')
+    } else {
+      setPlacement('bottom')
+    }
+
+    setContentWidth(rect.width)
+  }, [])
+
+  useEffect(() => {
+    if (!open) {
+      return
+    }
+
+    const frame = requestAnimationFrame(evaluatePlacement)
+
+    const handleResize = () => evaluatePlacement()
+
+    window.addEventListener('resize', handleResize)
+    window.addEventListener('scroll', handleResize, true)
+
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('resize', handleResize)
+      window.removeEventListener('scroll', handleResize, true)
+    }
+  }, [open, evaluatePlacement])
+
+  const handleOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      if (disabled) return
+      setOpen(nextOpen)
+      if (nextOpen) {
+        requestAnimationFrame(evaluatePlacement)
+      }
+    },
+    [disabled, evaluatePlacement]
+  )
+
+  const handleSelect = useCallback(
+    (nextValue: string | undefined) => {
+      onValueChange(nextValue)
+      setOpen(false)
+    },
+    [onValueChange]
+  )
+
+  const displayLabel = selectedOption?.label ?? placeholder ?? 'Select'
+
+  return (
+    <YStack gap="$2">
+      <Popover open={open} onOpenChange={handleOpenChange}>
+        <Popover.Trigger asChild>
+          <Button
+            ref={triggerRef}
+            variant="outlined"
+            justifyContent="space-between"
+            iconAfter={ChevronDown}
+            disabled={disabled}
+            borderColor={error ? '$red9' : '$borderColor'}
+            color={selectedOption ? '$color12' : '$color11'}
+            onPress={() => handleOpenChange(!open)}
+          >
+            {displayLabel}
+          </Button>
+        </Popover.Trigger>
+
+        <Popover.Content
+          placement={placement}
+          w={contentWidth}
+          minWidth={contentWidth ?? 220}
+          maxWidth={320}
+          elevate
+          animation="quick"
+          enterStyle={{ opacity: 0, scale: 0.96 }}
+          exitStyle={{ opacity: 0, scale: 0.96 }}
+          borderWidth={1}
+          borderColor="$borderColor"
+          backgroundColor="$color2"
+          padding="$2"
+        >
+          <ScrollView maxHeight={280}>
+            <YStack gap="$1">
+              {allowClear && (
+                <Button
+                  size="$2"
+                  chromeless
+                  justifyContent="flex-start"
+                  onPress={() => handleSelect(undefined)}
+                  disabled={disabled}
+                  hoverStyle={{ backgroundColor: '$color3' }}
+                >
+                  Clear selection
+                </Button>
+              )}
+              {allowClear && options.length > 0 && <Separator />}
+              {options.map((option) => {
+                const isSelected = option.value === value
+                return (
+                  <Button
+                    key={option.value}
+                    size="$3"
+                    chromeless
+                    justifyContent="flex-start"
+                    onPress={() => handleSelect(option.value)}
+                    disabled={disabled}
+                    backgroundColor={isSelected ? '$blue3' : 'transparent'}
+                    hoverStyle={{ backgroundColor: '$blue4' }}
+                    borderRadius="$3"
+                    color={isSelected ? '$blue12' : '$color12'}
+                  >
+                    {option.label}
+                  </Button>
+                )
+              })}
+            </YStack>
+          </ScrollView>
+        </Popover.Content>
+      </Popover>
+      {error && (
+        <Text fontSize="$2" color="$red10">
+          {error}
+        </Text>
+      )}
+    </YStack>
   )
 }

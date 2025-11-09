@@ -2,7 +2,7 @@ import { YStack, ScrollView, Text, XStack, Button, H2, Separator } from '@app/ui
 import { Card } from 'tamagui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { GeneralProfileSection, EmploymentSection } from '@app/core/features/profile/components'
-import { ProfileSkillsLeft } from '@app/core/features/profile/profile-skills-left'
+import { ProfileSkillsLeft, ProfileSkillsProvider } from '@app/core/features/profile'
 import { ProfileExperienceLeft } from '@app/core/features/profile/profile-experience-left'
 import { ProfileEducationLeft } from '@app/core/features/profile/profile-education-left'
 import { ProfileCertificationsLeft } from '@app/core/features/profile/profile-certifications-left'
@@ -63,7 +63,9 @@ export default function EditUserPage() {
               multi-user support coming soon.
             </Text>
           </Card>
-          <ProfileSkillsLeft />
+          <ProfileSkillsProvider>
+            <ProfileSkillsLeft />
+          </ProfileSkillsProvider>
         </YStack>
 
         {/* Experience Section - Note: Currently operates on current admin user */}
