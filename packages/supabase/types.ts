@@ -3399,8 +3399,59 @@ export type Database = {
       };
     };
     Enums: {
-      notification_type: "success" | "warning" | "info";
-      organization_request_status: "pending" | "approved" | "rejected";
+      notification_type:
+        | "success"
+        | "warning"
+        | "info"
+        | "job.match"
+        | "app.submitted"
+        | "app.status_changed"
+        | "interview.scheduled"
+        | "offer.extended"
+        | "hiring.decision"
+        | "team.invite"
+        | "team.assigned"
+        | "team.commented"
+        | "team.role_changed"
+        | "profile.viewed"
+        | "profile.unlocked"
+        | "review.new"
+        | "review.reply"
+        | "skill.endorse"
+        | "acct.verify"
+        | "acct.password_reset"
+        | "payment.success"
+        | "payment.failed"
+        | "sub.renewal"
+        | "bgcheck.completed"
+        | "profile.reminder"
+        | "reengage"
+        | "feature.announcement"
+        | "platform.update"
+        | "message.received";
+      notification_channel: "in_app" | "email" | "push" | "sms";
+      notification_delivery_status:
+        | "queued"
+        | "sending"
+        | "sent"
+        | "delivered"
+        | "failed"
+        | "bounce"
+        | "blocked";
+      notification_event_kind:
+        | "accepted"
+        | "delivered"
+        | "opened"
+        | "clicked"
+        | "failed"
+        | "bounce"
+        | "complaint";
+      notification_frequency:
+        | "immediate"
+        | "digest_daily"
+        | "digest_weekly"
+        | "mute";
+      notification_severity: "info" | "important" | "critical";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -6808,15 +6859,13 @@ export type TablesInsert<
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]][
+  } ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]][
       "Tables"
     ]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]][
+} ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]][
     "Tables"
   ][TableName] extends {
     Insert: infer I;
@@ -6835,15 +6884,13 @@ export type TablesUpdate<
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]][
+  } ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]][
       "Tables"
     ]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]][
+} ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]][
     "Tables"
   ][TableName] extends {
     Update: infer U;
@@ -6862,15 +6909,13 @@ export type Enums<
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]][
+  } ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]][
       "Enums"
     ]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
-}
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][
+} ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][
     EnumName
   ]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
@@ -6883,15 +6928,13 @@ export type CompositeTypes<
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
-  }
-    ? keyof DatabaseWithoutInternals[
+  } ? keyof DatabaseWithoutInternals[
       PublicCompositeTypeNameOrOptions["schema"]
     ]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
-}
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]][
+} ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]][
     "CompositeTypes"
   ][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends

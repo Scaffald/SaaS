@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
-import type { Database } from "../database.types.ts";
+import type { Database, Json } from "../database.types.ts";
 import {
   NOTIFICATION_CHANNELS,
   NOTIFICATION_DELIVERY_STATUSES,
@@ -59,7 +59,7 @@ interface RecordDeliveryEventInput {
   deliveryId: number | null;
   channel: NotificationChannel | null;
   event: NotificationEventKind;
-  meta?: Record<string, unknown> | null;
+  meta?: DeliveryMetadata | null;
 }
 
 const DEFAULT_CHANNELS: ChannelEnabledMap = {
@@ -73,6 +73,52 @@ const BACKOFF_MINUTES = [0, 1, 5, 15, 60, 240, 720];
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isJsonValue(value: unknown): value is Json {
+  if (
+    value === null ||
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+  ) {
+    return true;
+  }
+
+  if (Array.isArray(value)) {
+    return value.every((item) => isJsonValue(item));
+  }
+
+  if (isRecord(value)) {
+    return Object.values(value).every((item) => item === undefined || isJsonValue(item));
+  }
+
+  return false;
+}
+
+function toJson(value: unknown, fallback: Json): Json {
+  if (value === undefined) {
+    return fallback;
+  }
+
+  if (isJsonValue(value)) {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => toJson(item, null));
+  }
+
+  if (isRecord(value)) {
+    const result: Record<string, Json | undefined> = {};
+    for (const [key, item] of Object.entries(value)) {
+      if (item === undefined) continue;
+      result[key] = toJson(item, null);
+    }
+    return result;
+  }
+
+  return String(value);
 }
 
 function toBoolean(value: unknown, fallback: boolean): boolean {
@@ -410,6 +456,8 @@ export async function recordDeliveryEvent({
     return;
   }
 
+  const normalizedMeta = meta ? normalizeMetadata(meta) : undefined;
+
   const { error } = await supabase
     .schema("core")
     .from("notification_events")
@@ -418,7 +466,7 @@ export async function recordDeliveryEvent({
       delivery_id: deliveryId ?? undefined,
       channel: channel ?? undefined,
       event,
-      meta: meta ?? undefined,
+      meta: normalizedMeta ?? undefined,
     });
 
   if (error) {
@@ -427,10 +475,17 @@ export async function recordDeliveryEvent({
 }
 
 export function normalizeMetadata(metadata: unknown): DeliveryMetadata {
-  if (isRecord(metadata)) {
-    return metadata;
+  if (!isRecord(metadata)) {
+    return {};
   }
-  return {};
+
+  const normalized: DeliveryMetadata = {};
+  for (const [key, value] of Object.entries(metadata)) {
+    if (value === undefined) continue;
+    normalized[key] = toJson(value, null);
+  }
+
+  return normalized;
 }
 
 export async function enqueueDelivery(
@@ -441,6 +496,8 @@ export async function enqueueDelivery(
   metadata: DeliveryMetadata,
   nextAttemptAt?: Date | null,
 ): Promise<NotificationDeliveryRow | null> {
+  const normalizedMetadata = normalizeMetadata(metadata);
+
   const { data, error } = await supabase
     .schema("core")
     .from("notification_deliveries")
@@ -448,7 +505,7 @@ export async function enqueueDelivery(
       notification_id: notificationId,
       channel,
       provider: provider ?? undefined,
-      metadata,
+      metadata: normalizedMetadata,
       next_attempt_at: nextAttemptAt ? nextAttemptAt.toISOString() : undefined,
     })
     .select()
@@ -573,7 +630,11 @@ export async function getDeviceTokens(
     throw new Error(`Failed to load notification devices: ${error.message}`);
   }
 
-  return (data ?? []).map((device) => ({
+  const devices = (data ?? []) as Array<
+    Database["core"]["Tables"]["notification_devices"]["Row"]
+  >;
+
+  return devices.map((device) => ({
     token: device.token,
     platform: device.platform,
     metadata: normalizeMetadata(device.metadata),
@@ -585,11 +646,38 @@ export async function insertNotification(
   payload: Partial<Database["core"]["Tables"]["notifications"]["Insert"]>,
   dedupeKey?: string | null,
 ): Promise<NotificationRow | null> {
+  if (!payload.user_id || !payload.title || !payload.message || !payload.type) {
+    throw new Error("Missing required notification fields (user_id, title, message, type)");
+  }
+
+  const preparedPayload: Database["core"]["Tables"]["notifications"]["Insert"] = {
+    user_id: payload.user_id,
+    title: payload.title,
+    message: payload.message,
+    type: payload.type,
+    severity: payload.severity ?? "info",
+    preview: payload.preview ?? null,
+    body: toJson(payload.body ?? {}, {}),
+    metadata: normalizeMetadata(payload.metadata ?? {}),
+    dedupe_key: payload.dedupe_key ?? dedupeKey ?? null,
+    cta_label: payload.cta_label ?? null,
+    cta_url: payload.cta_url ?? null,
+    routed_channels: payload.routed_channels
+      ? ensureChannelArray(payload.routed_channels as NotificationChannel[])
+      : [],
+    archived_at: payload.archived_at ?? null,
+    read: payload.read ?? null,
+    read_at: payload.read_at ?? null,
+    created_at: payload.created_at ?? undefined,
+    updated_at: payload.updated_at ?? undefined,
+    id: payload.id,
+  };
+
   if (dedupeKey) {
     const { data, error } = await supabase
       .schema("core")
       .from("notifications")
-      .upsert(payload, { onConflict: "dedupe_key" })
+      .upsert(preparedPayload, { onConflict: "dedupe_key" })
       .select()
       .single();
 
@@ -604,7 +692,7 @@ export async function insertNotification(
   const { data, error } = await supabase
     .schema("core")
     .from("notifications")
-    .insert(payload)
+    .insert(preparedPayload)
     .select()
     .single();
 
