@@ -1,10 +1,11 @@
 import { YStack, XStack, Text, Spinner, H4, Button, Dialog } from 'tamagui'
-import { GraduationCap, Calendar, Award, MapPin, Pencil, Trash2, CheckCircle, AlertCircle } from '@tamagui/lucide-icons'
+import { GraduationCap, Calendar, MapPin, Pencil, Trash2, CheckCircle, AlertCircle } from '@tamagui/lucide-icons'
 import { DashboardWidget } from '@app/ui'
 import { ProfileEmptyState, EducationEntryEditModal } from './components'
 import { formatDateRange } from './utils/date-formatting'
 import { api } from '@app/core/utils/api'
 import { useState } from 'react'
+import { useToastController } from '@tamagui/toast'
 
 /**
  * Profile Education Right Component
@@ -14,13 +15,22 @@ export function ProfileEducationRight() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<string | null>(null)
   // biome-ignore lint/suspicious/noExplicitAny: tRPC types not yet generated
   const [editingEntry, setEditingEntry] = useState<any | null>(null)
+  const toast = useToastController()
   
   // Query saved education data
   const educationQuery = api.profile.getEducation.useQuery()
   
   // Delete mutation
   const deleteEducationMutation = api.profile.deleteEducation.useMutation({
+    onError: (error) => {
+      toast.show('Delete Failed', {
+        message: error instanceof Error ? error.message : 'Failed to delete education entry. Please try again.',
+      })
+    },
     onSuccess: () => {
+      toast.show('Education Deleted', {
+        message: 'The education entry has been removed.',
+      })
       educationQuery.refetch()
       setDeleteDialogOpen(null)
     },
@@ -69,7 +79,13 @@ export function ProfileEducationRight() {
       ) : (
         <YStack gap="$3">
           {/* biome-ignore lint/suspicious/noExplicitAny: tRPC types not yet generated */}
-          {educationQuery.data.map((edu: any) => (
+          {educationQuery.data.map((edu: any) => {
+            const normalizedGpa =
+              typeof edu.gpa === 'number' ? edu.gpa : edu.gpa != null ? Number(edu.gpa) : undefined
+            const hasValidGpa =
+              typeof normalizedGpa === 'number' && !Number.isNaN(normalizedGpa)
+
+            return (
             <YStack
               key={edu.id}
               p="$4"
@@ -126,9 +142,9 @@ export function ProfileEducationRight() {
                   )}
                   
                   {/* GPA */}
-                  {edu.gpa && (
+                  {hasValidGpa && (
                     <Text fontSize="$3" color="$color11">
-                      GPA: {edu.gpa.toFixed(2)}/4.0
+                      GPA: {normalizedGpa.toFixed(1)}/4.0
                     </Text>
                   )}
                 </YStack>
@@ -225,7 +241,8 @@ export function ProfileEducationRight() {
                 )}
               </YStack>
             </YStack>
-          ))}
+            )
+          })}
         </YStack>
       )}
 

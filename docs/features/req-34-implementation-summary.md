@@ -1,168 +1,46 @@
 # REQ-34: Avatar Cropping Implementation Summary
 
-## ✅ Implementation Complete
+## 🚧 Current Status
 
-All core functionality has been implemented and is ready for testing.
+Implementation is **in progress**. Core cropping mechanics exist, but several acceptance criteria and technical requirements for REQ-34 remain incomplete.
 
-## What Was Fixed/Implemented
+## ✅ Implemented So Far
 
-### 1. Critical Bug Fixes ✅
+- Cross-platform modal (`AvatarCropModal.tsx`) with zoom controls, drag/pan gestures, and square overlay mask.
+- Basic error messaging, image dimension validation, and crop boundary constraints.
+- Initial integration with `AvatarImagePicker` for cropping newly selected photos.
+- Added `expo-image-manipulator` native dependency to support cropping on iOS/Android.
 
-#### Overlay Mismatch Bug
-- **Issue**: Circular `clipPath` used for square crop area
-- **Fix**: Replaced with 4-sided overlay divs creating a square mask
-- **Location**: `AvatarCropModal.tsx` lines 550-605
+## ❗️ Outstanding Gaps
 
-#### Error Handling
-- **Added**: Comprehensive try-catch blocks
-- **Added**: User-friendly error messages
-- **Added**: Image dimension validation
-- **Added**: Error state UI with close button
+- **Schema validation**: `uploadAvatarInputSchema` still accepts any string input (no size/MIME/file-name guards).
+- **Image processing pipeline**: Cropper returns blob/object URLs (web) or file URIs (native) without enforcing 512×512 output, compression, or base64 conversion.
+- **Flip controls & live preview**: UI lacks horizontal/vertical flip buttons and real-time circular preview required by FR2/FR5/FR6.
+- **Edit existing avatar**: `AvatarImagePicker` only opens the cropper for new selections; no “Edit Photo” flow for existing avatars.
+- **Accessibility**: Missing aria/accessibility labels, focus handling, keyboard shortcuts, and announcements outlined in Task 10.
+- **Automated tests**: No unit/integration coverage for cropper utilities or profile workflow.
+- **Responsive polish**: Layout does not yet adapt per UX2/UX1 guidelines (mobile landscape vs desktop parity).
 
-#### Coordinate Validation
-- **Added**: Input validation in `constrainCropPosition`
-- **Added**: NaN checks and type validation
-- **Added**: Boundary constraint validation
+## Files Reviewed
 
-### 2. Native Platform Support ✅
+- `packages/ui/src/components/image-picker/AvatarCropModal.tsx`
+- `packages/ui/src/components/image-picker/AvatarImagePicker.tsx`
+- `packages/core/features/profile/profile-general-left.tsx`
+- `packages/supabase/functions/_shared/schemas/consolidated.ts`
 
-#### expo-image-manipulator Integration
-- **Installed**: `expo-image-manipulator` package
-- **Implemented**: Native image cropping using `manipulateAsync`
-- **Added**: Proper crop region calculation
-- **Location**: `AvatarCropModal.tsx` lines 339-366
+## Recommended Next Actions
 
-#### Native Image Loading
-- **Added**: `RNImage.getSize` for native image dimension detection
-- **Added**: Same validation and initialization logic as web
-- **Location**: `AvatarCropModal.tsx` lines 86-129
+1. Harden Supabase schema validation (Task 2).
+2. Introduce shared image-processing utilities that output compressed 512×512 base64 strings with flip support (Task 6).
+3. Extend cropper UI for flip controls, live preview, accessibility, and responsive layouts (Tasks 3–5, 7, 10).
+4. Integrate edit flow + improved messaging in `AvatarImagePicker` and `ProfileGeneralLeft` (Task 8 & 9).
+5. Backfill automated tests and run `pnpm check`/`pnpm build` before moving REQ-34 to review (Task 11).
 
-### 3. Native Gesture Handlers ✅
+## Testing Coverage (Pending)
 
-#### Pinch-to-Zoom Gesture
-- **Implemented**: Using `react-native-gesture-handler`
-- **Features**: 
-  - Smooth zoom in/out
-  - Constrains to min/max zoom levels
-  - Auto-constrains crop position after zoom
-- **Location**: `AvatarCropModal.tsx` lines 466-482
+- Web: drag, zoom, crop, error states.
+- Native: pinch/zoom, pan, crop completion.
+- Edge cases: small/large images, invalid formats, corrupted data.
 
-#### Pan/Drag Gesture
-- **Implemented**: Using `react-native-gesture-handler`
-- **Features**:
-  - Drag to reposition crop area
-  - Coordinate conversion from display to image space
-  - Boundary constraints
-- **Location**: `AvatarCropModal.tsx` lines 484-507
-
-#### Combined Gestures
-- **Implemented**: Simultaneous pinch and pan
-- **Features**: Users can zoom and pan at the same time
-- **Location**: `AvatarCropModal.tsx` lines 509-514
-
-### 4. UI Improvements ✅
-
-#### Native UI Enhancement
-- **Added**: Zoom controls (buttons + gestures)
-- **Added**: Square crop overlay matching web
-- **Added**: Visual feedback (dark overlay outside crop area)
-- **Added**: Crop border with shadow
-- **Location**: `AvatarCropModal.tsx` lines 527-606
-
-#### Image Size Validation
-- **Added**: Minimum dimension check (50% of crop size)
-- **Added**: User-friendly warning messages
-- **Added**: Validation for both web and native
-- **Location**: `AvatarCropModal.tsx` lines 99-111, 104-106
-
-## Technical Details
-
-### Web Implementation
-- Uses HTML5 Canvas API for cropping
-- Mouse drag and wheel scroll for interaction
-- Converts to blob URL for result
-
-### Native Implementation
-- Uses `expo-image-manipulator` for actual cropping
-- Uses `react-native-gesture-handler` for gestures
-- Returns file URI for result
-
-### Cross-Platform Features
-- Consistent UI/UX across platforms
-- Same validation logic
-- Same error handling
-- Same zoom controls (buttons work on both)
-
-## Files Modified
-
-1. **packages/ui/src/components/image-picker/AvatarCropModal.tsx**
-   - Complete refactor with native support
-   - Added gesture handlers
-   - Fixed overlay bug
-   - Added error handling
-   - Updated documentation
-
-2. **apps/expo/package.json**
-   - Added `expo-image-manipulator` dependency
-
-## Testing Checklist
-
-### Web Testing
-- [ ] Chrome desktop - drag, zoom, crop
-- [ ] Safari desktop - drag, zoom, crop
-- [ ] Firefox desktop - drag, zoom, crop
-- [ ] Mobile web (responsive) - touch interactions
-- [ ] React Native Web build
-
-### Native Testing
-- [ ] iOS simulator - gestures, zoom, crop
-- [ ] Android emulator - gestures, zoom, crop
-- [ ] iOS device (if available) - gestures, zoom, crop
-- [ ] Android device (if available) - gestures, zoom, crop
-
-### Edge Cases
-- [ ] Very small images (< 200x200)
-- [ ] Very large images (> 5000x5000)
-- [ ] Portrait images
-- [ ] Landscape images
-- [ ] Square images
-- [ ] Different aspect ratios
-- [ ] Invalid image formats
-- [ ] Network image loading failures
-- [ ] Local file image loading
-
-## Known Limitations
-
-1. **Web div elements**: The web implementation uses native `div` elements for the overlay. This is intentional and works correctly on web. For full RNW compatibility, these could be converted to Tamagui `View` components, but testing shows it works as-is.
-
-2. **Gesture handlers**: Native gestures work on iOS and Android. Web still uses mouse events which is appropriate for that platform.
-
-## Next Steps
-
-1. **Manual Testing**: Test on all target platforms
-2. **User Feedback**: Gather feedback on UX
-3. **Performance Testing**: Test with very large images
-4. **Edge Case Testing**: Test all error scenarios
-
-## Dependencies Added
-
-- `expo-image-manipulator@^14.0.7` - For native image cropping
-
-## Dependencies Used (Already Present)
-
-- `react-native-gesture-handler@~2.28.0` - For native gestures
-- `react-native-reanimated@~4.1.2` - Already in project (not used but compatible)
-
-## Code Quality
-
-- ✅ No linter errors
-- ✅ TypeScript types properly defined
-- ✅ Proper error handling
-- ✅ Input validation
-- ✅ Cross-platform compatibility
-- ✅ Updated documentation
-
-## Summary
-
-The avatar cropping feature is now fully functional on both web and native platforms. All critical bugs have been fixed, native support has been added with gesture handlers, and comprehensive error handling is in place. The component is ready for testing and production use.
+These scenarios are outstanding and should be addressed once the remaining functionality is implemented.
 

@@ -27,6 +27,7 @@ import {
   UniversityAutocomplete,
   ConfirmationDialog,
   MonthYearPicker,
+  FieldError,
 } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
@@ -250,8 +251,8 @@ export function EducationEntryEditModal({
                                 nameField.onChange(text)
                                 universityField.onChange(null)
                               }}
-                              error={errors.institution_name?.message}
                             />
+                          <FieldError message={errors.institution_name?.message} />
                             <Button
                               size="$2"
                               variant="outlined"
@@ -336,12 +337,14 @@ export function EducationEntryEditModal({
                     name="custom_degree_type"
                     control={control}
                     render={({ field: customField }) => (
-                      <Input
-                        placeholder="Specify degree type"
-                        value={customField.value || ''}
-                        onChangeText={customField.onChange}
-                        error={errors.custom_degree_type?.message}
-                      />
+                      <>
+                        <Input
+                          placeholder="Specify degree type"
+                          value={customField.value || ''}
+                          onChangeText={customField.onChange}
+                        />
+                        <FieldError message={errors.custom_degree_type?.message} />
+                      </>
                     )}
                   />
                 ) : null
@@ -383,59 +386,61 @@ export function EducationEntryEditModal({
                 }, [field.value])
 
                 return (
-                  <Input
-                    placeholder="e.g. 3.5 (0.0 - 4.0)"
-                    value={localValue}
-                    onChangeText={(text) => {
-                      // Allow empty string
-                      if (text === '') {
-                        setLocalValue('')
-                        field.onChange(undefined)
-                        return
-                      }
-
-                      // Allow decimal point and digits
-                      // Match pattern: optional digits, optional decimal point, optional single digit after decimal
-                      const decimalPattern = /^\d*\.?\d?$/
-                      if (!decimalPattern.test(text)) {
-                        return // Don't update if invalid pattern
-                      }
-
-                      // Update local display value
-                      setLocalValue(text)
-
-                      // Parse as float
-                      const numValue = Number.parseFloat(text)
-
-                      // Validate range and that it's a valid number
-                      if (
-                        !Number.isNaN(numValue) &&
-                        numValue >= 0 &&
-                        numValue <= 4.0 &&
-                        // Ensure max 1 decimal place
-                        (text.split('.')[1]?.length ?? 0) <= 1
-                      ) {
-                        // Only update form field if we have a complete number (not just "3.")
-                        if (!text.endsWith('.')) {
-                          field.onChange(numValue)
+                  <>
+                    <Input
+                      placeholder="e.g. 3.5 (0.0 - 4.0)"
+                      value={localValue}
+                      onChangeText={(text) => {
+                        // Allow empty string
+                        if (text === '') {
+                          setLocalValue('')
+                          field.onChange(undefined)
+                          return
                         }
-                      }
-                    }}
-                    onBlur={() => {
-                      // On blur, ensure we have a valid number
-                      const currentValue = field.value
-                      if (currentValue !== undefined && currentValue !== null) {
-                        // Round to 1 decimal place
-                        const rounded = Math.round(currentValue * 10) / 10
-                        field.onChange(rounded)
-                        setLocalValue(rounded.toString())
-                      } else {
-                        setLocalValue('')
-                      }
-                    }}
-                    keyboardType="decimal-pad"
-                    error={errors.gpa?.message}
-                  />
+
+                        // Allow decimal point and digits
+                        // Match pattern: optional digits, optional decimal point, optional single digit after decimal
+                        const decimalPattern = /^\d*\.?\d?$/
+                        if (!decimalPattern.test(text)) {
+                          return // Don't update if invalid pattern
+                        }
+
+                        // Update local display value
+                        setLocalValue(text)
+
+                        // Parse as float
+                        const numValue = Number.parseFloat(text)
+
+                        // Validate range and that it's a valid number
+                        if (
+                          !Number.isNaN(numValue) &&
+                          numValue >= 0 &&
+                          numValue <= 4.0 &&
+                          // Ensure max 1 decimal place
+                          (text.split('.')[1]?.length ?? 0) <= 1
+                        ) {
+                          // Only update form field if we have a complete number (not just "3.")
+                          if (!text.endsWith('.')) {
+                            field.onChange(numValue)
+                          }
+                        }
+                      }}
+                      onBlur={() => {
+                        // On blur, ensure we have a valid number
+                        const currentValue = field.value
+                        if (currentValue !== undefined && currentValue !== null) {
+                          // Round to 1 decimal place
+                          const rounded = Math.round(currentValue * 10) / 10
+                          field.onChange(rounded)
+                          setLocalValue(rounded.toString())
+                        } else {
+                          setLocalValue('')
+                        }
+                      }}
+                      keyboardType="decimal-pad"
+                    />
+                    <FieldError message={errors.gpa?.message} />
+                  </>
                 )
               }}
             />
@@ -493,6 +498,10 @@ export function EducationEntryEditModal({
                       field.onChange(checked === true)
                       if (checked === true) {
                         setValue('end_date', undefined, { shouldValidate: true })
+                      } else {
+                        setValue('expected_graduation_date', undefined, {
+                          shouldValidate: true,
+                        })
                       }
                     }}
                   >
@@ -504,6 +513,10 @@ export function EducationEntryEditModal({
                       field.onChange(newValue)
                       if (newValue) {
                         setValue('end_date', undefined, { shouldValidate: true })
+                      } else {
+                        setValue('expected_graduation_date', undefined, {
+                          shouldValidate: true,
+                        })
                       }
                     }}
                   >
@@ -546,12 +559,15 @@ export function EducationEntryEditModal({
               name="description"
               control={control}
               render={({ field }) => (
-                <TextArea
-                  placeholder="Describe your education experience, achievements, relevant coursework..."
-                  value={field.value || ''}
-                  onChangeText={field.onChange}
-                  minH={80}
-                />
+                <>
+                  <TextArea
+                    placeholder="Describe your education experience, achievements, relevant coursework..."
+                    value={field.value || ''}
+                    onChangeText={field.onChange}
+                    minH={80}
+                  />
+                  <FieldError message={errors.description?.message} />
+                </>
               )}
             />
           </YStack>

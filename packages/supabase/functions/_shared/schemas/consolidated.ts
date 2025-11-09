@@ -323,10 +323,40 @@ export const industrySchema = z.object({
 // AVATAR UPLOAD SCHEMA
 // =============================================================================
 
+/**
+ * Avatar upload payload validation
+ *
+ * Validates client-supplied avatar images before they reach Supabase storage.
+ * Guards against oversized payloads, unexpected MIME types, and mismatched filenames.
+ */
 export const uploadAvatarInputSchema = z.object({
-  file: z.string(), // Base64 encoded file
-  fileName: z.string(),
-  contentType: z.string(),
+  file: z
+    .string()
+    .min(1, 'Image data is required')
+    .max(13_421_772, 'Image file size must be under 10MB') // 10MB base64 ≈ 13.4MB
+    .regex(
+      /^data:image\/(jpeg|jpg|png|webp);base64,/,
+      'Invalid image format. Please provide a JPG, PNG, or WebP image.',
+    ),
+  fileName: z
+    .string()
+    .min(1, 'Filename is required')
+    .regex(
+      /\.(jpg|jpeg|png|webp)$/i,
+      'Filename must end with .jpg, .jpeg, .png, or .webp.',
+    ),
+  contentType: z
+    .string()
+    .refine(
+      (type) =>
+        type === 'image/jpeg' ||
+        type === 'image/jpg' ||
+        type === 'image/png' ||
+        type === 'image/webp',
+      {
+        message: 'Content type must be image/jpeg, image/png, or image/webp.',
+      },
+    ),
 });
 
 export const uploadAvatarOutputSchema = z.object({
