@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
-import { Button, Card, ScrollView, Separator, Text, XStack, YStack } from 'tamagui'
-import { CheckCircle2, FileWarning, Loader2, RotateCcw } from '@tamagui/lucide-icons'
+import { Button, Card, H5, Paragraph, ScrollView, Separator, Text, XStack, YStack } from 'tamagui'
+import { CheckCircle2, FileWarning, Loader2, RotateCcw, Info, Clock, ListPlus } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
 import { useImportData } from '../hooks/useImportData'
 import { ConfidenceBadge } from './ConfidenceBadge'
@@ -44,6 +44,52 @@ export function ImportReviewScreen() {
   }))
 
   const currentSection = sections.find((section) => section.id === activeSection) ?? sections[0]
+  const totalItems = sections.reduce((total, section) => total + section.items.length, 0)
+  const allSelected = totalItems > 0 &&
+    sections.every((section) =>
+      section.items.every((item) => selectedItems[section.id]?.[item.id]),
+    )
+
+  const expiresInLabel = useMemo(() => {
+    if (!metadata?.expiresAt) return null
+    const expiresAtMs = new Date(metadata.expiresAt).getTime()
+    if (Number.isNaN(expiresAtMs)) return null
+    const diffMs = expiresAtMs - Date.now()
+    if (diffMs <= 0) {
+      return {
+        status: 'expired' as const,
+        label: 'Import data expired — upload again to continue',
+      }
+    }
+    const totalMinutes = Math.max(1, Math.round(diffMs / 60000))
+    const hours = Math.floor(totalMinutes / 60)
+    const minutes = totalMinutes % 60
+    let label = 'Expires in '
+    if (hours > 0) {
+      label += `${hours}h`
+      if (minutes > 0) {
+        label += ` ${minutes}m`
+      }
+    } else if (minutes > 0) {
+      label += `${minutes}m`
+    } else {
+      label += 'less than a minute'
+    }
+    return {
+      status: 'active' as const,
+      label,
+    }
+  }, [metadata?.expiresAt])
+
+  const storedAtLabel = useMemo(() => {
+    if (!metadata?.storedAt) return null
+    const storedDate = new Date(metadata.storedAt)
+    if (Number.isNaN(storedDate.getTime())) return null
+    return storedDate.toLocaleString(undefined, {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    })
+  }, [metadata?.storedAt])
 
   if (isLoading) {
     return (
@@ -204,8 +250,68 @@ export function ImportReviewScreen() {
     }
   }
 
+  const handleSelectAll = () => {
+    if (sections.length === 0) return
+    setSelectedItems(() => {
+      const next: SelectedState = {}
+      for (const section of sections) {
+        const sectionSelections: Record<string, boolean> = {}
+        for (const item of section.items) {
+          sectionSelections[item.id] = true
+        }
+        next[section.id] = sectionSelections
+      }
+      return next
+    })
+  }
+
   return (
     <YStack gap="$4" p="$4">
+      <Card bordered bg="$color2">
+        <Card.Header padded gap="$3">
+          <XStack gap="$3" items="flex-start" flexWrap="wrap">
+            <Info size={20} color="$blue10" />
+            <YStack flex={1} gap="$2">
+              <XStack gap="$2" items="center">
+                <H5>Imported data overview</H5>
+              </XStack>
+              <Paragraph color="$color11">
+                Review and confirm the details we extracted. You can import everything, bring over a subset, or clear the import and start again.
+              </Paragraph>
+              <XStack gap="$3" flexWrap="wrap">
+                <XStack gap="$2" items="center">
+                  <Clock
+                    size={16}
+                    color={expiresInLabel?.status === 'expired' ? '$red10' : '$blue10'}
+                  />
+                  <Text
+                    color={expiresInLabel?.status === 'expired' ? '$red10' : '$color11'}
+                    fontWeight="600"
+                  >
+                    {expiresInLabel?.label ?? 'Expires 24 hours after upload'}
+                  </Text>
+                </XStack>
+                {storedAtLabel && (
+                  <Text color="$color10">Uploaded {storedAtLabel}</Text>
+                )}
+                <Text color="$color10">
+                  Source:{' '}
+                  <Text fontWeight="600" color="$color12">
+                    {metadata?.source === 'json' ? 'JSON export' : 'Resume upload'}
+                  </Text>
+                </Text>
+                <Text color="$color10">
+                  Items detected:{' '}
+                  <Text fontWeight="600" color="$color12">
+                    {totalItems}
+                  </Text>
+                </Text>
+              </XStack>
+            </YStack>
+          </XStack>
+        </Card.Header>
+      </Card>
+
       <YStack gap="$2">
         <Text fontSize="$6" fontWeight="700">
           Review Imported Data
@@ -309,11 +415,30 @@ export function ImportReviewScreen() {
 
       <Separator />
 
-      <XStack justify="space-between" items="center">
-        <Button size="$3" variant="outlined" icon={RotateCcw} onPress={() => setSelectedItems({})}>
-          Clear Selections
-        </Button>
-        <XStack gap="$3" items="center">
+      <XStack justify="space-between" items="center" flexWrap="wrap" gap="$3">
+        <XStack gap="$2" flexWrap="wrap">
+          <Button size="$3" variant="outlined" icon={RotateCcw} onPress={() => setSelectedItems({})}>
+            Clear selections
+          </Button>
+          <Button
+            size="$3"
+            variant="outlined"
+            icon={ListPlus}
+            onPress={handleSelectAll}
+            disabled={allSelected || totalItems === 0}
+          >
+            Select all
+          </Button>
+        </XStack>
+        <XStack gap="$3" items="center" flexWrap="wrap">
+          <Text color="$color10" aria-live="polite">
+            Selected {selectedCount} of {totalItems}
+          </Text>
+          {isImporting && (
+            <Text color="$color10" aria-live="assertive">
+              Importing {importProgress.completed} of {importProgress.total}...
+            </Text>
+          )}
           <Button
             size="$3"
             variant="outlined"
@@ -324,20 +449,15 @@ export function ImportReviewScreen() {
               void refetch()
             }}
           >
-            Clear Import
+            Clear import
           </Button>
-          {isImporting && (
-            <Text color="$color10">
-              Importing {importProgress.completed} of {importProgress.total}...
-            </Text>
-          )}
           <Button
             size="$4"
             iconAfter={CheckCircle2}
             disabled={selectedCount === 0 || isImporting}
             onPress={handleImportSelected}
           >
-            Import Selected ({selectedCount})
+            Import selected ({selectedCount})
           </Button>
         </XStack>
       </XStack>
