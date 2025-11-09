@@ -7,7 +7,6 @@ deno.lock
 
 # tamagui
 **/.tamagui/*
-**/.tamagui-build/*
 
 # production
 /build

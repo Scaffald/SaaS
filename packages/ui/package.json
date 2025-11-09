@@ -13,9 +13,7 @@
     "./styleguide/*": "./src/styleguide/*"
   },
   "scripts": {
-    "build": "node ./scripts/safe-tamagui-build.mjs",
-    "watch": "node ./scripts/safe-tamagui-build.mjs --debug",
-    "check": "pnpm run check-circular-deps && tamagui check",
+    "check": "tamagui check",
     "check:type": "tsc --outDir /tmp",
     "lint": "biome lint ./src",
     "lint:fix": "biome lint --write ./src",
