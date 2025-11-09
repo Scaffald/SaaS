@@ -3,6 +3,8 @@ import { Button, Input, Text, XStack, YStack, Paragraph, Card } from 'tamagui'
 import { StepNavigation } from '../StepNavigation'
 import type { WizardStepComponentProps } from './types'
 import type { CertificationEntry, CertificationsStepData } from '../../hooks/useProfileWizard'
+import { MonthYearPicker } from '@app/ui'
+import { randomUUID } from 'expo-crypto'
 
 export function CertificationsStep({
   initialData,
@@ -17,6 +19,8 @@ export function CertificationsStep({
   const [certifications, setCertifications] = useState<CertificationEntry[]>(initialData?.certifications ?? [])
   const [name, setName] = useState('')
   const [issuer, setIssuer] = useState('')
+  const [issuedOn, setIssuedOn] = useState<Date | null>(null)
+  const [expiresOn, setExpiresOn] = useState<Date | null>(null)
 
   useEffect(() => {
     if (initialData?.certifications) {
@@ -26,6 +30,13 @@ export function CertificationsStep({
 
   const hasMinimum = certifications.length > 0
 
+  const baselineKey = useMemo(
+    () => serializeCertifications(initialData?.certifications ?? []),
+    [initialData?.certifications],
+  )
+  const currentKey = useMemo(() => serializeCertifications(certifications), [certifications])
+  const isDirty = baselineKey !== currentKey
+
   useEffect(() => {
     const payload: CertificationsStepData = {
       certifications,
@@ -33,20 +44,25 @@ export function CertificationsStep({
     onStepStateChange?.({
       data: payload,
       isValid: true,
-      isDirty: true,
+      isDirty,
     })
-  }, [certifications, onStepStateChange])
+  }, [certifications, isDirty, onStepStateChange])
 
   const addCertification = () => {
-    if (!name.trim()) return
+    if (!name.trim() || !issuer.trim()) return
+
     const entry: CertificationEntry = {
-      id: `${name.trim().toLowerCase()}-${issuer.trim().toLowerCase()}`,
+      id: randomUUID(),
       name: name.trim(),
       issuer: issuer.trim(),
+      issuedOn: issuedOn ? formatWizardDate(issuedOn) : null,
+      expiresOn: expiresOn ? formatWizardDate(expiresOn) : null,
     }
     setCertifications((prev) => [...prev, entry])
     setName('')
     setIssuer('')
+    setIssuedOn(null)
+    setExpiresOn(null)
   }
 
   const removeCertification = (id?: string) => {
@@ -94,6 +110,18 @@ export function CertificationsStep({
                       {cert.issuer}
                     </Text>
                   )}
+                  <XStack gap="$2">
+                    {cert.issuedOn && (
+                      <Text fontSize="$2" color="$color10">
+                        Issued {formatDisplayDate(cert.issuedOn)}
+                      </Text>
+                    )}
+                    {cert.expiresOn && (
+                      <Text fontSize="$2" color="$color10">
+                        • Expires {formatDisplayDate(cert.expiresOn)}
+                      </Text>
+                    )}
+                  </XStack>
                 </YStack>
                 <Button size="$2" variant="outlined" onPress={() => removeCertification(cert.id)}>
                   Remove
@@ -113,7 +141,23 @@ export function CertificationsStep({
           <Text fontWeight="600">Issuing organization</Text>
           <Input placeholder="Occupational Safety and Health Administration" value={issuer} onChangeText={setIssuer} />
         </YStack>
-        <Button onPress={addCertification} disabled={!name.trim()}>
+        <XStack gap="$3">
+          <YStack flex={1} gap="$2">
+            <MonthYearPicker
+              label="Issued on"
+              value={issuedOn}
+              onChange={setIssuedOn}
+            />
+          </YStack>
+          <YStack flex={1} gap="$2">
+            <MonthYearPicker
+              label="Expires on"
+              value={expiresOn}
+              onChange={setExpiresOn}
+            />
+          </YStack>
+        </XStack>
+        <Button onPress={addCertification} disabled={!name.trim() || !issuer.trim()}>
           Add Certification
         </Button>
       </YStack>
@@ -132,6 +176,29 @@ export function CertificationsStep({
       />
     </YStack>
   )
+}
+
+function serializeCertifications(items: CertificationEntry[]): string {
+  return items
+    .map((item) => `${item.id ?? item.name}:${item.issuer}:${item.issuedOn ?? ''}:${item.expiresOn ?? ''}`)
+    .sort()
+    .join('|')
+}
+
+function formatWizardDate(date: Date): string {
+  const year = date.getFullYear()
+  const month = `${date.getMonth() + 1}`.padStart(2, '0')
+  return `${year}-${month}-01`
+}
+
+function formatDisplayDate(value: string): string {
+  const [year, month] = value.split('-')
+  if (!year || !month) return value
+  const date = new Date(Number.parseInt(year, 10), Number.parseInt(month, 10) - 1, 1)
+  return date.toLocaleString(undefined, {
+    month: 'long',
+    year: 'numeric',
+  })
 }
 
 

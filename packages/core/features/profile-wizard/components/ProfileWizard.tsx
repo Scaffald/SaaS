@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Button, Spinner, Text, YStack, Paragraph, ScrollView } from 'tamagui'
 import type { ComponentType } from 'react'
 import { ProgressIndicator } from './ProgressIndicator'
@@ -14,12 +14,14 @@ import { ExperienceStep } from './steps/ExperienceStep'
 import { CertificationsStep } from './steps/CertificationsStep'
 import { EmploymentPrefsStep } from './steps/EmploymentPrefsStep'
 import { EducationStep } from './steps/EducationStep'
+import { WizardStartScreen } from './WizardStartScreen'
 
 interface ProfileWizardProps {
   onSuccess?: () => void
   onCancel?: () => void
   initialStep?: ProfileWizardStepId
   onViewProfile?: () => void
+  onUploadResume?: () => void
 }
 
 type StepComponentMap = {
@@ -92,7 +94,13 @@ function getDefaultStepData(step: ProfileWizardStepId): WizardStepPayloads[Profi
   }
 }
 
-export function ProfileWizard({ onSuccess, onCancel, initialStep, onViewProfile }: ProfileWizardProps) {
+export function ProfileWizard({
+  onSuccess,
+  onCancel,
+  initialStep,
+  onViewProfile,
+  onUploadResume,
+}: ProfileWizardProps) {
   const {
     state,
     orderedSteps,
@@ -106,6 +114,8 @@ export function ProfileWizard({ onSuccess, onCancel, initialStep, onViewProfile 
 
   const [stepSnapshots, setStepSnapshots] = useState<Partial<Record<ProfileWizardStepId, StepSnapshot>>>({})
   const [showSuccess, setShowSuccess] = useState(false)
+  const [showStartScreen, setShowStartScreen] = useState(false)
+  const [hasAcknowledgedStart, setHasAcknowledgedStart] = useState(false)
 
   const currentStep = state.currentStep
   const StepComponent = STEP_COMPONENTS[currentStep]
@@ -118,6 +128,28 @@ export function ProfileWizard({ onSuccess, onCancel, initialStep, onViewProfile 
     }
     return getDefaultStepData(currentStep)
   }, [currentStep, state.stepData])
+
+  useEffect(() => {
+    if (isLoading || isError) {
+      return
+    }
+
+    if (hasAcknowledgedStart) {
+      setShowStartScreen(false)
+      return
+    }
+
+    if (initialStep) {
+      setShowStartScreen(false)
+      return
+    }
+
+    const hasProgress =
+      state.progress.completedSteps.length > 0 ||
+      Object.values(state.stepData).some((value) => value && Object.keys(value).length > 0)
+
+    setShowStartScreen(!hasProgress)
+  }, [hasAcknowledgedStart, initialStep, isError, isLoading, state.progress.completedSteps, state.stepData])
 
   const currentSnapshot = stepSnapshots[currentStep] ?? {
     data: initialDataForStep,
@@ -187,6 +219,32 @@ export function ProfileWizard({ onSuccess, onCancel, initialStep, onViewProfile 
     goBack()
   }, [goBack])
 
+  if (showStartScreen) {
+    return (
+      <ScrollView>
+        <YStack p="$6">
+          <WizardStartScreen
+            completionPercentage={state.progress.completionPercentage}
+            onStartWizard={() => {
+              setHasAcknowledgedStart(true)
+              setShowStartScreen(false)
+            }}
+            onUploadResume={() => {
+              setHasAcknowledgedStart(true)
+              setShowStartScreen(false)
+              onUploadResume?.()
+            }}
+            onSkip={() => {
+              setHasAcknowledgedStart(true)
+              setShowStartScreen(false)
+              onCancel?.()
+            }}
+          />
+        </YStack>
+      </ScrollView>
+    )
+  }
+
   if (isLoading) {
     return (
       <YStack gap="$4" items="center" justify="center" flex={1} p="$6">
@@ -202,7 +260,7 @@ export function ProfileWizard({ onSuccess, onCancel, initialStep, onViewProfile 
         <Text fontSize="$4" fontWeight="600">
           We couldn't load your wizard
         </Text>
-        <Paragraph color="$color11" textAlign="center">
+        <Paragraph color="$color11" text="center">
           Please refresh and try again. If the issue persists, contact support.
         </Paragraph>
         <Button onPress={onCancel}>Close</Button>
@@ -249,8 +307,8 @@ export function ProfileWizard({ onSuccess, onCancel, initialStep, onViewProfile 
   }
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 24 }}>
-      <YStack gap="$5">
+    <ScrollView>
+      <YStack gap="$5" p="$6">
         <ProgressIndicator
           currentStep={state.progress.currentStep}
           completedSteps={state.progress.completedSteps}
@@ -258,7 +316,7 @@ export function ProfileWizard({ onSuccess, onCancel, initialStep, onViewProfile 
         />
 
         <StepComponent
-          initialData={initialDataForStep as WizardStepPayloads<typeof currentStep>}
+          initialData={initialDataForStep as WizardStepPayloads[ProfileWizardStepId]}
           isSaving={state.isSaving}
           isLastStep={isLastStep}
           onBack={handleBack}

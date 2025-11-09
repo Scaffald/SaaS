@@ -44,7 +44,7 @@ export const ProfileCompletionModal = memo(function ProfileCompletionModal({
             </Text>
           </XStack>
 
-          <Paragraph color="$color11">
+          <Paragraph color="$color11" aria-live="polite">
             {isFirstTime
               ? 'We’ll walk you through six quick steps so employers can get to know you. Auto-save is enabled, and you can come back anytime.'
               : benefitMessage}
@@ -53,7 +53,7 @@ export const ProfileCompletionModal = memo(function ProfileCompletionModal({
 
         <YStack gap="$3">
           <Button size="$5" themeInverse onPress={onStartWizard}>
-            Start Wizard
+            {isFirstTime ? 'Start Wizard' : 'Continue Profile'}
           </Button>
           <Button size="$5" icon={UploadCloud} onPress={onUploadResume}>
             Upload Resume

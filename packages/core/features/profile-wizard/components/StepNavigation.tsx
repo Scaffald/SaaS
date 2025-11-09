@@ -64,7 +64,7 @@ export function StepNavigation({
       </XStack>
 
       {isSaving && (
-        <Text fontSize="$2" color="$color10">
+        <Text fontSize="$2" color="$color10" aria-live="polite">
           Saving your progress...
         </Text>
       )}
