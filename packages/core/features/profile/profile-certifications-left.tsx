@@ -550,7 +550,8 @@ export function ProfileCertificationsLeft({
             <Button
               size="$3"
               icon={PlusCircle}
-              variant={showCustomForm ? 'outlined' : 'primary'}
+              variant={showCustomForm ? 'outlined' : undefined}
+              theme={showCustomForm ? undefined : 'accent'}
               onPress={() =>
                 setShowCustomForm((prev) => {
                   if (prev) {

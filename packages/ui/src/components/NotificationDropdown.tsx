@@ -202,8 +202,8 @@ export function NotificationDropdown({
           {unreadCount > 0 && (
             <YStack
               position="absolute"
-              top={-4}
-              right={-4}
+              t={-4}
+              r={-4}
               bg="$red9"
               rounded="$10"
               px="$2"
@@ -227,7 +227,6 @@ export function NotificationDropdown({
         rounded="$4"
         p={0}
         maxH={400}
-        w={isMobile ? 'calc(100vw - 32px)' : 360}
         elevate
         borderWidth={1}
         borderColor="$borderColor"
@@ -235,6 +234,7 @@ export function NotificationDropdown({
         animation="quick"
         enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
         exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
+        style={{ width: isMobile ? 'calc(100vw - 32px)' : 360 }}
       >
         {/* Header */}
         <XStack
@@ -270,10 +270,10 @@ export function NotificationDropdown({
         ) : notifications.length === 0 ? (
           <YStack p="$4" items="center" gap="$3">
             <Bell size={32} color="$color8" opacity={0.5} />
-            <Text color="$color11" textAlign="center">
+            <Text color="$color11" style={{ textAlign: 'center' }}>
               No notifications
             </Text>
-            <Text fontSize="$2" color="$color10" textAlign="center">
+            <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>
               You're all caught up!
             </Text>
           </YStack>

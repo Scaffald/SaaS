@@ -54,7 +54,7 @@ import { Button as TamaguiButton, type ButtonProps as TamaguiButtonProps } from 
  * ```
  */
 
-export interface ButtonProps extends TamaguiButtonProps {
+export interface ButtonProps extends Omit<TamaguiButtonProps, 'variant' | 'theme'> {
   /**
    * Visual style variant
    * @default 'primary'

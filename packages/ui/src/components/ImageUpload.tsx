@@ -412,7 +412,7 @@ export function ImageUpload({
               <Text fontWeight="600" fontSize="$5">
                 {isDragActive ? 'Drop image here' : 'Upload Image'}
               </Text>
-              <Text fontSize="$2" color="$color11" textAlign="center">
+              <Text fontSize="$2" color="$color11" style={{ textAlign: 'center' }}>
                 {isUploading
                   ? `Uploading... ${uploadProgress > 0 ? `${uploadProgress}%` : ''}`
                   : 'Drag & drop or click to browse'}
@@ -430,7 +430,7 @@ export function ImageUpload({
             </Button>
 
             {/* File Type Info */}
-            <Text fontSize="$1" color="$color10" textAlign="center">
+            <Text fontSize="$1" color="$color10" style={{ textAlign: 'center' }}>
               Supported: {accept.replace(/image\//g, '').replace(/,/g, ', ')} (Max {maxSizeMB}MB)
             </Text>
           </YStack>

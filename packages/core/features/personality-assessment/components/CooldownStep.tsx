@@ -105,14 +105,19 @@ export function CooldownStep({
   )
 
   return (
-    <YStack gap="$6" maxWidth={800} width="100%" alignSelf="center">
+    <YStack gap="$6" width="100%" alignSelf="center" style={{ maxWidth: 800 }}>
       {/* Cooldown Timer */}
       <YStack gap="$4" p="$6" bg="$color3" rounded="$4" borderWidth={1} borderColor="$color7">
         <YStack gap="$2" items="center">
-          <Text fontSize="$6" fontWeight="600" color="$color12" textAlign="center">
+          <Text
+            fontSize="$6"
+            fontWeight="600"
+            color="$color12"
+            style={{ textAlign: 'center' }}
+          >
             Cooldown Period
           </Text>
-          <Text fontSize="$4" color="$color11" textAlign="center">
+          <Text fontSize="$4" color="$color11" style={{ textAlign: 'center' }}>
             Please wait 60 seconds before taking the second color test
           </Text>
           <Text fontSize="$8" fontWeight="bold" color="$blue10">
@@ -127,10 +132,15 @@ export function CooldownStep({
       {/* IPIP Questions Section */}
       <YStack gap="$4">
         <YStack gap="$2" items="center">
-          <Text fontSize="$5" fontWeight="600" color="$color12" textAlign="center">
+          <Text
+            fontSize="$5"
+            fontWeight="600"
+            color="$color12"
+            style={{ textAlign: 'center' }}
+          >
             While you wait, answer some personality questions
           </Text>
-          <Text fontSize="$3" color="$color11" textAlign="center">
+          <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
             Progress: {currentIndex} / 120 ({progress}%)
           </Text>
         </YStack>
@@ -160,7 +170,7 @@ export function CooldownStep({
 
         {!currentQuestion && !isCooldownActive && (
           <YStack gap="$2" items="center" p="$4">
-            <Text fontSize="$4" color="$green10" fontWeight="600" textAlign="center">
+            <Text fontSize="$4" color="$green10" fontWeight="600" style={{ textAlign: 'center' }}>
               All questions answered! You can continue to the next step.
             </Text>
           </YStack>

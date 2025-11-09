@@ -61,7 +61,7 @@ export function PersonalityAssessmentWizard() {
         <Text fontSize="$5" fontWeight="600" color="$red11">
           Error loading assessment
         </Text>
-        <Text fontSize="$3" color="$color11" textAlign="center">
+        <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
           {error.message || 'An unexpected error occurred'}
         </Text>
       </YStack>
@@ -179,8 +179,8 @@ export function PersonalityAssessmentWizard() {
                     language: assessment?.ipip_language || 'en',
                   },
                   {
-                    onSuccess: (result) => {
-                      if (result.isComplete) {
+                    onSuccess: (result: { isComplete?: boolean } | undefined) => {
+                      if (result?.isComplete) {
                         handleNext()
                       }
                     },
@@ -226,7 +226,7 @@ export function PersonalityAssessmentWizard() {
               <Text fontSize="$8" fontWeight="bold" color="$green10">
                 ✓ Assessment Complete!
               </Text>
-              <Text fontSize="$4" color="$color11" textAlign="center">
+              <Text fontSize="$4" color="$color11" style={{ textAlign: 'center' }}>
                 Your personality assessment has been completed. You can view your results below.
               </Text>
               {assessment && <ResultsStep assessment={assessment} isReadOnly />}

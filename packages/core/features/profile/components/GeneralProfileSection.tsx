@@ -41,6 +41,9 @@ export function GeneralProfileSection({
   const [isLoading, setIsLoading] = useState(false)
   const toast = useToastController()
 
+  const getErrorMessage = (value: unknown): string | undefined =>
+    typeof value === 'string' ? value : undefined
+
   // Determine which tRPC endpoints to use based on mode
   const useQuery =
     mode === 'admin' && userId
@@ -324,7 +327,10 @@ export function GeneralProfileSection({
           <AddressForm
             mode="hybrid"
             placeholder="Search for home address..."
-            error={errors.address?.street?.message || errors.address?.city?.message}
+            error={
+              getErrorMessage(errors.address?.street?.message) ??
+              getErrorMessage(errors.address?.city?.message)
+            }
             provider="mapbox"
             apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
             addressValue={{

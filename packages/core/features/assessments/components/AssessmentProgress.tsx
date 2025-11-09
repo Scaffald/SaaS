@@ -40,7 +40,7 @@ export function AssessmentProgress({
               <XStack height={8} bg="$color5" rounded="$10" overflow="hidden" width="100%">
                 <XStack height="100%" bg="$blue9" width={`${completionScore}%`} animation="quick" />
               </XStack>
-              <Text fontSize="$2" fontWeight="600" color="$blue10" textAlign="right">
+              <Text fontSize="$2" fontWeight="600" color="$blue10" style={{ textAlign: 'right' }}>
                 {completionScore}%
               </Text>
             </YStack>
