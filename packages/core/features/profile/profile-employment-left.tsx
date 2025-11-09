@@ -25,6 +25,13 @@ import {
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
 } from '@app/core/utils/api'
+import { invalidateProfileQueries } from './utils/profile-sync'
+import {
+  startProfileSync,
+  completeProfileSync,
+  failProfileSync,
+  resetProfileSyncError,
+} from './utils/profile-sync-store'
 import { DashboardWidget, LocationListInput, ToggleCard, ConfirmationDialog } from '@app/ui'
 import {
   Flag,
@@ -46,26 +53,48 @@ export function ProfileEmploymentLeft() {
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<EmploymentProfileFormData | null>(null)
   const toast = useToastController()
+  const utils = api.useContext()
 
   // Use tRPC to fetch and update employment data
   const {
     data: employmentData,
     isLoading: isLoadingEmployment,
-    refetch,
   } = api.profile.getEmployment.useQuery()
   const updateEmploymentMutation = api.profile.updateEmployment.useMutation({
+    async onMutate(input) {
+      resetProfileSyncError()
+      startProfileSync()
+      await utils.profile.getEmployment.cancel()
+      const previousEmployment = utils.profile.getEmployment.getData()
+      utils.profile.getEmployment.setData(undefined, (current) => ({
+        ...(current ?? profileEmploymentDefaults),
+        ...input,
+      }))
+      return { previousEmployment }
+    },
+    onError: (error, _input, context) => {
+      console.error('Error saving employment:', error)
+      if (context?.previousEmployment) {
+        utils.profile.getEmployment.setData(undefined, context.previousEmployment)
+      }
+      failProfileSync()
+      toast.show('Error', {
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Failed to save employment preferences. Please try again.',
+      })
+    },
     onSuccess: () => {
       toast.show('Employment Updated', {
         message: 'Your employment preferences have been saved successfully!',
       })
-      refetch()
     },
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
-    onError: (error: any) => {
-      console.error('Error saving employment:', error)
-      toast.show('Error', {
-        message: error.message || 'Failed to save employment preferences. Please try again.',
-      })
+    onSettled: (_data, error) => {
+      if (!error) {
+        completeProfileSync()
+      }
+      void invalidateProfileQueries(utils)
     },
   })
 
@@ -219,27 +248,27 @@ export function ProfileEmploymentLeft() {
                           render={({ field: distanceField }) => (
                             <YStack gap="$3">
                               <Slider
-                                value={[distanceField.value ?? 50]}
+                                value={[distanceField.value ?? 25]}
                                 onValueChange={([value]) => distanceField.onChange(value)}
-                                min={5}
-                                max={100}
+                                min={10}
+                                max={250}
                                 step={5}
                                 size="$1"
                               >
-                                <Slider.Track>
-                                  <Slider.TrackActive />
+                                <Slider.Track backgroundColor="$color4">
+                                  <Slider.TrackActive backgroundColor="$blue9" />
                                 </Slider.Track>
                                 <Slider.Thumb index={0} circular />
                               </Slider>
                               <XStack justify="space-between" items="center">
                                 <Text fontSize="$2" color="$color9">
-                                  5 miles
+                                  10 miles
                                 </Text>
                                 <Text fontSize="$3" fontWeight="600" color="$color12">
-                                  {distanceField.value ?? 50} miles
+                                  {distanceField.value ?? 25} miles
                                 </Text>
                                 <Text fontSize="$2" color="$color9">
-                                  100 miles
+                                  250 miles
                                 </Text>
                               </XStack>
                             </YStack>

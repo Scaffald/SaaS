@@ -106,7 +106,7 @@ export const profileEmploymentInputSchema = z
 
     // Travel preferences
     open_to_travel: z.boolean().optional(),
-    travel_distance_miles: z.number().max(100).optional(),
+    travel_distance_miles: z.number().min(10).max(250).optional(),
 
     // Residency (multiple countries but keep US boolean)
     us_resident: z.boolean().optional(),

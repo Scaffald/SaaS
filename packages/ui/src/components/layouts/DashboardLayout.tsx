@@ -32,6 +32,13 @@ export const DashboardLayout = ({
   // Determine which breadcrumbs to display
   const displayBreadcrumbs = breadcrumbItems || breadcrumbs
 
+  const hasLeftContent = Boolean(leftContent)
+  const hasRightContent = Boolean(rightContent)
+  const hasBothColumns = hasLeftContent && hasRightContent
+
+  const leftColumnWidth = isSmallScreen || !hasBothColumns ? '100%' : '60%'
+  const rightColumnWidth = isSmallScreen || !hasBothColumns ? '100%' : '40%'
+
   return (
     <ScrollView flex={1} bg="$color2" pt="$3" pb="$5" showsVerticalScrollIndicator={false}>
       <YStack gap="$3">
@@ -48,13 +55,23 @@ export const DashboardLayout = ({
           flexDirection={isSmallScreen ? 'column' : 'row'}
           p={isSmallScreen ? '$3' : '$7'}
         >
-          {leftContent && (
-            <YStack minW={300} flex={2}>
+          {hasLeftContent && (
+            <YStack
+              minW={isSmallScreen ? '100%' : 300}
+              width={leftColumnWidth}
+              maxW={leftColumnWidth}
+              flexBasis={leftColumnWidth}
+            >
               {leftContent}
             </YStack>
           )}
-          {rightContent && (
-            <YStack minW={300} flex={1}>
+          {hasRightContent && (
+            <YStack
+              minW={isSmallScreen ? '100%' : 300}
+              width={rightColumnWidth}
+              maxW={rightColumnWidth}
+              flexBasis={rightColumnWidth}
+            >
               {rightContent}
             </YStack>
           )}

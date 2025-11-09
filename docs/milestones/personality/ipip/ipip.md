@@ -295,6 +295,29 @@ interface AssessmentStep {
 - **Layout Components**: Use Tamagui components (`YStack`, `XStack`, `Button`, `Text`, etc.)
 - See **Chart Components** and **UI Components Available** sections above for complete details
 
+## Implementation Plan
+
+### Step 1 — Schema Modernization *(in progress)*
+- Convert `core.personality_assessments` into a fully polymorphic catalog.
+- Replace test-specific columns with:
+  - `assessment_type` / `assessment_subtype` enums.
+  - `raw_data` JSONB for answers, metadata, and derived values.
+- Drop the `UNIQUE (user_id)` constraint to store multiple historical runs.
+- Retain lifecycle timestamps (`started_at`, `updated_at`, `completed_at`) and status fields to distinguish active vs. completed sessions.
+- Add supporting indexes (`user_id, completed_at DESC`, `user_id, completion_status`) to keep resume/fetch queries fast.
+- Consider migrating existing records by moving legacy IPIP/Luscher columns into `raw_data`.
+
+### Step 2 — Scoring Logic *(planned)*
+- Perform scoring on the client; optionally mirror logic in the tRPC handler as a safeguard.
+- Persist only raw answers (and minimal metadata) in `raw_data`; compute aggregates on demand during read.
+- Action item: locate or recreate the IPIP item bank with domain, facet, and reverse-key information so the client can calculate raw sums accurately.
+- Keep normalization/percentile logic out of scope for now—raw sums are sufficient and future-proof.
+
+### Step 3 — Narrative Mapping *(queued)*
+- Audit `en.results.json` (or successor) to confirm domain and facet narratives for low/neutral/high buckets.
+- Decide on threshold strategy (fixed cutoffs vs. configurable per facet/domain) when we resume.
+- Plan for future localization by structuring narrative resources for multiple locales.
+
 ## Success Metrics  
 - Completion rate of IPIP assessment.  
 - User engagement with results page (time spent, interactions with narrative and chart views).  

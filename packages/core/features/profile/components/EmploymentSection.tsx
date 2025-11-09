@@ -222,28 +222,28 @@ export function EmploymentSection({
                       render={({ field: distanceField }) => (
                         <YStack gap="$3">
                           <Slider
-                            value={[distanceField.value ?? 50]}
+                            value={[distanceField.value ?? 25]}
                             onValueChange={([value]) => distanceField.onChange(value)}
-                            min={5}
-                            max={100}
+                            min={10}
+                            max={250}
                             step={5}
                             size="$1"
                             disabled={readOnly}
                           >
-                            <Slider.Track>
-                              <Slider.TrackActive />
+                            <Slider.Track backgroundColor="$color4">
+                              <Slider.TrackActive backgroundColor="$blue9" />
                             </Slider.Track>
                             <Slider.Thumb index={0} circular />
                           </Slider>
                           <XStack justify="space-between" items="center">
                             <Text fontSize="$2" color="$color9">
-                              5 miles
+                              10 miles
                             </Text>
                             <Text fontSize="$3" fontWeight="600" color="$color12">
-                              {distanceField.value ?? 50} miles
+                              {distanceField.value ?? 25} miles
                             </Text>
                             <Text fontSize="$2" color="$color9">
-                              100 miles
+                              250 miles
                             </Text>
                           </XStack>
                         </YStack>

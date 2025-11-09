@@ -58,8 +58,14 @@ const editorStyles = `
   .rich-text-editor-container .ProseMirror {
     padding: 12px;
     min-height: 100%;
+    height: 100%;
     outline: none;
     cursor: text;
+    font-family: var(--font-family, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+    font-size: 16px;
+    line-height: 1.5;
+    color: inherit;
+    overflow-y: auto;
   }
 
   .rich-text-editor-container .ProseMirror p.is-editor-empty:first-child::before {
@@ -194,6 +200,15 @@ export function RichTextEditor({
     return null
   }
 
+  const resolvedHeight = Math.max(minHeight ?? 150, 120)
+
+  const handleContainerPointerDown = () => {
+    if (disabled || readOnly) {
+      return
+    }
+    editor.chain().focus().run()
+  }
+
   return (
     <YStack
       borderWidth={1}
@@ -257,12 +272,16 @@ export function RichTextEditor({
       {/* Editor Content */}
       <div
         style={{
-          height: minHeight,
+          height: resolvedHeight,
+          minHeight: resolvedHeight,
+          maxHeight: resolvedHeight,
           flex: 1,
           width: '100%',
           cursor: disabled ? 'not-allowed' : 'text',
+          overflowY: 'auto',
         }}
         className={`rich-text-editor-container${disabled ? ' disabled' : ''}`}
+        onMouseDown={handleContainerPointerDown}
       >
         <EditorContent editor={editor} />
       </div>

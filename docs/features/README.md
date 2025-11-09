@@ -138,7 +138,7 @@ This directory contains detailed documentation for Scaffald's major features and
 
 ### RSS Job Feeds Integration
 - **Status**: 📋 Planned
-- **Documentation**: [rss-job-feeds.md](./rss-job-feeds.md)
+- **Documentation**: Pending (summary tracked in product backlog)
 - **Description**: Automatic fetching, parsing, and caching of job listings from external RSS feeds
 - **Key Benefits**:
   - Expanded job market access
@@ -173,7 +173,5 @@ When adding new feature documentation:
 
 ## Quick Links
 
-- [CSI MasterFormat Integration](./csi-seed.md) - Construction industry skills taxonomy
-- [RSS Job Feeds Integration](./rss-job-feeds.md) - External job feed system
 - [Architecture Documentation](../architecture/) - System design patterns
 - [Deployment Guides](../deployment/) - Production deployment
