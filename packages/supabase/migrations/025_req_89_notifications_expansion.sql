@@ -441,10 +441,26 @@ BEGIN
   IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'pg_cron') THEN
     CREATE EXTENSION IF NOT EXISTS pg_cron;
 
-    PERFORM cron.unschedule('notifications-send-worker');
-    PERFORM cron.unschedule('notifications-check-receipts');
-    PERFORM cron.unschedule('notifications-digest-daily');
-    PERFORM cron.unschedule('notifications-digest-weekly');
+    IF EXISTS (
+      SELECT 1 FROM cron.job WHERE jobname = 'notifications-send-worker'
+    ) THEN
+      PERFORM cron.unschedule('notifications-send-worker');
+    END IF;
+    IF EXISTS (
+      SELECT 1 FROM cron.job WHERE jobname = 'notifications-check-receipts'
+    ) THEN
+      PERFORM cron.unschedule('notifications-check-receipts');
+    END IF;
+    IF EXISTS (
+      SELECT 1 FROM cron.job WHERE jobname = 'notifications-digest-daily'
+    ) THEN
+      PERFORM cron.unschedule('notifications-digest-daily');
+    END IF;
+    IF EXISTS (
+      SELECT 1 FROM cron.job WHERE jobname = 'notifications-digest-weekly'
+    ) THEN
+      PERFORM cron.unschedule('notifications-digest-weekly');
+    END IF;
 
     PERFORM cron.schedule(
       'notifications-send-worker',

@@ -31,14 +31,17 @@ SELECT
       THEN 20 ELSE 0 END) +
     (CASE
       WHEN EXISTS (
-        SELECT 1 FROM core.user_certifications uc
+        SELECT 1
+        FROM core.user_certifications uc
+        JOIN core.certifications c
+          ON c.id = uc.certification_id
         WHERE uc.user_id = p.user_id
-          AND COALESCE(uc.name, '') <> ''
-          AND COALESCE(uc.issuing_organization, '') <> ''
+          AND COALESCE(c.name, '') <> ''
+          AND COALESCE(c.issuing_organization, '') <> ''
       )
       THEN 15 ELSE 0 END) +
     (CASE
-      WHEN COALESCE(p.address, '') <> ''
+      WHEN (p.address IS NOT NULL AND p.address <> '{}'::jsonb)
         OR COALESCE(array_length(p.preferred_work_locations, 1), 0) > 0
       THEN 15 ELSE 0 END) +
     (CASE
@@ -121,11 +124,15 @@ COMMENT ON FUNCTION core.refresh_ghost_profiles IS
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'pg_cron') THEN
-    PERFORM cron.unschedule('ghost_profile_refresh');
+    IF EXISTS (
+      SELECT 1 FROM cron.job WHERE jobname = 'ghost_profile_refresh'
+    ) THEN
+      PERFORM cron.unschedule('ghost_profile_refresh');
+    END IF;
     PERFORM cron.schedule(
       'ghost_profile_refresh',
       '0 3 * * 1',
-      $$SELECT core.refresh_ghost_profiles();$$
+      'SELECT core.refresh_ghost_profiles();'
     );
   END IF;
 END;
