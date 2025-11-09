@@ -49,12 +49,24 @@ function decodeBase64File(base64: string): Uint8Array {
   }
 }
 
-async function scanForMalware(
-  _fileBytes: Uint8Array,
-  _fileName: string,
-): Promise<void> {
-  // Placeholder for integration with malware scanning service (e.g., VirusTotal)
-  // For now we simply log the scan request.
+async function scanForMalware(fileBytes: Uint8Array, fileName: string): Promise<void> {
+  if (fileBytes.length === 0) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Uploaded file is empty",
+    });
+  }
+
+  const suspiciousExtensions = [".exe", ".bat", ".cmd", ".sh", ".com"];
+  const lowered = fileName.toLowerCase();
+  if (suspiciousExtensions.some((ext) => lowered.endsWith(ext))) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Executable files are not allowed",
+    });
+  }
+
+  // Placeholder for real malware scanning (VirusTotal, etc.)
   console.log("[profileImport] Malware scan placeholder executed");
 }
 
@@ -214,6 +226,87 @@ export function heuristicParseResume(text: string): ImportPayload {
   return payload;
 }
 
+function sanitizeString(value: unknown): string | null {
+  if (typeof value !== "string") {
+    return null;
+  }
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  const withoutControl = trimmed.replace(/[\u0000-\u001F\u007F]+/g, "");
+  const strippedScripts = withoutControl.replace(/<script.*?>.*?<\/script>/gim, "");
+  const strippedTags = strippedScripts.replace(/<[^>]+>/g, "");
+  return strippedTags.replace(/[<>]/g, "");
+}
+
+function sanitizePayload(payload: ImportPayload): ImportPayload {
+  const sanitizeCollection = <T>(
+    items: T[] | undefined,
+    mapper: (item: T) => Record<string, unknown>,
+  ): Record<string, unknown>[] => {
+    if (!items || items.length === 0) return [];
+    return items
+      .map((item) => {
+        const mapped = mapper(item);
+        const sanitizedEntries = Object.entries(mapped).reduce<Record<string, unknown>>(
+          (acc, [key, value]) => {
+            if (typeof value === "string") {
+              const sanitized = sanitizeString(value);
+              if (sanitized !== null) {
+                acc[key] = sanitized;
+              }
+            } else if (Array.isArray(value)) {
+              acc[key] = value.filter((entry) => typeof entry === "string").map((entry) =>
+                sanitizeString(entry) ?? ""
+              ).filter((entry) => entry.length > 0);
+            } else if (value !== undefined && value !== null) {
+              acc[key] = value;
+            }
+            return acc;
+          },
+          {},
+        );
+        return sanitizedEntries;
+      })
+      .filter((record) => Object.keys(record).length > 0);
+  };
+
+  return {
+    general: sanitizeCollection(payload.general, (item) => ({
+      first_name: item.first_name,
+      last_name: item.last_name,
+      headline: item.headline,
+      summary: item.summary,
+      confidence_score: item.confidence_score,
+    })) as ImportPayload["general"],
+    experience: sanitizeCollection(payload.experience, (item) => ({
+      job_title: item.job_title,
+      company_name: item.company_name,
+      start_date: item.start_date,
+      end_date: item.end_date,
+      is_current: item.is_current,
+      confidence_score: item.confidence_score,
+    })) as ImportPayload["experience"],
+    education: sanitizeCollection(payload.education, (item) => ({
+      degree: item.degree,
+      institution: item.institution,
+      start_date: item.start_date,
+      end_date: item.end_date,
+      confidence_score: item.confidence_score,
+    })) as ImportPayload["education"],
+    skills: sanitizeCollection(payload.skills, (item) => ({
+      name: item.name,
+      taxonomy: item.taxonomy,
+      confidence_score: item.confidence_score,
+    })) as ImportPayload["skills"],
+    certifications: sanitizeCollection(payload.certifications, (item) => ({
+      name: item.name,
+      issuer: item.issuer,
+      issue_date: item.issue_date,
+      confidence_score: item.confidence_score,
+    })) as ImportPayload["certifications"],
+  };
+}
+
 async function generateStructuredPayload(
   text: string,
   options: ParseOptions,
@@ -357,7 +450,7 @@ export const profileImportRouter = t.router({
       );
 
       return {
-        payload,
+        payload: sanitizePayload(payload),
         metadata: {
           ...metadata,
           fileName: input.fileName,
@@ -383,7 +476,7 @@ export const profileImportRouter = t.router({
       }
 
       return {
-        payload: parsed.data,
+        payload: sanitizePayload(parsed.data),
       };
     }),
 
@@ -397,13 +490,14 @@ export const profileImportRouter = t.router({
 
       const storedAt = new Date();
       const expiresAt = new Date(storedAt.getTime() + IMPORT_TTL_MS);
+      const sanitizedPayload = sanitizePayload(input.payload);
 
       const metadata: ImportMetadata = {
         version: 1,
         source: input.source,
         storedAt: storedAt.toISOString(),
         expiresAt: expiresAt.toISOString(),
-        payload: input.payload,
+        payload: sanitizedPayload,
       };
 
       const { error } = await supabase
