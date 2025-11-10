@@ -26,7 +26,11 @@ export default function PublicUserProfilePage() {
   const currentUserId = session?.user?.id
 
   // Fetch profile by slug
-  const { data: profileData, isLoading, error } = api.profile.vanity.bySlug.useQuery(
+  const {
+    data: profileData,
+    isLoading,
+    error,
+  } = api.profile.vanity.bySlug.useQuery(
     { slug: slug || '' },
     {
       enabled: !!slug,
@@ -62,9 +66,9 @@ export default function PublicUserProfilePage() {
       <DashboardLayout
         breadcrumbItems={breadcrumbItems}
         leftContent={
-          <YStack alignItems="center" justifyContent="center" minHeight={400}>
+          <YStack items="center" justify="center" style={{ minHeight: 400 }}>
             <Spinner size="large" />
-            <Text marginTop="$4" color="$color10">
+            <Text mt="$4" color="$color10">
               Loading profile...
             </Text>
           </YStack>
@@ -79,11 +83,11 @@ export default function PublicUserProfilePage() {
       <DashboardLayout
         breadcrumbItems={breadcrumbItems}
         leftContent={
-          <YStack alignItems="center" justifyContent="center" minHeight={400} gap="$4">
+          <YStack items="center" justify="center" style={{ minHeight: 400 }} gap="$4">
             <Text fontSize="$6" fontWeight="bold" color="$color11">
               Profile Not Found
             </Text>
-            <Text color="$color10" textAlign="center">
+            <Text color="$color10" style={{ textAlign: 'center' }}>
               The profile you're looking for doesn't exist or has been removed.
             </Text>
           </YStack>
@@ -112,25 +116,18 @@ export default function PublicUserProfilePage() {
           {visibility.work_experience && (
             <ExperienceWidget userId={profileData.id} showEdit={false} />
           )}
-          {visibility.education && (
-            <EducationWidget userId={profileData.id} showEdit={false} />
-          )}
+          {visibility.education && <EducationWidget userId={profileData.id} showEdit={false} />}
         </YStack>
       }
       rightContent={
         <YStack gap="$4">
-          {visibility.skills && (
-            <SkillsWidget userId={profileData.id} showEdit={false} />
-          )}
+          {visibility.skills && <SkillsWidget userId={profileData.id} showEdit={false} />}
           {visibility.certifications && (
             <CertificationsWidget userId={profileData.id} showEdit={false} />
           )}
-          {visibility.reviews && (
-            <ReviewsWidget userId={profileData.id} showEdit={false} />
-          )}
+          {visibility.reviews && <ReviewsWidget userId={profileData.id} showEdit={false} />}
         </YStack>
       }
     />
   )
 }
-

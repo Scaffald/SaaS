@@ -118,7 +118,7 @@ export const OfficeApplicationsScreen = () => {
   // Error state
   if (isError) {
     return (
-      <YStack flex={1} items="center" justify="center" bg="$background" p="$4">
+      <YStack flex={1} items="center" justify="center" p="$4">
         <Text color="$red10" fontSize="$5" fontWeight="bold">
           Error Loading Applications
         </Text>

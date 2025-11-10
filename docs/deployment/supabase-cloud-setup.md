@@ -268,6 +268,9 @@ Configure:
 Edge Functions need environment variables:
 
 ```bash
+# Required for resume parsing and AI-assisted imports
+pnpm supa secrets set OPENAI_API_KEY=sk-your-openai-key
+
 # Set Google OAuth secret
 pnpm supa secrets set GOOGLE_SECRET=your-google-secret
 

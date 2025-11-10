@@ -14,4 +14,5 @@ export type {
   MapPin as MapPinType,
   MapRegion,
   MapTooltipData,
+  ViewportBounds,
 } from './types'

@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react'
-import {
-  YStack,
-  XStack,
-  Text,
-  Input,
-  Button,
-  Spinner,
-  H4,
-} from 'tamagui'
+import { YStack, XStack, Text, Input, Button, Spinner, H4 } from 'tamagui'
 import { Copy, Check, AlertCircle, Clock } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { api } from '@app/core/utils/api'
 import { isSlugValid, isReservedSlug } from '@app/core/utils/slugify'
 import { copyToClipboard } from '@app/core/utils/clipboard'
 import { DashboardWidget } from '@app/ui'
+
+type UpdateSlugResult = {
+  success: boolean
+  slug: string
+  nextChangeAllowed: string
+}
+
+type VanityMutationError = { message?: string }
 
 /**
  * Vanity URL Section Component
@@ -42,7 +42,7 @@ export function VanityUrlSection() {
 
   // Update slug
   const updateSlugMutation = api.profile.vanity.updateSlug.useMutation({
-    onSuccess: (data) => {
+    onSuccess: (data: UpdateSlugResult) => {
       toast.show('Slug Updated', {
         message: `Your profile URL has been updated to /u/${data.slug}`,
       })
@@ -56,7 +56,7 @@ export function VanityUrlSection() {
       utils.profile.widgets.getGeneralInfo.invalidate()
       utils.profile.vanity.getSlugHistory.invalidate()
     },
-    onError: (error) => {
+    onError: (error: VanityMutationError) => {
       toast.show('Error', {
         message: error.message || 'Failed to update slug. Please try again.',
       })
@@ -196,7 +196,7 @@ export function VanityUrlSection() {
   if (isLoadingProfile) {
     return (
       <DashboardWidget>
-        <YStack alignItems="center" padding="$4">
+        <YStack items="center" p="$4">
           <Spinner size="small" />
         </YStack>
       </DashboardWidget>
@@ -221,16 +221,16 @@ export function VanityUrlSection() {
             </Text>
             <XStack
               gap="$2"
-              alignItems="center"
-              padding="$3"
-              backgroundColor="$color3"
-              borderRadius="$4"
+              items="center"
+              p="$3"
+              bg="$color3"
+              rounded="$4"
               borderWidth={1}
               borderColor="$color6"
             >
               <Text
                 flex={1}
-                fontFamily="monospace"
+                style={{ fontFamily: 'monospace' }}
                 fontSize="$3"
                 color="$color11"
                 numberOfLines={1}
@@ -253,7 +253,7 @@ export function VanityUrlSection() {
 
         {/* Slug Input */}
         <YStack gap="$2">
-          <XStack alignItems="center" justifyContent="space-between">
+          <XStack items="center" justify="space-between">
             <Text fontWeight="600" fontSize="$3">
               Profile Slug
             </Text>
@@ -270,7 +270,7 @@ export function VanityUrlSection() {
 
           {isEditing ? (
             <YStack gap="$2">
-              <XStack gap="$2" alignItems="center">
+              <XStack gap="$2" items="center">
                 <Text fontSize="$2" color="$color10">
                   /u/
                 </Text>
@@ -300,7 +300,7 @@ export function VanityUrlSection() {
                       Checking availability...
                     </Text>
                   ) : availabilityStatus.available === true ? (
-                    <XStack gap="$2" alignItems="center">
+                    <XStack gap="$2" items="center">
                       <Check size={16} color="$green10" />
                       <Text fontSize="$2" color="$green10">
                         Available
@@ -308,7 +308,7 @@ export function VanityUrlSection() {
                     </XStack>
                   ) : availabilityStatus.available === false ? (
                     <YStack gap="$1">
-                      <XStack gap="$2" alignItems="center">
+                      <XStack gap="$2" items="center">
                         <AlertCircle size={16} color="$red10" />
                         <Text fontSize="$2" color="$red10">
                           Not available
@@ -316,7 +316,7 @@ export function VanityUrlSection() {
                       </XStack>
                       {availabilityStatus.suggestions &&
                         availabilityStatus.suggestions.length > 0 && (
-                          <YStack gap="$1" marginLeft="$4">
+                          <YStack gap="$1" ml="$4">
                             <Text fontSize="$2" color="$color10">
                               Suggestions:
                             </Text>
@@ -348,7 +348,7 @@ export function VanityUrlSection() {
               )}
 
               {/* Action Buttons */}
-              <XStack gap="$2" justifyContent="flex-end">
+              <XStack gap="$2" justify="flex-end">
                 <Button
                   size="$3"
                   variant="outlined"
@@ -374,14 +374,14 @@ export function VanityUrlSection() {
           ) : (
             <XStack
               gap="$2"
-              alignItems="center"
-              padding="$3"
-              backgroundColor="$color3"
-              borderRadius="$4"
+              items="center"
+              p="$3"
+              bg="$color3"
+              rounded="$4"
               borderWidth={1}
               borderColor="$color6"
             >
-              <Text flex={1} fontFamily="monospace" fontSize="$3" color="$color11">
+              <Text flex={1} style={{ fontFamily: 'monospace' }} fontSize="$3" color="$color11">
                 {currentSlug || 'No slug set'}
               </Text>
             </XStack>
@@ -392,10 +392,10 @@ export function VanityUrlSection() {
         {daysRemaining && daysRemaining > 0 && nextChangeAllowed && (
           <XStack
             gap="$2"
-            alignItems="center"
-            padding="$3"
-            backgroundColor="$yellow3"
-            borderRadius="$4"
+            items="center"
+            p="$3"
+            bg="$yellow3"
+            rounded="$4"
             borderWidth={1}
             borderColor="$yellow7"
           >
@@ -419,13 +419,21 @@ export function VanityUrlSection() {
               Change History
             </Text>
             <YStack gap="$1">
-              {slugHistory.history.slice(0, 5).map((entry) => (
+              {(
+                slugHistory.history as Array<{
+                  changed_at: string
+                  new_slug: string
+                  old_slug: string | null
+                }>
+              )
+                .slice(0, 5)
+                .map((entry) => (
                 <XStack
                   key={`${entry.changed_at}-${entry.new_slug}`}
                   gap="$2"
-                  padding="$2"
-                  backgroundColor="$color3"
-                  borderRadius="$2"
+                  p="$2"
+                  bg="$color3"
+                  rounded="$2"
                 >
                   <Text fontSize="$2" color="$color10" flex={1}>
                     {entry.old_slug || '(initial)'} → {entry.new_slug}

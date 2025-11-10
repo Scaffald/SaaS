@@ -21,18 +21,54 @@ export const onetRouter = t.router({
       const { supabase } = ctx;
 
       try {
-        // Use O*NET's search function
+        // Attempt to use the managed RPC if available
         const { data, error } = await supabase.rpc("search_occupations", {
           search_query: input.query,
           max_results: input.limit,
         });
 
         if (error) {
-          console.error("Error searching occupations:", error);
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: `Failed to search occupations: ${error.message}`,
-          });
+          // When running locally the RPC may not be present—fall back to a basic ilike query
+          const missingFunction =
+            error.code === "PGRST202" ||
+            error.code === "42704" ||
+            error.code === "42883" ||
+            error.message?.includes("search_occupations");
+
+          if (!missingFunction) {
+            console.error("[onet.searchOccupations] RPC error", {
+              message: error.message,
+              code: error.code,
+            });
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: `Failed to search occupations: ${error.message}`,
+            });
+          }
+
+          const { data: fallbackData, error: fallbackError } = await supabase
+            .schema("onet")
+            .from("occupation_data")
+            .select("onetsoc_code, title, description")
+            .ilike("title", `%${input.query}%`)
+            .order("title", { ascending: true })
+            .limit(input.limit);
+
+          if (fallbackError) {
+            console.error("[onet.searchOccupations] Fallback query failed", {
+              message: fallbackError.message,
+              code: fallbackError.code,
+            });
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: `Failed to search occupations: ${fallbackError.message}`,
+            });
+          }
+
+          return {
+            occupations: fallbackData ?? [],
+            query: input.query,
+          };
         }
 
         return {
@@ -40,6 +76,10 @@ export const onetRouter = t.router({
           query: input.query,
         };
       } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+
         console.error("Error in searchOccupations:", error);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

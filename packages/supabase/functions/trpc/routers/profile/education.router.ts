@@ -173,14 +173,109 @@ export const profileEducationRouter = t.router({
 
         const savedEducation = [];
 
-        for (const edu of input.education_entries) {
-          // Determine is_verified: true if university_id is provided, false otherwise
-          const isVerified = !!edu.university_id;
+        for (const [index, edu] of input.education_entries.entries()) {
+          const entryLabel = `education entry #${index + 1}`;
 
-          // Use custom_degree_type if degree_type is "Other", otherwise use degree_type
-          const finalDegreeType = edu.degree_type === "Other"
-            ? (edu.custom_degree_type || null)
-            : (edu.degree_type || null);
+          const universityId = edu.university_id ?? null;
+          const institutionName = (edu.institution_name ?? "").trim();
+          if (!institutionName) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: `${entryLabel}: Institution name is required.`,
+            });
+          }
+
+          const startDateRaw = edu.start_date ?? "";
+          const startDate = startDateRaw.trim();
+          if (!startDate) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: `${entryLabel}: Start date is required.`,
+            });
+          }
+
+          const isCurrent = edu.is_current ?? false;
+          const endDateRaw = edu.end_date ?? null;
+          const endDate = endDateRaw ? endDateRaw.trim() : null;
+          if (!isCurrent && !endDate) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: `${entryLabel}: End date is required unless currently enrolled.`,
+            });
+          }
+
+          if (endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            if (!Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime()) && end <= start) {
+              throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: `${entryLabel}: End date must be after start date.`,
+              });
+            }
+          }
+
+          const expectedGradRaw = edu.expected_graduation_date ?? null;
+          const expectedGraduationDate =
+            isCurrent && expectedGradRaw ? expectedGradRaw.trim() : null;
+
+          const fieldOfStudy =
+            typeof edu.field_of_study === "string" && edu.field_of_study.trim().length > 0
+              ? edu.field_of_study.trim()
+              : null;
+
+          const location =
+            typeof edu.location === "string" && edu.location.trim().length > 0
+              ? edu.location.trim()
+              : null;
+
+          const description =
+            typeof edu.description === "string" && edu.description.trim().length > 0
+              ? edu.description.trim()
+              : null;
+          if (description && description.length > 500) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: `${entryLabel}: Description cannot exceed 500 characters.`,
+            });
+          }
+
+          const hasCustomDegree = edu.degree_type === "Other";
+          const customDegree =
+            hasCustomDegree && typeof edu.custom_degree_type === "string"
+              ? edu.custom_degree_type.trim()
+              : "";
+          if (hasCustomDegree && customDegree.length === 0) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: `${entryLabel}: Please specify the degree type for "Other".`,
+            });
+          }
+
+          const normalizedDegree =
+            hasCustomDegree
+              ? customDegree
+              : typeof edu.degree_type === "string" && edu.degree_type.trim().length > 0
+              ? edu.degree_type.trim()
+              : null;
+
+          const rawGpa =
+            typeof edu.gpa === "number"
+              ? edu.gpa
+              : typeof edu.gpa === "string" && edu.gpa.trim().length > 0
+                ? Number(edu.gpa)
+                : null;
+          if (
+            rawGpa != null &&
+            (Number.isNaN(rawGpa) || rawGpa < 0 || rawGpa > 4)
+          ) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: `${entryLabel}: GPA must be between 0.0 and 4.0.`,
+            });
+          }
+
+          const isVerified = !!universityId;
 
           if (edu.id) {
             // Update existing education
@@ -188,18 +283,18 @@ export const profileEducationRouter = t.router({
               .schema("core")
               .from("user_education")
               .update({
-                university_id: edu.university_id || null,
-                institution_name: edu.institution_name,
+                university_id: universityId,
+                institution_name: institutionName,
                 is_verified: isVerified,
-                degree_type: finalDegreeType,
-                field_of_study: edu.field_of_study || null,
-                start_date: edu.start_date || null,
-                end_date: edu.end_date || null,
-                expected_graduation_date: edu.expected_graduation_date || null,
-                is_current: edu.is_current,
-                gpa: edu.gpa || null,
-                description: edu.description || null,
-                location: edu.location || null,
+                degree_type: normalizedDegree,
+                field_of_study: fieldOfStudy,
+                start_date: startDate,
+                end_date: endDate,
+                expected_graduation_date: expectedGraduationDate,
+                is_current: isCurrent,
+                gpa: rawGpa,
+                description,
+                location,
                 updated_at: new Date().toISOString(),
               })
               .eq("id", edu.id)
@@ -214,7 +309,20 @@ export const profileEducationRouter = t.router({
               });
             }
 
-            savedEducation.push(data);
+            savedEducation.push({
+              ...data,
+              institution_name: institutionName,
+              degree_type: normalizedDegree,
+              field_of_study: fieldOfStudy,
+              start_date: startDate,
+              end_date: endDate,
+              expected_graduation_date: expectedGraduationDate,
+              is_current: isCurrent,
+              gpa: rawGpa,
+              description,
+              location,
+              is_verified: isVerified,
+            });
           } else {
             // Create new education
             const { data, error } = await supabase
@@ -222,18 +330,18 @@ export const profileEducationRouter = t.router({
               .from("user_education")
               .insert({
                 user_id: user.id,
-                university_id: edu.university_id || null,
-                institution_name: edu.institution_name,
+                university_id: universityId,
+                institution_name: institutionName,
                 is_verified: isVerified,
-                degree_type: finalDegreeType,
-                field_of_study: edu.field_of_study || null,
-                start_date: edu.start_date || null,
-                end_date: edu.end_date || null,
-                expected_graduation_date: edu.expected_graduation_date || null,
-                is_current: edu.is_current,
-                gpa: edu.gpa || null,
-                description: edu.description || null,
-                location: edu.location || null,
+                degree_type: normalizedDegree,
+                field_of_study: fieldOfStudy,
+                start_date: startDate,
+                end_date: endDate,
+                expected_graduation_date: expectedGraduationDate,
+                is_current: isCurrent,
+                gpa: rawGpa,
+                description,
+                location,
               })
               .select()
               .single();
@@ -245,7 +353,20 @@ export const profileEducationRouter = t.router({
               });
             }
 
-            savedEducation.push(data);
+            savedEducation.push({
+              ...data,
+              institution_name: institutionName,
+              degree_type: normalizedDegree,
+              field_of_study: fieldOfStudy,
+              start_date: startDate,
+              end_date: endDate,
+              expected_graduation_date: expectedGraduationDate,
+              is_current: isCurrent,
+              gpa: rawGpa,
+              description,
+              location,
+              is_verified: isVerified,
+            });
           }
         }
 

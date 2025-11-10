@@ -1,6 +1,5 @@
 import { YStack, XStack, Text, Button, Card, Avatar, Image } from 'tamagui'
-import { Star, MapPin, Award, DollarSign, Briefcase, MessageSquare, Edit, Share2, MoreVertical } from '@tamagui/lucide-icons'
-import { useRouter } from 'expo-router'
+import { Star, MapPin, Award, DollarSign, Briefcase, MessageSquare, Edit3, Share2, MoreVertical } from '@tamagui/lucide-icons'
 import { useWindowDimensions } from 'tamagui'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
 
@@ -13,6 +12,7 @@ interface UserProfileHeaderEnhancedProps {
     headline: string | null
     industry_name: string | null
     years_of_experience: number | null
+    calculatedYearsOfExperience?: number | null
     gamified_score: number | null
     location: string | null
     hourly_rate_cents: number | null
@@ -42,7 +42,6 @@ export function UserProfileHeaderEnhanced({
   isOwnProfile = false,
   onEdit,
 }: UserProfileHeaderEnhancedProps) {
-  const _router = useRouter()
   const { width } = useWindowDimensions()
   const isMobile = width < 768
 
@@ -65,6 +64,18 @@ export function UserProfileHeaderEnhanced({
   // Banner height - responsive
   const bannerHeight = isMobile ? 160 : 200
 
+  const resolvedYears =
+    typeof profile.calculatedYearsOfExperience === 'number'
+      ? profile.calculatedYearsOfExperience
+      : profile.years_of_experience
+
+  const formattedYears =
+    typeof resolvedYears === 'number' && !Number.isNaN(resolvedYears)
+      ? resolvedYears % 1 !== 0
+        ? resolvedYears.toFixed(1)
+        : resolvedYears
+      : null
+
   return (
     <Card elevate bordered overflow="hidden" p={0}>
       {/* Banner Section */}
@@ -74,13 +85,12 @@ export function UserProfileHeaderEnhanced({
             source={{ uri: bannerUrl }}
             width="100%"
             height={bannerHeight}
-            contentFit="cover"
+            objectFit="cover"
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
           />
         ) : (
           <YStack
-            flex={1}
-            bg="linear-gradient(135deg, $blue4 0%, $blue6 100%)"
+            bg="$blue5"
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
           />
         )}
@@ -88,9 +98,11 @@ export function UserProfileHeaderEnhanced({
         {/* Avatar Overlay */}
         <YStack
           position="absolute"
-          bottom={-60}
-          left={isMobile ? '$4' : '$6'}
-          zIndex={10}
+          style={{
+            bottom: -60,
+            left: isMobile ? 16 : 24,
+            zIndex: 10,
+          }}
         >
           <Avatar circular size={isMobile ? 120 : 160} borderWidth={4} borderColor="$background">
             {avatarUrl ? (
@@ -107,7 +119,7 @@ export function UserProfileHeaderEnhanced({
       </YStack>
 
       {/* Content Section */}
-      <YStack gap="$4" p="$5" pt={isMobile ? '$20' : '$24'}>
+      <YStack gap="$4" p="$5" pt={isMobile ? 80 : 96}>
         {/* Header Row - Name, Headline, and Actions */}
         <XStack gap="$4" items="flex-start" justify="space-between" flexWrap="wrap">
           <YStack flex={1} gap="$2" minW={200}>
@@ -147,7 +159,7 @@ export function UserProfileHeaderEnhanced({
           {/* Action Buttons */}
           <XStack gap="$2" flexWrap="wrap">
             {isOwnProfile && onEdit && (
-              <Button size={isMobile ? '$3' : '$4'} theme="blue" icon={Edit} onPress={onEdit}>
+              <Button size={isMobile ? '$3' : '$4'} theme="info" icon={Edit3} onPress={onEdit}>
                 Edit Profile
               </Button>
             )}
@@ -157,7 +169,7 @@ export function UserProfileHeaderEnhanced({
               </Button>
             )}
             {canLeaveReview && onLeaveReview && (
-              <Button size={isMobile ? '$3' : '$4'} theme="blue" icon={MessageSquare} onPress={onLeaveReview}>
+              <Button size={isMobile ? '$3' : '$4'} theme="info" icon={MessageSquare} onPress={onLeaveReview}>
                 Leave Review
               </Button>
             )}
@@ -192,11 +204,11 @@ export function UserProfileHeaderEnhanced({
           )}
 
           {/* Years of Experience */}
-          {profile.years_of_experience !== null && (
+          {formattedYears !== null && (
             <XStack gap="$2" items="center" px="$3" py="$2" bg="$color2" rounded="$3">
               <Award size={18} color="$color11" />
               <Text fontSize="$3" color="$color11" fontWeight="600">
-                {profile.years_of_experience} years experience
+                {formattedYears} years experience
               </Text>
             </XStack>
           )}

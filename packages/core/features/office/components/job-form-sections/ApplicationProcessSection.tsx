@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { YStack, XStack, Text, Input } from '@app/ui'
-import { Label, Switch } from 'tamagui'
+import { YStack, XStack, Text, Input, ToggleSwitch } from '@app/ui'
+import { Label } from 'tamagui'
 
 interface ApplicationProcessSectionProps {
   requiresAssessment?: boolean
@@ -61,18 +61,16 @@ export function ApplicationProcessSection({
       {/* Requires Assessment */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="assessment">Requires assessment</Label>
+          <Label>Requires assessment</Label>
           <Text fontSize="$2" color="$color10">
             Skills or aptitude test required
           </Text>
         </YStack>
-        <Switch
-          id="assessment"
+        <ToggleSwitch
           checked={localState.requires_assessment || false}
           onCheckedChange={(checked) => handleChange('requires_assessment', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Requires assessment"
+        />
       </XStack>
 
       {localState.requires_assessment && (
@@ -89,18 +87,16 @@ export function ApplicationProcessSection({
       {/* Requires Video Interview */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="videoInterview">Requires video interview</Label>
+          <Label>Requires video interview</Label>
           <Text fontSize="$2" color="$color10">
             Pre-recorded video interview required
           </Text>
         </YStack>
-        <Switch
-          id="videoInterview"
+        <ToggleSwitch
           checked={localState.requires_video_interview || false}
           onCheckedChange={(checked) => handleChange('requires_video_interview', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Requires video interview"
+        />
       </XStack>
 
       {/* Estimated Application Time */}

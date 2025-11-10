@@ -52,7 +52,7 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
               </Text>
             </XStack>
             {onLeaveReview && (
-              <Button size="$3" theme="blue" icon={MessageSquarePlus} onPress={onLeaveReview}>
+              <Button size="$3" theme="info" icon={MessageSquarePlus} onPress={onLeaveReview}>
                 Leave Review
               </Button>
             )}
@@ -110,7 +110,7 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
             </Text>
           </XStack>
           {onLeaveReview && (
-            <Button size="$3" theme="blue" icon={MessageSquarePlus} onPress={onLeaveReview}>
+            <Button size="$3" theme="info" icon={MessageSquarePlus} onPress={onLeaveReview}>
               Leave Review
             </Button>
           )}

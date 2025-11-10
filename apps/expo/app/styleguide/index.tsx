@@ -2,10 +2,10 @@
 import React from 'react'
 import { Link } from 'expo-router'
 import { Paragraph, Text, View, XStack, YStack } from '@app/ui'
-import { NAV_SECTIONS } from './navigation/sections'
-import { StyleguidePage } from './_components/StyleguidePage'
-import { AnchorHeading } from './_components/AnchorHeading'
-import { TodoCallout } from './_components/TodoCallout'
+import { NAV_SECTIONS } from '@app/styleguide'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
+import { TodoCallout } from '@app/styleguide'
 
 export default function StyleguideWelcomePage() {
   return (
@@ -59,7 +59,7 @@ const QuickLinks = () => (
               borderRadius={10}
               borderWidth={1}
               borderColor="$color6"
-              backgroundColor="$color2"
+              bg="$color2"
               hoverStyle={{ backgroundColor: '$color3' }}
               pressStyle={{ backgroundColor: '$color4' }}
             >

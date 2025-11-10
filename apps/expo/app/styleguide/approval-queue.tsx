@@ -2,8 +2,8 @@
 import React from 'react'
 import { Link } from 'expo-router'
 import { Button, Paragraph, Text, View, XStack, YStack } from '@app/ui'
-import { TODO_ITEMS } from './data/todos'
-import { StyleguidePage } from './_components/StyleguidePage'
+import { TODO_ITEMS } from '@app/styleguide'
+import { StyleguidePage } from '@app/styleguide'
 
 export default function ApprovalQueuePage() {
   return (
@@ -38,23 +38,17 @@ export default function ApprovalQueuePage() {
             </Link>
             <XStack gap="$3">
               <Button size="$3">Approve</Button>
-              <Button size="$3" backgroundColor="$color3" color="$color11">
+              <Button size="$3" bg="$color3" color="$color11">
                 Defer
               </Button>
-              <Button size="$3" backgroundColor="$color3" color="$color11">
+              <Button size="$3" bg="$color3" color="$color11">
                 Reject
               </Button>
             </XStack>
           </YStack>
         ))}
         {TODO_ITEMS.length === 0 ? (
-          <View
-            padding="$5"
-            borderWidth={1}
-            borderColor="$color6"
-            borderRadius="$4"
-            backgroundColor="$color3"
-          >
+          <View padding="$5" borderWidth={1} borderColor="$color6" borderRadius="$4" bg="$color3">
             <Text fontSize={14} color="$color10">
               No pending approvals. 🎉
             </Text>

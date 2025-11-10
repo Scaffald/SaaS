@@ -1,5 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
+import { Sentry } from "../_shared/sentry.ts";
+
 // Environment variables
 const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -115,6 +117,24 @@ export const createTRPCContext = async (opts: { req: Request }) => {
     "Final user context:",
     userId ? { id: userId, email: userEmail } : "undefined",
   );
+
+  if (Sentry.getCurrentHub().getClient()) {
+    if (userId) {
+      Sentry.setUser({
+        id: userId,
+        email: userEmail ?? undefined,
+      });
+    } else {
+      Sentry.setUser(null);
+    }
+
+    Sentry.setContext("request", {
+      procedureUserId: userId,
+      hasAuthorizationHeader: Boolean(authorizationHeader),
+      isAnonKey,
+    });
+  }
+
   return {
     user: userId ? { id: userId, email: userEmail } : undefined,
     userToken,

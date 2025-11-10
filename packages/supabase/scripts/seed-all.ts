@@ -132,6 +132,35 @@ async function seedJobs() {
   }
 }
 
+async function seedOnet() {
+  console.log("\n📊 Seeding O*NET Occupational Database...");
+
+  try {
+    const scriptDir = path.dirname(new URL(import.meta.url).pathname);
+    const onetScriptPath = path.join(scriptDir, "seed-onet.ts");
+
+    // Run the O*NET seeding script with inherited environment
+    // This uses PostgreSQL COPY protocol for fast bulk loading from CSV files
+    // It will skip if data already exists unless ONET_FORCE_RELOAD=1 is set
+    const { stdout, stderr } = await execAsync(
+      `pnpx tsx "${onetScriptPath}"`,
+      {
+        env: process.env, // Inherit all environment variables
+      },
+    );
+
+    if (stdout) console.log(stdout);
+    if (stderr && !stderr.includes("Warning") && !stderr.includes("Skipping")) {
+      console.error(stderr);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("❌ Error seeding O*NET data:", error);
+    return false;
+  }
+}
+
 async function verifySkills() {
   console.log("\n📊 Verifying CSI MasterFormat Data...");
 
@@ -444,10 +473,23 @@ async function main() {
     process.exit(1);
   }
 
+  // Seed O*NET data
+  console.log(`\n${"=".repeat(50)}`);
+  console.log("📋 Step 5: Seeding O*NET Occupational Database");
+  console.log("=".repeat(50));
+  const onetSeeded = await seedOnet();
+
+  if (!onetSeeded) {
+    console.error("\n❌ O*NET seeding failed. Check errors above.");
+    process.exit(1);
+  }
+
   console.log(`\n✅ Seeding complete!`);
   console.log(`   - CSI codes seeded ✓`);
   console.log(`   - Universities seeded ✓`);
+  console.log(`   - Certifications seeded ✓`);
   console.log(`   - External jobs seeded ✓`);
+  console.log(`   - O*NET database seeded ✓`);
 
   // Display stats
   await displayStats();

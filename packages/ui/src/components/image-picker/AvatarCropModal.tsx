@@ -1,7 +1,14 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { Platform, Image as RNImage } from 'react-native'
+import {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo,
+  type ComponentRef,
+  type CSSProperties,
+} from 'react'
+import { Platform, Image as RNImage, type ImageStyle } from 'react-native'
 import { GestureDetector, Gesture } from 'react-native-gesture-handler'
-import * as ImageManipulator from 'expo-image-manipulator'
 import {
   Dialog,
   Sheet,
@@ -9,288 +16,288 @@ import {
   YStack,
   Text,
   Button,
-  Image,
+  Image as TamaguiImage,
   View,
+  Circle,
   useWindowDimensions,
 } from 'tamagui'
-import { X, Check, ZoomIn, ZoomOut, RotateCcw } from '@tamagui/lucide-icons'
+import {
+  X,
+  Check,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  FlipHorizontal,
+  FlipVertical,
+} from '@tamagui/lucide-icons'
+
+import { processCroppedImage } from './utils/imageProcessing'
+import { detectMimeTypeFromSrc, getNativeTransform, getWebTransform } from './utils/helpers'
+
+import type { CropRect } from './utils/imageProcessing.types'
 
 export interface AvatarCropModalProps {
-  /** Whether the modal is open */
   open: boolean
-  /** Callback when modal open state changes */
   onOpenChange: (open: boolean) => void
-  /** Source image URI */
   imageUri: string
-  /** Callback with cropped image URI */
-  onCropComplete: (croppedImageUri: string) => void
-  /** Size of the crop area (square) */
+  onCropComplete: (croppedImageDataUrl: string) => void
   cropSize?: number
+  onError?: (message: string) => void
 }
 
-/**
- * AvatarCropModal Component
- *
- * A cross-platform modal for cropping avatar images into a square format.
- * - Web: Uses canvas API for image cropping with zoom and drag controls
- * - Native: Uses expo-image-manipulator with pinch-to-zoom and pan gestures
- *
- * Features:
- * - Square crop overlay with visual feedback
- * - Zoom controls (buttons + pinch gesture on native, scroll on web)
- * - Drag/pan to position the crop area
- * - Image size validation
- * - Comprehensive error handling
- * - Cross-platform support (Web, iOS, Android)
- *
- * @example
- * ```tsx
- * <AvatarCropModal
- *   open={isOpen}
- *   onOpenChange={setIsOpen}
- *   imageUri={selectedImageUri}
- *   onCropComplete={(croppedUri) => {
- *     // Handle cropped image
- *   }}
- *   cropSize={300}
- * />
- * ```
- */
+const OUTPUT_TARGET_SIZE = 512
+const MAX_FILE_BYTES = 500 * 1024
+const PREVIEW_SIZE = 120
+const MIN_ZOOM = 1
+const MAX_ZOOM = 3
+const ZOOM_MULTIPLIER = 1.1
+
+const ERROR_MESSAGES = {
+  invalidDimensions: 'Invalid image dimensions. Please try a different photo.',
+  tooSmall: 'Image is too small. Minimum recommended size is %s.',
+  loadFailed: 'Failed to load image. Please try again.',
+  processingFailed: 'We could not process your image. Please try again.',
+} as const
+
+function formatPixels(value: number) {
+  return `${Math.round(value)}px`
+}
+
 export function AvatarCropModal({
   open,
   onOpenChange,
   imageUri,
   onCropComplete,
   cropSize = 300,
+  onError,
 }: AvatarCropModalProps) {
   const { width, height } = useWindowDimensions()
   const isMobile = width < 768
+  const isLandscape = width > height
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 })
   const [cropPosition, setCropPosition] = useState({ x: 0, y: 0 })
-  const [zoom, setZoom] = useState(1) // Zoom level (1 = 100%)
+  const [zoom, setZoom] = useState(1)
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const [error, setError] = useState<string | null>(null)
   const imageRef = useRef<HTMLImageElement | null>(null)
-  const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const animationFrameRef = useRef<number | null>(null)
+  const [flipHorizontal, setFlipHorizontal] = useState(false)
+  const [flipVertical, setFlipVertical] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
+  const firstControlRef = useRef<ComponentRef<typeof Button> | null>(null)
+  const [liveAnnouncement, setLiveAnnouncement] = useState('')
 
-  // Larger modal size
+  const resolvedMimeType = useMemo(() => detectMimeTypeFromSrc(imageUri), [imageUri])
+
   const maxDisplaySize = isMobile
     ? Math.min(width - 64, height - 200)
     : Math.min(600, width - 128, height - 200)
-  const displaySize = Math.max(400, Math.min(maxDisplaySize, cropSize * 1.5))
+  const displaySize = Math.max(360, Math.min(maxDisplaySize, cropSize * 1.5))
 
-  // Load image and get dimensions
+  const resetState = useCallback(() => {
+    setZoom(1)
+    setCropPosition({ x: 0, y: 0 })
+    setFlipHorizontal(false)
+    setFlipVertical(false)
+    setError(null)
+    setImageLoaded(false)
+    setIsProcessing(false)
+  }, [])
+
   useEffect(() => {
     if (!imageUri || !open) {
-      setImageLoaded(false)
-      setZoom(1)
-      setCropPosition({ x: 0, y: 0 })
-      setError(null)
+      resetState()
       return
     }
 
     if (Platform.OS !== 'web') {
-      // For native, load image dimensions
       RNImage.getSize(
         imageUri,
-        (width, height) => {
-          // Validate image dimensions
-          if (width === 0 || height === 0) {
-            setError('Invalid image dimensions')
+        (nativeWidth, nativeHeight) => {
+          if (nativeWidth === 0 || nativeHeight === 0) {
+            setError(ERROR_MESSAGES.invalidDimensions)
             setImageLoaded(false)
             return
           }
 
-          // Check if image is too small
-          const minDimension = Math.min(width, height)
+          const minDimension = Math.min(nativeWidth, nativeHeight)
           if (minDimension < cropSize * 0.5) {
-            setError(
-              `Image is too small. Minimum recommended size is ${cropSize * 2}x${cropSize * 2}px.`
-            )
+            setError(ERROR_MESSAGES.tooSmall.replace('%s', `${cropSize * 2}x${cropSize * 2}px`))
           } else {
             setError(null)
           }
 
-          setImageDimensions({ width, height })
+          setImageDimensions({ width: nativeWidth, height: nativeHeight })
 
-          // Initialize zoom to fit image in display area
-          const baseScale = displaySize / Math.max(width, height)
+          const baseScale = displaySize / Math.max(nativeWidth, nativeHeight)
           const initialZoom = Math.max(1, baseScale * 1.2)
           setZoom(initialZoom)
 
-          // Initialize crop position to center
-          const initialCropSize = Math.min(width, height, cropSize)
+          const initialCropSize = Math.min(nativeWidth, nativeHeight, cropSize)
           setCropPosition({
-            x: Math.max(0, (width - initialCropSize) / 2),
-            y: Math.max(0, (height - initialCropSize) / 2),
+            x: Math.max(0, (nativeWidth - initialCropSize) / 2),
+            y: Math.max(0, (nativeHeight - initialCropSize) / 2),
           })
 
           setImageLoaded(true)
         },
-        (error) => {
-          console.error('Failed to load image dimensions:', error)
-          setError('Failed to load image. Please try a different image.')
+        (err) => {
+          console.error('Failed to load native image dimensions:', err)
+          setError(ERROR_MESSAGES.loadFailed)
           setImageLoaded(false)
         }
       )
+
       return
     }
 
-    const img = document.createElement('img')
+    const ImageCtor = (
+      globalThis as {
+        Image?: new () => HTMLImageElement
+      }
+    ).Image
+
+    if (!ImageCtor) {
+      setError(ERROR_MESSAGES.loadFailed)
+      setImageLoaded(false)
+      return
+    }
+
+    const img = new ImageCtor()
     img.crossOrigin = 'anonymous'
 
     img.onload = () => {
       try {
-        const imgWidth = img.naturalWidth
-        const imgHeight = img.naturalHeight
-
-        // Validate image dimensions
-        if (imgWidth === 0 || imgHeight === 0) {
-          throw new Error('Invalid image dimensions')
+        if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+          throw new Error(ERROR_MESSAGES.invalidDimensions)
         }
 
-        // Check if image is too small
-        const minDimension = Math.min(imgWidth, imgHeight)
+        const minDimension = Math.min(img.naturalWidth, img.naturalHeight)
         if (minDimension < cropSize * 0.5) {
-          setError(
-            `Image is too small. Minimum recommended size is ${cropSize * 2}x${cropSize * 2}px.`
-          )
+          setError(ERROR_MESSAGES.tooSmall.replace('%s', `${cropSize * 2}x${cropSize * 2}px`))
         } else {
           setError(null)
         }
 
-        setImageDimensions({ width: imgWidth, height: imgHeight })
+        setImageDimensions({ width: img.naturalWidth, height: img.naturalHeight })
 
-        // Initialize zoom to fit image in display area
-        const baseScale = displaySize / Math.max(imgWidth, imgHeight)
-        const initialZoom = Math.max(1, baseScale * 1.2) // Start slightly zoomed in
+        const baseScale = displaySize / Math.max(img.naturalWidth, img.naturalHeight)
+        const initialZoom = Math.max(1, baseScale * 1.2)
         setZoom(initialZoom)
 
-        // Initialize crop position to center
-        const initialCropSize = Math.min(imgWidth, imgHeight, cropSize)
+        const initialCropSize = Math.min(img.naturalWidth, img.naturalHeight, cropSize)
         setCropPosition({
-          x: Math.max(0, (imgWidth - initialCropSize) / 2),
-          y: Math.max(0, (imgHeight - initialCropSize) / 2),
+          x: Math.max(0, (img.naturalWidth - initialCropSize) / 2),
+          y: Math.max(0, (img.naturalHeight - initialCropSize) / 2),
         })
 
-        setImageLoaded(true)
         imageRef.current = img
+        setImageLoaded(true)
       } catch (err) {
         console.error('Error loading image:', err)
-        setError(err instanceof Error ? err.message : 'Failed to load image')
+        setError(err instanceof Error ? err.message : ERROR_MESSAGES.loadFailed)
         setImageLoaded(false)
       }
     }
 
     img.onerror = () => {
-      const errorMsg = 'Failed to load image. Please try a different image.'
-      console.error('Failed to load image for cropping')
-      setError(errorMsg)
+      console.error('Failed to load image for cropping.')
+      setError(ERROR_MESSAGES.loadFailed)
       setImageLoaded(false)
     }
 
     img.src = imageUri
-  }, [imageUri, open, cropSize, displaySize])
+  }, [imageUri, open, cropSize, displaySize, resetState])
 
-  // Calculate actual crop size (can't exceed image dimensions)
   const actualCropSize =
     imageDimensions.width > 0 && imageDimensions.height > 0
       ? Math.min(imageDimensions.width, imageDimensions.height, cropSize)
       : cropSize
 
-  // Base scale to fit image in display area
   const baseScale =
     imageDimensions.width > 0 && imageDimensions.height > 0
       ? displaySize / Math.max(imageDimensions.width, imageDimensions.height)
       : 1
 
-  // Final scale with zoom applied
   const scale = baseScale * zoom
 
   const scaledImageWidth = imageDimensions.width * scale
   const scaledImageHeight = imageDimensions.height * scale
 
-  // Crop area display size should be fixed (based on baseScale, not zoom)
-  // This ensures the crop box stays the same size while only the image zooms
   const cropDisplaySize = actualCropSize * baseScale
 
-  // Calculate crop area's top-left corner (crop area is centered in container)
   const cropAreaTopLeft = useMemo(() => {
     const cropAreaTopLeftX = displaySize / 2 - cropDisplaySize / 2
     const cropAreaTopLeftY = displaySize / 2 - cropDisplaySize / 2
     return { x: cropAreaTopLeftX, y: cropAreaTopLeftY }
   }, [displaySize, cropDisplaySize])
 
-  const cropAreaTopLeftX = cropAreaTopLeft.x
-  const cropAreaTopLeftY = cropAreaTopLeft.y
+  const currentCropSize = useMemo(() => {
+    if (zoom <= 0) return actualCropSize
+    return actualCropSize / zoom
+  }, [actualCropSize, zoom])
 
-  // Calculate max crop position to ensure crop area stays within image bounds
+  const previewScaleFactor = cropDisplaySize > 0 ? PREVIEW_SIZE / cropDisplaySize : 1
+
+  const previewImageWidth = scaledImageWidth * previewScaleFactor
+  const previewImageHeight = scaledImageHeight * previewScaleFactor
+
+  const previewLeft = -(cropPosition.x * scale - cropAreaTopLeft.x) * previewScaleFactor
+  const previewTop = -(cropPosition.y * scale - cropAreaTopLeft.y) * previewScaleFactor
+
   const getMaxCropPosition = useCallback(() => {
     if (imageDimensions.width === 0 || imageDimensions.height === 0) {
       return { maxX: 0, maxY: 0 }
     }
     return {
-      maxX: Math.max(0, imageDimensions.width - actualCropSize),
-      maxY: Math.max(0, imageDimensions.height - actualCropSize),
+      maxX: Math.max(0, imageDimensions.width - currentCropSize),
+      maxY: Math.max(0, imageDimensions.height - currentCropSize),
     }
-  }, [imageDimensions, actualCropSize])
+  }, [imageDimensions, currentCropSize])
 
-  // Constrain crop position to image boundaries with validation
   const constrainCropPosition = useCallback(
     (x: number, y: number) => {
-      // Validate inputs are numbers
-      if (typeof x !== 'number' || typeof y !== 'number' || Number.isNaN(x) || Number.isNaN(y)) {
+      if (!Number.isFinite(x) || !Number.isFinite(y)) {
         console.warn('Invalid crop position values:', { x, y })
         return { x: 0, y: 0 }
       }
 
       const { maxX, maxY } = getMaxCropPosition()
 
-      // Ensure values are within valid range
-      const constrainedX = Math.max(0, Math.min(x, maxX))
-      const constrainedY = Math.max(0, Math.min(y, maxY))
-
       return {
-        x: constrainedX,
-        y: constrainedY,
+        x: Math.max(0, Math.min(x, maxX)),
+        y: Math.max(0, Math.min(y, maxY)),
       }
     },
     [getMaxCropPosition]
   )
 
-  // Zoom controls
-  const minZoom = 0.5
-  const maxZoom = 3
-
   const handleZoomIn = useCallback(() => {
     setZoom((prev) => {
-      const newZoom = Math.min(maxZoom, prev * 1.2)
-      // Constrain crop position after zoom
+      const next = Math.min(MAX_ZOOM, prev * ZOOM_MULTIPLIER)
       setCropPosition((pos) => constrainCropPosition(pos.x, pos.y))
-      return newZoom
+      return next
     })
-  }, [maxZoom, constrainCropPosition])
+  }, [constrainCropPosition])
 
   const handleZoomOut = useCallback(() => {
     setZoom((prev) => {
-      const newZoom = Math.max(minZoom, prev / 1.2)
-      // Constrain crop position after zoom
+      const next = Math.max(MIN_ZOOM, prev / ZOOM_MULTIPLIER)
       setCropPosition((pos) => constrainCropPosition(pos.x, pos.y))
-      return newZoom
+      return next
     })
-  }, [minZoom, constrainCropPosition])
+  }, [constrainCropPosition])
 
   const handleZoomReset = useCallback(() => {
-    const baseScale =
+    const newBaseScale =
       imageDimensions.width > 0 && imageDimensions.height > 0
         ? displaySize / Math.max(imageDimensions.width, imageDimensions.height)
         : 1
-    setZoom(Math.max(1, baseScale * 1.2))
-    // Reset crop position to center
+    const initialZoom = Math.max(1, newBaseScale * 1.2)
+    setZoom(initialZoom)
     if (imageDimensions.width > 0 && imageDimensions.height > 0) {
       const initialCropSize = Math.min(imageDimensions.width, imageDimensions.height, cropSize)
       setCropPosition({
@@ -301,158 +308,75 @@ export function AvatarCropModal({
   }, [imageDimensions, displaySize, cropSize])
 
   const handleWheel = useCallback(
-    (e: React.WheelEvent) => {
+    (event: React.WheelEvent) => {
       if (Platform.OS !== 'web' || !imageLoaded) return
-      e.preventDefault()
+      event.preventDefault()
 
-      const delta = e.deltaY > 0 ? 0.9 : 1.1
+      const multiplier = event.deltaY > 0 ? 1 / ZOOM_MULTIPLIER : ZOOM_MULTIPLIER
       setZoom((prev) => {
-        const newZoom = Math.max(minZoom, Math.min(maxZoom, prev * delta))
-        // Constrain crop position after zoom
+        const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, prev * multiplier))
         setCropPosition((pos) => constrainCropPosition(pos.x, pos.y))
-        return newZoom
+        return next
       })
     },
-    [imageLoaded, minZoom, maxZoom, constrainCropPosition]
+    [constrainCropPosition, imageLoaded]
   )
 
-  // Handle crop
-  const handleCrop = useCallback(async () => {
-    if (!imageLoaded) return
-
-    // Ensure crop position is within bounds
-    const constrained = constrainCropPosition(cropPosition.x, cropPosition.y)
-
-    if (Platform.OS === 'web' && canvasRef.current && imageRef.current) {
-      const canvas = canvasRef.current
-      const ctx = canvas.getContext('2d')
-      if (!ctx || !imageRef.current) return
-
-      // Set canvas size to desired crop size
-      canvas.width = cropSize
-      canvas.height = cropSize
-
-      // Draw cropped portion of image
-      ctx.drawImage(
-        imageRef.current,
-        constrained.x,
-        constrained.y,
-        actualCropSize,
-        actualCropSize,
-        0,
-        0,
-        cropSize,
-        cropSize
-      )
-
-      // Convert to blob URL
-      canvas.toBlob(
-        (blob) => {
-          if (blob) {
-            const croppedUri = URL.createObjectURL(blob)
-            onCropComplete(croppedUri)
-            onOpenChange(false)
-          }
-        },
-        'image/jpeg',
-        0.95
-      )
-    } else if (Platform.OS !== 'web') {
-      // Native: Use expo-image-manipulator
-      try {
-        // Calculate crop region (in pixels)
-        const cropRegion = {
-          originX: Math.round(constrained.x),
-          originY: Math.round(constrained.y),
-          width: Math.round(actualCropSize),
-          height: Math.round(actualCropSize),
-        }
-
-        // Perform crop
-        const result = await ImageManipulator.manipulateAsync(imageUri, [{ crop: cropRegion }], {
-          compress: 0.9,
-          format: ImageManipulator.SaveFormat.JPEG,
-        })
-
-        onCropComplete(result.uri)
-        onOpenChange(false)
-      } catch (err) {
-        console.error('Error cropping image:', err)
-        setError(err instanceof Error ? err.message : 'Failed to crop image')
-      }
-    }
-  }, [
-    imageUri,
-    cropPosition,
-    actualCropSize,
-    cropSize,
-    imageLoaded,
-    onCropComplete,
-    onOpenChange,
-    constrainCropPosition,
-  ])
-
-  // Smooth drag handling with requestAnimationFrame
   const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => {
+    (event: React.MouseEvent) => {
       if (Platform.OS !== 'web' || !containerRef.current) return
-      e.preventDefault()
+      event.preventDefault()
       setIsDragging(true)
 
       const rect = containerRef.current.getBoundingClientRect()
+      const mouseXInContainer = event.clientX - rect.left
+      const mouseYInContainer = event.clientY - rect.top
 
-      // Calculate mouse position relative to crop area's top-left corner
-      const mouseXInContainer = e.clientX - rect.left
-      const mouseYInContainer = e.clientY - rect.top
+      const mouseXInImage = (mouseXInContainer - cropAreaTopLeft.x) / scale
+      const mouseYInImage = (mouseYInContainer - cropAreaTopLeft.y) / scale
 
-      // Convert to image coordinates (subtract crop area offset, then divide by scale)
-      const mouseXInImage = (mouseXInContainer - cropAreaTopLeftX) / scale
-      const mouseYInImage = (mouseYInContainer - cropAreaTopLeftY) / scale
-
-      // Store the offset from current crop position
       setDragStart({
         x: mouseXInImage - cropPosition.x,
         y: mouseYInImage - cropPosition.y,
       })
     },
-    [cropPosition, scale, cropAreaTopLeftX, cropAreaTopLeftY]
+    [cropAreaTopLeft.x, cropAreaTopLeft.y, cropPosition, scale]
   )
 
   const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
+    (event: React.MouseEvent) => {
       if (!isDragging || Platform.OS !== 'web' || !containerRef.current) return
-      e.preventDefault()
+      event.preventDefault()
 
-      // Cancel any pending animation frame
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current)
       }
 
-      // Use requestAnimationFrame for smooth updates
       animationFrameRef.current = requestAnimationFrame(() => {
         if (!containerRef.current) return
 
         const rect = containerRef.current.getBoundingClientRect()
+        const mouseXInContainer = event.clientX - rect.left
+        const mouseYInContainer = event.clientY - rect.top
 
-        // Calculate mouse position relative to crop area's top-left corner
-        const mouseXInContainer = e.clientX - rect.left
-        const mouseYInContainer = e.clientY - rect.top
+        const mouseXInImage = (mouseXInContainer - cropAreaTopLeft.x) / scale
+        const mouseYInImage = (mouseYInContainer - cropAreaTopLeft.y) / scale
 
-        // Convert to image coordinates (subtract crop area offset, then divide by scale)
-        const mouseXInImage = (mouseXInContainer - cropAreaTopLeftX) / scale
-        const mouseYInImage = (mouseYInContainer - cropAreaTopLeftY) / scale
-
-        // Calculate new crop position (subtract the drag offset we stored)
         const newX = mouseXInImage - dragStart.x
         const newY = mouseYInImage - dragStart.y
 
-        // Constrain to image boundaries
-        const constrained = constrainCropPosition(newX, newY)
-
-        setCropPosition(constrained)
+        setCropPosition(constrainCropPosition(newX, newY))
       })
     },
-    [isDragging, scale, dragStart, constrainCropPosition, cropAreaTopLeftX, cropAreaTopLeftY]
+    [
+      constrainCropPosition,
+      cropAreaTopLeft.x,
+      cropAreaTopLeft.y,
+      dragStart.x,
+      dragStart.y,
+      isDragging,
+      scale,
+    ]
   )
 
   const handleMouseUp = useCallback(() => {
@@ -463,7 +387,6 @@ export function AvatarCropModal({
     }
   }, [])
 
-  // Cleanup animation frame on unmount
   useEffect(() => {
     return () => {
       if (animationFrameRef.current) {
@@ -472,18 +395,20 @@ export function AvatarCropModal({
     }
   }, [])
 
-  // Ensure crop position stays within bounds when zoom or dimensions change
   useEffect(() => {
     if (imageLoaded && imageDimensions.width > 0 && imageDimensions.height > 0) {
       setCropPosition((pos) => constrainCropPosition(pos.x, pos.y))
     }
-  }, [zoom, imageDimensions, imageLoaded, constrainCropPosition])
+  }, [constrainCropPosition, imageDimensions, imageLoaded, zoom])
 
-  // Native gesture handlers
+  useEffect(() => {
+    if (!imageLoaded) return
+    setLiveAnnouncement(`Zoom level ${Math.round(zoom * 100)} percent`)
+  }, [imageLoaded, zoom])
+
   const lastPanPosition = useRef({ x: 0, y: 0 })
   const lastZoom = useRef(1)
 
-  // Pinch gesture for zoom
   const pinchGesture = useMemo(() => {
     if (Platform.OS === 'web' || !imageLoaded) return null
 
@@ -491,17 +416,15 @@ export function AvatarCropModal({
       .onStart(() => {
         lastZoom.current = zoom
       })
-      .onUpdate((e) => {
-        const newZoom = Math.max(minZoom, Math.min(maxZoom, lastZoom.current * e.scale))
-        setZoom(newZoom)
+      .onUpdate((event) => {
+        const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, lastZoom.current * event.scale))
+        setZoom(next)
       })
       .onEnd(() => {
-        // Constrain crop position after zoom
         setCropPosition((pos) => constrainCropPosition(pos.x, pos.y))
       })
-  }, [zoom, minZoom, maxZoom, imageLoaded, constrainCropPosition])
+  }, [constrainCropPosition, imageLoaded, zoom])
 
-  // Pan gesture for dragging
   const panGesture = useMemo(() => {
     if (Platform.OS === 'web' || !imageLoaded) return null
 
@@ -509,31 +432,246 @@ export function AvatarCropModal({
       .onStart(() => {
         lastPanPosition.current = { ...cropPosition }
       })
-      .onUpdate((e) => {
-        // Convert pan translation from display coordinates to image coordinates
-        const deltaX = e.translationX / scale
-        const deltaY = e.translationY / scale
+      .onUpdate((event) => {
+        const deltaX = event.translationX / scale
+        const deltaY = event.translationY / scale
 
         const newX = lastPanPosition.current.x - deltaX
         const newY = lastPanPosition.current.y - deltaY
 
-        const constrained = constrainCropPosition(newX, newY)
-        setCropPosition(constrained)
+        setCropPosition(constrainCropPosition(newX, newY))
       })
       .onEnd(() => {
-        // Final constraint check
         setCropPosition((pos) => constrainCropPosition(pos.x, pos.y))
       })
-  }, [cropPosition, scale, imageLoaded, constrainCropPosition])
+  }, [constrainCropPosition, cropPosition, imageLoaded, scale])
 
-  // Combined gesture (pinch and pan can work together)
   const combinedGesture = useMemo(() => {
     if (Platform.OS === 'web' || !imageLoaded || !pinchGesture || !panGesture) return null
-
     return Gesture.Simultaneous(pinchGesture, panGesture)
-  }, [pinchGesture, panGesture, imageLoaded])
+  }, [imageLoaded, panGesture, pinchGesture])
 
-  // Mobile: Render as Sheet
+  const toggleFlipHorizontal = useCallback(() => {
+    setFlipHorizontal((prev) => !prev)
+  }, [])
+
+  const toggleFlipVertical = useCallback(() => {
+    setFlipVertical((prev) => !prev)
+  }, [])
+
+  const cropRect: CropRect = useMemo(() => {
+    const constrained = constrainCropPosition(cropPosition.x, cropPosition.y)
+    const widthPx = Math.min(currentCropSize, imageDimensions.width)
+    const heightPx = Math.min(currentCropSize, imageDimensions.height)
+
+    return {
+      originX: Math.round(constrained.x),
+      originY: Math.round(constrained.y),
+      width: Math.max(1, Math.round(widthPx)),
+      height: Math.max(1, Math.round(heightPx)),
+    }
+  }, [constrainCropPosition, cropPosition, currentCropSize, imageDimensions])
+
+  const handleSave = useCallback(async () => {
+    if (!imageLoaded) return
+
+    setIsProcessing(true)
+    try {
+      const targetSize = Math.min(OUTPUT_TARGET_SIZE, cropRect.width, cropRect.height)
+
+      const result = await processCroppedImage({
+        imageSrc: imageUri,
+        crop: cropRect,
+        imageWidth: imageDimensions.width,
+        imageHeight: imageDimensions.height,
+        flipHorizontal,
+        flipVertical,
+        mimeType: resolvedMimeType,
+        targetSize,
+        maxBytes: MAX_FILE_BYTES,
+      })
+
+      onCropComplete(result.dataUrl)
+      onOpenChange(false)
+    } catch (err) {
+      console.error('Image processing error:', err)
+      const message = err instanceof Error ? err.message : ERROR_MESSAGES.processingFailed
+      setError(message)
+      onError?.(message)
+    } finally {
+      setIsProcessing(false)
+    }
+  }, [
+    cropRect,
+    flipHorizontal,
+    flipVertical,
+    imageDimensions.height,
+    imageDimensions.width,
+    imageLoaded,
+    imageUri,
+    onCropComplete,
+    onError,
+    onOpenChange,
+    resolvedMimeType,
+  ])
+
+  const saveButtonDisabled = !imageLoaded || isProcessing
+
+  useEffect(() => {
+    if (!open || !imageLoaded) {
+      return
+    }
+    if (Platform.OS === 'web') {
+      const node = firstControlRef.current as HTMLElement | null
+      node?.focus?.()
+    }
+  }, [open, imageLoaded])
+
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !open) {
+      return
+    }
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        onOpenChange(false)
+      }
+      if (!isProcessing && (event.key === '+' || event.key === '=')) {
+        event.preventDefault()
+        handleZoomIn()
+      }
+      if (!isProcessing && (event.key === '-' || event.key === '_')) {
+        event.preventDefault()
+        handleZoomOut()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [open, onOpenChange, isProcessing, handleZoomIn, handleZoomOut])
+
+  const renderControls = () => {
+    const previewStyle: CSSProperties | ImageStyle =
+      Platform.OS === 'web'
+        ? {
+            position: 'absolute',
+            left: previewLeft,
+            top: previewTop,
+            transform: getWebTransform(
+              previewImageWidth,
+              previewImageHeight,
+              flipHorizontal,
+              flipVertical
+            ),
+          }
+        : {
+            position: 'absolute',
+            left: previewLeft,
+            top: previewTop,
+            transform: getNativeTransform(
+              previewImageWidth,
+              previewImageHeight,
+              flipHorizontal,
+              flipVertical
+            ),
+          }
+
+    return (
+      <>
+        <Circle
+          size={PREVIEW_SIZE}
+          overflow="hidden"
+          borderWidth={2}
+          borderColor="$blue8"
+          shadowColor="$shadowColor"
+          shadowOffset={{ width: 0, height: 2 }}
+          shadowOpacity={0.3}
+          shadowRadius={6}
+          aria-role="image"
+          aria-label="Preview of cropped avatar"
+        >
+          <TamaguiImage
+            source={{ uri: imageUri }}
+            width={previewImageWidth}
+            height={previewImageHeight}
+            style={previewStyle}
+          />
+          <View
+            position="absolute"
+            rounded={PREVIEW_SIZE / 2}
+            borderWidth={1}
+            borderColor="rgba(255,255,255,0.35)"
+            width="100%"
+            height="100%"
+            pointerEvents="none"
+          />
+        </Circle>
+
+        <XStack gap="$2" items="center">
+          <Button
+            ref={firstControlRef}
+            size="$2"
+            icon={ZoomOut}
+            onPress={handleZoomOut}
+            disabled={zoom <= MIN_ZOOM || isProcessing}
+            variant="outlined"
+            aria-role="button"
+            aria-label="Zoom out"
+          />
+          <Text fontSize="$2" color="$color11" minW={60} text="center">
+            {Math.round(zoom * 100)}%
+          </Text>
+          <Button
+            size="$2"
+            icon={ZoomIn}
+            onPress={handleZoomIn}
+            disabled={zoom >= MAX_ZOOM || isProcessing}
+            variant="outlined"
+            aria-role="button"
+            aria-label="Zoom in"
+          />
+          <Button
+            size="$2"
+            icon={RotateCcw}
+            onPress={handleZoomReset}
+            disabled={isProcessing}
+            variant="outlined"
+            aria-role="button"
+            aria-label="Reset zoom"
+          >
+            Reset
+          </Button>
+        </XStack>
+
+        <XStack gap="$2">
+          <Button
+            size="$2"
+            variant="outlined"
+            theme={flipHorizontal ? 'info' : undefined}
+            bg={flipHorizontal ? '$blue4' : '$background'}
+            borderColor={flipHorizontal ? '$blue7' : '$borderColor'}
+            onPress={toggleFlipHorizontal}
+            icon={FlipHorizontal}
+            disabled={isProcessing}
+            aria-role="button"
+            aria-label={flipHorizontal ? 'Disable horizontal flip' : 'Flip image horizontally'}
+          />
+          <Button
+            size="$2"
+            variant="outlined"
+            theme={flipVertical ? 'info' : undefined}
+            bg={flipVertical ? '$blue4' : '$background'}
+            borderColor={flipVertical ? '$blue7' : '$borderColor'}
+            onPress={toggleFlipVertical}
+            icon={FlipVertical}
+            disabled={isProcessing}
+            aria-role="button"
+            aria-label={flipVertical ? 'Disable vertical flip' : 'Flip image vertically'}
+          />
+        </XStack>
+      </>
+    )
+  }
+
   if (isMobile) {
     return (
       <Sheet modal open={open} onOpenChange={onOpenChange} snapPoints={[90]} dismissOnSnapToBottom>
@@ -552,16 +690,23 @@ export function AvatarCropModal({
             <Text fontSize="$6" fontWeight="700" flex={1}>
               Crop Avatar
             </Text>
-            <Button size="$3" circular chromeless icon={X} onPress={() => onOpenChange(false)} />
+            <Button
+              size="$3"
+              circular
+              chromeless
+              icon={X}
+              onPress={() => onOpenChange(false)}
+              disabled={isProcessing}
+            />
           </XStack>
 
           <YStack p="$4" gap="$4" flex={1}>
             {error ? (
               <YStack items="center" justify="center" gap="$3" flex={1}>
-                <Text fontSize="$4" color="$red10" textAlign="center" fontWeight="600">
+                <Text fontSize="$4" color="$red10" text="center" fontWeight="600">
                   Error
                 </Text>
-                <Text fontSize="$3" color="$color11" textAlign="center">
+                <Text fontSize="$3" color="$color11" text="center">
                   {error}
                 </Text>
                 <Button variant="outlined" onPress={() => onOpenChange(false)}>
@@ -569,122 +714,166 @@ export function AvatarCropModal({
                 </Button>
               </YStack>
             ) : imageLoaded ? (
-              <YStack flex={1} items="center" justify="center" gap="$4">
-                <Text fontSize="$3" color="$color11" textAlign="center">
-                  Pinch to zoom • Drag to position
-                </Text>
+              <YStack flex={1} items="center" justify="center" gap="$4" width="100%">
+                {(() => {
+                  const liveRegionProps =
+                    Platform.OS === 'web'
+                      ? ({
+                          'aria-live': 'polite',
+                          'aria-atomic': 'true',
+                        } as const)
+                      : ({ accessibilityLiveRegion: 'polite' } as const)
 
-                {/* Zoom controls */}
-                <XStack gap="$2" items="center">
-                  <Button
-                    size="$2"
-                    icon={ZoomOut}
-                    onPress={handleZoomOut}
-                    disabled={zoom <= minZoom}
-                    variant="outlined"
-                  />
-                  <Text fontSize="$2" color="$color11" minWidth={60} textAlign="center">
-                    {Math.round(zoom * 100)}%
-                  </Text>
-                  <Button
-                    size="$2"
-                    icon={ZoomIn}
-                    onPress={handleZoomIn}
-                    disabled={zoom >= maxZoom}
-                    variant="outlined"
-                  />
-                  <Button size="$2" icon={RotateCcw} onPress={handleZoomReset} variant="outlined">
-                    Reset
-                  </Button>
-                </XStack>
-
-                {/* Image container with crop overlay */}
-                <GestureDetector gesture={combinedGesture || undefined}>
-                  <View
-                    position="relative"
-                    width={displaySize}
-                    height={displaySize}
-                    bg="$color2"
-                    borderRadius="$4"
-                    overflow="hidden"
-                  >
-                    {/* Image */}
-                    <Image
-                      source={{ uri: imageUri }}
-                      width={scaledImageWidth}
-                      height={scaledImageHeight}
-                      position="absolute"
-                      left={cropAreaTopLeftX - cropPosition.x * scale}
-                      top={cropAreaTopLeftY - cropPosition.y * scale}
-                    />
-
-                    {/* Dark overlay outside crop area - 4 sides */}
-                    {/* Top */}
+                  const liveRegion = (
                     <View
-                      position="absolute"
-                      top={0}
-                      left={0}
+                      {...liveRegionProps}
+                      style={{
+                        position: 'absolute',
+                        width: 1,
+                        height: 1,
+                        overflow: 'hidden',
+                        left: -9999,
+                        top: -9999,
+                      }}
+                    >
+                      <Text>{liveAnnouncement}</Text>
+                    </View>
+                  )
+
+                  const controls = renderControls()
+
+                  const cropContent = (
+                    <View
+                      position="relative"
                       width={displaySize}
-                      height={(displaySize - cropDisplaySize) / 2}
-                      bg="rgba(0, 0, 0, 0.5)"
-                      pointerEvents="none"
-                    />
-                    {/* Bottom */}
-                    <View
-                      position="absolute"
-                      bottom={0}
-                      left={0}
-                      width={displaySize}
-                      height={(displaySize - cropDisplaySize) / 2}
-                      bg="rgba(0, 0, 0, 0.5)"
-                      pointerEvents="none"
-                    />
-                    {/* Left */}
-                    <View
-                      position="absolute"
-                      top={(displaySize - cropDisplaySize) / 2}
-                      left={0}
-                      width={(displaySize - cropDisplaySize) / 2}
-                      height={cropDisplaySize}
-                      bg="rgba(0, 0, 0, 0.5)"
-                      pointerEvents="none"
-                    />
-                    {/* Right */}
-                    <View
-                      position="absolute"
-                      top={(displaySize - cropDisplaySize) / 2}
-                      right={0}
-                      width={(displaySize - cropDisplaySize) / 2}
-                      height={cropDisplaySize}
-                      bg="rgba(0, 0, 0, 0.5)"
-                      pointerEvents="none"
-                    />
+                      height={displaySize}
+                      bg="$color2"
+                      rounded="$4"
+                      overflow="hidden"
+                      aria-role="image"
+                      aria-label="Avatar crop area. Drag to reposition and pinch to zoom."
+                    >
+                      <TamaguiImage
+                        source={{ uri: imageUri }}
+                        width={scaledImageWidth}
+                        height={scaledImageHeight}
+                        style={{
+                          position: 'absolute',
+                          left: cropAreaTopLeft.x - cropPosition.x * scale,
+                          top: cropAreaTopLeft.y - cropPosition.y * scale,
+                          transform: getNativeTransform(
+                            scaledImageWidth,
+                            scaledImageHeight,
+                            flipHorizontal,
+                            flipVertical
+                          ),
+                        }}
+                      />
 
-                    {/* Crop border */}
-                    <View
-                      position="absolute"
-                      left={(displaySize - cropDisplaySize) / 2}
-                      top={(displaySize - cropDisplaySize) / 2}
-                      width={cropDisplaySize}
-                      height={cropDisplaySize}
-                      borderWidth={2}
-                      borderColor="$blue10"
-                      borderRadius="$2"
-                      shadowColor="$shadowColor"
-                      shadowOffset={{ width: 0, height: 2 }}
-                      shadowOpacity={0.3}
-                      shadowRadius={8}
-                      pointerEvents="none"
-                    />
-                  </View>
-                </GestureDetector>
+                      <View
+                        position="absolute"
+                        t={0}
+                        l={0}
+                        width={displaySize}
+                        height={(displaySize - cropDisplaySize) / 2}
+                        bg="rgba(0, 0, 0, 0.5)"
+                        pointerEvents="none"
+                      />
+                      <View
+                        position="absolute"
+                        b={0}
+                        l={0}
+                        width={displaySize}
+                        height={(displaySize - cropDisplaySize) / 2}
+                        bg="rgba(0, 0, 0, 0.5)"
+                        pointerEvents="none"
+                      />
+                      <View
+                        position="absolute"
+                        t={(displaySize - cropDisplaySize) / 2}
+                        l={0}
+                        width={(displaySize - cropDisplaySize) / 2}
+                        height={cropDisplaySize}
+                        bg="rgba(0, 0, 0, 0.5)"
+                        pointerEvents="none"
+                      />
+                      <View
+                        position="absolute"
+                        t={(displaySize - cropDisplaySize) / 2}
+                        r={0}
+                        width={(displaySize - cropDisplaySize) / 2}
+                        height={cropDisplaySize}
+                        bg="rgba(0, 0, 0, 0.5)"
+                        pointerEvents="none"
+                      />
 
-                <XStack gap="$3" w="100%">
+                      <View
+                        position="absolute"
+                        l={(displaySize - cropDisplaySize) / 2}
+                        t={(displaySize - cropDisplaySize) / 2}
+                        width={cropDisplaySize}
+                        height={cropDisplaySize}
+                        borderWidth={2}
+                        borderColor="$blue10"
+                        rounded="$2"
+                        shadowColor="$shadowColor"
+                        shadowOffset={{ width: 0, height: 2 }}
+                        shadowOpacity={0.3}
+                        shadowRadius={8}
+                        pointerEvents="none"
+                      />
+                    </View>
+                  )
+
+                  const cropper =
+                    combinedGesture !== null ? (
+                      <GestureDetector gesture={combinedGesture}>{cropContent}</GestureDetector>
+                    ) : (
+                      cropContent
+                    )
+
+                  if (isLandscape) {
+                    return (
+                      <>
+                        {liveRegion}
+                        <XStack gap="$4" width="100%" justify="center" items="center">
+                          {cropper}
+                          <YStack gap="$4" maxW={280} items="center">
+                            <Text fontSize="$3" color="$color11" text="center">
+                              Pinch to zoom • Drag to position
+                            </Text>
+                            {controls}
+                          </YStack>
+                        </XStack>
+                      </>
+                    )
+                  }
+
+                  return (
+                    <>
+                      {liveRegion}
+                      <Text fontSize="$3" color="$color11" text="center">
+                        Pinch to zoom • Drag to position
+                      </Text>
+                      {controls}
+                      {cropper}
+                    </>
+                  )
+                })()}
+
+                <XStack gap="$3" width="100%">
                   <Button flex={1} variant="outlined" onPress={() => onOpenChange(false)}>
                     Cancel
                   </Button>
-                  <Button flex={1} theme="blue" onPress={handleCrop} icon={Check}>
-                    Crop & Use
+                  <Button
+                    flex={1}
+                    theme="info"
+                    onPress={handleSave}
+                    icon={Check}
+                    disabled={saveButtonDisabled}
+                    opacity={saveButtonDisabled ? 0.6 : 1}
+                  >
+                    {isProcessing ? 'Processing…' : 'Save'}
                   </Button>
                 </XStack>
               </YStack>
@@ -699,7 +888,6 @@ export function AvatarCropModal({
     )
   }
 
-  // Desktop: Render as Dialog
   return (
     <Dialog modal open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
@@ -742,17 +930,17 @@ export function AvatarCropModal({
               Crop Avatar
             </Dialog.Title>
             <Dialog.Close asChild>
-              <Button size="$3" circular chromeless icon={X} />
+              <Button size="$3" circular chromeless icon={X} disabled={isProcessing} />
             </Dialog.Close>
           </XStack>
 
           <YStack p="$4" gap="$4" items="center">
             {error ? (
               <YStack items="center" justify="center" gap="$3" minH={displaySize}>
-                <Text fontSize="$4" color="$red10" textAlign="center" fontWeight="600">
+                <Text fontSize="$4" color="$red10" text="center" fontWeight="600">
                   Error
                 </Text>
-                <Text fontSize="$3" color="$color11" textAlign="center">
+                <Text fontSize="$3" color="$color11" text="center">
                   {error}
                 </Text>
                 <Button variant="outlined" onPress={() => onOpenChange(false)}>
@@ -761,35 +949,28 @@ export function AvatarCropModal({
               </YStack>
             ) : imageLoaded ? (
               <>
-                <Text fontSize="$3" color="$color11" textAlign="center">
+                <View
+                  {...(Platform.OS === 'web'
+                    ? { 'aria-live': 'polite', 'aria-atomic': 'true' }
+                    : { accessibilityLiveRegion: 'polite' as const })}
+                  style={{
+                    position: 'absolute',
+                    width: 1,
+                    height: 1,
+                    overflow: 'hidden',
+                    left: -9999,
+                    top: -9999,
+                  }}
+                >
+                  <Text>{liveAnnouncement}</Text>
+                </View>
+                <Text fontSize="$3" color="$color11" text="center">
                   Drag to position • Scroll to zoom
                 </Text>
 
-                {/* Zoom controls */}
-                <XStack gap="$2" items="center">
-                  <Button
-                    size="$2"
-                    icon={ZoomOut}
-                    onPress={handleZoomOut}
-                    disabled={zoom <= minZoom}
-                    variant="outlined"
-                  />
-                  <Text fontSize="$2" color="$color11" minWidth={60} textAlign="center">
-                    {Math.round(zoom * 100)}%
-                  </Text>
-                  <Button
-                    size="$2"
-                    icon={ZoomIn}
-                    onPress={handleZoomIn}
-                    disabled={zoom >= maxZoom}
-                    variant="outlined"
-                  />
-                  <Button size="$2" icon={RotateCcw} onPress={handleZoomReset} variant="outlined">
-                    Reset
-                  </Button>
-                </XStack>
+                {renderControls()}
 
-                {/* @ts-ignore - ref for web drag handling */}
+                {/* @ts-ignore ref for web drag handling */}
                 <div
                   ref={containerRef}
                   style={{
@@ -801,93 +982,89 @@ export function AvatarCropModal({
                     overflow: 'hidden',
                     cursor: isDragging ? 'grabbing' : 'grab',
                   }}
+                  role="img"
+                  aria-label="Avatar crop area. Drag to reposition and scroll to zoom."
                   onMouseDown={handleMouseDown}
                   onMouseMove={handleMouseMove}
                   onMouseUp={handleMouseUp}
                   onMouseLeave={handleMouseUp}
                   onWheel={handleWheel}
                 >
-                  {/* Hidden canvas for cropping */}
-                  <canvas ref={canvasRef} style={{ display: 'none' }} />
-
-                  {/* Image */}
                   {imageRef.current && (
                     <img
                       src={imageUri}
                       alt="Crop preview"
                       style={{
                         position: 'absolute',
-                        // Position image so its top-left corner aligns with crop area's top-left
-                        // when cropPosition is (0, 0)
-                        left: `${cropAreaTopLeftX - cropPosition.x * scale}px`,
-                        top: `${cropAreaTopLeftY - cropPosition.y * scale}px`,
+                        left: formatPixels(cropAreaTopLeft.x - cropPosition.x * scale),
+                        top: formatPixels(cropAreaTopLeft.y - cropPosition.y * scale),
                         width: scaledImageWidth,
                         height: scaledImageHeight,
                         pointerEvents: 'none',
                         userSelect: 'none',
                         transition: isDragging ? 'none' : 'left 0.1s ease-out, top 0.1s ease-out',
+                        transform: getWebTransform(
+                          scaledImageWidth,
+                          scaledImageHeight,
+                          flipHorizontal,
+                          flipVertical
+                        ),
                       }}
                     />
                   )}
 
-                  {/* Dark overlay outside crop area - 4 sides for square mask */}
-                  {/* Top overlay */}
                   <div
                     style={{
                       position: 'absolute',
                       top: 0,
                       left: 0,
                       width: '100%',
-                      height: `${(displaySize - cropDisplaySize) / 2}px`,
+                      height: formatPixels((displaySize - cropDisplaySize) / 2),
                       backgroundColor: 'rgba(0, 0, 0, 0.5)',
                       pointerEvents: 'none',
                     }}
                   />
-                  {/* Bottom overlay */}
                   <div
                     style={{
                       position: 'absolute',
                       bottom: 0,
                       left: 0,
                       width: '100%',
-                      height: `${(displaySize - cropDisplaySize) / 2}px`,
+                      height: formatPixels((displaySize - cropDisplaySize) / 2),
                       backgroundColor: 'rgba(0, 0, 0, 0.5)',
                       pointerEvents: 'none',
                     }}
                   />
-                  {/* Left overlay */}
                   <div
                     style={{
                       position: 'absolute',
-                      top: `${(displaySize - cropDisplaySize) / 2}px`,
+                      top: formatPixels((displaySize - cropDisplaySize) / 2),
                       left: 0,
-                      width: `${(displaySize - cropDisplaySize) / 2}px`,
-                      height: `${cropDisplaySize}px`,
+                      width: formatPixels((displaySize - cropDisplaySize) / 2),
+                      height: formatPixels(cropDisplaySize),
                       backgroundColor: 'rgba(0, 0, 0, 0.5)',
                       pointerEvents: 'none',
                     }}
                   />
-                  {/* Right overlay */}
                   <div
                     style={{
                       position: 'absolute',
-                      top: `${(displaySize - cropDisplaySize) / 2}px`,
+                      top: formatPixels((displaySize - cropDisplaySize) / 2),
                       right: 0,
-                      width: `${(displaySize - cropDisplaySize) / 2}px`,
-                      height: `${cropDisplaySize}px`,
+                      width: formatPixels((displaySize - cropDisplaySize) / 2),
+                      height: formatPixels(cropDisplaySize),
                       backgroundColor: 'rgba(0, 0, 0, 0.5)',
                       pointerEvents: 'none',
                     }}
                   />
 
-                  {/* Crop overlay border - fixed size */}
                   <div
                     style={{
                       position: 'absolute',
                       left: '50%',
                       top: '50%',
-                      width: cropDisplaySize,
-                      height: cropDisplaySize,
+                      width: formatPixels(cropDisplaySize),
+                      height: formatPixels(cropDisplaySize),
                       transform: 'translate(-50%, -50%)',
                       border: '2px solid var(--blue10)',
                       borderRadius: 'var(--radius-2)',
@@ -898,14 +1075,21 @@ export function AvatarCropModal({
                   />
                 </div>
 
-                <XStack gap="$3" w="100%">
+                <XStack gap="$3" width="100%">
                   <Dialog.Close asChild>
-                    <Button flex={1} variant="outlined">
+                    <Button flex={1} variant="outlined" disabled={isProcessing}>
                       Cancel
                     </Button>
                   </Dialog.Close>
-                  <Button flex={1} theme="blue" onPress={handleCrop} icon={Check}>
-                    Crop & Use
+                  <Button
+                    flex={1}
+                    theme="info"
+                    onPress={handleSave}
+                    icon={Check}
+                    disabled={saveButtonDisabled}
+                    opacity={saveButtonDisabled ? 0.6 : 1}
+                  >
+                    {isProcessing ? 'Processing…' : 'Save'}
                   </Button>
                 </XStack>
               </>

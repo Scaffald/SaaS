@@ -1,9 +1,9 @@
 // @ts-nocheck
 import React from 'react'
 import { Paragraph, Text, XStack, YStack } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
-import { ExampleCard } from '../_components/ExampleCard'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
+import { ExampleCard } from '@app/styleguide'
 
 const items = [
   { id: 1, name: 'Morgan Diaz', role: 'Site Supervisor', status: 'Online' },
@@ -53,9 +53,9 @@ export default function ListsPage() {
                   width={48}
                   height={48}
                   borderRadius={999}
-                  backgroundColor="$color4"
+                  bg="$color4"
                   alignItems="center"
-                  justifyContent="center"
+                  justify="center"
                 >
                   <Text fontSize={18} fontWeight="600" color="$color11">
                     {item.name[0]}

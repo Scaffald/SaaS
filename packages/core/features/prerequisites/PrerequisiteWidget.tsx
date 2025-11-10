@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useForm, Controller } from 'react-hook-form'
+import { useRouter } from 'expo-router'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   YStack,
@@ -14,7 +15,8 @@ import {
   Separator,
 } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
-import { DashboardWidget, CustomCheckbox } from '@app/ui'
+import { DashboardWidget, CustomCheckbox, UIButton as StyledButton, spacing } from '@app/ui'
+import { ResumeUploadButton, ResumeUploadModal } from '@app/core/features/resume'
 import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
 import {
@@ -39,6 +41,8 @@ import {
 export function PrerequisiteWidget() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const toast = useToastController()
+  const router = useRouter()
+  const [resumeModalOpen, setResumeModalOpen] = useState(false)
 
   // Check prerequisites status
   const {
@@ -46,6 +50,10 @@ export function PrerequisiteWidget() {
     isLoading: isCheckingStatus,
     refetch: refetchStatus,
   } = api.prerequisites.check.useQuery()
+
+  const { data: resumeStatus } = api.resume.hasUploaded.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  })
 
   // Fetch industries for dropdown
   const { data: industriesData, isLoading: isLoadingIndustries } =
@@ -81,19 +89,41 @@ export function PrerequisiteWidget() {
     mode: 'onChange',
   })
 
+  const previousPrefillHashRef = useRef<string | null>(null)
+
   // Populate form with existing data when loaded
   useEffect(() => {
-    if (statusData?.data) {
-      const data = statusData.data
-      reset({
-        first_name: data.first_name || '',
-        last_name: data.last_name || '',
-        address: data.address || prerequisitesDefaults.address,
-        user_types: data.user_types || [],
-        industry_id: data.industry_id || '',
-      })
+    if (!statusData?.data) {
+      return
     }
-  }, [statusData, reset])
+
+    const prefillData: PrerequisitesFormData = {
+      first_name: statusData.data.first_name ?? '',
+      last_name: statusData.data.last_name ?? '',
+      address: {
+        street: statusData.data.address?.street ?? prerequisitesDefaults.address.street,
+        city: statusData.data.address?.city ?? prerequisitesDefaults.address.city,
+        state: statusData.data.address?.state ?? prerequisitesDefaults.address.state,
+        zip: statusData.data.address?.zip ?? prerequisitesDefaults.address.zip,
+        country: statusData.data.address?.country ?? prerequisitesDefaults.address.country,
+        latitude: statusData.data.address?.latitude,
+        longitude: statusData.data.address?.longitude,
+      },
+      user_types: statusData.data.user_types ?? [],
+      industry_id: statusData.data.industry_id ?? '',
+      accepts_privacy_policy: statusData.data.accepts_privacy_policy ?? false,
+      accepts_terms_of_service: statusData.data.accepts_terms_of_service ?? false,
+    }
+
+    const prefillHash = JSON.stringify(prefillData)
+
+    if (previousPrefillHashRef.current === prefillHash) {
+      return
+    }
+
+    previousPrefillHashRef.current = prefillHash
+    reset(prefillData)
+  }, [reset, statusData?.data])
 
   // Handle form submission
   const onSubmit = async (data: PrerequisitesFormData) => {
@@ -109,8 +139,16 @@ export function PrerequisiteWidget() {
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
-        <YStack gap="$2">
+      <YStack gap={spacing.md}>
+        <ResumeUploadModal
+          open={resumeModalOpen}
+          onOpenChange={setResumeModalOpen}
+          onUploadComplete={(resumeId) => {
+            setResumeModalOpen(false)
+            router.push(`/dashboard/profile/resume/review?resumeId=${resumeId}`)
+          }}
+        />
+        <YStack gap={spacing.xs}>
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Complete Your Profile
           </Text>
@@ -120,8 +158,8 @@ export function PrerequisiteWidget() {
         </YStack>
 
         {isCheckingStatus ? (
-          <YStack gap="$3" items="center" py="$8">
-            <Spinner size="large" />
+          <YStack gap={spacing.sm} items="center" py={spacing['2xl']}>
+            <Spinner size="large" color="$blue7" />
             <Text color="$color11">Loading...</Text>
           </YStack>
         ) : (
@@ -136,7 +174,6 @@ export function PrerequisiteWidget() {
                     control={control}
                     render={({ field }) => (
                       <Input
-                        data-testid="prereq-first-name-input"
                         placeholder="First name"
                         value={field.value}
                         onChangeText={field.onChange}
@@ -145,7 +182,7 @@ export function PrerequisiteWidget() {
                     )}
                   />
                   {errors.first_name && (
-                    <Text data-testid="first-name-error" color="$red10" fontSize="$2">
+                    <Text color="$red10" fontSize="$2">
                       {errors.first_name.message}
                     </Text>
                   )}
@@ -158,7 +195,6 @@ export function PrerequisiteWidget() {
                     control={control}
                     render={({ field }) => (
                       <Input
-                        data-testid="prereq-last-name-input"
                         placeholder="Last name"
                         value={field.value}
                         onChangeText={field.onChange}
@@ -167,7 +203,7 @@ export function PrerequisiteWidget() {
                     )}
                   />
                   {errors.last_name && (
-                    <Text data-testid="last-name-error" color="$red10" fontSize="$2">
+                    <Text color="$red10" fontSize="$2">
                       {errors.last_name.message}
                     </Text>
                   )}
@@ -176,6 +212,21 @@ export function PrerequisiteWidget() {
             </YStack>
 
             <Separator />
+
+            {!resumeStatus?.hasUploaded && (
+              <>
+                <YStack gap="$3">
+                  <Text fontWeight="600">Optional: Import Your Resume</Text>
+                  <Text fontSize="$2" color="$color11">
+                    Upload your resume to automatically fill in experience, education, and skills.
+                    You can skip this step and continue manually at any time.
+                  </Text>
+                  <ResumeUploadButton onPress={() => setResumeModalOpen(true)} size="$3" />
+                </YStack>
+
+                <Separator />
+              </>
+            )}
 
             {/* 2. Address */}
             <YStack gap="$3">
@@ -192,7 +243,7 @@ export function PrerequisiteWidget() {
                 error={errors.address?.street?.message || errors.address?.city?.message}
               />
               {errors.address && (
-                <Text data-testid="address-error" color="$red10" fontSize="$2">
+                <Text color="$red10" fontSize="$2">
                   {errors.address.street?.message ||
                     errors.address.city?.message ||
                     errors.address.state?.message ||
@@ -217,7 +268,6 @@ export function PrerequisiteWidget() {
                         gap="$3"
                         items="center"
                         pressStyle={{ opacity: 0.7 }}
-                        data-testid={`prereq-user-type-${option.value}-checkbox`}
                       >
                         <CustomCheckbox
                           checked={field.value?.includes(option.value as UserType)}
@@ -251,7 +301,7 @@ export function PrerequisiteWidget() {
                 )}
               />
               {errors.user_types && (
-                <Text data-testid="user-types-error" color="$red10" fontSize="$2">
+                <Text color="$red10" fontSize="$2">
                   {errors.user_types.message}
                 </Text>
               )}
@@ -273,7 +323,7 @@ export function PrerequisiteWidget() {
                         <Text color="$color11">Loading industries...</Text>
                       </XStack>
                     ) : (
-                      <Select data-testid="prereq-industry-select" value={field.value} onValueChange={field.onChange} size="$4">
+                      <Select value={field.value} onValueChange={field.onChange} size="$4">
                         <Select.Trigger width="100%">
                           <Select.Value placeholder="Select your industry" />
                         </Select.Trigger>
@@ -322,7 +372,7 @@ export function PrerequisiteWidget() {
                 )}
               />
               {errors.industry_id && (
-                <Text data-testid="industry-error" color="$red10" fontSize="$2">
+                <Text color="$red10" fontSize="$2">
                   {errors.industry_id.message}
                 </Text>
               )}
@@ -340,7 +390,7 @@ export function PrerequisiteWidget() {
                 control={control}
                 render={({ field }) => (
                   <YStack gap="$2">
-                    <XStack gap="$3" items="center" pressStyle={{ opacity: 0.7 }} data-testid="prereq-privacy-checkbox">
+                    <XStack gap="$3" items="center" pressStyle={{ opacity: 0.7 }}>
                       <CustomCheckbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
@@ -349,7 +399,7 @@ export function PrerequisiteWidget() {
                       <Text flex={1} onPress={() => field.onChange(!field.value)}>
                         I accept the{' '}
                         <Text
-                          color="$blue10"
+                          color="$blue7"
                           textDecorationLine="underline"
                           onPress={(e) => {
                             e.stopPropagation()
@@ -363,7 +413,7 @@ export function PrerequisiteWidget() {
                       </Text>
                     </XStack>
                     {errors.accepts_privacy_policy && (
-                      <Text data-testid="privacy-error" color="$red10" fontSize="$2">
+                      <Text color="$red10" fontSize="$2">
                         {errors.accepts_privacy_policy.message}
                       </Text>
                     )}
@@ -377,7 +427,7 @@ export function PrerequisiteWidget() {
                 control={control}
                 render={({ field }) => (
                   <YStack gap="$2">
-                    <XStack gap="$3" items="center" pressStyle={{ opacity: 0.7 }} data-testid="prereq-terms-checkbox">
+                    <XStack gap="$3" items="center" pressStyle={{ opacity: 0.7 }}>
                       <CustomCheckbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
@@ -386,7 +436,7 @@ export function PrerequisiteWidget() {
                       <Text flex={1} onPress={() => field.onChange(!field.value)}>
                         I accept the{' '}
                         <Text
-                          color="$blue10"
+                          color="$blue7"
                           textDecorationLine="underline"
                           onPress={(e) => {
                             e.stopPropagation()
@@ -400,7 +450,7 @@ export function PrerequisiteWidget() {
                       </Text>
                     </XStack>
                     {errors.accepts_terms_of_service && (
-                      <Text data-testid="terms-error" color="$red10" fontSize="$2">
+                      <Text color="$red10" fontSize="$2">
                         {errors.accepts_terms_of_service.message}
                       </Text>
                     )}
@@ -410,24 +460,23 @@ export function PrerequisiteWidget() {
             </YStack>
 
             {/* Submit Button */}
-            <Button
-              data-testid="prereq-submit-button"
+            <StyledButton
+              variant="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={isSubmitting}
               opacity={isSubmitting ? 0.5 : 1}
               size="$5"
-              themeInverse
-              mt="$2"
+              mt={spacing.xs}
             >
               {isSubmitting ? (
-                <XStack gap="$2" items="center">
-                  <Spinner size="small" color="$color12" />
-                  <Button.Text>Completing...</Button.Text>
+                <XStack gap={spacing.xs} items="center">
+                  <Spinner size="small" color="white" />
+                  <StyledButton.Text>Completing...</StyledButton.Text>
                 </XStack>
               ) : (
-                <Button.Text>Complete Profile</Button.Text>
+                <StyledButton.Text>Complete Profile</StyledButton.Text>
               )}
-            </Button>
+            </StyledButton>
           </>
         )}
       </YStack>

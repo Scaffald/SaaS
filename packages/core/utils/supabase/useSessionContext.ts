@@ -1,5 +1,28 @@
 import { useContext } from 'react'
-import { SessionContext } from '@app/core/provider/auth/AuthProvider'
+import { SessionContext, type SessionContextHelper } from '@app/core/provider/auth/AuthProvider'
+import { supabase } from '@app/core/utils/supabase/client'
+
+const fallbackSessionContext: SessionContextHelper = {
+  session: null,
+  error: null,
+  isLoading: true,
+  supabaseClient: supabase,
+  signOut: async () => {
+    if (__DEV__) {
+      console.warn('[useSessionContext] signOut called without SessionContext provider')
+    }
+  },
+  clearAuth: async () => {
+    if (__DEV__) {
+      console.warn('[useSessionContext] clearAuth called without SessionContext provider')
+    }
+  },
+  refreshSession: async () => {
+    if (__DEV__) {
+      console.warn('[useSessionContext] refreshSession called without SessionContext provider')
+    }
+  },
+}
 
 /**
  * Unified useSessionContext hook that works with our unified AuthProvider
@@ -9,7 +32,13 @@ export const useSessionContext = () => {
   const context = useContext(SessionContext)
 
   if (!context) {
-    throw new Error('useSessionContext must be used within a SessionContext provider')
+    if (__DEV__) {
+      console.warn(
+        '[useSessionContext] SessionContext provider missing. Returning fallback context to avoid runtime crash.'
+      )
+    }
+
+    return fallbackSessionContext
   }
 
   return context

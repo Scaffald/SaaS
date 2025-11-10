@@ -14,7 +14,8 @@
     "../ui/src",
     "../api/src",
     "../../supabase/types.ts",
-    "../../supabase/helpers.ts"
+    "../../supabase/helpers.ts",
+    "../../types/custom-modules.d.ts"
   ],
   "exclude": [
     "../../supabase/functions/**/*",
@@ -29,7 +30,8 @@
       "@app/core": ["."],
       "@app/core/*": ["./*"],
       "@app/supabase": ["../../supabase"],
-      "@app/supabase/*": ["../../supabase/*"]
+      "@app/supabase/*": ["../../supabase/*"],
+      "expo-clipboard": ["../../types/expo-clipboard.d.ts"]
     },
     "plugins": []
   },

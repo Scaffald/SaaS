@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { phoneNumberSchema } from "@app/ui";
+import { phoneNumberSchema } from "@app/schemas/common/phone";
 
 /**
  * General Profile Form Schema

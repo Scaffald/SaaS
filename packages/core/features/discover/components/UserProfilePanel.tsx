@@ -1,9 +1,17 @@
 import { YStack, XStack, Text, Button, Card, Avatar, Spinner } from 'tamagui'
 import { MapPin, X, ExternalLink, User } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
+import { useToastController } from '@tamagui/toast'
 import { api } from '@app/core/utils/api'
 import { RouteBuilder } from '@app/core/constants/routes'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
+
+type PreviewSkill = {
+  csiSkillId?: string | null
+  onetOccupationId?: string | null
+  taxonomy?: string | null
+  proficiency: number
+}
 
 interface UserProfilePanelProps {
   /** User ID to display */
@@ -30,6 +38,7 @@ export function UserProfilePanel({
   position = { top: 16, right: 16 },
 }: UserProfilePanelProps) {
   const router = useRouter()
+  const toast = useToastController()
 
   // Fetch lightweight preview data
   const { data: preview, isLoading } = api.userProfile.getPreview.useQuery(
@@ -42,9 +51,16 @@ export function UserProfilePanel({
   }
 
   const handleViewProfile = () => {
-    if (userId) {
-      router.push(RouteBuilder.dashboardUser(userId))
+    if (!userId) return
+
+    try {
+      router.push(RouteBuilder.discoverWorkerDetail(userId))
       onOpenChange(false)
+    } catch (navigationError) {
+      console.error('Failed to navigate to worker profile', navigationError)
+      toast.show('Unable to load profile', {
+        message: 'Please try again.',
+      })
     }
   }
 
@@ -56,6 +72,7 @@ export function UserProfilePanel({
   const avatarUrl = preview?.avatarPath
     ? getStorageUrl('avatars', preview.avatarPath)
     : preview?.avatarUrl || null
+  const topSkills = (preview?.topSkills ?? []) as PreviewSkill[]
 
   return (
     <Card
@@ -139,13 +156,13 @@ export function UserProfilePanel({
           </XStack>
 
           {/* Top Skills */}
-          {preview.topSkills && preview.topSkills.length > 0 && (
+          {topSkills.length > 0 && (
             <YStack gap="$2">
               <Text fontSize="$2" fontWeight="600" color="$color11" textTransform="uppercase">
                 Top Skills
               </Text>
               <XStack gap="$2" flexWrap="wrap">
-                {preview.topSkills.slice(0, 3).map((skill) => (
+                {topSkills.slice(0, 3).map((skill) => (
                   <YStack
                     key={skill.csiSkillId || skill.onetOccupationId || skill.taxonomy}
                     bg="$color3"
@@ -160,7 +177,7 @@ export function UserProfilePanel({
                     </Text>
                   </YStack>
                 ))}
-                {preview.topSkills.length > 3 && (
+                {topSkills.length > 3 && (
                   <YStack
                     bg="$color3"
                     px="$2"
@@ -170,7 +187,7 @@ export function UserProfilePanel({
                     borderColor="$borderColor"
                   >
                     <Text fontSize="$2" color="$color11">
-                      +{preview.topSkills.length - 3} more
+                      +{topSkills.length - 3} more
                     </Text>
                   </YStack>
                 )}
@@ -182,7 +199,7 @@ export function UserProfilePanel({
           <XStack gap="$2" pt="$2">
             <Button
               flex={1}
-              theme="blue"
+              theme="info"
               onPress={handleViewProfile}
               icon={ExternalLink}
             >

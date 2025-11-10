@@ -1,8 +1,8 @@
 // @ts-nocheck
 import React from 'react'
 import { Paragraph, Text, XStack, YStack } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
 
 const utilities = [
   {
@@ -47,7 +47,7 @@ export default function UtilitiesPage() {
               borderColor="$color6"
               borderRadius="$4"
               padding="$4"
-              backgroundColor="$color2"
+              bg="$color2"
               gap={6}
             >
               <Text fontSize={14} fontWeight="600" color="$color11">
@@ -70,7 +70,7 @@ export default function UtilitiesPage() {
         <XStack gap="$2" flexWrap="wrap">
           {Array.from({ length: 8 }, (_, index) => index + 1).map((token) => (
             <YStack key={token} alignItems="center" gap={4}>
-              <YStack width={48} height={token * 4} backgroundColor="$color5" borderRadius="$2" />
+              <YStack width={48} height={token * 4} bg="$color5" borderRadius="$2" />
               <Text fontSize={12} color="$color10">
                 {'$'}
                 {token}

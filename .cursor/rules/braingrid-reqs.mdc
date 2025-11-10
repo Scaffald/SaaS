@@ -1,0 +1,12 @@
+---
+description: "BrainGrid requirement workflow standards"
+globs: ["docs/features/req-*.md"]
+alwaysApply: true
+---
+
+# BrainGrid Requirement Workflow
+
+- **Plan first**: Review the REQ, outline tasks, and surface clarifying questions with the team before coding.
+- **Confirm status**: When implementation starts, switch the BrainGrid REQ status to `IN_PROGRESS`.
+- **Work transparently**: Commit related code regularly and keep the associated BrainGrid tasks updated as progress is made.
+- **Close the loop**: After all work is complete, move the REQ into `REVIEW` and highlight anything that still needs attention.

@@ -12,37 +12,41 @@ export interface CheckboxProps {
   size?: 'small' | 'medium' | 'large'
   /** Optional test ID for testing */
   testID?: string
-  /** Optional label for accessibility */
-  accessibilityLabel?: string
 }
 
 const CheckboxContainer = styled(View, {
-  position: 'relative',
   cursor: 'pointer',
-  animation: '100ms',
+  animation: 'quick',
+  overflow: 'hidden',
+  items: 'center',
+  justify: 'center',
+  borderWidth: 1,
   variants: {
     size: {
       small: {
-        width: 16,
-        height: 16,
+        width: '$1',
+        height: '$1',
+        borderRadius: '$1',
       },
       medium: {
-        width: 20,
-        height: 20,
+        width: '$1',
+        height: '$1',
+        borderRadius: '$2',
       },
       large: {
-        width: 24,
-        height: 24,
+        width: '$2',
+        height: '$2',
+        borderRadius: '$2',
       },
     },
     checked: {
       true: {
-        bg: '$color10',
-        borderColor: '$color10',
+        bg: '$blue7',
+        borderColor: '$blue7',
       },
       false: {
         bg: 'transparent',
-        borderColor: '$color10',
+        borderColor: '$borderColor',
       },
     },
     disabled: {
@@ -56,8 +60,15 @@ const CheckboxContainer = styled(View, {
       },
     },
   } as const,
+  focusStyle: {
+    borderColor: '$blue7',
+    outlineColor: '$blue7',
+    outlineWidth: 2,
+    outlineStyle: 'solid',
+  },
   hoverStyle: {
     scale: 1.05,
+    borderColor: '$blue8',
   },
   pressStyle: {
     scale: 0.95,
@@ -65,28 +76,12 @@ const CheckboxContainer = styled(View, {
 })
 
 const CheckboxIcon = styled(View, {
-  position: 'absolute',
-  t: 0,
-  l: 0,
-  r: 0,
-  b: 0,
+  pointerEvents: 'none',
+  width: '100%',
+  height: '100%',
   items: 'center',
   justify: 'center',
   variants: {
-    size: {
-      small: {
-        width: 16,
-        height: 16,
-      },
-      medium: {
-        width: 20,
-        height: 20,
-      },
-      large: {
-        width: 24,
-        height: 24,
-      },
-    },
     checked: {
       true: {
         opacity: 1,
@@ -124,7 +119,6 @@ export function Checkbox({
   disabled = false,
   size = 'medium',
   testID,
-  accessibilityLabel,
 }: CheckboxProps) {
   const handlePress = () => {
     if (!disabled) {
@@ -138,13 +132,12 @@ export function Checkbox({
       disabled={disabled}
       size={size}
       onPress={handlePress}
-      aria-label={accessibilityLabel}
+      aria-role="checkbox"
+      aria-state={{ checked, disabled }}
       testID={testID}
-      borderWidth={2}
-      rounded={size === 'small' ? 2 : size === 'medium' ? 3 : 4}
     >
-      <CheckboxIcon checked={checked} size={size}>
-        <Check size={size === 'small' ? 10 : size === 'medium' ? 12 : 14} color="white" />
+      <CheckboxIcon checked={checked}>
+        <Check size={size === 'small' ? 12 : size === 'medium' ? 12 : 12} color="white" />
       </CheckboxIcon>
     </CheckboxContainer>
   )

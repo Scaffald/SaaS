@@ -133,7 +133,7 @@ export function OfficeCMSList() {
                         icon={Trash2}
                         onPress={() => handleDelete(slide.id, slide.title)}
                         chromeless
-                        theme="red"
+                        theme="error"
                       />
                     </XStack>
                   </XStack>

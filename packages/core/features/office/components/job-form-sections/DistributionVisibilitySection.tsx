@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { YStack, XStack, Text, Input } from '@app/ui'
-import { Label, Switch } from 'tamagui'
+import { YStack, XStack, Text, Input, ToggleSwitch } from '@app/ui'
+import { Label } from 'tamagui'
 
 interface DistributionVisibilitySectionProps {
   isFeatured?: boolean
@@ -57,18 +57,16 @@ export function DistributionVisibilitySection({
       {/* Is Featured */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="featured">Featured job</Label>
+          <Label>Featured job</Label>
           <Text fontSize="$2" color="$color10">
             Highlight this job in listings
           </Text>
         </YStack>
-        <Switch
-          id="featured"
+        <ToggleSwitch
           checked={localState.is_featured || false}
           onCheckedChange={(checked) => handleChange('is_featured', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Featured job"
+        />
       </XStack>
 
       {localState.is_featured && (

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { YStack, XStack, Text, Button, Popover, Separator, type GetThemeValueForKey } from 'tamagui'
+import { YStack, XStack, Text, Button, Popover, Separator, type TamaguiElement } from 'tamagui'
 import { Image } from 'expo-image'
 import { User, Settings, Sun, Moon, LogOut, Eye, Pencil } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
@@ -39,10 +39,9 @@ export function UserMenuAvatar() {
   const router = useRouter()
   const { width } = useWindowDimensions()
   const isMobile = width < 768
-  const triggerRef = useRef<{ focus?: () => void } | null>(null)
+  const triggerRef = useRef<TamaguiElement | null>(null)
 
-  const { user } = useUser()
-  // const { profile } = useUser() // Will uncomment when we add avatar display
+  const { user, profile } = useUser()
 
   // Fetch general profile data to get first_name and last_name
   const { data: generalProfile } = api.profile.getGeneral.useQuery(undefined, {
@@ -57,36 +56,11 @@ export function UserMenuAvatar() {
     return user?.email || 'User'
   })()
 
-  // Get avatar URL
-  // const avatarUrl = getAvatarUrl(profile?.avatar_path || '')
-
-  // Get user ID for profile viewing
-  // const userId = user?.id || ''
-
-  // Get initials for fallback
-  // const initials = displayName ? getInitials(displayName) : '?'
-
-  // Generate a consistent color based on the name
-  // const getColorIndex = (str: string): number => {
-  //   let hash = 0
-  //   for (let i = 0; i < str.length; i++) {
-  //     hash = str.charCodeAt(i) + ((hash << 5) - hash)
-  //   }
-  //   return Math.abs(hash) % 8
-  // }
-
-  // const colorIndex = getColorIndex(displayName)
-  // const bgColors = [
-  //   '$blue10',
-  //   '$green10',
-  //   '$blue10',
-  //   '$red10',
-  //   '$pink10',
-  //   '$red10',
-  //   '$yellow10',
-  //   '$color10',
-  // ]
-  // const bgColor = bgColors[colorIndex] as GetThemeValueForKey<'backgroundColor'>
+  const avatarUri =
+    getAvatarUrl(profile?.avatar_path) ??
+    (typeof user?.user_metadata?.avatar_url === 'string' ? user.user_metadata.avatar_url : null)
+  const fallbackInitial =
+    displayName && displayName.trim().length > 0 ? displayName.trim().charAt(0).toUpperCase() : 'U'
 
   // Handle escape key to close
   useEffect(() => {
@@ -151,6 +125,7 @@ export function UserMenuAvatar() {
   const userId = user?.id || ''
   const viewProfileHref = userId ? RouteBuilder.dashboardUser(userId) : undefined
   const editProfileHref = ROUTES.DASHBOARD_PROFILE_GENERAL.path
+  const settingsHref = ROUTES.DASHBOARD_SETTINGS.path
 
   // Avatar size (matches notification icon height)
   const avatarSize = 30
@@ -173,21 +148,40 @@ export function UserMenuAvatar() {
           aria-label="User menu"
           onPress={() => setOpen(!open)}
         >
-          {/* Minimal avatar - just a colored box */}
-          <YStack
-            width={avatarSize}
-            height={avatarSize}
-            rounded="$2"
-            bg="$blue10"
-            items="center"
-            justify="center"
-            borderWidth={1}
-            borderColor="$borderColor"
-          >
-            <Text color="white" fontSize={12} fontWeight="700">
-              U
-            </Text>
-          </YStack>
+          {avatarUri ? (
+            <YStack
+              width={avatarSize}
+              height={avatarSize}
+              overflow="hidden"
+              borderWidth={1}
+              borderColor="$borderColor"
+              bg="$color2"
+              items="center"
+              justify="center"
+              style={{ borderRadius: avatarSize / 2 }}
+            >
+              <Image
+                source={{ uri: avatarUri }}
+                style={{ width: '100%', height: '100%' }}
+                contentFit="cover"
+              />
+            </YStack>
+          ) : (
+            <YStack
+              width={avatarSize}
+              height={avatarSize}
+              rounded="$2"
+              bg="$blue10"
+              items="center"
+              justify="center"
+              borderWidth={1}
+              borderColor="$borderColor"
+            >
+              <Text color="white" fontSize={12} fontWeight="700">
+                {fallbackInitial}
+              </Text>
+            </YStack>
+          )}
         </Button>
       </Popover.Trigger>
 
@@ -195,7 +189,6 @@ export function UserMenuAvatar() {
         role="menu"
         rounded="$4"
         p={0}
-        w={isMobile ? 'calc(100vw - 32px)' : 240}
         elevate
         borderWidth={1}
         borderColor="$borderColor"
@@ -203,6 +196,7 @@ export function UserMenuAvatar() {
         animation="quick"
         enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
         exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
+        style={{ width: isMobile ? 'calc(100vw - 32px)' as const : 240 }}
       >
         {/* Header */}
         <YStack p="$4" borderBottomWidth={1} borderBottomColor="$borderColor" gap="$2">
@@ -258,6 +252,27 @@ export function UserMenuAvatar() {
               <Pencil size={18} color="$color10" />
               <Text fontSize="$3" color="$color12">
                 Edit Profile
+              </Text>
+            </XStack>
+          </YStack>
+
+          {/* Settings */}
+          <YStack
+            role="menuitem"
+            tabIndex={0}
+            p="$3"
+            bg="transparent"
+            pressStyle={{ bg: '$color3' }}
+            hoverStyle={{ bg: '$color3' }}
+            onPress={() => handleMenuItemClick(settingsHref)}
+            cursor="pointer"
+            width="100%"
+            aria-label="Open settings"
+          >
+            <XStack gap="$3" items="center">
+              <Settings size={18} color="$color10" />
+              <Text fontSize="$3" color="$color12">
+                Settings
               </Text>
             </XStack>
           </YStack>

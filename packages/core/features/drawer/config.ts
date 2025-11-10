@@ -70,9 +70,19 @@ export const generateDashboardDrawerItems = (options?: {
         href: ROUTES.OFFICE_ORGANIZATIONS.path,
       },
       {
+        key: "office-notifications",
+        title: ROUTES.OFFICE_NOTIFICATIONS.title,
+        href: ROUTES.OFFICE_NOTIFICATIONS.path,
+      },
+      {
         key: "office-cms",
         title: ROUTES.OFFICE_CMS.title,
         href: ROUTES.OFFICE_CMS.path,
+      },
+      {
+        key: "office-styleguide",
+        title: ROUTES.STYLEGUIDE.title,
+        href: ROUTES.STYLEGUIDE.path,
       },
     ];
 
@@ -164,7 +174,7 @@ export const generateDashboardDrawerItems = (options?: {
     ],
   });
 
-  // Assessments route - Expandable with sub-items for each assessment
+  // Assessments route - Always show sub-items for each assessment
   const assessmentSubItems: DrawerItemConfig[] = [
     {
       key: "assessment-pulse",
@@ -198,7 +208,6 @@ export const generateDashboardDrawerItems = (options?: {
     title: "Assessments",
     href: ROUTES.DASHBOARD_ASSESSMENTS.path,
     icon: ClipboardCheck,
-    isExpandable: true,
     subItems: assessmentSubItems,
   });
 

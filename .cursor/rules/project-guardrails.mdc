@@ -35,7 +35,7 @@ alwaysApply: true
 - **Development**: `pnpm dev` (Expo on port 8081), `pnpm web` (Web on port 3000)
 - **Platform builds**: `pnpm ios`, `pnpm android`, `pnpm web:build`, `pnpm prebuild`
 - **Supabase operations**: `pnpm supa` (local Supabase), `pnpm supa:studio`, `pnpm supa:mailpit`
-- **Code quality**: `pnpm check`, `pnpm build`, `pnpm typecheck`, `pnpm lint`, `pnpm format:fix`
+- **Code quality**: `pnpm check`, `pnpm build`
 - **Testing**: `pnpm test:all`, `pnpm test:build`, `pnpm test:lint`, `pnpm test:deps`
 - **UI/Tamagui**: `pnpm ui:check`, `pnpm ui:optimize`, `pnpm tamagui:check`, `pnpm tamagui:upgrade`
 
@@ -70,6 +70,10 @@ alwaysApply: true
 2. **Completing Task**: Mark as `COMPLETED` BEFORE committing code
 3. **Completing REQ**: Update requirement status when all tasks done
 4. **Creating Blockers**: File new REQ for issues found, add dependencies
+
+### Code Quality Requirements
+- **RUN `pnpm check` immediately after implementing changes for any BrainGrid requirement** so that formatting, linting, and type checks complete before additional commands
+- **DO NOT bypass or defer `pnpm check`** when working on BrainGrid requirements—even when iterating quickly or responding to review feedback
 
 ### Quick Reference
 ```bash

@@ -278,7 +278,7 @@ export function ApplicationWizard({
               <Button size="$4" variant="outlined" onPress={() => setShowCancelConfirm(false)}>
                 Keep Editing
               </Button>
-              <Button size="$4" theme="red" onPress={confirmCancel}>
+              <Button size="$4" theme="error" onPress={confirmCancel}>
                 Exit Application
               </Button>
             </XStack>

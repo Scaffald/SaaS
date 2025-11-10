@@ -2,15 +2,20 @@
   "extends": "../../tsconfig.base",
   "include": [
     "app",
+    "src",
     "types.d.ts",
+    "../../types/custom-modules.d.ts",
     "../../packages/ui",
     "../../packages/api",
     "../../packages/core",
+    "../../packages/schemas/src/**/*.ts",
+    "../../packages/schemas/src/**/*.tsx",
     "../../packages/supabase/types.ts",
     "../../packages/supabase/client-types.ts",
     "../../packages/supabase/app-router-type.ts",
     "../../packages/supabase/helpers.ts",
-    "../../packages/supabase/functions/_shared/schemas/consolidated.ts"
+    "../../packages/supabase/functions/_shared/**/*.ts",
+    "../../vitest.config.ts"
   ],
   "exclude": [
     "../../packages/supabase/functions/trpc/**/*",
@@ -30,9 +35,14 @@
       "@app/core": ["packages/core"],
       "@app/core/*": ["packages/core/*"],
       "@app/ui": ["packages/ui"],
-      "@app/ui/*": ["packages/ui/*"],
+      "@app/ui/*": ["packages/ui/src/*"],
       "@app/supabase": ["packages/supabase"],
-      "@app/supabase/*": ["packages/supabase/*"]
+      "@app/supabase/*": ["packages/supabase/*"],
+      "@app/schemas": ["packages/schemas/src"],
+      "@app/schemas/*": ["packages/schemas/src/*"],
+      "@app/styleguide": ["packages/ui/src/styleguide/index.ts"],
+      "@app/styleguide/*": ["packages/ui/src/styleguide/*"],
+      "expo-clipboard": ["types/expo-clipboard.d.ts"]
     }
   },
   "references": []

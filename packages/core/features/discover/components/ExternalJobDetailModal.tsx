@@ -281,7 +281,7 @@ export function ExternalJobDetailModal({
                   View on Site
                 </Button>
 
-                <Button size="$4" theme="blue" onPress={handleApply}>
+                <Button size="$4" theme="info" onPress={handleApply}>
                   Apply Now
                 </Button>
               </XStack>

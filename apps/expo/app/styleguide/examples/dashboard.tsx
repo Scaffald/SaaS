@@ -2,8 +2,8 @@
 import React from 'react'
 import { Button, Paragraph, Text, XStack, YStack } from '@app/ui'
 import { BarChart, type BarChartData } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
 
 const barData: BarChartData[] = [
   { value: 45, label: 'Mon', frontColor: '#4FC3F7' },
@@ -31,7 +31,7 @@ export default function DashboardExamplePage() {
           borderColor="$color6"
           borderRadius="$4"
           padding="$4"
-          backgroundColor="$color2"
+          bg="$color2"
         >
           <Text fontSize={18} fontWeight="600" color="$color11">
             Compliance health
@@ -41,7 +41,7 @@ export default function DashboardExamplePage() {
           </Paragraph>
           <XStack gap="$3" flexWrap="wrap">
             <Button>Generate report</Button>
-            <Button backgroundColor="$color3" color="$color11">
+            <Button bg="$color3" color="$color11">
               Schedule review
             </Button>
           </XStack>
@@ -56,7 +56,7 @@ export default function DashboardExamplePage() {
           borderColor="$color6"
           borderRadius="$4"
           padding="$4"
-          backgroundColor="$color1"
+          bg="$color1"
           gap="$3"
         >
           <Text fontSize={14} fontWeight="600" color="$color11">

@@ -1,8 +1,29 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import type { Context } from "./context.ts";
 
+import { captureTRPCError } from "../_shared/sentry.ts";
+
 // Initialize tRPC with context type
 export const t = initTRPC.context<Context>().create();
+
+const errorHandlingMiddleware = t.middleware(async ({
+  next,
+  path,
+  ctx,
+  input,
+}) => {
+  try {
+    return await next();
+  } catch (error) {
+    captureTRPCError(error, {
+      procedure: path,
+      input,
+      userId: ctx.user?.id,
+      userEmail: ctx.user?.email,
+    });
+    throw error;
+  }
+});
 
 /**
  * Middleware to enforce user authentication
@@ -62,17 +83,19 @@ export const enforceOfficeRole = t.middleware(async ({ ctx, next }) => {
   return next({ ctx });
 });
 
+const baseProcedure = t.procedure.use(errorHandlingMiddleware);
+
 /**
  * Base procedure - no authentication required
  */
-export const publicProcedure = t.procedure;
+export const publicProcedure = baseProcedure;
 
 /**
  * Protected procedure - requires authentication
  */
-export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+export const protectedProcedure = baseProcedure.use(enforceUserIsAuthed);
 
 /**
  * Office procedure - requires office role
  */
-export const officeProcedure = t.procedure.use(enforceOfficeRole);
+export const officeProcedure = baseProcedure.use(enforceOfficeRole);

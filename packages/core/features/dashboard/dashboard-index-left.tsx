@@ -1,12 +1,12 @@
 import { YStack, Spinner, Text } from 'tamagui'
 import { ProfileSnapshotWidget } from '../profile/widgets'
 import { PrerequisiteWidget } from '../prerequisites/PrerequisiteWidget'
-import { LuscherTest1Widget } from '../luscher-test-1'
 import { IPIPAssessmentWidget } from '../ipip-assessment'
-import { LuscherTest2Widget } from '../luscher-test-2'
 import { RIASECAssessmentWidget } from '../riasec-assessment'
 import { OccupationAssessmentWidget } from '../occupation-assessment'
 import { api } from '@app/core/utils/api'
+import { ProfileCompletionExperience } from '../profile-completion/components/ProfileCompletionExperience'
+import { ResumeImportWidget } from '@app/core/features/resume'
 
 /**
  * Dashboard Index Left Component
@@ -34,10 +34,10 @@ export function DashboardIndexLeft() {
   // Show ProfileSnapshotWidget and individual assessment widgets if prerequisites are complete
   return (
     <YStack gap="$4">
+      <ResumeImportWidget />
+      <ProfileCompletionExperience />
       <ProfileSnapshotWidget />
-      <LuscherTest1Widget />
       <IPIPAssessmentWidget />
-      <LuscherTest2Widget />
       <RIASECAssessmentWidget />
       <OccupationAssessmentWidget />
     </YStack>

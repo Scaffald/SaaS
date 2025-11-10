@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { YStack, XStack, Text, Input, UserSearch } from '@app/ui'
-import { Adapt, Sheet, Select, Label, Switch } from 'tamagui'
+import { YStack, XStack, Text, Input, UserSearch, ToggleSwitch } from '@app/ui'
+import { Adapt, Sheet, Select, Label } from 'tamagui'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
 
 interface JobMetadataSectionProps {
@@ -237,18 +237,16 @@ export function JobMetadataSection({
       {/* Is Confidential */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="confidential">Confidential posting</Label>
+          <Label>Confidential posting</Label>
           <Text fontSize="$2" color="$color10">
             Hide company name and details from job listings
           </Text>
         </YStack>
-        <Switch
-          id="confidential"
+        <ToggleSwitch
           checked={localState.is_confidential || false}
           onCheckedChange={(checked) => handleChange('is_confidential', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Confidential posting"
+        />
       </XStack>
 
       {/* Date Fields */}

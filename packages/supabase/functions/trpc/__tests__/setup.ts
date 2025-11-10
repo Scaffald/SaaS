@@ -94,32 +94,62 @@ export function createTestContext(authToken?: string) {
 /**
  * Make a tRPC request via HTTP
  */
+type TrpcCallType = "query" | "mutation";
+
+interface CallTRPCEndpointOptions {
+  authToken?: string;
+  type?: TrpcCallType;
+  headers?: Record<string, string>;
+}
+
 export async function callTRPCEndpoint(
   path: string,
   input?: unknown,
-  authToken?: string,
+  optionsOrToken: CallTRPCEndpointOptions | string = {},
 ) {
+  const normalizedOptions: CallTRPCEndpointOptions = typeof optionsOrToken ===
+      "string"
+    ? { authToken: optionsOrToken }
+    : optionsOrToken;
+
+  const { authToken, type = "query", headers: extraHeaders } = normalizedOptions;
+
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
+    Authorization: `Bearer ${
+      authToken && authToken.length > 0 ? authToken : TEST_SUPABASE_ANON_KEY
+    }`,
+    ...extraHeaders,
   };
 
-  if (authToken) {
-    headers.Authorization = `Bearer ${authToken}`;
+  const baseUrl = `${TEST_SUPABASE_URL}/functions/v1/trpc/${path}`;
+
+  if (type === "mutation") {
+    const response = await fetch(`${baseUrl}?batch=1`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        0: input ?? null,
+      }),
+    });
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : [data];
   }
 
-  // tRPC batch format: ?batch=1&input={"0":...}
-  const url = input
-    ? `${TEST_SUPABASE_URL}/functions/v1/trpc/${path}?batch=1&input=${
+  const url = input === undefined
+    ? baseUrl
+    : `${baseUrl}?batch=1&input=${
       encodeURIComponent(JSON.stringify({ "0": input }))
-    }`
-    : `${TEST_SUPABASE_URL}/functions/v1/trpc/${path}`;
+    }`;
 
   const response = await fetch(url, {
     method: "GET",
     headers,
   });
 
-  return response.json();
+  const data = await response.json();
+  return Array.isArray(data) ? data : [data];
 }
 
 /**

@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { YStack, XStack, Text, Button, ScrollView, AnimatePresence, Switch, Label } from 'tamagui'
+import { YStack, XStack, Text, Button, ScrollView, AnimatePresence, Label } from 'tamagui'
 import { ChevronDown, ChevronRight, X } from '@tamagui/lucide-icons'
+import { ToggleSwitch } from '@app/ui'
 
 type FilterPopupProps = {
   isOpen: boolean
@@ -171,22 +172,16 @@ export const FilterPopup = ({
                       {/* Workers Toggle */}
                       <YStack gap="$1">
                         <XStack justify="space-between" items="center">
-                          <Label htmlFor="workers-toggle" fontSize="$3">
+                          <Label fontSize="$3" onPress={() => onShowWorkersChange?.(!showWorkers)}>
                             Workers
                           </Label>
-                          <Switch
-                            id="workers-toggle"
-                            size="$3"
+                          <ToggleSwitch
                             checked={showWorkers}
-                            onCheckedChange={onShowWorkersChange}
+                            onCheckedChange={(checked) => onShowWorkersChange?.(checked)}
                             aria-label={
                               showWorkers ? 'Showing workers on map' : 'Hiding workers on map'
                             }
-                            accessibilityRole="switch"
-                            accessibilityState={{ checked: showWorkers }}
-                          >
-                            <Switch.Thumb animation="quick" />
-                          </Switch>
+                          />
                         </XStack>
                         <Text fontSize="$1" color="$color10" pl="$1">
                           Show worker profiles on the map
@@ -196,24 +191,21 @@ export const FilterPopup = ({
                       {/* Employers Toggle */}
                       <YStack gap="$1">
                         <XStack justify="space-between" items="center">
-                          <Label htmlFor="employers-toggle" fontSize="$3">
+                          <Label
+                            fontSize="$3"
+                            onPress={() => onShowOrganizationsChange?.(!showOrganizations)}
+                          >
                             Employers
                           </Label>
-                          <Switch
-                            id="employers-toggle"
-                            size="$3"
+                          <ToggleSwitch
                             checked={showOrganizations}
-                            onCheckedChange={onShowOrganizationsChange}
+                            onCheckedChange={(checked) => onShowOrganizationsChange?.(checked)}
                             aria-label={
                               showOrganizations
                                 ? 'Showing employers on map'
                                 : 'Hiding employers on map'
                             }
-                            accessibilityRole="switch"
-                            accessibilityState={{ checked: showOrganizations }}
-                          >
-                            <Switch.Thumb animation="quick" />
-                          </Switch>
+                          />
                         </XStack>
                         <Text fontSize="$1" color="$color10" pl="$1">
                           Show employer organizations on the map
@@ -223,20 +215,14 @@ export const FilterPopup = ({
                       {/* Jobs Toggle */}
                       <YStack gap="$1">
                         <XStack justify="space-between" items="center">
-                          <Label htmlFor="jobs-toggle" fontSize="$3">
+                          <Label fontSize="$3" onPress={() => onShowJobsChange?.(!showJobs)}>
                             Jobs
                           </Label>
-                          <Switch
-                            id="jobs-toggle"
-                            size="$3"
+                          <ToggleSwitch
                             checked={showJobs}
-                            onCheckedChange={onShowJobsChange}
+                            onCheckedChange={(checked) => onShowJobsChange?.(checked)}
                             aria-label={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
-                            accessibilityRole="switch"
-                            accessibilityState={{ checked: showJobs }}
-                          >
-                            <Switch.Thumb animation="quick" />
-                          </Switch>
+                          />
                         </XStack>
                         <Text fontSize="$1" color="$color10" pl="$1">
                           Show job openings on the map

@@ -1,4 +1,5 @@
-import { Dialog, Button, XStack, YStack, Text } from 'tamagui'
+import { Dialog, XStack, YStack, Text } from 'tamagui'
+import { Button, type ButtonProps } from '../buttons/Button'
 
 interface ConfirmationDialogProps {
   open: boolean
@@ -44,6 +45,16 @@ export function ConfirmationDialog({
   confirmTheme = 'blue',
   isLoading = false,
 }: ConfirmationDialogProps) {
+  const confirmVariantMap: Record<
+    NonNullable<ConfirmationDialogProps['confirmTheme']>,
+    NonNullable<ButtonProps['variant']>
+  > = {
+    blue: 'primary',
+    green: 'secondary',
+    red: 'danger',
+  }
+  const confirmVariant = confirmVariantMap[confirmTheme] ?? 'primary'
+
   const handleConfirm = () => {
     onConfirm()
     // Don't close here - let parent handle closing after async operations
@@ -85,7 +96,7 @@ export function ConfirmationDialog({
                 {cancelLabel}
               </Button>
             </Dialog.Close>
-            <Button theme={confirmTheme} onPress={handleConfirm} disabled={isLoading}>
+            <Button variant={confirmVariant} onPress={handleConfirm} disabled={isLoading}>
               {confirmLabel}
             </Button>
           </XStack>

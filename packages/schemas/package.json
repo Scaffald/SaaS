@@ -7,17 +7,22 @@
   "exports": {
     ".": "./src/index.ts",
     "./profile": "./src/profile/index.ts",
-    "./common": "./src/common/index.ts"
+    "./common": "./src/common/index.ts",
+    "./common/phone": "./src/common/phone.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
     "format": "biome format .",
-    "format:fix": "biome format --write ."
+    "format:fix": "biome format --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "awesome-phonenumber": "catalog:"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",

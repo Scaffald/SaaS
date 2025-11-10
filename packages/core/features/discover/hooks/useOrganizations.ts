@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@app/core/utils/supabase/client";
-import type { ViewportBounds } from "@app/ui/src/components/maps/types";
+import type { ViewportBounds } from "@app/ui";
 
 // Type for organization data
 export interface OrganizationMapPin {

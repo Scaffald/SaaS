@@ -1,9 +1,9 @@
 // @ts-nocheck
 import React from 'react'
 import { Paragraph, Text, XStack, YStack } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
-import { ExampleCard } from '../_components/ExampleCard'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
+import { ExampleCard } from '@app/styleguide'
 
 const ALERTS = [
   { label: 'Primary', color: '$color9', message: 'Heads up! Read this important alert message.' },
@@ -48,14 +48,14 @@ const AlertCard = ({ label, color, message }: AlertCardProps) => (
     borderRadius="$4"
     borderWidth={1}
     borderColor="$color6"
-    backgroundColor="$color1"
+    bg="$color1"
     shadowColor="rgba(0,0,0,0.05)"
     shadowRadius={12}
     padding="$4"
     gap={8}
   >
     <XStack gap="$3" alignItems="center">
-      <YStack width={8} height={8} borderRadius={999} backgroundColor={color} />
+      <YStack width={8} height={8} borderRadius={999} bg={color} />
       <Text fontSize={14} fontWeight="600" color="$color11">
         {label}
       </Text>

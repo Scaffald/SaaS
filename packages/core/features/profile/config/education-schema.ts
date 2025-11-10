@@ -5,10 +5,14 @@ import { z } from "zod";
  * LinkedIn-style education tracking
  */
 // Single education entry schema (reusable)
-const educationEntrySchema = z.object({
+const educationEntrySchema = z
+  .object({
   id: z.string().uuid().optional(),
-  university_id: z.string().uuid().optional(),
-  institution_name: z.string().min(1, "Institution name is required"),
+  university_id: z.string().uuid().nullable().optional(),
+  institution_name: z
+    .string()
+    .trim()
+    .min(1, "Institution name is required"),
   is_verified: z.boolean().default(false),
   degree_type: z
     .enum([
@@ -25,9 +29,14 @@ const educationEntrySchema = z.object({
       "Other",
     ])
     .optional(),
-  custom_degree_type: z.string().optional(),
+  custom_degree_type: z
+    .string()
+    .trim()
+    .min(1, "Please specify the degree type")
+    .max(100, "Custom degree type must be 100 characters or less")
+    .optional(),
   field_of_study: z.string().optional(),
-  start_date: z.string().optional(),
+  start_date: z.string().min(1, "Start date is required"),
   end_date: z.string().optional(),
   expected_graduation_date: z.string().optional(),
   is_current: z.boolean().default(false),
@@ -35,31 +44,38 @@ const educationEntrySchema = z.object({
   description: z.string().max(500, "Description cannot exceed 500 characters").optional(),
   location: z.string().optional(),
 })
-  .refine(
-    (data) => {
-      // End date must be after start date when both are provided
-      if (
-        !data.is_current &&
-        data.end_date &&
-        data.start_date &&
-        new Date(data.end_date) <= new Date(data.start_date)
-      ) {
-        return false;
+  .superRefine((data, ctx) => {
+    // Require end date when not currently enrolled
+    if (!data.is_current && (!data.end_date || data.end_date.trim().length === 0)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "End date is required unless currently enrolled",
+        path: ["end_date"],
+      });
+    }
+
+    // Ensure end date is after start date
+    if (data.end_date) {
+      const startDate = new Date(data.start_date);
+      const endDate = new Date(data.end_date);
+      if (!Number.isNaN(startDate.getTime()) && !Number.isNaN(endDate.getTime()) && endDate <= startDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "End date must be after start date",
+          path: ["end_date"],
+        });
       }
-      return true;
-    },
-    { message: "End date must be after start date", path: ["end_date"] }
-  )
-  .refine(
-    (data) => {
-      // If degree_type is "Other", custom_degree_type must be provided
-      if (data.degree_type === "Other" && !data.custom_degree_type) {
-        return false;
-      }
-      return true;
-    },
-    { message: "Please specify the degree type", path: ["custom_degree_type"] }
-  );
+    }
+
+    // Custom degree type must be provided for "Other"
+    if (data.degree_type === "Other" && !data.custom_degree_type) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Please specify the degree type",
+        path: ["custom_degree_type"],
+      });
+    }
+  });
 
 export const educationProfileSchema = z.object({
   // Education level (existing field)
@@ -84,6 +100,8 @@ export const educationProfileSchema = z.object({
 // Export the single entry schema for use in edit modal
 export const singleEducationEntrySchema = educationEntrySchema;
 
+export type EducationEntryFormValues = z.infer<typeof educationEntrySchema>;
+
 export type EducationProfileFormData = z.infer<typeof educationProfileSchema>;
 
 export const educationProfileDefaults: Partial<EducationProfileFormData> = {
@@ -92,17 +110,17 @@ export const educationProfileDefaults: Partial<EducationProfileFormData> = {
 };
 
 // Helper function to create new education entry
-export const createNewEducationEntry = () => ({
+export const createNewEducationEntry = (): EducationEntryFormValues => ({
   id: undefined,
   university_id: undefined,
   institution_name: "",
   is_verified: false,
   degree_type: undefined,
-  custom_degree_type: "",
+  custom_degree_type: undefined,
   field_of_study: "",
   start_date: "",
-  end_date: undefined,
-  expected_graduation_date: undefined,
+  end_date: "",
+  expected_graduation_date: "",
   is_current: false,
   gpa: undefined,
   description: "",

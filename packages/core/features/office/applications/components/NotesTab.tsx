@@ -61,7 +61,7 @@ export const NotesTab = ({ notes, applicationId }: NotesTabProps) => {
           mb="$3"
         />
 
-        <Button onPress={handleSubmit} disabled={!newNote.trim()} theme="blue">
+        <Button onPress={handleSubmit} disabled={!newNote.trim()} theme="info">
           Add Note
         </Button>
       </Card>

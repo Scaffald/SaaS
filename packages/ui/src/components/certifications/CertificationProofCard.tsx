@@ -147,7 +147,7 @@ export function CertificationProofCard({
                 <Button
                   size="$2"
                   variant="outlined"
-                  theme="red"
+                  theme="error"
                   onPress={onRemoveProof}
                   disabled={uploading}
                 >

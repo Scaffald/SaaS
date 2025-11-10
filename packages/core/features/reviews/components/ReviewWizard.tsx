@@ -301,13 +301,13 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
             </Button>
 
             {isLastStep ? (
-              <Button size="$4" theme="green" onPress={handleSubmit}>
+              <Button size="$4" theme="success" onPress={handleSubmit}>
                 Submit Review
               </Button>
             ) : (
               <Button
                 size="$4"
-                theme="blue"
+                theme="info"
                 iconAfter={ChevronRight}
                 onPress={handleNext}
                 disabled={!canGoForward}

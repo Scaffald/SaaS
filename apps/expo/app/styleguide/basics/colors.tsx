@@ -1,8 +1,8 @@
 // @ts-nocheck
 import React from 'react'
 import { Paragraph, Text, YStack } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
 import { BRAND_COLORS } from '@app/core/assets/brand-colors'
 
 const VARIANT_MAP = [
@@ -57,14 +57,8 @@ type VariantRowProps = {
 }
 
 const VariantRow = ({ label, hex }: VariantRowProps) => (
-  <YStack
-    borderWidth={1}
-    borderColor="$color6"
-    borderRadius="$4"
-    overflow="hidden"
-    backgroundColor="$color2"
-  >
-    <YStack height={60} backgroundColor={hex} />
+  <YStack borderWidth={1} borderColor="$color6" borderRadius="$4" overflow="hidden" bg="$color2">
+    <YStack height={60} bg={hex} />
     <YStack padding="$3" gap={4}>
       <Text fontSize={13} fontWeight="600" color="$color11">
         {label}

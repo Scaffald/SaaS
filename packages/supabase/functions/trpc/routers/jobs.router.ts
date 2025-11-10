@@ -803,7 +803,7 @@ export const jobsRouter = t.router({
             slug,
             logo_url
           )
-        `
+        `,
         )
         .eq("slug", input.slug.toLowerCase())
         .eq("status", "open") // Only return open jobs

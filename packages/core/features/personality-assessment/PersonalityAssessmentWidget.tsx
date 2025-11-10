@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router'
-import { YStack, Text, Button, Spinner, XStack, Progress } from 'tamagui'
-import { DashboardWidget } from '@app/ui'
+import { YStack, Text, Spinner, XStack, Progress } from 'tamagui'
+import { DashboardWidget, UIButton as StyledButton, spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
 
@@ -22,8 +22,8 @@ export function PersonalityAssessmentWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap="$3" items="center" py="$8">
-          <Spinner size="large" />
+        <YStack gap={spacing.sm} items="center" py={spacing['2xl']}>
+          <Spinner size="large" color="$blue7" />
           <Text color="$color11">Loading...</Text>
         </YStack>
       </DashboardWidget>
@@ -60,8 +60,8 @@ export function PersonalityAssessmentWidget() {
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
-        <YStack gap="$2">
+      <YStack gap={spacing.md}>
+        <YStack gap={spacing.xs}>
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Personality Assessment
           </Text>
@@ -73,17 +73,17 @@ export function PersonalityAssessmentWidget() {
 
         {/* Progress Display */}
         {hasStarted && (
-          <YStack gap="$2">
+          <YStack gap={spacing.xs}>
             <XStack justify="space-between" items="center">
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 {getStepLabel(currentStep)}
               </Text>
-              <Text fontSize="$4" fontWeight="bold" color="$blue10">
+              <Text fontSize="$4" fontWeight="bold" color="$blue8">
                 {completionScore}%
               </Text>
             </XStack>
             <Progress value={completionScore} max={100}>
-              <Progress.Indicator animation="bouncy" />
+              <Progress.Indicator animation="bouncy" bg="$blue7" />
             </Progress>
             <Text fontSize="$2" color="$color11">
               {hasStarted ? 'Continue where you left off' : 'Start your assessment'}
@@ -92,9 +92,16 @@ export function PersonalityAssessmentWidget() {
         )}
 
         {/* Action Button */}
-        <Button onPress={handleStart} size="$5" themeInverse mt={hasStarted ? '$2' : '$4'}>
-          <Button.Text>{hasStarted ? 'Continue Assessment' : 'Start Assessment'}</Button.Text>
-        </Button>
+        <StyledButton
+          variant="primary"
+          onPress={handleStart}
+          size="$5"
+          mt={hasStarted ? spacing.xs : spacing.md}
+        >
+          <StyledButton.Text>
+            {hasStarted ? 'Continue Assessment' : 'Start Assessment'}
+          </StyledButton.Text>
+        </StyledButton>
 
         {!hasStarted && (
           <Text fontSize="$2" color="$color11">

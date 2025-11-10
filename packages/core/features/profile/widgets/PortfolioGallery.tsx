@@ -1,10 +1,9 @@
 import { YStack, XStack, Text, Image, Card, H4, Spinner } from 'tamagui'
-import { ImageIcon, Eye } from '@tamagui/lucide-icons'
-import { DashboardWidget } from '@app/ui'
+import { Eye } from '@tamagui/lucide-icons'
+import { DashboardWidget, ResponsiveModal } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
 import { useState } from 'react'
-import { ResponsiveModal } from '@app/ui'
 import type { ProfileWidgetProps } from './types'
 
 interface PortfolioItem {
@@ -67,7 +66,7 @@ export function PortfolioGallery({
 
           {/* Grid Layout */}
           <YStack gap="$3">
-            {portfolioItems.map((item) => {
+            {portfolioItems.map((item: PortfolioItem) => {
               const imageUrl = item.file_path
                 ? getStorageUrl('portfolio', item.file_path)
                 : item.image_url
@@ -87,7 +86,7 @@ export function PortfolioGallery({
                         source={{ uri: imageUrl }}
                         width="100%"
                         height={variant === 'compact' ? 150 : 200}
-                        contentFit="cover"
+                        objectFit="cover"
                         borderRadius="$3"
                       />
                     )}
@@ -141,7 +140,7 @@ export function PortfolioGallery({
                       source={{ uri: imageUrl }}
                       width="100%"
                       height={400}
-                      contentFit="contain"
+                      objectFit="contain"
                       borderRadius="$3"
                     />
                   )}

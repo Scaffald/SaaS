@@ -68,6 +68,9 @@ export function MonthYearPicker({
   const selectedYear = value ? value.getFullYear().toString() : ''
 
   const handleMonthChange = (month: string) => {
+    if (disabled) {
+      return
+    }
     if (!month) {
       onChange(null)
       return
@@ -79,6 +82,9 @@ export function MonthYearPicker({
   }
 
   const handleYearChange = (year: string) => {
+    if (disabled) {
+      return
+    }
     if (!year) {
       onChange(null)
       return
@@ -97,16 +103,12 @@ export function MonthYearPicker({
         </Text>
       )}
       <YStack gap="$2">
-        <Select
-          value={selectedMonth}
-          onValueChange={handleMonthChange}
-          disabled={disabled}
-          size="$4"
-        >
+        <Select value={selectedMonth} onValueChange={handleMonthChange} size="$4">
           <Select.Trigger
             icon={Calendar}
             borderColor={error ? '$red10' : '$borderColor'}
-            backgroundColor={disabled ? '$color3' : '$background'}
+            bg={disabled ? '$color3' : '$background'}
+            disabled={disabled}
           >
             <Select.Value placeholder="Month" />
           </Select.Trigger>
@@ -135,11 +137,12 @@ export function MonthYearPicker({
           </Select.Content>
         </Select>
 
-        <Select value={selectedYear} onValueChange={handleYearChange} disabled={disabled} size="$4">
+        <Select value={selectedYear} onValueChange={handleYearChange} size="$4">
           <Select.Trigger
             icon={Calendar}
             borderColor={error ? '$red10' : '$borderColor'}
-            backgroundColor={disabled ? '$color3' : '$background'}
+            bg={disabled ? '$color3' : '$background'}
+            disabled={disabled}
           >
             <Select.Value placeholder="Year" />
           </Select.Trigger>

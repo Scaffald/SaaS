@@ -149,7 +149,7 @@ export function SuccessStep({
       {/* Action Buttons */}
       <YStack gap="$3" width="100%" mt="$4">
         {onViewApplication && (
-          <Button size="$5" theme="blue" icon={ExternalLink} onPress={onViewApplication}>
+          <Button size="$5" theme="info" icon={ExternalLink} onPress={onViewApplication}>
             View My Application
           </Button>
         )}

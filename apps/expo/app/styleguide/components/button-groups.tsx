@@ -1,9 +1,9 @@
 // @ts-nocheck
 import React, { useState } from 'react'
 import { Button, Text, XStack, YStack } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
-import { ExampleCard } from '../_components/ExampleCard'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
+import { ExampleCard } from '@app/styleguide'
 
 export default function ButtonGroupsPage() {
   const [active, setActive] = useState('day')
@@ -24,7 +24,7 @@ export default function ButtonGroupsPage() {
           description="Segmented control toggles between presets."
           code={`<XStack borderWidth={1} borderColor="$color6" borderRadius="$4" overflow="hidden">
   {['day','week','month'].map((option) => (
-    <Button key={option} backgroundColor={active === option ? '$color9' : '$color2'}>
+    <Button key={option} bg={active === option ? '$color9' : '$color2'}>
       {option}
     </Button>
   ))}
@@ -34,7 +34,7 @@ export default function ButtonGroupsPage() {
             {['day', 'week', 'month'].map((option) => (
               <Button
                 key={option}
-                backgroundColor={active === option ? '$color9' : '$color2'}
+                bg={active === option ? '$color9' : '$color2'}
                 color={active === option ? '$color1' : '$color11'}
                 borderRadius={0}
                 onPress={() => setActive(option)}
@@ -61,7 +61,7 @@ export default function ButtonGroupsPage() {
           <YStack borderWidth={1} borderColor="$color6" borderRadius="$4" overflow="hidden">
             <Button borderRadius={0}>Archive</Button>
             <Button borderRadius={0}>Duplicate</Button>
-            <Button borderRadius={0} backgroundColor="$color8" color="$color1">
+            <Button borderRadius={0} bg="$color8" color="$color1">
               Delete
             </Button>
           </YStack>

@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react'
+import type { IconProps } from '@tamagui/helpers-icon'
 import { Onboarding, type OnboardingStepInfo, StepContent, Spinner, YStack } from '@app/ui'
 import * as LucideIcons from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
@@ -61,17 +62,16 @@ export const WelcomeScreen = ({ onOnboarded }: WelcomeScreenProps = {}) => {
   const steps: OnboardingStepInfo[] =
     data?.slides && data.slides.length > 0
       ? data.slides.map((slide: WelcomeSlide) => {
-          // Dynamically resolve the icon component
-          const IconComponent = (LucideIcons as Record<string, ComponentType<{ size?: number }>>)[
-            slide.icon_name
-          ]
+          // Dynamically resolve the icon component with fallback to a known icon
+          const icons = LucideIcons as Record<string, ComponentType<IconProps> | undefined>
+          const IconComponent = icons[slide.icon_name] ?? LucideIcons.UserSearch
 
           return {
             backgroundImage: slide.background_image_url,
             Content: () => (
               <StepContent
                 title={slide.title}
-                icon={IconComponent as ComponentType<{ size?: number }>}
+                icon={IconComponent}
                 description={slide.description}
               />
             ),

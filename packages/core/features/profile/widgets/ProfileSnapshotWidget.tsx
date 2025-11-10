@@ -1,5 +1,5 @@
 import { YStack, XStack, Text, H4, Spinner, Avatar, Button, Progress } from 'tamagui'
-import { DashboardWidget } from '@app/ui'
+import { DashboardWidget, UIButton as StyledButton, spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
@@ -49,8 +49,8 @@ export function ProfileSnapshotWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
-          <Spinner size="large" />
+        <YStack gap={spacing.md} items="center" py={spacing['2xl']}>
+          <Spinner size="large" color="$blue7" />
           <Text color="$color11">Loading profile...</Text>
         </YStack>
       </DashboardWidget>
@@ -60,7 +60,7 @@ export function ProfileSnapshotWidget() {
   if (!generalInfo) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
+        <YStack gap={spacing.md} items="center" py={spacing['2xl']}>
           <Text color="$color11">Profile data unavailable</Text>
         </YStack>
       </DashboardWidget>
@@ -85,23 +85,21 @@ export function ProfileSnapshotWidget() {
 
   const completion = calculateCompletion()
 
+  const resolvedYearsOfExperience =
+    typeof generalInfo.calculatedYearsOfExperience === 'number'
+      ? generalInfo.calculatedYearsOfExperience
+      : generalInfo.years_of_experience ?? 0
+
+  const formattedYearsOfExperience =
+    Number.isFinite(resolvedYearsOfExperience) && resolvedYearsOfExperience % 1 !== 0
+      ? resolvedYearsOfExperience.toFixed(1)
+      : resolvedYearsOfExperience ?? 0
+
   // Get current role from experience
   const currentRole = experience?.find((exp: Record<string, unknown>) => exp.is_current)
 
   // Get top skills
   const topSkills = skills?.slice(0, 5) || []
-
-  // Helper to get skill name
-  const getSkillName = (skill: Record<string, unknown>): string => {
-    if (skill.metadata && typeof skill.metadata === 'object') {
-      const metadata = skill.metadata as Record<string, unknown>
-      const name = metadata.name
-      const title = metadata.title
-      if (typeof name === 'string') return name
-      if (typeof title === 'string') return title
-    }
-    return 'Skill'
-  }
 
   const displayName =
     generalInfo.display_name ||
@@ -111,11 +109,16 @@ export function ProfileSnapshotWidget() {
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
+      <YStack gap={spacing.md}>
         {/* Header */}
         <XStack justify="space-between" items="center">
           <H4>Profile</H4>
-          <Button size="$2" chromeless onPress={() => router.push('/dashboard/profile')}>
+          <Button
+            size="$2"
+            chromeless
+            color="$blue7"
+            onPress={() => router.push('/dashboard/profile')}
+          >
             View Full Profile
           </Button>
         </XStack>
@@ -128,7 +131,7 @@ export function ProfileSnapshotWidget() {
                 uri: getAvatarUrl(generalInfo.avatar_path) || generalInfo.avatar_url || '',
               }}
             />
-            <Avatar.Fallback backgroundColor="$color6" />
+            <Avatar.Fallback bg="$color6" />
           </Avatar>
 
           <YStack gap="$1" items="center">
@@ -193,14 +196,22 @@ export function ProfileSnapshotWidget() {
               </Text>
             </XStack>
             <Progress value={completion} max={100}>
-              <Progress.Indicator animation="bouncy" bg="$green9" />
+              <Progress.Indicator animation="bouncy" bg="$blue7" />
             </Progress>
           </YStack>
 
           {/* Stats Row */}
-          <XStack gap="$3" flexWrap="wrap">
-            <YStack gap="$1" flex={1} minW={80} bg="$color2" p="$3" rounded="$3" items="center">
-              <Text fontSize="$6" fontWeight="700" color="$blue10">
+          <XStack gap={spacing.sm} flexWrap="wrap">
+            <YStack
+              gap="$1"
+              flex={1}
+              minW={80}
+              bg="$color2"
+              p={spacing.sm}
+              rounded="$3"
+              items="center"
+            >
+              <Text fontSize="$6" fontWeight="700" color="$blue8">
                 {skills?.length || 0}
               </Text>
               <Text fontSize="$1" color="$color11">
@@ -208,7 +219,15 @@ export function ProfileSnapshotWidget() {
               </Text>
             </YStack>
 
-            <YStack gap="$1" flex={1} minW={80} bg="$color2" p="$3" rounded="$3" items="center">
+            <YStack
+              gap="$1"
+              flex={1}
+              minW={80}
+              bg="$color2"
+              p={spacing.sm}
+              rounded="$3"
+              items="center"
+            >
               <Text fontSize="$6" fontWeight="700" color="$green10">
                 {certifications?.length || 0}
               </Text>
@@ -217,9 +236,17 @@ export function ProfileSnapshotWidget() {
               </Text>
             </YStack>
 
-            <YStack gap="$1" flex={1} minW={80} bg="$color2" p="$3" rounded="$3" items="center">
-              <Text fontSize="$6" fontWeight="700" color="$color10">
-                {generalInfo.years_of_experience || 0}
+            <YStack
+              gap="$1"
+              flex={1}
+              minW={80}
+              bg="$color2"
+              p={spacing.sm}
+              rounded="$3"
+              items="center"
+            >
+              <Text fontSize="$6" fontWeight="700" color="$blue7">
+                    {formattedYearsOfExperience}
               </Text>
               <Text fontSize="$1" color="$color11">
                 Years
@@ -240,7 +267,18 @@ export function ProfileSnapshotWidget() {
               </Button>
             </XStack>
             <XStack gap="$2" flexWrap="wrap">
-              {topSkills.map((skill: Record<string, unknown>) => (
+              {topSkills.map((skill: Record<string, unknown>) => {
+                const displayCode =
+                  typeof skill.displayCode === 'string' ? skill.displayCode : null
+                const skillName = typeof skill.name === 'string' ? skill.name : 'Skill'
+                const chipLabel =
+                  typeof skill.label === 'string'
+                    ? skill.label
+                    : displayCode
+                      ? `${displayCode} · ${skillName}`
+                      : skillName
+
+                return (
                 <XStack
                   key={skill.id as string}
                   bg="$color3"
@@ -255,23 +293,24 @@ export function ProfileSnapshotWidget() {
                       ✓
                     </Text>
                   )}
-                  <Text fontSize="$2">{getSkillName(skill)}</Text>
+                    <Text fontSize="$2">{chipLabel}</Text>
                 </XStack>
-              ))}
+                )
+              })}
             </XStack>
           </YStack>
         )}
 
         {/* Quick Actions */}
-        <YStack gap="$2">
-          <Button
+        <YStack gap={spacing.xs}>
+          <StyledButton
+            variant="primary"
             size="$3"
-            theme="blue"
             onPress={() => router.push('/dashboard/profile')}
             width="100%"
           >
             Edit Profile
-          </Button>
+          </StyledButton>
           {completion < 100 && (
             <YStack items="center">
               <Text fontSize="$1" color="$color11">

@@ -198,7 +198,7 @@ export function OrganizationLocationsInput({
           ))
         ) : (
           /* Empty state - show Add Location button */
-          <YStack p="$4" bg="$background" borderWidth={1} borderColor="$borderColor" gap="$2">
+          <YStack p="$4" borderWidth={1} borderColor="$borderColor" gap="$2">
             <Text color="$color11">No locations added yet</Text>
             <Button
               variant="outlined"

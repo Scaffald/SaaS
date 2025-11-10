@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { YStack, XStack, Text, Input } from '@app/ui'
-import { Adapt, Sheet, Select, Label, Switch } from 'tamagui'
+import { YStack, XStack, Text, Input, ToggleSwitch } from '@app/ui'
+import { Adapt, Sheet, Select, Label } from 'tamagui'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
 
 interface EnhancedRequirementsSectionProps {
@@ -129,18 +129,16 @@ export function EnhancedRequirementsSection({
       {/* Background Check */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="backgroundCheck">Require background check</Label>
+          <Label>Require background check</Label>
           <Text fontSize="$2" color="$color10">
             Background screening required for this position
           </Text>
         </YStack>
-        <Switch
-          id="backgroundCheck"
+        <ToggleSwitch
           checked={localState.require_background_check || false}
           onCheckedChange={(checked) => handleChange('require_background_check', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Require background check"
+        />
       </XStack>
 
       {localState.require_background_check && (
@@ -157,35 +155,31 @@ export function EnhancedRequirementsSection({
       {/* Drug Test */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="drugTest">Require drug test</Label>
+          <Label>Require drug test</Label>
           <Text fontSize="$2" color="$color10">
             Pre-employment drug screening required
           </Text>
         </YStack>
-        <Switch
-          id="drugTest"
+        <ToggleSwitch
           checked={localState.require_drug_test || false}
           onCheckedChange={(checked) => handleChange('require_drug_test', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Require drug test"
+        />
       </XStack>
 
       {/* Driver's License */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="driversLicense">Require driver's license</Label>
+          <Label>Require driver's license</Label>
           <Text fontSize="$2" color="$color10">
             Valid driver's license required
           </Text>
         </YStack>
-        <Switch
-          id="driversLicense"
+        <ToggleSwitch
           checked={localState.require_drivers_license || false}
           onCheckedChange={(checked) => handleChange('require_drivers_license', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Require driver's license"
+        />
       </XStack>
 
       {localState.require_drivers_license && (

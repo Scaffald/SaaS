@@ -1,7 +1,8 @@
-import { YStack, XStack, Text, H4, Spinner, Button } from 'tamagui'
-import { DashboardWidget } from '@app/ui'
+import { YStack, XStack, Text, Spinner } from 'tamagui'
+import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
+import { CheckCircle } from '@tamagui/lucide-icons'
 import type { ProfileWidgetProps } from './types'
 
 interface UserSkill {
@@ -24,7 +25,13 @@ interface UserSkill {
  */
 export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: ProfileWidgetProps) {
   const router = useRouter()
-  const { data, isLoading, error } = api.profile.widgets.getSkills.useQuery(
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+    isFetching,
+  } = api.profile.widgets.getSkills.useQuery(
     { userId },
     {
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
@@ -34,10 +41,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
-          <Spinner size="large" />
-          <Text color="$color11">Loading skills...</Text>
-        </YStack>
+        <LoadingState message="Loading skills..." />
       </DashboardWidget>
     )
   }
@@ -50,6 +54,16 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
           <Text color="$color11" fontSize="$2">
             {error.message}
           </Text>
+          <UIButton
+            variant="primary"
+            size="$2"
+            onPress={() => {
+              void refetch()
+            }}
+            disabled={isFetching}
+          >
+            Retry
+          </UIButton>
         </YStack>
       </DashboardWidget>
     )
@@ -100,26 +114,29 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
+      <YStack gap={spacing.md}>
         {/* Header */}
         <XStack justify="space-between" items="center">
-          <H4>Skills</H4>
+          <Heading variant="h4">Skills</Heading>
           {showEdit && (
-            <Button size="$2" chromeless onPress={() => router.push('/dashboard/profile/skills')}>
+            <UIButton variant="outlined" size="$2" onPress={() => router.push('/dashboard/profile/skills')}>
               Edit
-            </Button>
+            </UIButton>
           )}
         </XStack>
 
         {skills.length === 0 ? (
-          <YStack gap="$2" items="center" py="$4">
-            <Text color="$color11">No skills added yet</Text>
-            {showEdit && (
-              <Button size="$2" onPress={() => router.push('/dashboard/profile/skills')}>
-                Add Skills
-              </Button>
-            )}
-          </YStack>
+          <EmptyState
+            title="No skills added yet"
+            description="Add your skills to showcase your expertise"
+            action={
+              showEdit ? (
+                <UIButton variant="primary" onPress={() => router.push('/dashboard/profile/skills')}>
+                  Add Skills
+                </UIButton>
+              ) : undefined
+            }
+          />
         ) : (
           <YStack gap="$4">
             {sortedTaxonomies.slice(0, showCompact ? 1 : undefined).map((taxonomy) => (
@@ -136,33 +153,29 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                     .map((skill: UserSkill) => (
                       <XStack
                         key={skill.id}
-                        bg="$color3"
+                        bg="$blue2"
                         px="$3"
                         py="$2"
                         rounded="$3"
                         borderWidth={1}
-                        borderColor={skill.verified ? '$green7' : '$color6'}
+                        borderColor={skill.verified ? '$blue7' : '$blue5'}
                         gap="$2"
                         items="center"
                       >
-                        {skill.verified && (
-                          <Text color="$green10" fontSize="$1">
-                            ✓
-                          </Text>
-                        )}
+                        {skill.verified && <CheckCircle size={14} color="$blue11" />}
                         <YStack gap="$0.5">
-                          <Text fontSize="$2" fontWeight="500">
+                          <Text fontSize="$2" fontWeight="500" color="$blue11">
                             {getSkillName(skill)}
                           </Text>
                           {!showCompact && (
                             <XStack gap="$2">
                               {skill.proficiency_level !== null && (
-                                <Text fontSize="$1" color="$color10">
+                                <Text fontSize="$1" color="$blue10">
                                   {getProficiencyLabel(skill.proficiency_level)}
                                 </Text>
                               )}
                               {skill.years_experience !== null && skill.years_experience > 0 && (
-                                <Text fontSize="$1" color="$color10">
+                                <Text fontSize="$1" color="$blue10">
                                   • {skill.years_experience}y
                                 </Text>
                               )}
@@ -177,9 +190,17 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
 
             {/* Show More link for compact view */}
             {showCompact && skills.length > 5 && (
-              <Button size="$2" chromeless onPress={() => router.push('/dashboard/profile/skills')}>
-                View all {skills.length} skills
-              </Button>
+              <Text
+                color="$blue7"
+                fontSize="$3"
+                fontWeight="600"
+                cursor="pointer"
+                hoverStyle={{ color: '$blue8' }}
+                pressStyle={{ color: '$blue9' }}
+                onPress={() => router.push('/dashboard/profile/skills')}
+              >
+                View all {skills.length} skills →
+              </Text>
             )}
           </YStack>
         )}

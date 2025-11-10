@@ -17,6 +17,7 @@ export { ProfileEmploymentRight } from './profile-employment-right'
 // Skills Profile Components
 export { ProfileSkillsLeft } from './profile-skills-left'
 export { ProfileSkillsRight } from './profile-skills-right'
+export { ProfileSkillsProvider, useProfileSkillsContext } from './profile-skills-context'
 
 // Certifications Profile Components
 export { ProfileCertificationsLeft } from './profile-certifications-left'

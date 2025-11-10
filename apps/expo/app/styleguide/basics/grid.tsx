@@ -1,9 +1,9 @@
 // @ts-nocheck
 import React from 'react'
 import { Paragraph, Text, XStack, YStack } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
-import { ExampleCard } from '../_components/ExampleCard'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
+import { ExampleCard } from '@app/styleguide'
 
 const columns = Array.from({ length: 12 }, (_, index) => index + 1)
 
@@ -34,11 +34,11 @@ export default function GridPage() {
                 key={column}
                 width="8.33%"
                 minWidth={88}
-                backgroundColor="$color5"
+                bg="$color5"
                 borderRadius="$3"
                 padding="$2"
                 alignItems="center"
-                justifyContent="center"
+                justify="center"
               >
                 <Text fontSize={12} color="$color11">
                   {column}

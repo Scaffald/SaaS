@@ -223,7 +223,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             {/* CTA Button */}
             <Button
               size="$5"
-              theme="blue"
+              theme="info"
               iconAfter={<ExternalLink size={18} />}
               onPress={handleViewFullDetails}
             >

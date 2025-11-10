@@ -1,20 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react'
+import type React from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useWindowDimensions } from 'react-native'
-import {
-  YStack,
-  XStack,
-  Text,
-  Button,
-  Input,
-  H4,
-  Spinner,
-  AnimatePresence,
-  Slider,
-  Checkbox,
-  Label,
-} from 'tamagui'
+import { YStack, XStack, Text, Button, Input, H4, Spinner, AnimatePresence, Slider, Label } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, useController, type Control } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   api,
@@ -25,17 +14,117 @@ import {
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
 } from '@app/core/utils/api'
-import { DashboardWidget, LocationListInput, ToggleCard, ConfirmationDialog } from '@app/ui'
+import { invalidateProfileQueries } from './utils/profile-sync'
 import {
-  Flag,
-  MapPin,
-  Plane,
-  DollarSign,
-  Car,
-  Shield,
-  Calendar,
-  Check,
-} from '@tamagui/lucide-icons'
+  startProfileSync,
+  completeProfileSync,
+  failProfileSync,
+  resetProfileSyncError,
+  useAdaptiveProfileSync,
+} from './utils/profile-sync-store'
+import { CustomCheckbox, DashboardWidget, LocationListInput, ToggleCard, ConfirmationDialog } from '@app/ui'
+import { Flag, MapPin, Plane, DollarSign, Car, Shield, Calendar } from '@tamagui/lucide-icons'
+
+type MultiSelectFieldName = 'drivers_license_classes' | 'military_status' | 'availability'
+
+type UpdateEmploymentInput = EmploymentProfileFormData
+
+interface UpdateEmploymentContext {
+  previousEmployment?: EmploymentProfileFormData | undefined
+}
+
+interface MultiSelectToggleFieldProps {
+  control: Control<EmploymentProfileFormData>
+  name: MultiSelectFieldName
+  icon: React.ReactNode
+  title: string
+  description: string
+  options: readonly string[]
+  testID?: string
+  onToggleChange?: (checked: boolean) => void
+}
+
+function MultiSelectToggleField({
+  control,
+  name,
+  icon,
+  title,
+  description,
+  options,
+  testID,
+  onToggleChange,
+}: MultiSelectToggleFieldProps) {
+  const {
+    field: { value, onChange },
+  } = useController({
+    control,
+    name,
+  })
+
+  const selectedValues = value ?? []
+  const hasValues = selectedValues.length > 0
+  const [isExpanded, setIsExpanded] = useState(hasValues)
+
+  useEffect(() => {
+    setIsExpanded(hasValues)
+  }, [hasValues])
+
+  useEffect(() => {
+    onToggleChange?.(hasValues || isExpanded)
+  }, [hasValues, isExpanded, onToggleChange])
+
+  const handleToggleChange = (checked: boolean) => {
+    setIsExpanded(checked)
+    if (!checked) {
+      onChange([])
+    }
+    onToggleChange?.(checked)
+  }
+
+  const handleOptionChange = (option: string, checked: boolean) => {
+    const nextChecked = checked === true
+    if (nextChecked) {
+      if (!selectedValues.includes(option)) {
+        onChange([...selectedValues, option])
+      }
+      return
+    }
+
+    onChange(selectedValues.filter((item) => item !== option))
+  }
+
+  return (
+    <ToggleCard
+      icon={icon}
+      title={title}
+      description={description}
+      checked={isExpanded || hasValues}
+      onCheckedChange={(checked) => handleToggleChange(Boolean(checked))}
+      testID={testID}
+      expandedContent={
+        <YStack gap="$2" pt="$2">
+          {options.map((option) => {
+            const checkboxId = `${name}-${option.replace(/\s+/g, '-').toLowerCase()}`
+            const isChecked = selectedValues.includes(option)
+            return (
+              <XStack key={option} gap="$3" items="center">
+                <CustomCheckbox
+                  aria-label={option}
+                  checked={isChecked}
+                  onCheckedChange={(value) => handleOptionChange(option, value)}
+                  testID={checkboxId}
+                />
+                <Label cursor="pointer" onPress={() => handleOptionChange(option, !isChecked)}>
+                  {option}
+                </Label>
+              </XStack>
+            )
+          })}
+        </YStack>
+      }
+    />
+  )
+}
 
 /**
  * Profile Employment Left Component
@@ -46,26 +135,52 @@ export function ProfileEmploymentLeft() {
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<EmploymentProfileFormData | null>(null)
   const toast = useToastController()
+  const utils = api.useContext()
+  const syncStatus = useAdaptiveProfileSync(300)
+  const isSyncing = syncStatus === 'syncing'
 
   // Use tRPC to fetch and update employment data
   const {
     data: employmentData,
     isLoading: isLoadingEmployment,
-    refetch,
+    isFetching: isFetchingEmployment,
   } = api.profile.getEmployment.useQuery()
   const updateEmploymentMutation = api.profile.updateEmployment.useMutation({
-    onSuccess: () => {
+    async onMutate(input: UpdateEmploymentInput): Promise<UpdateEmploymentContext> {
+      resetProfileSyncError()
+      startProfileSync()
+      await utils.profile.getEmployment.cancel()
+      const previousEmployment = utils.profile.getEmployment.getData()
+      utils.profile.getEmployment.setData(undefined, (current: EmploymentProfileFormData | undefined) => ({
+        ...(current ?? profileEmploymentDefaults),
+        ...input,
+      }))
+      return { previousEmployment }
+    },
+    onError: (error: unknown, _input: UpdateEmploymentInput, context?: UpdateEmploymentContext) => {
+      console.error('Error saving employment:', error)
+      if (context?.previousEmployment) {
+        utils.profile.getEmployment.setData(undefined, context.previousEmployment)
+      }
+      failProfileSync()
+      toast.show('Error', {
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Failed to save employment preferences. Please try again.',
+      })
+    },
+    onSuccess: async () => {
       toast.show('Employment Updated', {
         message: 'Your employment preferences have been saved successfully!',
       })
-      refetch()
+      await utils.profile.getEmployment.invalidate()
     },
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
-    onError: (error: any) => {
-      console.error('Error saving employment:', error)
-      toast.show('Error', {
-        message: error.message || 'Failed to save employment preferences. Please try again.',
-      })
+    onSettled: async (_data: { success: boolean } | undefined, error: unknown) => {
+      if (!error) {
+        completeProfileSync()
+      }
+      await invalidateProfileQueries(utils)
     },
   })
 
@@ -75,6 +190,8 @@ export function ProfileEmploymentLeft() {
     formState: { errors, isDirty },
     watch,
     reset,
+    setError,
+    clearErrors,
   } = useForm<EmploymentProfileFormData>({
     resolver: zodResolver(profileEmploymentInputSchema),
     defaultValues: profileEmploymentDefaults,
@@ -82,18 +199,105 @@ export function ProfileEmploymentLeft() {
   })
 
   const _openToTravel = watch('open_to_travel')
+  const usResidentValue = watch('us_resident')
+  const usPassportValue = watch('us_passport')
+  const authorizedCountriesValue = watch('authorized_countries')
+  const driversLicenseClassesValue = watch('drivers_license_classes')
+  const travelDistanceValue = watch('travel_distance_miles')
+  const driversLicenseToggleRef = useRef(false)
+
+  useEffect(() => {
+    const hasResidencyStatus =
+      Boolean(usResidentValue) ||
+      Boolean(usPassportValue) ||
+      (Array.isArray(authorizedCountriesValue) && authorizedCountriesValue.length > 0)
+
+    if (hasResidencyStatus) {
+      clearErrors(['us_resident', 'us_passport', 'authorized_countries'])
+    }
+  }, [usResidentValue, usPassportValue, authorizedCountriesValue, clearErrors])
+
+  useEffect(() => {
+    if (Array.isArray(driversLicenseClassesValue) && driversLicenseClassesValue.length > 0) {
+      clearErrors('drivers_license_classes')
+    }
+  }, [driversLicenseClassesValue, clearErrors])
+
+  useEffect(() => {
+    if (travelDistanceValue !== undefined && travelDistanceValue !== null) {
+      clearErrors('travel_distance_miles')
+    }
+  }, [travelDistanceValue, clearErrors])
 
   // Reset form when employment data is loaded
   useEffect(() => {
-    if (employmentData) {
-      reset(employmentData)
-      originalDataRef.current = employmentData
+    if (!employmentData || isLoadingEmployment || isFetchingEmployment) {
+      return
     }
-  }, [employmentData, reset])
+
+    const previousSerialized = originalDataRef.current ? JSON.stringify(originalDataRef.current) : null
+    const nextSerialized = JSON.stringify(employmentData)
+
+    if (previousSerialized === nextSerialized) {
+      return
+    }
+
+    reset(employmentData)
+    originalDataRef.current = employmentData
+  }, [employmentData, isLoadingEmployment, isFetchingEmployment, reset])
 
   const onSubmit = async (data: EmploymentProfileFormData) => {
     console.log('✅ Form submission started')
     console.log('📋 Form data:', JSON.stringify(data, null, 2))
+    clearErrors([
+      'us_resident',
+      'us_passport',
+      'authorized_countries',
+      'drivers_license_classes',
+      'travel_distance_miles',
+    ])
+
+    const hasResidencyStatus =
+      Boolean(data.us_resident) ||
+      Boolean(data.us_passport) ||
+      (Array.isArray(data.authorized_countries) && data.authorized_countries.length > 0)
+
+    if (!hasResidencyStatus) {
+      setError('us_resident', {
+        type: 'manual',
+        message: 'Please indicate your work authorization status',
+      })
+      toast.show('Validation Error', {
+        message: 'Please indicate your work authorization status',
+      })
+      return
+    }
+
+    if (
+      driversLicenseToggleRef.current &&
+      (!Array.isArray(data.drivers_license_classes) || data.drivers_license_classes.length === 0)
+    ) {
+      setError('drivers_license_classes', {
+        type: 'manual',
+        message: 'Please select at least one license class',
+      })
+      toast.show('Validation Error', {
+        message: 'Please select at least one license class',
+      })
+      return
+    }
+
+    if (data.open_to_travel && (data.travel_distance_miles === undefined || data.travel_distance_miles === null)) {
+      setError('travel_distance_miles', {
+        type: 'manual',
+        message: 'Please select a travel distance',
+      })
+      toast.show('Validation Error', {
+        message: 'Please select a travel distance',
+      })
+      return
+    }
+
     setIsLoading(true)
     try {
       await updateEmploymentMutation.mutateAsync(data)
@@ -206,8 +410,9 @@ export function ProfileEmploymentLeft() {
                     icon={<Plane size="$2" color="$color11" />}
                     title="Willing to Travel"
                     description="I am available for work assignments that require travel"
-                    checked={field.value || false}
-                    onCheckedChange={field.onChange}
+                    checked={field.value ?? false}
+                    onCheckedChange={(checked) => field.onChange(Boolean(checked))}
+                    cardPressDisabled
                     expandedContent={
                       <YStack gap="$3" pt="$2">
                         <Text fontSize="$3" fontWeight="500" color="$color11">
@@ -219,27 +424,27 @@ export function ProfileEmploymentLeft() {
                           render={({ field: distanceField }) => (
                             <YStack gap="$3">
                               <Slider
-                                value={[distanceField.value ?? 50]}
+                                value={[distanceField.value ?? 25]}
                                 onValueChange={([value]) => distanceField.onChange(value)}
-                                min={5}
-                                max={100}
+                                min={10}
+                                max={250}
                                 step={5}
                                 size="$1"
                               >
-                                <Slider.Track>
-                                  <Slider.TrackActive />
+                                <Slider.Track bg="$color4">
+                                  <Slider.TrackActive bg="$blue9" />
                                 </Slider.Track>
                                 <Slider.Thumb index={0} circular />
                               </Slider>
                               <XStack justify="space-between" items="center">
                                 <Text fontSize="$2" color="$color9">
-                                  5 miles
+                                  10 miles
                                 </Text>
                                 <Text fontSize="$3" fontWeight="600" color="$color12">
-                                  {distanceField.value ?? 50} miles
+                                  {distanceField.value ?? 25} miles
                                 </Text>
                                 <Text fontSize="$2" color="$color9">
-                                  100 miles
+                                  250 miles
                                 </Text>
                               </XStack>
                             </YStack>
@@ -250,6 +455,11 @@ export function ProfileEmploymentLeft() {
                   />
                 )}
               />
+              {errors.travel_distance_miles && (
+                <Text color="$red10" fontSize="$2">
+                  {errors.travel_distance_miles.message?.toString()}
+                </Text>
+              )}
             </YStack>
 
             {/* Residency */}
@@ -263,8 +473,8 @@ export function ProfileEmploymentLeft() {
                     icon={<Flag size="$2" color="$color11" />}
                     title="US Resident"
                     description="I am a resident of the United States"
-                    checked={field.value || false}
-                    onCheckedChange={field.onChange}
+                    checked={field.value ?? false}
+                    onCheckedChange={(checked) => field.onChange(Boolean(checked))}
                   />
                 )}
               />
@@ -276,200 +486,65 @@ export function ProfileEmploymentLeft() {
                     icon={<MapPin size="$2" color="$color11" />}
                     title="US Passport"
                     description="I have a valid United States passport"
-                    checked={field.value || false}
-                    onCheckedChange={field.onChange}
+                    checked={field.value ?? false}
+                    onCheckedChange={(checked) => field.onChange(Boolean(checked))}
                   />
                 )}
               />
             </YStack>
+            {errors.us_resident && (
+              <Text color="$red10" fontSize="$2">
+                {errors.us_resident.message?.toString()}
+              </Text>
+            )}
 
             {/* Drivers License */}
             <YStack gap="$3">
               <Text fontWeight="600">Driver's License</Text>
-              <Controller
-                name="drivers_license_classes"
+              <MultiSelectToggleField
                 control={control}
-                render={({ field }) => {
-                  const hasValues = !!(field.value && field.value.length > 0)
-                  const [isExpanded, setIsExpanded] = useState(hasValues)
-
-                  // Sync expanded state with checkbox values
-                  useEffect(() => {
-                    setIsExpanded(hasValues)
-                  }, [hasValues])
-
-                  return (
-                    <ToggleCard
-                      icon={<Car size="$2" color="$color11" />}
-                      title="I have a valid driver's license"
-                      description="Select all license classes that apply"
-                      checked={hasValues || isExpanded}
-                      onCheckedChange={(checked) => {
-                        setIsExpanded(checked)
-                        if (!checked) {
-                          field.onChange([])
-                        }
-                      }}
-                      expandedContent={
-                        <YStack gap="$2" pt="$2">
-                          {DRIVERS_LICENSE_OPTIONS.map((license) => {
-                            const checkboxId = `license-${license.replace(/\s+/g, '-').toLowerCase()}`
-                            return (
-                              <XStack key={license} gap="$3" items="center">
-                                <Checkbox
-                                  id={checkboxId}
-                                  checked={field.value?.includes(license) || false}
-                                  onCheckedChange={(checked) => {
-                                    const current = field.value || []
-                                    if (checked === true) {
-                                      field.onChange([...current, license])
-                                    } else {
-                                      const filtered = current.filter((l) => l !== license)
-                                      field.onChange(filtered)
-                                    }
-                                  }}
-                                >
-                                  <Checkbox.Indicator>
-                                    <Check size={16} />
-                                  </Checkbox.Indicator>
-                                </Checkbox>
-                                <Label htmlFor={checkboxId} cursor="pointer">
-                                  {license}
-                                </Label>
-                              </XStack>
-                            )
-                          })}
-                        </YStack>
-                      }
-                    />
-                  )
+                name="drivers_license_classes"
+                icon={<Car size="$2" color="$color11" />}
+                title="I have a valid driver's license"
+                description="Select all license classes that apply"
+                options={DRIVERS_LICENSE_OPTIONS}
+                testID="drivers-license-toggle"
+                onToggleChange={(checked) => {
+                  driversLicenseToggleRef.current = checked
                 }}
               />
+              {errors.drivers_license_classes && (
+                <Text color="$red10" fontSize="$2">
+                  {errors.drivers_license_classes.message?.toString()}
+                </Text>
+              )}
             </YStack>
 
             {/* Military Status */}
             <YStack gap="$3">
               <Text fontWeight="600">Military Status</Text>
-              <Controller
-                name="military_status"
+              <MultiSelectToggleField
                 control={control}
-                render={({ field }) => {
-                  const hasValues = !!(field.value && field.value.length > 0)
-                  const [isExpanded, setIsExpanded] = useState(hasValues)
-
-                  // Sync expanded state with checkbox values
-                  useEffect(() => {
-                    setIsExpanded(hasValues)
-                  }, [hasValues])
-
-                  return (
-                    <ToggleCard
-                      icon={<Shield size="$2" color="$color11" />}
-                      title="Former/Current Military"
-                      description="Select all that apply"
-                      checked={hasValues || isExpanded}
-                      onCheckedChange={(checked) => {
-                        setIsExpanded(checked)
-                        if (!checked) {
-                          field.onChange([])
-                        }
-                      }}
-                      expandedContent={
-                        <YStack gap="$2" pt="$2">
-                          {MILITARY_STATUS_OPTIONS.map((status) => {
-                            const checkboxId = `military-${status.replace(/\s+/g, '-').toLowerCase()}`
-                            return (
-                              <XStack key={status} gap="$3" items="center">
-                                <Checkbox
-                                  id={checkboxId}
-                                  checked={field.value?.includes(status) || false}
-                                  onCheckedChange={(checked) => {
-                                    const current = field.value || []
-                                    if (checked === true) {
-                                      field.onChange([...current, status])
-                                    } else {
-                                      field.onChange(current.filter((s) => s !== status))
-                                    }
-                                  }}
-                                >
-                                  <Checkbox.Indicator>
-                                    <Check size={16} />
-                                  </Checkbox.Indicator>
-                                </Checkbox>
-                                <Label htmlFor={checkboxId} cursor="pointer">
-                                  {status}
-                                </Label>
-                              </XStack>
-                            )
-                          })}
-                        </YStack>
-                      }
-                    />
-                  )
-                }}
+                name="military_status"
+                icon={<Shield size="$2" color="$color11" />}
+                title="Former/Current Military"
+                description="Select all that apply"
+                options={MILITARY_STATUS_OPTIONS}
+                testID="military-status-toggle"
               />
             </YStack>
 
             {/* Availability */}
             <YStack gap="$3">
               <Text fontWeight="600">Availability</Text>
-              <Controller
-                name="availability"
+              <MultiSelectToggleField
                 control={control}
-                render={({ field }) => {
-                  const hasValues = !!(field.value && field.value.length > 0)
-                  const [isExpanded, setIsExpanded] = useState(hasValues)
-
-                  // Sync expanded state with checkbox values
-                  useEffect(() => {
-                    setIsExpanded(hasValues)
-                  }, [hasValues])
-
-                  return (
-                    <ToggleCard
-                      icon={<Calendar size="$2" color="$color11" />}
-                      title="I'm available for work"
-                      description="Select all that apply"
-                      checked={hasValues || isExpanded}
-                      onCheckedChange={(checked) => {
-                        setIsExpanded(checked)
-                        if (!checked) {
-                          field.onChange([])
-                        }
-                      }}
-                      expandedContent={
-                        <YStack gap="$2" pt="$2">
-                          {AVAILABILITY_OPTIONS.map((option) => {
-                            const checkboxId = `availability-${option.replace(/\s+/g, '-').toLowerCase()}`
-                            return (
-                              <XStack key={option} gap="$3" items="center">
-                                <Checkbox
-                                  id={checkboxId}
-                                  checked={field.value?.includes(option) || false}
-                                  onCheckedChange={(checked) => {
-                                    const current = field.value || []
-                                    if (checked === true) {
-                                      field.onChange([...current, option])
-                                    } else {
-                                      field.onChange(current.filter((a) => a !== option))
-                                    }
-                                  }}
-                                >
-                                  <Checkbox.Indicator>
-                                    <Check size={16} />
-                                  </Checkbox.Indicator>
-                                </Checkbox>
-                                <Label htmlFor={checkboxId} cursor="pointer">
-                                  {option}
-                                </Label>
-                              </XStack>
-                            )
-                          })}
-                        </YStack>
-                      }
-                    />
-                  )
-                }}
+                name="availability"
+                icon={<Calendar size="$2" color="$color11" />}
+                title="I'm available for work"
+                description="Select all that apply"
+                options={AVAILABILITY_OPTIONS}
+                testID="availability-toggle"
               />
             </YStack>
 
@@ -487,10 +562,10 @@ export function ProfileEmploymentLeft() {
                 onPress={handleSubmit(onSubmit, onFormError)}
                 disabled={!isDirty || isLoading}
                 opacity={!isDirty || isLoading ? 0.5 : 1}
-                space={isLoading ? '$2' : 0}
+                space={isSyncing ? '$2' : 0}
               >
                 <AnimatePresence>
-                  {isLoading && (
+                  {isSyncing && (
                     <Button.Icon>
                       <Spinner
                         animation="bouncy"
@@ -504,7 +579,7 @@ export function ProfileEmploymentLeft() {
                     </Button.Icon>
                   )}
                 </AnimatePresence>
-                <Button.Text>{isLoading ? 'Saving...' : 'Save Changes'}</Button.Text>
+                <Button.Text>{isSyncing ? 'Saving...' : 'Save Changes'}</Button.Text>
               </Button>
             </XStack>
 

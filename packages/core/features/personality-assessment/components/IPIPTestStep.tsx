@@ -87,11 +87,17 @@ export function IPIPTestStep({
 
   if (isComplete) {
     return (
-      <YStack gap="$6" maxWidth={800} width="100%" alignSelf="center" items="center" p="$8">
+      <YStack
+        gap="$6"
+        width="100%"
+        items="center"
+        p="$8"
+        style={{ maxWidth: 800, alignSelf: 'center' }}
+      >
         <Text fontSize="$8" fontWeight="bold" color="$green10">
           ✓ All Questions Complete!
         </Text>
-        <Text fontSize="$4" color="$color11" textAlign="center">
+        <Text fontSize="$4" color="$color11" style={{ textAlign: 'center' }}>
           You've answered all 120 questions. Great job!
         </Text>
       </YStack>
@@ -109,7 +115,7 @@ export function IPIPTestStep({
   }
 
   return (
-    <YStack gap="$6" maxWidth={800} width="100%" alignSelf="center">
+    <YStack gap="$6" width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
       {/* Progress Bar */}
       <YStack gap="$2">
         <XStack justify="space-between" items="center">
@@ -127,7 +133,13 @@ export function IPIPTestStep({
 
       {/* Question */}
       <YStack gap="$4" p="$6" bg="$color2" rounded="$4" borderWidth={1} borderColor="$borderColor">
-        <Text fontSize="$7" fontWeight="bold" color="$color12" textAlign="center" lineHeight="$6">
+        <Text
+          fontSize="$7"
+          fontWeight="bold"
+          color="$color12"
+          style={{ textAlign: 'center' }}
+          lineHeight="$6"
+        >
           I {currentQuestion.text.toLowerCase()}
         </Text>
       </YStack>
@@ -162,7 +174,7 @@ export function IPIPTestStep({
         >
           Previous
         </Button>
-        <Text fontSize="$3" color="$color11" alignSelf="center">
+        <Text fontSize="$3" color="$color11" style={{ alignSelf: 'center' }}>
           {answers.length} answers saved
         </Text>
       </XStack>

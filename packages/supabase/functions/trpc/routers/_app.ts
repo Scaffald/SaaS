@@ -9,6 +9,7 @@ import { onetRouter } from "./onet.router.ts";
 import { organizationsRouter } from "./organizations.router.ts";
 import { prerequisitesRouter } from "./prerequisites.router.ts";
 import { profileRouter } from "./profile/index.ts";
+import { profileWizardRouter } from "./profile/profileWizard.router.ts";
 import { reviewsRouter } from "./reviews.router.ts";
 import { userProfileRouter } from "./user-profile.router.ts";
 import { workersRouter } from "./workers.router.ts";
@@ -16,6 +17,7 @@ import { mapRouter } from "./map.router.ts";
 import { notificationsRouter } from "./notifications.router.ts";
 import { portfolioRouter } from "./portfolio.router.ts";
 import { personalityAssessmentRouter } from "./personality-assessment.router.ts";
+import { resumeRouter } from "./resume.router.ts";
 
 /**
  * Main application router
@@ -23,6 +25,7 @@ import { personalityAssessmentRouter } from "./personality-assessment.router.ts"
  */
 export const appRouter = t.router({
   profile: profileRouter,
+  profileWizard: profileWizardRouter,
   auth: authRouter,
   cms: cmsRouter,
   office: officeRouter,
@@ -39,6 +42,7 @@ export const appRouter = t.router({
   notifications: notificationsRouter,
   portfolio: portfolioRouter,
   personalityAssessment: personalityAssessmentRouter,
+  resume: resumeRouter,
 });
 
 // Export the router type for client-side usage

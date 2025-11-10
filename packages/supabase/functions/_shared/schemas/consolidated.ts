@@ -1,22 +1,184 @@
 import { z } from "zod";
+// @ts-ignore - Deno requires .ts extension for relative imports
+import {
+  phoneNumberSchema,
+} from "../phone.ts";
 
 // Phone validation helper (matches frontend validation)
-const phoneNumberSchema = z
-  .string()
-  .optional()
-  .refine(
-    (phone) => {
-      if (!phone) return true; // Optional field
-      // Remove all formatting characters for validation
-      const digitsOnly = phone.replace(/[^\d]/g, "");
-      // Must have at least 10 digits (for US/international numbers)
-      // and no more than 15 digits (E.164 standard max)
-      return digitsOnly.length >= 10 && digitsOnly.length <= 15;
-    },
-    {
-      message: "Please enter a valid phone number",
-    },
-  );
+const optionalPhoneNumberSchema = phoneNumberSchema;
+
+// =============================================================================
+// PROFILE WIZARD SCHEMAS & CONSTANTS
+// =============================================================================
+
+export const PROFILE_WIZARD_STEPS = [
+  "general",
+  "skills",
+  "experience",
+  "certifications",
+  "preferences",
+  "education",
+] as const;
+
+export type ProfileWizardStepId = typeof PROFILE_WIZARD_STEPS[number];
+
+export const PROFILE_WIZARD_OPTIONAL_STEPS: ProfileWizardStepId[] = [
+  "certifications",
+  "education",
+];
+
+export const PROFILE_WIZARD_REQUIRED_STEPS = PROFILE_WIZARD_STEPS.filter(
+  (step) => !PROFILE_WIZARD_OPTIONAL_STEPS.includes(step),
+) as ProfileWizardStepId[];
+
+export const PROFILE_WIZARD_STEP_WEIGHTS: Record<ProfileWizardStepId, number> = {
+  general: 20,
+  skills: 20,
+  experience: 20,
+  certifications: 10,
+  preferences: 15,
+  education: 15,
+};
+
+export const profileWizardStepSchema = z.enum(PROFILE_WIZARD_STEPS);
+
+const generalStepSchema = z.object({
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  headline: z.string().optional(),
+  bio: z.string().nullable().optional(),
+}).strip();
+
+const skillsStepSchema = z.object({
+  skills: z.array(
+    z.object({
+      id: z.string().optional(),
+      name: z.string(),
+      taxonomy: z.enum(["csi", "onet"]).optional(),
+      proficiency: z.number().int().min(1).max(5).optional(),
+    }),
+  ).optional(),
+}).strip();
+
+const experienceStepSchema = z.object({
+  jobTitle: z.string().optional(),
+  companyName: z.string().optional(),
+  startDate: z.string().nullable().optional(),
+  endDate: z.string().nullable().optional(),
+  isCurrent: z.boolean().optional(),
+  summary: z.string().nullable().optional(),
+}).strip();
+
+const certificationEntrySchema = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string().optional(),
+  issuer: z.string().optional(),
+  issuedOn: z.string().nullable().optional(),
+  expiresOn: z.string().nullable().optional(),
+}).strip();
+
+const certificationsStepSchema = z.object({
+  certifications: z.array(certificationEntrySchema).optional(),
+}).strip();
+
+const preferencesStepSchema = z.object({
+  locationPreference: z.string().nullable().optional(),
+  hourlyRate: z.string().nullable().optional(),
+  availability: z.string().nullable().optional(),
+  remotePreference: z.enum(["remote", "hybrid", "onsite"]).nullable().optional(),
+}).strip();
+
+const educationStepSchema = z.object({
+  degreeType: z.string().optional(),
+  institutionName: z.string().optional(),
+  startDate: z.string().nullable().optional(),
+  endDate: z.string().nullable().optional(),
+  isCurrent: z.boolean().optional(),
+}).strip();
+
+const profileWizardStepSchemas = {
+  general: generalStepSchema,
+  skills: skillsStepSchema,
+  experience: experienceStepSchema,
+  certifications: certificationsStepSchema,
+  preferences: preferencesStepSchema,
+  education: educationStepSchema,
+} as const;
+
+export type ProfileWizardStepData = {
+  [Step in ProfileWizardStepId]?: z.infer<(typeof profileWizardStepSchemas)[Step]>;
+};
+
+const profileWizardStepDataSchema = z.object({
+  general: generalStepSchema.optional(),
+  skills: skillsStepSchema.optional(),
+  experience: experienceStepSchema.optional(),
+  certifications: certificationsStepSchema.optional(),
+  preferences: preferencesStepSchema.optional(),
+  education: educationStepSchema.optional(),
+}).partial().strip();
+
+export const profileWizardSaveStepInputSchema = z.discriminatedUnion("step", [
+  z.object({
+    step: z.literal("general"),
+    data: generalStepSchema,
+    skip: z.boolean().optional(),
+  }),
+  z.object({
+    step: z.literal("skills"),
+    data: skillsStepSchema,
+    skip: z.boolean().optional(),
+  }),
+  z.object({
+    step: z.literal("experience"),
+    data: experienceStepSchema,
+    skip: z.boolean().optional(),
+  }),
+  z.object({
+    step: z.literal("certifications"),
+    data: certificationsStepSchema,
+    skip: z.boolean().optional(),
+  }),
+  z.object({
+    step: z.literal("preferences"),
+    data: preferencesStepSchema,
+    skip: z.boolean().optional(),
+  }),
+  z.object({
+    step: z.literal("education"),
+    data: educationStepSchema,
+    skip: z.boolean().optional(),
+  }),
+]);
+
+export const profileWizardCompleteInputSchema = z.object({
+  celebrate: z.boolean().optional(),
+}).strip();
+
+export const profileWizardProgressSchema = z.object({
+  currentStep: profileWizardStepSchema,
+  completedSteps: z.array(profileWizardStepSchema),
+  completionPercentage: z.number().min(0).max(100),
+  lastSavedAt: z.string().datetime().nullable(),
+  requiredSteps: z.array(profileWizardStepSchema),
+  completedAt: z.string().datetime().nullable().optional(),
+  stepData: profileWizardStepDataSchema.default({}),
+}).strip();
+
+export type ProfileWizardProgress = z.infer<typeof profileWizardProgressSchema>;
+export type ProfileWizardSaveStepInput = z.infer<
+  typeof profileWizardSaveStepInputSchema
+>;
+
+export const profileWizardDefaultProgress: ProfileWizardProgress = {
+  currentStep: PROFILE_WIZARD_STEPS[0],
+  completedSteps: [],
+  completionPercentage: 0,
+  lastSavedAt: null,
+  requiredSteps: PROFILE_WIZARD_REQUIRED_STEPS,
+  completedAt: null,
+  stepData: {},
+};
 
 /**
  * Consolidated schemas for tRPC operations
@@ -50,7 +212,7 @@ export const profileGeneralInputSchema = z.object({
   avatar_path: z.union([z.string().url(), z.string().min(1), z.literal("")])
     .optional(),
   email: z.string().email().optional(),
-  phone: phoneNumberSchema,
+  phone: optionalPhoneNumberSchema,
   // About field accepts both string (legacy) and JSONContent (TipTap format)
   about: z.union([
     z.string().max(500, "About section must be 500 characters or less"),
@@ -67,7 +229,7 @@ export const profileGeneralOutputSchema = z.object({
   last_name: z.string(),
   avatar_path: z.string(),
   email: z.string(),
-  phone: z.string(),
+  phone: optionalPhoneNumberSchema,
   about: z.string(),
   address: addressSchema.nullable(),
 });
@@ -117,7 +279,7 @@ export const profileEmploymentInputSchema = z
 
     // Travel preferences
     open_to_travel: z.boolean().optional(),
-    travel_distance_miles: z.number().max(100).optional(),
+    travel_distance_miles: z.number().min(10).max(250).optional(),
 
     // Residency (multiple countries but keep US boolean)
     us_resident: z.boolean().optional(),
@@ -141,7 +303,39 @@ export const profileEmploymentInputSchema = z
     // Hourly Rate (no minimum, max 200)
     hourly_rate: z.number().max(200).optional(),
   })
-  .partial();
+  .partial()
+  .superRefine((data, ctx) => {
+    const residencyFieldsProvided =
+      typeof data.us_resident !== 'undefined' ||
+      typeof data.us_passport !== 'undefined' ||
+      typeof data.authorized_countries !== 'undefined';
+
+    if (residencyFieldsProvided) {
+      const hasResidencyStatus =
+        Boolean(data.us_resident) ||
+        Boolean(data.us_passport) ||
+        (Array.isArray(data.authorized_countries) && data.authorized_countries.length > 0);
+
+      if (!hasResidencyStatus) {
+        ctx.addIssue({
+          path: ['us_resident'],
+          code: z.ZodIssueCode.custom,
+          message: 'Please indicate your work authorization status',
+        });
+      }
+    }
+
+    if (
+      data.open_to_travel === true &&
+      (data.travel_distance_miles === undefined || data.travel_distance_miles === null)
+    ) {
+      ctx.addIssue({
+        path: ['travel_distance_miles'],
+        code: z.ZodIssueCode.custom,
+        message: 'Please select a travel distance',
+      });
+    }
+  });
 
 export const profileEmploymentOutputSchema = z.object({
   preferred_work_locations: z.array(z.string()),
@@ -334,10 +528,40 @@ export const industrySchema = z.object({
 // AVATAR UPLOAD SCHEMA
 // =============================================================================
 
+/**
+ * Avatar upload payload validation
+ *
+ * Validates client-supplied avatar images before they reach Supabase storage.
+ * Guards against oversized payloads, unexpected MIME types, and mismatched filenames.
+ */
 export const uploadAvatarInputSchema = z.object({
-  file: z.string(), // Base64 encoded file
-  fileName: z.string(),
-  contentType: z.string(),
+  file: z
+    .string()
+    .min(1, 'Image data is required')
+    .max(13_421_772, 'Image file size must be under 10MB') // 10MB base64 ≈ 13.4MB
+    .regex(
+      /^data:image\/(jpeg|jpg|png|webp);base64,/,
+      'Invalid image format. Please provide a JPG, PNG, or WebP image.',
+    ),
+  fileName: z
+    .string()
+    .min(1, 'Filename is required')
+    .regex(
+      /\.(jpg|jpeg|png|webp)$/i,
+      'Filename must end with .jpg, .jpeg, .png, or .webp.',
+    ),
+  contentType: z
+    .string()
+    .refine(
+      (type) =>
+        type === 'image/jpeg' ||
+        type === 'image/jpg' ||
+        type === 'image/png' ||
+        type === 'image/webp',
+      {
+        message: 'Content type must be image/jpeg, image/png, or image/webp.',
+      },
+    ),
 });
 
 export const uploadAvatarOutputSchema = z.object({

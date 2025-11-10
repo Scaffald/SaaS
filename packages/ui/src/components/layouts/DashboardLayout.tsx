@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
-import { YStack, XStack, ScrollView, useWindowDimensions } from 'tamagui'
-import { Breadcrumb, useBreadcrumbs, type BreadcrumbItem } from '@app/ui'
+import { useWindowDimensions, ScrollView, XStack, YStack } from 'tamagui'
+import { Breadcrumb, type BreadcrumbItem } from '../Breadcrumb'
+import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
 type DashboardLayoutProps = {
   rightContent?: ReactNode
@@ -22,6 +23,8 @@ export const DashboardLayout = ({
 }: DashboardLayoutProps) => {
   const { width } = useWindowDimensions()
   const isSmallScreen = width < 640
+  const isTablet = width >= 640 && width < 1024
+  const isDesktop = width >= 1024
 
   // Auto-generate breadcrumbs if enabled and no manual override
   const { breadcrumbs } = useBreadcrumbs({
@@ -32,9 +35,23 @@ export const DashboardLayout = ({
   // Determine which breadcrumbs to display
   const displayBreadcrumbs = breadcrumbItems || breadcrumbs
 
+  const hasLeftContent = Boolean(leftContent)
+  const hasRightContent = Boolean(rightContent)
+  const hasBothColumns = hasLeftContent && hasRightContent
+
+  const leftColumnWidth = !hasBothColumns ? '100%' : isDesktop ? '70%' : isTablet ? '60%' : '100%'
+  const rightColumnWidth = !hasBothColumns ? '100%' : isDesktop ? '30%' : isTablet ? '40%' : '100%'
+  const rightColumnMaxHeight = hasBothColumns
+    ? isDesktop
+      ? 620
+      : isTablet
+        ? 540
+        : undefined
+    : undefined
+
   return (
-    <ScrollView flex={1} bg="$color2" pt="$3" pb="$5" showsVerticalScrollIndicator={false}>
-      <YStack gap="$3">
+    <ScrollView flex={1} bg="$color2" showsVerticalScrollIndicator={false}>
+      <YStack gap="$3" pt="$3" pb="$5">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
           <XStack px={isSmallScreen ? '$3' : '$7'} pt="$3">
@@ -48,14 +65,32 @@ export const DashboardLayout = ({
           flexDirection={isSmallScreen ? 'column' : 'row'}
           p={isSmallScreen ? '$3' : '$7'}
         >
-          {leftContent && (
-            <YStack minW={300} flex={2}>
+          {hasLeftContent && (
+            <YStack
+              minW={isSmallScreen ? '100%' : 300}
+              width={leftColumnWidth}
+              maxW={leftColumnWidth}
+              flexBasis={leftColumnWidth}
+              flex={1}
+            >
               {leftContent}
             </YStack>
           )}
-          {rightContent && (
-            <YStack minW={300} flex={1}>
-              {rightContent}
+          {hasRightContent && (
+            <YStack
+              minW={isSmallScreen ? '100%' : 300}
+              width={rightColumnWidth}
+              maxW={rightColumnWidth}
+              flexBasis={rightColumnWidth}
+              style={rightColumnMaxHeight ? { maxHeight: rightColumnMaxHeight } : undefined}
+            >
+              {rightColumnMaxHeight ? (
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  <YStack pb="$4">{rightContent}</YStack>
+                </ScrollView>
+              ) : (
+                rightContent
+              )}
             </YStack>
           )}
         </XStack>

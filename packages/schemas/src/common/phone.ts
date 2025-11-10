@@ -1,4 +1,20 @@
+import { parsePhoneNumber } from 'awesome-phonenumber'
 import { z } from 'zod'
+
+const PHONE_INVALID_MESSAGE = 'Please enter a valid phone number'
+
+const validatePhoneNumber = (phone: string | undefined, countryCode?: string): boolean => {
+  if (!phone) {
+    return true
+  }
+
+  try {
+    const parsed = parsePhoneNumber(phone, countryCode ? { regionCode: countryCode } : undefined)
+    return parsed.valid
+  } catch {
+    return false
+  }
+}
 
 /**
  * Phone number validation schema
@@ -8,19 +24,9 @@ import { z } from 'zod'
 export const phoneNumberSchema = z
   .string()
   .optional()
-  .refine(
-    (phone) => {
-      if (!phone) return true // Optional field
-      // Remove all formatting characters for validation
-      const digitsOnly = phone.replace(/[^\d]/g, '')
-      // Must have at least 10 digits (for US/international numbers)
-      // and no more than 15 digits (E.164 standard max)
-      return digitsOnly.length >= 10 && digitsOnly.length <= 15
-    },
-    {
-      message: 'Please enter a valid phone number',
-    }
-  )
+  .refine((phone) => validatePhoneNumber(phone), {
+    message: PHONE_INVALID_MESSAGE,
+  })
 
 /**
  * Required phone number validation schema
@@ -28,15 +34,68 @@ export const phoneNumberSchema = z
 export const requiredPhoneNumberSchema = z
   .string()
   .min(1, 'Phone number is required')
-  .refine(
-    (phone) => {
-      // Remove all formatting characters for validation
-      const digitsOnly = phone.replace(/[^\d]/g, '')
-      // Must have at least 10 digits (for US/international numbers)
-      // and no more than 15 digits (E.164 standard max)
-      return digitsOnly.length >= 10 && digitsOnly.length <= 15
-    },
-    {
-      message: 'Please enter a valid phone number',
+  .refine((phone) => validatePhoneNumber(phone), {
+    message: PHONE_INVALID_MESSAGE,
+  })
+
+/**
+ * Format phone number for display using the international format.
+ */
+export const formatPhoneNumber = (phone: string, countryCode?: string): string => {
+  try {
+    const parsed = parsePhoneNumber(phone, countryCode ? { regionCode: countryCode } : undefined)
+    if (parsed.regionCode === 'US' && parsed.number?.national) {
+      return `+1 ${parsed.number.national}`
     }
-  )
+    return parsed.number?.international ?? phone
+  } catch {
+    return phone
+  }
+}
+
+/**
+ * Convert a phone number into the E.164 format for storage.
+ */
+export const getE164Format = (phone: string, countryCode?: string): string => {
+  try {
+    const parsed = parsePhoneNumber(phone, countryCode ? { regionCode: countryCode } : undefined)
+    return parsed.number?.e164 ?? phone
+  } catch {
+    return phone
+  }
+}
+
+/**
+ * Determine whether a phone number is valid for a specific region.
+ */
+export const isValidPhoneNumber = (phone: string, countryCode?: string): boolean => {
+  if (!phone) {
+    return false
+  }
+
+  return validatePhoneNumber(phone, countryCode)
+}
+
+/**
+ * Extract the detected region code (ISO 3166 alpha-2) from a phone number.
+ */
+export const getPhoneRegionCode = (phone: string): string | undefined => {
+  try {
+    const parsed = parsePhoneNumber(phone)
+    return parsed.regionCode ?? undefined
+  } catch {
+    return undefined
+  }
+}
+
+/**
+ * Determine the number type (mobile, fixed-line, etc.).
+ */
+export const getPhoneNumberType = (phone: string, countryCode?: string): string | undefined => {
+  try {
+    const parsed = parsePhoneNumber(phone, countryCode ? { regionCode: countryCode } : undefined)
+    return parsed.type ?? undefined
+  } catch {
+    return undefined
+  }
+}

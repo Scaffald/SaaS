@@ -1,0 +1,38 @@
+import { memo } from 'react'
+import { Text, XStack, YStack } from 'tamagui'
+import { ShieldAlert, ShieldCheck, ShieldQuestion } from '@tamagui/lucide-icons'
+import { CONFIDENCE_BADGES, type ConfidenceLevel } from '../utils/importConfidence'
+
+interface ConfidenceBadgeProps {
+  level: ConfidenceLevel
+  showDescription?: boolean
+}
+
+const ICON_MAP: Record<ConfidenceLevel, typeof ShieldCheck> = {
+  high: ShieldCheck,
+  medium: ShieldQuestion,
+  low: ShieldAlert,
+}
+
+export const ConfidenceBadge = memo(function ConfidenceBadge({ level, showDescription = false }: ConfidenceBadgeProps) {
+  const config = CONFIDENCE_BADGES[level]
+  const Icon = ICON_MAP[level]
+
+  return (
+    <XStack gap="$2" items="center">
+      <Icon size={16} color={config.colorToken} />
+      <YStack>
+        <Text color={config.colorToken} fontSize="$2" fontWeight="600">
+          {config.label}
+        </Text>
+        {showDescription && (
+          <Text color="$color10" fontSize="$1">
+            {config.description}
+          </Text>
+        )}
+      </YStack>
+    </XStack>
+  )
+})
+
+

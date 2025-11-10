@@ -3,8 +3,8 @@ import React, { useMemo } from 'react'
 import { Paragraph, Text, View, XStack, YStack } from '@app/ui'
 import { config } from '@app/ui'
 import { BRAND_COLORS } from '@app/core/assets/brand-colors'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
 
 export default function DesignTokensPage() {
   const colorTokens = useMemo(() => Object.entries(config.tokens.color ?? {}), [])
@@ -51,7 +51,7 @@ export default function DesignTokensPage() {
           </XStack>
           <Paragraph fontSize={12} color="$color10">
             Tokens source: packages/ui/src/tamagui.config.ts &
-            packages/ui/src/themes/earth-theme.ts.
+            packages/ui/src/themes/scaffald-theme.ts.
           </Paragraph>
         </YStack>
         <AnchorHeading
@@ -93,7 +93,7 @@ const TokenTable = ({ tokens, unit = '' }: TokenTableProps) => (
           borderColor="$color6"
           borderRadius="$4"
           width={140}
-          backgroundColor="$color2"
+          bg="$color2"
           gap={4}
         >
           <Text fontSize={13} fontWeight="600" color="$color11">
@@ -120,9 +120,9 @@ const ColorSwatch = ({ label, value }: ColorSwatchProps) => (
     borderWidth={1}
     borderColor="$color6"
     overflow="hidden"
-    backgroundColor="$color2"
+    bg="$color2"
   >
-    <View height={72} backgroundColor={value} />
+    <View height={72} bg={value} />
     <YStack padding="$3" gap={4}>
       <Text fontSize={13} fontWeight="600" color="$color11">
         {label}

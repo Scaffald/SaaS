@@ -1,4 +1,5 @@
 import { useRoleProtectedRoute } from '@app/core/utils/auth/useRoleProtectedRoute'
+import { ErrorBoundary } from '@app/core/components/ErrorBoundary'
 import { DrawerLayout } from '@app/core/features/drawer/DrawerLayout'
 import { Drawer } from 'expo-router/drawer'
 import { YStack, Text, Spinner } from 'tamagui'
@@ -9,7 +10,7 @@ export default function OfficeLayout() {
   // Show loading state BEFORE rendering the drawer
   if (isLoading) {
     return (
-      <YStack flex={1} justify="center" items="center" bg="$background">
+      <YStack flex={1} justify="center" items="center">
         <Spinner size="large" />
         <Text mt="$4">Loading...</Text>
       </YStack>
@@ -23,20 +24,27 @@ export default function OfficeLayout() {
 
   // Only render drawer once auth is confirmed
   return (
-    <DrawerLayout protectionComponent={null}>
-      <Drawer.Screen name="index" options={{ title: 'Office' }} />
-      <Drawer.Screen name="applications/index" options={{ title: 'Applications' }} />
-      <Drawer.Screen name="users/index" options={{ title: 'Manage Users' }} />
-      <Drawer.Screen name="users/[id]/edit" options={{ title: 'Edit User' }} />
-      <Drawer.Screen name="jobs/index" options={{ title: 'Manage Jobs' }} />
-      <Drawer.Screen name="jobs/create" options={{ title: 'Create Job' }} />
-      <Drawer.Screen name="jobs/[id]/edit" options={{ title: 'Edit Job' }} />
-      <Drawer.Screen name="universities/index" options={{ title: 'Manage Universities' }} />
-      <Drawer.Screen name="universities/create" options={{ title: 'Create University' }} />
-      <Drawer.Screen name="universities/[id]/edit" options={{ title: 'Edit University' }} />
-      <Drawer.Screen name="organizations/index" options={{ title: 'Manage Organizations' }} />
-      <Drawer.Screen name="organizations/create" options={{ title: 'Create Organization' }} />
-      <Drawer.Screen name="organizations/[id]/edit" options={{ title: 'Edit Organization' }} />
-    </DrawerLayout>
+    <ErrorBoundary
+      context={{
+        section: 'office',
+        requiredRoles: ['office'],
+      }}
+    >
+      <DrawerLayout protectionComponent={null}>
+        <Drawer.Screen name="index" options={{ title: 'Office' }} />
+        <Drawer.Screen name="applications/index" options={{ title: 'Applications' }} />
+        <Drawer.Screen name="users/index" options={{ title: 'Manage Users' }} />
+        <Drawer.Screen name="users/[id]/edit" options={{ title: 'Edit User' }} />
+        <Drawer.Screen name="jobs/index" options={{ title: 'Manage Jobs' }} />
+        <Drawer.Screen name="jobs/create" options={{ title: 'Create Job' }} />
+        <Drawer.Screen name="jobs/[id]/edit" options={{ title: 'Edit Job' }} />
+        <Drawer.Screen name="universities/index" options={{ title: 'Manage Universities' }} />
+        <Drawer.Screen name="universities/create" options={{ title: 'Create University' }} />
+        <Drawer.Screen name="universities/[id]/edit" options={{ title: 'Edit University' }} />
+        <Drawer.Screen name="organizations/index" options={{ title: 'Manage Organizations' }} />
+        <Drawer.Screen name="organizations/create" options={{ title: 'Create Organization' }} />
+        <Drawer.Screen name="organizations/[id]/edit" options={{ title: 'Edit Organization' }} />
+      </DrawerLayout>
+    </ErrorBoundary>
   )
 }

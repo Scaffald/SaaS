@@ -1,9 +1,9 @@
 // @ts-nocheck
 import React from 'react'
 import { Paragraph, Text, XStack, YStack } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
-import { ExampleCard } from '../_components/ExampleCard'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
+import { ExampleCard } from '@app/styleguide'
 
 export default function MediaObjectPage() {
   return (
@@ -21,7 +21,7 @@ export default function MediaObjectPage() {
           title="Media card"
           description="Left-aligned avatar with stacked metadata."
           code={`<XStack gap="$3" alignItems="flex-start">
-  <YStack width={64} height={64} borderRadius={12} backgroundColor="$color4" />
+  <YStack width={64} height={64} borderRadius={12} bg="$color4" />
   <YStack>
     <Text fontWeight="600">Quarterly compliance</Text>
     <Paragraph>Our Q1 focus areas and staffing plan.</Paragraph>
@@ -36,7 +36,7 @@ export default function MediaObjectPage() {
             borderRadius="$4"
             padding="$3"
           >
-            <YStack width={64} height={64} borderRadius={12} backgroundColor="$color4" />
+            <YStack width={64} height={64} borderRadius={12} bg="$color4" />
             <YStack gap={6} flex={1}>
               <Text fontSize={14} fontWeight="600" color="$color11">
                 Quarterly compliance update

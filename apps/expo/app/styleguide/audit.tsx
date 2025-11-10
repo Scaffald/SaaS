@@ -1,10 +1,8 @@
 // @ts-nocheck
 import React, { useMemo } from 'react'
 import { Paragraph, Text, YStack } from '@app/ui'
-import audit from './data/audit.json'
-import { StyleguidePage } from './_components/StyleguidePage'
-import { AnchorHeading } from './_components/AnchorHeading'
-import { CodeBlock } from './_components/CodeBlock'
+import audit from '@app/styleguide/data/audit.json'
+import { AnchorHeading, CodeBlock, StyleguidePage } from '@app/styleguide'
 
 export default function StyleguideAuditPage() {
   const auditJson = useMemo(() => JSON.stringify(audit, null, 2), [])

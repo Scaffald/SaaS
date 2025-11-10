@@ -1,9 +1,9 @@
 // @ts-nocheck
 import React from 'react'
 import { Button, Input, Text, XStack, YStack } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
-import { ExampleCard } from '../_components/ExampleCard'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
+import { ExampleCard } from '@app/styleguide'
 
 export default function FormInputGroupsPage() {
   return (
@@ -21,7 +21,7 @@ export default function FormInputGroupsPage() {
           title="URL composer"
           description="Shows prefix, suffix, and segmented button actions."
           code={`<XStack>
-  <XStack backgroundColor="$color3" paddingHorizontal="$3" alignItems="center">
+  <XStack bg="$color3" paddingHorizontal="$3" alignItems="center">
     <Text>https://</Text>
   </XStack>
   <Input flex={1} placeholder="domain" />
@@ -33,7 +33,7 @@ export default function FormInputGroupsPage() {
               <XStack
                 paddingHorizontal="$3"
                 alignItems="center"
-                backgroundColor="$color3"
+                bg="$color3"
                 borderRightWidth={1}
                 borderColor="$color6"
               >
@@ -46,7 +46,7 @@ export default function FormInputGroupsPage() {
             </XStack>
             <XStack borderWidth={1} borderColor="$color6" borderRadius="$4" overflow="hidden">
               <Input flex={1} placeholder="Amount" borderWidth={0} keyboardType="numeric" />
-              <XStack paddingHorizontal="$3" alignItems="center" backgroundColor="$color3">
+              <XStack paddingHorizontal="$3" alignItems="center" bg="$color3">
                 <Text fontSize={13} color="$color11">
                   USD
                 </Text>

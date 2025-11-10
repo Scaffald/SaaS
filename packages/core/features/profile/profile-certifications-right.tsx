@@ -210,7 +210,7 @@ export function ProfileCertificationsRight() {
                           e.stopPropagation()
                           handleRemove(cert)
                         }}
-                        theme="red"
+                        theme="error"
                       >
                         Remove
                       </Button>

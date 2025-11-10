@@ -35,7 +35,7 @@ const CategoryRow = ({
         <Switch
           size="$2"
           native
-          theme="green"
+          theme="success"
           checked={value}
           disabled={disabled}
           onCheckedChange={(checked) => onChange(Boolean(checked))}

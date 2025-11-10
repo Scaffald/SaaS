@@ -1,18 +1,7 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
-import {
-  YStack,
-  XStack,
-  Text,
-  Button,
-  Input,
-  Spinner,
-  Slider,
-  Card,
-  Separator,
-  Checkbox,
-  Label,
-} from 'tamagui'
-import { Search, Check } from '@tamagui/lucide-icons'
+import { YStack, XStack, Text, Button, Input, Spinner, Slider, Card, Separator, Label } from 'tamagui'
+import { Search } from '@tamagui/lucide-icons'
+import { CustomCheckbox } from '@app/ui'
 
 /**
  * Parent skill from search (multi-taxonomy format)
@@ -36,6 +25,12 @@ export interface InlineSkillSearchProps {
   isSearching?: boolean
   /** Existing skill IDs that user has already added */
   existingSkillIds?: string[]
+  /** External term injected from parent (e.g., chip selection) */
+  externalSearchTerm?: string | null
+  /** Preferred taxonomy when external term provided */
+  externalSearchTaxonomy?: 'csi' | 'onet' | 'both'
+  /** Callback when external term has been consumed */
+  onConsumeExternalSearchTerm?: () => void
 }
 
 /**
@@ -73,6 +68,9 @@ export function InlineSkillSearch({
   onSelectSkill,
   isSearching = false,
   existingSkillIds = [],
+  externalSearchTerm,
+  externalSearchTaxonomy,
+  onConsumeExternalSearchTerm,
 }: InlineSkillSearchProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<ParentSkill[]>([])
@@ -82,6 +80,7 @@ export function InlineSkillSearch({
   const [isLoading, setIsLoading] = useState(false)
   const [searchCSI, setSearchCSI] = useState(true)
   const [searchONET, setSearchONET] = useState(false)
+  const lastExternalTermRef = useRef<string | null>(null)
 
   // Search skills with debounce and query cancellation
   const abortControllerRef = useRef<AbortController | null>(null)
@@ -150,6 +149,38 @@ export function InlineSkillSearch({
       }
     }
   }, [])
+
+  // Apply external search term when provided (e.g., suggestion chip)
+  useEffect(() => {
+    if (!externalSearchTerm || externalSearchTerm === lastExternalTermRef.current) {
+      return
+    }
+
+    lastExternalTermRef.current = externalSearchTerm
+    if (externalSearchTaxonomy === 'onet') {
+      setSearchCSI(false)
+      setSearchONET(true)
+    } else if (externalSearchTaxonomy === 'csi') {
+      setSearchCSI(true)
+      setSearchONET(false)
+    } else if (externalSearchTaxonomy === 'both') {
+      setSearchCSI(true)
+      setSearchONET(true)
+    } else {
+      // Default to searching both taxonomies for suggestions
+      setSearchCSI(true)
+      setSearchONET(true)
+    }
+
+    setSearchQuery(externalSearchTerm)
+    handleSearchChange(externalSearchTerm)
+    onConsumeExternalSearchTerm?.()
+  }, [
+    externalSearchTerm,
+    externalSearchTaxonomy,
+    handleSearchChange,
+    onConsumeExternalSearchTerm,
+  ])
 
   // Handle skill selection
   const handleSkillSelect = useCallback((skill: ParentSkill, taxonomy: string) => {
@@ -290,33 +321,25 @@ export function InlineSkillSearch({
         {/* Taxonomy Checkboxes */}
         <XStack gap="$3" items="center">
           <XStack gap="$2" items="center">
-            <Checkbox
-              id="search-csi"
+            <CustomCheckbox
               checked={searchCSI}
-              onCheckedChange={(checked) => setSearchCSI(checked === true)}
-              size="$3"
-            >
-              <Checkbox.Indicator>
-                <Check size={16} />
-              </Checkbox.Indicator>
-            </Checkbox>
-            <Label htmlFor="search-csi" fontSize="$2">
+              onCheckedChange={(checked) => setSearchCSI(checked)}
+              aria-label="Filter CSI taxonomy"
+              testID="search-csi"
+            />
+            <Label fontSize="$2" onPress={() => setSearchCSI((prev) => !prev)}>
               CSI
             </Label>
           </XStack>
 
           <XStack gap="$2" items="center">
-            <Checkbox
-              id="search-onet"
+            <CustomCheckbox
               checked={searchONET}
-              onCheckedChange={(checked) => setSearchONET(checked === true)}
-              size="$3"
-            >
-              <Checkbox.Indicator>
-                <Check size={16} />
-              </Checkbox.Indicator>
-            </Checkbox>
-            <Label htmlFor="search-onet" fontSize="$2">
+              onCheckedChange={(checked) => setSearchONET(checked)}
+              aria-label="Filter O*NET taxonomy"
+              testID="search-onet"
+            />
+            <Label fontSize="$2" onPress={() => setSearchONET((prev) => !prev)}>
               O*NET
             </Label>
           </XStack>

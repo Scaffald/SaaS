@@ -6,6 +6,12 @@ import {
   type UserPrivateUpdate,
   // @ts-ignore - Deno requires .ts extension
 } from "../../../_shared/schemas/consolidated.ts";
+// @ts-ignore - Deno requires .ts extension for relative imports
+import {
+  formatPhoneNumber,
+  getPhoneRegionCode,
+  isValidPhoneNumber,
+} from "../../../_shared/phone.ts";
 
 /**
  * Profile General router - handles basic profile information
@@ -59,7 +65,7 @@ export const profileGeneralRouter = t.router({
     const { data: privateData, error: privateError } = await supabase
       .schema("core")
       .from("profile")
-      .select("first_name, last_name, address")
+      .select("first_name, last_name, address, phone")
       .eq("user_id", user.id)
       .single();
 
@@ -72,12 +78,22 @@ export const profileGeneralRouter = t.router({
 
     console.log("Auth user email:", authUser?.user?.email);
 
+    const profilePhone = privateData?.phone || authUser?.user?.phone || "";
+    const normalizedPhone = profilePhone
+      ? (() => {
+          const region = getPhoneRegionCode(profilePhone) ?? "US";
+          return isValidPhoneNumber(profilePhone, region)
+            ? formatPhoneNumber(profilePhone, region)
+            : profilePhone;
+        })()
+      : "";
+
     return {
       first_name: privateData?.first_name || "",
       last_name: privateData?.last_name || "",
       avatar_path: profile?.avatar_path || "",
       email: authUser?.user?.email || "",
-      phone: authUser?.user?.phone || "",
+      phone: normalizedPhone,
       about: profile?.about || null,
       address: privateData?.address || null,
     };
@@ -132,6 +148,7 @@ export const profileGeneralRouter = t.router({
         last_name?: string;
         address?: Record<string, unknown>;
         geo?: string;
+        phone?: string | null;
       } = {
         user_id: user.id,
         updated_at: new Date().toISOString(),
@@ -158,6 +175,18 @@ export const profileGeneralRouter = t.router({
           // PostGIS POINT format: POINT(longitude latitude)
           privateUpdate.geo =
             `POINT(${input.address.longitude} ${input.address.latitude})`;
+        }
+      }
+
+      if (input.phone !== undefined) {
+        if (!input.phone) {
+          privateUpdate.phone = null;
+        } else {
+          const region = getPhoneRegionCode(input.phone) ?? "US";
+          const normalized = isValidPhoneNumber(input.phone, region)
+            ? formatPhoneNumber(input.phone, region)
+            : input.phone;
+          privateUpdate.phone = normalized;
         }
       }
 

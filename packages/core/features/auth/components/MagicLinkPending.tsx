@@ -1,10 +1,12 @@
 import { useCallback, useState } from 'react'
 import { AnimatePresence, Paragraph, Spinner, View, YStack } from 'tamagui'
 import { CheckCircle2 } from '@tamagui/lucide-icons'
-import { supabase } from '@app/core/utils/supabase/client'
 import { getBaseUrl } from '@app/core/utils/getBaseUrl'
 import { router } from 'expo-router'
 import { ROUTES } from '@app/core/constants/routes'
+import { supabase } from '@app/core/utils/supabase/client'
+import { api } from '@app/core/utils/api'
+import { TRPCClientError } from '@trpc/client'
 
 import { CodeConfirmation } from './CodeConfirmation'
 import { EmailHeader } from './EmailHeader'
@@ -20,6 +22,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
   const [verified, setVerified] = useState(false)
   const [_isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const requestMagicLink = api.auth.requestMagicLink.useMutation()
 
   const handleEnter = useCallback(
     async (code: number) => {
@@ -82,20 +85,18 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
     if (!email) return
 
     try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: getBaseUrl(),
-        },
+      await requestMagicLink.mutateAsync({
+        email: email.trim().toLowerCase(),
+        redirectTo: getBaseUrl(),
       })
-
-      if (error) {
-        setError(error.message)
-      }
     } catch (err) {
+      if (err instanceof TRPCClientError) {
+        setError(err.message)
+        return
+      }
       setError(err instanceof Error ? err.message : 'Failed to resend code')
     }
-  }, [email])
+  }, [email, requestMagicLink])
 
   const displayEmail = email ?? 'your email address'
 

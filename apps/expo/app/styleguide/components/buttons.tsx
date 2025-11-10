@@ -1,11 +1,11 @@
 // @ts-nocheck
 import React from 'react'
 import { Button, Text, XStack, YStack } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
-import { ExampleCard } from '../_components/ExampleCard'
-import { PropsTable } from '../_components/PropsTable'
-import { TodoCallout } from '../_components/TodoCallout'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
+import { ExampleCard } from '@app/styleguide'
+import { PropsTable } from '@app/styleguide'
+import { TodoCallout } from '@app/styleguide'
 
 export default function ButtonsPage() {
   return (
@@ -24,28 +24,28 @@ export default function ButtonsPage() {
           description="Primary CTA plus semantic variants."
           code={`<XStack gap="$3">
   <Button>Primary</Button>
-  <Button backgroundColor="$color5">Secondary</Button>
-  <Button backgroundColor="$color6" color="$color11">Inverse</Button>
+  <Button bg="$color5">Secondary</Button>
+  <Button bg="$color6" color="$color11">Inverse</Button>
 </XStack>`}
         >
           <XStack gap="$3" flexWrap="wrap">
             <Button size="$3">Primary</Button>
-            <Button size="$3" backgroundColor="$color5" color="$color12">
+            <Button size="$3" bg="$color5" color="$color12">
               Secondary
             </Button>
-            <Button size="$3" backgroundColor="$color3" color="$color11">
+            <Button size="$3" bg="$color3" color="$color11">
               Ghost
             </Button>
-            <Button size="$3" backgroundColor="$color9" color="$color1">
+            <Button size="$3" bg="$color9" color="$color1">
               Info
             </Button>
-            <Button size="$3" backgroundColor="$color10" color="$color1">
+            <Button size="$3" bg="$color10" color="$color1">
               Success
             </Button>
-            <Button size="$3" backgroundColor="$color8" color="$color1">
+            <Button size="$3" bg="$color8" color="$color1">
               Warning
             </Button>
-            <Button size="$3" backgroundColor="$color7" color="$color1">
+            <Button size="$3" bg="$color7" color="$color1">
               Danger
             </Button>
           </XStack>

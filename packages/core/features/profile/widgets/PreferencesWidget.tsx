@@ -1,5 +1,5 @@
-import { YStack, XStack, Text, H4, Spinner, Button } from 'tamagui'
-import { DashboardWidget } from '@app/ui'
+import { YStack, XStack, Text } from 'tamagui'
+import { DashboardWidget, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 
@@ -19,10 +19,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
-          <Spinner size="large" />
-          <Text color="$color11">Loading preferences...</Text>
-        </YStack>
+        <LoadingState message="Loading preferences..." />
       </DashboardWidget>
     )
   }
@@ -64,18 +61,18 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
+      <YStack gap={spacing.md}>
         {/* Header */}
         <XStack justify="space-between" items="center">
-          <H4>Work Preferences</H4>
+          <Heading variant="h4">Work Preferences</Heading>
           {showEdit && (
-            <Button
+            <UIButton
+              variant="outlined"
               size="$2"
-              chromeless
               onPress={() => router.push('/dashboard/profile/employment')}
             >
               Edit
-            </Button>
+            </UIButton>
           )}
         </XStack>
 
@@ -128,14 +125,16 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
                   {data.preferred_work_locations.map((location: string) => (
                     <XStack
                       key={location}
-                      bg="$color3"
+                      bg="$blue2"
                       px="$3"
                       py="$1.5"
                       rounded="$3"
                       borderWidth={1}
-                      borderColor="$color6"
+                      borderColor="$blue7"
                     >
-                      <Text fontSize="$2">{location}</Text>
+                      <Text fontSize="$2" color="$blue11">
+                        {location}
+                      </Text>
                     </XStack>
                   ))}
                 </XStack>
@@ -205,7 +204,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
                   {data.drivers_license_classes.map((license: string) => (
                     <XStack
                       key={license}
-                      bg="$blue3"
+                      bg="$blue2"
                       px="$3"
                       py="$1.5"
                       rounded="$3"

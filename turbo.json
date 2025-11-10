@@ -14,6 +14,9 @@
       "dependsOn": ["^build"],
       "outputs": ["tsconfig.tsbuildinfo"]
     },
+    "typecheck#@app/ui": {
+      "dependsOn": []
+    },
     "format": {
       "outputs": []
     },
@@ -27,11 +30,11 @@
       "outputs": []
     },
     "check": {
-      "dependsOn": ["format:fix", "lint:fix"],
+      "dependsOn": ["format:fix", "lint:fix", "typecheck"],
       "outputs": []
     },
     "check#expo-app": {
-      "dependsOn": ["format:fix", "lint:fix"],
+      "dependsOn": ["format:fix", "lint:fix", "typecheck"],
       "outputs": []
     },
     "check-circular-deps": {

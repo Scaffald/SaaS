@@ -71,7 +71,7 @@ export function ResultsStep({
   const hasReport = assessment.ai_report && assessment.ai_report.length > 0
 
   return (
-    <YStack gap="$6" maxWidth={900} width="100%" alignSelf="center">
+    <YStack gap="$6" width="100%" style={{ maxWidth: 900, alignSelf: 'center' }}>
       {/* AI Report Section */}
       {hasReport && (
         <YStack
@@ -116,7 +116,7 @@ export function ResultsStep({
           </Text>
           <Button
             size="$4"
-            theme="blue"
+            theme="info"
             onPress={handleGenerateReport}
             disabled={generatingReport || isLoading}
             icon={generatingReport || isLoading ? <Spinner size="small" /> : undefined}
@@ -192,7 +192,7 @@ export function ResultsStep({
       {/* No Results State */}
       {!ipipScores && !hasReport && (
         <YStack gap="$4" items="center" p="$8">
-          <Text fontSize="$5" color="$color11" textAlign="center">
+          <Text fontSize="$5" color="$color11" style={{ textAlign: 'center' }}>
             Complete the assessment to see your results.
           </Text>
         </YStack>

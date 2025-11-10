@@ -8,10 +8,101 @@ import { getBaseUrl } from "./getBaseUrl";
 import { supabase } from "./supabase/client";
 import { clearAllAuthStorage } from "./auth/clearAuthStorage";
 import { getGlobalQueryClient } from "@app/core/provider/react-query/queryClient";
+import { Sentry } from "@app/core/utils/sentry/client";
 
 // Create tRPC React client with proper typing from shared supabase package
 // biome-ignore lint/suspicious/noExplicitAny: Required for cross-environment tRPC compatibility
 export const api = createTRPCReact<AppRouter>() as any;
+
+// Performance tracing link - wraps requests in Sentry transactions when enabled
+const sentryPerformanceLink: TRPCLink<AppRouter> = () => {
+  return ({ next, op }) => {
+    return observable((observer) => {
+      const sentryWithInternals = Sentry as unknown as {
+        getCurrentHub?: () => {
+          getClient?: () => unknown;
+        };
+        startTransaction?: (context: {
+          name: string;
+          op?: string;
+        }) => {
+          setContext?: (key: string, context: Record<string, unknown>) => void;
+          setStatus?: (status: string) => void;
+          startChild?: (context: {
+            op?: string;
+            description?: string;
+          }) => {
+            setStatus?: (status: string) => void;
+            finish?: () => void;
+          };
+          finish?: () => void;
+        };
+      };
+
+      const hub = sentryWithInternals.getCurrentHub?.();
+      const client = hub?.getClient?.();
+      let finished = false;
+
+      const transaction =
+        client && typeof sentryWithInternals.startTransaction === "function"
+          ? sentryWithInternals.startTransaction({
+            name: `trpc.${op.path}`,
+            op: `trpc.${op.type}`,
+          })
+          : null;
+
+      transaction?.setContext?.("trpc", {
+        path: op.path,
+        type: op.type,
+      });
+
+      const span = transaction?.startChild?.({
+        op: "trpc.request",
+        description: op.path,
+      });
+
+      const finish = (status: "ok" | "internal_error" | "cancelled") => {
+        if (finished) {
+          return;
+        }
+        if (status === "internal_error") {
+          span?.setStatus?.("internal_error");
+          transaction?.setStatus?.("internal_error");
+        } else if (status === "cancelled") {
+          span?.setStatus?.("cancelled");
+          transaction?.setStatus?.("cancelled");
+        } else {
+          span?.setStatus?.("ok");
+          transaction?.setStatus?.("ok");
+        }
+        span?.finish?.();
+        transaction?.finish?.();
+        finished = true;
+      };
+
+      const subscription = next(op).subscribe({
+        next(value) {
+          observer.next(value);
+        },
+        error(err) {
+          finish("internal_error");
+          observer.error(err);
+        },
+        complete() {
+          finish("ok");
+          observer.complete();
+        },
+      });
+
+      return () => {
+        subscription.unsubscribe();
+        if (!finished) {
+          finish("cancelled");
+        }
+      };
+    });
+  };
+};
 
 // Custom error handling link for session validation
 const sessionValidationLink: TRPCLink<AppRouter> = () => {
@@ -55,6 +146,8 @@ export const createTrpcClient = () =>
   // biome-ignore lint/suspicious/noExplicitAny: Required for tRPC router compatibility
   (api as any).createClient({
     links: [
+      // Performance tracing needs to be the outermost link to capture timings
+      sentryPerformanceLink,
       // Error handling link - detects invalid sessions and signs out
       // This prevents stale sessions after DB resets from causing issues
       sessionValidationLink,

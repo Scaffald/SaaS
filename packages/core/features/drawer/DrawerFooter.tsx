@@ -56,7 +56,7 @@ export const DrawerFooter = () => {
         onPress={handleThemeToggle}
         aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
       >
-        {isDark ? <Sun size={20} color="$accentColor" /> : <Moon size={20} color="$accentColor" />}
+        {isDark ? <Sun size={20} color="$blue5" /> : <Moon size={20} color="$blue5" />}
       </Button>
 
       {/* Logout Button */}
@@ -77,7 +77,7 @@ export const DrawerFooter = () => {
         onPress={handleLogout}
         aria-label="Sign out"
       >
-        <LogOut size={20} color="$accentColor" />
+        <LogOut size={20} color="$blue5" />
       </Button>
     </XStack>
   )

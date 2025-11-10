@@ -1,5 +1,5 @@
 import { DiscoverWorkersScreen } from '@app/core/features/discover/discover-workers-screen'
-import { DashboardLayout } from '@app/ui/src/components/layouts/DashboardLayout'
+import { DashboardLayout } from '@app/ui'
 
 export default function DiscoverWorkersPage() {
   const { left, right } = DiscoverWorkersScreen()

@@ -41,6 +41,17 @@ export function GeneralProfileSection({
   const [isLoading, setIsLoading] = useState(false)
   const toast = useToastController()
 
+  const getErrorMessage = (value: unknown): string | undefined => {
+    if (typeof value === 'string') {
+      return value
+    }
+    if (value && typeof value === 'object' && 'message' in value) {
+      const message = (value as { message?: unknown }).message
+      return typeof message === 'string' ? message : undefined
+    }
+    return undefined
+  }
+
   // Determine which tRPC endpoints to use based on mode
   const useQuery =
     mode === 'admin' && userId
@@ -219,7 +230,7 @@ export function GeneralProfileSection({
             />
             {errors.first_name && (
               <Text color="$red10" fontSize="$2">
-                {errors.first_name.message}
+                {getErrorMessage(errors.first_name.message) ?? 'First name is required'}
               </Text>
             )}
           </YStack>
@@ -242,7 +253,7 @@ export function GeneralProfileSection({
             />
             {errors.last_name && (
               <Text color="$red10" fontSize="$2">
-                {errors.last_name.message}
+                {getErrorMessage(errors.last_name.message) ?? 'Last name is required'}
               </Text>
             )}
           </YStack>
@@ -257,7 +268,7 @@ export function GeneralProfileSection({
             render={({ field }) => (
               <TextArea
                 placeholder="Tell us about yourself..."
-                value={field.value || ''}
+                value={typeof field.value === 'string' ? field.value : ''}
                 onChangeText={field.onChange}
                 minH={100}
                 borderColor={errors.about ? '$red8' : '$borderColor'}
@@ -268,7 +279,7 @@ export function GeneralProfileSection({
           />
           {errors.about && (
             <Text color="$red10" fontSize="$2">
-              {errors.about.message}
+              {getErrorMessage(errors.about.message) ?? 'Please provide a short bio'}
             </Text>
           )}
         </YStack>
@@ -283,7 +294,7 @@ export function GeneralProfileSection({
               <PhoneNumberInput
                 value={field.value || ''}
                 onChange={field.onChange}
-                error={errors.phone?.message}
+                error={getErrorMessage(errors.phone?.message)}
                 defaultCountry="US"
                 storeFormatted={true}
                 disabled={readOnly}
@@ -324,7 +335,10 @@ export function GeneralProfileSection({
           <AddressForm
             mode="hybrid"
             placeholder="Search for home address..."
-            error={errors.address?.street?.message || errors.address?.city?.message}
+            error={
+              getErrorMessage(errors.address?.street?.message) ??
+              getErrorMessage(errors.address?.city?.message)
+            }
             provider="mapbox"
             apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
             addressValue={{

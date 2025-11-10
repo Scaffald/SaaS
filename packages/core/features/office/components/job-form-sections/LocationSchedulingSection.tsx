@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { YStack, XStack, Text, Input } from '@app/ui'
-import { Label, Switch, TextArea } from 'tamagui'
+import { YStack, XStack, Text, Input, ToggleSwitch } from '@app/ui'
+import { Label, TextArea } from 'tamagui'
 
 interface LocationSchedulingSectionProps {
   relocationAssistanceOffered?: boolean
@@ -54,18 +54,16 @@ export function LocationSchedulingSection({
       {/* Relocation Assistance */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
-          <Label htmlFor="relocationAssistance">Relocation assistance offered</Label>
+          <Label>Relocation assistance offered</Label>
           <Text fontSize="$2" color="$color10">
             Company provides relocation support
           </Text>
         </YStack>
-        <Switch
-          id="relocationAssistance"
+        <ToggleSwitch
           checked={localState.relocation_assistance_offered || false}
           onCheckedChange={(checked) => handleChange('relocation_assistance_offered', checked)}
-        >
-          <Switch.Thumb animation="quick" />
-        </Switch>
+          aria-label="Relocation assistance offered"
+        />
       </XStack>
 
       {localState.relocation_assistance_offered && (

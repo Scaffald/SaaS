@@ -9,6 +9,12 @@ import { UserMenuAvatar } from './UserMenuAvatar'
 import { DrawerMenu } from './DrawerMenu'
 import { api } from '@app/core/utils/api'
 import type { NotificationItem } from '@app/ui'
+import { useRouter } from 'expo-router'
+import type { Href } from 'expo-router'
+import { useNotificationDeviceRegistration } from '@app/core/hooks/useNotificationDeviceRegistration'
+import { ROUTES } from '@app/core/constants/routes'
+
+const NOTIFICATIONS_ROUTE: Href = ROUTES.DASHBOARD_NOTIFICATIONS.path as Href
 
 interface DrawerLayoutProps {
   /**
@@ -38,13 +44,29 @@ export function DrawerLayout({
   const { width } = useWindowDimensions()
   const theme = useTheme()
   const isSmall = width < 1400
+  const router = useRouter()
+
+  const { data: preferencesData } = api.notifications.preferences.get.useQuery(undefined, {
+    staleTime: 5 * 60 * 1000,
+    refetchOnMount: false,
+  })
+
+  const pushEnabled = preferencesData
+    ? preferencesData.globalEnabled && preferencesData.channelEnabled.push
+    : true
+
+  useNotificationDeviceRegistration(pushEnabled)
 
   // Fetch notifications
-  const { data: notifications = [], isLoading: isLoadingNotifications } =
-    api.notifications.list.useQuery({ limit: 50 })
+  const {
+    data: notificationsData,
+    isLoading: isLoadingNotifications,
+    refetch: refetchNotifications,
+  } = api.notifications.list.useQuery({ limit: 25 })
 
   // Fetch unread count
-  const { data: unreadCountData } = api.notifications.getUnreadCount.useQuery()
+  const { data: unreadCountData, refetch: refetchUnread } =
+    api.notifications.getUnreadCount.useQuery()
   const unreadCount = unreadCountData?.count || 0
 
   // Mark as read mutation
@@ -71,24 +93,39 @@ export function DrawerLayout({
   }
 
   // Transform notifications to match NotificationItem interface
-  const transformedNotifications: NotificationItem[] = notifications.map(
-    (n: {
-      id: string
-      type: string
-      title: string
-      message: string
-      created_at: string
-      read: boolean
-      destination_url: string | null
-    }) => ({
-      id: n.id,
-      type: n.type as 'success' | 'warning' | 'info',
-      title: n.title,
-      message: n.message,
-      timestamp: n.created_at,
-      read: n.read,
-      destination_url: n.destination_url,
-    })
+  const transformedNotifications: NotificationItem[] = (notificationsData?.items ?? []).map(
+    (notification: unknown): NotificationItem => {
+      const item = notification as {
+        id: string
+        type: NotificationItem['type']
+        severity?: NotificationItem['severity'] | null
+        title: string
+        body?: { preview?: string | null } | null
+        preview?: string | null
+        message?: string | null
+        created_at: string
+        read?: boolean | null
+        cta_url?: string | null
+        cta_label?: string | null
+        routed_channels?: string[] | null
+      }
+
+      return {
+        id: item.id,
+        type: item.type,
+        severity: item.severity ?? 'info',
+        title: item.title,
+        preview:
+          typeof item.body?.preview === 'string'
+            ? item.body.preview
+            : item.preview ?? item.message ?? '',
+        createdAt: item.created_at,
+        read: item.read ?? false,
+        ctaUrl: item.cta_url ?? undefined,
+        ctaLabel: item.cta_label ?? undefined,
+        channels: Array.isArray(item.routed_channels) ? item.routed_channels : [],
+      }
+    }
   )
 
   return (
@@ -135,6 +172,13 @@ export function DrawerLayout({
                       isLoading={isLoadingNotifications}
                       onNotificationClick={handleNotificationClick}
                       onMarkAsRead={handleMarkAsRead}
+                      onViewAll={() => {
+                        router.push(NOTIFICATIONS_ROUTE)
+                        setTimeout(() => {
+                          refetchNotifications()
+                          refetchUnread()
+                        }, 250)
+                      }}
                     />
                     <UserMenuAvatar />
                   </XStack>

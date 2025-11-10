@@ -1,61 +1,109 @@
-import { useUser } from "@app/core/utils/useUser";
-import { useRouter, useSegments } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Platform } from "react-native";
+import { useRouter, useSegments } from "expo-router";
+
 import { AUTH_ROUTES } from "@app/core/constants/routes";
+import { useUser } from "@app/core/utils/useUser";
+
+type UseProtectedRouteOptions = {
+  timeoutMs?: number;
+  suppressTimeout?: boolean;
+  dependencyLoadingStates?: boolean[];
+  onTimeout?: () => void;
+};
 
 /**
  * Hook to handle protected route navigation
  * This should be used in individual route components that need authentication
  */
-export function useProtectedRoute() {
+export function useProtectedRoute(options: UseProtectedRouteOptions = {}) {
   const { user, isPending } = useUser();
   const router = useRouter();
   const segments = useSegments();
   const [hasChecked, setHasChecked] = useState(false);
   const loadingStartTime = useRef<number>(Date.now());
 
-  // Timeout protection: If loading for too long, assume session is invalid
+  const {
+    timeoutMs,
+    suppressTimeout = false,
+    dependencyLoadingStates = [],
+    onTimeout,
+  } = options;
+
+  const timeoutDuration = timeoutMs ?? 10_000;
+  const isDependenciesLoading = dependencyLoadingStates.some(Boolean);
+
+  const markChecked = useCallback(() => {
+    setHasChecked(true);
+  }, []);
+
+  const isAuthLoading = isPending;
+  const isAnyLoading = isAuthLoading || isDependenciesLoading;
+
+  // Timeout protection: If loading for too long, assume session is invalid.
+  // Timeout only applies when the auth session itself is still pending.
   useEffect(() => {
-    if (isPending) {
-      loadingStartTime.current = Date.now();
+    if (!isAuthLoading) {
+      return;
     }
 
-    if (isPending && !hasChecked) {
-      const timeoutId = setTimeout(() => {
-        const loadingDuration = Date.now() - loadingStartTime.current;
+    loadingStartTime.current = Date.now();
 
-        if (loadingDuration >= 10000) {
-          console.warn(
-            "[useProtectedRoute] Loading timeout exceeded (10s) - assuming invalid session",
-          );
-          console.warn(
-            "[useProtectedRoute] Redirecting to auth to prevent infinite loading",
-          );
+    if (suppressTimeout) {
+      return;
+    }
 
-          const inAuthGroup = segments[0] === "auth";
+    if (hasChecked) {
+      return;
+    }
 
-          if (!inAuthGroup) {
-            try {
-              router.replace(AUTH_ROUTES.INDEX.path);
-              setHasChecked(true);
-            } catch (error) {
-              console.error(
-                "[useProtectedRoute] Timeout redirect error:",
-                error,
-              );
-            }
+    const timeoutId = setTimeout(() => {
+      const loadingDuration = Date.now() - loadingStartTime.current;
+
+      if (loadingDuration >= timeoutDuration) {
+        console.warn(
+          "[useProtectedRoute] Loading timeout exceeded - assuming invalid session",
+          {
+            timeoutMs: timeoutDuration,
+            loadingDuration,
+          },
+        );
+
+        onTimeout?.();
+
+        const inAuthGroup = segments[0] === "auth";
+
+        if (!inAuthGroup) {
+          try {
+            router.replace(AUTH_ROUTES.INDEX.path);
+            setHasChecked(true);
+          } catch (error) {
+            console.error("[useProtectedRoute] Timeout redirect error:", error);
           }
         }
-      }, 10000);
+      }
+    }, timeoutDuration);
 
-      return () => clearTimeout(timeoutId);
+    return () => clearTimeout(timeoutId);
+  }, [
+    isAuthLoading,
+    hasChecked,
+    segments,
+    router,
+    timeoutDuration,
+    suppressTimeout,
+    onTimeout,
+  ]);
+
+  useEffect(() => {
+    if (isAuthLoading) {
+      loadingStartTime.current = Date.now();
     }
-  }, [isPending, hasChecked, segments, router]);
+  }, [isAuthLoading]);
 
   useEffect(() => {
     // Don't check if still loading user data
-    if (isPending) {
+    if (isAnyLoading) {
       return;
     }
 
@@ -103,11 +151,14 @@ export function useProtectedRoute() {
       // User is in the correct place, mark as checked
       setHasChecked(true);
     }
-  }, [user, isPending, segments, hasChecked, router]);
+  }, [user, isAnyLoading, segments, hasChecked, router]);
 
   return {
     isAuthenticated: !!user,
-    isLoading: isPending || !hasChecked,
+    isLoading: isAnyLoading || !hasChecked,
+    markChecked,
+    isAuthLoading,
+    isDependenciesLoading,
     user,
   };
 }

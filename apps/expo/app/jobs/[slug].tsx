@@ -15,7 +15,11 @@ export default function PublicJobDetailPage() {
   const { slug } = useLocalSearchParams<{ slug: string }>()
 
   // Fetch job by slug
-  const { data: jobData, isLoading, error } = api.jobs.bySlug.useQuery(
+  const {
+    data: jobData,
+    isLoading,
+    error,
+  } = api.jobs.bySlug.useQuery(
     { slug: slug || '' },
     {
       enabled: !!slug,
@@ -40,9 +44,9 @@ export default function PublicJobDetailPage() {
       <DashboardLayout
         breadcrumbItems={breadcrumbItems}
         leftContent={
-          <YStack alignItems="center" justifyContent="center" minHeight={400}>
+          <YStack items="center" justify="center" style={{ minHeight: 400 }}>
             <Spinner size="large" />
-            <Text marginTop="$4" color="$color10">
+            <Text mt="$4" color="$color10">
               Loading job...
             </Text>
           </YStack>
@@ -57,11 +61,11 @@ export default function PublicJobDetailPage() {
       <DashboardLayout
         breadcrumbItems={breadcrumbItems}
         leftContent={
-          <YStack alignItems="center" justifyContent="center" minHeight={400} gap="$4">
+          <YStack items="center" justify="center" style={{ minHeight: 400 }} gap="$4">
             <Text fontSize="$6" fontWeight="bold" color="$color11">
               Job Not Found
             </Text>
-            <Text color="$color10" textAlign="center">
+            <Text color="$color10" style={{ textAlign: 'center' }}>
               The job you're looking for doesn't exist, is no longer available, or has been removed.
             </Text>
           </YStack>
@@ -73,6 +77,7 @@ export default function PublicJobDetailPage() {
   // Use existing job detail screen component
   const { left, right } = DiscoverJobDetailScreen({ jobId: jobData.id })
 
-  return <DashboardLayout breadcrumbItems={breadcrumbItems} leftContent={left} rightContent={right} />
+  return (
+    <DashboardLayout breadcrumbItems={breadcrumbItems} leftContent={left} rightContent={right} />
+  )
 }
-

@@ -1,9 +1,9 @@
 // @ts-nocheck
 import React, { useState } from 'react'
 import { Button, Text, YStack } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
-import { ExampleCard } from '../_components/ExampleCard'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
+import { ExampleCard } from '@app/styleguide'
 
 export default function TooltipPopoverPage() {
   const [visible, setVisible] = useState(false)
@@ -27,13 +27,13 @@ export default function TooltipPopoverPage() {
             <Button
               onHoverIn={() => setVisible(true)}
               onHoverOut={() => setVisible(false)}
-              backgroundColor="$color3"
+              bg="$color3"
               color="$color11"
             >
               Hover me
             </Button>
             {visible ? (
-              <YStack padding="$2" borderRadius="$3" backgroundColor="$color11">
+              <YStack padding="$2" borderRadius="$3" bg="$color11">
                 <Text fontSize={12} color="$color1">
                   Tooltip placeholder
                 </Text>

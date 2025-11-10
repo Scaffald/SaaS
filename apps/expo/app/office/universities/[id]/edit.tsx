@@ -10,7 +10,7 @@ export default function EditUniversityPage() {
 
   if (!id) {
     return (
-      <YStack flex={1} bg="$background" items="center" justify="center">
+      <YStack flex={1} items="center" justify="center">
         <YStack>Invalid university ID</YStack>
       </YStack>
     )
@@ -23,7 +23,7 @@ export default function EditUniversityPage() {
 
   if (isLoading) {
     return (
-      <YStack flex={1} bg="$background" items="center" justify="center">
+      <YStack flex={1} items="center" justify="center">
         <Spinner size="large" />
       </YStack>
     )
@@ -31,7 +31,7 @@ export default function EditUniversityPage() {
 
   if (!data?.university) {
     return (
-      <YStack flex={1} bg="$background" items="center" justify="center">
+      <YStack flex={1} items="center" justify="center">
         <YStack>University not found</YStack>
       </YStack>
     )

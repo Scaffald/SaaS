@@ -2,9 +2,9 @@
 import React, { useState } from 'react'
 import { Button, XStack, YStack } from '@app/ui'
 import { ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
-import { ExampleCard } from '../_components/ExampleCard'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
+import { ExampleCard } from '@app/styleguide'
 
 const pages = [1, 2, 3, 4, 5]
 
@@ -28,7 +28,7 @@ export default function PaginationPage() {
           code={`<XStack gap="$2">
   <Button icon={ChevronLeft} disabled={current === 1} />
   {pages.map((page) => (
-    <Button key={page} backgroundColor={page === current ? '$color9' : '$color2'}>
+    <Button key={page} bg={page === current ? '$color9' : '$color2'}>
       {page}
     </Button>
   ))}
@@ -44,7 +44,7 @@ export default function PaginationPage() {
             {pages.map((page) => (
               <Button
                 key={page}
-                backgroundColor={page === current ? '$color9' : '$color2'}
+                bg={page === current ? '$color9' : '$color2'}
                 color={page === current ? '$color1' : '$color11'}
                 onPress={() => setCurrent(page)}
               >

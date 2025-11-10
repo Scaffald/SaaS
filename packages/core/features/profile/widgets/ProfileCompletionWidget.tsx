@@ -86,12 +86,12 @@ export function ProfileCompletionWidget({
           <Progress
             value={completionData.completionPercentage}
             max={100}
-            backgroundColor="$color4"
+            bg="$color4"
             size="$1"
           >
             <Progress.Indicator
               animation="bouncy"
-              backgroundColor={
+              bg={
                 completionData.completionPercentage === 100 ? '$green10' : '$blue10'
               }
             />
@@ -119,7 +119,7 @@ export function ProfileCompletionWidget({
               {showEdit && nextIncompleteItem.actionRoute && (
                 <Button
                   size="$2"
-                  theme="blue"
+                  theme="info"
                   icon={ChevronRight}
                   onPress={() => router.push(nextIncompleteItem.actionRoute as string)}
                 >
@@ -187,7 +187,7 @@ export function ProfileCompletionWidget({
             {nextIncompleteItem.actionRoute && showEdit && (
               <Button
                 size="$3"
-                theme="blue"
+                theme="info"
                 onPress={() => router.push(nextIncompleteItem.actionRoute as string)}
               >
                 Complete: {nextIncompleteItem.title}

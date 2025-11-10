@@ -25,7 +25,7 @@ export function ReviewStep8Recommendation({
       <XStack gap="$4" justify="center">
         <Button
           size="$6"
-          theme={recommendation === true ? 'green' : undefined}
+          theme={recommendation === true ? 'success' : undefined}
           variant={recommendation === true ? undefined : 'outlined'}
           icon={ThumbsUp}
           onPress={() => onChange(true)}
@@ -37,7 +37,7 @@ export function ReviewStep8Recommendation({
 
         <Button
           size="$6"
-          theme={recommendation === false ? 'red' : undefined}
+          theme={recommendation === false ? 'error' : undefined}
           variant={recommendation === false ? undefined : 'outlined'}
           icon={ThumbsDown}
           onPress={() => onChange(false)}

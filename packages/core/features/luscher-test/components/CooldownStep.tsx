@@ -13,11 +13,11 @@ const COOLDOWN_DURATION = 60 // 60 seconds
 
 // Diary prompts (randomly selected)
 const DIARY_PROMPTS = [
-  "What kind of work are you focused on today?",
+  'What kind of work are you focused on today?',
   "How's your energy level — light, steady, or heavy?",
   "What's something you'd like to make progress on?",
-  "Pick one: creating • fixing • organizing • connecting.",
-  "If today had a color, which one would it be?",
+  'Pick one: creating • fixing • organizing • connecting.',
+  'If today had a color, which one would it be?',
 ]
 
 /**
@@ -33,7 +33,9 @@ export function CooldownStep({
   const [timeRemaining, setTimeRemaining] = useState(0)
   const [isCooldownActive, setIsCooldownActive] = useState(true)
   const [diaryResponse, setDiaryResponse] = useState('')
-  const [selectedPrompt] = useState(() => DIARY_PROMPTS[Math.floor(Math.random() * DIARY_PROMPTS.length)])
+  const [selectedPrompt] = useState(
+    () => DIARY_PROMPTS[Math.floor(Math.random() * DIARY_PROMPTS.length)]
+  )
 
   useEffect(() => {
     // Calculate time remaining
@@ -69,18 +71,21 @@ export function CooldownStep({
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
-  const cooldownProgress = Math.max(0, ((COOLDOWN_DURATION - timeRemaining) / COOLDOWN_DURATION) * 100)
+  const cooldownProgress = Math.max(
+    0,
+    ((COOLDOWN_DURATION - timeRemaining) / COOLDOWN_DURATION) * 100
+  )
 
   return (
-    <YStack gap="$6" maxWidth={800} width="100%" alignSelf="center" p="$4">
+    <YStack gap="$6" width="100%" self="center" p="$4" style={{ maxWidth: 800 }}>
       {/* Cooldown Timer */}
       <YStack gap="$4" p="$6" bg="$color3" rounded="$4" borderWidth={1} borderColor="$color7">
         <YStack gap="$2" items="center">
           <Clock size={48} color="$blue10" />
-          <Text fontSize="$6" fontWeight="600" color="$color12" textAlign="center">
+          <Text fontSize="$6" fontWeight="600" color="$color12">
             Take a short pause
           </Text>
-          <Text fontSize="$4" color="$color11" textAlign="center">
+          <Text fontSize="$4" color="$color11">
             Please wait 60 seconds before taking the second color test
           </Text>
           <Text fontSize="$10" fontWeight="bold" color="$blue10">
@@ -93,7 +98,7 @@ export function CooldownStep({
       </YStack>
 
       {/* Diary Prompt Section */}
-      <YStack gap="$4" p="$4" bg="$background" rounded="$4" borderWidth={1} borderColor="$borderColor">
+      <YStack gap="$4" p="$4" rounded="$4" borderWidth={1} borderColor="$borderColor">
         <YStack gap="$2">
           <Text fontSize="$5" fontWeight="600" color="$color12">
             {selectedPrompt}
@@ -108,7 +113,7 @@ export function CooldownStep({
           value={diaryResponse}
           onChangeText={setDiaryResponse}
           disabled={isLoading || !isCooldownActive}
-          minHeight={120}
+          style={{ minHeight: 120 }}
           maxLength={500}
           fontSize="$4"
         />
@@ -116,4 +121,3 @@ export function CooldownStep({
     </YStack>
   )
 }
-

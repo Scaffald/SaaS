@@ -27,6 +27,21 @@ import {
   ConfirmationDialog,
 } from '@app/ui'
 import type { JSONContent } from '@tiptap/core'
+import { isValidPhoneNumber } from '@app/schemas/common/phone'
+import { invalidateProfileQueries } from './utils/profile-sync'
+import {
+  startProfileSync,
+  completeProfileSync,
+  failProfileSync,
+  resetProfileSyncError,
+  useAdaptiveProfileSync,
+} from './utils/profile-sync-store'
+
+type UpdateGeneralInput = GeneralProfileFormData
+
+interface UpdateGeneralContext {
+  previousGeneral?: GeneralProfileFormData | undefined
+}
 
 /**
  * Profile General Left Component
@@ -37,45 +52,74 @@ export function ProfileGeneralLeft() {
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<GeneralProfileFormData | null>(null)
   const toast = useToastController()
+  const utils = api.useContext()
+  const syncStatus = useAdaptiveProfileSync(300)
+  const isSyncing = syncStatus === 'syncing'
 
   // Use tRPC to fetch and update profile data
   const {
     data: profileData,
     isLoading: isLoadingProfile,
-    refetch,
   } = api.profile.getGeneral.useQuery()
   const updateProfileMutation = api.profile.updateGeneral.useMutation({
+    async onMutate(input: UpdateGeneralInput): Promise<UpdateGeneralContext> {
+      resetProfileSyncError()
+      startProfileSync()
+      await utils.profile.getGeneral.cancel()
+      const previousGeneral = utils.profile.getGeneral.getData()
+      utils.profile.getGeneral.setData(undefined, (current: GeneralProfileFormData | undefined) => ({
+        ...(current ?? {}),
+        ...input,
+      }))
+      return { previousGeneral }
+    },
+    onError: (error: unknown, _input: UpdateGeneralInput, context?: UpdateGeneralContext) => {
+      console.error('Error saving profile:', error)
+      if (context?.previousGeneral) {
+        utils.profile.getGeneral.setData(undefined, context.previousGeneral)
+      }
+      failProfileSync()
+      toast.show('Error', {
+        message: error instanceof Error ? error.message : 'Failed to save profile. Please try again.',
+      })
+    },
     onSuccess: () => {
       toast.show('Profile Updated', {
         message: 'Your profile has been saved successfully!',
       })
-      refetch()
     },
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
-    onError: (error: any) => {
-      console.error('Error saving profile:', error)
-      toast.show('Error', {
-        message: error.message || 'Failed to save profile. Please try again.',
-      })
+    onSettled: (_data: { success: boolean } | undefined, error: unknown) => {
+      if (!error) {
+        completeProfileSync()
+      }
+      void invalidateProfileQueries(utils)
     },
   })
 
   const uploadAvatarMutation = api.profile.uploadAvatar.useMutation({
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC response type
-    onSuccess: (data: any) => {
+    onMutate: () => {
+      resetProfileSyncError()
+      startProfileSync()
+    },
+    onSuccess: async (data: { avatarPath: string }) => {
       toast.show('Avatar Uploaded', {
         message: 'Your avatar has been uploaded successfully!',
       })
-      // Update the form with the new avatar path
       setValue('avatar_path', data.avatarPath)
-      refetch()
+      await invalidateProfileQueries(utils)
     },
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error('Error uploading avatar:', error)
+      failProfileSync()
       toast.show('Upload Error', {
-        message: error.message || 'Failed to upload avatar. Please try again.',
+        message:
+          error instanceof Error ? error.message : 'Failed to upload avatar. Please try again.',
       })
+    },
+    onSettled: (_data: { avatarPath: string } | undefined, error: unknown) => {
+      if (!error) {
+        completeProfileSync()
+      }
     },
   })
 
@@ -87,6 +131,8 @@ export function ProfileGeneralLeft() {
     reset,
     setValue,
     trigger,
+    setError,
+    clearErrors,
   } = useForm<GeneralProfileFormData>({
     resolver: zodResolver(generalProfileSchema),
     defaultValues: generalProfileDefaults,
@@ -100,8 +146,32 @@ export function ProfileGeneralLeft() {
     if (profileData) {
       reset(profileData)
       originalDataRef.current = profileData
+
+      if (profileData.phone && !isValidPhoneNumber(profileData.phone)) {
+        setError('phone', {
+          type: 'manual',
+          message: 'Your current phone number is invalid. Please enter a valid phone number.',
+        })
+      } else {
+        clearErrors('phone')
+      }
+
+      void trigger('phone')
     }
-  }, [profileData, reset])
+  }, [profileData, reset, setError, clearErrors, trigger])
+
+  const phoneValue = watch('phone')
+
+  useEffect(() => {
+    if (!phoneValue) {
+      clearErrors('phone')
+      return
+    }
+
+    if (isValidPhoneNumber(phoneValue)) {
+      clearErrors('phone')
+    }
+  }, [phoneValue, clearErrors])
 
   // Debug: Log form state changes
   useEffect(() => {
@@ -160,18 +230,21 @@ export function ProfileGeneralLeft() {
               if (imageUri) {
                 // Convert image to base64 for upload
                 try {
-                  const response = await fetch(imageUri)
-                  const blob = await response.blob()
-                  const reader = new FileReader()
-                  reader.onloadend = () => {
-                    const base64data = reader.result as string
-                    uploadAvatarMutation.mutate({
-                      file: base64data,
-                      fileName: `avatar-${Date.now()}.jpg`,
-                      contentType: blob.type || 'image/jpeg',
-                    })
-                  }
-                  reader.readAsDataURL(blob)
+                  const [metadata] = imageUri.split(',')
+                  const mimeMatch = metadata?.match(/^data:(image\/[a-zA-Z+]+);base64$/)
+                  const contentType = mimeMatch ? mimeMatch[1] : 'image/jpeg'
+
+                  const extension = (() => {
+                    if (contentType === 'image/png') return 'png'
+                    if (contentType === 'image/webp') return 'webp'
+                    return 'jpg'
+                  })()
+
+                  uploadAvatarMutation.mutate({
+                    file: imageUri,
+                    fileName: `avatar-${Date.now()}.${extension}`,
+                    contentType,
+                  })
                 } catch (error) {
                   console.error('Error processing image:', error)
                   toast.show('Error', {
@@ -185,6 +258,11 @@ export function ProfileGeneralLeft() {
             }}
             size={120}
             disabled={uploadAvatarMutation.isPending}
+            onCropError={(message) =>
+              toast.show('Error', {
+                message,
+              })
+            }
             placeholder="Upload Avatar"
           />
           {uploadAvatarMutation.isPending && (
@@ -333,12 +411,12 @@ export function ProfileGeneralLeft() {
           </Button>
           <Button
             onPress={handleSubmit(onSubmit, onError)}
-            disabled={!isDirty || isLoading}
-            opacity={!isDirty || isLoading ? 0.5 : 1}
-            space={isLoading ? '$2' : 0}
+            disabled={!isDirty || isLoading || Object.keys(errors).length > 0}
+            opacity={!isDirty || isLoading || Object.keys(errors).length > 0 ? 0.5 : 1}
+            space={isSyncing ? '$2' : 0}
           >
             <AnimatePresence>
-              {isLoading && (
+              {isSyncing && (
                 <Button.Icon>
                   <Spinner
                     animation="bouncy"
@@ -352,7 +430,7 @@ export function ProfileGeneralLeft() {
                 </Button.Icon>
               )}
             </AnimatePresence>
-            <Button.Text>{isLoading ? 'Saving...' : 'Save Changes'}</Button.Text>
+            <Button.Text>{isSyncing ? 'Saving...' : 'Save Changes'}</Button.Text>
           </Button>
         </XStack>
 

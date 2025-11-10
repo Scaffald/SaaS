@@ -1,8 +1,8 @@
 // @ts-nocheck
 import React from 'react'
 import { Button, Paragraph, Text, XStack, YStack } from '@app/ui'
-import { StyleguidePage } from '../_components/StyleguidePage'
-import { AnchorHeading } from '../_components/AnchorHeading'
+import { StyleguidePage } from '@app/styleguide'
+import { AnchorHeading } from '@app/styleguide'
 
 export default function MarketingExamplePage() {
   return (
@@ -16,7 +16,7 @@ export default function MarketingExamplePage() {
           title="Hero"
           description="Full-width hero with gradient background and call to action."
         />
-        <YStack borderRadius="$4" padding="$6" backgroundColor="$color3" gap="$4">
+        <YStack borderRadius="$4" padding="$6" bg="$color3" gap="$4">
           <Text fontSize={32} fontWeight="700" color="$color12">
             Compliance operations, simplified.
           </Text>
@@ -25,7 +25,7 @@ export default function MarketingExamplePage() {
           </Paragraph>
           <XStack gap="$3">
             <Button>Request demo</Button>
-            <Button backgroundColor="$color2" color="$color11">
+            <Button bg="$color2" color="$color11">
               View pricing
             </Button>
           </XStack>
@@ -45,7 +45,7 @@ export default function MarketingExamplePage() {
               borderColor="$color6"
               borderRadius="$4"
               padding="$4"
-              backgroundColor="$color1"
+              bg="$color1"
               gap={6}
             >
               <Text fontSize={16} fontWeight="600" color="$color11">

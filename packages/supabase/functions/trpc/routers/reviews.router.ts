@@ -2,6 +2,66 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { protectedProcedure, publicProcedure, t } from "../middleware.ts";
 
+type MaybeArray<T> = T | T[] | null | undefined;
+
+const nestedSkillSummarySchema = z.object({
+  id: z.string().nullable().optional(),
+  name: z.string().nullable().optional(),
+  category: z.string().nullable().optional(),
+});
+
+const reviewSkillRatingSchema = z.object({
+  skill_id: z.string(),
+  score: z.number(),
+  skills: z
+    .union([nestedSkillSummarySchema, z.array(nestedSkillSummarySchema)])
+    .nullable()
+    .optional(),
+});
+
+const reviewCategoryRatingSchema = z.object({
+  category: z.string(),
+  rating: z.number(),
+});
+
+const reviewSoftSkillVoteSchema = z.object({
+  skill_id: z.string(),
+  is_strength: z.boolean(),
+  rating: z.number().nullable().optional(),
+  soft_skills: z
+    .union([nestedSkillSummarySchema, z.array(nestedSkillSummarySchema)])
+    .nullable()
+    .optional(),
+});
+
+const reviewAnalyticsRowSchema = z.object({
+  rating: z.number().nullable().optional(),
+  created_at: z.string(),
+  review_skill_ratings: z
+    .array(reviewSkillRatingSchema)
+    .nullable()
+    .optional(),
+  review_category_ratings: z
+    .array(reviewCategoryRatingSchema)
+    .nullable()
+    .optional(),
+  review_soft_skill_votes: z
+    .array(reviewSoftSkillVoteSchema)
+    .nullable()
+    .optional(),
+});
+
+type ReviewAnalyticsRow = z.infer<typeof reviewAnalyticsRowSchema>;
+type SkillSummary = z.infer<typeof nestedSkillSummarySchema>;
+
+const resolveRelation = <T>(relation: MaybeArray<T>): T | undefined => {
+  if (Array.isArray(relation)) {
+    return relation[0];
+  }
+
+  return relation ?? undefined;
+};
+
 // ========================================
 // Input Schemas
 // ========================================
@@ -631,25 +691,43 @@ export const reviewsRouter = t.router({
         });
       }
 
-      if (!reviews || reviews.length === 0) {
+      const parsedReviewsResult = z
+        .array(reviewAnalyticsRowSchema)
+        .safeParse(reviews ?? []);
+
+      if (!parsedReviewsResult.success) {
+        console.error(
+          "[reviewsRouter] Unexpected review analytics payload",
+          parsedReviewsResult.error.flatten(),
+        );
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to parse review analytics",
+        });
+      }
+
+      const parsedReviews = parsedReviewsResult.data;
+
+      if (parsedReviews.length === 0) {
         return null;
       }
 
       // Calculate overall statistics
-      const totalReviews = reviews.length;
-      const recommendCount = reviews.filter((r) => r.rating === 1).length;
-      const notRecommendCount = reviews.filter((r) => r.rating === -1).length;
+      const totalReviews = parsedReviews.length;
+      const recommendCount = parsedReviews.filter((r) => r.rating === 1).length;
+      const notRecommendCount = parsedReviews.filter((r) => r.rating === -1).length;
 
       // Aggregate skill ratings
       const skillRatings = new Map<
         string,
         { name: string; total: number; count: number; skillId: string }
       >();
-      for (const review of reviews) {
+      for (const review of parsedReviews) {
         if (review.review_skill_ratings) {
           for (const sr of review.review_skill_ratings) {
             const skillId = sr.skill_id;
-            const skillName = sr.skills?.name || "Unknown Skill";
+            const skillDetails = resolveRelation<SkillSummary>(sr.skills);
+            const skillName = skillDetails?.name || "Unknown Skill";
             if (!skillRatings.has(skillId)) {
               skillRatings.set(skillId, {
                 name: skillName,
@@ -670,7 +748,7 @@ export const reviewsRouter = t.router({
         string,
         { total: number; count: number }
       >();
-      for (const review of reviews) {
+      for (const review of parsedReviews) {
         if (review.review_category_ratings) {
           for (const cr of review.review_category_ratings) {
             if (!categoryRatings.has(cr.category)) {
@@ -692,11 +770,12 @@ export const reviewsRouter = t.router({
         string,
         { name: string; count: number; category: string }
       >();
-      for (const review of reviews) {
+      for (const review of parsedReviews) {
         if (review.review_soft_skill_votes) {
           for (const vote of review.review_soft_skill_votes) {
-            const skillName = vote.soft_skills?.name || "Unknown";
-            const skillCategory = vote.soft_skills?.category || "other";
+            const softSkill = resolveRelation<SkillSummary>(vote.soft_skills);
+            const skillName = softSkill?.name || "Unknown";
+            const skillCategory = softSkill?.category || "other";
             const map = vote.is_strength ? strengthTags : improvementTags;
 
             if (!map.has(skillName)) {
@@ -716,7 +795,7 @@ export const reviewsRouter = t.router({
         string,
         { month: string; count: number; avgRating: number; totalRating: number }
       >();
-      for (const review of reviews) {
+      for (const review of parsedReviews) {
         const date = new Date(review.created_at);
         const monthKey = `${date.getFullYear()}-${
           String(date.getMonth() + 1).padStart(2, "0")
@@ -734,11 +813,10 @@ export const reviewsRouter = t.router({
         data.count += 1;
 
         // Calculate average from category ratings
-        const avgCategoryRating = review.review_category_ratings?.length > 0
-          ? review.review_category_ratings.reduce(
-            (sum: number, cr: { rating: number }) => sum + cr.rating,
-            0,
-          ) / review.review_category_ratings.length
+        const reviewCategories = review.review_category_ratings ?? [];
+        const avgCategoryRating = reviewCategories.length > 0
+          ? reviewCategories.reduce((sum, cr) => sum + cr.rating, 0) /
+            reviewCategories.length
           : 0;
         data.totalRating += avgCategoryRating;
         data.avgRating = data.totalRating / data.count;

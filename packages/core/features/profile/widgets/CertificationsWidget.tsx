@@ -1,8 +1,9 @@
-import { YStack, XStack, Text, H4, Spinner, Button, Separator } from 'tamagui'
-import { DashboardWidget } from '@app/ui'
+import { YStack, XStack, Text, Separator } from 'tamagui'
+import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 import { Linking } from 'react-native'
+import { Award, CheckCircle } from '@tamagui/lucide-icons'
 import type { ProfileWidgetProps } from './types'
 import { formatDate } from '../utils/date-formatting'
 
@@ -31,7 +32,13 @@ export function CertificationsWidget({
   variant = 'full',
 }: ProfileWidgetProps) {
   const router = useRouter()
-  const { data, isLoading, error } = api.profile.widgets.getCertifications.useQuery(
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+    isFetching,
+  } = api.profile.widgets.getCertifications.useQuery(
     { userId },
     {
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
@@ -41,10 +48,7 @@ export function CertificationsWidget({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
-          <Spinner size="large" />
-          <Text color="$color11">Loading certifications...</Text>
-        </YStack>
+        <LoadingState message="Loading certifications..." />
       </DashboardWidget>
     )
   }
@@ -57,6 +61,16 @@ export function CertificationsWidget({
           <Text color="$color11" fontSize="$2">
             {error.message}
           </Text>
+          <UIButton
+            variant="primary"
+            size="$2"
+            onPress={() => {
+              void refetch()
+            }}
+            disabled={isFetching}
+          >
+            Retry
+          </UIButton>
         </YStack>
       </DashboardWidget>
     )
@@ -78,30 +92,37 @@ export function CertificationsWidget({
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
+      <YStack gap={spacing.md}>
         {/* Header */}
         <XStack justify="space-between" items="center">
-          <H4>Certifications</H4>
+          <Heading variant="h4">Certifications</Heading>
           {showEdit && (
-            <Button
+            <UIButton
+              variant="outlined"
               size="$2"
-              chromeless
               onPress={() => router.push('/dashboard/profile/certifications')}
             >
               Edit
-            </Button>
+            </UIButton>
           )}
         </XStack>
 
         {certifications.length === 0 ? (
-          <YStack gap="$2" items="center" py="$4">
-            <Text color="$color11">No certifications added yet</Text>
-            {showEdit && (
-              <Button size="$2" onPress={() => router.push('/dashboard/profile/certifications')}>
-                Add Certification
-              </Button>
-            )}
-          </YStack>
+          <EmptyState
+            icon={<Award />}
+            title="No certifications added yet"
+            description="Add your professional certifications and licenses"
+            action={
+              showEdit ? (
+                <UIButton
+                  variant="primary"
+                  onPress={() => router.push('/dashboard/profile/certifications')}
+                >
+                  Add Certification
+                </UIButton>
+              ) : undefined
+            }
+          />
         ) : (
           <YStack gap="$4">
             {/* Active Certifications */}
@@ -118,14 +139,15 @@ export function CertificationsWidget({
                             {cert.name}
                           </Text>
                           <XStack
-                            bg="$green3"
+                            bg="$blue2"
                             px="$2"
                             py="$0.5"
                             rounded="$2"
                             borderWidth={1}
-                            borderColor="$green7"
+                            borderColor="$blue7"
                           >
-                            <Text color="$green11" fontSize="$1" fontWeight="600">
+                            <CheckCircle size={12} color="$blue11" />
+                            <Text color="$blue11" fontSize="$1" fontWeight="600" ml="$1">
                               Active
                             </Text>
                           </XStack>
@@ -183,10 +205,11 @@ export function CertificationsWidget({
                               </Text>
                               <Text
                                 fontSize="$2"
-                                color="$blue10"
+                                color="$blue7"
                                 textDecorationLine="underline"
-                                onPress={() => Linking.openURL(cert.credential_url || '')}
                                 cursor="pointer"
+                                hoverStyle={{ color: '$blue8' }}
+                                onPress={() => Linking.openURL(cert.credential_url || '')}
                               >
                                 View Certificate →
                               </Text>
@@ -239,13 +262,17 @@ export function CertificationsWidget({
 
             {/* Show More link for compact view */}
             {showCompact && certifications.length > 3 && (
-              <Button
-                size="$2"
-                chromeless
+              <Text
+                color="$blue7"
+                fontSize="$3"
+                fontWeight="600"
+                cursor="pointer"
+                hoverStyle={{ color: '$blue8' }}
+                pressStyle={{ color: '$blue9' }}
                 onPress={() => router.push('/dashboard/profile/certifications')}
               >
-                View all {certifications.length} certifications
-              </Button>
+                View all {certifications.length} certifications →
+              </Text>
             )}
           </YStack>
         )}

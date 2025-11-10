@@ -1,5 +1,5 @@
-import { YStack, XStack, Text, H4, Spinner, Avatar, Button } from 'tamagui'
-import { DashboardWidget } from '@app/ui'
+import { YStack, XStack, Text, Avatar } from 'tamagui'
+import { DashboardWidget, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
@@ -19,7 +19,13 @@ export function GeneralInfoWidget({
   variant = 'full',
 }: ProfileWidgetProps) {
   const router = useRouter()
-  const { data, isLoading, error } = api.profile.widgets.getGeneralInfo.useQuery(
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+    isFetching,
+  } = api.profile.widgets.getGeneralInfo.useQuery(
     { userId },
     {
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
@@ -29,10 +35,7 @@ export function GeneralInfoWidget({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
-          <Spinner size="large" />
-          <Text color="$color11">Loading profile...</Text>
-        </YStack>
+        <LoadingState message="Loading profile..." />
       </DashboardWidget>
     )
   }
@@ -45,6 +48,16 @@ export function GeneralInfoWidget({
           <Text color="$color11" fontSize="$2">
             {error.message}
           </Text>
+          <UIButton
+            variant="primary"
+            size="$2"
+            onPress={() => {
+              void refetch()
+            }}
+            disabled={isFetching}
+          >
+            Retry
+          </UIButton>
         </YStack>
       </DashboardWidget>
     )
@@ -70,14 +83,18 @@ export function GeneralInfoWidget({
 
   return (
     <DashboardWidget>
-      <YStack gap="$4">
+      <YStack gap={spacing.md}>
         {/* Header */}
         <XStack justify="space-between" items="center">
-          <H4>General Information</H4>
+          <Heading variant="h4">General Information</Heading>
           {showEdit && (
-            <Button size="$2" chromeless onPress={() => router.push('/dashboard/profile/general')}>
+            <UIButton
+              variant="outlined"
+              size="$2"
+              onPress={() => router.push('/dashboard/profile/general')}
+            >
               Edit
-            </Button>
+            </UIButton>
           )}
         </XStack>
 
@@ -87,7 +104,7 @@ export function GeneralInfoWidget({
             <Avatar.Image
               source={{ uri: getAvatarUrl(data.avatar_path) || data.avatar_url || '' }}
             />
-            <Avatar.Fallback backgroundColor="$color6" />
+            <Avatar.Fallback bg="$color6" />
           </Avatar>
 
           <YStack gap="$1" items="center">
@@ -111,14 +128,14 @@ export function GeneralInfoWidget({
           {/* Status Badges */}
           {data.open_to_work && (
             <XStack
-              bg="$green3"
+              bg="$blue2"
               px="$3"
               py="$1.5"
               rounded="$10"
               borderWidth={1}
-              borderColor="$green7"
+              borderColor="$blue7"
             >
-              <Text color="$green11" fontSize="$2" fontWeight="600">
+              <Text color="$blue11" fontSize="$2" fontWeight="600">
                 Open to Work
               </Text>
             </XStack>
@@ -181,16 +198,29 @@ export function GeneralInfoWidget({
             </Text>
 
             <XStack gap="$4" flexWrap="wrap">
-              {data.years_of_experience !== null && data.years_of_experience !== undefined && (
-                <YStack gap="$1" flex={1} minW={120}>
-                  <Text fontSize="$2" color="$color10">
-                    Experience
-                  </Text>
-                  <Text fontSize="$3">
-                    {data.years_of_experience} {data.years_of_experience === 1 ? 'year' : 'years'}
-                  </Text>
-                </YStack>
-              )}
+              {(() => {
+                const yearsValue =
+                  typeof data.calculatedYearsOfExperience === 'number'
+                    ? data.calculatedYearsOfExperience
+                    : data.years_of_experience
+                const formattedYears =
+                  typeof yearsValue === 'number' && !Number.isNaN(yearsValue)
+                    ? yearsValue % 1 !== 0
+                      ? yearsValue.toFixed(1)
+                      : yearsValue
+                    : null
+                if (formattedYears === null) return null
+                return (
+                  <YStack gap="$1" flex={1} minW={120}>
+                    <Text fontSize="$2" color="$color10">
+                      Experience
+                    </Text>
+                    <Text fontSize="$3">
+                      {formattedYears} {Number(formattedYears) === 1 ? 'year' : 'years'}
+                    </Text>
+                  </YStack>
+                )
+              })()}
 
               {data.industries && (
                 <YStack gap="$1" flex={1} minW={120}>

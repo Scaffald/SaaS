@@ -1,15 +1,5 @@
 import { useState, useEffect } from 'react'
-import {
-  YStack,
-  XStack,
-  Text,
-  Button,
-  Input,
-  Spinner,
-  AnimatePresence,
-  Slider,
-  Checkbox,
-} from 'tamagui'
+import { YStack, XStack, Text, Button, Input, Spinner, AnimatePresence, Slider } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -21,7 +11,7 @@ import {
   MILITARY_STATUS_OPTIONS,
   AVAILABILITY_OPTIONS,
 } from '../config/employment-schema'
-import { DashboardWidget, LocationListInput, ToggleCard } from '@app/ui'
+import { CustomCheckbox, DashboardWidget, LocationListInput, ToggleCard } from '@app/ui'
 import { Flag, MapPin, Plane, Car, Shield, Calendar } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
 
@@ -222,28 +212,28 @@ export function EmploymentSection({
                       render={({ field: distanceField }) => (
                         <YStack gap="$3">
                           <Slider
-                            value={[distanceField.value ?? 50]}
+                            value={[distanceField.value ?? 25]}
                             onValueChange={([value]) => distanceField.onChange(value)}
-                            min={5}
-                            max={100}
+                            min={10}
+                            max={250}
                             step={5}
                             size="$1"
                             disabled={readOnly}
                           >
-                            <Slider.Track>
-                              <Slider.TrackActive />
+                            <Slider.Track bg="$color4">
+                              <Slider.TrackActive bg="$blue9" />
                             </Slider.Track>
                             <Slider.Thumb index={0} circular />
                           </Slider>
                           <XStack justify="space-between" items="center">
                             <Text fontSize="$2" color="$color9">
-                              5 miles
+                              10 miles
                             </Text>
                             <Text fontSize="$3" fontWeight="600" color="$color12">
-                              {distanceField.value ?? 50} miles
+                              {distanceField.value ?? 25} miles
                             </Text>
                             <Text fontSize="$2" color="$color9">
-                              100 miles
+                              250 miles
                             </Text>
                           </XStack>
                         </YStack>
@@ -321,12 +311,12 @@ export function EmploymentSection({
                     <YStack gap="$2" pt="$2">
                       {DRIVERS_LICENSE_OPTIONS.map((license) => (
                         <XStack key={license} gap="$3" items="center">
-                          <Checkbox
+                          <CustomCheckbox
                             checked={field.value?.includes(license) || false}
                             onCheckedChange={(checked) => {
                               if (readOnly) return
                               const current = field.value || []
-                              if (checked === true) {
+                              if (checked) {
                                 field.onChange([...current, license])
                               } else {
                                 const filtered = current.filter((l) => l !== license)
@@ -334,6 +324,11 @@ export function EmploymentSection({
                               }
                             }}
                             disabled={readOnly}
+                            aria-label={
+                              license === 'Class D'
+                                ? "Class D (standard driver's license)"
+                                : `Class ${license}`
+                            }
                           />
                           <Text
                             onPress={() => {
@@ -391,18 +386,19 @@ export function EmploymentSection({
                     <YStack gap="$2" pt="$2">
                       {MILITARY_STATUS_OPTIONS.map((status) => (
                         <XStack key={status} gap="$3" items="center">
-                          <Checkbox
+                          <CustomCheckbox
                             checked={field.value?.includes(status) || false}
                             onCheckedChange={(checked) => {
                               if (readOnly) return
                               const current = field.value || []
-                              if (checked === true) {
+                              if (checked) {
                                 field.onChange([...current, status])
                               } else {
                                 field.onChange(current.filter((s) => s !== status))
                               }
                             }}
                             disabled={readOnly}
+                            aria-label={status}
                           />
                           <Text>{status}</Text>
                         </XStack>
@@ -444,18 +440,19 @@ export function EmploymentSection({
                     <YStack gap="$2" pt="$2">
                       {AVAILABILITY_OPTIONS.map((option) => (
                         <XStack key={option} gap="$3" items="center">
-                          <Checkbox
+                          <CustomCheckbox
                             checked={field.value?.includes(option) || false}
                             onCheckedChange={(checked) => {
                               if (readOnly) return
                               const current = field.value || []
-                              if (checked === true) {
+                              if (checked) {
                                 field.onChange([...current, option])
                               } else {
                                 field.onChange(current.filter((a) => a !== option))
                               }
                             }}
                             disabled={readOnly}
+                            aria-label={option}
                           />
                           <Text>{option}</Text>
                         </XStack>

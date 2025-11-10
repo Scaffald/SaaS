@@ -8,6 +8,7 @@ interface UserProfileHeaderProps {
     headline: string | null
     industry_name: string | null
     years_of_experience: number | null
+    calculatedYearsOfExperience?: number | null
     gamified_score: number | null
     location: string | null
     hourly_rate_cents: number | null
@@ -31,6 +32,18 @@ export function UserProfileHeader({
     const dollars = cents / 100
     return `$${dollars.toFixed(2)}/hr`
   }
+
+  const resolvedYears =
+    typeof profile.calculatedYearsOfExperience === 'number'
+      ? profile.calculatedYearsOfExperience
+      : profile.years_of_experience
+
+  const formattedYears =
+    typeof resolvedYears === 'number' && !Number.isNaN(resolvedYears)
+      ? resolvedYears % 1 !== 0
+        ? resolvedYears.toFixed(1)
+        : resolvedYears
+      : null
 
   return (
     <Card elevate bordered>
@@ -109,7 +122,7 @@ export function UserProfileHeader({
 
           {/* Leave Review Button */}
           {canLeaveReview && onLeaveReview && (
-            <Button size="$4" theme="blue" icon={MessageSquare} onPress={onLeaveReview}>
+            <Button size="$4" theme="info" icon={MessageSquare} onPress={onLeaveReview}>
               Leave Review
             </Button>
           )}
@@ -126,11 +139,11 @@ export function UserProfileHeader({
             </XStack>
           )}
 
-          {profile.years_of_experience !== null && (
+          {formattedYears !== null && (
             <XStack gap="$2" items="center" px="$3" py="$2" bg="$color2" rounded="$3">
               <Award size={18} color="$color11" />
               <Text fontSize="$4" color="$color11" fontWeight="600">
-                {profile.years_of_experience} years experience
+                {formattedYears} years experience
               </Text>
             </XStack>
           )}

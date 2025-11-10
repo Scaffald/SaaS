@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from 'react'
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react'
 import {
   YStack,
   XStack,
@@ -8,7 +8,6 @@ import {
   H4,
   TextArea,
   Select,
-  Checkbox,
   Adapt,
   Sheet,
   useWindowDimensions,
@@ -19,7 +18,17 @@ import {
 } from 'tamagui'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, X, ChevronDown, Briefcase, Calendar, MapPin } from '@tamagui/lucide-icons'
+import {
+  Plus,
+  X,
+  ChevronDown,
+  Briefcase,
+  Calendar,
+  MapPin,
+  Check,
+  CheckCircle,
+  AlertTriangle,
+} from '@tamagui/lucide-icons'
 import { ProfileEmptyState } from './components'
 import { formatDateRange } from './utils/date-formatting'
 import { randomUUID } from 'expo-crypto'
@@ -31,31 +40,95 @@ import {
   EMPLOYMENT_TYPE_OPTIONS,
   CAREER_LEVEL_OPTIONS,
 } from './config'
-import { DashboardWidget, ConfirmationDialog, MonthYearPicker, AddressAutocomplete } from '@app/ui'
+import {
+  CustomCheckbox,
+  DashboardWidget,
+  ConfirmationDialog,
+  MonthYearPicker,
+  AddressAutocomplete,
+} from '@app/ui'
 import { api } from '@app/core/utils/api'
+import { invalidateProfileQueries } from './utils/profile-sync'
+import {
+  startProfileSync,
+  completeProfileSync,
+  failProfileSync,
+  resetProfileSyncError,
+  useAdaptiveProfileSync,
+} from './utils/profile-sync-store'
+
+type ExperienceEntries = NonNullable<ExperienceProfileFormData['experience_entries']>
+
+interface SaveExperienceInput {
+  career_level: ExperienceProfileFormData['career_level'] | null
+  experience_entries: ExperienceEntries
+}
+
+interface SaveExperienceContext {
+  previousExperience?: ExperienceEntries | undefined
+  previousSummary?: { career_level: ExperienceProfileFormData['career_level'] | null } | undefined
+}
 
 /**
  * Profile Experience Left Component
  * Form for managing work experience history
  */
 export function ProfileExperienceLeft() {
-  const [isLoading, setIsLoading] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<ExperienceProfileFormData | null>(null)
   const { width } = useWindowDimensions()
   const isMobile = width < 640
+  const syncStatus = useAdaptiveProfileSync(300)
+  const isSyncing = syncStatus === 'syncing'
 
   // Queries
   const experienceQuery = api.profile.getExperience.useQuery()
   const experienceSummaryQuery = api.profile.getExperienceSummary.useQuery()
+  const utils = api.useContext()
 
   // Mutations
   const saveExperienceMutation = api.profile.saveExperience.useMutation({
-    onSuccess: () => {
-      experienceQuery.refetch()
-      experienceSummaryQuery.refetch()
+    async onMutate(input: SaveExperienceInput): Promise<SaveExperienceContext> {
+      resetProfileSyncError()
+      startProfileSync()
+      await Promise.all([
+        utils.profile.getExperience.cancel(),
+        utils.profile.getExperienceSummary.cancel(),
+      ])
+
+      const previousExperience = utils.profile.getExperience.getData()
+      const previousSummary = utils.profile.getExperienceSummary.getData()
+
+      utils.profile.getExperience.setData(undefined, input.experience_entries)
+      utils.profile
+        .getExperienceSummary
+        .setData(undefined, { career_level: input.career_level ?? null })
+
+      return { previousExperience, previousSummary }
+    },
+    onError: (error: unknown, _input: SaveExperienceInput, context?: SaveExperienceContext) => {
+      console.error('Error saving experience:', error)
+      if (context?.previousExperience) {
+        utils.profile.getExperience.setData(undefined, context.previousExperience)
+      }
+      if (context?.previousSummary) {
+        utils.profile.getExperienceSummary.setData(undefined, context.previousSummary)
+      }
+      failProfileSync()
+    },
+    onSettled: (_data: { success: boolean } | undefined, error: unknown) => {
+      if (!error) {
+        completeProfileSync()
+      }
+      void invalidateProfileQueries(utils)
     },
   })
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'success'>('idle')
+  const [saveBanner, setSaveBanner] = useState<{ type: 'success' | 'error'; message: string } | null>(
+    null
+  )
+  const bannerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const buttonTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const {
     control,
@@ -99,17 +172,66 @@ export function ProfileExperienceLeft() {
     }
   }, [experienceQuery.data, experienceSummaryQuery.data, reset])
 
+  const clearTimers = useCallback(() => {
+    if (bannerTimeoutRef.current) {
+      clearTimeout(bannerTimeoutRef.current)
+      bannerTimeoutRef.current = null
+    }
+    if (buttonTimeoutRef.current) {
+      clearTimeout(buttonTimeoutRef.current)
+      buttonTimeoutRef.current = null
+    }
+  }, [])
+
+  const showSuccessFeedback = useCallback(() => {
+    setSaveState('success')
+    setSaveBanner({ type: 'success', message: 'Changes saved successfully' })
+
+    if (bannerTimeoutRef.current) {
+      clearTimeout(bannerTimeoutRef.current)
+    }
+    bannerTimeoutRef.current = setTimeout(() => {
+      setSaveBanner(null)
+      bannerTimeoutRef.current = null
+    }, 3000)
+
+    if (buttonTimeoutRef.current) {
+      clearTimeout(buttonTimeoutRef.current)
+    }
+    buttonTimeoutRef.current = setTimeout(() => {
+      setSaveState('idle')
+      buttonTimeoutRef.current = null
+    }, 2000)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      clearTimers()
+    }
+  }, [clearTimers])
+
   const onSubmit = async (data: ExperienceProfileFormData) => {
-    setIsLoading(true)
+    clearTimers()
+    setSaveBanner(null)
+    setSaveState('saving')
     try {
+      const experienceEntries = (data.experience_entries ?? []) as ExperienceEntries
+
       await saveExperienceMutation.mutateAsync({
-        career_level: data.career_level || null,
-        experience_entries: data.experience_entries || [],
+        career_level: data.career_level ?? null,
+        experience_entries: experienceEntries,
       })
+      showSuccessFeedback()
     } catch (error) {
       console.error('Error saving experience:', error)
-    } finally {
-      setIsLoading(false)
+      setSaveState('idle')
+      setSaveBanner({
+        type: 'error',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Failed to save changes. Please try again.',
+      })
     }
   }
 
@@ -183,7 +305,7 @@ export function ProfileExperienceLeft() {
               name="career_level"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || ''} onValueChange={field.onChange} placement="bottom">
+                <Select value={field.value || ''} onValueChange={field.onChange}>
                   <Select.Trigger iconAfter={ChevronDown}>
                     <Select.Value placeholder="Select career level" />
                   </Select.Trigger>
@@ -217,7 +339,7 @@ export function ProfileExperienceLeft() {
                     <Select.ScrollUpButton />
                     <Select.Viewport>
                       {CAREER_LEVEL_OPTIONS.map((level) => (
-                        <Select.Item key={level} value={level} index={0}>
+                    <Select.Item key={level} value={level} index={0}>
                           <Select.ItemText>{level}</Select.ItemText>
                         </Select.Item>
                       ))}
@@ -314,11 +436,7 @@ export function ProfileExperienceLeft() {
                     name={`experience_entries.${index}.employment_type`}
                     control={control}
                     render={({ field }) => (
-                      <Select
-                        value={field.value || ''}
-                        onValueChange={field.onChange}
-                        placement="bottom"
-                      >
+                      <Select value={field.value || ''} onValueChange={field.onChange}>
                         <Select.Trigger iconAfter={ChevronDown}>
                           <Select.Value placeholder="Select type" />
                         </Select.Trigger>
@@ -399,24 +517,26 @@ export function ProfileExperienceLeft() {
               </XStack>
 
               {/* Remote Work Checkbox */}
-              <XStack gap="$2" items="center">
-                <Controller
-                  name={`experience_entries.${index}.is_remote`}
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      id={`remote-${index}`}
-                    >
-                      <Checkbox.Indicator>
-                        <X />
-                      </Checkbox.Indicator>
-                    </Checkbox>
-                  )}
-                />
-                <Label htmlFor={`remote-${index}`}>Remote Work</Label>
-              </XStack>
+              <Controller
+                name={`experience_entries.${index}.is_remote`}
+                control={control}
+                render={({ field }) => {
+                  const isRemote = Boolean(field.value)
+                  return (
+                    <XStack gap="$2" items="center">
+                      <CustomCheckbox
+                        checked={isRemote}
+                        onCheckedChange={field.onChange}
+                        testID={`remote-${index}`}
+                        aria-label="Remote work"
+                      />
+                      <Label cursor="pointer" onPress={() => field.onChange(!isRemote)}>
+                        Remote Work
+                      </Label>
+                    </XStack>
+                  )
+                }}
+              />
 
               {/* Start and End Dates */}
               <XStack gap="$3">
@@ -432,7 +552,6 @@ export function ProfileExperienceLeft() {
                           const dateStr = date ? date.toISOString().split('T')[0] : null
                           field.onChange(dateStr || undefined)
                         }}
-                        placeholder="Select start date"
                         error={errors.experience_entries?.[index]?.start_date?.message}
                         label="Start Date"
                       />
@@ -452,7 +571,6 @@ export function ProfileExperienceLeft() {
                           const dateStr = date ? date.toISOString().split('T')[0] : null
                           field.onChange(dateStr || undefined)
                         }}
-                        placeholder="Select end date"
                         disabled={watch(`experience_entries.${index}.is_current`)}
                         error={errors.experience_entries?.[index]?.end_date?.message}
                         label="End Date"
@@ -463,24 +581,26 @@ export function ProfileExperienceLeft() {
               </XStack>
 
               {/* Currently Working Checkbox */}
-              <XStack gap="$2" items="center">
-                <Controller
-                  name={`experience_entries.${index}.is_current`}
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      id={`current-${index}`}
-                    >
-                      <Checkbox.Indicator>
-                        <X />
-                      </Checkbox.Indicator>
-                    </Checkbox>
-                  )}
-                />
-                <Label htmlFor={`current-${index}`}>I currently work here</Label>
-              </XStack>
+              <Controller
+                name={`experience_entries.${index}.is_current`}
+                control={control}
+                render={({ field }) => {
+                  const isCurrent = Boolean(field.value)
+                  return (
+                    <XStack gap="$2" items="center">
+                      <CustomCheckbox
+                        checked={isCurrent}
+                        onCheckedChange={field.onChange}
+                        testID={`current-${index}`}
+                        aria-label="Currently work here"
+                      />
+                      <Label cursor="pointer" onPress={() => field.onChange(!isCurrent)}>
+                        I currently work here
+                      </Label>
+                    </XStack>
+                  )
+                }}
+              />
 
               {/* Description */}
               <YStack gap="$2">
@@ -508,6 +628,33 @@ export function ProfileExperienceLeft() {
           )}
         </YStack>
 
+        {/* Save Feedback */}
+        {saveBanner && (
+          <YStack
+            mt="$4"
+            p="$3"
+            gap="$2"
+            borderWidth={1}
+            borderColor={saveBanner.type === 'success' ? '$green7' : '$red7'}
+            bg={saveBanner.type === 'success' ? '$green3' : '$red3'}
+            rounded="$4"
+          >
+            <XStack gap="$2" items="center">
+              {saveBanner.type === 'success' ? (
+                <CheckCircle size={18} color="$green10" />
+              ) : (
+                <AlertTriangle size={18} color="$red10" />
+              )}
+              <Text
+                fontWeight="600"
+                color={saveBanner.type === 'success' ? '$green11' : '$red11'}
+              >
+                {saveBanner.message}
+              </Text>
+            </XStack>
+          </YStack>
+        )}
+
         {/* Action Buttons */}
         <XStack justify="flex-end" gap="$3" pt="$4">
           <Button
@@ -520,10 +667,22 @@ export function ProfileExperienceLeft() {
           </Button>
           <Button
             onPress={handleSubmit(onSubmit)}
-            disabled={!isDirty || isLoading}
-            opacity={!isDirty || isLoading ? 0.5 : 1}
+            disabled={!isDirty || saveState === 'saving'}
+            opacity={!isDirty || saveState === 'saving' ? 0.5 : 1}
           >
-            {isLoading ? 'Saving...' : 'Save Changes'}
+            {saveState === 'success' ? (
+              <XStack gap="$2" items="center">
+                <Check size={18} color="$green10" />
+                <Text color="$green10">Saved!</Text>
+              </XStack>
+            ) : isSyncing && saveState === 'saving' ? (
+              <XStack gap="$2" items="center">
+                <Spinner size="small" color="$color12" />
+                <Text>Saving...</Text>
+              </XStack>
+            ) : (
+              'Save Changes'
+            )}
           </Button>
         </XStack>
 

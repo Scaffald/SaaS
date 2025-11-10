@@ -1,10 +1,12 @@
 import { YStack, XStack, Text, Spinner, H4, Button, Dialog } from 'tamagui'
-import { GraduationCap, Calendar, Award, MapPin, Pencil, Trash2, CheckCircle, AlertCircle } from '@tamagui/lucide-icons'
+import { GraduationCap, Calendar, MapPin, Pencil, Trash2, CheckCircle, AlertCircle } from '@tamagui/lucide-icons'
 import { DashboardWidget } from '@app/ui'
 import { ProfileEmptyState, EducationEntryEditModal } from './components'
 import { formatDateRange } from './utils/date-formatting'
 import { api } from '@app/core/utils/api'
 import { useState } from 'react'
+import { useToastController } from '@tamagui/toast'
+import type { EducationEntry } from './types/education'
 
 /**
  * Profile Education Right Component
@@ -12,21 +14,36 @@ import { useState } from 'react'
  */
 export function ProfileEducationRight() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<string | null>(null)
-  // biome-ignore lint/suspicious/noExplicitAny: tRPC types not yet generated
-  const [editingEntry, setEditingEntry] = useState<any | null>(null)
+  const [editingEntry, setEditingEntry] = useState<EducationEntry | null>(null)
+  const toast = useToastController()
   
   // Query saved education data
   const educationQuery = api.profile.getEducation.useQuery()
+  const educationEntries = (educationQuery.data ?? []) as EducationEntry[]
   
   // Delete mutation
   const deleteEducationMutation = api.profile.deleteEducation.useMutation({
+    onError: (error: unknown) => {
+      toast.show('Delete Failed', {
+        message: error instanceof Error ? error.message : 'Failed to delete education entry. Please try again.',
+      })
+    },
     onSuccess: () => {
+      toast.show('Education Deleted', {
+        message: 'The education entry has been removed.',
+      })
       educationQuery.refetch()
       setDeleteDialogOpen(null)
     },
   })
   
-  const handleDelete = (educationId: string) => {
+  const handleDelete = (educationId: string | null | undefined) => {
+    if (!educationId) {
+      toast.show('Delete Failed', {
+        message: 'Missing education identifier. Please try again.',
+      })
+      return
+    }
     deleteEducationMutation.mutate({ educationId })
   }
 
@@ -61,15 +78,20 @@ export function ProfileEducationRight() {
         Your education history is displayed here. Edit entries in the left panel.
       </Text>
 
-      {!educationQuery.data || educationQuery.data.length === 0 ? (
+      {educationEntries.length === 0 ? (
         <ProfileEmptyState
           icon={GraduationCap}
           message="No education history saved yet. Add your first education entry in the left panel."
         />
       ) : (
         <YStack gap="$3">
-          {/* biome-ignore lint/suspicious/noExplicitAny: tRPC types not yet generated */}
-          {educationQuery.data.map((edu: any) => (
+          {educationEntries.map((edu) => {
+            const normalizedGpa =
+              typeof edu.gpa === 'number' ? edu.gpa : edu.gpa != null ? Number(edu.gpa) : undefined
+            const hasValidGpa =
+              typeof normalizedGpa === 'number' && !Number.isNaN(normalizedGpa)
+
+            return (
             <YStack
               key={edu.id}
               p="$4"
@@ -126,9 +148,9 @@ export function ProfileEducationRight() {
                   )}
                   
                   {/* GPA */}
-                  {edu.gpa && (
+                  {hasValidGpa && (
                     <Text fontSize="$3" color="$color11">
-                      GPA: {edu.gpa.toFixed(2)}/4.0
+                      GPA: {normalizedGpa.toFixed(1)}/4.0
                     </Text>
                   )}
                 </YStack>
@@ -147,7 +169,7 @@ export function ProfileEducationRight() {
                     size="$2"
                     variant="outlined"
                     icon={Trash2}
-                    onPress={() => setDeleteDialogOpen(edu.id)}
+                    onPress={() => setDeleteDialogOpen(edu.id ?? null)}
                   >
                     Delete
                   </Button>
@@ -174,7 +196,7 @@ export function ProfileEducationRight() {
                         Cancel
                       </Button>
                       <Button
-                        theme="red"
+                        theme="error"
                         onPress={() => handleDelete(edu.id)}
                         disabled={deleteEducationMutation.isLoading}
                       >
@@ -193,9 +215,9 @@ export function ProfileEducationRight() {
                     <Calendar size={16} color="$color11" />
                     <Text fontSize="$2" color="$color11">
                       {formatDateRange(
-                        edu.start_date, 
-                        edu.end_date, 
-                        edu.is_current,
+                        edu.start_date,
+                        edu.end_date,
+                        Boolean(edu.is_current),
                         edu.expected_graduation_date
                       )}
                     </Text>
@@ -225,7 +247,8 @@ export function ProfileEducationRight() {
                 )}
               </YStack>
             </YStack>
-          ))}
+            )
+          })}
         </YStack>
       )}
 

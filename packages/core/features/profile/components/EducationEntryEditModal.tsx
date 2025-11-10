@@ -10,26 +10,25 @@ import {
   Adapt,
   Sheet,
   useWindowDimensions,
-  Checkbox,
   Label,
   Spinner,
 } from 'tamagui'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChevronDown } from '@tamagui/lucide-icons'
+import { singleEducationEntrySchema, DEGREE_TYPE_OPTIONS } from '../config'
 import {
-  singleEducationEntrySchema,
-  type EducationProfileFormData,
-  DEGREE_TYPE_OPTIONS,
-} from '../config'
-import {
+  CustomCheckbox,
   ResponsiveModal,
   UniversityAutocomplete,
   ConfirmationDialog,
   MonthYearPicker,
+  FieldError,
 } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
+import type { EducationEntry, EducationEntryFormValues } from '../types/education'
+import { normalizeEducationEntry } from '../utils/education-entry'
 
 // University type definition
 interface University {
@@ -40,8 +39,7 @@ interface University {
   slug: string
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: tRPC types not yet generated
-type EducationEntry = any
+type DegreeOption = (typeof DEGREE_TYPE_OPTIONS)[number]
 
 interface EducationEntryEditModalProps {
   open: boolean
@@ -50,10 +48,6 @@ interface EducationEntryEditModalProps {
   onSuccess?: () => void
 }
 
-/**
- * Education Entry Edit Modal
- * Modal form for editing a single education entry
- */
 export function EducationEntryEditModal({
   open,
   onOpenChange,
@@ -62,7 +56,7 @@ export function EducationEntryEditModal({
 }: EducationEntryEditModalProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
-  const originalDataRef = useRef<EducationProfileFormData['education_entries'][0] | null>(null)
+  const originalDataRef = useRef<EducationEntryFormValues | null>(null)
   const { width } = useWindowDimensions()
   const isMobile = width < 640
   const toast = useToastController()
@@ -95,9 +89,13 @@ export function EducationEntryEditModal({
       onSuccess?.()
       onOpenChange(false)
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Failed to update education entry. Please try again.'
       toast.show('Error', {
-        message: error.message || 'Failed to update education entry. Please try again.',
+        message,
       })
     },
   })
@@ -114,7 +112,7 @@ export function EducationEntryEditModal({
     setValue,
     watch,
     formState: { errors, isDirty },
-  } = useForm<EducationProfileFormData['education_entries'][0]>({
+  } = useForm<EducationEntryFormValues>({
     resolver: zodResolver(singleEducationEntrySchema),
     mode: 'onChange',
   })
@@ -122,30 +120,7 @@ export function EducationEntryEditModal({
   // Load education entry data when modal opens
   useEffect(() => {
     if (open && educationEntry) {
-      // Determine if degree_type needs to be "Other" (if it's not in the standard list)
-      const isStandardDegreeType = educationEntry.degree_type
-        ? (DEGREE_TYPE_OPTIONS as readonly string[]).includes(educationEntry.degree_type)
-        : false
-      const degreeType = isStandardDegreeType ? educationEntry.degree_type : undefined
-      const customDegreeType =
-        !isStandardDegreeType && educationEntry.degree_type ? educationEntry.degree_type : undefined
-
-      const formData = {
-        id: educationEntry.id,
-        university_id: educationEntry.university_id || undefined,
-        institution_name: educationEntry.institution_name || '',
-        is_verified: educationEntry.is_verified || false,
-        degree_type: degreeType || (customDegreeType ? 'Other' : undefined),
-        custom_degree_type: customDegreeType || undefined,
-        field_of_study: educationEntry.field_of_study || undefined,
-        start_date: educationEntry.start_date || undefined,
-        end_date: educationEntry.end_date || undefined,
-        expected_graduation_date: educationEntry.expected_graduation_date || undefined,
-        is_current: educationEntry.is_current || false,
-        gpa: educationEntry.gpa || undefined,
-        description: educationEntry.description || undefined,
-        location: educationEntry.location || undefined,
-      }
+      const formData = normalizeEducationEntry(educationEntry)
 
       reset(formData)
       originalDataRef.current = formData
@@ -153,22 +128,27 @@ export function EducationEntryEditModal({
     }
   }, [open, educationEntry, reset])
 
-  const onSubmit = async (data: EducationProfileFormData['education_entries'][0]) => {
+  const onSubmit = async (data: EducationEntryFormValues) => {
     setIsLoading(true)
     try {
+      if (!educationEntry) {
+        return
+      }
+
       // Get all existing education entries
-      const allEntries = educationQuery.data || []
-      
+      const allEntries: EducationEntryFormValues[] = (educationQuery.data ?? []).map(
+        normalizeEducationEntry
+      )
+
       // Update the entry being edited
-      // biome-ignore lint/suspicious/noExplicitAny: tRPC types not yet generated
-      const updatedEntries = allEntries.map((entry: any) =>
+      const updatedEntries = allEntries.map((entry: EducationEntryFormValues) =>
         entry.id === educationEntry.id ? data : entry
       )
 
       await saveEducationMutation.mutateAsync({
         education_entries: updatedEntries,
       })
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error updating education:', error)
     } finally {
       setIsLoading(false)
@@ -224,8 +204,7 @@ export function EducationEntryEditModal({
                               searchError={searchUniversitiesQuery.error?.message}
                               placeholder="Search for institution..."
                               error={
-                                errors.institution_name?.message ||
-                                errors.university_id?.message
+                                errors.institution_name?.message || errors.university_id?.message
                               }
                             />
                             <Button
@@ -236,7 +215,6 @@ export function EducationEntryEditModal({
                                 universityField.onChange(null)
                                 setValue('is_verified', false, { shouldValidate: false })
                               }}
-                              alignSelf="flex-start"
                             >
                               Can't find your institution? Enter it manually
                             </Button>
@@ -250,8 +228,8 @@ export function EducationEntryEditModal({
                                 nameField.onChange(text)
                                 universityField.onChange(null)
                               }}
-                              error={errors.institution_name?.message}
                             />
+                            <FieldError message={errors.institution_name?.message} />
                             <Button
                               size="$2"
                               variant="outlined"
@@ -260,7 +238,6 @@ export function EducationEntryEditModal({
                                 nameField.onChange('')
                                 universityField.onChange(undefined)
                               }}
-                              alignSelf="flex-start"
                             >
                               Search from catalog instead
                             </Button>
@@ -281,7 +258,12 @@ export function EducationEntryEditModal({
               name="degree_type"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || ''} onValueChange={field.onChange} placement="bottom">
+                <Select
+                  value={field.value ?? ''}
+                  onValueChange={(value) =>
+                    field.onChange(value === '' ? undefined : (value as DegreeOption))
+                  }
+                >
                   <Select.Trigger iconAfter={ChevronDown}>
                     <Select.Value placeholder="Select degree type" />
                   </Select.Trigger>
@@ -331,20 +313,26 @@ export function EducationEntryEditModal({
               control={control}
               render={({ field: degreeTypeField }) => {
                 const isOther = degreeTypeField.value === 'Other'
-                return isOther ? (
-                  <Controller
-                    name="custom_degree_type"
-                    control={control}
-                    render={({ field: customField }) => (
-                      <Input
-                        placeholder="Specify degree type"
-                        value={customField.value || ''}
-                        onChangeText={customField.onChange}
-                        error={errors.custom_degree_type?.message}
+                return (
+                  <>
+                    {isOther && (
+                      <Controller
+                        name="custom_degree_type"
+                        control={control}
+                        render={({ field: customField }) => (
+                          <>
+                            <Input
+                              placeholder="Specify degree type"
+                              value={customField.value || ''}
+                              onChangeText={customField.onChange}
+                            />
+                            <FieldError message={errors.custom_degree_type?.message} />
+                          </>
+                        )}
                       />
                     )}
-                  />
-                ) : null
+                  </>
+                )
               }}
             />
           </YStack>
@@ -373,9 +361,7 @@ export function EducationEntryEditModal({
               control={control}
               render={({ field }) => {
                 // Use local state to track raw input for better decimal handling
-                const [localValue, setLocalValue] = useState(
-                  field.value?.toString() || ''
-                )
+                const [localValue, setLocalValue] = useState(field.value?.toString() || '')
 
                 // Sync local value when field value changes externally (e.g., form reset)
                 useEffect(() => {
@@ -383,59 +369,61 @@ export function EducationEntryEditModal({
                 }, [field.value])
 
                 return (
-                  <Input
-                    placeholder="e.g. 3.5 (0.0 - 4.0)"
-                    value={localValue}
-                    onChangeText={(text) => {
-                      // Allow empty string
-                      if (text === '') {
-                        setLocalValue('')
-                        field.onChange(undefined)
-                        return
-                      }
-
-                      // Allow decimal point and digits
-                      // Match pattern: optional digits, optional decimal point, optional single digit after decimal
-                      const decimalPattern = /^\d*\.?\d?$/
-                      if (!decimalPattern.test(text)) {
-                        return // Don't update if invalid pattern
-                      }
-
-                      // Update local display value
-                      setLocalValue(text)
-
-                      // Parse as float
-                      const numValue = Number.parseFloat(text)
-
-                      // Validate range and that it's a valid number
-                      if (
-                        !Number.isNaN(numValue) &&
-                        numValue >= 0 &&
-                        numValue <= 4.0 &&
-                        // Ensure max 1 decimal place
-                        (text.split('.')[1]?.length ?? 0) <= 1
-                      ) {
-                        // Only update form field if we have a complete number (not just "3.")
-                        if (!text.endsWith('.')) {
-                          field.onChange(numValue)
+                  <>
+                    <Input
+                      placeholder="e.g. 3.5 (0.0 - 4.0)"
+                      value={localValue}
+                      onChangeText={(text) => {
+                        // Allow empty string
+                        if (text === '') {
+                          setLocalValue('')
+                          field.onChange(undefined)
+                          return
                         }
-                      }
-                    }}
-                    onBlur={() => {
-                      // On blur, ensure we have a valid number
-                      const currentValue = field.value
-                      if (currentValue !== undefined && currentValue !== null) {
-                        // Round to 1 decimal place
-                        const rounded = Math.round(currentValue * 10) / 10
-                        field.onChange(rounded)
-                        setLocalValue(rounded.toString())
-                      } else {
-                        setLocalValue('')
-                      }
-                    }}
-                    keyboardType="decimal-pad"
-                    error={errors.gpa?.message}
-                  />
+
+                        // Allow decimal point and digits
+                        // Match pattern: optional digits, optional decimal point, optional single digit after decimal
+                        const decimalPattern = /^\d*\.?\d?$/
+                        if (!decimalPattern.test(text)) {
+                          return // Don't update if invalid pattern
+                        }
+
+                        // Update local display value
+                        setLocalValue(text)
+
+                        // Parse as float
+                        const numValue = Number.parseFloat(text)
+
+                        // Validate range and that it's a valid number
+                        if (
+                          !Number.isNaN(numValue) &&
+                          numValue >= 0 &&
+                          numValue <= 4.0 &&
+                          // Ensure max 1 decimal place
+                          (text.split('.')[1]?.length ?? 0) <= 1
+                        ) {
+                          // Only update form field if we have a complete number (not just "3.")
+                          if (!text.endsWith('.')) {
+                            field.onChange(numValue)
+                          }
+                        }
+                      }}
+                      onBlur={() => {
+                        // On blur, ensure we have a valid number
+                        const currentValue = field.value
+                        if (currentValue !== undefined && currentValue !== null) {
+                          // Round to 1 decimal place
+                          const rounded = Math.round(currentValue * 10) / 10
+                          field.onChange(rounded)
+                          setLocalValue(rounded.toString())
+                        } else {
+                          setLocalValue('')
+                        }
+                      }}
+                      keyboardType="decimal-pad"
+                    />
+                    <FieldError message={errors.gpa?.message} />
+                  </>
                 )
               }}
             />
@@ -485,40 +473,39 @@ export function EducationEntryEditModal({
             <Controller
               name="is_current"
               control={control}
-              render={({ field }) => (
-                <XStack gap="$2" items="center">
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={(checked) => {
-                      field.onChange(checked === true)
-                      if (checked === true) {
-                        setValue('end_date', undefined, { shouldValidate: true })
-                      }
-                    }}
-                  >
-                    <Checkbox.Indicator />
-                  </Checkbox>
-                  <Label
-                    onPress={() => {
-                      const newValue = !field.value
-                      field.onChange(newValue)
-                      if (newValue) {
-                        setValue('end_date', undefined, { shouldValidate: true })
-                      }
-                    }}
-                  >
-                    Currently enrolled
-                  </Label>
-                </XStack>
-              )}
+              render={({ field }) => {
+                const isCurrent = Boolean(field.value)
+                const handleChange = (next: boolean) => {
+                  field.onChange(next)
+                  if (next) {
+                    setValue('end_date', undefined, { shouldValidate: true })
+                  } else {
+                    setValue('expected_graduation_date', undefined, {
+                      shouldValidate: true,
+                    })
+                  }
+                }
+
+                return (
+                  <XStack gap="$2" items="center">
+                    <CustomCheckbox
+                      checked={isCurrent}
+                      onCheckedChange={handleChange}
+                      testID="education-modal-current"
+                      aria-label="Currently enrolled"
+                    />
+                    <Label onPress={() => handleChange(!isCurrent)}>Currently enrolled</Label>
+                  </XStack>
+                )
+              }}
             />
 
             {/* Expected Graduation Date */}
             <Controller
               name="is_current"
               control={control}
-              render={({ field: isCurrentField }) => {
-                return isCurrentField.value ? (
+              render={({ field: isCurrentField }) =>
+                isCurrentField.value ? (
                   <Controller
                     name="expected_graduation_date"
                     control={control}
@@ -534,8 +521,10 @@ export function EducationEntryEditModal({
                       />
                     )}
                   />
-                ) : null
-              }}
+                ) : (
+                  <></>
+                )
+              }
             />
           </YStack>
 
@@ -546,12 +535,15 @@ export function EducationEntryEditModal({
               name="description"
               control={control}
               render={({ field }) => (
-                <TextArea
-                  placeholder="Describe your education experience, achievements, relevant coursework..."
-                  value={field.value || ''}
-                  onChangeText={field.onChange}
-                  minH={80}
-                />
+                <>
+                  <TextArea
+                    placeholder="Describe your education experience, achievements, relevant coursework..."
+                    value={field.value || ''}
+                    onChangeText={field.onChange}
+                    minH={80}
+                  />
+                  <FieldError message={errors.description?.message} />
+                </>
               )}
             />
           </YStack>
@@ -604,4 +596,3 @@ export function EducationEntryEditModal({
     </>
   )
 }
-

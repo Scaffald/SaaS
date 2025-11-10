@@ -4,7 +4,10 @@
   "private": true,
   "scripts": {
     "seed": "pnpx tsx scripts/seed-all.ts",
+    "seed:onet": "pnpx tsx scripts/seed-onet.ts",
     "seed:universities": "pnpx tsx scripts/seed-universities.ts",
+    "download-onet": "pnpx tsx scripts/download-onet.ts",
+    "convert-onet": "pnpx tsx scripts/convert-onet-sql.ts",
     "test:permissions": "pnpx tsx scripts/test-external-jobs-permissions.ts",
     "test:endpoints": "bash functions/trpc/__tests__/run-tests.sh",
     "test:api": "pnpm test:endpoints"
@@ -19,7 +22,9 @@
   "dependencies": {
     "@supabase/supabase-js": "catalog:",
     "@trpc/server": "catalog:",
+    "adm-zip": "^0.5.16",
     "csv-parse": "^6.1.0",
+    "pg-copy-streams": "^6.0.5",
     "zod": "catalog:"
   },
   "devDependencies": {

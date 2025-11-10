@@ -9,7 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from '@tamagui/lucide-icons'
-import type { ColumnDef } from '@tanstack/react-table'
+import type { ColumnDef, Updater, VisibilityState } from '@tanstack/react-table'
 import {
   useReactTable,
   getCoreRowModel,
@@ -18,6 +18,8 @@ import {
   flexRender,
 } from '@tanstack/react-table'
 import { Table } from './TableParts'
+
+const HEADER_ROW_HEIGHT = 48
 
 export interface DataTableProps<TData> {
   columns: ColumnDef<TData, unknown>[]
@@ -30,6 +32,8 @@ export interface DataTableProps<TData> {
   cellHeight?: string
   hidePagination?: boolean
   testID?: string
+  columnVisibility?: VisibilityState
+  onColumnVisibilityChange?: (updater: Updater<VisibilityState>) => void
 }
 
 export function DataTable<TData>({
@@ -43,6 +47,8 @@ export function DataTable<TData>({
   cellHeight = '$5',
   hidePagination = false,
   testID,
+  columnVisibility,
+  onColumnVisibilityChange,
 }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
@@ -55,6 +61,16 @@ export function DataTable<TData>({
         pageSize,
       },
     },
+    ...(columnVisibility
+      ? {
+          state: {
+            columnVisibility,
+          },
+          onColumnVisibilityChange,
+        }
+      : onColumnVisibilityChange
+        ? { onColumnVisibilityChange }
+        : {}),
   })
 
   const headerGroups = table.getHeaderGroups()
@@ -94,8 +110,8 @@ export function DataTable<TData>({
               borderBottomRightRadius="$2"
             >
               {/* Header */}
-              <Table.Head>
-                {headerGroups.map((headerGroup) => (
+              <Table.Head position="absolute" t={0} z={5} bg="$background">
+                {headerGroups.map((headerGroup, groupIndex) => (
                   <Table.Row
                     key={headerGroup.id}
                     backgrounded
@@ -103,40 +119,67 @@ export function DataTable<TData>({
                     rowLocation="first"
                     borderTopRightRadius="$4"
                     borderTopLeftRadius="$4"
+                    position="absolute"
+                    t={groupIndex * HEADER_ROW_HEIGHT}
+                    z={5 + groupIndex}
                   >
-                    {headerGroup.headers.map((header, idx) => (
-                      <Table.HeaderCell
-                        key={header.id}
-                        pl="$3"
-                        cellLocation={
-                          idx === 0
-                            ? 'first'
-                            : idx === headerGroup.headers.length - 1
-                              ? 'last'
-                              : 'middle'
-                        }
-                      >
-                        <View
-                          flexDirection="row"
-                          cursor={header.column.getCanSort() ? 'pointer' : 'default'}
-                          onPress={header.column.getToggleSortingHandler()}
-                          gap="$2"
-                          items="center"
+                    {headerGroup.headers.map((header, idx) => {
+                      const cellLocation =
+                        idx === 0
+                          ? 'first'
+                          : idx === headerGroup.headers.length - 1
+                            ? 'last'
+                            : 'middle'
+
+                      if (header.isPlaceholder) {
+                        return (
+                          <Table.HeaderCell
+                            key={header.id}
+                            pl="$3"
+                            cellWidth={cellWidth as never}
+                            cellLocation={cellLocation}
+                          />
+                        )
+                      }
+
+                      const columnMeta = header.column.columnDef.meta as
+                        | { width?: string | number }
+                        | undefined
+                      const columnWidth = columnMeta?.width ?? cellWidth
+
+                      return (
+                        <Table.HeaderCell
+                          key={header.id}
+                          pl="$3"
+                          cellWidth={columnWidth as never}
+                          cellLocation={cellLocation}
                         >
-                          <Text fontSize="$4" selectable={false}>
-                            {flexRender(header.column.columnDef.header, header.getContext())}
-                          </Text>
-                          {header.column.getCanSort() &&
-                            (header.column.getIsSorted() === 'asc' ? (
-                              <ChevronUp size="$1" />
-                            ) : header.column.getIsSorted() === 'desc' ? (
-                              <ChevronDown size="$1" />
-                            ) : (
-                              <ChevronsUpDown size="$1" />
-                            ))}
-                        </View>
-                      </Table.HeaderCell>
-                    ))}
+                          <View
+                            flexDirection="row"
+                            cursor={header.column.getCanSort() ? 'pointer' : 'default'}
+                            onPress={
+                              header.column.getCanSort()
+                                ? header.column.getToggleSortingHandler()
+                                : undefined
+                            }
+                            gap="$2"
+                            items="center"
+                          >
+                            <Text fontSize="$4" selectable={false}>
+                              {flexRender(header.column.columnDef.header, header.getContext())}
+                            </Text>
+                            {header.column.getCanSort() &&
+                              (header.column.getIsSorted() === 'asc' ? (
+                                <ChevronUp size="$1" />
+                              ) : header.column.getIsSorted() === 'desc' ? (
+                                <ChevronDown size="$1" />
+                              ) : (
+                                <ChevronsUpDown size="$1" />
+                              ))}
+                          </View>
+                        </Table.HeaderCell>
+                      )
+                    })}
                   </Table.Row>
                 ))}
               </Table.Head>
@@ -152,23 +195,31 @@ export function DataTable<TData>({
                     onPress={() => onRowClick?.(row.original)}
                     rowLocation={rowIdx === tableRows.length - 1 ? 'last' : 'middle'}
                   >
-                    {row.getVisibleCells().map((cell, cellIdx) => (
-                      <Table.Cell
-                        key={cell.id}
-                        pl="$3"
-                        cellLocation={
-                          cellIdx === 0
-                            ? 'first'
-                            : cellIdx === row.getVisibleCells().length - 1
-                              ? 'last'
-                              : 'middle'
-                        }
-                      >
-                        <Text fontSize="$4" color="$color11">
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </Text>
-                      </Table.Cell>
-                    ))}
+                    {row.getVisibleCells().map((cell, cellIdx) => {
+                      const columnMeta = cell.column.columnDef.meta as
+                        | { width?: string | number }
+                        | undefined
+                      const columnWidth = columnMeta?.width ?? cellWidth
+
+                      return (
+                        <Table.Cell
+                          key={cell.id}
+                          pl="$3"
+                          cellWidth={columnWidth as never}
+                          cellLocation={
+                            cellIdx === 0
+                              ? 'first'
+                              : cellIdx === row.getVisibleCells().length - 1
+                                ? 'last'
+                                : 'middle'
+                          }
+                        >
+                          <Text fontSize="$4" color="$color11">
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </Text>
+                        </Table.Cell>
+                      )
+                    })}
                   </Table.Row>
                 ))}
               </Table.Body>

@@ -34,6 +34,11 @@ const ROUTES_CONFIG = {
     title: "Home",
   },
 
+  STYLEGUIDE: {
+    path: "/styleguide",
+    title: "Styleguide",
+  },
+
   // Auth Routes
   AUTH: {
     path: "/auth",
@@ -55,6 +60,11 @@ const ROUTES_CONFIG = {
   DASHBOARD: {
     path: "/dashboard",
     title: "Dashboard",
+    isProtected: true,
+  },
+  DASHBOARD_NOTIFICATIONS: {
+    path: "/dashboard/settings/notifications",
+    title: "Notifications",
     isProtected: true,
   },
 
@@ -82,6 +92,11 @@ const ROUTES_CONFIG = {
   DASHBOARD_PROFILE_CERTIFICATIONS: {
     path: "/dashboard/profile/certifications",
     title: "Certifications",
+    isProtected: true,
+  },
+  DASHBOARD_PROFILE_IMPORT_REVIEW: {
+    path: "/dashboard/profile/import-review",
+    title: "Import Review",
     isProtected: true,
   },
   DASHBOARD_PROFILE_EDUCATION: {
@@ -128,6 +143,11 @@ const ROUTES_CONFIG = {
     title: "Workers",
     isProtected: true,
   },
+  DASHBOARD_DISCOVER_WORKER_DETAIL: {
+    path: "/dashboard/discover/workers/:id",
+    title: "Worker Details",
+    isProtected: true,
+  },
   DASHBOARD_DISCOVER_EMPLOYERS: {
     path: "/dashboard/discover/employers",
     title: "Employers",
@@ -146,6 +166,11 @@ const ROUTES_CONFIG = {
   DASHBOARD_DISCOVER_JOB_DETAIL: {
     path: "/dashboard/discover/jobs/:id",
     title: "Job Details",
+    isProtected: true,
+  },
+  DASHBOARD_ORGANIZATIONS_CREATE: {
+    path: "/dashboard/organizations/create",
+    title: "Request Organization",
     isProtected: true,
   },
 
@@ -259,7 +284,12 @@ const ROUTES_CONFIG = {
   },
   OFFICE_ORGANIZATIONS: {
     path: "/office/organizations",
-    title: "Manage Organizations",
+    title: "Organizations",
+    isProtected: true,
+  },
+  OFFICE_NOTIFICATIONS: {
+    path: "/office/notifications",
+    title: "Notifications",
     isProtected: true,
   },
   OFFICE_ORGANIZATIONS_CREATE: {
@@ -331,10 +361,14 @@ export const RouteBuilder = {
   // Dashboard routes
   dashboardUser: (userId: string | number) =>
     buildRoute(ROUTES.DASHBOARD_USER, { userId }),
+  discoverWorkerDetail: (id: string | number) =>
+    buildRoute(ROUTES.DASHBOARD_DISCOVER_WORKER_DETAIL, { id }),
   discoverJobDetail: (id: string | number) =>
     buildRoute(ROUTES.DASHBOARD_DISCOVER_JOB_DETAIL, { id }),
   dashboardEmployer: (id: string | number) =>
     buildRoute(ROUTES.DASHBOARD_DISCOVER_EMPLOYER_DETAIL, { id }),
+  dashboardOrganizationCreate: () =>
+    ROUTES.DASHBOARD_ORGANIZATIONS_CREATE.path,
 } as const;
 
 // ============================================================================
@@ -357,6 +391,7 @@ export const DASHBOARD_ROUTES = {
   INDEX: ROUTES.DASHBOARD,
   PROFILE: ROUTES.DASHBOARD_PROFILE,
   SETTINGS: ROUTES.DASHBOARD_SETTINGS,
+  NOTIFICATIONS: ROUTES.DASHBOARD_NOTIFICATIONS,
 } as const;
 
 /**
@@ -367,6 +402,7 @@ export const OFFICE_ROUTES = {
   USERS: ROUTES.OFFICE_USERS,
   JOBS: ROUTES.OFFICE_JOBS,
   UNIVERSITIES: ROUTES.OFFICE_UNIVERSITIES,
+  NOTIFICATIONS: ROUTES.OFFICE_NOTIFICATIONS,
 } as const;
 
 // ============================================================================

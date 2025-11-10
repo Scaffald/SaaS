@@ -93,17 +93,15 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
   // Get top skills
   const topSkills = skills?.slice(0, 5) || []
 
-  // Helper to get skill name
-  const getSkillName = (skill: Record<string, unknown>): string => {
-    if (skill.metadata && typeof skill.metadata === 'object') {
-      const metadata = skill.metadata as Record<string, unknown>
-      const name = metadata.name
-      const title = metadata.title
-      if (typeof name === 'string') return name
-      if (typeof title === 'string') return title
-    }
-    return 'Skill'
-  }
+  const resolvedYearsOfExperience =
+    typeof generalInfo?.calculatedYearsOfExperience === 'number'
+      ? generalInfo.calculatedYearsOfExperience
+      : generalInfo?.years_of_experience ?? 0
+
+  const formattedYearsOfExperience =
+    Number.isFinite(resolvedYearsOfExperience) && resolvedYearsOfExperience % 1 !== 0
+      ? resolvedYearsOfExperience.toFixed(1)
+      : resolvedYearsOfExperience ?? 0
 
   const displayName =
     generalInfo?.display_name ||
@@ -134,7 +132,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                       uri: getAvatarUrl(generalInfo.avatar_path) || generalInfo.avatar_url || '',
                     }}
                   />
-                  <Avatar.Fallback backgroundColor="$color6" />
+                  <Avatar.Fallback bg="$color6" />
                 </Avatar>
 
                 <YStack gap="$1" items="center">
@@ -249,7 +247,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                     items="center"
                   >
                     <Text fontSize="$6" fontWeight="700" color="$color10">
-                      {generalInfo.years_of_experience || 0}
+                      {formattedYearsOfExperience}
                     </Text>
                     <Text fontSize="$1" color="$color11">
                       Years
@@ -265,24 +263,36 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                     Top Skills
                   </Text>
                   <XStack gap="$2" flexWrap="wrap">
-                    {topSkills.map((skill: Record<string, unknown>) => (
-                      <XStack
-                        key={skill.id as string}
-                        bg="$color3"
-                        px="$2.5"
-                        py="$1.5"
-                        rounded="$2"
-                        borderWidth={1}
-                        borderColor={skill.verified ? '$green7' : '$color6'}
-                      >
-                        {skill.verified && (
-                          <Text color="$green10" fontSize="$1" mr="$1">
-                            ✓
-                          </Text>
-                        )}
-                        <Text fontSize="$2">{getSkillName(skill)}</Text>
-                      </XStack>
-                    ))}
+                    {topSkills.map((skill: Record<string, unknown>) => {
+                      const displayCode =
+                        typeof skill.displayCode === 'string' ? skill.displayCode : null
+                      const skillName = typeof skill.name === 'string' ? skill.name : 'Skill'
+                      const chipLabel =
+                        typeof skill.label === 'string'
+                          ? skill.label
+                          : displayCode
+                            ? `${displayCode} · ${skillName}`
+                            : skillName
+
+                      return (
+                        <XStack
+                          key={skill.id as string}
+                          bg="$color3"
+                          px="$2.5"
+                          py="$1.5"
+                          rounded="$2"
+                          borderWidth={1}
+                          borderColor={skill.verified ? '$green7' : '$color6'}
+                        >
+                          {skill.verified && (
+                            <Text color="$green10" fontSize="$1" mr="$1">
+                              ✓
+                            </Text>
+                          )}
+                          <Text fontSize="$2">{chipLabel}</Text>
+                        </XStack>
+                      )
+                    })}
                   </XStack>
                 </YStack>
               )}

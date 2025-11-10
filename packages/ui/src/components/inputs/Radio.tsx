@@ -11,14 +11,12 @@ export interface RadioProps {
   size?: 'small' | 'medium' | 'large'
   /** Optional test ID for testing */
   testID?: string
-  /** Optional label for accessibility */
-  accessibilityLabel?: string
 }
 
 const RadioContainer = styled(View, {
   position: 'relative',
   cursor: 'pointer',
-  animation: '100ms',
+  animation: 'quick',
   variants: {
     size: {
       small: {
@@ -36,10 +34,10 @@ const RadioContainer = styled(View, {
     },
     checked: {
       true: {
-        borderColor: '$color10',
+        borderColor: '$blue7',
       },
       false: {
-        borderColor: '$color10',
+        borderColor: '$borderColor',
       },
     },
     disabled: {
@@ -53,8 +51,15 @@ const RadioContainer = styled(View, {
       },
     },
   } as const,
+  focusStyle: {
+    borderColor: '$blue7',
+    outlineColor: '$blue7',
+    outlineWidth: 2,
+    outlineStyle: 'solid',
+  },
   hoverStyle: {
     scale: 1.05,
+    borderColor: '$blue8',
   },
   pressStyle: {
     scale: 0.95,
@@ -63,7 +68,7 @@ const RadioContainer = styled(View, {
 
 const RadioDot = styled(View, {
   position: 'absolute',
-  bg: '$color10',
+  bg: '$blue7',
   rounded: 50,
   variants: {
     size: {
@@ -123,7 +128,6 @@ export function Radio({
   disabled = false,
   size = 'medium',
   testID,
-  accessibilityLabel,
 }: RadioProps) {
   const handlePress = () => {
     if (!disabled) {
@@ -137,7 +141,6 @@ export function Radio({
       disabled={disabled}
       size={size}
       onPress={handlePress}
-      aria-label={accessibilityLabel}
       testID={testID}
       borderWidth={2}
       rounded={50}

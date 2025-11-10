@@ -68,6 +68,26 @@ export interface AssessmentWizardProps {
    * Step content to render
    */
   children: ReactNode
+
+  /**
+   * Override completed step tracking (useful when handled externally)
+   */
+  completedSteps?: Set<string>
+
+  /**
+   * Whether to render the header section (title, description, progress)
+   */
+  showHeader?: boolean
+
+  /**
+   * Whether to render the progress indicator inside the header
+   */
+  showProgressIndicator?: boolean
+
+  /**
+   * Orientation of progress indicator when rendered internally
+   */
+  progressOrientation?: 'horizontal' | 'vertical'
 }
 
 /**
@@ -88,11 +108,19 @@ export function AssessmentWizard({
   onPrevious,
   onNext,
   children,
+  completedSteps: completedStepsOverride,
+  showHeader = true,
+  showProgressIndicator,
+  progressOrientation = 'horizontal',
 }: AssessmentWizardProps) {
   const currentStepOrder = steps.find((s) => s.id === currentStep)?.order || 0
-  const completedSteps = new Set(
+  const calculatedCompletedSteps = new Set(
     steps.filter((step) => step.order < currentStepOrder).map((step) => step.id)
   )
+  const completedSteps = completedStepsOverride ?? calculatedCompletedSteps
+  const shouldShowProgress =
+    (showProgressIndicator ?? steps.length > 1) && steps.length > 1 && showHeader
+  const shouldRenderHeader = showHeader && (title || description || shouldShowProgress || false)
 
   // Loading state
   if (isLoading) {
@@ -122,16 +150,10 @@ export function AssessmentWizard({
   }
 
   return (
-    <YStack flex={1} bg="$background">
+    <YStack flex={1}>
       {/* Header */}
-      {(title || description || steps.length > 1) && (
-        <YStack
-          p="$4"
-          bg="$background"
-          borderBottomWidth={1}
-          borderBottomColor="$borderColor"
-          gap="$3"
-        >
+      {shouldRenderHeader && (
+        <YStack p="$4" gap="$3">
           {(title || description) && (
             <YStack gap="$1">
               {title && (
@@ -150,12 +172,13 @@ export function AssessmentWizard({
           )}
 
           {/* Progress Indicator */}
-          {steps.length > 1 && (
+          {shouldShowProgress && (
             <AssessmentProgress
               steps={steps}
               currentStep={currentStep}
               completedSteps={completedSteps}
               completionScore={completionScore}
+              orientation={progressOrientation}
             />
           )}
         </YStack>
@@ -170,7 +193,7 @@ export function AssessmentWizard({
 
       {/* Navigation Footer */}
       {(showPrevious || showNext) && (
-        <YStack p="$4" bg="$background" borderTopWidth={1} borderTopColor="$borderColor">
+        <YStack p="$4" borderTopWidth={1} borderTopColor="$borderColor">
           <XStack gap="$3" justify="space-between">
             {showPrevious && (
               <Button size="$4" variant="outlined" icon={ChevronLeft} onPress={onPrevious}>

@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from 'expo-router'
 import { DiscoverJobDetailScreen } from '@app/core/features/discover/discover-job-detail-screen'
-import { DashboardLayout } from '@app/ui/src/components/layouts/DashboardLayout'
+import { DashboardLayout } from '@app/ui'
 
 export default function JobDetailPage() {
   const { id } = useLocalSearchParams<{ id: string }>()
