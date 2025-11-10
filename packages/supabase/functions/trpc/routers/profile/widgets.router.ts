@@ -18,10 +18,10 @@ export const profileWidgetsRouter = t.router({
    * Public endpoint - can view any user's public profile info
    */
   getGeneralInfo: publicProcedure
-    .input(userIdInputSchema)
+    .input(userIdInputSchema.optional())
     .query(async ({ ctx, input }) => {
       const { supabase, user } = ctx;
-      const targetUserId = input.userId || user?.id;
+      const targetUserId = input?.userId || user?.id;
 
       if (!targetUserId) {
         throw new TRPCError({
@@ -104,10 +104,10 @@ export const profileWidgetsRouter = t.router({
    * Public endpoint - can view any user's experience
    */
   getExperience: publicProcedure
-    .input(userIdInputSchema)
+    .input(userIdInputSchema.optional())
     .query(async ({ ctx, input }) => {
       const { supabase, user } = ctx;
-      const targetUserId = input.userId || user?.id;
+      const targetUserId = input?.userId || user?.id;
 
       if (!targetUserId) {
         throw new TRPCError({
@@ -138,10 +138,10 @@ export const profileWidgetsRouter = t.router({
    * Public endpoint - can view any user's education
    */
   getEducation: publicProcedure
-    .input(userIdInputSchema)
+    .input(userIdInputSchema.optional())
     .query(async ({ ctx, input }) => {
       const { supabase, user } = ctx;
-      const targetUserId = input.userId || user?.id;
+      const targetUserId = input?.userId || user?.id;
 
       if (!targetUserId) {
         throw new TRPCError({
@@ -172,10 +172,10 @@ export const profileWidgetsRouter = t.router({
    * Public endpoint - can view any user's skills
    */
   getSkills: publicProcedure
-    .input(userIdInputSchema)
+    .input(userIdInputSchema.optional())
     .query(async ({ ctx, input }) => {
       const { supabase, user } = ctx;
-      const targetUserId = input.userId || user?.id;
+      const targetUserId = input?.userId || user?.id;
 
       if (!targetUserId) {
         throw new TRPCError({
@@ -206,10 +206,10 @@ export const profileWidgetsRouter = t.router({
    * Public endpoint - can view any user's certifications
    */
   getCertifications: publicProcedure
-    .input(userIdInputSchema)
+    .input(userIdInputSchema.optional())
     .query(async ({ ctx, input }) => {
       const { supabase, user } = ctx;
-      const targetUserId = input.userId || user?.id;
+      const targetUserId = input?.userId || user?.id;
 
       if (!targetUserId) {
         throw new TRPCError({

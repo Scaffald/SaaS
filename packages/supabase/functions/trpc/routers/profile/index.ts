@@ -24,7 +24,7 @@ export const profileRouter = t.mergeRouters(
   profileEducationRouter,
   profileExperienceRouter,
   profileCompletionRouter,
-  profileVanityRouter,
+  t.router({ vanity: profileVanityRouter }),
   t.router({ widgets: profileWidgetsRouter }),
   t.router({ import: profileImportRouter }),
 );

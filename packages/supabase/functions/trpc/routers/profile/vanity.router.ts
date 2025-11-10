@@ -124,12 +124,11 @@ export const profileVanityRouter = t.router({
     .input(slugInputSchema)
     .mutation(async ({ ctx, input }) => {
       const { supabase, user } = ctx;
-      const { supabaseAdmin } = ctx;
 
       const newSlug = input.slug.toLowerCase().trim();
 
       // Check 30-day cooldown
-      const { data: lastChange, error: historyError } = await supabaseAdmin
+      const { data: lastChange, error: historyError } = await supabase
         .schema("core")
         .from("slug_change_history")
         .select("changed_at")
@@ -210,7 +209,7 @@ export const profileVanityRouter = t.router({
       }
 
       // Record in history
-      const { error: historyInsertError } = await supabaseAdmin
+      const { error: historyInsertError } = await supabase
         .schema("core")
         .from("slug_change_history")
         .insert({
@@ -239,9 +238,9 @@ export const profileVanityRouter = t.router({
    * Protected endpoint for viewing own slug change history
    */
   getSlugHistory: protectedProcedure.query(async ({ ctx }) => {
-    const { supabaseAdmin, user } = ctx;
+    const { supabase, user } = ctx;
 
-    const { data: history, error } = await supabaseAdmin
+    const { data: history, error } = await supabase
       .schema("core")
       .from("slug_change_history")
       .select("old_slug, new_slug, changed_at")
