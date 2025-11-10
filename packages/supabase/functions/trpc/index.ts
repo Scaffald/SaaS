@@ -71,19 +71,28 @@ Deno.serve(async (req: Request) => {
       cause: error instanceof Error && 'cause' in error ? error.cause : undefined,
     }, null, 2));
     
-    // Return error details (safe for development, mask in production)
-    const errorMessage = error instanceof Error 
-      ? error.message 
+    // Return error details only in development, generic message in production
+    const isDevelopment = Deno.env.get("ENVIRONMENT") === "development" ||
+                          Deno.env.get("DENO_DEPLOYMENT_ID") === undefined;
+
+    const errorMessage = error instanceof Error
+      ? error.message
       : String(error);
     const errorName = error instanceof Error ? error.name : "UnknownError";
-    
-    return new Response(JSON.stringify({ 
+
+    // In production, return generic error without sensitive details
+    const responseBody = isDevelopment ? {
       error: "Internal server error",
       message: errorMessage,
       type: errorName,
-    }), {
+    } : {
+      error: "Internal server error",
+      message: "An unexpected error occurred. Please try again later.",
+    };
+
+    return new Response(JSON.stringify(responseBody), {
       status: 500,
-      headers: { 
+      headers: {
         "Content-Type": "application/json",
         ...corsHeaders
       },
