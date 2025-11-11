@@ -7,6 +7,7 @@ export {
   TEAM_INVITATION_TTL_MIN,
   TEAM_INVITATION_TTL_MAX,
   TEAM_VISIBILITIES,
+  teamIdSchema,
   teamArchiveSchema,
   teamCreateSchema,
   teamInvitationCancelSchema,

@@ -3,11 +3,11 @@ import type { Session } from '@supabase/supabase-js'
 import React, { type ReactNode, type FC } from 'react'
 
 import { AuthProvider } from './auth/AuthProvider'
+import { CookieConsentProvider } from './cookie-consent'
 import { QueryClientProvider } from './react-query'
 import { TamaguiProvider } from './tamagui'
 import { UniversalThemeProvider } from './theme'
 import { ToastProvider } from './toast'
-import { CookieConsentProvider } from './cookie-consent'
 
 export { loadThemePromise } from './theme/UniversalThemeProvider'
 
@@ -21,11 +21,9 @@ export function Provider({
   return (
     // Note: DatePickerProvider Conflicted with Popover so this is just a temporary solution
     <DatePickerProvider config={{ selectedDates: [], onDatesChange: () => {} }}>
-      <CookieConsentProvider>
-        <AuthProvider initialSession={initialSession}>
-          <Providers>{children}</Providers>
-        </AuthProvider>
-      </CookieConsentProvider>
+      <Providers>
+        <AuthProvider initialSession={initialSession}>{children}</AuthProvider>
+      </Providers>
     </DatePickerProvider>
   )
 }
@@ -42,4 +40,10 @@ const compose = (providers: FC<{ children: ReactNode }>[]) =>
     return Provider
   })
 
-const Providers = compose([UniversalThemeProvider, TamaguiProvider, ToastProvider, QueryClientProvider])
+const Providers = compose([
+  UniversalThemeProvider,
+  TamaguiProvider,
+  CookieConsentProvider,
+  ToastProvider,
+  QueryClientProvider,
+])

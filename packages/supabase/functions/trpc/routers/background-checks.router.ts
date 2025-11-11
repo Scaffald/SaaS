@@ -1,5 +1,5 @@
-import { TRPCError } from '@trpc/server'
-import { z } from 'zod'
+import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 
 import {
   BACKGROUND_CHECK_ALLOWED_MIME_TYPES,
@@ -8,27 +8,32 @@ import {
   backgroundCheckInitiationSchema,
   backgroundCheckStatusEnum,
   backgroundCheckUploadRequestSchema,
-} from '../../_shared/background-check-schemas.ts'
+} from "../../_shared/background-check-schemas.ts";
 import {
   notifyBackgroundCheckInvitation,
   notifyBackgroundCheckStatusChange,
-} from '../../_shared/background-check-notifications.ts'
+} from "../../_shared/background-check-notifications.ts";
 import {
+  type CheckStatusResponse,
   createNationSearchClient,
   isNationSearchOutageError,
-  type CheckStatusResponse,
-} from '../../_shared/nationsearch/client.ts'
+} from "../../_shared/nationsearch/client.ts";
 import {
   appendStatusHistory,
-  BackgroundCheckStatus,
   BACKGROUND_CHECK_BASE_COLUMNS,
   BACKGROUND_CHECK_SYNC_COLUMNS,
+  BackgroundCheckStatus,
   mapProviderStatus,
   mergeMetadata,
   shouldSyncStatus,
-} from '../../_shared/background-check-status.ts'
-import type { Context } from '../context.ts'
-import { officeProcedure, protectedProcedure, publicProcedure, t } from '../middleware.ts'
+} from "../../_shared/background-check-status.ts";
+import type { Context } from "../context.ts";
+import {
+  officeProcedure,
+  protectedProcedure,
+  publicProcedure,
+  t,
+} from "../middleware.ts";
 
 const listPackagesOutputSchema = z.object({
   id: z.string().uuid(),
@@ -51,7 +56,7 @@ const listPackagesOutputSchema = z.object({
       estimated_completion_days: z.number().nullable(),
     }),
   ),
-})
+});
 
 const listChecksOutputSchema = z.object({
   id: z.string().uuid(),
@@ -68,7 +73,7 @@ const listChecksOutputSchema = z.object({
   provider_check_id: z.string().nullable(),
   findings: z.record(z.unknown()).nullable(),
   metadata: z.record(z.unknown()).nullable(),
-})
+});
 
 const getCheckOutputSchema = z.object({
   check: z.object({
@@ -85,7 +90,7 @@ const getCheckOutputSchema = z.object({
     created_at: z.string().datetime(),
     updated_at: z.string().datetime(),
     expires_at: z.string().datetime().nullable(),
-    estimated_completion_date: z.string().date().nullable(),
+    estimated_completion_date: z.string().nullable(),
   }),
   documents: z.array(
     z.object({
@@ -99,128 +104,152 @@ const getCheckOutputSchema = z.object({
       verified: z.boolean(),
     }),
   ),
-})
+});
 
 const updatePrivacyInputSchema = z.object({
   background_check_id: z.string().uuid(),
   share_publicly: z.boolean(),
   shared_with_organization_ids: z.array(z.string().uuid()).default([]),
-})
+});
 
-const BACKGROUND_CHECK_BUCKET_ID = 'background-check-documents'
-const SIGNED_UPLOAD_URL_TTL_SECONDS = 60 * 5
-const MAX_DOCUMENT_SIZE_BYTES = 10 * 1024 * 1024
+const BACKGROUND_CHECK_BUCKET_ID = "background-check-documents";
+const SIGNED_UPLOAD_URL_TTL_SECONDS = 60 * 5;
+const MAX_DOCUMENT_SIZE_BYTES = 10 * 1024 * 1024;
 
 function sanitizeFileName(fileName: string): string {
-  const cleaned = fileName.replace(/[^A-Za-z0-9._-]/g, '_')
-  return cleaned.length > 255 ? cleaned.slice(cleaned.length - 255) : cleaned
+  const cleaned = fileName.replace(/[^A-Za-z0-9._-]/g, "_");
+  return cleaned.length > 255 ? cleaned.slice(cleaned.length - 255) : cleaned;
 }
 
-function buildDocumentStoragePath(userId: string, backgroundCheckId: string, fileName: string) {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-  const sanitizedFileName = sanitizeFileName(fileName)
-  return `${userId}/${backgroundCheckId}/${timestamp}-${sanitizedFileName}`
+function buildDocumentStoragePath(
+  userId: string,
+  backgroundCheckId: string,
+  fileName: string,
+) {
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const sanitizedFileName = sanitizeFileName(fileName);
+  return `${userId}/${backgroundCheckId}/${timestamp}-${sanitizedFileName}`;
 }
 
 type BackgroundCheckRecord = {
-  id: string
-  status: BackgroundCheckStatus
-  status_history?: unknown
-  provider_check_id?: string | null
-  metadata?: unknown
-  summary?: string | null
-  findings?: unknown
-  component_statuses?: unknown
-  completed_at?: string | null
-  expires_at?: string | null
-  estimated_completion_date?: string | null
-}
+  id: string;
+  status: BackgroundCheckStatus;
+  status_history?: unknown;
+  provider_check_id?: string | null;
+  metadata?: unknown;
+  summary?: string | null;
+  findings?: unknown;
+  component_statuses?: unknown;
+  completed_at?: string | null;
+  expires_at?: string | null;
+  estimated_completion_date?: string | null;
+};
 
 async function syncBackgroundCheckFromProvider(params: {
-  nationSearch: ReturnType<typeof createNationSearchClient>
-  supabaseAdmin: Context['supabaseAdmin']
-  check: BackgroundCheckRecord
+  nationSearch: ReturnType<typeof createNationSearchClient>;
+  supabaseAdmin: Context["supabaseAdmin"];
+  check: BackgroundCheckRecord;
 }): Promise<BackgroundCheckRecord | null> {
-  const { nationSearch, supabaseAdmin, check } = params
+  const { nationSearch, supabaseAdmin, check } = params;
 
   if (!check.provider_check_id || !shouldSyncStatus(check.status)) {
-    return null
+    return null;
   }
 
   try {
-    const providerStatus = (await nationSearch.fetchCheckStatus(check.provider_check_id)) as CheckStatusResponse
+    const providerStatus =
+      (await nationSearch.fetchCheckStatus(
+        check.provider_check_id,
+      )) as CheckStatusResponse;
 
-    const updates: Record<string, unknown> = {}
-    let history = Array.isArray(check.status_history) ? [...(check.status_history as unknown[])] : []
-    const mappedStatus = mapProviderStatus(providerStatus.status)
+    const updates: Record<string, unknown> = {};
+    let history = Array.isArray(check.status_history)
+      ? [...(check.status_history as unknown[])]
+      : [];
+    const mappedStatus = mapProviderStatus(providerStatus.status);
 
     if (mappedStatus && mappedStatus !== check.status) {
-      updates.status = mappedStatus
+      updates.status = mappedStatus;
       history = appendStatusHistory(history, {
         status: mappedStatus,
         occurred_at: new Date().toISOString(),
-        actor: 'provider',
+        actor: "provider",
         provider_status: providerStatus.status,
-      })
+      });
     }
 
     if (providerStatus.summary !== undefined) {
-      updates.summary = providerStatus.summary ?? null
+      updates.summary = providerStatus.summary ?? null;
     }
 
     if (providerStatus.findings !== undefined) {
-      updates.findings = providerStatus.findings ?? null
+      updates.findings = providerStatus.findings ?? null;
     }
 
     if (providerStatus.components?.length) {
-      updates.component_statuses = providerStatus.components
+      updates.component_statuses = providerStatus.components;
     }
 
     if (providerStatus.completed_at !== undefined) {
-      updates.completed_at = providerStatus.completed_at ?? null
+      updates.completed_at = providerStatus.completed_at ?? null;
     }
 
     if (providerStatus.expires_at !== undefined) {
-      updates.expires_at = providerStatus.expires_at ?? null
+      updates.expires_at = providerStatus.expires_at ?? null;
     }
 
     if (providerStatus.estimated_completion_date !== undefined) {
-      updates.estimated_completion_date = providerStatus.estimated_completion_date ?? null
+      updates.estimated_completion_date =
+        providerStatus.estimated_completion_date ?? null;
     }
 
-    if (providerStatus.metadata && typeof providerStatus.metadata === 'object') {
-      updates.metadata = mergeMetadata(check.metadata, { nationsearch: providerStatus.metadata })
+    if (
+      providerStatus.metadata && typeof providerStatus.metadata === "object"
+    ) {
+      updates.metadata = mergeMetadata(check.metadata, {
+        nationsearch: providerStatus.metadata,
+      });
     }
 
     if (JSON.stringify(history) !== JSON.stringify(check.status_history)) {
-      updates.status_history = history
+      updates.status_history = history;
     }
 
     if (Object.keys(updates).length === 0) {
-      return null
+      return null;
     }
 
     const { data: refreshed, error } = await supabaseAdmin
-      .schema('core')
-      .from('background_checks')
+      .schema("core")
+      .from("background_checks")
       .update(updates)
-      .eq('id', check.id)
+      .eq("id", check.id)
       .select(BACKGROUND_CHECK_BASE_COLUMNS)
-      .maybeSingle()
+      .maybeSingle();
 
     if (error) {
-      console.error('[backgroundChecks.syncBackgroundCheckFromProvider] failed to persist provider status', error)
-      return { ...check, ...updates }
+      console.error(
+        "[backgroundChecks.syncBackgroundCheckFromProvider] failed to persist provider status",
+        error,
+      );
+      return { ...check, ...updates };
     }
 
-    return (refreshed as BackgroundCheckRecord | null) ?? { ...check, ...updates }
+    return (refreshed as BackgroundCheckRecord | null) ??
+      { ...check, ...updates };
   } catch (error) {
     if (isNationSearchOutageError(error)) {
-      console.warn('[backgroundChecks.syncBackgroundCheckFromProvider] provider outage while syncing', error)
-      return null
+      console.warn(
+        "[backgroundChecks.syncBackgroundCheckFromProvider] provider outage while syncing",
+        error,
+      );
+      return null;
     }
-    console.error('[backgroundChecks.syncBackgroundCheckFromProvider] failed to fetch provider status', error)
-    return null
+    console.error(
+      "[backgroundChecks.syncBackgroundCheckFromProvider] failed to fetch provider status",
+      error,
+    );
+    return null;
   }
 }
 
@@ -229,50 +258,53 @@ export const backgroundChecksRouter = t.router({
    * List active NationSearch packages with resolved component metadata.
    */
   listPackages: protectedProcedure.query(async ({ ctx }) => {
-    const { supabase } = ctx
+    const { supabase } = ctx;
 
     const { data: packages, error: packageError } = await supabase
-      .schema('core')
-      .from('background_check_packages')
+      .schema("core")
+      .from("background_check_packages")
       .select(
-        'id, slug, display_name, description, provider_package_code, check_type_ids, platform_cost_cents, retail_cost_cents, estimated_completion_days, metadata',
+        "id, slug, display_name, description, provider_package_code, check_type_ids, platform_cost_cents, retail_cost_cents, estimated_completion_days, metadata",
       )
-      .eq('is_active', true)
-      .order('display_name', { ascending: true })
+      .eq("is_active", true)
+      .order("display_name", { ascending: true });
 
     if (packageError) {
       throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Failed to load background check packages',
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to load background check packages",
         cause: packageError,
-      })
+      });
     }
 
     const typeIds = Array.from(
       new Set(
         packages
           ?.flatMap((pkg) => pkg.check_type_ids ?? [])
-          .filter((id): id is string => typeof id === 'string'),
+          .filter((id): id is string => typeof id === "string"),
       ),
-    )
+    );
 
     const { data: types, error: typeError } = await supabase
-      .schema('core')
-      .from('background_check_types')
+      .schema("core")
+      .from("background_check_types")
       .select(
-        'id, slug, display_name, description, category, validity_days, estimated_completion_days',
+        "id, slug, display_name, description, category, validity_days, estimated_completion_days",
       )
-      .in('id', typeIds.length > 0 ? typeIds : ['00000000-0000-0000-0000-000000000000'])
+      .in(
+        "id",
+        typeIds.length > 0 ? typeIds : ["00000000-0000-0000-0000-000000000000"],
+      );
 
     if (typeError) {
       throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Failed to load background check components',
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to load background check components",
         cause: typeError,
-      })
+      });
     }
 
-    const typeMap = new Map(types?.map((type) => [type.id, type]) ?? [])
+    const typeMap = new Map(types?.map((type) => [type.id, type]) ?? []);
 
     const result = (packages ?? []).map((pkg) => ({
       id: pkg.id,
@@ -287,9 +319,9 @@ export const backgroundChecksRouter = t.router({
       components: (pkg.check_type_ids ?? [])
         .map((typeId: string) => typeMap.get(typeId))
         .filter(Boolean),
-    }))
+    }));
 
-    return listPackagesOutputSchema.array().parse(result)
+    return listPackagesOutputSchema.array().parse(result);
   }),
 
   /**
@@ -306,60 +338,60 @@ export const backgroundChecksRouter = t.router({
         }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx
+      const { supabase, user } = ctx;
 
       const { data: pkg, error: pkgError } = await supabase
-        .schema('core')
-        .from('background_check_packages')
-        .select('id, check_type_ids, metadata, is_active, slug, display_name')
-        .eq('id', input.package_id)
-        .maybeSingle()
+        .schema("core")
+        .from("background_check_packages")
+        .select("id, check_type_ids, metadata, is_active, slug, display_name")
+        .eq("id", input.package_id)
+        .maybeSingle();
 
       if (pkgError) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to load background check package',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load background check package",
           cause: pkgError,
-        })
+        });
       }
 
       if (!pkg || !pkg.is_active) {
         throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Selected background check package is not available',
-        })
+          code: "BAD_REQUEST",
+          message: "Selected background check package is not available",
+        });
       }
 
       const checkTypeIds =
         input.check_type_overrides && input.check_type_overrides.length > 0
           ? input.check_type_overrides
-          : (pkg.check_type_ids ?? [])
+          : (pkg.check_type_ids ?? []);
 
       if (checkTypeIds.length === 0) {
         throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Selected package does not have any configured components',
-        })
+          code: "BAD_REQUEST",
+          message: "Selected package does not have any configured components",
+        });
       }
 
       const statusHistory = [
         {
-          status: 'pending',
+          status: "pending",
           occurred_at: new Date().toISOString(),
-          actor: 'worker',
+          actor: "worker",
         },
-      ]
-      let currentHistory: unknown = statusHistory
+      ];
+      let currentHistory: unknown = statusHistory;
 
       const { data: record, error: insertError } = await supabase
-        .schema('core')
-        .from('background_checks')
+        .schema("core")
+        .from("background_checks")
         .insert({
           user_id: user!.id,
           package_id: pkg.id,
           check_type_ids: checkTypeIds,
           custom_configuration: input.custom_configuration ?? {},
-          status: 'pending',
+          status: "pending",
           status_history,
           paid_by: input.paid_by,
           cost_cents: input.cost_cents,
@@ -367,23 +399,26 @@ export const backgroundChecksRouter = t.router({
           invited_at: new Date().toISOString(),
           estimated_completion_date: null,
         })
-        .select('id, status, status_history, provider_check_id, metadata, estimated_completion_date')
-        .single()
+        .select(
+          "id, status, status_history, provider_check_id, metadata, estimated_completion_date",
+        )
+        .single();
 
       if (insertError || !record) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Unable to create background check record',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Unable to create background check record",
           cause: insertError,
-        })
+        });
       }
 
-      let finalRecord: BackgroundCheckRecord = record as unknown as BackgroundCheckRecord
+      let finalRecord: BackgroundCheckRecord =
+        record as unknown as BackgroundCheckRecord;
 
       try {
-        const nationSearch = createNationSearchClient()
+        const nationSearch = createNationSearchClient();
         const payload = {
-          package_code: pkg.slug ?? '',
+          package_code: pkg.slug ?? "",
           user: {
             id: user!.id,
             email: ctx.user?.email ?? undefined,
@@ -392,111 +427,120 @@ export const backgroundChecksRouter = t.router({
             background_check_id: record.id,
           },
           custom_configuration: input.custom_configuration ?? {},
-        }
+        };
 
-        const response = await nationSearch.initiateCheck(payload)
-        const providerCheckId = response?.id ?? null
+        const response = await nationSearch.initiateCheck(payload);
+        const providerCheckId = response?.id ?? null;
 
         if (providerCheckId) {
           const newHistory = appendStatusHistory(currentHistory, {
-            status: 'in_progress',
+            status: "in_progress",
             occurred_at: new Date().toISOString(),
-            actor: 'worker',
-          })
+            actor: "worker",
+          });
 
           const metadataPatch = mergeMetadata(record.metadata, {
             provider_check_id: providerCheckId,
             provider_reference: response.metadata ?? null,
-          })
+          });
 
           const { data: updatedRecord, error: updateError } = await supabase
-            .schema('core')
-            .from('background_checks')
+            .schema("core")
+            .from("background_checks")
             .update({
               provider_check_id: providerCheckId,
-              status: 'in_progress',
+              status: "in_progress",
               status_history: newHistory,
               metadata: metadataPatch,
-              estimated_completion_date: response.estimated_completion_date ?? null,
+              estimated_completion_date: response.estimated_completion_date ??
+                null,
             })
-            .eq('id', record.id)
+            .eq("id", record.id)
             .select(BACKGROUND_CHECK_BASE_COLUMNS)
-            .maybeSingle()
+            .maybeSingle();
 
-          currentHistory = newHistory
+          currentHistory = newHistory;
 
           if (!updateError && updatedRecord) {
-            finalRecord = updatedRecord as BackgroundCheckRecord
+            finalRecord = updatedRecord as BackgroundCheckRecord;
           } else {
             finalRecord = {
               ...finalRecord,
               provider_check_id: providerCheckId,
-              status: 'in_progress',
+              status: "in_progress",
               status_history: newHistory,
               metadata: metadataPatch,
-              estimated_completion_date: response.estimated_completion_date ?? null,
-            }
+              estimated_completion_date: response.estimated_completion_date ??
+                null,
+            };
           }
         }
       } catch (error) {
         if (isNationSearchOutageError(error)) {
           const outageHistory = appendStatusHistory(currentHistory, {
-            status: 'pending',
+            status: "pending",
             occurred_at: new Date().toISOString(),
-            actor: 'system',
-            notes: 'queued_due_to_provider_outage',
-          })
-          const outageMessage = error instanceof Error ? error.message : String(error)
+            actor: "system",
+            notes: "queued_due_to_provider_outage",
+          });
+          const outageMessage = error instanceof Error
+            ? error.message
+            : String(error);
           const outageMetadata = mergeMetadata(finalRecord.metadata, {
             provider_outage: true,
             provider_message: outageMessage,
-          })
+          });
 
           const { data: outageRecord } = await supabase
-            .schema('core')
-            .from('background_checks')
+            .schema("core")
+            .from("background_checks")
             .update({
               status_history: outageHistory,
               metadata: outageMetadata,
             })
-            .eq('id', record.id)
+            .eq("id", record.id)
             .select(BACKGROUND_CHECK_BASE_COLUMNS)
-            .maybeSingle()
+            .maybeSingle();
 
-          currentHistory = outageHistory
+          currentHistory = outageHistory;
 
           finalRecord = (outageRecord as BackgroundCheckRecord | null) ?? {
             ...finalRecord,
             status_history: outageHistory,
             metadata: outageMetadata,
-          }
+          };
         } else {
-          console.error('[backgroundChecks.initiate] NationSearch initiation failed', error)
+          console.error(
+            "[backgroundChecks.initiate] NationSearch initiation failed",
+            error,
+          );
         }
       }
 
-      return finalRecord
+      return finalRecord;
     }),
 
   /**
    * List current user's background checks.
    */
   listChecks: protectedProcedure.query(async ({ ctx }) => {
-    const { supabase, user } = ctx
+    const { supabase, user } = ctx;
 
     const { data, error } = await supabase
-      .schema('core')
-      .from('background_checks')
-      .select('id, status, package_id, completed_at, created_at, expires_at, invited_at, provider_check_id, findings, metadata, package:background_check_packages(id, display_name, slug)')
-      .eq('user_id', user!.id)
-      .order('created_at', { ascending: false })
+      .schema("core")
+      .from("background_checks")
+      .select(
+        "id, status, package_id, completed_at, created_at, expires_at, invited_at, provider_check_id, findings, metadata, package:background_check_packages(id, display_name, slug)",
+      )
+      .eq("user_id", user!.id)
+      .order("created_at", { ascending: false });
 
     if (error) {
       throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Failed to load background checks',
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to load background checks",
         cause: error,
-      })
+      });
     }
 
     return listChecksOutputSchema.array().parse(
@@ -516,7 +560,7 @@ export const backgroundChecksRouter = t.router({
         findings: row.findings,
         metadata: row.metadata,
       })),
-    )
+    );
   }),
 
   /**
@@ -525,67 +569,69 @@ export const backgroundChecksRouter = t.router({
   getCheck: protectedProcedure
     .input(z.object({ background_check_id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      const { supabase, supabaseAdmin, user } = ctx
+      const { supabase, supabaseAdmin, user } = ctx;
 
       const { data: check, error: checkError } = await supabase
-        .schema('core')
-        .from('background_checks')
+        .schema("core")
+        .from("background_checks")
         .select(
-          'id, status, status_history, package_id, check_type_ids, provider_check_id, summary, findings, component_statuses, metadata, created_at, updated_at, expires_at, estimated_completion_date',
+          "id, status, status_history, package_id, check_type_ids, provider_check_id, summary, findings, component_statuses, metadata, created_at, updated_at, expires_at, estimated_completion_date",
         )
-        .eq('id', input.background_check_id)
-        .eq('user_id', user!.id)
-        .maybeSingle()
+        .eq("id", input.background_check_id)
+        .eq("user_id", user!.id)
+        .maybeSingle();
 
       if (checkError) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to load background check',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load background check",
           cause: checkError,
-        })
+        });
       }
 
       if (!check) {
         throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Background check not found',
-        })
+          code: "NOT_FOUND",
+          message: "Background check not found",
+        });
       }
 
-      let hydratedCheck = check as BackgroundCheckRecord
+      let hydratedCheck = check as BackgroundCheckRecord;
 
       if (shouldSyncStatus(hydratedCheck.status)) {
-        const nationSearch = createNationSearchClient()
+        const nationSearch = createNationSearchClient();
         const synced = await syncBackgroundCheckFromProvider({
           nationSearch,
           supabaseAdmin,
           check: hydratedCheck,
-        })
+        });
 
         if (synced) {
-          hydratedCheck = synced
+          hydratedCheck = synced;
         }
       }
 
       const { data: documents, error: docError } = await supabase
-        .schema('core')
-        .from('background_check_documents')
-        .select('id, document_type, file_path, file_name, file_size, mime_type, uploaded_at, verified')
-        .eq('background_check_id', input.background_check_id)
-        .order('uploaded_at', { ascending: false })
+        .schema("core")
+        .from("background_check_documents")
+        .select(
+          "id, document_type, file_path, file_name, file_size, mime_type, uploaded_at, verified",
+        )
+        .eq("background_check_id", input.background_check_id)
+        .order("uploaded_at", { ascending: false });
 
       if (docError) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to load background check documents',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load background check documents",
           cause: docError,
-        })
+        });
       }
 
       return getCheckOutputSchema.parse({
         check: hydratedCheck,
         documents: documents ?? [],
-      })
+      });
     }),
 
   /**
@@ -594,38 +640,40 @@ export const backgroundChecksRouter = t.router({
   listDisputesForCheck: protectedProcedure
     .input(z.object({ background_check_id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      const { supabase, user } = ctx
+      const { supabase, user } = ctx;
 
       const { data, error } = await supabase
-        .schema('core')
-        .from('background_check_disputes')
+        .schema("core")
+        .from("background_check_disputes")
         .select(
-          'id, dispute_reason, dispute_details, supporting_documents, status, created_at, updated_at, resolved_at, resolution, resolution_notes',
+          "id, dispute_reason, dispute_details, supporting_documents, status, created_at, updated_at, resolved_at, resolution, resolution_notes",
         )
-        .eq('background_check_id', input.background_check_id)
-        .eq('user_id', user!.id)
-        .order('created_at', { ascending: false })
+        .eq("background_check_id", input.background_check_id)
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false });
 
       if (error) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to load disputes for this background check',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load disputes for this background check",
           cause: error,
-        })
+        });
       }
 
       return (data ?? []).map((row) => ({
         id: row.id,
         dispute_reason: row.dispute_reason,
         dispute_details: row.dispute_details,
-        supporting_documents: Array.isArray(row.supporting_documents) ? row.supporting_documents : [],
+        supporting_documents: Array.isArray(row.supporting_documents)
+          ? row.supporting_documents
+          : [],
         status: row.status,
         created_at: row.created_at,
         updated_at: row.updated_at,
         resolved_at: row.resolved_at,
         resolution: row.resolution,
         resolution_notes: row.resolution_notes,
-      }))
+      }));
     }),
 
   /**
@@ -634,65 +682,68 @@ export const backgroundChecksRouter = t.router({
   createUploadUrl: protectedProcedure
     .input(backgroundCheckUploadRequestSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx
+      const { supabase, user } = ctx;
 
       const { data: check, error: checkError } = await supabase
-        .schema('core')
-        .from('background_checks')
-        .select('id')
-        .eq('id', input.background_check_id)
-        .eq('user_id', user!.id)
-        .maybeSingle()
+        .schema("core")
+        .from("background_checks")
+        .select("id")
+        .eq("id", input.background_check_id)
+        .eq("user_id", user!.id)
+        .maybeSingle();
 
       if (checkError) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to verify background check before upload',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to verify background check before upload",
           cause: checkError,
-        })
+        });
       }
 
       if (!check) {
         throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Background check not found for user',
-        })
+          code: "NOT_FOUND",
+          message: "Background check not found for user",
+        });
       }
 
       if (!BACKGROUND_CHECK_ALLOWED_MIME_TYPES.includes(input.mime_type)) {
         throw new TRPCError({
-          code: 'BAD_REQUEST',
+          code: "BAD_REQUEST",
           message: `Unsupported file type: ${input.mime_type}`,
-        })
+        });
       }
 
       if (input.file_size > MAX_DOCUMENT_SIZE_BYTES) {
         throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'File exceeds maximum size of 10MB',
-        })
+          code: "BAD_REQUEST",
+          message: "File exceeds maximum size of 10MB",
+        });
       }
 
       const storagePath = buildDocumentStoragePath(
         user!.id,
         input.background_check_id,
         input.file_name,
-      )
+      );
 
       const { data, error } = await supabase.storage
         .from(BACKGROUND_CHECK_BUCKET_ID)
-        .createSignedUploadUrl(storagePath, SIGNED_UPLOAD_URL_TTL_SECONDS)
+        .createSignedUploadUrl(storagePath, SIGNED_UPLOAD_URL_TTL_SECONDS);
 
       if (error || !data) {
-        console.error('[backgroundChecks.createUploadUrl] failed to create signed URL', {
-          background_check_id: input.background_check_id,
-          user_id: user!.id,
-          message: error?.message,
-        })
+        console.error(
+          "[backgroundChecks.createUploadUrl] failed to create signed URL",
+          {
+            background_check_id: input.background_check_id,
+            user_id: user!.id,
+            message: error?.message,
+          },
+        );
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Unable to create upload URL',
-        })
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Unable to create upload URL",
+        });
       }
 
       return {
@@ -701,7 +752,7 @@ export const backgroundChecksRouter = t.router({
         storagePath,
         bucket: BACKGROUND_CHECK_BUCKET_ID,
         expiresIn: SIGNED_UPLOAD_URL_TTL_SECONDS,
-      }
+      };
     }),
 
   /**
@@ -710,56 +761,56 @@ export const backgroundChecksRouter = t.router({
   addDocumentMetadata: protectedProcedure
     .input(backgroundCheckDocumentUploadSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx
+      const { supabase, user } = ctx;
 
       const { data: existing, error: checkError } = await supabase
-        .schema('core')
-        .from('background_checks')
-        .select('id')
-        .eq('id', input.background_check_id)
-        .eq('user_id', user!.id)
-        .maybeSingle()
+        .schema("core")
+        .from("background_checks")
+        .select("id")
+        .eq("id", input.background_check_id)
+        .eq("user_id", user!.id)
+        .maybeSingle();
 
       if (checkError) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to verify background check ownership',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to verify background check ownership",
           cause: checkError,
-        })
+        });
       }
 
       if (!existing) {
         throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Background check not found for user',
-        })
+          code: "NOT_FOUND",
+          message: "Background check not found for user",
+        });
       }
 
       if (!BACKGROUND_CHECK_ALLOWED_MIME_TYPES.includes(input.mime_type)) {
         throw new TRPCError({
-          code: 'BAD_REQUEST',
+          code: "BAD_REQUEST",
           message: `Unsupported file type: ${input.mime_type}`,
-        })
+        });
       }
 
       if (input.file_size > MAX_DOCUMENT_SIZE_BYTES) {
         throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'File exceeds maximum size of 10MB',
-        })
+          code: "BAD_REQUEST",
+          message: "File exceeds maximum size of 10MB",
+        });
       }
 
-      const expectedPrefix = `${user!.id}/${input.background_check_id}/`
+      const expectedPrefix = `${user!.id}/${input.background_check_id}/`;
       if (!input.storage_path.startsWith(expectedPrefix)) {
         throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'Invalid storage path for document upload',
-        })
+          code: "FORBIDDEN",
+          message: "Invalid storage path for document upload",
+        });
       }
 
       const { data, error } = await supabase
-        .schema('core')
-        .from('background_check_documents')
+        .schema("core")
+        .from("background_check_documents")
         .insert({
           background_check_id: input.background_check_id,
           document_type: input.document_type,
@@ -770,18 +821,18 @@ export const backgroundChecksRouter = t.router({
           uploaded_by_user_id: user!.id,
           metadata: input.metadata ?? {},
         })
-        .select('id, document_type, file_name')
-        .single()
+        .select("id, document_type, file_name")
+        .single();
 
       if (error || !data) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to record document metadata',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to record document metadata",
           cause: error,
-        })
+        });
       }
 
-      return data
+      return data;
     }),
 
   /**
@@ -790,63 +841,64 @@ export const backgroundChecksRouter = t.router({
   updatePrivacy: protectedProcedure
     .input(updatePrivacyInputSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx
+      const { supabase, user } = ctx;
 
       const { data: existing, error: fetchError } = await supabase
-        .schema('core')
-        .from('background_checks')
-        .select('metadata')
-        .eq('id', input.background_check_id)
-        .eq('user_id', user!.id)
-        .maybeSingle()
+        .schema("core")
+        .from("background_checks")
+        .select("metadata")
+        .eq("id", input.background_check_id)
+        .eq("user_id", user!.id)
+        .maybeSingle();
 
       if (fetchError) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to load background check metadata',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load background check metadata",
           cause: fetchError,
-        })
+        });
       }
 
       if (!existing) {
         throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Background check not found for user',
-        })
+          code: "NOT_FOUND",
+          message: "Background check not found for user",
+        });
       }
 
       const existingMetadata =
-        existing.metadata && typeof existing.metadata === 'object' && !Array.isArray(existing.metadata)
+        existing.metadata && typeof existing.metadata === "object" &&
+          !Array.isArray(existing.metadata)
           ? (existing.metadata as Record<string, unknown>)
-          : {}
+          : {};
 
       const updatedPrivacy = {
         share_publicly: input.share_publicly,
         shared_with_organization_ids: input.shared_with_organization_ids,
-      }
+      };
 
       const updatedMetadata = mergeMetadata(existingMetadata, {
         privacy: updatedPrivacy,
-      })
+      });
 
       const { error: updateError } = await supabase
-        .schema('core')
-        .from('background_checks')
+        .schema("core")
+        .from("background_checks")
         .update({ metadata: updatedMetadata })
-        .eq('id', input.background_check_id)
-        .eq('user_id', user!.id)
+        .eq("id", input.background_check_id)
+        .eq("user_id", user!.id);
 
       if (updateError) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to update background check privacy settings',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update background check privacy settings",
           cause: updateError,
-        })
+        });
       }
 
       return {
         privacy: updatedPrivacy,
-      }
+      };
     }),
 
   /**
@@ -855,50 +907,51 @@ export const backgroundChecksRouter = t.router({
   submitDispute: protectedProcedure
     .input(backgroundCheckDisputeSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx
+      const { supabase, user } = ctx;
 
       const { data: existing, error: checkError } = await supabase
-        .schema('core')
-        .from('background_checks')
+        .schema("core")
+        .from("background_checks")
         .select(
-          'id, status, status_history, requested_by_user_id, package:background_check_packages(display_name, slug)',
+          "id, status, status_history, requested_by_user_id, package:background_check_packages(display_name, slug)",
         )
-        .eq('id', input.background_check_id)
-        .eq('user_id', user!.id)
-        .maybeSingle()
+        .eq("id", input.background_check_id)
+        .eq("user_id", user!.id)
+        .maybeSingle();
 
       if (checkError) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to verify background check ownership',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to verify background check ownership",
           cause: checkError,
-        })
+        });
       }
 
       if (!existing) {
         throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Background check not found for user',
-        })
+          code: "NOT_FOUND",
+          message: "Background check not found for user",
+        });
       }
 
-      const allowedStatuses: Array<z.infer<typeof backgroundCheckStatusEnum>> = [
-        'completed_clear',
-        'completed_consider',
-        'completed_not_clear',
-        'partially_completed',
-      ]
+      const allowedStatuses: Array<z.infer<typeof backgroundCheckStatusEnum>> =
+        [
+          "completed_clear",
+          "completed_consider",
+          "completed_not_clear",
+          "partially_completed",
+        ];
 
       if (!allowedStatuses.includes(existing.status)) {
         throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Background check must be completed before filing a dispute',
-        })
+          code: "BAD_REQUEST",
+          message: "Background check must be completed before filing a dispute",
+        });
       }
 
       const { data, error } = await supabase
-        .schema('core')
-        .from('background_check_disputes')
+        .schema("core")
+        .from("background_check_disputes")
         .insert({
           background_check_id: input.background_check_id,
           user_id: user!.id,
@@ -906,57 +959,66 @@ export const backgroundChecksRouter = t.router({
           dispute_details: input.dispute_details,
           supporting_documents: input.supporting_documents ?? [],
         })
-        .select('id, status, created_at')
-        .single()
+        .select("id, status, created_at")
+        .single();
 
       if (error || !data) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to submit dispute',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to submit dispute",
           cause: error,
-        })
+        });
       }
 
-      if (existing.status !== 'disputed') {
-        const disputeHistory = Array.isArray(existing.status_history) ? [...existing.status_history] : []
+      if (existing.status !== "disputed") {
+        const disputeHistory = Array.isArray(existing.status_history)
+          ? [...existing.status_history]
+          : [];
         disputeHistory.push({
-          status: 'disputed',
+          status: "disputed",
           occurred_at: new Date().toISOString(),
-          actor: 'worker',
+          actor: "worker",
           notes: input.dispute_reason ?? null,
           submitter_user_id: user!.id,
-        })
+        });
 
         const { error: disputeStatusError } = await supabase
-          .schema('core')
-          .from('background_checks')
+          .schema("core")
+          .from("background_checks")
           .update({
-            status: 'disputed',
+            status: "disputed",
             status_history: disputeHistory,
           })
-          .eq('id', input.background_check_id)
+          .eq("id", input.background_check_id);
 
         if (disputeStatusError) {
-          console.error('[backgroundChecks.submitDispute] failed to update dispute status', disputeStatusError)
+          console.error(
+            "[backgroundChecks.submitDispute] failed to update dispute status",
+            disputeStatusError,
+          );
         }
       }
 
       try {
         await notifyBackgroundCheckStatusChange({
           supabase: ctx.supabaseAdmin,
-          status: 'disputed',
+          status: "disputed",
           workerId: user!.id,
           requesterId: existing.requested_by_user_id ?? null,
           checkId: input.background_check_id,
-          packageName: existing.package?.display_name ?? existing.package?.slug ?? null,
+          packageName: existing.package?.display_name ??
+            existing.package?.slug ?? null,
           summary: input.dispute_reason ?? input.dispute_details ?? null,
           actorId: user!.id,
-        })
+        });
       } catch (error) {
-        console.error('[backgroundChecks.submitDispute] failed to send dispute notification', error)
+        console.error(
+          "[backgroundChecks.submitDispute] failed to send dispute notification",
+          error,
+        );
       }
 
-      return data
+      return data;
     }),
 
   /**
@@ -965,13 +1027,13 @@ export const backgroundChecksRouter = t.router({
   organizationListChecks: officeProcedure
     .input(z.object({ organization_id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      const { supabase, user } = ctx
+      const { supabase, user } = ctx;
 
       const { data, error } = await supabase
-        .schema('core')
-        .from('background_checks')
-    .select(
-      `
+        .schema("core")
+        .from("background_checks")
+        .select(
+          `
         id,
         status,
         user_id,
@@ -988,17 +1050,17 @@ export const backgroundChecksRouter = t.router({
         worker:users!background_checks_user_id_fkey(id, display_name, username, email, avatar_path),
         job:jobs!background_checks_job_id_fkey(id, title)
       `,
-    )
-        .eq('organization_id', input.organization_id)
-        .eq('requested_by_user_id', user!.id)
-        .order('created_at', { ascending: false })
+        )
+        .eq("organization_id", input.organization_id)
+        .eq("requested_by_user_id", user!.id)
+        .order("created_at", { ascending: false });
 
       if (error) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to load organization background checks',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load organization background checks",
           cause: error,
-        })
+        });
       }
 
       return (data ?? []).map((row) => {
@@ -1047,7 +1109,7 @@ export const backgroundChecksRouter = t.router({
           findings: row.findings,
           metadata: row.metadata,
         };
-      })
+      });
     }),
 
   organizationInitiate: officeProcedure
@@ -1059,57 +1121,57 @@ export const backgroundChecksRouter = t.router({
           job_id: z.string().uuid().optional(),
         })
         .omit({ paid_by: true })
-        .extend({ paid_by: z.literal('organization') }),
+        .extend({ paid_by: z.literal("organization") }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx
+      const { supabase, user } = ctx;
 
       const { data: pkg, error: pkgError } = await supabase
-        .schema('core')
-        .from('background_check_packages')
-        .select('id, display_name, check_type_ids, metadata, is_active, slug')
-        .eq('id', input.package_id)
-        .maybeSingle()
+        .schema("core")
+        .from("background_check_packages")
+        .select("id, display_name, check_type_ids, metadata, is_active, slug")
+        .eq("id", input.package_id)
+        .maybeSingle();
 
       if (pkgError) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to load background check package',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load background check package",
           cause: pkgError,
-        })
+        });
       }
 
       if (!pkg || !pkg.is_active) {
         throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Selected background check package is not available',
-        })
+          code: "BAD_REQUEST",
+          message: "Selected background check package is not available",
+        });
       }
 
       const checkTypeIds =
         input.check_type_overrides && input.check_type_overrides.length > 0
           ? input.check_type_overrides
-          : (pkg.check_type_ids ?? [])
+          : (pkg.check_type_ids ?? []);
 
       if (checkTypeIds.length === 0) {
         throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Selected package does not have any configured components',
-        })
+          code: "BAD_REQUEST",
+          message: "Selected package does not have any configured components",
+        });
       }
 
       const statusHistory = [
         {
-          status: 'pending' as const,
+          status: "pending" as const,
           occurred_at: new Date().toISOString(),
-          actor: 'organization',
+          actor: "organization",
         },
-      ]
-      let currentHistory: unknown = statusHistory
+      ];
+      let currentHistory: unknown = statusHistory;
 
       const { data: record, error: insertError } = await supabase
-        .schema('core')
-        .from('background_checks')
+        .schema("core")
+        .from("background_checks")
         .insert({
           user_id: input.worker_user_id,
           organization_id: input.organization_id,
@@ -1117,31 +1179,34 @@ export const backgroundChecksRouter = t.router({
           package_id: pkg.id,
           check_type_ids: checkTypeIds,
           custom_configuration: input.custom_configuration ?? {},
-          status: 'pending',
+          status: "pending",
           status_history,
-          paid_by: 'organization',
+          paid_by: "organization",
           cost_cents: input.cost_cents,
           metadata: input.metadata ?? {},
           requested_by_user_id: user!.id,
           invited_at: new Date().toISOString(),
         })
-        .select('id, status, status_history, provider_check_id, metadata, estimated_completion_date')
-        .single()
+        .select(
+          "id, status, status_history, provider_check_id, metadata, estimated_completion_date",
+        )
+        .single();
 
       if (insertError || !record) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Unable to create background check record',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Unable to create background check record",
           cause: insertError,
-        })
+        });
       }
 
-      let finalRecord: BackgroundCheckRecord = record as unknown as BackgroundCheckRecord
+      let finalRecord: BackgroundCheckRecord =
+        record as unknown as BackgroundCheckRecord;
 
       try {
-        const nationSearch = createNationSearchClient()
+        const nationSearch = createNationSearchClient();
         const payload = {
-          package_code: pkg.slug ?? '',
+          package_code: pkg.slug ?? "",
           user: {
             id: input.worker_user_id,
           },
@@ -1153,87 +1218,94 @@ export const backgroundChecksRouter = t.router({
             requested_by: user!.id,
           },
           custom_configuration: input.custom_configuration ?? {},
-        }
+        };
 
-        const response = await nationSearch.initiateCheck(payload)
-        const providerCheckId = response?.id ?? null
+        const response = await nationSearch.initiateCheck(payload);
+        const providerCheckId = response?.id ?? null;
 
         if (providerCheckId) {
           const newHistory = appendStatusHistory(currentHistory, {
-            status: 'invited',
+            status: "invited",
             occurred_at: new Date().toISOString(),
-            actor: 'organization',
+            actor: "organization",
             requested_by: user!.id,
-          })
+          });
 
           const metadataPatch = mergeMetadata(record.metadata, {
             provider_check_id: providerCheckId,
             provider_reference: response.metadata ?? null,
-          })
+          });
 
           const { data: updatedRecord, error: updateError } = await supabase
-            .schema('core')
-            .from('background_checks')
+            .schema("core")
+            .from("background_checks")
             .update({
               provider_check_id: providerCheckId,
-              status: 'invited',
+              status: "invited",
               status_history: newHistory,
               metadata: metadataPatch,
-              estimated_completion_date: response.estimated_completion_date ?? null,
+              estimated_completion_date: response.estimated_completion_date ??
+                null,
             })
-            .eq('id', record.id)
+            .eq("id", record.id)
             .select(BACKGROUND_CHECK_BASE_COLUMNS)
-            .maybeSingle()
+            .maybeSingle();
 
-          currentHistory = newHistory
+          currentHistory = newHistory;
 
           if (!updateError && updatedRecord) {
-            finalRecord = updatedRecord as BackgroundCheckRecord
+            finalRecord = updatedRecord as BackgroundCheckRecord;
           } else {
             finalRecord = {
               ...finalRecord,
               provider_check_id: providerCheckId,
-              status: 'invited',
+              status: "invited",
               status_history: newHistory,
               metadata: metadataPatch,
-              estimated_completion_date: response.estimated_completion_date ?? null,
-            }
+              estimated_completion_date: response.estimated_completion_date ??
+                null,
+            };
           }
         }
       } catch (error) {
         if (isNationSearchOutageError(error)) {
           const outageHistory = appendStatusHistory(currentHistory, {
-            status: 'pending',
+            status: "pending",
             occurred_at: new Date().toISOString(),
-            actor: 'system',
-            notes: 'queued_due_to_provider_outage',
-          })
-          const outageMessage = error instanceof Error ? error.message : String(error)
+            actor: "system",
+            notes: "queued_due_to_provider_outage",
+          });
+          const outageMessage = error instanceof Error
+            ? error.message
+            : String(error);
           const outageMetadata = mergeMetadata(finalRecord.metadata, {
             provider_outage: true,
             provider_message: outageMessage,
-          })
+          });
 
           const { data: outageRecord } = await supabase
-            .schema('core')
-            .from('background_checks')
+            .schema("core")
+            .from("background_checks")
             .update({
               status_history: outageHistory,
               metadata: outageMetadata,
             })
-            .eq('id', record.id)
+            .eq("id", record.id)
             .select(BACKGROUND_CHECK_BASE_COLUMNS)
-            .maybeSingle()
+            .maybeSingle();
 
-          currentHistory = outageHistory
+          currentHistory = outageHistory;
 
           finalRecord = (outageRecord as BackgroundCheckRecord | null) ?? {
             ...finalRecord,
             status_history: outageHistory,
             metadata: outageMetadata,
-          }
+          };
         } else {
-          console.error('[backgroundChecks.organizationInitiate] NationSearch initiation failed', error)
+          console.error(
+            "[backgroundChecks.organizationInitiate] NationSearch initiation failed",
+            error,
+          );
         }
       }
 
@@ -1245,58 +1317,61 @@ export const backgroundChecksRouter = t.router({
           checkId: record.id,
           packageName: pkg.display_name ?? pkg.slug ?? null,
           actorId: user!.id,
-        })
+        });
       } catch (error) {
-        console.error('[backgroundChecks.organizationInitiate] failed to send invitation notification', error)
+        console.error(
+          "[backgroundChecks.organizationInitiate] failed to send invitation notification",
+          error,
+        );
       }
 
-      return finalRecord
+      return finalRecord;
     }),
 
   organizationGet: officeProcedure
     .input(z.object({ background_check_id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      const { supabase, supabaseAdmin, user } = ctx
+      const { supabase, supabaseAdmin, user } = ctx;
 
       const { data: check, error: checkError } = await supabase
-        .schema('core')
-        .from('background_checks')
+        .schema("core")
+        .from("background_checks")
         .select(
-          'id, status, user_id, organization_id, job_id, requested_by_user_id, status_history, findings, summary, provider_check_id, metadata, component_statuses, completed_at, expires_at, estimated_completion_date, created_at, updated_at',
+          "id, status, user_id, organization_id, job_id, requested_by_user_id, status_history, findings, summary, provider_check_id, metadata, component_statuses, completed_at, expires_at, estimated_completion_date, created_at, updated_at",
         )
-        .eq('id', input.background_check_id)
-        .maybeSingle()
+        .eq("id", input.background_check_id)
+        .maybeSingle();
 
       if (checkError) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to load background check',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load background check",
           cause: checkError,
-        })
+        });
       }
 
       if (!check || check.requested_by_user_id !== user!.id) {
         throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Background check not found for organization',
-        })
+          code: "NOT_FOUND",
+          message: "Background check not found for organization",
+        });
       }
 
-      let hydratedCheck = check as BackgroundCheckRecord
+      let hydratedCheck = check as BackgroundCheckRecord;
 
       if (shouldSyncStatus(hydratedCheck.status)) {
-        const nationSearch = createNationSearchClient()
+        const nationSearch = createNationSearchClient();
         const synced = await syncBackgroundCheckFromProvider({
           nationSearch,
           supabaseAdmin,
           check: hydratedCheck,
-        })
+        });
         if (synced) {
-          hydratedCheck = synced
+          hydratedCheck = synced;
         }
       }
 
-      return hydratedCheck
+      return hydratedCheck;
     }),
 
   adminListChecks: officeProcedure
@@ -1310,11 +1385,11 @@ export const backgroundChecksRouter = t.router({
         .optional(),
     )
     .query(async ({ ctx, input }) => {
-      const { supabase } = ctx
+      const { supabase } = ctx;
 
       let query = supabase
-        .schema('core')
-        .from('background_checks')
+        .schema("core")
+        .from("background_checks")
         .select(
           `
             id,
@@ -1337,46 +1412,49 @@ export const backgroundChecksRouter = t.router({
             requester:users!background_checks_requested_by_user_id_fkey(id, display_name, email)
           `,
         )
-        .order('created_at', { ascending: false })
-        .range(input?.offset ?? 0, (input?.offset ?? 0) + (input?.limit ?? 50) - 1)
+        .order("created_at", { ascending: false })
+        .range(
+          input?.offset ?? 0,
+          (input?.offset ?? 0) + (input?.limit ?? 50) - 1,
+        );
 
       if (input?.status) {
-        query = query.eq('status', input.status)
+        query = query.eq("status", input.status);
       }
 
-      const { data, error } = await query
+      const { data, error } = await query;
 
       if (error) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to load background checks for review',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load background checks for review",
           cause: error,
-        })
+        });
       }
 
       return (data ?? []).map((row) => {
         const workerRecord = (row.worker ?? null) as
           | {
-            id?: string | null
-            display_name?: string | null
-            username?: string | null
-            email?: string | null
-            avatar_path?: string | null
+            id?: string | null;
+            display_name?: string | null;
+            username?: string | null;
+            email?: string | null;
+            avatar_path?: string | null;
           }
-          | null
+          | null;
         const organizationRecord = (row.organization ?? null) as
           | {
-            id?: string | null
-            name?: string | null
+            id?: string | null;
+            name?: string | null;
           }
-          | null
+          | null;
         const requesterRecord = (row.requester ?? null) as
           | {
-            id?: string | null
-            display_name?: string | null
-            email?: string | null
+            id?: string | null;
+            display_name?: string | null;
+            email?: string | null;
           }
-          | null
+          | null;
 
         return {
           id: row.id,
@@ -1416,8 +1494,8 @@ export const backgroundChecksRouter = t.router({
               email: requesterRecord.email ?? null,
             }
             : null,
-        }
-      })
+        };
+      });
     }),
 
   adminUpdateStatus: officeProcedure
@@ -1433,44 +1511,46 @@ export const backgroundChecksRouter = t.router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx
+      const { supabase, user } = ctx;
 
       const { data: existing, error: fetchError } = await supabase
-        .schema('core')
-        .from('background_checks')
+        .schema("core")
+        .from("background_checks")
         .select(
-          'status_history, user_id, requested_by_user_id, package:background_check_packages(display_name, slug)',
+          "status_history, user_id, requested_by_user_id, package:background_check_packages(display_name, slug)",
         )
-        .eq('id', input.background_check_id)
-        .maybeSingle()
+        .eq("id", input.background_check_id)
+        .maybeSingle();
 
       if (fetchError) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to load background check for update',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load background check for update",
           cause: fetchError,
-        })
+        });
       }
 
       if (!existing) {
         throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Background check not found',
-        })
+          code: "NOT_FOUND",
+          message: "Background check not found",
+        });
       }
 
-      const history = Array.isArray(existing.status_history) ? existing.status_history : []
+      const history = Array.isArray(existing.status_history)
+        ? existing.status_history
+        : [];
       history.push({
         status: input.status,
         occurred_at: new Date().toISOString(),
-        actor: 'admin',
+        actor: "admin",
         notes: input.notes ?? null,
         reviewer_user_id: user!.id,
-      })
+      });
 
       const { data: updated, error: updateError } = await supabase
-        .schema('core')
-        .from('background_checks')
+        .schema("core")
+        .from("background_checks")
         .update({
           status: input.status,
           summary: input.summary ?? null,
@@ -1479,18 +1559,18 @@ export const backgroundChecksRouter = t.router({
           status_history: history,
           expires_at: input.expires_at ?? null,
         })
-        .eq('id', input.background_check_id)
+        .eq("id", input.background_check_id)
         .select(
-          'id, status, updated_at, summary, findings, component_statuses, status_history, expires_at, user_id, requested_by_user_id, package:background_check_packages(display_name, slug)',
+          "id, status, updated_at, summary, findings, component_statuses, status_history, expires_at, user_id, requested_by_user_id, package:background_check_packages(display_name, slug)",
         )
-        .single()
+        .single();
 
       if (updateError || !updated) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to update background check status',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update background check status",
           cause: updateError,
-        })
+        });
       }
 
       try {
@@ -1500,15 +1580,19 @@ export const backgroundChecksRouter = t.router({
           workerId: updated.user_id,
           requesterId: updated.requested_by_user_id ?? null,
           checkId: updated.id,
-          packageName: updated.package?.display_name ?? updated.package?.slug ?? null,
+          packageName: updated.package?.display_name ?? updated.package?.slug ??
+            null,
           summary: input.summary ?? updated.summary ?? null,
           actorId: user!.id,
-        })
+        });
       } catch (error) {
-        console.error('[backgroundChecks.adminUpdateStatus] failed to send status notification', error)
+        console.error(
+          "[backgroundChecks.adminUpdateStatus] failed to send status notification",
+          error,
+        );
       }
 
-      return updated
+      return updated;
     }),
 
   adminListDisputes: officeProcedure
@@ -1516,17 +1600,23 @@ export const backgroundChecksRouter = t.router({
       z
         .object({
           status: z
-            .enum(['pending', 'under_review', 'resolved', 'upheld', 'cancelled'])
+            .enum([
+              "pending",
+              "under_review",
+              "resolved",
+              "upheld",
+              "cancelled",
+            ])
             .optional(),
         })
         .optional(),
     )
     .query(async ({ ctx, input }) => {
-      const { supabase } = ctx
+      const { supabase } = ctx;
 
       let query = supabase
-        .schema('core')
-        .from('background_check_disputes')
+        .schema("core")
+        .from("background_check_disputes")
         .select(
           `
             id,
@@ -1553,43 +1643,43 @@ export const backgroundChecksRouter = t.router({
             )
           `,
         )
-        .order('created_at', { ascending: false })
+        .order("created_at", { ascending: false });
 
       if (input?.status) {
-        query = query.eq('status', input.status)
+        query = query.eq("status", input.status);
       }
 
-      const { data, error } = await query
+      const { data, error } = await query;
 
       if (error) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to load background check disputes',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load background check disputes",
           cause: error,
-        })
+        });
       }
 
       return (data ?? []).map((row) => {
         const backgroundCheckRecord = (row.background_check ?? null) as
           | {
-            id?: string | null
-            status?: string | null
-            summary?: string | null
-            findings?: Record<string, unknown> | null
-            completed_at?: string | null
-            expires_at?: string | null
-            package?: Record<string, unknown> | null
+            id?: string | null;
+            status?: string | null;
+            summary?: string | null;
+            findings?: Record<string, unknown> | null;
+            completed_at?: string | null;
+            expires_at?: string | null;
+            package?: Record<string, unknown> | null;
             worker?:
               | {
-                id?: string | null
-                display_name?: string | null
-                username?: string | null
-                email?: string | null
+                id?: string | null;
+                display_name?: string | null;
+                username?: string | null;
+                email?: string | null;
               }
-              | null
-            organization?: { id?: string | null; name?: string | null } | null
+              | null;
+            organization?: { id?: string | null; name?: string | null } | null;
           }
-          | null
+          | null;
 
         return {
           id: row.id,
@@ -1615,7 +1705,8 @@ export const backgroundChecksRouter = t.router({
               worker: backgroundCheckRecord.worker
                 ? {
                   id: backgroundCheckRecord.worker.id ?? null,
-                  display_name: backgroundCheckRecord.worker.display_name ?? null,
+                  display_name: backgroundCheckRecord.worker.display_name ??
+                    null,
                   username: backgroundCheckRecord.worker.username ?? null,
                   email: backgroundCheckRecord.worker.email ?? null,
                 }
@@ -1628,25 +1719,25 @@ export const backgroundChecksRouter = t.router({
                 : null,
             }
             : null,
-        }
-      })
+        };
+      });
     }),
 
   adminResolveDispute: officeProcedure
     .input(
       z.object({
         dispute_id: z.string().uuid(),
-        status: z.enum(['resolved', 'upheld', 'cancelled']),
+        status: z.enum(["resolved", "upheld", "cancelled"]),
         resolution: z.string().nullable().optional(),
         resolution_notes: z.string().nullable().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx
+      const { supabase, user } = ctx;
 
       const { data, error } = await supabase
-        .schema('core')
-        .from('background_check_disputes')
+        .schema("core")
+        .from("background_check_disputes")
         .update({
           status: input.status,
           resolution: input.resolution ?? null,
@@ -1654,100 +1745,109 @@ export const backgroundChecksRouter = t.router({
           resolved_at: new Date().toISOString(),
           resolved_by_user_id: user!.id,
         })
-        .eq('id', input.dispute_id)
-        .select('id, status, resolved_at, resolution, resolution_notes')
-        .single()
+        .eq("id", input.dispute_id)
+        .select("id, status, resolved_at, resolution, resolution_notes")
+        .single();
 
       if (error || !data) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to resolve dispute',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to resolve dispute",
           cause: error,
-        })
+        });
       }
 
-      return data
+      return data;
     }),
 
   adminGetMetrics: officeProcedure.query(async ({ ctx }) => {
-    const { supabase } = ctx
+    const { supabase } = ctx;
 
-    const [{ data: checks, error: checksError }, { data: disputes, error: disputesError }] =
-      await Promise.all([
-        supabase
-          .schema('core')
-          .from('background_checks')
-          .select(
-            'status, created_at, completed_at, package:background_check_packages(id, display_name, slug)',
-          ),
-        supabase.schema('core').from('background_check_disputes').select('status'),
-      ])
+    const [
+      { data: checks, error: checksError },
+      { data: disputes, error: disputesError },
+    ] = await Promise.all([
+      supabase
+        .schema("core")
+        .from("background_checks")
+        .select(
+          "status, created_at, completed_at, package:background_check_packages(id, display_name, slug)",
+        ),
+      supabase.schema("core").from("background_check_disputes").select(
+        "status",
+      ),
+    ]);
 
     if (checksError || disputesError) {
       throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Unable to load background check metrics',
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Unable to load background check metrics",
         cause: checksError ?? disputesError,
-      })
+      });
     }
 
-    const statusTotals: Record<string, number> = {}
-    const packageTotals: Record<string, number> = {}
-    let completedCount = 0
-    let durationSumDays = 0
-
-    ;(checks ?? []).forEach((record) => {
-      const status = record.status ?? 'unknown'
-      statusTotals[status] = (statusTotals[status] ?? 0) + 1
+    const statusTotals: Record<string, number> = {};
+    const packageTotals: Record<string, number> = {};
+    let completedCount = 0;
+    let durationSumDays = 0;
+    (checks ?? []).forEach((record) => {
+      const status = record.status ?? "unknown";
+      statusTotals[status] = (statusTotals[status] ?? 0) + 1;
 
       if (record.completed_at) {
-        const createdAt = new Date(record.created_at ?? record.completed_at).getTime()
-        const completedAt = new Date(record.completed_at).getTime()
-        if (!Number.isNaN(createdAt) && !Number.isNaN(completedAt) && completedAt >= createdAt) {
-          const diffDays = (completedAt - createdAt) / (1000 * 60 * 60 * 24)
-          durationSumDays += diffDays
-          completedCount += 1
+        const createdAt = new Date(record.created_at ?? record.completed_at)
+          .getTime();
+        const completedAt = new Date(record.completed_at).getTime();
+        if (
+          !Number.isNaN(createdAt) && !Number.isNaN(completedAt) &&
+          completedAt >= createdAt
+        ) {
+          const diffDays = (completedAt - createdAt) / (1000 * 60 * 60 * 24);
+          durationSumDays += diffDays;
+          completedCount += 1;
         }
       }
 
-      const packageLabel =
-        record.package?.display_name ?? record.package?.slug ?? 'Uncategorized Package'
-      packageTotals[packageLabel] = (packageTotals[packageLabel] ?? 0) + 1
-    })
+      const packageLabel = record.package?.display_name ??
+        record.package?.slug ?? "Uncategorized Package";
+      packageTotals[packageLabel] = (packageTotals[packageLabel] ?? 0) + 1;
+    });
 
-    const disputeTotals: Record<string, number> = {}
-    ;(disputes ?? []).forEach((record) => {
-      const status = record.status ?? 'unknown'
-      disputeTotals[status] = (disputeTotals[status] ?? 0) + 1
-    })
+    const disputeTotals: Record<string, number> = {};
+    (disputes ?? []).forEach((record) => {
+      const status = record.status ?? "unknown";
+      disputeTotals[status] = (disputeTotals[status] ?? 0) + 1;
+    });
 
-    const averageCompletionDays =
-      completedCount > 0 ? +(durationSumDays / completedCount).toFixed(1) : null
+    const averageCompletionDays = completedCount > 0
+      ? +(durationSumDays / completedCount).toFixed(1)
+      : null;
 
-    const packageDistribution = Object.entries(packageTotals).map(([label, count]) => ({
+    const packageDistribution = Object.entries(packageTotals).map((
+      [label, count],
+    ) => ({
       label,
       count,
-    }))
+    }));
 
     return {
       totals: {
         checks: checks?.length ?? 0,
-        under_review: statusTotals['under_review'] ?? 0,
-        disputed: statusTotals['disputed'] ?? 0,
-        completed:
-          (statusTotals['completed_clear'] ?? 0) +
-          (statusTotals['completed_consider'] ?? 0) +
-          (statusTotals['completed_not_clear'] ?? 0),
+        under_review: statusTotals["under_review"] ?? 0,
+        disputed: statusTotals["disputed"] ?? 0,
+        completed: (statusTotals["completed_clear"] ?? 0) +
+          (statusTotals["completed_consider"] ?? 0) +
+          (statusTotals["completed_not_clear"] ?? 0),
       },
       disputes: {
-        pending: disputeTotals['pending'] ?? 0,
-        under_review: disputeTotals['under_review'] ?? 0,
-        resolved: disputeTotals['resolved'] ?? 0,
-        upheld: disputeTotals['upheld'] ?? 0,
+        pending: disputeTotals["pending"] ?? 0,
+        under_review: disputeTotals["under_review"] ?? 0,
+        resolved: disputeTotals["resolved"] ?? 0,
+        upheld: disputeTotals["upheld"] ?? 0,
       },
       averageCompletionDays,
       packageDistribution,
-    }
+    };
   }),
 
   adminGetAccessLog: officeProcedure
@@ -1759,11 +1859,11 @@ export const backgroundChecksRouter = t.router({
         .optional(),
     )
     .query(async ({ ctx, input }) => {
-      const { supabase } = ctx
+      const { supabase } = ctx;
 
       const { data, error } = await supabase
-        .schema('core')
-        .from('background_check_access_log')
+        .schema("core")
+        .from("background_check_access_log")
         .select(
           `
             id,
@@ -1782,51 +1882,60 @@ export const backgroundChecksRouter = t.router({
             actor:users!background_check_access_log_accessed_by_user_id_fkey(id, display_name, username, email)
           `,
         )
-        .order('accessed_at', { ascending: false })
-        .limit(input?.limit ?? 200)
+        .order("accessed_at", { ascending: false })
+        .limit(input?.limit ?? 200);
 
       if (error) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to load access log entries',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load access log entries",
           cause: error,
-        })
+        });
       }
 
       return (data ?? []).map((row) => {
         const backgroundCheckRecord = (row.background_check ?? null) as
           | {
-              id?: string | null
-              status?: string | null
-              package?: { display_name?: string | null; slug?: string | null } | null
-              worker?:
-                | {
-                    id?: string | null
-                    display_name?: string | null
-                    username?: string | null
-                    email?: string | null
-                  }
-                | null
-            }
-          | null
+            id?: string | null;
+            status?: string | null;
+            package?:
+              | { display_name?: string | null; slug?: string | null }
+              | null;
+            worker?:
+              | {
+                id?: string | null;
+                display_name?: string | null;
+                username?: string | null;
+                email?: string | null;
+              }
+              | null;
+          }
+          | null;
 
         const actorRecord = (row.actor ?? null) as
-          | { id?: string | null; display_name?: string | null; username?: string | null; email?: string | null }
-          | null
+          | {
+            id?: string | null;
+            display_name?: string | null;
+            username?: string | null;
+            email?: string | null;
+          }
+          | null;
 
         const backgroundCheckPackage =
           backgroundCheckRecord?.package?.display_name ??
-          backgroundCheckRecord?.package?.slug ??
-          null
-        const workerName =
-          backgroundCheckRecord?.worker?.display_name ??
+            backgroundCheckRecord?.package?.slug ??
+            null;
+        const workerName = backgroundCheckRecord?.worker?.display_name ??
           backgroundCheckRecord?.worker?.username ??
-          (backgroundCheckRecord?.worker?.id ? `User ${backgroundCheckRecord.worker.id.slice(0, 8)}` : null)
+          (backgroundCheckRecord?.worker?.id
+            ? `User ${backgroundCheckRecord.worker.id.slice(0, 8)}`
+            : null);
 
-        const actorName =
-          actorRecord?.display_name ??
+        const actorName = actorRecord?.display_name ??
           actorRecord?.username ??
-          (actorRecord?.id ? `User ${actorRecord.id.slice(0, 8)}` : 'Administrator')
+          (actorRecord?.id
+            ? `User ${actorRecord.id.slice(0, 8)}`
+            : "Administrator");
 
         return {
           id: row.id,
@@ -1846,8 +1955,8 @@ export const backgroundChecksRouter = t.router({
             package_name: backgroundCheckPackage,
             worker_name: workerName,
           },
-        }
-      })
+        };
+      });
     }),
 
   /**
@@ -1856,8 +1965,7 @@ export const backgroundChecksRouter = t.router({
   verifyWebhookSignature: publicProcedure
     .input(z.object({ signature: z.string(), payload: z.string() }))
     .mutation(async ({ input }) => {
-      const client = createNationSearchClient()
-      return client.verifyWebhookSignature(input.signature, input.payload)
+      const client = createNationSearchClient();
+      return client.verifyWebhookSignature(input.signature, input.payload);
     }),
-})
-
+});

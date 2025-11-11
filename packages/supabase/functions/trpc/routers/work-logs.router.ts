@@ -14,25 +14,25 @@ import type { Database } from "../../_shared/database.types.ts";
 // @ts-ignore - Deno requires file extension
 import {
   addCollaboratorSchema,
-  approveWorkLogMoveSchema,
   addSkillToProfileSchema,
   addWorkLogCommentSchema,
+  approveWorkLogMoveSchema,
   cancelWorkLogMoveSchema,
   checkTimeOverlapSchema,
   createWorkLogSchema,
+  deleteWorkLogPhotoSchema,
   denyWorkLogMoveSchema,
   disputeWorkLogSchema,
-  deleteWorkLogPhotoSchema,
+  exportWorkLogSchema,
   getSuggestedSkillsSchema,
   moveWorkLogSchema,
-  exportWorkLogSchema,
   submitWorkLogSchema,
   updateCollaboratorSchema,
   updatePhotoVisibilitySchema,
   updateProfileVisibilitySchema,
+  updateWorkLogPhotoSchema,
   updateWorkLogSchema,
   uploadWorkLogPhotoSchema,
-  updateWorkLogPhotoSchema,
   verifyWorkLogSchema,
 } from "../../_shared/work-log-schemas.ts";
 // @ts-ignore - Deno requires file extension
@@ -50,11 +50,12 @@ import type {
   WorkLogExportTimeEntry,
 } from "../../_shared/work-log-export.ts";
 // @ts-ignore - Deno requires file extension
-import { enrichUserSkills } from "../utils/skill-enrichment.ts";
+import { enrichUserSkills } from "./utils/skill-enrichment.ts";
 
 type DbClient = SupabaseClient<Database>;
 type WorkLogRow = Database["core"]["Tables"]["work_logs"]["Row"];
-type CollaboratorRow = Database["core"]["Tables"]["work_log_collaborators"]["Row"];
+type CollaboratorRow =
+  Database["core"]["Tables"]["work_log_collaborators"]["Row"];
 
 const WORK_LOG_PHOTO_BUCKET = "work-log-photos";
 const SIGNED_UPLOAD_URL_TTL_SECONDS = 60 * 5;
@@ -114,7 +115,8 @@ const validateGpsCapture = (capture: {
   if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "GPS coordinates fall outside the valid latitude/longitude ranges.",
+      message:
+        "GPS coordinates fall outside the valid latitude/longitude ranges.",
     });
   }
 
@@ -289,7 +291,7 @@ const notifyMoveEvent = async (
           actorId,
         },
         routed_channels: [...routedChannels],
-      }),
+      })
     ),
   );
 };
@@ -349,15 +351,15 @@ const parseTimeEntries = (raw: unknown): WorkLogExportTimeEntry[] => {
       continue;
     }
 
-    const rawBreak =
-      typeof entry.breakMinutes === "number"
-        ? entry.breakMinutes
-        : typeof entry.breakMinutes === "string"
-        ? Number(entry.breakMinutes)
-        : 0;
+    const rawBreak = typeof entry.breakMinutes === "number"
+      ? entry.breakMinutes
+      : typeof entry.breakMinutes === "string"
+      ? Number(entry.breakMinutes)
+      : 0;
 
-    const breakMinutes =
-      Number.isFinite(rawBreak) && rawBreak > 0 ? Math.floor(rawBreak) : 0;
+    const breakMinutes = Number.isFinite(rawBreak) && rawBreak > 0
+      ? Math.floor(rawBreak)
+      : 0;
 
     const rawDuration = Math.max(endMinutes - startMinutes, 0);
     const effectiveDuration = Math.max(rawDuration - breakMinutes, 0);
@@ -367,10 +369,10 @@ const parseTimeEntries = (raw: unknown): WorkLogExportTimeEntry[] => {
       end,
       durationHours: effectiveDuration / 60,
       breakMinutes,
-      description:
-        typeof entry.description === "string" && entry.description.trim().length > 0
-          ? entry.description
-          : null,
+      description: typeof entry.description === "string" &&
+          entry.description.trim().length > 0
+        ? entry.description
+        : null,
     });
   }
 
@@ -398,13 +400,12 @@ const resolveStringField = (
 const resolveProjectDisplayName = (
   project: Record<string, unknown> | null | undefined,
 ): string => {
-  const name =
-    resolveStringField(project, [
-      "name",
-      "project_name",
-      "title",
-      "display_name",
-    ]) ?? "";
+  const name = resolveStringField(project, [
+    "name",
+    "project_name",
+    "title",
+    "display_name",
+  ]) ?? "";
 
   const trimmed = name.trim();
 
@@ -452,8 +453,8 @@ const buildWorkLogExportSnapshot = async (
   let projectRecord: Record<string, unknown> | null = null;
 
   if (workLog.project_id) {
-  const { data: projectData } = await supabase
-    .schema("core")
+    const { data: projectData } = await supabase
+      .schema("core")
       .from("construction_projects")
       .select("*")
       .eq("id", workLog.project_id)
@@ -474,8 +475,8 @@ const buildWorkLogExportSnapshot = async (
       .eq("id", organizationId)
       .maybeSingle();
 
-    organizationRecord =
-      (organizationData as Record<string, unknown> | null) ?? null;
+    organizationRecord = (organizationData as Record<string, unknown> | null) ??
+      null;
   }
 
   const { data: collaboratorRows } = await supabase
@@ -519,31 +520,31 @@ const buildWorkLogExportSnapshot = async (
   const tasks =
     Array.isArray(workLog.tasks_completed) && workLog.tasks_completed.length > 0
       ? workLog.tasks_completed.filter(
-          (task): task is string =>
-            typeof task === "string" && task.trim().length > 0,
-        )
+        (task): task is string =>
+          typeof task === "string" && task.trim().length > 0,
+      )
       : [];
 
   const skills =
     Array.isArray(workLog.skills_used) && workLog.skills_used.length > 0
       ? workLog.skills_used.filter(
-          (skill): skill is string =>
-            typeof skill === "string" && skill.trim().length > 0,
-        )
+        (skill): skill is string =>
+          typeof skill === "string" && skill.trim().length > 0,
+      )
       : [];
 
-  const totalHours =
-    typeof workLog.total_hours === "number"
-      ? workLog.total_hours
-      : workLog.total_hours
-      ? Number(workLog.total_hours)
-      : 0;
+  const totalHours = typeof workLog.total_hours === "number"
+    ? workLog.total_hours
+    : workLog.total_hours
+    ? Number(workLog.total_hours)
+    : 0;
 
   return {
     workLog,
     ownerName,
-    ownerEmail:
-      typeof ownerRecord?.email === "string" ? ownerRecord.email : null,
+    ownerEmail: typeof ownerRecord?.email === "string"
+      ? ownerRecord.email
+      : null,
     projectName: resolveStringField(projectRecord, [
       "name",
       "title",
@@ -585,7 +586,12 @@ const intersectingEntries = (
   currentEntries: Array<{ start: string; end: string }>,
   existingEntries: Array<{ start: string; end: string }>,
 ) => {
-  const conflicts: Array<{ incoming: { start: string; end: string }; existing: { start: string; end: string } }> = [];
+  const conflicts: Array<
+    {
+      incoming: { start: string; end: string };
+      existing: { start: string; end: string };
+    }
+  > = [];
   for (const incoming of currentEntries) {
     for (const existing of existingEntries) {
       if (entriesOverlap(incoming, existing)) {
@@ -621,7 +627,13 @@ const getWorkLogAccess = async (
   supabase: DbClient,
   workLogId: string,
   userId: string,
-): Promise<{ workLog: WorkLogRow; role: "owner" | "editor" | "viewer"; collaborator?: Pick<CollaboratorRow, "permission_level"> }> => {
+): Promise<
+  {
+    workLog: WorkLogRow;
+    role: "owner" | "editor" | "viewer";
+    collaborator?: Pick<CollaboratorRow, "permission_level">;
+  }
+> => {
   const workLog = await fetchWorkLog(supabase, workLogId);
 
   if (workLog.user_id === userId) {
@@ -661,7 +673,9 @@ const getWorkLogAccess = async (
 const listCollaboratorSummaries = async (
   supabase: DbClient,
   workLogId: string,
-): Promise<Array<Pick<CollaboratorRow, "collaborator_user_id" | "permission_level">>> => {
+): Promise<
+  Array<Pick<CollaboratorRow, "collaborator_user_id" | "permission_level">>
+> => {
   const { data, error } = await supabase
     .schema("core")
     .from("work_log_collaborators")
@@ -675,7 +689,9 @@ const listCollaboratorSummaries = async (
     });
   }
 
-  return (data ?? []) as Array<Pick<CollaboratorRow, "collaborator_user_id" | "permission_level">>;
+  return (data ?? []) as Array<
+    Pick<CollaboratorRow, "collaborator_user_id" | "permission_level">
+  >;
 };
 
 const getConversationParticipants = async (
@@ -696,7 +712,10 @@ const getConversationParticipants = async (
     collaboratorPermissions.set(workLog.verified_by_user_id, "edit");
   }
 
-  const collaboratorSummaries = await listCollaboratorSummaries(supabase, workLog.id);
+  const collaboratorSummaries = await listCollaboratorSummaries(
+    supabase,
+    workLog.id,
+  );
   for (const collaborator of collaboratorSummaries) {
     participants.add(collaborator.collaborator_user_id);
     collaboratorPermissions.set(
@@ -714,10 +733,11 @@ const notifyConversationParticipants = async (
   actorId: string,
   preview: string,
 ): Promise<void> => {
-  const { participants, collaboratorPermissions } = await getConversationParticipants(
-    supabase,
-    workLog,
-  );
+  const { participants, collaboratorPermissions } =
+    await getConversationParticipants(
+      supabase,
+      workLog,
+    );
 
   participants.delete(actorId);
 
@@ -732,7 +752,7 @@ const notifyConversationParticipants = async (
         logDate: workLog.log_date,
         permissionLevel: collaboratorPermissions.get(recipientId),
         commentPreview: preview,
-      }),
+      })
     ),
   );
 };
@@ -762,7 +782,12 @@ const createSystemMessage = async (
     });
   }
 
-  await notifyConversationParticipants(supabase, workLog, actorId, shorten(message));
+  await notifyConversationParticipants(
+    supabase,
+    workLog,
+    actorId,
+    shorten(message),
+  );
 
   return data;
 };
@@ -804,7 +829,9 @@ const extractSkillIds = (input: unknown): string[] => {
   }
 
   return (input as unknown[])
-    .filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+    .filter((item): item is string =>
+      typeof item === "string" && item.trim().length > 0
+    )
     .map((item) => item.trim());
 };
 
@@ -833,13 +860,13 @@ const fetchProjectContext = async (
   }
 
   const projectRecord = (project ?? null) as Record<string, unknown> | null;
-  const projectName =
-    (projectRecord?.name as string | undefined) ??
+  const projectName = (projectRecord?.name as string | undefined) ??
     (projectRecord?.project_name as string | undefined) ??
     (projectRecord?.title as string | undefined) ??
     null;
 
-  const organizationId = (projectRecord?.organization_id as string | undefined) ?? null;
+  const organizationId =
+    (projectRecord?.organization_id as string | undefined) ?? null;
 
   let organizationName: string | null = null;
 
@@ -852,12 +879,14 @@ const fetchProjectContext = async (
       .maybeSingle();
 
     if (organizationError) {
-      console.error("[workLogs] Failed to load organization context", organizationError);
+      console.error(
+        "[workLogs] Failed to load organization context",
+        organizationError,
+      );
     }
 
     const orgRecord = (organization ?? null) as Record<string, unknown> | null;
-    organizationName =
-      (orgRecord?.name as string | undefined) ??
+    organizationName = (orgRecord?.name as string | undefined) ??
       (orgRecord?.legal_name as string | undefined) ??
       (orgRecord?.display_name as string | undefined) ??
       null;
@@ -874,7 +903,12 @@ const fetchProjectContext = async (
 const resolveCsiSkillDetails = async (
   supabase: DbClient,
   skillIds: string[],
-): Promise<Map<string, { name: string; code_key: string | null; code_display: string | null }>> => {
+): Promise<
+  Map<
+    string,
+    { name: string; code_key: string | null; code_display: string | null }
+  >
+> => {
   if (skillIds.length === 0) {
     return new Map();
   }
@@ -940,7 +974,9 @@ const getSuggestedSkillsForWorkLog = async (
   workLog: WorkLogRow,
   userId: string,
 ): Promise<SuggestedSkill[]> => {
-  const skillIds = Array.from(new Set(extractSkillIds(workLog.skills_used as unknown)));
+  const skillIds = Array.from(
+    new Set(extractSkillIds(workLog.skills_used as unknown)),
+  );
 
   if (skillIds.length === 0) {
     return [];
@@ -948,14 +984,19 @@ const getSuggestedSkillsForWorkLog = async (
 
   const { csi: existingCsiSkills } = await getUserSkillSets(supabase, userId);
 
-  const missingCsiSkillIds = skillIds.filter((skillId) => !existingCsiSkills.has(skillId));
+  const missingCsiSkillIds = skillIds.filter((skillId) =>
+    !existingCsiSkills.has(skillId)
+  );
 
   if (missingCsiSkillIds.length === 0) {
     return [];
   }
 
   const csiDetails = await resolveCsiSkillDetails(supabase, missingCsiSkillIds);
-  const projectContext = await fetchProjectContext(supabase, workLog.project_id);
+  const projectContext = await fetchProjectContext(
+    supabase,
+    workLog.project_id,
+  );
 
   const suggestions: SuggestedSkill[] = [];
 
@@ -1133,10 +1174,9 @@ export const workLogsRouter = t.router({
       >();
 
       for (const membership of memberships ?? []) {
-        const organizationId =
-          typeof membership.organization_id === "string"
-            ? membership.organization_id
-            : null;
+        const organizationId = typeof membership.organization_id === "string"
+          ? membership.organization_id
+          : null;
 
         if (!organizationId) {
           continue;
@@ -1145,11 +1185,10 @@ export const workLogsRouter = t.router({
         if (!organizationsMap.has(organizationId)) {
           organizationsMap.set(organizationId, {
             id: organizationId,
-            name:
-              typeof membership.organization_name === "string" &&
-              membership.organization_name.trim().length > 0
-                ? membership.organization_name.trim()
-                : "Unknown Organization",
+            name: typeof membership.organization_name === "string" &&
+                membership.organization_name.trim().length > 0
+              ? membership.organization_name.trim()
+              : "Unknown Organization",
             isAdmin: Boolean(membership.is_admin),
             isOwner: Boolean(membership.is_owner),
           });
@@ -1226,33 +1265,30 @@ export const workLogsRouter = t.router({
       const projects = (projectRows ?? [])
         .map((project) => project as Record<string, unknown>)
         .map((project) => {
-          const id =
-            typeof project.id === "string" ? project.id : String(project.id);
-          const organizationId =
-            typeof project.organization_id === "string"
-              ? project.organization_id
-              : String(project.organization_id ?? "");
+          const id = typeof project.id === "string"
+            ? project.id
+            : String(project.id);
+          const organizationId = typeof project.organization_id === "string"
+            ? project.organization_id
+            : String(project.organization_id ?? "");
 
-          const status =
-            resolveStringField(project, [
-              "status",
-              "project_status",
-              "state",
-            ]) ?? null;
+          const status = resolveStringField(project, [
+            "status",
+            "project_status",
+            "state",
+          ]) ?? null;
 
-          const startsAt =
-            resolveStringField(project, [
-              "start_date",
-              "starts_at",
-              "project_start",
-            ]) ?? null;
+          const startsAt = resolveStringField(project, [
+            "start_date",
+            "starts_at",
+            "project_start",
+          ]) ?? null;
 
-          const endsAt =
-            resolveStringField(project, [
-              "end_date",
-              "ends_at",
-              "project_end",
-            ]) ?? null;
+          const endsAt = resolveStringField(project, [
+            "end_date",
+            "ends_at",
+            "project_end",
+          ]) ?? null;
 
           return {
             id,
@@ -1279,7 +1315,7 @@ export const workLogsRouter = t.router({
               .map((value) => value.toLowerCase());
 
             const matchesSearch = haystack.some((value) =>
-              value.includes(normalizedSearch),
+              value.includes(normalizedSearch)
             );
 
             if (!matchesSearch) {
@@ -1322,7 +1358,8 @@ export const workLogsRouter = t.router({
       if (projectError || !projectExists) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Construction project is required before creating a work log.",
+          message:
+            "Construction project is required before creating a work log.",
         });
       }
 
@@ -1386,7 +1423,7 @@ export const workLogsRouter = t.router({
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
-      const { workLog, role } = await getWorkLogAccess(
+      const { workLog: _workLog, role } = await getWorkLogAccess(
         supabase,
         input.workLogId,
         user.id,
@@ -1424,7 +1461,8 @@ export const workLogsRouter = t.router({
         const newVal = input.payload[key];
         if (typeof newVal !== "undefined") {
           updates[columnName] = newVal;
-          oldValue[columnName] = (workLog as Record<string, unknown>)[columnName];
+          oldValue[columnName] =
+            (workLog as Record<string, unknown>)[columnName];
           newValue[columnName] = newVal;
         }
       };
@@ -1568,7 +1606,9 @@ export const workLogsRouter = t.router({
         workLog.project_id,
       );
 
-      const nextStatus = requireVerification ? "pending_verification" : "verified";
+      const nextStatus = requireVerification
+        ? "pending_verification"
+        : "verified";
       const updates: Record<string, unknown> = {
         status: nextStatus,
         submitted_at: new Date().toISOString(),
@@ -1607,7 +1647,9 @@ export const workLogsRouter = t.router({
         action: "status_change",
         oldValue: { status: workLog.status },
         newValue: { status: nextStatus },
-        reason: input.forceSubmit ? "User elected to submit despite overlap warning." : input.reason ?? null,
+        reason: input.forceSubmit
+          ? "User elected to submit despite overlap warning."
+          : input.reason ?? null,
       });
 
       if (workLog.status === "disputed") {
@@ -1708,7 +1750,10 @@ export const workLogsRouter = t.router({
 
       const workLog = await fetchWorkLog(supabase, input.workLogId);
 
-      if (workLog.status !== "pending_verification" && workLog.status !== "verified") {
+      if (
+        workLog.status !== "pending_verification" &&
+        workLog.status !== "verified"
+      ) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Only pending or verified work logs can be disputed.",
@@ -1778,7 +1823,7 @@ export const workLogsRouter = t.router({
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
-      const { workLog, role } = await getWorkLogAccess(
+      const { role } = await getWorkLogAccess(
         supabase,
         input.workLogId,
         user.id,
@@ -2059,7 +2104,8 @@ export const workLogsRouter = t.router({
       if (workLog.status === "draft") {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Conversations are not available while a work log is in draft.",
+          message:
+            "Conversations are not available while a work log is in draft.",
         });
       }
 
@@ -2156,7 +2202,9 @@ export const workLogsRouter = t.router({
         });
       }
 
-      const skillIdsFromLog = new Set(extractSkillIds(workLog.skills_used as unknown));
+      const skillIdsFromLog = new Set(
+        extractSkillIds(workLog.skills_used as unknown),
+      );
 
       if (input.taxonomy === "csi" && !skillIdsFromLog.has(input.skillId)) {
         throw new TRPCError({
@@ -2165,8 +2213,9 @@ export const workLogsRouter = t.router({
         });
       }
 
-      const skillIdentifier =
-        input.taxonomy === "csi" ? input.skillId : normaliseOnetCode(input.skillId);
+      const skillIdentifier = input.taxonomy === "csi"
+        ? input.skillId
+        : normaliseOnetCode(input.skillId);
 
       const { data: existingSkill, error: existingSkillError } = await supabase
         .schema("core")
@@ -2194,7 +2243,10 @@ export const workLogsRouter = t.router({
         });
       }
 
-      const projectContext = await fetchProjectContext(supabase, workLog.project_id);
+      const projectContext = await fetchProjectContext(
+        supabase,
+        workLog.project_id,
+      );
       const metadata = {
         sources: [
           {
@@ -2210,12 +2262,13 @@ export const workLogsRouter = t.router({
         ],
       };
 
-      const insertPayload: Database["core"]["Tables"]["user_skills"]["Insert"] = {
-        user_id: user.id,
-        skill_taxonomy: input.taxonomy,
-        proficiency_level: input.proficiencyLevel,
-        metadata,
-      };
+      const insertPayload: Database["core"]["Tables"]["user_skills"]["Insert"] =
+        {
+          user_id: user.id,
+          skill_taxonomy: input.taxonomy,
+          proficiency_level: input.proficiencyLevel,
+          metadata,
+        };
 
       if (input.yearsExperience !== undefined) {
         insertPayload.years_experience = input.yearsExperience;
@@ -2266,7 +2319,8 @@ export const workLogsRouter = t.router({
       if (role === "viewer") {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "You do not have permission to upload photos for this work log.",
+          message:
+            "You do not have permission to upload photos for this work log.",
         });
       }
 
@@ -2285,25 +2339,31 @@ export const workLogsRouter = t.router({
       if (currentUsage + input.fileSizeBytes > storageLimit) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Storage limit reached. Remove existing photos or contact support.",
+          message:
+            "Storage limit reached. Remove existing photos or contact support.",
         });
       }
 
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       const sanitizedFileName = sanitizeFileName(input.fileName);
-      const filePath = `${user.id}/${input.workLogId}/${timestamp}-${sanitizedFileName}`;
+      const filePath =
+        `${user.id}/${input.workLogId}/${timestamp}-${sanitizedFileName}`;
 
-      const { data: signedUpload, error: signedUrlError } = await supabase.storage
+      const { data: signedUpload, error: signedUrlError } = await supabase
+        .storage
         .from(WORK_LOG_PHOTO_BUCKET)
         .createSignedUploadUrl(filePath, SIGNED_UPLOAD_URL_TTL_SECONDS, {
           contentType: input.contentType,
         });
 
       if (signedUrlError || !signedUpload) {
-        console.error("[workLogs.uploadPhoto] Failed to create signed upload URL", {
-          workLogId: input.workLogId,
-          message: signedUrlError?.message,
-        });
+        console.error(
+          "[workLogs.uploadPhoto] Failed to create signed upload URL",
+          {
+            workLogId: input.workLogId,
+            message: signedUrlError?.message,
+          },
+        );
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Unable to create upload URL",
@@ -2361,10 +2421,13 @@ export const workLogsRouter = t.router({
           .eq("user_id", user.id);
 
         if (usageUpdateError) {
-          console.error("[workLogs.uploadPhoto] Failed to update storage usage", {
-            userId: user.id,
-            message: usageUpdateError.message,
-          });
+          console.error(
+            "[workLogs.uploadPhoto] Failed to update storage usage",
+            {
+              userId: user.id,
+              message: usageUpdateError.message,
+            },
+          );
         }
       } else {
         await supabase
@@ -2426,7 +2489,9 @@ export const workLogsRouter = t.router({
         .eq("id", input.photoId)
         .single();
 
-      if (photoError || !photoRecord || photoRecord.work_log_id !== workLog.id) {
+      if (
+        photoError || !photoRecord || photoRecord.work_log_id !== workLog.id
+      ) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Work log photo not found.",
@@ -2548,7 +2613,10 @@ export const workLogsRouter = t.router({
         workLogId: photo.work_log_id,
         userId: user.id,
         action: "photo_added",
-        oldValue: { photo_id: photo.id, show_on_profile: photo.show_on_profile },
+        oldValue: {
+          photo_id: photo.id,
+          show_on_profile: photo.show_on_profile,
+        },
         newValue: { photo_id: photo.id, show_on_profile: input.showOnProfile },
       });
 
@@ -2586,7 +2654,9 @@ export const workLogsRouter = t.router({
         .eq("id", input.photoId)
         .single();
 
-      if (photoError || !photoRecord || photoRecord.work_log_id !== workLog.id) {
+      if (
+        photoError || !photoRecord || photoRecord.work_log_id !== workLog.id
+      ) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Work log photo not found.",
@@ -2597,7 +2667,9 @@ export const workLogsRouter = t.router({
         photoRecord.file_path,
         photoRecord.thumbnail_path,
         photoRecord.medium_path,
-      ].filter((value): value is string => typeof value === "string" && value.length > 0);
+      ].filter((value): value is string =>
+        typeof value === "string" && value.length > 0
+      );
 
       if (filePaths.length > 0) {
         const { error: removeError } = await supabase.storage
@@ -2605,11 +2677,14 @@ export const workLogsRouter = t.router({
           .remove(filePaths);
 
         if (removeError) {
-          console.warn("[workLogs.deletePhoto] Failed to delete storage objects", {
-            workLogId: workLog.id,
-            photoId: photoRecord.id,
-            message: removeError.message,
-          });
+          console.warn(
+            "[workLogs.deletePhoto] Failed to delete storage objects",
+            {
+              workLogId: workLog.id,
+              photoId: photoRecord.id,
+              message: removeError.message,
+            },
+          );
         }
       }
 
@@ -2626,10 +2701,9 @@ export const workLogsRouter = t.router({
         });
       }
 
-      const photoBytes =
-        typeof photoRecord.file_size_bytes === "number"
-          ? photoRecord.file_size_bytes
-          : Number(photoRecord.file_size_bytes ?? 0);
+      const photoBytes = typeof photoRecord.file_size_bytes === "number"
+        ? photoRecord.file_size_bytes
+        : Number(photoRecord.file_size_bytes ?? 0);
 
       if (photoBytes > 0) {
         const { data: usage } = await supabase
@@ -2654,10 +2728,13 @@ export const workLogsRouter = t.router({
             .eq("user_id", workLog.user_id);
 
           if (usageError) {
-            console.warn("[workLogs.deletePhoto] Failed to update usage metrics", {
-              userId: workLog.user_id,
-              message: usageError.message,
-            });
+            console.warn(
+              "[workLogs.deletePhoto] Failed to update usage metrics",
+              {
+                userId: workLog.user_id,
+                message: usageError.message,
+              },
+            );
           }
         }
       }
@@ -2737,8 +2814,8 @@ export const workLogsRouter = t.router({
         newValue: {
           visibility: updates.visibility ?? workLog.visibility,
           show_on_profile: updates.show_on_profile ?? workLog.show_on_profile,
-          show_date_range_on_profile:
-            updates.show_date_range_on_profile ?? workLog.show_date_range_on_profile,
+          show_date_range_on_profile: updates.show_date_range_on_profile ??
+            workLog.show_date_range_on_profile,
         },
       });
 
@@ -3021,8 +3098,8 @@ export const workLogsRouter = t.router({
         `Work log move approved by ${actorName}.`,
       );
 
-      const requesterId =
-        workLog.pending_move_requested_by ?? workLog.user_id ?? null;
+      const requesterId = workLog.pending_move_requested_by ??
+        workLog.user_id ?? null;
 
       if (requesterId) {
         await notifyMoveEvent(notificationClient, [requesterId], {
@@ -3118,8 +3195,8 @@ export const workLogsRouter = t.router({
         `Work log move denied by ${actorName}: ${input.reason}`,
       );
 
-      const requesterId =
-        workLog.pending_move_requested_by ?? workLog.user_id ?? null;
+      const requesterId = workLog.pending_move_requested_by ??
+        workLog.user_id ?? null;
 
       if (requesterId) {
         await notifyMoveEvent(notificationClient, [requesterId], {
@@ -3281,8 +3358,9 @@ export const workLogsRouter = t.router({
       ].filter(Boolean);
 
       const proposedName = sanitizeFileName(baseNameParts.join("-"));
-      const fileBaseName =
-        proposedName.length > 0 ? proposedName : `work-log-${workLog.id.slice(0, 8)}`;
+      const fileBaseName = proposedName.length > 0
+        ? proposedName
+        : `work-log-${workLog.id.slice(0, 8)}`;
 
       if (input.format === "pdf") {
         const pdfBytes = await buildWorkLogPdf(snapshot);
@@ -3336,7 +3414,9 @@ export const workLogsRouter = t.router({
         .eq("user_id", user.id)
         .eq("log_date", input.logDate);
 
-      const relevantLogs = (workLogs ?? []).filter((log) => log.id !== input.workLogId);
+      const relevantLogs = (workLogs ?? []).filter((log) =>
+        log.id !== input.workLogId
+      );
 
       const conflicts = relevantLogs
         .map((log) => ({
@@ -3482,5 +3562,3 @@ export const workLogsRouter = t.router({
       return data;
     }),
 });
-
-

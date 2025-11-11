@@ -8,10 +8,9 @@ type CoreSchemaTables = Database extends { core: { Tables: infer Tables } }
 
 type CoreWorkLogRow = CoreSchemaTables extends Record<string, unknown>
   ? "work_logs" extends keyof CoreSchemaTables
-    ? CoreSchemaTables["work_logs"] extends { Row: infer RowType }
-      ? RowType
-      : null
+    ? CoreSchemaTables["work_logs"] extends { Row: infer RowType } ? RowType
     : null
+  : null
   : null;
 
 type WorkLogRowFallback = {
@@ -40,8 +39,9 @@ type WorkLogRowFallback = {
   updated_at?: string | null;
 };
 
-type WorkLogRow = (CoreWorkLogRow extends null ? Record<string, unknown> : CoreWorkLogRow) &
-  WorkLogRowFallback;
+type WorkLogRow =
+  & (CoreWorkLogRow extends null ? Record<string, unknown> : CoreWorkLogRow)
+  & WorkLogRowFallback;
 
 export interface WorkLogExportCollaborator {
   userId: string;
@@ -77,7 +77,9 @@ export interface WorkLogExportSnapshot {
 const CSV_SEPARATOR = ",";
 
 const escapeCsvCell = (value: string): string => {
-  if (value.includes('"') || value.includes(CSV_SEPARATOR) || value.includes("\n")) {
+  if (
+    value.includes('"') || value.includes(CSV_SEPARATOR) || value.includes("\n")
+  ) {
     return `"${value.replace(/"/g, '""')}"`;
   }
   return value;
@@ -100,13 +102,17 @@ export const buildWorkLogCsv = (snapshot: WorkLogExportSnapshot): string => {
       "Time Entries",
       snapshot.timeEntries.length
         ? snapshot.timeEntries
-            .map((entry) => {
-              const duration = entry.durationHours.toFixed(2);
-              const breakMinutes = entry.breakMinutes > 0 ? ` (break ${entry.breakMinutes}m)` : "";
-              const description = entry.description ? ` - ${entry.description}` : "";
-              return `${entry.start} - ${entry.end} (${duration}h${breakMinutes})${description}`;
-            })
-            .join(" | ")
+          .map((entry) => {
+            const duration = entry.durationHours.toFixed(2);
+            const breakMinutes = entry.breakMinutes > 0
+              ? ` (break ${entry.breakMinutes}m)`
+              : "";
+            const description = entry.description
+              ? ` - ${entry.description}`
+              : "";
+            return `${entry.start} - ${entry.end} (${duration}h${breakMinutes})${description}`;
+          })
+          .join(" | ")
         : "None",
     ],
     [
@@ -121,8 +127,10 @@ export const buildWorkLogCsv = (snapshot: WorkLogExportSnapshot): string => {
       "Collaborators",
       snapshot.collaborators.length
         ? snapshot.collaborators
-            .map((collaborator) => `${collaborator.displayName} (${collaborator.permissionLevel})`)
-            .join("; ")
+          .map((collaborator) =>
+            `${collaborator.displayName} (${collaborator.permissionLevel})`
+          )
+          .join("; ")
         : "None",
     ],
     ["Photos Attached", String(snapshot.photoCount)],
@@ -135,12 +143,17 @@ export const buildWorkLogCsv = (snapshot: WorkLogExportSnapshot): string => {
     ["Dispute Reason", snapshot.workLog.dispute_reason ?? ""],
     ["GPS Captured At", snapshot.workLog.gps_captured_at ?? ""],
     ["Device Type", snapshot.workLog.device_type ?? ""],
-    ["Location Permission Status", snapshot.workLog.location_permission_status ?? ""],
+    [
+      "Location Permission Status",
+      snapshot.workLog.location_permission_status ?? "",
+    ],
   ];
 
   const header = ["Field", "Value"].map(escapeCsvCell).join(CSV_SEPARATOR);
   const body = rows
-    .map(([field, value]) => [field, value].map(escapeCsvCell).join(CSV_SEPARATOR))
+    .map(([field, value]) =>
+      [field, value].map(escapeCsvCell).join(CSV_SEPARATOR)
+    )
     .join("\n");
 
   return `${header}\n${body}`;
@@ -202,7 +215,7 @@ const formatHours = (value: number) => `${value.toFixed(2)}h`;
 export const buildWorkLogPdf = async (
   snapshot: WorkLogExportSnapshot,
 ): Promise<Uint8Array> => {
-  const pdfLibModule = (await import("npm:pdf-lib")) as PdfLibModule;
+  const pdfLibModule = (await import("pdf-lib")) as PdfLibModule;
   const { PDFDocument, StandardFonts } = pdfLibModule;
 
   const document = await PDFDocument.create();
@@ -272,7 +285,9 @@ export const buildWorkLogPdf = async (
   ];
 
   drawHeading("Work Log Summary");
-  const summaryLines = summaryPairs.map(([label, value]) => `${label}: ${value}`);
+  const summaryLines = summaryPairs.map(([label, value]) =>
+    `${label}: ${value}`
+  );
   for (const line of summaryLines) {
     const wrapped = wrapText(line, fontRegular, 12, availableWidth);
     drawLines(wrapped);
@@ -280,15 +295,20 @@ export const buildWorkLogPdf = async (
 
   drawHeading("Work Description");
   drawLines(
-    wrapText(snapshot.workLog.work_description ?? "Not provided.", fontRegular, 12, availableWidth),
+    wrapText(
+      snapshot.workLog.work_description ?? "Not provided.",
+      fontRegular,
+      12,
+      availableWidth,
+    ),
   );
 
   drawHeading("Tasks Completed");
   drawLines(
     snapshot.tasks.length
       ? snapshot.tasks.flatMap((task, index) =>
-          wrapText(`${index + 1}. ${task}`, fontRegular, 12, availableWidth),
-        )
+        wrapText(`${index + 1}. ${task}`, fontRegular, 12, availableWidth)
+      )
       : ["No tasks were recorded for this work log."],
   );
 
@@ -296,15 +316,17 @@ export const buildWorkLogPdf = async (
   drawLines(
     snapshot.timeEntries.length
       ? snapshot.timeEntries.flatMap((entry, index) =>
-          wrapText(
-            `${index + 1}. ${entry.start} - ${entry.end}  •  ${formatHours(entry.durationHours)}${
-              entry.breakMinutes > 0 ? ` (break ${entry.breakMinutes}m)` : ""
-            }${entry.description ? `  •  ${entry.description}` : ""}`,
-            fontRegular,
-            12,
-            availableWidth,
-          ),
+        wrapText(
+          `${index + 1}. ${entry.start} - ${entry.end}  •  ${
+            formatHours(entry.durationHours)
+          }${entry.breakMinutes > 0 ? ` (break ${entry.breakMinutes}m)` : ""}${
+            entry.description ? `  •  ${entry.description}` : ""
+          }`,
+          fontRegular,
+          12,
+          availableWidth,
         )
+      )
       : ["No time entries were recorded."],
   );
 
@@ -312,9 +334,11 @@ export const buildWorkLogPdf = async (
   drawLines(
     snapshot.collaborators.length
       ? snapshot.collaborators.map(
-          (collaborator, index) =>
-            `${index + 1}. ${collaborator.displayName} (${collaborator.permissionLevel})`,
-        )
+        (collaborator, index) =>
+          `${
+            index + 1
+          }. ${collaborator.displayName} (${collaborator.permissionLevel})`,
+      )
       : ["No collaborators were added to this work log."],
   );
 
@@ -327,4 +351,3 @@ export const buildWorkLogPdf = async (
 
   return document.save();
 };
-
