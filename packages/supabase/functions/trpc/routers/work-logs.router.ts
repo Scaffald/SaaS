@@ -38,7 +38,7 @@ const WORK_LOG_PHOTO_BUCKET = "work-log-photos";
 const SIGNED_UPLOAD_URL_TTL_SECONDS = 60 * 5;
 
 const WORK_LOG_SELECT =
-  "id, user_id, status, project_id, time_entries, tasks_completed, skills_used, visibility, show_on_profile, show_date_range_on_profile, entry_type, log_date, work_description, gps_location, gps_accuracy_meters, gps_captured_at, device_type, location_permission_status";
+  "id, user_id, status, project_id, time_entries, tasks_completed, skills_used, visibility, show_on_profile, show_date_range_on_profile, entry_type, log_date, work_description, gps_location, gps_accuracy_meters, gps_captured_at, device_type, location_permission_status, verified_by_user_id";
 
 const sanitizeFileName = (fileName: string): string => {
   return fileName
@@ -120,15 +120,19 @@ const getWorkLogAccess = async (
     });
   }
 
-  if (!collaborator) {
-    throw new TRPCError({
-      code: "FORBIDDEN",
-      message: "You do not have access to this work log",
-    });
+  if (collaborator) {
+    const role = collaborator.permission_level === "edit" ? "editor" : "viewer";
+    return { workLog, role, collaborator };
   }
 
-  const role = collaborator.permission_level === "edit" ? "editor" : "viewer";
-  return { workLog, role, collaborator };
+  if (workLog.verified_by_user_id === userId) {
+    return { workLog, role: "editor" };
+  }
+
+  throw new TRPCError({
+    code: "FORBIDDEN",
+    message: "You do not have access to this work log",
+  });
 };
 
 const listCollaboratorSummaries = async (
@@ -151,6 +155,95 @@ const listCollaboratorSummaries = async (
   return (data ?? []) as Array<Pick<CollaboratorRow, "collaborator_user_id" | "permission_level">>;
 };
 
+const getConversationParticipants = async (
+  supabase: DbClient,
+  workLog: WorkLogRow,
+): Promise<{
+  participants: Set<string>;
+  collaboratorPermissions: Map<string, "view" | "edit">;
+}> => {
+  const participants = new Set<string>();
+  const collaboratorPermissions = new Map<string, "view" | "edit">();
+
+  participants.add(workLog.user_id);
+  collaboratorPermissions.set(workLog.user_id, "edit");
+
+  if (workLog.verified_by_user_id) {
+    participants.add(workLog.verified_by_user_id);
+    collaboratorPermissions.set(workLog.verified_by_user_id, "edit");
+  }
+
+  const collaboratorSummaries = await listCollaboratorSummaries(supabase, workLog.id);
+  for (const collaborator of collaboratorSummaries) {
+    participants.add(collaborator.collaborator_user_id);
+    collaboratorPermissions.set(
+      collaborator.collaborator_user_id,
+      collaborator.permission_level as "view" | "edit",
+    );
+  }
+
+  return { participants, collaboratorPermissions };
+};
+
+const notifyConversationParticipants = async (
+  supabase: DbClient,
+  workLog: WorkLogRow,
+  actorId: string,
+  preview: string,
+): Promise<void> => {
+  const { participants, collaboratorPermissions } = await getConversationParticipants(
+    supabase,
+    workLog,
+  );
+
+  participants.delete(actorId);
+
+  await Promise.all(
+    [...participants].map((recipientId) =>
+      notifyWorkLogCollaborator("comment", {
+        supabase,
+        recipientId,
+        actorId,
+        workLogId: workLog.id,
+        entryType: workLog.entry_type ?? "daily",
+        logDate: workLog.log_date,
+        permissionLevel: collaboratorPermissions.get(recipientId),
+        commentPreview: preview,
+      }),
+    ),
+  );
+};
+
+const createSystemMessage = async (
+  supabase: DbClient,
+  workLog: WorkLogRow,
+  actorId: string,
+  message: string,
+) => {
+  const { data, error } = await supabase
+    .schema("core")
+    .from("work_log_conversations")
+    .insert({
+      work_log_id: workLog.id,
+      user_id: actorId,
+      message,
+      is_system_message: true,
+    })
+    .select()
+    .single();
+
+  if (error || !data) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to record system message",
+    });
+  }
+
+  await notifyConversationParticipants(supabase, workLog, actorId, shorten(message));
+
+  return data;
+};
+
 const ensureCollaboratorExists = async (
   supabaseAdmin: SupabaseClient<Database>,
   userId: string,
@@ -167,6 +260,24 @@ const ensureCollaboratorExists = async (
 const shorten = (value: string, max = 140): string => {
   if (value.length <= max) return value;
   return `${value.slice(0, max - 1)}…`;
+};
+
+const getUserDisplayName = async (
+  supabase: DbClient,
+  userId: string,
+): Promise<string> => {
+  const { data } = await supabase
+    .schema("core")
+    .from("users")
+    .select("display_name, username")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (!data) {
+    return "System";
+  }
+
+  return data.display_name?.trim() || data.username?.trim() || "Member";
 };
 
 const recordAuditLog = async (
@@ -521,6 +632,16 @@ export const workLogsRouter = t.router({
         reason: input.forceSubmit ? "User elected to submit despite overlap warning." : input.reason ?? null,
       });
 
+      if (workLog.status === "disputed") {
+        const actorName = await getUserDisplayName(supabase, user.id);
+        await createSystemMessage(
+          supabase,
+          data,
+          user.id,
+          `Work log resubmitted for verification by ${actorName}`,
+        );
+      }
+
       return data;
     }),
 
@@ -577,6 +698,14 @@ export const workLogsRouter = t.router({
         oldValue: { status: workLog.status },
         newValue: { status: "verified" },
       });
+
+      const actorName = await getUserDisplayName(supabase, user.id);
+      await createSystemMessage(
+        supabase,
+        data,
+        user.id,
+        `Work log verified by ${actorName}`,
+      );
 
       return data;
     }),
@@ -643,6 +772,12 @@ export const workLogsRouter = t.router({
         newValue: { status: "disputed" },
         reason: input.disputeReason,
       });
+
+      const actorName = await getUserDisplayName(supabase, user.id);
+      const disputeMessage = input.disputeReason
+        ? `Work log disputed by ${actorName}: ${input.disputeReason}`
+        : `Work log disputed by ${actorName}`;
+      await createSystemMessage(supabase, data, user.id, disputeMessage);
 
       return data;
     }),
@@ -934,6 +1069,13 @@ export const workLogsRouter = t.router({
         user.id,
       );
 
+      if (workLog.status === "draft") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Conversations are not available while a work log is in draft.",
+        });
+      }
+
       const { data, error } = await supabase
         .schema("core")
         .from("work_log_conversations")
@@ -963,40 +1105,11 @@ export const workLogsRouter = t.router({
       });
 
       if (!input.isSystemMessage) {
-        const collaboratorSummaries = await listCollaboratorSummaries(
+        await notifyConversationParticipants(
           supabase,
-          input.workLogId,
-        );
-        const recipients = new Set<string>();
-        const collaboratorPermissions = new Map<string, "view" | "edit">();
-
-        for (const collaborator of collaboratorSummaries) {
-          recipients.add(collaborator.collaborator_user_id);
-          collaboratorPermissions.set(
-            collaborator.collaborator_user_id,
-            collaborator.permission_level as "view" | "edit",
-          );
-        }
-
-        recipients.add(workLog.user_id);
-        recipients.delete(user.id);
-
-        const preview = shorten(input.message.trim(), 140);
-
-        await Promise.all(
-          [...recipients].map((recipientId) =>
-            notifyWorkLogCollaborator("comment", {
-              supabase,
-              recipientId,
-              actorId: user.id,
-              workLogId: workLog.id,
-              entryType: workLog.entry_type ?? "daily",
-              logDate: workLog.log_date,
-              permissionLevel: collaboratorPermissions.get(recipientId) ??
-                (recipientId === workLog.user_id ? "edit" : undefined),
-              commentPreview: preview,
-            }),
-          ),
+          workLog,
+          user.id,
+          shorten(input.message, 140),
         );
       }
 
@@ -1431,6 +1544,43 @@ export const workLogsRouter = t.router({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to load collaborators",
+        });
+      }
+
+      return data ?? [];
+    }),
+
+  getConversation: protectedProcedure
+    .input(z.object({ workLogId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      if (!user?.id) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      await getWorkLogAccess(supabase, input.workLogId, user.id);
+
+      const { data, error } = await supabase
+        .schema("core")
+        .from("work_log_conversations")
+        .select(`
+          id,
+          work_log_id,
+          user_id,
+          message,
+          is_system_message,
+          created_at,
+          updated_at,
+          user:users(id, display_name, username, avatar_url)
+        `)
+        .eq("work_log_id", input.workLogId)
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load conversation",
         });
       }
 
