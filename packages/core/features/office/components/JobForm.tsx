@@ -277,6 +277,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         <YStack gap="$2">
           <Text fontWeight="600">Organization *</Text>
           <Select
+            data-testid="job-organization-select"
             value={formData.organization_id}
             onValueChange={(value: string) => setFormData({ ...formData, organization_id: value })}
           >
@@ -319,6 +320,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         <YStack gap="$2">
           <Text fontWeight="600">Job Title *</Text>
           <Input
+            data-testid="job-title-input"
             placeholder="e.g. Senior Construction Manager"
             value={formData.title}
             onChangeText={(text: string) => setFormData({ ...formData, title: text })}
@@ -330,6 +332,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         <YStack gap="$2">
           <Text fontWeight="600">Description *</Text>
           <TextArea
+            data-testid="job-description-input"
             placeholder="Describe the job role, responsibilities, and requirements..."
             value={formData.description}
             onChangeText={(text: string) => setFormData({ ...formData, description: text })}
@@ -342,6 +345,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         <YStack gap="$2">
           <Text fontWeight="600">Employment Type</Text>
           <Select
+            data-testid="job-employment-type-select"
             value={formData.employment_type || ''}
             onValueChange={(value: string) =>
               setFormData({ ...formData, employment_type: value || undefined })
@@ -386,6 +390,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         <YStack gap="$2">
           <Text fontWeight="600">Work Location</Text>
           <Select
+            data-testid="job-remote-option-select"
             value={formData.remote_option || ''}
             onValueChange={(value: string) =>
               setFormData({ ...formData, remote_option: value || undefined })
@@ -477,6 +482,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             <YStack gap="$2" flex={1}>
               <Text fontSize="$2">Min ($)</Text>
               <Input
+                data-testid="job-pay-min-input"
                 placeholder="Min"
                 keyboardType="numeric"
                 value={
@@ -494,6 +500,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             <YStack gap="$2" flex={1}>
               <Text fontSize="$2">Max ($)</Text>
               <Input
+                data-testid="job-pay-max-input"
                 placeholder="Max"
                 keyboardType="numeric"
                 value={
@@ -510,6 +517,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             </YStack>
           </XStack>
           <Select
+            data-testid="job-pay-type-select"
             value={formData.pay_range_type || ''}
             onValueChange={(value: string) =>
               setFormData({ ...formData, pay_range_type: value || undefined })
@@ -554,6 +562,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         <YStack gap="$2">
           <Text fontWeight="600">Position Level</Text>
           <Input
+            data-testid="job-position-level-input"
             placeholder="e.g. Senior, Mid-Level, Entry Level"
             value={formData.position_level}
             onChangeText={(text: string) => setFormData({ ...formData, position_level: text })}
@@ -671,10 +680,11 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
 
         {/* Actions */}
         <XStack gap="$3" pt="$4">
-          <Button flex={1} variant="outlined" onPress={() => router.back()} disabled={isLoading}>
+          <Button data-testid="job-cancel-button" flex={1} variant="outlined" onPress={() => router.back()} disabled={isLoading}>
             Cancel
           </Button>
           <Button
+            data-testid="job-save-draft-button"
             flex={1}
             onPress={() => handleSubmit(true)}
             disabled={
@@ -685,6 +695,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             {!isLoading && 'Save as Draft'}
           </Button>
           <Button
+            data-testid="job-publish-button"
             flex={1}
             themeInverse
             onPress={() => handleSubmit(false)}

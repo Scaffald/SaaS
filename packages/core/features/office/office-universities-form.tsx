@@ -176,7 +176,7 @@ export function OfficeUniversitiesForm({
         <XStack justify="space-between" items="center">
           <H4>{isEditing ? 'Edit University' : 'New University'}</H4>
           {isEditing && (
-            <Button size="$2" variant="outlined" onPress={onCancel} icon={X}>
+            <Button size="$2" variant="outlined" onPress={onCancel} icon={X} data-testid="cancel-button">
               Cancel
             </Button>
           )}
@@ -193,6 +193,7 @@ export function OfficeUniversitiesForm({
               control={control}
               render={({ field }) => (
                 <Input
+                  data-testid="university-name-input"
                   placeholder="e.g. Harvard University"
                   value={field.value}
                   onChangeText={(text) => handleNameChange(text, field.onChange)}
@@ -201,7 +202,7 @@ export function OfficeUniversitiesForm({
               )}
             />
             {errors.name && (
-              <Text color="$red10" fontSize="$2">
+              <Text data-testid="name-error" color="$red10" fontSize="$2">
                 {errors.name.message}
               </Text>
             )}
@@ -220,6 +221,7 @@ export function OfficeUniversitiesForm({
               control={control}
               render={({ field }) => (
                 <Input
+                  data-testid="university-slug-input"
                   placeholder="e.g. harvard-university"
                   value={field.value}
                   onChangeText={field.onChange}
@@ -228,7 +230,7 @@ export function OfficeUniversitiesForm({
               )}
             />
             {errors.slug && (
-              <Text color="$red10" fontSize="$2">
+              <Text data-testid="slug-error" color="$red10" fontSize="$2">
                 {errors.slug.message}
               </Text>
             )}
@@ -244,6 +246,7 @@ export function OfficeUniversitiesForm({
               control={control}
               render={({ field }) => (
                 <Input
+                  data-testid="university-country-input"
                   placeholder="e.g. United States"
                   value={field.value}
                   onChangeText={field.onChange}
@@ -252,7 +255,7 @@ export function OfficeUniversitiesForm({
               )}
             />
             {errors.country && (
-              <Text color="$red10" fontSize="$2">
+              <Text data-testid="country-error" color="$red10" fontSize="$2">
                 {errors.country.message}
               </Text>
             )}
@@ -271,6 +274,7 @@ export function OfficeUniversitiesForm({
               control={control}
               render={({ field }) => (
                 <Input
+                  data-testid="university-country-code-input"
                   placeholder="e.g. US"
                   value={field.value}
                   onChangeText={(text) => field.onChange(text.toUpperCase())}
@@ -280,7 +284,7 @@ export function OfficeUniversitiesForm({
               )}
             />
             {errors.alpha_two_code && (
-              <Text color="$red10" fontSize="$2">
+              <Text data-testid="country-code-error" color="$red10" fontSize="$2">
                 {errors.alpha_two_code.message}
               </Text>
             )}
@@ -297,6 +301,7 @@ export function OfficeUniversitiesForm({
               control={control}
               render={({ field }) => (
                 <Input
+                  data-testid="university-state-input"
                   placeholder="e.g. Massachusetts"
                   value={field.value}
                   onChangeText={field.onChange}
@@ -316,6 +321,7 @@ export function OfficeUniversitiesForm({
               control={control}
               render={({ field }) => (
                 <TextArea
+                  data-testid="university-domains-input"
                   placeholder="e.g. harvard.edu, hbs.edu"
                   value={field.value}
                   onChangeText={field.onChange}
@@ -336,6 +342,7 @@ export function OfficeUniversitiesForm({
               control={control}
               render={({ field }) => (
                 <TextArea
+                  data-testid="university-webpages-input"
                   placeholder="e.g. https://www.harvard.edu, https://www.hbs.edu"
                   value={field.value}
                   onChangeText={field.onChange}
@@ -348,11 +355,12 @@ export function OfficeUniversitiesForm({
           {/* Submit Button */}
           <XStack justify="flex-end" pt="$4" gap="$2">
             {isEditing && (
-              <Button variant="outlined" onPress={onCancel} disabled={isLoading}>
+              <Button variant="outlined" onPress={onCancel} disabled={isLoading} data-testid="cancel-button">
                 Cancel
               </Button>
             )}
             <Button
+              data-testid="save-button"
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}

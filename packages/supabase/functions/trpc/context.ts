@@ -27,7 +27,6 @@ console.log("Environment check:", {
  */
 export const createTRPCContext = async (opts: { req: Request }) => {
   const authorizationHeader = opts.req.headers.get("authorization");
-  console.log("Auth header present:", !!authorizationHeader);
 
   let userId: string | undefined;
   let userEmail: string | undefined;

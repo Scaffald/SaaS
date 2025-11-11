@@ -74,6 +74,7 @@ const createColumns = (
       return (
         <XStack gap="$2">
           <Button
+            data-testid={`user-edit-button-${user.id}`}
             size="$2"
             variant="outlined"
             icon={Pencil}
@@ -81,7 +82,7 @@ const createColumns = (
           >
             Edit
           </Button>
-          <DeleteButton itemName={displayName} itemType="user" onDelete={() => onDelete(user.id)} />
+          <DeleteButton data-testid={`user-delete-button-${user.id}`} itemName={displayName} itemType="user" onDelete={() => onDelete(user.id)} />
         </XStack>
       )
     },

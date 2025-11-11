@@ -134,13 +134,14 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
           <YStack gap="$2">
             <Text fontWeight="600">Name *</Text>
             <Input
+              testID="org-form-name"
               value={field.value}
               onChangeText={handleNameChange}
               placeholder="Enter organization name"
               borderColor={errors.name ? '$red8' : '$borderColor'}
             />
             {errors.name && (
-              <Text color="$red10" fontSize="$2">
+              <Text data-testid="name-error" color="$red10" fontSize="$2">
                 {errors.name.message}
               </Text>
             )}
@@ -156,6 +157,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
           <YStack gap="$2">
             <Text fontWeight="600">Slug *</Text>
             <Input
+              testID="org-form-slug"
               value={field.value}
               onChangeText={field.onChange}
               placeholder="organization-slug"
@@ -165,7 +167,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               URL-friendly identifier (lowercase, hyphens only)
             </Text>
             {errors.slug && (
-              <Text color="$red10" fontSize="$2">
+              <Text data-testid="slug-error" color="$red10" fontSize="$2">
                 {errors.slug.message}
               </Text>
             )}
@@ -189,7 +191,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
                 onValueChange={field.onChange}
                 disablePreventBodyScroll
               >
-                <Select.Trigger iconAfter={ChevronDown}>
+                <Select.Trigger testID="org-form-industry" iconAfter={ChevronDown}>
                   <Select.Value placeholder="Select an industry">
                     {selectedIndustry ? selectedIndustry.name : 'Select an industry'}
                   </Select.Value>
@@ -237,13 +239,14 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
           <YStack gap="$2">
             <Text fontWeight="600">Logo URL</Text>
             <Input
+              testID="org-form-logo-url"
               value={field.value || ''}
               onChangeText={field.onChange}
               placeholder="https://example.com/logo.png"
               borderColor={errors.logo_url ? '$red8' : '$borderColor'}
             />
             {errors.logo_url && (
-              <Text color="$red10" fontSize="$2">
+              <Text data-testid="logo-error" color="$red10" fontSize="$2">
                 {errors.logo_url.message}
               </Text>
             )}
@@ -259,7 +262,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
           <YStack gap="$2">
             <Text fontWeight="600">Visibility</Text>
             <Select value={field.value} onValueChange={field.onChange} disablePreventBodyScroll>
-              <Select.Trigger iconAfter={ChevronDown}>
+              <Select.Trigger testID="org-form-visibility" iconAfter={ChevronDown}>
                 <Select.Value placeholder="Select visibility" />
               </Select.Trigger>
 
@@ -299,23 +302,26 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         name="locations"
         control={control}
         render={({ field }) => (
-          <OrganizationLocationsInput
-            value={field.value}
-            onChange={field.onChange}
-            errors={errors.locations?.message}
-            disabled={isLoading}
-            provider="mapbox"
-            apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
-          />
+          <YStack data-testid="org-form-locations">
+            <OrganizationLocationsInput
+              value={field.value}
+              onChange={field.onChange}
+              errors={errors.locations?.message}
+              disabled={isLoading}
+              provider="mapbox"
+              apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
+            />
+          </YStack>
         )}
       />
 
       {/* Submit buttons */}
       <XStack justify="flex-end" gap="$2" mt="$4">
-        <Button variant="outlined" onPress={() => router.back()} disabled={isLoading}>
+        <Button testID="org-form-cancel-btn" variant="outlined" onPress={() => router.back()} disabled={isLoading}>
           Cancel
         </Button>
         <Button
+          testID="org-form-save-btn"
           onPress={handleSubmit(onSubmit)}
           disabled={!isDirty || isLoading}
           icon={isLoading ? <Spinner /> : undefined}

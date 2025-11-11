@@ -236,6 +236,33 @@ The iOS simulator will not make requests to localhost
 pnpm web -H $(pnpm get-local-ip-mac | head -n 1)
 ```
 
+### Playwright E2E Testing
+
+We provide Supabase authentication helpers for Playwright tests, similar to Clerk's `@clerk/playwright`:
+
+```bash
+# Install Playwright
+pnpm add -D @playwright/test
+pnpm exec playwright install
+
+# Run tests
+pnpm exec playwright test
+```
+
+**Quick Reference:**
+
+```typescript
+import { signInAsTestUser, signInAsAdmin, getBearerToken } from './tests/playwright-helpers/auth'
+
+// Login in tests
+await signInAsTestUser(page)
+
+// Get bearer token for API testing
+const token = await getBearerToken('user@example.com', 'password')
+```
+
+See [`tests/README.md`](./tests/README.md) for full documentation.
+
 ### EAS dev builds
 
 > [!IMPORTANT]  
