@@ -27,11 +27,18 @@ import {
   uploadWorkLogPhotoSchema,
   verifyWorkLogSchema,
 } from "../../_shared/work-log-schemas.ts";
+// @ts-ignore - Deno requires file extension
+import { notifyWorkLogCollaborator } from "../../_shared/work-log-notifications.ts";
 
 type DbClient = SupabaseClient<Database>;
+type WorkLogRow = Database["core"]["Tables"]["work_logs"]["Row"];
+type CollaboratorRow = Database["core"]["Tables"]["work_log_collaborators"]["Row"];
 
 const WORK_LOG_PHOTO_BUCKET = "work-log-photos";
 const SIGNED_UPLOAD_URL_TTL_SECONDS = 60 * 5;
+
+const WORK_LOG_SELECT =
+  "id, user_id, status, project_id, time_entries, tasks_completed, skills_used, visibility, show_on_profile, show_date_range_on_profile, entry_type, log_date, work_description, gps_location, gps_accuracy_meters, gps_captured_at, device_type, location_permission_status";
 
 const sanitizeFileName = (fileName: string): string => {
   return fileName
@@ -69,13 +76,11 @@ const intersectingEntries = (
 const fetchWorkLog = async (
   supabase: DbClient,
   workLogId: string,
-) => {
+): Promise<WorkLogRow> => {
   const { data, error } = await supabase
     .schema("core")
     .from("work_logs")
-    .select(
-      "id, user_id, status, project_id, time_entries, tasks_completed, skills_used, visibility, show_on_profile, show_date_range_on_profile, entry_type, log_date, work_description, gps_location, gps_accuracy_meters, gps_captured_at, device_type, location_permission_status",
-    )
+    .select(WORK_LOG_SELECT)
     .eq("id", workLogId)
     .single();
 
@@ -89,18 +94,18 @@ const fetchWorkLog = async (
   return data;
 };
 
-const ensureOwnerOrEditor = async (
+const getWorkLogAccess = async (
   supabase: DbClient,
   workLogId: string,
   userId: string,
-) => {
+): Promise<{ workLog: WorkLogRow; role: "owner" | "editor" | "viewer"; collaborator?: Pick<CollaboratorRow, "permission_level"> }> => {
   const workLog = await fetchWorkLog(supabase, workLogId);
 
   if (workLog.user_id === userId) {
-    return { workLog, permission: "owner" as const };
+    return { workLog, role: "owner" };
   }
 
-  const { data: collaborator } = await supabase
+  const { data: collaborator, error } = await supabase
     .schema("core")
     .from("work_log_collaborators")
     .select("permission_level")
@@ -108,14 +113,60 @@ const ensureOwnerOrEditor = async (
     .eq("collaborator_user_id", userId)
     .maybeSingle();
 
-  if (collaborator?.permission_level === "edit") {
-    return { workLog, permission: "editor" as const };
+  if (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to verify collaborator access",
+    });
   }
 
-  throw new TRPCError({
-    code: "FORBIDDEN",
-    message: "You do not have permission to modify this work log",
-  });
+  if (!collaborator) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "You do not have access to this work log",
+    });
+  }
+
+  const role = collaborator.permission_level === "edit" ? "editor" : "viewer";
+  return { workLog, role, collaborator };
+};
+
+const listCollaboratorSummaries = async (
+  supabase: DbClient,
+  workLogId: string,
+): Promise<Array<Pick<CollaboratorRow, "collaborator_user_id" | "permission_level">>> => {
+  const { data, error } = await supabase
+    .schema("core")
+    .from("work_log_collaborators")
+    .select("collaborator_user_id, permission_level")
+    .eq("work_log_id", workLogId);
+
+  if (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to load collaborators",
+    });
+  }
+
+  return (data ?? []) as Array<Pick<CollaboratorRow, "collaborator_user_id" | "permission_level">>;
+};
+
+const ensureCollaboratorExists = async (
+  supabaseAdmin: SupabaseClient<Database>,
+  userId: string,
+): Promise<void> => {
+  const { data, error } = await supabaseAdmin.auth.admin.getUserById(userId);
+  if (error || !data?.user) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Collaborator user not found",
+    });
+  }
+};
+
+const shorten = (value: string, max = 140): string => {
+  if (value.length <= max) return value;
+  return `${value.slice(0, max - 1)}…`;
 };
 
 const recordAuditLog = async (
@@ -259,11 +310,18 @@ export const workLogsRouter = t.router({
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
-      const { workLog, permission } = await ensureOwnerOrEditor(
+      const { workLog, role } = await getWorkLogAccess(
         supabase,
         input.workLogId,
         user.id,
       );
+
+      if (role === "viewer") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You do not have permission to edit this work log.",
+        });
+      }
 
       if (workLog.status !== "draft" && !input.reason) {
         throw new TRPCError({
@@ -359,7 +417,7 @@ export const workLogsRouter = t.router({
 
       return {
         workLog: data,
-        permission,
+        permission: role,
       };
     }),
 
@@ -592,32 +650,66 @@ export const workLogsRouter = t.router({
   addCollaborator: protectedProcedure
     .input(addCollaboratorSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, supabaseAdmin, user } = ctx;
 
       if (!user?.id) {
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
-      const workLog = await fetchWorkLog(supabase, input.workLogId);
+      const { workLog, role } = await getWorkLogAccess(
+        supabase,
+        input.workLogId,
+        user.id,
+      );
 
-      if (workLog.user_id !== user.id) {
+      if (role !== "owner") {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Only the owner can manage collaborators.",
         });
       }
 
+      if (input.collaboratorUserId === workLog.user_id) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "You are already the owner of this work log.",
+        });
+      }
+
+      await ensureCollaboratorExists(supabaseAdmin, input.collaboratorUserId);
+
+      const permissionLevel = input.permissionLevel ?? "view";
+
+      const { data: existing, error: existingError } = await supabase
+        .schema("core")
+        .from("work_log_collaborators")
+        .select("*")
+        .eq("work_log_id", input.workLogId)
+        .eq("collaborator_user_id", input.collaboratorUserId)
+        .maybeSingle();
+
+      if (existingError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to verify collaborator status",
+        });
+      }
+
+      if (existing) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Collaborator already added to this work log.",
+        });
+      }
+
       const { data, error } = await supabase
         .schema("core")
         .from("work_log_collaborators")
-        .upsert(
-          {
-            work_log_id: input.workLogId,
-            collaborator_user_id: input.collaboratorUserId,
-            permission_level: input.permissionLevel ?? "view",
-          },
-          { onConflict: "work_log_id,collaborator_user_id" },
-        )
+        .insert({
+          work_log_id: input.workLogId,
+          collaborator_user_id: input.collaboratorUserId,
+          permission_level: permissionLevel,
+        })
         .select()
         .single();
 
@@ -634,8 +726,18 @@ export const workLogsRouter = t.router({
         action: "collaborator_added",
         newValue: {
           collaborator_user_id: input.collaboratorUserId,
-          permission_level: input.permissionLevel ?? "view",
+          permission_level: permissionLevel,
         },
+      });
+
+      await notifyWorkLogCollaborator("added", {
+        supabase,
+        recipientId: input.collaboratorUserId,
+        actorId: user.id,
+        workLogId: workLog.id,
+        entryType: workLog.entry_type ?? "daily",
+        logDate: workLog.log_date,
+        permissionLevel,
       });
 
       return data;
@@ -650,13 +752,43 @@ export const workLogsRouter = t.router({
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
-      const workLog = await fetchWorkLog(supabase, input.workLogId);
+      const { workLog, role } = await getWorkLogAccess(
+        supabase,
+        input.workLogId,
+        user.id,
+      );
 
-      if (workLog.user_id !== user.id) {
+      if (role !== "owner") {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Only the owner can manage collaborators.",
         });
+      }
+
+      const { data: existing, error: existingError } = await supabase
+        .schema("core")
+        .from("work_log_collaborators")
+        .select("*")
+        .eq("work_log_id", input.workLogId)
+        .eq("collaborator_user_id", input.collaboratorUserId)
+        .maybeSingle();
+
+      if (existingError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load collaborator",
+        });
+      }
+
+      if (!existing) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Collaborator not found on this work log.",
+        });
+      }
+
+      if (existing.permission_level === input.permissionLevel) {
+        return existing;
       }
 
       const { data, error } = await supabase
@@ -688,6 +820,16 @@ export const workLogsRouter = t.router({
         },
       });
 
+      await notifyWorkLogCollaborator("permission_changed", {
+        supabase,
+        recipientId: input.collaboratorUserId,
+        actorId: user.id,
+        workLogId: workLog.id,
+        entryType: workLog.entry_type ?? "daily",
+        logDate: workLog.log_date,
+        permissionLevel: input.permissionLevel,
+      });
+
       return data;
     }),
 
@@ -705,12 +847,38 @@ export const workLogsRouter = t.router({
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
-      const workLog = await fetchWorkLog(supabase, input.workLogId);
+      const { workLog, role } = await getWorkLogAccess(
+        supabase,
+        input.workLogId,
+        user.id,
+      );
 
-      if (workLog.user_id !== user.id) {
+      if (role !== "owner") {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Only the owner can manage collaborators.",
+        });
+      }
+
+      const { data: existing, error: existingError } = await supabase
+        .schema("core")
+        .from("work_log_collaborators")
+        .select("*")
+        .eq("work_log_id", input.workLogId)
+        .eq("collaborator_user_id", input.collaboratorUserId)
+        .maybeSingle();
+
+      if (existingError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load collaborator",
+        });
+      }
+
+      if (!existing) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Collaborator not found on this work log.",
         });
       }
 
@@ -734,7 +902,18 @@ export const workLogsRouter = t.router({
         action: "edit",
         oldValue: {
           collaborator_user_id: input.collaboratorUserId,
+          permission_level: existing.permission_level,
         },
+      });
+
+      await notifyWorkLogCollaborator("removed", {
+        supabase,
+        recipientId: input.collaboratorUserId,
+        actorId: user.id,
+        workLogId: workLog.id,
+        entryType: workLog.entry_type ?? "daily",
+        logDate: workLog.log_date,
+        permissionLevel: existing.permission_level as "view" | "edit",
       });
 
       return { success: true };
@@ -749,7 +928,11 @@ export const workLogsRouter = t.router({
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
-      await ensureOwnerOrEditor(supabase, input.workLogId, user.id);
+      const { workLog } = await getWorkLogAccess(
+        supabase,
+        input.workLogId,
+        user.id,
+      );
 
       const { data, error } = await supabase
         .schema("core")
@@ -779,6 +962,44 @@ export const workLogsRouter = t.router({
         },
       });
 
+      if (!input.isSystemMessage) {
+        const collaboratorSummaries = await listCollaboratorSummaries(
+          supabase,
+          input.workLogId,
+        );
+        const recipients = new Set<string>();
+        const collaboratorPermissions = new Map<string, "view" | "edit">();
+
+        for (const collaborator of collaboratorSummaries) {
+          recipients.add(collaborator.collaborator_user_id);
+          collaboratorPermissions.set(
+            collaborator.collaborator_user_id,
+            collaborator.permission_level as "view" | "edit",
+          );
+        }
+
+        recipients.add(workLog.user_id);
+        recipients.delete(user.id);
+
+        const preview = shorten(input.message.trim(), 140);
+
+        await Promise.all(
+          [...recipients].map((recipientId) =>
+            notifyWorkLogCollaborator("comment", {
+              supabase,
+              recipientId,
+              actorId: user.id,
+              workLogId: workLog.id,
+              entryType: workLog.entry_type ?? "daily",
+              logDate: workLog.log_date,
+              permissionLevel: collaboratorPermissions.get(recipientId) ??
+                (recipientId === workLog.user_id ? "edit" : undefined),
+              commentPreview: preview,
+            }),
+          ),
+        );
+      }
+
       return data;
     }),
 
@@ -791,27 +1012,17 @@ export const workLogsRouter = t.router({
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
-      const { permission } = await ensureOwnerOrEditor(
+      const { workLog, role } = await getWorkLogAccess(
         supabase,
         input.workLogId,
         user.id,
       );
 
-      if (permission === "editor") {
-        const { data: collaborator } = await supabase
-          .schema("core")
-          .from("work_log_collaborators")
-          .select("permission_level")
-          .eq("work_log_id", input.workLogId)
-          .eq("collaborator_user_id", user.id)
-          .single();
-
-        if (collaborator?.permission_level !== "edit") {
-          throw new TRPCError({
-            code: "FORBIDDEN",
-            message: "You do not have permission to upload photos for this work log.",
-          });
-        }
+      if (role === "viewer") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You do not have permission to upload photos for this work log.",
+        });
       }
 
       const { data: usage } = await supabase
@@ -941,6 +1152,19 @@ export const workLogsRouter = t.router({
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
+      const { workLog, role } = await getWorkLogAccess(
+        supabase,
+        input.workLogId,
+        user.id,
+      );
+
+      if (role !== "owner") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only the owner can change photo visibility.",
+        });
+      }
+
       const { data: photo, error: photoError } = await supabase
         .schema("core")
         .from("work_log_photos")
@@ -948,14 +1172,12 @@ export const workLogsRouter = t.router({
         .eq("id", input.photoId)
         .single();
 
-      if (photoError || !photo) {
+      if (photoError || !photo || photo.work_log_id !== workLog.id) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Work log photo not found",
         });
       }
-
-      await ensureOwnerOrEditor(supabase, photo.work_log_id, user.id);
 
       const { data, error } = await supabase
         .schema("core")
@@ -995,9 +1217,13 @@ export const workLogsRouter = t.router({
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
-      const workLog = await fetchWorkLog(supabase, input.workLogId);
+      const { workLog, role } = await getWorkLogAccess(
+        supabase,
+        input.workLogId,
+        user.id,
+      );
 
-      if (workLog.user_id !== user.id) {
+      if (role !== "owner") {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Only the owner can update profile visibility.",
@@ -1060,9 +1286,13 @@ export const workLogsRouter = t.router({
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
-      const workLog = await fetchWorkLog(supabase, input.workLogId);
+      const { workLog, role } = await getWorkLogAccess(
+        supabase,
+        input.workLogId,
+        user.id,
+      );
 
-      if (workLog.user_id !== user.id) {
+      if (role !== "owner") {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Only the owner can move a work log between projects.",
@@ -1131,6 +1361,21 @@ export const workLogsRouter = t.router({
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
+      if (input.workLogId) {
+        const { role } = await getWorkLogAccess(
+          supabase,
+          input.workLogId,
+          user.id,
+        );
+
+        if (role !== "owner") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Only the owner can check for time overlaps.",
+          });
+        }
+      }
+
       const { data: workLogs } = await supabase
         .schema("core")
         .from("work_logs")
@@ -1154,6 +1399,42 @@ export const workLogsRouter = t.router({
         hasConflicts: conflicts.length > 0,
         conflicts,
       };
+    }),
+
+  getCollaborators: protectedProcedure
+    .input(z.object({ workLogId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      if (!user?.id) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      await getWorkLogAccess(supabase, input.workLogId, user.id);
+
+      const { data, error } = await supabase
+        .schema("core")
+        .from("work_log_collaborators")
+        .select(`
+          id,
+          work_log_id,
+          collaborator_user_id,
+          permission_level,
+          invited_at,
+          created_at,
+          user:users(id, display_name, username, avatar_url)
+        `)
+        .eq("work_log_id", input.workLogId)
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load collaborators",
+        });
+      }
+
+      return data ?? [];
     }),
 
   getById: publicProcedure
