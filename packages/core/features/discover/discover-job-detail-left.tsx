@@ -4,6 +4,8 @@ import { ApplicationWizard } from '@app/core/features/applications/components'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 import { ROUTES } from '@app/core/constants/routes'
+import { useEffect } from 'react'
+import { captureEvent } from '@app/core/utils/analytics/client'
 
 interface DiscoverJobDetailLeftProps {
   jobId: string
@@ -34,6 +36,17 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   const externalJob = externalJobs?.jobs?.find((j: { id: string }) => j.id === jobId)
   const job = internalJob || externalJob
   const isExternal = !!externalJob
+
+  useEffect(() => {
+    if (job) {
+      captureEvent('job_viewed', {
+        job_id: job.id,
+        is_external: isExternal,
+        organization_id:
+          !isExternal && 'organization' in job ? job.organization?.id ?? null : null,
+      })
+    }
+  }, [job, isExternal])
 
   if (isLoading) {
     return (
@@ -99,6 +112,10 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           theme="info"
           icon={ExternalLink}
           onPress={() => {
+            captureEvent('job_external_link_clicked', {
+              job_id: job.id,
+              url: job.url || null,
+            })
             if (job.url) {
               // Open external URL
               if (typeof window !== 'undefined') {

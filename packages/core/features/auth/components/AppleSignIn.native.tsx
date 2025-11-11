@@ -1,5 +1,6 @@
 import { initiateAppleSignIn } from '@app/core/utils/auth/initiateAppleSignIn'
 import { supabase } from '@app/core/utils/supabase/client'
+import { captureEvent } from '@app/core/utils/analytics/client'
 import * as AppleAuthentication from 'expo-apple-authentication'
 import { Platform } from 'react-native'
 import { useRouter } from 'expo-router'
@@ -9,6 +10,7 @@ export function AppleSignIn() {
   const router = useRouter()
   async function signInWithApple() {
     try {
+      captureEvent('auth_social_sign_in_started', { provider: 'apple' })
       const { token, nonce } = await initiateAppleSignIn()
       const { error } = await supabase.auth.signInWithIdToken({
         provider: 'apple',
@@ -18,6 +20,14 @@ export function AppleSignIn() {
       if (!error) router.replace('/')
       if (error) throw error
     } catch (e) {
+      const errorCode =
+        typeof e === 'object' && e && 'code' in e ? String((e as { code: unknown }).code) : e instanceof Error ? e.name : 'unknown'
+      const errorMessage = e instanceof Error ? e.message : null
+      captureEvent('auth_social_sign_in_failed', {
+        provider: 'apple',
+        error_code: errorCode,
+        message: errorMessage,
+      })
       if (e instanceof Error && 'code' in e) {
         if (e.code === 'ERR_REQUEST_CANCELED') {
           // handle if the user canceled the sign-in flow

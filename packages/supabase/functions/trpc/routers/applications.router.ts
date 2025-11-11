@@ -8,6 +8,7 @@ import {
   applicationUpdateSchema,
   fileUploadSchema,
 } from "../../_shared/application-schemas.ts";
+import { trackServerEvent } from "../../_shared/analytics.ts";
 import { t } from "../middleware.ts";
 
 const publicProcedure = t.procedure;
@@ -110,6 +111,18 @@ export const applicationsRouter = router({
           cause: error,
         });
       }
+
+      const attachmentsCount = Array.isArray(application.attachments)
+        ? application.attachments.length
+        : Object.keys(application.attachments || {}).length;
+
+      await trackServerEvent(user.id, "application_submitted", {
+        application_id: application.id,
+        job_id: input.job_id,
+        is_complete: application.is_complete,
+        has_screening_answers: Boolean(input.screening_answers && Object.keys(input.screening_answers).length > 0),
+        attachments_count: attachmentsCount,
+      });
 
       // Scoring and auto-rejection will be handled by database triggers
 

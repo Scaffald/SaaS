@@ -1,11 +1,26 @@
 import 'dotenv/config'
 
+const APP_ENV = process.env.APP_ENV || 'development'
 // Load environment-specific variables
-const IS_DEV = process.env.APP_ENV === 'development'
-const IS_STAGING = process.env.APP_ENV === 'staging'
-const IS_PRODUCTION = process.env.APP_ENV === 'production'
+const IS_DEV = APP_ENV === 'development'
+const IS_STAGING = APP_ENV === 'staging'
+const IS_PRODUCTION = APP_ENV === 'production'
 const APP_VERSION = process.env.APP_VERSION || '1.0.0'
 const SENTRY_RELEASE = process.env.SENTRY_RELEASE || `scf-neue@${APP_VERSION}`
+
+const posthogKeyByEnv = {
+  development: process.env.POSTHOG_KEY_DEV,
+  staging: process.env.POSTHOG_KEY_STAGING,
+  production: process.env.POSTHOG_KEY_PROD,
+}
+
+const POSTHOG_KEY = process.env.POSTHOG_KEY || posthogKeyByEnv[APP_ENV] || ''
+const POSTHOG_HOST = process.env.POSTHOG_HOST || 'https://app.posthog.com'
+
+const IOS_BUNDLE_BASE = 'com.scaffald.app'
+const ANDROID_PACKAGE_BASE = 'com.scaffald.app'
+const iosBundleIdentifier = IS_PRODUCTION ? IOS_BUNDLE_BASE : `${IOS_BUNDLE_BASE}.${APP_ENV}`
+const androidPackage = IS_PRODUCTION ? ANDROID_PACKAGE_BASE : `${ANDROID_PACKAGE_BASE}.${APP_ENV}`
 
 // Load production environment variables if in production mode
 if (IS_PRODUCTION) {
@@ -14,11 +29,11 @@ if (IS_PRODUCTION) {
 
 export default {
   expo: {
-    name: IS_PRODUCTION ? 'SCF-Neue' : `SCF-Neue (${process.env.APP_ENV || 'dev'})`,
+    name: IS_PRODUCTION ? 'SCF-Neue' : `SCF-Neue (${APP_ENV})`,
     slug: 'scf-neue',
     jsEngine: 'hermes',
     scheme: 'myapp',
-    version: '1.0.0',
+    version: APP_VERSION,
     orientation: 'portrait',
     icon: './assets/icon.png',
     userInterfaceStyle: 'automatic',
@@ -34,7 +49,7 @@ export default {
     assetBundlePatterns: ['**/*'],
     ios: {
       supportsTablet: true,
-      bundleIdentifier: 'com.scaffald.app',
+      bundleIdentifier: iosBundleIdentifier,
       buildNumber: '6',
       infoPlist: {
         UIBackgroundModes: ['location', 'fetch', 'remote-notification'],
@@ -50,7 +65,7 @@ export default {
         foregroundImage: './assets/adaptive-icon.png',
         backgroundColor: '#FFFFFF',
       },
-      package: 'com.scaffald.app',
+      package: androidPackage,
       permissions: ['android.permission.RECORD_AUDIO'],
       versionCode: 3,
     },
@@ -142,6 +157,16 @@ export default {
         styleURL: process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL,
         apiBaseUrl: process.env.EXPO_PUBLIC_MAPBOX_API_URL,
       },
+      analytics: {
+        posthog: {
+          host: POSTHOG_HOST,
+          key: POSTHOG_KEY,
+          env: APP_ENV,
+        },
+      },
+      appEnv: APP_ENV,
+      posthogHost: POSTHOG_HOST,
+      posthogKey: POSTHOG_KEY,
       sentryRelease: SENTRY_RELEASE,
     },
     hooks: {

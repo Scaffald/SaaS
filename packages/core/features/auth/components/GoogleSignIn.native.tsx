@@ -1,6 +1,7 @@
 import { Button } from 'tamagui'
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin'
 import { supabase } from '@app/core/utils/supabase/client'
+import { captureEvent } from '@app/core/utils/analytics/client'
 import { useRouter } from 'expo-router'
 
 import { IconGoogle } from './IconGoogle'
@@ -11,6 +12,7 @@ export function GoogleSignIn() {
 
   async function signInWithGoogle() {
     try {
+      captureEvent('auth_social_sign_in_started', { provider: 'google' })
       GoogleSignin.configure({
         iosClientId: process.env.GOOGLE_IOS_CLIENT_ID,
         webClientId: process.env.GOOGLE_WEB_CLIENT_ID,
@@ -36,6 +38,18 @@ export function GoogleSignIn() {
         throw new Error('no ID token present!')
       }
     } catch (error) {
+      const errorCode =
+        typeof error === 'object' && error && 'code' in error
+          ? String((error as { code: unknown }).code)
+          : error instanceof Error
+            ? error.name
+            : 'unknown'
+      const errorMessage = error instanceof Error ? error.message : null
+      captureEvent('auth_social_sign_in_failed', {
+        provider: 'google',
+        error_code: errorCode,
+        message: errorMessage,
+      })
       if (error && typeof error === 'object' && 'code' in error) {
         if (error.code === statusCodes.SIGN_IN_CANCELLED) {
           // user cancelled the login flow

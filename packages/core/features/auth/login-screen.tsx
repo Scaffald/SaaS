@@ -18,6 +18,8 @@ import type { AuthChangeEvent } from '@supabase/supabase-js'
 import { supabase } from '@app/core/utils/supabase/client'
 import { z } from 'zod'
 import { SocialLogin } from './components/SocialLogin'
+import { captureEvent } from '@app/core/utils/analytics/client'
+import { captureEventWithQueue } from '@app/core/utils/analytics/queue'
 import { api } from '@app/core/utils/api'
 import { TRPCClientError } from '@trpc/client'
 
@@ -54,20 +56,28 @@ export const LoginScreen = () => {
     console.log('Sending magic link for:', data.email)
     setIsSubmitting(true)
 
+    const trimmedEmail = data.email?.trim()
+
+    if (!trimmedEmail) {
+      form.setError('email', { type: 'custom', message: 'Email is required' })
+      setIsSubmitting(false)
+      return
+    }
+
+    const normalizedEmail = trimmedEmail.toLowerCase()
+    const emailDomain = normalizedEmail.includes('@') ? normalizedEmail.split('@')[1] ?? 'unknown' : 'unknown'
+
     try {
-      // Additional validation to ensure email is present
-      if (!data.email || data.email.trim() === '') {
-        form.setError('email', { type: 'custom', message: 'Email is required' })
-        return
-      }
-
-      const normalizedEmail = data.email.trim().toLowerCase()
-
       const redirectTo = process.env.EXPO_PUBLIC_URL
 
       const result = await requestMagicLink.mutateAsync({
         email: normalizedEmail,
         redirectTo,
+      })
+
+      await captureEventWithQueue('auth_magic_link_requested', {
+        email_domain: emailDomain,
+        mode: result?.mode ?? null,
       })
 
       console.log('Magic link sent successfully!')
@@ -78,6 +88,16 @@ export const LoginScreen = () => {
       })
     } catch (error) {
       console.error('Error sending magic link:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      const errorCode =
+        error instanceof TRPCClientError ? error.data?.code ?? error.name : error instanceof Error ? error.name : 'unknown'
+
+      captureEvent('auth_magic_link_failed', {
+        email_domain: emailDomain || null,
+        error_code: errorCode ?? null,
+        message: errorMessage ?? null,
+      })
+
       if (error instanceof TRPCClientError) {
         const lowerMessage = error.message.toLowerCase()
         if (lowerMessage.includes('email')) {
