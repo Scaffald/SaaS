@@ -3,6 +3,15 @@ import { z } from "zod";
 
 import { officeProcedure, protectedProcedure, publicProcedure, t } from "../middleware.ts";
 import type { Context } from "../context.ts";
+import { recordTeamAuditLog } from "../../_shared/team-audit-log.ts";
+import {
+  TeamPermissions,
+  type TeamPermissionKey,
+  checkTeamPermission,
+  isOrganizationAdminRole,
+  isSuperAdmin,
+  loadUserRoleAssignments,
+} from "../../_shared/permissions/team-permissions.ts";
 import {
   TEAM_INVITATION_TTL_DEFAULT,
   TEAM_MEMBER_STATUSES,
@@ -60,26 +69,47 @@ const BASE_TEAM_ROLES: ReadonlyArray<{
   },
 ];
 
-const ROLE_PERMISSIONS: Record<string, ReadonlyArray<string>> = {
+const ROLE_PERMISSIONS: Record<string, ReadonlyArray<TeamPermissionKey>> = {
   admin: [
-    "team.manage",
-    "team.members.manage",
-    "team.roles.manage",
-    "team.invitations.manage",
-    "team.analytics.view",
-    "applications.manage",
-    "applications.review",
+    TeamPermissions.VIEW,
+    TeamPermissions.MANAGE,
+    TeamPermissions.MANAGE_MEMBERS,
+    TeamPermissions.MANAGE_ROLES,
+    TeamPermissions.MANAGE_INVITATIONS,
+    TeamPermissions.VIEW_ANALYTICS,
+    TeamPermissions.MANAGE_APPLICATIONS,
+    TeamPermissions.REVIEW_APPLICATIONS,
+    TeamPermissions.VIEW_APPLICATIONS,
+    TeamPermissions.PARTICIPATE_DISCUSSION,
   ],
   lead: [
-    "team.members.manage",
-    "team.invitations.manage",
-    "team.analytics.view",
-    "applications.manage",
-    "applications.review",
+    TeamPermissions.VIEW,
+    TeamPermissions.MANAGE_MEMBERS,
+    TeamPermissions.MANAGE_INVITATIONS,
+    TeamPermissions.VIEW_ANALYTICS,
+    TeamPermissions.MANAGE_APPLICATIONS,
+    TeamPermissions.REVIEW_APPLICATIONS,
+    TeamPermissions.VIEW_APPLICATIONS,
+    TeamPermissions.PARTICIPATE_DISCUSSION,
   ],
-  recruiter: ["applications.manage", "applications.review", "team.discussion.participate"],
-  reviewer: ["applications.review", "team.discussion.participate"],
-  member: ["team.applications.view", "team.discussion.participate"],
+  recruiter: [
+    TeamPermissions.VIEW,
+    TeamPermissions.MANAGE_APPLICATIONS,
+    TeamPermissions.REVIEW_APPLICATIONS,
+    TeamPermissions.VIEW_APPLICATIONS,
+    TeamPermissions.PARTICIPATE_DISCUSSION,
+  ],
+  reviewer: [
+    TeamPermissions.VIEW,
+    TeamPermissions.REVIEW_APPLICATIONS,
+    TeamPermissions.VIEW_APPLICATIONS,
+    TeamPermissions.PARTICIPATE_DISCUSSION,
+  ],
+  member: [
+    TeamPermissions.VIEW,
+    TeamPermissions.VIEW_APPLICATIONS,
+    TeamPermissions.PARTICIPATE_DISCUSSION,
+  ],
 };
 
 const nowIso = () => new Date().toISOString();
@@ -361,6 +391,70 @@ async function resolveRoleId(options: {
   return undefined;
 }
 
+async function ensureOrganizationTeamPermission({
+  ctx,
+  organizationId,
+  permission,
+}: {
+  ctx: Context;
+  organizationId: string;
+  permission: TeamPermissionKey;
+}) {
+  const { supabaseAdmin, user } = ctx;
+
+  if (!user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  await ensureOrganizationRoles(supabaseAdmin, organizationId);
+
+  const result = await checkTeamPermission({
+    supabaseAdmin,
+    userId: user.id,
+    organizationId,
+    permission,
+  });
+
+  if (!result.allowed) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "You do not have permission to manage teams for this organization.",
+    });
+  }
+}
+
+async function ensureTeamActionPermission({
+  ctx,
+  team,
+  permission,
+}: {
+  ctx: Context;
+  team: { id: string; organization_id: string };
+  permission: TeamPermissionKey;
+}) {
+  const { supabaseAdmin, user } = ctx;
+
+  if (!user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  await ensureOrganizationRoles(supabaseAdmin, team.organization_id);
+
+  const result = await checkTeamPermission({
+    supabaseAdmin,
+    userId: user.id,
+    team,
+    permission,
+  });
+
+  if (!result.allowed) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "You do not have permission to perform this action on the team.",
+    });
+  }
+}
+
 function buildMembersRouter(procedure: AuthenticatedProcedure) {
   return t.router({
     roles: procedure
@@ -376,21 +470,32 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           ),
       )
       .query(async ({ ctx, input }) => {
-        const { supabase, supabaseAdmin } = ctx;
+        const { supabaseAdmin } = ctx;
 
         let organizationId = input.organizationId ?? null;
-        if (!organizationId && input.teamId) {
-          const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
+        let team: { id: string; organization_id: string } | null = null;
+
+        if (input.teamId) {
+          team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
           organizationId = team.organization_id;
+          await ensureTeamActionPermission({
+            ctx,
+            team,
+            permission: TeamPermissions.MANAGE_ROLES,
+          });
+        } else if (organizationId) {
+          await ensureOrganizationTeamPermission({
+            ctx,
+            organizationId,
+            permission: TeamPermissions.MANAGE_ROLES,
+          });
         }
 
         if (!organizationId) {
           throw new TRPCError({ code: "BAD_REQUEST", message: "Unable to resolve organization for team roles" });
         }
 
-        await ensureOrganizationRoles(supabaseAdmin, organizationId);
-
-        const { data, error } = await supabase
+        const { data, error } = await supabaseAdmin
           .schema("core")
           .from("team_roles")
           .select("id, key, name, description, is_default, is_system")
@@ -419,9 +524,16 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
     list: procedure
       .input(z.object({ teamId: teamIdSchema }))
       .query(async ({ ctx, input }) => {
-        const { supabase } = ctx;
+        const { supabaseAdmin } = ctx;
 
-        const { data, error } = await supabase
+        const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
+        await ensureTeamActionPermission({
+          ctx,
+          team,
+          permission: TeamPermissions.VIEW,
+        });
+
+        const { data, error } = await supabaseAdmin
           .schema("core")
           .from("team_members")
           .select(
@@ -459,7 +571,11 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
     add: procedure
       .input(teamMemberAddSchema)
       .mutation(async ({ ctx, input }) => {
-        const { supabaseAdmin } = ctx;
+        const { supabaseAdmin, user } = ctx;
+
+        if (!user) {
+          throw new TRPCError({ code: "UNAUTHORIZED" });
+        }
         const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
 
         if (team.is_archived) {
@@ -468,6 +584,12 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
             message: "Cannot add members to an archived team",
           });
         }
+
+        await ensureTeamActionPermission({
+          ctx,
+          team,
+          permission: TeamPermissions.MANAGE_MEMBERS,
+        });
 
         const resolvedRoleId = await resolveRoleId({
           supabaseAdmin,
@@ -491,7 +613,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           user_id: input.userId,
           role_id: resolvedRoleId,
           status,
-          invited_by: input.addedBy ?? user?.id ?? null,
+          invited_by: input.addedBy ?? user.id,
           joined_at: status === "active" ? nowIso() : null,
           metadata: input.metadata ?? {},
         };
@@ -523,7 +645,21 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        return { member: transformMember(data as Record<string, any>) };
+        const member = transformMember(data as Record<string, any>);
+
+        await recordTeamAuditLog({
+          supabaseAdmin,
+          teamId: input.teamId,
+          action: status === "active" ? "joined" : "invited",
+          actorUserId: user.id,
+          memberUserId: member.userId ?? null,
+          metadata: {
+            method: "manual_add",
+            status,
+          },
+        });
+
+        return { member };
       }),
 
     update: procedure
@@ -531,23 +667,59 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
       .mutation(async ({ ctx, input }) => {
         const { supabaseAdmin, user } = ctx;
 
+        if (!user) {
+          throw new TRPCError({ code: "UNAUTHORIZED" });
+        }
+
+        const { data: existingMember, error: existingError } = await supabaseAdmin
+          .schema("core")
+          .from("team_members")
+          .select(
+            `
+            id,
+            team_id,
+            user_id,
+            role_id,
+            status,
+            metadata,
+            role:team_roles(id, key, name)
+          `,
+          )
+          .eq("id", input.teamMemberId)
+          .single();
+
+        if (existingError || !existingMember) {
+          throw new TRPCError({
+            code: existingError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+            message: existingError ? `Failed to load team member: ${existingError.message}` : "Team member not found",
+          });
+        }
+
+        const teamId = existingMember.team_id as string;
+
+        if (input.teamId && input.teamId !== teamId) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "teamId does not match the member's team",
+          });
+        }
+
+        const team = await fetchTeamOrThrow(supabaseAdmin, teamId);
+        await ensureTeamActionPermission({
+          ctx,
+          team,
+          permission: TeamPermissions.MANAGE_MEMBERS,
+        });
+
         const updates: Record<string, unknown> = {};
 
         if (input.roleId || input.roleKey) {
-          if (!input.teamId) {
-            throw new TRPCError({
-              code: "BAD_REQUEST",
-              message: "teamId is required when updating a role",
-            });
-          }
-
-          const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
           const resolvedRoleId = await resolveRoleId({
             supabaseAdmin,
             organizationId: team.organization_id,
             roleId: input.roleId,
             roleKey: input.roleKey,
-            teamId: input.teamId,
+            teamId,
           });
 
           if (!resolvedRoleId) {
@@ -618,13 +790,71 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        return { member: transformMember(data as Record<string, any>) };
+        const member = transformMember(data as Record<string, any>);
+
+        const roleChanged = updates.role_id !== undefined &&
+          existingMember.role_id !== member.role?.id;
+        const statusChanged = updates.status !== undefined &&
+          existingMember.status !== updates.status;
+
+        if (roleChanged) {
+          await recordTeamAuditLog({
+            supabaseAdmin,
+            teamId,
+            action: "role_changed",
+            actorUserId: user.id,
+            memberUserId: member.userId ?? null,
+            metadata: {
+              previousRoleId: existingMember.role_id,
+              previousRoleKey: existingMember.role?.key ?? null,
+              newRoleId: member.role?.id ?? null,
+              newRoleKey: member.role?.key ?? null,
+            },
+          });
+        }
+
+        if (statusChanged) {
+          const newStatus = updates.status as string;
+          if (newStatus === "removed") {
+            await recordTeamAuditLog({
+              supabaseAdmin,
+              teamId,
+              action: "removed",
+              actorUserId: user.id,
+              memberUserId: member.userId ?? null,
+              metadata: {
+                previousStatus: existingMember.status,
+                removalReason: input.removedAt ? "timestamp_update" : null,
+              },
+            });
+          } else if (
+            newStatus === "active" &&
+            existingMember.status === "removed"
+          ) {
+            await recordTeamAuditLog({
+              supabaseAdmin,
+              teamId,
+              action: "reinstated",
+              actorUserId: user.id,
+              memberUserId: member.userId ?? null,
+              metadata: {
+                previousStatus: existingMember.status,
+              },
+            });
+          }
+        }
+
+        return { member };
       }),
 
     remove: procedure
       .input(teamMemberRemoveSchema)
       .mutation(async ({ ctx, input }) => {
-        const { supabaseAdmin } = ctx;
+        const { supabaseAdmin, user } = ctx;
+
+        if (!user) {
+          throw new TRPCError({ code: "UNAUTHORIZED" });
+        }
 
         const { data: existingMember, error: memberError } = await supabaseAdmin
           .schema("core")
@@ -640,6 +870,13 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
             message: memberError ? `Failed to load team member: ${memberError.message}` : "Team member not found",
           });
         }
+
+        const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
+        await ensureTeamActionPermission({
+          ctx,
+          team,
+          permission: TeamPermissions.MANAGE_MEMBERS,
+        });
 
         const metadata = (existingMember.metadata as Record<string, unknown> | null) ?? {};
         if (input.reason) {
@@ -677,7 +914,20 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        return { member: transformMember(data as Record<string, any>) };
+        const member = transformMember(data as Record<string, any>);
+
+        await recordTeamAuditLog({
+          supabaseAdmin,
+          teamId: input.teamId,
+          action: "removed",
+          actorUserId: user.id,
+          memberUserId: member.userId ?? null,
+          metadata: {
+            reason: input.reason ?? null,
+          },
+        });
+
+        return { member };
       }),
 
     statusChange: procedure
@@ -691,6 +941,27 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
             message: `Unsupported team member status "${input.status}"`,
           });
         }
+
+        const { data: existingMember, error: existingError } = await supabaseAdmin
+          .schema("core")
+          .from("team_members")
+          .select("team_id, user_id, status")
+          .eq("id", input.teamMemberId)
+          .single();
+
+        if (existingError || !existingMember) {
+          throw new TRPCError({
+            code: existingError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+            message: existingError ? `Failed to load team member: ${existingError.message}` : "Team member not found",
+          });
+        }
+
+        const team = await fetchTeamOrThrow(supabaseAdmin, existingMember.team_id as string);
+        await ensureTeamActionPermission({
+          ctx,
+          team,
+          permission: TeamPermissions.MANAGE_MEMBERS,
+        });
 
         const updates: Record<string, unknown> = {
           status: input.status,
@@ -728,7 +999,33 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        return { member: transformMember(data as Record<string, any>) };
+        const member = transformMember(data as Record<string, any>);
+
+        if (input.status === "removed") {
+          await recordTeamAuditLog({
+            supabaseAdmin,
+            teamId: member.teamId,
+            action: "removed",
+            actorUserId: user?.id ?? null,
+            memberUserId: member.userId ?? null,
+            metadata: {
+              previousStatus: existingMember.status,
+            },
+          });
+        } else if (input.status === "active" && existingMember.status === "removed") {
+          await recordTeamAuditLog({
+            supabaseAdmin,
+            teamId: member.teamId,
+            action: "reinstated",
+            actorUserId: user?.id ?? null,
+            memberUserId: member.userId ?? null,
+            metadata: {
+              previousStatus: existingMember.status,
+            },
+          });
+        }
+
+        return { member };
       }),
   });
 }
@@ -743,9 +1040,16 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
         }),
       )
       .query(async ({ ctx, input }) => {
-        const { supabase } = ctx;
+        const { supabaseAdmin } = ctx;
 
-        let query = supabase
+        const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
+        await ensureTeamActionPermission({
+          ctx,
+          team,
+          permission: TeamPermissions.MANAGE_INVITATIONS,
+        });
+
+        let query = supabaseAdmin
           .schema("core")
           .from("team_invitations")
           .select(
@@ -797,6 +1101,12 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
         }
 
         const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
+
+        await ensureTeamActionPermission({
+          ctx,
+          team,
+          permission: TeamPermissions.MANAGE_INVITATIONS,
+        });
 
         const resolvedRoleId = await resolveRoleId({
           supabaseAdmin,
@@ -879,8 +1189,23 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
+        const invitation = transformInvitation(data as Record<string, any>);
+
+        await recordTeamAuditLog({
+          supabaseAdmin,
+          teamId: team.id,
+          action: "invited",
+          actorUserId: user.id,
+          memberUserId: input.userId ?? null,
+          metadata: {
+            email: input.email ?? null,
+            roleId: resolvedRoleId,
+            expiresAt: expiresAt.toISOString(),
+          },
+        });
+
         return {
-          invitation: transformInvitation(data as Record<string, any>),
+          invitation,
           token: rawToken,
         };
       }),
@@ -888,7 +1213,18 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
     resend: procedure
       .input(teamInvitationResendSchema)
       .mutation(async ({ ctx, input }) => {
-        const { supabaseAdmin } = ctx;
+        const { supabaseAdmin, user } = ctx;
+
+        if (!user) {
+          throw new TRPCError({ code: "UNAUTHORIZED" });
+        }
+
+        const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
+        await ensureTeamActionPermission({
+          ctx,
+          team,
+          permission: TeamPermissions.MANAGE_INVITATIONS,
+        });
 
         const { data: invitation, error: fetchError } = await supabaseAdmin
           .schema("core")
@@ -934,12 +1270,23 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
     cancel: procedure
       .input(teamInvitationCancelSchema)
       .mutation(async ({ ctx, input }) => {
-        const { supabaseAdmin } = ctx;
+        const { supabaseAdmin, user } = ctx;
+
+        if (!user) {
+          throw new TRPCError({ code: "UNAUTHORIZED" });
+        }
+
+        const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
+        await ensureTeamActionPermission({
+          ctx,
+          team,
+          permission: TeamPermissions.MANAGE_INVITATIONS,
+        });
 
         const { data: invitation, error: fetchError } = await supabaseAdmin
           .schema("core")
           .from("team_invitations")
-          .select("metadata")
+          .select("metadata, invited_user_id, status")
           .eq("id", input.invitationId)
           .eq("team_id", input.teamId)
           .single();
@@ -973,6 +1320,18 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
+        await recordTeamAuditLog({
+          supabaseAdmin,
+          teamId: input.teamId,
+          action: "invitation_rescinded",
+          actorUserId: user.id,
+          memberUserId: invitation.invited_user_id as string | null,
+          metadata: {
+            reason: input.reason ?? null,
+            previousStatus: invitation.status,
+          },
+        });
+
         return { success: true };
       }),
   });
@@ -991,47 +1350,253 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
         }),
       )
       .query(async ({ ctx, input }) => {
-        const { supabase } = ctx;
+        const { supabaseAdmin, user } = ctx;
 
-        let query = supabase
-          .schema("core")
-          .from("teams")
-          .select(
-            `
-            *,
-            default_role:team_roles(id, key, name)
-          `,
-          )
-          .order("created_at", { ascending: false });
-
-        if (input.organizationId) {
-          query = query.eq("organization_id", input.organizationId);
+        if (!user) {
+          throw new TRPCError({ code: "UNAUTHORIZED" });
         }
 
-        if (!input.includeArchived) {
-          query = query.eq("is_archived", false);
+        const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
+        const superAdmin = isSuperAdmin(assignments);
+
+        const adminOrganizationIds = new Set<string>();
+        const accessibleOrganizationIds = new Set<string>();
+
+        for (const assignment of assignments) {
+          const organizationId = assignment.scope_org_id ?? undefined;
+          if (assignment.role?.scope === "organization" && organizationId) {
+            accessibleOrganizationIds.add(organizationId);
+            if (isOrganizationAdminRole(assignment.role?.name ?? null)) {
+              adminOrganizationIds.add(organizationId);
+            }
+          }
         }
 
-        const { data, error } = await query;
+        const { data: ownedOrganizations, error: ownedError } = await supabaseAdmin
+          .schema("public")
+          .from("organizations")
+          .select("id")
+          .eq("owner_user_id", user.id);
 
-        if (error) {
+        if (ownedError) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: `Failed to fetch teams: ${error.message}`,
+            message: `Failed to load owned organizations: ${ownedError.message}`,
           });
         }
 
-        return {
-          teams: (data ?? []).map((record) => transformTeam(record as Record<string, any>)),
+        for (const organization of ownedOrganizations ?? []) {
+          const orgId = typeof organization.id === "string"
+            ? organization.id
+            : null;
+          if (orgId) {
+            accessibleOrganizationIds.add(orgId);
+            adminOrganizationIds.add(orgId);
+          }
+        }
+
+        const {
+          data: teamMemberships,
+          error: membershipsError,
+        } = await supabaseAdmin
+          .schema("core")
+          .from("team_members")
+          .select("team_id, status, team:teams(id, organization_id)")
+          .eq("user_id", user.id)
+          .neq("status", "removed");
+
+        if (membershipsError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to load team memberships: ${membershipsError.message}`,
+          });
+        }
+
+        const memberTeamIds = new Set<string>();
+        const teamToOrganizationMap = new Map<string, string | null>();
+        const memberTeamsByOrganization = new Map<string, Set<string>>();
+
+        for (const membership of teamMemberships ?? []) {
+          const teamId = typeof membership.team_id === "string"
+            ? membership.team_id
+            : null;
+          const organizationId = membership.team?.organization_id
+            ? String(membership.team.organization_id)
+            : null;
+
+          if (teamId) {
+            memberTeamIds.add(teamId);
+            teamToOrganizationMap.set(teamId, organizationId);
+          }
+
+          if (organizationId) {
+            accessibleOrganizationIds.add(organizationId);
+            const set = memberTeamsByOrganization.get(organizationId) ?? new Set<string>();
+            if (teamId) {
+              set.add(teamId);
+            }
+            memberTeamsByOrganization.set(organizationId, set);
+          }
+        }
+
+        if (
+          input.organizationId &&
+          !superAdmin &&
+          !accessibleOrganizationIds.has(input.organizationId)
+        ) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "You do not have access to the requested organization.",
+          });
+        }
+
+        const selectClause = `
+          *,
+          default_role:team_roles(id, key, name)
+        `;
+
+        const includeArchived = input.includeArchived;
+        const teamsMap = new Map<string, ReturnType<typeof transformTeam>>();
+
+        const fetchTeamsByOrgIds = async (organizationIds: string[]) => {
+          if (!organizationIds.length) return;
+
+          let query = supabaseAdmin
+            .schema("core")
+            .from("teams")
+            .select(selectClause)
+            .in("organization_id", organizationIds)
+            .order("created_at", { ascending: false });
+
+          if (!includeArchived) {
+            query = query.eq("is_archived", false);
+          }
+
+          const { data, error } = await query;
+
+          if (error) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: `Failed to fetch teams: ${error.message}`,
+            });
+          }
+
+          for (const record of data ?? []) {
+            teamsMap.set(
+              record.id as string,
+              transformTeam(record as Record<string, any>),
+            );
+          }
         };
+
+        const fetchTeamsByIds = async (teamIds: string[]) => {
+          if (!teamIds.length) return;
+
+          let query = supabaseAdmin
+            .schema("core")
+            .from("teams")
+            .select(selectClause)
+            .in("id", teamIds)
+            .order("created_at", { ascending: false });
+
+          if (!includeArchived) {
+            query = query.eq("is_archived", false);
+          }
+
+          const { data, error } = await query;
+
+          if (error) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: `Failed to fetch teams: ${error.message}`,
+            });
+          }
+
+          for (const record of data ?? []) {
+            teamsMap.set(
+              record.id as string,
+              transformTeam(record as Record<string, any>),
+            );
+          }
+        };
+
+        if (input.organizationId) {
+          if (superAdmin || adminOrganizationIds.has(input.organizationId)) {
+            await fetchTeamsByOrgIds([input.organizationId]);
+          } else {
+            const memberTeams = memberTeamsByOrganization.get(input.organizationId);
+            if (!memberTeams || memberTeams.size === 0) {
+              return { teams: [] };
+            }
+            await fetchTeamsByIds(Array.from(memberTeams));
+          }
+        } else if (superAdmin) {
+          let query = supabaseAdmin
+            .schema("core")
+            .from("teams")
+            .select(selectClause)
+            .order("created_at", { ascending: false });
+
+          if (!includeArchived) {
+            query = query.eq("is_archived", false);
+          }
+
+          const { data, error } = await query;
+
+          if (error) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: `Failed to fetch teams: ${error.message}`,
+            });
+          }
+
+          for (const record of data ?? []) {
+            teamsMap.set(
+              record.id as string,
+              transformTeam(record as Record<string, any>),
+            );
+          }
+        } else {
+          if (adminOrganizationIds.size > 0) {
+            await fetchTeamsByOrgIds(Array.from(adminOrganizationIds));
+          }
+
+          if (memberTeamIds.size > 0) {
+            const nonAdminTeamIds = Array
+              .from(memberTeamIds)
+              .filter((teamId) => {
+                const orgId = teamToOrganizationMap.get(teamId);
+                return !orgId || !adminOrganizationIds.has(orgId);
+              });
+
+            await fetchTeamsByIds(nonAdminTeamIds);
+          }
+        }
+
+        const teams = Array
+          .from(teamsMap.values())
+          .sort((a, b) => {
+            const aTimestamp = a.createdAt ? Date.parse(a.createdAt) : 0;
+            const bTimestamp = b.createdAt ? Date.parse(b.createdAt) : 0;
+            return bTimestamp - aTimestamp;
+          });
+
+        return { teams };
       }),
 
     byId: procedure
       .input(z.object({ teamId: teamIdSchema }))
       .query(async ({ ctx, input }) => {
-        const { supabase } = ctx;
+        const { supabaseAdmin } = ctx;
 
-        const { data, error } = await supabase
+        const teamRecord = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
+        await ensureTeamActionPermission({
+          ctx,
+          team: teamRecord,
+          permission: TeamPermissions.VIEW,
+        });
+
+        const { data, error } = await supabaseAdmin
           .schema("core")
           .from("teams")
           .select(
@@ -1061,6 +1626,12 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
         }
+
+        await ensureOrganizationTeamPermission({
+          ctx,
+          organizationId: input.organizationId,
+          permission: TeamPermissions.MANAGE,
+        });
 
         await ensureOrganizationRoles(supabaseAdmin, input.organizationId);
         const resolvedRoleId = await resolveRoleId({
@@ -1124,6 +1695,11 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
         }
 
         const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
+        await ensureTeamActionPermission({
+          ctx,
+          team,
+          permission: TeamPermissions.MANAGE,
+        });
         const updates: Record<string, unknown> = {};
 
         if (input.name !== undefined) updates.name = input.name;
@@ -1199,6 +1775,13 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
         }
+
+        const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
+        await ensureTeamActionPermission({
+          ctx,
+          team,
+          permission: TeamPermissions.MANAGE,
+        });
 
         const { data: teamRecord, error: teamError } = await supabaseAdmin
           .schema("core")
@@ -1384,6 +1967,17 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
               metadata,
             })
             .eq("id", invitation.id);
+
+          await recordTeamAuditLog({
+            supabaseAdmin,
+            teamId: team.id,
+            action: "joined",
+            actorUserId: responderId,
+            memberUserId: responderId,
+            metadata: {
+              invitationId: String(invitation.id ?? ""),
+            },
+          });
 
           return { status: "accepted", teamId: team.id };
         }

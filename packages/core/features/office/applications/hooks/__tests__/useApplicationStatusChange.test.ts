@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { ApplicationStatus } from '../../mock-data/ats-mock-data'
+import type { ApplicationStatus } from '../../../mock-data/ats-mock-data'
 
 const invalidateMock = vi.fn()
 let mutateShouldFail = false

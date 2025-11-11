@@ -233,10 +233,27 @@ export const uploadWorkLogPhotoSchema = z.object({
 
 export type UploadWorkLogPhotoInput = z.infer<typeof uploadWorkLogPhotoSchema>;
 
+export const updateWorkLogPhotoSchema = z.object({
+  photoId: z.string().uuid(),
+  workLogId: z.string().uuid(),
+  caption: z.string().max(500).nullable().optional(),
+  photoType: z.enum(WORK_LOG_PHOTO_TYPES).optional(),
+  displayOrder: z.number().int().min(0).max(10_000).optional(),
+});
+
+export type UpdateWorkLogPhotoInput = z.infer<typeof updateWorkLogPhotoSchema>;
+
 export const updatePhotoVisibilitySchema = z.object({
   photoId: z.string().uuid(),
   showOnProfile: z.boolean(),
 });
+
+export const deleteWorkLogPhotoSchema = z.object({
+  photoId: z.string().uuid(),
+  workLogId: z.string().uuid(),
+});
+
+export type DeleteWorkLogPhotoInput = z.infer<typeof deleteWorkLogPhotoSchema>;
 
 export const updateProfileVisibilitySchema = z
   .object({

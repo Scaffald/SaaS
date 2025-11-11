@@ -5,6 +5,7 @@ import { Button, Card, Select, Spinner, Tabs, Text, XStack, YStack } from 'tamag
 import { AlertTriangle, Check, ChevronDown, ClipboardList, RefreshCcw } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 
+import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { useUserRoles } from '@app/core/utils/auth/useUserRoles'
 import type { AppRouter } from '@app/supabase/client-types'
@@ -17,13 +18,15 @@ import {
 } from '../components/status.utils'
 import { AdminCheckReviewDialog } from './AdminCheckReviewDialog'
 import { AdminDisputeResolutionDialog } from './AdminDisputeResolutionDialog'
+import { AdminMetricsPanel } from './AdminMetricsPanel'
+import { AdminAuditLogPanel } from './AdminAuditLogPanel'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 
 type AdminCheckSummary = RouterOutputs['backgroundChecks']['adminListChecks'][number]
 type AdminDisputeSummary = RouterOutputs['backgroundChecks']['adminListDisputes'][number]
 
-type AdminTab = 'checks' | 'disputes'
+type AdminTab = 'checks' | 'disputes' | 'metrics' | 'audit'
 
 interface CheckRow {
   id: string
@@ -82,6 +85,8 @@ export function AdminBackgroundChecksPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>('checks')
   const [statusFilter, setStatusFilter] = useState<'all' | BackgroundCheckStatus>('under_review')
   const [searchQuery, setSearchQuery] = useState('')
+  // biome-ignore lint/correctness/noUnusedVariables: used in render JSX below
+  const [auditSearch, setAuditSearch] = useState('')
   const [selectedCheck, setSelectedCheck] = useState<AdminCheckSummary | null>(null)
   const [selectedDispute, setSelectedDispute] = useState<AdminDisputeSummary | null>(null)
 
@@ -101,6 +106,22 @@ export function AdminBackgroundChecksPage() {
     refetchOnWindowFocus: true,
     staleTime: 30_000,
   })
+
+  // biome-ignore lint/correctness/noUnusedVariables: conditionally used in render
+  const metricsQuery = api.backgroundChecks.adminGetMetrics.useQuery(undefined, {
+    enabled: isAdmin && activeTab === 'metrics',
+    staleTime: 60_000,
+  })
+
+  // biome-ignore lint/correctness/noUnusedVariables: conditionally used in render
+  const accessLogQuery = api.backgroundChecks.adminGetAccessLog.useQuery(
+    { limit: 200 },
+    {
+      enabled: isAdmin && activeTab === 'audit',
+      refetchOnWindowFocus: true,
+      staleTime: 30_000,
+    },
+  )
 
   const checkRows = useMemo<CheckRow[]>(() => {
     return (checksQuery.data ?? []).map((check: AdminCheckSummary) => {
@@ -316,7 +337,11 @@ export function AdminBackgroundChecksPage() {
           Background check review tools are restricted to compliance administrators. Contact an administrator if you
           believe this is an error.
         </Text>
-        <Button size="$3" variant="outlined" onPress={() => router.push('/office/background-checks')}>
+        <Button
+          size="$3"
+          variant="outlined"
+          onPress={() => router.push(ROUTES.OFFICE_BACKGROUND_CHECKS.path)}
+        >
           Go to organization background checks
         </Button>
       </YStack>
@@ -414,6 +439,24 @@ export function AdminBackgroundChecksPage() {
               >
                 Disputes
               </Tabs.Tab>
+              <Tabs.Tab
+                value="metrics"
+                borderBottomWidth={activeTab === 'metrics' ? 2 : 0}
+                borderBottomColor="$blue10"
+                px="$3"
+                py="$2"
+              >
+                Metrics
+              </Tabs.Tab>
+              <Tabs.Tab
+                value="audit"
+                borderBottomWidth={activeTab === 'audit' ? 2 : 0}
+                borderBottomColor="$blue10"
+                px="$3"
+                py="$2"
+              >
+                Audit Log
+              </Tabs.Tab>
             </XStack>
           </Tabs.List>
         </Tabs>
@@ -463,12 +506,14 @@ export function AdminBackgroundChecksPage() {
             <Button
               size="$3"
               variant="outlined"
-              onPress={() => router.push('/office/background-checks')}
+              onPress={() => router.push(ROUTES.OFFICE_BACKGROUND_CHECKS.path)}
             >
               Organization view
             </Button>
           </XStack>
-        ) : (
+        ) : null}
+
+        {activeTab === 'disputes' ? (
           <XStack gap="$2">
             <Button
               size="$3"
@@ -480,7 +525,7 @@ export function AdminBackgroundChecksPage() {
               Refresh disputes
             </Button>
           </XStack>
-        )}
+        ) : null}
       </YStack>
 
       {activeTab === 'checks' ? (
@@ -502,7 +547,9 @@ export function AdminBackgroundChecksPage() {
           }
           onRowClick={(row) => setSelectedCheck(row.raw)}
         />
-      ) : (
+      ) : null}
+
+      {activeTab === 'disputes' ? (
         <OfficePageLayout
           title="Dispute management"
           searchPlaceholder="Search disputes…"
@@ -519,7 +566,27 @@ export function AdminBackgroundChecksPage() {
           }
           onRowClick={(row) => setSelectedDispute(row.raw)}
         />
-      )}
+      ) : null}
+
+      {activeTab === 'metrics' ? (
+        <YStack px="$4" pb="$4">
+          <AdminMetricsPanel
+            metrics={metricsQuery.data}
+            isLoading={metricsQuery.isLoading}
+            onRefresh={() => void metricsQuery.refetch()}
+          />
+        </YStack>
+      ) : null}
+
+      {activeTab === 'audit' ? (
+        <AdminAuditLogPanel
+          entries={accessLogQuery.data ?? []}
+          isLoading={accessLogQuery.isLoading}
+          searchValue={auditSearch}
+          onSearchChange={setAuditSearch}
+          onRefresh={() => void accessLogQuery.refetch()}
+        />
+      ) : null}
 
       <AdminCheckReviewDialog
         open={Boolean(selectedCheck)}

@@ -14,14 +14,22 @@ import {
 } from './status.utils'
 import { CheckProgressTracker } from './CheckProgressTracker'
 import { PrivacyControls } from './PrivacyControls'
+import { DisputeStatusTracker } from './DisputeStatusTracker'
+import { useDispute } from '../hooks/useDispute'
 
 interface ResultsViewerProps {
   checkId: string | null
   summary?: BackgroundCheckSummary
   onClose: () => void
+  onRequestDispute?: (checkId: string) => void
 }
 
-export const ResultsViewer = memo(function ResultsViewer({ checkId, summary, onClose }: ResultsViewerProps) {
+export const ResultsViewer = memo(function ResultsViewer({
+  checkId,
+  summary,
+  onClose,
+  onRequestDispute,
+}: ResultsViewerProps) {
   const getCheckQuery = api.backgroundChecks.getCheck.useQuery(
     { background_check_id: checkId ?? '' },
     {
@@ -30,6 +38,16 @@ export const ResultsViewer = memo(function ResultsViewer({ checkId, summary, onC
       refetchOnWindowFocus: true,
     },
   )
+
+  const {
+    disputes,
+    isLoadingDisputes,
+    hasActiveDispute,
+    refetchDisputes,
+  } = useDispute({
+    checkId: checkId ?? null,
+    enabled: Boolean(checkId),
+  })
 
   if (!checkId) {
     return null
@@ -123,6 +141,42 @@ export const ResultsViewer = memo(function ResultsViewer({ checkId, summary, onC
         completedAt={completedAtFromHistory}
         expiresAt={detail.expires_at ?? null}
       />
+
+      <DisputeStatusTracker
+        disputes={disputes}
+        isLoading={isLoadingDisputes}
+        onRefresh={refetchDisputes}
+      />
+
+      {onRequestDispute && summary?.status && (
+        <YStack
+          gap="$2"
+          p="$3"
+          bg="$color2"
+          rounded="$4"
+          borderWidth={1}
+          borderColor="$borderColor"
+        >
+          <Text fontSize="$3" fontWeight="600" color="$color12">
+            Notice something inaccurate?
+          </Text>
+          <Text fontSize="$2" color="$color10">
+            Submit a dispute so our compliance team can review and correct any issues.
+          </Text>
+          <Button
+            size="$3"
+            theme="blue"
+            disabled={hasActiveDispute}
+            onPress={() => {
+              if (checkId) {
+                onRequestDispute(checkId)
+              }
+            }}
+          >
+            {hasActiveDispute ? 'Dispute in progress' : 'Dispute results'}
+          </Button>
+        </YStack>
+      )}
 
       {detail.summary && (
         <YStack gap="$2">

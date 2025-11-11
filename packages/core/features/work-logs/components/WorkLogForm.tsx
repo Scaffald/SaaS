@@ -10,10 +10,9 @@ import {
   Separator,
   ScrollView,
   Spinner,
+  Checkbox,
 } from "tamagui";
 import { Plus, MapPin, Save } from "@tamagui/lucide-icons";
-
-import { Checkbox } from "@app/ui";
 
 import type { CreateWorkLogInput } from "../schemas";
 import { ProjectSelector } from "./ProjectSelector";
@@ -22,6 +21,7 @@ import {
   useWorkLogForm,
   type UseWorkLogFormOptions,
 } from "../hooks/useWorkLogForm";
+import { PhotoUpload } from "./PhotoUpload";
 
 const getDateInputProps = () => {
   if (Platform.OS === "web") {
@@ -85,6 +85,7 @@ export function WorkLogForm({
     setOrganizationFilter,
     skillsQuery,
     pendingOfflineDraft,
+    workLogId,
   } = useWorkLogForm(options);
 
   const {
@@ -123,9 +124,8 @@ export function WorkLogForm({
   }, [tasksCompleted]);
 
   const skillOptions = useMemo(() => {
-    const explicit = skillsQuery.data?.explicitSkills ?? [];
+    const explicit = (skillsQuery.data?.explicitSkills ?? []) as Array<Record<string, unknown>>;
     return explicit
-      .map((skill) => skill as Record<string, unknown>)
       .map((skill) => ({
         id: deriveSkillId(skill),
         name: deriveSkillName(skill),
@@ -166,13 +166,13 @@ export function WorkLogForm({
 
   return (
     <FormProvider {...form}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 64 }}>
-        <YStack gap="$5" p="$4">
+      <ScrollView>
+        <YStack gap="$5" p="$4" pb="$8">
           <YStack gap="$2">
             <Text fontSize="$6" fontWeight="700">
               Work Log Details
             </Text>
-            <Text fontSize="$3" color="$colorMuted">
+            <Text fontSize="$3" color="$color10">
               Provide information about the work performed, including project, schedule, and skills.
             </Text>
           </YStack>
@@ -304,7 +304,7 @@ export function WorkLogForm({
 
             <YStack gap="$2">
               {tasksWithKeys.length === 0 && (
-                <Text fontSize="$3" color="$colorMuted">
+                <Text fontSize="$3" color="$color10">
                   No tasks added yet.
                 </Text>
               )}
@@ -356,7 +356,7 @@ export function WorkLogForm({
             )}
 
             {skillOptions.length === 0 && !skillsQuery.isLoading && (
-              <Text fontSize="$3" color="$colorMuted">
+              <Text fontSize="$3" color="$color10">
                 You do not have any skills associated with your profile yet.
               </Text>
             )}
@@ -366,8 +366,8 @@ export function WorkLogForm({
                 <XStack key={skill.id} gap="$2" items="center">
                   <Checkbox
                     checked={selectedSkills.includes(skill.id)}
-                    onCheckedChange={(checked) =>
-                      toggleSkill(skill.id, checked)
+                    onCheckedChange={(next) =>
+                      toggleSkill(skill.id, next === true)
                     }
                   />
                   <Text fontSize="$3">{skill.name}</Text>
@@ -426,12 +426,16 @@ export function WorkLogForm({
 
           <Separator />
 
+          <PhotoUpload workLogId={workLogId} />
+
+          <Separator />
+
           <YStack gap="$2">
             <Text fontWeight="600" fontSize="$4">
               Draft Status
             </Text>
             {autoSaveStatus.state === "saving" && (
-              <Text fontSize="$3" color="$colorMuted">
+              <Text fontSize="$3" color="$color10">
                 Saving draft…
               </Text>
             )}
@@ -461,12 +465,7 @@ export function WorkLogForm({
             )}
           </YStack>
 
-          <Button
-            icon={Save}
-            size="$5"
-            onPress={submit}
-            disabled={isSubmitting}
-          >
+          <Button icon={Save} size="$5" onPress={() => submit()} disabled={isSubmitting}>
             {isSubmitting ? "Saving…" : submitLabel}
           </Button>
         </YStack>

@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'expo-router'
-import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
+import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import { Button, Label, Select, Spinner, Text, XStack, YStack } from 'tamagui'
 import { Check, ChevronDown, Eye, ExternalLink, RefreshCcw } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 
+import { ROUTES } from '@app/core/constants/routes'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
@@ -32,8 +33,6 @@ type CheckRow = {
   jobTitle: string
   raw: OrganizationCheckSummary
 }
-
-const columnHelper = createColumnHelper<CheckRow>()
 
 const formatDateTime = (value: string | null | undefined) => {
   if (!value) return '—'
@@ -110,7 +109,7 @@ export function OrganizationBackgroundChecksPage() {
     }
 
     const query = searchQuery.trim().toLowerCase()
-    return rows.filter((row) => {
+    return rows.filter((row: CheckRow) => {
       return (
         row.workerName.toLowerCase().includes(query) ||
         row.packageName.toLowerCase().includes(query) ||
@@ -124,24 +123,25 @@ export function OrganizationBackgroundChecksPage() {
   const handleNavigateToRequest = () => {
     if (!selectedOrganizationId) return
     router.push({
-      pathname: '/office/background-checks/request',
+      pathname: ROUTES.OFFICE_BACKGROUND_CHECKS_REQUEST.path,
       params: { organizationId: selectedOrganizationId },
     })
   }
 
-  const columns = useMemo(
+  const columns = useMemo<ColumnDef<CheckRow, unknown>[]>(
     () =>
       [
-        columnHelper.accessor('workerName', {
+        {
+          accessorKey: 'workerName',
           header: 'Worker',
-          cell: (info) => (
+          cell: ({ row }: CellContext<CheckRow, unknown>) => (
             <YStack>
               <Text fontSize="$3" fontWeight="600" color="$color12">
-                {info.getValue()}
+                {row.original.workerName}
               </Text>
-              {info.row.original.workerEmail ? (
+              {row.original.workerEmail ? (
                 <Text fontSize="$2" color="$color10">
-                  {info.row.original.workerEmail}
+                  {row.original.workerEmail}
                 </Text>
               ) : null}
             </YStack>
@@ -149,45 +149,51 @@ export function OrganizationBackgroundChecksPage() {
           meta: {
             width: '$20',
           },
-        }),
-        columnHelper.accessor('packageName', {
+        },
+        {
+          accessorKey: 'packageName',
           header: 'Package',
-          cell: (info) => info.getValue(),
-        }),
-        columnHelper.accessor('statusLabel', {
+          cell: ({ row }: CellContext<CheckRow, unknown>) => row.original.packageName,
+        },
+        {
+          accessorKey: 'statusLabel',
           header: 'Status',
-          cell: (info) => info.getValue(),
-        }),
-        columnHelper.accessor('createdAt', {
+          cell: ({ row }: CellContext<CheckRow, unknown>) => row.original.statusLabel,
+        },
+        {
+          accessorKey: 'createdAt',
           header: 'Requested',
-          cell: (info) => formatDateTime(info.getValue()),
-        }),
-        columnHelper.accessor('completedAt', {
+          cell: ({ row }: CellContext<CheckRow, unknown>) => formatDateTime(row.original.createdAt),
+        },
+        {
+          accessorKey: 'completedAt',
           header: 'Completed',
-          cell: (info) => formatDateTime(info.getValue()),
-        }),
-        columnHelper.accessor('expiresAt', {
+          cell: ({ row }: CellContext<CheckRow, unknown>) => formatDateTime(row.original.completedAt),
+        },
+        {
+          accessorKey: 'expiresAt',
           header: 'Expires',
-          cell: (info) => formatDateTime(info.getValue()),
-        }),
-        columnHelper.accessor('jobTitle', {
+          cell: ({ row }: CellContext<CheckRow, unknown>) => formatDateTime(row.original.expiresAt),
+        },
+        {
+          accessorKey: 'jobTitle',
           header: 'Job Link',
-          cell: (info) => info.getValue(),
-        }),
-        columnHelper.display({
+          cell: ({ row }: CellContext<CheckRow, unknown>) => row.original.jobTitle,
+        },
+        {
           id: 'actions',
           header: 'Actions',
-          cell: (info) => (
+          cell: ({ row }: CellContext<CheckRow, unknown>) => (
             <Button
               size="$2"
               variant="outlined"
               icon={Eye}
-              onPress={() => setSelectedCheckId(info.row.original.id)}
+              onPress={() => setSelectedCheckId(row.original.id)}
             >
               View
             </Button>
           ),
-        }),
+        },
       ] satisfies ColumnDef<CheckRow, unknown>[],
     [],
   )
@@ -298,7 +304,7 @@ export function OrganizationBackgroundChecksPage() {
               ? 'Loading background checks…'
               : 'No background checks found for this organization yet.'
           }
-          onRowClick={(row) => setSelectedCheckId((row as CheckRow).id)}
+      onRowClick={(row: CheckRow) => setSelectedCheckId(row.id)}
         />
       ) : (
         <YStack flex={1} p="$4" gap="$3" items="center" justify="center">
@@ -315,7 +321,7 @@ export function OrganizationBackgroundChecksPage() {
         <YStack px="$4" pb="$6" gap="$3">
           <OrganizationCheckDetails
             checkId={selectedCheckId}
-            summary={rows.find((row) => row.id === selectedCheckId)?.raw}
+            summary={rows.find((row: CheckRow) => row.id === selectedCheckId)?.raw}
             onClose={() => setSelectedCheckId(null)}
           />
         </YStack>

@@ -187,6 +187,15 @@ export function CheckStatusDashboard() {
                 checkId={selectedCheckId}
                 summary={selectedCheck ?? undefined}
                 onClose={() => setSelectedCheckId(null)}
+                onRequestDispute={(id) => {
+                  const candidate =
+                    checksQuery.data?.find(
+                      (item: BackgroundCheckSummary) => item.id === id,
+                    ) ?? null
+                  if (candidate) {
+                    setDisputeCheck(candidate)
+                  }
+                }}
               />
             </YStack>
           )}

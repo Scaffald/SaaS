@@ -206,7 +206,7 @@ export function TeamForm({ mode, organizationId, teamId, initialData, onCancel, 
     const resolvedDefaultRoleKey =
       values.defaultRoleKey ?? selectedRole?.key ?? teamRoleKeySchema.parse('member')
 
-    const payload: TeamCreateInput = {
+    const payloadBase = {
       organizationId,
       name: values.name.trim(),
       slug: values.slug?.trim() || undefined,
@@ -219,7 +219,11 @@ export function TeamForm({ mode, organizationId, teamId, initialData, onCancel, 
     }
 
     if (mode === 'create') {
-      await createMutation.mutateAsync(payload)
+      const createPayload: TeamCreateInput = {
+        ...payloadBase,
+        metadata: {},
+      }
+      await createMutation.mutateAsync(createPayload)
     } else {
       if (!teamId) {
         toast.show('Error', { message: 'Missing team identifier for update' })
@@ -227,7 +231,7 @@ export function TeamForm({ mode, organizationId, teamId, initialData, onCancel, 
       }
       await updateMutation.mutateAsync({
         teamId,
-        ...payload,
+        ...payloadBase,
       })
     }
   }

@@ -11,7 +11,7 @@ type RoleRecord = NonNullable<TeamRolesOutput['roles']>[number]
 
 type TeamRoleKey = ReturnType<typeof teamRoleKeySchema['parse']>
 
-interface RoleOption {
+export interface TeamRoleOption {
   id: string
   key: TeamRoleKey
   name: string
@@ -37,9 +37,9 @@ export function useTeamFormOptions({ organizationId }: UseTeamFormOptionsParams)
     },
   )
 
-  const roles: RoleOption[] = useMemo(() => {
+  const roles: TeamRoleOption[] = useMemo(() => {
     return (
-      rolesQuery.data?.roles?.map((role: RoleRecord): RoleOption => ({
+      rolesQuery.data?.roles?.map((role: RoleRecord): TeamRoleOption => ({
         id: role.id,
         key: teamRoleKeySchema.parse(role.key),
         name: role.name,

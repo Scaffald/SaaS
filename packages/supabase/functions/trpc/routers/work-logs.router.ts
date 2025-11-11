@@ -22,6 +22,7 @@ import {
   createWorkLogSchema,
   denyWorkLogMoveSchema,
   disputeWorkLogSchema,
+  deleteWorkLogPhotoSchema,
   getSuggestedSkillsSchema,
   moveWorkLogSchema,
   exportWorkLogSchema,
@@ -31,6 +32,7 @@ import {
   updateProfileVisibilitySchema,
   updateWorkLogSchema,
   uploadWorkLogPhotoSchema,
+  updateWorkLogPhotoSchema,
   verifyWorkLogSchema,
 } from "../../_shared/work-log-schemas.ts";
 // @ts-ignore - Deno requires file extension
@@ -2395,6 +2397,99 @@ export const workLogsRouter = t.router({
       };
     }),
 
+  updatePhotoMetadata: protectedProcedure
+    .input(updateWorkLogPhotoSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      if (!user?.id) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      const { workLog, role } = await getWorkLogAccess(
+        supabase,
+        input.workLogId,
+        user.id,
+      );
+
+      if (role === "viewer") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You do not have permission to update this photo.",
+        });
+      }
+
+      const { data: photoRecord, error: photoError } = await supabase
+        .schema("core")
+        .from("work_log_photos")
+        .select("id, work_log_id, caption, photo_type, display_order")
+        .eq("id", input.photoId)
+        .single();
+
+      if (photoError || !photoRecord || photoRecord.work_log_id !== workLog.id) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Work log photo not found.",
+        });
+      }
+
+      const updates: Record<string, unknown> = {};
+      const oldValue: Record<string, unknown> = {};
+      const newValue: Record<string, unknown> = {};
+
+      if (typeof input.caption !== "undefined") {
+        updates.caption = input.caption ?? null;
+        oldValue.caption = photoRecord.caption ?? null;
+        newValue.caption = updates.caption;
+      }
+
+      if (typeof input.photoType !== "undefined") {
+        updates.photo_type = input.photoType ?? null;
+        oldValue.photo_type = photoRecord.photo_type ?? null;
+        newValue.photo_type = updates.photo_type;
+      }
+
+      if (typeof input.displayOrder !== "undefined") {
+        updates.display_order = input.displayOrder ?? 0;
+        oldValue.display_order = photoRecord.display_order ?? 0;
+        newValue.display_order = updates.display_order;
+      }
+
+      if (Object.keys(updates).length === 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "No metadata fields provided for update.",
+        });
+      }
+
+      updates.updated_at = new Date().toISOString();
+
+      const { data: updatedPhoto, error: updateError } = await supabase
+        .schema("core")
+        .from("work_log_photos")
+        .update(updates)
+        .eq("id", input.photoId)
+        .select()
+        .single();
+
+      if (updateError || !updatedPhoto) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update photo metadata.",
+        });
+      }
+
+      await recordAuditLog(supabase, {
+        workLogId: workLog.id,
+        userId: user.id,
+        action: "edit",
+        oldValue,
+        newValue,
+      });
+
+      return updatedPhoto;
+    }),
+
   updatePhotoVisibility: protectedProcedure
     .input(updatePhotoVisibilitySchema)
     .mutation(async ({ ctx, input }) => {
@@ -2458,6 +2553,127 @@ export const workLogsRouter = t.router({
       });
 
       return data;
+    }),
+
+  deletePhoto: protectedProcedure
+    .input(deleteWorkLogPhotoSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      if (!user?.id) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      const { workLog, role } = await getWorkLogAccess(
+        supabase,
+        input.workLogId,
+        user.id,
+      );
+
+      if (role === "viewer") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You do not have permission to delete this photo.",
+        });
+      }
+
+      const { data: photoRecord, error: photoError } = await supabase
+        .schema("core")
+        .from("work_log_photos")
+        .select(
+          "id, work_log_id, file_path, thumbnail_path, medium_path, file_size_bytes",
+        )
+        .eq("id", input.photoId)
+        .single();
+
+      if (photoError || !photoRecord || photoRecord.work_log_id !== workLog.id) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Work log photo not found.",
+        });
+      }
+
+      const filePaths = [
+        photoRecord.file_path,
+        photoRecord.thumbnail_path,
+        photoRecord.medium_path,
+      ].filter((value): value is string => typeof value === "string" && value.length > 0);
+
+      if (filePaths.length > 0) {
+        const { error: removeError } = await supabase.storage
+          .from(WORK_LOG_PHOTO_BUCKET)
+          .remove(filePaths);
+
+        if (removeError) {
+          console.warn("[workLogs.deletePhoto] Failed to delete storage objects", {
+            workLogId: workLog.id,
+            photoId: photoRecord.id,
+            message: removeError.message,
+          });
+        }
+      }
+
+      const { error: deleteError } = await supabase
+        .schema("core")
+        .from("work_log_photos")
+        .delete()
+        .eq("id", input.photoId);
+
+      if (deleteError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete photo record.",
+        });
+      }
+
+      const photoBytes =
+        typeof photoRecord.file_size_bytes === "number"
+          ? photoRecord.file_size_bytes
+          : Number(photoRecord.file_size_bytes ?? 0);
+
+      if (photoBytes > 0) {
+        const { data: usage } = await supabase
+          .schema("core")
+          .from("user_storage_usage")
+          .select("work_log_photos_bytes")
+          .eq("user_id", workLog.user_id)
+          .maybeSingle();
+
+        if (usage) {
+          const nextBytes = Math.max(
+            0,
+            (usage.work_log_photos_bytes ?? 0) - photoBytes,
+          );
+          const { error: usageError } = await supabase
+            .schema("core")
+            .from("user_storage_usage")
+            .update({
+              work_log_photos_bytes: nextBytes,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("user_id", workLog.user_id);
+
+          if (usageError) {
+            console.warn("[workLogs.deletePhoto] Failed to update usage metrics", {
+              userId: workLog.user_id,
+              message: usageError.message,
+            });
+          }
+        }
+      }
+
+      await recordAuditLog(supabase, {
+        workLogId: workLog.id,
+        userId: user.id,
+        action: "photo_removed",
+        oldValue: {
+          photo_id: photoRecord.id,
+          file_path: photoRecord.file_path,
+        },
+        newValue: null,
+      });
+
+      return { success: true };
     }),
 
   updateProfileVisibility: protectedProcedure

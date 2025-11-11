@@ -589,6 +589,46 @@ export const backgroundChecksRouter = t.router({
     }),
 
   /**
+   * List disputes for the authenticated user's background check.
+   */
+  listDisputesForCheck: protectedProcedure
+    .input(z.object({ background_check_id: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const { supabase, user } = ctx
+
+      const { data, error } = await supabase
+        .schema('core')
+        .from('background_check_disputes')
+        .select(
+          'id, dispute_reason, dispute_details, supporting_documents, status, created_at, updated_at, resolved_at, resolution, resolution_notes',
+        )
+        .eq('background_check_id', input.background_check_id)
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to load disputes for this background check',
+          cause: error,
+        })
+      }
+
+      return (data ?? []).map((row) => ({
+        id: row.id,
+        dispute_reason: row.dispute_reason,
+        dispute_details: row.dispute_details,
+        supporting_documents: Array.isArray(row.supporting_documents) ? row.supporting_documents : [],
+        status: row.status,
+        created_at: row.created_at,
+        updated_at: row.updated_at,
+        resolved_at: row.resolved_at,
+        resolution: row.resolution,
+        resolution_notes: row.resolution_notes,
+      }))
+    }),
+
+  /**
    * Generate a signed upload URL for a background check document.
    */
   createUploadUrl: protectedProcedure
@@ -1627,6 +1667,187 @@ export const backgroundChecksRouter = t.router({
       }
 
       return data
+    }),
+
+  adminGetMetrics: officeProcedure.query(async ({ ctx }) => {
+    const { supabase } = ctx
+
+    const [{ data: checks, error: checksError }, { data: disputes, error: disputesError }] =
+      await Promise.all([
+        supabase
+          .schema('core')
+          .from('background_checks')
+          .select(
+            'status, created_at, completed_at, package:background_check_packages(id, display_name, slug)',
+          ),
+        supabase.schema('core').from('background_check_disputes').select('status'),
+      ])
+
+    if (checksError || disputesError) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Unable to load background check metrics',
+        cause: checksError ?? disputesError,
+      })
+    }
+
+    const statusTotals: Record<string, number> = {}
+    const packageTotals: Record<string, number> = {}
+    let completedCount = 0
+    let durationSumDays = 0
+
+    ;(checks ?? []).forEach((record) => {
+      const status = record.status ?? 'unknown'
+      statusTotals[status] = (statusTotals[status] ?? 0) + 1
+
+      if (record.completed_at) {
+        const createdAt = new Date(record.created_at ?? record.completed_at).getTime()
+        const completedAt = new Date(record.completed_at).getTime()
+        if (!Number.isNaN(createdAt) && !Number.isNaN(completedAt) && completedAt >= createdAt) {
+          const diffDays = (completedAt - createdAt) / (1000 * 60 * 60 * 24)
+          durationSumDays += diffDays
+          completedCount += 1
+        }
+      }
+
+      const packageLabel =
+        record.package?.display_name ?? record.package?.slug ?? 'Uncategorized Package'
+      packageTotals[packageLabel] = (packageTotals[packageLabel] ?? 0) + 1
+    })
+
+    const disputeTotals: Record<string, number> = {}
+    ;(disputes ?? []).forEach((record) => {
+      const status = record.status ?? 'unknown'
+      disputeTotals[status] = (disputeTotals[status] ?? 0) + 1
+    })
+
+    const averageCompletionDays =
+      completedCount > 0 ? +(durationSumDays / completedCount).toFixed(1) : null
+
+    const packageDistribution = Object.entries(packageTotals).map(([label, count]) => ({
+      label,
+      count,
+    }))
+
+    return {
+      totals: {
+        checks: checks?.length ?? 0,
+        under_review: statusTotals['under_review'] ?? 0,
+        disputed: statusTotals['disputed'] ?? 0,
+        completed:
+          (statusTotals['completed_clear'] ?? 0) +
+          (statusTotals['completed_consider'] ?? 0) +
+          (statusTotals['completed_not_clear'] ?? 0),
+      },
+      disputes: {
+        pending: disputeTotals['pending'] ?? 0,
+        under_review: disputeTotals['under_review'] ?? 0,
+        resolved: disputeTotals['resolved'] ?? 0,
+        upheld: disputeTotals['upheld'] ?? 0,
+      },
+      averageCompletionDays,
+      packageDistribution,
+    }
+  }),
+
+  adminGetAccessLog: officeProcedure
+    .input(
+      z
+        .object({
+          limit: z.number().int().positive().max(500).default(200),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const { supabase } = ctx
+
+      const { data, error } = await supabase
+        .schema('core')
+        .from('background_check_access_log')
+        .select(
+          `
+            id,
+            background_check_id,
+            accessed_by_user_id,
+            access_type,
+            accessed_at,
+            ip_address,
+            user_agent,
+            background_check:background_checks(
+              id,
+              status,
+              package:background_check_packages(id, display_name, slug),
+              worker:users!background_checks_user_id_fkey(id, display_name, username, email)
+            ),
+            actor:users!background_check_access_log_accessed_by_user_id_fkey(id, display_name, username, email)
+          `,
+        )
+        .order('accessed_at', { ascending: false })
+        .limit(input?.limit ?? 200)
+
+      if (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to load access log entries',
+          cause: error,
+        })
+      }
+
+      return (data ?? []).map((row) => {
+        const backgroundCheckRecord = (row.background_check ?? null) as
+          | {
+              id?: string | null
+              status?: string | null
+              package?: { display_name?: string | null; slug?: string | null } | null
+              worker?:
+                | {
+                    id?: string | null
+                    display_name?: string | null
+                    username?: string | null
+                    email?: string | null
+                  }
+                | null
+            }
+          | null
+
+        const actorRecord = (row.actor ?? null) as
+          | { id?: string | null; display_name?: string | null; username?: string | null; email?: string | null }
+          | null
+
+        const backgroundCheckPackage =
+          backgroundCheckRecord?.package?.display_name ??
+          backgroundCheckRecord?.package?.slug ??
+          null
+        const workerName =
+          backgroundCheckRecord?.worker?.display_name ??
+          backgroundCheckRecord?.worker?.username ??
+          (backgroundCheckRecord?.worker?.id ? `User ${backgroundCheckRecord.worker.id.slice(0, 8)}` : null)
+
+        const actorName =
+          actorRecord?.display_name ??
+          actorRecord?.username ??
+          (actorRecord?.id ? `User ${actorRecord.id.slice(0, 8)}` : 'Administrator')
+
+        return {
+          id: row.id,
+          background_check_id: row.background_check_id,
+          access_type: row.access_type,
+          accessed_at: row.accessed_at,
+          ip_address: row.ip_address,
+          user_agent: row.user_agent,
+          actor: {
+            id: actorRecord?.id ?? null,
+            name: actorName,
+            email: actorRecord?.email ?? null,
+          },
+          background_check: {
+            id: backgroundCheckRecord?.id ?? null,
+            status: backgroundCheckRecord?.status ?? null,
+            package_name: backgroundCheckPackage,
+            worker_name: workerName,
+          },
+        }
+      })
     }),
 
   /**

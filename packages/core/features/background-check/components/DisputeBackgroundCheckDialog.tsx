@@ -1,24 +1,21 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { AlertTriangle } from '@tamagui/lucide-icons'
 import {
   Button,
   Dialog,
-  Input,
-  Label,
   Separator,
-  Spinner,
   Text,
-  TextArea,
   XStack,
   YStack,
 } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import type { inferRouterOutputs } from '@trpc/server'
 
-import type { AppRouter } from '@app/supabase/client-types'
-import { api } from '@app/core/utils/api'
 import { formatDate } from '@app/core/features/profile/utils/date-formatting'
 import { getStatusMetadata } from './status.utils'
+import { DisputeForm } from './DisputeForm'
+import { DisputeStatusTracker } from './DisputeStatusTracker'
+import { useDispute } from '../hooks/useDispute'
+import type { inferRouterOutputs } from '@trpc/server'
+import type { AppRouter } from '@app/supabase/client-types'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type BackgroundCheckSummary = RouterOutputs['backgroundChecks']['listChecks'][number]
@@ -36,64 +33,48 @@ export function DisputeBackgroundCheckDialog({
   onOpenChange,
   onSubmitted,
 }: DisputeBackgroundCheckDialogProps) {
-  const toast = useToastController()
-  const utils = api.useUtils()
-
-  const [reason, setReason] = useState('')
-  const [details, setDetails] = useState('')
-  const [errors, setErrors] = useState<{ reason?: string; details?: string }>({})
-
-  useEffect(() => {
-    if (open) {
-      setReason('')
-      setDetails('')
-      setErrors({})
-    }
-  }, [open, check?.id])
-
-  const submitMutation = api.backgroundChecks.submitDispute.useMutation({
-    onSuccess: async () => {
-      toast.show('Dispute submitted', {
-        message: 'Our compliance team will review your request shortly.',
-      })
-      await utils.backgroundChecks.listChecks.invalidate()
-      onSubmitted()
-    },
-    onError: (error: unknown) => {
-      toast.show('Unable to submit dispute', {
-        message: error instanceof Error ? error.message : 'Please try again soon.',
-        type: 'error',
-      })
-    },
+  const {
+    form,
+    reasonOptions,
+    attachments,
+    addAttachment,
+    removeAttachment,
+    submitDispute,
+    reset,
+    isSubmitting,
+    isUploading,
+    attachmentError,
+    submissionError,
+    disputes,
+    isLoadingDisputes,
+    hasActiveDispute,
+    refetchDisputes,
+  } = useDispute({
+    checkId: check?.id ?? null,
+    enabled: open,
   })
 
   const statusMeta = useMemo(() => {
     if (!check) return null
-    return getStatusMetadata(check.status)
+    return getStatusMetadata(check.status as never)
   }, [check])
 
+  useEffect(() => {
+    if (!open) {
+      reset()
+    }
+  }, [open, reset])
+
   const handleSubmit = async () => {
-    if (!check) return
-
-    const validationErrors: typeof errors = {}
-    if (!reason.trim()) {
-      validationErrors.reason = 'Provide a brief summary of the issue.'
+    const success = await submitDispute()
+    if (success) {
+      onSubmitted()
     }
-    if (!details.trim()) {
-      validationErrors.details = 'Describe what is incorrect or missing.'
-    }
-
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors)
-      return
-    }
-
-    await submitMutation.mutateAsync({
-      background_check_id: check.id,
-      dispute_reason: reason.trim(),
-      dispute_details: details.trim(),
-    })
+    return success
   }
+
+  const summaryPackage =
+    check?.package?.display_name ?? check?.package?.slug ?? 'Background check package'
 
   return (
     <Dialog modal open={open} onOpenChange={onOpenChange}>
@@ -120,7 +101,7 @@ export function DisputeBackgroundCheckDialog({
                 Dispute background check
               </Dialog.Title>
               <Dialog.Close asChild>
-                <Button size="$2" variant="outlined" disabled={submitMutation.isLoading}>
+                <Button size="$2" variant="outlined" disabled={isSubmitting || isUploading}>
                   Close
                 </Button>
               </Dialog.Close>
@@ -137,7 +118,7 @@ export function DisputeBackgroundCheckDialog({
                 <Text fontSize="$2" color="$color10">
                   Package:{' '}
                   <Text fontWeight="600" color="$color12">
-                    {check.package?.display_name ?? check.package?.slug ?? 'Unknown package'}
+                    {summaryPackage}
                   </Text>
                 </Text>
                 <Text fontSize="$2" color="$color10">
@@ -152,81 +133,37 @@ export function DisputeBackgroundCheckDialog({
               </YStack>
             ) : null}
 
-            <Separator />
-
-            <YStack gap="$3">
-              <YStack gap="$1">
-                <Label htmlFor="dispute-reason">What needs review?</Label>
-                <Input
-                  id="dispute-reason"
-                  placeholder="Incorrect criminal record, missing certification, etc."
-                  value={reason}
-                  onChangeText={(value) => {
-                    setReason(value)
-                    if (errors.reason) {
-                      setErrors((prev) => ({ ...prev, reason: undefined }))
-                    }
-                  }}
+            {check ? (
+              <>
+                <DisputeStatusTracker
+                  disputes={disputes}
+                  isLoading={isLoadingDisputes}
+                  onRefresh={refetchDisputes}
                 />
-                {errors.reason ? (
-                  <Text fontSize="$2" color="$red10">
-                    {errors.reason}
-                  </Text>
-                ) : null}
-              </YStack>
 
-              <YStack gap="$1">
-                <Label htmlFor="dispute-details">Explain the issue</Label>
-                <TextArea
-                  id="dispute-details"
-                  rows={6}
-                  placeholder="Share specific details, dates, or supporting context to investigate."
-                  value={details}
-                  onChangeText={(value) => {
-                    setDetails(value)
-                    if (errors.details) {
-                      setErrors((prev) => ({ ...prev, details: undefined }))
-                    }
-                  }}
+                <Separator />
+
+                <DisputeForm
+                  form={form}
+                  reasonOptions={reasonOptions}
+                  attachments={attachments}
+                  onSelectAttachment={addAttachment}
+                  onRemoveAttachment={removeAttachment}
+                  onSubmit={handleSubmit}
+                  isSubmitting={isSubmitting}
+                  isUploading={isUploading}
+                  attachmentError={attachmentError}
+                  submissionError={submissionError}
+                  hasActiveDispute={hasActiveDispute}
                 />
-                {errors.details ? (
-                  <Text fontSize="$2" color="$red10">
-                    {errors.details}
-                  </Text>
-                ) : null}
+              </>
+            ) : (
+              <YStack gap="$3" items="center" py="$6">
+                <Text fontSize="$3" color="$color10">
+                  Select a background check to review dispute information.
+                </Text>
               </YStack>
-
-              <Text fontSize="$2" color="$color10">
-                We will share this dispute with the background check provider. Expect an update within 5 business days.
-              </Text>
-            </YStack>
-
-            <XStack gap="$2" justify="flex-end">
-              <Dialog.Close asChild>
-                <Button
-                  size="$3"
-                  variant="outlined"
-                  disabled={submitMutation.isLoading}
-                >
-                  Cancel
-                </Button>
-              </Dialog.Close>
-              <Button
-                size="$3"
-                theme="blue"
-                onPress={handleSubmit}
-                disabled={submitMutation.isLoading}
-              >
-                {submitMutation.isLoading ? (
-                  <XStack gap="$2" items="center">
-                    <Spinner size="small" color="$color1" />
-                    <Text color="$color1">Submitting…</Text>
-                  </XStack>
-                ) : (
-                  'Submit dispute'
-                )}
-              </Button>
-            </XStack>
+            )}
           </YStack>
         </Dialog.Content>
       </Dialog.Portal>

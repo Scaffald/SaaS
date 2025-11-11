@@ -8,7 +8,7 @@ import {
   teamInvitationPolicySchema,
   teamRoleKeySchema,
 } from '@app/schemas'
-import { TeamForm } from '@app/core/features/office/teams'
+import { TeamForm, TeamMembersList } from '@app/core/features/office/teams'
 import { api } from '@app/core/utils/api'
 
 export default function EditTeamPage() {
@@ -93,28 +93,32 @@ export default function EditTeamPage() {
     : undefined
 
   return (
-    <TeamForm
-      mode="edit"
-      organizationId={team.organizationId}
-      teamId={team.id}
-      onCancel={() => router.back()}
-      initialData={{
-        id: team.id,
-        name: team.name ?? '',
-        slug: team.slug ?? undefined,
-        purpose: team.purpose ?? undefined,
-        visibility,
-        invitationPolicy,
-        description: team.description ?? undefined,
-        defaultRole: team.defaultRole
-          ? {
-              id: team.defaultRole.id,
-              key: teamRoleKeySchema.parse(team.defaultRole.key),
-            }
-          : null,
-        defaultRoleId: team.defaultRole?.id ?? team.defaultRoleId ?? null,
-        defaultRoleKey: parsedDefaultRoleKey ?? undefined,
-      }}
-    />
+    <YStack flex={1} gap="$6" p="$4">
+      <TeamForm
+        mode="edit"
+        organizationId={team.organizationId}
+        teamId={team.id}
+        onCancel={() => router.back()}
+        initialData={{
+          id: team.id,
+          name: team.name ?? '',
+          slug: team.slug ?? undefined,
+          purpose: team.purpose ?? undefined,
+          visibility,
+          invitationPolicy,
+          description: team.description ?? undefined,
+          defaultRole: team.defaultRole
+            ? {
+                id: team.defaultRole.id,
+                key: teamRoleKeySchema.parse(team.defaultRole.key),
+              }
+            : null,
+          defaultRoleId: team.defaultRole?.id ?? team.defaultRoleId ?? null,
+          defaultRoleKey: parsedDefaultRoleKey ?? undefined,
+        }}
+      />
+
+      <TeamMembersList teamId={team.id} organizationId={team.organizationId} />
+    </YStack>
   )
 }

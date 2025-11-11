@@ -3,18 +3,21 @@ import { ScrollView } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Button, Input, Label, Select, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
 import { Check, ChevronDown, CircleAlert } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
+import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server'
 
 import type { AppRouter } from '@app/supabase/client-types'
+import { ROUTES } from '@app/core/constants/routes'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
 import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
 
+type RouterInputs = inferRouterInputs<AppRouter>
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type PackageSummary = RouterOutputs['backgroundChecks']['listPackages'][number]
 type WorkerSummary = RouterOutputs['workers']['getWorkers']['workers'][number]
 type JobSummary = RouterOutputs['office']['listJobs']['jobs'][number]
 type OrganizationSummary = RouterOutputs['office']['getOrganizations']['organizations'][number]
+type OrganizationInitiateInput = RouterInputs['backgroundChecks']['organizationInitiate']
 
 const formatCurrency = (cents: number | null | undefined) => {
   if (typeof cents !== 'number') return '—'
@@ -81,11 +84,9 @@ export function OrganizationBackgroundCheckRequestForm() {
   const jobs = useMemo<JobSummary[]>(() => jobsQuery.data?.jobs ?? [], [jobsQuery.data?.jobs])
 
   const initiateMutation = api.backgroundChecks.organizationInitiate.useMutation({
-    onSuccess: async (_data, variables) => {
+    onSuccess: async (_data: unknown, variables: OrganizationInitiateInput | undefined) => {
       const orgId =
-        typeof (variables as { organization_id?: unknown })?.organization_id === 'string'
-          ? (variables as { organization_id: string }).organization_id
-          : organizationId
+        typeof variables?.organization_id === 'string' ? variables.organization_id : organizationId
       toast.show('Background check requested', {
         message: 'Worker has been invited to start their background check.',
       })
@@ -94,7 +95,7 @@ export function OrganizationBackgroundCheckRequestForm() {
           organization_id: orgId,
         })
         router.replace({
-          pathname: '/office/background-checks',
+          pathname: ROUTES.OFFICE_BACKGROUND_CHECKS.path,
           params: { organizationId: orgId },
         })
       }

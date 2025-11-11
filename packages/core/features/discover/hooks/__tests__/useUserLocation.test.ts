@@ -6,6 +6,8 @@ const originalNavigator = globalThis.navigator
 
 type GeolocationArgs = Parameters<Geolocation['getCurrentPosition']>
 type GeolocationReturn = ReturnType<Geolocation['getCurrentPosition']>
+type PositionSuccessCallback = (position: GeolocationPosition) => void
+type PositionErrorCallback = (error: GeolocationPositionError) => void
 
 const getCurrentPositionMock = vi.fn<GeolocationArgs, GeolocationReturn>()
 const watchPositionMock = vi.fn<
@@ -55,8 +57,8 @@ describe('useUserLocation (web)', () => {
     const invokeSuccess =
       (position: GeolocationPosition) =>
         (
-          successCallback: GeolocationPositionCallback,
-          _errorCallback?: GeolocationPositionErrorCallback | null,
+          successCallback: PositionSuccessCallback,
+          _errorCallback?: PositionErrorCallback | null,
           _options?: PositionOptions,
         ) => {
           successCallback(position)
@@ -111,8 +113,8 @@ describe('useUserLocation (web)', () => {
     const invokeError =
       (message: string) =>
         (
-          _successCallback: GeolocationPositionCallback,
-          errorCallback?: GeolocationPositionErrorCallback | null,
+          _successCallback: PositionSuccessCallback,
+          errorCallback?: PositionErrorCallback | null,
           _options?: PositionOptions,
         ) => {
           const positionError = {

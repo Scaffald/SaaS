@@ -63,7 +63,7 @@ export const ProjectSelector = memo(function ProjectSelector({
 
       {hasMultipleOrganizations && (
         <YStack gap="$1">
-          <Text fontSize="$3" color="$colorMuted">
+          <Text fontSize="$3" color="$color10">
             Organization
           </Text>
           <Select
@@ -108,17 +108,15 @@ export const ProjectSelector = memo(function ProjectSelector({
       )}
 
       <YStack gap="$1">
-        <Text fontSize="$3" color="$colorMuted">
+        <Text fontSize="$3" color="$color10">
           Select a project to associate with this work log.
         </Text>
-        <Select
-          value={value}
-          onValueChange={onChange}
-          size="$4"
-          disablePreventBodyScroll
-          disabled={disabled || isLoading || filteredProjects.length === 0}
-        >
-          <Select.Trigger bordered iconAfter={ChevronDown}>
+        <Select value={value} onValueChange={onChange} size="$4" disablePreventBodyScroll>
+          <Select.Trigger
+            bordered
+            iconAfter={ChevronDown}
+            disabled={disabled || isLoading || filteredProjects.length === 0}
+          >
             <Select.Value placeholder={isLoading ? "Loading projects..." : "Select a project"} />
           </Select.Trigger>
 
@@ -178,13 +176,13 @@ export const ProjectSelector = memo(function ProjectSelector({
       )}
 
       {helperText && (
-        <Text fontSize="$2" color="$colorMuted">
+        <Text fontSize="$2" color="$color10">
           {helperText}
         </Text>
       )}
 
       {!isLoading && !error && filteredProjects.length === 0 && (
-        <Text fontSize="$3" color="$colorMuted">
+        <Text fontSize="$3" color="$color10">
           No projects available for the selected organization.
         </Text>
       )}

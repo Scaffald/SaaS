@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useForm, useFieldArray, useWatch, type SubmitHandler } from "react-hook-form";
+import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNetInfo } from "@react-native-community/netinfo";
 import { useToastController } from "@tamagui/toast";
@@ -13,10 +13,8 @@ import {
   createWorkLogSchema,
   hasTimeEntriesOverlap,
 } from "../schemas";
-import {
-  useOfflineWorkLogs,
-  type OfflineWorkLog,
-} from "./useOfflineWorkLogs";
+import { useOfflineWorkLogs } from "./useOfflineWorkLogs";
+import type { OfflineWorkLog } from "../types/offline";
 
 const DEFAULT_TIME_ENTRY = {
   start: "",
@@ -108,7 +106,7 @@ export interface UseWorkLogFormReturn {
   totalHours: number;
   overlapDetected: boolean;
   autoSaveStatus: AutoSaveStatus;
-  submit: SubmitHandler<CreateWorkLogInput>;
+  submit: () => Promise<void>;
   isSubmitting: boolean;
   workLogId: string | null;
   location: ReturnType<typeof useWorkLogLocation>;
@@ -141,7 +139,7 @@ export const useWorkLogForm = ({
   );
 
   const lastSavedPayloadRef = useRef<CreateWorkLogInput | null>(null);
-  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const autoSaveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isSavingRef = useRef(false);
 
   const defaultValues: CreateWorkLogInput = {
@@ -186,7 +184,8 @@ export const useWorkLogForm = ({
   const sanitizedTimeEntries = useMemo(
     () =>
       (watchedValues.timeEntries ?? []).filter(
-        (entry) => typeof entry?.start === "string" && typeof entry?.end === "string",
+        (entry): entry is { start: string; end: string } =>
+          typeof entry?.start === "string" && typeof entry?.end === "string",
       ),
     [watchedValues.timeEntries],
   );
@@ -244,7 +243,7 @@ export const useWorkLogForm = ({
   }, [form]);
 
   const createWorkLogMutation = api.workLogs.create.useMutation({
-    onError: (error) => {
+    onError: (error: Error) => {
       setAutoSaveStatus({
         state: "error",
         message: error.message ?? "Failed to save work log draft.",
@@ -253,7 +252,7 @@ export const useWorkLogForm = ({
   });
 
   const updateWorkLogMutation = api.workLogs.update.useMutation({
-    onError: (error) => {
+    onError: (error: Error) => {
       setAutoSaveStatus({
         state: "error",
         message: error.message ?? "Failed to update work log draft.",
@@ -428,7 +427,7 @@ export const useWorkLogForm = ({
     [timeEntriesArray],
   );
 
-  const submit = handleSubmit(async (values) => {
+  const submitHandler = handleSubmit(async (values) => {
     const payload = createWorkLogSchema.safeParse(values);
     if (!payload.success) {
       toast.show("Unable to submit", {
@@ -506,6 +505,8 @@ export const useWorkLogForm = ({
       });
     }
   });
+
+  const submit = useCallback(() => submitHandler(), [submitHandler]);
 
   const captureLocation = useCallback(async () => {
     const result = await location.requestLocation();

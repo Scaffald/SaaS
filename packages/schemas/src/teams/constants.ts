@@ -3,7 +3,15 @@ import { z } from 'zod'
 export const TEAM_VISIBILITIES = ['organization', 'private'] as const
 export const TEAM_INVITATION_POLICIES = ['invite_only', 'request_to_join'] as const
 
-export const TEAM_ROLE_KEYS = ['admin', 'lead', 'recruiter', 'reviewer', 'member'] as const
+export const TEAM_ROLE_KEYS = [
+  'admin',
+  'team_admin',
+  'lead',
+  'team_lead',
+  'recruiter',
+  'reviewer',
+  'member',
+] as const
 
 export const TEAM_MEMBER_STATUSES = ['active', 'pending', 'removed'] as const
 

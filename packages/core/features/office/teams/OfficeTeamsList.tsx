@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useRouter } from 'expo-router'
-import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
+import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import { XStack, Text, YStack, Spinner, Button } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { Pencil } from '@tamagui/lucide-icons'
@@ -29,43 +29,46 @@ type TeamRow = {
   updatedAt?: string
 }
 
-const columnHelper = createColumnHelper<TeamRow>()
-
 const createColumns = (
   router: ReturnType<typeof useRouter>,
   onArchive: (team: TeamRow) => Promise<void>,
 ): ColumnDef<TeamRow, unknown>[] =>
   [
-    columnHelper.accessor('name', {
+    {
+      accessorKey: 'name',
       header: 'Team Name',
-      cell: (info) => info.getValue(),
+      cell: ({ row }: CellContext<TeamRow, unknown>) => row.original.name,
       meta: {
         width: '$20',
       },
-    }),
-    columnHelper.accessor('visibility', {
+    },
+    {
+      accessorKey: 'visibility',
       header: 'Visibility',
-      cell: (info) => {
-        const value = info.getValue()
+      cell: ({ row }: CellContext<TeamRow, unknown>) => {
+        const value = row.original.visibility
         return value.charAt(0).toUpperCase() + value.slice(1)
       },
-    }),
-    columnHelper.accessor('defaultRoleName', {
+    },
+    {
+      accessorKey: 'defaultRoleName',
       header: 'Default Role',
-      cell: (info) => info.getValue() ?? info.row.original.defaultRoleKey ?? 'Member',
-    }),
-    columnHelper.accessor('updatedAt', {
+      cell: ({ row }: CellContext<TeamRow, unknown>) =>
+        row.original.defaultRoleName ?? row.original.defaultRoleKey ?? 'Member',
+    },
+    {
+      accessorKey: 'updatedAt',
       header: 'Updated',
-      cell: (info) => {
-        const value = info.getValue()
+      cell: ({ row }: CellContext<TeamRow, unknown>) => {
+        const value = row.original.updatedAt
         return value ? new Date(value).toLocaleDateString() : '—'
       },
-    }),
-    columnHelper.display({
+    },
+    {
       id: 'actions',
       header: 'Actions',
-      cell: (info) => {
-        const team = info.row.original
+      cell: ({ row }: CellContext<TeamRow, unknown>) => {
+        const team = row.original
         return (
           <XStack gap="$2">
             <Button
@@ -85,8 +88,8 @@ const createColumns = (
           </XStack>
         )
       },
-    }),
-  ] satisfies ColumnDef<TeamRow, unknown>[]
+    },
+  ]
 
 export function OfficeTeamsList() {
   const router = useRouter()
@@ -177,12 +180,11 @@ export function OfficeTeamsList() {
       />
       {archiveMutation.isPending ? (
         <YStack
-          alignSelf="flex-end"
           bg="$color2"
           p="$3"
           rounded="$4"
           shadowColor="$color10"
-          style={{ marginRight: 16, marginBottom: 16 }}
+          style={{ alignSelf: 'flex-end', marginRight: 16, marginBottom: 16 }}
         >
           <XStack gap="$3" items="center">
             <Spinner size="small" />

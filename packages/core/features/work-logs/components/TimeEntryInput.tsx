@@ -101,9 +101,9 @@ export const TimeEntryInput = memo(function TimeEntryInput({
           chromeless
           onPress={onRemove}
           disabled={disableRemove}
-          alignSelf="flex-end"
           icon={MinusCircle}
           accessibilityLabel="Remove time entry"
+          style={{ alignSelf: "flex-end" }}
         />
       </XStack>
 
