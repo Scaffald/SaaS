@@ -5,21 +5,83 @@
 
 BEGIN;
 
+-- Temporary construction projects table to support work logs before dedicated schema lands
+CREATE TABLE IF NOT EXISTS core.construction_projects (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  organization_id UUID NOT NULL REFERENCES core.organizations (id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  project_number TEXT,
+  status TEXT,
+  description TEXT,
+  location JSONB,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  is_archived BOOLEAN NOT NULL DEFAULT FALSE,
+  archived BOOLEAN NOT NULL DEFAULT FALSE,
+  archived_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+DROP TRIGGER IF EXISTS construction_projects_set_updated_at ON core.construction_projects;
+
+CREATE TRIGGER construction_projects_set_updated_at
+  BEFORE UPDATE ON core.construction_projects
+  FOR EACH ROW
+  EXECUTE FUNCTION core.set_updated_at();
+
+CREATE INDEX IF NOT EXISTS construction_projects_org_idx
+  ON core.construction_projects (organization_id, is_archived);
+
+-- System config table for work log defaults
+CREATE TABLE IF NOT EXISTS core.system_config (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  description TEXT,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+DROP TRIGGER IF EXISTS system_config_set_updated_at ON core.system_config;
+
+CREATE TRIGGER system_config_set_updated_at
+  BEFORE UPDATE ON core.system_config
+  FOR EACH ROW
+  EXECUTE FUNCTION core.set_updated_at();
+
+-- Helper to calculate total time entry hours
+CREATE OR REPLACE FUNCTION core.calculate_time_entries_total_hours(time_entries JSONB)
+RETURNS NUMERIC
+LANGUAGE sql
+IMMUTABLE
+AS $$
+  SELECT COALESCE(
+    SUM(
+      (
+        EXTRACT(
+          EPOCH FROM (
+            (entry->>'end')::time - (entry->>'start')::time
+          )
+        ) / 3600
+      )::numeric
+    ),
+    0::numeric
+  )
+  FROM jsonb_array_elements(time_entries) AS entry
+  WHERE entry ? 'start'
+    AND entry ? 'end'
+    AND (entry->>'start') IS NOT NULL
+    AND (entry->>'end') IS NOT NULL
+$$;
+
 -- Create work logs table
 CREATE TABLE core.work_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES core.users (id) ON DELETE CASCADE,
-  project_id UUID NOT NULL REFERENCES public.construction_projects (id) ON DELETE CASCADE,
+  project_id UUID NOT NULL REFERENCES core.construction_projects (id) ON DELETE CASCADE,
   entry_type TEXT NOT NULL DEFAULT 'daily' CHECK (entry_type IN ('daily', 'project', 'task')),
   log_date DATE NOT NULL,
   time_entries JSONB NOT NULL DEFAULT '[]'::jsonb,
   total_hours NUMERIC(5, 2) GENERATED ALWAYS AS (
-    (
-      SELECT COALESCE(SUM(
-        EXTRACT(EPOCH FROM ((entry->>'end')::time - (entry->>'start')::time)) / 3600
-      ), 0)
-      FROM jsonb_array_elements(time_entries) AS entry
-    )
+    core.calculate_time_entries_total_hours(time_entries)
   ) STORED,
   work_description TEXT NOT NULL,
   tasks_completed TEXT[] DEFAULT ARRAY[]::text[],
@@ -129,18 +191,18 @@ CREATE INDEX work_log_conversations_user_idx ON core.work_log_conversations (use
 CREATE INDEX user_storage_usage_total_idx ON core.user_storage_usage (total_bytes DESC);
 
 -- Organization-level configuration
-ALTER TABLE public.organizations
+ALTER TABLE core.organizations
   ADD COLUMN IF NOT EXISTS work_log_require_verification BOOLEAN DEFAULT FALSE,
   ADD COLUMN IF NOT EXISTS work_log_require_approval_to_move BOOLEAN DEFAULT FALSE,
   ADD COLUMN IF NOT EXISTS work_log_default_entry_type TEXT DEFAULT 'daily' CHECK (work_log_default_entry_type IN ('daily', 'project', 'task'));
 
 -- Project-level configuration
-ALTER TABLE public.construction_projects
+ALTER TABLE core.construction_projects
   ADD COLUMN IF NOT EXISTS work_log_entry_type_override TEXT CHECK (work_log_entry_type_override IN ('daily', 'project', 'task')),
   ADD COLUMN IF NOT EXISTS work_log_require_verification_override BOOLEAN;
 
 -- System configuration defaults
-INSERT INTO public.system_config (key, value, description)
+INSERT INTO core.system_config (key, value, description)
 VALUES
   ('work_log_default_storage_limit_mb', '100', 'Default storage limit for work log photos per user (MB)'),
   ('work_log_max_photos_per_entry', '10', 'Maximum number of photos per work log entry'),
@@ -151,5 +213,4 @@ SET value = EXCLUDED.value,
     description = EXCLUDED.description;
 
 COMMIT;
-
 

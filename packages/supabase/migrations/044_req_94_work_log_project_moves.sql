@@ -23,7 +23,7 @@ CREATE INDEX IF NOT EXISTS work_logs_pending_move_project_idx
 -- Allow tracking of approval requirements per project
 -- ---------------------------------------------------------
 
-ALTER TABLE public.construction_projects
+ALTER TABLE core.construction_projects
   ADD COLUMN IF NOT EXISTS work_log_require_approval_to_move_override BOOLEAN;
 
 -- ---------------------------------------------------------

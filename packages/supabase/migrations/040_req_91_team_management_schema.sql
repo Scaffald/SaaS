@@ -1,511 +1,5 @@
 -- =========================================================
 -- 040_req_91_team_management_schema.sql
--- Team management schema expansion for REQ-91
--- =========================================================
-
-BEGIN;
-
--- =========================================================
--- Teams table enhancements
--- =========================================================
-
-ALTER TABLE core.teams
-  ADD COLUMN description JSONB,
-  ADD COLUMN purpose TEXT,
-  ADD COLUMN visibility TEXT NOT NULL DEFAULT 'organization'
-    CHECK (visibility IN ('organization', 'private')),
-  ADD COLUMN invitation_policy TEXT NOT NULL DEFAULT 'invite_only'
-    CHECK (invitation_policy IN ('invite_only', 'request_to_join')),
-  ADD COLUMN default_role_key TEXT NOT NULL DEFAULT 'member',
-  ADD COLUMN default_role_id UUID,
-  ADD COLUMN metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
-  ADD COLUMN is_archived BOOLEAN NOT NULL DEFAULT FALSE,
-  ADD COLUMN archived_at TIMESTAMPTZ,
-  ADD COLUMN archived_by UUID;
-
-COMMENT ON COLUMN core.teams.description IS
-  'Rich text description of the team purpose and responsibilities.';
-COMMENT ON COLUMN core.teams.purpose IS
-  'Optional freeform purpose descriptor (department, project, location, etc).';
-COMMENT ON COLUMN core.teams.visibility IS
-  'Controls discoverability within the organization (organization | private).';
-COMMENT ON COLUMN core.teams.invitation_policy IS
-  'How new members join the team (invite_only | request_to_join).';
-COMMENT ON COLUMN core.teams.default_role_key IS
-  'Key of the default team role assigned to new members.';
-COMMENT ON COLUMN core.teams.metadata IS
-  'Extensible JSON metadata for future configurability.';
-COMMENT ON COLUMN core.teams.is_archived IS
-  'Soft delete flag indicating the team is archived.';
-COMMENT ON COLUMN core.teams.archived_at IS
-  'Timestamp when the team was archived.';
-COMMENT ON COLUMN core.teams.archived_by IS
-  'User who archived the team.';
-
-ALTER TABLE core.teams
-  ADD CONSTRAINT teams_archived_by_fkey
-    FOREIGN KEY (archived_by) REFERENCES core.users(id);
-
-ALTER TABLE core.teams
-  ADD CONSTRAINT teams_default_role_id_fkey
-    FOREIGN KEY (default_role_id) REFERENCES core.team_roles(id);
-
-CREATE INDEX IF NOT EXISTS teams_visibility_idx
-  ON core.teams (visibility, is_archived);
-
--- =========================================================
--- Team roles
--- =========================================================
-
-CREATE TABLE core.team_roles (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  organization_id UUID,
-  key TEXT NOT NULL,
-  name TEXT NOT NULL,
-  description TEXT,
-  priority SMALLINT NOT NULL DEFAULT 100,
-  is_default BOOLEAN NOT NULL DEFAULT FALSE,
-  is_system BOOLEAN NOT NULL DEFAULT FALSE,
-  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
-  created_by UUID,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-COMMENT ON TABLE core.team_roles IS
-  'Defines team roles either globally (organization_id NULL) or per-organization.';
-COMMENT ON COLUMN core.team_roles.key IS
-  'Stable identifier used by applications (e.g., admin, lead, recruiter).';
-COMMENT ON COLUMN core.team_roles.priority IS
-  'Lower numbers represent higher privilege when resolving conflicts.';
-COMMENT ON COLUMN core.team_roles.is_default IS
-  'Whether this role is assigned automatically to new members.';
-COMMENT ON COLUMN core.team_roles.is_system IS
-  'Marks global system roles that cannot be deleted.';
-
-ALTER TABLE core.team_roles
-  ADD CONSTRAINT team_roles_key_org_unique UNIQUE (organization_id, key);
-
-ALTER TABLE core.team_roles
-  ADD CONSTRAINT team_roles_organization_fkey
-    FOREIGN KEY (organization_id) REFERENCES core.organizations(id)
-    ON DELETE CASCADE;
-
-ALTER TABLE core.team_roles
-  ADD CONSTRAINT team_roles_created_by_fkey
-    FOREIGN KEY (created_by) REFERENCES core.users(id);
-
-CREATE INDEX IF NOT EXISTS team_roles_org_idx
-  ON core.team_roles (organization_id, priority);
-
--- =========================================================
--- Team role permissions
--- =========================================================
-
-CREATE TABLE core.team_role_permissions (
-  role_id UUID NOT NULL,
-  permission_key TEXT NOT NULL,
-  created_by UUID,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  PRIMARY KEY (role_id, permission_key)
-);
-
-COMMENT ON TABLE core.team_role_permissions IS
-  'Associates roles with granular permission keys used by application logic.';
-
-ALTER TABLE core.team_role_permissions
-  ADD CONSTRAINT team_role_permissions_role_id_fkey
-    FOREIGN KEY (role_id) REFERENCES core.team_roles(id)
-    ON DELETE CASCADE;
-
-ALTER TABLE core.team_role_permissions
-  ADD CONSTRAINT team_role_permissions_created_by_fkey
-    FOREIGN KEY (created_by) REFERENCES core.users(id);
-
-CREATE INDEX IF NOT EXISTS team_role_permissions_permission_idx
-  ON core.team_role_permissions (permission_key);
-
--- =========================================================
--- Team members enrichment
--- =========================================================
-
-ALTER TABLE core.team_members
-  ADD COLUMN role_id UUID,
-  ADD COLUMN invited_by UUID,
-  ADD COLUMN status TEXT NOT NULL DEFAULT 'active'
-    CHECK (status IN ('active', 'pending', 'removed')),
-  ADD COLUMN joined_at TIMESTAMPTZ,
-  ADD COLUMN removed_at TIMESTAMPTZ,
-  ADD COLUMN metadata JSONB NOT NULL DEFAULT '{}'::jsonb;
-
-ALTER TABLE core.team_members
-  ADD CONSTRAINT team_members_role_id_fkey
-    FOREIGN KEY (role_id) REFERENCES core.team_roles(id);
-
-ALTER TABLE core.team_members
-  ADD CONSTRAINT team_members_invited_by_fkey
-    FOREIGN KEY (invited_by) REFERENCES core.users(id);
-
-CREATE INDEX IF NOT EXISTS team_members_status_idx
-  ON core.team_members (team_id, status);
-
--- Backfill existing members
-WITH member_role AS (
-  SELECT id
-  FROM core.team_roles
-  WHERE organization_id IS NULL
-    AND key = 'member'
-  LIMIT 1
-),
-ensure_member_role AS (
-  INSERT INTO core.team_roles (organization_id, key, name, description, priority, is_default, is_system)
-  SELECT NULL, 'member', 'Member', 'Read-only access to team content.', 400, TRUE, TRUE
-  WHERE NOT EXISTS (SELECT 1 FROM member_role)
-  RETURNING id
-),
-resolved_member_role AS (
-  SELECT id FROM member_role
-  UNION ALL
-  SELECT id FROM ensure_member_role
-)
-UPDATE core.team_members tm
-SET
-  role_id = resolved_member_role.id,
-  joined_at = COALESCE(tm.joined_at, tm.created_at),
-  status = 'active'
-FROM resolved_member_role
-WHERE tm.role_id IS NULL;
-
-ALTER TABLE core.team_members
-  ALTER COLUMN role_id SET NOT NULL;
-
--- =========================================================
--- Team invitations
--- =========================================================
-
-CREATE TABLE core.team_invitations (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  team_id UUID NOT NULL,
-  email CITEXT NOT NULL,
-  invited_user_id UUID,
-  role_id UUID,
-  status TEXT NOT NULL DEFAULT 'pending'
-    CHECK (status IN ('pending', 'accepted', 'declined', 'expired', 'revoked')),
-  token TEXT NOT NULL,
-  expires_at TIMESTAMPTZ NOT NULL,
-  accepted_at TIMESTAMPTZ,
-  declined_at TIMESTAMPTZ,
-  revoked_at TIMESTAMPTZ,
-  created_by UUID NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  metadata JSONB NOT NULL DEFAULT '{}'::jsonb
-);
-
-COMMENT ON TABLE core.team_invitations IS
-  'Tracks invitations for users to join teams, including status transitions.';
-
-ALTER TABLE core.team_invitations
-  ADD CONSTRAINT team_invitations_team_id_fkey
-    FOREIGN KEY (team_id) REFERENCES core.teams(id)
-    ON DELETE CASCADE;
-
-ALTER TABLE core.team_invitations
-  ADD CONSTRAINT team_invitations_role_id_fkey
-    FOREIGN KEY (role_id) REFERENCES core.team_roles(id);
-
-ALTER TABLE core.team_invitations
-  ADD CONSTRAINT team_invitations_invited_user_fkey
-    FOREIGN KEY (invited_user_id) REFERENCES core.users(id);
-
-ALTER TABLE core.team_invitations
-  ADD CONSTRAINT team_invitations_created_by_fkey
-    FOREIGN KEY (created_by) REFERENCES core.users(id);
-
-CREATE UNIQUE INDEX team_invitations_token_idx
-  ON core.team_invitations (token);
-
-CREATE INDEX team_invitations_team_status_idx
-  ON core.team_invitations (team_id, status);
-
-CREATE INDEX team_invitations_email_idx
-  ON core.team_invitations (team_id, email);
-
--- =========================================================
--- Team member audit log
--- =========================================================
-
-CREATE TABLE core.team_member_audit_log (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  team_id UUID NOT NULL,
-  member_user_id UUID,
-  actor_user_id UUID,
-  action TEXT NOT NULL
-    CHECK (action IN ('invited', 'joined', 'role_changed', 'removed', 'reinstated', 'left', 'invitation_rescinded')),
-  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-COMMENT ON TABLE core.team_member_audit_log IS
-  'Immutable audit trail of membership changes for compliance and analytics.';
-
-ALTER TABLE core.team_member_audit_log
-  ADD CONSTRAINT team_member_audit_log_team_id_fkey
-    FOREIGN KEY (team_id) REFERENCES core.teams(id)
-    ON DELETE CASCADE;
-
-ALTER TABLE core.team_member_audit_log
-  ADD CONSTRAINT team_member_audit_log_member_fkey
-    FOREIGN KEY (member_user_id) REFERENCES core.users(id);
-
-ALTER TABLE core.team_member_audit_log
-  ADD CONSTRAINT team_member_audit_log_actor_fkey
-    FOREIGN KEY (actor_user_id) REFERENCES core.users(id);
-
-CREATE INDEX team_member_audit_log_team_idx
-  ON core.team_member_audit_log (team_id, created_at DESC);
-
--- =========================================================
--- Seed system roles and permissions
--- =========================================================
-
-INSERT INTO core.team_roles (organization_id, key, name, description, priority, is_default, is_system)
-VALUES
-  (NULL, 'admin', 'Team Admin', 'Full team management including roles and settings.', 10, FALSE, TRUE),
-  (NULL, 'lead', 'Team Lead', 'Manage jobs, applications, and invite team members.', 20, FALSE, TRUE),
-  (NULL, 'recruiter', 'Recruiter', 'Manage candidate pipeline and communication.', 40, FALSE, TRUE),
-  (NULL, 'reviewer', 'Reviewer', 'Review applications and leave feedback.', 60, FALSE, TRUE),
-  (NULL, 'member', 'Member', 'View team content and collaborate.', 80, TRUE, TRUE)
-ON CONFLICT (organization_id, key) DO NOTHING;
-
-WITH role_ids AS (
-  SELECT key, id
-  FROM core.team_roles
-  WHERE organization_id IS NULL
-    AND key IN ('admin', 'lead', 'recruiter', 'reviewer', 'member')
-)
-INSERT INTO core.team_role_permissions (role_id, permission_key)
-SELECT
-  role_ids.id,
-  permission_key
-FROM role_ids
-JOIN (
-  VALUES
-    ('admin', 'team.manage'),
-    ('admin', 'team.members.manage'),
-    ('admin', 'team.roles.manage'),
-    ('admin', 'team.jobs.manage'),
-    ('admin', 'team.analytics.view'),
-    ('lead', 'team.members.invite'),
-    ('lead', 'team.jobs.manage'),
-    ('lead', 'team.analytics.view'),
-    ('lead', 'team.applications.manage'),
-    ('recruiter', 'team.applications.manage'),
-    ('recruiter', 'team.candidates.communicate'),
-    ('reviewer', 'team.applications.review'),
-    ('member', 'team.applications.view'),
-    ('member', 'team.discussion.participate')
-) AS permissions(role_key, permission_key)
-ON role_ids.key = permissions.role_key
-ON CONFLICT (role_id, permission_key) DO NOTHING;
-
--- Ensure teams default role aligns with seeded member role
-WITH member_role AS (
-  SELECT id
-  FROM core.team_roles
-  WHERE organization_id IS NULL
-    AND key = 'member'
-  LIMIT 1
-)
-UPDATE core.teams
-SET
-  default_role_id = member_role.id,
-  default_role_key = COALESCE(default_role_key, 'member')
-FROM member_role
-WHERE core.teams.default_role_id IS NULL;
-
--- =========================================================
--- RLS enablement and service role access for new tables
--- =========================================================
-
-ALTER TABLE core.team_roles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE core.team_roles FORCE ROW LEVEL SECURITY;
-ALTER TABLE core.team_role_permissions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE core.team_role_permissions FORCE ROW LEVEL SECURITY;
-ALTER TABLE core.team_invitations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE core.team_invitations FORCE ROW LEVEL SECURITY;
-ALTER TABLE core.team_member_audit_log ENABLE ROW LEVEL SECURITY;
-ALTER TABLE core.team_member_audit_log FORCE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS team_roles_service_role ON core.team_roles;
-CREATE POLICY team_roles_service_role
-  ON core.team_roles
-  FOR ALL
-  TO service_role
-  USING (TRUE)
-  WITH CHECK (TRUE);
-
-DROP POLICY IF EXISTS team_role_permissions_service_role ON core.team_role_permissions;
-CREATE POLICY team_role_permissions_service_role
-  ON core.team_role_permissions
-  FOR ALL
-  TO service_role
-  USING (TRUE)
-  WITH CHECK (TRUE);
-
-DROP POLICY IF EXISTS team_invitations_service_role ON core.team_invitations;
-CREATE POLICY team_invitations_service_role
-  ON core.team_invitations
-  FOR ALL
-  TO service_role
-  USING (TRUE)
-  WITH CHECK (TRUE);
-
-DROP POLICY IF EXISTS team_member_audit_log_service_role ON core.team_member_audit_log;
-CREATE POLICY team_member_audit_log_service_role
-  ON core.team_member_audit_log
-  FOR ALL
-  TO service_role
-  USING (TRUE)
-  WITH CHECK (TRUE);
-
-GRANT ALL ON core.team_roles TO service_role;
-GRANT ALL ON core.team_role_permissions TO service_role;
-GRANT ALL ON core.team_invitations TO service_role;
-GRANT ALL ON core.team_member_audit_log TO service_role;
-
-COMMIT;
-
--- =========================================================
--- 040_req_91_team_management_schema.sql
--- Team Management schema expansion for REQ-91
--- =========================================================
-
-BEGIN;
-
--- =========================================================
--- Extend core.teams with metadata and lifecycle management
--- =========================================================
-
-ALTER TABLE core.teams
-  ADD COLUMN description JSONB,
-  ADD COLUMN purpose TEXT,
-  ADD COLUMN visibility TEXT NOT NULL DEFAULT 'organization',
-  ADD COLUMN default_role_id UUID,
-  ADD COLUMN is_archived BOOLEAN NOT NULL DEFAULT false,
-  ADD COLUMN archived_at TIMESTAMPTZ,
-  ADD COLUMN archived_by UUID,
-  ADD COLUMN archived_reason TEXT,
-  ADD COLUMN settings JSONB NOT NULL DEFAULT '{}'::jsonb,
-  ADD COLUMN updated_by UUID;
-
-ALTER TABLE core.teams
-  ADD CONSTRAINT teams_visibility_check
-  CHECK (visibility IN ('organization', 'private'));
-
--- =========================================================
--- Expand core.team_members with role + status tracking
--- =========================================================
-
-ALTER TABLE core.team_members
-  ADD COLUMN role_id UUID,
-  ADD COLUMN status TEXT NOT NULL DEFAULT 'active',
-  ADD COLUMN joined_at TIMESTAMPTZ,
-  ADD COLUMN invited_by UUID,
-  ADD COLUMN added_by UUID,
-  ADD COLUMN invitation_id UUID,
-  ADD COLUMN updated_at TIMESTAMPTZ,
-  ADD COLUMN removed_at TIMESTAMPTZ,
-  ADD COLUMN removed_by UUID,
-  ADD COLUMN notes TEXT,
-  ADD COLUMN metadata JSONB NOT NULL DEFAULT '{}'::jsonb;
-
-ALTER TABLE core.team_members
-  ADD CONSTRAINT team_members_status_check
-  CHECK (status IN ('active', 'pending', 'invited', 'suspended', 'removed'));
-
-UPDATE core.team_members
-SET
-  status = 'active',
-  joined_at = COALESCE(joined_at, created_at),
-  updated_at = COALESCE(updated_at, created_at)
-WHERE joined_at IS NULL
-   OR updated_at IS NULL;
-
-ALTER TABLE core.team_members
-  ALTER COLUMN joined_at SET NOT NULL,
-  ALTER COLUMN updated_at SET NOT NULL,
-  ALTER COLUMN joined_at SET DEFAULT NOW(),
-  ALTER COLUMN updated_at SET DEFAULT NOW();
-
--- =========================================================
--- Team roles and permissions
--- =========================================================
-
-CREATE TABLE core.team_roles (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  organization_id UUID NOT NULL,
-  key TEXT NOT NULL,
-  name TEXT NOT NULL,
-  description TEXT,
-  is_default BOOLEAN NOT NULL DEFAULT false,
-  is_system BOOLEAN NOT NULL DEFAULT false,
-  created_by UUID,
-  updated_by UUID,
-  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  CONSTRAINT team_roles_key_unique UNIQUE (organization_id, key)
-);
-
-CREATE TABLE core.team_role_permissions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  role_id UUID NOT NULL,
-  permission TEXT NOT NULL,
-  effect TEXT NOT NULL DEFAULT 'allow',
-  created_by UUID,
-  updated_by UUID,
-  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  CONSTRAINT team_role_permissions_effect_check CHECK (effect IN ('allow', 'deny')),
-  CONSTRAINT team_role_permissions_unique UNIQUE (role_id, permission, effect)
-);
-
--- =========================================================
--- Team invitations tracking
--- =========================================================
-
-CREATE TABLE core.team_invitations (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  team_id UUID NOT NULL,
-  organization_id UUID NOT NULL,
-  inviter_user_id UUID NOT NULL,
-  invitee_user_id UUID,
-  invitee_email CITEXT,
-  role_id UUID,
-  token TEXT NOT NULL,
-  status TEXT NOT NULL DEFAULT 'pending',
-  message TEXT,
-  expires_at TIMESTAMPTZ,
-  responded_at TIMESTAMPTZ,
-  accepted_at TIMESTAMPTZ,
-  declined_at TIMESTAMPTZ,
-  cancelled_at TIMESTAMPTZ,
-  reminder_count INTEGER NOT NULL DEFAULT 0,
-  last_reminded_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  created_by UUID,
-  updated_by UUID,
-  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
-  CONSTRAINT team_invitations_status_check CHECK (status IN ('pending', 'accepted', 'declined', 'expired', 'cancelled')),
-  CONSTRAINT team_invitations_contact_check CHECK (invitee_user_id IS NOT NULL OR invitee_email IS NOT NULL),
-  CONSTRAINT team_invitations_token_unique UNIQUE (token)
-);
-
-COMMIT;
--- =========================================================
--- 040_req_91_team_management_schema.sql
 -- Team Management schema expansion: roles, permissions, invitations
 -- =========================================================
 
@@ -542,129 +36,71 @@ BEGIN
         'invitation.manage'
       )
     $enum$;
-  ELSE
-    PERFORM 1
-    FROM pg_enum
-    WHERE enumtypid = 'core.team_permission'::regtype
-      AND enumlabel = 'team.view';
-    IF NOT FOUND THEN
-      EXECUTE $$ALTER TYPE core.team_permission ADD VALUE IF NOT EXISTS 'team.view'$$;
-    END IF;
-
-    PERFORM 1
-    FROM pg_enum
-    WHERE enumtypid = 'core.team_permission'::regtype
-      AND enumlabel = 'team.manage';
-    IF NOT FOUND THEN
-      EXECUTE $$ALTER TYPE core.team_permission ADD VALUE IF NOT EXISTS 'team.manage'$$;
-    END IF;
-
-    PERFORM 1
-    FROM pg_enum
-    WHERE enumtypid = 'core.team_permission'::regtype
-      AND enumlabel = 'team.settings';
-    IF NOT FOUND THEN
-      EXECUTE $$ALTER TYPE core.team_permission ADD VALUE IF NOT EXISTS 'team.settings'$$;
-    END IF;
-
-    PERFORM 1
-    FROM pg_enum
-    WHERE enumtypid = 'core.team_permission'::regtype
-      AND enumlabel = 'team.invite';
-    IF NOT FOUND THEN
-      EXECUTE $$ALTER TYPE core.team_permission ADD VALUE IF NOT EXISTS 'team.invite'$$;
-    END IF;
-
-    PERFORM 1
-    FROM pg_enum
-    WHERE enumtypid = 'core.team_permission'::regtype
-      AND enumlabel = 'team.remove_member';
-    IF NOT FOUND THEN
-      EXECUTE $$ALTER TYPE core.team_permission ADD VALUE IF NOT EXISTS 'team.remove_member'$$;
-    END IF;
-
-    PERFORM 1
-    FROM pg_enum
-    WHERE enumtypid = 'core.team_permission'::regtype
-      AND enumlabel = 'team.assign_role';
-    IF NOT FOUND THEN
-      EXECUTE $$ALTER TYPE core.team_permission ADD VALUE IF NOT EXISTS 'team.assign_role'$$;
-    END IF;
-
-    PERFORM 1
-    FROM pg_enum
-    WHERE enumtypid = 'core.team_permission'::regtype
-      AND enumlabel = 'job.manage';
-    IF NOT FOUND THEN
-      EXECUTE $$ALTER TYPE core.team_permission ADD VALUE IF NOT EXISTS 'job.manage'$$;
-    END IF;
-
-    PERFORM 1
-    FROM pg_enum
-    WHERE enumtypid = 'core.team_permission'::regtype
-      AND enumlabel = 'application.review';
-    IF NOT FOUND THEN
-      EXECUTE $$ALTER TYPE core.team_permission ADD VALUE IF NOT EXISTS 'application.review'$$;
-    END IF;
-
-    PERFORM 1
-    FROM pg_enum
-    WHERE enumtypid = 'core.team_permission'::regtype
-      AND enumlabel = 'application.manage';
-    IF NOT FOUND THEN
-      EXECUTE $$ALTER TYPE core.team_permission ADD VALUE IF NOT EXISTS 'application.manage'$$;
-    END IF;
-
-    PERFORM 1
-    FROM pg_enum
-    WHERE enumtypid = 'core.team_permission'::regtype
-      AND enumlabel = 'application.comment';
-    IF NOT FOUND THEN
-      EXECUTE $$ALTER TYPE core.team_permission ADD VALUE IF NOT EXISTS 'application.comment'$$;
-    END IF;
-
-    PERFORM 1
-    FROM pg_enum
-    WHERE enumtypid = 'core.team_permission'::regtype
-      AND enumlabel = 'interview.schedule';
-    IF NOT FOUND THEN
-      EXECUTE $$ALTER TYPE core.team_permission ADD VALUE IF NOT EXISTS 'interview.schedule'$$;
-    END IF;
-
-    PERFORM 1
-    FROM pg_enum
-    WHERE enumtypid = 'core.team_permission'::regtype
-      AND enumlabel = 'offer.manage';
-    IF NOT FOUND THEN
-      EXECUTE $$ALTER TYPE core.team_permission ADD VALUE IF NOT EXISTS 'offer.manage'$$;
-    END IF;
-
-    PERFORM 1
-    FROM pg_enum
-    WHERE enumtypid = 'core.team_permission'::regtype
-      AND enumlabel = 'analytics.view';
-    IF NOT FOUND THEN
-      EXECUTE $$ALTER TYPE core.team_permission ADD VALUE IF NOT EXISTS 'analytics.view'$$;
-    END IF;
-
-    PERFORM 1
-    FROM pg_enum
-    WHERE enumtypid = 'core.team_permission'::regtype
-      AND enumlabel = 'document.manage';
-    IF NOT FOUND THEN
-      EXECUTE $$ALTER TYPE core.team_permission ADD VALUE IF NOT EXISTS 'document.manage'$$;
-    END IF;
-
-    PERFORM 1
-    FROM pg_enum
-    WHERE enumtypid = 'core.team_permission'::regtype
-      AND enumlabel = 'invitation.manage';
-    IF NOT FOUND THEN
-      EXECUTE $$ALTER TYPE core.team_permission ADD VALUE IF NOT EXISTS 'invitation.manage'$$;
-    END IF;
   END IF;
 END;
 $$;
+
+-- ====================================================================================
+-- Step 1b: Clean up legacy partial schema from earlier attempts
+-- ====================================================================================
+
+DO $cleanup$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'core'
+      AND table_name = 'team_invitation_tokens'
+  ) THEN
+    EXECUTE 'DROP TABLE core.team_invitation_tokens CASCADE';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'core'
+      AND table_name = 'team_invitation_audit_log'
+  ) THEN
+    EXECUTE 'DROP TABLE core.team_invitation_audit_log CASCADE';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'core'
+      AND table_name = 'team_member_audit_log'
+  ) THEN
+    EXECUTE 'DROP TABLE core.team_member_audit_log CASCADE';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'core'
+      AND table_name = 'team_role_permissions'
+  ) THEN
+    EXECUTE 'DROP TABLE core.team_role_permissions CASCADE';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'core'
+      AND table_name = 'team_invitations'
+  ) THEN
+    EXECUTE 'DROP TABLE core.team_invitations CASCADE';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'core'
+      AND table_name = 'team_roles'
+  ) THEN
+    EXECUTE 'DROP TABLE core.team_roles CASCADE';
+  END IF;
+END;
+$cleanup$;
 
 -- ====================================================================================
 -- Step 2: Extend core.teams metadata
@@ -676,17 +112,43 @@ ALTER TABLE core.teams
   ADD COLUMN IF NOT EXISTS parent_team_id UUID,
   ADD COLUMN IF NOT EXISTS visibility TEXT NOT NULL DEFAULT 'organization'
     CHECK (visibility IN ('organization', 'private', 'public')),
+  ADD COLUMN IF NOT EXISTS invitation_policy TEXT NOT NULL DEFAULT 'invite_only'
+    CHECK (invitation_policy IN ('invite_only', 'request_to_join')),
   ADD COLUMN IF NOT EXISTS invitation_expiration_days INTEGER NOT NULL DEFAULT 7
     CHECK (invitation_expiration_days BETWEEN 1 AND 90),
   ADD COLUMN IF NOT EXISTS allow_self_join BOOLEAN NOT NULL DEFAULT FALSE,
   ADD COLUMN IF NOT EXISTS auto_assign_jobs BOOLEAN NOT NULL DEFAULT FALSE,
+  ADD COLUMN IF NOT EXISTS metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
   ADD COLUMN IF NOT EXISTS settings JSONB NOT NULL DEFAULT '{}'::jsonb,
+  ADD COLUMN IF NOT EXISTS default_role_key TEXT NOT NULL DEFAULT 'member',
   ADD COLUMN IF NOT EXISTS default_role_id UUID,
   ADD COLUMN IF NOT EXISTS is_archived BOOLEAN NOT NULL DEFAULT FALSE,
   ADD COLUMN IF NOT EXISTS archived_at TIMESTAMPTZ,
   ADD COLUMN IF NOT EXISTS archived_by UUID,
   ADD COLUMN IF NOT EXISTS archived_reason TEXT,
   ADD COLUMN IF NOT EXISTS updated_by UUID;
+
+COMMENT ON COLUMN core.teams.description IS
+  'Rich text description of the team purpose and responsibilities.';
+COMMENT ON COLUMN core.teams.purpose IS
+  'Optional freeform purpose descriptor (department, project, location, etc).';
+COMMENT ON COLUMN core.teams.visibility IS
+  'Controls discoverability within the organization (organization | private | public).';
+COMMENT ON COLUMN core.teams.invitation_policy IS
+  'How new members join the team (invite_only | request_to_join).';
+COMMENT ON COLUMN core.teams.metadata IS
+  'Extensible JSON metadata for future configurability.';
+COMMENT ON COLUMN core.teams.default_role_key IS
+  'Key of the default team role assigned to new members.';
+COMMENT ON COLUMN core.teams.is_archived IS
+  'Soft delete flag indicating the team is archived.';
+COMMENT ON COLUMN core.teams.archived_at IS
+  'Timestamp when the team was archived.';
+COMMENT ON COLUMN core.teams.archived_by IS
+  'User who archived the team.';
+
+CREATE INDEX IF NOT EXISTS teams_visibility_idx
+  ON core.teams (visibility, is_archived);
 
 -- Ensure default visibility for existing rows
 UPDATE core.teams
@@ -724,11 +186,19 @@ CREATE TABLE IF NOT EXISTS core.team_role_permissions (
   role_id UUID NOT NULL REFERENCES core.team_roles(id) ON DELETE CASCADE,
   permission core.team_permission NOT NULL,
   is_allowed BOOLEAN NOT NULL DEFAULT TRUE,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  created_by UUID REFERENCES core.users(id) ON DELETE SET NULL,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_by UUID REFERENCES core.users(id) ON DELETE SET NULL
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS team_role_permissions_role_permission_idx
   ON core.team_role_permissions (role_id, permission);
+
+CREATE TRIGGER set_updated_at_team_role_permissions
+  BEFORE UPDATE ON core.team_role_permissions
+  FOR EACH ROW
+  EXECUTE FUNCTION core.set_updated_at();
 
 -- ====================================================================================
 -- Step 4: Team invitations table
@@ -974,6 +444,15 @@ ALTER TABLE core.teams
 -- ====================================================================================
 -- Step 7: Foreign keys & indexes
 -- ====================================================================================
+
+ALTER TABLE core.teams DROP CONSTRAINT IF EXISTS teams_default_role_id_fkey;
+ALTER TABLE core.teams DROP CONSTRAINT IF EXISTS teams_parent_team_id_fkey;
+ALTER TABLE core.teams DROP CONSTRAINT IF EXISTS teams_archived_by_fkey;
+ALTER TABLE core.teams DROP CONSTRAINT IF EXISTS teams_updated_by_fkey;
+ALTER TABLE core.team_members DROP CONSTRAINT IF EXISTS team_members_role_id_fkey;
+ALTER TABLE core.team_members DROP CONSTRAINT IF EXISTS team_members_added_by_fkey;
+ALTER TABLE core.team_members DROP CONSTRAINT IF EXISTS team_members_invitation_id_fkey;
+ALTER TABLE core.team_members DROP CONSTRAINT IF EXISTS team_members_removed_by_fkey;
 
 ALTER TABLE core.teams
   ADD CONSTRAINT teams_default_role_id_fkey
@@ -1361,4 +840,5 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON core.team_invitations TO authenticated;
 GRANT ALL ON core.team_invitations TO service_role;
 
 COMMIT;
+
 

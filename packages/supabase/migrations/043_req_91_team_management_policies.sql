@@ -14,10 +14,12 @@ ALTER TABLE core.team_invitations ENABLE ROW LEVEL SECURITY;
 -- core.team_roles policies
 -- =========================================================
 
+DROP POLICY IF EXISTS team_roles_read ON core.team_roles;
 CREATE POLICY team_roles_read ON core.team_roles
   FOR SELECT TO authenticated
   USING (true);
 
+DROP POLICY IF EXISTS team_roles_insert ON core.team_roles;
 CREATE POLICY team_roles_insert ON core.team_roles
   FOR INSERT TO authenticated
   WITH CHECK (
@@ -28,6 +30,7 @@ CREATE POLICY team_roles_insert ON core.team_roles
     )
   );
 
+DROP POLICY IF EXISTS team_roles_update ON core.team_roles;
 CREATE POLICY team_roles_update ON core.team_roles
   FOR UPDATE TO authenticated
   USING (
@@ -45,6 +48,7 @@ CREATE POLICY team_roles_update ON core.team_roles
     )
   );
 
+DROP POLICY IF EXISTS team_roles_delete ON core.team_roles;
 CREATE POLICY team_roles_delete ON core.team_roles
   FOR DELETE TO authenticated
   USING (
@@ -59,10 +63,12 @@ CREATE POLICY team_roles_delete ON core.team_roles
 -- core.team_role_permissions policies
 -- =========================================================
 
+DROP POLICY IF EXISTS team_role_permissions_read ON core.team_role_permissions;
 CREATE POLICY team_role_permissions_read ON core.team_role_permissions
   FOR SELECT TO authenticated
   USING (true);
 
+DROP POLICY IF EXISTS team_role_permissions_write ON core.team_role_permissions;
 CREATE POLICY team_role_permissions_write ON core.team_role_permissions
   FOR ALL TO authenticated
   USING (
@@ -88,6 +94,7 @@ CREATE POLICY team_role_permissions_write ON core.team_role_permissions
 -- core.team_invitations policies
 -- =========================================================
 
+DROP POLICY IF EXISTS team_invitations_read ON core.team_invitations;
 CREATE POLICY team_invitations_read ON core.team_invitations
   FOR SELECT TO authenticated
   USING (
@@ -100,6 +107,7 @@ CREATE POLICY team_invitations_read ON core.team_invitations
     )
   );
 
+DROP POLICY IF EXISTS team_invitations_insert ON core.team_invitations;
 CREATE POLICY team_invitations_insert ON core.team_invitations
   FOR INSERT TO authenticated
   WITH CHECK (
@@ -111,6 +119,7 @@ CREATE POLICY team_invitations_insert ON core.team_invitations
     )
   );
 
+DROP POLICY IF EXISTS team_invitations_update ON core.team_invitations;
 CREATE POLICY team_invitations_update ON core.team_invitations
   FOR UPDATE TO authenticated
   USING (
@@ -131,6 +140,7 @@ CREATE POLICY team_invitations_update ON core.team_invitations
     )
   );
 
+DROP POLICY IF EXISTS team_invitations_delete ON core.team_invitations;
 CREATE POLICY team_invitations_delete ON core.team_invitations
   FOR DELETE TO authenticated
   USING (

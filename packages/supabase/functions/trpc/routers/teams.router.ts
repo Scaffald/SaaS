@@ -1373,7 +1373,7 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
         }
 
         const { data: ownedOrganizations, error: ownedError } = await supabaseAdmin
-          .schema("public")
+          .schema("core")
           .from("organizations")
           .select("id")
           .eq("owner_user_id", user.id);

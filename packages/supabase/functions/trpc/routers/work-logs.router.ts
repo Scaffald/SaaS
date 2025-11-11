@@ -144,7 +144,7 @@ const fetchProjectRecord = async (
   errorMessage: string,
 ): Promise<ProjectRecord> => {
   const { data, error } = await supabase
-    .schema("public")
+    .schema("core")
     .from("construction_projects")
     .select("id, organization_id, work_log_require_approval_to_move_override")
     .eq("id", projectId)
@@ -165,7 +165,7 @@ const fetchOrganizationMoveSettings = async (
   organizationId: string,
 ): Promise<OrganizationMoveSettings> => {
   const { data, error } = await supabase
-    .schema("public")
+    .schema("core")
     .from("organizations")
     .select("id, owner_user_id, work_log_require_approval_to_move")
     .eq("id", organizationId)
@@ -452,8 +452,8 @@ const buildWorkLogExportSnapshot = async (
   let projectRecord: Record<string, unknown> | null = null;
 
   if (workLog.project_id) {
-    const { data: projectData } = await supabase
-      .schema("public")
+  const { data: projectData } = await supabase
+    .schema("core")
       .from("construction_projects")
       .select("*")
       .eq("id", workLog.project_id)
@@ -468,7 +468,7 @@ const buildWorkLogExportSnapshot = async (
 
   if (organizationId) {
     const { data: organizationData } = await supabase
-      .schema("public")
+      .schema("core")
       .from("organizations")
       .select("*")
       .eq("id", organizationId)
@@ -822,7 +822,7 @@ const fetchProjectContext = async (
   }
 
   const { data: project, error: projectError } = await supabase
-    .schema("public")
+    .schema("core")
     .from("construction_projects")
     .select("*")
     .eq("id", projectId)
@@ -845,7 +845,7 @@ const fetchProjectContext = async (
 
   if (organizationId) {
     const { data: organization, error: organizationError } = await supabase
-      .schema("public")
+      .schema("core")
       .from("organizations")
       .select("*")
       .eq("id", organizationId)
@@ -1073,7 +1073,7 @@ const getProjectVerificationRequirement = async (
   projectId: string,
 ) => {
   const { data: project } = await supabase
-    .schema("public")
+    .schema("core")
     .from("construction_projects")
     .select("organization_id, work_log_require_verification_override")
     .eq("id", projectId)
@@ -1088,7 +1088,7 @@ const getProjectVerificationRequirement = async (
   }
 
   const { data: organization } = await supabase
-    .schema("public")
+    .schema("core")
     .from("organizations")
     .select("work_log_require_verification")
     .eq("id", project.organization_id)
@@ -1205,7 +1205,7 @@ export const workLogsRouter = t.router({
       }
 
       const { data: projectRows, error: projectsError } = await supabase
-        .schema("public")
+        .schema("core")
         .from("construction_projects")
         .select("*")
         .in("organization_id", organizationIds);
@@ -1313,7 +1313,7 @@ export const workLogsRouter = t.router({
       }
 
       const { data: projectExists, error: projectError } = await supabase
-        .schema("public")
+        .schema("core")
         .from("construction_projects")
         .select("id")
         .eq("id", input.projectId)
