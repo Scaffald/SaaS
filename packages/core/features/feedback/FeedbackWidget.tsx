@@ -116,7 +116,7 @@ export function FeedbackWidget() {
 
   return (
     <>
-      <YStack position="absolute" b="$4" r="$4" zi={1000}>
+      <YStack position="absolute" b="$4" r="$4" style={{ zIndex: 1000 }}>
         <Button
           size="$6"
           circular
@@ -139,8 +139,8 @@ export function FeedbackWidget() {
             bg="$yellow4"
             borderWidth={1}
             borderColor="$yellow6"
-            br="$3"
-            maxWidth={220}
+            rounded="$3"
+            style={{ maxWidth: 220 }}
           >
             <Text fontSize="$2" color="$yellow10">
               {pendingCount === 1
@@ -252,7 +252,7 @@ export function FeedbackWidget() {
                     gap="$2"
                     bg="$color2"
                     borderColor={isDragActive ? "$blue7" : "$color6"}
-                    br="$4"
+                    rounded="$4"
                   >
                     <input {...getInputProps()} />
                     <Text fontWeight="600">
@@ -269,7 +269,13 @@ export function FeedbackWidget() {
               </UploadSurface>
 
               {screenshot ? (
-                <YStack mt="$3" borderWidth={1} borderColor="$color6" overflow="hidden" br="$4">
+                <YStack
+                  mt="$3"
+                  borderWidth={1}
+                  borderColor="$color6"
+                  overflow="hidden"
+                  rounded="$4"
+                >
                   {screenshotPreview ? (
                     <Image
                       source={{ uri: screenshotPreview }}
