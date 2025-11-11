@@ -190,4 +190,72 @@ describe('discovery data hooks', () => {
       }),
     ])
   })
+
+  it('throws when organization fetch fails', async () => {
+    const rpcBuilder = createOrgRpcBuilder(null, { message: 'database down' })
+    supabaseMock.schema.mockReturnValue({
+      rpc: vi.fn(() => rpcBuilder),
+    })
+
+    const config = useOrganizations() as any
+    await expect(config.queryFn()).rejects.toThrow('Failed to fetch organizations: database down')
+  })
+
+  it('returns empty array when organization query yields no results', async () => {
+    const rpcBuilder = createOrgRpcBuilder([], null)
+    supabaseMock.schema.mockReturnValue({
+      rpc: vi.fn(() => rpcBuilder),
+    })
+
+    const config = useOrganizations() as any
+    const result = await config.queryFn()
+
+    expect(result).toEqual([])
+  })
+
+  it('normalizes profile data when optional fields are missing', async () => {
+    const profiles = [
+      {
+        id: 'worker-2',
+        name: null,
+        headline: null,
+        gamified_score: 55,
+        skills_summary: null,
+        certifications: null,
+        hourly_rate_cents: null,
+        longitude: null,
+        latitude: null,
+        location: null,
+        calculatedYearsOfExperience: null,
+        years_of_experience: null,
+        avatar_url: null,
+      },
+    ]
+
+    const talentBuilder = createTalentQueryBuilder(profiles)
+    supabaseMock.schema.mockReturnValue({
+      from: vi.fn(() => talentBuilder),
+    })
+
+    const config = useTalentProfiles() as any
+    const result = await config.queryFn()
+
+    expect(result).toEqual([
+      expect.objectContaining({
+        id: 'worker-2',
+        name: 'Anonymous Worker',
+        title: 'Skilled Trades Professional',
+        hourlyRate: 0,
+        coordinates: [-84.5555, 42.7325],
+        scoreLabel: undefined,
+        score: 55,
+        badges: [],
+        certifications: [],
+        skills: [],
+        experienceYears: 0,
+        locationLabel: 'Location not set',
+      }),
+    ])
+  })
 })
+

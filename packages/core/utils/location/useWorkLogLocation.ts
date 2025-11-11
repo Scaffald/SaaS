@@ -4,9 +4,9 @@ import * as Location from 'expo-location';
 
 import {
   LOCATION_PERMISSION_STATUS_VALUES,
-  LocationPermissionStatus,
-  WorkLogLocation,
-  WorkLogLocationState,
+  type LocationPermissionStatus,
+  type WorkLogLocation,
+  type WorkLogLocationState,
 } from './types';
 
 const getDeviceType = () => {
@@ -57,7 +57,6 @@ const resolveLocationPermissionStatus = (
       return 'granted';
     case Location.PermissionStatus.DENIED:
       return 'denied';
-    case Location.PermissionStatus.UNDETERMINED:
     default:
       return 'notDetermined';
   }

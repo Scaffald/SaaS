@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
+import { z } from 'zod'
 
 const createTeamMock = vi.hoisted(() => ({ mutateAsync: vi.fn(), useMutation: vi.fn() }))
 const updateTeamMock = vi.hoisted(() => ({ mutateAsync: vi.fn(), useMutation: vi.fn() }))
@@ -14,10 +15,7 @@ const teamFormOptionsMock = vi.hoisted(() => ({
       { id: 'role-1', key: 'member', name: 'Member' },
       { id: 'role-2', key: 'team_admin', name: 'Team Admin' },
     ],
-    parentTeamOptions: [{ id: 'team-parent', name: 'Parent Team' }],
     isLoading: false,
-    isFetching: false,
-    refetchParentTeams: vi.fn(),
   })),
 }))
 
@@ -38,6 +36,27 @@ vi.mock('@tamagui/toast', () => ({ useToastController: () => toastMock }))
 
 vi.mock('expo-router', () => ({ useRouter: () => routerMock }))
 
+vi.mock('@app/schemas', () => {
+  const teamRoleKeySchema = z.enum(['member', 'team_admin', 'team_lead', 'recruiter'])
+  const teamCreateSchema = z
+    .object({
+      organizationId: z.string(),
+      name: z.string().min(1),
+      slug: z.string().optional(),
+      purpose: z.string().optional(),
+      visibility: z.enum(['organization', 'private', 'public']).default('organization'),
+      description: z.string().optional(),
+      defaultRoleId: z.string().optional(),
+      defaultRoleKey: teamRoleKeySchema.optional(),
+    })
+
+  return {
+    teamCreateSchema,
+    teamRoleKeySchema,
+    TEAM_VISIBILITIES: ['organization', 'private', 'public'] as const,
+  }
+})
+
 vi.mock('react-hook-form', () => {
   return {
     useForm: ({ defaultValues }: { defaultValues?: Record<string, unknown> }) => {
@@ -57,12 +76,12 @@ vi.mock('react-hook-form', () => {
           },
         formState: { errors: {}, isDirty: true },
         setValue: setValueSpy,
-        watch: (name?: string) => {
-          if (!name) return store.values
-          return store.values[name]
-        },
         reset: (next?: Record<string, unknown>) => {
           Object.assign(store.values, next ?? cleanValues)
+        },
+        getValues: (name?: string) => {
+          if (!name) return store.values
+          return store.values[name]
         },
       }
     },
@@ -96,8 +115,6 @@ vi.mock('react-hook-form', () => {
     },
   }
 })
-
-const selectState = { onChange: (_value: string) => {} }
 
 vi.mock('tamagui', async () => {
   const actual = await vi.importActual<typeof import('tamagui')>('tamagui')
@@ -169,26 +186,6 @@ vi.mock('tamagui', async () => {
     </button>
   )
 
-  const SwitchBase = ({
-    checked,
-    onCheckedChange,
-    testID,
-  }: {
-    checked?: boolean
-    onCheckedChange?: (value: boolean) => void
-    testID?: string
-  }) => (
-    <button
-      type="button"
-      data-testid={testID}
-      aria-pressed={checked}
-      onClick={() => onCheckedChange?.(!checked)}
-    >
-      toggle
-    </button>
-  )
-  SwitchBase.Thumb = ({ children }: { children?: ReactNode }) => <span>{children}</span>
-
   const SelectBase = ({
     value,
     onValueChange,
@@ -199,10 +196,7 @@ vi.mock('tamagui', async () => {
     children: ReactNode
   }) => (
     <div data-testid="select" data-value={value}>
-      {(() => {
-        selectState.onChange = onValueChange
-        return null
-      })()}
+      <div hidden>{onValueChange.toString()}</div>
       {children}
     </div>
   )
@@ -226,7 +220,7 @@ vi.mock('tamagui', async () => {
     <button
       type="button"
       data-testid={`select-item-${index}`}
-      onClick={() => selectState.onChange(value)}
+      onClick={() => onValueChange(value)}
     >
       {children}
     </button>
@@ -245,7 +239,6 @@ vi.mock('tamagui', async () => {
     XStack,
     ScrollView,
     Spinner,
-    Switch: SwitchBase,
     Select: SelectBase,
   }
 })
@@ -284,10 +277,6 @@ describe('TeamForm', () => {
           visibility: 'organization',
           description: 'Hire quickly',
           defaultRole: { id: 'role-2', key: 'team_admin' },
-          invitationExpirationDays: 12,
-          allowSelfJoin: true,
-          autoAssignJobs: false,
-          parentTeamId: 'team-parent',
         }}
       />,
     )
@@ -301,10 +290,7 @@ describe('TeamForm', () => {
           name: 'Field Ops',
           slug: 'field-ops',
           defaultRoleKey: 'team_admin',
-          invitationExpirationDays: 12,
-          allowSelfJoin: true,
-          autoAssignJobs: false,
-          parentTeamId: 'team-parent',
+          defaultRoleId: 'role-2',
         }),
       )
     })
@@ -323,7 +309,6 @@ describe('TeamForm', () => {
           name: 'Existing Team',
           slug: 'existing-team',
           defaultRole: { id: 'role-1', key: 'member' },
-          invitationExpirationDays: 8,
         }}
       />,
     )
@@ -335,12 +320,33 @@ describe('TeamForm', () => {
         expect.objectContaining({
           teamId: 'team-123',
           name: 'Existing Team',
-          invitationExpirationDays: 8,
+          defaultRoleId: 'role-1',
+          defaultRoleKey: 'member',
         }),
       )
     })
   })
 
-})
+  it('calls cancel handler when cancel button pressed', async () => {
+    const user = userEvent.setup()
+    const onCancel = vi.fn()
 
+    render(<TeamForm mode="create" organizationId="org-1" onCancel={onCancel} />)
+
+    await user.click(screen.getByTestId('team-form-cancel'))
+
+    expect(onCancel).toHaveBeenCalled()
+  })
+
+  it('shows loading state while role options are loading', () => {
+    teamFormOptionsMock.useTeamFormOptions.mockReturnValueOnce({
+      roles: [],
+      isLoading: true,
+    })
+
+    render(<TeamForm mode="create" organizationId="org-1" />)
+
+    expect(screen.getByText('Loading team options…')).toBeInTheDocument()
+  })
+})
 

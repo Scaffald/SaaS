@@ -12,7 +12,13 @@ export function getInitials(name: string): string {
     return '?'
   }
 
-  const words = name.trim().split(/\s+/)
+  const trimmed = name.trim()
+
+  if (trimmed.length === 0) {
+    return '?'
+  }
+
+  const words = trimmed.split(/\s+/)
 
   if (words.length === 1) {
     // Single word: use first character

@@ -12,11 +12,11 @@ This guide translates the Vitest tooling introduced for REQ-172 into practical w
 
 | Scenario | Command | Notes |
 | --- | --- | --- |
-| Full preflight (formatting, linting, type check) | `pnpm check` | Mirrors the CI `turbo check` pipeline. |
-| Complete test stack | `pnpm test` | Runs `pnpm check`, then all Vitest suites, followed by Supabase Deno endpoint tests. |
+| Full preflight (formatting, linting, type check) | `pnpm check` | Mirrors the CI `turbo check` pipeline. ⚠️ **Currently fails** because Expo teams screens still have invalid Tamagui props and Supabase helpers require typed Deno imports. |
+| Complete test stack | `pnpm test` | Runs `pnpm check`, then all Vitest suites, followed by Supabase Deno endpoint tests.⚠️ Blocked for the same reasons as `pnpm check`. |
 | Vitest across the monorepo | `pnpm test:unit` | Uses the shared configuration defined in `vitest.config.ts`. |
 | Watch mode for active development | `pnpm test:watch` | Re-runs impacted suites as files change. |
-| Coverage summary (50% thresholds enforced) | `pnpm test:coverage` | Emits HTML (`coverage/index.html`), JSON, and text reports. |
+| Coverage summary (50% thresholds enforced) | `pnpm test:coverage` | Emits HTML (`coverage/index.html`), JSON, and text reports. Prefer running after fixing the Expo/Supabase errors or by filtering to specific packages (see below). |
 | Vitest UI dashboard | `pnpm test:vitest:ui` | Hosts an interactive runner at `http://localhost:51204`. |
 | Target a workspace | `pnpm --filter @app/core test` | Replace `@app/core` with any workspace (`@app/ui`, `@app/schemas`, `expo-app`). |
 
@@ -27,6 +27,8 @@ Vitest respects native filtering flags:
 - `pnpm test:unit -- packages/core/utils/__tests__/slugify.test.ts` runs a single file.
 - `pnpm test:unit -- --testNamePattern="Vanity URL"` focuses on a matching describe/it block.
 - `pnpm --filter expo-app test -- --runInBand` executes Expo-focused suites serially when debugging timing-sensitive hooks.
+- `pnpm vitest run packages/core/features/discover/hooks/__tests__/useFindNearestResults.test.ts` executes the new discovery coverage without touching the Expo type errors.
+- `pnpm vitest run packages/ui/src/components/cards/__tests__/DashboardWidget.test.tsx packages/ui/src/components/states/__tests__/EmptyState.test.tsx` exercises the UI coverage milestone quickly.
 
 For Deno-based tRPC tests, use the existing script: `pnpm --filter @app/supabase test:endpoints`. The runner automatically checks Supabase status, warms authentication tokens, and caches fixtures under `packages/supabase/functions/trpc/__tests__/`.
 
@@ -61,5 +63,9 @@ When service-role credentials are not configured locally the helpers emit a warn
 ## CI Expectations
 
 The GitHub Actions workflow (Task 2) mirrors the local flow: install dependencies, run `pnpm supa start`, execute `pnpm test`, upload coverage, and shut Supabase down. Keeping local runs aligned with this sequence prevents “works on my machine” surprises.
+
+### Interim CI workaround
+
+Until the Expo/Supabase TypeScript issues are addressed, CI will red-line after the type-check step. You can still collect coverage artifacts by running the filtered commands above, archiving `coverage/`, and attaching the results to your PR description. Once the type errors are cleaned up, remove the filters and rely on the standard `pnpm test` workflow again.
 
 
