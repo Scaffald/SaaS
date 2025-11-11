@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 import { defineConfig, type UserConfig } from 'vitest/config'
 
 const workspaceRoot = fileURLToPath(new URL('.', import.meta.url))
+const coverageReportsDirectory = resolve(workspaceRoot, 'coverage')
 
 type VitestPlugin = NonNullable<UserConfig['plugins']>[number]
 const plugins: VitestPlugin[] = [react() as unknown as VitestPlugin]
@@ -46,6 +47,45 @@ export default defineConfig({
     server: {
       deps: {
         inline: ['@testing-library/react-native', 'expo-router'],
+      },
+    },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      reportsDirectory: coverageReportsDirectory,
+      include: [
+        'packages/core/utils/api.ts',
+        'packages/core/utils/getBaseUrl.ts',
+        'packages/core/utils/getLocalhost.*.ts',
+        'packages/core/utils/slugify.ts',
+        'packages/core/utils/useAdaptiveLoading.ts',
+        'packages/core/utils/useAllOrganizations.ts',
+        'packages/core/utils/useDebounce.ts',
+        'packages/core/utils/useOrganizations.ts',
+        'packages/core/utils/useUser.ts',
+        'packages/core/utils/supabase/**/*.ts',
+        'packages/core/utils/auth/useProtectedRoute.ts',
+        'packages/core/features/discover/utils/**/*.ts',
+        'packages/ui/src/components/image-picker/utils/**/*.ts',
+        'packages/ui/src/components/image-picker/__tests__/**/*.ts',
+        'packages/schemas/src/profile/**/*.ts',
+      ],
+      exclude: [
+        'test/**',
+        '**/node_modules/**',
+        '**/dist/**',
+        '**/.expo/**',
+        '**/.tamagui/**',
+        '**/__tests__/**/fixtures/**',
+        '**/*.config.{js,ts}',
+        '**/*.d.ts',
+        'packages/supabase/functions/trpc/__tests__/**',
+      ],
+      thresholds: {
+        lines: 50,
+        functions: 50,
+        branches: 50,
+        statements: 50,
       },
     },
   },

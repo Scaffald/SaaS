@@ -2,6 +2,8 @@ import '@testing-library/jest-dom/vitest'
 
 import React from 'react'
 import { afterEach, vi } from 'vitest'
+import { cleanup as cleanupReact } from '@testing-library/react'
+import { cleanup as cleanupReactNative } from '@testing-library/react-native'
 
 process.env.EXPO_PUBLIC_SUPABASE_URL ??= 'http://127.0.0.1:54321'
 process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ??= 'test-anon-key'
@@ -44,7 +46,12 @@ vi.mock('expo-modules-core', () => ({
   NativeModulesProxy: {},
 }))
 
-afterEach(() => {})
+afterEach(() => {
+  cleanupReact()
+  cleanupReactNative()
+  vi.clearAllMocks()
+  vi.restoreAllMocks()
+})
 
 // Expo modules expect __DEV__ to be defined
 ;(globalThis as Record<string, unknown>).__DEV__ ??= false

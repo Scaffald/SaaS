@@ -1,0 +1,93 @@
+name: Test Suite
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PNPM_HOME: ~/.pnpm
+  SUPABASE_AUTO_UPDATE: 'false'
+  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10.20.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Start Supabase
+        id: supabase-start
+        run: |
+          pnpm supa start > supabase.log 2>&1 &
+          echo "SUPABASE_PID=$!" >> "$GITHUB_ENV"
+          for attempt in {1..30}; do
+            if pnpm supa status >/dev/null 2>&1; then
+              echo "Supabase is ready."
+              exit 0
+            fi
+            echo "Waiting for Supabase (${attempt}/30)..."
+            sleep 10
+          done
+          echo "Supabase did not become ready in time."
+          exit 1
+        shell: bash
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-coverage
+          path: coverage
+          if-no-files-found: ignore
+
+      - name: Upload coverage to Codecov
+        if: env.CODECOV_TOKEN != ''
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/coverage-final.json
+          token: ${{ env.CODECOV_TOKEN }}
+
+      - name: Upload Supabase logs
+        if: failure()
+        run: |
+          echo "::group::Supabase logs"
+          cat supabase.log || true
+          echo "::endgroup::"
+
+      - name: Stop Supabase
+        if: always()
+        run: |
+          if [ -n "${SUPABASE_PID:-}" ]; then
+            pnpm supa stop || true
+            kill "${SUPABASE_PID}" || true
+          fi
+        shell: bash
+
