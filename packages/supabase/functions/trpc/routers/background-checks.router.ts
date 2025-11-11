@@ -2,10 +2,12 @@ import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 
 import {
+  BACKGROUND_CHECK_ALLOWED_MIME_TYPES,
   backgroundCheckDisputeSchema,
   backgroundCheckDocumentUploadSchema,
   backgroundCheckInitiationSchema,
   backgroundCheckStatusEnum,
+  backgroundCheckUploadRequestSchema,
 } from '../../_shared/background-check-schemas.ts'
 import { createNationSearchClient } from '../../_shared/nationsearch/client.ts'
 import { officeProcedure, protectedProcedure, publicProcedure, t } from '../middleware.ts'
@@ -80,6 +82,21 @@ const getCheckOutputSchema = z.object({
     }),
   ),
 })
+
+const BACKGROUND_CHECK_BUCKET_ID = 'background-check-documents'
+const SIGNED_UPLOAD_URL_TTL_SECONDS = 60 * 5
+const MAX_DOCUMENT_SIZE_BYTES = 10 * 1024 * 1024
+
+function sanitizeFileName(fileName: string): string {
+  const cleaned = fileName.replace(/[^A-Za-z0-9._-]/g, '_')
+  return cleaned.length > 255 ? cleaned.slice(cleaned.length - 255) : cleaned
+}
+
+function buildDocumentStoragePath(userId: string, backgroundCheckId: string, fileName: string) {
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+  const sanitizedFileName = sanitizeFileName(fileName)
+  return `${userId}/${backgroundCheckId}/${timestamp}-${sanitizedFileName}`
+}
 
 export const backgroundChecksRouter = t.router({
   /**
@@ -352,6 +369,82 @@ export const backgroundChecksRouter = t.router({
     }),
 
   /**
+   * Generate a signed upload URL for a background check document.
+   */
+  createUploadUrl: protectedProcedure
+    .input(backgroundCheckUploadRequestSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx
+
+      const { data: check, error: checkError } = await supabase
+        .schema('core')
+        .from('background_checks')
+        .select('id')
+        .eq('id', input.background_check_id)
+        .eq('user_id', user!.id)
+        .maybeSingle()
+
+      if (checkError) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to verify background check before upload',
+          cause: checkError,
+        })
+      }
+
+      if (!check) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Background check not found for user',
+        })
+      }
+
+      if (!BACKGROUND_CHECK_ALLOWED_MIME_TYPES.includes(input.mime_type)) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: `Unsupported file type: ${input.mime_type}`,
+        })
+      }
+
+      if (input.file_size > MAX_DOCUMENT_SIZE_BYTES) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'File exceeds maximum size of 10MB',
+        })
+      }
+
+      const storagePath = buildDocumentStoragePath(
+        user!.id,
+        input.background_check_id,
+        input.file_name,
+      )
+
+      const { data, error } = await supabase.storage
+        .from(BACKGROUND_CHECK_BUCKET_ID)
+        .createSignedUploadUrl(storagePath, SIGNED_UPLOAD_URL_TTL_SECONDS)
+
+      if (error || !data) {
+        console.error('[backgroundChecks.createUploadUrl] failed to create signed URL', {
+          background_check_id: input.background_check_id,
+          user_id: user!.id,
+          message: error?.message,
+        })
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Unable to create upload URL',
+        })
+      }
+
+      return {
+        uploadUrl: data.signedUrl,
+        token: data.token,
+        storagePath,
+        bucket: BACKGROUND_CHECK_BUCKET_ID,
+        expiresIn: SIGNED_UPLOAD_URL_TTL_SECONDS,
+      }
+    }),
+
+  /**
    * Upload background check supporting document metadata (storage upload handled client-side).
    */
   addDocumentMetadata: protectedProcedure
@@ -382,17 +475,40 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
+      if (!BACKGROUND_CHECK_ALLOWED_MIME_TYPES.includes(input.mime_type)) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: `Unsupported file type: ${input.mime_type}`,
+        })
+      }
+
+      if (input.file_size > MAX_DOCUMENT_SIZE_BYTES) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'File exceeds maximum size of 10MB',
+        })
+      }
+
+      const expectedPrefix = `${user!.id}/${input.background_check_id}/`
+      if (!input.storage_path.startsWith(expectedPrefix)) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Invalid storage path for document upload',
+        })
+      }
+
       const { data, error } = await supabase
         .schema('core')
         .from('background_check_documents')
         .insert({
           background_check_id: input.background_check_id,
           document_type: input.document_type,
-          file_path: input.file_name,
+          file_path: input.storage_path,
           file_name: input.file_name,
           file_size: input.file_size,
           mime_type: input.mime_type,
           uploaded_by_user_id: user!.id,
+          metadata: input.metadata ?? {},
         })
         .select('id, document_type, file_name')
         .single()

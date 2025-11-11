@@ -1,5 +1,11 @@
 import { z } from 'zod'
 
+export const BACKGROUND_CHECK_ALLOWED_MIME_TYPES = [
+  'application/pdf',
+  'image/jpeg',
+  'image/png',
+] as const;
+
 /**
  * Shared background check schemas for Edge Functions (Deno runtime)
  * Mirrors the database schema introduced in migrations 032-036.
@@ -97,15 +103,24 @@ export type BackgroundCheckInitiationInput = z.infer<typeof backgroundCheckIniti
 export const backgroundCheckDocumentUploadSchema = z.object({
   background_check_id: z.string().uuid(),
   document_type: z.string().min(1),
+  storage_path: z.string().min(1),
   file_name: z.string().min(1),
-  mime_type: z
-    .enum(['application/pdf', 'image/jpeg', 'image/png'])
-    .default('application/pdf'),
+  mime_type: z.enum(BACKGROUND_CHECK_ALLOWED_MIME_TYPES),
   file_size: z.number().int().positive().max(10 * 1024 * 1024, 'File must be <= 10MB'),
   metadata: z.record(z.unknown()).optional(),
 })
 
 export type BackgroundCheckDocumentUploadInput = z.infer<typeof backgroundCheckDocumentUploadSchema>
+
+export const backgroundCheckUploadRequestSchema = z.object({
+  background_check_id: z.string().uuid(),
+  document_type: z.string().min(1),
+  file_name: z.string().min(1),
+  mime_type: z.enum(BACKGROUND_CHECK_ALLOWED_MIME_TYPES),
+  file_size: z.number().int().positive().max(10 * 1024 * 1024, 'File must be <= 10MB'),
+})
+
+export type BackgroundCheckUploadRequestInput = z.infer<typeof backgroundCheckUploadRequestSchema>
 
 export const componentStatusSchema = z.object({
   check_type_id: z.string().uuid(),
