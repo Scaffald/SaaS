@@ -69,6 +69,8 @@ export default defineConfig({
         'packages/ui/src/components/image-picker/utils/**/*.ts',
         'packages/ui/src/components/image-picker/__tests__/**/*.ts',
         'packages/schemas/src/profile/**/*.ts',
+        'packages/schemas/src/common/**/*.ts',
+        'packages/schemas/src/jobs/**/*.ts',
       ],
       exclude: [
         'test/**',
@@ -80,6 +82,9 @@ export default defineConfig({
         '**/*.config.{js,ts}',
         '**/*.d.ts',
         'packages/supabase/functions/trpc/__tests__/**',
+        'packages/schemas/src/**/index.ts',
+        'packages/schemas/src/jobs/job-update.schema.ts',
+        'packages/schemas/src/jobs/types.ts',
       ],
       thresholds: {
         lines: 50,
