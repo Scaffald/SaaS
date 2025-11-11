@@ -9,6 +9,10 @@ import {
   backgroundCheckStatusEnum,
   backgroundCheckUploadRequestSchema,
 } from '../../_shared/background-check-schemas.ts'
+import {
+  notifyBackgroundCheckInvitation,
+  notifyBackgroundCheckStatusChange,
+} from '../../_shared/background-check-notifications.ts'
 import { createNationSearchClient } from '../../_shared/nationsearch/client.ts'
 import { officeProcedure, protectedProcedure, publicProcedure, t } from '../middleware.ts'
 
@@ -535,7 +539,9 @@ export const backgroundChecksRouter = t.router({
       const { data: existing, error: checkError } = await supabase
         .schema('core')
         .from('background_checks')
-        .select('id, status')
+        .select(
+          'id, status, status_history, requested_by_user_id, package:background_check_packages(display_name, slug)',
+        )
         .eq('id', input.background_check_id)
         .eq('user_id', user!.id)
         .maybeSingle()
@@ -588,6 +594,45 @@ export const backgroundChecksRouter = t.router({
           message: 'Failed to submit dispute',
           cause: error,
         })
+      }
+
+      if (existing.status !== 'disputed') {
+        const disputeHistory = Array.isArray(existing.status_history) ? [...existing.status_history] : []
+        disputeHistory.push({
+          status: 'disputed',
+          occurred_at: new Date().toISOString(),
+          actor: 'worker',
+          notes: input.dispute_reason ?? null,
+          submitter_user_id: user!.id,
+        })
+
+        const { error: disputeStatusError } = await supabase
+          .schema('core')
+          .from('background_checks')
+          .update({
+            status: 'disputed',
+            status_history: disputeHistory,
+          })
+          .eq('id', input.background_check_id)
+
+        if (disputeStatusError) {
+          console.error('[backgroundChecks.submitDispute] failed to update dispute status', disputeStatusError)
+        }
+      }
+
+      try {
+        await notifyBackgroundCheckStatusChange({
+          supabase: ctx.supabaseAdmin,
+          status: 'disputed',
+          workerId: user!.id,
+          requesterId: existing.requested_by_user_id ?? null,
+          checkId: input.background_check_id,
+          packageName: existing.package?.display_name ?? existing.package?.slug ?? null,
+          summary: input.dispute_reason ?? input.dispute_details ?? null,
+          actorId: user!.id,
+        })
+      } catch (error) {
+        console.error('[backgroundChecks.submitDispute] failed to send dispute notification', error)
       }
 
       return data
@@ -652,7 +697,7 @@ export const backgroundChecksRouter = t.router({
       const { data: pkg, error: pkgError } = await supabase
         .schema('core')
         .from('background_check_packages')
-        .select('id, check_type_ids, metadata, is_active, slug')
+        .select('id, display_name, check_type_ids, metadata, is_active, slug')
         .eq('id', input.package_id)
         .maybeSingle()
 
@@ -740,6 +785,19 @@ export const backgroundChecksRouter = t.router({
         await nationSearch.initiateCheck(payload)
       } catch (error) {
         console.error('[backgroundChecks.organizationInitiate] NationSearch initiation failed', error)
+      }
+
+      try {
+        await notifyBackgroundCheckInvitation({
+          supabase: ctx.supabaseAdmin,
+          workerId: input.worker_user_id,
+          invitedById: user!.id,
+          checkId: record.id,
+          packageName: pkg.display_name ?? pkg.slug ?? null,
+          actorId: user!.id,
+        })
+      } catch (error) {
+        console.error('[backgroundChecks.organizationInitiate] failed to send invitation notification', error)
       }
 
       return record
@@ -834,7 +892,9 @@ export const backgroundChecksRouter = t.router({
       const { data: existing, error: fetchError } = await supabase
         .schema('core')
         .from('background_checks')
-        .select('status_history')
+        .select(
+          'status_history, user_id, requested_by_user_id, package:background_check_packages(display_name, slug)',
+        )
         .eq('id', input.background_check_id)
         .maybeSingle()
 
@@ -874,7 +934,9 @@ export const backgroundChecksRouter = t.router({
           expires_at: input.expires_at ?? null,
         })
         .eq('id', input.background_check_id)
-        .select('id, status, updated_at, summary, findings, component_statuses, status_history, expires_at')
+        .select(
+          'id, status, updated_at, summary, findings, component_statuses, status_history, expires_at, user_id, requested_by_user_id, package:background_check_packages(display_name, slug)',
+        )
         .single()
 
       if (updateError || !updated) {
@@ -883,6 +945,21 @@ export const backgroundChecksRouter = t.router({
           message: 'Failed to update background check status',
           cause: updateError,
         })
+      }
+
+      try {
+        await notifyBackgroundCheckStatusChange({
+          supabase: ctx.supabaseAdmin,
+          status: updated.status,
+          workerId: updated.user_id,
+          requesterId: updated.requested_by_user_id ?? null,
+          checkId: updated.id,
+          packageName: updated.package?.display_name ?? updated.package?.slug ?? null,
+          summary: input.summary ?? updated.summary ?? null,
+          actorId: user!.id,
+        })
+      } catch (error) {
+        console.error('[backgroundChecks.adminUpdateStatus] failed to send status notification', error)
       }
 
       return updated
