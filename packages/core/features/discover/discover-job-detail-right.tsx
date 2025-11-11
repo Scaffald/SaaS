@@ -20,6 +20,12 @@ interface DiscoverJobDetailRightProps {
   jobId: string
 }
 
+type InternalJobSkill = {
+  id: string
+  name?: string | null
+  taxonomy?: 'csi' | 'onet'
+}
+
 /**
  * Format pay range for display
  */
@@ -423,11 +429,19 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                   Required Skills
                 </Text>
                 <XStack gap="$2" flexWrap="wrap">
-                  {job.skills.map((skill: { id: string; name: string }) => (
-                    <Chip key={skill.id} bg="$blue10" color="$color1" fontSize="$3" px="$3" py="$2">
-                      {skill.name}
-                    </Chip>
-                  ))}
+                  {((job.skills ?? []) as InternalJobSkill[]).map((skill) => {
+                    const label =
+                      skill.name ??
+                      (skill.taxonomy ? `${skill.taxonomy.toUpperCase()} ${skill.id}` : skill.id)
+                    if (!label) {
+                      return null
+                    }
+                    return (
+                      <Chip key={skill.id} bg="$blue10" color="$color1" fontSize="$3" px="$3" py="$2">
+                        {label}
+                      </Chip>
+                    )
+                  })}
                 </XStack>
               </YStack>
             </>

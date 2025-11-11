@@ -9,12 +9,14 @@
     "constants",
     "index.ts",
     "types.d.ts",
+    "types",
     "package.json",
     "../../package.json",
     "../ui/src",
     "../api/src",
     "../../supabase/types.ts",
     "../../supabase/helpers.ts",
+    "../../supabase/functions/_shared/deno-modules.d.ts",
     "../../types/custom-modules.d.ts"
   ],
   "exclude": [

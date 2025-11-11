@@ -31,7 +31,8 @@ export interface InternalJob {
   }>
   skills?: Array<{
     id: string
-    name: string
+    name?: string | null
+    taxonomy?: 'csi' | 'onet'
   }>
 
   // Application Screening (Migration 067)
@@ -272,11 +273,19 @@ export function InternalJobCard({ job, hasApplied }: InternalJobCardProps) {
                 +{job.certifications.length - 3} more
               </Chip>
             )}
-            {job.skills?.slice(0, 2).map((skill) => (
-              <Chip key={skill.id} bg="$blue10" color="$color1" fontSize="$2" px="$2" py="$1">
-                {skill.name}
-              </Chip>
-            ))}
+            {job.skills?.slice(0, 2).map((skill) => {
+              const label =
+                skill.name ??
+                (skill.taxonomy ? `${skill.taxonomy.toUpperCase()} ${skill.id}` : skill.id)
+              if (!label) {
+                return null
+              }
+              return (
+                <Chip key={skill.id} bg="$blue10" color="$color1" fontSize="$2" px="$2" py="$1">
+                  {label}
+                </Chip>
+              )
+            })}
             {job.skills && job.skills.length > 2 && (
               <Chip bg="$color3" color="$color11" fontSize="$2" px="$2" py="$1">
                 +{job.skills.length - 2} more

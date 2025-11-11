@@ -520,18 +520,26 @@ export function InternalJobDetailModal({
                       Required Skills
                     </Text>
                     <XStack gap="$2" flexWrap="wrap">
-                      {job.skills.map((skill) => (
-                        <Chip
-                          key={skill.id}
-                          bg="$blue10"
-                          color="$color1"
-                          fontSize="$3"
-                          px="$3"
-                          py="$2"
-                        >
-                          {skill.name}
-                        </Chip>
-                      ))}
+                      {job.skills.map((skill) => {
+                        const label =
+                          skill.name ??
+                          (skill.taxonomy ? `${skill.taxonomy.toUpperCase()} ${skill.id}` : skill.id)
+                        if (!label) {
+                          return null
+                        }
+                        return (
+                          <Chip
+                            key={skill.id}
+                            bg="$blue10"
+                            color="$color1"
+                            fontSize="$3"
+                            px="$3"
+                            py="$2"
+                          >
+                            {label}
+                          </Chip>
+                        )
+                      })}
                     </XStack>
                   </YStack>
                 </>

@@ -1,5 +1,6 @@
 import { styled, View } from 'tamagui'
 import { Check } from '@tamagui/lucide-icons'
+import { Platform } from 'react-native'
 
 export interface CheckboxProps {
   /** Whether the checkbox is checked */
@@ -12,6 +13,12 @@ export interface CheckboxProps {
   size?: 'small' | 'medium' | 'large'
   /** Optional test ID for testing */
   testID?: string
+  /** Optional aria-label attribute for web */
+  ariaLabel?: string
+  /** Optional aria-labelledby attribute for web */
+  ariaLabelledBy?: string
+  /** Optional aria-describedby attribute for web */
+  ariaDescribedBy?: string
 }
 
 const CheckboxContainer = styled(View, {
@@ -119,6 +126,9 @@ export function Checkbox({
   disabled = false,
   size = 'medium',
   testID,
+  ariaLabel,
+  ariaLabelledBy,
+  ariaDescribedBy,
 }: CheckboxProps) {
   const handlePress = () => {
     if (!disabled) {
@@ -126,15 +136,30 @@ export function Checkbox({
     }
   }
 
+  const accessibilityProps =
+    Platform.OS === 'web'
+      ? {
+          role: 'checkbox' as const,
+          'aria-checked': checked,
+          ...(disabled ? { 'aria-disabled': true } : {}),
+          ...(ariaLabel ? { 'aria-label': ariaLabel } : {}),
+          ...(ariaLabelledBy ? { 'aria-labelledby': ariaLabelledBy } : {}),
+          ...(ariaDescribedBy ? { 'aria-describedby': ariaDescribedBy } : {}),
+          ...(testID ? { 'data-testid': testID } : {}),
+        }
+      : {
+          accessibilityRole: 'checkbox' as const,
+          accessibilityState: { checked, disabled },
+          ...(testID ? { testID } : {}),
+        }
+
   return (
     <CheckboxContainer
       checked={checked}
       disabled={disabled}
       size={size}
       onPress={handlePress}
-      aria-role="checkbox"
-      aria-state={{ checked, disabled }}
-      testID={testID}
+      {...accessibilityProps}
     >
       <CheckboxIcon checked={checked}>
         <Check size={size === 'small' ? 12 : size === 'medium' ? 12 : 12} color="white" />

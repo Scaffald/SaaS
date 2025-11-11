@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { useRouter } from 'expo-router'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Pressable } from 'react-native'
 import {
   YStack,
   XStack,
@@ -267,7 +268,6 @@ export function PrerequisiteWidget() {
                         key={option.value}
                         gap="$3"
                         items="center"
-                        pressStyle={{ opacity: 0.7 }}
                       >
                         <CustomCheckbox
                           checked={field.value?.includes(option.value as UserType)}
@@ -280,9 +280,10 @@ export function PrerequisiteWidget() {
                             }
                           }}
                           size="medium"
+                          testID={`checkbox-user-type-${option.value}`}
+                          ariaLabelledBy={`checkbox-user-type-${option.value}-label`}
                         />
-                        <Text
-                          flex={1}
+                        <Pressable
                           onPress={() => {
                             const currentTypes = field.value || []
                             const isChecked = currentTypes.includes(option.value as UserType)
@@ -292,9 +293,20 @@ export function PrerequisiteWidget() {
                               field.onChange([...currentTypes, option.value])
                             }
                           }}
+                          accessibilityRole="button"
+                          style={({ pressed }) => ({
+                            flex: 1,
+                            opacity: pressed ? 0.7 : 1,
+                            alignSelf: 'flex-start',
+                          })}
                         >
-                          {option.label}
-                        </Text>
+                          <Text
+                            nativeID={`checkbox-user-type-${option.value}-label`}
+                            cursor="pointer"
+                          >
+                            {option.label}
+                          </Text>
+                        </Pressable>
                       </XStack>
                     ))}
                   </YStack>
@@ -390,19 +402,29 @@ export function PrerequisiteWidget() {
                 control={control}
                 render={({ field }) => (
                   <YStack gap="$2">
-                    <XStack gap="$3" items="center" pressStyle={{ opacity: 0.7 }}>
-                      <CustomCheckbox
+                    <XStack gap="$3" items="center">
+                        <CustomCheckbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
-                        size="medium"
-                      />
-                      <Text flex={1} onPress={() => field.onChange(!field.value)}>
+                          size="medium"
+                        testID="checkbox-legal-privacy-policy"
+                        ariaLabel="Accept privacy policy"
+                        />
+                    <Pressable
+                      onPress={() => field.onChange(!field.value)}
+                      accessibilityRole="button"
+                      style={({ pressed }) => ({
+                        alignSelf: 'flex-start',
+                        opacity: pressed ? 0.7 : 1,
+                      })}
+                    >
+                      <Text nativeID="checkbox-legal-privacy-policy-label" cursor="pointer">
                         I accept the{' '}
                         <Text
                           color="$blue7"
                           textDecorationLine="underline"
-                          onPress={(e) => {
-                            e.stopPropagation()
+                          onPress={(event) => {
+                            event.stopPropagation?.()
                             if (typeof window !== 'undefined') {
                               window.open('https://scaffald.com/privacy', '_blank')
                             }
@@ -411,7 +433,7 @@ export function PrerequisiteWidget() {
                           Privacy Policy
                         </Text>
                       </Text>
-                    </XStack>
+                    </Pressable>
                     {errors.accepts_privacy_policy && (
                       <Text color="$red10" fontSize="$2">
                         {errors.accepts_privacy_policy.message}
@@ -427,19 +449,29 @@ export function PrerequisiteWidget() {
                 control={control}
                 render={({ field }) => (
                   <YStack gap="$2">
-                    <XStack gap="$3" items="center" pressStyle={{ opacity: 0.7 }}>
+                    <XStack gap="$3" items="center">
                       <CustomCheckbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
                         size="medium"
+                        testID="checkbox-legal-terms-of-service"
+                        ariaLabel="Accept terms of service"
                       />
-                      <Text flex={1} onPress={() => field.onChange(!field.value)}>
+                    <Pressable
+                      onPress={() => field.onChange(!field.value)}
+                      accessibilityRole="button"
+                      style={({ pressed }) => ({
+                        alignSelf: 'flex-start',
+                        opacity: pressed ? 0.7 : 1,
+                      })}
+                    >
+                      <Text nativeID="checkbox-legal-terms-of-service-label" cursor="pointer">
                         I accept the{' '}
                         <Text
                           color="$blue7"
                           textDecorationLine="underline"
-                          onPress={(e) => {
-                            e.stopPropagation()
+                          onPress={(event) => {
+                            event.stopPropagation?.()
                             if (typeof window !== 'undefined') {
                               window.open('https://scaffald.com/terms', '_blank')
                             }
@@ -448,6 +480,7 @@ export function PrerequisiteWidget() {
                           Terms of Service
                         </Text>
                       </Text>
+                    </Pressable>
                     </XStack>
                     {errors.accepts_terms_of_service && (
                       <Text color="$red10" fontSize="$2">

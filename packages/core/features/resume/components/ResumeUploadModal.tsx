@@ -214,6 +214,7 @@ export function ResumeUploadModal({
       }
 
       const nextCandidate: UploadCandidate = {
+        kind: 'native',
         name,
         size,
         type: mimeType,

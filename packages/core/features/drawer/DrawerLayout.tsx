@@ -13,6 +13,7 @@ import { useRouter } from 'expo-router'
 import type { Href } from 'expo-router'
 import { useNotificationDeviceRegistration } from '@app/core/hooks/useNotificationDeviceRegistration'
 import { ROUTES } from '@app/core/constants/routes'
+import { FeedbackWidget } from '@app/core/features/feedback'
 
 const NOTIFICATIONS_ROUTE: Href = ROUTES.DASHBOARD_NOTIFICATIONS.path as Href
 
@@ -191,6 +192,7 @@ export function DrawerLayout({
       >
         {children}
       </Drawer>
+      {!hideDrawer ? <FeedbackWidget /> : null}
     </>
   )
 }

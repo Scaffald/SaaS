@@ -41,7 +41,7 @@ export function DiscoverJobsLeft({
   )
 
   // Fetch user's applications to show applied status
-  const { data: applicationsData } = api.jobs.getMyApplications.useQuery(
+  const { data: userApplications } = api.applications.getUserApplications.useQuery(
     { limit: 100, offset: 0 },
     { enabled: true }
   )
@@ -50,8 +50,12 @@ export function DiscoverJobsLeft({
   const internalJobs = internalData?.jobs || []
 
   // Create a set of job IDs user has applied to
-  const appliedJobIds = new Set(
-    applicationsData?.applications?.map((app: { job_id: string }) => app.job_id) || []
+  type ApplicationSummary = { job_id?: string | null }
+
+  const appliedJobIds = new Set<string>(
+    ((userApplications ?? []) as ApplicationSummary[])
+      .map((application) => application.job_id)
+      .filter((jobId): jobId is string => Boolean(jobId))
   )
 
   const isLoading = externalLoading || internalLoading
