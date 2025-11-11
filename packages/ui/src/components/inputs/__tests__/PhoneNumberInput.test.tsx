@@ -1,5 +1,6 @@
+import type { InputHTMLAttributes } from 'react'
 import { act, fireEvent, render, screen } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
 
 const selectHandler = vi.hoisted<{ current: (value: string) => void }>(() => ({
@@ -13,13 +14,17 @@ vi.mock('tamagui', () => {
   const XStack = ({ children, ...rest }: { children?: ReactNode }) => (
     <div {...rest}>{children}</div>
   )
-  const Text = ({ children, ...rest }: { children?: ReactNode }) => <span {...rest}>{children}</span>
-  const Input = ({ onChangeText, ...rest }: { onChangeText?: (value: string) => void }) => (
-    <input
-      {...rest}
-      value={rest.value ?? ''}
-      onChange={(event) => onChangeText?.(event.target.value)}
-    />
+  const Text = ({ children, ...rest }: { children?: ReactNode }) => (
+    <span {...rest}>{children}</span>
+  )
+
+  type MockInputProps = {
+    onChangeText?: (value: string) => void
+    value?: string
+  } & InputHTMLAttributes<HTMLInputElement>
+
+  const Input = ({ onChangeText, value, ...rest }: MockInputProps) => (
+    <input {...rest} value={value ?? ''} onChange={(event) => onChangeText?.(event.target.value)} />
   )
 
   const Select = ({ children, onValueChange, value }: any) => {
@@ -31,14 +36,22 @@ vi.mock('tamagui', () => {
     )
   }
 
-  Select.Trigger = ({ children, ...rest }: any) => <button type="button" {...rest}>{children}</button>
+  Select.Trigger = ({ children, ...rest }: any) => (
+    <button type="button" {...rest}>
+      {children}
+    </button>
+  )
   Select.Value = ({ children }: any) => <span>{children}</span>
   Select.Content = ({ children }: any) => <div>{children}</div>
   Select.ScrollUpButton = () => null
   Select.ScrollDownButton = () => null
   Select.Viewport = ({ children }: any) => <div>{children}</div>
   Select.Item = ({ value, children }: any) => (
-    <button type="button" onClick={() => selectHandler.current(value)} data-testid={`country-${value}`}>
+    <button
+      type="button"
+      onClick={() => selectHandler.current(value)}
+      data-testid={`country-${value}`}
+    >
       {children}
     </button>
   )
@@ -77,7 +90,12 @@ vi.mock('../../config/countries', () => ({
     { code: 'GB', dialCode: '+44', name: 'United Kingdom', flag: '🇬🇧' },
   ],
   findCountryByCode: (code: string) =>
-    ({ US: { code: 'US', dialCode: '+1', name: 'United States', flag: '🇺🇸' }, GB: { code: 'GB', dialCode: '+44', name: 'United Kingdom', flag: '🇬🇧' } } as Record<string, unknown>)[code] ?? null,
+    (
+      ({
+        US: { code: 'US', dialCode: '+1', name: 'United States', flag: '🇺🇸' },
+        GB: { code: 'GB', dialCode: '+44', name: 'United Kingdom', flag: '🇬🇧' },
+      }) as Record<string, unknown>
+    )[code] ?? null,
   getDefaultCountry: () => ({ code: 'US', dialCode: '+1', name: 'United States', flag: '🇺🇸' }),
 }))
 

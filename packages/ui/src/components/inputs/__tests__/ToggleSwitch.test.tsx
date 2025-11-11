@@ -5,7 +5,12 @@ import type { ReactNode } from 'react'
 const styledCalls = vi.hoisted(() => [] as Array<{ config: Record<string, unknown> }>)
 
 vi.mock('tamagui', () => {
-  const View = ({ children, onPress, testID, ...rest }: { children?: ReactNode; onPress?: () => void; testID?: string }) => {
+  const View = ({
+    children,
+    onPress,
+    testID,
+    ...rest
+  }: { children?: ReactNode; onPress?: () => void; testID?: string }) => {
     const props: Record<string, unknown> = { ...rest }
 
     if (testID) {
@@ -17,16 +22,14 @@ vi.mock('tamagui', () => {
       props.role = 'button'
     }
 
-    return (
-      <div {...props}>
-        {children}
-      </div>
-    )
+    return <div {...props}>{children}</div>
   }
 
   const styled = (Component: (props: any) => ReactNode, config: Record<string, unknown>) => {
     styledCalls.push({ config })
-    return ({ children, ...rest }: { children?: ReactNode }) => <Component {...rest}>{children}</Component>
+    return ({ children, ...rest }: { children?: ReactNode }) => (
+      <Component {...rest}>{children}</Component>
+    )
   }
 
   return {
