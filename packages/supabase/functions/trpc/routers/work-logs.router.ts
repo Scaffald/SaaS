@@ -55,6 +55,46 @@ const sanitizeFileName = (fileName: string): string => {
 const buildPoint = (latitude: number, longitude: number) =>
   `POINT(${longitude} ${latitude})`;
 
+const isFiniteNumber = (value: unknown): value is number =>
+  typeof value === "number" && Number.isFinite(value);
+
+const normalizeAccuracyMeters = (input: unknown): number | null => {
+  if (!isFiniteNumber(input)) {
+    return null;
+  }
+
+  return input > 0 ? input : null;
+};
+
+const validateGpsCapture = (capture: {
+  latitude: number;
+  longitude: number;
+  accuracyMeters?: number | null;
+}) => {
+  const { latitude, longitude, accuracyMeters } = capture;
+
+  if (!isFiniteNumber(latitude) || !isFiniteNumber(longitude)) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "GPS coordinates must be finite numbers.",
+    });
+  }
+
+  if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "GPS coordinates fall outside the valid latitude/longitude ranges.",
+    });
+  }
+
+  if (isFiniteNumber(accuracyMeters) && accuracyMeters <= 0) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "GPS accuracy must be greater than zero when provided.",
+    });
+  }
+};
+
 const entriesOverlap = (
   a: { start: string; end: string },
   b: { start: string; end: string },
@@ -607,11 +647,14 @@ export const workLogsRouter = t.router({
       };
 
       if (gpsCapture) {
+        validateGpsCapture(gpsCapture);
         insertPayload.gps_location = buildPoint(
           gpsCapture.latitude,
           gpsCapture.longitude,
         );
-        insertPayload.gps_accuracy_meters = gpsCapture.accuracyMeters ?? null;
+        insertPayload.gps_accuracy_meters = normalizeAccuracyMeters(
+          gpsCapture.accuracyMeters,
+        );
         insertPayload.gps_captured_at = gpsCapture.capturedAt ?? null;
         insertPayload.device_type = gpsCapture.deviceType ?? null;
         insertPayload.location_permission_status =
@@ -703,14 +746,27 @@ export const workLogsRouter = t.router({
 
       if (input.payload.gpsCapture) {
         const capture = input.payload.gpsCapture;
+        validateGpsCapture(capture);
         updates.gps_location = buildPoint(capture.latitude, capture.longitude);
-        updates.gps_accuracy_meters = capture.accuracyMeters ?? null;
+        updates.gps_accuracy_meters = normalizeAccuracyMeters(
+          capture.accuracyMeters,
+        );
         updates.gps_captured_at = capture.capturedAt ?? null;
         updates.device_type = capture.deviceType ?? null;
         updates.location_permission_status = capture.permissionStatus ?? null;
 
         oldValue.gps_location = workLog.gps_location ?? null;
         newValue.gps_location = updates.gps_location;
+        oldValue.gps_accuracy_meters = workLog.gps_accuracy_meters ?? null;
+        newValue.gps_accuracy_meters = updates.gps_accuracy_meters;
+        oldValue.gps_captured_at = workLog.gps_captured_at ?? null;
+        newValue.gps_captured_at = updates.gps_captured_at;
+        oldValue.device_type = workLog.device_type ?? null;
+        newValue.device_type = updates.device_type ?? null;
+        oldValue.location_permission_status =
+          workLog.location_permission_status ?? null;
+        newValue.location_permission_status =
+          updates.location_permission_status ?? null;
       }
 
       if (Object.keys(updates).length === 0) {
@@ -1571,10 +1627,18 @@ export const workLogsRouter = t.router({
       };
 
       if (input.gpsCapture) {
+        validateGpsCapture(input.gpsCapture);
         insertPayload.gps_location = buildPoint(
           input.gpsCapture.latitude,
           input.gpsCapture.longitude,
         );
+        insertPayload.gps_accuracy_meters = normalizeAccuracyMeters(
+          input.gpsCapture.accuracyMeters,
+        );
+        insertPayload.gps_captured_at = input.gpsCapture.capturedAt ?? null;
+        insertPayload.device_type = input.gpsCapture.deviceType ?? null;
+        insertPayload.location_permission_status =
+          input.gpsCapture.permissionStatus ?? null;
       }
 
       const { data: photoRecord, error: insertError } = await supabase

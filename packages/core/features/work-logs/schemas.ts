@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { LOCATION_PERMISSION_STATUS_VALUES } from '../../utils/location/types';
+
 const TIME_24_HOUR = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
 const WORK_LOG_ENTRY_TYPES = ['daily', 'project', 'task'] as const;
@@ -98,10 +100,10 @@ const gpsCaptureSchema = z
       .number()
       .gte(-180, 'Longitude must be greater than or equal to -180.')
       .lte(180, 'Longitude must be less than or equal to 180.'),
-    accuracyMeters: z.number().nonnegative().optional(),
+    accuracyMeters: z.number().positive('Accuracy must be greater than zero.').nullable().optional(),
     capturedAt: z.string().datetime().optional(),
-    deviceType: z.enum(['ios', 'android']).optional(),
-    permissionStatus: z.string().min(1).optional(),
+    deviceType: z.enum(['ios', 'android', 'web']).optional(),
+    permissionStatus: z.enum(LOCATION_PERMISSION_STATUS_VALUES).optional(),
   })
   .strict();
 
