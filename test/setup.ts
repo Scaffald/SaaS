@@ -46,6 +46,21 @@ vi.mock('expo-modules-core', () => ({
   NativeModulesProxy: {},
 }))
 
+if (typeof window !== 'undefined' && !window.matchMedia) {
+  const mockMatchMediaResult = {
+    matches: false,
+    media: '',
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  }
+
+  window.matchMedia = vi.fn().mockImplementation(() => mockMatchMediaResult)
+}
+
 afterEach(() => {
   cleanupReact()
   cleanupReactNative()
@@ -55,4 +70,3 @@ afterEach(() => {
 
 // Expo modules expect __DEV__ to be defined
 ;(globalThis as Record<string, unknown>).__DEV__ ??= false
-
