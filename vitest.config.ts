@@ -79,6 +79,7 @@ export default defineConfig({
         'packages/ui/src/components/image-picker/hooks/**/*.ts',
         'packages/ui/src/components/buttons/**/*.ts',
         'packages/ui/src/components/CustomToast.tsx',
+        'packages/ui/src/components/inputs/**/*.ts',
         'packages/schemas/src/profile/**/*.ts',
         'packages/schemas/src/common/**/*.ts',
         'packages/schemas/src/jobs/**/*.ts',
