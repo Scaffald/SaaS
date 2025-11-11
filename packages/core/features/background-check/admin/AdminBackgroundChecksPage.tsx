@@ -85,7 +85,6 @@ export function AdminBackgroundChecksPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>('checks')
   const [statusFilter, setStatusFilter] = useState<'all' | BackgroundCheckStatus>('under_review')
   const [searchQuery, setSearchQuery] = useState('')
-  // biome-ignore lint/correctness/noUnusedVariables: used in render JSX below
   const [auditSearch, setAuditSearch] = useState('')
   const [selectedCheck, setSelectedCheck] = useState<AdminCheckSummary | null>(null)
   const [selectedDispute, setSelectedDispute] = useState<AdminDisputeSummary | null>(null)
@@ -107,13 +106,11 @@ export function AdminBackgroundChecksPage() {
     staleTime: 30_000,
   })
 
-  // biome-ignore lint/correctness/noUnusedVariables: conditionally used in render
   const metricsQuery = api.backgroundChecks.adminGetMetrics.useQuery(undefined, {
     enabled: isAdmin && activeTab === 'metrics',
     staleTime: 60_000,
   })
 
-  // biome-ignore lint/correctness/noUnusedVariables: conditionally used in render
   const accessLogQuery = api.backgroundChecks.adminGetAccessLog.useQuery(
     { limit: 200 },
     {

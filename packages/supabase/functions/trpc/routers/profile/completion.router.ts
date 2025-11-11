@@ -294,7 +294,6 @@ async function fetchCompletionData(
     .select(`
       first_name,
       last_name,
-      headline,
       address,
       location,
       availability,
@@ -335,6 +334,13 @@ async function fetchCompletionData(
     .eq("user_id", userId)
     .maybeSingle();
 
+  const userPromise = supabase
+    .schema("core")
+    .from("users")
+    .select("headline")
+    .eq("id", userId)
+    .maybeSingle();
+
   const [
     { data: profileData, error: profileError },
     { data: skillsData, error: skillsError },
@@ -342,6 +348,7 @@ async function fetchCompletionData(
     { data: educationData, error: educationError },
     { data: experienceData, error: experienceError },
     { data: preferencesData, error: preferencesError },
+    { data: userData, error: userError },
   ] = await Promise.all([
     profilePromise,
     skillsPromise,
@@ -349,6 +356,7 @@ async function fetchCompletionData(
     educationPromise,
     experiencePromise,
     preferencesPromise,
+    userPromise,
   ]);
 
   if (profileError && profileError.code !== "PGRST116") {
@@ -369,9 +377,28 @@ async function fetchCompletionData(
   if (preferencesError && preferencesError.code !== "PGRST116") {
     throw preferencesError;
   }
+  if (userError && userError.code !== "PGRST116") {
+    throw userError;
+  }
+
+  const profileRecord: Record<string, unknown> = profileData
+    ? { ...profileData }
+    : {};
+
+  const userHeadline =
+    userData && typeof userData === "object" && "headline" in userData
+      ? (userData as Record<string, unknown>).headline
+      : undefined;
+
+  if (userHeadline !== undefined) {
+    profileRecord.headline = userHeadline;
+  }
+
+  const normalizedProfileData =
+    Object.keys(profileRecord).length > 0 ? profileRecord : null;
 
   return {
-    profileData: profileData ?? null,
+    profileData: normalizedProfileData,
     skillsData: skillsData ?? [],
     certificationsData: certificationsData ?? [],
     educationData: educationData ?? [],

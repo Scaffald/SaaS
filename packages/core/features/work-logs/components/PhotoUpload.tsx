@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useState } from "react";
-import { Platform } from "react-native";
-import { randomUUID } from "expo-crypto";
+import { useCallback, useMemo, useState } from 'react'
+import { Platform } from 'react-native'
+import { randomUUID } from 'expo-crypto'
 import {
   Button,
   Checkbox,
@@ -12,49 +12,43 @@ import {
   View,
   XStack,
   YStack,
-} from "tamagui";
-import { Camera, ImagePlus, UploadCloud } from "@tamagui/lucide-icons";
-import { useToastController } from "@tamagui/toast";
+} from 'tamagui'
+import { Camera, ImagePlus, UploadCloud } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
 
-import {
-  UploadSurface,
-  type UploadSelection,
-} from "@app/ui";
+import { UploadSurface, type UploadSelection } from '@app/ui'
 
-import type { WorkLogPhotoType } from "../types/photos";
-import { PhotoGallery } from "./PhotoGallery";
-import { usePhotoUpload, type UploadCandidate } from "../hooks/usePhotoUpload";
+import type { WorkLogPhotoType } from '../types/photos'
+import { PhotoGallery } from './PhotoGallery'
+import { usePhotoUpload, type UploadCandidate } from '../hooks/usePhotoUpload'
 
-type PhotoCategory = Exclude<WorkLogPhotoType, null>;
+type PhotoCategory = Exclude<WorkLogPhotoType, null>
 
 const PHOTO_TYPE_OPTIONS: Array<{ value: PhotoCategory; label: string }> = [
-  { value: "before", label: "Before" },
-  { value: "progress", label: "Progress" },
-  { value: "after", label: "After" },
-  { value: "general", label: "General" },
-];
+  { value: 'before', label: 'Before' },
+  { value: 'progress', label: 'Progress' },
+  { value: 'after', label: 'After' },
+  { value: 'general', label: 'General' },
+]
 
-const DEFAULT_PHOTO_NAME = (suffix: string) =>
-  `work-log-photo-${suffix}.jpg`;
+const DEFAULT_PHOTO_NAME = (suffix: string) => `work-log-photo-${suffix}.jpg`
 
 const formatStorageSummary = (used: number, limit: number) => {
   const formatter = new Intl.NumberFormat(undefined, {
-    style: "unit",
-    unit: "megabyte",
-    unitDisplay: "short",
+    style: 'unit',
+    unit: 'megabyte',
+    unitDisplay: 'short',
     maximumFractionDigits: 1,
-  });
-  return `${formatter.format(used / 1_000_000)} / ${formatter.format(
-    limit / 1_000_000,
-  )}`;
-};
+  })
+  return `${formatter.format(used / 1_000_000)} / ${formatter.format(limit / 1_000_000)}`
+}
 
 export interface PhotoUploadProps {
-  workLogId?: string | null;
+  workLogId?: string | null
 }
 
 export function PhotoUpload({ workLogId }: PhotoUploadProps) {
-  const toast = useToastController();
+  const toast = useToastController()
   const {
     isReady,
     photos,
@@ -69,200 +63,177 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
     updatePhoto,
     togglePhotoVisibility,
     deletePhoto,
-  } = usePhotoUpload({ workLogId });
+  } = usePhotoUpload({ workLogId })
 
-  const [caption, setCaption] = useState("");
-  const [photoType, setPhotoType] = useState<PhotoCategory>("general");
-  const [showOnProfile, setShowOnProfile] = useState(false);
-  const [isCapturing, setIsCapturing] = useState(false);
+  const [caption, setCaption] = useState('')
+  const [photoType, setPhotoType] = useState<PhotoCategory>('general')
+  const [showOnProfile, setShowOnProfile] = useState(false)
+  const [isCapturing, setIsCapturing] = useState(false)
 
   const usagePercent = useMemo(() => {
     if (storageUsage.limitBytes === 0) {
-      return 0;
+      return 0
     }
-    return Math.min(
-      100,
-      Math.round((storageUsage.usedBytes / storageUsage.limitBytes) * 100),
-    );
-  }, [storageUsage.limitBytes, storageUsage.usedBytes]);
+    return Math.min(100, Math.round((storageUsage.usedBytes / storageUsage.limitBytes) * 100))
+  }, [storageUsage.limitBytes, storageUsage.usedBytes])
 
   const resetForm = () => {
-    setCaption("");
-    setPhotoType("general");
-    setShowOnProfile(false);
-  };
+    setCaption('')
+    setPhotoType('general')
+    setShowOnProfile(false)
+  }
 
   const ensureReady = () => {
     if (!isReady) {
-      toast.show("Save Draft First", {
+      toast.show('Save Draft First', {
         message:
-          "Photos can be added after the work log draft has been saved. Please wait for auto-save to finish.",
-        type: "info",
-      });
-      return false;
+          'Photos can be added after the work log draft has been saved. Please wait for auto-save to finish.',
+        type: 'info',
+      })
+      return false
     }
     if (!canUploadMore) {
-      toast.show("Photo Limit Reached", {
+      toast.show('Photo Limit Reached', {
         message: `You can upload up to ${maxPhotos} photos per work log.`,
-        type: "warning",
-      });
-      return false;
+        type: 'warning',
+      })
+      return false
     }
-    return true;
-  };
+    return true
+  }
 
   const buildCandidateFromSelection = useCallback(
     (selection: UploadSelection): UploadCandidate | null => {
-      if (selection.platform === "web") {
-        const file = selection.file;
+      if (selection.platform === 'web') {
+        const file = selection.file
         if (!file) {
-          toast.show("Upload Failed", {
-            message: "Unable to process the selected file.",
-            type: "error",
-          });
-          return null;
+          toast.show('Upload Failed', {
+            message: 'Unable to process the selected file.',
+            type: 'error',
+          })
+          return null
         }
         return {
           id: randomUUID(),
-          platform: "web",
+          platform: 'web',
           file,
           fileName: file.name || DEFAULT_PHOTO_NAME(randomUUID().slice(0, 8)),
-          mimeType:
-            (file.type as UploadCandidate["mimeType"]) || "image/jpeg",
+          mimeType: (file.type as UploadCandidate['mimeType']) || 'image/jpeg',
           size: file.size,
           caption: caption.trim() || undefined,
           photoType,
           showOnProfile,
-        };
+        }
       }
 
-      const asset = selection.asset;
+      const asset = selection.asset
       if (!asset?.uri) {
-        toast.show("Upload Failed", {
-          message: "Unable to process the selected photo.",
-          type: "error",
-        });
-        return null;
+        toast.show('Upload Failed', {
+          message: 'Unable to process the selected photo.',
+          type: 'error',
+        })
+        return null
       }
 
       const fileName =
-        asset.name ??
-        DEFAULT_PHOTO_NAME(randomUUID().replaceAll("-", "").slice(0, 10));
+        asset.name ?? DEFAULT_PHOTO_NAME(randomUUID().replaceAll('-', '').slice(0, 10))
 
       return {
         id: randomUUID(),
-        platform: "native",
+        platform: 'native',
         uri: asset.uri,
         fileName,
-        mimeType:
-          (asset.type as UploadCandidate["mimeType"]) || "image/jpeg",
+        mimeType: (asset.type as UploadCandidate['mimeType']) || 'image/jpeg',
         size: asset.size ?? 0,
         caption: caption.trim() || undefined,
         photoType,
         showOnProfile,
-      };
+      }
     },
-    [caption, photoType, showOnProfile, toast],
-  );
+    [caption, photoType, showOnProfile, toast]
+  )
 
   const handleUploadSelection = useCallback(
     async (selection: UploadSelection) => {
       if (!ensureReady()) {
-        return;
+        return
       }
-      const candidate = buildCandidateFromSelection(selection);
-      if (!candidate) return;
-      await uploadPhoto({ candidate });
-      resetForm();
+      const candidate = buildCandidateFromSelection(selection)
+      if (!candidate) return
+      await uploadPhoto({ candidate })
+      resetForm()
     },
-    [buildCandidateFromSelection, ensureReady, uploadPhoto],
-  );
+    [buildCandidateFromSelection, ensureReady, uploadPhoto]
+  )
 
   const handleCapturePhoto = useCallback(async () => {
     if (!ensureReady()) {
-      return;
+      return
     }
 
     try {
-      setIsCapturing(true);
-      const ImagePicker = await import("expo-image-picker");
-      const { status } =
-        await ImagePicker.requestCameraPermissionsAsync();
+      setIsCapturing(true)
+      const ImagePicker = await import('expo-image-picker')
+      const { status } = await ImagePicker.requestCameraPermissionsAsync()
 
-      if (status !== "granted") {
-        toast.show("Camera Permission Required", {
+      if (status !== 'granted') {
+        toast.show('Camera Permission Required', {
           message:
-            "Camera access is needed to capture photos. Please enable it in your device settings.",
-          type: "warning",
-        });
-        return;
+            'Camera access is needed to capture photos. Please enable it in your device settings.',
+          type: 'warning',
+        })
+        return
       }
 
       const result = await ImagePicker.launchCameraAsync({
         allowsEditing: false,
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         quality: 1,
-      });
+      })
 
       if (result.canceled || !result.assets?.length) {
-        return;
+        return
       }
 
-      const asset = result.assets[0];
+      const asset = result.assets[0]
       const candidate: UploadCandidate = {
         id: randomUUID(),
-        platform: "native",
+        platform: 'native',
         uri: asset.uri,
         fileName:
-          asset.fileName ??
-          DEFAULT_PHOTO_NAME(randomUUID().replaceAll("-", "").slice(0, 10)),
-        mimeType:
-          (asset.type as UploadCandidate["mimeType"]) || "image/jpeg",
+          asset.fileName ?? DEFAULT_PHOTO_NAME(randomUUID().replaceAll('-', '').slice(0, 10)),
+        mimeType: (asset.type as UploadCandidate['mimeType']) || 'image/jpeg',
         size: asset.fileSize ?? 0,
         width: asset.width,
         height: asset.height,
         caption: caption.trim() || undefined,
         photoType,
         showOnProfile,
-      };
+      }
 
-      await uploadPhoto({ candidate });
-      resetForm();
+      await uploadPhoto({ candidate })
+      resetForm()
     } catch (error) {
-      console.error("[PhotoUpload] Camera capture failed", error);
-      toast.show("Capture Failed", {
-        message: "Unable to capture photo. Please try again.",
-        type: "error",
-      });
+      console.error('[PhotoUpload] Camera capture failed', error)
+      toast.show('Capture Failed', {
+        message: 'Unable to capture photo. Please try again.',
+        type: 'error',
+      })
     } finally {
-      setIsCapturing(false);
+      setIsCapturing(false)
     }
-  }, [
-    caption,
-    ensureReady,
-    photoType,
-    showOnProfile,
-    toast,
-    uploadPhoto,
-  ]);
+  }, [caption, ensureReady, photoType, showOnProfile, toast, uploadPhoto])
 
   return (
     <YStack gap="$4">
-      <YStack
-        borderWidth={1}
-        borderColor="$borderColor"
-        rounded="$4"
-        p="$4"
-        gap="$3"
-        bg="$color2"
-      >
+      <YStack borderWidth={1} borderColor="$borderColor" rounded="$4" p="$4" gap="$3" bg="$color2">
         <YStack gap="$2">
           <Text fontWeight="700" fontSize="$5">
             Work Log Photos
           </Text>
           <Text color="$color11" fontSize="$3">
-            Add up to {maxPhotos} photos documenting your work. Individual files
-            must be 2MB or less.
+            Add up to {maxPhotos} photos documenting your work. Individual files must be 2MB or
+            less.
           </Text>
         </YStack>
 
@@ -272,17 +243,14 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
               Storage Usage
             </Text>
             <Text fontSize="$2" color="$color10">
-              {formatStorageSummary(
-                storageUsage.usedBytes,
-                storageUsage.limitBytes,
-              )}
+              {formatStorageSummary(storageUsage.usedBytes, storageUsage.limitBytes)}
             </Text>
           </XStack>
-          <View height={10} bg="$color4" borderRadius="$4" overflow="hidden">
+          <View height={10} bg="$color4" rounded="$4" overflow="hidden">
             <View
               height="100%"
               width={`${usagePercent}%`}
-              bg={usagePercent > 90 ? "$red9" : "$blue9"}
+              bg={usagePercent > 90 ? '$red9' : '$blue9'}
             />
           </View>
         </YStack>
@@ -301,8 +269,8 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
               Draft not yet saved
             </Text>
             <Text color="$orange11" fontSize="$3">
-              Photos can be added after the work log draft is saved. Keep filling
-              out the form and we&apos;ll enable uploads automatically.
+              Photos can be added after the work log draft is saved. Keep filling out the form and
+              we&apos;ll enable uploads automatically.
             </Text>
           </YStack>
         ) : (
@@ -319,9 +287,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
               />
               <Select
                 value={photoType}
-                onValueChange={(value) =>
-                  setPhotoType(value as PhotoCategory)
-                }
+                onValueChange={(value) => setPhotoType(value as PhotoCategory)}
                 disablePreventBodyScroll
               >
                 <Select.Trigger>
@@ -329,11 +295,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                 </Select.Trigger>
                 <Select.Content>
                   {PHOTO_TYPE_OPTIONS.map((option, index) => (
-                    <Select.Item
-                      key={option.value}
-                      value={option.value}
-                      index={index}
-                    >
+                    <Select.Item key={option.value} value={option.value} index={index}>
                       <Select.ItemText>{option.label}</Select.ItemText>
                     </Select.Item>
                   ))}
@@ -342,14 +304,10 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
               <XStack gap="$2" items="center">
                 <Checkbox
                   checked={showOnProfile}
-                  onCheckedChange={(value) =>
-                    setShowOnProfile(Boolean(value))
-                  }
+                  onCheckedChange={(value) => setShowOnProfile(Boolean(value))}
                   size="$3"
                 />
-                <Text fontSize="$3">
-                  Show on my public profile when verified
-                </Text>
+                <Text fontSize="$3">Show on my public profile when verified</Text>
               </XStack>
             </YStack>
 
@@ -359,9 +317,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
               disabled={isUploading || isCapturing || !canUploadMore}
               accept="image/jpeg,image/png,image/webp"
               maxSizeBytes={2 * 1024 * 1024}
-              onError={(message) =>
-                toast.show("Upload Failed", { message, type: "error" })
-              }
+              onError={(message) => toast.show('Upload Failed', { message, type: 'error' })}
               onSelect={handleUploadSelection}
             >
               {({ getRootProps, getInputProps, open, isDragActive, isProcessing }) => (
@@ -369,25 +325,22 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                   <YStack
                     {...(getRootProps() as Record<string, unknown>)}
                     p="$4"
-                    bg={isDragActive ? "$blue3" : "$color1"}
+                    bg={isDragActive ? '$blue3' : '$color1'}
                     rounded="$4"
                     borderWidth={2}
-                    borderColor={isDragActive ? "$blue9" : "$borderColor"}
+                    borderColor={isDragActive ? '$blue9' : '$borderColor'}
                     borderStyle="dashed"
                     items="center"
                     justify="center"
                     gap="$2"
                   >
-                    {Platform.OS === "web" ? (
+                    {Platform.OS === 'web' ? (
                       <input
                         {...(getInputProps() as Record<string, unknown>)}
-                        style={{ display: "none" }}
+                        style={{ display: 'none' }}
                       />
                     ) : null}
-                    <ImagePlus
-                      size={32}
-                      color={isDragActive ? "$blue11" : "$color10"}
-                    />
+                    <ImagePlus size={32} color={isDragActive ? '$blue11' : '$color10'} />
                     <Text fontWeight="600" fontSize="$3">
                       Drag and drop photos here
                     </Text>
@@ -406,7 +359,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                     >
                       Choose From Device
                     </Button>
-                    {Platform.OS !== "web" && (
+                    {Platform.OS !== 'web' && (
                       <Button
                         flex={1}
                         icon={Camera}
@@ -414,7 +367,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                         disabled={isUploading || isProcessing || isCapturing}
                         onPress={handleCapturePhoto}
                       >
-                        {isCapturing ? "Opening…" : "Capture Photo"}
+                        {isCapturing ? 'Opening…' : 'Capture Photo'}
                       </Button>
                     )}
                   </XStack>
@@ -427,25 +380,14 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                 <Text fontSize="$2" color="$color11">
                   Upload progress
                 </Text>
-                <View height={8} bg="$color4" borderRadius="$4" overflow="hidden">
-                  <View
-                    height="100%"
-                    width={`${uploadProgress}%`}
-                    bg="$blue9"
-                  />
+                <View height={8} bg="$color4" rounded="$4" overflow="hidden">
+                  <View height="100%" width={`${uploadProgress}%`} bg="$blue9" />
                 </View>
               </YStack>
             )}
 
             {uploadError ? (
-              <YStack
-                borderWidth={1}
-                borderColor="$red8"
-                bg="$red3"
-                rounded="$4"
-                px="$3"
-                py="$2"
-              >
+              <YStack borderWidth={1} borderColor="$red8" bg="$red3" rounded="$4" px="$3" py="$2">
                 <Text color="$red11">{uploadError}</Text>
               </YStack>
             ) : null}
@@ -463,16 +405,15 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
           photos={photos}
           disabled={isUploading || isCapturing}
           onUpdateCaption={async (photoId, nextCaption) => {
-            await updatePhoto(photoId, { caption: nextCaption ?? null });
+            await updatePhoto(photoId, { caption: nextCaption ?? null })
           }}
           onUpdatePhotoType={async (photoId, nextType) => {
-            await updatePhoto(photoId, { photoType: nextType });
+            await updatePhoto(photoId, { photoType: nextType ?? undefined })
           }}
           onToggleVisibility={togglePhotoVisibility}
           onDelete={deletePhoto}
         />
       )}
     </YStack>
-  );
+  )
 }
-
