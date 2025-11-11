@@ -14,10 +14,13 @@ import type { Database } from "../../_shared/database.types.ts";
 // @ts-ignore - Deno requires file extension
 import {
   addCollaboratorSchema,
+  approveWorkLogMoveSchema,
   addSkillToProfileSchema,
   addWorkLogCommentSchema,
+  cancelWorkLogMoveSchema,
   checkTimeOverlapSchema,
   createWorkLogSchema,
+  denyWorkLogMoveSchema,
   disputeWorkLogSchema,
   getSuggestedSkillsSchema,
   moveWorkLogSchema,
@@ -32,6 +35,8 @@ import {
 // @ts-ignore - Deno requires file extension
 import { notifyWorkLogCollaborator } from "../../_shared/work-log-notifications.ts";
 // @ts-ignore - Deno requires file extension
+import { insertNotification } from "../../_shared/notifications/utils.ts";
+// @ts-ignore - Deno requires file extension
 import { enrichUserSkills } from "../utils/skill-enrichment.ts";
 
 type DbClient = SupabaseClient<Database>;
@@ -42,7 +47,7 @@ const WORK_LOG_PHOTO_BUCKET = "work-log-photos";
 const SIGNED_UPLOAD_URL_TTL_SECONDS = 60 * 5;
 
 const WORK_LOG_SELECT =
-  "id, user_id, status, project_id, time_entries, tasks_completed, skills_used, visibility, show_on_profile, show_date_range_on_profile, entry_type, log_date, work_description, gps_location, gps_accuracy_meters, gps_captured_at, device_type, location_permission_status, verified_by_user_id";
+  "id, user_id, status, project_id, time_entries, tasks_completed, skills_used, visibility, show_on_profile, show_date_range_on_profile, entry_type, log_date, work_description, gps_location, gps_accuracy_meters, gps_captured_at, device_type, location_permission_status, verified_by_user_id, pending_move_to_project_id, pending_move_reason, pending_move_requested_at, pending_move_requested_by";
 
 const sanitizeFileName = (fileName: string): string => {
   return fileName
@@ -93,6 +98,174 @@ const validateGpsCapture = (capture: {
       message: "GPS accuracy must be greater than zero when provided.",
     });
   }
+};
+
+type ProjectRecord = {
+  id: string;
+  organization_id: string;
+  work_log_require_approval_to_move_override?: boolean | null;
+};
+
+type OrganizationMoveSettings = {
+  id: string;
+  owner_user_id: string | null;
+  work_log_require_approval_to_move: boolean | null;
+};
+
+const fetchProjectRecord = async (
+  supabase: DbClient,
+  projectId: string,
+  errorMessage: string,
+): Promise<ProjectRecord> => {
+  const { data, error } = await supabase
+    .schema("public")
+    .from("construction_projects")
+    .select("id, organization_id, work_log_require_approval_to_move_override")
+    .eq("id", projectId)
+    .maybeSingle();
+
+  if (error || !data) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: errorMessage,
+    });
+  }
+
+  return data;
+};
+
+const fetchOrganizationMoveSettings = async (
+  supabase: DbClient,
+  organizationId: string,
+): Promise<OrganizationMoveSettings> => {
+  const { data, error } = await supabase
+    .schema("public")
+    .from("organizations")
+    .select("id, owner_user_id, work_log_require_approval_to_move")
+    .eq("id", organizationId)
+    .maybeSingle();
+
+  if (error || !data) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Organization configuration could not be found.",
+    });
+  }
+
+  return data;
+};
+
+const resolveMoveApprovalRequirement = (
+  project: ProjectRecord,
+  organization: OrganizationMoveSettings,
+  explicitRequest?: boolean,
+) => {
+  if (typeof explicitRequest === "boolean") {
+    return explicitRequest;
+  }
+
+  if (
+    typeof project.work_log_require_approval_to_move_override === "boolean"
+  ) {
+    return project.work_log_require_approval_to_move_override;
+  }
+
+  return Boolean(organization.work_log_require_approval_to_move);
+};
+
+const getOrganizationManagerIds = async (
+  supabase: DbClient,
+  organizationId: string,
+) => {
+  const { data, error } = await supabase
+    .schema("core")
+    .from("role_assignments")
+    .select("user_id, roles:roles(name, scope)")
+    .eq("scope_org_id", organizationId);
+
+  if (error || !data) {
+    console.error("[workLogs] unable to load organization managers", {
+      organizationId,
+      error: error?.message,
+    });
+    return [] as string[];
+  }
+
+  const managerRoles = new Set(["manager", "admin"]);
+
+  return data
+    .filter(
+      (assignment) =>
+        assignment.roles?.scope === "organization" &&
+        assignment.roles?.name &&
+        managerRoles.has(assignment.roles.name),
+    )
+    .map((assignment) => assignment.user_id)
+    .filter((value): value is string => Boolean(value));
+};
+
+const assertUserIsOrganizationManager = async (
+  supabase: DbClient,
+  userId: string,
+  organization: OrganizationMoveSettings,
+) => {
+  if (organization.owner_user_id === userId) {
+    return;
+  }
+
+  const managerIds = await getOrganizationManagerIds(
+    supabase,
+    organization.id,
+  );
+
+  if (!managerIds.includes(userId)) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Only project managers can approve move requests.",
+    });
+  }
+};
+
+const notifyMoveEvent = async (
+  supabase: DbClient,
+  recipients: string[],
+  {
+    actorId,
+    workLogId,
+    title,
+    message,
+    metadata = {},
+  }: {
+    actorId: string;
+    workLogId: string;
+    title: string;
+    message: string;
+    metadata?: Record<string, unknown>;
+  },
+) => {
+  if (!recipients.length) {
+    return;
+  }
+
+  const routedChannels = ["in_app"] as const;
+
+  await Promise.all(
+    recipients.map((recipientId) =>
+      insertNotification(supabase, {
+        user_id: recipientId,
+        type: "info",
+        severity: "info",
+        title,
+        message,
+        metadata: {
+          ...metadata,
+          workLogId,
+          actorId,
+        },
+        routed_channels: [...routedChannels],
+      }),
+    ),
+  );
 };
 
 const entriesOverlap = (
@@ -559,7 +732,18 @@ const recordAuditLog = async (
   }: {
     workLogId: string;
     userId: string;
-    action: "status_change" | "edit" | "comment" | "move_project" | "collaborator_added" | "photo_added" | "photo_removed";
+    action:
+      | "status_change"
+      | "edit"
+      | "comment"
+      | "move_project"
+      | "move_requested"
+      | "move_cancelled"
+      | "move_denied"
+      | "move_approved"
+      | "collaborator_added"
+      | "photo_added"
+      | "photo_removed";
     oldValue?: Record<string, unknown> | null;
     newValue?: Record<string, unknown> | null;
     reason?: string | null;
@@ -1838,7 +2022,7 @@ export const workLogsRouter = t.router({
   moveToProject: protectedProcedure
     .input(moveWorkLogSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, supabaseAdmin, user } = ctx;
 
       if (!user?.id) {
         throw new TRPCError({ code: "UNAUTHORIZED" });
@@ -1857,32 +2041,133 @@ export const workLogsRouter = t.router({
         });
       }
 
-      if (workLog.project_id === input.targetProjectId) {
+      if (
+        workLog.project_id === input.targetProjectId &&
+        !workLog.pending_move_to_project_id
+      ) {
         return workLog;
       }
 
-      const { data: targetProject, error: projectError } = await supabase
-        .schema("public")
-        .from("construction_projects")
-        .select("id")
-        .eq("id", input.targetProjectId)
-        .single();
-
-      if (projectError || !targetProject) {
+      if (workLog.pending_move_to_project_id) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Target project not found.",
+          message:
+            "A move request is already pending. Cancel the existing request before creating a new one.",
         });
+      }
+
+      const sourceProject = await fetchProjectRecord(
+        supabase,
+        workLog.project_id,
+        "Source project not found.",
+      );
+
+      const targetProject = await fetchProjectRecord(
+        supabase,
+        input.targetProjectId,
+        "Target project not found.",
+      );
+
+      if (sourceProject.organization_id !== targetProject.organization_id) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "Work logs can only be moved between projects within the same organization.",
+        });
+      }
+
+      const organization = await fetchOrganizationMoveSettings(
+        supabase,
+        sourceProject.organization_id,
+      );
+
+      const requireApproval = resolveMoveApprovalRequirement(
+        targetProject,
+        organization,
+        input.requireApproval,
+      );
+
+      const managerRecipients = new Set<string>(
+        await getOrganizationManagerIds(supabase, organization.id),
+      );
+      if (organization.owner_user_id) {
+        managerRecipients.add(organization.owner_user_id);
+      }
+      managerRecipients.delete(user.id);
+
+      const notificationClient = supabaseAdmin ?? supabase;
+      const nowIso = new Date().toISOString();
+
+      if (requireApproval) {
+        const pendingUpdates: Record<string, unknown> = {
+          pending_move_to_project_id: input.targetProjectId,
+          pending_move_reason: input.reason,
+          pending_move_requested_at: nowIso,
+          pending_move_requested_by: user.id,
+          updated_at: nowIso,
+        };
+
+        const { data, error } = await supabase
+          .schema("core")
+          .from("work_logs")
+          .update(pendingUpdates)
+          .eq("id", input.workLogId)
+          .select()
+          .single();
+
+        if (error || !data) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to request work log move",
+          });
+        }
+
+        await recordAuditLog(supabase, {
+          workLogId: input.workLogId,
+          userId: user.id,
+          action: "move_requested",
+          oldValue: { project_id: workLog.project_id },
+          newValue: {
+            pending_move_to_project_id: input.targetProjectId,
+            pending_move_reason: input.reason,
+          },
+          reason: input.reason,
+        });
+
+        const actorName = await getUserDisplayName(supabase, user.id);
+        await createSystemMessage(
+          supabase,
+          data,
+          user.id,
+          `Work log move requested by ${actorName}: ${input.reason}`,
+        );
+
+        if (managerRecipients.size > 0) {
+          await notifyMoveEvent(notificationClient, [...managerRecipients], {
+            actorId: user.id,
+            workLogId: workLog.id,
+            title: "Work Log Move Requires Approval",
+            message:
+              "A work log move is awaiting your approval before it can be completed.",
+            metadata: {
+              targetProjectId: input.targetProjectId,
+              reason: input.reason,
+              status: "pending",
+            },
+          });
+        }
+
+        return data;
       }
 
       const updates: Record<string, unknown> = {
         project_id: input.targetProjectId,
-        updated_at: new Date().toISOString(),
+        pending_move_to_project_id: null,
+        pending_move_reason: null,
+        pending_move_requested_at: null,
+        pending_move_requested_by: null,
+        updated_at: nowIso,
       };
-
-      if (input.requireApproval) {
-        updates.status = "pending_verification";
-      }
 
       const { data, error } = await supabase
         .schema("core")
@@ -1905,7 +2190,336 @@ export const workLogsRouter = t.router({
         action: "move_project",
         oldValue: { project_id: workLog.project_id },
         newValue: { project_id: input.targetProjectId },
+        reason: input.reason,
       });
+
+      const actorName = await getUserDisplayName(supabase, user.id);
+      await createSystemMessage(
+        supabase,
+        data,
+        user.id,
+        `Work log moved to a new project by ${actorName}. Reason: ${input.reason}`,
+      );
+
+      if (managerRecipients.size > 0) {
+        await notifyMoveEvent(notificationClient, [...managerRecipients], {
+          actorId: user.id,
+          workLogId: workLog.id,
+          title: "Work Log Moved",
+          message:
+            "A work log was moved to a different project. Review the entry if any follow-up is required.",
+          metadata: {
+            targetProjectId: input.targetProjectId,
+            reason: input.reason,
+            status: "completed",
+          },
+        });
+      }
+
+      return data;
+    }),
+
+  approveMoveRequest: protectedProcedure
+    .input(approveWorkLogMoveSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, supabaseAdmin, user } = ctx;
+
+      if (!user?.id) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      const workLog = await fetchWorkLog(supabase, input.workLogId);
+
+      if (!workLog.pending_move_to_project_id) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "There is no pending move request for this work log.",
+        });
+      }
+
+      const targetProject = await fetchProjectRecord(
+        supabase,
+        workLog.pending_move_to_project_id,
+        "Pending move target project not found.",
+      );
+
+      const organization = await fetchOrganizationMoveSettings(
+        supabase,
+        targetProject.organization_id,
+      );
+
+      await assertUserIsOrganizationManager(supabase, user.id, organization);
+
+      const notificationClient = supabaseAdmin ?? supabase;
+      const nowIso = new Date().toISOString();
+
+      const { data, error } = await supabase
+        .schema("core")
+        .from("work_logs")
+        .update({
+          project_id: workLog.pending_move_to_project_id,
+          pending_move_to_project_id: null,
+          pending_move_reason: null,
+          pending_move_requested_at: null,
+          pending_move_requested_by: null,
+          updated_at: nowIso,
+        })
+        .eq("id", workLog.id)
+        .select()
+        .single();
+
+      if (error || !data) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to approve move request",
+        });
+      }
+
+      await recordAuditLog(supabase, {
+        workLogId: workLog.id,
+        userId: user.id,
+        action: "move_approved",
+        oldValue: {
+          project_id: workLog.project_id,
+          pending_move_to_project_id: workLog.pending_move_to_project_id,
+        },
+        newValue: { project_id: data.project_id },
+        reason: workLog.pending_move_reason ?? null,
+      });
+
+      const actorName = await getUserDisplayName(supabase, user.id);
+      await createSystemMessage(
+        supabase,
+        data,
+        user.id,
+        `Work log move approved by ${actorName}.`,
+      );
+
+      const requesterId =
+        workLog.pending_move_requested_by ?? workLog.user_id ?? null;
+
+      if (requesterId) {
+        await notifyMoveEvent(notificationClient, [requesterId], {
+          actorId: user.id,
+          workLogId: workLog.id,
+          title: "Work Log Move Approved",
+          message:
+            "Your work log move request has been approved and is now complete.",
+          metadata: {
+            targetProjectId: data.project_id,
+            status: "approved",
+          },
+        });
+      }
+
+      return data;
+    }),
+
+  denyMoveRequest: protectedProcedure
+    .input(denyWorkLogMoveSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, supabaseAdmin, user } = ctx;
+
+      if (!user?.id) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      const workLog = await fetchWorkLog(supabase, input.workLogId);
+
+      if (!workLog.pending_move_to_project_id) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "There is no pending move request for this work log.",
+        });
+      }
+
+      const targetProject = await fetchProjectRecord(
+        supabase,
+        workLog.pending_move_to_project_id,
+        "Pending move target project not found.",
+      );
+
+      const organization = await fetchOrganizationMoveSettings(
+        supabase,
+        targetProject.organization_id,
+      );
+
+      await assertUserIsOrganizationManager(supabase, user.id, organization);
+
+      const notificationClient = supabaseAdmin ?? supabase;
+
+      const { data, error } = await supabase
+        .schema("core")
+        .from("work_logs")
+        .update({
+          pending_move_to_project_id: null,
+          pending_move_reason: null,
+          pending_move_requested_at: null,
+          pending_move_requested_by: null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", workLog.id)
+        .select()
+        .single();
+
+      if (error || !data) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to deny move request",
+        });
+      }
+
+      await recordAuditLog(supabase, {
+        workLogId: workLog.id,
+        userId: user.id,
+        action: "move_denied",
+        oldValue: {
+          pending_move_to_project_id: workLog.pending_move_to_project_id,
+          pending_move_reason: workLog.pending_move_reason,
+        },
+        newValue: {
+          pending_move_to_project_id: null,
+          pending_move_reason: null,
+        },
+        reason: input.reason,
+      });
+
+      const actorName = await getUserDisplayName(supabase, user.id);
+      await createSystemMessage(
+        supabase,
+        data,
+        user.id,
+        `Work log move denied by ${actorName}: ${input.reason}`,
+      );
+
+      const requesterId =
+        workLog.pending_move_requested_by ?? workLog.user_id ?? null;
+
+      if (requesterId) {
+        await notifyMoveEvent(notificationClient, [requesterId], {
+          actorId: user.id,
+          workLogId: workLog.id,
+          title: "Work Log Move Denied",
+          message:
+            "Your work log move request was denied. Review the provided reason before submitting another request.",
+          metadata: {
+            targetProjectId: workLog.pending_move_to_project_id,
+            denialReason: input.reason,
+            status: "denied",
+          },
+        });
+      }
+
+      return data;
+    }),
+
+  cancelMoveRequest: protectedProcedure
+    .input(cancelWorkLogMoveSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, supabaseAdmin, user } = ctx;
+
+      if (!user?.id) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      const { workLog, role } = await getWorkLogAccess(
+        supabase,
+        input.workLogId,
+        user.id,
+      );
+
+      if (role !== "owner") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only the owner can cancel a move request.",
+        });
+      }
+
+      if (!workLog.pending_move_to_project_id) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "There is no pending move request to cancel.",
+        });
+      }
+
+      const sourceProject = await fetchProjectRecord(
+        supabase,
+        workLog.project_id,
+        "Source project not found.",
+      );
+
+      const organization = await fetchOrganizationMoveSettings(
+        supabase,
+        sourceProject.organization_id,
+      );
+
+      const managerRecipients = new Set<string>(
+        await getOrganizationManagerIds(supabase, organization.id),
+      );
+      if (organization.owner_user_id) {
+        managerRecipients.add(organization.owner_user_id);
+      }
+      managerRecipients.delete(user.id);
+
+      const notificationClient = supabaseAdmin ?? supabase;
+
+      const { data, error } = await supabase
+        .schema("core")
+        .from("work_logs")
+        .update({
+          pending_move_to_project_id: null,
+          pending_move_reason: null,
+          pending_move_requested_at: null,
+          pending_move_requested_by: null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", workLog.id)
+        .select()
+        .single();
+
+      if (error || !data) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to cancel move request",
+        });
+      }
+
+      await recordAuditLog(supabase, {
+        workLogId: workLog.id,
+        userId: user.id,
+        action: "move_cancelled",
+        oldValue: {
+          pending_move_to_project_id: workLog.pending_move_to_project_id,
+          pending_move_reason: workLog.pending_move_reason,
+        },
+        newValue: {
+          pending_move_to_project_id: null,
+          pending_move_reason: null,
+        },
+        reason: workLog.pending_move_reason ?? null,
+      });
+
+      const actorName = await getUserDisplayName(supabase, user.id);
+      await createSystemMessage(
+        supabase,
+        data,
+        user.id,
+        `Work log move request cancelled by ${actorName}.`,
+      );
+
+      if (managerRecipients.size > 0) {
+        await notifyMoveEvent(notificationClient, [...managerRecipients], {
+          actorId: user.id,
+          workLogId: workLog.id,
+          title: "Work Log Move Cancelled",
+          message:
+            "A pending work log move request was cancelled by the worker.",
+          metadata: {
+            previousTargetProjectId: workLog.pending_move_to_project_id,
+            status: "cancelled",
+          },
+        });
+      }
 
       return data;
     }),

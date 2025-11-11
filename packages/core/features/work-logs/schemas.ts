@@ -259,8 +259,36 @@ export const updateProfileVisibilitySchema = z
 export const moveWorkLogSchema = z.object({
   workLogId: z.string().uuid(),
   targetProjectId: z.string().uuid(),
+  reason: z
+    .string()
+    .min(1, 'A reason is required when requesting a project move.')
+    .max(500, 'Move reasons cannot exceed 500 characters.'),
   requireApproval: z.boolean().optional(),
 });
+
+export type MoveWorkLogInput = z.infer<typeof moveWorkLogSchema>;
+
+export const approveWorkLogMoveSchema = z.object({
+  workLogId: z.string().uuid(),
+});
+
+export type ApproveWorkLogMoveInput = z.infer<typeof approveWorkLogMoveSchema>;
+
+export const denyWorkLogMoveSchema = z.object({
+  workLogId: z.string().uuid(),
+  reason: z
+    .string()
+    .min(1, 'A denial reason is required.')
+    .max(500, 'Denial reasons cannot exceed 500 characters.'),
+});
+
+export type DenyWorkLogMoveInput = z.infer<typeof denyWorkLogMoveSchema>;
+
+export const cancelWorkLogMoveSchema = z.object({
+  workLogId: z.string().uuid(),
+});
+
+export type CancelWorkLogMoveInput = z.infer<typeof cancelWorkLogMoveSchema>;
 
 export const checkTimeOverlapSchema = z.object({
   logDate: z

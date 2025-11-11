@@ -1,9 +1,12 @@
 export {
   addCollaboratorSchema,
+  approveWorkLogMoveSchema,
   addSkillToProfileSchema,
   addWorkLogCommentSchema,
+  cancelWorkLogMoveSchema,
   checkTimeOverlapSchema,
   createWorkLogSchema,
+  denyWorkLogMoveSchema,
   disputeWorkLogSchema,
   hasTimeEntriesOverlap,
   getSuggestedSkillsSchema,
