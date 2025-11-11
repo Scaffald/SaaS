@@ -1,3 +1,4 @@
+import type { CSSProperties, ReactNode } from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
@@ -9,7 +10,7 @@ vi.mock('tamagui', async () => {
   const actual = await vi.importActual<typeof import('tamagui')>('tamagui')
 
   const mapStyleProps = (props: Record<string, unknown>) => {
-    const style = { ...props.style }
+    const style = { ...(props.style as Record<string, unknown> | undefined) }
     const passthrough: Record<string, unknown> = {}
     for (const [key, value] of Object.entries(props)) {
       if (key === 'style') continue
@@ -43,13 +44,7 @@ vi.mock('tamagui', async () => {
     return { style, passthrough } as const
   }
 
-  const MockYStack = ({
-    children,
-    ...rest
-  }: {
-    children: React.ReactNode
-    style?: React.CSSProperties
-  }) => {
+  const MockYStack = ({ children, ...rest }: { children: ReactNode; style?: CSSProperties }) => {
     const { style, passthrough } = mapStyleProps(rest)
     return (
       <div data-testid="y-stack" style={style} {...passthrough}>

@@ -1,3 +1,4 @@
+import type { CSSProperties, ReactNode } from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
@@ -5,7 +6,7 @@ import { describe, expect, it, vi } from 'vitest'
 vi.mock('tamagui', async () => {
   const actual = await vi.importActual<typeof import('tamagui')>('tamagui')
   const mapStyleProps = (props: Record<string, unknown>) => {
-    const styleProps: Record<string, unknown> = { ...props.style }
+    const styleProps: Record<string, unknown> = { ...(props.style as Record<string, unknown> | undefined) }
     const passthrough: Record<string, unknown> = {}
     for (const [key, value] of Object.entries(props)) {
       if (key === 'style') continue
@@ -65,15 +66,7 @@ vi.mock('tamagui', async () => {
     return { style: styleProps, passthrough } as const
   }
 
-  const MockButton = ({
-    children,
-    onPress,
-    ...rest
-  }: {
-    children: React.ReactNode
-    onPress?: () => void
-    style?: React.CSSProperties
-  }) => {
+  const MockButton = ({ children, onPress, ...rest }: { children: ReactNode; onPress?: () => void; style?: CSSProperties }) => {
     const { style, passthrough } = mapStyleProps(rest)
     return (
       <button type="button" onClick={onPress} style={style} {...passthrough}>
@@ -82,13 +75,7 @@ vi.mock('tamagui', async () => {
     )
   }
 
-  const MockXStack = ({
-    children,
-    ...rest
-  }: {
-    children: React.ReactNode
-    style?: React.CSSProperties
-  }) => {
+  const MockXStack = ({ children, ...rest }: { children: ReactNode; style?: CSSProperties }) => {
     const { style, passthrough } = mapStyleProps(rest)
     return (
       <div data-testid="x-stack" style={style} {...passthrough}>
