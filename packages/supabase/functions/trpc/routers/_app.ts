@@ -21,6 +21,7 @@ import { personalityAssessmentRouter } from "./personality-assessment.router.ts"
 import { resumeRouter } from "./resume.router.ts";
 import { feedbackRouter } from "./feedback.router.ts";
 import { workLogsRouter } from "./work-logs.router.ts";
+import { teamsRouter } from "./teams.router.ts";
 
 /**
  * Main application router
@@ -49,6 +50,7 @@ export const appRouter = t.router({
   feedback: feedbackRouter,
   backgroundChecks: backgroundChecksRouter,
   workLogs: workLogsRouter,
+  teams: teamsRouter,
 });
 
 // Export the router type for client-side usage

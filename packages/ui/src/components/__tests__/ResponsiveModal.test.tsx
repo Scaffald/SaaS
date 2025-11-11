@@ -4,7 +4,10 @@ import type { ReactNode } from 'react'
 
 const windowDimensions = vi.hoisted(() => ({ width: 1024 }))
 const dialogProps = vi.hoisted(() => ({ content: null as Record<string, unknown> | null }))
-const sheetProps = vi.hoisted(() => ({ frame: null as Record<string, unknown> | null, sheet: null as Record<string, unknown> | null }))
+const sheetProps = vi.hoisted(() => ({
+  frame: null as Record<string, unknown> | null,
+  sheet: null as Record<string, unknown> | null,
+}))
 
 vi.mock('tamagui', () => {
   const basicDiv = ({ testID, children, ...rest }: { testID?: string; children?: ReactNode }) => (

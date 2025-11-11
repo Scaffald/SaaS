@@ -1,0 +1,159 @@
+import { describe, expect, it } from 'vitest'
+
+import {
+  TEAM_INVITATION_TTL_DEFAULT,
+  TEAM_INVITATION_TTL_MAX,
+  TEAM_ROLE_KEYS,
+  teamCreateSchema,
+  teamInvitationCreateSchema,
+  teamInvitationRespondSchema,
+  teamMemberAddSchema,
+  teamMemberUpdateSchema,
+  teamUpdateSchema,
+} from '../teams'
+
+const baseTeamInput = () => ({
+  organizationId: '11111111-2222-3333-4444-555555555555',
+  name: 'Field Operations',
+})
+
+describe('teamCreateSchema', () => {
+  it('accepts minimal valid input and applies defaults', () => {
+    const parsed = teamCreateSchema.parse(baseTeamInput())
+
+    expect(parsed.visibility).toBe('organization')
+    expect(parsed.settings).toEqual({})
+    expect(parsed.defaultRoleKey).toBe('member')
+    expect(parsed.invitationExpirationDays).toBe(TEAM_INVITATION_TTL_DEFAULT)
+    expect(parsed.allowSelfJoin).toBe(false)
+    expect(parsed.autoAssignJobs).toBe(false)
+  })
+
+  it('rejects invalid slug pattern', () => {
+    expect(() =>
+      teamCreateSchema.parse({
+        ...baseTeamInput(),
+        slug: 'invalid slug',
+      }),
+    ).toThrowError(/Slug may only contain letters, numbers, and hyphens/)
+  })
+
+  it('rejects invitation expiration outside supported range', () => {
+    expect(() =>
+      teamCreateSchema.parse({
+        ...baseTeamInput(),
+        invitationExpirationDays: TEAM_INVITATION_TTL_MAX + 1,
+      }),
+    ).toThrowError(/Invitation expiration cannot exceed/)
+  })
+})
+
+describe('teamUpdateSchema', () => {
+  it('requires at least one change', () => {
+    expect(() =>
+      teamUpdateSchema.parse({
+        teamId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+      }),
+    ).toThrowError(/At least one field must be provided/)
+  })
+
+  it('allows updating name and visibility', () => {
+    expect(() =>
+      teamUpdateSchema.parse({
+        teamId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+        name: 'Updated Team Name',
+        visibility: 'private',
+      }),
+    ).not.toThrow()
+  })
+
+  it('allows toggling self join access', () => {
+    expect(() =>
+      teamUpdateSchema.parse({
+        teamId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+        allowSelfJoin: false,
+      }),
+    ).not.toThrow()
+  })
+})
+
+describe('teamMemberAddSchema', () => {
+  it('defaults to team configured role when none is provided', () => {
+    expect(() =>
+      teamMemberAddSchema.parse({
+        teamId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+        userId: '99999999-8888-7777-6666-555555555555',
+      }),
+    ).not.toThrow()
+  })
+
+  it('accepts role key assignments', () => {
+    expect(() =>
+      teamMemberAddSchema.parse({
+        teamId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+        userId: '99999999-8888-7777-6666-555555555555',
+        roleKey: TEAM_ROLE_KEYS[0],
+      }),
+    ).not.toThrow()
+  })
+})
+
+describe('teamMemberUpdateSchema', () => {
+  it('requires a role or status change', () => {
+    expect(() =>
+      teamMemberUpdateSchema.parse({
+        teamMemberId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+      }),
+    ).toThrowError(/Provide a role or status update/)
+  })
+
+  it('accepts status changes', () => {
+    expect(() =>
+      teamMemberUpdateSchema.parse({
+        teamMemberId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+        status: 'invited',
+      }),
+    ).not.toThrow()
+  })
+})
+
+describe('teamInvitationCreateSchema', () => {
+  it('requires an invitation role', () => {
+    expect(() =>
+      teamInvitationCreateSchema.parse({
+        teamId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+        email: 'new.member@example.com',
+      }),
+    ).toThrowError(/role must be provided/)
+  })
+
+  it('accepts role key invitations', () => {
+    expect(() =>
+      teamInvitationCreateSchema.parse({
+        teamId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+        organizationId: '11111111-2222-3333-4444-555555555555',
+        email: 'new.member@example.com',
+        roleKey: 'member',
+      }),
+    ).not.toThrow()
+  })
+})
+
+describe('teamInvitationRespondSchema', () => {
+  it('validates token length and action enum', () => {
+    expect(() =>
+      teamInvitationRespondSchema.parse({
+        token: 'short',
+        action: 'accept',
+      }),
+    ).toThrowError(/appears to be invalid/)
+
+    expect(() =>
+      teamInvitationRespondSchema.parse({
+        token: 'tok_tok_tok_tok_tok_tok_tok_tok',
+        action: 'maybe',
+      }),
+    ).toThrowError(/Invalid enum value/)
+  })
+})
+
