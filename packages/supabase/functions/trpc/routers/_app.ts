@@ -3,6 +3,7 @@ import { applicationsRouter } from "./applications.router.ts";
 import { authRouter } from "./auth.router.ts";
 import { cmsRouter } from "./cms.router.ts";
 import { employersRouter } from "./employers.router.ts";
+import { backgroundChecksRouter } from "./background-checks.router.ts";
 import { jobsRouter } from "./jobs.router.ts";
 import { officeRouter } from "./office.router.ts";
 import { onetRouter } from "./onet.router.ts";
@@ -45,6 +46,7 @@ export const appRouter = t.router({
   personalityAssessment: personalityAssessmentRouter,
   resume: resumeRouter,
   feedback: feedbackRouter,
+  backgroundChecks: backgroundChecksRouter,
 });
 
 // Export the router type for client-side usage
