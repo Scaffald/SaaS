@@ -11,6 +11,7 @@ export {
   hasTimeEntriesOverlap,
   getSuggestedSkillsSchema,
   moveWorkLogSchema,
+  exportWorkLogSchema,
   submitWorkLogSchema,
   timeEntriesSchema,
   timeEntrySchema,

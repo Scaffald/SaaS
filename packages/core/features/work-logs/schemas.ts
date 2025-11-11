@@ -290,6 +290,13 @@ export const cancelWorkLogMoveSchema = z.object({
 
 export type CancelWorkLogMoveInput = z.infer<typeof cancelWorkLogMoveSchema>;
 
+export const exportWorkLogSchema = z.object({
+  workLogId: z.string().uuid(),
+  format: z.enum(['csv', 'pdf']).default('csv'),
+});
+
+export type ExportWorkLogInput = z.infer<typeof exportWorkLogSchema>;
+
 export const checkTimeOverlapSchema = z.object({
   logDate: z
     .string()

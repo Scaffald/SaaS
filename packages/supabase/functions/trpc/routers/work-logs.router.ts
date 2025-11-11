@@ -24,6 +24,7 @@ import {
   disputeWorkLogSchema,
   getSuggestedSkillsSchema,
   moveWorkLogSchema,
+  exportWorkLogSchema,
   submitWorkLogSchema,
   updateCollaboratorSchema,
   updatePhotoVisibilitySchema,
@@ -37,6 +38,16 @@ import { notifyWorkLogCollaborator } from "../../_shared/work-log-notifications.
 // @ts-ignore - Deno requires file extension
 import { insertNotification } from "../../_shared/notifications/utils.ts";
 // @ts-ignore - Deno requires file extension
+import {
+  buildWorkLogCsv,
+  buildWorkLogPdf,
+} from "../../_shared/work-log-export.ts";
+// @ts-ignore - Deno requires file extension
+import type {
+  WorkLogExportSnapshot,
+  WorkLogExportTimeEntry,
+} from "../../_shared/work-log-export.ts";
+// @ts-ignore - Deno requires file extension
 import { enrichUserSkills } from "../utils/skill-enrichment.ts";
 
 type DbClient = SupabaseClient<Database>;
@@ -47,7 +58,7 @@ const WORK_LOG_PHOTO_BUCKET = "work-log-photos";
 const SIGNED_UPLOAD_URL_TTL_SECONDS = 60 * 5;
 
 const WORK_LOG_SELECT =
-  "id, user_id, status, project_id, time_entries, tasks_completed, skills_used, visibility, show_on_profile, show_date_range_on_profile, entry_type, log_date, work_description, gps_location, gps_accuracy_meters, gps_captured_at, device_type, location_permission_status, verified_by_user_id, pending_move_to_project_id, pending_move_reason, pending_move_requested_at, pending_move_requested_by";
+  "id, user_id, status, project_id, time_entries, tasks_completed, skills_used, visibility, show_on_profile, show_date_range_on_profile, entry_type, log_date, work_description, total_hours, submitted_at, verified_at, disputed_at, dispute_reason, gps_location, gps_accuracy_meters, gps_captured_at, device_type, location_permission_status, created_at, updated_at, verified_by_user_id, pending_move_to_project_id, pending_move_reason, pending_move_requested_at, pending_move_requested_by";
 
 const sanitizeFileName = (fileName: string): string => {
   return fileName
@@ -266,6 +277,245 @@ const notifyMoveEvent = async (
       }),
     ),
   );
+};
+
+const bytesToBase64 = (bytes: Uint8Array): string => {
+  let binary = "";
+  const chunkSize = 0x8000;
+
+  for (let index = 0; index < bytes.length; index += chunkSize) {
+    const chunk = bytes.subarray(index, index + chunkSize);
+    binary += String.fromCharCode(...chunk);
+  }
+
+  return btoa(binary);
+};
+
+const toMinutesFromTimeString = (value: string): number => {
+  const match = /^(\d{1,2}):(\d{2})$/.exec(value);
+  if (!match) {
+    return Number.NaN;
+  }
+
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) {
+    return Number.NaN;
+  }
+
+  return hours * 60 + minutes;
+};
+
+const parseTimeEntries = (raw: unknown): WorkLogExportTimeEntry[] => {
+  if (!Array.isArray(raw)) {
+    return [];
+  }
+
+  const entries: WorkLogExportTimeEntry[] = [];
+
+  for (const candidate of raw) {
+    if (typeof candidate !== "object" || candidate === null) {
+      continue;
+    }
+
+    const entry = candidate as Record<string, unknown>;
+    const start = typeof entry.start === "string" ? entry.start : null;
+    const end = typeof entry.end === "string" ? entry.end : null;
+
+    if (!start || !end) {
+      continue;
+    }
+
+    const startMinutes = toMinutesFromTimeString(start);
+    const endMinutes = toMinutesFromTimeString(end);
+
+    if (Number.isNaN(startMinutes) || Number.isNaN(endMinutes)) {
+      continue;
+    }
+
+    const rawBreak =
+      typeof entry.breakMinutes === "number"
+        ? entry.breakMinutes
+        : typeof entry.breakMinutes === "string"
+        ? Number(entry.breakMinutes)
+        : 0;
+
+    const breakMinutes =
+      Number.isFinite(rawBreak) && rawBreak > 0 ? Math.floor(rawBreak) : 0;
+
+    const rawDuration = Math.max(endMinutes - startMinutes, 0);
+    const effectiveDuration = Math.max(rawDuration - breakMinutes, 0);
+
+    entries.push({
+      start,
+      end,
+      durationHours: effectiveDuration / 60,
+      breakMinutes,
+      description:
+        typeof entry.description === "string" && entry.description.trim().length > 0
+          ? entry.description
+          : null,
+    });
+  }
+
+  return entries;
+};
+
+const resolveStringField = (
+  source: Record<string, unknown> | null | undefined,
+  keys: string[],
+): string | null => {
+  if (!source) {
+    return null;
+  }
+
+  for (const key of keys) {
+    const value = source[key];
+    if (typeof value === "string" && value.trim().length > 0) {
+      return value;
+    }
+  }
+
+  return null;
+};
+
+const buildWorkLogExportSnapshot = async (
+  supabase: DbClient,
+  workLog: WorkLogRow,
+): Promise<WorkLogExportSnapshot> => {
+  const ownerName = await getUserDisplayName(supabase, workLog.user_id);
+
+  const { data: ownerRecord } = await supabase
+    .schema("core")
+    .from("users")
+    .select("email")
+    .eq("id", workLog.user_id)
+    .maybeSingle();
+
+  let projectRecord: Record<string, unknown> | null = null;
+
+  if (workLog.project_id) {
+    const { data: projectData } = await supabase
+      .schema("public")
+      .from("construction_projects")
+      .select("*")
+      .eq("id", workLog.project_id)
+      .maybeSingle();
+
+    projectRecord = (projectData as Record<string, unknown> | null) ?? null;
+  }
+
+  let organizationRecord: Record<string, unknown> | null = null;
+
+  const organizationId = resolveStringField(projectRecord, ["organization_id"]);
+
+  if (organizationId) {
+    const { data: organizationData } = await supabase
+      .schema("public")
+      .from("organizations")
+      .select("*")
+      .eq("id", organizationId)
+      .maybeSingle();
+
+    organizationRecord =
+      (organizationData as Record<string, unknown> | null) ?? null;
+  }
+
+  const { data: collaboratorRows } = await supabase
+    .schema("core")
+    .from("work_log_collaborators")
+    .select("collaborator_user_id, permission_level")
+    .eq("work_log_id", workLog.id)
+    .order("invited_at", { ascending: true });
+
+  const collaborators: WorkLogExportSnapshot["collaborators"] = [];
+
+  for (const row of collaboratorRows ?? []) {
+    if (!row.collaborator_user_id) {
+      continue;
+    }
+
+    const displayName = await getUserDisplayName(
+      supabase,
+      row.collaborator_user_id,
+    );
+
+    collaborators.push({
+      userId: row.collaborator_user_id,
+      displayName,
+      permissionLevel: (row.permission_level as "view" | "edit") ?? "view",
+    });
+  }
+
+  const { data: photoRows } = await supabase
+    .schema("core")
+    .from("work_log_photos")
+    .select("id")
+    .eq("work_log_id", workLog.id);
+
+  const { data: conversationRows } = await supabase
+    .schema("core")
+    .from("work_log_conversations")
+    .select("id")
+    .eq("work_log_id", workLog.id);
+
+  const tasks =
+    Array.isArray(workLog.tasks_completed) && workLog.tasks_completed.length > 0
+      ? workLog.tasks_completed.filter(
+          (task): task is string =>
+            typeof task === "string" && task.trim().length > 0,
+        )
+      : [];
+
+  const skills =
+    Array.isArray(workLog.skills_used) && workLog.skills_used.length > 0
+      ? workLog.skills_used.filter(
+          (skill): skill is string =>
+            typeof skill === "string" && skill.trim().length > 0,
+        )
+      : [];
+
+  const totalHours =
+    typeof workLog.total_hours === "number"
+      ? workLog.total_hours
+      : workLog.total_hours
+      ? Number(workLog.total_hours)
+      : 0;
+
+  return {
+    workLog,
+    ownerName,
+    ownerEmail:
+      typeof ownerRecord?.email === "string" ? ownerRecord.email : null,
+    projectName: resolveStringField(projectRecord, [
+      "name",
+      "title",
+      "project_name",
+    ]),
+    projectIdentifier: resolveStringField(projectRecord, [
+      "project_code",
+      "job_number",
+      "slug",
+      "reference_code",
+    ]),
+    organizationName: resolveStringField(organizationRecord, [
+      "name",
+      "display_name",
+    ]),
+    organizationIdentifier: resolveStringField(organizationRecord, [
+      "slug",
+      "external_id",
+      "short_code",
+    ]),
+    totalHours,
+    tasks,
+    skills,
+    timeEntries: parseTimeEntries(workLog.time_entries),
+    collaborators,
+    photoCount: photoRows?.length ?? 0,
+    commentCount: conversationRows?.length ?? 0,
+  };
 };
 
 const entriesOverlap = (
@@ -2522,6 +2772,61 @@ export const workLogsRouter = t.router({
       }
 
       return data;
+    }),
+
+  exportWorkLog: protectedProcedure
+    .input(exportWorkLogSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      if (!user?.id) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      const { workLog, role } = await getWorkLogAccess(
+        supabase,
+        input.workLogId,
+        user.id,
+      );
+
+      if (role !== "owner") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only the owner can export this work log.",
+        });
+      }
+
+      const snapshot = await buildWorkLogExportSnapshot(supabase, workLog);
+
+      const baseNameParts = [
+        "work-log",
+        workLog.log_date ?? null,
+        workLog.id.slice(0, 8),
+      ].filter(Boolean);
+
+      const proposedName = sanitizeFileName(baseNameParts.join("-"));
+      const fileBaseName =
+        proposedName.length > 0 ? proposedName : `work-log-${workLog.id.slice(0, 8)}`;
+
+      if (input.format === "pdf") {
+        const pdfBytes = await buildWorkLogPdf(snapshot);
+        return {
+          fileName: `${fileBaseName}.pdf`,
+          mimeType: "application/pdf",
+          base64: bytesToBase64(pdfBytes),
+          byteLength: pdfBytes.length,
+        };
+      }
+
+      const csvContent = buildWorkLogCsv(snapshot);
+      const csvBytes = new TextEncoder().encode(csvContent);
+
+      return {
+        fileName: `${fileBaseName}.csv`,
+        mimeType: "text/csv",
+        base64: bytesToBase64(csvBytes),
+        byteLength: csvBytes.length,
+      };
     }),
 
   checkTimeOverlap: protectedProcedure
