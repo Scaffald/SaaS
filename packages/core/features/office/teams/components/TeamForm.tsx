@@ -16,7 +16,7 @@ import {
 } from 'tamagui'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
-import { z } from 'zod'
+import type { z } from 'zod'
 
 import {
   teamCreateBaseSchema,

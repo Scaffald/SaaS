@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useRouter } from 'expo-router'
-import { type ColumnDef } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
 import { Button, Card, Select, Spinner, Tabs, Text, XStack, YStack } from 'tamagui'
 import { AlertTriangle, Check, ChevronDown, ClipboardList, RefreshCcw } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
