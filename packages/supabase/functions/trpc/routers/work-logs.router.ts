@@ -82,6 +82,19 @@ const normalizeAccuracyMeters = (input: unknown): number | null => {
   return input > 0 ? input : null;
 };
 
+const projectOptionsInputSchema = z
+  .object({
+    organizationId: z.string().uuid().optional(),
+    search: z
+      .string()
+      .min(1)
+      .max(120)
+      .transform((value) => value.trim())
+      .optional(),
+    includeArchived: z.boolean().optional(),
+  })
+  .optional();
+
 const validateGpsCapture = (capture: {
   latitude: number;
   longitude: number;
@@ -378,6 +391,47 @@ const resolveStringField = (
   }
 
   return null;
+};
+
+const resolveProjectDisplayName = (
+  project: Record<string, unknown> | null | undefined,
+): string => {
+  const name =
+    resolveStringField(project, [
+      "name",
+      "project_name",
+      "title",
+      "display_name",
+    ]) ?? "";
+
+  const trimmed = name.trim();
+
+  if (trimmed.length > 0) {
+    return trimmed;
+  }
+
+  const fallbackId =
+    typeof project?.id === "string" && project.id.trim().length > 0
+      ? project.id.slice(0, 8)
+      : "unknown";
+
+  return `Project ${fallbackId}`;
+};
+
+const isArchivedProject = (project: Record<string, unknown>): boolean => {
+  if (typeof project.is_archived === "boolean") {
+    return project.is_archived;
+  }
+
+  if (typeof project.archived === "boolean") {
+    return project.archived;
+  }
+
+  if (project.archived_at) {
+    return true;
+  }
+
+  return false;
 };
 
 const buildWorkLogExportSnapshot = async (
@@ -1042,6 +1096,211 @@ const getProjectVerificationRequirement = async (
 };
 
 export const workLogsRouter = t.router({
+  getProjectOptions: protectedProcedure
+    .input(projectOptionsInputSchema)
+    .query(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      if (!user?.id) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      const { data: memberships, error: membershipsError } = await supabase
+        .schema("public")
+        .from("v_organization_memberships")
+        .select(
+          "user_id, organization_id, organization_name, is_admin, is_owner",
+        )
+        .eq("user_id", user.id);
+
+      if (membershipsError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load organization memberships.",
+        });
+      }
+
+      const organizationsMap = new Map<
+        string,
+        {
+          id: string;
+          name: string;
+          isAdmin: boolean;
+          isOwner: boolean;
+        }
+      >();
+
+      for (const membership of memberships ?? []) {
+        const organizationId =
+          typeof membership.organization_id === "string"
+            ? membership.organization_id
+            : null;
+
+        if (!organizationId) {
+          continue;
+        }
+
+        if (!organizationsMap.has(organizationId)) {
+          organizationsMap.set(organizationId, {
+            id: organizationId,
+            name:
+              typeof membership.organization_name === "string" &&
+              membership.organization_name.trim().length > 0
+                ? membership.organization_name.trim()
+                : "Unknown Organization",
+            isAdmin: Boolean(membership.is_admin),
+            isOwner: Boolean(membership.is_owner),
+          });
+        }
+      }
+
+      const organizations = Array.from(organizationsMap.values());
+
+      if (!organizations.length) {
+        return {
+          organizations: [],
+          projects: [] as Array<{
+            id: string;
+            name: string;
+            organizationId: string;
+            status: string | null;
+            isArchived: boolean;
+            startsAt: string | null;
+            endsAt: string | null;
+          }>,
+        };
+      }
+
+      const filterOrganizationId = input?.organizationId ?? null;
+
+      if (
+        filterOrganizationId &&
+        !organizationsMap.has(filterOrganizationId)
+      ) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You do not have access to the requested organization.",
+        });
+      }
+
+      const organizationIds = filterOrganizationId
+        ? [filterOrganizationId]
+        : organizations.map((organization) => organization.id);
+
+      if (!organizationIds.length) {
+        return {
+          organizations,
+          projects: [] as Array<{
+            id: string;
+            name: string;
+            organizationId: string;
+            status: string | null;
+            isArchived: boolean;
+            startsAt: string | null;
+            endsAt: string | null;
+          }>,
+        };
+      }
+
+      const { data: projectRows, error: projectsError } = await supabase
+        .schema("public")
+        .from("construction_projects")
+        .select("*")
+        .in("organization_id", organizationIds);
+
+      if (projectsError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load projects for organizations.",
+        });
+      }
+
+      const includeArchived = input?.includeArchived ?? false;
+      const normalizedSearch =
+        typeof input?.search === "string" && input.search.length > 0
+          ? input.search.toLowerCase()
+          : null;
+
+      const projects = (projectRows ?? [])
+        .map((project) => project as Record<string, unknown>)
+        .map((project) => {
+          const id =
+            typeof project.id === "string" ? project.id : String(project.id);
+          const organizationId =
+            typeof project.organization_id === "string"
+              ? project.organization_id
+              : String(project.organization_id ?? "");
+
+          const status =
+            resolveStringField(project, [
+              "status",
+              "project_status",
+              "state",
+            ]) ?? null;
+
+          const startsAt =
+            resolveStringField(project, [
+              "start_date",
+              "starts_at",
+              "project_start",
+            ]) ?? null;
+
+          const endsAt =
+            resolveStringField(project, [
+              "end_date",
+              "ends_at",
+              "project_end",
+            ]) ?? null;
+
+          return {
+            id,
+            name: resolveProjectDisplayName(project),
+            organizationId,
+            status,
+            isArchived: isArchivedProject(project),
+            startsAt,
+            endsAt,
+          };
+        })
+        .filter((project) => {
+          if (!project.organizationId) {
+            return false;
+          }
+
+          if (!includeArchived && project.isArchived) {
+            return false;
+          }
+
+          if (normalizedSearch) {
+            const haystack = [project.name, project.id]
+              .filter(Boolean)
+              .map((value) => value.toLowerCase());
+
+            const matchesSearch = haystack.some((value) =>
+              value.includes(normalizedSearch),
+            );
+
+            if (!matchesSearch) {
+              return false;
+            }
+          }
+
+          return true;
+        })
+        .sort((a, b) => {
+          if (a.organizationId === b.organizationId) {
+            return a.name.localeCompare(b.name);
+          }
+
+          return a.organizationId.localeCompare(b.organizationId);
+        });
+
+      return {
+        organizations,
+        projects,
+      };
+    }),
+
   create: protectedProcedure
     .input(createWorkLogSchema)
     .mutation(async ({ ctx, input }) => {
