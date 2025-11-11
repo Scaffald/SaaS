@@ -77,6 +77,7 @@ export const ApplicationStatusChangeModal = ({
             {isRejection && <Text color="$red10"> *</Text>}
           </Text>
           <TextArea
+            data-testid="status-change-reason-input"
             placeholder={
               isRejection
                 ? 'Please provide a reason for rejection...'
@@ -88,7 +89,7 @@ export const ApplicationStatusChangeModal = ({
             numberOfLines={4}
           />
           {isRejection && !reason.trim() && (
-            <Text color="$red10" fontSize="$2">
+            <Text data-testid="reason-error" color="$red10" fontSize="$2">
               Rejection reason is required
             </Text>
           )}
@@ -96,10 +97,11 @@ export const ApplicationStatusChangeModal = ({
 
         {/* Action buttons */}
         <XStack gap="$3" ml="auto">
-          <Button variant="outlined" onPress={handleClose} disabled={isLoading}>
+          <Button data-testid="status-change-cancel-button" variant="outlined" onPress={handleClose} disabled={isLoading}>
             Cancel
           </Button>
           <Button
+            data-testid="status-change-confirm-button"
             onPress={handleConfirm}
             disabled={isLoading || (isRejection && !reason.trim())}
             bg={isRejection ? '$red9' : '$green9'}

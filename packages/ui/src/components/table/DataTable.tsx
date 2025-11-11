@@ -31,6 +31,7 @@ export interface DataTableProps<TData> {
   cellWidth?: string
   cellHeight?: string
   hidePagination?: boolean
+  testID?: string
   columnVisibility?: VisibilityState
   onColumnVisibilityChange?: (updater: Updater<VisibilityState>) => void
 }
@@ -45,6 +46,7 @@ export function DataTable<TData>({
   cellWidth = '$15',
   cellHeight = '$5',
   hidePagination = false,
+  testID,
   columnVisibility,
   onColumnVisibilityChange,
 }: DataTableProps<TData>) {
@@ -96,6 +98,7 @@ export function DataTable<TData>({
         <ScrollView horizontal>
           <View width="100%">
             <Table
+              data-testid={testID}
               alignCells={{ x: 'left', y: 'center' }}
               alignHeaderCells={{ y: 'center', x: 'left' }}
               cellWidth={cellWidth as never}

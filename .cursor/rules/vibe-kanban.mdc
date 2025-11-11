@@ -1,0 +1,51 @@
+Vibe‑Kanban Usage Rules
+
+Purpose
+Provide a consistent workflow for creating, updating, reviewing, and completing tickets with the Vibe‑Kanban MCP. Keep ticket metadata actionable and auditable.
+
+Ticket Structure
+- Title: Short, action-oriented summary.
+- Description: Contains:
+  - Context/goal
+  - Clear instructions/checklist
+  - References (files, commands, docs)
+  - Execution Summary section appended during/after work (commands run, files changed, artifacts, counts/results)
+- Status: one of `todo`, `in-progress`, `in-review`, `done`, `cancelled`.
+
+Status Semantics
+- `todo`: Not started; ready for pickup.
+- `in-progress`: Work started; updates should appear in Execution Summary.
+- `in-review`: Implementation completed; waiting for review/validation.
+- `done`: Reviewed and accepted; artifacts/results confirmed.
+- `cancelled`: No longer applicable.
+
+Standard Actions
+- Start work: set status `in-progress` and record start context in the description.
+- Append updates: add an “Execution Summary (YYYY-MM-DD)” block; list commands run, files modified/added, artifacts produced, and key counts.
+- Request review: move to `in-review` and ensure summary is up to date.
+- Complete: after validation, set to `done` and add a final one-line acceptance note at the end of the summary.
+- Reopen: if issues found during review, set back to `todo` or `in-progress` and add a short reason at the end of the last summary block.
+
+Execution Summary Template
+---
+Execution Summary (YYYY-MM-DD)
+- Commands: list exact commands used
+- Code: files edited/added (paths)
+- Artifacts: output files (paths)
+- Results: key counts/IDs/status updates
+- Next: follow-ups or pointers for reviewers
+---
+
+MCP Commands (typical)
+- Update description/status: use the MCP ticket update to set `description` and/or `status`.
+- Add attempt: start a task attempt on the active branch for traceability.
+
+Good Practices
+- Reference files and commands with absolute or workspace-rooted paths.
+- Prefer appending to description over replacing; keep a chronological log via Execution Summary blocks.
+- Do not manually create follow-up tickets unless explicitly asked; rely on batchers/right-time emission where configured.
+
+Security & Hygiene
+- Do not include secrets in tickets.
+- Link to local artifacts and databases; avoid pasting large data dumps.
+

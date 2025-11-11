@@ -1,0 +1,41 @@
+{
+  "project": "SCF-Neue",
+  "description": "SCF-Neue monorepo (Expo app + local Supabase)",
+  "ports": {
+    "expo-dev-server": {
+      "port": 8081,
+      "description": "Expo development server",
+      "environment": "development",
+      "protocol": "http",
+      "required": true
+    },
+    "web-dev": {
+      "port": 3000,
+      "description": "Web development server (when using pnpm web)",
+      "environment": "development",
+      "protocol": "http",
+      "required": false
+    },
+    "supabase": {
+      "port": 54321,
+      "description": "Supabase local stack",
+      "environment": "development",
+      "protocol": "http",
+      "required": true
+    },
+    "supabase-studio": {
+      "port": 54323,
+      "description": "Supabase Studio",
+      "environment": "development",
+      "protocol": "http",
+      "required": false
+    },
+    "mailpit": {
+      "port": 54324,
+      "description": "Mailpit (local email)",
+      "environment": "development",
+      "protocol": "http",
+      "required": false
+    }
+  }
+}

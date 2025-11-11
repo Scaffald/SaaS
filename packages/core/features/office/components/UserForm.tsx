@@ -101,10 +101,10 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
             Edit User
           </Text>
           <XStack gap="$2">
-            <Button onPress={() => router.back()} variant="outlined">
+            <Button data-testid="cancel-button" onPress={() => router.back()} variant="outlined">
               Cancel
             </Button>
-            <Button onPress={handleSubmit} disabled={updateUserMutation.isPending} themeInverse>
+            <Button data-testid="save-button" onPress={handleSubmit} disabled={updateUserMutation.isPending} themeInverse>
               {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
             </Button>
           </XStack>
@@ -119,22 +119,23 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
 
             <YStack gap="$2">
               <Text fontWeight="600">First Name</Text>
-              <Input value={firstName} onChangeText={setFirstName} placeholder="First name" />
+              <Input data-testid="user-first-name-input" value={firstName} onChangeText={setFirstName} placeholder="First name" />
             </YStack>
 
             <YStack gap="$2">
               <Text fontWeight="600">Last Name</Text>
-              <Input value={lastName} onChangeText={setLastName} placeholder="Last name" />
+              <Input data-testid="user-last-name-input" value={lastName} onChangeText={setLastName} placeholder="Last name" />
             </YStack>
 
             <YStack gap="$2">
               <Text fontWeight="600">Display Name</Text>
-              <Input value={displayName} onChangeText={setDisplayName} placeholder="Display name" />
+              <Input data-testid="user-display-name-input" value={displayName} onChangeText={setDisplayName} placeholder="Display name" />
             </YStack>
 
             <YStack gap="$2">
               <Text fontWeight="600">Bio</Text>
               <Input
+                data-testid="user-bio-input"
                 value={bio}
                 onChangeText={setBio}
                 placeholder="Bio"
@@ -155,6 +156,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
             <YStack gap="$2">
               <Text fontWeight="600">Email</Text>
               <Input
+                data-testid="user-email-input"
                 value={email}
                 onChangeText={setEmail}
                 placeholder="email@example.com"
@@ -166,6 +168,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
             <YStack gap="$2">
               <Text fontWeight="600">Phone</Text>
               <Input
+                data-testid="user-phone-input"
                 value={phone}
                 onChangeText={setPhone}
                 placeholder="Phone number"
@@ -175,12 +178,12 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
 
             <YStack gap="$2">
               <Text fontWeight="600">Birth Date</Text>
-              <Input value={birthDate} onChangeText={setBirthDate} placeholder="YYYY-MM-DD" />
+              <Input data-testid="user-birth-date-input" value={birthDate} onChangeText={setBirthDate} placeholder="YYYY-MM-DD" />
             </YStack>
 
             <YStack gap="$2">
               <Text fontWeight="600">Location</Text>
-              <Input value={location} onChangeText={setLocation} placeholder="City, State" />
+              <Input data-testid="user-location-input" value={location} onChangeText={setLocation} placeholder="City, State" />
             </YStack>
           </YStack>
         </Card>
@@ -195,6 +198,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
             <YStack gap="$2">
               <Text fontWeight="600">Employment Status</Text>
               <Input
+                data-testid="user-employment-status-input"
                 value={employmentStatus}
                 onChangeText={setEmploymentStatus}
                 placeholder="e.g., employed, unemployed"
@@ -204,6 +208,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
             <YStack gap="$2">
               <Text fontWeight="600">Job Search Status</Text>
               <Input
+                data-testid="user-job-search-status-input"
                 value={jobSearchStatus}
                 onChangeText={setJobSearchStatus}
                 placeholder="e.g., actively looking, open"
@@ -213,6 +218,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
             <YStack gap="$2">
               <Text fontWeight="600">Years of Experience</Text>
               <Input
+                data-testid="user-years-experience-input"
                 value={yearsOfExperience}
                 onChangeText={setYearsOfExperience}
                 placeholder="Years"
@@ -222,12 +228,13 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
 
             <YStack gap="$2">
               <Text fontWeight="600">Current Title</Text>
-              <Input value={currentTitle} onChangeText={setCurrentTitle} placeholder="Job title" />
+              <Input data-testid="user-current-title-input" value={currentTitle} onChangeText={setCurrentTitle} placeholder="Job title" />
             </YStack>
 
             <YStack gap="$2">
               <Text fontWeight="600">Current Employer</Text>
               <Input
+                data-testid="user-current-employer-input"
                 value={currentEmployer}
                 onChangeText={setCurrentEmployer}
                 placeholder="Company name"
@@ -238,10 +245,11 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
 
         {/* Submit Button (mobile-friendly placement) */}
         <XStack gap="$2" pb="$4">
-          <Button flex={1} onPress={() => router.back()} variant="outlined">
+          <Button data-testid="cancel-button" flex={1} onPress={() => router.back()} variant="outlined">
             Cancel
           </Button>
           <Button
+            data-testid="save-button"
             flex={1}
             onPress={handleSubmit}
             disabled={updateUserMutation.isPending}

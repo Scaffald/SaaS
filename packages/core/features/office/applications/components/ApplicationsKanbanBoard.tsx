@@ -162,7 +162,7 @@ const StatusColumn = ({
 }: StatusColumnProps) => {
   return (
     <DroppableColumn id={status} items={applications.map((app) => app.id)}>
-      <YStack width={300} bg="$color2" rounded="$4" p="$3">
+      <YStack data-testid={`kanban-column-${status}`} width={300} bg="$color2" rounded="$4" p="$3">
         {/* Column Header */}
         <XStack justify="space-between" items="center" mb="$3">
           <XStack gap="$2" items="center">
@@ -215,6 +215,7 @@ const ApplicationCard = ({ application, onPress }: ApplicationCardProps) => {
 
   return (
     <Card
+      data-testid={`kanban-card-${application.id}`}
       p="$3"
       bg="$background"
       hoverStyle={{
