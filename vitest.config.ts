@@ -72,6 +72,8 @@ export default defineConfig({
         'packages/core/features/office/applications/hooks/**/*.ts',
         'packages/core/features/office/applications/components/ApplicationsFilters.tsx',
         'packages/core/features/office/cms-slide-form.tsx',
+        'packages/core/features/office/components/JobForm.tsx',
+        'packages/core/features/office/components/OrganizationForm.tsx',
         'packages/ui/src/components/image-picker/utils/**/*.ts',
         'packages/ui/src/components/image-picker/__tests__/**/*.ts',
         'packages/schemas/src/profile/**/*.ts',
