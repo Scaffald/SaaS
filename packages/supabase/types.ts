@@ -3178,261 +3178,26 @@ export type Database = {
         }
         Relationships: []
       }
-      team_invitations: {
-        Row: {
-          accepted_at: string | null
-          cancelled_at: string | null
-          created_at: string
-          declined_at: string | null
-          email: string
-          expires_at: string
-          id: string
-          invited_by: string | null
-          invited_user_id: string | null
-          metadata: Json
-          organization_id: string
-          responded_at: string | null
-          responded_by: string | null
-          response_message: string | null
-          role_id: string
-          status:
-            | "pending"
-            | "accepted"
-            | "declined"
-            | "cancelled"
-            | "expired"
-          team_id: string
-          token_hash: string
-          updated_at: string
-        }
-        Insert: {
-          accepted_at?: string | null
-          cancelled_at?: string | null
-          created_at?: string
-          declined_at?: string | null
-          email: string
-          expires_at?: string
-          id?: string
-          invited_by?: string | null
-          invited_user_id?: string | null
-          metadata?: Json
-          organization_id: string
-          responded_at?: string | null
-          responded_by?: string | null
-          response_message?: string | null
-          role_id: string
-          status?:
-            | "pending"
-            | "accepted"
-            | "declined"
-            | "cancelled"
-            | "expired"
-          team_id: string
-          token_hash: string
-          updated_at?: string
-        }
-        Update: {
-          accepted_at?: string | null
-          cancelled_at?: string | null
-          created_at?: string
-          declined_at?: string | null
-          email?: string
-          expires_at?: string
-          id?: string
-          invited_by?: string | null
-          invited_user_id?: string | null
-          metadata?: Json
-          organization_id?: string
-          responded_at?: string | null
-          responded_by?: string | null
-          response_message?: string | null
-          role_id?: string
-          status?:
-            | "pending"
-            | "accepted"
-            | "declined"
-            | "cancelled"
-            | "expired"
-          team_id?: string
-          token_hash?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "team_invitations_invited_by_fkey"
-            columns: ["invited_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_invitations_invited_by_fkey"
-            columns: ["invited_by"]
-            isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_invitations_invited_user_id_fkey"
-            columns: ["invited_user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_invitations_invited_user_id_fkey"
-            columns: ["invited_user_id"]
-            isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_invitations_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_invitations_responded_by_fkey"
-            columns: ["responded_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_invitations_responded_by_fkey"
-            columns: ["responded_by"]
-            isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_invitations_role_id_fkey"
-            columns: ["role_id"]
-            isOneToOne: false
-            referencedRelation: "team_roles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_invitations_team_id_fkey"
-            columns: ["team_id"]
-            isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       team_members: {
         Row: {
-          added_by: string | null
           created_at: string
           id: string
-          invitation_id: string | null
-          joined_at: string
-          metadata: Json
-          permissions_override: Json
-          removed_at: string | null
-          removed_by: string | null
-          removal_reason: string | null
-          role_id: string
-          status:
-            | "active"
-            | "pending"
-            | "invited"
-            | "suspended"
-            | "removed"
           team_id: string
-          updated_at: string
           user_id: string
         }
         Insert: {
-          added_by?: string | null
           created_at?: string
           id?: string
-          invitation_id?: string | null
-          joined_at?: string
-          metadata?: Json
-          permissions_override?: Json
-          removed_at?: string | null
-          removed_by?: string | null
-          removal_reason?: string | null
-          role_id: string
-          status?:
-            | "active"
-            | "pending"
-            | "invited"
-            | "suspended"
-            | "removed"
           team_id: string
-          updated_at?: string
           user_id: string
         }
         Update: {
-          added_by?: string | null
           created_at?: string
           id?: string
-          invitation_id?: string | null
-          joined_at?: string
-          metadata?: Json
-          permissions_override?: Json
-          removed_at?: string | null
-          removed_by?: string | null
-          removal_reason?: string | null
-          role_id?: string
-          status?:
-            | "active"
-            | "pending"
-            | "invited"
-            | "suspended"
-            | "removed"
           team_id?: string
-          updated_at?: string
           user_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "team_members_added_by_fkey"
-            columns: ["added_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_members_added_by_fkey"
-            columns: ["added_by"]
-            isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_members_invitation_id_fkey"
-            columns: ["invitation_id"]
-            isOneToOne: false
-            referencedRelation: "team_invitations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_members_removed_by_fkey"
-            columns: ["removed_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_members_removed_by_fkey"
-            columns: ["removed_by"]
-            isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_members_role_id_fkey"
-            columns: ["role_id"]
-            isOneToOne: false
-            referencedRelation: "team_roles"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "team_members_team_id_fkey"
             columns: ["team_id"]
@@ -3456,214 +3221,39 @@ export type Database = {
           },
         ]
       }
-      team_role_permissions: {
-        Row: {
-          created_at: string
-          id: string
-          is_allowed: boolean
-          permission: Database["core"]["Enums"]["team_permission"]
-          role_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          is_allowed?: boolean
-          permission: Database["core"]["Enums"]["team_permission"]
-          role_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          is_allowed?: boolean
-          permission?: Database["core"]["Enums"]["team_permission"]
-          role_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "team_role_permissions_role_id_fkey"
-            columns: ["role_id"]
-            isOneToOne: false
-            referencedRelation: "team_roles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      team_roles: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          description: string | null
-          id: string
-          is_assignable: boolean
-          is_default: boolean
-          is_system: boolean
-          key: string
-          level: number
-          metadata: Json
-          name: string
-          organization_id: string | null
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          description?: string | null
-          id?: string
-          is_assignable?: boolean
-          is_default?: boolean
-          is_system?: boolean
-          key: string
-          level?: number
-          metadata?: Json
-          name: string
-          organization_id?: string | null
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          description?: string | null
-          id?: string
-          is_assignable?: boolean
-          is_default?: boolean
-          is_system?: boolean
-          key?: string
-          level?: number
-          metadata?: Json
-          name?: string
-          organization_id?: string | null
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "team_roles_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_roles_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_roles_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_roles_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_roles_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       teams: {
         Row: {
-          allow_self_join: boolean
-          archived_at: string | null
-          archived_by: string | null
-          archived_reason: string | null
-          auto_assign_jobs: boolean
           created_at: string
           created_by: string | null
-          default_role_id: string
-          description: Json | null
           id: string
           image_url: string | null
-          invitation_expiration_days: number
-          is_archived: boolean
           name: string
           organization_id: string
-          parent_team_id: string | null
-          purpose: string | null
-          settings: Json
           slug: string | null
           updated_at: string
-          updated_by: string | null
-          visibility: string
         }
         Insert: {
-          allow_self_join?: boolean
-          archived_at?: string | null
-          archived_by?: string | null
-          archived_reason?: string | null
-          auto_assign_jobs?: boolean
           created_at?: string
           created_by?: string | null
-          default_role_id: string
-          description?: Json | null
           id?: string
           image_url?: string | null
-          invitation_expiration_days?: number
-          is_archived?: boolean
           name: string
           organization_id: string
-          parent_team_id?: string | null
-          purpose?: string | null
-          settings?: Json
           slug?: string | null
           updated_at?: string
-          updated_by?: string | null
-          visibility?: string
         }
         Update: {
-          allow_self_join?: boolean
-          archived_at?: string | null
-          archived_by?: string | null
-          archived_reason?: string | null
-          auto_assign_jobs?: boolean
           created_at?: string
           created_by?: string | null
-          default_role_id?: string
-          description?: Json | null
           id?: string
           image_url?: string | null
-          invitation_expiration_days?: number
-          is_archived?: boolean
           name?: string
           organization_id?: string
-          parent_team_id?: string | null
-          purpose?: string | null
-          settings?: Json
           slug?: string | null
           updated_at?: string
-          updated_by?: string | null
-          visibility?: string
         }
         Relationships: [
           {
-            foreignKeyName: "teams_archived_by_fkey"
-            columns: ["archived_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "teams_archived_by_fkey"
-            columns: ["archived_by"]
-            isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "teams_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
@@ -3675,13 +3265,6 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "teams_default_role_id_fkey"
-            columns: ["default_role_id"]
-            isOneToOne: false
-            referencedRelation: "team_roles"
             referencedColumns: ["id"]
           },
           {
@@ -3689,27 +3272,6 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "teams_parent_team_id_fkey"
-            columns: ["parent_team_id"]
-            isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "teams_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "teams_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "v_profile_search"
             referencedColumns: ["id"]
           },
         ]
@@ -4197,13 +3759,6 @@ export type Database = {
           slug: string
         }[]
       }
-      has_team_permission: {
-        Args: {
-          target_team_id: string
-          required_permission: Database["core"]["Enums"]["team_permission"]
-        }
-        Returns: boolean
-      }
       jitter_coordinate: {
         Args: { coord: number; max_offset_degrees?: number }
         Returns: number
@@ -4217,7 +3772,6 @@ export type Database = {
         }
         Returns: number
       }
-      is_team_admin: { Args: { target_team_id: string }; Returns: boolean }
       refresh_ghost_profiles: { Args: never; Returns: undefined }
       refresh_years_of_experience: {
         Args: { p_user_id: string }
@@ -4293,22 +3847,6 @@ export type Database = {
         | "feature.announcement"
         | "platform.update"
         | "message.received"
-      team_permission:
-        | "team.view"
-        | "team.manage"
-        | "team.settings"
-        | "team.invite"
-        | "team.remove_member"
-        | "team.assign_role"
-        | "job.manage"
-        | "application.review"
-        | "application.manage"
-        | "application.comment"
-        | "interview.schedule"
-        | "offer.manage"
-        | "analytics.view"
-        | "document.manage"
-        | "invitation.manage"
       organization_request_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {

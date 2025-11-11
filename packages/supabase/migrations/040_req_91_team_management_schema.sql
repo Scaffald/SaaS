@@ -1,5 +1,134 @@
 -- =========================================================
 -- 040_req_91_team_management_schema.sql
+-- Team Management schema expansion for REQ-91
+-- =========================================================
+
+BEGIN;
+
+-- =========================================================
+-- Extend core.teams with metadata and lifecycle management
+-- =========================================================
+
+ALTER TABLE core.teams
+  ADD COLUMN description JSONB,
+  ADD COLUMN purpose TEXT,
+  ADD COLUMN visibility TEXT NOT NULL DEFAULT 'organization',
+  ADD COLUMN default_role_id UUID,
+  ADD COLUMN is_archived BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN archived_at TIMESTAMPTZ,
+  ADD COLUMN archived_by UUID,
+  ADD COLUMN archived_reason TEXT,
+  ADD COLUMN settings JSONB NOT NULL DEFAULT '{}'::jsonb,
+  ADD COLUMN updated_by UUID;
+
+ALTER TABLE core.teams
+  ADD CONSTRAINT teams_visibility_check
+  CHECK (visibility IN ('organization', 'private'));
+
+-- =========================================================
+-- Expand core.team_members with role + status tracking
+-- =========================================================
+
+ALTER TABLE core.team_members
+  ADD COLUMN role_id UUID,
+  ADD COLUMN status TEXT NOT NULL DEFAULT 'active',
+  ADD COLUMN joined_at TIMESTAMPTZ,
+  ADD COLUMN invited_by UUID,
+  ADD COLUMN added_by UUID,
+  ADD COLUMN invitation_id UUID,
+  ADD COLUMN updated_at TIMESTAMPTZ,
+  ADD COLUMN removed_at TIMESTAMPTZ,
+  ADD COLUMN removed_by UUID,
+  ADD COLUMN notes TEXT,
+  ADD COLUMN metadata JSONB NOT NULL DEFAULT '{}'::jsonb;
+
+ALTER TABLE core.team_members
+  ADD CONSTRAINT team_members_status_check
+  CHECK (status IN ('active', 'pending', 'removed'));
+
+UPDATE core.team_members
+SET
+  status = 'active',
+  joined_at = COALESCE(joined_at, created_at),
+  updated_at = COALESCE(updated_at, created_at)
+WHERE joined_at IS NULL
+   OR updated_at IS NULL;
+
+ALTER TABLE core.team_members
+  ALTER COLUMN joined_at SET NOT NULL,
+  ALTER COLUMN updated_at SET NOT NULL,
+  ALTER COLUMN joined_at SET DEFAULT NOW(),
+  ALTER COLUMN updated_at SET DEFAULT NOW();
+
+-- =========================================================
+-- Team roles and permissions
+-- =========================================================
+
+CREATE TABLE core.team_roles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  organization_id UUID NOT NULL,
+  key TEXT NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT,
+  is_default BOOLEAN NOT NULL DEFAULT false,
+  is_system BOOLEAN NOT NULL DEFAULT false,
+  created_by UUID,
+  updated_by UUID,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT team_roles_key_unique UNIQUE (organization_id, key)
+);
+
+CREATE TABLE core.team_role_permissions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  role_id UUID NOT NULL,
+  permission TEXT NOT NULL,
+  effect TEXT NOT NULL DEFAULT 'allow',
+  created_by UUID,
+  updated_by UUID,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT team_role_permissions_effect_check CHECK (effect IN ('allow', 'deny')),
+  CONSTRAINT team_role_permissions_unique UNIQUE (role_id, permission, effect)
+);
+
+-- =========================================================
+-- Team invitations tracking
+-- =========================================================
+
+CREATE TABLE core.team_invitations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  team_id UUID NOT NULL,
+  organization_id UUID NOT NULL,
+  inviter_user_id UUID NOT NULL,
+  invitee_user_id UUID,
+  invitee_email CITEXT,
+  role_id UUID,
+  token TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending',
+  message TEXT,
+  expires_at TIMESTAMPTZ,
+  responded_at TIMESTAMPTZ,
+  accepted_at TIMESTAMPTZ,
+  declined_at TIMESTAMPTZ,
+  cancelled_at TIMESTAMPTZ,
+  reminder_count INTEGER NOT NULL DEFAULT 0,
+  last_reminded_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  created_by UUID,
+  updated_by UUID,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  CONSTRAINT team_invitations_status_check CHECK (status IN ('pending', 'accepted', 'declined', 'expired', 'cancelled')),
+  CONSTRAINT team_invitations_contact_check CHECK (invitee_user_id IS NOT NULL OR invitee_email IS NOT NULL),
+  CONSTRAINT team_invitations_token_unique UNIQUE (token)
+);
+
+COMMIT;
+-- =========================================================
+-- 040_req_91_team_management_schema.sql
 -- Team Management schema expansion: roles, permissions, invitations
 -- =========================================================
 
