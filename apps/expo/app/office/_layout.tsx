@@ -38,12 +38,24 @@ export default function OfficeLayout() {
         <Drawer.Screen name="jobs/index" options={{ title: 'Manage Jobs' }} />
         <Drawer.Screen name="jobs/create" options={{ title: 'Create Job' }} />
         <Drawer.Screen name="jobs/[id]/edit" options={{ title: 'Edit Job' }} />
+        <Drawer.Screen name="teams/index" options={{ title: 'Teams' }} />
+        <Drawer.Screen name="teams/create" options={{ title: 'Create Team' }} />
+        <Drawer.Screen name="teams/[id]/edit" options={{ title: 'Edit Team' }} />
         <Drawer.Screen name="universities/index" options={{ title: 'Manage Universities' }} />
         <Drawer.Screen name="universities/create" options={{ title: 'Create University' }} />
         <Drawer.Screen name="universities/[id]/edit" options={{ title: 'Edit University' }} />
         <Drawer.Screen name="organizations/index" options={{ title: 'Manage Organizations' }} />
         <Drawer.Screen name="organizations/create" options={{ title: 'Create Organization' }} />
         <Drawer.Screen name="organizations/[id]/edit" options={{ title: 'Edit Organization' }} />
+        <Drawer.Screen name="background-checks/index" options={{ title: 'Background Checks' }} />
+        <Drawer.Screen
+          name="background-checks/admin"
+          options={{ title: 'Review Background Checks' }}
+        />
+        <Drawer.Screen
+          name="background-checks/request"
+          options={{ title: 'Request Background Check' }}
+        />
       </DrawerLayout>
     </ErrorBoundary>
   )

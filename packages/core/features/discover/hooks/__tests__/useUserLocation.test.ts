@@ -8,20 +8,32 @@ type GeolocationArgs = Parameters<Geolocation['getCurrentPosition']>
 type GeolocationReturn = ReturnType<Geolocation['getCurrentPosition']>
 
 const getCurrentPositionMock = vi.fn<GeolocationArgs, GeolocationReturn>()
+const watchPositionMock = vi.fn<
+  Parameters<Geolocation['watchPosition']>,
+  ReturnType<Geolocation['watchPosition']>
+>(() => 1)
+const clearWatchMock = vi.fn<
+  Parameters<Geolocation['clearWatch']>,
+  ReturnType<Geolocation['clearWatch']>
+>()
 
 describe('useUserLocation (web)', () => {
-  const geolocationMock = {
+  const geolocationMock: Geolocation = {
     getCurrentPosition: getCurrentPositionMock,
+    watchPosition: watchPositionMock,
+    clearWatch: clearWatchMock,
   }
 
   beforeEach(() => {
     Object.defineProperty(globalThis, 'navigator', {
       configurable: true,
       value: {
-        geolocation: geolocationMock as Geolocation,
+        geolocation: geolocationMock,
       },
     })
     getCurrentPositionMock.mockReset()
+    watchPositionMock.mockReset()
+    clearWatchMock.mockReset()
   })
 
   afterEach(() => {

@@ -930,9 +930,25 @@ export const backgroundChecksRouter = t.router({
       const { data, error } = await supabase
         .schema('core')
         .from('background_checks')
-        .select(
-          'id, status, user_id, package_id, job_id, completed_at, created_at, expires_at, invited_at, provider_check_id, findings, metadata, package:background_check_packages(id, display_name, slug)',
-        )
+    .select(
+      `
+        id,
+        status,
+        user_id,
+        package_id,
+        job_id,
+        completed_at,
+        created_at,
+        expires_at,
+        invited_at,
+        provider_check_id,
+        findings,
+        metadata,
+        package:background_check_packages(id, display_name, slug),
+        worker:users!background_checks_user_id_fkey(id, display_name, username, email, avatar_path),
+        job:jobs!background_checks_job_id_fkey(id, title)
+      `,
+    )
         .eq('organization_id', input.organization_id)
         .eq('requested_by_user_id', user!.id)
         .order('created_at', { ascending: false })
@@ -945,20 +961,53 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
-      return (data ?? []).map((row) => ({
-        id: row.id,
-        status: row.status,
-        worker_user_id: row.user_id,
-        job_id: row.job_id,
-        package: row.package ?? null,
-        completed_at: row.completed_at,
-        created_at: row.created_at,
-        expires_at: row.expires_at,
-        invited_at: row.invited_at,
-        provider_check_id: row.provider_check_id,
-        findings: row.findings,
-        metadata: row.metadata,
-      }))
+      return (data ?? []).map((row) => {
+        const workerRecord = (row.worker ?? null) as
+          | {
+            id?: string | null;
+            display_name?: string | null;
+            username?: string | null;
+            email?: string | null;
+            avatar_path?: string | null;
+          }
+          | null;
+        const jobRecord = (row.job ?? null) as
+          | {
+            id?: string | null;
+            title?: string | null;
+          }
+          | null;
+
+        return {
+          id: row.id,
+          status: row.status,
+          worker_user_id: row.user_id,
+          job_id: row.job_id,
+          package: row.package ?? null,
+          worker: workerRecord
+            ? {
+              id: workerRecord.id ?? null,
+              display_name: workerRecord.display_name ?? null,
+              username: workerRecord.username ?? null,
+              email: workerRecord.email ?? null,
+              avatar_path: workerRecord.avatar_path ?? null,
+            }
+            : null,
+          job: jobRecord
+            ? {
+              id: jobRecord.id ?? null,
+              title: jobRecord.title ?? null,
+            }
+            : null,
+          completed_at: row.completed_at,
+          created_at: row.created_at,
+          expires_at: row.expires_at,
+          invited_at: row.invited_at,
+          provider_check_id: row.provider_check_id,
+          findings: row.findings,
+          metadata: row.metadata,
+        };
+      })
     }),
 
   organizationInitiate: officeProcedure
@@ -1227,7 +1276,26 @@ export const backgroundChecksRouter = t.router({
         .schema('core')
         .from('background_checks')
         .select(
-          'id, status, user_id, organization_id, job_id, summary, findings, created_at, updated_at, invited_at, completed_at, expires_at, package:background_check_packages(id, display_name, slug)',
+          `
+            id,
+            status,
+            user_id,
+            organization_id,
+            job_id,
+            requested_by_user_id,
+            summary,
+            findings,
+            status_history,
+            created_at,
+            updated_at,
+            invited_at,
+            completed_at,
+            expires_at,
+            package:background_check_packages(id, display_name, slug),
+            worker:users!background_checks_user_id_fkey(id, display_name, username, email, avatar_path),
+            organization:organizations!background_checks_organization_id_fkey(id, name),
+            requester:users!background_checks_requested_by_user_id_fkey(id, display_name, email)
+          `,
         )
         .order('created_at', { ascending: false })
         .range(input?.offset ?? 0, (input?.offset ?? 0) + (input?.limit ?? 50) - 1)
@@ -1246,7 +1314,70 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
-      return data ?? []
+      return (data ?? []).map((row) => {
+        const workerRecord = (row.worker ?? null) as
+          | {
+            id?: string | null
+            display_name?: string | null
+            username?: string | null
+            email?: string | null
+            avatar_path?: string | null
+          }
+          | null
+        const organizationRecord = (row.organization ?? null) as
+          | {
+            id?: string | null
+            name?: string | null
+          }
+          | null
+        const requesterRecord = (row.requester ?? null) as
+          | {
+            id?: string | null
+            display_name?: string | null
+            email?: string | null
+          }
+          | null
+
+        return {
+          id: row.id,
+          status: row.status,
+          user_id: row.user_id,
+          organization_id: row.organization_id,
+          job_id: row.job_id,
+          requested_by_user_id: row.requested_by_user_id,
+          summary: row.summary ?? null,
+          findings: row.findings ?? null,
+          status_history: row.status_history ?? null,
+          created_at: row.created_at,
+          updated_at: row.updated_at,
+          invited_at: row.invited_at,
+          completed_at: row.completed_at,
+          expires_at: row.expires_at,
+          package: row.package ?? null,
+          worker: workerRecord
+            ? {
+              id: workerRecord.id ?? null,
+              display_name: workerRecord.display_name ?? null,
+              username: workerRecord.username ?? null,
+              email: workerRecord.email ?? null,
+              avatar_path: workerRecord.avatar_path ?? null,
+            }
+            : null,
+          organization: organizationRecord
+            ? {
+              id: organizationRecord.id ?? null,
+              name: organizationRecord.name ?? null,
+            }
+            : null,
+          requester: requesterRecord
+            ? {
+              id: requesterRecord.id ?? null,
+              display_name: requesterRecord.display_name ?? null,
+              email: requesterRecord.email ?? null,
+            }
+            : null,
+        }
+      })
     }),
 
   adminUpdateStatus: officeProcedure
@@ -1357,7 +1488,30 @@ export const backgroundChecksRouter = t.router({
         .schema('core')
         .from('background_check_disputes')
         .select(
-          'id, background_check_id, user_id, dispute_reason, dispute_details, supporting_documents, status, created_at, updated_at, resolved_at, resolved_by_user_id',
+          `
+            id,
+            background_check_id,
+            user_id,
+            dispute_reason,
+            dispute_details,
+            supporting_documents,
+            status,
+            created_at,
+            updated_at,
+            resolved_at,
+            resolved_by_user_id,
+            background_check:background_checks(
+              id,
+              status,
+              summary,
+              findings,
+              completed_at,
+              expires_at,
+              package:background_check_packages(id, display_name, slug),
+              worker:users!background_checks_user_id_fkey(id, display_name, username, email),
+              organization:organizations!background_checks_organization_id_fkey(id, name)
+            )
+          `,
         )
         .order('created_at', { ascending: false })
 
@@ -1375,7 +1529,67 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
-      return data ?? []
+      return (data ?? []).map((row) => {
+        const backgroundCheckRecord = (row.background_check ?? null) as
+          | {
+            id?: string | null
+            status?: string | null
+            summary?: string | null
+            findings?: Record<string, unknown> | null
+            completed_at?: string | null
+            expires_at?: string | null
+            package?: Record<string, unknown> | null
+            worker?:
+              | {
+                id?: string | null
+                display_name?: string | null
+                username?: string | null
+                email?: string | null
+              }
+              | null
+            organization?: { id?: string | null; name?: string | null } | null
+          }
+          | null
+
+        return {
+          id: row.id,
+          background_check_id: row.background_check_id,
+          user_id: row.user_id,
+          dispute_reason: row.dispute_reason,
+          dispute_details: row.dispute_details,
+          supporting_documents: row.supporting_documents,
+          status: row.status,
+          created_at: row.created_at,
+          updated_at: row.updated_at,
+          resolved_at: row.resolved_at,
+          resolved_by_user_id: row.resolved_by_user_id,
+          background_check: backgroundCheckRecord
+            ? {
+              id: backgroundCheckRecord.id ?? null,
+              status: backgroundCheckRecord.status ?? null,
+              summary: backgroundCheckRecord.summary ?? null,
+              findings: backgroundCheckRecord.findings ?? null,
+              completed_at: backgroundCheckRecord.completed_at ?? null,
+              expires_at: backgroundCheckRecord.expires_at ?? null,
+              package: backgroundCheckRecord.package ?? null,
+              worker: backgroundCheckRecord.worker
+                ? {
+                  id: backgroundCheckRecord.worker.id ?? null,
+                  display_name: backgroundCheckRecord.worker.display_name ?? null,
+                  username: backgroundCheckRecord.worker.username ?? null,
+                  email: backgroundCheckRecord.worker.email ?? null,
+                }
+                : null,
+              organization: backgroundCheckRecord.organization
+                ? {
+                  id: backgroundCheckRecord.organization.id ?? null,
+                  name: backgroundCheckRecord.organization.name ?? null,
+                }
+                : null,
+            }
+            : null,
+        }
+      })
     }),
 
   adminResolveDispute: officeProcedure

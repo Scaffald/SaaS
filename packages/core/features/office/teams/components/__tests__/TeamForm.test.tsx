@@ -37,23 +37,31 @@ vi.mock('@tamagui/toast', () => ({ useToastController: () => toastMock }))
 vi.mock('expo-router', () => ({ useRouter: () => routerMock }))
 
 vi.mock('@app/schemas', () => {
-  const teamRoleKeySchema = z.enum(['member', 'team_admin', 'team_lead', 'recruiter'])
-  const teamCreateSchema = z
-    .object({
-      organizationId: z.string(),
-      name: z.string().min(1),
-      slug: z.string().optional(),
-      purpose: z.string().optional(),
-      visibility: z.enum(['organization', 'private', 'public']).default('organization'),
-      description: z.string().optional(),
-      defaultRoleId: z.string().optional(),
-      defaultRoleKey: teamRoleKeySchema.optional(),
-    })
+  const teamRoleKeySchema = z.enum(['member', 'team_admin', 'team_lead', 'recruiter', 'reviewer'])
+  const teamCreateBaseSchema = z.object({
+    organizationId: z.string(),
+    name: z.string().min(1),
+    slug: z.string().optional(),
+    purpose: z.string().optional(),
+    visibility: z.enum(['organization', 'private']).default('organization'),
+    invitationPolicy: z.enum(['invite_only', 'request_to_join']).default('invite_only'),
+    description: z.string().optional(),
+    imageUrl: z.string().optional(),
+    metadata: z.record(z.any()).default({}),
+    defaultRoleId: z.string().optional(),
+    defaultRoleKey: teamRoleKeySchema.default('member'),
+  })
+  const teamCreateSchema = teamCreateBaseSchema.refine(
+    (input) => Boolean(input.defaultRoleId ?? input.defaultRoleKey),
+    'A default role must be provided',
+  )
 
   return {
+    teamCreateBaseSchema,
     teamCreateSchema,
     teamRoleKeySchema,
-    TEAM_VISIBILITIES: ['organization', 'private', 'public'] as const,
+    TEAM_VISIBILITIES: ['organization', 'private'] as const,
+    TEAM_INVITATION_POLICIES: ['invite_only', 'request_to_join'] as const,
   }
 })
 
@@ -186,6 +194,8 @@ vi.mock('tamagui', async () => {
     </button>
   )
 
+  let selectOnValueChange: ((value: string) => void) | undefined
+
   const SelectBase = ({
     value,
     onValueChange,
@@ -194,12 +204,14 @@ vi.mock('tamagui', async () => {
     value: string
     onValueChange: (value: string) => void
     children: ReactNode
-  }) => (
-    <div data-testid="select" data-value={value}>
-      <div hidden>{onValueChange.toString()}</div>
-      {children}
-    </div>
-  )
+  }) => {
+    selectOnValueChange = onValueChange
+    return (
+      <div data-testid="select" data-value={value}>
+        {children}
+      </div>
+    )
+  }
   SelectBase.Trigger = ({ children }: { children: ReactNode }) => <div>{children}</div>
   SelectBase.Value = ({ children }: { children?: ReactNode }) => <span>{children}</span>
   SelectBase.Content = ({ children }: { children: ReactNode }) => <div>{children}</div>
@@ -220,7 +232,7 @@ vi.mock('tamagui', async () => {
     <button
       type="button"
       data-testid={`select-item-${index}`}
-      onClick={() => onValueChange(value)}
+      onClick={() => selectOnValueChange?.(value)}
     >
       {children}
     </button>
@@ -275,6 +287,7 @@ describe('TeamForm', () => {
           slug: 'field-ops',
           purpose: 'Regional hiring',
           visibility: 'organization',
+          invitationPolicy: 'invite_only',
           description: 'Hire quickly',
           defaultRole: { id: 'role-2', key: 'team_admin' },
         }}
@@ -291,6 +304,7 @@ describe('TeamForm', () => {
           slug: 'field-ops',
           defaultRoleKey: 'team_admin',
           defaultRoleId: 'role-2',
+          invitationPolicy: 'invite_only',
         }),
       )
     })
@@ -322,6 +336,7 @@ describe('TeamForm', () => {
           name: 'Existing Team',
           defaultRoleId: 'role-1',
           defaultRoleKey: 'member',
+          invitationPolicy: 'invite_only',
         }),
       )
     })

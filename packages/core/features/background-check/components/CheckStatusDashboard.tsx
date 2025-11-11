@@ -8,9 +8,11 @@ import { api } from '@app/core/utils/api'
 import { CheckStatusCard } from './CheckStatusCard'
 import { ResultsViewer } from './ResultsViewer'
 import {
+  canDisputeStatus,
   getStatusCategory,
   type BackgroundCheckSummary,
 } from './status.utils'
+import { DisputeBackgroundCheckDialog } from './DisputeBackgroundCheckDialog'
 
 type FilterValue = 'all' | 'active' | 'completed' | 'expired'
 
@@ -25,6 +27,7 @@ export function CheckStatusDashboard() {
   const router = useRouter()
   const [activeFilter, setActiveFilter] = useState<FilterValue>('active')
   const [selectedCheckId, setSelectedCheckId] = useState<string | null>(null)
+  const [disputeCheck, setDisputeCheck] = useState<BackgroundCheckSummary | null>(null)
 
   const checksQuery = api.backgroundChecks.listChecks.useQuery(undefined, {
     refetchOnWindowFocus: true,
@@ -155,6 +158,13 @@ export function CheckStatusDashboard() {
               check={check}
               onViewDetails={handleViewDetails}
               onRenew={handleRenew}
+              onDispute={
+                canDisputeStatus(check.status)
+                  ? (selected) => {
+                      setDisputeCheck(selected)
+                    }
+                  : undefined
+              }
             />
           ))}
 
@@ -182,6 +192,20 @@ export function CheckStatusDashboard() {
           )}
         </YStack>
       </ScrollView>
+
+      <DisputeBackgroundCheckDialog
+        open={Boolean(disputeCheck)}
+        check={disputeCheck}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDisputeCheck(null)
+          }
+        }}
+        onSubmitted={() => {
+          setDisputeCheck(null)
+          void checksQuery.refetch()
+        }}
+      />
     </YStack>
   )
 }

@@ -1,74 +1,58 @@
 import { useMemo } from 'react'
 import { useToastController } from '@tamagui/toast'
+import type { AppRouter } from '@app/supabase/client-types'
+import type { inferRouterOutputs } from '@trpc/server'
 
 import { api } from '@app/core/utils/api'
+import { teamRoleKeySchema } from '@app/schemas'
 
-interface UseTeamFormOptionsParams {
-  organizationId?: string
-  currentTeamId?: string
-}
+type TeamRolesOutput = inferRouterOutputs<AppRouter>['teams']['members']['roles']
+type RoleRecord = NonNullable<TeamRolesOutput['roles']>[number]
 
-interface TeamOption {
-  id: string
-  name: string
-  isArchived?: boolean
-}
+type TeamRoleKey = ReturnType<typeof teamRoleKeySchema['parse']>
 
 interface RoleOption {
   id: string
-  key: string
+  key: TeamRoleKey
   name: string
-  level?: number
   description?: string | null
-  isDefault?: boolean
 }
 
-export function useTeamFormOptions({ organizationId, currentTeamId }: UseTeamFormOptionsParams) {
+interface UseTeamFormOptionsParams {
+  organizationId?: string
+}
+
+export function useTeamFormOptions({ organizationId }: UseTeamFormOptionsParams) {
   const toast = useToastController()
 
-  const rolesQuery = api.teams.members.roles.useQuery(undefined, {
-    onError: (error) => {
-      toast.show('Error', {
-        message: error.message ?? 'Failed to load team roles',
-      })
-    },
-  })
-
-  const teamsQuery = api.teams.list.useQuery(
-    { organizationId, includeArchived: false },
+  const rolesQuery = api.teams.members.roles.useQuery(
+    { organizationId },
     {
       enabled: Boolean(organizationId),
-      onError: (error) => {
+      onError: (error: Error) => {
         toast.show('Error', {
-          message: error.message ?? 'Failed to load teams',
+          message: error.message ?? 'Failed to load team roles',
         })
       },
     },
   )
 
   const roles: RoleOption[] = useMemo(() => {
-    return rolesQuery.data?.roles ?? []
+    return (
+      rolesQuery.data?.roles?.map((role: RoleRecord): RoleOption => ({
+        id: role.id,
+        key: teamRoleKeySchema.parse(role.key),
+        name: role.name,
+        description: role.description ?? null,
+      })) ?? []
+    )
   }, [rolesQuery.data])
-
-  const parentTeamOptions: TeamOption[] = useMemo(() => {
-    const teams = teamsQuery.data?.teams ?? []
-
-    return teams
-      .filter((team) => team.id !== currentTeamId)
-      .map((team) => ({
-        id: team.id as string,
-        name: team.name as string,
-        isArchived: team.isArchived as boolean | undefined,
-      }))
-  }, [teamsQuery.data?.teams, currentTeamId])
 
   return {
     roles,
-    parentTeamOptions,
-    isLoading: rolesQuery.isLoading || teamsQuery.isLoading,
-    isFetching: rolesQuery.isFetching || teamsQuery.isFetching,
-    refetchParentTeams: teamsQuery.refetch,
+    isLoading: rolesQuery.isLoading,
+    isFetching: rolesQuery.isFetching,
+    refetchRoles: rolesQuery.refetch,
   }
 }
-
 

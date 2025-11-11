@@ -23,8 +23,66 @@ import {
   teamUpdateSchema,
 } from "../../_shared/team-schemas.ts";
 
-type AuthenticatedProcedure = typeof protectedProcedure;
 type SupabaseAdminClient = Context["supabaseAdmin"];
+type AuthenticatedProcedure = typeof protectedProcedure;
+
+const TEAM_MEMBER_STATUS_SET = new Set(TEAM_MEMBER_STATUSES);
+
+const BASE_TEAM_ROLES: ReadonlyArray<{
+  key: string;
+  name: string;
+  description: string;
+}> = [
+  {
+    key: "admin",
+    name: "Team Admin",
+    description: "Full access to manage the team, members, roles, and invitations.",
+  },
+  {
+    key: "lead",
+    name: "Team Lead",
+    description: "Manage day-to-day team operations and collaborate on hiring activities.",
+  },
+  {
+    key: "recruiter",
+    name: "Recruiter",
+    description: "Manage applications, communication, and scheduling with candidates.",
+  },
+  {
+    key: "reviewer",
+    name: "Reviewer",
+    description: "Review applications and provide structured feedback.",
+  },
+  {
+    key: "member",
+    name: "Member",
+    description: "Collaborate on evaluations with read access to shared resources.",
+  },
+];
+
+const ROLE_PERMISSIONS: Record<string, ReadonlyArray<string>> = {
+  admin: [
+    "team.manage",
+    "team.members.manage",
+    "team.roles.manage",
+    "team.invitations.manage",
+    "team.analytics.view",
+    "applications.manage",
+    "applications.review",
+  ],
+  lead: [
+    "team.members.manage",
+    "team.invitations.manage",
+    "team.analytics.view",
+    "applications.manage",
+    "applications.review",
+  ],
+  recruiter: ["applications.manage", "applications.review", "team.discussion.participate"],
+  reviewer: ["applications.review", "team.discussion.participate"],
+  member: ["team.applications.view", "team.discussion.participate"],
+};
+
+const nowIso = () => new Date().toISOString();
 
 const addDays = (date: Date, days: number): Date => {
   const result = new Date(date);
@@ -32,206 +90,331 @@ const addDays = (date: Date, days: number): Date => {
   return result;
 };
 
-const toIsoString = (date: Date) => date.toISOString();
-
-function transformTeamRecord(record: Record<string, unknown>) {
-  if (!record) {
-    return record;
-  }
-
-  const defaultRole = record.default_role as Record<string, unknown> | null;
-
-  return {
-    id: record.id,
-    organizationId: record.organization_id,
-    name: record.name,
-    slug: record.slug,
-    purpose: record.purpose,
-    visibility: record.visibility,
-    description: record.description,
-    imageUrl: record.image_url,
-    settings: record.settings ?? {},
-    parentTeamId: record.parent_team_id,
-    defaultRoleId: record.default_role_id,
-    defaultRole: defaultRole
-      ? {
-        id: defaultRole.id,
-        key: defaultRole.key,
-        name: defaultRole.name,
-        level: defaultRole.level,
-      }
-      : null,
-    invitationExpirationDays: record.invitation_expiration_days,
-    allowSelfJoin: record.allow_self_join,
-    autoAssignJobs: record.auto_assign_jobs,
-    isArchived: record.is_archived,
-    archivedAt: record.archived_at,
-    archivedBy: record.archived_by,
-    archivedReason: record.archived_reason,
-    createdAt: record.created_at,
-    updatedAt: record.updated_at,
-    createdBy: record.created_by,
-    updatedBy: record.updated_by,
-  };
-}
-
-function transformMemberRecord(record: Record<string, unknown>) {
-  const role = record.role as Record<string, unknown> | null;
-  const user = record.user as Record<string, unknown> | null;
-
-  return {
-    id: record.id,
-    teamId: record.team_id,
-    userId: record.user_id,
-    status: record.status,
-    createdAt: record.created_at,
-    updatedAt: record.updated_at,
-    joinedAt: record.joined_at,
-    invitationId: record.invitation_id,
-    addedBy: record.added_by,
-    removedAt: record.removed_at,
-    removedBy: record.removed_by,
-    removalReason: record.removal_reason,
-    permissionsOverride: record.permissions_override ?? {},
-    metadata: record.metadata ?? {},
-    role: role
-      ? {
-        id: role.id,
-        key: role.key,
-        name: role.name,
-        level: role.level,
-      }
-      : null,
-    user: user
-      ? {
-        id: user.id,
-        displayName: user.display_name,
-        username: user.username,
-        avatarPath: user.avatar_path,
-      }
-      : null,
-  };
-}
-
-function transformInvitationRecord(record: Record<string, unknown>) {
-  const role = record.role as Record<string, unknown> | null;
-
-  return {
-    id: record.id,
-    teamId: record.team_id,
-    organizationId: record.organization_id,
-    email: record.email,
-    status: record.status,
-    expiresAt: record.expires_at,
-    createdAt: record.created_at,
-    updatedAt: record.updated_at,
-    invitedBy: record.invited_by,
-    invitedUserId: record.invited_user_id,
-    acceptedAt: record.accepted_at,
-    declinedAt: record.declined_at,
-    cancelledAt: record.cancelled_at,
-    respondedAt: record.responded_at,
-    respondedBy: record.responded_by,
-    responseMessage: record.response_message,
-    role: role
-      ? {
-        id: role.id,
-        key: role.key,
-        name: role.name,
-        level: role.level,
-      }
-      : null,
-    metadata: record.metadata ?? {},
-  };
-}
-
-async function resolveRoleId(
-  supabaseAdmin: SupabaseAdminClient,
-  roleId: string | undefined,
-  roleKey: z.infer<typeof teamRoleKeySchema> | undefined,
-  fallbackTeamId?: string,
-): Promise<string | undefined> {
-  if (roleId) {
-    return roleId;
-  }
-
-  if (!roleKey) {
-    if (!fallbackTeamId) {
-      return undefined;
-    }
-
-    const { data, error } = await supabaseAdmin
-      .schema("core")
-      .from("teams")
-      .select("default_role_id")
-      .eq("id", fallbackTeamId)
-      .single();
-
-    if (error) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: `Failed to resolve team default role: ${error.message}`,
-      });
-    }
-
-    return data?.default_role_id as string | undefined;
-  }
-
-  const { data, error } = await supabaseAdmin
-    .schema("core")
-    .from("team_roles")
-    .select("id")
-    .eq("key", roleKey)
-    .single();
-
-  if (error || !data) {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: `Unable to resolve role key "${roleKey}"`,
-    });
-  }
-
-  return data.id as string;
+function generateInvitationToken(bytes = 32): string {
+  const buffer = new Uint8Array(bytes);
+  crypto.getRandomValues(buffer);
+  return Array.from(buffer, (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 async function hashInvitationToken(token: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(token);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const encoded = new TextEncoder().encode(token);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", encoded);
   return Array.from(new Uint8Array(hashBuffer))
     .map((byte) => byte.toString(16).padStart(2, "0"))
     .join("");
 }
 
-function buildMembersRouter(procedure: AuthenticatedProcedure) {
-  return t.router({
-    roles: procedure.query(async ({ ctx }) => {
-      const { supabase } = ctx;
+function transformTeam(record: Record<string, any>) {
+  const defaultRole = record.default_role as Record<string, any> | null;
 
-      const { data, error } = await supabase
-        .schema("core")
-        .from("team_roles")
-        .select("id, key, name, description, level, is_default")
-        .order("level", { ascending: false });
+  return {
+    id: record.id as string,
+    organizationId: record.organization_id as string,
+    name: record.name as string,
+    slug: (record.slug as string) ?? null,
+    purpose: (record.purpose as string) ?? null,
+    visibility: (record.visibility as string) ?? "organization",
+    invitationPolicy: (record.invitation_policy as string) ?? "invite_only",
+    description: record.description ?? null,
+    imageUrl: (record.image_url as string) ?? null,
+    metadata: (record.metadata as Record<string, unknown>) ?? {},
+    defaultRoleKey: (record.default_role_key as string) ?? "member",
+    defaultRoleId: (record.default_role_id as string) ?? null,
+    defaultRole: defaultRole
+      ? {
+          id: defaultRole.id as string,
+          key: defaultRole.key as string,
+          name: defaultRole.name as string,
+        }
+      : null,
+    isArchived: Boolean(record.is_archived),
+    archivedAt: (record.archived_at as string) ?? null,
+    archivedBy: (record.archived_by as string) ?? null,
+    createdAt: record.created_at as string,
+    updatedAt: record.updated_at as string,
+    createdBy: (record.created_by as string) ?? null,
+  };
+}
 
-      if (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to load team roles: ${error.message}`,
-        });
+function transformMember(record: Record<string, any>) {
+  const role = record.role as Record<string, any> | null;
+  const user = record.user as Record<string, any> | null;
+
+  return {
+    id: record.id as string,
+    teamId: record.team_id as string,
+    userId: record.user_id as string,
+    roleId: record.role_id as string | null,
+    status: record.status as string,
+    joinedAt: (record.joined_at as string) ?? null,
+    invitedBy: (record.invited_by as string) ?? null,
+    removedAt: (record.removed_at as string) ?? null,
+    metadata: (record.metadata as Record<string, unknown>) ?? {},
+    createdAt: record.created_at as string,
+    role: role
+      ? {
+          id: role.id as string,
+          key: role.key as string,
+          name: role.name as string,
+        }
+      : null,
+    user: user
+      ? {
+          id: user.id as string,
+          displayName: (user.display_name as string) ?? null,
+          username: (user.username as string) ?? null,
+          avatarPath: (user.avatar_path as string) ?? null,
+        }
+      : null,
+  };
+}
+
+function transformInvitation(record: Record<string, any>) {
+  const role = record.role as Record<string, any> | null;
+
+  return {
+    id: record.id as string,
+    teamId: record.team_id as string,
+    email: (record.email as string) ?? null,
+    invitedUserId: (record.invited_user_id as string) ?? null,
+    roleId: (record.role_id as string) ?? null,
+    status: record.status as string,
+    expiresAt: (record.expires_at as string) ?? null,
+    acceptedAt: (record.accepted_at as string) ?? null,
+    declinedAt: (record.declined_at as string) ?? null,
+    revokedAt: (record.revoked_at as string) ?? null,
+    createdAt: record.created_at as string,
+    createdBy: (record.created_by as string) ?? null,
+    metadata: (record.metadata as Record<string, unknown>) ?? {},
+    role: role
+      ? {
+          id: role.id as string,
+          key: role.key as string,
+          name: role.name as string,
+        }
+      : null,
+  };
+}
+
+async function fetchTeamOrThrow(supabaseAdmin: SupabaseAdminClient, teamId: string) {
+  const { data, error } = await supabaseAdmin
+    .schema("core")
+    .from("teams")
+    .select("id, organization_id, default_role_id, is_archived")
+    .eq("id", teamId)
+    .single();
+
+  if (error || !data) {
+    throw new TRPCError({
+      code: error?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+      message: error ? `Failed to load team: ${error.message}` : "Team not found",
+    });
+  }
+
+  return data as {
+    id: string;
+    organization_id: string;
+    default_role_id: string | null;
+    is_archived: boolean;
+  };
+}
+
+async function ensureOrganizationRoles(
+  supabaseAdmin: SupabaseAdminClient,
+  organizationId: string,
+): Promise<Map<string, string>> {
+  const { data: existingRoles, error: rolesError } = await supabaseAdmin
+    .schema("core")
+    .from("team_roles")
+    .select("id, key")
+    .eq("organization_id", organizationId);
+
+  if (rolesError) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: `Failed to load team roles: ${rolesError.message}`,
+    });
+  }
+
+  const roleMap = new Map<string, string>();
+  for (const role of existingRoles ?? []) {
+    roleMap.set(role.key as string, role.id as string);
+  }
+
+  const missingRoles = BASE_TEAM_ROLES.filter((role) => !roleMap.has(role.key));
+  if (missingRoles.length > 0) {
+    const insertPayload = missingRoles.map((role) => ({
+      organization_id: organizationId,
+      key: role.key,
+      name: role.name,
+      description: role.description,
+      is_default: role.key === "member",
+      is_system: true,
+    }));
+
+    const { data: inserted, error: insertError } = await supabaseAdmin
+      .schema("core")
+      .from("team_roles")
+      .insert(insertPayload)
+      .select("id, key");
+
+    if (insertError) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: `Failed to seed team roles: ${insertError.message}`,
+      });
+    }
+
+    for (const role of inserted ?? []) {
+      roleMap.set(role.key as string, role.id as string);
+    }
+  }
+
+  const roleIds = Array.from(roleMap.values());
+  if (roleIds.length > 0) {
+    const { data: existingPerms, error: permsError } = await supabaseAdmin
+      .schema("core")
+      .from("team_role_permissions")
+      .select("role_id, permission_key")
+      .in("role_id", roleIds);
+
+    if (permsError) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: `Failed to load team role permissions: ${permsError.message}`,
+      });
+    }
+
+    const permissionMap = new Map<string, Set<string>>();
+    for (const record of existingPerms ?? []) {
+      const roleId = record.role_id as string;
+      const permission = record.permission_key as string;
+      const set = permissionMap.get(roleId) ?? new Set<string>();
+      set.add(permission);
+      permissionMap.set(roleId, set);
+    }
+
+    const permissionInserts: Array<{ role_id: string; permission_key: string }> = [];
+    for (const [roleKey, permissions] of Object.entries(ROLE_PERMISSIONS)) {
+      const roleId = roleMap.get(roleKey);
+      if (!roleId || permissions.length === 0) {
+        continue;
       }
 
-      return {
-        roles: (data ?? []).map((role) => ({
-          id: role.id,
-          key: role.key,
-          name: role.name,
-          description: role.description,
-          level: role.level,
-          isDefault: role.is_default,
-        })),
-      };
-    }),
+      const existingSet = permissionMap.get(roleId) ?? new Set<string>();
+      for (const permission of permissions) {
+        if (!existingSet.has(permission)) {
+          permissionInserts.push({
+            role_id: roleId,
+            permission_key: permission,
+          });
+        }
+      }
+    }
+
+    if (permissionInserts.length > 0) {
+      const { error: permissionInsertError } = await supabaseAdmin
+        .schema("core")
+        .from("team_role_permissions")
+        .insert(permissionInserts);
+
+      if (permissionInsertError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to seed team role permissions: ${permissionInsertError.message}`,
+        });
+      }
+    }
+  }
+
+  return roleMap;
+}
+
+async function resolveRoleId(options: {
+  supabaseAdmin: SupabaseAdminClient;
+  organizationId: string;
+  roleId?: string | null;
+  roleKey?: z.infer<typeof teamRoleKeySchema> | null;
+  teamId?: string;
+}) {
+  if (options.roleId) {
+    return options.roleId;
+  }
+
+  if (options.roleKey) {
+    const roles = await ensureOrganizationRoles(options.supabaseAdmin, options.organizationId);
+    const resolved = roles.get(options.roleKey);
+    if (!resolved) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: `Unknown team role key "${options.roleKey}"`,
+      });
+    }
+    return resolved;
+  }
+
+  if (options.teamId) {
+    const team = await fetchTeamOrThrow(options.supabaseAdmin, options.teamId);
+    return team.default_role_id ?? undefined;
+  }
+
+  return undefined;
+}
+
+function buildMembersRouter(procedure: AuthenticatedProcedure) {
+  return t.router({
+    roles: procedure
+      .input(
+        z
+          .object({
+            organizationId: z.string().uuid().optional(),
+            teamId: teamIdSchema.optional(),
+          })
+          .refine(
+            (input) => Boolean(input.organizationId ?? input.teamId),
+            "Provide an organizationId or teamId to load roles",
+          ),
+      )
+      .query(async ({ ctx, input }) => {
+        const { supabase, supabaseAdmin } = ctx;
+
+        let organizationId = input.organizationId ?? null;
+        if (!organizationId && input.teamId) {
+          const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
+          organizationId = team.organization_id;
+        }
+
+        if (!organizationId) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Unable to resolve organization for team roles" });
+        }
+
+        await ensureOrganizationRoles(supabaseAdmin, organizationId);
+
+        const { data, error } = await supabase
+          .schema("core")
+          .from("team_roles")
+          .select("id, key, name, description, is_default, is_system")
+          .eq("organization_id", organizationId)
+          .order("name", { ascending: true });
+
+        if (error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to load team roles: ${error.message}`,
+          });
+        }
+
+        return {
+          roles: (data ?? []).map((role) => ({
+            id: role.id as string,
+            key: role.key as string,
+            name: role.name as string,
+            description: role.description as string | null,
+            isDefault: Boolean(role.is_default),
+            isSystem: Boolean(role.is_system),
+          })),
+        };
+      }),
 
     list: procedure
       .input(z.object({ teamId: teamIdSchema }))
@@ -249,27 +432,12 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
             role_id,
             status,
             joined_at,
-            invitation_id,
-            added_by,
+            invited_by,
             removed_at,
-            removed_by,
-            removal_reason,
-            permissions_override,
             metadata,
             created_at,
-            updated_at,
-            role:team_roles(
-              id,
-              key,
-              name,
-              level
-            ),
-            user:users(
-              id,
-              display_name,
-              username,
-              avatar_path
-            )
+            role:team_roles(id, key, name),
+            user:users(id, display_name, username, avatar_path)
           `,
           )
           .eq("team_id", input.teamId)
@@ -284,240 +452,161 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
         }
 
         return {
-          members: (data ?? []).map((record) => transformMemberRecord(record)),
+          members: (data ?? []).map((record) => transformMember(record)),
         };
       }),
 
     add: procedure
       .input(teamMemberAddSchema)
       .mutation(async ({ ctx, input }) => {
-        const { supabase, supabaseAdmin, user } = ctx;
+        const { supabaseAdmin } = ctx;
+        const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
 
-        if (!user) {
-          throw new TRPCError({ code: "UNAUTHORIZED" });
+        if (team.is_archived) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Cannot add members to an archived team",
+          });
         }
 
-        const resolvedRoleId = await resolveRoleId(
+        const resolvedRoleId = await resolveRoleId({
           supabaseAdmin,
-          input.roleId,
-          input.roleKey,
-          input.teamId,
-        );
+          organizationId: team.organization_id,
+          roleId: input.roleId,
+          roleKey: input.roleKey,
+          teamId: input.teamId,
+        });
 
         if (!resolvedRoleId) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Unable to determine team member role",
+            message: "A team role is required when adding a member",
           });
         }
 
-        const { data: existingMember } = await supabase
-          .schema("core")
-          .from("team_members")
-          .select("id, status")
-          .eq("team_id", input.teamId)
-          .eq("user_id", input.userId)
-          .maybeSingle();
-
-        if (existingMember) {
-          if (existingMember.status === "removed") {
-            const reactivationPayload: Record<string, unknown> = {
-              role_id: resolvedRoleId,
-              status: "active" as (typeof TEAM_MEMBER_STATUSES)[number],
-              added_by: user.id,
-              removed_at: null,
-              removed_by: null,
-              removal_reason: null,
-              invitation_id: null,
-              joined_at: toIsoString(new Date()),
-            };
-
-            const { data, error } = await supabase
-              .schema("core")
-              .from("team_members")
-              .update(reactivationPayload)
-              .eq("id", existingMember.id)
-              .select(
-                `
-                id,
-                team_id,
-                user_id,
-                role_id,
-                status,
-                joined_at,
-                invitation_id,
-                added_by,
-                removed_at,
-                removed_by,
-                removal_reason,
-                permissions_override,
-                metadata,
-                created_at,
-                updated_at,
-                role:team_roles(
-                  id,
-                  key,
-                  name,
-                  level
-                ),
-                user:users(
-                  id,
-                  display_name,
-                  username,
-                  avatar_path
-                )
-              `,
-              )
-              .single();
-
-            if (error || !data) {
-              throw new TRPCError({
-                code: "INTERNAL_SERVER_ERROR",
-                message: error
-                  ? `Failed to reactivate team member: ${error.message}`
-                  : "Unable to reactivate team member",
-              });
-            }
-
-            return {
-              member: transformMemberRecord(data),
-            };
-          }
-
-          throw new TRPCError({
-            code: "CONFLICT",
-            message: "User is already a team member",
-          });
-        }
+        const status = input.status ?? "active";
 
         const insertPayload = {
           team_id: input.teamId,
           user_id: input.userId,
           role_id: resolvedRoleId,
-          added_by: user.id,
-          joined_at: toIsoString(new Date()),
-          status: "active" as (typeof TEAM_MEMBER_STATUSES)[number],
+          status,
+          invited_by: input.addedBy ?? user?.id ?? null,
+          joined_at: status === "active" ? nowIso() : null,
+          metadata: input.metadata ?? {},
         };
 
-        const { data, error } = await supabase
+        const { data, error } = await supabaseAdmin
           .schema("core")
           .from("team_members")
           .insert(insertPayload)
           .select(
             `
-            id,
-            team_id,
-            user_id,
-            role_id,
-            status,
-            joined_at,
-            invitation_id,
-            added_by,
-            removed_at,
-            removed_by,
-            removal_reason,
-            permissions_override,
-            metadata,
-            created_at,
-            updated_at,
-            role:team_roles(
-              id,
-              key,
-              name,
-              level
-            ),
-            user:users(
-              id,
-              display_name,
-              username,
-              avatar_path
-            )
+            *,
+            role:team_roles(id, key, name),
+            user:users(id, display_name, username, avatar_path)
           `,
           )
           .single();
 
         if (error) {
+          if (error.code === "23505") {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "This user is already a member of the team",
+            });
+          }
+
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: `Failed to add team member: ${error.message}`,
           });
         }
 
-        return {
-          member: transformMemberRecord(data),
-        };
+        return { member: transformMember(data as Record<string, any>) };
       }),
 
     update: procedure
       .input(teamMemberUpdateSchema)
       .mutation(async ({ ctx, input }) => {
-        const { supabase, supabaseAdmin, user } = ctx;
+        const { supabaseAdmin, user } = ctx;
 
-        const resolvedRoleId = await resolveRoleId(
-          supabaseAdmin,
-          input.roleId,
-          input.roleKey,
-        );
+        const updates: Record<string, unknown> = {};
 
-        const updatePayload: Record<string, unknown> = {};
-        if (resolvedRoleId) {
-          updatePayload.role_id = resolvedRoleId;
+        if (input.roleId || input.roleKey) {
+          if (!input.teamId) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "teamId is required when updating a role",
+            });
+          }
+
+          const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
+          const resolvedRoleId = await resolveRoleId({
+            supabaseAdmin,
+            organizationId: team.organization_id,
+            roleId: input.roleId,
+            roleKey: input.roleKey,
+            teamId: input.teamId,
+          });
+
+          if (!resolvedRoleId) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Failed to resolve team member role",
+            });
+          }
+
+          updates.role_id = resolvedRoleId;
         }
-        if (input.status !== undefined) {
-          updatePayload.status = input.status;
+
+        if (input.status) {
+          if (!TEAM_MEMBER_STATUS_SET.has(input.status)) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: `Unsupported team member status "${input.status}"`,
+            });
+          }
+
+          updates.status = input.status;
           if (input.status === "removed") {
-            updatePayload.removed_at = toIsoString(new Date());
-            updatePayload.removed_by = user?.id ?? null;
+            updates.removed_at = input.removedAt ?? nowIso();
+          } else if (input.removedAt !== undefined) {
+            updates.removed_at = input.removedAt;
           } else {
-            if (input.status === "active") {
-              updatePayload.joined_at = toIsoString(new Date());
-            }
-            updatePayload.removed_at = null;
-            updatePayload.removed_by = null;
-            updatePayload.removal_reason = null;
+            updates.removed_at = null;
           }
         }
-        if (Object.keys(updatePayload).length === 0) {
+
+        if (input.joinedAt !== undefined) {
+          updates.joined_at = input.joinedAt;
+        }
+
+        if (input.metadata !== undefined) {
+          updates.metadata = input.metadata ?? {};
+        }
+
+        if (input.removedAt !== undefined && updates.status === undefined) {
+          updates.removed_at = input.removedAt;
+        }
+
+        if (Object.keys(updates).length === 0) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "No updates provided",
+            message: "Provide at least one change when modifying a team member",
           });
         }
 
-        const { data, error } = await supabase
+        const { data, error } = await supabaseAdmin
           .schema("core")
           .from("team_members")
-          .update(updatePayload)
+          .update(updates)
           .eq("id", input.teamMemberId)
           .select(
             `
-            id,
-            team_id,
-            user_id,
-            role_id,
-            status,
-            joined_at,
-            invitation_id,
-            added_by,
-            removed_at,
-            removed_by,
-            removal_reason,
-            permissions_override,
-            metadata,
-            created_at,
-            updated_at,
-            role:team_roles(
-              id,
-              key,
-              name,
-              level
-            ),
-            user:users(
-              id,
-              display_name,
-              username,
-              avatar_path
-            )
+            *,
+            role:team_roles(id, key, name),
+            user:users(id, display_name, username, avatar_path)
           `,
           )
           .single();
@@ -525,103 +614,58 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
         if (error || !data) {
           throw new TRPCError({
             code: error?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
-            message: error
-              ? `Failed to update team member: ${error.message}`
-              : "Team member not found",
+            message: error ? `Failed to update team member: ${error.message}` : "Team member not found",
           });
         }
 
-        return {
-          member: transformMemberRecord(data),
-        };
+        return { member: transformMember(data as Record<string, any>) };
       }),
 
     remove: procedure
       .input(teamMemberRemoveSchema)
       .mutation(async ({ ctx, input }) => {
-        const { supabase, user } = ctx;
+        const { supabaseAdmin } = ctx;
 
-        const { error } = await supabase
+        const { data: existingMember, error: memberError } = await supabaseAdmin
           .schema("core")
           .from("team_members")
-          .update({
-            status: "removed",
-            removed_at: toIsoString(new Date()),
-            removed_by: user?.id ?? null,
-            removal_reason: input.reason ?? null,
-          })
+          .select("metadata")
           .eq("id", input.teamMemberId)
-          .eq("team_id", input.teamId);
+          .eq("team_id", input.teamId)
+          .single();
 
-        if (error) {
+        if (memberError || !existingMember) {
           throw new TRPCError({
-            code: error.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
-            message: error.code === "PGRST116"
-              ? "Team member not found"
-              : `Failed to remove team member: ${error.message}`,
+            code: memberError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+            message: memberError ? `Failed to load team member: ${memberError.message}` : "Team member not found",
           });
         }
 
-        return {
-          success: true as const,
-        };
-      }),
-
-    changeStatus: procedure
-      .input(teamMemberStatusChangeSchema)
-      .mutation(async ({ ctx, input }) => {
-        const { supabase, user } = ctx;
-
-        const updatePayload: Record<string, unknown> = {
-          status: input.status,
-        };
-
-        if (input.status === "removed") {
-          updatePayload.removed_at = toIsoString(new Date());
-          updatePayload.removed_by = user?.id ?? null;
-        } else {
-          if (input.status === "active") {
-            updatePayload.joined_at = toIsoString(new Date());
-          }
-          updatePayload.removed_at = null;
-          updatePayload.removed_by = null;
-          updatePayload.removal_reason = null;
+        const metadata = (existingMember.metadata as Record<string, unknown> | null) ?? {};
+        if (input.reason) {
+          metadata.removalReason = input.reason;
         }
 
-        const { data, error } = await supabase
+        const updates: Record<string, unknown> = {
+          status: "removed",
+          removed_at: nowIso(),
+        };
+
+        if (input.reason) {
+          updates.metadata = metadata;
+        }
+
+        const { data, error } = await supabaseAdmin
           .schema("core")
           .from("team_members")
-          .update(updatePayload)
+          .update(updates)
           .eq("id", input.teamMemberId)
+          .eq("team_id", input.teamId)
           .select(
             `
-            id,
-            team_id,
-            user_id,
-            role_id,
-            status,
-            joined_at,
-            invitation_id,
-            added_by,
-            removed_at,
-            removed_by,
-            removal_reason,
-            permissions_override,
-            metadata,
-            created_at,
-            updated_at,
-            role:team_roles(
-              id,
-              key,
-              name,
-              level
-            ),
-            user:users(
-              id,
-              display_name,
-              username,
-              avatar_path
-            )
+            *,
+            role:team_roles(id, key, name),
+            user:users(id, display_name, username, avatar_path)
           `,
           )
           .single();
@@ -629,15 +673,62 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
         if (error || !data) {
           throw new TRPCError({
             code: error?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
-            message: error
-              ? `Failed to update member status: ${error.message}`
-              : "Team member not found",
+            message: error ? `Failed to remove team member: ${error.message}` : "Team member not found",
           });
         }
 
-        return {
-          member: transformMemberRecord(data),
+        return { member: transformMember(data as Record<string, any>) };
+      }),
+
+    statusChange: procedure
+      .input(teamMemberStatusChangeSchema)
+      .mutation(async ({ ctx, input }) => {
+        const { supabaseAdmin, user } = ctx;
+
+        if (!TEAM_MEMBER_STATUS_SET.has(input.status)) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Unsupported team member status "${input.status}"`,
+          });
+        }
+
+        const updates: Record<string, unknown> = {
+          status: input.status,
+          updated_at: nowIso(),
         };
+
+        if (input.status === "removed") {
+          updates.removed_at = nowIso();
+        } else {
+          updates.removed_at = null;
+        }
+
+        if (input.status === "active") {
+          updates.joined_at = updates.joined_at ?? nowIso();
+        }
+
+        const { data, error } = await supabaseAdmin
+          .schema("core")
+          .from("team_members")
+          .update(updates)
+          .eq("id", input.teamMemberId)
+          .select(
+            `
+            *,
+            role:team_roles(id, key, name),
+            user:users(id, display_name, username, avatar_path)
+          `,
+          )
+          .single();
+
+        if (error || !data) {
+          throw new TRPCError({
+            code: error?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+            message: error ? `Failed to update team member status: ${error.message}` : "Team member not found",
+          });
+        }
+
+        return { member: transformMember(data as Record<string, any>) };
       }),
   });
 }
@@ -659,13 +750,20 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
           .from("team_invitations")
           .select(
             `
-            *,
-            role:team_roles(
-              id,
-              key,
-              name,
-              level
-            )
+            id,
+            team_id,
+            email,
+            invited_user_id,
+            role_id,
+            status,
+            expires_at,
+            accepted_at,
+            declined_at,
+            revoked_at,
+            created_at,
+            created_by,
+            metadata,
+            role:team_roles(id, key, name)
           `,
           )
           .eq("team_id", input.teamId)
@@ -680,101 +778,109 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
         if (error) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: `Failed to load invitations: ${error.message}`,
+            message: `Failed to load team invitations: ${error.message}`,
           });
         }
 
         return {
-          invitations: (data ?? []).map((record) => transformInvitationRecord(record)),
+          invitations: (data ?? []).map((record) => transformInvitation(record as Record<string, any>)),
         };
       }),
 
     create: procedure
       .input(teamInvitationCreateSchema)
       .mutation(async ({ ctx, input }) => {
-        const { supabase, supabaseAdmin, user } = ctx;
+        const { supabaseAdmin, user } = ctx;
 
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
         }
 
-        const resolvedRoleId = await resolveRoleId(
+        const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
+
+        const resolvedRoleId = await resolveRoleId({
           supabaseAdmin,
-          input.roleId,
-          input.roleKey,
-        );
+          organizationId: team.organization_id,
+          roleId: input.roleId,
+          roleKey: input.roleKey,
+          teamId: input.teamId,
+        });
 
         if (!resolvedRoleId) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Unable to determine invitation role",
+            message: "An invitation role must be provided",
           });
         }
 
-        const rawToken = crypto.randomUUID().replace(/-/g, "");
+        if (input.userId) {
+          const { data: existingMember } = await supabaseAdmin
+            .schema("core")
+            .from("team_members")
+            .select("id, status")
+            .eq("team_id", input.teamId)
+            .eq("user_id", input.userId)
+            .maybeSingle();
+
+          if (existingMember && existingMember.status !== "removed") {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "This user is already a member of the team",
+            });
+          }
+        }
+
+        const rawToken = generateInvitationToken();
         const tokenHash = await hashInvitationToken(rawToken);
+        const expiresAt = input.expiresAt ? new Date(input.expiresAt) : addDays(new Date(), TEAM_INVITATION_TTL_DEFAULT);
 
-        const { data: team, error: teamError } = await supabase
-          .schema("core")
-          .from("teams")
-          .select("organization_id, invitation_expiration_days")
-          .eq("id", input.teamId)
-          .single();
+        const metadata = {
+          ...(input.metadata ?? {}),
+          message: input.message ?? undefined,
+        };
 
-        if (teamError || !team) {
-          throw new TRPCError({
-            code: teamError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
-            message: teamError
-              ? `Failed to load team: ${teamError.message}`
-              : "Team not found",
-          });
-        }
+        const insertPayload = {
+          team_id: input.teamId,
+          invited_user_id: input.userId ?? null,
+          email: input.email ?? null,
+          role_id: resolvedRoleId,
+          token: tokenHash,
+          status: "pending",
+          expires_at: expiresAt.toISOString(),
+          accepted_at: null,
+          declined_at: null,
+          created_by: user.id,
+          metadata,
+        };
 
-        const expirationDays = team.invitation_expiration_days ?? TEAM_INVITATION_TTL_DEFAULT;
-
-        const expiresAt = input.expiresAt
-          ? new Date(input.expiresAt)
-          : addDays(new Date(), expirationDays);
-
-        const { data, error } = await supabase
+        const { data, error } = await supabaseAdmin
           .schema("core")
           .from("team_invitations")
-          .insert({
-            team_id: input.teamId,
-            organization_id: team.organization_id,
-            email: input.email.toLowerCase(),
-            role_id: resolvedRoleId,
-            token_hash: tokenHash,
-            status: "pending",
-            expires_at: toIsoString(expiresAt),
-            invited_by: user.id,
-            metadata: {
-              ...(input.metadata ?? {}),
-              ...(input.message ? { invitation_message: input.message } : {}),
-            },
-          })
+          .insert(insertPayload)
           .select(
             `
             *,
-            role:team_roles(
-              id,
-              key,
-              name,
-              level
-            )
+            role:team_roles(id, key, name)
           `,
           )
           .single();
 
         if (error || !data) {
+          if (error?.code === "23505") {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "An active invitation already exists for this recipient",
+            });
+          }
+
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: `Failed to create invitation: ${error?.message ?? "unknown error"}`,
+            message: error ? `Failed to create team invitation: ${error.message}` : "Failed to create team invitation",
           });
         }
 
         return {
-          invitation: transformInvitationRecord(data),
+          invitation: transformInvitation(data as Record<string, any>),
           token: rawToken,
         };
       }),
@@ -782,111 +888,92 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
     resend: procedure
       .input(teamInvitationResendSchema)
       .mutation(async ({ ctx, input }) => {
-        const { supabase } = ctx;
+        const { supabaseAdmin } = ctx;
 
-        const { data: team, error: teamError } = await supabase
+        const { data: invitation, error: fetchError } = await supabaseAdmin
           .schema("core")
-          .from("teams")
-          .select("invitation_expiration_days")
-          .eq("id", input.teamId)
+          .from("team_invitations")
+          .select("metadata")
+          .eq("id", input.invitationId)
+          .eq("team_id", input.teamId)
           .single();
 
-        if (teamError || !team) {
+        if (fetchError || !invitation) {
           throw new TRPCError({
-            code: teamError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
-            message: teamError
-              ? `Failed to load team: ${teamError.message}`
-              : "Team not found",
+            code: fetchError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+            message: fetchError ? `Failed to load invitation: ${fetchError.message}` : "Invitation not found",
           });
         }
 
-        const expirationDays = team.invitation_expiration_days ?? TEAM_INVITATION_TTL_DEFAULT;
+        const metadata = (invitation.metadata as Record<string, unknown> | null) ?? {};
+        const resendCount = Number(metadata.resendCount ?? 0) + 1;
+        metadata.resendCount = resendCount;
+        metadata.lastResentAt = nowIso();
 
-        const { data, error } = await supabase
+        const { error } = await supabaseAdmin
           .schema("core")
           .from("team_invitations")
           .update({
-            expires_at: toIsoString(addDays(new Date(), expirationDays)),
-            updated_at: toIsoString(new Date()),
+            metadata,
           })
           .eq("id", input.invitationId)
-          .eq("team_id", input.teamId)
-          .eq("status", "pending")
-          .select(
-            `
-            *,
-            role:team_roles(
-              id,
-              key,
-              name,
-              level
-            )
-          `,
-          )
-          .single();
+          .eq("team_id", input.teamId);
 
-        if (error || !data) {
+        if (error) {
           throw new TRPCError({
-            code: error?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
-            message: error
-              ? `Failed to resend invitation: ${error.message}`
-              : "Invitation not found",
+            code: error.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+            message: error.code === "PGRST116"
+              ? "Invitation not found"
+              : `Failed to update invitation: ${error.message}`,
           });
         }
 
-        return {
-          invitation: transformInvitationRecord(data),
-        };
+        return { success: true };
       }),
 
     cancel: procedure
       .input(teamInvitationCancelSchema)
       .mutation(async ({ ctx, input }) => {
-        const { supabase, user } = ctx;
+        const { supabaseAdmin } = ctx;
 
-        const { data, error } = await supabase
+        const { data: invitation, error: fetchError } = await supabaseAdmin
           .schema("core")
           .from("team_invitations")
-          .update({
-            status: "cancelled",
-            cancelled_at: toIsoString(new Date()),
-            responded_by: user?.id ?? null,
-            responded_at: toIsoString(new Date()),
-            response_message: input.reason ?? null,
-            metadata: input.reason
-              ? {
-                ...(input.reason ? { cancellation_reason: input.reason } : {}),
-              }
-              : undefined,
-          })
+          .select("metadata")
           .eq("id", input.invitationId)
           .eq("team_id", input.teamId)
-          .eq("status", "pending")
-          .select(
-            `
-            *,
-            role:team_roles(
-              id,
-              key,
-              name,
-              level
-            )
-          `,
-          )
           .single();
 
-        if (error || !data) {
+        if (fetchError || !invitation) {
           throw new TRPCError({
-            code: error?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
-            message: error
-              ? `Failed to cancel invitation: ${error.message}`
-              : "Invitation not found",
+            code: fetchError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+            message: fetchError ? `Failed to load invitation: ${fetchError.message}` : "Invitation not found",
           });
         }
 
-        return {
-          invitation: transformInvitationRecord(data),
-        };
+        const metadata = (invitation.metadata as Record<string, unknown> | null) ?? {};
+        if (input.reason) {
+          metadata.revokedReason = input.reason;
+        }
+
+        const { error } = await supabaseAdmin
+          .schema("core")
+          .from("team_invitations")
+          .update({
+            status: "revoked",
+            revoked_at: nowIso(),
+            metadata,
+          })
+          .eq("id", input.invitationId);
+
+        if (error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to cancel invitation: ${error.message}`,
+          });
+        }
+
+        return { success: true };
       }),
   });
 }
@@ -904,11 +991,7 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
         }),
       )
       .query(async ({ ctx, input }) => {
-        const { supabase, user } = ctx;
-
-        if (!user) {
-          throw new TRPCError({ code: "UNAUTHORIZED" });
-        }
+        const { supabase } = ctx;
 
         let query = supabase
           .schema("core")
@@ -916,12 +999,7 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
           .select(
             `
             *,
-            default_role:team_roles(
-              id,
-              key,
-              name,
-              level
-            )
+            default_role:team_roles(id, key, name)
           `,
           )
           .order("created_at", { ascending: false });
@@ -944,7 +1022,7 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
         }
 
         return {
-          teams: (data ?? []).map((record) => transformTeamRecord(record)),
+          teams: (data ?? []).map((record) => transformTeam(record as Record<string, any>)),
         };
       }),
 
@@ -959,12 +1037,7 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
           .select(
             `
             *,
-            default_role:team_roles(
-              id,
-              key,
-              name,
-              level
-            )
+            default_role:team_roles(id, key, name)
           `,
           )
           .eq("id", input.teamId)
@@ -973,98 +1046,60 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
         if (error || !data) {
           throw new TRPCError({
             code: error?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
-            message: error
-              ? `Failed to find team: ${error.message}`
-              : "Team not found",
+            message: error ? `Failed to load team: ${error.message}` : "Team not found",
           });
         }
 
-        return {
-          team: transformTeamRecord(data),
-        };
+        return { team: transformTeam(data as Record<string, any>) };
       }),
 
     create: procedure
       .input(teamCreateSchema)
       .mutation(async ({ ctx, input }) => {
-        const { supabase, supabaseAdmin, user } = ctx;
+        const { supabaseAdmin, user } = ctx;
 
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
         }
 
-        const resolvedRoleId = await resolveRoleId(
+        await ensureOrganizationRoles(supabaseAdmin, input.organizationId);
+        const resolvedRoleId = await resolveRoleId({
           supabaseAdmin,
-          input.defaultRoleId,
-          input.defaultRoleKey ?? "member",
-        );
+          organizationId: input.organizationId,
+          roleId: input.defaultRoleId,
+          roleKey: input.defaultRoleKey,
+        });
 
         if (!resolvedRoleId) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Unable to resolve default role for new team",
+            message: "Unable to determine default team role",
           });
-        }
-
-        let parentTeamId: string | null = null;
-        if (input.parentTeamId) {
-          const { data: parentTeam, error: parentError } = await supabase
-            .schema("core")
-            .from("teams")
-            .select("id, organization_id")
-            .eq("id", input.parentTeamId)
-            .single();
-
-          if (parentError || !parentTeam) {
-            throw new TRPCError({
-              code: parentError?.code === "PGRST116" ? "NOT_FOUND" : "BAD_REQUEST",
-              message: parentError
-                ? `Unable to load parent team: ${parentError.message}`
-                : "Parent team not found",
-            });
-          }
-
-          if (parentTeam.organization_id !== input.organizationId) {
-            throw new TRPCError({
-              code: "BAD_REQUEST",
-              message: "Parent team must belong to the same organization",
-            });
-          }
-
-          parentTeamId = input.parentTeamId;
         }
 
         const insertPayload = {
           organization_id: input.organizationId,
-          name: input.name.trim(),
-          slug: input.slug ? input.slug.trim().toLowerCase() : null,
-          purpose: input.purpose?.trim() ?? null,
-          visibility: input.visibility,
+          name: input.name,
+          slug: input.slug ?? null,
+          purpose: input.purpose ?? null,
+          visibility: input.visibility ?? "organization",
+          invitation_policy: input.invitationPolicy ?? "invite_only",
           description: input.description ?? null,
           image_url: input.imageUrl ?? null,
-          settings: input.settings ?? {},
-          parent_team_id: parentTeamId,
-          invitation_expiration_days: input.invitationExpirationDays,
-          allow_self_join: input.allowSelfJoin,
-          auto_assign_jobs: input.autoAssignJobs,
+          metadata: input.metadata ?? {},
           default_role_id: resolvedRoleId,
+          default_role_key: input.defaultRoleKey ?? "member",
           created_by: user.id,
-          updated_by: user.id,
         };
 
-        const { data, error } = await supabase
+        const { data, error } = await supabaseAdmin
           .schema("core")
           .from("teams")
           .insert(insertPayload)
           .select(
             `
             *,
-            default_role:team_roles(
-              id,
-              key,
-              name,
-              level
-            )
+            default_role:team_roles(id, key, name)
           `,
           )
           .single();
@@ -1072,140 +1107,76 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
         if (error || !data) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: `Failed to create team: ${error?.message ?? "unknown error"}`,
+            message: error ? `Failed to create team: ${error.message}` : "Failed to create team",
           });
         }
 
-        return {
-          team: transformTeamRecord(data),
-        };
+        return { team: transformTeam(data as Record<string, any>) };
       }),
 
     update: procedure
       .input(teamUpdateSchema)
       .mutation(async ({ ctx, input }) => {
-        const { supabase, supabaseAdmin, user } = ctx;
+        const { supabaseAdmin, user } = ctx;
 
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
         }
 
-        const { data: existingTeam, error: existingTeamError } = await supabase
-          .schema("core")
-          .from("teams")
-          .select("organization_id")
-          .eq("id", input.teamId)
-          .single();
+        const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
+        const updates: Record<string, unknown> = {};
 
-        if (existingTeamError || !existingTeam) {
-          throw new TRPCError({
-            code: existingTeamError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
-            message: existingTeamError
-              ? `Failed to load team: ${existingTeamError.message}`
-              : "Team not found",
+        if (input.name !== undefined) updates.name = input.name;
+        if (input.slug !== undefined) updates.slug = input.slug ?? null;
+        if (input.purpose !== undefined) updates.purpose = input.purpose ?? null;
+        if (input.visibility !== undefined) updates.visibility = input.visibility;
+        if (input.invitationPolicy !== undefined) updates.invitation_policy = input.invitationPolicy;
+        if (input.description !== undefined) updates.description = input.description ?? null;
+        if (input.imageUrl !== undefined) updates.image_url = input.imageUrl ?? null;
+        if (input.metadata !== undefined) updates.metadata = input.metadata ?? {};
+
+        if (input.defaultRoleId || input.defaultRoleKey) {
+          const resolvedRoleId = await resolveRoleId({
+            supabaseAdmin,
+            organizationId: team.organization_id,
+            roleId: input.defaultRoleId,
+            roleKey: input.defaultRoleKey,
+            teamId: team.id,
           });
-        }
 
-        const targetOrganizationId = input.organizationId ?? existingTeam.organization_id;
-
-        const resolvedRoleId = await resolveRoleId(
-          supabaseAdmin,
-          input.defaultRoleId,
-          input.defaultRoleKey,
-        );
-
-        const updatePayload: Record<string, unknown> = {};
-
-        if (input.name !== undefined) {
-          updatePayload.name = input.name.trim();
-        }
-        if (input.slug !== undefined) {
-          updatePayload.slug = input.slug ? input.slug.trim().toLowerCase() : null;
-        }
-        if (input.purpose !== undefined) {
-          updatePayload.purpose = input.purpose === null ? null : input.purpose?.trim() ?? null;
-        }
-        if (input.visibility !== undefined) {
-          updatePayload.visibility = input.visibility;
-        }
-        if (input.description !== undefined) {
-          updatePayload.description = input.description ?? null;
-        }
-        if (input.imageUrl !== undefined) {
-          updatePayload.image_url = input.imageUrl ?? null;
-        }
-        if (input.settings !== undefined) {
-          updatePayload.settings = input.settings ?? {};
-        }
-        if (resolvedRoleId !== undefined) {
-          updatePayload.default_role_id = resolvedRoleId;
-        }
-        if (input.organizationId !== undefined) {
-          updatePayload.organization_id = input.organizationId;
-        }
-        if (input.parentTeamId !== undefined) {
-          if (input.parentTeamId === null) {
-            updatePayload.parent_team_id = null;
-          } else {
-            const { data: parentTeam, error: parentError } = await supabase
-              .schema("core")
-              .from("teams")
-              .select("organization_id")
-              .eq("id", input.parentTeamId)
-              .single();
-
-            if (parentError || !parentTeam) {
-              throw new TRPCError({
-                code: parentError?.code === "PGRST116" ? "NOT_FOUND" : "BAD_REQUEST",
-                message: parentError
-                  ? `Unable to load parent team: ${parentError.message}`
-                  : "Parent team not found",
-              });
-            }
-
-            if (parentTeam.organization_id !== targetOrganizationId) {
-              throw new TRPCError({
-                code: "BAD_REQUEST",
-                message: "Parent team must belong to the same organization",
-              });
-            }
-
-            updatePayload.parent_team_id = input.parentTeamId;
+          if (!resolvedRoleId) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Unable to resolve default team role",
+            });
           }
-        }
-        if (input.invitationExpirationDays !== undefined) {
-          updatePayload.invitation_expiration_days = input.invitationExpirationDays;
-        }
-        if (input.allowSelfJoin !== undefined) {
-          updatePayload.allow_self_join = input.allowSelfJoin;
-        }
-        if (input.autoAssignJobs !== undefined) {
-          updatePayload.auto_assign_jobs = input.autoAssignJobs;
+
+          updates.default_role_id = resolvedRoleId;
+          if (input.defaultRoleKey) {
+            updates.default_role_key = input.defaultRoleKey;
+          }
+        } else if (input.defaultRoleKey !== undefined) {
+          updates.default_role_key = input.defaultRoleKey;
         }
 
-        if (Object.keys(updatePayload).length === 0) {
+        if (Object.keys(updates).length === 0) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "No updates provided",
+            message: "Provide at least one field to update",
           });
         }
 
-        updatePayload.updated_by = user.id;
+        updates.updated_at = nowIso();
 
-        const { data, error } = await supabase
+        const { data, error } = await supabaseAdmin
           .schema("core")
           .from("teams")
-          .update(updatePayload)
+          .update(updates)
           .eq("id", input.teamId)
           .select(
             `
             *,
-            default_role:team_roles(
-              id,
-              key,
-              name,
-              level
-            )
+            default_role:team_roles(id, key, name)
           `,
           )
           .single();
@@ -1213,45 +1184,61 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
         if (error || !data) {
           throw new TRPCError({
             code: error?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
-            message: error
-              ? `Failed to update team: ${error.message}`
-              : "Team not found",
+            message: error ? `Failed to update team: ${error.message}` : "Team not found",
           });
         }
 
-        return {
-          team: transformTeamRecord(data),
-        };
+        return { team: transformTeam(data as Record<string, any>) };
       }),
 
     archive: procedure
       .input(teamArchiveSchema)
       .mutation(async ({ ctx, input }) => {
-        const { supabase, user } = ctx;
+        const { supabaseAdmin, user } = ctx;
 
         if (!user) {
           throw new TRPCError({ code: "UNAUTHORIZED" });
         }
 
-        const { data, error } = await supabase
+        const { data: teamRecord, error: teamError } = await supabaseAdmin
           .schema("core")
           .from("teams")
-          .update({
-            is_archived: true,
-            archived_at: toIsoString(new Date()),
-            archived_by: user.id,
-            archived_reason: input.reason ?? null,
-          })
+          .select("metadata")
+          .eq("id", input.teamId)
+          .single();
+
+        if (teamError || !teamRecord) {
+          throw new TRPCError({
+            code: teamError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+            message: teamError ? `Failed to load team: ${teamError.message}` : "Team not found",
+          });
+        }
+
+        const metadata = (teamRecord.metadata as Record<string, unknown> | null) ?? {};
+        if (input.reason) {
+          metadata.archivedReason = input.reason;
+        }
+
+        const updates: Record<string, unknown> = {
+          is_archived: true,
+          archived_at: nowIso(),
+          archived_by: user.id,
+          updated_at: nowIso(),
+        };
+
+        if (input.reason) {
+          updates.metadata = metadata;
+        }
+
+        const { data, error } = await supabaseAdmin
+          .schema("core")
+          .from("teams")
+          .update(updates)
           .eq("id", input.teamId)
           .select(
             `
             *,
-            default_role:team_roles(
-              id,
-              key,
-              name,
-              level
-            )
+            default_role:team_roles(id, key, name)
           `,
           )
           .single();
@@ -1259,15 +1246,11 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
         if (error || !data) {
           throw new TRPCError({
             code: error?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
-            message: error
-              ? `Failed to archive team: ${error.message}`
-              : "Team not found",
+            message: error ? `Failed to archive team: ${error.message}` : "Team not found",
           });
         }
 
-        return {
-          team: transformTeamRecord(data),
-        };
+        return { team: transformTeam(data as Record<string, any>) };
       }),
 
     members: membersRouter,
@@ -1277,48 +1260,39 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
       .input(teamInvitationRespondSchema)
       .mutation(async ({ ctx, input }) => {
         const { supabaseAdmin } = ctx;
-
         const tokenHash = await hashInvitationToken(input.token);
 
-        const { data: invitation, error: invitationError } = await supabaseAdmin
+        const { data: invitation, error } = await supabaseAdmin
           .schema("core")
           .from("team_invitations")
           .select(
             `
             *,
-            role:team_roles(
-              id,
-              key,
-              name,
-              level
-            )
+            team:teams(id, organization_id, default_role_id, default_role_key)
           `,
           )
-          .eq("token_hash", tokenHash)
+          .eq("token", tokenHash)
           .single();
 
-        if (invitationError || !invitation) {
+        if (error || !invitation) {
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "Invitation not found or already processed",
           });
         }
 
-        if (invitation.status !== "pending") {
+        if ((invitation.status as string) !== "pending") {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: `Invitation is already ${invitation.status}`,
+            message: `Invitation has already been ${invitation.status}`,
           });
         }
 
-        if (new Date(invitation.expires_at) < new Date()) {
+        if (invitation.expires_at && new Date(invitation.expires_at) < new Date()) {
           await supabaseAdmin
             .schema("core")
             .from("team_invitations")
-            .update({
-              status: "expired",
-              updated_at: toIsoString(new Date()),
-            })
+            .update({ status: "expired" })
             .eq("id", invitation.id);
 
           throw new TRPCError({
@@ -1327,89 +1301,108 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        if (input.action === "accept" && !input.responderId) {
+        const responderId = input.responderId ?? (invitation.invited_user_id as string | null);
+        if (!responderId) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Responder ID is required to accept an invitation",
+            message: "A responder user ID is required to process the invitation",
           });
         }
 
+        const team = invitation.team as {
+          id: string;
+          organization_id: string;
+          default_role_id: string | null;
+          default_role_key: string | null;
+        };
+
         if (input.action === "accept") {
-          const joinedAt = toIsoString(new Date());
+          const resolvedRoleId = invitation.role_id
+            ?? (await resolveRoleId({
+              supabaseAdmin,
+              organizationId: team.organization_id,
+              teamId: team.id,
+            }));
 
-          const { error: memberError } = await supabaseAdmin
-            .schema("core")
-            .from("team_members")
-            .upsert({
-              team_id: invitation.team_id,
-              user_id: input.responderId!,
-              role_id: invitation.role_id,
-              status: "active",
-              added_by: invitation.invited_by ?? input.responderId!,
-              invitation_id: invitation.id,
-              joined_at: joinedAt,
-              removed_at: null,
-              removed_by: null,
-              removal_reason: null,
-            }, { onConflict: "team_id,user_id" });
-
-          if (memberError) {
+          if (!resolvedRoleId) {
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
-              message: `Failed to add member from invitation: ${memberError.message}`,
+              message: "Unable to determine team member role for invitation",
             });
           }
+
+          const { data: existingMember } = await supabaseAdmin
+            .schema("core")
+            .from("team_members")
+            .select("id, status, metadata")
+            .eq("team_id", team.id)
+            .eq("user_id", responderId)
+            .maybeSingle();
+
+          if (existingMember) {
+            await supabaseAdmin
+              .schema("core")
+              .from("team_members")
+              .update({
+                status: "active",
+                role_id: resolvedRoleId,
+                removed_at: null,
+                invited_by: invitation.created_by ?? null,
+                metadata: {
+                  ...(existingMember.metadata as Record<string, unknown> | null) ?? {},
+                  lastJoinedSource: "invitation",
+                },
+              })
+              .eq("id", existingMember.id);
+          } else {
+            await supabaseAdmin
+              .schema("core")
+              .from("team_members")
+              .insert({
+                team_id: team.id,
+                user_id: responderId,
+                role_id: resolvedRoleId,
+                status: "active",
+                joined_at: nowIso(),
+                invited_by: invitation.created_by ?? null,
+                metadata: {
+                  source: "invitation",
+                },
+              });
+          }
+
+          const metadata = (invitation.metadata as Record<string, unknown> | null) ?? {};
+          metadata.lastAction = "accepted";
+          metadata.responderId = responderId;
+
+          await supabaseAdmin
+            .schema("core")
+            .from("team_invitations")
+            .update({
+              status: "accepted",
+              accepted_at: nowIso(),
+              metadata,
+            })
+            .eq("id", invitation.id);
+
+          return { status: "accepted", teamId: team.id };
         }
 
-        const updates: Record<string, unknown> = {
-          status: input.action === "accept" ? "accepted" : "declined",
-          responded_by: input.responderId ?? null,
-          invited_user_id: input.responderId ?? null,
-          updated_at: toIsoString(new Date()),
-          responded_at: toIsoString(new Date()),
-        };
-
-        if (input.action === "accept") {
-          updates.accepted_at = toIsoString(new Date());
-        } else {
-          updates.declined_at = toIsoString(new Date());
-        }
-
-        if (input.responseMetadata) {
-          updates.metadata = {
-            ...(invitation.metadata ?? {}),
-            response: input.responseMetadata,
-          };
-        }
-
-        const { data, error } = await supabaseAdmin
+        await supabaseAdmin
           .schema("core")
           .from("team_invitations")
-          .update(updates)
-          .eq("id", invitation.id)
-          .select(
-            `
-            *,
-            role:team_roles(
-              id,
-              key,
-              name,
-              level
-            )
-          `,
-          )
-          .single();
+          .update({
+            status: "declined",
+            declined_at: nowIso(),
+            metadata: {
+              ...((invitation.metadata as Record<string, unknown> | null) ?? {}),
+              lastAction: "declined",
+              responderId,
+            },
+          })
+          .eq("id", invitation.id);
 
-        if (error || !data) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: `Failed to update invitation status: ${error?.message ?? "unknown error"}`,
-          });
-        }
-
-        return {
-          invitation: transformInvitationRecord(data),
-        };
+        return { status: "declined", teamId: team.id };
       }),
   });
 }

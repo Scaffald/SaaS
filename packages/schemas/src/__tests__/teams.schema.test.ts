@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
 import {
-  TEAM_INVITATION_TTL_DEFAULT,
-  TEAM_INVITATION_TTL_MAX,
   TEAM_ROLE_KEYS,
   teamCreateSchema,
   teamInvitationCreateSchema,
@@ -22,11 +20,9 @@ describe('teamCreateSchema', () => {
     const parsed = teamCreateSchema.parse(baseTeamInput())
 
     expect(parsed.visibility).toBe('organization')
-    expect(parsed.settings).toEqual({})
+    expect(parsed.metadata).toEqual({})
     expect(parsed.defaultRoleKey).toBe('member')
-    expect(parsed.invitationExpirationDays).toBe(TEAM_INVITATION_TTL_DEFAULT)
-    expect(parsed.allowSelfJoin).toBe(false)
-    expect(parsed.autoAssignJobs).toBe(false)
+    expect(parsed.invitationPolicy).toBe('invite_only')
   })
 
   it('rejects invalid slug pattern', () => {
@@ -38,14 +34,6 @@ describe('teamCreateSchema', () => {
     ).toThrowError(/Slug may only contain letters, numbers, and hyphens/)
   })
 
-  it('rejects invitation expiration outside supported range', () => {
-    expect(() =>
-      teamCreateSchema.parse({
-        ...baseTeamInput(),
-        invitationExpirationDays: TEAM_INVITATION_TTL_MAX + 1,
-      }),
-    ).toThrowError(/Invitation expiration cannot exceed/)
-  })
 })
 
 describe('teamUpdateSchema', () => {
@@ -67,11 +55,12 @@ describe('teamUpdateSchema', () => {
     ).not.toThrow()
   })
 
-  it('allows toggling self join access', () => {
+  it('allows updating team metadata fields', () => {
     expect(() =>
       teamUpdateSchema.parse({
         teamId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
-        allowSelfJoin: false,
+        description: { summary: 'Updated summary' },
+        settings: { notifications: { email: true } },
       }),
     ).not.toThrow()
   })
@@ -104,14 +93,14 @@ describe('teamMemberUpdateSchema', () => {
       teamMemberUpdateSchema.parse({
         teamMemberId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
       }),
-    ).toThrowError(/Provide a role or status update/)
+    ).toThrowError(/Provide at least one change when modifying a team member/)
   })
 
   it('accepts status changes', () => {
     expect(() =>
       teamMemberUpdateSchema.parse({
         teamMemberId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
-        status: 'invited',
+        status: 'pending',
       }),
     ).not.toThrow()
   })
@@ -136,6 +125,16 @@ describe('teamInvitationCreateSchema', () => {
         roleKey: 'member',
       }),
     ).not.toThrow()
+  })
+
+  it('requires an email or user id', () => {
+    expect(() =>
+      teamInvitationCreateSchema.parse({
+        teamId: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+        organizationId: '11111111-2222-3333-4444-555555555555',
+        roleKey: 'member',
+      }),
+    ).toThrowError(/Provide an email or user ID/)
   })
 })
 

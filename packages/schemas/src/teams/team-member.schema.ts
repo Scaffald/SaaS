@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+import { jsonSchema } from './json'
 import { teamIdSchema } from './team.schema'
 import { teamInvitationStatusSchema, teamMemberStatusSchema, teamRoleKeySchema } from './constants'
 
@@ -11,6 +12,8 @@ export const teamMemberAddSchema = z.object({
   roleId: z.string().uuid().optional(),
   roleKey: teamRoleKeySchema.optional(),
   addedBy: z.string().uuid().optional(),
+  status: teamMemberStatusSchema.optional(),
+  metadata: jsonSchema.optional(),
 })
 
 export const teamMemberUpdateSchema = z
@@ -20,11 +23,21 @@ export const teamMemberUpdateSchema = z
     roleId: z.string().uuid().optional(),
     roleKey: teamRoleKeySchema.optional(),
     status: teamMemberStatusSchema.optional(),
+    joinedAt: z.union([z.string().datetime(), z.null()]).optional(),
+    removedAt: z.union([z.string().datetime(), z.null()]).optional(),
+    notes: z.string().max(500).optional(),
+    metadata: jsonSchema.optional(),
   })
   .refine(
     (value) =>
-      value.roleId !== undefined || value.roleKey !== undefined || value.status !== undefined,
-    'Provide a role or status update when modifying a team member'
+      value.roleId !== undefined ||
+      value.roleKey !== undefined ||
+      value.status !== undefined ||
+      value.joinedAt !== undefined ||
+      value.removedAt !== undefined ||
+      value.notes !== undefined ||
+      value.metadata !== undefined,
+    'Provide at least one change when modifying a team member'
   )
 
 export const teamMemberRemoveSchema = z.object({

@@ -70,6 +70,16 @@ export const generateDashboardDrawerItems = (options?: {
         href: ROUTES.OFFICE_ORGANIZATIONS.path,
       },
       {
+        key: "office-background-checks",
+        title: ROUTES.OFFICE_BACKGROUND_CHECKS.title,
+        href: ROUTES.OFFICE_BACKGROUND_CHECKS.path,
+      },
+      {
+        key: "office-background-checks-admin",
+        title: ROUTES.OFFICE_BACKGROUND_CHECKS_ADMIN.title,
+        href: ROUTES.OFFICE_BACKGROUND_CHECKS_ADMIN.path,
+      },
+      {
         key: "office-notifications",
         title: ROUTES.OFFICE_NOTIFICATIONS.title,
         href: ROUTES.OFFICE_NOTIFICATIONS.path,

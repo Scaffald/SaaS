@@ -61,7 +61,7 @@ export const useOrganizations = (options: UseOrganizationsOptions = {}) => {
 
       // Transform to OrganizationMapPin format and filter by viewport bounds if provided
       const filtered = organizations
-        .map((org): OrganizationMapPin | null => {
+        .map((org: OrgWithCoords): OrganizationMapPin | null => {
           // Skip organizations without valid coordinates
           if (
             org.longitude === null ||

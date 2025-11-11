@@ -135,7 +135,7 @@ describe('office applications hooks', () => {
 
     expect(mocks.updateMutation.useMutation).toHaveBeenCalled()
     act(() => {
-      mocks.updateMutation.options.onSuccess?.()
+      mocks.updateMutation.options.onSuccess?.(undefined)
     })
 
     expect(mocks.invalidateGetByUser).toHaveBeenCalledTimes(1)
@@ -145,7 +145,7 @@ describe('office applications hooks', () => {
     renderHook(() => useWithdrawApplication())
 
     act(() => {
-      mocks.withdrawMutation.options.onSuccess?.()
+      mocks.withdrawMutation.options.onSuccess?.(undefined)
     })
 
     expect(mocks.invalidateGetByUser).toHaveBeenCalledTimes(1)
@@ -225,7 +225,7 @@ describe('office applications hooks', () => {
     expect(mocks.updateMutation.mutateAsync).toHaveBeenCalledWith({ application_id: 'app-2', status: 'reviewing' })
 
     act(() => {
-      mocks.updateMutation.options.onSuccess?.()
+      mocks.updateMutation.options.onSuccess?.(undefined)
     })
 
     expect(mocks.invalidateGetUserApplications).toHaveBeenCalled()

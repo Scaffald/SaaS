@@ -1,0 +1,428 @@
+import { useEffect, useMemo, useState } from 'react'
+import { ScrollView } from 'react-native'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { Button, Input, Label, Select, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Check, ChevronDown, CircleAlert } from '@tamagui/lucide-icons'
+import type { inferRouterOutputs } from '@trpc/server'
+
+import type { AppRouter } from '@app/supabase/client-types'
+import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
+import { api } from '@app/core/utils/api'
+import { useToastController } from '@tamagui/toast'
+
+type RouterOutputs = inferRouterOutputs<AppRouter>
+type PackageSummary = RouterOutputs['backgroundChecks']['listPackages'][number]
+type WorkerSummary = RouterOutputs['workers']['getWorkers']['workers'][number]
+type JobSummary = RouterOutputs['office']['listJobs']['jobs'][number]
+type OrganizationSummary = RouterOutputs['office']['getOrganizations']['organizations'][number]
+
+const formatCurrency = (cents: number | null | undefined) => {
+  if (typeof cents !== 'number') return '—'
+  return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(cents / 100)
+}
+
+export function OrganizationBackgroundCheckRequestForm() {
+  const router = useRouter()
+  const toast = useToastController()
+  const utils = api.useUtils()
+
+  const params = useLocalSearchParams<{ organizationId?: string | string[] }>()
+  const initialOrganizationId =
+    typeof params.organizationId === 'string'
+      ? params.organizationId
+      : Array.isArray(params.organizationId)
+        ? params.organizationId[0]
+        : undefined
+
+  const [organizationId, setOrganizationId] = useState<string | null>(initialOrganizationId ?? null)
+  const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null)
+  const [selectedWorkerId, setSelectedWorkerId] = useState<string | null>(null)
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null)
+  const [notes, setNotes] = useState('')
+  const [workerSearch, setWorkerSearch] = useState('')
+
+  const { data: organizationsData, isLoading: isLoadingOrganizations } = useAllOrganizations()
+  const organizations = useMemo<OrganizationSummary[]>(
+    () => (organizationsData?.organizations ?? []) as OrganizationSummary[],
+    [organizationsData?.organizations],
+  )
+
+  useEffect(() => {
+    if (!organizationId && organizations.length === 1) {
+      setOrganizationId(organizations[0].id as string)
+    }
+  }, [organizations, organizationId])
+
+  const { data: packagesData, isLoading: isLoadingPackages } = api.backgroundChecks.listPackages.useQuery(undefined, {
+    staleTime: 5 * 60 * 1000,
+  })
+  const packages = useMemo<PackageSummary[]>(() => packagesData ?? [], [packagesData])
+
+  const workersQuery = api.workers.getWorkers.useQuery(
+    { search: workerSearch || undefined, limit: 50 },
+    {
+      staleTime: 30 * 1000,
+    },
+  )
+  const workers = useMemo<WorkerSummary[]>(() => workersQuery.data?.workers ?? [], [workersQuery.data?.workers])
+
+  const jobsQuery = api.office.listJobs.useQuery(
+    {
+      organization_id: organizationId ?? undefined,
+      status: 'open',
+      limit: 100,
+      offset: 0,
+    },
+    {
+      enabled: Boolean(organizationId),
+      staleTime: 60 * 1000,
+    },
+  )
+  const jobs = useMemo<JobSummary[]>(() => jobsQuery.data?.jobs ?? [], [jobsQuery.data?.jobs])
+
+  const initiateMutation = api.backgroundChecks.organizationInitiate.useMutation({
+    onSuccess: async (_data, variables) => {
+      const orgId =
+        typeof (variables as { organization_id?: unknown })?.organization_id === 'string'
+          ? (variables as { organization_id: string }).organization_id
+          : organizationId
+      toast.show('Background check requested', {
+        message: 'Worker has been invited to start their background check.',
+      })
+      if (orgId) {
+        await utils.backgroundChecks.organizationListChecks.invalidate({
+          organization_id: orgId,
+        })
+        router.replace({
+          pathname: '/office/background-checks',
+          params: { organizationId: orgId },
+        })
+      }
+    },
+    onError: (error: unknown) => {
+      toast.show('Unable to request background check', {
+        message: error instanceof Error ? error.message : 'Please try again in a moment.',
+        type: 'error',
+      })
+    },
+  })
+
+  const selectedPackage = useMemo<PackageSummary | null>(() => {
+    if (!selectedPackageId) return null
+    return packages.find((pkg) => pkg.id === selectedPackageId) ?? null
+  }, [packages, selectedPackageId])
+
+  const selectedWorker = useMemo<WorkerSummary | null>(() => {
+    if (!selectedWorkerId) return null
+    return workers.find((worker) => worker.id === selectedWorkerId) ?? null
+  }, [workers, selectedWorkerId])
+
+  const selectedJob = useMemo<JobSummary | null>(() => {
+    if (!selectedJobId) return null
+    return jobs.find((job) => job.id === selectedJobId) ?? null
+  }, [jobs, selectedJobId])
+
+  const costCents = selectedPackage?.retail_cost_cents ?? selectedPackage?.platform_cost_cents ?? 0
+
+  const handleSubmit = async () => {
+    if (!organizationId) {
+      toast.show('Select an organization', { message: 'Choose an organization before requesting a check.' })
+      return
+    }
+    if (!selectedPackage) {
+      toast.show('Select a package', { message: 'Choose a background check package to continue.' })
+      return
+    }
+    if (!selectedWorkerId) {
+      toast.show('Select a worker', { message: 'Choose the worker you want to screen.' })
+      return
+    }
+
+    await initiateMutation.mutateAsync({
+      organization_id: organizationId,
+      worker_user_id: selectedWorkerId,
+      package_id: selectedPackage.id,
+      job_id: selectedJobId ?? undefined,
+      paid_by: 'organization',
+      cost_cents: costCents,
+      metadata: {
+        requested_via: 'office_dashboard',
+        notes: notes.trim() || undefined,
+      },
+    })
+  }
+
+  if (isLoadingOrganizations || isLoadingPackages) {
+    return (
+      <YStack flex={1} items="center" justify="center" gap="$2">
+        <Spinner size="large" />
+        <Text fontSize="$3" color="$color11">
+          Loading options…
+        </Text>
+      </YStack>
+    )
+  }
+
+  if (!organizations.length) {
+    return (
+      <YStack flex={1} items="center" justify="center" gap="$3" px="$4">
+        <Text fontSize="$6" fontWeight="700" color="$color12">
+          No organizations available
+        </Text>
+        <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
+          Create an organization before requesting a background check.
+        </Text>
+      </YStack>
+    )
+  }
+
+  return (
+    <ScrollView style={{ flex: 1 }}>
+      <YStack flex={1} gap="$4" px="$4" py="$6">
+        <YStack gap="$1">
+          <Text fontSize="$7" fontWeight="700" color="$color12">
+            Request Background Check
+          </Text>
+          <Text fontSize="$3" color="$color11">
+            Invite a worker to complete the required screening package on behalf of your organization.
+          </Text>
+        </YStack>
+
+        <YStack gap="$3">
+          <YStack gap="$2">
+            <Label htmlFor="org-select">Organization</Label>
+            <Select
+              id="org-select"
+              value={organizationId ?? ''}
+              onValueChange={(value) => {
+                setOrganizationId(value)
+                setSelectedJobId(null)
+              }}
+              disablePreventBodyScroll
+            >
+              <Select.Trigger iconAfter={ChevronDown}>
+                <Select.Value
+                  placeholder={
+                    organizationId
+                      ? organizations.find((org) => org.id === organizationId)?.name ?? 'Select organization'
+                      : 'Select organization'
+                  }
+                />
+              </Select.Trigger>
+              <Select.Content zIndex={200_000}>
+                <Select.ScrollUpButton />
+                <Select.Viewport>
+                  <Select.Group>
+                    <Select.Label>Organizations</Select.Label>
+                    {organizations.map((org, index) => (
+                      <Select.Item key={org.id as string} value={org.id as string} index={index}>
+                        <Select.ItemText>{(org.name as string) ?? 'Untitled organization'}</Select.ItemText>
+                        <Select.ItemIndicator>
+                          <Check size={16} />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    ))}
+                  </Select.Group>
+                </Select.Viewport>
+                <Select.ScrollDownButton />
+              </Select.Content>
+            </Select>
+          </YStack>
+
+          <YStack gap="$2">
+            <Label htmlFor="package-select">Background check package</Label>
+            <Select
+              id="package-select"
+              value={selectedPackageId ?? ''}
+              onValueChange={(value) => setSelectedPackageId(value)}
+              disablePreventBodyScroll
+            >
+              <Select.Trigger iconAfter={ChevronDown}>
+                <Select.Value
+                  placeholder={
+                    selectedPackage
+                      ? `${selectedPackage.display_name} (${formatCurrency(selectedPackage.retail_cost_cents)})`
+                      : 'Select package'
+                  }
+                />
+              </Select.Trigger>
+              <Select.Content zIndex={200_000}>
+                <Select.ScrollUpButton />
+                <Select.Viewport>
+                  <Select.Group>
+                    <Select.Label>Packages</Select.Label>
+                    {packages.map((pkg, index) => (
+                      <Select.Item key={pkg.id} value={pkg.id} index={index}>
+                        <Select.ItemText>
+                          {pkg.display_name} · {formatCurrency(pkg.retail_cost_cents)}
+                        </Select.ItemText>
+                        <Select.ItemIndicator>
+                          <Check size={16} />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    ))}
+                  </Select.Group>
+                </Select.Viewport>
+                <Select.ScrollDownButton />
+              </Select.Content>
+            </Select>
+            {selectedPackage?.description ? (
+              <Text fontSize="$2" color="$color10">
+                {selectedPackage.description}
+              </Text>
+            ) : null}
+          </YStack>
+
+          <YStack gap="$2">
+            <Label htmlFor="worker-search">Worker</Label>
+            <Input
+              id="worker-search"
+              placeholder="Search workers by name or email…"
+              value={workerSearch}
+              onChangeText={setWorkerSearch}
+              autoCapitalize="none"
+            />
+            <Select
+              value={selectedWorkerId ?? ''}
+              onValueChange={(value) => setSelectedWorkerId(value)}
+              disablePreventBodyScroll
+            >
+              <Select.Trigger iconAfter={ChevronDown}>
+                <Select.Value
+                  placeholder={
+                    selectedWorker
+                      ? selectedWorker.name ?? `${selectedWorker.first_name ?? ''} ${selectedWorker.last_name ?? ''}`.trim()
+                      : workersQuery.isLoading
+                        ? 'Loading workers…'
+                        : 'Select worker'
+                  }
+                />
+              </Select.Trigger>
+              <Select.Content zIndex={200_000}>
+                <Select.ScrollUpButton />
+                <Select.Viewport>
+                  <Select.Group>
+                    <Select.Label>Workers</Select.Label>
+                    {workers.length === 0 ? (
+                      <Select.Item value="placeholder" disabled index={0}>
+                        <Select.ItemText>No workers found</Select.ItemText>
+                        <Select.ItemIndicator>
+                          <Check size={16} />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    ) : (
+                      workers.map((worker, index) => {
+                        const fullName = `${worker.first_name ?? ''} ${worker.last_name ?? ''}`.trim()
+                        const displayName = worker.name ?? (fullName.length > 0 ? fullName : worker.id.substring(0, 8))
+                        return (
+                          <Select.Item key={worker.id as string} value={worker.id as string} index={index}>
+                            <Select.ItemText>{displayName}</Select.ItemText>
+                            <Select.ItemIndicator>
+                              <Check size={16} />
+                            </Select.ItemIndicator>
+                          </Select.Item>
+                        )
+                      })
+                    )}
+                  </Select.Group>
+                </Select.Viewport>
+                <Select.ScrollDownButton />
+              </Select.Content>
+            </Select>
+          </YStack>
+
+          <YStack gap="$2">
+            <Label htmlFor="job-select">Related job (optional)</Label>
+            <Select
+              id="job-select"
+              value={selectedJobId ?? ''}
+              onValueChange={(value) => setSelectedJobId(value || null)}
+              disablePreventBodyScroll
+            >
+              <Select.Trigger iconAfter={ChevronDown}>
+                <Select.Value
+                  placeholder={
+                    selectedJob ? selectedJob.title ?? `Job ${selectedJob.id.substring(0, 8)}` : 'Select job'
+                  }
+                />
+              </Select.Trigger>
+              <Select.Content zIndex={200_000}>
+                <Select.ScrollUpButton />
+                <Select.Viewport>
+                  <Select.Group>
+                    <Select.Label>Open jobs</Select.Label>
+                    <Select.Item value="" index={0}>
+                      <Select.ItemText>Not tied to a job</Select.ItemText>
+                      <Select.ItemIndicator>
+                        <Check size={16} />
+                      </Select.ItemIndicator>
+                    </Select.Item>
+                    {jobs.map((job, index) => (
+                      <Select.Item key={job.id as string} value={job.id as string} index={index + 1}>
+                        <Select.ItemText>{(job.title as string) ?? 'Untitled job'}</Select.ItemText>
+                        <Select.ItemIndicator>
+                          <Check size={16} />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    ))}
+                  </Select.Group>
+                </Select.Viewport>
+                <Select.ScrollDownButton />
+              </Select.Content>
+            </Select>
+          </YStack>
+
+          <YStack gap="$2">
+            <Label htmlFor="additional-notes">Internal notes (optional)</Label>
+            <TextArea
+              id="additional-notes"
+              placeholder="Share any context for your compliance team. These notes stay internal."
+              value={notes}
+              onChangeText={setNotes}
+              rows={4}
+            />
+          </YStack>
+
+          <YStack gap="$2" p="$3" bg="$color3" rounded="$4">
+            <XStack gap="$2" items="center">
+              <CircleAlert size={18} color="$color11" />
+              <Text fontSize="$3" fontWeight="600" color="$color12">
+                Cost summary
+              </Text>
+            </XStack>
+            <Text fontSize="$3" color="$color11">
+              Package cost:{' '}
+              <Text fontWeight="700" color="$color12">
+                {formatCurrency(costCents)}
+              </Text>
+            </Text>
+            <Text fontSize="$2" color="$color10">
+              Charges will be billed to your payment method on file once the screening begins.
+            </Text>
+          </YStack>
+        </YStack>
+
+        <XStack gap="$3">
+          <Button
+            flex={1}
+            size="$4"
+            variant="outlined"
+            disabled={initiateMutation.isLoading}
+            onPress={() => router.back()}
+          >
+            Cancel
+          </Button>
+          <Button
+            flex={1}
+            size="$4"
+            theme="blue"
+            onPress={handleSubmit}
+            disabled={initiateMutation.isLoading}
+          >
+            {initiateMutation.isLoading ? 'Requesting…' : 'Send Invitation'}
+          </Button>
+        </XStack>
+      </YStack>
+    </ScrollView>
+  )
+}

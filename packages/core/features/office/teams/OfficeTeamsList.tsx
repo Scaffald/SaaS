@@ -4,22 +4,28 @@ import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
 import { XStack, Text, YStack, Spinner, Button } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { Pencil } from '@tamagui/lucide-icons'
+import type { AppRouter } from '@app/supabase/client-types'
+import type { inferRouterOutputs } from '@trpc/server'
 
-import { ROUTES } from '@app/core/constants/routes'
+import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
+import { TEAM_VISIBILITIES, teamRoleKeySchema } from '@app/schemas'
 
 import { OfficePageLayout } from '../components/OfficePageLayout'
 import { DeleteButton } from '../components/DeleteButton'
 
+type TeamVisibility = (typeof TEAM_VISIBILITIES)[number]
+type TeamRoleKey = ReturnType<typeof teamRoleKeySchema['parse']>
+
+type TeamsListOutput = inferRouterOutputs<AppRouter>['teams']['list']
+type TeamRecord = NonNullable<TeamsListOutput['teams']>[number]
+
 type TeamRow = {
   id: string
   name: string
-  visibility: string
+  visibility: TeamVisibility
   defaultRoleName?: string | null
-  defaultRoleKey?: string | null
-  allowSelfJoin?: boolean
-  autoAssignJobs?: boolean
-  invitationExpirationDays?: number
+  defaultRoleKey?: TeamRoleKey | null
   updatedAt?: string
 }
 
@@ -28,66 +34,59 @@ const columnHelper = createColumnHelper<TeamRow>()
 const createColumns = (
   router: ReturnType<typeof useRouter>,
   onArchive: (team: TeamRow) => Promise<void>,
-): ColumnDef<TeamRow, unknown>[] => [
-  columnHelper.accessor('name', {
-    header: 'Team Name',
-    cell: (info) => info.getValue(),
-    meta: {
-      width: '$20',
-    },
-  }),
-  columnHelper.accessor('visibility', {
-    header: 'Visibility',
-    cell: (info) => {
-      const value = info.getValue()
-      return value.charAt(0).toUpperCase() + value.slice(1)
-    },
-  }),
-  columnHelper.accessor('defaultRoleName', {
-    header: 'Default Role',
-    cell: (info) => info.getValue() ?? info.row.original.defaultRoleKey ?? 'Member',
-  }),
-  columnHelper.accessor('allowSelfJoin', {
-    header: 'Self Join?',
-    cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-  }),
-  columnHelper.accessor('invitationExpirationDays', {
-    header: 'Invite TTL (days)',
-    cell: (info) => info.getValue() ?? '—',
-  }),
-  columnHelper.accessor('updatedAt', {
-    header: 'Updated',
-    cell: (info) => {
-      const value = info.getValue()
-      return value ? new Date(value).toLocaleDateString() : '—'
-    },
-  }),
-  columnHelper.display({
-    id: 'actions',
-    header: 'Actions',
-    cell: (info) => {
-      const team = info.row.original
-      return (
-        <XStack gap="$2">
-          <Button
-            size="$2"
-            variant="outlined"
-            icon={Pencil}
-            onPress={() => router.push(`/office/teams/${team.id}/edit`)}
-          >
-            Edit
-          </Button>
-          <DeleteButton
-            itemName={team.name}
-            itemType="team"
-            onDelete={() => onArchive(team)}
-            size="$2"
-          />
-        </XStack>
-      )
-    },
-  }),
-]
+): ColumnDef<TeamRow, unknown>[] =>
+  [
+    columnHelper.accessor('name', {
+      header: 'Team Name',
+      cell: (info) => info.getValue(),
+      meta: {
+        width: '$20',
+      },
+    }),
+    columnHelper.accessor('visibility', {
+      header: 'Visibility',
+      cell: (info) => {
+        const value = info.getValue()
+        return value.charAt(0).toUpperCase() + value.slice(1)
+      },
+    }),
+    columnHelper.accessor('defaultRoleName', {
+      header: 'Default Role',
+      cell: (info) => info.getValue() ?? info.row.original.defaultRoleKey ?? 'Member',
+    }),
+    columnHelper.accessor('updatedAt', {
+      header: 'Updated',
+      cell: (info) => {
+        const value = info.getValue()
+        return value ? new Date(value).toLocaleDateString() : '—'
+      },
+    }),
+    columnHelper.display({
+      id: 'actions',
+      header: 'Actions',
+      cell: (info) => {
+        const team = info.row.original
+        return (
+          <XStack gap="$2">
+            <Button
+              size="$2"
+              variant="outlined"
+              icon={Pencil}
+              onPress={() => router.push(RouteBuilder.officeTeamsEdit(team.id))}
+            >
+              Edit
+            </Button>
+            <DeleteButton
+              itemName={team.name}
+              itemType="team"
+              onDelete={() => onArchive(team)}
+              size="$2"
+            />
+          </XStack>
+        )
+      },
+    }),
+  ] satisfies ColumnDef<TeamRow, unknown>[]
 
 export function OfficeTeamsList() {
   const router = useRouter()
@@ -111,21 +110,28 @@ export function OfficeTeamsList() {
   })
 
   const teams: TeamRow[] = useMemo(() => {
-    if (!data?.teams) {
+    if (!data?.teams?.length) {
       return []
     }
 
-    return data.teams.map((team: Record<string, unknown>) => ({
-      id: team.id as string,
-      name: (team.name as string) ?? 'Untitled Team',
-      visibility: (team.visibility as string) ?? 'organization',
-      defaultRoleName: (team.defaultRole as Record<string, unknown> | null)?.name as string | undefined,
-      defaultRoleKey: (team.defaultRole as Record<string, unknown> | null)?.key as string | undefined,
-      allowSelfJoin: Boolean(team.allowSelfJoin),
-      autoAssignJobs: Boolean(team.autoAssignJobs),
-      invitationExpirationDays: team.invitationExpirationDays as number | undefined,
-      updatedAt: team.updatedAt as string | undefined,
-    }))
+    return (data.teams as TeamRecord[]).map((team) => {
+      const parsedVisibility = TEAM_VISIBILITIES.includes(
+        team.visibility as TeamVisibility,
+      )
+        ? (team.visibility as TeamVisibility)
+        : 'organization'
+
+      return {
+        id: team.id,
+        name: team.name ?? 'Untitled Team',
+        visibility: parsedVisibility,
+        defaultRoleName: team.defaultRole?.name ?? null,
+        defaultRoleKey: team.defaultRole?.key
+          ? teamRoleKeySchema.parse(team.defaultRole.key)
+          : null,
+        updatedAt: team.updatedAt ?? undefined,
+      }
+    })
   }, [data?.teams])
 
   const filteredTeams = useMemo(() => {
@@ -166,11 +172,18 @@ export function OfficeTeamsList() {
         onCreateClick={() => router.push(ROUTES.OFFICE_TEAMS_CREATE.path)}
         columns={columns}
         data={filteredTeams}
-        isLoading={isLoading || archiveMutation.isLoading}
+        isLoading={isLoading || archiveMutation.isPending}
         emptyMessage="No teams found"
       />
-      {archiveMutation.isLoading ? (
-        <YStack position="absolute" bottom="$4" right="$4" bg="$color2" p="$3" br="$4" shadowColor="$color10">
+      {archiveMutation.isPending ? (
+        <YStack
+          alignSelf="flex-end"
+          bg="$color2"
+          p="$3"
+          rounded="$4"
+          shadowColor="$color10"
+          style={{ marginRight: 16, marginBottom: 16 }}
+        >
           <XStack gap="$3" items="center">
             <Spinner size="small" />
             <Text>Archiving team...</Text>
@@ -180,5 +193,4 @@ export function OfficeTeamsList() {
     </YStack>
   )
 }
-
 

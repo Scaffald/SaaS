@@ -149,6 +149,10 @@ describe('ResultsRail', () => {
       />
     )
 
+    if (!ref.current) {
+      throw new Error('ResultList ref was not assigned')
+    }
+
     expect(typeof ref.current.scrollToCard).toBe('function')
     ref.current.scrollToCard('profile-2')
     expect(mockScrollToCard).toHaveBeenCalledWith('profile-2')

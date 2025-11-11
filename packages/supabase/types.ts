@@ -6,6 +6,8 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+export {}
+
 export type Database = {
   auth: {
     Tables: {
@@ -3178,26 +3180,145 @@ export type Database = {
         }
         Relationships: []
       }
+      team_member_audit_log: {
+        Row: {
+          action:
+            | "invited"
+            | "joined"
+            | "role_changed"
+            | "removed"
+            | "reinstated"
+            | "left"
+            | "invitation_rescinded"
+          actor_user_id: string | null
+          created_at: string
+          id: string
+          member_user_id: string | null
+          metadata: Json
+          team_id: string
+        }
+        Insert: {
+          action?:
+            | "invited"
+            | "joined"
+            | "role_changed"
+            | "removed"
+            | "reinstated"
+            | "left"
+            | "invitation_rescinded"
+          actor_user_id?: string | null
+          created_at?: string
+          id?: string
+          member_user_id?: string | null
+          metadata?: Json
+          team_id: string
+        }
+        Update: {
+          action?:
+            | "invited"
+            | "joined"
+            | "role_changed"
+            | "removed"
+            | "reinstated"
+            | "left"
+            | "invitation_rescinded"
+          actor_user_id?: string | null
+          created_at?: string
+          id?: string
+          member_user_id?: string | null
+          metadata?: Json
+          team_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_member_audit_log_actor_fkey"
+            columns: ["actor_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_member_audit_log_member_fkey"
+            columns: ["member_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_member_audit_log_member_fkey"
+            columns: ["member_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_member_audit_log_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       team_members: {
         Row: {
           created_at: string
           id: string
+          invited_by: string | null
+          joined_at: string | null
+          metadata: Json
+          removed_at: string | null
+          role_id: string
+          status: "active" | "pending" | "removed"
           team_id: string
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
+          invited_by?: string | null
+          joined_at?: string | null
+          metadata?: Json
+          removed_at?: string | null
+          role_id: string
+          status?: "active" | "pending" | "removed"
           team_id: string
           user_id: string
         }
         Update: {
           created_at?: string
           id?: string
+          invited_by?: string | null
+          joined_at?: string | null
+          metadata?: Json
+          removed_at?: string | null
+          role_id?: string
+          status?: "active" | "pending" | "removed"
           team_id?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "team_members_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_members_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_members_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "team_roles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "team_members_team_id_fkey"
             columns: ["team_id"]
@@ -3221,38 +3342,183 @@ export type Database = {
           },
         ]
       }
-      teams: {
+      team_invitations: {
         Row: {
+          accepted_at: string | null
           created_at: string
-          created_by: string | null
+          created_by: string
+          declined_at: string | null
+          email: string
+          expires_at: string
           id: string
-          image_url: string | null
-          name: string
-          organization_id: string
-          slug: string | null
-          updated_at: string
+          invited_user_id: string | null
+          metadata: Json
+          revoked_at: string | null
+          role_id: string | null
+          status: "pending" | "accepted" | "declined" | "expired" | "revoked"
+          team_id: string
+          token: string
         }
         Insert: {
+          accepted_at?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by: string
+          declined_at?: string | null
+          email: string
+          expires_at: string
           id?: string
-          image_url?: string | null
-          name: string
-          organization_id: string
-          slug?: string | null
-          updated_at?: string
+          invited_user_id?: string | null
+          metadata?: Json
+          revoked_at?: string | null
+          role_id?: string | null
+          status?: "pending" | "accepted" | "declined" | "expired" | "revoked"
+          team_id: string
+          token: string
         }
         Update: {
+          accepted_at?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by?: string
+          declined_at?: string | null
+          email?: string
+          expires_at?: string
           id?: string
-          image_url?: string | null
-          name?: string
-          organization_id?: string
-          slug?: string | null
-          updated_at?: string
+          invited_user_id?: string | null
+          metadata?: Json
+          revoked_at?: string | null
+          role_id?: string | null
+          status?: "pending" | "accepted" | "declined" | "expired" | "revoked"
+          team_id?: string
+          token?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "team_invitations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_invited_user_fkey"
+            columns: ["invited_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_invited_user_fkey"
+            columns: ["invited_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "team_roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          archived_at: string | null
+          archived_by: string | null
+          created_at: string
+          created_by: string | null
+          default_role_id: string | null
+          default_role_key: string
+          description: Json | null
+          id: string
+          invitation_policy: "invite_only" | "request_to_join"
+          image_url: string | null
+          is_archived: boolean
+          metadata: Json
+          name: string
+          organization_id: string
+          purpose: string | null
+          slug: string | null
+          updated_at: string
+          visibility: "organization" | "private"
+        }
+        Insert: {
+          archived_at?: string | null
+          archived_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          default_role_id?: string | null
+          default_role_key?: string
+          description?: Json | null
+          id?: string
+          invitation_policy?: "invite_only" | "request_to_join"
+          image_url?: string | null
+          is_archived?: boolean
+          metadata?: Json
+          name: string
+          organization_id: string
+          purpose?: string | null
+          slug?: string | null
+          updated_at?: string
+          visibility?: "organization" | "private"
+        }
+        Update: {
+          archived_at?: string | null
+          archived_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          default_role_id?: string | null
+          default_role_key?: string
+          description?: Json | null
+          id?: string
+          invitation_policy?: "invite_only" | "request_to_join"
+          image_url?: string | null
+          is_archived?: boolean
+          metadata?: Json
+          name?: string
+          organization_id?: string
+          purpose?: string | null
+          slug?: string | null
+          updated_at?: string
+          visibility?: "organization" | "private"
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teams_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teams_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teams_default_role_id_fkey"
+            columns: ["default_role_id"]
+            isOneToOne: false
+            referencedRelation: "team_roles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "teams_created_by_fkey"
             columns: ["created_by"]
@@ -3269,6 +3535,116 @@ export type Database = {
           },
           {
             foreignKeyName: "teams_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_role_permissions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          permission_key: string
+          role_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          permission_key: string
+          role_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          permission_key?: string
+          role_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_role_permissions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_role_permissions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_role_permissions_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "team_roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_roles: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_default: boolean
+          is_system: boolean
+          key: string
+          metadata: Json
+          name: string
+          organization_id: string | null
+          priority: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean
+          is_system?: boolean
+          key: string
+          metadata?: Json
+          name: string
+          organization_id?: string | null
+          priority?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean
+          is_system?: boolean
+          key?: string
+          metadata?: Json
+          name?: string
+          organization_id?: string | null
+          priority?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_roles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_roles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_roles_organization_fkey"
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"

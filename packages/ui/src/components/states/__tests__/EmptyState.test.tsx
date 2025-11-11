@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 
 import { spacing } from '../../../config/spacing'
 import { typography } from '../../../config/typography'
@@ -8,26 +8,54 @@ import { typography } from '../../../config/typography'
 const stackPropsLog = vi.hoisted(() => [] as Array<Record<string, unknown>>)
 const textPropsLog = vi.hoisted(() => [] as Array<Record<string, unknown>>)
 
-vi.mock('tamagui', () => ({
-  YStack: ({ children, ...rest }: { children?: ReactNode }) => {
-    stackPropsLog.push(rest)
-    return <div data-testid={rest['data-testid'] ?? 'ystack'}>{children}</div>
-  },
-  Text: ({ children, ...rest }: { children?: ReactNode }) => {
-    textPropsLog.push(rest)
-    const { lineHeight, style, ...other } = rest as Record<string, unknown>
-    const mergedStyle =
-      lineHeight !== undefined
-        ? { ...(style as Record<string, unknown> | undefined), lineHeight }
-        : (style as Record<string, unknown> | undefined)
+vi.mock('tamagui', () => {
+  interface MockStackProps extends Record<string, unknown> {
+    children?: ReactNode
+    'data-testid'?: string
+  }
 
-    return (
-      <p data-testid={rest['data-testid'] ?? 'text'} {...other} style={mergedStyle}>
-        {children}
-      </p>
-    )
-  },
-}))
+  interface MockTextProps extends Record<string, unknown> {
+    children?: ReactNode
+    lineHeight?: number | string
+    style?: CSSProperties
+    'data-testid'?: string
+  }
+
+  return {
+    YStack: ({ children, 'data-testid': dataTestId, ...rest }: MockStackProps) => {
+      stackPropsLog.push(rest)
+      return (
+        <div
+          data-testid={dataTestId ?? 'ystack'}
+          {...(rest as Record<string, string | number | boolean | undefined>)}
+        >
+          {children}
+        </div>
+      )
+    },
+    Text: ({ children, lineHeight, style, 'data-testid': dataTestId, ...rest }: MockTextProps) => {
+      const loggedProps = {
+        lineHeight,
+        style,
+        ...rest,
+      }
+      textPropsLog.push(loggedProps)
+
+      const mergedStyle: CSSProperties | undefined =
+        lineHeight !== undefined ? { ...(style ?? {}), lineHeight } : style
+
+      return (
+        <p
+          data-testid={dataTestId ?? 'text'}
+          {...(rest as Record<string, string | number | boolean | undefined>)}
+          style={mergedStyle}
+        >
+          {children}
+        </p>
+      )
+    },
+  }
+})
 
 vi.mock('@tamagui/lucide-icons', () => ({
   Inbox: ({ size, color }: { size: number; color: string }) => (

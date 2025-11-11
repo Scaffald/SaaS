@@ -262,6 +262,21 @@ const ROUTES_CONFIG = {
     title: "Manage Universities",
     isProtected: true,
   },
+  OFFICE_BACKGROUND_CHECKS: {
+    path: "/office/background-checks",
+    title: "Background Checks",
+    isProtected: true,
+  },
+  OFFICE_BACKGROUND_CHECKS_ADMIN: {
+    path: "/office/background-checks/admin",
+    title: "Review Background Checks",
+    isProtected: true,
+  },
+  OFFICE_BACKGROUND_CHECKS_REQUEST: {
+    path: "/office/background-checks/request",
+    title: "Request Background Check",
+    isProtected: true,
+  },
   OFFICE_UNIVERSITIES_CREATE: {
     path: "/office/universities/create",
     title: "Create University",
@@ -300,6 +315,21 @@ const ROUTES_CONFIG = {
   OFFICE_ORGANIZATIONS_EDIT: {
     path: "/office/organizations/:id/edit",
     title: "Edit Organization",
+    isProtected: true,
+  },
+  OFFICE_TEAMS: {
+    path: "/office/teams",
+    title: "Teams",
+    isProtected: true,
+  },
+  OFFICE_TEAMS_CREATE: {
+    path: "/office/teams/create",
+    title: "Create Team",
+    isProtected: true,
+  },
+  OFFICE_TEAMS_EDIT: {
+    path: "/office/teams/:id/edit",
+    title: "Edit Team",
     isProtected: true,
   },
   OFFICE_CMS: {
@@ -357,6 +387,10 @@ export const RouteBuilder = {
     buildRoute(ROUTES.OFFICE_JOBS_EDIT, { id }),
   officeUniversitiesEdit: (id: string | number) =>
     buildRoute(ROUTES.OFFICE_UNIVERSITIES_EDIT, { id }),
+  officeTeamsEdit: (id: string | number) =>
+    buildRoute(ROUTES.OFFICE_TEAMS_EDIT, { id }),
+  officeBackgroundChecksRequest: () => ROUTES.OFFICE_BACKGROUND_CHECKS_REQUEST.path,
+  officeBackgroundChecksAdmin: () => ROUTES.OFFICE_BACKGROUND_CHECKS_ADMIN.path,
 
   // Dashboard routes
   dashboardUser: (userId: string | number) =>
@@ -401,7 +435,10 @@ export const OFFICE_ROUTES = {
   INDEX: ROUTES.OFFICE,
   USERS: ROUTES.OFFICE_USERS,
   JOBS: ROUTES.OFFICE_JOBS,
+  TEAMS: ROUTES.OFFICE_TEAMS,
   UNIVERSITIES: ROUTES.OFFICE_UNIVERSITIES,
+  BACKGROUND_CHECKS: ROUTES.OFFICE_BACKGROUND_CHECKS,
+  BACKGROUND_CHECKS_ADMIN: ROUTES.OFFICE_BACKGROUND_CHECKS_ADMIN,
   NOTIFICATIONS: ROUTES.OFFICE_NOTIFICATIONS,
 } as const;
 

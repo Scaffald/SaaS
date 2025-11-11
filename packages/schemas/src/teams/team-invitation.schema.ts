@@ -13,8 +13,9 @@ export const teamInvitationIdSchema = z.string().uuid('Invitation ID must be a v
 export const teamInvitationCreateSchema = z
   .object({
     teamId: teamIdSchema,
-    email: z.string().email('Invitation email must be valid'),
     organizationId: z.string().uuid('Organization ID must be a valid UUID').optional(),
+    email: z.string().email('Invitation email must be valid').optional(),
+    userId: z.string().uuid('Invitee user ID must be a valid UUID').optional(),
     roleId: z.string().uuid().optional(),
     roleKey: teamRoleKeySchema.optional(),
     expiresAt: z.string().datetime().optional(),
@@ -24,6 +25,10 @@ export const teamInvitationCreateSchema = z
   .refine(
     (value) => value.roleId !== undefined || value.roleKey !== undefined,
     'A role must be provided when creating an invitation'
+  )
+  .refine(
+    (value) => value.email !== undefined || value.userId !== undefined,
+    'Provide an email or user ID when creating an invitation'
   )
 
 export const teamInvitationResendSchema = z.object({

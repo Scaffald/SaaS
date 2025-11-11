@@ -9,7 +9,6 @@ import {
   ScrollView,
   Select,
   Spinner,
-  Switch,
   Text,
   TextArea,
   XStack,
@@ -17,25 +16,34 @@ import {
 } from 'tamagui'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
+import { z } from 'zod'
 
 import {
-  TEAM_INVITATION_TTL_DEFAULT,
-  TEAM_INVITATION_TTL_MAX,
-  TEAM_INVITATION_TTL_MIN,
+  teamCreateBaseSchema,
   teamCreateSchema,
   type TeamCreateInput,
-  type teamRoleKeySchema,
+  teamRoleKeySchema,
+  TEAM_INVITATION_POLICIES,
   TEAM_VISIBILITIES,
 } from '@app/schemas'
+import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 
 import { useTeamFormOptions } from '../hooks/useTeamFormOptions'
 
 type TeamVisibility = (typeof TEAM_VISIBILITIES)[number]
-type TeamRoleKey = ReturnType<typeof teamRoleKeySchema['parse']>
+type TeamRoleKey = z.infer<typeof teamRoleKeySchema>
+type TeamInvitationPolicy = (typeof TEAM_INVITATION_POLICIES)[number]
 
-interface TeamFormValues extends Omit<TeamCreateInput, 'description'> {
-  description?: string | null
+interface TeamFormValues {
+  name: string
+  slug?: string
+  purpose?: string
+  visibility: TeamVisibility
+  invitationPolicy: TeamInvitationPolicy
+  description?: string
+  defaultRoleId?: string
+  defaultRoleKey?: TeamRoleKey
 }
 
 export interface TeamInitialData {
@@ -44,14 +52,23 @@ export interface TeamInitialData {
   slug?: string | null
   purpose?: string | null
   visibility?: TeamVisibility
+  invitationPolicy?: TeamInvitationPolicy
   description?: unknown
   defaultRole?: { id: string; key: TeamRoleKey } | null
   defaultRoleId?: string | null
-  invitationExpirationDays?: number | null
-  allowSelfJoin?: boolean | null
-  autoAssignJobs?: boolean | null
-  parentTeamId?: string | null
+  defaultRoleKey?: TeamRoleKey | null
 }
+
+const teamFormSchema = teamCreateBaseSchema.pick({
+  name: true,
+  slug: true,
+  purpose: true,
+  visibility: true,
+  invitationPolicy: true,
+  description: true,
+  defaultRoleId: true,
+  defaultRoleKey: true,
+})
 
 interface TeamFormProps {
   mode: 'create' | 'edit'
@@ -83,24 +100,19 @@ export function TeamForm({ mode, organizationId, teamId, initialData, onCancel, 
       slug: initialData?.slug ?? '',
       purpose: initialData?.purpose ?? '',
       visibility: (initialData?.visibility as TeamVisibility | undefined) ?? 'organization',
+      invitationPolicy: initialData?.invitationPolicy ?? 'invite_only',
       description: normalizeDescription(initialData?.description),
-      defaultRoleKey: (initialData?.defaultRole?.key as TeamRoleKey | undefined) ?? 'member',
-      defaultRoleId: initialData?.defaultRoleId ?? undefined,
-      invitationExpirationDays:
-        initialData?.invitationExpirationDays ?? TEAM_INVITATION_TTL_DEFAULT,
-      allowSelfJoin: Boolean(initialData?.allowSelfJoin),
-      autoAssignJobs: Boolean(initialData?.autoAssignJobs),
-      parentTeamId: initialData?.parentTeamId ?? undefined,
+      defaultRoleId: initialData?.defaultRoleId ?? initialData?.defaultRole?.id ?? undefined,
+      defaultRoleKey: initialData?.defaultRoleKey ?? initialData?.defaultRole?.key ?? 'member',
     }),
     [
-      initialData?.allowSelfJoin,
-      initialData?.autoAssignJobs,
+      initialData?.invitationPolicy,
+      initialData?.defaultRole?.id,
       initialData?.defaultRole?.key,
       initialData?.defaultRoleId,
+      initialData?.defaultRoleKey,
       initialData?.description,
-      initialData?.invitationExpirationDays,
       initialData?.name,
-      initialData?.parentTeamId,
       initialData?.purpose,
       initialData?.slug,
       initialData?.visibility,
@@ -110,13 +122,12 @@ export function TeamForm({ mode, organizationId, teamId, initialData, onCancel, 
   const {
     control,
     handleSubmit,
+    getValues,
     formState: { errors, isDirty },
     setValue,
-    // biome-ignore lint/correctness/noUnusedVariables: watch will support dependent form fields in upcoming iterations
-    watch,
     reset,
   } = useForm<TeamFormValues>({
-    resolver: zodResolver(teamCreateSchema),
+    resolver: zodResolver(teamFormSchema),
     defaultValues,
   })
 
@@ -124,16 +135,37 @@ export function TeamForm({ mode, organizationId, teamId, initialData, onCancel, 
     reset(defaultValues)
   }, [defaultValues, reset])
 
-  const { roles, parentTeamOptions, isLoading: isOptionsLoading } = useTeamFormOptions({
+  const { roles, isLoading: isOptionsLoading } = useTeamFormOptions({
     organizationId,
-    currentTeamId: teamId,
   })
 
+  // Auto-select default role when options load
+  useEffect(() => {
+    if (roles.length === 0) return
+
+    const currentRoleId = getValues('defaultRoleId')
+    const currentRoleKey = getValues('defaultRoleKey')
+
+    if (currentRoleId && roles.some((role) => role.id === currentRoleId)) {
+      if (!currentRoleKey) {
+        const currentRole = roles.find((role) => role.id === currentRoleId)
+        if (currentRole) {
+          setValue('defaultRoleKey', currentRole.key, { shouldValidate: true })
+        }
+      }
+      return
+    }
+
+    const defaultRole = roles.find((role) => role.key === 'member') ?? roles[0]
+    setValue('defaultRoleId', defaultRole.id, { shouldValidate: true })
+    setValue('defaultRoleKey', defaultRole.key, { shouldValidate: true })
+  }, [roles, getValues, setValue])
+
   const createMutation = api.teams.create.useMutation({
-    onSuccess: (data) => {
+    onSuccess: (data: { team?: unknown }) => {
       toast.show('Success', { message: 'Team created successfully' })
       onSuccess?.(data?.team)
-      router.push('/office/teams')
+      router.push(ROUTES.OFFICE_TEAMS.path)
     },
     onError: (error: Error) => {
       toast.show('Error', { message: error.message || 'Failed to create team' })
@@ -141,10 +173,10 @@ export function TeamForm({ mode, organizationId, teamId, initialData, onCancel, 
   })
 
   const updateMutation = api.teams.update.useMutation({
-    onSuccess: (data) => {
+    onSuccess: (data: { team?: unknown }) => {
       toast.show('Success', { message: 'Team updated successfully' })
       onSuccess?.(data?.team)
-      router.push('/office/teams')
+      router.push(ROUTES.OFFICE_TEAMS.path)
     },
     onError: (error: Error) => {
       toast.show('Error', { message: error.message || 'Failed to update team' })
@@ -170,19 +202,20 @@ export function TeamForm({ mode, organizationId, teamId, initialData, onCancel, 
   }
 
   const onSubmit = async (values: TeamFormValues) => {
+    const selectedRole = roles.find((role) => role.id === values.defaultRoleId)
+    const resolvedDefaultRoleKey =
+      values.defaultRoleKey ?? selectedRole?.key ?? teamRoleKeySchema.parse('member')
+
     const payload: TeamCreateInput = {
       organizationId,
       name: values.name.trim(),
       slug: values.slug?.trim() || undefined,
       purpose: values.purpose?.trim() || undefined,
       visibility: values.visibility,
-      description: values.description ? values.description.trim() : undefined,
-      defaultRoleKey: values.defaultRoleKey,
-      defaultRoleId: values.defaultRoleId,
-      invitationExpirationDays: values.invitationExpirationDays,
-      allowSelfJoin: values.allowSelfJoin,
-      autoAssignJobs: values.autoAssignJobs,
-      parentTeamId: values.parentTeamId || undefined,
+      invitationPolicy: values.invitationPolicy,
+      description: values.description?.trim() || undefined,
+      defaultRoleId: values.defaultRoleId ?? selectedRole?.id,
+      defaultRoleKey: resolvedDefaultRoleKey,
     }
 
     if (mode === 'create') {
@@ -201,343 +234,265 @@ export function TeamForm({ mode, organizationId, teamId, initialData, onCancel, 
 
   const visibilityOptions = TEAM_VISIBILITIES.map((value) => ({
     value,
-    label:
-      value === 'organization'
-        ? 'Organization'
-        : value === 'private'
-          ? 'Private'
-          : 'Public',
+    label: value === 'organization' ? 'Organization' : 'Private',
   }))
 
-  return (
-    <ScrollView flex={1} bg="$color2" p="$5" showsVerticalScrollIndicator={false}>
-      <YStack gap="$4" width="100%" maxWidth={640} alignSelf="center">
-        <Controller
-          name="name"
-          control={control}
-          render={({ field }) => (
-            <YStack gap="$2">
-              <Label htmlFor="team-name">Name *</Label>
-              <Input
-                id="team-name"
-                testID="team-form-name"
-                value={field.value}
-                onChangeText={handleNameChange}
-                placeholder="Field Ops Team"
-                borderColor={errors.name ? '$red8' : '$borderColor'}
-              />
-              {errors.name && (
-                <Text color="$red10" fontSize="$2">
-                  {errors.name.message}
-                </Text>
-              )}
-            </YStack>
-          )}
-        />
+  const invitationPolicyOptions = TEAM_INVITATION_POLICIES.map((value) => ({
+    value,
+    label: value === 'invite_only' ? 'Invite Only' : 'Request to Join',
+  }))
 
-        <Controller
-          name="slug"
-          control={control}
-          render={({ field }) => (
-            <YStack gap="$2">
-              <Label htmlFor="team-slug">Slug *</Label>
-              <Input
-                id="team-slug"
-                testID="team-form-slug"
-                value={field.value ?? ''}
-                onChangeText={handleSlugChange}
-                placeholder="field-ops-team"
-                borderColor={errors.slug ? '$red8' : '$borderColor'}
-              />
-              <Text fontSize="$2" color="$color11">
-                Lowercase, URL friendly identifier for the team
+  const renderContent = () => (
+    <YStack gap="$4" width="100%" maxW={640} self="center">
+      <Controller
+        name="name"
+        control={control}
+        render={({ field }) => (
+          <YStack gap="$2">
+            <Label htmlFor="team-name">Name *</Label>
+            <Input
+              id="team-name"
+              testID='team-form-name'
+              value={field.value}
+              onChangeText={handleNameChange}
+              placeholder="Field Ops Team"
+              borderColor={errors.name ? '$red8' : '$borderColor'}
+            />
+            {errors.name && (
+              <Text color="$red10" fontSize="$2">
+                {errors.name.message}
               </Text>
-              {errors.slug && (
-                <Text color="$red10" fontSize="$2">
-                  {errors.slug.message}
-                </Text>
-              )}
-            </YStack>
-          )}
-        />
+            )}
+          </YStack>
+        )}
+      />
 
-        <Controller
-          name="purpose"
-          control={control}
-          render={({ field }) => (
-            <YStack gap="$2">
-              <Label htmlFor="team-purpose">Purpose</Label>
-              <Input
-                id="team-purpose"
-                testID="team-form-purpose"
-                value={field.value ?? ''}
-                onChangeText={(value) => field.onChange(value)}
-                placeholder="e.g. Hiring for Southeast operations"
-              />
-              {errors.purpose && (
-                <Text color="$red10" fontSize="$2">
-                  {errors.purpose.message}
-                </Text>
-              )}
-            </YStack>
-          )}
-        />
+      <Controller
+        name="slug"
+        control={control}
+        render={({ field }) => (
+          <YStack gap="$2">
+            <Label htmlFor="team-slug">Slug *</Label>
+            <Input
+              id="team-slug"
+              testID='team-form-slug'
+              value={field.value ?? ''}
+              onChangeText={handleSlugChange}
+              placeholder="field-ops-team"
+              borderColor={errors.slug ? '$red8' : '$borderColor'}
+            />
+            <Text fontSize="$2" color="$color11">
+              Lowercase, URL friendly identifier for the team
+            </Text>
+            {errors.slug && (
+              <Text color="$red10" fontSize="$2">
+                {errors.slug.message}
+              </Text>
+            )}
+          </YStack>
+        )}
+      />
 
-        <Controller
-          name="visibility"
-          control={control}
-          render={({ field }) => (
-            <YStack gap="$2">
-              <Label>Visibility</Label>
-              <Select value={field.value} onValueChange={field.onChange} disablePreventBodyScroll>
-                <Select.Trigger iconAfter={ChevronDown} testID="team-form-visibility">
-                  <Select.Value placeholder="Select visibility" />
-                </Select.Trigger>
-                <Select.Content zIndex={200000}>
-                  <Select.ScrollUpButton />
-                  <Select.Viewport>
-                    <Select.Group>
-                      <Select.Label>Visibility options</Select.Label>
-                      {visibilityOptions.map((option, index) => (
-                        <Select.Item key={option.value} value={option.value} index={index}>
-                          <Select.ItemText>{option.label}</Select.ItemText>
-                          <Select.ItemIndicator>
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                      ))}
-                    </Select.Group>
-                  </Select.Viewport>
-                  <Select.ScrollDownButton />
-                </Select.Content>
-              </Select>
-              {errors.visibility && (
-                <Text color="$red10" fontSize="$2">
-                  {errors.visibility.message}
-                </Text>
-              )}
-            </YStack>
-          )}
-        />
+      <Controller
+        name="purpose"
+        control={control}
+        render={({ field }) => (
+          <YStack gap="$2">
+            <Label htmlFor="team-purpose">Purpose</Label>
+            <Input
+              id="team-purpose"
+              testID='team-form-purpose'
+              value={field.value ?? ''}
+              onChangeText={(value) => field.onChange(value)}
+              placeholder="e.g. Hiring for Southeast operations"
+            />
+            {errors.purpose && (
+              <Text color="$red10" fontSize="$2">
+                {errors.purpose.message}
+              </Text>
+            )}
+          </YStack>
+        )}
+      />
 
-        <Controller
-          name="description"
-          control={control}
-          render={({ field }) => (
-            <YStack gap="$2">
-              <Label htmlFor="team-description">Description</Label>
-              <TextArea
-                id="team-description"
-                testID="team-form-description"
-                value={field.value ?? ''}
-                onChangeText={(value) => field.onChange(value)}
-                placeholder="Add context about this team"
-                rows={4}
-              />
-              {errors.description && (
-                <Text color="$red10" fontSize="$2">
-                  {errors.description.message as string}
-                </Text>
-              )}
-            </YStack>
-          )}
-        />
-
-        <Controller
-          name="defaultRoleKey"
-          control={control}
-          render={({ field }) => (
-            <YStack gap="$2">
-              <Label>Default Role</Label>
-              <Select
-                value={field.value}
-                onValueChange={(value) => field.onChange(value as TeamRoleKey)}
-                disablePreventBodyScroll
-              >
-                <Select.Trigger iconAfter={ChevronDown} testID="team-form-default-role">
-                  <Select.Value placeholder="Select default role" />
-                </Select.Trigger>
-                <Select.Content zIndex={200000}>
-                  <Select.ScrollUpButton />
-                  <Select.Viewport>
-                    <Select.Group>
-                      <Select.Label>Team roles</Select.Label>
-                      {roles.map((role, index) => (
-                        <Select.Item key={role.id} value={role.key} index={index}>
-                          <Select.ItemText>{role.name}</Select.ItemText>
-                          <Select.ItemIndicator>
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                      ))}
-                    </Select.Group>
-                  </Select.Viewport>
-                  <Select.ScrollDownButton />
-                </Select.Content>
-              </Select>
-              {errors.defaultRoleKey && (
-                <Text color="$red10" fontSize="$2">
-                  {errors.defaultRoleKey.message}
-                </Text>
-              )}
-            </YStack>
-          )}
-        />
-
-        <Controller
-          name="parentTeamId"
-          control={control}
-          render={({ field }) => (
-            <YStack gap="$2">
-              <Label>Parent Team</Label>
-              <Select
-                value={field.value ?? ''}
-                onValueChange={(value) => field.onChange(value || undefined)}
-                disablePreventBodyScroll
-              >
-                <Select.Trigger iconAfter={ChevronDown} testID="team-form-parent-team">
-                  <Select.Value placeholder="None" />
-                </Select.Trigger>
-                <Select.Content zIndex={200000}>
-                  <Select.ScrollUpButton />
-                  <Select.Viewport>
-                    <Select.Group>
-                      <Select.Label>Teams</Select.Label>
-                      <Select.Item value="" index={0}>
-                        <Select.ItemText>None</Select.ItemText>
+      <Controller
+        name="visibility"
+        control={control}
+        render={({ field }) => (
+          <YStack gap="$2">
+            <Label>Visibility</Label>
+            <Select value={field.value} onValueChange={field.onChange} disablePreventBodyScroll>
+              <Select.Trigger iconAfter={ChevronDown} testID='team-form-visibility'>
+                <Select.Value placeholder="Select visibility" />
+              </Select.Trigger>
+              <Select.Content zIndex={200000}>
+                <Select.ScrollUpButton />
+                <Select.Viewport>
+                  <Select.Group>
+                    <Select.Label>Visibility options</Select.Label>
+                    {visibilityOptions.map((option, index) => (
+                      <Select.Item key={option.value} value={option.value} index={index}>
+                        <Select.ItemText>{option.label}</Select.ItemText>
                         <Select.ItemIndicator>
                           <Check size={16} />
                         </Select.ItemIndicator>
                       </Select.Item>
-                      {parentTeamOptions.map((team, index) => (
-                        <Select.Item key={team.id} value={team.id} index={index + 1}>
-                          <Select.ItemText>{team.name}</Select.ItemText>
-                          <Select.ItemIndicator>
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                      ))}
-                    </Select.Group>
-                  </Select.Viewport>
-                  <Select.ScrollDownButton />
-                </Select.Content>
-              </Select>
-            </YStack>
-          )}
-        />
-
-        <Controller
-          name="invitationExpirationDays"
-          control={control}
-          render={({ field }) => (
-            <YStack gap="$2">
-              <Label htmlFor="team-invitation-ttl">Invitation Expiration (days)</Label>
-              <Input
-                id="team-invitation-ttl"
-                testID="team-form-invitation-ttl"
-                value={String(field.value ?? TEAM_INVITATION_TTL_DEFAULT)}
-                keyboardType="number-pad"
-                inputMode="numeric"
-                onChangeText={(value) => field.onChange(Number(value))}
-                borderColor={errors.invitationExpirationDays ? '$red8' : '$borderColor'}
-              />
-              <Text fontSize="$2" color="$color11">
-                Between {TEAM_INVITATION_TTL_MIN} and {TEAM_INVITATION_TTL_MAX} days
+                    ))}
+                  </Select.Group>
+                </Select.Viewport>
+                <Select.ScrollDownButton />
+              </Select.Content>
+            </Select>
+            {errors.visibility && (
+              <Text color="$red10" fontSize="$2">
+                {errors.visibility.message}
               </Text>
-              {errors.invitationExpirationDays && (
-                <Text color="$red10" fontSize="$2">
-                  {errors.invitationExpirationDays.message}
-                </Text>
-              )}
-            </YStack>
-          )}
-        />
+            )}
+          </YStack>
+        )}
+      />
 
-        <Controller
-          name="allowSelfJoin"
-          control={control}
-          render={({ field }) => (
-            <XStack
-              justifyContent="space-between"
-              alignItems="center"
-              bg="$color3"
-              p="$3"
-              rounded="$4"
+      <Controller
+        name="invitationPolicy"
+        control={control}
+        render={({ field }) => (
+          <YStack gap="$2">
+            <Label>Invitation Policy</Label>
+            <Select value={field.value} onValueChange={field.onChange} disablePreventBodyScroll>
+              <Select.Trigger iconAfter={ChevronDown} testID='team-form-invitation-policy'>
+                <Select.Value placeholder="Select invitation policy" />
+              </Select.Trigger>
+              <Select.Content zIndex={200000}>
+                <Select.ScrollUpButton />
+                <Select.Viewport>
+                  <Select.Group>
+                    <Select.Label>Invitation policy</Select.Label>
+                    {invitationPolicyOptions.map((option, index) => (
+                      <Select.Item key={option.value} value={option.value} index={index}>
+                        <Select.ItemText>{option.label}</Select.ItemText>
+                        <Select.ItemIndicator>
+                          <Check size={16} />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    ))}
+                  </Select.Group>
+                </Select.Viewport>
+                <Select.ScrollDownButton />
+              </Select.Content>
+            </Select>
+            {errors.invitationPolicy && (
+              <Text color="$red10" fontSize="$2">
+                {errors.invitationPolicy.message}
+              </Text>
+            )}
+          </YStack>
+        )}
+      />
+
+      <Controller
+        name="description"
+        control={control}
+        render={({ field }) => (
+          <YStack gap="$2">
+            <Label htmlFor="team-description">Description</Label>
+            <TextArea
+              id="team-description"
+              testID='team-form-description'
+              value={field.value ?? ''}
+              onChangeText={(value) => field.onChange(value)}
+              placeholder="Add context about this team"
+              rows={4}
+            />
+            {errors.description && (
+              <Text color="$red10" fontSize="$2">
+                {errors.description.message as string}
+              </Text>
+            )}
+          </YStack>
+        )}
+      />
+
+      <Controller
+        name="defaultRoleId"
+        control={control}
+        render={({ field }) => (
+          <YStack gap="$2">
+            <Label>Default Role</Label>
+            <Select
+              value={field.value ?? ''}
+              onValueChange={(value) => {
+                field.onChange(value)
+                const role = roles.find((item) => item.id === value)
+                if (role) {
+                  setValue('defaultRoleKey', role.key, { shouldValidate: true })
+                }
+              }}
+              disablePreventBodyScroll
             >
-              <YStack gap="$1" flex={1}>
-                <Text fontWeight="600">Allow self-join</Text>
-                <Text fontSize="$2" color="$color11">
-                  Permit members to join without invitation
-                </Text>
-              </YStack>
-              <Switch
-                checked={Boolean(field.value)}
-                onCheckedChange={(checked) => field.onChange(Boolean(checked))}
-                size="$3"
-                testID="team-form-allow-self-join"
-              >
-                <Switch.Thumb animation="quick" />
-              </Switch>
-            </XStack>
-          )}
-        />
+              <Select.Trigger iconAfter={ChevronDown} testID='team-form-default-role'>
+                <Select.Value placeholder="Select default role" />
+              </Select.Trigger>
+              <Select.Content zIndex={200000}>
+                <Select.ScrollUpButton />
+                <Select.Viewport>
+                  <Select.Group>
+                    <Select.Label>Team roles</Select.Label>
+                    {roles.map((role, index) => (
+                      <Select.Item key={role.id} value={role.id} index={index}>
+                        <Select.ItemText>{role.name}</Select.ItemText>
+                        <Select.ItemIndicator>
+                          <Check size={16} />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    ))}
+                  </Select.Group>
+                </Select.Viewport>
+                <Select.ScrollDownButton />
+              </Select.Content>
+            </Select>
+            {errors.defaultRoleId && (
+              <Text color="$red10" fontSize="$2">
+                {errors.defaultRoleId.message as string}
+              </Text>
+            )}
+          </YStack>
+        )}
+      />
 
-        <Controller
-          name="autoAssignJobs"
-          control={control}
-          render={({ field }) => (
-            <XStack
-              justifyContent="space-between"
-              alignItems="center"
-              bg="$color3"
-              p="$3"
-              rounded="$4"
-            >
-              <YStack gap="$1" flex={1}>
-                <Text fontWeight="600">Auto-assign new jobs</Text>
-                <Text fontSize="$2" color="$color11">
-                  Automatically assign jobs to this team when created
-                </Text>
-              </YStack>
-              <Switch
-                checked={Boolean(field.value)}
-                onCheckedChange={(checked) => field.onChange(Boolean(checked))}
-                size="$3"
-                testID="team-form-auto-assign"
-              >
-                <Switch.Thumb animation="quick" />
-              </Switch>
-            </XStack>
-          )}
-        />
+      <XStack gap="$2" justify="flex-end">
+        <Button
+          theme="gray"
+          variant="outlined"
+          onPress={onCancel ?? (() => router.back())}
+          disabled={isSubmitting}
+          testID='team-form-cancel'
+        >
+          Cancel
+        </Button>
+        <Button
+          onPress={handleSubmit(onSubmit)}
+          disabled={isSubmitting || !isDirty}
+          testID='team-form-submit'
+        >
+          {isSubmitting ? 'Saving…' : mode === 'create' ? 'Create Team' : 'Save Changes'}
+        </Button>
+      </XStack>
+    </YStack>
+  )
 
-        <XStack justifyContent="flex-end" gap="$3" mt="$4">
-          <Button
-            variant="outlined"
-            disabled={isSubmitting}
-            testID="team-form-cancel"
-            onPress={() => {
-              if (onCancel) {
-                onCancel()
-              } else {
-                router.back()
-              }
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            testID="team-form-submit"
-            onPress={handleSubmit(onSubmit)}
-            disabled={isSubmitting || isOptionsLoading || (!isDirty && mode === 'edit')}
-            icon={isSubmitting ? <Spinner size="small" /> : undefined}
-          >
-            {isSubmitting ? 'Saving...' : mode === 'create' ? 'Create team' : 'Save changes'}
-          </Button>
-        </XStack>
+  if (isOptionsLoading && roles.length === 0) {
+    return (
+      <YStack flex={1} items="center" justify="center" p="$6">
+        <Spinner size="large" />
+        <Text mt="$4">Loading team options…</Text>
       </YStack>
+    )
+  }
+
+  return (
+    <ScrollView flex={1} bg="$color2" p="$5" showsVerticalScrollIndicator={false}>
+      {renderContent()}
     </ScrollView>
   )
 }
-
 

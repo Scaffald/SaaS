@@ -1,13 +1,7 @@
 import { z } from 'zod'
 
 import { jsonSchema } from './json'
-import {
-  TEAM_INVITATION_TTL_DEFAULT,
-  TEAM_INVITATION_TTL_MAX,
-  TEAM_INVITATION_TTL_MIN,
-  teamRoleKeySchema,
-  teamVisibilitySchema,
-} from './constants'
+import { teamInvitationPolicySchema, teamRoleKeySchema, teamVisibilitySchema } from './constants'
 
 export const teamIdSchema = z.string().uuid('Team ID must be a valid UUID')
 
@@ -25,50 +19,33 @@ const teamNameSchema = z
 const teamPurposeValueSchema = z.string().max(160, 'Purpose must be 160 characters or fewer')
 const teamPurposeSchema = teamPurposeValueSchema.optional()
 
-const teamSettingsSchema = jsonSchema
+const teamMetadataSchema = jsonSchema
   .default({})
   .refine(
     (value) => typeof value === 'object' && value !== null,
-    'Team settings must resolve to an object'
+    'Team metadata must resolve to an object'
   )
 
 const teamImageUrlSchema = z.string().url('Image must be a valid URL').max(2048)
 
-const invitationExpirationDaysSchema = z
-  .number({ invalid_type_error: 'Invitation expiration must be a number' })
-  .int('Invitation expiration must be a whole number of days')
-  .min(
-    TEAM_INVITATION_TTL_MIN,
-    `Invitation expiration must be at least ${TEAM_INVITATION_TTL_MIN} day(s)`
-  )
-  .max(
-    TEAM_INVITATION_TTL_MAX,
-    `Invitation expiration cannot exceed ${TEAM_INVITATION_TTL_MAX} days`
-  )
+export const teamCreateBaseSchema = z.object({
+  organizationId: z.string().uuid('Organization ID must be a valid UUID'),
+  name: teamNameSchema,
+  slug: teamSlugSchema.optional(),
+  purpose: teamPurposeSchema,
+  visibility: teamVisibilitySchema.default('organization'),
+  invitationPolicy: teamInvitationPolicySchema.default('invite_only'),
+  description: jsonSchema.optional(),
+  imageUrl: teamImageUrlSchema.optional(),
+  metadata: teamMetadataSchema,
+  defaultRoleId: z.string().uuid('Default role ID must be a valid UUID').optional(),
+  defaultRoleKey: teamRoleKeySchema.default('member'),
+})
 
-const teamCreateBodySchema = z
-  .object({
-    organizationId: z.string().uuid('Organization ID must be a valid UUID'),
-    name: teamNameSchema,
-    slug: teamSlugSchema.optional(),
-    purpose: teamPurposeSchema,
-    visibility: teamVisibilitySchema.default('organization'),
-    description: jsonSchema.optional(),
-    imageUrl: teamImageUrlSchema.optional(),
-    settings: teamSettingsSchema,
-    parentTeamId: teamIdSchema.optional(),
-    invitationExpirationDays: invitationExpirationDaysSchema.default(TEAM_INVITATION_TTL_DEFAULT),
-    allowSelfJoin: z.boolean().default(false),
-    autoAssignJobs: z.boolean().default(false),
-    defaultRoleId: z.string().uuid().optional(),
-    defaultRoleKey: teamRoleKeySchema.optional().default('member'),
-  })
-  .refine(
-    (input) => Boolean(input.defaultRoleId ?? input.defaultRoleKey),
-    'A default role must be provided for the team'
-  )
-
-export const teamCreateSchema = teamCreateBodySchema
+export const teamCreateSchema = teamCreateBaseSchema.refine(
+  (input) => Boolean(input.defaultRoleId ?? input.defaultRoleKey),
+  'A default role must be provided for the team'
+)
 
 const teamUpdateBodySchema = z.object({
   organizationId: z.string().uuid('Organization ID must be a valid UUID').optional(),
@@ -76,15 +53,15 @@ const teamUpdateBodySchema = z.object({
   slug: teamSlugSchema.optional(),
   purpose: z.union([teamPurposeValueSchema, z.null()]).optional(),
   visibility: teamVisibilitySchema.optional(),
+  invitationPolicy: teamInvitationPolicySchema.optional(),
   description: jsonSchema.optional(),
   imageUrl: z.union([teamImageUrlSchema, z.null()]).optional(),
-  settings: teamSettingsSchema.optional(),
-  parentTeamId: z.union([teamIdSchema, z.null()]).optional(),
-  invitationExpirationDays: invitationExpirationDaysSchema.optional(),
-  allowSelfJoin: z.boolean().optional(),
-  autoAssignJobs: z.boolean().optional(),
+  metadata: teamMetadataSchema.optional(),
   defaultRoleId: z.string().uuid().optional(),
   defaultRoleKey: teamRoleKeySchema.optional(),
+  archivedAt: z.union([z.string().datetime(), z.null()]).optional(),
+  archivedBy: z.union([z.string().uuid(), z.null()]).optional(),
+  isArchived: z.boolean().optional(),
 })
 
 export const teamUpdateSchema = z
@@ -99,21 +76,22 @@ export const teamUpdateSchema = z
       input.slug !== undefined ||
       input.purpose !== undefined ||
       input.visibility !== undefined ||
+      input.invitationPolicy !== undefined ||
       input.description !== undefined ||
       input.imageUrl !== undefined ||
-      input.settings !== undefined ||
-      input.parentTeamId !== undefined ||
-      input.invitationExpirationDays !== undefined ||
-      input.allowSelfJoin !== undefined ||
-      input.autoAssignJobs !== undefined ||
+      input.metadata !== undefined ||
       input.defaultRoleId !== undefined ||
-      input.defaultRoleKey !== undefined,
+      input.defaultRoleKey !== undefined ||
+      input.archivedAt !== undefined ||
+      input.archivedBy !== undefined ||
+      input.isArchived !== undefined,
     'At least one field must be provided to update a team'
   )
 
 export const teamArchiveSchema = z.object({
   teamId: teamIdSchema,
   reason: z.string().max(280, 'Archive reason must be 280 characters or fewer').optional(),
+  archivedBy: z.string().uuid().optional(),
 })
 
 export type TeamCreateInput = z.infer<typeof teamCreateSchema>

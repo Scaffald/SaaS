@@ -2130,6 +2130,7 @@ export const workLogsRouter = t.router({
       return {
         uploadUrl: signedUpload.signedUrl,
         token: signedUpload.token,
+        filePath: filePath,
         photo: photoRecord,
         expiresIn: SIGNED_UPLOAD_URL_TTL_SECONDS,
       };

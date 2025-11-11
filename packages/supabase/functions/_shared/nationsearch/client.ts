@@ -1,5 +1,3 @@
-import { delay } from "https://deno.land/std@0.223.0/async/delay.ts";
-
 const DEFAULT_TIMEOUT_MS = 15_000;
 const SIGNATURE_HEADER = "x-nationsearch-signature";
 const IDEMPOTENCY_HEADER = "Idempotency-Key";
@@ -8,7 +6,11 @@ const OUTAGE_STATUS_CODES = new Set([502, 503, 504]);
 
 const textEncoder = new TextEncoder();
 
-type FetchLike = (input: string | Request, init?: RequestInit) => Promise<Response>;
+type FetchLike = (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
+
+async function delay(ms: number): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 type JsonRecord = Record<string, unknown>;
 
@@ -28,12 +30,13 @@ export interface NationSearchClientOptions {
   userAgent?: string;
 }
 
-export interface NationSearchRequestOptions extends RequestInit {
+export interface NationSearchRequestOptions extends Omit<RequestInit, "body"> {
+  body?: BodyInit | JsonRecord;
   idempotencyKey?: string;
   retryCount?: number;
 }
 
-export interface InitiateCheckPayload {
+export interface InitiateCheckPayload extends JsonRecord {
   package_code: string;
   user: {
     id: string;
@@ -64,7 +67,7 @@ export interface InitiateCheckResponse {
   metadata?: JsonRecord;
 }
 
-export interface SubmitDocumentPayload {
+export interface SubmitDocumentPayload extends JsonRecord {
   document_type: string;
   file_url: string;
   file_name?: string;
@@ -150,9 +153,15 @@ async function verifyCertificateFingerprint(baseUrl: string): Promise<void> {
     const hostname = url.hostname;
     const port = Number(url.port) || 443;
 
-    const conn = await Deno.connectTls({ hostname, port });
+    const denoGlobal = (globalThis as { Deno?: { connectTls?: (options: { hostname: string; port: number }) => Promise<unknown> } }).Deno;
+    if (typeof denoGlobal?.connectTls !== "function") {
+      console.warn("[nationsearch] TLS validation unavailable in this runtime; skipping pin verification");
+      return;
+    }
+
+    const conn = await denoGlobal.connectTls({ hostname, port });
     try {
-      const tlsConn = conn as unknown as { getCertificate?: () => { rawDER?: Uint8Array } | null };
+      const tlsConn = conn as { getCertificate?: () => { rawDER?: Uint8Array } | null };
       const certificate = typeof tlsConn.getCertificate === "function" ? tlsConn.getCertificate() : null;
 
       if (!certificate?.rawDER) {
@@ -174,7 +183,7 @@ async function verifyCertificateFingerprint(baseUrl: string): Promise<void> {
         );
       }
     } finally {
-      conn.close();
+      (conn as { close?: () => void }).close?.();
     }
   } catch (error) {
     console.error("[nationsearch] Certificate pinning failure", error);
@@ -260,18 +269,27 @@ async function requestWithRetry(ctx: RequestContext): Promise<unknown> {
   await ensureCertificateValidated(baseUrl);
 
   const url = `${baseUrl.replace(/\/$/, "")}/${path.replace(/^\//, "")}`;
-  const method = init.method ?? (init.body ? "POST" : "GET");
-  const bodyString = init.body
-    ? typeof init.body === "string"
-      ? init.body
-      : JSON.stringify(init.body)
+  const {
+    method: initMethod,
+    body,
+    headers: initHeaders,
+    idempotencyKey,
+    retryCount: _retryCount,
+    ...restInit
+  } = init;
+
+  const method = initMethod ?? (body ? "POST" : "GET");
+  const bodyString = body
+    ? typeof body === "string"
+      ? body
+      : JSON.stringify(body)
     : undefined;
 
-  const headers = new Headers(init.headers ?? {});
+  const headers = new Headers(initHeaders ?? {});
   headers.set("Authorization", `Bearer ${apiKey}`);
   headers.set("Content-Type", "application/json");
   if (userAgent) headers.set("User-Agent", userAgent);
-  if (init.idempotencyKey) headers.set(IDEMPOTENCY_HEADER, init.idempotencyKey);
+  if (idempotencyKey) headers.set(IDEMPOTENCY_HEADER, idempotencyKey);
 
   if (bodyString) {
     const signature = await hmacSha256(apiSecret, bodyString);
@@ -283,7 +301,7 @@ async function requestWithRetry(ctx: RequestContext): Promise<unknown> {
 
   try {
     const response = await fetchImpl(url, {
-      ...init,
+      ...restInit,
       method,
       body: bodyString,
       headers,

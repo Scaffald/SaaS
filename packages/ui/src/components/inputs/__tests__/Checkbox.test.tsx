@@ -16,19 +16,31 @@ vi.mock('@tamagui/lucide-icons', () => ({
 }))
 
 vi.mock('tamagui', () => {
+  interface MockViewProps extends Record<string, unknown> {
+    children?: ReactNode
+    onPress?: () => void
+    testID?: string
+    role?: string
+    'aria-checked'?: boolean
+    'aria-disabled'?: boolean
+  }
+
   const View = ({
     children,
     onPress,
     testID,
+    role,
+    'aria-checked': ariaChecked,
+    'aria-disabled': ariaDisabled,
     ...rest
-  }: { children?: ReactNode; onPress?: () => void; testID?: string }) => (
+  }: MockViewProps) => (
     <div
       data-testid={testID}
-      role={rest.role as string | undefined}
-      aria-checked={rest['aria-checked'] as boolean | undefined}
-      aria-disabled={rest['aria-disabled'] as boolean | undefined}
+      role={role}
+      aria-checked={ariaChecked}
+      aria-disabled={ariaDisabled}
       onClick={onPress}
-      {...rest}
+      {...(rest as Record<string, string | number | boolean | undefined>)}
     >
       {children}
     </div>

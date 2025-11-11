@@ -2,6 +2,47 @@ import type { PDFFont, PDFPage } from "pdf-lib";
 
 import type { Database } from "./database.types.ts";
 
+type CoreSchemaTables = Database extends { core: { Tables: infer Tables } }
+  ? Tables
+  : never;
+
+type CoreWorkLogRow = CoreSchemaTables extends Record<string, unknown>
+  ? "work_logs" extends keyof CoreSchemaTables
+    ? CoreSchemaTables["work_logs"] extends { Row: infer RowType }
+      ? RowType
+      : null
+    : null
+  : null;
+
+type WorkLogRowFallback = {
+  id: string;
+  user_id: string;
+  status?: string | null;
+  project_id?: string | null;
+  time_entries?: unknown;
+  tasks_completed?: string[] | null;
+  skills_used?: string[] | null;
+  visibility?: string | null;
+  show_on_profile?: boolean | null;
+  show_date_range_on_profile?: boolean | null;
+  entry_type?: string | null;
+  log_date?: string | null;
+  work_description?: string | null;
+  total_hours?: number | string | null;
+  submitted_at?: string | null;
+  verified_at?: string | null;
+  disputed_at?: string | null;
+  dispute_reason?: string | null;
+  gps_captured_at?: string | null;
+  device_type?: string | null;
+  location_permission_status?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+};
+
+type WorkLogRow = (CoreWorkLogRow extends null ? Record<string, unknown> : CoreWorkLogRow) &
+  WorkLogRowFallback;
+
 export interface WorkLogExportCollaborator {
   userId: string;
   displayName: string;
@@ -17,7 +58,7 @@ export interface WorkLogExportTimeEntry {
 }
 
 export interface WorkLogExportSnapshot {
-  workLog: Database["core"]["Tables"]["work_logs"]["Row"];
+  workLog: WorkLogRow;
   ownerName: string;
   ownerEmail?: string | null;
   projectName?: string | null;

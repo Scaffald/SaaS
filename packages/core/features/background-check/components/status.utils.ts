@@ -12,6 +12,23 @@ export type BackgroundCheckDocument = GetCheckOutput['documents'][number]
 
 type StatusTone = 'info' | 'success' | 'warning' | 'danger' | 'neutral'
 
+export const BACKGROUND_CHECK_STATUSES: BackgroundCheckStatus[] = [
+  'pending',
+  'invited',
+  'submitted',
+  'in_progress',
+  'under_review',
+  'partially_completed',
+  'disputed',
+  'completed_clear',
+  'completed_consider',
+  'completed_not_clear',
+  'failed',
+  'cancelled',
+  'expired',
+  'refunded',
+] as const
+
 const ACTIVE_STATUSES = new Set<BackgroundCheckStatus>([
   'pending',
   'invited',
@@ -32,6 +49,16 @@ const COMPLETED_STATUSES = new Set<BackgroundCheckStatus>([
 ])
 
 const EXPIRED_STATUSES = new Set<BackgroundCheckStatus>(['expired'])
+
+const DISPUTE_ELIGIBLE_STATUSES = new Set<BackgroundCheckStatus>([
+  'completed_clear',
+  'completed_consider',
+  'completed_not_clear',
+  'partially_completed',
+  'failed',
+  'cancelled',
+  'refunded',
+])
 
 const STATUS_METADATA: Record<BackgroundCheckStatus, { label: string; tone: StatusTone; description?: string }> =
   {
@@ -169,6 +196,10 @@ export function isCompletedStatus(status: BackgroundCheckStatus) {
 
 export function isExpiredStatus(status: BackgroundCheckStatus) {
   return EXPIRED_STATUSES.has(status)
+}
+
+export function canDisputeStatus(status: BackgroundCheckStatus) {
+  return DISPUTE_ELIGIBLE_STATUSES.has(status)
 }
 
 export function getStatusCategory(status: BackgroundCheckStatus): 'active' | 'completed' | 'expired' | 'other' {

@@ -4,11 +4,19 @@ import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
 import { TeamForm } from '@app/core/features/office/teams'
 import { Spinner, Text, YStack, Select, Button, Label } from 'tamagui'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import type { AppRouter } from '@app/supabase/client-types'
+import type { inferRouterOutputs } from '@trpc/server'
+
+type OfficeOrganizationsOutput = inferRouterOutputs<AppRouter>['office']['getOrganizations']
+type OrganizationOption = OfficeOrganizationsOutput['organizations'][number]
 
 export default function CreateTeamPage() {
   const router = useRouter()
   const { data, isLoading } = useAllOrganizations()
-  const organizations = useMemo(() => data?.organizations ?? [], [data?.organizations])
+  const organizations = useMemo<OrganizationOption[]>(
+    () => (data?.organizations ?? []) as OrganizationOption[],
+    [data?.organizations]
+  )
   const [selectedOrganizationId, setSelectedOrganizationId] = useState<string | null>(null)
 
   useEffect(() => {
@@ -41,7 +49,7 @@ export default function CreateTeamPage() {
 
   return (
     <YStack flex={1} p="$4" gap="$4">
-      <YStack gap="$2" maxWidth={520}>
+      <YStack gap="$2" style={{ maxWidth: 520 }}>
         <Label htmlFor="team-create-organization">Select organization</Label>
         <Select
           id="team-create-organization"
@@ -65,7 +73,7 @@ export default function CreateTeamPage() {
               <Select.Group>
                 <Select.Label>Organizations</Select.Label>
                 {organizations.map((org, index) => (
-                  <Select.Item key={org.id} value={org.id as string} index={index}>
+                  <Select.Item key={org.id} value={org.id} index={index}>
                     <Select.ItemText>
                       {(org.name as string) ?? 'Untitled Organization'}
                     </Select.ItemText>
@@ -88,11 +96,11 @@ export default function CreateTeamPage() {
           onCancel={() => router.back()}
         />
       ) : (
-        <YStack p="$6" bg="$color3" rounded="$6" alignItems="center" gap="$2">
+        <YStack p="$6" bg="$color3" rounded="$6" items="center" gap="$2">
           <Text fontSize="$6" fontWeight="700">
             Choose an organization to continue
           </Text>
-          <Text color="$color11" textAlign="center">
+          <Text color="$color11" style={{ textAlign: 'center' }}>
             Teams belong to a single organization. Select one above to configure the team.
           </Text>
         </YStack>
