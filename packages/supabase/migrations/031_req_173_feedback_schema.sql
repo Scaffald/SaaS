@@ -60,7 +60,7 @@ DROP TRIGGER IF EXISTS set_logs_user_feedback_updated_at ON logs.user_feedback;
 CREATE TRIGGER set_logs_user_feedback_updated_at
   BEFORE UPDATE ON logs.user_feedback
   FOR EACH ROW
-  EXECUTE FUNCTION public.set_updated_at();
+  EXECUTE FUNCTION core.set_updated_at();
 
 -- Indexes to support queries and retries
 CREATE INDEX IF NOT EXISTS idx_logs_user_feedback_user_id ON logs.user_feedback (user_id);
