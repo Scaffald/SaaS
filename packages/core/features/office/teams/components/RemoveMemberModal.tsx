@@ -33,7 +33,7 @@ export function RemoveMemberModal({
       onOpenChange(false)
       onRemoved?.()
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast.show('Unable to remove member', { message: error.message })
     },
   })
@@ -54,12 +54,7 @@ export function RemoveMemberModal({
   }
 
   return (
-    <ResponsiveModal
-      open={open}
-      onOpenChange={onOpenChange}
-      title="Remove team member"
-      description="Removing a member immediately revokes their access to this team's jobs, applications, and notes."
-    >
+    <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Remove team member">
       <YStack gap="$4">
         <Text fontSize="$4">
           Are you sure you want to remove{' '}
@@ -74,8 +69,11 @@ export function RemoveMemberModal({
             value={reason}
             onChangeText={setReason}
             placeholder="Provide additional context for other admins…"
-            minHeight={80}
-            bordered
+            rows={4}
+            borderWidth={1}
+            borderColor="$borderColor"
+            px="$3"
+            py="$2"
             disabled={removeMemberMutation.isPending}
           />
         </YStack>

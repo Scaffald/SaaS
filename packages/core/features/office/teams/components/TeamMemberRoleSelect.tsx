@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Select, Spinner, Text, YStack } from 'tamagui'
+import { Select, Text, YStack } from 'tamagui'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 
@@ -39,13 +39,13 @@ export function TeamMemberRoleSelect({
   }, [roles])
 
   const updateRoleMutation = api.teams.members.update.useMutation({
-    onSuccess: (_, variables) => {
+    onSuccess: (_data: unknown, variables: { roleId?: string } | undefined) => {
       toast.show('Role updated', { message: 'Team member role changed successfully.' })
       if (variables?.roleId) {
         onRoleChanged?.(variables.roleId)
       }
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast.show('Unable to update role', { message: error.message })
       setSelectedRoleId(currentRoleId ?? '')
     },
@@ -63,7 +63,7 @@ export function TeamMemberRoleSelect({
   const activeRole = selectedRoleId ? roleLookup.get(selectedRoleId) : undefined
 
   return (
-    <YStack gap="$2" minWidth={200}>
+    <YStack gap="$2">
       <Text fontSize="$3" color="$color11">
         Role
       </Text>
@@ -72,13 +72,11 @@ export function TeamMemberRoleSelect({
         value={selectedRoleId}
         onValueChange={handleRoleChange}
         disablePreventBodyScroll
-        disabled={disabled || roles.length === 0 || updateRoleMutation.isPending}
       >
-        <Select.Trigger iconAfter={ChevronDown} borderColor="$borderColor" h="$4">
+        <Select.Trigger iconAfter={ChevronDown} disabled={disabled || updateRoleMutation.isPending}>
           <Select.Value placeholder="Select role">
             {activeRole ? activeRole.name : 'Select role'}
           </Select.Value>
-          {updateRoleMutation.isPending ? <Spinner size="small" ml="$2" /> : null}
         </Select.Trigger>
         <Select.Content zIndex={1000}>
           <Select.ScrollUpButton />

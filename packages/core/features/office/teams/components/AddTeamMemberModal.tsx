@@ -38,7 +38,7 @@ export function AddTeamMemberModal({
       onOpenChange(false)
       onAdded?.()
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast.show('Unable to add member', { message: error.message })
     },
   })

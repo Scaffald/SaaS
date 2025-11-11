@@ -5,6 +5,9 @@ import { useToastController } from '@tamagui/toast'
 
 import { api } from '@app/core/utils/api'
 import { useTeamFormOptions, type TeamRoleOption } from '../hooks/useTeamFormOptions'
+import type { AppRouter } from '@app/supabase/client-types'
+import type { inferRouterOutputs } from '@trpc/server'
+
 import { AddTeamMemberModal } from './AddTeamMemberModal'
 import { RemoveMemberModal } from './RemoveMemberModal'
 import { TeamMemberRoleSelect } from './TeamMemberRoleSelect'
@@ -13,6 +16,9 @@ interface TeamMembersListProps {
   teamId: string
   organizationId: string
 }
+
+type MembersListOutput = inferRouterOutputs<AppRouter>['teams']['members']['list']
+type MemberRecord = NonNullable<MembersListOutput['members']>[number]
 
 interface TeamMember {
   id: string
@@ -39,8 +45,9 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
 
   const { roles, isLoading: isLoadingRoles } = useTeamFormOptions({ organizationId })
 
-  const members = useMemo(() => {
-    return (membersQuery.data?.members ?? []).map((member) => ({
+  const members = useMemo<TeamMember[]>(() => {
+    const list = (membersQuery.data?.members ?? []) as MemberRecord[]
+    return list.map((member) => ({
       id: member.id,
       userId: member.userId,
       status: member.status,
@@ -95,7 +102,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
       ) : hasMembers ? (
         <YStack gap="$3">
           {members.map((member) => (
-            <Card key={member.id} padding="$4" borderColor="$borderColor" borderWidth={1} gap="$3">
+            <Card key={member.id} p="$4" borderColor="$borderColor" borderWidth={1} gap="$3">
               <XStack gap="$3" items="center" justify="space-between">
                 <XStack gap="$3" items="center">
                   <Avatar circular size="$4">
@@ -129,6 +136,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                         id: member.id,
                         userId: member.userId,
                         displayName: member.displayName,
+                        status: member.status,
                       })
                     }
                   >
