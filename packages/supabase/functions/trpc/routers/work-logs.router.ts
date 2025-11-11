@@ -14,10 +14,12 @@ import type { Database } from "../../_shared/database.types.ts";
 // @ts-ignore - Deno requires file extension
 import {
   addCollaboratorSchema,
+  addSkillToProfileSchema,
   addWorkLogCommentSchema,
   checkTimeOverlapSchema,
   createWorkLogSchema,
   disputeWorkLogSchema,
+  getSuggestedSkillsSchema,
   moveWorkLogSchema,
   submitWorkLogSchema,
   updateCollaboratorSchema,
@@ -29,6 +31,8 @@ import {
 } from "../../_shared/work-log-schemas.ts";
 // @ts-ignore - Deno requires file extension
 import { notifyWorkLogCollaborator } from "../../_shared/work-log-notifications.ts";
+// @ts-ignore - Deno requires file extension
+import { enrichUserSkills } from "../utils/skill-enrichment.ts";
 
 type DbClient = SupabaseClient<Database>;
 type WorkLogRow = Database["core"]["Tables"]["work_logs"]["Row"];
@@ -242,6 +246,229 @@ const createSystemMessage = async (
   await notifyConversationParticipants(supabase, workLog, actorId, shorten(message));
 
   return data;
+};
+
+type SkillTaxonomy = "csi" | "onet";
+
+interface SuggestedSkill {
+  id: string;
+  taxonomy: SkillTaxonomy;
+  name: string;
+  code: string | null;
+  displayCode: string | null;
+  label: string;
+  context: {
+    workLogId: string;
+    projectId: string | null;
+    projectName: string | null;
+    organizationId: string | null;
+    organizationName: string | null;
+    logDate: string | null;
+  };
+}
+
+interface ProjectContext {
+  projectId: string | null;
+  projectName: string | null;
+  organizationId: string | null;
+  organizationName: string | null;
+}
+
+const normaliseOnetCode = (value: string | null | undefined): string => {
+  if (!value) return "";
+  return value.trim();
+};
+
+const extractSkillIds = (input: unknown): string[] => {
+  if (!Array.isArray(input)) {
+    return [];
+  }
+
+  return (input as unknown[])
+    .filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+    .map((item) => item.trim());
+};
+
+const fetchProjectContext = async (
+  supabase: DbClient,
+  projectId: string | null,
+): Promise<ProjectContext> => {
+  if (!projectId) {
+    return {
+      projectId: null,
+      projectName: null,
+      organizationId: null,
+      organizationName: null,
+    };
+  }
+
+  const { data: project, error: projectError } = await supabase
+    .schema("public")
+    .from("construction_projects")
+    .select("*")
+    .eq("id", projectId)
+    .maybeSingle();
+
+  if (projectError) {
+    console.error("[workLogs] Failed to load project context", projectError);
+  }
+
+  const projectRecord = (project ?? null) as Record<string, unknown> | null;
+  const projectName =
+    (projectRecord?.name as string | undefined) ??
+    (projectRecord?.project_name as string | undefined) ??
+    (projectRecord?.title as string | undefined) ??
+    null;
+
+  const organizationId = (projectRecord?.organization_id as string | undefined) ?? null;
+
+  let organizationName: string | null = null;
+
+  if (organizationId) {
+    const { data: organization, error: organizationError } = await supabase
+      .schema("public")
+      .from("organizations")
+      .select("*")
+      .eq("id", organizationId)
+      .maybeSingle();
+
+    if (organizationError) {
+      console.error("[workLogs] Failed to load organization context", organizationError);
+    }
+
+    const orgRecord = (organization ?? null) as Record<string, unknown> | null;
+    organizationName =
+      (orgRecord?.name as string | undefined) ??
+      (orgRecord?.legal_name as string | undefined) ??
+      (orgRecord?.display_name as string | undefined) ??
+      null;
+  }
+
+  return {
+    projectId,
+    projectName,
+    organizationId,
+    organizationName,
+  };
+};
+
+const resolveCsiSkillDetails = async (
+  supabase: DbClient,
+  skillIds: string[],
+): Promise<Map<string, { name: string; code_key: string | null; code_display: string | null }>> => {
+  if (skillIds.length === 0) {
+    return new Map();
+  }
+
+  const { data, error } = await supabase
+    .schema("data")
+    .from("masterformat")
+    .select("id, name, code_key, code_display")
+    .in("id", skillIds);
+
+  if (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to load skill details",
+    });
+  }
+
+  return new Map(
+    (data ?? []).map((row) => [
+      row.id,
+      {
+        name: row.name,
+        code_key: row.code_key ?? null,
+        code_display: row.code_display ?? null,
+      },
+    ]),
+  );
+};
+
+const getUserSkillSets = async (
+  supabase: DbClient,
+  userId: string,
+): Promise<{ csi: Set<string>; onet: Set<string> }> => {
+  const { data, error } = await supabase
+    .schema("core")
+    .from("user_skills")
+    .select("skill_taxonomy, csi_skill_id, onet_occupation_id")
+    .eq("user_id", userId);
+
+  if (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to load user skills",
+    });
+  }
+
+  const csi = new Set<string>();
+  const onet = new Set<string>();
+
+  for (const skill of data ?? []) {
+    if (skill.skill_taxonomy === "csi" && skill.csi_skill_id) {
+      csi.add(skill.csi_skill_id);
+    } else if (skill.skill_taxonomy === "onet" && skill.onet_occupation_id) {
+      onet.add(normaliseOnetCode(skill.onet_occupation_id));
+    }
+  }
+
+  return { csi, onet };
+};
+
+const getSuggestedSkillsForWorkLog = async (
+  supabase: DbClient,
+  workLog: WorkLogRow,
+  userId: string,
+): Promise<SuggestedSkill[]> => {
+  const skillIds = Array.from(new Set(extractSkillIds(workLog.skills_used as unknown)));
+
+  if (skillIds.length === 0) {
+    return [];
+  }
+
+  const { csi: existingCsiSkills } = await getUserSkillSets(supabase, userId);
+
+  const missingCsiSkillIds = skillIds.filter((skillId) => !existingCsiSkills.has(skillId));
+
+  if (missingCsiSkillIds.length === 0) {
+    return [];
+  }
+
+  const csiDetails = await resolveCsiSkillDetails(supabase, missingCsiSkillIds);
+  const projectContext = await fetchProjectContext(supabase, workLog.project_id);
+
+  const suggestions: SuggestedSkill[] = [];
+
+  for (const skillId of missingCsiSkillIds) {
+    const detail = csiDetails.get(skillId);
+    if (!detail) {
+      continue;
+    }
+
+    const label = detail.code_display
+      ? `${detail.code_display} · ${detail.name}`
+      : detail.name;
+
+    suggestions.push({
+      id: skillId,
+      taxonomy: "csi",
+      name: detail.name,
+      code: detail.code_key,
+      displayCode: detail.code_display,
+      label,
+      context: {
+        workLogId: workLog.id,
+        projectId: projectContext.projectId,
+        projectName: projectContext.projectName,
+        organizationId: projectContext.organizationId,
+        organizationName: projectContext.organizationName,
+        logDate: (workLog.log_date as string | null) ?? null,
+      },
+    });
+  }
+
+  return suggestions;
 };
 
 const ensureCollaboratorExists = async (
@@ -642,7 +869,16 @@ export const workLogsRouter = t.router({
         );
       }
 
-      return data;
+      const suggestedSkills = await getSuggestedSkillsForWorkLog(
+        supabase,
+        data,
+        user.id,
+      );
+
+      return {
+        workLog: data,
+        suggestedSkills,
+      };
     }),
 
   verify: officeProcedure
@@ -1114,6 +1350,151 @@ export const workLogsRouter = t.router({
       }
 
       return data;
+    }),
+
+  getSuggestedSkills: protectedProcedure
+    .input(getSuggestedSkillsSchema)
+    .query(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      if (!user?.id) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      const { workLog, role } = await getWorkLogAccess(
+        supabase,
+        input.workLogId,
+        user.id,
+      );
+
+      if (role !== "owner") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only the work log owner can view skill suggestions.",
+        });
+      }
+
+      const suggestions = await getSuggestedSkillsForWorkLog(
+        supabase,
+        workLog,
+        user.id,
+      );
+
+      return { suggestions };
+    }),
+
+  addSkillToProfile: protectedProcedure
+    .input(addSkillToProfileSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      if (!user?.id) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      const { workLog, role } = await getWorkLogAccess(
+        supabase,
+        input.workLogId,
+        user.id,
+      );
+
+      if (role !== "owner") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only the work log owner can add skills from this log.",
+        });
+      }
+
+      const skillIdsFromLog = new Set(extractSkillIds(workLog.skills_used as unknown));
+
+      if (input.taxonomy === "csi" && !skillIdsFromLog.has(input.skillId)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "The requested skill is not associated with this work log.",
+        });
+      }
+
+      const skillIdentifier =
+        input.taxonomy === "csi" ? input.skillId : normaliseOnetCode(input.skillId);
+
+      const { data: existingSkill, error: existingSkillError } = await supabase
+        .schema("core")
+        .from("user_skills")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("skill_taxonomy", input.taxonomy)
+        .eq(
+          input.taxonomy === "csi" ? "csi_skill_id" : "onet_occupation_id",
+          skillIdentifier,
+        )
+        .maybeSingle();
+
+      if (existingSkillError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to check existing skills",
+        });
+      }
+
+      if (existingSkill) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "This skill is already on your profile.",
+        });
+      }
+
+      const projectContext = await fetchProjectContext(supabase, workLog.project_id);
+      const metadata = {
+        sources: [
+          {
+            type: "work_log",
+            workLogId: workLog.id,
+            projectId: projectContext.projectId,
+            projectName: projectContext.projectName,
+            organizationId: projectContext.organizationId,
+            organizationName: projectContext.organizationName,
+            logDate: (workLog.log_date as string | null) ?? null,
+            addedAt: new Date().toISOString(),
+          },
+        ],
+      };
+
+      const insertPayload: Database["core"]["Tables"]["user_skills"]["Insert"] = {
+        user_id: user.id,
+        skill_taxonomy: input.taxonomy,
+        proficiency_level: input.proficiencyLevel,
+        metadata,
+      };
+
+      if (input.yearsExperience !== undefined) {
+        insertPayload.years_experience = input.yearsExperience;
+      }
+
+      if (input.taxonomy === "csi") {
+        insertPayload.csi_skill_id = input.skillId;
+      } else {
+        insertPayload.onet_occupation_id = skillIdentifier;
+      }
+
+      const { data, error } = await supabase
+        .schema("core")
+        .from("user_skills")
+        .insert(insertPayload)
+        .select()
+        .single();
+
+      if (error || !data) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to add skill to profile",
+        });
+      }
+
+      const [enrichedSkill] = await enrichUserSkills(supabase, [data]);
+
+      return {
+        skill: enrichedSkill ?? null,
+      };
     }),
 
   uploadPhoto: protectedProcedure

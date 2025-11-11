@@ -268,4 +268,33 @@ export const checkTimeOverlapSchema = z.object({
   workLogId: z.string().uuid().optional(),
 });
 
+export type CheckTimeOverlapInput = z.infer<typeof checkTimeOverlapSchema>;
+
+export const getSuggestedSkillsSchema = z.object({
+  workLogId: z.string().uuid(),
+});
+
+export type GetSuggestedSkillsInput = z.infer<typeof getSuggestedSkillsSchema>;
+
+const baseAddSkillSchema = z.object({
+  workLogId: z.string().uuid(),
+  proficiencyLevel: z.number().int().min(0, 'Proficiency must be between 0 and 5.').max(5),
+  yearsExperience: z.number().min(0, 'Years of experience cannot be negative.').max(100).optional(),
+});
+
+export const addSkillToProfileSchema = z.discriminatedUnion('taxonomy', [
+  baseAddSkillSchema.extend({
+    taxonomy: z.literal('csi'),
+    skillId: z.string().uuid({
+      message: 'CSI skills must reference a valid UUID.',
+    }),
+  }),
+  baseAddSkillSchema.extend({
+    taxonomy: z.literal('onet'),
+    skillId: z.string().min(1, 'O*NET skills must provide a valid occupation code.'),
+  }),
+]);
+
+export type AddSkillToProfileInput = z.infer<typeof addSkillToProfileSchema>;
+
 
