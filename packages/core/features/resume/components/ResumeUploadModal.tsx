@@ -17,12 +17,21 @@ const MAX_FILE_BYTES = 1024 * 1024
 
 type UploadStatus = 'idle' | 'selecting' | 'uploading' | 'parsing' | 'success' | 'error'
 
-interface UploadCandidate {
-  name: string
-  size: number
-  type: string
-  getBase64: () => Promise<string>
-}
+type UploadCandidate =
+  | {
+      kind: 'web'
+      name: string
+      size: number
+      type: string
+      file: File
+    }
+  | {
+      kind: 'native'
+      name: string
+      size: number
+      type: string
+      getBase64: () => Promise<string>
+    }
 
 export interface ResumeUploadModalProps {
   open: boolean
@@ -44,12 +53,19 @@ export function ResumeUploadModal({
   const [candidate, setCandidate] = useState<UploadCandidate | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
+  const [progressLogs, setProgressLogs] = useState<string[]>([])
+  const lastCandidateRef = useRef<UploadCandidate | null>(null)
+
+  const appendLog = useCallback((message: string) => {
+    setProgressLogs((previous) => [...previous, message])
+  }, [])
 
   const resetState = useCallback(() => {
     setStatus('idle')
     setCandidate(null)
     setErrorMessage(null)
     setFileName(null)
+    setProgressLogs([])
     uploadResumeMutation.reset()
     parseResumeMutation.reset()
   }, [parseResumeMutation, uploadResumeMutation])
@@ -65,6 +81,33 @@ export function ResumeUploadModal({
   }, [open, resetState])
 
   const showProgress = status === 'uploading' || status === 'parsing'
+
+  const shouldShowProgressIndicators = status === 'uploading' || status === 'parsing' || status === 'success' || status === 'error'
+
+  const progressValue = useMemo(() => {
+    switch (status) {
+      case 'uploading':
+        return 0.35
+      case 'parsing':
+        return 0.75
+      case 'success':
+        return 1
+      case 'error':
+        return 1
+      default:
+        return 0
+    }
+  }, [status])
+
+  const progressColor = useMemo(() => {
+    if (status === 'error') {
+      return '$red9'
+    }
+    if (status === 'success') {
+      return '$green9'
+    }
+    return '$blue9'
+  }, [status])
 
   const progressLabel = useMemo(() => {
     switch (status) {
@@ -86,7 +129,8 @@ export function ResumeUploadModal({
       message,
       type: 'error',
     })
-  }, [toast])
+    appendLog(`❌ ${message}`)
+  }, [appendLog, toast])
 
   const validateFileSize = (size: number): boolean => {
     if (size > MAX_FILE_BYTES) {
@@ -97,6 +141,11 @@ export function ResumeUploadModal({
   }
 
   const handleWebFileSelect = useCallback((file: File) => {
+    console.debug('[ResumeUploadModal] handleWebFileSelect', {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+    })
     const mimeType = file.type || guessMimeTypeFromName(file.name)
     if (!ACCEPTED_MIME_TYPES.includes(mimeType as typeof ACCEPTED_MIME_TYPES[number])) {
       handleUploadError('Please upload a PDF or Word document.')
@@ -107,15 +156,17 @@ export function ResumeUploadModal({
       return
     }
 
-    const getBase64 = () => readFileAsBase64(file)
-
-    setCandidate({
+    const nextCandidate: UploadCandidate = {
+      kind: 'web',
       name: file.name,
       size: file.size,
       type: mimeType,
-      getBase64,
-    })
+      file,
+    }
+    setCandidate(nextCandidate)
+    lastCandidateRef.current = null
     setFileName(file.name)
+    setProgressLogs([`📄 Selected file "${file.name}" (${Math.round(file.size / 1024)} KB)`])
   }, [handleUploadError, validateFileSize])
 
   const handleNativePick = useCallback(async () => {
@@ -162,14 +213,17 @@ export function ResumeUploadModal({
         return `data:${mimeType};base64,${contents}`
       }
 
-      setCandidate({
+      const nextCandidate: UploadCandidate = {
         name,
         size,
         type: mimeType,
         getBase64,
-      })
+      }
+      setCandidate(nextCandidate)
+      lastCandidateRef.current = null
       setFileName(name)
       setStatus('idle')
+      setProgressLogs([`📄 Selected file "${name}" (${Math.round(size / 1024)} KB)`])
     } catch (error) {
       console.error('[ResumeUploadModal] Native picker error', error)
       handleUploadError('Failed to open document picker. Please try again.')
@@ -178,47 +232,105 @@ export function ResumeUploadModal({
   }, [handleUploadError, validateFileSize])
 
   useEffect(() => {
-    const uploadCandidate = async () => {
-      if (!candidate) {
-        return
-      }
+    if (!candidate) {
+      console.debug('[ResumeUploadModal] useEffect no candidate')
+      lastCandidateRef.current = null
+      return
+    }
 
+    if (lastCandidateRef.current === candidate) {
+      return
+    }
+
+    lastCandidateRef.current = candidate
+    let isCancelled = false
+
+    const uploadCandidate = async () => {
       try {
+        if (isCancelled) {
+          return
+        }
         setStatus('uploading')
-        const base64 = await candidate.getBase64()
+        appendLog('⬆️ Preparing upload request...')
+        const base64 =
+          candidate.kind === 'web'
+            ? await fileToDataUrl(candidate.file)
+            : await candidate.getBase64()
+        console.debug('[ResumeUploadModal] obtained base64', {
+          length: base64.length,
+          kind: candidate.kind,
+        })
+        if (isCancelled) {
+          return
+        }
+        appendLog('📡 Sending upload to resume.upload...')
         const uploadResponse = await uploadResumeMutation.mutateAsync({
           fileData: base64,
           fileName: candidate.name,
           fileSize: candidate.size,
           mimeType: candidate.type,
         })
+        appendLog('✅ Upload stored, starting AI parsing...')
+
+        if (isCancelled) {
+          return
+        }
 
         setStatus('parsing')
+        appendLog('🤖 Resume uploaded. Starting AI parsing...')
         await parseResumeMutation.mutateAsync({
           resumeId: uploadResponse.resumeId,
           sections: ['general', 'experience', 'education', 'skills', 'certifications', 'employment'],
         })
+        appendLog('🤖 Parsing completed, updating dashboard...')
+
+        if (isCancelled) {
+          return
+        }
 
         await utils.resume.hasUploaded.invalidate()
 
+        if (isCancelled) {
+          return
+        }
+
         setStatus('success')
+        appendLog('✅ Parsing complete. Preparing your review wizard...')
         toast.show('Resume Imported', {
           message: 'Review the parsed details before saving them to your profile.',
           type: 'success',
         })
 
-        onUploadComplete?.(uploadResponse.resumeId)
-        onOpenChange(false)
+        if (!isCancelled) {
+          appendLog('🚀 Redirecting to the review experience...')
+          onUploadComplete?.(uploadResponse.resumeId)
+        }
+
+        if (!isCancelled) {
+          onOpenChange(false)
+        }
       } catch (error) {
+        if (isCancelled) {
+          return
+        }
         console.error('[ResumeUploadModal] Upload error', error)
-        const message = error instanceof Error ? error.message : 'Unable to process resume. Please try again.'
+        const message =
+          error instanceof Error ? error.message : 'Unable to process resume. Please try again.'
         handleUploadError(message)
       } finally {
-        setCandidate(null)
+        if (!isCancelled) {
+          appendLog('ℹ️ Resetting uploader state.')
+          setCandidate(null)
+        }
       }
     }
 
     void uploadCandidate()
+
+    return () => {
+      isCancelled = true
+      console.debug('[ResumeUploadModal] upload effect cleanup')
+    }
   }, [
     candidate,
     handleUploadError,
@@ -247,11 +359,15 @@ export function ResumeUploadModal({
           <FileUpload
             accept={ACCEPTED_EXTENSIONS}
             maxSizeMB={1}
+            title="Upload resume"
+            description="Drag & drop or browse to import your resume."
+            helperText="Accepted formats: PDF, DOC, DOCX (max 1MB)"
             onFileSelect={handleWebFileSelect}
             onFileRemove={() => {
               setCandidate(null)
               setStatus('idle')
               setErrorMessage(null)
+              setProgressLogs((previous) => [...previous, '🗑️ Removed selected file'])
             }}
             disabled={status === 'uploading' || status === 'parsing'}
             currentFileName={fileName ?? undefined}
@@ -281,13 +397,33 @@ export function ResumeUploadModal({
           </YStack>
         )}
 
-        {showProgress && (
-          <XStack gap="$3" items="center" bg="$blue3" p="$3" rounded="$3">
-            <Spinner size="small" color="$blue10" />
-            <Text color="$blue11" fontWeight="600">
-              {progressLabel}
-            </Text>
-          </XStack>
+        {shouldShowProgressIndicators && progressValue > 0 && (
+          <YStack gap="$2" bg="$color2" p="$3" rounded="$3">
+            <YStack
+              height={8}
+              bg="$color4"
+              rounded="$4"
+              overflow="hidden"
+            >
+              <YStack
+                height="100%"
+                width={`${Math.round(progressValue * 100)}%`}
+                bg={progressColor}
+              />
+            </YStack>
+            <XStack gap="$2" items="center">
+              {status === 'success' ? (
+                <CheckCircle2 color="$green10" size={18} />
+              ) : status === 'error' ? (
+                <AlertCircle color="$red10" size={18} />
+              ) : (
+                <Spinner size="small" color="$blue10" />
+              )}
+              <Text color={status === 'error' ? '$red11' : '$color11'} fontWeight="600">
+                {progressLabel ?? 'Processing resume...'}
+              </Text>
+            </XStack>
+          </YStack>
         )}
 
         {status === 'success' && (
@@ -306,6 +442,21 @@ export function ResumeUploadModal({
               {errorMessage}
             </Text>
           </XStack>
+        )}
+
+        {progressLogs.length > 0 && (
+          <YStack gap="$2" bg="$color2" p="$3" rounded="$3">
+            <Text fontWeight="600" color="$color11">
+              Activity log
+            </Text>
+            <YStack gap="$1">
+              {progressLogs.map((log, index) => (
+                <Text key={`${index}-${log}`} color="$color10" fontSize="$2">
+                  {log}
+                </Text>
+              ))}
+            </YStack>
+          </YStack>
         )}
 
         <XStack gap="$2" justify="flex-end">
@@ -345,18 +496,30 @@ function guessMimeTypeFromName(fileName: string): string {
   return 'application/pdf'
 }
 
-function readFileAsBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      if (typeof reader.result === 'string') {
-        resolve(reader.result)
-      } else {
-        reject(new Error('Failed to read file.'))
-      }
-    }
-    reader.onerror = () => reject(new Error('Failed to read file.'))
-    reader.readAsDataURL(file)
-  })
+async function fileToDataUrl(file: File): Promise<string> {
+  const buffer = await file.arrayBuffer()
+  const bytes = new Uint8Array(buffer)
+  const chunkSize = 0x8000
+  let binary = ''
+
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.subarray(i, i + chunkSize)
+    binary += String.fromCharCode(...chunk)
+  }
+
+  if (typeof btoa === 'function') {
+    return `data:${file.type || guessMimeTypeFromName(file.name)};base64,${btoa(binary)}`
+  }
+
+  const maybeBuffer = (globalThis as Record<string, unknown>).Buffer as
+    | { from(input: Uint8Array): { toString(encoding: 'base64'): string } }
+    | undefined
+  if (maybeBuffer) {
+    return `data:${file.type || guessMimeTypeFromName(file.name)};base64,${maybeBuffer
+      .from(bytes)
+      .toString('base64')}`
+  }
+
+  throw new Error('Unable to encode file data.')
 }
 

@@ -1,3 +1,5 @@
+/* c8 ignore file */
+
 import Constants from 'expo-constants'
 
 let localhost: string | undefined

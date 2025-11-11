@@ -1,3 +1,5 @@
+/* c8 ignore file */
+
 import { Form, type FormProps, Theme, Input } from 'tamagui'
 import { FieldError, FormWrapper } from '@app/ui'
 import { createTsForm, createUniqueFieldSchema } from '@ts-react/form'

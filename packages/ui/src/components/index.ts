@@ -11,3 +11,8 @@ export {
   validateCharacterLimit,
 } from './rich-text'
 export type { RichTextDisplayProps, RichTextEditorProps } from './rich-text'
+export {
+  UploadSurface,
+  type UploadSelection,
+  type UploadSurfaceProps,
+} from './upload/UploadSurface'

@@ -44,7 +44,7 @@ export type UseFilePickerProps<MT extends MediaTypeOptionsString> = {
   /** multiple only works for image only types on native, but on web it works regarding the media types */
   multiple?: boolean
   typeOfPicker: 'file' | 'image'
-}
+} & Partial<Omit<DropZoneOptionsCustom, 'mediaTypes' | 'onOpen'>>
 
 export type UseFilePickerControl = {
   open: () => void

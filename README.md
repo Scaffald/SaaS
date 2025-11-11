@@ -1,4 +1,5 @@
 [![Netlify Status](https://api.netlify.com/api/v1/badges/ce335a05-285b-4e5b-84f9-5da31a6cdf6f/deploy-status)](https://app.netlify.com/projects/scaffald/deploys)
+[![Test Suite](https://github.com/Unicorn/SCF-Neue/actions/workflows/test.yml/badge.svg)](https://github.com/Unicorn/SCF-Neue/actions/workflows/test.yml)
 
 ## Getting Started
 

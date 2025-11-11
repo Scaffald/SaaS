@@ -1,23 +1,17 @@
 import { Camera, User, Delete, Edit3 } from '@tamagui/lucide-icons'
 import { useEffect, useId, useState } from 'react'
-import { Button, Circle, Image, Label, Text, View, XStack, YStack } from 'tamagui'
+import { Button, Circle, Image, Label, Spinner, Text, View, XStack, YStack } from 'tamagui'
 
 import type { AvatarImagePickerProps } from './types'
-import { useFilePicker } from './hooks/useFilePicker'
-import { MediaTypeOptions } from './types'
 import { AvatarCropModal } from './AvatarCropModal'
+import { UploadSurface } from '../upload/UploadSurface'
+import type { UploadSelection } from '../upload/UploadSurface'
 
 /**
  * Avatar Image Picker Component
  *
  * A cross-platform image picker specifically designed for avatar uploads.
  * Supports drag & drop on web and native image picker on mobile.
- *
- * @param value - Current avatar image URI
- * @param onImageSelect - Callback when image is selected
- * @param size - Size of the avatar picker (default: 120)
- * @param disabled - Whether the picker is disabled
- * @param placeholder - Placeholder text when no image is selected
  */
 export function AvatarImagePicker({
   value,
@@ -40,33 +34,6 @@ export function AvatarImagePicker({
     }
   }, [value, cropModalOpen])
 
-  const { open, getInputProps, getRootProps, dragStatus } = useFilePicker({
-    typeOfPicker: 'image',
-    mediaTypes: [MediaTypeOptions.Images],
-    multiple: false,
-
-    onPick: async ({ webFiles, nativeFiles }) => {
-      setIsLoading(true)
-      try {
-        if (webFiles?.length) {
-          const imageUri = URL.createObjectURL(webFiles[0])
-          setSelectedImageUri(imageUri)
-          setCropModalOpen(true)
-          setShouldRevokeUri(true)
-        } else if (nativeFiles?.length) {
-          const imageUri = nativeFiles[0].uri
-          setSelectedImageUri(imageUri)
-          setCropModalOpen(true)
-          setShouldRevokeUri(false)
-        }
-      } catch (error) {
-        console.error('Error selecting image:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    },
-  })
-
   useEffect(() => {
     return () => {
       if (shouldRevokeUri && selectedImageUri.startsWith('blob:')) {
@@ -74,6 +41,28 @@ export function AvatarImagePicker({
       }
     }
   }, [selectedImageUri, shouldRevokeUri])
+
+  const handleUploadSelection = async (selection: UploadSelection) => {
+    setIsLoading(true)
+    try {
+      if (selection.platform === 'web') {
+        const imageUri = URL.createObjectURL(selection.file)
+        setSelectedImageUri(imageUri)
+        setShouldRevokeUri(true)
+        setCropModalOpen(true)
+      } else {
+        const imageUri = selection.asset.uri
+        setSelectedImageUri(imageUri)
+        setShouldRevokeUri(false)
+        setCropModalOpen(true)
+      }
+    } catch (error) {
+      console.error('Error selecting image:', error)
+      onCropError?.('Failed to load selected image.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleCropComplete = (croppedImageDataUrl: string) => {
     onImageSelect(croppedImageDataUrl)
@@ -104,164 +93,167 @@ export function AvatarImagePicker({
     setCropModalOpen(true)
   }
 
-  const { isDragActive } = dragStatus || {}
-
   return (
-    <YStack items="center" gap="$3">
-      {/* Avatar Circle */}
-      <View
-        // @ts-ignore reason: getRootProps() which is web specific return some react-native incompatible props, but it's fine
-        {...(getRootProps ? getRootProps() : {})}
-        position="relative"
-      >
-        {/* Hidden input for web */}
-        {/* @ts-ignore */}
-        <View
-          id={id}
-          tag="input"
-          width={0}
-          height={0}
-          {...(getInputProps ? getInputProps() : {})}
-        />
+    <UploadSurface
+      accept=".png,.jpg,.jpeg,.webp"
+      disabled={disabled}
+      dropzoneOptions={{ noClick: false }}
+      onError={(message) => onCropError?.(message)}
+      onSelect={handleUploadSelection}
+    >
+      {({ getRootProps, getInputProps, open, isDragActive, isProcessing }) => {
+        const isBusy = isLoading || isProcessing
 
-        <Circle
-          size={size}
-          bg={isDragActive ? '$blue3' : '$color3'}
-          borderColor={isDragActive ? '$blue8' : '$color6'}
-          borderWidth={2}
-          borderStyle={isDragActive ? 'solid' : 'dashed'}
-          overflow="hidden"
-          cursor={disabled ? 'not-allowed' : 'pointer'}
-          opacity={disabled ? 0.5 : 1}
-          pressStyle={{
-            scale: disabled ? 1 : 0.98,
-          }}
-          hoverStyle={{
-            borderColor: disabled ? '$color6' : '$blue8',
-            bg: disabled ? '$color3' : '$blue2',
-          }}
-          aria-role="image"
-          aria-label={previewUri || value ? 'Current avatar preview' : 'Avatar placeholder'}
-        >
-          {value ? (
-            <Image
-              source={{ uri: previewUri || value }}
-              width={size}
-              height={size}
-              rounded={size / 2}
-            />
-          ) : (
-            <YStack items="center" justify="center" flex={1} gap="$2">
-              <User size={size * 0.3} color="$color9" />
-              <Text
-                fontSize="$2"
-                color="$color9"
-                text="center"
-                display={size < 80 ? 'none' : 'flex'}
+        return (
+          <YStack items="center" gap="$3">
+            <View
+              {...(getRootProps({
+                style: { position: 'relative' },
+              }) as Record<string, unknown>)}
+            >
+              {/* Hidden input for web */}
+              {/* @ts-ignore */}
+              <View
+                id={id}
+                tag="input"
+                width={0}
+                height={0}
+                {...(getInputProps({ accept: 'image/*' }) as Record<string, unknown>)}
+              />
+
+              <Circle
+                size={size}
+                bg={isDragActive ? '$blue3' : '$color3'}
+                borderColor={isDragActive ? '$blue8' : '$color6'}
+                borderWidth={2}
+                borderStyle={isDragActive ? 'solid' : 'dashed'}
+                overflow="hidden"
+                cursor={disabled ? 'not-allowed' : 'pointer'}
+                opacity={disabled ? 0.5 : 1}
+                pressStyle={{
+                  scale: disabled ? 1 : 0.98,
+                }}
+                hoverStyle={{
+                  borderColor: disabled ? '$color6' : '$blue8',
+                  bg: disabled ? '$color3' : '$blue2',
+                }}
+                aria-role="image"
+                aria-label={previewUri || value ? 'Current avatar preview' : 'Avatar placeholder'}
               >
-                {isDragActive ? 'Drop here' : placeholder}
-              </Text>
-            </YStack>
-          )}
+                {previewUri ? (
+                  <Image
+                    source={{ uri: previewUri }}
+                    width={size}
+                    height={size}
+                    rounded={size / 2}
+                  />
+                ) : (
+                  <YStack items="center" justify="center" flex={1} gap="$2">
+                    <User size={size * 0.3} color="$color9" />
+                    <Text
+                      fontSize="$2"
+                      color="$color9"
+                      text="center"
+                      display={size < 80 ? 'none' : 'flex'}
+                    >
+                      {isDragActive ? 'Drop here' : placeholder}
+                    </Text>
+                  </YStack>
+                )}
 
-          {/* Camera overlay when hovering */}
-          <View
-            position="absolute"
-            t={0}
-            l={0}
-            r={0}
-            b={0}
-            bg="$color9"
-            rounded={size / 2}
-            items="center"
-            justify="center"
-            opacity={0}
-            hoverStyle={{
-              opacity: disabled ? 0 : 1,
-            }}
-            style={{ pointerEvents: 'none' }}
-          >
-            <Camera size={size * 0.25} color="white" />
-          </View>
-        </Circle>
-      </View>
+                {isBusy && !previewUri && (
+                  <YStack
+                    position="absolute"
+                    t={0}
+                    l={0}
+                    r={0}
+                    b={0}
+                    items="center"
+                    justify="center"
+                    bg="rgba(0,0,0,0.35)"
+                  >
+                    <Spinner color="white" size="large" />
+                  </YStack>
+                )}
 
-      {/* Action Buttons */}
-      <XStack gap="$2" items="center">
-        <Button
-          size="$3"
-          variant="outlined"
-          onPress={open}
-          disabled={disabled || isLoading || cropModalOpen}
-          icon={Camera}
-          aria-role="button"
-          aria-label={value ? 'Select a new photo' : 'Select a photo'}
-        >
-          <Button.Text>
-            {isLoading ? 'Loading...' : value ? 'Change Photo' : 'Select Photo'}
-          </Button.Text>
-        </Button>
+                <View
+                  position="absolute"
+                  t={0}
+                  l={0}
+                  r={0}
+                  b={0}
+                  bg="$color9"
+                  rounded={size / 2}
+                  items="center"
+                  justify="center"
+                  opacity={0}
+                  hoverStyle={{ opacity: disabled ? 0 : 1 }}
+                  style={{ pointerEvents: 'none' }}
+                >
+                  <Camera size={size * 0.25} color="white" />
+                </View>
+              </Circle>
+            </View>
 
-        {value ? (
-          <Button
-            size="$3"
-            variant="outlined"
-            onPress={openEditModal}
-            disabled={disabled || isLoading || cropModalOpen}
-            icon={Edit3}
-            aria-role="button"
-            aria-label="Edit current photo"
-          >
-            <Button.Text>Edit Photo</Button.Text>
-          </Button>
-        ) : null}
+            <XStack gap="$2" items="center">
+              <Button
+                size="$3"
+                variant="outlined"
+                onPress={open}
+                disabled={disabled || isBusy || cropModalOpen}
+                icon={Camera}
+                aria-role="button"
+                aria-label={value ? 'Select a new photo' : 'Select a photo'}
+              >
+                <Button.Text>
+                  {value ? 'Change Photo' : isBusy || cropModalOpen ? 'Opening...' : placeholder}
+                </Button.Text>
+              </Button>
+              {value ? (
+                <>
+                  <Button
+                    size="$3"
+                    variant="outlined"
+                    icon={Edit3}
+                    onPress={openEditModal}
+                    disabled={disabled || isBusy}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    size="$3"
+                    variant="outlined"
+                    icon={Delete}
+                    onPress={() => onImageSelect('')}
+                    disabled={disabled || isBusy}
+                  >
+                    Remove
+                  </Button>
+                </>
+              ) : null}
+            </XStack>
 
-        {value ? (
-          <Button
-            size="$3"
-            variant="outlined"
-            color="$red10"
-            onPress={() => onImageSelect('')}
-            disabled={disabled || isLoading || cropModalOpen}
-            icon={Delete}
-            aria-role="button"
-            aria-label="Remove photo"
-          >
-            <Button.Text>Remove</Button.Text>
-          </Button>
-        ) : null}
-      </XStack>
+            <Label htmlFor={id}>{placeholder}</Label>
 
-      {cropModalOpen && (
-        <Text fontSize="$2" color="$color10" aria-live="polite">
-          Editing photo...
-        </Text>
-      )}
-
-      {/* Web-only drag instruction */}
-      <Label
-        $platform-native={{
-          display: 'none',
-        }}
-        size="$2"
-        color="$color9"
-        text="center"
-        display={disabled ? 'none' : 'flex'}
-      >
-        <Text>Drag & drop an image or click to select</Text>
-      </Label>
-
-      {/* Crop Modal */}
-      {selectedImageUri ? (
-        <AvatarCropModal
-          open={cropModalOpen}
-          onOpenChange={setCropModalOpen}
-          imageUri={selectedImageUri}
-          onCropComplete={handleCropComplete}
-          cropSize={size * 2}
-          onError={handleCropError}
-        />
-      ) : null}
-    </YStack>
+            <AvatarCropModal
+              open={cropModalOpen}
+              onOpenChange={(nextOpen) => {
+                if (!nextOpen) {
+                  if (shouldRevokeUri && selectedImageUri.startsWith('blob:')) {
+                    URL.revokeObjectURL(selectedImageUri)
+                  }
+                  setSelectedImageUri('')
+                  setShouldRevokeUri(false)
+                }
+                setCropModalOpen(nextOpen)
+              }}
+              imageUri={selectedImageUri}
+              onCropComplete={handleCropComplete}
+              onError={handleCropError}
+            />
+          </YStack>
+        )
+      }}
+    </UploadSurface>
   )
 }

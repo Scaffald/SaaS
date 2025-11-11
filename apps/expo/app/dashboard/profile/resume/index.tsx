@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useRouter } from 'expo-router'
 import { DashboardLayout } from '@app/ui'
 import { YStack, Text, Paragraph, Button, Spinner, XStack } from 'tamagui'
@@ -12,6 +12,13 @@ import { api } from '@app/core/utils/api'
 function ResumeImportContent() {
   const router = useRouter()
   const [modalOpen, setModalOpen] = useState(false)
+  const handleResumeUploadComplete = useCallback(
+    (resumeId: string) => {
+      setModalOpen(false)
+      router.push(`/dashboard/profile/resume/review?resumeId=${resumeId}`)
+    },
+    [router]
+  )
   const { data, isLoading } = api.resume.hasUploaded.useQuery(undefined, {
     refetchOnWindowFocus: false,
   })
@@ -23,10 +30,7 @@ function ResumeImportContent() {
       <ResumeUploadModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        onUploadComplete={(resumeId: string) => {
-          setModalOpen(false)
-          router.push(`/dashboard/profile/resume/review?resumeId=${resumeId}`)
-        }}
+        onUploadComplete={handleResumeUploadComplete}
       />
 
       <YStack gap="$2">

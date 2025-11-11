@@ -301,6 +301,15 @@ async function callOpenAIForResume(
   resumeText: string,
   openAiKey: string,
 ): Promise<z.infer<typeof parsedResumeSchema>> {
+  const requestStartedAt = performance.now();
+  console.log(
+    "[resume] parse:openai_request",
+    JSON.stringify({
+      textChars: resumeText.length,
+      textPreview: resumeText.slice(0, 120),
+    }),
+  );
+
   const response = await fetch(
     "https://api.openai.com/v1/chat/completions",
     {
@@ -331,6 +340,14 @@ async function callOpenAIForResume(
 
   if (!response.ok) {
     const body = await response.text();
+    console.error(
+      "[resume] parse:openai_error",
+      JSON.stringify({
+        status: response.status,
+        elapsedMs: Math.round(performance.now() - requestStartedAt),
+        body,
+      }),
+    );
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: `OpenAI parsing failed: ${body}`,
@@ -338,6 +355,14 @@ async function callOpenAIForResume(
   }
 
   const completion = await response.json();
+  console.log(
+    "[resume] parse:openai_response",
+    JSON.stringify({
+      status: response.status,
+      elapsedMs: Math.round(performance.now() - requestStartedAt),
+      usage: completion?.usage,
+    }),
+  );
   const content: string | undefined = completion?.choices?.[0]?.message?.content;
 
   if (!content) {
@@ -899,6 +924,16 @@ export const resumeRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       const { supabase, user } = ctx;
 
+      console.log(
+        "[resume] upload:start",
+        JSON.stringify({
+          userId: user.id,
+          fileName: input.fileName,
+          fileSize: input.fileSize,
+          mimeType: input.mimeType,
+        }),
+      );
+
       if (!ALLOWED_MIME_TYPES.has(input.mimeType)) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -937,6 +972,14 @@ export const resumeRouter = t.router({
         });
       }
 
+      console.log(
+        "[resume] upload:stored",
+        JSON.stringify({
+          userId: user.id,
+          filePath,
+        }),
+      );
+
       const { data, error } = await supabase
         .schema("core")
         .from("resume_uploads")
@@ -959,6 +1002,14 @@ export const resumeRouter = t.router({
         });
       }
 
+      console.log(
+        "[resume] upload:completed",
+        JSON.stringify({
+          userId: user.id,
+          resumeId: data.id,
+        }),
+      );
+
       return {
         success: true,
         resumeId: data.id,
@@ -973,6 +1024,17 @@ export const resumeRouter = t.router({
       const { supabase, user } = ctx;
       const openAiKey = Deno.env.get("OPENAI_API_KEY")?.trim();
       const openAiConfigured = Boolean(openAiKey);
+      const parseStart = performance.now();
+
+      console.log(
+        "[resume] parse:start",
+        JSON.stringify({
+          resumeId: input.resumeId,
+          userId: user.id,
+          sections: input.sections,
+          openAiConfigured,
+        }),
+      );
 
       await updateResumeParsingStatus(supabase, input.resumeId, "processing");
 
@@ -983,9 +1045,20 @@ export const resumeRouter = t.router({
           user.id,
         );
 
+        const downloadStartedAt = performance.now();
         const fileBytes = await downloadResumeFile(
           supabase,
           resume.file_path,
+        );
+
+        console.log(
+          "[resume] parse:downloaded",
+          JSON.stringify({
+            resumeId: input.resumeId,
+            bytes: fileBytes.length,
+            downloadDurationMs: Math.round(performance.now() - downloadStartedAt),
+            mimeType: resume.mime_type,
+          }),
         );
 
         const resumeText = await extractResumeText(
@@ -1006,9 +1079,20 @@ export const resumeRouter = t.router({
           );
         }
 
+        const openAiStart = performance.now();
         const parsed = openAiKey
           ? await callOpenAIForResume(resumeText, openAiKey)
           : parsedResumeSchema.parse({});
+        const openAiDuration = performance.now() - openAiStart;
+
+        console.log(
+          "[resume] parse:ai_completed",
+          JSON.stringify({
+            resumeId: input.resumeId,
+            openAiDurationMs: Math.round(openAiDuration),
+            parsedSections: Object.keys(parsed ?? {}).length,
+          }),
+        );
 
         const skillMatches = parsed.skills
           ? await Promise.all(
@@ -1017,6 +1101,16 @@ export const resumeRouter = t.router({
             ),
           )
           : [];
+
+        console.log(
+          "[resume] parse:skills_matched",
+          JSON.stringify({
+            resumeId: input.resumeId,
+            skillsRequested: parsed.skills?.length ?? 0,
+            matchesComputed: skillMatches.length,
+            elapsedMs: Math.round(performance.now() - parseStart),
+          }),
+        );
 
         const errors: Array<z.infer<typeof parseErrorSchema>> = [];
         const missingSectionMessage = (section: ResumeSection): string =>
@@ -1058,11 +1152,30 @@ export const resumeRouter = t.router({
           errors,
         );
 
+        console.log(
+          "[resume] parse:wizard_state_ensure",
+          JSON.stringify({
+            resumeId: input.resumeId,
+            userId: user.id,
+            errorsCount: errors.length,
+          }),
+        );
+
         await updateResumeParsingStatus(
           supabase,
           input.resumeId,
           errors.length > 0 ? "completed" : "completed",
           errors,
+        );
+
+        console.log(
+          "[resume] parse:completed",
+          JSON.stringify({
+            resumeId: input.resumeId,
+            userId: user.id,
+            elapsedMs: Math.round(performance.now() - parseStart),
+            hasWarnings: errors.length > 0,
+          }),
         );
 
         return {
@@ -1075,6 +1188,15 @@ export const resumeRouter = t.router({
           supabase,
           input.resumeId,
           "failed",
+        );
+        console.error(
+          "[resume] parse:failed",
+          JSON.stringify({
+            resumeId: input.resumeId,
+            userId: user.id,
+            elapsedMs: Math.round(performance.now() - parseStart),
+            message: error instanceof Error ? error.message : String(error),
+          }),
         );
         if (error instanceof TRPCError) throw error;
         console.error("[resume] parsing error", error);

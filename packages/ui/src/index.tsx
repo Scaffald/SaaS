@@ -39,6 +39,11 @@ export { ImageUpload, type ImageUploadProps } from './components/ImageUpload'
 export { FormWrapper } from './components/FormWrapper'
 export { IconSelector } from './components/IconSelector'
 export {
+  UploadSurface,
+  type UploadSurfaceProps,
+  type UploadSelection,
+} from './components/upload/UploadSurface'
+export {
   Breadcrumb,
   type BreadcrumbItem,
   type BreadcrumbProps,

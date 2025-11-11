@@ -57,3 +57,35 @@ If checks fail:
 - **Build errors**: Ensure all packages build with `pnpm build`
 - **Dependency issues**: Run `pnpm dedupe` and `pnpm check-deps`
 - **Circular dependencies**: Review import structure
+
+## Test Suite
+
+The `Test Suite` workflow verifies the Vitest suites and the Supabase Deno integration tests on every push and pull request targeting `main`.
+
+### Jobs
+
+1. **Setup**
+   - Checkout repository
+   - Install pnpm 10.20.0 and Node.js 22 with pnpm caching
+   - Install dependencies via `pnpm install --frozen-lockfile`
+2. **Supabase**
+   - Launches the local Supabase stack with `pnpm supa start`
+   - Waits for the health check to report ready through `pnpm supa status`
+3. **Tests**
+   - Executes `pnpm test` which runs the lint/typecheck pipeline, Vitest suites, and Deno endpoint tests
+   - Uploads `coverage/` artifacts for later inspection
+4. **Teardown**
+   - Streams Supabase logs when the job fails
+   - Stops the Supabase containers to free runner resources
+
+### Local Parity
+
+Run the same commands locally before pushing:
+
+```bash
+pnpm supa start
+pnpm test
+pnpm supa stop
+```
+
+When Supabase is already running on your machine the `pnpm test` command will reuse the existing instance, matching the behaviour in CI.

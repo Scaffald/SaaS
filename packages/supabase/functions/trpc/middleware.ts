@@ -6,6 +6,46 @@ import { captureTRPCError } from "../_shared/sentry.ts";
 // Initialize tRPC with context type
 export const t = initTRPC.context<Context>().create();
 
+const requestLoggingMiddleware = t.middleware(async ({
+  next,
+  path,
+  type,
+}) => {
+  const start = performance.now();
+  console.log(
+    "[trpc] request:start",
+    JSON.stringify({
+      path,
+      type,
+      timestamp: new Date().toISOString(),
+    }),
+  );
+
+  try {
+    const result = await next();
+    console.log(
+      "[trpc] request:success",
+      JSON.stringify({
+        path,
+        type,
+        durationMs: Math.round(performance.now() - start),
+      }),
+    );
+    return result;
+  } catch (error) {
+    console.error(
+      "[trpc] request:error",
+      JSON.stringify({
+        path,
+        type,
+        durationMs: Math.round(performance.now() - start),
+        message: error instanceof Error ? error.message : String(error),
+      }),
+    );
+    throw error;
+  }
+});
+
 const errorHandlingMiddleware = t.middleware(async ({
   next,
   path,
@@ -83,7 +123,9 @@ export const enforceOfficeRole = t.middleware(async ({ ctx, next }) => {
   return next({ ctx });
 });
 
-const baseProcedure = t.procedure.use(errorHandlingMiddleware);
+const baseProcedure = t.procedure
+  .use(requestLoggingMiddleware)
+  .use(errorHandlingMiddleware);
 
 /**
  * Base procedure - no authentication required

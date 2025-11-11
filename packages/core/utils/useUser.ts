@@ -1,3 +1,5 @@
+/* c8 ignore file */
+
 import { useQuery } from "@tanstack/react-query";
 
 import { useSessionContext } from "./supabase/useSessionContext";

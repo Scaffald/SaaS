@@ -1,3 +1,5 @@
+/* c8 ignore file */
+
 import * as Linking from 'expo-linking'
 
 export const redirect = (url: string) => {

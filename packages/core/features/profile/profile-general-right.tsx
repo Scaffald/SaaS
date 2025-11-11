@@ -1,5 +1,8 @@
+import { useState, useCallback } from 'react'
+import { useRouter } from 'expo-router'
 import { YStack, Text, H3, H4 } from 'tamagui'
-import { DashboardWidget, StackedCards } from '@app/ui'
+import { DashboardWidget, StackedCards, spacing } from '@app/ui'
+import { ResumeUploadButton, ResumeUploadModal } from '@app/core/features/resume'
 import { VanityUrlSection } from './components/VanityUrlSection'
 
 /**
@@ -7,6 +10,16 @@ import { VanityUrlSection } from './components/VanityUrlSection'
  * Navigation and overview for general profile settings with animated tips
  */
 export function ProfileGeneralRight() {
+  const router = useRouter()
+  const [resumeModalOpen, setResumeModalOpen] = useState(false)
+  const handleResumeUploadComplete = useCallback(
+    (resumeId: string) => {
+      setResumeModalOpen(false)
+      router.push(`/dashboard/profile/resume/review?resumeId=${resumeId}`)
+    },
+    [router],
+  )
+
   // Profile improvement tip cards with marked-up children
   const profileTipCards = [
     {
@@ -58,23 +71,45 @@ export function ProfileGeneralRight() {
   ]
 
   return (
-    <YStack gap="$4">
-      <DashboardWidget>
-        <H3>General Information</H3>
-        <Text color="$color11" fontSize="$3">
-          Update your basic profile information including your name, photo, and contact details.
-        </Text>
-      </DashboardWidget>
+    <>
+      <YStack gap="$4">
+        <DashboardWidget>
+          <H3>General Information</H3>
+          <Text color="$color11" fontSize="$3">
+            Update your basic profile information including your name, photo, and contact details.
+          </Text>
+        </DashboardWidget>
 
-      <VanityUrlSection />
+        <DashboardWidget>
+          <YStack gap={spacing.sm}>
+            <H4>Import from your resume</H4>
+            <Text color="$color11" fontSize="$3">
+              Upload a PDF or Word document under 1MB and we’ll walk you through reviewing the details before
+              they’re saved to your profile.
+            </Text>
+            <Text color="$color10" fontSize="$2">
+              Accepted formats: PDF, DOC, DOCX. You can re-import your resume at any time.
+            </Text>
+            <ResumeUploadButton onPress={() => setResumeModalOpen(true)} size="$4" />
+          </YStack>
+        </DashboardWidget>
 
-      <StackedCards
-        cards={profileTipCards}
-        interval={8000}
-        autoPlay={true}
-        maxStackSize={2}
-        wrapperComponent={DashboardWidget}
+        <VanityUrlSection />
+
+        <StackedCards
+          cards={profileTipCards}
+          interval={8000}
+          autoPlay={true}
+          maxStackSize={2}
+          wrapperComponent={DashboardWidget}
+        />
+      </YStack>
+
+      <ResumeUploadModal
+        open={resumeModalOpen}
+        onOpenChange={setResumeModalOpen}
+        onUploadComplete={handleResumeUploadComplete}
       />
-    </YStack>
+    </>
   )
 }

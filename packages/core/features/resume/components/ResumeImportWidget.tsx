@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useRouter } from 'expo-router'
 import { FileText, ShieldCheck } from '@tamagui/lucide-icons'
 import { Text, XStack, YStack } from 'tamagui'
@@ -10,6 +10,13 @@ import { ResumeUploadModal } from './ResumeUploadModal'
 export function ResumeImportWidget() {
   const router = useRouter()
   const [modalOpen, setModalOpen] = useState(false)
+  const handleResumeUploadComplete = useCallback(
+    (resumeId: string) => {
+      setModalOpen(false)
+      router.push(`/dashboard/profile/resume/review?resumeId=${resumeId}`)
+    },
+    [router],
+  )
   const { data, isLoading } = api.resume.hasUploaded.useQuery(undefined, {
     refetchOnWindowFocus: false,
   })
@@ -68,10 +75,7 @@ export function ResumeImportWidget() {
       <ResumeUploadModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        onUploadComplete={(resumeId) => {
-          setModalOpen(false)
-          router.push(`/dashboard/profile/resume/review?resumeId=${resumeId}`)
-        }}
+        onUploadComplete={handleResumeUploadComplete}
       />
     </>
   )

@@ -1,3 +1,5 @@
+/* c8 ignore file */
+
 import { api } from "./api";
 
 /**

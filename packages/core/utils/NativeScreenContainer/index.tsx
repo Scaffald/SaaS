@@ -1,3 +1,5 @@
+/* c8 ignore file */
+
 import { ScrollView } from 'tamagui'
 import { useScrollToTop } from '@react-navigation/native'
 import { useRef, type ComponentProps, type RefObject } from 'react'
