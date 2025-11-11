@@ -150,6 +150,8 @@ export function Checkbox({
       : {
           accessibilityRole: 'checkbox' as const,
           accessibilityState: { checked, disabled },
+          ...(ariaLabel ? { accessibilityLabel: ariaLabel } : {}),
+          ...(ariaLabelledBy ? { accessibilityLabelledBy: [ariaLabelledBy] } : {}),
           ...(testID ? { testID } : {}),
         }
 

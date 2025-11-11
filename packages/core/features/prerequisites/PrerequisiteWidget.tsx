@@ -264,11 +264,7 @@ export function PrerequisiteWidget() {
                 render={({ field }) => (
                   <YStack gap="$2">
                     {USER_TYPE_OPTIONS.map((option) => (
-                      <XStack
-                        key={option.value}
-                        gap="$3"
-                        items="center"
-                      >
+                      <XStack key={option.value} gap="$3" items="center">
                         <CustomCheckbox
                           checked={field.value?.includes(option.value as UserType)}
                           onCheckedChange={(checked: boolean) => {
@@ -295,15 +291,12 @@ export function PrerequisiteWidget() {
                           }}
                           accessibilityRole="button"
                           style={({ pressed }) => ({
-                            flex: 1,
+                            flexShrink: 1,
                             opacity: pressed ? 0.7 : 1,
                             alignSelf: 'flex-start',
                           })}
                         >
-                          <Text
-                            nativeID={`checkbox-user-type-${option.value}-label`}
-                            cursor="pointer"
-                          >
+                          <Text nativeID={`checkbox-user-type-${option.value}-label`}>
                             {option.label}
                           </Text>
                         </Pressable>
@@ -403,37 +396,38 @@ export function PrerequisiteWidget() {
                 render={({ field }) => (
                   <YStack gap="$2">
                     <XStack gap="$3" items="center">
-                        <CustomCheckbox
+                      <CustomCheckbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
-                          size="medium"
+                        size="medium"
                         testID="checkbox-legal-privacy-policy"
-                        ariaLabel="Accept privacy policy"
-                        />
-                    <Pressable
-                      onPress={() => field.onChange(!field.value)}
-                      accessibilityRole="button"
-                      style={({ pressed }) => ({
-                        alignSelf: 'flex-start',
-                        opacity: pressed ? 0.7 : 1,
-                      })}
-                    >
-                      <Text nativeID="checkbox-legal-privacy-policy-label" cursor="pointer">
-                        I accept the{' '}
-                        <Text
-                          color="$blue7"
-                          textDecorationLine="underline"
-                          onPress={(event) => {
-                            event.stopPropagation?.()
-                            if (typeof window !== 'undefined') {
-                              window.open('https://scaffald.com/privacy', '_blank')
-                            }
-                          }}
-                        >
-                          Privacy Policy
+                        ariaLabelledBy="checkbox-legal-privacy-policy-label"
+                      />
+                      <Pressable
+                        onPress={() => field.onChange(!field.value)}
+                        accessibilityRole="button"
+                        style={({ pressed }) => ({
+                          alignSelf: 'flex-start',
+                          opacity: pressed ? 0.7 : 1,
+                        })}
+                      >
+                        <Text nativeID="checkbox-legal-privacy-policy-label">
+                          I accept the{' '}
+                          <Text
+                            color="$blue7"
+                            textDecorationLine="underline"
+                            onPress={(event) => {
+                              event.stopPropagation?.()
+                              if (typeof window !== 'undefined') {
+                                window.open('https://scaffald.com/privacy', '_blank')
+                              }
+                            }}
+                          >
+                            Privacy Policy
+                          </Text>
                         </Text>
-                      </Text>
-                    </Pressable>
+                      </Pressable>
+                    </XStack>
                     {errors.accepts_privacy_policy && (
                       <Text color="$red10" fontSize="$2">
                         {errors.accepts_privacy_policy.message}
@@ -455,32 +449,32 @@ export function PrerequisiteWidget() {
                         onCheckedChange={field.onChange}
                         size="medium"
                         testID="checkbox-legal-terms-of-service"
-                        ariaLabel="Accept terms of service"
+                        ariaLabelledBy="checkbox-legal-terms-of-service-label"
                       />
-                    <Pressable
-                      onPress={() => field.onChange(!field.value)}
-                      accessibilityRole="button"
-                      style={({ pressed }) => ({
-                        alignSelf: 'flex-start',
-                        opacity: pressed ? 0.7 : 1,
-                      })}
-                    >
-                      <Text nativeID="checkbox-legal-terms-of-service-label" cursor="pointer">
-                        I accept the{' '}
-                        <Text
-                          color="$blue7"
-                          textDecorationLine="underline"
-                          onPress={(event) => {
-                            event.stopPropagation?.()
-                            if (typeof window !== 'undefined') {
-                              window.open('https://scaffald.com/terms', '_blank')
-                            }
-                          }}
-                        >
-                          Terms of Service
+                      <Pressable
+                        onPress={() => field.onChange(!field.value)}
+                        accessibilityRole="button"
+                        style={({ pressed }) => ({
+                          alignSelf: 'flex-start',
+                          opacity: pressed ? 0.7 : 1,
+                        })}
+                      >
+                        <Text nativeID="checkbox-legal-terms-of-service-label">
+                          I accept the{' '}
+                          <Text
+                            color="$blue7"
+                            textDecorationLine="underline"
+                            onPress={(event) => {
+                              event.stopPropagation?.()
+                              if (typeof window !== 'undefined') {
+                                window.open('https://scaffald.com/terms', '_blank')
+                              }
+                            }}
+                          >
+                            Terms of Service
+                          </Text>
                         </Text>
-                      </Text>
-                    </Pressable>
+                      </Pressable>
                     </XStack>
                     {errors.accepts_terms_of_service && (
                       <Text color="$red10" fontSize="$2">
