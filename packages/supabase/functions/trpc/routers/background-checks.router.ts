@@ -13,7 +13,12 @@ import {
   notifyBackgroundCheckInvitation,
   notifyBackgroundCheckStatusChange,
 } from '../../_shared/background-check-notifications.ts'
-import { createNationSearchClient } from '../../_shared/nationsearch/client.ts'
+import {
+  createNationSearchClient,
+  isNationSearchOutageError,
+  type CheckStatusResponse,
+} from '../../_shared/nationsearch/client.ts'
+import type { Context } from '../context.ts'
 import { officeProcedure, protectedProcedure, publicProcedure, t } from '../middleware.ts'
 
 const listPackagesOutputSchema = z.object({
@@ -100,6 +105,180 @@ function buildDocumentStoragePath(userId: string, backgroundCheckId: string, fil
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
   const sanitizedFileName = sanitizeFileName(fileName)
   return `${userId}/${backgroundCheckId}/${timestamp}-${sanitizedFileName}`
+}
+
+type BackgroundCheckStatus = z.infer<typeof backgroundCheckStatusEnum>
+
+const providerStatusMap: Record<string, BackgroundCheckStatus> = {
+  pending: 'pending',
+  queued: 'pending',
+  invited: 'invited',
+  awaiting_invitation: 'invited',
+  submitted: 'submitted',
+  processing: 'in_progress',
+  'in-progress': 'in_progress',
+  in_progress: 'in_progress',
+  under_review: 'under_review',
+  review: 'under_review',
+  complete_clear: 'completed_clear',
+  complete_consider: 'completed_consider',
+  complete_not_clear: 'completed_not_clear',
+  partially_complete: 'partially_completed',
+  partial: 'partially_completed',
+  failed: 'failed',
+  cancelled: 'cancelled',
+  canceled: 'cancelled',
+  disputed: 'disputed',
+  expired: 'expired',
+  refunded: 'refunded',
+}
+
+const terminalStatuses = new Set<BackgroundCheckStatus>([
+  'completed_clear',
+  'completed_consider',
+  'completed_not_clear',
+  'failed',
+  'cancelled',
+  'disputed',
+  'expired',
+  'refunded',
+])
+
+const BACKGROUND_CHECK_REFRESH_COLUMNS =
+  'id, status, status_history, provider_check_id, summary, findings, component_statuses, metadata, completed_at, expires_at, estimated_completion_date, updated_at'
+
+function mapProviderStatus(status: string | null | undefined): BackgroundCheckStatus | null {
+  if (!status) return null
+  const normalised = status.toLowerCase()
+  if (providerStatusMap[normalised]) {
+    return providerStatusMap[normalised]
+  }
+  if (normalised.startsWith('complete') || normalised.startsWith('completed')) {
+    return 'completed_clear'
+  }
+  if (normalised.includes('progress')) {
+    return 'in_progress'
+  }
+  return null
+}
+
+function shouldSyncStatus(status: BackgroundCheckStatus): boolean {
+  return !terminalStatuses.has(status)
+}
+
+function appendStatusHistory(history: unknown, entry: Record<string, unknown>): unknown[] {
+  const existing = Array.isArray(history) ? [...history] : []
+  existing.push(entry)
+  return existing
+}
+
+function mergeMetadata(existing: unknown, patch: Record<string, unknown>): Record<string, unknown> {
+  if (existing && typeof existing === 'object' && !Array.isArray(existing)) {
+    return { ...(existing as Record<string, unknown>), ...patch }
+  }
+  return { ...patch }
+}
+
+type BackgroundCheckRecord = {
+  id: string
+  status: BackgroundCheckStatus
+  status_history?: unknown
+  provider_check_id?: string | null
+  metadata?: unknown
+  summary?: string | null
+  findings?: unknown
+  component_statuses?: unknown
+  completed_at?: string | null
+  expires_at?: string | null
+  estimated_completion_date?: string | null
+}
+
+async function syncBackgroundCheckFromProvider(params: {
+  nationSearch: ReturnType<typeof createNationSearchClient>
+  supabaseAdmin: Context['supabaseAdmin']
+  check: BackgroundCheckRecord
+}): Promise<BackgroundCheckRecord | null> {
+  const { nationSearch, supabaseAdmin, check } = params
+
+  if (!check.provider_check_id || !shouldSyncStatus(check.status)) {
+    return null
+  }
+
+  try {
+    const providerStatus = (await nationSearch.fetchCheckStatus(check.provider_check_id)) as CheckStatusResponse
+
+    const updates: Record<string, unknown> = {}
+    let history = Array.isArray(check.status_history) ? [...(check.status_history as unknown[])] : []
+    const mappedStatus = mapProviderStatus(providerStatus.status)
+
+    if (mappedStatus && mappedStatus !== check.status) {
+      updates.status = mappedStatus
+      history = appendStatusHistory(history, {
+        status: mappedStatus,
+        occurred_at: new Date().toISOString(),
+        actor: 'provider',
+        provider_status: providerStatus.status,
+      })
+    }
+
+    if (providerStatus.summary !== undefined) {
+      updates.summary = providerStatus.summary ?? null
+    }
+
+    if (providerStatus.findings !== undefined) {
+      updates.findings = providerStatus.findings ?? null
+    }
+
+    if (providerStatus.components?.length) {
+      updates.component_statuses = providerStatus.components
+    }
+
+    if (providerStatus.completed_at !== undefined) {
+      updates.completed_at = providerStatus.completed_at ?? null
+    }
+
+    if (providerStatus.expires_at !== undefined) {
+      updates.expires_at = providerStatus.expires_at ?? null
+    }
+
+    if (providerStatus.estimated_completion_date !== undefined) {
+      updates.estimated_completion_date = providerStatus.estimated_completion_date ?? null
+    }
+
+    if (providerStatus.metadata && typeof providerStatus.metadata === 'object') {
+      updates.metadata = mergeMetadata(check.metadata, { nationsearch: providerStatus.metadata })
+    }
+
+    if (JSON.stringify(history) !== JSON.stringify(check.status_history)) {
+      updates.status_history = history
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return null
+    }
+
+    const { data: refreshed, error } = await supabaseAdmin
+      .schema('core')
+      .from('background_checks')
+      .update(updates)
+      .eq('id', check.id)
+      .select(BACKGROUND_CHECK_REFRESH_COLUMNS)
+      .maybeSingle()
+
+    if (error) {
+      console.error('[backgroundChecks.syncBackgroundCheckFromProvider] failed to persist provider status', error)
+      return { ...check, ...updates }
+    }
+
+    return (refreshed as BackgroundCheckRecord | null) ?? { ...check, ...updates }
+  } catch (error) {
+    if (isNationSearchOutageError(error)) {
+      console.warn('[backgroundChecks.syncBackgroundCheckFromProvider] provider outage while syncing', error)
+      return null
+    }
+    console.error('[backgroundChecks.syncBackgroundCheckFromProvider] failed to fetch provider status', error)
+    return null
+  }
 }
 
 export const backgroundChecksRouter = t.router({
@@ -227,6 +406,7 @@ export const backgroundChecksRouter = t.router({
           actor: 'worker',
         },
       ]
+      let currentHistory: unknown = statusHistory
 
       const { data: record, error: insertError } = await supabase
         .schema('core')
@@ -244,7 +424,7 @@ export const backgroundChecksRouter = t.router({
           invited_at: new Date().toISOString(),
           estimated_completion_date: null,
         })
-        .select('id, provider_check_id, status')
+        .select('id, status, status_history, provider_check_id, metadata, estimated_completion_date')
         .single()
 
       if (insertError || !record) {
@@ -254,6 +434,8 @@ export const backgroundChecksRouter = t.router({
           cause: insertError,
         })
       }
+
+      let finalRecord: BackgroundCheckRecord = record as unknown as BackgroundCheckRecord
 
       try {
         const nationSearch = createNationSearchClient()
@@ -269,12 +451,88 @@ export const backgroundChecksRouter = t.router({
           custom_configuration: input.custom_configuration ?? {},
         }
 
-        await nationSearch.initiateCheck(payload)
+        const response = await nationSearch.initiateCheck(payload)
+        const providerCheckId = response?.id ?? null
+
+        if (providerCheckId) {
+          const newHistory = appendStatusHistory(currentHistory, {
+            status: 'in_progress',
+            occurred_at: new Date().toISOString(),
+            actor: 'worker',
+          })
+
+          const metadataPatch = mergeMetadata(record.metadata, {
+            provider_check_id: providerCheckId,
+            provider_reference: response.metadata ?? null,
+          })
+
+          const { data: updatedRecord, error: updateError } = await supabase
+            .schema('core')
+            .from('background_checks')
+            .update({
+              provider_check_id: providerCheckId,
+              status: 'in_progress',
+              status_history: newHistory,
+              metadata: metadataPatch,
+              estimated_completion_date: response.estimated_completion_date ?? null,
+            })
+            .eq('id', record.id)
+            .select(BACKGROUND_CHECK_REFRESH_COLUMNS)
+            .maybeSingle()
+
+          currentHistory = newHistory
+
+          if (!updateError && updatedRecord) {
+            finalRecord = updatedRecord as BackgroundCheckRecord
+          } else {
+            finalRecord = {
+              ...finalRecord,
+              provider_check_id: providerCheckId,
+              status: 'in_progress',
+              status_history: newHistory,
+              metadata: metadataPatch,
+              estimated_completion_date: response.estimated_completion_date ?? null,
+            }
+          }
+        }
       } catch (error) {
-        console.error('[backgroundChecks.initiate] NationSearch initiation failed', error)
+        if (isNationSearchOutageError(error)) {
+          const outageHistory = appendStatusHistory(currentHistory, {
+            status: 'pending',
+            occurred_at: new Date().toISOString(),
+            actor: 'system',
+            notes: 'queued_due_to_provider_outage',
+          })
+          const outageMessage = error instanceof Error ? error.message : String(error)
+          const outageMetadata = mergeMetadata(finalRecord.metadata, {
+            provider_outage: true,
+            provider_message: outageMessage,
+          })
+
+          const { data: outageRecord } = await supabase
+            .schema('core')
+            .from('background_checks')
+            .update({
+              status_history: outageHistory,
+              metadata: outageMetadata,
+            })
+            .eq('id', record.id)
+            .select(BACKGROUND_CHECK_REFRESH_COLUMNS)
+            .maybeSingle()
+
+          currentHistory = outageHistory
+
+          finalRecord = (outageRecord as BackgroundCheckRecord | null) ?? {
+            ...finalRecord,
+            status_history: outageHistory,
+            metadata: outageMetadata,
+          }
+        } else {
+          console.error('[backgroundChecks.initiate] NationSearch initiation failed', error)
+        }
       }
 
-      return record
+      return finalRecord
     }),
 
   /**
@@ -324,7 +582,7 @@ export const backgroundChecksRouter = t.router({
   getCheck: protectedProcedure
     .input(z.object({ background_check_id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      const { supabase, user } = ctx
+      const { supabase, supabaseAdmin, user } = ctx
 
       const { data: check, error: checkError } = await supabase
         .schema('core')
@@ -351,6 +609,21 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
+      let hydratedCheck = check as BackgroundCheckRecord
+
+      if (shouldSyncStatus(hydratedCheck.status)) {
+        const nationSearch = createNationSearchClient()
+        const synced = await syncBackgroundCheckFromProvider({
+          nationSearch,
+          supabaseAdmin,
+          check: hydratedCheck,
+        })
+
+        if (synced) {
+          hydratedCheck = synced
+        }
+      }
+
       const { data: documents, error: docError } = await supabase
         .schema('core')
         .from('background_check_documents')
@@ -367,7 +640,7 @@ export const backgroundChecksRouter = t.router({
       }
 
       return getCheckOutputSchema.parse({
-        check,
+        check: hydratedCheck,
         documents: documents ?? [],
       })
     }),
@@ -735,6 +1008,7 @@ export const backgroundChecksRouter = t.router({
           actor: 'organization',
         },
       ]
+      let currentHistory: unknown = statusHistory
 
       const { data: record, error: insertError } = await supabase
         .schema('core')
@@ -754,7 +1028,7 @@ export const backgroundChecksRouter = t.router({
           requested_by_user_id: user!.id,
           invited_at: new Date().toISOString(),
         })
-        .select('id, provider_check_id, status')
+        .select('id, status, status_history, provider_check_id, metadata, estimated_completion_date')
         .single()
 
       if (insertError || !record) {
@@ -764,6 +1038,8 @@ export const backgroundChecksRouter = t.router({
           cause: insertError,
         })
       }
+
+      let finalRecord: BackgroundCheckRecord = record as unknown as BackgroundCheckRecord
 
       try {
         const nationSearch = createNationSearchClient()
@@ -782,9 +1058,86 @@ export const backgroundChecksRouter = t.router({
           custom_configuration: input.custom_configuration ?? {},
         }
 
-        await nationSearch.initiateCheck(payload)
+        const response = await nationSearch.initiateCheck(payload)
+        const providerCheckId = response?.id ?? null
+
+        if (providerCheckId) {
+          const newHistory = appendStatusHistory(currentHistory, {
+            status: 'invited',
+            occurred_at: new Date().toISOString(),
+            actor: 'organization',
+            requested_by: user!.id,
+          })
+
+          const metadataPatch = mergeMetadata(record.metadata, {
+            provider_check_id: providerCheckId,
+            provider_reference: response.metadata ?? null,
+          })
+
+          const { data: updatedRecord, error: updateError } = await supabase
+            .schema('core')
+            .from('background_checks')
+            .update({
+              provider_check_id: providerCheckId,
+              status: 'invited',
+              status_history: newHistory,
+              metadata: metadataPatch,
+              estimated_completion_date: response.estimated_completion_date ?? null,
+            })
+            .eq('id', record.id)
+            .select(BACKGROUND_CHECK_REFRESH_COLUMNS)
+            .maybeSingle()
+
+          currentHistory = newHistory
+
+          if (!updateError && updatedRecord) {
+            finalRecord = updatedRecord as BackgroundCheckRecord
+          } else {
+            finalRecord = {
+              ...finalRecord,
+              provider_check_id: providerCheckId,
+              status: 'invited',
+              status_history: newHistory,
+              metadata: metadataPatch,
+              estimated_completion_date: response.estimated_completion_date ?? null,
+            }
+          }
+        }
       } catch (error) {
-        console.error('[backgroundChecks.organizationInitiate] NationSearch initiation failed', error)
+        if (isNationSearchOutageError(error)) {
+          const outageHistory = appendStatusHistory(currentHistory, {
+            status: 'pending',
+            occurred_at: new Date().toISOString(),
+            actor: 'system',
+            notes: 'queued_due_to_provider_outage',
+          })
+          const outageMessage = error instanceof Error ? error.message : String(error)
+          const outageMetadata = mergeMetadata(finalRecord.metadata, {
+            provider_outage: true,
+            provider_message: outageMessage,
+          })
+
+          const { data: outageRecord } = await supabase
+            .schema('core')
+            .from('background_checks')
+            .update({
+              status_history: outageHistory,
+              metadata: outageMetadata,
+            })
+            .eq('id', record.id)
+            .select(BACKGROUND_CHECK_REFRESH_COLUMNS)
+            .maybeSingle()
+
+          currentHistory = outageHistory
+
+          finalRecord = (outageRecord as BackgroundCheckRecord | null) ?? {
+            ...finalRecord,
+            status_history: outageHistory,
+            metadata: outageMetadata,
+          }
+        } else {
+          console.error('[backgroundChecks.organizationInitiate] NationSearch initiation failed', error)
+        }
       }
 
       try {
@@ -800,19 +1153,19 @@ export const backgroundChecksRouter = t.router({
         console.error('[backgroundChecks.organizationInitiate] failed to send invitation notification', error)
       }
 
-      return record
+      return finalRecord
     }),
 
   organizationGet: officeProcedure
     .input(z.object({ background_check_id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      const { supabase, user } = ctx
+      const { supabase, supabaseAdmin, user } = ctx
 
       const { data: check, error: checkError } = await supabase
         .schema('core')
         .from('background_checks')
         .select(
-          'id, status, user_id, organization_id, job_id, requested_by_user_id, status_history, findings, summary, provider_check_id, created_at, updated_at',
+          'id, status, user_id, organization_id, job_id, requested_by_user_id, status_history, findings, summary, provider_check_id, metadata, component_statuses, completed_at, expires_at, estimated_completion_date, created_at, updated_at',
         )
         .eq('id', input.background_check_id)
         .maybeSingle()
@@ -832,7 +1185,21 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
-      return check
+      let hydratedCheck = check as BackgroundCheckRecord
+
+      if (shouldSyncStatus(hydratedCheck.status)) {
+        const nationSearch = createNationSearchClient()
+        const synced = await syncBackgroundCheckFromProvider({
+          nationSearch,
+          supabaseAdmin,
+          check: hydratedCheck,
+        })
+        if (synced) {
+          hydratedCheck = synced
+        }
+      }
+
+      return hydratedCheck
     }),
 
   adminListChecks: officeProcedure
