@@ -67,6 +67,8 @@ export default defineConfig({
         'packages/core/utils/auth/useProtectedRoute.ts',
         'packages/core/features/profile/utils/**/*.ts',
         'packages/core/features/discover/utils/**/*.ts',
+        'packages/core/features/discover/hooks/**/*.ts',
+        'packages/core/features/discover/providers/**/*.tsx',
         'packages/ui/src/components/image-picker/utils/**/*.ts',
         'packages/ui/src/components/image-picker/__tests__/**/*.ts',
         'packages/schemas/src/profile/**/*.ts',
