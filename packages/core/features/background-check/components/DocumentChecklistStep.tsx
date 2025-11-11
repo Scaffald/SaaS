@@ -1,13 +1,13 @@
-import { memo, useMemo } from "react";
-import { Button, Card, Checkbox, Text, XStack, YStack } from "tamagui";
+import { memo, useMemo } from 'react'
+import { Button, Card, Checkbox, Text, XStack, YStack } from 'tamagui'
 
-import type { BackgroundCheckFormState, DocumentDraft } from "../hooks/useBackgroundCheckForm";
+import type { DocumentDraft } from '../hooks/useBackgroundCheckForm'
 
 interface DocumentChecklistStepProps {
-  requiredDocuments: string[] | undefined;
-  documents: DocumentDraft[];
-  onToggleDocument: (documentType: string, provided: boolean) => void;
-  onContinue: () => void;
+  requiredDocuments: string[] | undefined
+  documents: DocumentDraft[]
+  onToggleDocument: (documentType: string, provided: boolean) => void
+  onContinue: () => void
 }
 
 export const DocumentChecklistStep = memo(function DocumentChecklistStep({
@@ -17,13 +17,13 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
   onContinue,
 }: DocumentChecklistStepProps) {
   const fulfilledDocuments = useMemo(() => {
-    return new Set(documents.map((doc) => doc.documentType));
-  }, [documents]);
+    return new Set(documents.map((doc) => doc.documentType))
+  }, [documents])
 
   const allDocumentsProvided =
     requiredDocuments && requiredDocuments.length > 0
       ? requiredDocuments.every((doc) => fulfilledDocuments.has(doc))
-      : true;
+      : true
 
   return (
     <YStack gap="$4" flex={1}>
@@ -40,16 +40,16 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
       <YStack gap="$3" flex={1}>
         {requiredDocuments?.length ? (
           requiredDocuments.map((docType) => {
-            const isChecked = fulfilledDocuments.has(docType);
+            const isChecked = fulfilledDocuments.has(docType)
             return (
               <Card
                 key={docType}
                 bordered
-                borderRadius="$4"
-                padding="$3"
-                backgroundColor={isChecked ? "$green3" : "$color2"}
+                rounded="$4"
+                p="$3"
+                bg={isChecked ? '$green3' : '$color2'}
               >
-                <XStack alignItems="center" gap="$3">
+                <XStack items="center" gap="$3">
                   <Checkbox
                     size="$4"
                     checked={isChecked}
@@ -59,18 +59,18 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
                   </Checkbox>
                   <YStack gap="$1" flex={1}>
                     <Text fontSize="$4" fontWeight="bold" color="$color12">
-                      {docType.replace(/_/g, " ")}
+                      {docType.replace(/_/g, ' ')}
                     </Text>
                     <Text fontSize="$2" color="$color10">
-                      Upload a clear photo or PDF of your {docType.replace(/_/g, " ")}.
+                      Upload a clear photo or PDF of your {docType.replace(/_/g, ' ')}.
                     </Text>
                   </YStack>
                 </XStack>
               </Card>
-            );
+            )
           })
         ) : (
-          <Card bordered borderRadius="$4" padding="$3" backgroundColor="$color2">
+          <Card bordered rounded="$4" p="$3" bg="$color2">
             <Text fontSize="$3" color="$color11">
               No documents are required for this package.
             </Text>
@@ -87,7 +87,5 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
         Continue
       </Button>
     </YStack>
-  );
-});
-
-
+  )
+})

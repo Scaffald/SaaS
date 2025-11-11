@@ -1,47 +1,46 @@
-import { memo } from "react";
-import { Button, Card, ScrollView, Text, XStack, YStack } from "tamagui";
+import { memo } from 'react'
+import { Button, Card, ScrollView, Text, XStack, YStack } from 'tamagui'
 
-import type { BackgroundCheckPaidBy } from "../hooks/useBackgroundCheckForm";
-import type { inferRouterOutputs } from "@trpc/server";
-import type { AppRouter } from "@app/supabase/client-types";
+import type { inferRouterOutputs } from '@trpc/server'
+import type { AppRouter } from '@app/supabase/client-types'
 
-type RouterOutputs = inferRouterOutputs<AppRouter>;
-type BackgroundCheckPackage = RouterOutputs["backgroundChecks"]["listPackages"][number];
+type RouterOutputs = inferRouterOutputs<AppRouter>
+type BackgroundCheckPackage = RouterOutputs['backgroundChecks']['listPackages'][number]
 
 interface PackageSelectionStepProps {
-  packages: BackgroundCheckPackage[] | undefined;
-  selectedPackageId?: string;
-  onSelect: (packageId: string) => void;
-  isLoading: boolean;
-  onContinue: () => void;
+  packages: BackgroundCheckPackage[] | undefined
+  selectedPackageId?: string
+  onSelect: (packageId: string) => void
+  isLoading: boolean
+  onContinue: () => void
 }
 
 const formatCurrency = (cents: number | null | undefined) => {
-  if (cents == null) return "—";
+  if (cents == null) return '—'
   return new Intl.NumberFormat(undefined, {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
-};
+    style: 'currency',
+    currency: 'USD',
+  }).format(cents / 100)
+}
 
 const PackageCard = memo(function PackageCard({
   pkg,
   isSelected,
   onSelect,
 }: {
-  pkg: BackgroundCheckPackage;
-  isSelected: boolean;
-  onSelect: () => void;
+  pkg: BackgroundCheckPackage
+  isSelected: boolean
+  onSelect: () => void
 }) {
   return (
     <Card
       elevate
       bordered
-      backgroundColor={isSelected ? "$blue3" : "$background"}
-      borderColor={isSelected ? "$blue8" : "$borderColor"}
+      bg={isSelected ? '$blue3' : '$background'}
+      borderColor={isSelected ? '$blue8' : '$borderColor'}
       borderWidth={2}
-      borderRadius="$4"
-      padding="$4"
+      rounded="$4"
+      p="$4"
       gap="$3"
       onPress={onSelect}
     >
@@ -52,7 +51,7 @@ const PackageCard = memo(function PackageCard({
         <Text fontSize="$3" color="$color11">
           {pkg.description}
         </Text>
-        <XStack gap="$3" alignItems="center">
+        <XStack gap="$3" items="center">
           <Text fontSize="$4" fontWeight="bold" color="$color12">
             {formatCurrency(pkg.retail_cost_cents)}
           </Text>
@@ -65,7 +64,7 @@ const PackageCard = memo(function PackageCard({
             Components
           </Text>
           {pkg.components?.length ? (
-            pkg.components.map((component) => (
+            pkg.components.map((component: BackgroundCheckPackage['components'][number]) => (
               <Text key={component.id} fontSize="$2" color="$color11">
                 • {component.display_name}
               </Text>
@@ -88,7 +87,7 @@ export const PackageSelectionStep = memo(function PackageSelectionStep({
   isLoading,
   onContinue,
 }: PackageSelectionStepProps) {
-  const hasSelection = Boolean(selectedPackageId);
+  const hasSelection = Boolean(selectedPackageId)
 
   return (
     <YStack gap="$4" flex={1}>
@@ -103,7 +102,7 @@ export const PackageSelectionStep = memo(function PackageSelectionStep({
       </YStack>
 
       <ScrollView flex={1}>
-        <YStack gap="$3" paddingBottom="$6">
+        <YStack gap="$3" pb="$6">
           {isLoading && (
             <Text fontSize="$3" color="$color10">
               Loading packages…
@@ -134,7 +133,5 @@ export const PackageSelectionStep = memo(function PackageSelectionStep({
         Continue
       </Button>
     </YStack>
-  );
-});
-
-
+  )
+})

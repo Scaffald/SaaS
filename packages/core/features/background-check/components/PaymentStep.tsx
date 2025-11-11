@@ -1,32 +1,32 @@
-import { memo } from "react";
-import { Button, RadioGroup, Text, XStack, YStack } from "tamagui";
+import { memo } from 'react'
+import { Button, RadioGroup, Text, XStack, YStack } from 'tamagui'
 
-import type { BackgroundCheckPaidBy, PaymentDetails } from "../hooks/useBackgroundCheckForm";
+import type { BackgroundCheckPaidBy, PaymentDetails } from '../hooks/useBackgroundCheckForm'
 
 interface PaymentStepProps {
-  payment: PaymentDetails;
-  onUpdatePayment: (updates: Partial<PaymentDetails>) => void;
-  onComplete: () => void;
+  payment: PaymentDetails
+  onUpdatePayment: (updates: Partial<PaymentDetails>) => void
+  onComplete: () => void
 }
 
 const PAYMENT_OPTIONS: Array<{ value: BackgroundCheckPaidBy; label: string; description: string }> =
   [
-    { value: "worker", label: "Worker (You)", description: "You will cover the background check." },
+    { value: 'worker', label: 'Worker (You)', description: 'You will cover the background check.' },
     {
-      value: "organization",
-      label: "Organization",
-      description: "The hiring organization will cover the cost.",
+      value: 'organization',
+      label: 'Organization',
+      description: 'The hiring organization will cover the cost.',
     },
-    { value: "platform", label: "Platform", description: "Platform sponsored screening." },
-  ];
+    { value: 'platform', label: 'Platform', description: 'Platform sponsored screening.' },
+  ]
 
 const formatCurrency = (cents: number | null | undefined) => {
-  if (cents == null) return "—";
+  if (cents == null) return '—'
   return new Intl.NumberFormat(undefined, {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
-};
+    style: 'currency',
+    currency: 'USD',
+  }).format(cents / 100)
+}
 
 export const PaymentStep = memo(function PaymentStep({
   payment,
@@ -34,13 +34,13 @@ export const PaymentStep = memo(function PaymentStep({
   onComplete,
 }: PaymentStepProps) {
   const handlePaymentSelection = (value: BackgroundCheckPaidBy) => {
-    onUpdatePayment({ paidBy: value });
-  };
+    onUpdatePayment({ paidBy: value })
+  }
 
   const completePayment = () => {
-    onUpdatePayment({ status: "succeeded" });
-    onComplete();
-  };
+    onUpdatePayment({ status: 'succeeded' })
+    onComplete()
+  }
 
   return (
     <YStack gap="$4" flex={1}>
@@ -54,7 +54,7 @@ export const PaymentStep = memo(function PaymentStep({
         </Text>
       </YStack>
 
-      <YStack gap="$2" backgroundColor="$color2" padding="$4" borderRadius="$4">
+      <YStack gap="$2" bg="$color2" p="$4" rounded="$4">
         <Text fontSize="$2" color="$color11">
           Total Due
         </Text>
@@ -73,7 +73,7 @@ export const PaymentStep = memo(function PaymentStep({
         >
           <YStack gap="$3">
             {PAYMENT_OPTIONS.map((option) => (
-              <XStack key={option.value} alignItems="flex-start" gap="$3">
+              <XStack key={option.value} items="flex-start" gap="$3">
                 <RadioGroup.Item value={option.value} size="$4">
                   <RadioGroup.Indicator />
                 </RadioGroup.Item>
@@ -99,7 +99,5 @@ export const PaymentStep = memo(function PaymentStep({
         Confirm & Continue
       </Button>
     </YStack>
-  );
-});
-
-
+  )
+})

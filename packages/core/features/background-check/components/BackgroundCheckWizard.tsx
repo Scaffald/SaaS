@@ -1,12 +1,12 @@
-import { useCallback, useMemo } from "react";
-import { Button, ScrollView, Separator, Text, XStack, YStack } from "tamagui";
+import { useCallback, useMemo } from 'react'
+import { Button, ScrollView, Separator, Text, XStack, YStack } from 'tamagui'
 
-import { useBackgroundCheckForm } from "../hooks/useBackgroundCheckForm";
-import { ConsentStep } from "./ConsentStep";
-import { DocumentChecklistStep } from "./DocumentChecklistStep";
-import { PackageSelectionStep } from "./PackageSelectionStep";
-import { PaymentStep } from "./PaymentStep";
-import { ProgressIndicator } from "./ProgressIndicator";
+import { useBackgroundCheckForm } from '../hooks/useBackgroundCheckForm'
+import { ConsentStep } from './ConsentStep'
+import { DocumentChecklistStep } from './DocumentChecklistStep'
+import { PackageSelectionStep } from './PackageSelectionStep'
+import { PaymentStep } from './PaymentStep'
+import { ProgressIndicator } from './ProgressIndicator'
 
 export function BackgroundCheckWizard() {
   const {
@@ -27,19 +27,19 @@ export function BackgroundCheckWizard() {
     nextStep,
     previousStep,
     submitBackgroundCheck,
-  } = useBackgroundCheckForm();
+  } = useBackgroundCheckForm()
 
   const requiredDocuments = useMemo(() => {
-    const raw = selectedPackage?.metadata?.required_documents;
+    const raw = selectedPackage?.metadata?.required_documents
     if (Array.isArray(raw)) {
-      return raw.map((item) => String(item));
+      return raw.map((item) => String(item))
     }
-    return [];
-  }, [selectedPackage?.metadata]);
+    return []
+  }, [selectedPackage?.metadata])
 
   const renderStepContent = () => {
     switch (currentStep) {
-      case "packages":
+      case 'packages':
         return (
           <PackageSelectionStep
             packages={packagesQuery.data}
@@ -48,16 +48,16 @@ export function BackgroundCheckWizard() {
             isLoading={packagesQuery.isLoading}
             onContinue={() => nextStep()}
           />
-        );
-      case "consent":
+        )
+      case 'consent':
         return (
           <ConsentStep
             consent={state.consent}
             onChange={updateConsent}
             onContinue={() => nextStep()}
           />
-        );
-      case "documents":
+        )
+      case 'documents':
         return (
           <DocumentChecklistStep
             requiredDocuments={requiredDocuments}
@@ -68,25 +68,25 @@ export function BackgroundCheckWizard() {
                   documentType,
                   storagePath: `pending://${documentType}`,
                   fileName: `${documentType}-pending`,
-                  mimeType: "application/octet-stream",
+                  mimeType: 'application/octet-stream',
                   fileSize: 0,
-                });
+                })
               } else {
-                removeDocument(`pending://${documentType}`);
+                removeDocument(`pending://${documentType}`)
               }
             }}
             onContinue={() => nextStep()}
           />
-        );
-      case "payment":
+        )
+      case 'payment':
         return (
           <PaymentStep
             payment={state.payment}
             onUpdatePayment={updatePayment}
             onComplete={() => handleSubmit()}
           />
-        );
-      case "confirmation":
+        )
+      case 'confirmation':
         return (
           <YStack gap="$4" flex={1}>
             <YStack gap="$2">
@@ -98,44 +98,45 @@ export function BackgroundCheckWizard() {
               </Text>
             </YStack>
 
-            <YStack gap="$2" backgroundColor="$color2" padding="$4" borderRadius="$4">
+            <YStack gap="$2" bg="$color2" p="$4" rounded="$4">
               <Text fontSize="$4" fontWeight="bold" color="$color12">
                 Summary
               </Text>
               <Text fontSize="$3" color="$color11">
-                Package: {selectedPackage?.display_name ?? "Pending"}
+                Package: {selectedPackage?.display_name ?? 'Pending'}
               </Text>
               <Text fontSize="$3" color="$color11">
-                Cost: ${state.payment.costCents ? (state.payment.costCents / 100).toFixed(2) : "—"}
+                Cost: $
+                {state.payment.costCents ? (state.payment.costCents / 100).toFixed(2) : '—'}
               </Text>
               <Text fontSize="$3" color="$color11">
                 Payment: {state.payment.paidBy}
               </Text>
             </YStack>
 
-            <Button size="$4" theme="blue" onPress={() => goToStep("packages")}>
+            <Button size="$4" theme="blue" onPress={() => goToStep('packages')}>
               Start another background check
             </Button>
           </YStack>
-        );
+        )
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   const handleSubmit = useCallback(async () => {
-    if (isSubmitting) return;
-    await submitBackgroundCheck();
-  }, [isSubmitting, submitBackgroundCheck]);
+    if (isSubmitting) return
+    await submitBackgroundCheck()
+  }, [isSubmitting, submitBackgroundCheck])
 
   return (
-    <YStack flex={1} backgroundColor="$background">
+    <YStack flex={1} bg="$background">
       <YStack
-        padding="$4"
+        p="$4"
         gap="$3"
         borderBottomWidth={1}
         borderBottomColor="$borderColor"
-        backgroundColor="$background"
+        bg="$background"
       >
         <YStack gap="$1">
           <Text fontSize="$7" fontWeight="bold" color="$color12">
@@ -150,36 +151,33 @@ export function BackgroundCheckWizard() {
       </YStack>
 
       {submitError && (
-        <YStack backgroundColor="$red3" padding="$3" borderBottomWidth={1} borderBottomColor="$red7">
+        <YStack bg="$red3" p="$3" borderBottomWidth={1} borderBottomColor="$red7">
           <Text color="$red11">We couldn’t submit your background check: {submitError.message}</Text>
         </YStack>
       )}
 
-      <ScrollView flex={1} contentContainerStyle={{ padding: 16 }}>
-        <YStack gap="$4" flex={1}>
+      <ScrollView flex={1}>
+        <YStack gap="$4" flex={1} px="$4" pb="$6">
           {renderStepContent()}
         </YStack>
       </ScrollView>
 
       <Separator />
 
-      <XStack padding="$4" justifyContent="space-between" backgroundColor="$background">
+      <XStack p="$4" justify="space-between" bg="$background">
         <Button
           size="$4"
-          disabled={currentStepIndex === 0 || currentStep === "confirmation"}
+          disabled={currentStepIndex === 0 || currentStep === 'confirmation'}
           onPress={previousStep}
-          theme="alt1"
         >
           Back
         </Button>
-        {currentStep !== "confirmation" && (
+        {currentStep !== 'confirmation' && (
           <Text fontSize="$2" color="$color9">
             Step {currentStepIndex + 1} of {steps.length}
           </Text>
         )}
       </XStack>
     </YStack>
-  );
+  )
 }
-
-

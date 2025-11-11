@@ -1,38 +1,38 @@
-import { memo, useMemo } from "react";
-import { Platform } from "react-native";
-import { Button, ScrollView, Switch, Text, TextArea, XStack, YStack } from "tamagui";
+import { memo, useMemo } from 'react'
+import { Platform } from 'react-native'
+import { Button, ScrollView, Switch, Text, TextArea, XStack, YStack } from 'tamagui'
 
-import type { ConsentDetails } from "../hooks/useBackgroundCheckForm";
+import type { ConsentDetails } from '../hooks/useBackgroundCheckForm'
 
 interface ConsentStepProps {
-  consent: ConsentDetails;
-  onChange: (updates: Partial<ConsentDetails>) => void;
-  onContinue: () => void;
+  consent: ConsentDetails
+  onChange: (updates: Partial<ConsentDetails>) => void
+  onContinue: () => void
 }
 
 const FCRA_DISCLOSURE = `
 By proceeding you acknowledge that Scaffolded Trades will obtain a consumer report
 (background check) for employment purposes. This report may include information about
 your criminal history, driving records, education, employment history, and other
-relevant records.`;
+relevant records.`
 
 const SUMMARY_OF_RIGHTS = `
 You have the right to request information about the nature and scope of any consumer
 report. If any adverse action is taken based on the report, you will receive a summary
-of your rights and have the opportunity to dispute inaccurate or incomplete information.`;
+of your rights and have the opportunity to dispute inaccurate or incomplete information.`
 
 export const ConsentStep = memo(function ConsentStep({
   consent,
   onChange,
   onContinue,
 }: ConsentStepProps) {
-  const canContinue = consent.acceptsDisclosure && consent.signature.trim().length > 1;
+  const canContinue = consent.acceptsDisclosure && consent.signature.trim().length > 1
 
   const signaturePlaceholder = useMemo(() => {
-    const now = new Date();
-    const localeDate = now.toLocaleDateString();
-    return `Type your full name (${localeDate})`;
-  }, []);
+    const now = new Date()
+    const localeDate = now.toLocaleDateString()
+    return `Type your full name (${localeDate})`
+  }, [])
 
   return (
     <YStack gap="$4" flex={1}>
@@ -47,8 +47,8 @@ export const ConsentStep = memo(function ConsentStep({
       </YStack>
 
       <ScrollView flex={1}>
-        <YStack gap="$4" paddingBottom="$6">
-          <YStack gap="$2" backgroundColor="$color2" padding="$4" borderRadius="$4">
+        <YStack gap="$4" pb="$6">
+          <YStack gap="$2" bg="$color2" p="$4" rounded="$4">
             <Text fontSize="$4" fontWeight="bold" color="$color12">
               FCRA Disclosure
             </Text>
@@ -57,7 +57,7 @@ export const ConsentStep = memo(function ConsentStep({
             </Text>
           </YStack>
 
-          <YStack gap="$2" backgroundColor="$color2" padding="$4" borderRadius="$4">
+          <YStack gap="$2" bg="$color2" p="$4" rounded="$4">
             <Text fontSize="$4" fontWeight="bold" color="$color12">
               Summary of Rights
             </Text>
@@ -67,14 +67,14 @@ export const ConsentStep = memo(function ConsentStep({
           </YStack>
 
           <YStack gap="$3">
-            <XStack gap="$3" alignItems="center">
+            <XStack gap="$3" items="center">
               <Switch
                 size="$3"
                 checked={consent.acceptsDisclosure}
                 onCheckedChange={(checked) => {
                   onChange({
                     acceptsDisclosure: checked,
-                  });
+                  })
                 }}
               >
                 <Switch.Thumb />
@@ -95,10 +95,10 @@ export const ConsentStep = memo(function ConsentStep({
                   onChange({
                     signature: value,
                     signedAt: value ? new Date().toISOString() : undefined,
-                    ipAddress: consent.ipAddress ?? "unknown",
+                    ipAddress: consent.ipAddress ?? 'unknown',
                     userAgent:
                       consent.userAgent ??
-                      (typeof navigator !== "undefined"
+                      (typeof navigator !== 'undefined'
                         ? navigator.userAgent
                         : `app/${Platform.OS}`),
                   })
@@ -123,7 +123,5 @@ export const ConsentStep = memo(function ConsentStep({
         Continue
       </Button>
     </YStack>
-  );
-});
-
-
+  )
+})

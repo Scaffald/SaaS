@@ -101,6 +101,12 @@ const getCheckOutputSchema = z.object({
   ),
 })
 
+const updatePrivacyInputSchema = z.object({
+  background_check_id: z.string().uuid(),
+  share_publicly: z.boolean(),
+  shared_with_organization_ids: z.array(z.string().uuid()).default([]),
+})
+
 const BACKGROUND_CHECK_BUCKET_ID = 'background-check-documents'
 const SIGNED_UPLOAD_URL_TTL_SECONDS = 60 * 5
 const MAX_DOCUMENT_SIZE_BYTES = 10 * 1024 * 1024
@@ -736,6 +742,71 @@ export const backgroundChecksRouter = t.router({
       }
 
       return data
+    }),
+
+  /**
+   * Update privacy controls for a background check record.
+   */
+  updatePrivacy: protectedProcedure
+    .input(updatePrivacyInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx
+
+      const { data: existing, error: fetchError } = await supabase
+        .schema('core')
+        .from('background_checks')
+        .select('metadata')
+        .eq('id', input.background_check_id)
+        .eq('user_id', user!.id)
+        .maybeSingle()
+
+      if (fetchError) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to load background check metadata',
+          cause: fetchError,
+        })
+      }
+
+      if (!existing) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Background check not found for user',
+        })
+      }
+
+      const existingMetadata =
+        existing.metadata && typeof existing.metadata === 'object' && !Array.isArray(existing.metadata)
+          ? (existing.metadata as Record<string, unknown>)
+          : {}
+
+      const updatedPrivacy = {
+        share_publicly: input.share_publicly,
+        shared_with_organization_ids: input.shared_with_organization_ids,
+      }
+
+      const updatedMetadata = mergeMetadata(existingMetadata, {
+        privacy: updatedPrivacy,
+      })
+
+      const { error: updateError } = await supabase
+        .schema('core')
+        .from('background_checks')
+        .update({ metadata: updatedMetadata })
+        .eq('id', input.background_check_id)
+        .eq('user_id', user!.id)
+
+      if (updateError) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update background check privacy settings',
+          cause: updateError,
+        })
+      }
+
+      return {
+        privacy: updatedPrivacy,
+      }
     }),
 
   /**
