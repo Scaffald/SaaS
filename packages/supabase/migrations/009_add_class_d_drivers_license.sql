@@ -5,7 +5,6 @@
 -- Requirement: REQ-35
 
 BEGIN;
-
 -- Update users with empty or null license classes to include Class D
 -- This assumes users who checked "I have a license" but didn't specify
 -- a class have the standard Class D license
@@ -20,7 +19,6 @@ WHERE (drivers_license_classes = ARRAY[]::text[] OR drivers_license_classes IS N
     OR hourly_rate_cents IS NOT NULL
     OR open_to_travel IS NOT NULL
   );
-
 -- Log the number of affected rows for verification
 DO $$
 DECLARE
@@ -29,6 +27,4 @@ BEGIN
   GET DIAGNOSTICS affected_count = ROW_COUNT;
   RAISE NOTICE 'Migration updated % users with Class D default', affected_count;
 END $$;
-
 COMMIT;
-

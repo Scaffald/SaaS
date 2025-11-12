@@ -7,11 +7,7 @@ export default function Screen() {
     <DashboardLayout
       showBreadcrumb={false}
       leftContent={<DashboardIndexLeft />}
-      rightContent={
-        <QuickLinksSidebar>
-          <DashboardIndexRight />
-        </QuickLinksSidebar>
-      }
+      rightContent={<DashboardIndexRight />}
     />
   )
 }

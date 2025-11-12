@@ -4,46 +4,38 @@
 -- =========================================================
 
 BEGIN;
-
 -- =========================================================
 -- SECTION 1: O*NET SCHEMA
 -- =========================================================
 
 -- Create dedicated schema for O*NET data
 CREATE SCHEMA IF NOT EXISTS onet;
-
 COMMENT ON SCHEMA onet IS 'O*NET 30.0 Database - Occupational Information Network (August 2025 release)';
-
 -- Permissions for O*NET schema
 GRANT USAGE ON SCHEMA onet TO service_role;
 GRANT ALL ON ALL TABLES IN SCHEMA onet TO service_role;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA onet TO service_role;
 ALTER DEFAULT PRIVILEGES IN SCHEMA onet GRANT ALL ON TABLES TO service_role;
 ALTER DEFAULT PRIVILEGES IN SCHEMA onet GRANT ALL ON SEQUENCES TO service_role;
-
 GRANT USAGE ON SCHEMA onet TO authenticated, anon;
 GRANT SELECT ON ALL TABLES IN SCHEMA onet TO authenticated, anon;
 ALTER DEFAULT PRIVILEGES IN SCHEMA onet GRANT SELECT ON TABLES TO authenticated, anon;
-
 CREATE TABLE IF NOT EXISTS onet.scales_reference (
   scale_id VARCHAR(3) NOT NULL,
   scale_name VARCHAR(50) NOT NULL,
   minimum DECIMAL(1,0) NOT NULL,
   maximum DECIMAL(3,0) NOT NULL,
   PRIMARY KEY (scale_id));
-
 CREATE TABLE IF NOT EXISTS onet.content_model_reference (
   element_id VARCHAR(20) NOT NULL,
   element_name VARCHAR(150) NOT NULL,
   description TEXT NOT NULL,
   PRIMARY KEY (element_id));
-
 CREATE TABLE IF NOT EXISTS onet.occupation_data (
   onetsoc_code CHAR(10) NOT NULL,
   title VARCHAR(150) NOT NULL,
   description TEXT NOT NULL,
   PRIMARY KEY (onetsoc_code));
-
 CREATE TABLE IF NOT EXISTS onet.job_zone_reference (
   job_zone DECIMAL(1,0) NOT NULL,
   name VARCHAR(50) NOT NULL,
@@ -53,7 +45,6 @@ CREATE TABLE IF NOT EXISTS onet.job_zone_reference (
   examples TEXT NOT NULL,
   svp_range VARCHAR(25) NOT NULL,
   PRIMARY KEY (job_zone));
-
 CREATE TABLE IF NOT EXISTS onet.unspsc_reference (
   commodity_code DECIMAL(8,0) NOT NULL,
   commodity_title VARCHAR(150) NOT NULL,
@@ -64,7 +55,6 @@ CREATE TABLE IF NOT EXISTS onet.unspsc_reference (
   segment_code DECIMAL(8,0) NOT NULL,
   segment_title VARCHAR(150) NOT NULL,
   PRIMARY KEY (commodity_code));
-
 CREATE TABLE IF NOT EXISTS onet.occupation_level_metadata (
   onetsoc_code CHAR(10) NOT NULL,
   item VARCHAR(150) NOT NULL,
@@ -73,7 +63,6 @@ CREATE TABLE IF NOT EXISTS onet.occupation_level_metadata (
   percent DECIMAL(4,1),
   date_updated DATE NOT NULL,
   FOREIGN KEY (onetsoc_code) REFERENCES onet.occupation_data (onetsoc_code));
-
 CREATE TABLE IF NOT EXISTS onet.ete_categories (
   element_id VARCHAR(20) NOT NULL,
   scale_id VARCHAR(3) NOT NULL,
@@ -614,15 +603,12 @@ CREATE TABLE IF NOT EXISTS onet.interests_illus_occupations (
   onetsoc_code CHAR(10) NOT NULL,
   FOREIGN KEY (element_id) REFERENCES onet.content_model_reference (element_id),
   FOREIGN KEY (onetsoc_code) REFERENCES onet.occupation_data (onetsoc_code));
-
-
 -- =========================================================
 -- SECTION 2: DATA SCHEMA (CSI + UNIVERSITIES)
 -- =========================================================
 
 -- Create data schema
 CREATE SCHEMA IF NOT EXISTS data;
-
 -- CSI MasterFormat Table
 CREATE TABLE data.masterformat (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -651,7 +637,6 @@ CREATE TABLE data.masterformat (
   -- Constraints
   CONSTRAINT csi_code_length CHECK (array_length(code, 1) = 4)
 );
-
 -- Universities Table
 CREATE TABLE data.universities (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -676,7 +661,6 @@ CREATE TABLE data.universities (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Certifications Catalog Table (hierarchical reference data)
 CREATE TABLE data.certifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -691,7 +675,6 @@ CREATE TABLE data.certifications (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- =========================================================
 -- SECTION 3: POLYMORPHIC SKILL ASSOCIATIONS
 -- =========================================================
@@ -703,7 +686,6 @@ CREATE TABLE data.certifications (
 DROP TABLE IF EXISTS core.user_skills CASCADE;
 DROP TABLE IF EXISTS core.job_skills CASCADE;
 DROP TABLE IF EXISTS core.organization_skills CASCADE;
-
 -- User Skills (Polymorphic)
 CREATE TABLE core.user_skills (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -740,12 +722,10 @@ CREATE TABLE core.user_skills (
   -- Prevent duplicate skills per user
   CONSTRAINT user_skills_unique UNIQUE (user_id, skill_taxonomy, csi_skill_id, onet_occupation_id)
 );
-
 -- Add foreign keys for polymorphic references
 ALTER TABLE core.user_skills
   ADD CONSTRAINT user_skills_csi_skill_id_fkey 
   FOREIGN KEY (csi_skill_id) REFERENCES data.masterformat(id) ON DELETE CASCADE;
-
 -- Note: onet_occupation_id FK will be added after O*NET data import (in 004_functions.sql)
 
 -- Job Skills (Polymorphic)
@@ -781,12 +761,10 @@ CREATE TABLE core.job_skills (
   -- Prevent duplicate skills per job
   CONSTRAINT job_skills_unique UNIQUE (job_id, skill_taxonomy, csi_skill_id, onet_occupation_id)
 );
-
 -- Add foreign keys
 ALTER TABLE core.job_skills
   ADD CONSTRAINT job_skills_csi_skill_id_fkey 
   FOREIGN KEY (csi_skill_id) REFERENCES data.masterformat(id) ON DELETE CASCADE;
-
 -- Organization Skills (Polymorphic)
 CREATE TABLE core.organization_skills (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -817,12 +795,10 @@ CREATE TABLE core.organization_skills (
   -- Prevent duplicate skills per organization
   CONSTRAINT org_skills_unique UNIQUE (organization_id, skill_taxonomy, csi_skill_id, onet_occupation_id)
 );
-
 -- Add foreign keys
 ALTER TABLE core.organization_skills
   ADD CONSTRAINT org_skills_csi_skill_id_fkey 
   FOREIGN KEY (csi_skill_id) REFERENCES data.masterformat(id) ON DELETE CASCADE;
-
 -- =========================================================
 -- SECTION 4: PERMISSIONS
 -- =========================================================
@@ -830,10 +806,8 @@ ALTER TABLE core.organization_skills
 -- Data schema permissions
 GRANT ALL ON SCHEMA data TO service_role;
 GRANT ALL ON ALL TABLES IN SCHEMA data TO service_role;
-
 GRANT USAGE ON SCHEMA data TO authenticated, anon;
 GRANT SELECT ON ALL TABLES IN SCHEMA data TO authenticated, anon;
-
 -- =========================================================
 -- SECTION 5: DEFAULT ROLES
 -- =========================================================
@@ -843,9 +817,7 @@ INSERT INTO core.roles (scope, name, description) VALUES
   ('platform', 'worker', 'Default role for all platform users'),
   ('platform', 'office', 'Office staff with administrative access')
 ON CONFLICT (name) DO NOTHING;
-
 COMMIT;
-
 -- =========================================================
 -- POST-COMMIT NOTES
 -- =========================================================
@@ -867,4 +839,4 @@ COMMIT;
 --      FOREIGN KEY (onet_occupation_id) 
 --      REFERENCES onet.occupation_data(onetsoc_code) ON DELETE CASCADE;
 -- 
--- =========================================================
+-- =========================================================;

@@ -177,7 +177,8 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
     const syncAnalyticsConsent = async () => {
       try {
         if (hasPerformanceConsent) {
-          await initAnalytics({ hasConsent: true, debug: __DEV__ })
+          // TODO: Uncomment this when we have a way to test analytics
+          // await initAnalytics({ hasConsent: true, debug: __DEV__ })
           if (cancelled) return
           const client = getAnalyticsClient()
           if (client) {
@@ -217,7 +218,8 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
 
     const syncAnalyticsIdentity = async () => {
       try {
-        await initAnalytics({ hasConsent: true, debug: __DEV__ })
+        // TODO: Uncomment this when we have a way to test analytics
+        // await initAnalytics({ hasConsent: true, debug: __DEV__ })
         if (cancelled) return
 
         const client = getAnalyticsClient()
@@ -276,7 +278,7 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
           if (previousUserIdRef.current) {
             const reason = lastSignOutReasonRef.current ?? 'session_timeout'
             if (!lastSignOutReasonRef.current) {
-            await captureEventWithQueue('user_signed_out', { reason })
+              await captureEventWithQueue('user_signed_out', { reason })
             }
           }
           client.reset()

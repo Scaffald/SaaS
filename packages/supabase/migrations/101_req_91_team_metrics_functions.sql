@@ -343,6 +343,7 @@ LANGUAGE plpgsql
 AS $$
 DECLARE
   v_count INTEGER := 0;
+  v_team RECORD;
 BEGIN
   FOR v_team IN
     SELECT id

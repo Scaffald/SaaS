@@ -2,7 +2,6 @@
 -- Ghost profile detection, scoring view, and cron scheduling
 
 BEGIN;
-
 -- =====================================================================
 -- Weighted completion scoring view
 -- =====================================================================
@@ -54,10 +53,8 @@ SELECT
   )::integer AS completion_score
 FROM core.profile p
 JOIN core.users u ON u.id = p.user_id;
-
 COMMENT ON VIEW core.v_profile_completion_scores IS
   'Weighted profile completion score (0-100) per user.';
-
 -- =====================================================================
 -- Ghost profile refresh function
 -- =====================================================================
@@ -114,10 +111,8 @@ BEGIN
   WHERE prefs.user_id = flagged.user_id;
 END;
 $$;
-
 COMMENT ON FUNCTION core.refresh_ghost_profiles IS
   'Evaluates completion scores and flags profiles <50% complete after 30 days.';
-
 -- =====================================================================
 -- Cron scheduling (weekly, Monday 03:00 UTC)
 -- =====================================================================
@@ -137,7 +132,6 @@ BEGIN
   END IF;
 END;
 $$;
-
 -- =====================================================================
 -- Deterministic coordinate jitter function (ensure updated signature)
 -- =====================================================================
@@ -159,10 +153,8 @@ AS $$
     ))::bit(32)::bigint::double precision / 4294967295.0 * 2 - 1
   ) * max_offset_degrees;
 $$;
-
 COMMENT ON FUNCTION core.jitter_coordinate_deterministic IS 
   'Adds deterministic offset to coordinate for privacy using user ID hash. Coordinates remain stable across queries while maintaining privacy. Use coord_type ''lng'' for longitude, ''lat'' for latitude. Default ±0.03° (≈2-3km depending on latitude).';
-
 -- =====================================================================
 -- Search view update with ghost penalty
 -- =====================================================================
@@ -206,9 +198,6 @@ LEFT JOIN core.profile pp ON pp.user_id = u.id
 LEFT JOIN core.preferences prefs ON prefs.user_id = u.id
 LEFT JOIN core.industries i ON i.id = u.industry_id
 WHERE pp.geo IS NOT NULL;
-
 COMMENT ON VIEW core.v_profile_search IS 
   'Public worker search view with ghost profile suppression.';
-
 COMMIT;
-

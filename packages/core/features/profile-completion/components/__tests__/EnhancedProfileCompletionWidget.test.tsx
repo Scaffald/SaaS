@@ -7,20 +7,6 @@ import type { CompletionStatus } from '../../hooks/useCompletionStatus'
 import type { EnhancedProfileCompletionWidgetProps } from '../EnhancedProfileCompletionWidget'
 import { EnhancedProfileCompletionWidget } from '../EnhancedProfileCompletionWidget'
 
-type CompletionStatusHookReturn = {
-  status: CompletionStatus | null
-  isLoading: boolean
-  isError: boolean
-  refetch: () => unknown
-  userType: 'worker' | 'employer'
-}
-
-const useCompletionStatusMock = vi.fn<[], CompletionStatusHookReturn>()
-
-vi.mock('../../hooks/useCompletionStatus', () => ({
-  useCompletionStatus: useCompletionStatusMock,
-}))
-
 vi.mock('../../constants/sectionMetadata', () => ({
   resolveSectionMetadata: (sectionId: string) => ({
     id: sectionId,
@@ -67,13 +53,21 @@ vi.mock('tamagui', () => {
     children,
     onPress,
     disabled,
+    accessibilityLabel,
     ...rest
   }: {
     children?: ReactNode
     onPress?: () => void
     disabled?: boolean
+    accessibilityLabel?: string
   } & Record<string, unknown>) => (
-    <button type="button" onClick={onPress} disabled={disabled} {...rest}>
+    <button
+      type="button"
+      onClick={onPress}
+      disabled={disabled}
+      aria-label={typeof accessibilityLabel === 'string' ? accessibilityLabel : undefined}
+      {...rest}
+    >
       {children}
     </button>
   )
@@ -185,26 +179,14 @@ describe('EnhancedProfileCompletionWidget', () => {
     totalBenefits: 3,
     hasMultipleBenefits: true,
     isBenefitLoading: false,
+    completionStatus: baseStatus,
+    isStatusLoading: false,
   }
 
-  const renderWidget = (
-    statusOverride?: Partial<CompletionStatusHookReturn>,
-    propsOverride?: Partial<EnhancedProfileCompletionWidgetProps>,
-  ) => {
-    useCompletionStatusMock.mockReturnValue({
-      status: baseStatus,
-      isLoading: false,
-      isError: false,
-      refetch: vi.fn(),
-      userType: 'worker',
-      ...statusOverride,
-    })
-
-    return render(<EnhancedProfileCompletionWidget {...baseProps} {...propsOverride} />)
-  }
+  const renderWidget = (propsOverride?: Partial<EnhancedProfileCompletionWidgetProps>) =>
+    render(<EnhancedProfileCompletionWidget {...baseProps} {...propsOverride} />)
 
   beforeEach(() => {
-    useCompletionStatusMock.mockReset()
     onStartWizard.mockReset()
     onOpenImport.mockReset()
     advanceBenefit.mockReset()
@@ -213,34 +195,26 @@ describe('EnhancedProfileCompletionWidget', () => {
   })
 
   it('renders loading state while completion status loads', () => {
-    renderWidget(
-      {
-        status: null,
-        isLoading: true,
-      },
-      {
-        currentBenefit: null,
-        hasMultipleBenefits: false,
-        isBenefitLoading: true,
-        totalBenefits: 1,
-      },
-    )
+    renderWidget({
+      completionStatus: null,
+      isStatusLoading: true,
+      currentBenefit: null,
+      hasMultipleBenefits: false,
+      isBenefitLoading: true,
+      totalBenefits: 1,
+    })
 
     expect(screen.getByText('Loading profile insights...')).toBeInTheDocument()
   })
 
   it('returns null when status is unavailable after loading', () => {
-    const { container } = renderWidget(
-      {
-        status: null,
-      },
-      {
-        currentBenefit: null,
-        hasMultipleBenefits: false,
-        isBenefitLoading: false,
-        totalBenefits: 1,
-      },
-    )
+    const { container } = renderWidget({
+      completionStatus: null,
+      currentBenefit: null,
+      hasMultipleBenefits: false,
+      isBenefitLoading: false,
+      totalBenefits: 1,
+    })
 
     expect(container).toBeEmptyDOMElement()
   })
@@ -253,7 +227,6 @@ describe('EnhancedProfileCompletionWidget', () => {
     expect(screen.getByText('42%')).toBeInTheDocument()
     expect(screen.getByText('1 sections remaining')).toBeInTheDocument()
     expect(screen.getByTestId('milestone')).toHaveTextContent('25% Complete')
-    expect(screen.getByText('Show another tip')).toBeInTheDocument()
     expect(
       screen.getByText(/Suggested section: Skills • Unlock 3 new opportunities/i),
     ).toBeInTheDocument()
@@ -268,16 +241,18 @@ describe('EnhancedProfileCompletionWidget', () => {
     fireEvent.click(screen.getByText('Import Data'))
     expect(onOpenImport).toHaveBeenCalledTimes(1)
 
-    fireEvent.click(screen.getByText('Show another tip'))
+    fireEvent.click(screen.getByRole('button', { name: 'View next profile suggestion' }))
     expect(advanceBenefit).toHaveBeenCalledTimes(1)
   })
 
   it('shows fallback messaging when benefit data is loading', () => {
-    renderWidget(undefined, {
+    renderWidget({
       currentBenefit: null,
       hasMultipleBenefits: false,
       isBenefitLoading: true,
       totalBenefits: 1,
+      completionStatus: baseStatus,
+      isStatusLoading: false,
     })
 
     expect(screen.getByText('Gathering personalized suggestions…')).toBeInTheDocument()

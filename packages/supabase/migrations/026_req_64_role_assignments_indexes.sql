@@ -4,8 +4,6 @@
 -- =========================================================
 
 BEGIN;
-
 CREATE INDEX IF NOT EXISTS role_assignments_user_id_idx
   ON core.role_assignments(user_id);
-
 COMMIT;

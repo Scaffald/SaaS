@@ -4,7 +4,6 @@
 -- =========================================================
 
 BEGIN;
-
 -- =========================================================
 -- Extend notification type enum with planned event types
 -- =========================================================
@@ -31,7 +30,6 @@ BEGIN
   END LOOP;
 END;
 $$;
-
 -- =========================================================
 -- Create new enums if they do not already exist
 -- =========================================================
@@ -47,7 +45,6 @@ BEGIN
   END IF;
 END
 $$;
-
 DO $$
 BEGIN
   IF NOT EXISTS (
@@ -60,7 +57,6 @@ BEGIN
   END IF;
 END
 $$;
-
 DO $$
 BEGIN
   IF NOT EXISTS (
@@ -75,7 +71,6 @@ BEGIN
   END IF;
 END
 $$;
-
 DO $$
 BEGIN
   IF NOT EXISTS (
@@ -90,7 +85,6 @@ BEGIN
   END IF;
 END
 $$;
-
 DO $$
 BEGIN
   IF NOT EXISTS (
@@ -105,7 +99,6 @@ BEGIN
   END IF;
 END
 $$;
-
 -- =========================================================
 -- Extend core.notifications table
 -- =========================================================
@@ -124,7 +117,6 @@ BEGIN
   END IF;
 END
 $$;
-
 -- Add new columns if missing
 ALTER TABLE core.notifications
   ADD COLUMN IF NOT EXISTS severity core.notification_severity NOT NULL DEFAULT 'info',
@@ -136,27 +128,22 @@ ALTER TABLE core.notifications
   ADD COLUMN IF NOT EXISTS archived_at TIMESTAMPTZ,
   ADD COLUMN IF NOT EXISTS routed_channels core.notification_channel[] NOT NULL DEFAULT ARRAY['in_app']::core.notification_channel[],
   ADD COLUMN IF NOT EXISTS metadata JSONB NOT NULL DEFAULT '{}'::jsonb;
-
 -- Ensure read column defaults to false
 ALTER TABLE core.notifications
   ALTER COLUMN read SET DEFAULT false;
-
 -- Backfill body preview data from legacy message column when available
 UPDATE core.notifications
 SET body = jsonb_build_object('preview', message)
 WHERE (body IS NULL OR body = '{}'::jsonb)
   AND message IS NOT NULL;
-
 -- Deduplicate key index for idempotency
 CREATE UNIQUE INDEX IF NOT EXISTS notifications_dedupe_key_idx
   ON core.notifications(dedupe_key)
   WHERE dedupe_key IS NOT NULL;
-
 -- Maintain routed channel index for unread queries
 CREATE INDEX IF NOT EXISTS notifications_unread_idx
   ON core.notifications(user_id)
   WHERE read = false;
-
 -- =========================================================
 -- Delivery Attempts Table
 -- =========================================================
@@ -174,22 +161,17 @@ CREATE TABLE IF NOT EXISTS core.notification_deliveries (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS notification_deliveries_queue_idx
   ON core.notification_deliveries(status, next_attempt_at)
   WHERE status IN ('queued','sending');
-
 CREATE INDEX IF NOT EXISTS notification_deliveries_notification_idx
   ON core.notification_deliveries(notification_id);
-
 CREATE INDEX IF NOT EXISTS notification_deliveries_provider_idx
   ON core.notification_deliveries(provider_msg_id)
   WHERE provider_msg_id IS NOT NULL;
-
 CREATE TRIGGER notification_deliveries_set_updated_at
   BEFORE UPDATE ON core.notification_deliveries
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
-
 -- =========================================================
 -- Delivery Events Table
 -- =========================================================
@@ -202,13 +184,10 @@ CREATE TABLE IF NOT EXISTS core.notification_events (
   meta JSONB,
   occurred_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS notification_events_notification_idx
   ON core.notification_events(notification_id, occurred_at DESC);
-
 CREATE INDEX IF NOT EXISTS notification_events_delivery_idx
   ON core.notification_events(delivery_id, occurred_at DESC);
-
 -- =========================================================
 -- Notification Preferences Table
 -- =========================================================
@@ -222,11 +201,9 @@ CREATE TABLE IF NOT EXISTS core.notification_preferences (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 CREATE TRIGGER notification_preferences_set_updated_at
   BEFORE UPDATE ON core.notification_preferences
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
-
 -- =========================================================
 -- Notification Devices Table
 -- =========================================================
@@ -241,17 +218,13 @@ CREATE TABLE IF NOT EXISTS core.notification_devices (
   metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
   CONSTRAINT notification_devices_user_token_unique UNIQUE(user_id, token)
 );
-
 CREATE INDEX IF NOT EXISTS notification_devices_user_idx
   ON core.notification_devices(user_id);
-
 CREATE INDEX IF NOT EXISTS notification_devices_token_idx
   ON core.notification_devices(token);
-
 CREATE TRIGGER notification_devices_set_updated_at
   BEFORE UPDATE ON core.notification_devices
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
-
 -- =========================================================
 -- Notification Digest Queue Table
 -- =========================================================
@@ -269,14 +242,11 @@ CREATE TABLE IF NOT EXISTS core.notification_digest_queue (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   CONSTRAINT notification_digest_queue_unique UNIQUE(user_id, type, bucket)
 );
-
 CREATE INDEX IF NOT EXISTS notification_digest_queue_bucket_idx
   ON core.notification_digest_queue(bucket, last_event_at DESC);
-
 CREATE TRIGGER notification_digest_queue_set_updated_at
   BEFORE UPDATE ON core.notification_digest_queue
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
-
 -- =========================================================
 -- Row Level Security Policies
 -- =========================================================
@@ -286,36 +256,30 @@ DROP POLICY IF EXISTS notifications_select_own ON core.notifications;
 DROP POLICY IF EXISTS notifications_update_own ON core.notifications;
 DROP POLICY IF EXISTS notifications_insert_service_role ON core.notifications;
 DROP POLICY IF EXISTS notifications_insert_own ON core.notifications;
-
 CREATE POLICY notifications_select_own
   ON core.notifications
   FOR SELECT
   TO authenticated
   USING (user_id = auth.uid());
-
 CREATE POLICY notifications_update_own
   ON core.notifications
   FOR UPDATE
   TO authenticated
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
-
 CREATE POLICY notifications_insert_service_role
   ON core.notifications
   FOR INSERT
   TO service_role
   WITH CHECK (true);
-
 CREATE POLICY notifications_insert_own
   ON core.notifications
   FOR INSERT
   TO authenticated
   WITH CHECK (user_id = auth.uid());
-
 -- Deliveries policies
 DROP POLICY IF EXISTS notification_deliveries_select_own ON core.notification_deliveries;
 DROP POLICY IF EXISTS notification_deliveries_service_all ON core.notification_deliveries;
-
 CREATE POLICY notification_deliveries_select_own
   ON core.notification_deliveries
   FOR SELECT
@@ -323,18 +287,15 @@ CREATE POLICY notification_deliveries_select_own
   USING (notification_id IN (
     SELECT id FROM core.notifications WHERE user_id = auth.uid()
   ));
-
 CREATE POLICY notification_deliveries_service_all
   ON core.notification_deliveries
   FOR ALL
   TO service_role
   USING (true)
   WITH CHECK (true);
-
 -- Events policies
 DROP POLICY IF EXISTS notification_events_select_own ON core.notification_events;
 DROP POLICY IF EXISTS notification_events_service_all ON core.notification_events;
-
 CREATE POLICY notification_events_select_own
   ON core.notification_events
   FOR SELECT
@@ -342,89 +303,72 @@ CREATE POLICY notification_events_select_own
   USING (notification_id IN (
     SELECT id FROM core.notifications WHERE user_id = auth.uid()
   ));
-
 CREATE POLICY notification_events_service_all
   ON core.notification_events
   FOR ALL
   TO service_role
   USING (true)
   WITH CHECK (true);
-
 -- Preferences policies
 DROP POLICY IF EXISTS notification_preferences_user_all ON core.notification_preferences;
 DROP POLICY IF EXISTS notification_preferences_service_all ON core.notification_preferences;
-
 CREATE POLICY notification_preferences_user_all
   ON core.notification_preferences
   FOR ALL
   TO authenticated
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
-
 CREATE POLICY notification_preferences_service_all
   ON core.notification_preferences
   FOR ALL
   TO service_role
   USING (true)
   WITH CHECK (true);
-
 -- Devices policies
 DROP POLICY IF EXISTS notification_devices_user_all ON core.notification_devices;
 DROP POLICY IF EXISTS notification_devices_service_all ON core.notification_devices;
-
 CREATE POLICY notification_devices_user_all
   ON core.notification_devices
   FOR ALL
   TO authenticated
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
-
 CREATE POLICY notification_devices_service_all
   ON core.notification_devices
   FOR ALL
   TO service_role
   USING (true)
   WITH CHECK (true);
-
 -- Digest queue policies
 DROP POLICY IF EXISTS notification_digest_queue_select_own ON core.notification_digest_queue;
 DROP POLICY IF EXISTS notification_digest_queue_service_all ON core.notification_digest_queue;
-
 CREATE POLICY notification_digest_queue_select_own
   ON core.notification_digest_queue
   FOR SELECT
   TO authenticated
   USING (user_id = auth.uid());
-
 CREATE POLICY notification_digest_queue_service_all
   ON core.notification_digest_queue
   FOR ALL
   TO service_role
   USING (true)
   WITH CHECK (true);
-
 -- =========================================================
 -- Grants
 -- =========================================================
 
 GRANT SELECT, INSERT, UPDATE ON core.notifications TO authenticated;
 GRANT ALL ON core.notifications TO service_role;
-
 GRANT SELECT ON core.notification_deliveries TO authenticated;
 GRANT ALL ON core.notification_deliveries TO service_role;
-
 GRANT SELECT ON core.notification_events TO authenticated;
 GRANT ALL ON core.notification_events TO service_role;
-
 GRANT SELECT, INSERT, UPDATE, DELETE ON core.notification_preferences TO authenticated;
 GRANT ALL ON core.notification_preferences TO service_role;
-
 GRANT SELECT, INSERT, UPDATE, DELETE ON core.notification_devices TO authenticated;
 GRANT ALL ON core.notification_devices TO service_role;
-
 GRANT SELECT ON core.notification_digest_queue TO authenticated;
 GRANT ALL ON core.notification_digest_queue TO service_role;
-
 -- =========================================================
 -- Cron scheduling for notification workers
 -- =========================================================
@@ -524,5 +468,4 @@ BEGIN
   END IF;
 END;
 $$;
-
 COMMIT;

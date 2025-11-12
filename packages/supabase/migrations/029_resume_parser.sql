@@ -4,7 +4,6 @@
 -- =========================================================
 
 BEGIN;
-
 -- =========================================================
 -- SECTION 1: RESUME UPLOADS TABLE
 -- =========================================================
@@ -25,25 +24,18 @@ CREATE TABLE IF NOT EXISTS core.resume_uploads (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 COMMENT ON TABLE core.resume_uploads
   IS 'Tracks user resume uploads stored in Supabase storage for AI parsing.';
-
 COMMENT ON COLUMN core.resume_uploads.parsing_errors
   IS 'JSON payload capturing parsing failures by section.';
-
 CREATE INDEX IF NOT EXISTS resume_uploads_user_idx
   ON core.resume_uploads (user_id, uploaded_at DESC);
-
 CREATE INDEX IF NOT EXISTS resume_uploads_status_idx
   ON core.resume_uploads (parsing_status);
-
 CREATE TRIGGER resume_uploads_set_updated_at
   BEFORE UPDATE ON core.resume_uploads
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
-
 ALTER TABLE core.resume_uploads ENABLE ROW LEVEL SECURITY;
-
 DROP POLICY IF EXISTS "Users can manage their own resume uploads" ON core.resume_uploads;
 CREATE POLICY "Users can manage their own resume uploads"
   ON core.resume_uploads
@@ -51,10 +43,8 @@ CREATE POLICY "Users can manage their own resume uploads"
   TO authenticated
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
-
 GRANT ALL ON TABLE core.resume_uploads TO service_role;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE core.resume_uploads TO authenticated;
-
 -- =========================================================
 -- SECTION 2: RESUME WIZARD STATE TABLE
 -- =========================================================
@@ -72,28 +62,20 @@ CREATE TABLE IF NOT EXISTS core.resume_wizard_state (
   completed_at TIMESTAMPTZ,
   UNIQUE (user_id, resume_id)
 );
-
 COMMENT ON TABLE core.resume_wizard_state
   IS 'Persisted progress for resume import wizard including parsed data.';
-
 COMMENT ON COLUMN core.resume_wizard_state.parsed_data
   IS 'Parsed resume sections stored for the review wizard.';
-
 COMMENT ON COLUMN core.resume_wizard_state.errors
   IS 'Parsing error metadata surfaced to the review wizard.';
-
 CREATE INDEX IF NOT EXISTS resume_wizard_state_user_idx
   ON core.resume_wizard_state (user_id, updated_at DESC);
-
 CREATE INDEX IF NOT EXISTS resume_wizard_state_resume_idx
   ON core.resume_wizard_state (resume_id);
-
 CREATE TRIGGER resume_wizard_state_set_updated_at
   BEFORE UPDATE ON core.resume_wizard_state
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
-
 ALTER TABLE core.resume_wizard_state ENABLE ROW LEVEL SECURITY;
-
 DROP POLICY IF EXISTS "Users can manage their own resume wizard state" ON core.resume_wizard_state;
 CREATE POLICY "Users can manage their own resume wizard state"
   ON core.resume_wizard_state
@@ -101,10 +83,8 @@ CREATE POLICY "Users can manage their own resume wizard state"
   TO authenticated
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
-
 GRANT ALL ON TABLE core.resume_wizard_state TO service_role;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE core.resume_wizard_state TO authenticated;
-
 -- =========================================================
 -- SECTION 3: RESUMES STORAGE BUCKET
 -- =========================================================
@@ -128,7 +108,6 @@ VALUES (
   ]
 )
 ON CONFLICT (id) DO NOTHING;
-
 DROP POLICY IF EXISTS "Users can read their own resume" ON storage.objects;
 CREATE POLICY "Users can read their own resume"
   ON storage.objects
@@ -137,7 +116,6 @@ CREATE POLICY "Users can read their own resume"
     bucket_id = 'resumes'
     AND auth.uid()::TEXT = (storage.foldername(name))[1]
   );
-
 DROP POLICY IF EXISTS "Users can upload their own resume" ON storage.objects;
 CREATE POLICY "Users can upload their own resume"
   ON storage.objects
@@ -146,7 +124,6 @@ CREATE POLICY "Users can upload their own resume"
     bucket_id = 'resumes'
     AND auth.uid()::TEXT = (storage.foldername(name))[1]
   );
-
 DROP POLICY IF EXISTS "Users can update their own resume" ON storage.objects;
 CREATE POLICY "Users can update their own resume"
   ON storage.objects
@@ -155,7 +132,6 @@ CREATE POLICY "Users can update their own resume"
     bucket_id = 'resumes'
     AND auth.uid()::TEXT = (storage.foldername(name))[1]
   );
-
 DROP POLICY IF EXISTS "Users can delete their own resume" ON storage.objects;
 CREATE POLICY "Users can delete their own resume"
   ON storage.objects
@@ -164,7 +140,4 @@ CREATE POLICY "Users can delete their own resume"
     bucket_id = 'resumes'
     AND auth.uid()::TEXT = (storage.foldername(name))[1]
   );
-
 COMMIT;
-
-

@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Button, Sheet, Text, YStack } from 'tamagui'
 import { EnhancedProfileCompletionWidget } from './EnhancedProfileCompletionWidget'
 import { ProfileCompletionModal } from './ProfileCompletionModal'
 import { ProfileWizard } from '@app/core/features/profile-wizard/components/ProfileWizard'
 import { useCompletionStatus } from '../hooks/useCompletionStatus'
+import type { CompletionStatus } from '../hooks/useCompletionStatus'
 import { useCompletionNudges } from '../hooks/useCompletionNudges'
+import type { PersonalizedBenefit } from '../hooks/useCompletionNudges'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 import { ROUTES } from '@app/core/constants/routes'
@@ -26,8 +28,11 @@ export function ProfileCompletionExperience() {
   const dismissNudgeMutation = api.profile.dismissNudge.useMutation()
   const [isWizardOpen, setIsWizardOpen] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [modalMode, setModalMode] = useState<'first-login' | 'progress-reminder'>('progress-reminder')
+  const [modalMode, setModalMode] = useState<'first-login' | 'progress-reminder'>(
+    'progress-reminder'
+  )
   const dismissedThisSessionRef = useRef(false)
+  const previousWizardOpenRef = useRef(isWizardOpen)
   const router = useRouter()
 
   useEffect(() => {
@@ -35,7 +40,8 @@ export function ProfileCompletionExperience() {
 
     if (dismissedThisSessionRef.current) return
 
-    const stored = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_MODAL_KEY) : null
+    const stored =
+      typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_MODAL_KEY) : null
     const hasDismissedThisSession = stored === 'true'
 
     if (!hasDismissedThisSession && status.shouldShowWizard) {
@@ -57,6 +63,14 @@ export function ProfileCompletionExperience() {
     return 'Complete your profile to unlock badges and appear in featured searches.'
   }, [currentBenefit, status])
 
+  useEffect(() => {
+    const wasOpen = previousWizardOpenRef.current
+    if (wasOpen && !isWizardOpen) {
+      void refetch()
+    }
+    previousWizardOpenRef.current = isWizardOpen
+  }, [isWizardOpen, refetch])
+
   const recordDismiss = useCallback(
     (reason: string) => {
       dismissNudgeMutation.mutate({
@@ -64,7 +78,7 @@ export function ProfileCompletionExperience() {
         reason,
       })
     },
-    [dismissNudgeMutation],
+    [dismissNudgeMutation]
   )
 
   const dismissModal = useCallback(
@@ -73,10 +87,15 @@ export function ProfileCompletionExperience() {
       if (typeof sessionStorage !== 'undefined') {
         sessionStorage.setItem(SESSION_MODAL_KEY, 'true')
       }
+      dismissedThisSessionRef.current = true
       recordDismiss(reason)
     },
-    [recordDismiss],
+    [recordDismiss]
   )
+
+  const handleModalDismiss = useCallback(() => {
+    dismissModal('user_dismissed_modal')
+  }, [dismissModal])
 
   const handleStartWizard = useCallback(() => {
     dismissModal('started_wizard')
@@ -90,7 +109,7 @@ export function ProfileCompletionExperience() {
     }
   }, [])
 
-  const navigateToImportReview = useCallback(() => {
+  const handleUploadResume = useCallback(() => {
     dismissModal('opened_import_review')
     setIsWizardOpen(false)
     router.push(ROUTES.DASHBOARD_PROFILE_IMPORT_REVIEW.path)
@@ -98,8 +117,7 @@ export function ProfileCompletionExperience() {
 
   const handleWizardClosed = useCallback(() => {
     setIsWizardOpen(false)
-    void refetch()
-  }, [refetch])
+  }, [])
 
   const handleViewProfile = useCallback(() => {
     router.push(ROUTES.DASHBOARD_PROFILE_GENERAL.path)
@@ -107,9 +125,9 @@ export function ProfileCompletionExperience() {
 
   return (
     <YStack gap="$4">
-      <EnhancedProfileCompletionWidget
-        onStartWizard={handleWidgetStart}
-        onOpenImport={navigateToImportReview}
+      <ProfileCompletionExperienceWidgetSection
+        status={status}
+        isStatusLoading={isLoading}
         currentBenefit={currentBenefit}
         advanceBenefit={advanceMessage}
         retreatBenefit={retreatMessage}
@@ -118,54 +136,152 @@ export function ProfileCompletionExperience() {
         totalBenefits={totalCount}
         hasMultipleBenefits={hasMultiple}
         isBenefitLoading={isBenefitLoading}
+        onStartWizard={handleWidgetStart}
+        onOpenImport={handleUploadResume}
       />
 
-      <ProfileCompletionModal
+      <ProfileCompletionExperienceModal
         open={isModalOpen}
         mode={modalMode}
         completionPercentage={status?.completionPercentage ?? 0}
         benefitMessage={benefitMessage}
         onStartWizard={handleStartWizard}
-        onUploadResume={navigateToImportReview}
-        onDismiss={() => dismissModal('user_dismissed_modal')}
+        onUploadResume={handleUploadResume}
+        onDismiss={handleModalDismiss}
       />
 
-      <Sheet
+      <ProfileCompletionWizardSheet
         open={isWizardOpen}
-        onOpenChange={(value: boolean) => {
-          setIsWizardOpen(value)
-          if (!value) {
-            void refetch()
-          }
-        }}
-        snapPoints={[90]}
-        modal
-        dismissOnSnapToBottom
-      >
-        <Sheet.Overlay />
-        <Sheet.Frame bg="$background" aria-label="Profile completion wizard">
-          <Sheet.Handle />
-          <YStack p="$4" gap="$4" flex={1}>
-            <YStack gap="$2">
-              <Text fontSize="$6" fontWeight="700">
-                Complete Your Profile
-              </Text>
-              <Text color="$color11">We’ll auto-save as you go. You can exit anytime.</Text>
-            </YStack>
-            <ProfileWizard
-              onSuccess={handleWizardClosed}
-              onCancel={handleWizardClosed}
-              onUploadResume={navigateToImportReview}
-              onViewProfile={handleViewProfile}
-            />
-            <Button size="$4" variant="outlined" onPress={() => setIsWizardOpen(false)}>
-              Close
-            </Button>
-          </YStack>
-        </Sheet.Frame>
-      </Sheet>
+        onOpenChange={setIsWizardOpen}
+        onClose={handleWizardClosed}
+        onUploadResume={handleUploadResume}
+        onViewProfile={handleViewProfile}
+      />
     </YStack>
   )
 }
 
+interface ProfileCompletionExperienceWidgetSectionProps {
+  status: CompletionStatus | null
+  isStatusLoading: boolean
+  currentBenefit: PersonalizedBenefit | null
+  advanceBenefit: () => void
+  retreatBenefit: () => void
+  goToBenefit: (index: number) => void
+  currentBenefitIndex: number
+  totalBenefits: number
+  hasMultipleBenefits: boolean
+  isBenefitLoading: boolean
+  onStartWizard: () => void
+  onOpenImport: () => void
+}
 
+const ProfileCompletionExperienceWidgetSection = memo(
+  function ProfileCompletionExperienceWidgetSection({
+    status,
+    isStatusLoading,
+    currentBenefit,
+    advanceBenefit,
+    retreatBenefit,
+    goToBenefit,
+    currentBenefitIndex,
+    totalBenefits,
+    hasMultipleBenefits,
+    isBenefitLoading,
+    onStartWizard,
+    onOpenImport,
+  }: ProfileCompletionExperienceWidgetSectionProps) {
+    return (
+      <EnhancedProfileCompletionWidget
+        onStartWizard={onStartWizard}
+        onOpenImport={onOpenImport}
+        currentBenefit={currentBenefit}
+        advanceBenefit={advanceBenefit}
+        retreatBenefit={retreatBenefit}
+        goToBenefit={goToBenefit}
+        currentBenefitIndex={currentBenefitIndex}
+        totalBenefits={totalBenefits}
+        hasMultipleBenefits={hasMultipleBenefits}
+        isBenefitLoading={isBenefitLoading}
+        completionStatus={status}
+        isStatusLoading={isStatusLoading}
+      />
+    )
+  }
+)
+
+interface ProfileCompletionExperienceModalProps {
+  open: boolean
+  mode: 'first-login' | 'progress-reminder'
+  completionPercentage: number
+  benefitMessage: string
+  onStartWizard: () => void
+  onUploadResume: () => void
+  onDismiss: () => void
+}
+
+const ProfileCompletionExperienceModal = memo(function ProfileCompletionExperienceModal({
+  open,
+  mode,
+  completionPercentage,
+  benefitMessage,
+  onStartWizard,
+  onUploadResume,
+  onDismiss,
+}: ProfileCompletionExperienceModalProps) {
+  return (
+    <ProfileCompletionModal
+      open={open}
+      mode={mode}
+      completionPercentage={completionPercentage}
+      benefitMessage={benefitMessage}
+      onStartWizard={onStartWizard}
+      onUploadResume={onUploadResume}
+      onDismiss={onDismiss}
+    />
+  )
+})
+
+interface ProfileCompletionWizardSheetProps {
+  open: boolean
+  onOpenChange: (value: boolean) => void
+  onClose: () => void
+  onUploadResume: () => void
+  onViewProfile: () => void
+}
+
+const ProfileCompletionWizardSheet = memo(function ProfileCompletionWizardSheet({
+  open,
+  onOpenChange,
+  onClose,
+  onUploadResume,
+  onViewProfile,
+}: ProfileCompletionWizardSheetProps) {
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange} snapPoints={[90]} modal dismissOnSnapToBottom>
+      <Sheet.Overlay />
+      <Sheet.Frame bg="$background" aria-label="Profile completion wizard">
+        <Sheet.Handle />
+        <YStack p="$4" gap="$4" flex={1}>
+          <YStack gap="$2">
+            <Text fontSize="$6" fontWeight="700">
+              Complete Your Profile
+            </Text>
+            <Text color="$color11">We’ll auto-save as you go. You can exit anytime.</Text>
+          </YStack>
+          {open ? (
+            <ProfileWizard
+              onSuccess={onClose}
+              onCancel={onClose}
+              onUploadResume={onUploadResume}
+              onViewProfile={onViewProfile}
+            />
+          ) : null}
+          <Button size="$4" variant="outlined" onPress={onClose}>
+            Close
+          </Button>
+        </YStack>
+      </Sheet.Frame>
+    </Sheet>
+  )
+})

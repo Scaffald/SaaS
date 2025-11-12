@@ -4,11 +4,11 @@ import { AnimatePresence, Button, Card, Progress, Text, XStack, YStack, styled }
 import { DashboardWidget } from '@app/ui'
 import { Sparkles, UploadCloud, ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
 import { LinearGradient } from '@tamagui/linear-gradient'
-import { useCompletionStatus } from '../hooks/useCompletionStatus'
 import type { PersonalizedBenefit } from '../hooks/useCompletionNudges'
 import { resolveSectionMetadata } from '../constants/sectionMetadata'
 import type { ProfileWizardStepId } from '@app/supabase/client-types'
 import { MilestoneBadge } from './MilestoneBadge'
+import type { CompletionStatus } from '../hooks/useCompletionStatus'
 
 export interface EnhancedProfileCompletionWidgetProps {
   onStartWizard: () => void
@@ -21,6 +21,8 @@ export interface EnhancedProfileCompletionWidgetProps {
   totalBenefits: number
   hasMultipleBenefits: boolean
   isBenefitLoading: boolean
+  completionStatus: CompletionStatus | null
+  isStatusLoading: boolean
 }
 
 const PROGRESS_GRADIENTS: Array<{ threshold: number; colors: [string, string] }> = [
@@ -71,8 +73,9 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
   totalBenefits,
   hasMultipleBenefits,
   isBenefitLoading,
+  completionStatus,
+  isStatusLoading,
 }: EnhancedProfileCompletionWidgetProps) {
-  const { status, isLoading } = useCompletionStatus()
   const showCarouselControls = hasMultipleBenefits && totalBenefits > 1
   const benefitDotIndices = useMemo(
     () => Array.from({ length: totalBenefits }, (_, idx) => idx),
@@ -119,7 +122,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
     }
   }, [showCarouselControls, isBenefitLoading, currentBenefitIndex, totalBenefits, advanceBenefit])
 
-  if (isLoading) {
+  if (isStatusLoading) {
     return (
       <DashboardWidget>
         <YStack gap="$4" items="center" py="$6">
@@ -129,19 +132,19 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
     )
   }
 
-  if (!status) {
+  if (!completionStatus) {
     return null
   }
 
-  const gradient = resolveProgressGradient(status.completionPercentage)
+  const gradient = resolveProgressGradient(completionStatus.completionPercentage)
   const headline =
-    status.completionPercentage < 25
+    completionStatus.completionPercentage < 25
       ? 'Let’s get your profile started'
-      : status.completionPercentage < 50
+      : completionStatus.completionPercentage < 50
         ? 'Making great progress!'
-        : status.completionPercentage < 75
+        : completionStatus.completionPercentage < 75
           ? 'Almost there—keep going!'
-          : status.completionPercentage < 100
+          : completionStatus.completionPercentage < 100
             ? 'Finish strong to unlock full visibility'
             : 'Profile complete!'
 
@@ -160,10 +163,10 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
         <YStack gap="$3">
           <XStack justify="space-between" items="center">
             <Text fontSize="$5" fontWeight="600">
-              {status.completionPercentage}%
+              {completionStatus.completionPercentage}%
             </Text>
             <Text fontSize="$2" color="$color10">
-              {status.incompleteSections.length} sections remaining
+              {completionStatus.incompleteSections.length} sections remaining
             </Text>
           </XStack>
           <Progress
@@ -171,7 +174,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
             bg="$color4"
             rounded="$5"
             height={18}
-            value={status.completionPercentage}
+            value={completionStatus.completionPercentage}
           >
             <Progress.Indicator asChild>
               <LinearGradient start={[0, 1]} end={[1, 0]} colors={gradient} rounded="$5" />
@@ -306,7 +309,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
             Milestones
           </Text>
           <XStack flexWrap="wrap" gap="$2">
-            {status.milestoneBadges.map((milestone) => (
+            {completionStatus.milestoneBadges.map((milestone) => (
               <MilestoneBadge key={milestone.id} milestone={milestone} />
             ))}
           </XStack>

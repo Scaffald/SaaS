@@ -4,7 +4,6 @@
 -- =========================================================
 
 BEGIN;
-
 -- =========================================================
 -- SECTION 1: AVATARS BUCKET
 -- =========================================================
@@ -13,14 +12,12 @@ BEGIN;
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('avatars', 'avatars', true)
 ON CONFLICT (id) DO NOTHING;
-
 -- Avatar images are publicly accessible
 DROP POLICY IF EXISTS "Avatar images are publicly accessible" ON storage.objects;
 CREATE POLICY "Avatar images are publicly accessible" 
 ON storage.objects
 FOR SELECT 
 USING (bucket_id = 'avatars');
-
 -- Users can upload their own avatar
 DROP POLICY IF EXISTS "Users can upload their own avatar" ON storage.objects;
 CREATE POLICY "Users can upload their own avatar" 
@@ -30,7 +27,6 @@ WITH CHECK (
   bucket_id = 'avatars' 
   AND auth.uid()::text = (storage.foldername(name))[1]
 );
-
 -- Users can update their own avatar
 DROP POLICY IF EXISTS "Users can update their own avatar" ON storage.objects;
 CREATE POLICY "Users can update their own avatar" 
@@ -40,7 +36,6 @@ USING (
   bucket_id = 'avatars' 
   AND auth.uid()::text = (storage.foldername(name))[1]
 );
-
 -- Users can delete their own avatar
 DROP POLICY IF EXISTS "Users can delete their own avatar" ON storage.objects;
 CREATE POLICY "Users can delete their own avatar" 
@@ -50,7 +45,6 @@ USING (
   bucket_id = 'avatars' 
   AND auth.uid()::text = (storage.foldername(name))[1]
 );
-
 -- =========================================================
 -- SECTION 2: CERTIFICATIONS BUCKET
 -- =========================================================
@@ -59,14 +53,12 @@ USING (
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('certifications', 'certifications', true)
 ON CONFLICT (id) DO NOTHING;
-
 -- Certification files are publicly accessible
 DROP POLICY IF EXISTS "Certification files are publicly accessible" ON storage.objects;
 CREATE POLICY "Certification files are publicly accessible" 
 ON storage.objects
 FOR SELECT 
 USING (bucket_id = 'certifications');
-
 -- Users can upload their own certification files
 DROP POLICY IF EXISTS "Users can upload their own certification files" ON storage.objects;
 CREATE POLICY "Users can upload their own certification files" 
@@ -76,7 +68,6 @@ WITH CHECK (
   bucket_id = 'certifications' 
   AND auth.uid()::text = (storage.foldername(name))[1]
 );
-
 -- Users can update their own certification files
 DROP POLICY IF EXISTS "Users can update their own certification files" ON storage.objects;
 CREATE POLICY "Users can update their own certification files" 
@@ -86,7 +77,6 @@ USING (
   bucket_id = 'certifications' 
   AND auth.uid()::text = (storage.foldername(name))[1]
 );
-
 -- Users can delete their own certification files
 DROP POLICY IF EXISTS "Users can delete their own certification files" ON storage.objects;
 CREATE POLICY "Users can delete their own certification files" 
@@ -96,7 +86,6 @@ USING (
   bucket_id = 'certifications' 
   AND auth.uid()::text = (storage.foldername(name))[1]
 );
-
 -- =========================================================
 -- SECTION 3: CMS MEDIA BUCKET
 -- =========================================================
@@ -112,15 +101,13 @@ VALUES (
   ARRAY['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
 )
 ON CONFLICT (id) DO NOTHING;
-
 -- Public read access for all CMS media
 DROP POLICY IF EXISTS "Public read access for cms-media" ON storage.objects;
 CREATE POLICY "Public read access for cms-media"
 ON storage.objects FOR SELECT
 TO public
 USING (bucket_id = 'cms-media');
-
--- Admin upload access for CMS media (office role or super_admin)
+-- Admin upload access for CMS media
 DROP POLICY IF EXISTS "Admin upload access for cms-media" ON storage.objects;
 CREATE POLICY "Admin upload access for cms-media"
 ON storage.objects FOR INSERT
@@ -131,12 +118,10 @@ WITH CHECK (
     SELECT 1 FROM core.role_assignments ra
     JOIN core.roles r ON r.id = ra.role_id
     WHERE ra.user_id = auth.uid()
-    AND r.scope = 'platform'
-    AND (r.name = 'office' OR r.name = 'super_admin')
+    AND r.name = 'super_admin'
   )
 );
-
--- Admin update access for CMS media (office role or super_admin)
+-- Admin update access for CMS media
 DROP POLICY IF EXISTS "Admin update access for cms-media" ON storage.objects;
 CREATE POLICY "Admin update access for cms-media"
 ON storage.objects FOR UPDATE
@@ -147,12 +132,10 @@ USING (
     SELECT 1 FROM core.role_assignments ra
     JOIN core.roles r ON r.id = ra.role_id
     WHERE ra.user_id = auth.uid()
-    AND r.scope = 'platform'
-    AND (r.name = 'office' OR r.name = 'super_admin')
+    AND r.name = 'super_admin'
   )
 );
-
--- Admin delete access for CMS media (office role or super_admin)
+-- Admin delete access for CMS media
 DROP POLICY IF EXISTS "Admin delete access for cms-media" ON storage.objects;
 CREATE POLICY "Admin delete access for cms-media"
 ON storage.objects FOR DELETE
@@ -163,13 +146,10 @@ USING (
     SELECT 1 FROM core.role_assignments ra
     JOIN core.roles r ON r.id = ra.role_id
     WHERE ra.user_id = auth.uid()
-    AND r.scope = 'platform'
-    AND (r.name = 'office' OR r.name = 'super_admin')
+    AND r.name = 'super_admin'
   )
 );
-
 COMMIT;
-
 -- =========================================================
 -- USAGE NOTES
 -- =========================================================
@@ -191,4 +171,4 @@ COMMIT;
 -- - Admin-only write/update/delete access (super_admin role required)
 -- - Supports images (JPEG, PNG, WebP, GIF)
 --
--- =========================================================
+-- =========================================================;

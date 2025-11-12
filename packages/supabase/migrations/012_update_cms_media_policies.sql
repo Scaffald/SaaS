@@ -4,7 +4,6 @@
 -- =========================================================
 
 BEGIN;
-
 -- Update upload policy to allow office role or super_admin
 DROP POLICY IF EXISTS "Admin upload access for cms-media" ON storage.objects;
 CREATE POLICY "Admin upload access for cms-media"
@@ -20,7 +19,6 @@ WITH CHECK (
     AND (r.name = 'office' OR r.name = 'super_admin')
   )
 );
-
 -- Update update policy to allow office role or super_admin
 DROP POLICY IF EXISTS "Admin update access for cms-media" ON storage.objects;
 CREATE POLICY "Admin update access for cms-media"
@@ -36,7 +34,6 @@ USING (
     AND (r.name = 'office' OR r.name = 'super_admin')
   )
 );
-
 -- Update delete policy to allow office role or super_admin
 DROP POLICY IF EXISTS "Admin delete access for cms-media" ON storage.objects;
 CREATE POLICY "Admin delete access for cms-media"
@@ -52,6 +49,4 @@ USING (
     AND (r.name = 'office' OR r.name = 'super_admin')
   )
 );
-
 COMMIT;
-

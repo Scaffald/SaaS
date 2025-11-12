@@ -4,32 +4,27 @@
 -- =========================================================
 
 BEGIN;
-
 -- =========================================================
 -- SCHEMAS
 -- =========================================================
 -- Core schema for all application tables
 CREATE SCHEMA IF NOT EXISTS core;
 COMMENT ON SCHEMA core IS 'Core application schema - all application and private tables';
-
 GRANT USAGE ON SCHEMA core TO authenticated, service_role, anon;
-
 -- CMS schema for content management
 CREATE SCHEMA IF NOT EXISTS cms;
 COMMENT ON SCHEMA cms IS 'CMS content management schema for welcome slides and future CMS features';
-
 GRANT USAGE ON SCHEMA cms TO authenticated, service_role, anon;
-
 -- =========================================================
 -- EXTENSIONS
 -- =========================================================
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA extensions;
 CREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA extensions;
 CREATE EXTENSION IF NOT EXISTS "citext" WITH SCHEMA public;
-CREATE EXTENSION IF NOT EXISTS "postgis";  -- Must be in public schema for GEOGRAPHY type
+CREATE EXTENSION IF NOT EXISTS "postgis";
+-- Must be in public schema for GEOGRAPHY type
 CREATE EXTENSION IF NOT EXISTS "pg_trgm" WITH SCHEMA extensions;
 CREATE EXTENSION IF NOT EXISTS "pg_cron" WITH SCHEMA extensions;
-
 -- =========================================================
 -- CUSTOM TYPES (ENUMS)
 -- =========================================================
@@ -45,7 +40,6 @@ CREATE TYPE public.application_status AS ENUM (
   'rejected',
   'withdrawn'
 );
-
 -- =========================================================
 -- CORE SCHEMA TABLES
 -- =========================================================
@@ -62,7 +56,6 @@ CREATE TABLE core.industries (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Users (public profile data)
 CREATE TABLE core.users (
   id UUID PRIMARY KEY,  -- FK to auth.users(id) in 003_relations.sql
@@ -84,7 +77,6 @@ CREATE TABLE core.users (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Organizations
 CREATE TABLE core.organizations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -102,7 +94,6 @@ CREATE TABLE core.organizations (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 -- Teams
 CREATE TABLE core.teams (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -114,7 +105,6 @@ CREATE TABLE core.teams (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 -- Team Members
 CREATE TABLE core.team_members (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -123,7 +113,6 @@ CREATE TABLE core.team_members (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE (team_id, user_id)
 );
-
 -- Skills Taxonomy
 CREATE TABLE core.skills (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -134,7 +123,6 @@ CREATE TABLE core.skills (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 -- NOTE: User Skills, Organization Skills, and Job Skills are created as polymorphic tables in 002_data.sql
 
 -- Follows (polymorphic)
@@ -147,7 +135,6 @@ CREATE TABLE core.follows (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE (follower_type, follower_id, followee_type, followee_id)
 );
-
 -- Jobs
 CREATE TABLE core.jobs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -176,8 +163,6 @@ CREATE TABLE core.jobs (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
-
 -- Certifications (reference/catalog table for certifications)
 CREATE TABLE core.certifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -194,7 +179,6 @@ CREATE TABLE core.certifications (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Job Certifications (junction table for job-certification relationship)
 CREATE TABLE core.job_certifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -204,7 +188,6 @@ CREATE TABLE core.job_certifications (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(job_id, certification_id)
 );
-
 -- Reviews (unified)
 CREATE TABLE core.reviews (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -220,7 +203,6 @@ CREATE TABLE core.reviews (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE (kind, subject_type, subject_id, author_user_id)
 );
-
 -- Review Skill Ratings
 CREATE TABLE core.review_skill_ratings (
   review_id UUID NOT NULL,  -- FK in 003_relations.sql
@@ -229,7 +211,6 @@ CREATE TABLE core.review_skill_ratings (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (review_id, skill_id)
 );
-
 -- Review Aspects
 CREATE TABLE core.review_aspects (
   review_id UUID NOT NULL,  -- FK in 003_relations.sql
@@ -238,7 +219,6 @@ CREATE TABLE core.review_aspects (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (review_id, key)
 );
-
 -- =========================================================
 -- EXTERNAL JOB FEEDS & AGGREGATION
 -- =========================================================
@@ -259,7 +239,6 @@ CREATE TABLE core.external_job_feeds (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- External Jobs (cached external job listings)
 CREATE TABLE core.external_jobs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -296,7 +275,6 @@ CREATE TABLE core.external_jobs (
   last_processed_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(feed_id, external_guid)
 );
-
 -- External Job Industries (industry mappings for external jobs)
 CREATE TABLE core.external_job_industries (
   external_job_id UUID NOT NULL,  -- FK to core.external_jobs(id) in 003_relations.sql
@@ -306,7 +284,6 @@ CREATE TABLE core.external_job_industries (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   PRIMARY KEY (external_job_id, industry_id)
 );
-
 -- External Job Skills (skill mappings for external jobs)
 CREATE TABLE core.external_job_skills (
   external_job_id UUID NOT NULL,  -- FK to core.external_jobs(id) in 003_relations.sql
@@ -317,7 +294,6 @@ CREATE TABLE core.external_job_skills (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   PRIMARY KEY (external_job_id, skill_id)
 );
-
 -- =========================================================
 -- REVIEW ENHANCEMENTS TABLES
 -- =========================================================
@@ -334,7 +310,6 @@ CREATE TABLE core.soft_skills (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Review Category Ratings
 CREATE TABLE core.review_category_ratings (
   review_id UUID NOT NULL,  -- FK to core.reviews(id) in 003_relations.sql
@@ -343,7 +318,6 @@ CREATE TABLE core.review_category_ratings (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   PRIMARY KEY (review_id, category)
 );
-
 -- Review Soft Skill Votes (Strengths & Improvements)
 CREATE TABLE core.review_soft_skill_votes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -355,7 +329,6 @@ CREATE TABLE core.review_soft_skill_votes (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE (review_id, skill_id, is_strength)
 );
-
 -- Seed Soft Skills Data
 INSERT INTO core.soft_skills (name, slug, category, description, order_index) VALUES
   -- Reliability Skills
@@ -388,7 +361,6 @@ INSERT INTO core.soft_skills (name, slug, category, description, order_index) VA
   ('Code Quality', 'code-quality', 'technical', 'Writes clean, maintainable code', 5),
   ('Documentation', 'documentation', 'technical', 'Creates clear and helpful documentation', 6)
 ON CONFLICT (slug) DO NOTHING;
-
 -- =========================================================
 -- CORE SCHEMA PRIVATE TABLES (PII) - moved from private schema
 -- =========================================================
@@ -422,7 +394,6 @@ CREATE TABLE core.profile (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- User Preferences
 CREATE TABLE core.preferences (
   user_id UUID PRIMARY KEY,  -- FK to core.users(id) in 003_relations.sql
@@ -441,7 +412,6 @@ CREATE TABLE core.preferences (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 -- Connections (social graph - sensitive)
 CREATE TABLE core.connections (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -455,7 +425,6 @@ CREATE TABLE core.connections (
   UNIQUE (requester_user_id, addressee_user_id),
   CHECK (requester_user_id <> addressee_user_id)
 );
-
 -- Applications (sensitive application data)
 CREATE TABLE core.applications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -474,7 +443,6 @@ CREATE TABLE core.applications (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE (job_id, user_id)
 );
-
 -- Application Messages
 CREATE TABLE core.application_messages (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -483,7 +451,6 @@ CREATE TABLE core.application_messages (
   body TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 -- Application Inquiries
 CREATE TABLE core.application_inquiries (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -493,7 +460,6 @@ CREATE TABLE core.application_inquiries (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 -- Invites (contains email addresses and tokens)
 CREATE TABLE core.invites (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -508,7 +474,6 @@ CREATE TABLE core.invites (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   consumed_at TIMESTAMPTZ
 );
-
 -- Roles (RBAC system)
 CREATE TABLE core.roles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -517,7 +482,6 @@ CREATE TABLE core.roles (
   description TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- Role Assignments
 CREATE TABLE core.role_assignments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -533,7 +497,6 @@ CREATE TABLE core.role_assignments (
     OR (scope_org_id IS NULL AND scope_team_id IS NOT NULL)
   )
 );
-
 -- User Certifications (personal certification data - PII)
 CREATE TABLE core.user_certifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -550,7 +513,6 @@ CREATE TABLE core.user_certifications (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- User Education (educational background - PII)
 CREATE TABLE core.user_education (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -574,7 +536,6 @@ CREATE TABLE core.user_education (
     (institution_name IS NOT NULL)
   )
 );
-
 -- User Experience (work experience history - PII)
 CREATE TABLE core.user_experience (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -592,7 +553,6 @@ CREATE TABLE core.user_experience (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
 -- =========================================================
 -- CMS SCHEMA TABLES
 -- =========================================================
@@ -609,11 +569,9 @@ CREATE TABLE cms.welcome_slides (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 COMMENT ON TABLE cms.welcome_slides IS 'Welcome screen slides shown during onboarding';
 COMMENT ON COLUMN cms.welcome_slides.icon_name IS 'Lucide icon name (e.g., UserSearch, Share2, Sprout)';
 COMMENT ON COLUMN cms.welcome_slides.display_order IS 'Order in which slides are displayed';
-
 -- Seed Welcome Slides Data
 INSERT INTO cms.welcome_slides (title, description, icon_name, background_image_url, display_order) VALUES
   (
@@ -638,5 +596,4 @@ INSERT INTO cms.welcome_slides (title, description, icon_name, background_image_
     3
   )
 ON CONFLICT DO NOTHING;
-
 COMMIT;
