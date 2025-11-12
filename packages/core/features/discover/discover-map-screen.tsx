@@ -40,6 +40,7 @@ export const DiscoverMapScreen = () => {
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [viewportBounds, setViewportBounds] = useState<ViewportBounds | null>(null)
+  const [mapReady, setMapReady] = useState(false)
 
   // Modal states
   const [workerModalOpen, setWorkerModalOpen] = useState(false)
@@ -62,17 +63,22 @@ export const DiscoverMapScreen = () => {
   // Fetch data with viewport bounds filtering
   // Only apply bounds filtering after initial load (when viewportBounds is set)
   // This prevents refetching on every pan and ensures initial data loads
+  const queryEnabled = mapReady && viewportBounds !== null
+
   const { data: talentProfiles = [], isLoading } = useTalentProfiles({
-    bounds: viewportBounds || null, // Pass null if no bounds yet (will fetch all initially)
+    bounds: viewportBounds,
     limit: 500,
+    enabled: queryEnabled && showWorkers,
   })
   const { data: organizations = [], isLoading: isLoadingOrgs } = useOrganizations({
-    bounds: viewportBounds || null,
+    bounds: viewportBounds,
     limit: 200,
+    enabled: queryEnabled && showOrganizations,
   })
   const { data: jobs = [], isLoading: isLoadingJobs } = useJobs({
-    bounds: viewportBounds || null,
+    bounds: viewportBounds,
     limit: 500,
+    enabled: queryEnabled && showJobs,
   })
 
   // Determine map center based on search location, user location, or default
@@ -222,6 +228,7 @@ export const DiscoverMapScreen = () => {
         west: location.longitude - boundsDelta,
       }
       setViewportBounds(immediateBounds)
+      setMapReady(true)
       
       // Center the map on the new location
       if (mapRef.current?.flyTo) {
@@ -239,6 +246,7 @@ export const DiscoverMapScreen = () => {
       // Check both center position and bounds size to determine if viewport changed meaningfully
       setViewportBounds((prevBounds) => {
         if (!prevBounds) {
+          setMapReady(true)
           return bounds // First bounds update
         }
         
@@ -265,6 +273,7 @@ export const DiscoverMapScreen = () => {
         // Only update if center moved significantly OR bounds size changed significantly
         // This prevents refetching on small pans while still updating on zoom changes
         if (centerLatDiff > 0.2 || centerLngDiff > 0.2 || latRangeDiff > 0.15 || lngRangeDiff > 0.15) {
+          setMapReady(true)
           return bounds
         }
         return prevBounds // Keep previous bounds to avoid unnecessary refetch
@@ -272,6 +281,11 @@ export const DiscoverMapScreen = () => {
     },
     []
   )
+
+  const handleMapReady = useCallback(({ bounds }: { bounds: ViewportBounds; zoom: number }) => {
+    setViewportBounds(bounds)
+    setMapReady(true)
+  }, [])
 
   return (
     <YStack flex={1} height="100vh" overflow="hidden" position="relative">
@@ -283,6 +297,7 @@ export const DiscoverMapScreen = () => {
         zoom={7}
         onPinPress={handleMarkerPress}
         onViewportChange={handleViewportChange}
+        onMapReady={handleMapReady}
         style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
       />
 

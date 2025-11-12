@@ -39,6 +39,10 @@ export function OrganizationLocationsInput({
   provider = 'mapbox',
   apiKey,
 }: OrganizationLocationsInputProps) {
+  const resolvedProvider = provider === 'google' ? 'mapbox' : provider
+  const resolvedApiKey =
+    apiKey || (resolvedProvider === 'mapbox' ? process.env.EXPO_PUBLIC_MAPBOX_TOKEN : undefined)
+
   // Maintain stable IDs across renders - only generate new IDs for new items
   const locationIdsRef = useRef<string[]>([])
 
@@ -169,8 +173,8 @@ export function OrganizationLocationsInput({
                   value={getAddressString(location.address)}
                   onAddressSelect={(address: AddressResult) => handleAddressSelect(index, address)}
                   placeholder="Search for an address..."
-                  provider={provider}
-                  apiKey={apiKey}
+                  provider={resolvedProvider}
+                  apiKey={resolvedApiKey}
                   disabled={disabled}
                   debounceMs={300}
                   minLength={3}

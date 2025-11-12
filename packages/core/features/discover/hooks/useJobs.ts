@@ -41,13 +41,15 @@ interface JobWithCoords {
 interface UseJobsOptions {
   bounds?: ViewportBounds | null;
   limit?: number;
+  enabled?: boolean;
 }
 
 export const useJobs = (options: UseJobsOptions = {}) => {
-  const { bounds, limit = 500 } = options;
+  const { bounds = null, limit = 500, enabled = true } = options;
 
   return useQuery({
     queryKey: ["map-jobs", bounds],
+    enabled,
     queryFn: async (): Promise<JobMapPin[]> => {
       // Fetch jobs with coordinates from address JSONB field
       let query = supabase

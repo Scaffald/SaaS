@@ -51,6 +51,7 @@ export interface MapContainerProps {
   selectedPinId?: string | null
   onPinPress?: (pinId: string | null) => void
   onViewportChange?: (bounds: ViewportBounds, zoom: number) => void
+  onMapReady?: (payload: { bounds: ViewportBounds; zoom: number }) => void
   showControls?: boolean
   style?: object
 }

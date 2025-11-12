@@ -19,13 +19,15 @@ type ProfileSearchRow =
 interface UseTalentProfilesOptions {
   bounds?: ViewportBounds | null;
   limit?: number;
+  enabled?: boolean;
 }
 
 export const useTalentProfiles = (options: UseTalentProfilesOptions = {}) => {
-  const { bounds, limit = 500 } = options;
+  const { bounds = null, limit = 500, enabled = true } = options;
 
   return useQuery({
     queryKey: ["talent-profiles", bounds],
+    enabled,
     queryFn: async (): Promise<TalentProfile[]> => {
       // Get profiles from the v_profile_search view
       let query = supabase
@@ -123,6 +125,5 @@ export const useTalentProfiles = (options: UseTalentProfilesOptions = {}) => {
       });
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled: true, // Always enabled, but query key changes with bounds
   });
 };

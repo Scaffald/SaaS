@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { View, Text } from 'tamagui'
 import type { MapContainerProps, MapContainerRef } from './types'
 import { MapFallback } from './MapFallback'
@@ -6,9 +6,9 @@ import type { MapView, Camera, PointAnnotation } from '@rnmapbox/maps'
 import MapboxGL from '@rnmapbox/maps'
 
 export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
-  ({ pins, center = [-84.5555, 42.7325], zoom = 7, onPinPress, style }, ref) => {
+  ({ pins, center = [-84.5555, 42.7325], zoom = 7, onPinPress, onMapReady, style }, ref) => {
     const mapRef = useRef<MapView | null>(null)
-    const [_isMapReady, setIsMapReady] = useState(false)
+    const [isMapReady, setIsMapReady] = useState(false)
 
     // Expose map methods to parent (native has limited support)
     useImperativeHandle(ref, () => ({
@@ -51,6 +51,65 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
     const MapView = MapboxGL.MapView
     const Camera = MapboxGL.Camera
     const PointAnnotation = MapboxGL.PointAnnotation
+
+    useEffect(() => {
+      if (!isMapReady || !onMapReady) {
+        return
+      }
+
+      async function emitInitialBounds() {
+        try {
+          const mapInstance = mapRef.current
+
+          if (!mapInstance || typeof mapInstance.getVisibleBounds !== 'function') {
+            onMapReady?.({
+              bounds: {
+                north: center[1] + 0.1,
+                south: center[1] - 0.1,
+                east: center[0] + 0.1,
+                west: center[0] - 0.1,
+              },
+              zoom,
+            })
+            return
+          }
+
+          const bounds = await mapInstance.getVisibleBounds()
+          if (!bounds || bounds.length !== 2) {
+            onMapReady?.({
+              bounds: {
+                north: center[1] + 0.1,
+                south: center[1] - 0.1,
+                east: center[0] + 0.1,
+                west: center[0] - 0.1,
+              },
+              zoom,
+            })
+            return
+          }
+
+          const [ne, sw] = bounds
+          const east = Math.max(ne[0], sw[0])
+          const west = Math.min(ne[0], sw[0])
+          const north = Math.max(ne[1], sw[1])
+          const south = Math.min(ne[1], sw[1])
+
+          onMapReady?.({
+            bounds: {
+              north,
+              south,
+              east,
+              west,
+            },
+            zoom,
+          })
+        } catch (error) {
+          console.warn('MapContainer.native: unable to emit initial bounds', error)
+        }
+      }
+
+      void emitInitialBounds()
+    }, [center, isMapReady, onMapReady, zoom])
 
     return (
       <View flex={1} style={style}>

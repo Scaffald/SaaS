@@ -119,7 +119,7 @@ export function DrawerLayout({
         preview:
           typeof item.body?.preview === 'string'
             ? item.body.preview
-            : item.preview ?? item.message ?? '',
+            : (item.preview ?? item.message ?? ''),
         createdAt: item.created_at,
         read: item.read ?? false,
         ctaUrl: item.cta_url ?? undefined,
@@ -192,7 +192,8 @@ export function DrawerLayout({
       >
         {children}
       </Drawer>
-      {!hideDrawer ? <FeedbackWidget /> : null}
+      {/* TODO: Uncomment this when we implement fully */}
+      {/* {!hideDrawer ? <FeedbackWidget /> : null} */}
     </>
   )
 }

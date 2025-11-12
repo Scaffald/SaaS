@@ -31,13 +31,15 @@ interface OrgWithCoords {
 interface UseOrganizationsOptions {
   bounds?: ViewportBounds | null;
   limit?: number;
+  enabled?: boolean;
 }
 
 export const useOrganizations = (options: UseOrganizationsOptions = {}) => {
-  const { bounds, limit = 200 } = options;
+  const { bounds = null, limit = 200, enabled = true } = options;
 
   return useQuery({
     queryKey: ["map-organizations", bounds],
+    enabled,
     queryFn: async (): Promise<OrganizationMapPin[]> => {
       // Get organizations with coordinates extracted from PostGIS geography
       // Note: RPC function doesn't support bounds filtering yet

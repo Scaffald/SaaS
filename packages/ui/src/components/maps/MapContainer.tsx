@@ -22,7 +22,18 @@ function extractViewportBounds(map: mapboxgl.Map): ViewportBounds {
 }
 
 export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
-  ({ pins, center = [-84.5555, 42.7325], zoom = 7, onPinPress, onViewportChange, style }, ref) => {
+  (
+    {
+      pins,
+      center = [-84.5555, 42.7325],
+      zoom = 7,
+      onPinPress,
+      onViewportChange,
+      onMapReady,
+      style,
+    },
+    ref
+  ) => {
     const mapContainerRef = useRef<HTMLDivElement | null>(null)
     const mapRef = useRef<mapboxgl.Map | null>(null)
     const markersRef = useRef(new Map<string, mapboxgl.Marker>())
@@ -340,6 +351,14 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         }
 
         setIsMapReady(true)
+
+        if (onMapReady) {
+          const initialBounds = extractViewportBounds(map)
+          onMapReady({
+            bounds: initialBounds,
+            zoom: map.getZoom(),
+          })
+        }
       })
 
       mapRef.current = map
@@ -357,7 +376,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           markersRef.current.clear()
         }
       }
-    }, [center, zoom, onViewportChange])
+    }, [center, zoom, onViewportChange, onMapReady])
 
     // Handle pin clicks and empty map clicks
     useEffect(() => {

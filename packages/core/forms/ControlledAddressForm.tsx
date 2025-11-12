@@ -209,11 +209,10 @@ export function ControlledAddressForm<TFieldValues extends FieldValues = FieldVa
   }
 
   // Get API key from environment if not provided
+  const resolvedProvider = provider === 'google' ? 'mapbox' : provider
   const effectiveApiKey =
     apiKey ||
-    (provider === 'mapbox'
-      ? process.env.EXPO_PUBLIC_MAPBOX_TOKEN
-      : process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY)
+    (resolvedProvider === 'mapbox' ? process.env.EXPO_PUBLIC_MAPBOX_TOKEN : undefined)
 
   return (
     <YStack gap="$2" position="relative" z={1000}>
@@ -225,7 +224,7 @@ export function ControlledAddressForm<TFieldValues extends FieldValues = FieldVa
       )}
       <AddressForm
         mode={mode}
-        provider={provider}
+        provider={resolvedProvider}
         apiKey={effectiveApiKey}
         zoomLevel={zoomLevel}
         placeholder={placeholder}

@@ -39,8 +39,12 @@ export const DashboardLayout = ({
   const hasRightContent = Boolean(rightContent)
   const hasBothColumns = hasLeftContent && hasRightContent
 
-  const leftColumnWidth = !hasBothColumns ? '100%' : isDesktop ? '70%' : isTablet ? '60%' : '100%'
-  const rightColumnWidth = !hasBothColumns ? '100%' : isDesktop ? '30%' : isTablet ? '40%' : '100%'
+  const leftColumnWidth =
+    !hasBothColumns || isSmallScreen ? '100%' : isDesktop ? '70%' : isTablet ? '60%' : '100%'
+  const rightColumnWidth =
+    !hasBothColumns || isSmallScreen ? '100%' : isDesktop ? '30%' : isTablet ? '40%' : '100%'
+
+  const ContentStack = isSmallScreen ? YStack : XStack
 
   return (
     <ScrollView flex={1} bg="$color2" showsVerticalScrollIndicator={false}>
@@ -53,18 +57,14 @@ export const DashboardLayout = ({
         )}
 
         {/* Content Area */}
-        <XStack
-          gap={isSmallScreen ? '$3' : '$8'}
-          flexDirection={isSmallScreen ? 'column' : 'row'}
-          p={isSmallScreen ? '$3' : '$7'}
-        >
+        <ContentStack gap={isSmallScreen ? '$3' : '$8'} p={isSmallScreen ? '$3' : '$7'}>
           {hasLeftContent && (
             <YStack
               minW={isSmallScreen ? '100%' : 300}
-              width={leftColumnWidth}
-              maxW={leftColumnWidth}
-              flexBasis={leftColumnWidth}
-              flex={1}
+              width={isSmallScreen ? '100%' : leftColumnWidth}
+              maxW={isSmallScreen ? '100%' : leftColumnWidth}
+              flexBasis={!isSmallScreen && hasBothColumns ? leftColumnWidth : 'auto'}
+              flex={!isSmallScreen && hasBothColumns ? 1 : undefined}
             >
               {leftContent}
             </YStack>
@@ -72,14 +72,14 @@ export const DashboardLayout = ({
           {hasRightContent && (
             <YStack
               minW={isSmallScreen ? '100%' : 300}
-              width={rightColumnWidth}
-              maxW={rightColumnWidth}
-              flexBasis={rightColumnWidth}
+              width={isSmallScreen ? '100%' : rightColumnWidth}
+              maxW={isSmallScreen ? '100%' : rightColumnWidth}
+              flexBasis={!isSmallScreen && hasBothColumns ? rightColumnWidth : 'auto'}
             >
               {rightContent}
             </YStack>
           )}
-        </XStack>
+        </ContentStack>
       </YStack>
     </ScrollView>
   )
