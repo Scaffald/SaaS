@@ -1,55 +1,109 @@
-import { type ReactNode, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Button, Card, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
-import { AlertTriangle, ArrowLeft, CalendarClock, Users } from '@tamagui/lucide-icons'
+import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
+import { AlertTriangle, RefreshCw, UserPlus } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '@app/supabase/client-types'
 
 import { DashboardLayout } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
+import {
+  TeamActivityFeed,
+  TeamAnalyticsSummary,
+  TeamAutomationSettings,
+  TeamInvitationsList,
+  TeamInviteModal,
+  TeamMembersList,
+  TeamOverviewCard,
+} from '@app/core/features/office/teams'
 
 type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
 type TeamRecord = TeamDetailOutput['team']
 type TeamMembersOutput = inferRouterOutputs<AppRouter>['teams']['members']['list']
 type TeamMemberRecord = NonNullable<TeamMembersOutput['members']>[number]
 
+type MentionOption = {
+  id: string
+  label: string
+}
+
 export default function DashboardTeamDetailPage() {
   const { id } = useLocalSearchParams<{ id?: string }>()
   const router = useRouter()
 
   const teamId = typeof id === 'string' ? id : ''
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
+  const [invitationRefreshKey, setInvitationRefreshKey] = useState(0)
 
   const {
     data: teamData,
     isLoading: teamLoading,
     error: teamError,
     refetch: refetchTeam,
-  } = api.teams.byId.useQuery(
-    { teamId },
-    {
-      enabled: Boolean(teamId),
-      retry: false,
-    }
-  )
+  } = api.teams.byId.useQuery({ teamId }, { enabled: Boolean(teamId), retry: false })
 
   const {
     data: membersData,
     isLoading: membersLoading,
     error: membersError,
     refetch: refetchMembers,
-  } = api.teams.members.list.useQuery(
-    { teamId },
-    {
-      enabled: Boolean(teamId),
-      retry: false,
-    }
+  } = api.teams.members.list.useQuery({ teamId }, { enabled: Boolean(teamId), retry: false })
+
+  const {
+    data: analyticsData,
+    isLoading: analyticsLoading,
+    error: analyticsError,
+    refetch: refetchAnalytics,
+  } = api.teams.analytics.overview.useQuery(
+    { teamId, limit: 30 },
+    { enabled: Boolean(teamId), retry: false }
   )
 
   const team = teamData?.team as TeamRecord | undefined
   const members = useMemo<TeamMemberRecord[]>(
     () => (membersData?.members ?? []) as TeamMemberRecord[],
     [membersData?.members]
+  )
+
+  const mentionOptions = useMemo<MentionOption[]>(() => {
+    const map = new Map<string, MentionOption>()
+    for (const member of members) {
+      if (!member.userId) continue
+      const label =
+        member.user?.displayName ?? member.user?.username ?? `User ${member.userId.slice(0, 6)}`
+      map.set(member.userId, { id: member.userId, label })
+    }
+    return Array.from(map.values())
+  }, [members])
+
+  const memberDirectory = useMemo(
+    () =>
+      members.reduce<Record<string, { displayName?: string | null; username?: string | null }>>(
+        (acc, member) => {
+          if (member.userId) {
+            acc[member.userId] = {
+              displayName: member.user?.displayName ?? null,
+              username: member.user?.username ?? null,
+            }
+          }
+          return acc
+        },
+        {}
+      ),
+    [members]
+  )
+
+  const latestMetrics = analyticsData?.metrics?.[0] ?? null
+  const memberCount = members.length
+
+  const overviewStats = useMemo(
+    () => ({
+      memberCount: latestMetrics?.members?.active ?? (memberCount > 0 ? memberCount : undefined),
+      jobCount: latestMetrics?.jobs?.active ?? undefined,
+      pendingInvitations: latestMetrics?.invitations?.pending ?? undefined,
+    }),
+    [latestMetrics, memberCount]
   )
 
   const breadcrumbItems = useMemo(
@@ -79,13 +133,42 @@ export default function DashboardTeamDetailPage() {
     )
   }
 
-  const isLoading = teamLoading || membersLoading
-  const hasError = teamError || membersError
+  const isLoading = teamLoading || membersLoading || analyticsLoading
+  const hasError = Boolean(teamError || membersError || analyticsError)
+  const errorMessage =
+    teamError?.message ??
+    membersError?.message ??
+    analyticsError?.message ??
+    'An unexpected error occurred while loading this team.'
 
   const handleRefresh = () => {
     void refetchTeam()
     void refetchMembers()
+    void refetchAnalytics()
   }
+
+  const overviewActions = (
+    <XStack gap="$2" flexWrap="wrap">
+      <Button
+        size="$2"
+        variant="outlined"
+        icon={RefreshCw}
+        onPress={handleRefresh}
+        disabled={isLoading}
+      >
+        Refresh
+      </Button>
+      <Button
+        size="$2"
+        bg="$color9"
+        color="$color1"
+        icon={UserPlus}
+        onPress={() => setIsInviteModalOpen(true)}
+      >
+        Invite member
+      </Button>
+    </XStack>
+  )
 
   const mainContent = isLoading ? (
     <YStack items="center" justify="center" py="$6" gap="$2">
@@ -95,106 +178,58 @@ export default function DashboardTeamDetailPage() {
   ) : hasError ? (
     <ErrorCard
       title="Unable to load team"
-      message={
-        teamError?.message ??
-        membersError?.message ??
-        'An unexpected error occurred while loading this team.'
-      }
+      message={errorMessage}
       actionLabel="Retry"
       onAction={handleRefresh}
     />
   ) : team ? (
     <YStack gap="$4">
-      <Card p="$4" borderWidth={1} borderColor="$borderColor" gap="$3">
-        <XStack gap="$3" items="center">
-          <Users size={22} />
-          <Text fontSize="$7" fontWeight="700">
-            {team.name || 'Untitled team'}
-          </Text>
-        </XStack>
-        {team.description ? (
-          <Text color="$color11">{team.description}</Text>
-        ) : (
-          <Text color="$color11">No description has been set for this team.</Text>
-        )}
-        <Separator />
-        <XStack gap="$4" flexWrap="wrap">
-          <InfoBadge label="Purpose" value={team.purpose ?? 'General'} />
-          <InfoBadge
-            label="Visibility"
-            value={team.visibility === 'private' ? 'Private' : 'Organization'}
-          />
-          <InfoBadge
-            label="Invitation policy"
-            value={
-              team.invitationPolicy === 'open'
-                ? 'Open'
-                : team.invitationPolicy === 'request'
-                  ? 'Requests require approval'
-                  : 'Invite only'
-            }
-          />
-          {team.createdAt ? (
-            <InfoBadge
-              label="Created"
-              value={new Date(team.createdAt).toLocaleDateString()}
-              icon={<CalendarClock size={16} />}
-            />
-          ) : null}
-        </XStack>
-        <XStack>
-          <Button
-            size="$3"
-            variant="outlined"
-            icon={ArrowLeft}
-            onPress={() => router.push(RouteBuilder.dashboardTeams())}
-          >
-            Back to teams
-          </Button>
-        </XStack>
+      <TeamOverviewCard team={team} stats={overviewStats} actions={overviewActions} />
+
+      <Card p="$4" borderWidth={1} borderColor="$borderColor" bg="$color1" gap="$4">
+        <TeamAnalyticsSummary teamId={teamId} />
       </Card>
 
-      <Card p="$4" borderWidth={1} borderColor="$borderColor" gap="$3">
-        <XStack justify="space-between" items="center">
-          <Text fontSize="$6" fontWeight="700">
-            Members
-          </Text>
-          <Button
-            size="$3"
-            variant="outlined"
-            onPress={() => router.push(RouteBuilder.dashboardTeamsInvitations())}
-          >
-            View invitations
-          </Button>
-        </XStack>
-        {members.length === 0 ? (
-          <Text color="$color11">No members yet.</Text>
-        ) : (
-          <YStack gap="$2">
-            {members.map((member) => {
-              const displayName =
-                member.user?.displayName ||
-                member.user?.username ||
-                (member.userId ? `User ${member.userId}` : 'Member')
-              const roleName = member.role?.name ?? 'Member'
-              return (
-                <Card
-                  key={member.id}
-                  p="$3"
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  bg="$color2"
-                >
-                  <Text fontWeight="600">{displayName}</Text>
-                  <Text color="$color11">Role: {roleName}</Text>
-                  <Text color="$color10" fontSize="$2">
-                    Status: {member.status}
-                  </Text>
-                </Card>
-              )
-            })}
-          </YStack>
-        )}
+      <Card p="$4" borderWidth={1} borderColor="$borderColor" bg="$color1" gap="$4">
+        <TeamAutomationSettings
+          teamId={teamId}
+          allowSelfJoin={team.allowSelfJoin ?? false}
+          autoAssignJobs={team.autoAssignJobs ?? false}
+          invitationExpirationDays={team.invitationExpirationDays ?? 7}
+          workloadStrategy={team.workloadStrategy ?? 'manual'}
+          workloadSettings={team.workloadSettings ?? {}}
+          analyticsRefreshIntervalMinutes={team.analyticsRefreshIntervalMinutes ?? 60}
+        />
+      </Card>
+
+      <Card p="$4" borderWidth={1} borderColor="$borderColor" bg="$color1" gap="$4">
+        <TeamActivityFeed
+          teamId={teamId}
+          mentionOptions={mentionOptions}
+          memberDirectory={memberDirectory}
+        />
+      </Card>
+
+      <Card p="$4" borderWidth={1} borderColor="$borderColor" bg="$color1" gap="$4">
+        <TeamMembersList teamId={teamId} organizationId={team.organizationId} />
+      </Card>
+
+      <Card p="$4" borderWidth={1} borderColor="$borderColor" bg="$color1" gap="$4">
+        <TeamInvitationsList
+          teamId={teamId}
+          refreshKey={invitationRefreshKey}
+          headerAction={
+            <Button
+              size="$2"
+              bg="$color9"
+              color="$color1"
+              icon={UserPlus}
+              onPress={() => setIsInviteModalOpen(true)}
+            >
+              Invite
+            </Button>
+          }
+        />
       </Card>
     </YStack>
   ) : (
@@ -207,43 +242,27 @@ export default function DashboardTeamDetailPage() {
   )
 
   return (
-    <DashboardLayout
-      leftContent={mainContent}
-      showBreadcrumb
-      breadcrumbItems={breadcrumbItems}
-      autoGenerateBreadcrumbs={false}
-    />
-  )
-}
-
-function InfoBadge({
-  label,
-  value,
-  icon,
-}: {
-  label: string
-  value: string
-  icon?: ReactNode
-}) {
-  return (
-    <XStack
-      gap="$2"
-      items="center"
-      borderWidth={1}
-      borderColor="$borderColor"
-      rounded="$4"
-      px="$3"
-      py="$2"
-      bg="$color3"
-    >
-      {icon ?? null}
-      <YStack>
-        <Text fontSize="$2" color="$color10" textTransform="uppercase">
-          {label}
-        </Text>
-        <Text fontWeight="600">{value}</Text>
-      </YStack>
-    </XStack>
+    <>
+      <DashboardLayout
+        leftContent={mainContent}
+        showBreadcrumb
+        breadcrumbItems={breadcrumbItems}
+        autoGenerateBreadcrumbs={false}
+      />
+      {team ? (
+        <TeamInviteModal
+          open={isInviteModalOpen}
+          onOpenChange={setIsInviteModalOpen}
+          teamId={teamId}
+          organizationId={team.organizationId}
+          defaultRoleId={team.defaultRoleId ?? undefined}
+          onInvited={() => {
+            setInvitationRefreshKey((prev) => prev + 1)
+            handleRefresh()
+          }}
+        />
+      ) : null}
+    </>
   )
 }
 

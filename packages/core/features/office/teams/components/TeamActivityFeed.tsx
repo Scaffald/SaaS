@@ -1,0 +1,402 @@
+import { useMemo, useState } from 'react'
+import {
+  Button,
+  Select,
+  Separator,
+  Spinner,
+  Text,
+  TextArea,
+  XStack,
+  YStack,
+} from 'tamagui'
+import { Check, ChevronDown, MessageCircle, Send } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import type { inferRouterOutputs } from '@trpc/server'
+
+import { api } from '@app/core/utils/api'
+import type { AppRouter } from '@app/supabase/client-types'
+
+type MentionOption = {
+  id: string
+  label: string
+}
+
+type MemberDirectoryEntry = {
+  displayName?: string | null
+  username?: string | null
+}
+
+interface TeamActivityFeedProps {
+  teamId: string
+  mentionOptions?: MentionOption[]
+  memberDirectory?: Record<string, MemberDirectoryEntry>
+}
+
+const PAGE_SIZE = 20
+
+type TeamActivityOutput = inferRouterOutputs<AppRouter>['teams']['analytics']['activity']
+type TeamActivityEvent = NonNullable<TeamActivityOutput['events']>[number]
+
+export function TeamActivityFeed({
+  teamId,
+  mentionOptions = [],
+  memberDirectory = {},
+}: TeamActivityFeedProps) {
+  const toast = useToastController()
+  const utils = api.useUtils()
+  const [commentBody, setCommentBody] = useState('')
+  const [mentions, setMentions] = useState<MentionOption[]>([])
+  const [mentionSelection, setMentionSelection] = useState('none')
+
+  const activityQuery = api.teams.analytics.activity.useInfiniteQuery(
+    {
+      teamId,
+      pageSize: PAGE_SIZE,
+    },
+    {
+      getNextPageParam: (lastPage: TeamActivityOutput | undefined) => lastPage?.nextCursor ?? undefined,
+      staleTime: 30_000,
+    },
+  )
+
+  const postCommentMutation = api.teams.analytics.postComment.useMutation({
+    onSuccess: async () => {
+      setCommentBody('')
+      setMentions([])
+      await utils.teams.analytics.activity.invalidate({ teamId, pageSize: PAGE_SIZE })
+      toast.show('Comment posted', {
+        message: 'Your update is now visible to the team.',
+      })
+    },
+    onError: (error: Error) => {
+      toast.show('Unable to post comment', { message: error.message })
+    },
+  })
+
+  const events: TeamActivityEvent[] = useMemo(() => {
+    const pages = activityQuery.data?.pages ?? []
+    return pages
+      .flatMap((page: TeamActivityOutput | undefined) => page?.events ?? [])
+      .map((event: TeamActivityEvent) => ({
+          ...event,
+          // Ensure payload is an object to simplify downstream use
+          payload:
+            typeof event.payload === 'object' && event.payload !== null ? event.payload : {},
+      })) as TeamActivityEvent[]
+  }, [activityQuery.data])
+
+  const availableMentionOptions = useMemo(
+    () => mentionOptions.filter((option) => !mentions.some((item) => item.id === option.id)),
+    [mentionOptions, mentions],
+  )
+
+  const resolveUserName = (userId?: string | null) => {
+    if (!userId) {
+      return 'System'
+    }
+    const entry = memberDirectory[userId]
+    if (entry) {
+      return entry.displayName ?? entry.username ?? `User ${userId.slice(0, 6)}`
+    }
+    return `User ${userId.slice(0, 6)}`
+  }
+
+  const renderEventDetails = (event: TeamActivityEvent) => {
+    const actor = resolveUserName(event.actorUserId)
+    const occurredAt = new Date(event.occurredAt).toLocaleString()
+
+    const payload = event.payload as Record<string, unknown>
+
+    switch (event.eventType) {
+      case 'discussion.comment': {
+        const body = typeof payload.body === 'string' ? payload.body : ''
+        const mentionIds = Array.isArray(payload.mentions)
+          ? (payload.mentions as string[])
+          : []
+        const mentionNames = mentionIds
+          .map((id) => resolveUserName(id))
+          .filter((name) => Boolean(name))
+
+        return (
+          <YStack gap="$2" key={event.id}>
+            <Text fontWeight="600">
+              {actor} commented
+            </Text>
+            {body ? <Text>{body}</Text> : null}
+            {mentionNames.length > 0 ? (
+              <Text fontSize="$3" color="$color10">
+                Mentions: {mentionNames.join(', ')}
+              </Text>
+            ) : null}
+            <Text fontSize="$2" color="$color10">
+              {occurredAt}
+            </Text>
+          </YStack>
+        )
+      }
+      case 'job.assigned': {
+        const jobId = (payload.jobId as string | undefined) ?? event.relatedJobId ?? 'job'
+        return (
+          <YStack gap="$1" key={event.id}>
+            <Text fontWeight="600">
+              {actor} assigned this team to job {jobId}
+            </Text>
+            <Text fontSize="$2" color="$color10">
+              {occurredAt}
+            </Text>
+          </YStack>
+        )
+      }
+      case 'job.assignment_updated': {
+        const jobId = (payload.jobId as string | undefined) ?? event.relatedJobId ?? 'job'
+        return (
+          <YStack gap="$1" key={event.id}>
+            <Text fontWeight="600">
+              {actor} updated the job assignment for {jobId}
+            </Text>
+            <Text fontSize="$2" color="$color10">
+              {occurredAt}
+            </Text>
+          </YStack>
+        )
+      }
+      case 'job.unassigned': {
+        const jobId = event.relatedJobId ?? 'job'
+        return (
+          <YStack gap="$1" key={event.id}>
+            <Text fontWeight="600">
+              {actor} removed this team from job {jobId}
+            </Text>
+            <Text fontSize="$2" color="$color10">
+              {occurredAt}
+            </Text>
+          </YStack>
+        )
+      }
+      case 'team.ownership_transferred': {
+        const targetMember = resolveUserName(event.subjectUserId)
+        return (
+          <YStack gap="$1" key={event.id}>
+            <Text fontWeight="600">
+              {actor} transferred ownership to {targetMember}
+            </Text>
+            <Text fontSize="$2" color="$color10">
+              {occurredAt}
+            </Text>
+          </YStack>
+        )
+      }
+      case 'member.self_removed': {
+        return (
+          <YStack gap="$1" key={event.id}>
+            <Text fontWeight="600">
+              {actor} left the team
+            </Text>
+            <Text fontSize="$2" color="$color10">
+              {occurredAt}
+            </Text>
+          </YStack>
+        )
+      }
+      default: {
+        return (
+          <YStack gap="$1" key={event.id}>
+            <Text fontWeight="600">
+              {actor} performed {event.eventType.replace('.', ' ')}
+            </Text>
+            <Text fontSize="$2" color="$color10">
+              {occurredAt}
+            </Text>
+          </YStack>
+        )
+      }
+    }
+  }
+
+  const handleMentionSelection = (value: string) => {
+    if (value === 'none') {
+      setMentionSelection('none')
+      return
+    }
+
+    const option = mentionOptions.find((item) => item.id === value)
+    if (option && !mentions.some((item) => item.id === option.id)) {
+      setMentions((prev) => [...prev, option])
+    }
+    setMentionSelection('none')
+  }
+
+  const handleRemoveMention = (id: string) => {
+    setMentions((prev) => prev.filter((item) => item.id !== id))
+  }
+
+  const handleSubmitComment = async () => {
+    if (postCommentMutation.isPending) {
+      return
+    }
+    if (!commentBody.trim()) {
+      return
+    }
+
+    await postCommentMutation.mutateAsync({
+      teamId,
+      body: commentBody.trim(),
+      mentions: mentions.map((mention) => mention.id),
+    })
+  }
+
+  const isPosting = postCommentMutation.isPending
+  const disableSubmit = isPosting || commentBody.trim().length === 0
+
+  return (
+    <YStack gap="$4">
+      <XStack gap="$2" items="center" justify="space-between" flexWrap="wrap">
+        <XStack gap="$2" items="center">
+          <MessageCircle size={20} />
+          <Text fontSize="$6" fontWeight="700">
+            Team activity
+          </Text>
+        </XStack>
+        <Button
+          size="$2"
+          variant="outlined"
+          onPress={() => void activityQuery.refetch()}
+          disabled={activityQuery.isFetching}
+        >
+          Refresh
+        </Button>
+      </XStack>
+
+      <YStack gap="$3">
+        <Text fontWeight="600">Share an update</Text>
+        <TextArea
+          value={commentBody}
+          onChangeText={setCommentBody}
+          placeholder="Share an update with your team…"
+          rows={3}
+          accessibilityLabel="Team update message"
+          disabled={isPosting}
+        />
+
+        {mentionOptions.length > 0 ? (
+          <YStack gap="$2">
+            <Text fontSize="$3" color="$color11">
+              Mention a teammate (optional)
+            </Text>
+            <XStack gap="$2" flexWrap="wrap">
+              {mentions.map((mention) => (
+                <Button
+                  key={mention.id}
+                  size="$2"
+                  variant="outlined"
+                  accessibilityLabel={`Remove mention ${mention.label}`}
+                  onPress={() => handleRemoveMention(mention.id)}
+                >
+                  @{mention.label}
+                </Button>
+              ))}
+              {availableMentionOptions.length > 0 ? (
+                <Select
+                  value={mentionSelection}
+                  onValueChange={(value) => handleMentionSelection(value)}
+                  disablePreventBodyScroll
+                >
+                  <Select.Trigger iconAfter={ChevronDown} size="$2">
+                    <Select.Value placeholder="Mention teammate">
+                      {mentionSelection === 'none' ? 'Add mention' : 'Mention added'}
+                    </Select.Value>
+                  </Select.Trigger>
+                  <Select.Content zIndex={1000}>
+                    <Select.ScrollUpButton />
+                    <Select.Viewport>
+                      <Select.Group>
+                        <Select.Label>Teammates</Select.Label>
+                        <Select.Item value="none" index={0}>
+                          <Select.ItemText>Select teammate</Select.ItemText>
+                          <Select.ItemIndicator>
+                            <Check size={16} />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                        {availableMentionOptions.map((option, index) => (
+                          <Select.Item key={option.id} value={option.id} index={index + 1}>
+                            <Select.ItemText>{option.label}</Select.ItemText>
+                            <Select.ItemIndicator>
+                              <Check size={16} />
+                            </Select.ItemIndicator>
+                          </Select.Item>
+                        ))}
+                      </Select.Group>
+                    </Select.Viewport>
+                    <Select.ScrollDownButton />
+                  </Select.Content>
+                </Select>
+              ) : null}
+            </XStack>
+          </YStack>
+        ) : null}
+
+        <XStack justify="flex-end">
+          <Button
+            size="$3"
+            bg="$color9"
+            color="$color1"
+            icon={Send}
+            onPress={() => void handleSubmitComment()}
+            disabled={disableSubmit}
+          >
+            {isPosting ? <Spinner size="small" color="$color1" /> : 'Post update'}
+          </Button>
+        </XStack>
+      </YStack>
+
+      <Separator />
+
+      {activityQuery.isLoading ? (
+        <YStack items="center" justify="center" gap="$2" py="$6">
+          <Spinner size="large" />
+          <Text color="$color11">Loading team activity…</Text>
+        </YStack>
+      ) : events.length === 0 ? (
+        <YStack gap="$2">
+          <Text fontWeight="600">No activity yet</Text>
+          <Text color="$color11">
+            Your team&apos;s collaboration history will appear here as members take action.
+          </Text>
+        </YStack>
+      ) : (
+        <YStack gap="$4">
+          {events.map((event, index) => (
+            <YStack
+              key={event.id}
+              gap="$2"
+              pb="$3"
+              borderBottomWidth={index === events.length - 1 ? 0 : 1}
+              borderColor="$borderColor"
+            >
+              {renderEventDetails(event)}
+            </YStack>
+          ))}
+
+          {activityQuery.hasNextPage ? (
+            <XStack justify="center">
+              <Button
+                size="$3"
+                variant="outlined"
+                onPress={() => void activityQuery.fetchNextPage()}
+                disabled={activityQuery.isFetchingNextPage}
+              >
+                {activityQuery.isFetchingNextPage ? (
+                  <Spinner size="small" />
+                ) : (
+                  'Load more'
+                )}
+              </Button>
+            </XStack>
+          ) : null}
+        </YStack>
+      )}
+    </YStack>
+  )
+}
+
+

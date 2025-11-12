@@ -11,7 +11,11 @@ export type TeamAuditAction =
   | "removed"
   | "reinstated"
   | "left"
-  | "invitation_rescinded";
+  | "invitation_rescinded"
+  | "job_assigned"
+  | "job_unassigned"
+  | "ownership_transferred"
+  | "workload_rebalanced";
 
 interface RecordTeamAuditLogOptions {
   supabaseAdmin: ServiceSupabaseClient;

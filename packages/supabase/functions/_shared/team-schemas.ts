@@ -25,5 +25,15 @@ export {
   teamMemberUpdateSchema,
   teamRoleKeySchema,
   teamUpdateSchema,
+  teamAnalyticsOverviewInputSchema,
+  teamAnalyticsActivityFeedSchema,
+  teamWorkloadSnapshotInputSchema,
+  teamJobAssignmentCreateSchema,
+  teamJobAssignmentUpdateSchema,
+  teamJobAssignmentDeleteSchema,
+  teamJobAssignmentListSchema,
+  teamOwnershipTransferSchema,
+  teamMemberSelfRemovalSchema,
+  teamActivityCommentSchema,
 } from "../../../schemas/src/teams/index.ts";
 

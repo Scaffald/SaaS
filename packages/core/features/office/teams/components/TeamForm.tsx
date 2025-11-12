@@ -21,7 +21,6 @@ import type { z } from 'zod'
 import {
   teamCreateBaseSchema,
   teamCreateSchema,
-  type TeamCreateInput,
   teamRoleKeySchema,
   TEAM_INVITATION_POLICIES,
   TEAM_VISIBILITIES,
@@ -219,10 +218,10 @@ export function TeamForm({ mode, organizationId, teamId, initialData, onCancel, 
     }
 
     if (mode === 'create') {
-      const createPayload: TeamCreateInput = {
+      const createPayload = teamCreateSchema.parse({
         ...payloadBase,
         metadata: {},
-      }
+      })
       await createMutation.mutateAsync(createPayload)
     } else {
       if (!teamId) {

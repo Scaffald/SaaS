@@ -1,7 +1,14 @@
 import { z } from 'zod'
 
 import { jsonSchema } from './json.ts'
-import { teamInvitationPolicySchema, teamRoleKeySchema, teamVisibilitySchema } from './constants.ts'
+import {
+  teamInvitationPolicySchema,
+  teamRoleKeySchema,
+  teamVisibilitySchema,
+  TEAM_INVITATION_TTL_DEFAULT,
+  TEAM_INVITATION_TTL_MIN,
+  TEAM_INVITATION_TTL_MAX,
+} from './constants.ts'
 
 export const teamIdSchema = z.string().uuid('Team ID must be a valid UUID')
 
@@ -28,6 +35,14 @@ const teamMetadataSchema = jsonSchema
 
 const teamImageUrlSchema = z.string().url('Image must be a valid URL').max(2048)
 
+const teamWorkloadStrategySchema = z.enum(['manual', 'round_robin', 'load_balance'])
+const analyticsRefreshIntervalSchema = z.number().int().min(5).max(1440)
+const invitationExpirationDaysSchema = z
+  .number()
+  .int()
+  .min(TEAM_INVITATION_TTL_MIN)
+  .max(TEAM_INVITATION_TTL_MAX)
+
 export const teamCreateBaseSchema = z.object({
   organizationId: z.string().uuid('Organization ID must be a valid UUID'),
   name: teamNameSchema,
@@ -40,6 +55,14 @@ export const teamCreateBaseSchema = z.object({
   metadata: teamMetadataSchema,
   defaultRoleId: z.string().uuid('Default role ID must be a valid UUID').optional(),
   defaultRoleKey: teamRoleKeySchema.default('member'),
+  allowSelfJoin: z.boolean().default(false),
+  autoAssignJobs: z.boolean().default(false),
+  invitationExpirationDays: invitationExpirationDaysSchema.default(TEAM_INVITATION_TTL_DEFAULT),
+  workloadStrategy: teamWorkloadStrategySchema.default('manual'),
+  workloadSettings: teamMetadataSchema,
+  analyticsMetadata: teamMetadataSchema,
+  analyticsRefreshIntervalMinutes: analyticsRefreshIntervalSchema.default(60),
+  settings: teamMetadataSchema,
 })
 
 export const teamCreateSchema = teamCreateBaseSchema.refine(
@@ -62,6 +85,14 @@ const teamUpdateBodySchema = z.object({
   archivedAt: z.union([z.string().datetime(), z.null()]).optional(),
   archivedBy: z.union([z.string().uuid(), z.null()]).optional(),
   isArchived: z.boolean().optional(),
+  allowSelfJoin: z.boolean().optional(),
+  autoAssignJobs: z.boolean().optional(),
+  invitationExpirationDays: invitationExpirationDaysSchema.optional(),
+  workloadStrategy: teamWorkloadStrategySchema.optional(),
+  workloadSettings: teamMetadataSchema.optional(),
+  analyticsMetadata: teamMetadataSchema.optional(),
+  analyticsRefreshIntervalMinutes: analyticsRefreshIntervalSchema.optional(),
+  settings: teamMetadataSchema.optional(),
 })
 
 export const teamUpdateSchema = z
@@ -84,7 +115,15 @@ export const teamUpdateSchema = z
       input.defaultRoleKey !== undefined ||
       input.archivedAt !== undefined ||
       input.archivedBy !== undefined ||
-      input.isArchived !== undefined,
+      input.isArchived !== undefined ||
+      input.allowSelfJoin !== undefined ||
+      input.autoAssignJobs !== undefined ||
+      input.invitationExpirationDays !== undefined ||
+      input.workloadStrategy !== undefined ||
+      input.workloadSettings !== undefined ||
+      input.analyticsMetadata !== undefined ||
+      input.analyticsRefreshIntervalMinutes !== undefined ||
+      input.settings !== undefined,
     'At least one field must be provided to update a team'
   )
 
