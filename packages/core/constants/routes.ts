@@ -317,6 +317,11 @@ const ROUTES_CONFIG = {
     title: "Request Background Check",
     isProtected: true,
   },
+  OFFICE_STORAGE: {
+    path: "/office/storage",
+    title: "Storage Analytics",
+    isProtected: true,
+  },
   OFFICE_UNIVERSITIES_CREATE: {
     path: "/office/universities/create",
     title: "Create University",
@@ -446,6 +451,7 @@ export const RouteBuilder = {
   officeBackgroundChecksRequest: () =>
     ROUTES.OFFICE_BACKGROUND_CHECKS_REQUEST.path,
   officeBackgroundChecksAdmin: () => ROUTES.OFFICE_BACKGROUND_CHECKS_ADMIN.path,
+  officeStorage: () => ROUTES.OFFICE_STORAGE.path,
   dashboardBackgroundCheck: () =>
     ROUTES.DASHBOARD_PROFILE_BACKGROUND_CHECK.path,
   dashboardBackgroundCheckInitiate: () =>

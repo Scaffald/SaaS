@@ -58,6 +58,7 @@ export default function OfficeLayout() {
           name="background-checks/request"
           options={{ title: 'Request Background Check' }}
         />
+        <Drawer.Screen name="storage/index" options={{ title: 'Storage Analytics' }} />
       </DrawerLayout>
     </ErrorBoundary>
   )

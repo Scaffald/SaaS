@@ -7,6 +7,7 @@ import {
   generalProfileSchema,
 } from "../../_shared/profile-schemas.ts";
 import { officeProfilesRouter } from "./office/profiles.router.ts";
+import { officeStorageRouter } from "./office/storage.router.ts";
 import { officeUniversitiesRouter } from "./office/universities.router.ts";
 import { transformJobSkills } from "../../_shared/skill-helpers.ts";
 import { officeTeamsRouter } from "./teams.router.ts";
@@ -18,6 +19,7 @@ export const officeRouter = t.router({
   universities: officeUniversitiesRouter,
   profiles: officeProfilesRouter,
   teams: officeTeamsRouter,
+  storage: officeStorageRouter,
   /**
    * List all users
    * Returns paginated list of users with basic profile info
