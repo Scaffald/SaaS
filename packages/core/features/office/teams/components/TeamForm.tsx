@@ -282,7 +282,7 @@ export function TeamForm({
         control={control}
         render={({ field }) => (
           <YStack gap="$2">
-            <Label htmlFor="team-slug">Slug *</Label>
+            <Label htmlFor="team-slug">Vanity URL *</Label>
             <Input
               id="team-slug"
               testID="team-form-slug"
@@ -292,7 +292,7 @@ export function TeamForm({
               borderColor={errors.slug ? '$red8' : '$borderColor'}
             />
             <Text fontSize="$2" color="$color11">
-              Lowercase, URL friendly identifier for the team
+              Lowercase, URL-friendly username for the team
             </Text>
             {errors.slug && (
               <Text color="$red10" fontSize="$2">

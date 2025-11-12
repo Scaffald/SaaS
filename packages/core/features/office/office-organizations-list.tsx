@@ -411,7 +411,7 @@ export function OfficeOrganizationsList() {
                           {request.name}
                         </Text>
                         <Text fontSize="$2" color="$color11">
-                          Slug: {request.slug}
+                          Vanity URL: {request.slug}
                         </Text>
                         {request.website ? (
                           <Text fontSize="$2" color="$blue10">

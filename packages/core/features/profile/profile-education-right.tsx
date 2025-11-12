@@ -1,5 +1,5 @@
 import { YStack, XStack, Text, Spinner, H4, Button, Dialog } from 'tamagui'
-import { GraduationCap, Calendar, MapPin, Pencil, Trash2, CheckCircle, AlertCircle } from '@tamagui/lucide-icons'
+import { GraduationCap, Calendar, MapPin, Pencil, Trash2, AlertCircle } from '@tamagui/lucide-icons'
 import { DashboardWidget } from '@app/ui'
 import { ProfileEmptyState, EducationEntryEditModal } from './components'
 import { formatDateRange } from './utils/date-formatting'
@@ -106,75 +106,51 @@ export function ProfileEducationRight() {
               }}
             >
               {/* Institution Name with Verification Badge */}
-              <XStack justify="space-between" items="flex-start">
-                <YStack gap="$1" flex={1}>
-                  <XStack gap="$2" items="center">
-                    <Text fontSize="$6" fontWeight="700" color="$color12">
-                      {edu.institution_name}
-                    </Text>
-                    {edu.is_verified ? (
-                      <CheckCircle size={16} color="$green10" />
-                    ) : (
-                      <XStack gap="$1" items="center">
-                        <AlertCircle size={14} color="$orange10" />
-                        <Text fontSize="$1" color="$orange10">
-                          Pending verification
-                        </Text>
-                      </XStack>
-                    )}
-                  </XStack>
-                  
-                  {/* Current Education Badge */}
-                  {edu.is_current && (
+              <YStack gap="$1">
+                <XStack gap="$2" items="center" flexWrap="wrap">
+                  <Text fontSize="$6" fontWeight="700" color="$color12">
+                    {edu.institution_name}
+                  </Text>
+                  {!edu.is_verified && (
                     <XStack gap="$1" items="center">
-                      <Text fontSize="$2" fontWeight="600" color="$blue10">
-                        Current
+                      <AlertCircle size={14} color="$orange10" />
+                      <Text fontSize="$1" color="$orange10">
+                        Pending verification
                       </Text>
                     </XStack>
                   )}
-
-                  {/* Degree Type */}
-                  {edu.degree_type && (
-                    <Text fontSize="$4" fontWeight="600" color="$color11">
-                      {edu.degree_type}
-                    </Text>
-                  )}
-
-                  {/* Field of Study */}
-                  {edu.field_of_study && (
-                    <Text fontSize="$3" color="$color11">
-                      {edu.field_of_study}
-                    </Text>
-                  )}
-                  
-                  {/* GPA */}
-                  {hasValidGpa && (
-                    <Text fontSize="$3" color="$color11">
-                      GPA: {normalizedGpa.toFixed(1)}/4.0
-                    </Text>
-                  )}
-                </YStack>
-                
-                {/* Action Buttons */}
-                <XStack gap="$2">
-                  <Button
-                    size="$2"
-                    variant="outlined"
-                    icon={Pencil}
-                    onPress={() => setEditingEntry(edu)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    size="$2"
-                    variant="outlined"
-                    icon={Trash2}
-                    onPress={() => setDeleteDialogOpen(edu.id ?? null)}
-                  >
-                    Delete
-                  </Button>
                 </XStack>
-              </XStack>
+                
+                {/* Current Education Badge */}
+                {edu.is_current && (
+                  <XStack gap="$1" items="center">
+                    <Text fontSize="$2" fontWeight="600" color="$blue10">
+                      Current
+                    </Text>
+                  </XStack>
+                )}
+
+                {/* Degree Type */}
+                {edu.degree_type && (
+                  <Text fontSize="$4" fontWeight="600" color="$color11">
+                    {edu.degree_type}
+                  </Text>
+                )}
+
+                {/* Field of Study */}
+                {edu.field_of_study && (
+                  <Text fontSize="$3" color="$color11">
+                    {edu.field_of_study}
+                  </Text>
+                )}
+                
+                {/* GPA */}
+                {hasValidGpa && (
+                  <Text fontSize="$3" color="$color11">
+                    GPA: {normalizedGpa.toFixed(1)}/4.0
+                  </Text>
+                )}
+              </YStack>
               
               {/* Delete Confirmation Dialog */}
               <Dialog
@@ -209,29 +185,51 @@ export function ProfileEducationRight() {
 
               {/* Details */}
               <YStack gap="$2">
-                {/* Dates */}
-                {(edu.start_date || edu.end_date || edu.is_current) && (
-                  <YStack gap="$1">
-                    <Calendar size={16} color="$color11" />
-                    <Text fontSize="$2" color="$color11">
-                      {formatDateRange(
-                        edu.start_date,
-                        edu.end_date,
-                        Boolean(edu.is_current),
-                        edu.expected_graduation_date
-                      )}
-                    </Text>
-                  </YStack>
-                )}
+                <XStack items="center" flexWrap="wrap" gap="$3">
+                  {(edu.start_date || edu.end_date || edu.is_current) && (
+                    <XStack gap="$2" items="center">
+                      <Calendar size={16} color="$color11" />
+                      <Text fontSize="$2" color="$color11">
+                        {formatDateRange(
+                          edu.start_date,
+                          edu.end_date,
+                          Boolean(edu.is_current),
+                          edu.expected_graduation_date
+                        )}
+                      </Text>
+                    </XStack>
+                  )}
+
+                  <XStack gap="$2" ml="auto">
+                    <Button
+                      size="$2"
+                      variant="outlined"
+                      circular
+                      icon={Pencil}
+                      aria-label="Edit education entry"
+                      accessibilityLabel="Edit education entry"
+                      onPress={() => setEditingEntry(edu)}
+                    />
+                    <Button
+                      size="$2"
+                      variant="outlined"
+                      circular
+                      icon={Trash2}
+                      aria-label="Delete education entry"
+                      accessibilityLabel="Delete education entry"
+                      onPress={() => setDeleteDialogOpen(edu.id ?? null)}
+                    />
+                  </XStack>
+                </XStack>
 
                 {/* Location */}
                 {edu.location && (
-                  <YStack gap="$1">
+                  <XStack gap="$2" items="center">
                     <MapPin size={16} color="$color11" />
                     <Text fontSize="$2" color="$color11">
                       {edu.location}
                     </Text>
-                  </YStack>
+                  </XStack>
                 )}
 
                 {/* Description */}

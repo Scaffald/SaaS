@@ -9,13 +9,8 @@ import { UserMenuAvatar } from './UserMenuAvatar'
 import { DrawerMenu } from './DrawerMenu'
 import { api } from '@app/core/utils/api'
 import type { NotificationItem } from '@app/ui'
-import { useRouter } from 'expo-router'
-import type { Href } from 'expo-router'
 import { useNotificationDeviceRegistration } from '@app/core/hooks/useNotificationDeviceRegistration'
-import { ROUTES } from '@app/core/constants/routes'
 import { FeedbackWidget } from '@app/core/features/feedback'
-
-const NOTIFICATIONS_ROUTE: Href = ROUTES.DASHBOARD_NOTIFICATIONS.path as Href
 
 interface DrawerLayoutProps {
   /**
@@ -45,8 +40,6 @@ export function DrawerLayout({
   const { width } = useWindowDimensions()
   const theme = useTheme()
   const isSmall = width < 1400
-  const router = useRouter()
-
   const { data: preferencesData } = api.notifications.preferences.get.useQuery(undefined, {
     staleTime: 5 * 60 * 1000,
     refetchOnMount: false,
@@ -59,15 +52,11 @@ export function DrawerLayout({
   useNotificationDeviceRegistration(pushEnabled)
 
   // Fetch notifications
-  const {
-    data: notificationsData,
-    isLoading: isLoadingNotifications,
-    refetch: refetchNotifications,
-  } = api.notifications.list.useQuery({ limit: 25 })
+  const { data: notificationsData, isLoading: isLoadingNotifications } =
+    api.notifications.list.useQuery({ limit: 25 })
 
   // Fetch unread count
-  const { data: unreadCountData, refetch: refetchUnread } =
-    api.notifications.getUnreadCount.useQuery()
+  const { data: unreadCountData } = api.notifications.getUnreadCount.useQuery()
   const unreadCount = unreadCountData?.count || 0
 
   // Mark as read mutation
@@ -173,13 +162,6 @@ export function DrawerLayout({
                       isLoading={isLoadingNotifications}
                       onNotificationClick={handleNotificationClick}
                       onMarkAsRead={handleMarkAsRead}
-                      onViewAll={() => {
-                        router.push(NOTIFICATIONS_ROUTE)
-                        setTimeout(() => {
-                          refetchNotifications()
-                          refetchUnread()
-                        }, 250)
-                      }}
                     />
                     <UserMenuAvatar />
                   </XStack>

@@ -149,22 +149,22 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         )}
       />
 
-      {/* Slug */}
+      {/* Vanity URL */}
       <Controller
         name="slug"
         control={control}
         render={({ field }) => (
           <YStack gap="$2">
-            <Text fontWeight="600">Slug *</Text>
+            <Text fontWeight="600">Vanity URL *</Text>
             <Input
               testID="org-form-slug"
               value={field.value}
               onChangeText={field.onChange}
-              placeholder="organization-slug"
+              placeholder="organization-username"
               borderColor={errors.slug ? '$red8' : '$borderColor'}
             />
             <Text fontSize="$2" opacity={0.7}>
-              URL-friendly identifier (lowercase, hyphens only)
+              Lowercase, URL-friendly username (hyphens only)
             </Text>
             {errors.slug && (
               <Text data-testid="slug-error" color="$red10" fontSize="$2">

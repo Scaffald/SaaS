@@ -51,23 +51,6 @@ export const OrganizationCard = memo(
             </XStack>
           </XStack>
 
-          {organization.industry && (
-            <XStack items="center" gap="$2">
-              <XStack
-                items="center"
-                gap="$1"
-                bg={isSelected ? '$blue3' : '$blue3'}
-                rounded="$4"
-                px="$2"
-                py="$1"
-              >
-                <Text color={isSelected ? '$color1' : '$blue11'} fontWeight="600" fontSize="$2">
-                  {organization.industry}
-                </Text>
-              </XStack>
-            </XStack>
-          )}
-
           {organization.address && (
             <XStack items="center" gap="$1">
               <MapPin size={14} color={isSelected ? '$color1' : '$color10'} />

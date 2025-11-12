@@ -13,7 +13,7 @@ import {
   type StackProps,
   type TextProps,
 } from 'tamagui'
-import { Bell, AlertCircle, Info, ShieldAlert, X, ExternalLink } from '@tamagui/lucide-icons'
+import { Bell, AlertCircle, Info, ShieldAlert, X } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import type { Href } from 'expo-router'
 
@@ -83,10 +83,6 @@ interface NotificationDropdownProps {
    * Callback to mark notification as read
    */
   onMarkAsRead?: (notificationId: string) => void
-  /**
-   * Callback when "View all" is pressed
-   */
-  onViewAll?: () => void
 }
 
 /**
@@ -159,7 +155,6 @@ export function NotificationDropdown({
   isLoading = false,
   onNotificationClick,
   onMarkAsRead,
-  onViewAll,
 }: NotificationDropdownProps) {
   const [open, setOpen] = useState(false)
   const router = useRouter()
@@ -225,11 +220,7 @@ export function NotificationDropdown({
   }, [])
 
   return (
-    <Popover
-      placement={isMobile ? 'top' : 'bottom-end'}
-      open={open}
-      onOpenChange={handleOpenChange}
-    >
+    <Popover placement="bottom-end" open={open} onOpenChange={handleOpenChange}>
       <Popover.Trigger asChild>
         <Button
           ref={triggerRef}
@@ -293,20 +284,7 @@ export function NotificationDropdown({
               Notifications
             </Text>
           </XStack>
-          <XStack gap="$2">
-            {onViewAll && (
-              <Button
-                size="$2"
-                theme="info"
-                icon={ExternalLink}
-                onPress={() => {
-                  setOpen(false)
-                  onViewAll()
-                }}
-              >
-                View all
-              </Button>
-            )}
+          <XStack>
             <Button
               size="$2"
               circular

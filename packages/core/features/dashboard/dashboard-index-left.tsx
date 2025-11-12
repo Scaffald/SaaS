@@ -34,8 +34,8 @@ export function DashboardIndexLeft() {
   // Show ProfileSnapshotWidget and individual assessment widgets if prerequisites are complete
   return (
     <YStack gap="$4">
-      <ResumeImportWidget />
-      <ProfileCompletionExperience />
+      {/* <ResumeImportWidget /> */}
+      {/* <ProfileCompletionExperience /> */}
       <ProfileSnapshotWidget />
       <IPIPAssessmentWidget />
       <RIASECAssessmentWidget />

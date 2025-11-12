@@ -132,7 +132,7 @@ export function UserMenuAvatar() {
 
   return (
     <Popover
-      placement={isMobile ? 'top' : 'bottom-end'}
+      placement="bottom-end"
       open={open}
       onOpenChange={handleOpenChange}
     >
@@ -199,7 +199,13 @@ export function UserMenuAvatar() {
         style={{ width: isMobile ? 'calc(100vw - 32px)' as const : 240 }}
       >
         {/* Header */}
-        <YStack p="$4" borderBottomWidth={1} borderBottomColor="$borderColor" gap="$2">
+        <YStack
+          px={0}
+          py="$4"
+          borderBottomWidth={1}
+          borderBottomColor="$borderColor"
+          gap="$2"
+        >
           <Text fontSize="$4" fontWeight="600" color="$color12">
             {displayName}
           </Text>
@@ -217,7 +223,8 @@ export function UserMenuAvatar() {
             <YStack
               role="menuitem"
               tabIndex={0}
-              p="$3"
+              px={0}
+              py="$3"
               bg="transparent"
               pressStyle={{ bg: '$color3' }}
               hoverStyle={{ bg: '$color3' }}
@@ -239,7 +246,8 @@ export function UserMenuAvatar() {
           <YStack
             role="menuitem"
             tabIndex={0}
-            p="$3"
+            px={0}
+            py="$3"
             bg="transparent"
             pressStyle={{ bg: '$color3' }}
             hoverStyle={{ bg: '$color3' }}
@@ -260,7 +268,8 @@ export function UserMenuAvatar() {
           <YStack
             role="menuitem"
             tabIndex={0}
-            p="$3"
+            px={0}
+            py="$3"
             bg="transparent"
             pressStyle={{ bg: '$color3' }}
             hoverStyle={{ bg: '$color3' }}
@@ -281,7 +290,8 @@ export function UserMenuAvatar() {
           <YStack
             role="menuitem"
             tabIndex={0}
-            p="$3"
+            px={0}
+            py="$3"
             bg="transparent"
             pressStyle={{ bg: '$color3' }}
             hoverStyle={{ bg: '$color3' }}
@@ -309,7 +319,8 @@ export function UserMenuAvatar() {
           <YStack
             role="menuitem"
             tabIndex={0}
-            p="$3"
+            px={0}
+            py="$3"
             bg="transparent"
             pressStyle={{ bg: '$color3' }}
             hoverStyle={{ bg: '$color3' }}
