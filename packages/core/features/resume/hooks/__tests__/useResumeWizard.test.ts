@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react'
-import { beforeEach, describe, expect, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ResumeWizardSection } from '../../hooks/useResumeWizard'
 import { useResumeWizard } from '../../hooks/useResumeWizard'

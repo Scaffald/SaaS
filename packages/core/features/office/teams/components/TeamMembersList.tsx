@@ -167,7 +167,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
   return (
     <YStack gap="$4" flex={1}>
       <XStack justify="space-between" items="center">
-        <Text fontSize="$6" fontWeight="700">
+        <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
           Team members
         </Text>
         <Button
@@ -176,6 +176,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
           bg="$color9"
           color="$color1"
           size="$3"
+          accessibilityLabel="Add a new team member"
         >
           Add Member
         </Button>
@@ -204,8 +205,20 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
             const isSelf = member.userId === currentUser?.id
             const canTransferToMember = canTransferOwnership && !isSelf && member.status === 'active'
 
+            const memberRoleName = member.record.role?.name ?? 'Member'
+            const memberStatusLabel = member.status === 'active' ? 'Active' : member.status
+
             return (
-              <Card key={member.id} p="$4" borderColor="$borderColor" borderWidth={1} gap="$3">
+              <Card
+                key={member.id}
+                p="$4"
+                borderColor="$borderColor"
+                borderWidth={1}
+                gap="$3"
+                accessible
+                accessibilityRole="summary"
+                accessibilityLabel={`${member.displayName ?? 'Team member'} · Role ${memberRoleName} · Status ${memberStatusLabel}`}
+              >
                 <XStack gap="$3" items="center" justify="space-between">
                   <XStack gap="$3" items="center">
                     <Avatar circular size="$4">
@@ -240,6 +253,8 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                         icon={Crown}
                         disabled={transferOwnershipMutation.isPending}
                         onPress={() => void handleTransferOwnership(member)}
+                        accessibilityLabel={`Promote ${member.displayName ?? 'this member'} to team owner`}
+                        accessibilityHint="Updates the member's permissions and notifies the team"
                       >
                         Make owner
                       </Button>
@@ -254,16 +269,21 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                           userId: member.userId,
                           displayName: member.displayName,
                           status: member.status,
-                        record: member.record,
+                          roleId: member.roleId,
+                          roleKey: member.roleKey,
+                          avatarPath: member.avatarPath,
+                          record: member.record,
                         })
                       }
+                      accessibilityLabel={`Remove ${member.displayName ?? 'this member'} from the team`}
+                      accessibilityHint="Opens a dialog to confirm removal"
                     >
                       Remove
                     </Button>
                   </XStack>
                 </XStack>
                 <Text fontSize="$3" color="$color11">
-                  Status: {member.status === 'active' ? 'Active' : member.status}
+                  Status: {memberStatusLabel}
                 </Text>
                 {workload ? (
                   <XStack gap="$3" flexWrap="wrap">
@@ -307,6 +327,8 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
           size="$3"
           disabled={selfRemoveMutation.isPending}
           onPress={() => setIsLeaveDialogOpen(true)}
+          accessibilityLabel="Open leave team dialog"
+          accessibilityHint="Opens a confirmation dialog to leave this team"
         >
           Leave team
         </Button>
@@ -364,6 +386,8 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                 onChangeText={setLeaveReason}
                 placeholder="Let the team know why you’re leaving…"
                 rows={3}
+                accessibilityLabel="Reason for leaving the team"
+                accessibilityHint="Optional message sent to the team about your departure"
               />
             </YStack>
             <XStack gap="$3" justify="flex-end">

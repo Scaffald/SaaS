@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import type { ReactNode } from 'react'
 import {
   Button,
   Select,
@@ -101,7 +102,9 @@ export function TeamActivityFeed({
     return `User ${userId.slice(0, 6)}`
   }
 
-  const renderEventDetails = (event: TeamActivityEvent) => {
+  const renderEventDetails = (
+    event: TeamActivityEvent,
+  ): { content: ReactNode; accessibilityLabel: string } => {
     const actor = resolveUserName(event.actorUserId)
     const occurredAt = new Date(event.occurredAt).toLocaleString()
 
@@ -117,98 +120,135 @@ export function TeamActivityFeed({
           .map((id) => resolveUserName(id))
           .filter((name) => Boolean(name))
 
-        return (
-          <YStack gap="$2" key={event.id}>
-            <Text fontWeight="600">
-              {actor} commented
-            </Text>
-            {body ? <Text>{body}</Text> : null}
-            {mentionNames.length > 0 ? (
-              <Text fontSize="$3" color="$color10">
-                Mentions: {mentionNames.join(', ')}
+        const accessibilityLabel = [
+          `${actor} commented`,
+          body ? `Comment: ${body}` : null,
+          mentionNames.length > 0 ? `Mentions ${mentionNames.join(', ')}` : null,
+          `On ${occurredAt}`,
+        ]
+          .filter((value): value is string => Boolean(value))
+          .join('. ')
+
+        return {
+          accessibilityLabel,
+          content: (
+            <YStack gap="$2">
+              <Text fontWeight="600">
+                {actor} commented
               </Text>
-            ) : null}
-            <Text fontSize="$2" color="$color10">
-              {occurredAt}
-            </Text>
-          </YStack>
-        )
+              {body ? <Text>{body}</Text> : null}
+              {mentionNames.length > 0 ? (
+                <Text fontSize="$3" color="$color10">
+                  Mentions: {mentionNames.join(', ')}
+                </Text>
+              ) : null}
+              <Text fontSize="$2" color="$color10">
+                {occurredAt}
+              </Text>
+            </YStack>
+          ),
+        }
       }
       case 'job.assigned': {
         const jobId = (payload.jobId as string | undefined) ?? event.relatedJobId ?? 'job'
-        return (
-          <YStack gap="$1" key={event.id}>
-            <Text fontWeight="600">
-              {actor} assigned this team to job {jobId}
-            </Text>
-            <Text fontSize="$2" color="$color10">
-              {occurredAt}
-            </Text>
-          </YStack>
-        )
+        const accessibilityLabel = `${actor} assigned this team to job ${jobId}. ${occurredAt}`
+        return {
+          accessibilityLabel,
+          content: (
+            <YStack gap="$1">
+              <Text fontWeight="600">
+                {actor} assigned this team to job {jobId}
+              </Text>
+              <Text fontSize="$2" color="$color10">
+                {occurredAt}
+              </Text>
+            </YStack>
+          ),
+        }
       }
       case 'job.assignment_updated': {
         const jobId = (payload.jobId as string | undefined) ?? event.relatedJobId ?? 'job'
-        return (
-          <YStack gap="$1" key={event.id}>
-            <Text fontWeight="600">
-              {actor} updated the job assignment for {jobId}
-            </Text>
-            <Text fontSize="$2" color="$color10">
-              {occurredAt}
-            </Text>
-          </YStack>
-        )
+        const accessibilityLabel = `${actor} updated the job assignment for ${jobId}. ${occurredAt}`
+        return {
+          accessibilityLabel,
+          content: (
+            <YStack gap="$1">
+              <Text fontWeight="600">
+                {actor} updated the job assignment for {jobId}
+              </Text>
+              <Text fontSize="$2" color="$color10">
+                {occurredAt}
+              </Text>
+            </YStack>
+          ),
+        }
       }
       case 'job.unassigned': {
         const jobId = event.relatedJobId ?? 'job'
-        return (
-          <YStack gap="$1" key={event.id}>
-            <Text fontWeight="600">
-              {actor} removed this team from job {jobId}
-            </Text>
-            <Text fontSize="$2" color="$color10">
-              {occurredAt}
-            </Text>
-          </YStack>
-        )
+        const accessibilityLabel = `${actor} removed this team from job ${jobId}. ${occurredAt}`
+        return {
+          accessibilityLabel,
+          content: (
+            <YStack gap="$1">
+              <Text fontWeight="600">
+                {actor} removed this team from job {jobId}
+              </Text>
+              <Text fontSize="$2" color="$color10">
+                {occurredAt}
+              </Text>
+            </YStack>
+          ),
+        }
       }
       case 'team.ownership_transferred': {
         const targetMember = resolveUserName(event.subjectUserId)
-        return (
-          <YStack gap="$1" key={event.id}>
-            <Text fontWeight="600">
-              {actor} transferred ownership to {targetMember}
-            </Text>
-            <Text fontSize="$2" color="$color10">
-              {occurredAt}
-            </Text>
-          </YStack>
-        )
+        const accessibilityLabel = `${actor} transferred ownership to ${targetMember}. ${occurredAt}`
+        return {
+          accessibilityLabel,
+          content: (
+            <YStack gap="$1">
+              <Text fontWeight="600">
+                {actor} transferred ownership to {targetMember}
+              </Text>
+              <Text fontSize="$2" color="$color10">
+                {occurredAt}
+              </Text>
+            </YStack>
+          ),
+        }
       }
       case 'member.self_removed': {
-        return (
-          <YStack gap="$1" key={event.id}>
-            <Text fontWeight="600">
-              {actor} left the team
-            </Text>
-            <Text fontSize="$2" color="$color10">
-              {occurredAt}
-            </Text>
-          </YStack>
-        )
+        const accessibilityLabel = `${actor} left the team. ${occurredAt}`
+        return {
+          accessibilityLabel,
+          content: (
+            <YStack gap="$1">
+              <Text fontWeight="600">
+                {actor} left the team
+              </Text>
+              <Text fontSize="$2" color="$color10">
+                {occurredAt}
+              </Text>
+            </YStack>
+          ),
+        }
       }
       default: {
-        return (
-          <YStack gap="$1" key={event.id}>
-            <Text fontWeight="600">
-              {actor} performed {event.eventType.replace('.', ' ')}
-            </Text>
-            <Text fontSize="$2" color="$color10">
-              {occurredAt}
-            </Text>
-          </YStack>
-        )
+        const normalizedEvent = event.eventType.replace('.', ' ')
+        const accessibilityLabel = `${actor} performed ${normalizedEvent}. ${occurredAt}`
+        return {
+          accessibilityLabel,
+          content: (
+            <YStack gap="$1">
+              <Text fontWeight="600">
+                {actor} performed {normalizedEvent}
+              </Text>
+              <Text fontSize="$2" color="$color10">
+                {occurredAt}
+              </Text>
+            </YStack>
+          ),
+        }
       }
     }
   }
@@ -252,8 +292,8 @@ export function TeamActivityFeed({
     <YStack gap="$4">
       <XStack gap="$2" items="center" justify="space-between" flexWrap="wrap">
         <XStack gap="$2" items="center">
-          <MessageCircle size={20} />
-          <Text fontSize="$6" fontWeight="700">
+          <MessageCircle size={20} accessibilityLabel="Team activity icon" />
+          <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
             Team activity
           </Text>
         </XStack>
@@ -262,19 +302,24 @@ export function TeamActivityFeed({
           variant="outlined"
           onPress={() => void activityQuery.refetch()}
           disabled={activityQuery.isFetching}
+          accessibilityLabel="Refresh team activity feed"
+          accessibilityHint="Reloads the most recent team events"
         >
           Refresh
         </Button>
       </XStack>
 
       <YStack gap="$3">
-        <Text fontWeight="600">Share an update</Text>
+        <Text fontWeight="600" accessibilityRole="header">
+          Share an update
+        </Text>
         <TextArea
           value={commentBody}
           onChangeText={setCommentBody}
           placeholder="Share an update with your team…"
           rows={3}
           accessibilityLabel="Team update message"
+          accessibilityHint="Enter the update you want to share with your team"
           disabled={isPosting}
         />
 
@@ -343,6 +388,8 @@ export function TeamActivityFeed({
             icon={Send}
             onPress={() => void handleSubmitComment()}
             disabled={disableSubmit}
+            accessibilityLabel="Post update"
+            accessibilityHint="Shares your message with the team"
           >
             {isPosting ? <Spinner size="small" color="$color1" /> : 'Post update'}
           </Button>
@@ -365,17 +412,23 @@ export function TeamActivityFeed({
         </YStack>
       ) : (
         <YStack gap="$4">
-          {events.map((event, index) => (
-            <YStack
-              key={event.id}
-              gap="$2"
-              pb="$3"
-              borderBottomWidth={index === events.length - 1 ? 0 : 1}
-              borderColor="$borderColor"
-            >
-              {renderEventDetails(event)}
-            </YStack>
-          ))}
+          {events.map((event, index) => {
+            const eventContent = renderEventDetails(event)
+            return (
+              <YStack
+                key={event.id}
+                gap="$2"
+                pb="$3"
+                borderBottomWidth={index === events.length - 1 ? 0 : 1}
+                borderColor="$borderColor"
+                accessible
+                accessibilityRole="summary"
+                accessibilityLabel={eventContent.accessibilityLabel}
+              >
+                {eventContent.content}
+              </YStack>
+            )
+          })}
 
           {activityQuery.hasNextPage ? (
             <XStack justify="center">
@@ -384,6 +437,8 @@ export function TeamActivityFeed({
                 variant="outlined"
                 onPress={() => void activityQuery.fetchNextPage()}
                 disabled={activityQuery.isFetchingNextPage}
+                accessibilityLabel="Load more activity"
+                accessibilityHint="Loads older team activity events"
               >
                 {activityQuery.isFetchingNextPage ? (
                   <Spinner size="small" />

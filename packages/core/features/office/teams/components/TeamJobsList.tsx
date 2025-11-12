@@ -36,7 +36,7 @@ export function TeamJobsList({
   return (
     <YStack gap="$3">
       <XStack justify="space-between" items="center" flexWrap="wrap" gap="$3">
-        <Text fontSize="$6" fontWeight="700">
+        <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
           Team jobs
         </Text>
         <XStack gap="$2" items="center">
@@ -46,6 +46,7 @@ export function TeamJobsList({
             icon={RefreshCcw}
             onPress={() => onRefresh?.()}
             disabled={isLoading}
+            accessibilityLabel="Refresh assigned jobs list"
           >
             Refresh
           </Button>
@@ -62,6 +63,7 @@ export function TeamJobsList({
                 params: { teamId },
               })
             }}
+            accessibilityLabel="Assign a job to this team"
           >
             Assign job
           </Button>
@@ -98,6 +100,9 @@ export function TeamJobsList({
               borderColor="$borderColor"
               bg="$color2"
               gap="$3"
+              accessible
+              accessibilityRole="summary"
+              accessibilityLabel={`Job ${job.title}. Status ${job.status ?? 'draft'}. Updated ${job.updated_at ? new Date(job.updated_at).toLocaleDateString() : 'recently'}`}
             >
               <XStack justify="space-between" items="flex-start" gap="$3" flexWrap="wrap">
                 <YStack gap="$1" flex={1}>
@@ -129,6 +134,7 @@ export function TeamJobsList({
                   size="$3"
                   variant="outlined"
                   onPress={() => router.push(RouteBuilder.officeJobsEdit(job.id))}
+                  accessibilityLabel={`View job ${job.title}`}
                 >
                   View job
                 </Button>
@@ -173,7 +179,17 @@ function StatusChip({ status }: { status: string }) {
   const textColor = isOpen ? '$green11' : '$color11'
 
   return (
-    <XStack px="$2" py="$1" borderWidth={1} borderColor={border} bg={background} rounded="$4">
+    <XStack
+      px="$2"
+      py="$1"
+      borderWidth={1}
+      borderColor={border}
+      bg={background}
+      rounded="$4"
+      accessible
+      accessibilityRole="text"
+      accessibilityLabel={`Job status ${normalized}`}
+    >
       <Text fontSize="$2" color={textColor}>
         {normalized}
       </Text>
@@ -187,7 +203,17 @@ function TeamBadge({ name, isPrimary }: { name: string; isPrimary: boolean }) {
   const textColor = isPrimary ? '$blue11' : '$color11'
 
   return (
-    <XStack px="$2" py="$1" borderWidth={1} borderColor={border} bg={background} rounded="$4">
+    <XStack
+      px="$2"
+      py="$1"
+      borderWidth={1}
+      borderColor={border}
+      bg={background}
+      rounded="$4"
+      accessible
+      accessibilityRole="text"
+      accessibilityLabel={`${name}${isPrimary ? ' primary team' : ''}`}
+    >
       <Text fontSize="$2" color={textColor}>
         {name}
         {isPrimary ? ' • Primary' : ''}

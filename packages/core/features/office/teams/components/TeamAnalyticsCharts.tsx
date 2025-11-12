@@ -101,6 +101,44 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
       .filter((entry) => entry.value > 0)
   }, [workloads])
 
+  const applicationsSummary = useMemo(() => {
+    if (applicationsTrend.length === 0) {
+      return null
+    }
+    const totalReviewed = applicationsTrend.reduce((sum, point) => sum + point.value, 0)
+    const latestPoint = applicationsTrend[applicationsTrend.length - 1]
+    const peakPoint = applicationsTrend.reduce(
+      (prev, point) => (point.value > prev.value ? point : prev),
+      applicationsTrend[0],
+    )
+
+    return `Reviewed ${totalReviewed} applications over the past ${applicationsTrend.length} days. Latest day ${latestPoint.label} recorded ${latestPoint.value} reviews, while the peak day ${peakPoint.label} reached ${peakPoint.value}.`
+  }, [applicationsTrend])
+
+  const timeToFirstReviewSummary = useMemo(() => {
+    if (timeToFirstReviewTrend.length === 0) {
+      return null
+    }
+    const values = timeToFirstReviewTrend.map((point) => point.value)
+    const averageHours = values.reduce((sum, hours) => sum + hours, 0) / values.length
+    const latestPoint = timeToFirstReviewTrend[timeToFirstReviewTrend.length - 1]
+
+    return `Average first-review time is ${averageHours.toFixed(1)} hours across the last ${timeToFirstReviewTrend.length} days. The most recent reading on ${latestPoint.label} was ${latestPoint.value.toFixed(1)} hours.`
+  }, [timeToFirstReviewTrend])
+
+  const workloadSummary = useMemo(() => {
+    if (workloadBreakdown.length === 0) {
+      return null
+    }
+    const totalAssignments = workloadBreakdown.reduce((sum, entry) => sum + entry.value, 0)
+    const busiestMember = workloadBreakdown.reduce(
+      (prev, entry) => (entry.value > prev.value ? entry : prev),
+      workloadBreakdown[0],
+    )
+
+    return `Team members are handling ${totalAssignments} active or pending assignments. ${busiestMember.text} currently has the highest workload with ${busiestMember.value} assignments.`
+  }, [workloadBreakdown])
+
   const isLoading =
     overviewQuery.isLoading || workloadQuery.isLoading || overviewQuery.isFetching || workloadQuery.isFetching
 
@@ -131,26 +169,60 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
       <AnalyticsCard
         title="Applications reviewed"
         description="Recent daily totals for applications reviewed by this team."
+        summary={applicationsSummary ?? undefined}
       >
-        <BarChart data={applicationsTrend} height={220} spacing={12} />
+        <YStack
+          gap="$2"
+          accessible
+          accessibilityRole="image"
+          accessibilityLabel={`Applications reviewed bar chart for the past ${applicationsTrend.length} days`}
+          accessibilityHint={applicationsSummary ?? undefined}
+        >
+          <BarChart data={applicationsTrend} height={220} spacing={12} />
+        </YStack>
       </AnalyticsCard>
 
       <AnalyticsCard
         title="Average time to first review (hours)"
         description="How quickly the team responds to new applications."
+        summary={timeToFirstReviewSummary ?? undefined}
       >
-        <LineChart data={timeToFirstReviewTrend} height={220} />
+        <YStack
+          gap="$2"
+          accessible
+          accessibilityRole="image"
+          accessibilityLabel={`Average time to first review line chart for the past ${timeToFirstReviewTrend.length} days`}
+          accessibilityHint={timeToFirstReviewSummary ?? undefined}
+        >
+          <LineChart data={timeToFirstReviewTrend} height={220} />
+        </YStack>
       </AnalyticsCard>
 
       <AnalyticsCard
         title="Current workload distribution"
         description="Pending and active assignments across team members."
         emptyMessage="No active assignments yet."
+        summary={workloadSummary ?? undefined}
       >
         {workloadBreakdown.length === 0 ? (
           <Text color="$color11">No workload snapshots available.</Text>
         ) : (
-          <PieChart data={workloadBreakdown} radius={110} donut showValuesAsLabels textColor="#111" />
+          <YStack
+            gap="$2"
+            accessible
+            accessibilityRole="image"
+            accessibilityLabel="Donut chart of active and pending assignments per team member"
+            accessibilityHint={workloadSummary ?? undefined}
+          >
+            <PieChart data={workloadBreakdown} radius={110} donut showValuesAsLabels textColor="#111" />
+            <YStack gap="$1">
+              {workloadBreakdown.map((entry) => (
+                <Text key={entry.text} fontSize="$2" color="$color11">
+                  {entry.text}: {entry.value} assignments
+                </Text>
+              ))}
+            </YStack>
+          </YStack>
         )}
       </AnalyticsCard>
     </YStack>
@@ -162,21 +234,28 @@ function AnalyticsCard({
   description,
   children,
   emptyMessage,
+  summary,
 }: {
   title: string
   description?: string
   children: ReactNode
   emptyMessage?: string
+  summary?: string
 }) {
   return (
     <Card borderWidth={1} borderColor="$borderColor" bg="$color2" p="$4" gap="$3">
       <YStack gap="$1">
-        <Text fontSize="$6" fontWeight="700">
+        <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
           {title}
         </Text>
         {description ? (
           <Text fontSize="$3" color="$color11">
             {description}
+          </Text>
+        ) : null}
+        {summary ? (
+          <Text fontSize="$2" color="$color11">
+            {summary}
           </Text>
         ) : null}
       </YStack>

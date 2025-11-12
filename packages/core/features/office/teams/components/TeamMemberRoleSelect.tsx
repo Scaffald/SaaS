@@ -73,7 +73,14 @@ export function TeamMemberRoleSelect({
         onValueChange={handleRoleChange}
         disablePreventBodyScroll
       >
-        <Select.Trigger iconAfter={ChevronDown} disabled={disabled || updateRoleMutation.isPending}>
+        <Select.Trigger
+          iconAfter={ChevronDown}
+          disabled={disabled || updateRoleMutation.isPending}
+          accessibilityLabel={
+            activeRole ? `Team role ${activeRole.name}. Double tap to change.` : 'Select team role'
+          }
+          accessibilityHint="Opens a list of available team roles"
+        >
           <Select.Value placeholder="Select role">
             {activeRole ? activeRole.name : 'Select role'}
           </Select.Value>

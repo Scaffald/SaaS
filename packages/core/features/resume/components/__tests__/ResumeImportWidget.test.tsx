@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { beforeEach, describe, expect, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ResumeImportWidget } from '../ResumeImportWidget'
 
@@ -22,11 +22,13 @@ vi.mock('@tamagui/lucide-icons', () => ({
 }))
 
 vi.mock('tamagui', () => {
+  // biome-ignore lint/suspicious/noExplicitAny: test doubles may receive arbitrary props
   const Stack = ({ children, ...rest }: any) => (
     <div data-testid="tamagui-stack" {...rest}>
       {children}
     </div>
   )
+  // biome-ignore lint/suspicious/noExplicitAny: test doubles may receive arbitrary props
   const Text = ({ children, ...rest }: any) => (
     <span data-testid="tamagui-text" {...rest}>
       {children}
@@ -41,6 +43,7 @@ vi.mock('tamagui', () => {
 })
 
 vi.mock('../ResumeUploadButton', () => ({
+  // biome-ignore lint/suspicious/noExplicitAny: test doubles may receive arbitrary props
   ResumeUploadButton: ({ onPress, label }: any) => (
     <button type="button" onClick={onPress}>
       {label}
@@ -49,6 +52,7 @@ vi.mock('../ResumeUploadButton', () => ({
 }))
 
 vi.mock('../ResumeUploadModal', () => ({
+  // biome-ignore lint/suspicious/noExplicitAny: test doubles may receive arbitrary props
   ResumeUploadModal: ({ open, onUploadComplete }: any) =>
     open ? (
       <button
@@ -72,6 +76,7 @@ vi.mock('@app/core/utils/api', () => ({
 }))
 
 vi.mock('@app/ui', () => ({
+  // biome-ignore lint/suspicious/noExplicitAny: test doubles may receive arbitrary props
   DashboardWidget: ({ children }: any) => (
     <div data-testid="dashboard-widget">{children}</div>
   ),

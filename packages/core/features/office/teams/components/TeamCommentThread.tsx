@@ -83,8 +83,8 @@ export function TeamCommentThread({
     <Card borderWidth={1} borderColor="$borderColor" bg="$color2" p="$4" gap="$4">
       <YStack gap="$2">
         <XStack gap="$2" items="center">
-          <MessageCircle size={18} />
-          <Text fontSize="$5" fontWeight="700">
+          <MessageCircle size={18} accessibilityLabel="Team discussion icon" />
+          <Text fontSize="$5" fontWeight="700" accessibilityRole="header">
             Team discussion
           </Text>
         </XStack>
@@ -100,6 +100,8 @@ export function TeamCommentThread({
           placeholder="Add a comment for your team…"
           rows={3}
           disabled={isSubmitting}
+          accessibilityLabel="Team discussion comment"
+          accessibilityHint="Describe your update and optionally mention a teammate"
         />
 
         {mentionOptions.length > 0 ? (
@@ -111,6 +113,11 @@ export function TeamCommentThread({
                 variant={selectedMentionId === option.id ? 'outlined' : undefined}
                 onPress={() =>
                   setSelectedMentionId((current) => (current === option.id ? null : option.id))
+                }
+                accessibilityLabel={
+                  selectedMentionId === option.id
+                    ? `Remove mention ${option.label}`
+                    : `Mention ${option.label}`
                 }
               >
                 @{option.label}
@@ -133,6 +140,8 @@ export function TeamCommentThread({
             color="$color1"
             onPress={() => void handleSubmit()}
             disabled={isSubmitting || commentBody.trim().length === 0}
+            accessibilityLabel="Post comment"
+            accessibilityHint="Shares this comment with the team"
           >
             {isSubmitting ? <Spinner size="small" color="$color1" /> : 'Post comment'}
           </Button>
@@ -151,25 +160,48 @@ export function TeamCommentThread({
         </YStack>
       ) : (
         <YStack gap="$3">
-          {comments.map((comment) => (
-            <YStack key={comment.id} gap="$1" borderBottomWidth={1} borderColor="$borderColor" pb="$3">
-              <Text fontWeight="600">
-                {comment.actorDisplayName ?? comment.actorUserId?.slice(0, 6) ?? 'Team member'}
-              </Text>
-              <Text color="$color10" fontSize="$2">
-                {new Date(comment.occurredAt).toLocaleString()}
-              </Text>
-              <Text>{comment.body}</Text>
-              {comment.mentions?.length ? (
-                <Text fontSize="$2" color="$color10">
-                  Mentions:{' '}
-                  {comment.mentions
-                    .map((mentionId: string) => mentionLookup.get(mentionId) ?? mentionId.slice(0, 6))
-                    .join(', ')}
+          {comments.map((comment) => {
+            const actorName =
+              comment.actorDisplayName ?? comment.actorUserId?.slice(0, 6) ?? 'Team member'
+            const occurredAt = new Date(comment.occurredAt).toLocaleString()
+            const mentionNames = (comment.mentions ?? []).map(
+              (mentionId: string) => mentionLookup.get(mentionId) ?? mentionId.slice(0, 6),
+            )
+            const commentAccessibilityLabel = [
+              `${actorName} commented`,
+              comment.body ? `Comment: ${comment.body}` : null,
+              mentionNames.length ? `Mentions ${mentionNames.join(', ')}` : null,
+              `On ${occurredAt}`,
+            ]
+              .filter((value): value is string => Boolean(value))
+              .join('. ')
+
+            return (
+              <YStack
+                key={comment.id}
+                gap="$1"
+                borderBottomWidth={1}
+                borderColor="$borderColor"
+                pb="$3"
+                accessible
+                accessibilityRole="summary"
+                accessibilityLabel={commentAccessibilityLabel}
+              >
+                <Text fontWeight="600">
+                  {actorName}
                 </Text>
-              ) : null}
-            </YStack>
-          ))}
+                <Text color="$color10" fontSize="$2">
+                  {occurredAt}
+                </Text>
+                <Text>{comment.body}</Text>
+                {mentionNames.length ? (
+                  <Text fontSize="$2" color="$color10">
+                    Mentions: {mentionNames.join(', ')}
+                  </Text>
+                ) : null}
+              </YStack>
+            )
+          })}
         </YStack>
       )}
     </Card>

@@ -106,7 +106,7 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
   return (
     <YStack gap="$4">
       <XStack justify="space-between" items="center" flexWrap="wrap" gap="$3">
-        <Text fontSize="$6" fontWeight="700">
+        <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
           Invitations
         </Text>
         <XStack gap="$2" items="center">
@@ -117,7 +117,11 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
             onValueChange={(value) => setStatusFilter(value as InvitationStatus | 'all')}
             disablePreventBodyScroll
           >
-            <Select.Trigger iconAfter={ChevronDown}>
+            <Select.Trigger
+              iconAfter={ChevronDown}
+              accessibilityLabel="Filter invitations by status"
+              accessibilityHint="Opens a menu of invitation statuses"
+            >
               <Select.Value placeholder="Filter status">
                 {statusFilter === 'all'
                   ? 'All statuses'
@@ -212,6 +216,9 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
                 borderColor="$borderColor"
                 gap="$3"
                 bg="$color1"
+                accessible
+                accessibilityRole="summary"
+                accessibilityLabel={`Invitation for ${invitation.email ?? invitation.invitedUserId ?? 'team member'} · Status ${statusLabel}${invitation.role?.name ? ` · Role ${invitation.role.name}` : ''}`}
               >
                 <XStack justify="space-between" items="center">
                   <YStack gap="$1">
@@ -282,6 +289,7 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
                     icon={RefreshCw}
                     disabled={!isPending || isLoading}
                     onPress={() => void handleResend(invitation.id)}
+                    accessibilityLabel={`Resend invitation to ${invitation.email ?? invitation.invitedUserId ?? 'team member'}`}
                   >
                     Resend
                   </Button>
@@ -292,6 +300,7 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
                     icon={XCircle}
                     disabled={!isPending || isLoading}
                     onPress={() => void handleCancel(invitation.id)}
+                    accessibilityLabel={`Cancel invitation for ${invitation.email ?? invitation.invitedUserId ?? 'team member'}`}
                   >
                     Cancel
                   </Button>
