@@ -12,7 +12,13 @@ import {
   XStack,
   YStack,
 } from 'tamagui'
-import { AlertCircle, CheckCircle2, CornerDownLeft, SkipForward, UploadCloud } from '@tamagui/lucide-icons'
+import {
+  AlertCircle,
+  CheckCircle2,
+  CornerDownLeft,
+  SkipForward,
+  UploadCloud,
+} from '@tamagui/lucide-icons'
 import { spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import {
@@ -86,6 +92,9 @@ const MERGEABLE_SECTIONS: readonly ResumeWizardSection[] = [
   'certifications',
 ]
 
+const OPENAI_DISABLED_MESSAGE =
+  'Resume parsing is disabled because the OpenAI API key is not configured. Please fill in this section manually.'
+
 export function ResumeWizard({ resumeId }: ResumeWizardProps) {
   const router = useRouter()
   const {
@@ -115,9 +124,12 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
   const skillsQuery = api.profile.skillsMultiTaxonomy.getUserSkills.useQuery(undefined, {
     refetchOnWindowFocus: false,
   })
-  const certificationsQuery = api.profile.certifications.getUserCertificationTree.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  })
+  const certificationsQuery = api.profile.certifications.getUserCertificationTree.useQuery(
+    undefined,
+    {
+      refetchOnWindowFocus: false,
+    }
+  )
   const employmentQuery = api.profile.getEmployment.useQuery(undefined, {
     refetchOnWindowFocus: false,
   })
@@ -158,7 +170,8 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
 
   const existingSkillNames = useMemo(() => {
     const rawSkills =
-      (skillsQuery.data?.skills as Array<{ skill_name?: unknown; name?: unknown }> | undefined) ?? []
+      (skillsQuery.data?.skills as Array<{ skill_name?: unknown; name?: unknown }> | undefined) ??
+      []
     return rawSkills
       .map((skill) => {
         if (typeof skill.skill_name === 'string') {
@@ -309,35 +322,19 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     existingSkillNames.length,
   ])
 
-  if (isLoading) {
-    return (
-      <YStack items="center" justify="center" flex={1} gap="$3" py="$10">
-        <Spinner size="large" />
-        <Text color="$color11">Loading resume import wizard...</Text>
-      </YStack>
-    )
-  }
-
-  if (!wizard) {
-    return (
-      <YStack items="center" justify="center" flex={1} gap="$3" py="$10">
-        <AlertCircle size={32} color="$red10" />
-        <Text fontWeight="700" color="$red11">
-          Wizard session not found
-        </Text>
-        <Text color="$color11">
-          Please upload your resume again to kick off the import flow.
-        </Text>
-      </YStack>
-    )
-  }
+  const aiParsingDisabled = useMemo(
+    () => errors?.some((error) => error.message?.includes(OPENAI_DISABLED_MESSAGE)) ?? false,
+    [errors]
+  )
 
   const mergedErrors = useMemo(() => {
     if (!errors?.length) return null
-    return errors.filter((error) => error.section === currentStep.id)
-  }, [currentStep.id, errors])
+    return errors
+      .filter((error) => error.section === currentStep.id)
+      .filter((error) => !(aiParsingDisabled && error.message.includes(OPENAI_DISABLED_MESSAGE)))
+  }, [aiParsingDisabled, currentStep.id, errors])
 
-  const completedSteps = wizard.completedSteps ?? []
+  const completedSteps = wizard?.completedSteps ?? []
 
   const updateMergeStrategy = useCallback(
     (section: ResumeWizardSection, strategy: ResumeMergeStrategy) => {
@@ -349,7 +346,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         [section]: strategy,
       }))
     },
-    [],
+    []
   )
 
   const mergeComparisonSections = useMemo(() => {
@@ -361,7 +358,9 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         existingItems: buildGeneralSummary(existingGeneral),
         incomingItems: buildSelectedGeneralSummary(generalForm),
         hasIncoming: Boolean(
-          generalForm.firstName?.trim() || generalForm.lastName?.trim() || generalForm.summary?.trim(),
+          generalForm.firstName?.trim() ||
+            generalForm.lastName?.trim() ||
+            generalForm.summary?.trim()
         ),
       },
       {
@@ -369,12 +368,10 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         label: 'Work Experience',
         strategy: mergeStrategies.experience,
         existingItems: previewList(
-          existingExperience.map((entry) =>
-            formatExperienceEntry(entry as Record<string, unknown>),
-          ),
+          existingExperience.map((entry) => formatExperienceEntry(entry as Record<string, unknown>))
         ),
         incomingItems: previewList(
-          selectedExperience.map((entry) => formatParsedExperience(entry)),
+          selectedExperience.map((entry) => formatParsedExperience(entry))
         ),
         hasIncoming: selectedExperience.length > 0,
       },
@@ -383,13 +380,9 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         label: 'Education',
         strategy: mergeStrategies.education,
         existingItems: previewList(
-          existingEducation.map((entry) =>
-            formatEducationEntry(entry as Record<string, unknown>),
-          ),
+          existingEducation.map((entry) => formatEducationEntry(entry as Record<string, unknown>))
         ),
-        incomingItems: previewList(
-          selectedEducation.map((entry) => formatParsedEducation(entry)),
-        ),
+        incomingItems: previewList(selectedEducation.map((entry) => formatParsedEducation(entry))),
         hasIncoming: selectedEducation.length > 0,
       },
       {
@@ -408,7 +401,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         incomingItems: previewList(
           selectedCertifications
             .map((cert) => cert.name)
-            .filter((name): name is string => Boolean(name?.trim())),
+            .filter((name): name is string => Boolean(name?.trim()))
         ),
         hasIncoming: selectedCertifications.length > 0,
       },
@@ -450,6 +443,27 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
 
   const mergeComparisonLoading = mergeDataLoading && !mergeDefaultsInitialized.current
 
+  if (isLoading) {
+    return (
+      <YStack items="center" justify="center" flex={1} gap="$3" py="$10">
+        <Spinner size="large" />
+        <Text color="$color11">Loading resume import wizard...</Text>
+      </YStack>
+    )
+  }
+
+  if (!wizard) {
+    return (
+      <YStack items="center" justify="center" flex={1} gap="$3" py="$10">
+        <AlertCircle size={32} color="$red10" />
+        <Text fontWeight="700" color="$red11">
+          Wizard session not found
+        </Text>
+        <Text color="$color11">Please upload your resume again to kick off the import flow.</Text>
+      </YStack>
+    )
+  }
+
   const handleSaveCurrentStep = async () => {
     switch (currentStep.id) {
       case 'general': {
@@ -465,7 +479,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         const safeStrategy = resolveMergeStrategy(
           mergeStrategies.experience,
           experience.length,
-          existingExperience.length,
+          existingExperience.length
         )
         await saveSection('experience', experience, safeStrategy)
         return
@@ -475,7 +489,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         const safeStrategy = resolveMergeStrategy(
           mergeStrategies.education,
           education.length,
-          existingEducation.length,
+          existingEducation.length
         )
         await saveSection('education', education, safeStrategy)
         return
@@ -485,7 +499,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         const safeStrategy = resolveMergeStrategy(
           mergeStrategies.skills,
           skills.length,
-          existingSkillNames.length,
+          existingSkillNames.length
         )
         await saveSection('skills', skills, safeStrategy)
         return
@@ -495,7 +509,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         const safeStrategy = resolveMergeStrategy(
           mergeStrategies.certifications,
           certifications.length,
-          existingCertificationNames.length,
+          existingCertificationNames.length
         )
         await saveSection('certifications', certifications, safeStrategy)
         return
@@ -527,7 +541,8 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           Resume Import
         </Text>
         <Text color="$color11">
-          Review each section parsed from your resume. Make edits or skip sections you don’t want to import.
+          Review each section parsed from your resume. Make edits or skip sections you don’t want to
+          import.
         </Text>
       </YStack>
 
@@ -538,14 +553,31 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         onStepChange={setCurrentIndex}
       />
 
+      {aiParsingDisabled ? (
+        <YStack gap="$2" bg="$yellow3" p="$3" rounded="$4">
+          <XStack gap="$2" items="center">
+            <AlertCircle color="$yellow11" />
+            <Text fontWeight="700" color="$yellow11">
+              AI resume parsing is currently disabled.
+            </Text>
+          </XStack>
+          <Text color="$yellow11">
+            We couldn’t extract data automatically because no OpenAI API key is configured. You can
+            still review and edit each section manually. To enable parsing locally, add a key with{' '}
+            <Text fontWeight="700">pnpm supa secrets set OPENAI_API_KEY=&lt;your-key&gt;</Text> and
+            restart your Supabase services.
+          </Text>
+        </YStack>
+      ) : null}
+
       {hasExistingProfileData ? (
         <YStack gap="$2" bg="$blue3" p="$3" rounded="$4">
           <Text fontWeight="700" color="$blue11">
             Merge resume with existing profile data
           </Text>
           <Text color="$blue11">
-            We found previously saved information. Choose how each section merges to avoid overwriting
-            details you want to keep.
+            We found previously saved information. Choose how each section merges to avoid
+            overwriting details you want to keep.
           </Text>
         </YStack>
       ) : null}
@@ -745,7 +777,9 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
   function renderSkillsStep() {
     const skills = parsedData.skills ?? []
     if (skills.length === 0) {
-      return <EmptyState message="No skills were detected. You can always add skills manually later." />
+      return (
+        <EmptyState message="No skills were detected. You can always add skills manually later." />
+      )
     }
     return (
       <YStack gap="$4">
@@ -765,7 +799,9 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
             checked={skillSelections[index]}
             onCheckedChange={(value) => skillSelections.set(index, value)}
             title={skill.name}
-            subtitle={skill.confidence ? `Confidence: ${(skill.confidence * 100).toFixed(0)}%` : undefined}
+            subtitle={
+              skill.confidence ? `Confidence: ${(skill.confidence * 100).toFixed(0)}%` : undefined
+            }
             details={[]}
           />
         ))}
@@ -817,12 +853,15 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           Employment Preferences
         </Text>
         <Paragraph color="$color11">
-          Tell us about your ideal working conditions. We’ll update your profile with these preferences.
+          Tell us about your ideal working conditions. We’ll update your profile with these
+          preferences.
         </Paragraph>
         <CheckboxRow
           label="Open to travel"
           checked={employmentForm.openToTravel}
-          onCheckedChange={(checked) => setEmploymentForm((prev) => ({ ...prev, openToTravel: checked }))}
+          onCheckedChange={(checked) =>
+            setEmploymentForm((prev) => ({ ...prev, openToTravel: checked }))
+          }
         />
         <XStack gap="$3" flexWrap="wrap">
           <YStack gap="$2" flex={1}>
@@ -862,7 +901,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
                 onChangeText={(value) =>
                   setEmploymentForm((prev) => {
                     const next = prev.locations.map((item) =>
-                      item.id === entry.id ? { ...item, value } : item,
+                      item.id === entry.id ? { ...item, value } : item
                     )
                     return { ...prev, locations: next }
                   })
@@ -912,10 +951,13 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           Review & Confirm
         </Text>
         <Paragraph color="$color11">
-          All set! When you finish, we’ll save the confirmed details to your profile. You can always make further edits
-          from the profile sections later on.
+          All set! When you finish, we’ll save the confirmed details to your profile. You can always
+          make further edits from the profile sections later on.
         </Paragraph>
-        <MergeComparisonView sections={mergeComparisonSections} isLoading={mergeComparisonLoading} />
+        <MergeComparisonView
+          sections={mergeComparisonSections}
+          isLoading={mergeComparisonLoading}
+        />
         <YStack gap="$2" bg="$green3" p="$3" rounded="$4">
           <XStack gap="$2" items="center">
             <CheckCircle2 color="$green10" />
@@ -951,7 +993,11 @@ function CheckboxRow({
 }) {
   return (
     <XStack gap="$2" items="center">
-      <Checkbox size="$3" checked={checked} onCheckedChange={(value) => onCheckedChange(value === true)} />
+      <Checkbox
+        size="$3"
+        checked={checked}
+        onCheckedChange={(value) => onCheckedChange(value === true)}
+      />
       <Text>{label}</Text>
     </XStack>
   )
@@ -980,7 +1026,11 @@ function SelectableCard({
       rounded="$4"
     >
       <XStack gap="$2" items="center">
-        <Checkbox size="$3" checked={checked} onCheckedChange={(value) => onCheckedChange(value === true)} />
+        <Checkbox
+          size="$3"
+          checked={checked}
+          onCheckedChange={(value) => onCheckedChange(value === true)}
+        />
         <YStack gap="$1" flex={1}>
           <Text fontWeight="700">{title}</Text>
           {subtitle ? <Text color="$color11">{subtitle}</Text> : null}
@@ -1064,15 +1114,13 @@ function MergeStrategySelector({
         value: 'keepExisting',
         label: 'Keep existing only',
         description: 'Skip importing this section and preserve your current profile data.',
-      },
+      }
     )
   }
 
   return (
     <YStack gap="$2" bg="$color2" p="$3" rounded="$4">
-      <Text fontWeight="600">
-        Merge strategy
-      </Text>
+      <Text fontWeight="600">Merge strategy</Text>
       <YStack gap="$2">
         {options.map((option) => (
           <Button
@@ -1148,11 +1196,16 @@ function previewList(items: string[], limit = 3): string[] {
   return [...items.slice(0, limit), `+${items.length - limit} more`]
 }
 
-function buildGeneralSummary(existing: {
-  first_name?: string
-  last_name?: string
-  about?: unknown
-} | null | undefined) {
+function buildGeneralSummary(
+  existing:
+    | {
+        first_name?: string
+        last_name?: string
+        about?: unknown
+      }
+    | null
+    | undefined
+) {
   if (!existing) {
     return ['No data saved yet']
   }
@@ -1181,7 +1234,7 @@ function buildEmploymentSummary(
     hourly_rate?: number | null
     open_to_travel?: boolean
     travel_distance_miles?: number | null
-  } | null,
+  } | null
 ) {
   if (!existing) {
     return ['No employment preferences saved']
@@ -1192,7 +1245,9 @@ function buildEmploymentSummary(
         .filter((location): location is string => Boolean(location))
     : []
   const hourlyRate =
-    typeof existing.hourly_rate === 'number' ? `Hourly rate: ${formatCurrency(existing.hourly_rate)}` : null
+    typeof existing.hourly_rate === 'number'
+      ? `Hourly rate: ${formatCurrency(existing.hourly_rate)}`
+      : null
   const travel =
     typeof existing.travel_distance_miles === 'number'
       ? `Travel up to ${existing.travel_distance_miles} miles`
@@ -1211,7 +1266,9 @@ function buildIncomingEmploymentSummary(form: EmploymentFormState) {
     .map((location) => location.value.trim())
     .filter((location) => location.length > 0)
   const hourlyRate =
-    typeof form.hourlyRate === 'number' ? `Hourly rate: ${formatCurrency(form.hourlyRate)}` : 'No hourly rate from resume'
+    typeof form.hourlyRate === 'number'
+      ? `Hourly rate: ${formatCurrency(form.hourlyRate)}`
+      : 'No hourly rate from resume'
   const travel =
     typeof form.travelDistanceMiles === 'number'
       ? `Travel up to ${form.travelDistanceMiles} miles`
@@ -1248,7 +1305,7 @@ function parseNumericInput(value: string): number | null {
 function resolveMergeStrategy(
   strategy: ResumeMergeStrategy,
   selectedCount: number,
-  existingCount: number,
+  existingCount: number
 ): ResumeMergeStrategy {
   if (existingCount === 0 && strategy === 'append') {
     return 'replace'
@@ -1258,4 +1315,3 @@ function resolveMergeStrategy(
   }
   return strategy
 }
-

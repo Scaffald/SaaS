@@ -61,12 +61,14 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
   const [selectedIndustryId, setSelectedIndustryId] = useState<string>('')
   const [pendingSearch, setPendingSearch] = useState<PendingSearch | null>(null)
 
-  const { data: industriesData, isLoading: isLoadingIndustries } = api.profile.getIndustries.useQuery()
-  const { data: primaryIndustryData } = api.profile.getPrimaryIndustry.useQuery()
+  const { data: industriesData, isLoading: isLoadingIndustries } =
+    api.profile.skillsMultiTaxonomy.getIndustries.useQuery()
+  const { data: primaryIndustryData } =
+    api.profile.skillsMultiTaxonomy.getPrimaryIndustry.useQuery()
 
-  const userSkillsQuery = api.profile.getUserSkills.useQuery()
+  const userSkillsQuery = api.profile.skillsMultiTaxonomy.getUserSkills.useQuery()
 
-  const addSkillMutation = api.profile.addSkill.useMutation({
+  const addSkillMutation = api.profile.skillsMultiTaxonomy.addSkill.useMutation({
     onMutate: () => {
       resetProfileSyncError()
       startProfileSync()
@@ -90,7 +92,8 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
     },
   })
 
-  const updateIndustryMutation = api.profile.updatePrimaryIndustry.useMutation({
+  const updateIndustryMutation =
+    api.profile.skillsMultiTaxonomy.updatePrimaryIndustry.useMutation({
     onMutate: () => {
       resetProfileSyncError()
       startProfileSync()
@@ -114,7 +117,7 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
     },
   })
 
-  const searchSkillsMutation = api.profile.searchSkills.useMutation()
+  const searchSkillsMutation = api.profile.skillsMultiTaxonomy.searchSkills.useMutation()
 
   useEffect(() => {
     if (primaryIndustryData?.primary_industry_id && !selectedIndustryId) {

@@ -23,6 +23,7 @@ import {
   teamInvitationIdSchema,
   teamInvitationResendSchema,
   teamInvitationRespondSchema,
+  teamInvitationUserRespondSchema,
   teamInvitationStatusFilterSchema,
   teamMemberAddSchema,
   teamMemberRemoveSchema,
@@ -201,6 +202,11 @@ function transformMember(record: Record<string, any>) {
 
 function transformInvitation(record: Record<string, any>) {
   const role = record.role as Record<string, any> | null;
+  const team = record.team as Record<string, any> | null;
+  const organization =
+    team && (team.organization as Record<string, any> | null)
+      ? (team.organization as Record<string, any>)
+      : null;
 
   return {
     id: record.id as string,
@@ -221,6 +227,14 @@ function transformInvitation(record: Record<string, any>) {
           id: role.id as string,
           key: role.key as string,
           name: role.name as string,
+        }
+      : null,
+    team: team
+      ? {
+          id: team.id as string,
+          name: (team.name as string) ?? null,
+          organizationId: (team.organization_id as string) ?? null,
+          organizationName: organization ? ((organization.name as string) ?? null) : null,
         }
       : null,
   };
@@ -1091,6 +1105,70 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
         };
       }),
 
+    mine: procedure
+      .input(
+        z
+          .object({
+            status: teamInvitationStatusFilterSchema,
+          })
+          .optional(),
+      )
+      .query(async ({ ctx, input }) => {
+        const { supabaseAdmin, user } = ctx;
+
+        if (!user) {
+          throw new TRPCError({ code: "UNAUTHORIZED" });
+        }
+
+        const normalizedEmail = user.email ? user.email.trim().toLowerCase() : null;
+        const status = input?.status ?? "pending";
+
+        let query = supabaseAdmin
+          .schema("core")
+          .from("team_invitations")
+          .select(
+            `
+            *,
+            team:teams(
+              id,
+              name,
+              organization_id,
+              organization:organizations(id, name)
+            ),
+            role:team_roles(id, key, name)
+          `,
+          )
+          .order("created_at", { ascending: false });
+
+        if (status) {
+          query = query.eq("status", status);
+        }
+
+        const filters: string[] = [`invited_user_id.eq.${user.id}`];
+        if (normalizedEmail) {
+          filters.push(`email.eq.${normalizedEmail}`);
+        }
+
+        if (filters.length === 1) {
+          query = query.eq("invited_user_id", user.id);
+        } else {
+          query = query.or(filters.join(","));
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to load invitations: ${error.message}`,
+          });
+        }
+
+        return {
+          invitations: (data ?? []).map((record) => transformInvitation(record as Record<string, any>)),
+        };
+      }),
+
     create: procedure
       .input(teamInvitationCreateSchema)
       .mutation(async ({ ctx, input }) => {
@@ -1123,6 +1201,8 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
+        const normalizedEmail = input.email ? String(input.email).trim().toLowerCase() : null;
+
         if (input.userId) {
           const { data: existingMember } = await supabaseAdmin
             .schema("core")
@@ -1152,7 +1232,7 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
         const insertPayload = {
           team_id: input.teamId,
           invited_user_id: input.userId ?? null,
-          email: input.email ?? null,
+          email: normalizedEmail,
           role_id: resolvedRoleId,
           token: tokenHash,
           status: "pending",
@@ -1333,6 +1413,203 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
         });
 
         return { success: true };
+      }),
+
+    respond: procedure
+      .input(teamInvitationUserRespondSchema)
+      .mutation(async ({ ctx, input }) => {
+        const { supabaseAdmin, user } = ctx;
+
+        if (!user) {
+          throw new TRPCError({ code: "UNAUTHORIZED" });
+        }
+
+        const { data: invitation, error } = await supabaseAdmin
+          .schema("core")
+          .from("team_invitations")
+          .select(
+            `
+            *,
+            team:teams(
+              id,
+              name,
+              organization_id,
+              default_role_id,
+              default_role_key
+            ),
+            role:team_roles(id, key, name)
+          `,
+          )
+          .eq("id", input.invitationId)
+          .single();
+
+        if (error || !invitation) {
+          throw new TRPCError({
+            code: error?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+            message: error ? `Invitation not found: ${error.message}` : "Invitation not found",
+          });
+        }
+
+        if ((invitation.status as string) !== "pending") {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Invitation has already been ${invitation.status}`,
+          });
+        }
+
+        if (invitation.expires_at && new Date(invitation.expires_at) < new Date()) {
+          await supabaseAdmin
+            .schema("core")
+            .from("team_invitations")
+            .update({ status: "expired" })
+            .eq("id", invitation.id);
+
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Invitation has expired",
+          });
+        }
+
+        const normalizedUserEmail = user.email ? user.email.trim().toLowerCase() : null;
+        const invitationEmail = invitation.email ? String(invitation.email).trim().toLowerCase() : null;
+        const matchesInvitedUser =
+          invitation.invited_user_id === user.id ||
+          (invitationEmail && normalizedUserEmail && invitationEmail === normalizedUserEmail);
+
+        if (!matchesInvitedUser) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "You are not authorized to respond to this invitation",
+          });
+        }
+
+        const team = invitation.team as {
+          id: string;
+          name: string | null;
+          organization_id: string;
+          default_role_id: string | null;
+          default_role_key: string | null;
+        };
+
+        if (!team) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Unable to load team information for invitation",
+          });
+        }
+
+        const metadata = (invitation.metadata as Record<string, unknown> | null) ?? {};
+        metadata.responderId = user.id;
+        metadata.lastAction = input.action;
+        if (input.responseMetadata) {
+          metadata.responseMetadata = input.responseMetadata;
+        }
+
+        if (input.action === "accept") {
+          const resolvedRoleId =
+            invitation.role_id ??
+            (await resolveRoleId({
+              supabaseAdmin,
+              organizationId: team.organization_id,
+              teamId: team.id,
+            }));
+
+          if (!resolvedRoleId) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "Unable to determine team member role for invitation",
+            });
+          }
+
+          const { data: existingMember } = await supabaseAdmin
+            .schema("core")
+            .from("team_members")
+            .select("id, status, metadata")
+            .eq("team_id", team.id)
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+          if (existingMember) {
+            await supabaseAdmin
+              .schema("core")
+              .from("team_members")
+              .update({
+                status: "active",
+                role_id: resolvedRoleId,
+                removed_at: null,
+                invited_by: invitation.created_by ?? null,
+                metadata: {
+                  ...(existingMember.metadata as Record<string, unknown> | null) ?? {},
+                  lastJoinedSource: "invitation",
+                },
+              })
+              .eq("id", existingMember.id);
+          } else {
+            await supabaseAdmin
+              .schema("core")
+              .from("team_members")
+              .insert({
+                team_id: team.id,
+                user_id: user.id,
+                role_id: resolvedRoleId,
+                status: "active",
+                joined_at: nowIso(),
+                invited_by: invitation.created_by ?? null,
+                metadata: {
+                  source: "invitation",
+                },
+              });
+          }
+
+          await supabaseAdmin
+            .schema("core")
+            .from("team_invitations")
+            .update({
+              status: "accepted",
+              accepted_at: nowIso(),
+              invited_user_id: user.id,
+              metadata,
+            })
+            .eq("id", invitation.id);
+
+          await recordTeamAuditLog({
+            supabaseAdmin,
+            teamId: team.id,
+            action: "joined",
+            actorUserId: user.id,
+            memberUserId: user.id,
+            metadata: {
+              invitationId: String(invitation.id ?? ""),
+              method: "in_app",
+            },
+          });
+
+          return {
+            status: "accepted" as const,
+            team: {
+              id: team.id,
+              name: team.name ?? null,
+            },
+          };
+        }
+
+        await supabaseAdmin
+          .schema("core")
+          .from("team_invitations")
+          .update({
+            status: "declined",
+            declined_at: nowIso(),
+            metadata,
+          })
+          .eq("id", invitation.id);
+
+        return {
+          status: "declined" as const,
+          team: {
+            id: team.id,
+            name: team.name ?? null,
+          },
+        };
       }),
   });
 }

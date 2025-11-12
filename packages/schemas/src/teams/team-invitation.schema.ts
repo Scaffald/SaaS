@@ -51,6 +51,13 @@ export const teamInvitationRespondSchema = z.object({
 
 export const teamInvitationStatusFilterSchema = teamInvitationStatusSchema.optional()
 
+export const teamInvitationUserRespondSchema = z.object({
+  invitationId: teamInvitationIdSchema,
+  action: teamInvitationActionSchema,
+  responseMetadata: jsonSchema.optional(),
+})
+
 export type TeamInvitationCreateInput = z.infer<typeof teamInvitationCreateSchema>
 export type TeamInvitationRespondInput = z.infer<typeof teamInvitationRespondSchema>
 export type TeamInvitationCancelInput = z.infer<typeof teamInvitationCancelSchema>
+export type TeamInvitationUserRespondInput = z.infer<typeof teamInvitationUserRespondSchema>

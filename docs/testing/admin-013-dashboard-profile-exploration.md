@@ -163,12 +163,12 @@ The `/dashboard/profile` route in SCF-Neue is a comprehensive profile management
 
 #### Technical Details
 - **tRPC Endpoints**:
-  - `api.profile.getIndustries.useQuery()` - Fetch available industries
-  - `api.profile.getPrimaryIndustry.useQuery()` - Get user's primary industry
-  - `api.profile.getUserSkills.useQuery()` - Fetch user's skills
-  - `api.profile.addSkill.useMutation()` - Add skill to profile
-  - `api.profile.updatePrimaryIndustry.useMutation()` - Update primary industry
-  - `api.profile.searchSkills.useMutation()` - Multi-taxonomy skill search
+  - `api.profile.skillsMultiTaxonomy.getIndustries.useQuery()` - Fetch available industries
+  - `api.profile.skillsMultiTaxonomy.getPrimaryIndustry.useQuery()` - Get user's primary industry
+  - `api.profile.skillsMultiTaxonomy.getUserSkills.useQuery()` - Fetch user's skills
+  - `api.profile.skillsMultiTaxonomy.addSkill.useMutation()` - Add skill to profile
+  - `api.profile.skillsMultiTaxonomy.updatePrimaryIndustry.useMutation()` - Update primary industry
+  - `api.profile.skillsMultiTaxonomy.searchSkills.useMutation()` - Multi-taxonomy skill search
 - **Taxonomies**:
   - O*NET 30.0: 1,016+ occupations with associated skills
   - CSI MasterFormat: 8,955 construction skills

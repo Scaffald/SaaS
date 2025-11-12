@@ -31,6 +31,7 @@ const POSTHOG_KEY =
   (EXTRA_CONFIG.posthogKey as string | undefined) ??
   (ANALYTICS_EXTRA.key as string | undefined) ??
   process.env.POSTHOG_KEY ??
+  process.env.EXPO_PUBLIC_POSTHOG_API_KEY ??
   ((APP_ENV === 'development'
     ? process.env.POSTHOG_KEY_DEV
     : APP_ENV === 'staging'
@@ -42,6 +43,7 @@ const POSTHOG_HOST =
   (EXTRA_CONFIG.posthogHost as string | undefined) ??
   (ANALYTICS_EXTRA.host as string | undefined) ??
   process.env.POSTHOG_HOST ??
+  process.env.EXPO_PUBLIC_POSTHOG_HOST ??
   DEFAULT_POSTHOG_HOST
 
 const CHANNEL = (Updates.channel ||

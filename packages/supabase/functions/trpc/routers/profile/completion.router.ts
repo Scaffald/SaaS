@@ -193,16 +193,10 @@ function getSectionStatuses(
     });
   const experienceMissing = experienceComplete ? [] : ["experience_entry"];
 
-  const certificationsComplete = Array.isArray(certificationsData) &&
-    certificationsData.some((entry) => {
-      if (!entry || typeof entry !== "object") return false;
-      const record = entry as Record<string, unknown>;
-      return `${record.name ?? ""}`.trim().length > 0 &&
-        `${record.issuing_organization ?? ""}`.trim().length > 0;
-    });
-  const certificationsMissing = certificationsComplete
-    ? []
-    : ["certification_entry"];
+  const certificationEntriesExist = Array.isArray(certificationsData) &&
+    certificationsData.length > 0;
+  const certificationsComplete = certificationEntriesExist;
+  const certificationsMissing = certificationsComplete ? [] : ["certification_entry"];
 
   const preferredLocations = Array.isArray(profile.preferred_work_locations)
     ? profile.preferred_work_locations as unknown[]
@@ -342,13 +336,13 @@ async function fetchCompletionData(
   const skillsPromise = supabase
     .schema("core")
     .from("user_skills")
-    .select("skill_id")
+    .select("id")
     .eq("user_id", userId);
 
   const certificationsPromise = supabase
     .schema("core")
     .from("user_certifications")
-    .select("name, issuing_organization")
+    .select("id")
     .eq("user_id", userId);
 
   const educationPromise = supabase

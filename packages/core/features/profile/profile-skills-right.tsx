@@ -38,10 +38,10 @@ export function ProfileSkillsRight() {
     data: userSkillsData,
     isLoading: isLoadingSkills,
     refetch: refetchSkills,
-  } = api.profile.getUserSkills.useQuery()
+  } = api.profile.skillsMultiTaxonomy.getUserSkills.useQuery()
 
   // Remove skill mutation
-  const removeSkillMutation = api.profile.removeSkill.useMutation({
+  const removeSkillMutation = api.profile.skillsMultiTaxonomy.removeSkill.useMutation({
     onSuccess: () => {
       toast.show('Skill Removed', {
         message: 'Skill has been removed from your profile',

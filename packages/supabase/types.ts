@@ -6,8 +6,6 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export {}
-
 export type Database = {
   auth: {
     Tables: {
@@ -1139,6 +1137,531 @@ export type Database = {
           },
         ]
       }
+      background_check_access_log: {
+        Row: {
+          access_type: string
+          accessed_at: string
+          accessed_by_user_id: string
+          accessed_fields: string[]
+          background_check_id: string
+          id: string
+          ip_address: unknown
+          metadata: Json
+          user_agent: string | null
+        }
+        Insert: {
+          access_type: string
+          accessed_at?: string
+          accessed_by_user_id: string
+          accessed_fields?: string[]
+          background_check_id: string
+          id?: string
+          ip_address?: unknown
+          metadata?: Json
+          user_agent?: string | null
+        }
+        Update: {
+          access_type?: string
+          accessed_at?: string
+          accessed_by_user_id?: string
+          accessed_fields?: string[]
+          background_check_id?: string
+          id?: string
+          ip_address?: unknown
+          metadata?: Json
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "background_check_access_log_accessed_by_user_id_fkey"
+            columns: ["accessed_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "background_check_access_log_accessed_by_user_id_fkey"
+            columns: ["accessed_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "background_check_access_log_background_check_id_fkey"
+            columns: ["background_check_id"]
+            isOneToOne: false
+            referencedRelation: "background_checks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      background_check_disputes: {
+        Row: {
+          background_check_id: string
+          created_at: string
+          dispute_details: string | null
+          dispute_reason: string
+          id: string
+          resolution: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by_user_id: string | null
+          status: Database["core"]["Enums"]["background_check_dispute_status"]
+          supporting_documents: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          background_check_id: string
+          created_at?: string
+          dispute_details?: string | null
+          dispute_reason: string
+          id?: string
+          resolution?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by_user_id?: string | null
+          status?: Database["core"]["Enums"]["background_check_dispute_status"]
+          supporting_documents?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          background_check_id?: string
+          created_at?: string
+          dispute_details?: string | null
+          dispute_reason?: string
+          id?: string
+          resolution?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by_user_id?: string | null
+          status?: Database["core"]["Enums"]["background_check_dispute_status"]
+          supporting_documents?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "background_check_disputes_background_check_id_fkey"
+            columns: ["background_check_id"]
+            isOneToOne: false
+            referencedRelation: "background_checks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "background_check_disputes_resolved_by_user_id_fkey"
+            columns: ["resolved_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "background_check_disputes_resolved_by_user_id_fkey"
+            columns: ["resolved_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "background_check_disputes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "background_check_disputes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      background_check_documents: {
+        Row: {
+          background_check_id: string
+          created_at: string
+          delete_after: string | null
+          deleted_at: string | null
+          document_type: string
+          file_name: string
+          file_path: string
+          file_size: number | null
+          id: string
+          metadata: Json
+          mime_type: string | null
+          updated_at: string
+          uploaded_at: string
+          uploaded_by_user_id: string | null
+          verified: boolean
+          verified_at: string | null
+          verified_by_user_id: string | null
+        }
+        Insert: {
+          background_check_id: string
+          created_at?: string
+          delete_after?: string | null
+          deleted_at?: string | null
+          document_type: string
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          id?: string
+          metadata?: Json
+          mime_type?: string | null
+          updated_at?: string
+          uploaded_at?: string
+          uploaded_by_user_id?: string | null
+          verified?: boolean
+          verified_at?: string | null
+          verified_by_user_id?: string | null
+        }
+        Update: {
+          background_check_id?: string
+          created_at?: string
+          delete_after?: string | null
+          deleted_at?: string | null
+          document_type?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          metadata?: Json
+          mime_type?: string | null
+          updated_at?: string
+          uploaded_at?: string
+          uploaded_by_user_id?: string | null
+          verified?: boolean
+          verified_at?: string | null
+          verified_by_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "background_check_documents_background_check_id_fkey"
+            columns: ["background_check_id"]
+            isOneToOne: false
+            referencedRelation: "background_checks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "background_check_documents_uploaded_by_user_id_fkey"
+            columns: ["uploaded_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "background_check_documents_uploaded_by_user_id_fkey"
+            columns: ["uploaded_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "background_check_documents_verified_by_user_id_fkey"
+            columns: ["verified_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "background_check_documents_verified_by_user_id_fkey"
+            columns: ["verified_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      background_check_packages: {
+        Row: {
+          check_type_ids: string[]
+          component_overrides: Json
+          created_at: string
+          description: string | null
+          display_name: string
+          estimated_completion_days: number | null
+          id: string
+          is_active: boolean
+          metadata: Json
+          platform_cost_cents: number
+          provider_package_code: string | null
+          retail_cost_cents: number
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          check_type_ids?: string[]
+          component_overrides?: Json
+          created_at?: string
+          description?: string | null
+          display_name: string
+          estimated_completion_days?: number | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json
+          platform_cost_cents: number
+          provider_package_code?: string | null
+          retail_cost_cents: number
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          check_type_ids?: string[]
+          component_overrides?: Json
+          created_at?: string
+          description?: string | null
+          display_name?: string
+          estimated_completion_days?: number | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json
+          platform_cost_cents?: number
+          provider_package_code?: string | null
+          retail_cost_cents?: number
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      background_check_types: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          display_name: string
+          estimated_completion_days: number | null
+          id: string
+          metadata: Json
+          platform_cost_cents: number
+          provider_check_code: string | null
+          provider_configuration: Json
+          required_documents: Json
+          retail_cost_cents: number | null
+          slug: string
+          updated_at: string
+          validity_days: number | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          display_name: string
+          estimated_completion_days?: number | null
+          id?: string
+          metadata?: Json
+          platform_cost_cents: number
+          provider_check_code?: string | null
+          provider_configuration?: Json
+          required_documents?: Json
+          retail_cost_cents?: number | null
+          slug: string
+          updated_at?: string
+          validity_days?: number | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          display_name?: string
+          estimated_completion_days?: number | null
+          id?: string
+          metadata?: Json
+          platform_cost_cents?: number
+          provider_check_code?: string | null
+          provider_configuration?: Json
+          required_documents?: Json
+          retail_cost_cents?: number | null
+          slug?: string
+          updated_at?: string
+          validity_days?: number | null
+        }
+        Relationships: []
+      }
+      background_checks: {
+        Row: {
+          adverse_action_sent_at: string | null
+          cancelled_at: string | null
+          cancelled_reason: string | null
+          check_type_ids: string[]
+          completed_at: string | null
+          component_statuses: Json
+          consent_given_at: string | null
+          consent_ip_address: unknown
+          consent_signature: string | null
+          consent_user_agent: string | null
+          cost_cents: number | null
+          created_at: string
+          custom_configuration: Json
+          disclosure_provided_at: string | null
+          estimated_completion_date: string | null
+          expires_at: string | null
+          findings: Json | null
+          id: string
+          initiated_by: string
+          invited_at: string | null
+          job_id: string | null
+          last_webhook_event_at: string | null
+          notes: string | null
+          organization_id: string | null
+          package_id: string | null
+          paid_by: Database["core"]["Enums"]["background_check_paid_by"] | null
+          payment_id: string | null
+          pre_adverse_action_sent_at: string | null
+          processing_started_at: string | null
+          provider_check_id: string | null
+          provider_reference: Json | null
+          requested_by_user_id: string | null
+          responded_at: string | null
+          status: Database["core"]["Enums"]["background_check_status"]
+          status_history: Json
+          submitted_at: string | null
+          summary: string | null
+          summary_of_rights_provided_at: string | null
+          updated_at: string
+          user_id: string
+          webhook_delivery_attempts: number
+        }
+        Insert: {
+          adverse_action_sent_at?: string | null
+          cancelled_at?: string | null
+          cancelled_reason?: string | null
+          check_type_ids?: string[]
+          completed_at?: string | null
+          component_statuses?: Json
+          consent_given_at?: string | null
+          consent_ip_address?: unknown
+          consent_signature?: string | null
+          consent_user_agent?: string | null
+          cost_cents?: number | null
+          created_at?: string
+          custom_configuration?: Json
+          disclosure_provided_at?: string | null
+          estimated_completion_date?: string | null
+          expires_at?: string | null
+          findings?: Json | null
+          id?: string
+          initiated_by?: string
+          invited_at?: string | null
+          job_id?: string | null
+          last_webhook_event_at?: string | null
+          notes?: string | null
+          organization_id?: string | null
+          package_id?: string | null
+          paid_by?: Database["core"]["Enums"]["background_check_paid_by"] | null
+          payment_id?: string | null
+          pre_adverse_action_sent_at?: string | null
+          processing_started_at?: string | null
+          provider_check_id?: string | null
+          provider_reference?: Json | null
+          requested_by_user_id?: string | null
+          responded_at?: string | null
+          status?: Database["core"]["Enums"]["background_check_status"]
+          status_history?: Json
+          submitted_at?: string | null
+          summary?: string | null
+          summary_of_rights_provided_at?: string | null
+          updated_at?: string
+          user_id: string
+          webhook_delivery_attempts?: number
+        }
+        Update: {
+          adverse_action_sent_at?: string | null
+          cancelled_at?: string | null
+          cancelled_reason?: string | null
+          check_type_ids?: string[]
+          completed_at?: string | null
+          component_statuses?: Json
+          consent_given_at?: string | null
+          consent_ip_address?: unknown
+          consent_signature?: string | null
+          consent_user_agent?: string | null
+          cost_cents?: number | null
+          created_at?: string
+          custom_configuration?: Json
+          disclosure_provided_at?: string | null
+          estimated_completion_date?: string | null
+          expires_at?: string | null
+          findings?: Json | null
+          id?: string
+          initiated_by?: string
+          invited_at?: string | null
+          job_id?: string | null
+          last_webhook_event_at?: string | null
+          notes?: string | null
+          organization_id?: string | null
+          package_id?: string | null
+          paid_by?: Database["core"]["Enums"]["background_check_paid_by"] | null
+          payment_id?: string | null
+          pre_adverse_action_sent_at?: string | null
+          processing_started_at?: string | null
+          provider_check_id?: string | null
+          provider_reference?: Json | null
+          requested_by_user_id?: string | null
+          responded_at?: string | null
+          status?: Database["core"]["Enums"]["background_check_status"]
+          status_history?: Json
+          submitted_at?: string | null
+          summary?: string | null
+          summary_of_rights_provided_at?: string | null
+          updated_at?: string
+          user_id?: string
+          webhook_delivery_attempts?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "background_checks_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "background_checks_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "background_checks_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "background_check_packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "background_checks_requested_by_user_id_fkey"
+            columns: ["requested_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "background_checks_requested_by_user_id_fkey"
+            columns: ["requested_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "background_checks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "background_checks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       certifications: {
         Row: {
           category: string | null
@@ -1245,6 +1768,71 @@ export type Database = {
             columns: ["requester_user_id"]
             isOneToOne: false
             referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      construction_projects: {
+        Row: {
+          archived: boolean
+          archived_at: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_archived: boolean
+          location: Json | null
+          metadata: Json
+          name: string
+          organization_id: string
+          project_number: string | null
+          status: string | null
+          updated_at: string
+          work_log_entry_type_override: string | null
+          work_log_require_approval_to_move_override: boolean | null
+          work_log_require_verification_override: boolean | null
+        }
+        Insert: {
+          archived?: boolean
+          archived_at?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_archived?: boolean
+          location?: Json | null
+          metadata?: Json
+          name: string
+          organization_id: string
+          project_number?: string | null
+          status?: string | null
+          updated_at?: string
+          work_log_entry_type_override?: string | null
+          work_log_require_approval_to_move_override?: boolean | null
+          work_log_require_verification_override?: boolean | null
+        }
+        Update: {
+          archived?: boolean
+          archived_at?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_archived?: boolean
+          location?: Json | null
+          metadata?: Json
+          name?: string
+          organization_id?: string
+          project_number?: string | null
+          status?: string | null
+          updated_at?: string
+          work_log_entry_type_override?: string | null
+          work_log_require_approval_to_move_override?: boolean | null
+          work_log_require_verification_override?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "construction_projects_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]
@@ -2292,6 +2880,9 @@ export type Database = {
           updated_at: string
           visibility: string | null
           website: string | null
+          work_log_default_entry_type: string | null
+          work_log_require_approval_to_move: boolean | null
+          work_log_require_verification: boolean | null
         }
         Insert: {
           address?: Json | null
@@ -2308,6 +2899,9 @@ export type Database = {
           updated_at?: string
           visibility?: string | null
           website?: string | null
+          work_log_default_entry_type?: string | null
+          work_log_require_approval_to_move?: boolean | null
+          work_log_require_verification?: boolean | null
         }
         Update: {
           address?: Json | null
@@ -2324,6 +2918,9 @@ export type Database = {
           updated_at?: string
           visibility?: string | null
           website?: string | null
+          work_log_default_entry_type?: string | null
+          work_log_require_approval_to_move?: boolean | null
+          work_log_require_verification?: boolean | null
         }
         Relationships: [
           {
@@ -3180,124 +3777,302 @@ export type Database = {
         }
         Relationships: []
       }
-      team_member_audit_log: {
+      system_config: {
         Row: {
-          action:
-            | "invited"
-            | "joined"
-            | "role_changed"
-            | "removed"
-            | "reinstated"
-            | "left"
-            | "invitation_rescinded"
-          actor_user_id: string | null
-          created_at: string
-          id: string
-          member_user_id: string | null
-          metadata: Json
-          team_id: string
+          description: string | null
+          key: string
+          updated_at: string
+          value: string
         }
         Insert: {
-          action?:
-            | "invited"
-            | "joined"
-            | "role_changed"
-            | "removed"
-            | "reinstated"
-            | "left"
-            | "invitation_rescinded"
-          actor_user_id?: string | null
-          created_at?: string
-          id?: string
-          member_user_id?: string | null
-          metadata?: Json
-          team_id: string
+          description?: string | null
+          key: string
+          updated_at?: string
+          value: string
         }
         Update: {
-          action?:
-            | "invited"
-            | "joined"
-            | "role_changed"
-            | "removed"
-            | "reinstated"
-            | "left"
-            | "invitation_rescinded"
-          actor_user_id?: string | null
+          description?: string | null
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
+      team_invitations: {
+        Row: {
+          accepted_at: string | null
+          cancelled_at: string | null
+          created_at: string
+          created_by: string | null
+          declined_at: string | null
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string | null
+          invited_user_id: string | null
+          invitee_user_id: string | null
+          inviter_user_id: string | null
+          metadata: Json
+          organization_id: string
+          responded_at: string | null
+          responded_by: string | null
+          response_message: string | null
+          role_id: string
+          status: string
+          team_id: string
+          token_hash: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          cancelled_at?: string | null
           created_at?: string
+          created_by?: string | null
+          declined_at?: string | null
+          email: string
+          expires_at?: string
           id?: string
-          member_user_id?: string | null
+          invited_by?: string | null
+          invited_user_id?: string | null
+          invitee_user_id?: string | null
+          inviter_user_id?: string | null
           metadata?: Json
+          organization_id: string
+          responded_at?: string | null
+          responded_by?: string | null
+          response_message?: string | null
+          role_id: string
+          status?: string
+          team_id: string
+          token_hash: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          cancelled_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          declined_at?: string | null
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          invited_user_id?: string | null
+          invitee_user_id?: string | null
+          inviter_user_id?: string | null
+          metadata?: Json
+          organization_id?: string
+          responded_at?: string | null
+          responded_by?: string | null
+          response_message?: string | null
+          role_id?: string
+          status?: string
           team_id?: string
+          token_hash?: string
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "team_member_audit_log_actor_fkey"
-            columns: ["actor_user_id"]
+            foreignKeyName: "team_invitations_created_by_fkey"
+            columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "team_member_audit_log_member_fkey"
-            columns: ["member_user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_member_audit_log_member_fkey"
-            columns: ["member_user_id"]
+            foreignKeyName: "team_invitations_created_by_fkey"
+            columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "v_profile_search"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "team_member_audit_log_team_id_fkey"
+            foreignKeyName: "team_invitations_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_invited_user_id_fkey"
+            columns: ["invited_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_invited_user_id_fkey"
+            columns: ["invited_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_invitee_user_id_fkey"
+            columns: ["invitee_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_invitee_user_id_fkey"
+            columns: ["invitee_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_inviter_user_id_fkey"
+            columns: ["inviter_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_inviter_user_id_fkey"
+            columns: ["inviter_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_responded_by_fkey"
+            columns: ["responded_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_responded_by_fkey"
+            columns: ["responded_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "team_roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_team_id_fkey"
             columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
             referencedColumns: ["id"]
           },
         ]
       }
       team_members: {
         Row: {
+          added_by: string | null
           created_at: string
           id: string
+          invitation_id: string | null
           invited_by: string | null
-          joined_at: string | null
+          joined_at: string
           metadata: Json
+          permissions_override: Json
+          removal_reason: string | null
           removed_at: string | null
+          removed_by: string | null
           role_id: string
-          status: "active" | "pending" | "removed"
+          status: string
           team_id: string
+          updated_at: string
           user_id: string
         }
         Insert: {
+          added_by?: string | null
           created_at?: string
           id?: string
+          invitation_id?: string | null
           invited_by?: string | null
-          joined_at?: string | null
+          joined_at?: string
           metadata?: Json
+          permissions_override?: Json
+          removal_reason?: string | null
           removed_at?: string | null
+          removed_by?: string | null
           role_id: string
-          status?: "active" | "pending" | "removed"
+          status?: string
           team_id: string
+          updated_at?: string
           user_id: string
         }
         Update: {
+          added_by?: string | null
           created_at?: string
           id?: string
+          invitation_id?: string | null
           invited_by?: string | null
-          joined_at?: string | null
+          joined_at?: string
           metadata?: Json
+          permissions_override?: Json
+          removal_reason?: string | null
           removed_at?: string | null
+          removed_by?: string | null
           role_id?: string
-          status?: "active" | "pending" | "removed"
+          status?: string
           team_id?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "team_members_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_members_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_members_invitation_id_fkey"
+            columns: ["invitation_id"]
+            isOneToOne: false
+            referencedRelation: "team_invitations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "team_members_invited_by_fkey"
             columns: ["invited_by"]
@@ -3308,6 +4083,20 @@ export type Database = {
           {
             foreignKeyName: "team_members_invited_by_fkey"
             columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_members_removed_by_fkey"
+            columns: ["removed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_members_removed_by_fkey"
+            columns: ["removed_by"]
             isOneToOne: false
             referencedRelation: "v_profile_search"
             referencedColumns: ["id"]
@@ -3342,224 +4131,36 @@ export type Database = {
           },
         ]
       }
-      team_invitations: {
-        Row: {
-          accepted_at: string | null
-          created_at: string
-          created_by: string
-          declined_at: string | null
-          email: string
-          expires_at: string
-          id: string
-          invited_user_id: string | null
-          metadata: Json
-          revoked_at: string | null
-          role_id: string | null
-          status: "pending" | "accepted" | "declined" | "expired" | "revoked"
-          team_id: string
-          token: string
-        }
-        Insert: {
-          accepted_at?: string | null
-          created_at?: string
-          created_by: string
-          declined_at?: string | null
-          email: string
-          expires_at: string
-          id?: string
-          invited_user_id?: string | null
-          metadata?: Json
-          revoked_at?: string | null
-          role_id?: string | null
-          status?: "pending" | "accepted" | "declined" | "expired" | "revoked"
-          team_id: string
-          token: string
-        }
-        Update: {
-          accepted_at?: string | null
-          created_at?: string
-          created_by?: string
-          declined_at?: string | null
-          email?: string
-          expires_at?: string
-          id?: string
-          invited_user_id?: string | null
-          metadata?: Json
-          revoked_at?: string | null
-          role_id?: string | null
-          status?: "pending" | "accepted" | "declined" | "expired" | "revoked"
-          team_id?: string
-          token?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "team_invitations_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_invitations_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_invitations_invited_user_fkey"
-            columns: ["invited_user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_invitations_invited_user_fkey"
-            columns: ["invited_user_id"]
-            isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_invitations_role_id_fkey"
-            columns: ["role_id"]
-            isOneToOne: false
-            referencedRelation: "team_roles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "team_invitations_team_id_fkey"
-            columns: ["team_id"]
-            isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      teams: {
-        Row: {
-          archived_at: string | null
-          archived_by: string | null
-          created_at: string
-          created_by: string | null
-          default_role_id: string | null
-          default_role_key: string
-          description: Json | null
-          id: string
-          invitation_policy: "invite_only" | "request_to_join"
-          image_url: string | null
-          is_archived: boolean
-          metadata: Json
-          name: string
-          organization_id: string
-          purpose: string | null
-          slug: string | null
-          updated_at: string
-          visibility: "organization" | "private"
-        }
-        Insert: {
-          archived_at?: string | null
-          archived_by?: string | null
-          created_at?: string
-          created_by?: string | null
-          default_role_id?: string | null
-          default_role_key?: string
-          description?: Json | null
-          id?: string
-          invitation_policy?: "invite_only" | "request_to_join"
-          image_url?: string | null
-          is_archived?: boolean
-          metadata?: Json
-          name: string
-          organization_id: string
-          purpose?: string | null
-          slug?: string | null
-          updated_at?: string
-          visibility?: "organization" | "private"
-        }
-        Update: {
-          archived_at?: string | null
-          archived_by?: string | null
-          created_at?: string
-          created_by?: string | null
-          default_role_id?: string | null
-          default_role_key?: string
-          description?: Json | null
-          id?: string
-          invitation_policy?: "invite_only" | "request_to_join"
-          image_url?: string | null
-          is_archived?: boolean
-          metadata?: Json
-          name?: string
-          organization_id?: string
-          purpose?: string | null
-          slug?: string | null
-          updated_at?: string
-          visibility?: "organization" | "private"
-        }
-        Relationships: [
-          {
-            foreignKeyName: "teams_archived_by_fkey"
-            columns: ["archived_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "teams_archived_by_fkey"
-            columns: ["archived_by"]
-            isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "teams_default_role_id_fkey"
-            columns: ["default_role_id"]
-            isOneToOne: false
-            referencedRelation: "team_roles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "teams_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "teams_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "teams_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       team_role_permissions: {
         Row: {
           created_at: string
           created_by: string | null
-          permission_key: string
+          id: string
+          is_allowed: boolean
+          permission: Database["core"]["Enums"]["team_permission"]
           role_id: string
+          updated_at: string
+          updated_by: string | null
         }
         Insert: {
           created_at?: string
           created_by?: string | null
-          permission_key: string
+          id?: string
+          is_allowed?: boolean
+          permission: Database["core"]["Enums"]["team_permission"]
           role_id: string
+          updated_at?: string
+          updated_by?: string | null
         }
         Update: {
           created_at?: string
           created_by?: string | null
-          permission_key?: string
+          id?: string
+          is_allowed?: boolean
+          permission?: Database["core"]["Enums"]["team_permission"]
           role_id?: string
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: [
           {
@@ -3583,6 +4184,20 @@ export type Database = {
             referencedRelation: "team_roles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "team_role_permissions_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_role_permissions_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
         ]
       }
       team_roles: {
@@ -3591,42 +4206,48 @@ export type Database = {
           created_by: string | null
           description: string | null
           id: string
+          is_assignable: boolean
           is_default: boolean
           is_system: boolean
           key: string
+          level: number
           metadata: Json
           name: string
           organization_id: string | null
-          priority: number
           updated_at: string
+          updated_by: string | null
         }
         Insert: {
           created_at?: string
           created_by?: string | null
           description?: string | null
           id?: string
+          is_assignable?: boolean
           is_default?: boolean
           is_system?: boolean
           key: string
+          level?: number
           metadata?: Json
           name: string
           organization_id?: string | null
-          priority?: number
           updated_at?: string
+          updated_by?: string | null
         }
         Update: {
           created_at?: string
           created_by?: string | null
           description?: string | null
           id?: string
+          is_assignable?: boolean
           is_default?: boolean
           is_system?: boolean
           key?: string
+          level?: number
           metadata?: Json
           name?: string
           organization_id?: string | null
-          priority?: number
           updated_at?: string
+          updated_by?: string | null
         }
         Relationships: [
           {
@@ -3644,10 +4265,172 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "team_roles_organization_fkey"
+            foreignKeyName: "team_roles_organization_id_fkey"
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_roles_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_roles_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          allow_self_join: boolean
+          archived_at: string | null
+          archived_by: string | null
+          archived_reason: string | null
+          auto_assign_jobs: boolean
+          created_at: string
+          created_by: string | null
+          default_role_id: string
+          default_role_key: string
+          description: Json | null
+          id: string
+          image_url: string | null
+          invitation_expiration_days: number
+          invitation_policy: string
+          is_archived: boolean
+          metadata: Json
+          name: string
+          organization_id: string
+          parent_team_id: string | null
+          purpose: string | null
+          settings: Json
+          slug: string | null
+          updated_at: string
+          updated_by: string | null
+          visibility: string
+        }
+        Insert: {
+          allow_self_join?: boolean
+          archived_at?: string | null
+          archived_by?: string | null
+          archived_reason?: string | null
+          auto_assign_jobs?: boolean
+          created_at?: string
+          created_by?: string | null
+          default_role_id: string
+          default_role_key?: string
+          description?: Json | null
+          id?: string
+          image_url?: string | null
+          invitation_expiration_days?: number
+          invitation_policy?: string
+          is_archived?: boolean
+          metadata?: Json
+          name: string
+          organization_id: string
+          parent_team_id?: string | null
+          purpose?: string | null
+          settings?: Json
+          slug?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          visibility?: string
+        }
+        Update: {
+          allow_self_join?: boolean
+          archived_at?: string | null
+          archived_by?: string | null
+          archived_reason?: string | null
+          auto_assign_jobs?: boolean
+          created_at?: string
+          created_by?: string | null
+          default_role_id?: string
+          default_role_key?: string
+          description?: Json | null
+          id?: string
+          image_url?: string | null
+          invitation_expiration_days?: number
+          invitation_policy?: string
+          is_archived?: boolean
+          metadata?: Json
+          name?: string
+          organization_id?: string
+          parent_team_id?: string | null
+          purpose?: string | null
+          settings?: Json
+          slug?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teams_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teams_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teams_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teams_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teams_default_role_id_fkey"
+            columns: ["default_role_id"]
+            isOneToOne: false
+            referencedRelation: "team_roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teams_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teams_parent_team_id_fkey"
+            columns: ["parent_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teams_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teams_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
             referencedColumns: ["id"]
           },
         ]
@@ -3953,6 +4736,51 @@ export type Database = {
           },
         ]
       }
+      user_storage_usage: {
+        Row: {
+          certification_files_bytes: number | null
+          portfolio_photos_bytes: number | null
+          storage_limit_bytes: number | null
+          total_bytes: number | null
+          updated_at: string | null
+          user_id: string
+          work_log_photos_bytes: number | null
+        }
+        Insert: {
+          certification_files_bytes?: number | null
+          portfolio_photos_bytes?: number | null
+          storage_limit_bytes?: number | null
+          total_bytes?: number | null
+          updated_at?: string | null
+          user_id: string
+          work_log_photos_bytes?: number | null
+        }
+        Update: {
+          certification_files_bytes?: number | null
+          portfolio_photos_bytes?: number | null
+          storage_limit_bytes?: number | null
+          total_bytes?: number | null
+          updated_at?: string | null
+          user_id?: string
+          work_log_photos_bytes?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_storage_usage_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_storage_usage_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
           about: Json | null
@@ -4066,6 +4894,356 @@ export type Database = {
         }
         Relationships: []
       }
+      work_log_audit_log: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          new_value: Json | null
+          old_value: Json | null
+          reason: string | null
+          user_id: string
+          work_log_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          new_value?: Json | null
+          old_value?: Json | null
+          reason?: string | null
+          user_id: string
+          work_log_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          new_value?: Json | null
+          old_value?: Json | null
+          reason?: string | null
+          user_id?: string
+          work_log_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_log_audit_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_log_audit_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_log_audit_log_work_log_id_fkey"
+            columns: ["work_log_id"]
+            isOneToOne: false
+            referencedRelation: "work_logs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_log_collaborators: {
+        Row: {
+          collaborator_user_id: string
+          created_at: string | null
+          id: string
+          invited_at: string | null
+          permission_level: string
+          work_log_id: string
+        }
+        Insert: {
+          collaborator_user_id: string
+          created_at?: string | null
+          id?: string
+          invited_at?: string | null
+          permission_level?: string
+          work_log_id: string
+        }
+        Update: {
+          collaborator_user_id?: string
+          created_at?: string | null
+          id?: string
+          invited_at?: string | null
+          permission_level?: string
+          work_log_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_log_collaborators_collaborator_user_id_fkey"
+            columns: ["collaborator_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_log_collaborators_collaborator_user_id_fkey"
+            columns: ["collaborator_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_log_collaborators_work_log_id_fkey"
+            columns: ["work_log_id"]
+            isOneToOne: false
+            referencedRelation: "work_logs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_log_conversations: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_system_message: boolean | null
+          message: string
+          updated_at: string | null
+          user_id: string
+          work_log_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_system_message?: boolean | null
+          message: string
+          updated_at?: string | null
+          user_id: string
+          work_log_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_system_message?: boolean | null
+          message?: string
+          updated_at?: string | null
+          user_id?: string
+          work_log_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_log_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_log_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_log_conversations_work_log_id_fkey"
+            columns: ["work_log_id"]
+            isOneToOne: false
+            referencedRelation: "work_logs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_log_photos: {
+        Row: {
+          caption: string | null
+          created_at: string | null
+          display_order: number | null
+          exif_data: Json | null
+          file_path: string
+          file_size_bytes: number
+          gps_location: unknown
+          id: string
+          medium_path: string | null
+          photo_type: string | null
+          show_on_profile: boolean | null
+          taken_at: string | null
+          thumbnail_path: string | null
+          work_log_id: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          exif_data?: Json | null
+          file_path: string
+          file_size_bytes: number
+          gps_location?: unknown
+          id?: string
+          medium_path?: string | null
+          photo_type?: string | null
+          show_on_profile?: boolean | null
+          taken_at?: string | null
+          thumbnail_path?: string | null
+          work_log_id: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          exif_data?: Json | null
+          file_path?: string
+          file_size_bytes?: number
+          gps_location?: unknown
+          id?: string
+          medium_path?: string | null
+          photo_type?: string | null
+          show_on_profile?: boolean | null
+          taken_at?: string | null
+          thumbnail_path?: string | null
+          work_log_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_log_photos_work_log_id_fkey"
+            columns: ["work_log_id"]
+            isOneToOne: false
+            referencedRelation: "work_logs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_logs: {
+        Row: {
+          created_at: string | null
+          device_type: string | null
+          dispute_reason: string | null
+          disputed_at: string | null
+          entry_type: string
+          gps_accuracy_meters: number | null
+          gps_captured_at: string | null
+          gps_location: unknown
+          id: string
+          location_permission_status: string | null
+          log_date: string
+          pending_move_reason: string | null
+          pending_move_requested_at: string | null
+          pending_move_requested_by: string | null
+          pending_move_to_project_id: string | null
+          project_id: string
+          show_date_range_on_profile: boolean | null
+          show_on_profile: boolean | null
+          skills_used: string[] | null
+          status: string
+          submitted_at: string | null
+          tasks_completed: string[] | null
+          time_entries: Json
+          total_hours: number | null
+          updated_at: string | null
+          user_id: string
+          verified_at: string | null
+          verified_by_user_id: string | null
+          visibility: string
+          work_description: string
+        }
+        Insert: {
+          created_at?: string | null
+          device_type?: string | null
+          dispute_reason?: string | null
+          disputed_at?: string | null
+          entry_type?: string
+          gps_accuracy_meters?: number | null
+          gps_captured_at?: string | null
+          gps_location?: unknown
+          id?: string
+          location_permission_status?: string | null
+          log_date: string
+          pending_move_reason?: string | null
+          pending_move_requested_at?: string | null
+          pending_move_requested_by?: string | null
+          pending_move_to_project_id?: string | null
+          project_id: string
+          show_date_range_on_profile?: boolean | null
+          show_on_profile?: boolean | null
+          skills_used?: string[] | null
+          status?: string
+          submitted_at?: string | null
+          tasks_completed?: string[] | null
+          time_entries?: Json
+          total_hours?: number | null
+          updated_at?: string | null
+          user_id: string
+          verified_at?: string | null
+          verified_by_user_id?: string | null
+          visibility?: string
+          work_description: string
+        }
+        Update: {
+          created_at?: string | null
+          device_type?: string | null
+          dispute_reason?: string | null
+          disputed_at?: string | null
+          entry_type?: string
+          gps_accuracy_meters?: number | null
+          gps_captured_at?: string | null
+          gps_location?: unknown
+          id?: string
+          location_permission_status?: string | null
+          log_date?: string
+          pending_move_reason?: string | null
+          pending_move_requested_at?: string | null
+          pending_move_requested_by?: string | null
+          pending_move_to_project_id?: string | null
+          project_id?: string
+          show_date_range_on_profile?: boolean | null
+          show_on_profile?: boolean | null
+          skills_used?: string[] | null
+          status?: string
+          submitted_at?: string | null
+          tasks_completed?: string[] | null
+          time_entries?: Json
+          total_hours?: number | null
+          updated_at?: string | null
+          user_id?: string
+          verified_at?: string | null
+          verified_by_user_id?: string | null
+          visibility?: string
+          work_description?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_logs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "construction_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_logs_verified_by_user_id_fkey"
+            columns: ["verified_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_logs_verified_by_user_id_fkey"
+            columns: ["verified_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       v_profile_completion_scores: {
@@ -4118,9 +5296,17 @@ export type Database = {
       }
     }
     Functions: {
+      calculate_time_entries_total_hours: {
+        Args: { time_entries: Json }
+        Returns: number
+      }
       calculate_years_of_experience: {
         Args: { p_user_id: string }
         Returns: number
+      }
+      can_access_work_log: {
+        Args: { target_work_log_id: string }
+        Returns: boolean
       }
       extract_tiptap_plain_text: { Args: { content: Json }; Returns: string }
       get_organizations_with_coords: {
@@ -4134,6 +5320,18 @@ export type Database = {
           name: string
           slug: string
         }[]
+      }
+      has_team_permission: {
+        Args: {
+          required_permission: Database["core"]["Enums"]["team_permission"]
+          target_team_id: string
+        }
+        Returns: boolean
+      }
+      is_team_admin: { Args: { target_team_id: string }; Returns: boolean }
+      is_work_log_owner: {
+        Args: { target_work_log_id: string }
+        Returns: boolean
       }
       jitter_coordinate: {
         Args: { coord: number; max_offset_degrees?: number }
@@ -4170,6 +5368,28 @@ export type Database = {
       }
     }
     Enums: {
+      background_check_dispute_status:
+        | "pending"
+        | "under_review"
+        | "resolved"
+        | "upheld"
+        | "cancelled"
+      background_check_paid_by: "worker" | "organization" | "platform"
+      background_check_status:
+        | "pending"
+        | "invited"
+        | "submitted"
+        | "in_progress"
+        | "under_review"
+        | "completed_clear"
+        | "completed_consider"
+        | "completed_not_clear"
+        | "partially_completed"
+        | "failed"
+        | "cancelled"
+        | "disputed"
+        | "expired"
+        | "refunded"
       notification_channel: "in_app" | "email" | "push" | "sms"
       notification_delivery_status:
         | "queued"
@@ -4224,6 +5444,22 @@ export type Database = {
         | "platform.update"
         | "message.received"
       organization_request_status: "pending" | "approved" | "rejected"
+      team_permission:
+        | "team.view"
+        | "team.manage"
+        | "team.settings"
+        | "team.invite"
+        | "team.remove_member"
+        | "team.assign_role"
+        | "job.manage"
+        | "application.review"
+        | "application.manage"
+        | "application.comment"
+        | "interview.schedule"
+        | "offer.manage"
+        | "analytics.view"
+        | "document.manage"
+        | "invitation.manage"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -7104,6 +8340,27 @@ export type Database = {
         }
         Relationships: []
       }
+      buckets_vectors: {
+        Row: {
+          created_at: string
+          id: string
+          type: Database["storage"]["Enums"]["buckettype"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          type?: Database["storage"]["Enums"]["buckettype"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          type?: Database["storage"]["Enums"]["buckettype"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       iceberg_namespaces: {
         Row: {
           bucket_id: string
@@ -7388,6 +8645,50 @@ export type Database = {
           },
         ]
       }
+      vector_indexes: {
+        Row: {
+          bucket_id: string
+          created_at: string
+          data_type: string
+          dimension: number
+          distance_metric: string
+          id: string
+          metadata_configuration: Json | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          bucket_id: string
+          created_at?: string
+          data_type: string
+          dimension: number
+          distance_metric: string
+          id?: string
+          metadata_configuration?: Json | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          bucket_id?: string
+          created_at?: string
+          data_type?: string
+          dimension?: number
+          distance_metric?: string
+          id?: string
+          metadata_configuration?: Json | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vector_indexes_bucket_id_fkey"
+            columns: ["bucket_id"]
+            isOneToOne: false
+            referencedRelation: "buckets_vectors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -7541,7 +8842,7 @@ export type Database = {
       }
     }
     Enums: {
-      buckettype: "STANDARD" | "ANALYTICS"
+      buckettype: "STANDARD" | "ANALYTICS" | "VECTOR"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -7692,6 +8993,30 @@ export const Constants = {
   },
   core: {
     Enums: {
+      background_check_dispute_status: [
+        "pending",
+        "under_review",
+        "resolved",
+        "upheld",
+        "cancelled",
+      ],
+      background_check_paid_by: ["worker", "organization", "platform"],
+      background_check_status: [
+        "pending",
+        "invited",
+        "submitted",
+        "in_progress",
+        "under_review",
+        "completed_clear",
+        "completed_consider",
+        "completed_not_clear",
+        "partially_completed",
+        "failed",
+        "cancelled",
+        "disputed",
+        "expired",
+        "refunded",
+      ],
       notification_channel: ["in_app", "email", "push", "sms"],
       notification_delivery_status: [
         "queued",
@@ -7750,6 +9075,23 @@ export const Constants = {
         "message.received",
       ],
       organization_request_status: ["pending", "approved", "rejected"],
+      team_permission: [
+        "team.view",
+        "team.manage",
+        "team.settings",
+        "team.invite",
+        "team.remove_member",
+        "team.assign_role",
+        "job.manage",
+        "application.review",
+        "application.manage",
+        "application.comment",
+        "interview.schedule",
+        "offer.manage",
+        "analytics.view",
+        "document.manage",
+        "invitation.manage",
+      ],
     },
   },
   data: {
@@ -7776,7 +9118,7 @@ export const Constants = {
   },
   storage: {
     Enums: {
-      buckettype: ["STANDARD", "ANALYTICS"],
+      buckettype: ["STANDARD", "ANALYTICS", "VECTOR"],
     },
   },
 } as const

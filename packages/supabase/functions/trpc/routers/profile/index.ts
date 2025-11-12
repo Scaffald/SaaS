@@ -18,7 +18,7 @@ import { profileWidgetsRouter } from "./widgets.router.ts";
 export const profileRouter = t.mergeRouters(
   profileGeneralRouter,
   profileEmploymentRouter,
-  skillsMultiTaxonomyRouter,
+  t.router({ skillsMultiTaxonomy: skillsMultiTaxonomyRouter }),
   profileAvatarRouter,
   profileCertificationsRouter,
   profileEducationRouter,

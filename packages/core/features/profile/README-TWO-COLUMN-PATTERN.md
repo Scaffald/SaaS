@@ -198,7 +198,7 @@ export function ProfileSkillsLeft() {
 import { ProfileResultsPanel, ProfileResultCard } from './components'
 
 export function ProfileSkillsRight() {
-  const { data: skills, isLoading } = api.profile.getUserSkills.useQuery()
+  const { data: skills, isLoading } = api.profile.skillsMultiTaxonomy.getUserSkills.useQuery()
   
   return (
     <ProfileResultsPanel

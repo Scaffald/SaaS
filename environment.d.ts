@@ -22,6 +22,9 @@ declare global {
       POSTHOG_KEY_STAGING?: string
       POSTHOG_KEY_PROD?: string
       POSTHOG_KEY_SERVER?: string
+      EXPO_PUBLIC_POSTHOG_API_KEY?: string
+      EXPO_PUBLIC_POSTHOG_HOST?: string
+      EXPO_PUBLIC_POSTHOG_PROJECT?: string
     }
   }
 }

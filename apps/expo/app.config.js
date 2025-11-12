@@ -14,8 +14,14 @@ const posthogKeyByEnv = {
   production: process.env.POSTHOG_KEY_PROD,
 }
 
-const POSTHOG_KEY = process.env.POSTHOG_KEY || posthogKeyByEnv[APP_ENV] || ''
-const POSTHOG_HOST = process.env.POSTHOG_HOST || 'https://app.posthog.com'
+const EXPO_PUBLIC_POSTHOG_API_KEY = process.env.EXPO_PUBLIC_POSTHOG_API_KEY
+const EXPO_PUBLIC_POSTHOG_HOST = process.env.EXPO_PUBLIC_POSTHOG_HOST
+const EXPO_PUBLIC_POSTHOG_PROJECT = process.env.EXPO_PUBLIC_POSTHOG_PROJECT
+
+const POSTHOG_KEY =
+  process.env.POSTHOG_KEY || EXPO_PUBLIC_POSTHOG_API_KEY || posthogKeyByEnv[APP_ENV] || ''
+const POSTHOG_HOST =
+  process.env.POSTHOG_HOST || EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com'
 
 const IOS_BUNDLE_BASE = 'com.scaffald.app'
 const ANDROID_PACKAGE_BASE = 'com.scaffald.app'
@@ -162,11 +168,13 @@ export default {
           host: POSTHOG_HOST,
           key: POSTHOG_KEY,
           env: APP_ENV,
+          project: EXPO_PUBLIC_POSTHOG_PROJECT,
         },
       },
       appEnv: APP_ENV,
       posthogHost: POSTHOG_HOST,
       posthogKey: POSTHOG_KEY,
+      posthogProject: EXPO_PUBLIC_POSTHOG_PROJECT,
       sentryRelease: SENTRY_RELEASE,
     },
     hooks: {

@@ -50,19 +50,19 @@ export function ResumeUploadModal({
   const parseResumeMutation = api.resume.parse.useMutation()
 
   const [status, setStatus] = useState<UploadStatus>('idle')
-  const [candidate, setCandidate] = useState<UploadCandidate | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
   const [progressLogs, setProgressLogs] = useState<string[]>([])
-  const lastCandidateRef = useRef<UploadCandidate | null>(null)
+  const uploadSequenceRef = useRef(0)
 
   const appendLog = useCallback((message: string) => {
     setProgressLogs((previous) => [...previous, message])
   }, [])
 
   const resetState = useCallback(() => {
+    uploadSequenceRef.current += 1
+    activeCandidateRef.current = null
     setStatus('idle')
-    setCandidate(null)
     setErrorMessage(null)
     setFileName(null)
     setProgressLogs([])
@@ -140,6 +140,97 @@ export function ResumeUploadModal({
     return true
   }
 
+  const activeCandidateRef = useRef<UploadCandidate | null>(null)
+
+  const beginUpload = useCallback(
+    async (nextCandidate: UploadCandidate) => {
+      const sequence = uploadSequenceRef.current + 1
+      uploadSequenceRef.current = sequence
+      activeCandidateRef.current = nextCandidate
+
+      try {
+        setStatus('uploading')
+        appendLog('⬆️ Preparing upload request...')
+        const base64 =
+          nextCandidate.kind === 'web'
+            ? await fileToDataUrl(nextCandidate.file)
+            : await nextCandidate.getBase64()
+        console.debug('[ResumeUploadModal] obtained base64', {
+          length: base64.length,
+          kind: nextCandidate.kind,
+        })
+        if (sequence !== uploadSequenceRef.current) {
+          return
+        }
+
+        appendLog('📡 Sending upload to resume.upload...')
+        const uploadResponse = await uploadResumeMutation.mutateAsync({
+          fileData: base64,
+          fileName: nextCandidate.name,
+          fileSize: nextCandidate.size,
+          mimeType: nextCandidate.type,
+        })
+        appendLog('✅ Upload stored, starting AI parsing...')
+
+        if (sequence !== uploadSequenceRef.current) {
+          return
+        }
+
+        setStatus('parsing')
+        appendLog('🤖 Resume uploaded. Starting AI parsing...')
+        await parseResumeMutation.mutateAsync({
+          resumeId: uploadResponse.resumeId,
+          sections: ['general', 'experience', 'education', 'skills', 'certifications', 'employment'],
+        })
+        appendLog('🤖 Parsing completed, updating dashboard...')
+
+        if (sequence !== uploadSequenceRef.current) {
+          return
+        }
+
+        await utils.resume.hasUploaded.invalidate()
+
+        if (sequence !== uploadSequenceRef.current) {
+          return
+        }
+
+        setStatus('success')
+        appendLog('✅ Parsing complete. Preparing your review wizard...')
+        toast.show('Resume Imported', {
+          message: 'Review the parsed details before saving them to your profile.',
+          type: 'success',
+        })
+        appendLog('🚀 Redirecting to the review experience...')
+        onUploadComplete?.(uploadResponse.resumeId)
+        onOpenChange(false)
+      } catch (error) {
+        if (sequence !== uploadSequenceRef.current) {
+          return
+        }
+        console.error('[ResumeUploadModal] Upload error', error)
+        const message =
+          error instanceof Error ? error.message : 'Unable to process resume. Please try again.'
+        handleUploadError(message)
+      } finally {
+        if (sequence === uploadSequenceRef.current) {
+          appendLog('ℹ️ Resetting uploader state.')
+          activeCandidateRef.current = null
+          setFileName(null)
+        }
+      }
+    },
+    [
+      appendLog,
+      handleUploadError,
+      onOpenChange,
+      onUploadComplete,
+      parseResumeMutation,
+      toast,
+      uploadResumeMutation,
+      utils.resume.hasUploaded,
+    ]
+  )
+
   const handleWebFileSelect = useCallback((file: File) => {
     console.debug('[ResumeUploadModal] handleWebFileSelect', {
       name: file.name,
@@ -163,11 +254,10 @@ export function ResumeUploadModal({
       type: mimeType,
       file,
     }
-    setCandidate(nextCandidate)
-    lastCandidateRef.current = null
     setFileName(file.name)
     setProgressLogs([`📄 Selected file "${file.name}" (${Math.round(file.size / 1024)} KB)`])
-  }, [handleUploadError, validateFileSize])
+    void beginUpload(nextCandidate)
+  }, [beginUpload, handleUploadError, validateFileSize])
 
   const handleNativePick = useCallback(async () => {
     try {
@@ -220,128 +310,16 @@ export function ResumeUploadModal({
         type: mimeType,
         getBase64,
       }
-      setCandidate(nextCandidate)
-      lastCandidateRef.current = null
       setFileName(name)
       setStatus('idle')
       setProgressLogs([`📄 Selected file "${name}" (${Math.round(size / 1024)} KB)`])
+      void beginUpload(nextCandidate)
     } catch (error) {
       console.error('[ResumeUploadModal] Native picker error', error)
       handleUploadError('Failed to open document picker. Please try again.')
       setStatus('idle')
     }
-  }, [handleUploadError, validateFileSize])
-
-  useEffect(() => {
-    if (!candidate) {
-      console.debug('[ResumeUploadModal] useEffect no candidate')
-      lastCandidateRef.current = null
-      return
-    }
-
-    if (lastCandidateRef.current === candidate) {
-      return
-    }
-
-    lastCandidateRef.current = candidate
-    let isCancelled = false
-
-    const uploadCandidate = async () => {
-      try {
-        if (isCancelled) {
-          return
-        }
-        setStatus('uploading')
-        appendLog('⬆️ Preparing upload request...')
-        const base64 =
-          candidate.kind === 'web'
-            ? await fileToDataUrl(candidate.file)
-            : await candidate.getBase64()
-        console.debug('[ResumeUploadModal] obtained base64', {
-          length: base64.length,
-          kind: candidate.kind,
-        })
-        if (isCancelled) {
-          return
-        }
-        appendLog('📡 Sending upload to resume.upload...')
-        const uploadResponse = await uploadResumeMutation.mutateAsync({
-          fileData: base64,
-          fileName: candidate.name,
-          fileSize: candidate.size,
-          mimeType: candidate.type,
-        })
-        appendLog('✅ Upload stored, starting AI parsing...')
-
-        if (isCancelled) {
-          return
-        }
-
-        setStatus('parsing')
-        appendLog('🤖 Resume uploaded. Starting AI parsing...')
-        await parseResumeMutation.mutateAsync({
-          resumeId: uploadResponse.resumeId,
-          sections: ['general', 'experience', 'education', 'skills', 'certifications', 'employment'],
-        })
-        appendLog('🤖 Parsing completed, updating dashboard...')
-
-        if (isCancelled) {
-          return
-        }
-
-        await utils.resume.hasUploaded.invalidate()
-
-        if (isCancelled) {
-          return
-        }
-
-        setStatus('success')
-        appendLog('✅ Parsing complete. Preparing your review wizard...')
-        toast.show('Resume Imported', {
-          message: 'Review the parsed details before saving them to your profile.',
-          type: 'success',
-        })
-
-        if (!isCancelled) {
-          appendLog('🚀 Redirecting to the review experience...')
-          onUploadComplete?.(uploadResponse.resumeId)
-        }
-
-        if (!isCancelled) {
-          onOpenChange(false)
-        }
-      } catch (error) {
-        if (isCancelled) {
-          return
-        }
-        console.error('[ResumeUploadModal] Upload error', error)
-        const message =
-          error instanceof Error ? error.message : 'Unable to process resume. Please try again.'
-        handleUploadError(message)
-      } finally {
-        if (!isCancelled) {
-          appendLog('ℹ️ Resetting uploader state.')
-          setCandidate(null)
-        }
-      }
-    }
-
-    void uploadCandidate()
-
-    return () => {
-      isCancelled = true
-      console.debug('[ResumeUploadModal] upload effect cleanup')
-    }
-  }, [
-    candidate,
-    handleUploadError,
-    onOpenChange,
-    onUploadComplete,
-    parseResumeMutation,
-    toast,
-    uploadResumeMutation,
-    utils.resume.hasUploaded,
-  ])
+  }, [beginUpload, handleUploadError, validateFileSize])
 
   return (
     <ResponsiveModal
@@ -365,10 +343,12 @@ export function ResumeUploadModal({
             helperText="Accepted formats: PDF, DOC, DOCX (max 1MB)"
             onFileSelect={handleWebFileSelect}
             onFileRemove={() => {
-              setCandidate(null)
+              uploadSequenceRef.current += 1
+              activeCandidateRef.current = null
               setStatus('idle')
               setErrorMessage(null)
               setProgressLogs((previous) => [...previous, '🗑️ Removed selected file'])
+              setFileName(null)
             }}
             disabled={status === 'uploading' || status === 'parsing'}
             currentFileName={fileName ?? undefined}
@@ -523,4 +503,5 @@ async function fileToDataUrl(file: File): Promise<string> {
 
   throw new Error('Unable to encode file data.')
 }
+
 

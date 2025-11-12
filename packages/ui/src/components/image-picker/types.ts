@@ -1,6 +1,7 @@
 import type { DropzoneOptions } from 'react-dropzone'
 
 export type DropZoneOptionsCustom = Omit<DropzoneOptions, 'accept'> & {
+  accept?: DropzoneOptions['accept']
   // native only
   onOpen: DropzoneOptions['onDrop']
   // native only
@@ -39,7 +40,7 @@ export type OnPickType<MT extends MediaTypeOptionsString[]> = (param: {
 }) => void | Promise<void>
 
 export type UseFilePickerProps<MT extends MediaTypeOptionsString> = {
-  mediaTypes: MT[]
+  mediaTypes?: MT[]
   onPick: OnPickType<MT[]>
   /** multiple only works for image only types on native, but on web it works regarding the media types */
   multiple?: boolean

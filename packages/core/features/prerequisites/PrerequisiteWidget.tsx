@@ -58,7 +58,7 @@ export function PrerequisiteWidget() {
 
   // Fetch industries for dropdown
   const { data: industriesData, isLoading: isLoadingIndustries } =
-    api.profile.getIndustries.useQuery()
+    api.profile.skillsMultiTaxonomy.getIndustries.useQuery()
 
   // Complete prerequisites mutation
   const completeMutation = api.prerequisites.complete.useMutation({

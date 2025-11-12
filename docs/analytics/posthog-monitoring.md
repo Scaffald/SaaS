@@ -7,8 +7,9 @@ This guide documents the operational configuration for keeping the new analytics
 - Provision three PostHog projects (`scaffald-dev`, `scaffald-staging`, `scaffald-prod`).
 - Supply keys through the existing variables that land in Expo at build time:
   - `POSTHOG_KEY_DEV`, `POSTHOG_KEY_STAGING`, `POSTHOG_KEY_PROD` (client SDKs)
+  - `EXPO_PUBLIC_POSTHOG_API_KEY` (client SDK override for local/dev shells)
   - `POSTHOG_KEY_SERVER` (Supabase edge functions)
-- Keep the shared `POSTHOG_HOST` pointing at PostHog Cloud unless you migrate to a self-hosted URL.
+- Keep the shared `POSTHOG_HOST` (or `EXPO_PUBLIC_POSTHOG_HOST`) pointing at PostHog Cloud unless you migrate to a self-hosted URL.
 
 `apps/expo/eas.json` already wires `APP_ENV` and the per-environment keys so builds remain isolated.
 

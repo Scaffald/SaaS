@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
 
@@ -8,12 +8,14 @@ import {
   teamInvitationPolicySchema,
   teamRoleKeySchema,
 } from '@app/schemas'
-import { TeamForm, TeamMembersList } from '@app/core/features/office/teams'
+import { TeamForm, TeamMembersList, TeamInviteModal, TeamInvitationsList } from '@app/core/features/office/teams'
 import { api } from '@app/core/utils/api'
 
 export default function EditTeamPage() {
   const router = useRouter()
   const params = useLocalSearchParams<{ id?: string }>()
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
+  const [inviteRefreshKey, setInviteRefreshKey] = useState(0)
   const teamId = useMemo(() => {
     const value = params.id
     if (!value) {
@@ -119,6 +121,30 @@ export default function EditTeamPage() {
       />
 
       <TeamMembersList teamId={team.id} organizationId={team.organizationId} />
+
+      <TeamInvitationsList
+        teamId={team.id}
+        refreshKey={inviteRefreshKey}
+        headerAction={
+          <Button
+            bg="$color9"
+            color="$color1"
+            size="$3"
+            onPress={() => setIsInviteModalOpen(true)}
+          >
+            Invite member
+          </Button>
+        }
+      />
+
+      <TeamInviteModal
+        open={isInviteModalOpen}
+        onOpenChange={setIsInviteModalOpen}
+        teamId={team.id}
+        organizationId={team.organizationId}
+        defaultRoleId={team.defaultRoleId ?? team.defaultRole?.id ?? null}
+        onInvited={() => setInviteRefreshKey((value) => value + 1)}
+      />
     </YStack>
   )
 }

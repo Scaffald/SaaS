@@ -48,6 +48,26 @@ export interface UploadSurfaceProps {
 }
 
 const DEFAULT_ACCEPT = '*/*'
+const EXTENSION_TO_MIME: Record<string, string> = {
+  pdf: 'application/pdf',
+  doc: 'application/msword',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  txt: 'text/plain',
+  rtf: 'application/rtf',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  webp: 'image/webp',
+  gif: 'image/gif',
+  bmp: 'image/bmp',
+  svg: 'image/svg+xml',
+  tiff: 'image/tiff',
+  csv: 'text/csv',
+  xls: 'application/vnd.ms-excel',
+  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  ppt: 'application/vnd.ms-powerpoint',
+  pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+}
 
 export function UploadSurface({
   onSelect,
@@ -99,6 +119,39 @@ export function UploadSurface({
     },
     [accept, maxSizeBytes, normalizedAcceptPatterns, onError]
   )
+
+  const dropzoneAccept = useMemo(() => {
+    if (dropzoneOptions?.accept) {
+      return dropzoneOptions.accept
+    }
+
+    if (!normalizedAcceptPatterns.length) {
+      return undefined
+    }
+
+    const acceptMap: Record<string, string[]> = {}
+
+    for (const pattern of normalizedAcceptPatterns) {
+      if (pattern === DEFAULT_ACCEPT) {
+        continue
+      }
+
+      if (pattern.includes('/')) {
+        acceptMap[pattern] = acceptMap[pattern] ?? []
+        continue
+      }
+
+      if (pattern.startsWith('.')) {
+        const extension = pattern.slice(1)
+        const mime = EXTENSION_TO_MIME[extension]
+        if (mime) {
+          acceptMap[mime] = acceptMap[mime] ?? []
+        }
+      }
+    }
+
+    return Object.keys(acceptMap).length > 0 ? acceptMap : undefined
+  }, [dropzoneOptions?.accept, normalizedAcceptPatterns])
 
   const handlePick = useCallback(
     async ({
@@ -183,6 +236,7 @@ export function UploadSurface({
     noClick: true,
     disabled,
     noDrag: disabled,
+    accept: dropzoneAccept,
     ...dropzoneOptions,
   })
 
