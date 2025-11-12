@@ -1,5 +1,5 @@
 import { YStack } from 'tamagui'
-import { DashboardLayout } from '@app/ui'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 import {
   GeneralInfoWidget,
   ExperienceWidget,
@@ -31,11 +31,13 @@ export default function ProfileIndexScreen() {
         </YStack>
       }
       rightContent={
-        <YStack gap="$4">
-          <SkillsWidget userId={user.id} showEdit />
-          <CertificationsWidget userId={user.id} showEdit />
-          <PreferencesWidget showEdit />
-        </YStack>
+        <QuickLinksSidebar>
+          <YStack gap="$4">
+            <SkillsWidget userId={user.id} showEdit />
+            <CertificationsWidget userId={user.id} showEdit />
+            <PreferencesWidget showEdit />
+          </YStack>
+        </QuickLinksSidebar>
       }
     />
   )

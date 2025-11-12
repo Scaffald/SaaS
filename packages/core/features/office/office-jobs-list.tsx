@@ -140,7 +140,11 @@ const createColumns = (
   }),
 ]
 
-export function OfficeJobsList() {
+export interface OfficeJobsListProps {
+  showHeader?: boolean
+}
+
+export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) {
   const router = useRouter()
   const [search, setSearch] = useState('')
   const [teamFilter, setTeamFilter] = useState<string | null>(null)
@@ -266,6 +270,7 @@ export function OfficeJobsList() {
       isLoading={isLoading}
       pageSize={50}
       emptyMessage="No jobs found"
+      hideHeader={!showHeader}
       actionBarConfig={{
         bar: {
           addLabel: 'Create Job',

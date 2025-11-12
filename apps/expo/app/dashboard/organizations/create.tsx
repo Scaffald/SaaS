@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { DashboardLayout } from '@app/ui'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 import { Building2, Info } from '@tamagui/lucide-icons'
 import { Button, Separator, Text, XStack, YStack } from 'tamagui'
 import { OrganizationRequestForm } from '@app/core/features/organizations/components/OrganizationRequestForm'
@@ -65,5 +65,10 @@ export default function DashboardOrganizationCreatePage() {
     </YStack>
   )
 
-  return <DashboardLayout leftContent={form} rightContent={sidebar} />
+  return (
+    <DashboardLayout
+      leftContent={form}
+      rightContent={<QuickLinksSidebar>{sidebar}</QuickLinksSidebar>}
+    />
+  )
 }

@@ -46,14 +46,10 @@ export const generateDashboardDrawerItems = (options?: {
   if (options?.includeOfficeLink) {
     const officeSubItems: DrawerItemConfig[] = [
       {
-        key: "office-users",
-        titleKey: "navigation.officeUsers",
-        href: ROUTES.OFFICE_CMS_WORKERS.path,
-      },
-      {
         key: "office-jobs",
         titleKey: "navigation.officeJobs",
         href: ROUTES.OFFICE_CMS_JOBS.path,
+        routeKey: "OFFICE_CMS_JOBS",
       },
     ];
 
@@ -62,6 +58,7 @@ export const generateDashboardDrawerItems = (options?: {
         key: "office-teams",
         titleKey: "navigation.officeTeams",
         href: ROUTES.OFFICE_CMS_TEAMS.path,
+        routeKey: "OFFICE_CMS_TEAMS",
         icon: Users,
       });
     }
@@ -71,36 +68,43 @@ export const generateDashboardDrawerItems = (options?: {
         key: "office-universities",
         titleKey: "navigation.officeUniversities",
         href: ROUTES.OFFICE_CMS_UNIVERSITIES.path,
+        routeKey: "OFFICE_CMS_UNIVERSITIES",
       },
       {
         key: "office-applications",
         titleKey: "navigation.officeApplications",
         href: ROUTES.OFFICE_ATS.path,
+        routeKey: "OFFICE_ATS",
       },
       {
         key: "office-organizations",
         titleKey: "navigation.officeOrganizations",
         href: ROUTES.OFFICE_CMS_ORGANIZATIONS.path,
+        routeKey: "OFFICE_CMS_ORGANIZATIONS",
       },
       {
         key: "office-background-checks",
         titleKey: "navigation.officeBackgroundChecks",
         href: ROUTES.OFFICE_ATS_CHECKS.path,
+        routeKey: "OFFICE_ATS_CHECKS",
       },
       {
         key: "office-notifications",
         titleKey: "navigation.notifications",
         href: ROUTES.OFFICE_NOTIFICATIONS.path,
+        routeKey: "OFFICE_NOTIFICATIONS",
       },
       {
         key: "office-cms",
         titleKey: "navigation.officeCms",
         href: ROUTES.OFFICE_CMS_WELCOME.path,
+        routeKey: "OFFICE_CMS_WELCOME",
       },
       {
         key: "office-styleguide",
         titleKey: "navigation.styleguide",
         href: ROUTES.STYLEGUIDE.path,
+        routeKey: "STYLEGUIDE",
       },
     );
 
@@ -108,8 +112,10 @@ export const generateDashboardDrawerItems = (options?: {
       key: "office",
       titleKey: "navigation.office",
       href: ROUTES.OFFICE.path,
+      routeKey: "OFFICE",
       icon: Building2,
       isExpandable: true,
+      expandOnActive: true,
       subItems: officeSubItems,
     });
   }
@@ -119,6 +125,7 @@ export const generateDashboardDrawerItems = (options?: {
     key: "dashboard",
     titleKey: "navigation.dashboard",
     href: ROUTES.DASHBOARD.path,
+    routeKey: "DASHBOARD",
     icon: BarChart3,
   });
 
@@ -126,28 +133,35 @@ export const generateDashboardDrawerItems = (options?: {
   items.push({
     key: "discover",
     titleKey: "navigation.discover",
-    href: ROUTES.DASHBOARD_DISCOVER_MAP.path,
+    href: ROUTES.DASHBOARD_DISCOVER.path,
+    routeKey: "DASHBOARD_DISCOVER",
     icon: MapIcon,
+    isExpandable: true,
+    expandOnActive: true,
     subItems: [
       {
         key: "discover-map",
         titleKey: "navigation.discoverMap",
         href: ROUTES.DASHBOARD_DISCOVER_MAP.path,
+        routeKey: "DASHBOARD_DISCOVER_MAP",
       },
       {
         key: "discover-workers",
         titleKey: "navigation.discoverWorkers",
         href: ROUTES.DASHBOARD_DISCOVER_WORKERS.path,
+        routeKey: "DASHBOARD_DISCOVER_WORKERS",
       },
       {
         key: "discover-employers",
         titleKey: "navigation.discoverEmployers",
         href: ROUTES.DASHBOARD_DISCOVER_EMPLOYERS.path,
+        routeKey: "DASHBOARD_DISCOVER_EMPLOYERS",
       },
       {
         key: "discover-jobs",
         titleKey: "navigation.discoverJobs",
         href: ROUTES.DASHBOARD_DISCOVER_JOBS.path,
+        routeKey: "DASHBOARD_DISCOVER_JOBS",
       },
     ],
   });
@@ -157,37 +171,46 @@ export const generateDashboardDrawerItems = (options?: {
     key: "profile",
     titleKey: "navigation.profile",
     href: ROUTES.DASHBOARD_PROFILE.path,
+    routeKey: "DASHBOARD_PROFILE",
     icon: User,
+    isExpandable: true,
+    expandOnActive: true,
     subItems: [
       {
         key: "profile-general",
         titleKey: "navigation.profileGeneral",
         href: ROUTES.DASHBOARD_PROFILE_GENERAL.path,
+        routeKey: "DASHBOARD_PROFILE_GENERAL",
       },
       {
         key: "profile-employment",
         titleKey: "navigation.profileEmployment",
         href: ROUTES.DASHBOARD_PROFILE_EMPLOYMENT.path,
+        routeKey: "DASHBOARD_PROFILE_EMPLOYMENT",
       },
       {
         key: "profile-skills",
         titleKey: "navigation.profileSkills",
         href: ROUTES.DASHBOARD_PROFILE_SKILLS.path,
+        routeKey: "DASHBOARD_PROFILE_SKILLS",
       },
       {
         key: "profile-certifications",
         titleKey: "navigation.profileCertifications",
         href: ROUTES.DASHBOARD_PROFILE_CERTIFICATIONS.path,
+        routeKey: "DASHBOARD_PROFILE_CERTIFICATIONS",
       },
       {
         key: "profile-education",
         titleKey: "navigation.profileEducation",
         href: ROUTES.DASHBOARD_PROFILE_EDUCATION.path,
+        routeKey: "DASHBOARD_PROFILE_EDUCATION",
       },
       {
         key: "profile-experience",
         titleKey: "navigation.profileExperience",
         href: ROUTES.DASHBOARD_PROFILE_EXPERIENCE.path,
+        routeKey: "DASHBOARD_PROFILE_EXPERIENCE",
       },
     ],
   });
@@ -198,6 +221,7 @@ export const generateDashboardDrawerItems = (options?: {
       key: "assessment-pulse",
       titleKey: "navigation.assessmentsPulse",
       href: ROUTES.DASHBOARD_ASSESSMENT_LUSCHER_1.path,
+      routeKey: "DASHBOARD_ASSESSMENT_LUSCHER_1",
       isCompleted: options?.assessmentStatus?.luscher1.isCompleted,
       isOnCooldown: options?.assessmentStatus?.luscher1.isOnCooldown,
     },
@@ -205,18 +229,21 @@ export const generateDashboardDrawerItems = (options?: {
       key: "assessment-ipip",
       titleKey: "navigation.assessmentsPersonality",
       href: ROUTES.DASHBOARD_ASSESSMENT_IPIP.path,
+      routeKey: "DASHBOARD_ASSESSMENT_IPIP",
       isCompleted: options?.assessmentStatus?.ipip.isCompleted,
     },
     {
       key: "assessment-riasec",
       titleKey: "navigation.assessmentsRiasec",
       href: ROUTES.DASHBOARD_ASSESSMENT_RIASEC.path,
+      routeKey: "DASHBOARD_ASSESSMENT_RIASEC",
       isCompleted: options?.assessmentStatus?.riasec.isCompleted,
     },
     {
       key: "assessment-occupation",
       titleKey: "navigation.assessmentsOccupation",
       href: ROUTES.DASHBOARD_ASSESSMENT_OCCUPATION.path,
+      routeKey: "DASHBOARD_ASSESSMENT_OCCUPATION",
       isCompleted: options?.assessmentStatus?.occupation.isCompleted,
     },
   ];
@@ -225,7 +252,10 @@ export const generateDashboardDrawerItems = (options?: {
     key: "assessments",
     titleKey: "navigation.assessments",
     href: ROUTES.DASHBOARD_ASSESSMENTS.path,
+    routeKey: "DASHBOARD_ASSESSMENTS",
     icon: ClipboardCheck,
+    isExpandable: true,
+    expandOnActive: true,
     subItems: assessmentSubItems,
   });
 

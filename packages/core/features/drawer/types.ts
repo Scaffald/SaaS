@@ -2,6 +2,7 @@ import type { JSX } from "react";
 import type { GestureResponderEvent } from "react-native";
 import type { DrawerContentComponentProps } from "@react-navigation/drawer";
 import type { TranslationKey } from "@app/core/locales";
+import type { RouteKey } from "@app/core/constants/routes";
 import type { BarChart3 } from "@tamagui/lucide-icons";
 
 /**
@@ -12,6 +13,7 @@ export type DrawerItemConfig = {
   title?: string;
   titleKey?: TranslationKey;
   href: string;
+  routeKey?: RouteKey;
   icon?: typeof BarChart3;
   description?: string;
   badge?: string;
@@ -19,6 +21,11 @@ export type DrawerItemConfig = {
   subItems?: DrawerItemConfig[];
   hasChevron?: boolean;
   isExpandable?: boolean;
+  /**
+   * When true, the item's sub-items will be shown automatically when the route is active,
+   * allowing the parent to act as a normal navigational link instead of relying on manual toggles.
+   */
+  expandOnActive?: boolean;
   isCompleted?: boolean; // Shows checkmark icon when true
   isOnCooldown?: boolean; // Shows clock icon when true (overrides checkmark)
 };

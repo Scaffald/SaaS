@@ -207,5 +207,14 @@ describe('ProfileEducationRight', () => {
 
     await waitFor(() => expect(deleteMutationSpy).toHaveBeenCalledWith({ educationId: 'ed-2' }))
   })
+
+  it('renders formatted date ranges and location metadata', () => {
+    render(<ProfileEducationRight />)
+
+    expect(screen.getByText('Dec 2017 - Apr 2022')).toBeInTheDocument()
+    expect(screen.getByText('Dec 2022 - Present (Expected: May 2025)')).toBeInTheDocument()
+    expect(screen.getByText('Boston, MA')).toBeInTheDocument()
+    expect(screen.getByText('Remote')).toBeInTheDocument()
+  })
 })
 

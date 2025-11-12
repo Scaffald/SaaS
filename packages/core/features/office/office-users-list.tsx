@@ -94,7 +94,11 @@ const createColumns = (
   }),
 ]
 
-export function OfficeUsersList() {
+export interface OfficeUsersListProps {
+  showHeader?: boolean
+}
+
+export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}) {
   const router = useRouter()
   const [search, setSearch] = useState('')
   const [addModalOpen, setAddModalOpen] = useState(false)
@@ -223,6 +227,7 @@ export function OfficeUsersList() {
           minimumVisibleColumns: 2,
         },
       }}
+      hideHeader={!showHeader}
     />
   )
 }

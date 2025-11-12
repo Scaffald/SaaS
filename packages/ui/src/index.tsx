@@ -70,6 +70,24 @@ export { ResponsiveModal, type ResponsiveModalProps } from './components/Respons
 
 // Layout components
 export { DashboardLayout } from './components/layouts/DashboardLayout'
+export {
+  QuickLinksWidget,
+  type QuickLinksWidgetProps,
+} from './components/navigation/QuickLinksWidget'
+export {
+  QuickLinksSidebar,
+  type QuickLinksSidebarProps,
+} from './components/navigation/QuickLinksSidebar'
+export {
+  OfficeTabs,
+  type OfficeTabsProps,
+  type OfficeTabsItem,
+} from './components/navigation/OfficeTabs'
+export {
+  OfficeAccordion,
+  type OfficeAccordionProps,
+  type OfficeAccordionSection,
+} from './components/navigation/OfficeAccordion'
 
 // Other components
 export * from './components/address'
@@ -87,6 +105,7 @@ export * from './components/typography'
 
 // Hooks
 export * from './hooks/useUniversitySearch'
+export { useQuickLinks } from './hooks/useQuickLinks'
 
 // Configuration
 export * from './config/animations'

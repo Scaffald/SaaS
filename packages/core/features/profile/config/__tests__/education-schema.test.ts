@@ -90,4 +90,32 @@ describe('education schema validation', () => {
       expect(messages).toContain('Institution name is required')
     }
   })
+
+  it('rejects missing end date when entry is not marked current', () => {
+    const result = singleEducationEntrySchema.safeParse({
+      ...baseEntry,
+      end_date: undefined,
+      is_current: false,
+    })
+
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      const messages = result.error.format().end_date?._errors ?? []
+      expect(messages).toContain('End date is required unless currently enrolled')
+    }
+  })
+
+  it('enforces description length limit of 500 characters', () => {
+    const overlongDescription = 'x'.repeat(501)
+    const result = singleEducationEntrySchema.safeParse({
+      ...baseEntry,
+      description: overlongDescription,
+    })
+
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      const messages = result.error.format().description?._errors ?? []
+      expect(messages).toContain('Description cannot exceed 500 characters')
+    }
+  })
 })

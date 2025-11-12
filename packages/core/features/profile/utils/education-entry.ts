@@ -40,7 +40,10 @@ export const normalizeEducationEntry = (
       typeof entry.gpa === "number"
         ? entry.gpa
         : entry.gpa != null && entry.gpa !== ""
-          ? Number.parseFloat(String(entry.gpa))
+          ? (() => {
+            const parsed = Number.parseFloat(String(entry.gpa));
+            return Number.isNaN(parsed) ? undefined : parsed;
+          })()
           : undefined,
     description: entry.description ?? undefined,
     location: entry.location ?? undefined,

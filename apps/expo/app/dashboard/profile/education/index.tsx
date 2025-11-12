@@ -1,12 +1,16 @@
 import { ProfileEducationLeft } from '@app/core/features/profile/profile-education-left'
 import { ProfileEducationRight } from '@app/core/features/profile/profile-education-right'
-import { DashboardLayout } from '@app/ui'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 
 export default function ProfileEducationPage() {
   return (
     <DashboardLayout
       leftContent={<ProfileEducationLeft />}
-      rightContent={<ProfileEducationRight />}
+      rightContent={
+        <QuickLinksSidebar>
+          <ProfileEducationRight />
+        </QuickLinksSidebar>
+      }
     />
   )
 }

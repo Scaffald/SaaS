@@ -4,7 +4,7 @@ import { Plus, Pencil, Trash2, Eye, EyeOff } from '@tamagui/lucide-icons'
 import { Link, useRouter } from 'expo-router'
 import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
-import { DashboardLayout } from '@app/ui'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 
 export function OfficeCMSList() {
   const [includeInactive, setIncludeInactive] = useState(false)
@@ -156,14 +156,20 @@ export function OfficeCMSList() {
         </YStack>
       }
       rightContent={
-        <YStack gap="$4">
-          <Text fontSize="$5" fontWeight="bold">
-            About Welcome Slides
-          </Text>
-          <Text>Manage the onboarding slides shown to new users when they first sign in.</Text>
-          <Text>Slides are displayed in order based on the "display_order" value.</Text>
-          <Text>Only active slides are shown to users.</Text>
-        </YStack>
+        <QuickLinksSidebar>
+          <YStack gap="$4">
+            <Text fontSize="$5" fontWeight="bold">
+              About Welcome Slides
+            </Text>
+            <Text>
+              Manage the onboarding slides shown to new users when they first sign in.
+            </Text>
+            <Text>
+              Slides are displayed in order based on the &quot;display_order&quot; value.
+            </Text>
+            <Text>Only active slides are shown to users.</Text>
+          </YStack>
+        </QuickLinksSidebar>
       }
     />
   )

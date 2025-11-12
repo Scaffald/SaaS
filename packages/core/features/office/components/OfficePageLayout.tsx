@@ -39,6 +39,7 @@ interface OfficePageLayoutProps<TData> {
   actionBarConfig?: OfficeActionBarConfig
   columnVisibility?: VisibilityState
   onColumnVisibilityChange?: (updater: Updater<VisibilityState>) => void
+  hideHeader?: boolean
 }
 
 export function OfficePageLayout<TData>({
@@ -58,17 +59,20 @@ export function OfficePageLayout<TData>({
   actionBarConfig,
   columnVisibility,
   onColumnVisibilityChange,
+  hideHeader = false,
 }: OfficePageLayoutProps<TData>) {
   return (
     <YStack flex={1} p="$4" gap="$4">
-      <XStack justify="space-between" items="center">
-        <H2>{title}</H2>
-        {!actionBarConfig && !hideCreateButton && (
-          <Button icon={Plus} onPress={onCreateClick}>
-            {createButtonLabel}
-          </Button>
-        )}
-      </XStack>
+      {!hideHeader && (
+        <XStack justify="space-between" items="center">
+          <H2>{title}</H2>
+          {!actionBarConfig && !hideCreateButton && (
+            <Button icon={Plus} onPress={onCreateClick}>
+              {createButtonLabel}
+            </Button>
+          )}
+        </XStack>
+      )}
 
       {actionBarConfig ? (
         <>

@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect } from 'react'
 import { YStack, Spinner, Text } from 'tamagui'
-import { DashboardLayout } from '@app/ui'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 import {
   GeneralInfoWidget,
   ExperienceWidget,
@@ -74,6 +74,7 @@ export default function PublicUserProfilePage() {
             </Text>
           </YStack>
         }
+        rightContent={<QuickLinksSidebar />}
       />
     )
   }
@@ -93,6 +94,7 @@ export default function PublicUserProfilePage() {
             </Text>
           </YStack>
         }
+        rightContent={<QuickLinksSidebar />}
       />
     )
   }
@@ -122,13 +124,15 @@ export default function PublicUserProfilePage() {
         </YStack>
       }
       rightContent={
-        <YStack gap="$4">
-          {visibility.skills && <SkillsWidget userId={profileData.id} showEdit={false} />}
-          {visibility.certifications && (
-            <CertificationsWidget userId={profileData.id} showEdit={false} />
-          )}
-          {visibility.reviews && <ReviewsWidget userId={profileData.id} showEdit={false} />}
-        </YStack>
+        <QuickLinksSidebar>
+          <YStack gap="$4">
+            {visibility.skills && <SkillsWidget userId={profileData.id} showEdit={false} />}
+            {visibility.certifications && (
+              <CertificationsWidget userId={profileData.id} showEdit={false} />
+            )}
+            {visibility.reviews && <ReviewsWidget userId={profileData.id} showEdit={false} />}
+          </YStack>
+        </QuickLinksSidebar>
       }
     />
   )

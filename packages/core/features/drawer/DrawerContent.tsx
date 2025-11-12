@@ -19,7 +19,7 @@ export const DrawerContent = ({
   onToggleExpanded,
   drawerProps,
 }: DrawerContentProps) => {
-  const { hasOfficeRole, roles, isLoading } = useUserRoles()
+  const { hasOfficeRole, roles } = useUserRoles()
   const assessmentStatus = useAssessmentStatus()
 
   const teamManagementRoles = new Set([
@@ -32,14 +32,6 @@ export const DrawerContent = ({
   const hasTeamManagementAccess = roles.some((role: string) =>
     teamManagementRoles.has(role)
   )
-
-  // Debug logging
-  console.log('[DrawerContent] Role status:', {
-    hasOfficeRole,
-    roles,
-    isLoading,
-    willShowOffice: hasOfficeRole,
-  })
 
   // Get drawer sections with Office link if user has office role and assessment status
   const drawerSections = getDrawerSections({

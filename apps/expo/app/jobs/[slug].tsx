@@ -1,7 +1,7 @@
 import { useLocalSearchParams } from 'expo-router'
 import { useEffect } from 'react'
 import { YStack, Spinner, Text } from 'tamagui'
-import { DashboardLayout } from '@app/ui'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 import { DiscoverJobDetailScreen } from '@app/core/features/discover/discover-job-detail-screen'
 import { api } from '@app/core/utils/api'
 import type { BreadcrumbItem } from '@app/ui'
@@ -51,6 +51,7 @@ export default function PublicJobDetailPage() {
             </Text>
           </YStack>
         }
+        rightContent={<QuickLinksSidebar />}
       />
     )
   }
@@ -70,6 +71,7 @@ export default function PublicJobDetailPage() {
             </Text>
           </YStack>
         }
+        rightContent={<QuickLinksSidebar />}
       />
     )
   }
@@ -78,6 +80,10 @@ export default function PublicJobDetailPage() {
   const { left, right } = DiscoverJobDetailScreen({ jobId: jobData.id })
 
   return (
-    <DashboardLayout breadcrumbItems={breadcrumbItems} leftContent={left} rightContent={right} />
+    <DashboardLayout
+      breadcrumbItems={breadcrumbItems}
+      leftContent={left}
+      rightContent={<QuickLinksSidebar>{right}</QuickLinksSidebar>}
+    />
   )
 }

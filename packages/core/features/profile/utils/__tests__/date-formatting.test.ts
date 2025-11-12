@@ -11,6 +11,10 @@ describe('formatDate', () => {
     expect(formatDate(undefined)).toBe('N/A')
     expect(formatDate('not-a-date')).toBe('not-a-date')
   })
+
+  it('treats empty strings as missing values', () => {
+    expect(formatDate('')).toBe('N/A')
+  })
 })
 
 describe('formatDateRange', () => {

@@ -150,5 +150,16 @@ test.describe('Profile education management', () => {
     await expect(page.getByText('Pending verification')).toBeVisible()
     await expect(page.getByText('Current')).toBeVisible()
   })
+
+  test('shows validation summary when attempting to save empty entry', async ({ page }) => {
+    await page.goto('/dashboard/profile/education')
+
+    await page.getByRole('button', { name: 'Add Education' }).click()
+    await page.getByRole('button', { name: 'Save Changes' }).click()
+
+    await expect(page.getByText('Please resolve the following issues:')).toBeVisible()
+    await expect(page.getByText(/Institution name is required/)).toBeVisible()
+    await expect(page.getByText(/Start date is required/)).toBeVisible()
+  })
 })
 

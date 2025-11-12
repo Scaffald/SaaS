@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from 'expo-router'
-import { DashboardLayout } from '@app/ui'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 import { DiscoverWorkerProfileScreen } from '@app/core/features/discover/discover-worker-profile-screen'
 
 export default function DiscoverWorkerProfilePage() {
@@ -7,6 +7,10 @@ export default function DiscoverWorkerProfilePage() {
   const { left, right, breadcrumbItems } = DiscoverWorkerProfileScreen({ userId: id })
 
   return (
-    <DashboardLayout leftContent={left} rightContent={right} breadcrumbItems={breadcrumbItems} />
+    <DashboardLayout
+      leftContent={left}
+      rightContent={<QuickLinksSidebar>{right}</QuickLinksSidebar>}
+      breadcrumbItems={breadcrumbItems}
+    />
   )
 }

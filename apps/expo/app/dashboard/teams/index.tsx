@@ -5,7 +5,7 @@ import { Users } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '@app/supabase/client-types'
 
-import { DashboardLayout } from '@app/ui'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 
@@ -144,6 +144,7 @@ export default function DashboardTeamsIndexPage() {
       showBreadcrumb
       breadcrumbItems={breadcrumbItems}
       autoGenerateBreadcrumbs={false}
+      rightContent={<QuickLinksSidebar />}
     />
   )
 }

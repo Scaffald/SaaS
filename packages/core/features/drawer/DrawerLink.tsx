@@ -18,6 +18,16 @@ export const DrawerLink = ({
   const active = isActivePath(pathname, item.href)
   const Icon = item.icon
   const isExpanded = expandedItems?.has(item.key) || false
+  const hasSubItems = Boolean(item.subItems?.length)
+  const shouldShowSubItems = hasSubItems
+    ? item.expandOnActive
+      ? active || isExpanded
+      : item.isExpandable
+        ? isExpanded
+        : true
+    : false
+  const isManualExpandable = item.isExpandable && !item.expandOnActive
+  const isAutoExpandable = item.isExpandable && item.expandOnActive
   const { t } = useTranslation()
 
   const resolveTitle = useCallback(() => {
@@ -73,7 +83,7 @@ export const DrawerLink = ({
           </XStack>
         )}
         {item.isExpandable ? (
-          isExpanded ? (
+          shouldShowSubItems ? (
             <ChevronDown size={16} color={active ? '$color1' : '$color10'} />
           ) : (
             <ChevronRight size={16} color="$color10" />
@@ -83,7 +93,7 @@ export const DrawerLink = ({
         )}
       </XStack>
     ),
-    [active, isExpanded, item.badge, item.hasChevron, item.isExpandable],
+    [active, item.badge, item.hasChevron, item.isExpandable, shouldShowSubItems],
   )
 
   if (item.disabled) {
@@ -125,7 +135,7 @@ export const DrawerLink = ({
     )
   }
 
-  if (item.isExpandable) {
+  if (isManualExpandable) {
     return (
       <YStack flex={1}>
         <XStack
@@ -144,7 +154,46 @@ export const DrawerLink = ({
           {renderContent()}
           {renderRightSide()}
         </XStack>
-        {isExpanded && item.subItems && (
+        {shouldShowSubItems && item.subItems && (
+          <YStack rounded="$4" my="$2" gap="$2" flex={1}>
+            {item.subItems.map((subItem) => (
+              <DrawerLink
+                key={subItem.key}
+                item={subItem}
+                pathname={pathname}
+                depth={1}
+                onNavigate={onNavigate}
+                expandedItems={expandedItems}
+                onToggleExpanded={onToggleExpanded}
+              />
+            ))}
+          </YStack>
+        )}
+      </YStack>
+    )
+  }
+
+  if (isAutoExpandable) {
+    return (
+      <YStack flex={1}>
+        <Link href={item.href} asChild>
+          <XStack
+            items="center"
+            justify="space-between"
+            px="$3"
+            py="$2"
+            rounded="$4"
+            my="$1"
+            bg={active ? '$blue9' : 'transparent'}
+            hoverStyle={{ bg: active ? '$blue9' : '$color3' }}
+            pressStyle={{ bg: active ? '$blue9' : '$color3' }}
+            cursor="pointer"
+          >
+            {renderContent()}
+            {renderRightSide()}
+          </XStack>
+        </Link>
+        {shouldShowSubItems && item.subItems && (
           <YStack rounded="$4" my="$2" gap="$2" flex={1}>
             {item.subItems.map((subItem) => (
               <DrawerLink

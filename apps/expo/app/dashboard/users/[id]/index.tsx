@@ -2,7 +2,7 @@ import { useLocalSearchParams } from 'expo-router'
 import { useNavigation } from '@react-navigation/native'
 import { useEffect, useMemo } from 'react'
 import { YStack } from 'tamagui'
-import { DashboardLayout } from '@app/ui'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 import {
   GeneralInfoWidget,
   ExperienceWidget,
@@ -98,11 +98,13 @@ export default function UserProfilePage() {
         </YStack>
       }
       rightContent={
-        <YStack gap="$4">
-          <SkillsWidget userId={id} showEdit={false} />
-          <CertificationsWidget userId={id} showEdit={false} />
-          <ReviewsWidget userId={id} showEdit={true} />
-        </YStack>
+        <QuickLinksSidebar>
+          <YStack gap="$4">
+            <SkillsWidget userId={id} showEdit={false} />
+            <CertificationsWidget userId={id} showEdit={false} />
+            <ReviewsWidget userId={id} showEdit />
+          </YStack>
+        </QuickLinksSidebar>
       }
     />
   )

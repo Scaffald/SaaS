@@ -2,7 +2,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router'
 import { YStack, Text, Spinner } from 'tamagui'
 import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
-import { DashboardLayout } from '@app/ui'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 import { CMSSlideForm } from './cms-slide-form'
 import type { WelcomeSlideCreate, WelcomeSlideUpdate } from '@app/schemas'
 
@@ -27,7 +27,7 @@ export function OfficeCMSEdit() {
             <Spinner size="large" />
           </YStack>
         }
-        rightContent={null}
+        rightContent={<QuickLinksSidebar />}
       />
     )
   }
@@ -40,7 +40,7 @@ export function OfficeCMSEdit() {
             <Text>Slide not found</Text>
           </YStack>
         }
-        rightContent={null}
+        rightContent={<QuickLinksSidebar />}
       />
     )
   }
@@ -57,15 +57,17 @@ export function OfficeCMSEdit() {
         </YStack>
       }
       rightContent={
-        <YStack gap="$4">
-          <Text fontSize="$5" fontWeight="bold">
-            Edit Slide
-          </Text>
-          <Text>
-            Update the slide information. Changes will be visible to users immediately if the slide
-            is active.
-          </Text>
-        </YStack>
+        <QuickLinksSidebar>
+          <YStack gap="$4">
+            <Text fontSize="$5" fontWeight="bold">
+              Edit Slide
+            </Text>
+            <Text>
+              Update the slide information. Changes will be visible to users immediately if the
+              slide is active.
+            </Text>
+          </YStack>
+        </QuickLinksSidebar>
       }
     />
   )

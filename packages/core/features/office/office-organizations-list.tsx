@@ -11,7 +11,7 @@ import {
   RefreshCw,
   X as XIcon,
 } from '@tamagui/lucide-icons'
-import { DashboardLayout, DashboardWidget } from '@app/ui'
+import { DashboardLayout, DashboardWidget, QuickLinksSidebar } from '@app/ui'
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { OfficePageLayout } from './components/OfficePageLayout'
@@ -345,7 +345,8 @@ export function OfficeOrganizationsList() {
           />
         }
         rightContent={
-          <YStack gap="$4">
+          <QuickLinksSidebar>
+            <YStack gap="$4">
             <DashboardWidget gap="$4">
               <XStack justify="space-between" items="center">
                 <Text fontSize="$5" fontWeight="700">
@@ -454,29 +455,30 @@ export function OfficeOrganizationsList() {
               )}
             </DashboardWidget>
 
-            <DashboardWidget gap="$3" elevated>
-              <Text fontSize="$5" fontWeight="700">
-                Quick Actions
-              </Text>
-              <YStack gap="$2">
-                <Button
-                  theme="info"
-                  icon={ArrowRightCircle}
-                  onPress={() => router.push(ROUTES.OFFICE_CMS_ORGANIZATIONS_CREATE.path)}
-                >
-                  Create Organization
-                </Button>
-                <Button
-                  variant="outlined"
-                  icon={RefreshCw}
-                  onPress={refreshRequests}
-                  disabled={isRequestsLoading || isRequestsRefetching}
-                >
-                  Review Pending Requests
-                </Button>
-              </YStack>
-            </DashboardWidget>
-          </YStack>
+              <DashboardWidget gap="$3" elevated>
+                <Text fontSize="$5" fontWeight="700">
+                  Quick Actions
+                </Text>
+                <YStack gap="$2">
+                  <Button
+                    theme="info"
+                    icon={ArrowRightCircle}
+                    onPress={() => router.push(ROUTES.OFFICE_CMS_ORGANIZATIONS_CREATE.path)}
+                  >
+                    Create Organization
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    icon={RefreshCw}
+                    onPress={refreshRequests}
+                    disabled={isRequestsLoading || isRequestsRefetching}
+                  >
+                    Review Pending Requests
+                  </Button>
+                </YStack>
+              </DashboardWidget>
+            </YStack>
+          </QuickLinksSidebar>
         }
       />
     </>

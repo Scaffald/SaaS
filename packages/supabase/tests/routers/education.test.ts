@@ -187,8 +187,8 @@ Deno.test({
     assertExists(error, "Expected validation error for invalid GPA");
     assertEquals(error.data?.code, "BAD_REQUEST");
     assert(
-      String(error.message).includes("GPA must be between 0.0 and 4.0"),
-      "GPA validation message should be returned",
+    String(error.message).includes("Number must be less than or equal to 4"),
+    "GPA validation message should mention upper bound",
     );
 
     await restoreEducation(authToken, originalEntries, originalLevel);
@@ -256,6 +256,99 @@ Deno.test({
     } finally {
       await restoreEducation(authToken, originalEntries, originalLevel);
     }
+  },
+});
+
+Deno.test({
+  name: "Profile education - current entries persist expected graduation date without end date",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    await requireAuthSetup();
+
+    const tokens = await loadCachedTokens();
+    assertExists(tokens, "Auth tokens should be cached");
+
+    const authToken = tokens.regular.token;
+    const originalEntries = await fetchEducationData(authToken);
+    const originalLevel = await fetchEducationLevel(authToken);
+
+    const currentEntry: EducationEntry = {
+      institution_name: `Current Program ${crypto.randomUUID().slice(0, 6)}`,
+      university_id: null,
+      degree_type: "Other",
+      custom_degree_type: "International Diploma",
+      start_date: "2024-01-01",
+      end_date: null,
+      is_current: true,
+      expected_graduation_date: "2026-06-01",
+      gpa: 3.2,
+    };
+
+    try {
+      const result = await saveEducation(authToken, {
+        education_level: originalLevel,
+        education_entries: [currentEntry],
+      });
+
+      const saved = result.education_entries[0];
+      assertExists(saved, "Current entry should be persisted");
+      assertEquals(saved.is_current, true);
+      assertEquals(saved.end_date, null);
+      assertEquals(saved.expected_graduation_date, "2026-06-01");
+      assertEquals(saved.degree_type, "International Diploma");
+    } finally {
+      await restoreEducation(authToken, originalEntries, originalLevel);
+    }
+  },
+});
+
+Deno.test({
+  name: "Profile education - rejects missing end date when entry not current",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    await requireAuthSetup();
+
+    const tokens = await loadCachedTokens();
+    assertExists(tokens, "Auth tokens should be cached");
+
+    const authToken = tokens.regular.token;
+    const originalEntries = await fetchEducationData(authToken);
+    const originalLevel = await fetchEducationLevel(authToken);
+
+    const invalidEntry: EducationEntry = {
+      institution_name: "Incomplete Dates University",
+      start_date: "2022-01-01",
+      end_date: null,
+      is_current: false,
+    };
+
+    const response = await callTRPCEndpoint(
+      "profile.saveEducation",
+      {
+        education_level: originalLevel,
+        education_entries: [invalidEntry],
+      },
+      {
+        authToken,
+        type: "mutation",
+      },
+    );
+
+    const error = response[0]?.error;
+    assertExists(error, "Expected validation error for missing end date");
+  assertEquals(error.data?.code, "INTERNAL_SERVER_ERROR");
+  assert(
+    String(error.message).includes("End date is required unless currently enrolled"),
+    "Missing end date message should be surfaced",
+  );
+    assert(
+      String(error.message).includes("End date is required unless currently enrolled"),
+      "Missing end date error should be returned",
+    );
+
+    await restoreEducation(authToken, originalEntries, originalLevel);
   },
 });
 

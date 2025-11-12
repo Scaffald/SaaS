@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { DashboardLayout } from '@app/ui'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 import { YStack, Text, Button } from 'tamagui'
 import { ResumeWizard } from '@app/core/features/resume'
 
@@ -40,5 +40,7 @@ function ResumeReviewContent() {
 }
 
 export default function ResumeReviewPage() {
-  return <DashboardLayout leftContent={<ResumeReviewContent />} rightContent={null} />
+  return (
+    <DashboardLayout leftContent={<ResumeReviewContent />} rightContent={<QuickLinksSidebar />} />
+  )
 }

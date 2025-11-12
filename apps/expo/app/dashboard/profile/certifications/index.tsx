@@ -1,12 +1,16 @@
 import { ProfileCertificationsLeft } from '@app/core/features/profile/profile-certifications-left'
 import { ProfileCertificationsRight } from '@app/core/features/profile/profile-certifications-right'
-import { DashboardLayout } from '@app/ui'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 
 export default function ProfileCertificationsPage() {
   return (
     <DashboardLayout
       leftContent={<ProfileCertificationsLeft />}
-      rightContent={<ProfileCertificationsRight />}
+      rightContent={
+        <QuickLinksSidebar>
+          <ProfileCertificationsRight />
+        </QuickLinksSidebar>
+      }
     />
   )
 }

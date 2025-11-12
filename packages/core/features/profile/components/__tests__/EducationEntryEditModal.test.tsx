@@ -1,6 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { EducationEntry } from '../../types/education'
 import { EducationEntryEditModal } from '../EducationEntryEditModal'
@@ -122,16 +122,32 @@ vi.mock('@app/ui', () => {
     MonthYearPicker,
     FieldError: ({ message }: { message?: string }) => (message ? <span>{message}</span> : null),
     ConfirmationDialog: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>,
-    TextArea: ({ value = '', onChangeText }: { value?: string; onChangeText?: (value: string) => void }) => (
+    TextArea: ({
+      value = '',
+      onChangeText,
+      ...rest
+    }: {
+      value?: string
+      onChangeText?: (value: string) => void
+    } & React.ComponentPropsWithoutRef<'textarea'>) => (
       <textarea
         value={value}
         onChange={(event) => onChangeText?.(event.target.value)}
+        {...rest}
       />
     ),
-    Input: ({ value = '', onChangeText }: { value?: string; onChangeText?: (value: string) => void }) => (
+    Input: ({
+      value = '',
+      onChangeText,
+      ...rest
+    }: {
+      value?: string
+      onChangeText?: (value: string) => void
+    } & React.ComponentPropsWithoutRef<'input'>) => (
       <input
         value={value}
         onChange={(event) => onChangeText?.(event.target.value)}
+        {...rest}
       />
     ),
   }
@@ -190,16 +206,32 @@ vi.mock('tamagui', () => {
       { Contents: () => <></> },
     ),
     Sheet: SheetRoot,
-    Input: ({ value = '', onChangeText }: { value?: string; onChangeText?: (value: string) => void }) => (
+    Input: ({
+      value = '',
+      onChangeText,
+      ...rest
+    }: {
+      value?: string
+      onChangeText?: (value: string) => void
+    } & React.ComponentPropsWithoutRef<'input'>) => (
       <input
         value={value}
         onChange={(event) => onChangeText?.(event.target.value)}
+        {...rest}
       />
     ),
-    TextArea: ({ value = '', onChangeText }: { value?: string; onChangeText?: (value: string) => void }) => (
+    TextArea: ({
+      value = '',
+      onChangeText,
+      ...rest
+    }: {
+      value?: string
+      onChangeText?: (value: string) => void
+    } & React.ComponentPropsWithoutRef<'textarea'>) => (
       <textarea
         value={value}
         onChange={(event) => onChangeText?.(event.target.value)}
+        {...rest}
       />
     ),
     Spinner: () => <div>spinner</div>,
@@ -221,6 +253,7 @@ const baseEducationEntry: EducationEntry = {
   description: 'Test description',
   location: 'Remote',
 }
+
 
 vi.mock('@app/core/utils/api', () => ({
   api: {
@@ -287,6 +320,10 @@ const renderModal = (entry: Partial<EducationEntry>) =>
   )
 
 describe('EducationEntryEditModal', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   it('shows manual entry input when university id is missing', () => {
     renderModal({ university_id: null, is_verified: false })
 
@@ -317,5 +354,6 @@ describe('EducationEntryEditModal', () => {
     fireEvent.click(screen.getByText('Bachelor Degree'))
     expect(screen.queryByPlaceholderText('Specify degree type')).not.toBeInTheDocument()
   })
+
 })
 

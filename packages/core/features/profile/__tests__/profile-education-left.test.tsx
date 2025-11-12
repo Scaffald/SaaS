@@ -450,5 +450,22 @@ describe('ProfileEducationLeft', () => {
       custom_degree_type: undefined,
     })
   })
+
+  it('surfaces validation summary when required fields are missing', async () => {
+    render(<ProfileEducationLeft />)
+
+    addEducationEntry()
+    fireEvent.click(screen.getByText('Save Changes'))
+
+    await waitFor(() => {
+      expect(screen.getByText(/Please resolve the following issues/)).toBeInTheDocument()
+    })
+
+    expect(
+      screen.getByText(
+        /Education 1 • End Date: End date is required unless currently enrolled/,
+      ),
+    ).toBeInTheDocument()
+  })
 })
 

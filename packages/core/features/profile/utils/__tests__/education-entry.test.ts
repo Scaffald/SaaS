@@ -90,4 +90,24 @@ describe('normalizeEducationEntry', () => {
     expect(result.degree_type).toBeUndefined()
     expect(result.custom_degree_type).toBeUndefined()
   })
+
+  it('prefers custom degree label when stored degree type is missing', () => {
+    const result = normalizeEducationEntry({
+      ...baseEntry,
+      degree_type: null,
+      custom_degree_type: 'Diploma of Fine Arts',
+    } as unknown as typeof baseEntry)
+
+    expect(result.degree_type).toBeUndefined()
+    expect(result.custom_degree_type).toBe('Diploma of Fine Arts')
+  })
+
+  it('drops invalid GPA strings that cannot be parsed', () => {
+    const result = normalizeEducationEntry({
+      ...baseEntry,
+      gpa: 'not-a-number',
+    } as unknown as typeof baseEntry)
+
+    expect(result.gpa).toBeUndefined()
+  })
 })
