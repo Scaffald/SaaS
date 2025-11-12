@@ -112,7 +112,7 @@ export function TeamCommentThread({
           disabled={isSubmitting}
           accessibilityLabel="Team discussion comment"
           accessibilityHint="Describe your update and optionally mention a teammate"
-          w="100%"
+          width="100%"
         />
 
         {mentionOptions.length > 0 ? (
@@ -120,7 +120,7 @@ export function TeamCommentThread({
             gap="$2"
             flexWrap="wrap"
             flexDirection={isSmallScreen ? 'column' : 'row'}
-            alignItems={isSmallScreen ? 'stretch' : 'center'}
+            items={isSmallScreen ? 'stretch' : 'center'}
           >
             {mentionOptions.map((option) => (
               <Button
@@ -135,7 +135,7 @@ export function TeamCommentThread({
                     ? `Remove mention ${option.label}`
                     : `Mention ${option.label}`
                 }
-                w={isSmallScreen ? '100%' : undefined}
+                width={isSmallScreen ? '100%' : undefined}
               >
                 @{option.label}
               </Button>
@@ -159,7 +159,7 @@ export function TeamCommentThread({
             disabled={isSubmitting || commentBody.trim().length === 0}
             accessibilityLabel="Post comment"
             accessibilityHint="Shares this comment with the team"
-            w={isSmallScreen ? '100%' : undefined}
+            width={isSmallScreen ? '100%' : undefined}
           >
             {isSubmitting ? <Spinner size="small" color="$color1" /> : 'Post comment'}
           </Button>
@@ -204,7 +204,7 @@ export function TeamCommentThread({
                 accessible
                 accessibilityRole="summary"
                 accessibilityLabel={commentAccessibilityLabel}
-                w="100%"
+                width="100%"
               >
                 <Text fontWeight="600">
                   {actorName}

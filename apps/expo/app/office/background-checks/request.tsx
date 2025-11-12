@@ -1,5 +1,14 @@
-import { OrganizationBackgroundCheckRequestForm } from '@app/core/features/background-check'
+import {
+  BackgroundCheckNavigationMenu,
+  OrganizationBackgroundCheckRequestForm,
+} from '@app/core/features/background-check'
+import { DashboardLayout } from '@app/ui'
 
 export default function OfficeBackgroundCheckRequestScreen() {
-  return <OrganizationBackgroundCheckRequestForm />
+  return (
+    <DashboardLayout
+      leftContent={<OrganizationBackgroundCheckRequestForm />}
+      rightContent={<BackgroundCheckNavigationMenu />}
+    />
+  )
 }

@@ -313,7 +313,7 @@ export function TeamActivityFeed({
           disabled={activityQuery.isFetching}
           accessibilityLabel="Refresh team activity feed"
           accessibilityHint="Reloads the most recent team events"
-          w={isSmallScreen ? '100%' : undefined}
+          width={isSmallScreen ? '100%' : undefined}
         >
           Refresh
         </Button>
@@ -331,7 +331,7 @@ export function TeamActivityFeed({
           accessibilityLabel="Team update message"
           accessibilityHint="Enter the update you want to share with your team"
           disabled={isPosting}
-          w="100%"
+          width="100%"
         />
 
         {mentionOptions.length > 0 ? (
@@ -343,7 +343,7 @@ export function TeamActivityFeed({
               gap="$2"
               flexWrap="wrap"
               flexDirection={isSmallScreen ? 'column' : 'row'}
-              alignItems={isSmallScreen ? 'stretch' : 'center'}
+              items={isSmallScreen ? 'stretch' : 'center'}
             >
               {mentions.map((mention) => (
                 <Button
@@ -352,7 +352,7 @@ export function TeamActivityFeed({
                   variant="outlined"
                   accessibilityLabel={`Remove mention ${mention.label}`}
                   onPress={() => handleRemoveMention(mention.id)}
-                  w={isSmallScreen ? '100%' : undefined}
+                  width={isSmallScreen ? '100%' : undefined}
                 >
                   @{mention.label}
                 </Button>
@@ -366,7 +366,7 @@ export function TeamActivityFeed({
                   <Select.Trigger
                     iconAfter={ChevronDown}
                     size="$2"
-                    w={isSmallScreen ? '100%' : undefined}
+                    width={isSmallScreen ? '100%' : undefined}
                   >
                     <Select.Value placeholder="Mention teammate">
                       {mentionSelection === 'none' ? 'Add mention' : 'Mention added'}
@@ -411,7 +411,7 @@ export function TeamActivityFeed({
             disabled={disableSubmit}
             accessibilityLabel="Post update"
             accessibilityHint="Shares your message with the team"
-            w={isSmallScreen ? '100%' : undefined}
+            width={isSmallScreen ? '100%' : undefined}
           >
             {isPosting ? <Spinner size="small" color="$color1" /> : 'Post update'}
           </Button>

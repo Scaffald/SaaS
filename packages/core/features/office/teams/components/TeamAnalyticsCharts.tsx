@@ -189,7 +189,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
             accessibilityRole="image"
             accessibilityLabel={`Applications reviewed bar chart for the past ${applicationsTrend.length} days`}
             accessibilityHint={applicationsSummary ?? undefined}
-            minWidth={isSmallScreen ? Math.max(width - 48, 320) : undefined}
+            style={isSmallScreen ? { minWidth: Math.max(width - 48, 320) } : undefined}
           >
             <BarChart
               data={applicationsTrend}
@@ -221,7 +221,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
             accessibilityRole="image"
             accessibilityLabel={`Average time to first review line chart for the past ${timeToFirstReviewTrend.length} days`}
             accessibilityHint={timeToFirstReviewSummary ?? undefined}
-            minWidth={isSmallScreen ? Math.max(width - 48, 320) : undefined}
+            style={isSmallScreen ? { minWidth: Math.max(width - 48, 320) } : undefined}
           >
             <LineChart
               data={timeToFirstReviewTrend}
@@ -256,7 +256,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
               accessibilityRole="image"
               accessibilityLabel="Donut chart of active and pending assignments per team member"
               accessibilityHint={workloadSummary ?? undefined}
-              minWidth={isSmallScreen ? Math.max(width - 48, 320) : undefined}
+              style={isSmallScreen ? { minWidth: Math.max(width - 48, 320) } : undefined}
             >
               <PieChart
                 data={workloadBreakdown}

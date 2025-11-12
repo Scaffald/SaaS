@@ -34,6 +34,7 @@ import {
   updateWorkLogSchema,
   uploadWorkLogPhotoSchema,
   verifyWorkLogSchema,
+  workLogStatusSchema,
 } from "../../_shared/work-log-schemas.ts";
 // @ts-ignore - Deno requires file extension
 import { notifyWorkLogCollaborator } from "../../_shared/work-log-notifications.ts";

@@ -82,7 +82,7 @@ export function TeamMemberRoleSelect({
             activeRole ? `Team role ${activeRole.name}. Double tap to change.` : 'Select team role'
           }
           accessibilityHint="Opens a list of available team roles"
-          w={fullWidth ? '100%' : undefined}
+          width={fullWidth ? '100%' : undefined}
         >
           <Select.Value placeholder="Select role">
             {activeRole ? activeRole.name : 'Select role'}

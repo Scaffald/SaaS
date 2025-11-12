@@ -1,4 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { ViewStyle } from 'react-native'
 import { AnimatePresence, Button, Card, Progress, Text, XStack, YStack, styled } from 'tamagui'
 import { DashboardWidget } from '@app/ui'
 import { Sparkles, UploadCloud, ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
@@ -56,6 +57,8 @@ const SuggestionViewport = styled(YStack, {
   width: '100%',
   overflow: 'hidden',
 })
+
+const suggestionFallbackStyle: ViewStyle = { minHeight: 64 }
 
 export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileCompletionWidget({
   onStartWizard,
@@ -194,8 +197,8 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                     chromeless
                     width={32}
                     height={32}
-                    alignItems="center"
-                    justifyContent="center"
+                    items="center"
+                    justify="center"
                     icon={ChevronLeft}
                     disabled={isBenefitLoading}
                     accessibilityLabel="View previous profile suggestion"
@@ -207,8 +210,8 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                     chromeless
                     width={32}
                     height={32}
-                    alignItems="center"
-                    justifyContent="center"
+                    items="center"
+                    justify="center"
                     icon={ChevronRight}
                     disabled={isBenefitLoading}
                     accessibilityLabel="View next profile suggestion"
@@ -221,8 +224,8 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
             <YStack gap="$3">
               <SuggestionViewport
                 height={suggestionHeight ?? undefined}
-                minHeight={suggestionHeight ?? '$8'}
                 justify="center"
+                style={suggestionHeight == null ? suggestionFallbackStyle : undefined}
               >
                 <AnimatePresence initial={false}>
                   {isBenefitLoading ? (
@@ -272,7 +275,6 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                       key={`profile-suggestion-dot-${dotIndex}`}
                       width={20}
                       height={20}
-                      minWidth={20}
                       p={0}
                       circular
                       chromeless

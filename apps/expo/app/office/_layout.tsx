@@ -52,10 +52,6 @@ export default function OfficeLayout() {
         <Drawer.Screen name="organizations/[id]/edit" options={{ title: 'Edit Organization' }} />
         <Drawer.Screen name="background-checks/index" options={{ title: 'Background Checks' }} />
         <Drawer.Screen
-          name="background-checks/admin"
-          options={{ title: 'Review Background Checks' }}
-        />
-        <Drawer.Screen
           name="background-checks/request"
           options={{ title: 'Request Background Check' }}
         />

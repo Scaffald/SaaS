@@ -155,6 +155,10 @@ export function TeamInvitationsWidget() {
   const topInvitations = invitations.slice(0, 3);
   const remainingCount = Math.max(invitations.length - topInvitations.length, 0);
 
+  if (!invitationsQuery.isLoading && invitations.length === 0) {
+    return null;
+  }
+
   const handleRespond = async (invitationId: string, action: 'accept' | 'decline') => {
     await respondMutation.mutateAsync({
       invitationId,

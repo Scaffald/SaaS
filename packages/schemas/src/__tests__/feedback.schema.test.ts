@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   FEEDBACK_ALLOWED_MIME_TYPES,
+  FEEDBACK_MAX_LENGTH,
   FEEDBACK_MIN_LENGTH,
   feedbackPendingSubmissionSchema,
   feedbackSubmitSchema,
@@ -24,6 +25,15 @@ const baseFeedback = (): FeedbackSubmitInput => ({
 describe("feedbackSubmitSchema", () => {
   it("accepts valid submissions without a screenshot", () => {
     expect(() => feedbackSubmitSchema.parse(baseFeedback())).not.toThrow();
+  });
+
+  it("rejects submissions that exceed maximum length", () => {
+    expect(() =>
+      feedbackSubmitSchema.parse({
+        ...baseFeedback(),
+        feedbackText: "B".repeat(FEEDBACK_MAX_LENGTH + 1),
+      }),
+    ).toThrowError(new RegExp(`cannot exceed ${FEEDBACK_MAX_LENGTH} characters`));
   });
 
   it("enforces minimum feedback length", () => {
@@ -57,6 +67,16 @@ describe("feedbackUploadRequestSchema", () => {
     ).not.toThrow();
   });
 
+  it("rejects unsupported mime types", () => {
+    expect(() =>
+      feedbackUploadRequestSchema.parse({
+        fileName: "example.bmp",
+        fileType: "image/bmp",
+        fileSize: 1024,
+      }),
+    ).toThrowError(/Invalid enum value/);
+  });
+
   it("rejects files that exceed size limit", () => {
     const mimeType = FEEDBACK_ALLOWED_MIME_TYPES[0];
     expect(() =>
@@ -87,6 +107,16 @@ describe("feedbackPendingSubmissionSchema", () => {
     expect(payload.screenshot?.mimeType).toBe("image/png");
     expect(payload.screenshot?.base64).toBe("ZmFrZS1iYXNlNjQ=");
     expect(payload.attempts).toBe(1);
+  });
+
+  it("validates context dimensions when queueing", () => {
+    expect(() =>
+      feedbackPendingSubmissionSchema.parse({
+        ...baseFeedback(),
+        viewportSize: "invalid",
+        id: "11111111-2222-3333-4444-555555555555",
+      }),
+    ).toThrowError(/Viewport size must be in the format/);
   });
 });
 

@@ -7,12 +7,16 @@ const createJobMock = vi.hoisted(() => ({ mutate: vi.fn(), mutateAsync: vi.fn(),
 const updateJobMock = vi.hoisted(() => ({ mutate: vi.fn(), mutateAsync: vi.fn(), useMutation: vi.fn() }))
 const toastMock = vi.hoisted(() => ({ show: vi.fn() }))
 const routerMock = vi.hoisted(() => ({ back: vi.fn() }))
+const teamsListMock = vi.hoisted(() => ({ useQuery: vi.fn() }))
 
 vi.mock('@app/core/utils/api', () => ({
   api: {
     office: {
       createJob: { useMutation: createJobMock.useMutation },
       updateJob: { useMutation: updateJobMock.useMutation },
+    },
+    teams: {
+      list: { useQuery: teamsListMock.useQuery },
     },
   },
 }))
@@ -53,6 +57,11 @@ vi.mock('@app/ui', () => ({
     <button type="button" data-testid={dataTestId} disabled={disabled} onClick={onPress}>
       {children}
     </button>
+  ),
+  CustomCheckbox: ({ checked, onCheckedChange, 'aria-label': ariaLabel }: { checked?: boolean; onCheckedChange: (next: boolean) => void; 'aria-label'?: string }) => (
+    <label>
+      <input type="checkbox" aria-label={ariaLabel} checked={Boolean(checked)} onChange={() => onCheckedChange(!checked)} />
+    </label>
   ),
   AddressForm: ({ onChange, onAddressSelect }: { onChange: (value: string) => void; onAddressSelect: (result: Record<string, unknown>) => void }) => (
     <div>
@@ -203,6 +212,15 @@ describe('JobForm', () => {
     toastMock.show.mockReset()
     routerMock.back.mockReset()
     onSuccess.mockReset()
+    teamsListMock.useQuery.mockReturnValue({
+      data: {
+        teams: [
+          { id: 'team-1', name: 'Primary Crew', is_primary: true },
+          { id: 'team-2', name: 'Support Crew', is_primary: false },
+        ],
+      },
+      isLoading: false,
+    })
   })
 
   it('auto-populates organization when only one option available', () => {

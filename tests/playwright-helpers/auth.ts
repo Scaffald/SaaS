@@ -1,28 +1,27 @@
-/**
- * Playwright Authentication Helpers for Supabase
- *
- * Provides utilities to authenticate users in Playwright tests using Supabase
- * Similar to Clerk's @clerk/playwright but for Supabase
- */
-
+// @ts-nocheck
 import { createClient } from '@supabase/supabase-js'
 import type { Page } from '@playwright/test'
 import { writeFileSync, readFileSync, existsSync } from 'fs'
 import { join } from 'path'
 import { ensureProfileComplete, ensureAdminProfileComplete } from './profile'
+import { readCachedToken, type TestPersona } from './tokens'
 
-// Supabase configuration from environment
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321'
-const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+const SUPABASE_ANON_KEY =
+  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
 
-// Test users from seed data
+const APP_BASE_URL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:8081'
+const STORAGE_KEY = `sb-${normaliseHost(SUPABASE_URL)}-auth-token`
+const STORAGE_STATE_PATH = 'tests/.auth/user.json'
+
 export const TEST_USERS = {
   regular: {
     email: 'lexis.salah@eths.education.com',
     password: 'password123',
   },
   admin: {
-    email: 'ewongagent@gmail.com', // From seed data
+    email: 'ewongagent@gmail.com',
     password: 'password123',
   },
   superAdmin: {
@@ -31,177 +30,139 @@ export const TEST_USERS = {
   },
 } as const
 
-/**
- * Get authentication token for a user
- */
-export async function getAuthToken(email: string, password: string): Promise<string> {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
-
-  if (error) {
-    throw new Error(`Failed to authenticate ${email}: ${error.message}`)
-  }
-
-  if (!data.session?.access_token) {
-    throw new Error(`No access token received for ${email}`)
-  }
-
-  return data.session.access_token
+type SupabaseSessionShape = {
+  access_token: string
+  refresh_token: string
+  expires_at: number
+  expires_in: number
+  token_type: string
+  user: Record<string, unknown>
 }
 
-/**
- * Get full session data including user info
- */
-export async function getSession(email: string, password: string) {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+function normaliseHost(url: string) {
+  return new URL(url).host.replace(/[.:]/g, '-')
+}
 
-  const { data, error } = await supabase.auth.signInWithPassword({
+function buildUserStub(email: string, userId: string) {
+  const timestamp = new Date().toISOString()
+  return {
+    id: userId,
     email,
-    password,
-  })
+    app_metadata: { provider: 'email', providers: ['email'] },
+    user_metadata: { email, email_verified: true },
+    role: 'authenticated',
+    aud: 'authenticated',
+    created_at: timestamp,
+    updated_at: timestamp,
+    last_sign_in_at: timestamp,
+    identities: [],
+    confirmed_at: timestamp,
+    email_confirmed_at: timestamp,
+  }
+}
 
+async function injectSession(page: Page, session: SupabaseSessionShape) {
+  const payload = {
+    currentSession: session,
+    expiresAt: session.expires_at,
+  }
+
+  await page.addInitScript(
+    ({ storageKey, payload, user }) => {
+      try {
+        window.localStorage.setItem(storageKey, JSON.stringify(payload))
+        window.localStorage.setItem('supabase.auth.token', JSON.stringify(payload))
+        window.localStorage.setItem('supabase.auth.user', JSON.stringify(user))
+        console.log('[TEST AUTH] Stored Supabase session for', storageKey)
+      } catch (error) {
+        console.error('[TEST AUTH] Failed to populate localStorage', error)
+      }
+    },
+    { storageKey: STORAGE_KEY, payload, user: session.user },
+  )
+
+  await page.goto(`${APP_BASE_URL}/dashboard`, { waitUntil: 'domcontentloaded' })
+  await page.waitForTimeout(1000)
+  const keys = await page.evaluate(() => Object.keys(window.localStorage))
+  console.log('[TEST AUTH] localStorage keys after injection:', keys)
+}
+
+async function confirmAuthenticated(page: Page) {
+  try {
+    await page.waitForURL('**/dashboard**', { timeout: 5000 })
+    const signInVisible = await page
+      .getByRole('heading', { name: /sign in/i })
+      .isVisible({ timeout: 1000 })
+      .catch(() => false)
+    return !signInVisible
+  } catch {
+    return false
+  }
+}
+
+async function tryCachedToken(page: Page, persona: TestPersona): Promise<boolean> {
+  const cached = await readCachedToken(persona)
+  if (!cached) {
+    return false
+  }
+
+  const nowSeconds = Math.floor(Date.now() / 1000)
+  const expiresSeconds = Math.floor(cached.expiresAt / 1000)
+  const session: SupabaseSessionShape = {
+    access_token: cached.token,
+    refresh_token: cached.token,
+    expires_at: expiresSeconds,
+    expires_in: Math.max(60, expiresSeconds - nowSeconds),
+    token_type: 'bearer',
+    user: buildUserStub(cached.email, cached.userId),
+  }
+
+  console.log(`[TEST AUTH] Injecting cached ${persona} session`)
+  await injectSession(page, session)
+  const authenticated = await confirmAuthenticated(page)
+  if (!authenticated) {
+    console.warn('[TEST AUTH] Cached token failed to authenticate, falling back to password')
+  }
+  return authenticated
+}
+
+async function signInViaPassword(email: string, password: string): Promise<SupabaseSessionShape> {
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
   if (error) {
-    throw new Error(`Failed to authenticate ${email}: ${error.message}`)
+    throw new Error(`Failed to sign in via password: ${error.message}`)
   }
 
   if (!data.session) {
-    throw new Error(`No session received for ${email}`)
+    throw new Error('Supabase did not return a session')
+  }
+
+  const { session } = data
+  if (!session.expires_at) {
+    session.expires_at = Math.floor(Date.now() / 1000) + (session.expires_in ?? 3600)
   }
 
   return {
-    token: data.session.access_token,
-    user: data.user,
-    session: data.session,
+    access_token: session.access_token,
+    refresh_token: session.refresh_token ?? session.access_token,
+    expires_at: session.expires_at,
+    expires_in: session.expires_in ?? 3600,
+    token_type: session.token_type ?? 'bearer',
+    user: session.user,
   }
 }
 
-/**
- * Login a user in Playwright and set authentication state
- * Similar to Clerk's `signInAsUser` helper
- * Uses Supabase's localStorage pattern for React Native Web
- */
 export async function signInAsUser(page: Page, email: string, password: string): Promise<void> {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  const persona: TestPersona = email === TEST_USERS.admin.email ? 'admin' : 'regular'
 
-  // Sign in via Supabase API
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
-
-  if (error) {
-    throw new Error(`Failed to sign in: ${error.message}`)
+  if (await tryCachedToken(page, persona)) {
+    return
   }
 
-  if (!data.session) {
-    throw new Error('No session created')
-  }
-
-  // Navigate to the app first
-  await page.goto('/')
-  
-  // Wait for page to load
-  await page.waitForLoadState('networkidle')
-
-  // Navigate to root to initialize the app
-  await page.goto('/', { waitUntil: 'domcontentloaded' })
-
-  // Set authentication in localStorage with correct Supabase key format
-  // Supabase JS SDK v2 uses: sb-<hostname-normalized>-auth-token
-  // where hostname has dots and colons replaced with dashes
-  await page.evaluate(
-    ({ session, user, url }) => {
-      // Normalize hostname: replace dots and colons with dashes
-      const hostname = new URL(url).hostname.replace(/\./g, '-')
-      const storageKey = `sb-${hostname}-auth-token`
-
-      console.log('[TEST AUTH] Setting localStorage key:', storageKey)
-
-      // Create the session object matching Supabase's expected format
-      const authData = {
-        access_token: session.access_token,
-        refresh_token: session.refresh_token,
-        expires_at: session.expires_at,
-        expires_in: session.expires_in,
-        token_type: session.token_type,
-        user: user,
-      }
-
-      localStorage.setItem(storageKey, JSON.stringify(authData))
-      console.log('[TEST AUTH] Session stored in localStorage')
-    },
-    { session: data.session, user: data.user, url: SUPABASE_URL },
-  )
-
-  // Reload the page to let Supabase read the session from localStorage
-  // This triggers Supabase's initialization which reads from localStorage
-  console.log('[TEST AUTH] Reloading page to initialize Supabase session')
-  await page.reload({ waitUntil: 'domcontentloaded' })
-
-  // Wait for Supabase to initialize the session
-  await page.waitForTimeout(2000)
-
-  // Now navigate to dashboard - Supabase should have the session
-  await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 30000 })
-
-  // Wait for dashboard to fully load
-  await page.waitForTimeout(2000)
+  const session = await signInViaPassword(email, password)
+  await injectSession(page, session)
 }
 
-/**
- * Create a storage state file for authenticated tests
- * This allows Playwright to reuse authentication across tests
- */
-export async function createStorageState(
-  email: string,
-  password: string,
-  outputPath = 'tests/.auth/user.json',
-): Promise<void> {
-  const session = await getSession(email, password)
-
-  const storageState = {
-    cookies: [],
-    origins: [
-      {
-        origin: new URL(process.env.EXPO_PUBLIC_URL || 'http://localhost:8081').origin,
-        localStorage: [
-          {
-            name: 'supabase.auth.token',
-            value: JSON.stringify(session.session),
-          },
-          {
-            name: 'supabase.auth.user',
-            value: JSON.stringify(session.user),
-          },
-        ],
-      },
-    ],
-  }
-
-  writeFileSync(outputPath, JSON.stringify(storageState, null, 2))
-  console.log(`✅ Storage state saved to ${outputPath}`)
-}
-
-/**
- * Load storage state from file
- */
-export async function loadStorageState(path = 'tests/.auth/user.json') {
-  if (!existsSync(path)) {
-    throw new Error(
-      `Storage state file not found at ${path}. Run createStorageState() first.`,
-    )
-  }
-
-  return JSON.parse(readFileSync(path, 'utf-8'))
-}
-
-/**
- * Login with test users (convenience shortcuts)
- */
 export const signInAsTestUser = async (page: Page) => {
   await signInAsUser(page, TEST_USERS.regular.email, TEST_USERS.regular.password)
   await ensureProfileComplete(page)
@@ -218,14 +179,91 @@ export const signInAsSuperAdmin = async (page: Page) => {
 }
 
 /**
- * Get auth token for API requests (useful for fetch/mocking)
+ * Legacy helpers kept for API compatibility below this line
  */
+export async function getAuthToken(email: string, password: string): Promise<string> {
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error) {
+    throw new Error(`Failed to authenticate ${email}: ${error.message}`)
+  }
+  if (!data.session?.access_token) {
+    throw new Error(`No access token received for ${email}`)
+  }
+  return data.session.access_token
+}
+
+export async function getSession(email: string, password: string) {
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error) {
+    throw new Error(`Failed to authenticate ${email}: ${error.message}`)
+  }
+  if (!data.session) {
+    throw new Error(`No session received for ${email}`)
+  }
+  return {
+    token: data.session.access_token,
+    user: data.user,
+    session: data.session,
+  }
+}
+
+export async function createStorageState(
+  email: string,
+  password: string,
+  outputPath = STORAGE_STATE_PATH,
+): Promise<void> {
+  const session = await getSession(email, password)
+  const storageState = {
+    cookies: [],
+    origins: [
+      {
+        origin: new URL(APP_BASE_URL).origin,
+        localStorage: [
+          {
+            name: STORAGE_KEY,
+            value: JSON.stringify({
+              currentSession: session.session,
+              expiresAt: session.session.expires_at,
+            }),
+          },
+          {
+            name: 'supabase.auth.token',
+            value: JSON.stringify({
+              currentSession: session.session,
+              expiresAt: session.session.expires_at,
+            }),
+          },
+          {
+            name: 'supabase.auth.user',
+            value: JSON.stringify(session.user),
+          },
+        ],
+      },
+    ],
+  }
+  writeFileSync(outputPath, JSON.stringify(storageState, null, 2))
+  console.log(`✅ Storage state saved to ${outputPath}`)
+}
+
+export async function loadStorageState(path = STORAGE_STATE_PATH) {
+  if (!existsSync(path)) {
+    throw new Error(`Storage state file not found at ${path}. Run createStorageState() first.`)
+  }
+  return JSON.parse(readFileSync(path, 'utf-8'))
+}
+
 export async function getBearerToken(email: string, password: string): Promise<string> {
   return getAuthToken(email, password)
 }
 
-// Convenience exports
-export const getRegularUserToken = () => getBearerToken(TEST_USERS.regular.email, TEST_USERS.regular.password)
-export const getAdminToken = () => getBearerToken(TEST_USERS.admin.email, TEST_USERS.admin.password)
-export const getSuperAdminToken = () => getBearerToken(TEST_USERS.superAdmin.email, TEST_USERS.superAdmin.password)
+export const getRegularUserToken = () =>
+  getBearerToken(TEST_USERS.regular.email, TEST_USERS.regular.password)
+
+export const getAdminToken = () =>
+  getBearerToken(TEST_USERS.admin.email, TEST_USERS.admin.password)
+
+export const getSuperAdminToken = () =>
+  getBearerToken(TEST_USERS.superAdmin.email, TEST_USERS.superAdmin.password)
 

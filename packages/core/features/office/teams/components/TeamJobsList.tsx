@@ -52,7 +52,7 @@ export function TeamJobsList({
           gap="$2"
           items={isSmallScreen ? 'flex-start' : 'center'}
           flexDirection={isSmallScreen ? 'column' : 'row'}
-          w={isSmallScreen ? '100%' : undefined}
+          width={isSmallScreen ? '100%' : undefined}
         >
           <Button
             size="$2"
@@ -61,7 +61,7 @@ export function TeamJobsList({
             onPress={() => onRefresh?.()}
             disabled={isLoading}
             accessibilityLabel="Refresh assigned jobs list"
-            w={isSmallScreen ? '100%' : undefined}
+            width={isSmallScreen ? '100%' : undefined}
           >
             Refresh
           </Button>
@@ -79,7 +79,7 @@ export function TeamJobsList({
               })
             }}
             accessibilityLabel="Assign a job to this team"
-            w={isSmallScreen ? '100%' : undefined}
+            width={isSmallScreen ? '100%' : undefined}
           >
             Assign job
           </Button>
@@ -119,7 +119,7 @@ export function TeamJobsList({
               accessible
               accessibilityRole="summary"
               accessibilityLabel={`Job ${job.title}. Status ${job.status ?? 'draft'}. Updated ${job.updated_at ? new Date(job.updated_at).toLocaleDateString() : 'recently'}`}
-              w="100%"
+              width="100%"
             >
               <XStack
                 justify="space-between"
@@ -128,7 +128,7 @@ export function TeamJobsList({
                 flexWrap="wrap"
                 flexDirection={isSmallScreen ? 'column' : 'row'}
               >
-                <YStack gap="$1" flex={1} w="100%">
+                <YStack gap="$1" flex={1} width="100%">
                   <Text fontSize="$5" fontWeight="700">
                     {job.title}
                   </Text>
@@ -149,21 +149,20 @@ export function TeamJobsList({
               ) : null}
               <XStack
                 gap="$2"
-                items={isSmallScreen ? 'flex-start' : 'center'}
                 flexDirection={isSmallScreen ? 'column' : 'row'}
-                alignItems={isSmallScreen ? 'stretch' : 'center'}
+                items={isSmallScreen ? 'stretch' : 'center'}
               >
                 <Text fontSize="$3" color="$color10">
                   Updated {job.updated_at ? new Date(job.updated_at).toLocaleDateString() : 'recently'}
                 </Text>
               </XStack>
-              <XStack w="100%">
+              <XStack width="100%">
                 <Button
                   size="$3"
                   variant="outlined"
                   onPress={() => router.push(RouteBuilder.officeJobsEdit(job.id))}
                   accessibilityLabel={`View job ${job.title}`}
-                  w={isSmallScreen ? '100%' : undefined}
+                  width={isSmallScreen ? '100%' : undefined}
                 >
                   View job
                 </Button>
@@ -172,7 +171,7 @@ export function TeamJobsList({
           ))}
         </YStack>
       ) : (
-        <Card borderWidth={1} borderColor="$borderColor" bg="$color2" p="$4" gap="$2" w="100%">
+        <Card borderWidth={1} borderColor="$borderColor" bg="$color2" p="$4" gap="$2" width="100%">
           <Text fontWeight="600">No jobs assigned yet</Text>
           <Text color="$color11">
             Assign this team to a job to keep the hiring workflow organized. Jobs assigned to this
@@ -191,7 +190,7 @@ export function TeamJobsList({
                 params: { teamId },
               })
             }}
-            w={isSmallScreen ? '100%' : undefined}
+            width={isSmallScreen ? '100%' : undefined}
           >
             Create job
           </Button>

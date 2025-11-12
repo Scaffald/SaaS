@@ -114,7 +114,7 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
         flexWrap="wrap"
         gap="$3"
         flexDirection={isSmallScreen ? 'column' : 'row'}
-        w="100%"
+        width="100%"
       >
         <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
           Invitations
@@ -123,52 +123,53 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
           gap="$2"
           items={isSmallScreen ? 'flex-start' : 'center'}
           flexDirection={isSmallScreen ? 'column' : 'row'}
-          w={isSmallScreen ? '100%' : undefined}
+          width={isSmallScreen ? '100%' : undefined}
         >
           {headerAction}
-          <Select
-            native
-            value={statusFilter}
-            onValueChange={(value) => setStatusFilter(value as InvitationStatus | 'all')}
-            disablePreventBodyScroll
-            w={isSmallScreen ? '100%' : undefined}
-          >
-            <Select.Trigger
-              iconAfter={ChevronDown}
-              accessibilityLabel="Filter invitations by status"
-              accessibilityHint="Opens a menu of invitation statuses"
-              w="100%"
+          <YStack width={isSmallScreen ? '100%' : undefined}>
+            <Select
+              native
+              value={statusFilter}
+              onValueChange={(value) => setStatusFilter(value as InvitationStatus | 'all')}
+              disablePreventBodyScroll
             >
-              <Select.Value placeholder="Filter status">
-                {statusFilter === 'all'
-                  ? 'All statuses'
-                  : STATUS_LABELS[statusFilter as InvitationStatus]}
-              </Select.Value>
-            </Select.Trigger>
-            <Select.Content zIndex={1000}>
-              <Select.ScrollUpButton />
-              <Select.Viewport>
-                <Select.Group>
-                  <Select.Label>Status</Select.Label>
-                  <Select.Item value="all" index={0}>
-                    <Select.ItemText>All statuses</Select.ItemText>
-                    <Select.ItemIndicator>
-                      <Check size={16} />
-                    </Select.ItemIndicator>
-                  </Select.Item>
-                  {TEAM_INVITATION_STATUSES.map((status, index) => (
-                    <Select.Item key={status} value={status} index={index + 1}>
-                      <Select.ItemText>{STATUS_LABELS[status]}</Select.ItemText>
+              <Select.Trigger
+                iconAfter={ChevronDown}
+                accessibilityLabel="Filter invitations by status"
+                accessibilityHint="Opens a menu of invitation statuses"
+                flex={1}
+              >
+                <Select.Value placeholder="Filter status">
+                  {statusFilter === 'all'
+                    ? 'All statuses'
+                    : STATUS_LABELS[statusFilter as InvitationStatus]}
+                </Select.Value>
+              </Select.Trigger>
+              <Select.Content zIndex={1000}>
+                <Select.ScrollUpButton />
+                <Select.Viewport>
+                  <Select.Group>
+                    <Select.Label>Status</Select.Label>
+                    <Select.Item value="all" index={0}>
+                      <Select.ItemText>All statuses</Select.ItemText>
                       <Select.ItemIndicator>
                         <Check size={16} />
                       </Select.ItemIndicator>
                     </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Viewport>
-              <Select.ScrollDownButton />
-            </Select.Content>
-          </Select>
+                    {TEAM_INVITATION_STATUSES.map((status, index) => (
+                      <Select.Item key={status} value={status} index={index + 1}>
+                        <Select.ItemText>{STATUS_LABELS[status]}</Select.ItemText>
+                        <Select.ItemIndicator>
+                          <Check size={16} />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    ))}
+                  </Select.Group>
+                </Select.Viewport>
+                <Select.ScrollDownButton />
+              </Select.Content>
+            </Select>
+          </YStack>
         </XStack>
       </XStack>
 
@@ -261,9 +262,8 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
 
                 <XStack
                   gap="$2"
-                  items={isSmallScreen ? 'flex-start' : 'center'}
                   flexDirection={isSmallScreen ? 'column' : 'row'}
-                  alignItems={isSmallScreen ? 'stretch' : 'center'}
+                  items={isSmallScreen ? 'stretch' : 'center'}
                 >
                   <Text fontSize="$3" color="$color11">
                     Role:
@@ -297,9 +297,8 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
 
                 <XStack
                   gap="$2"
-                  items={isSmallScreen ? 'flex-start' : 'center'}
                   flexDirection={isSmallScreen ? 'column' : 'row'}
-                  alignItems={isSmallScreen ? 'stretch' : 'center'}
+                  items={isSmallScreen ? 'stretch' : 'center'}
                 >
                   <Text fontSize="$3" color="$color11">
                     Type:
@@ -314,7 +313,7 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
                   justify={isSmallScreen ? 'flex-start' : 'flex-end'}
                   flexWrap="wrap"
                   flexDirection={isSmallScreen ? 'column' : 'row'}
-                  alignItems={isSmallScreen ? 'stretch' : 'center'}
+                  items={isSmallScreen ? 'stretch' : 'center'}
                 >
                   <Button
                     size="$2"
@@ -323,7 +322,7 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
                     disabled={!isPending || isLoading}
                     onPress={() => void handleResend(invitation.id)}
                     accessibilityLabel={`Resend invitation to ${invitation.email ?? invitation.invitedUserId ?? 'team member'}`}
-                    w={isSmallScreen ? '100%' : undefined}
+                    width={isSmallScreen ? '100%' : undefined}
                   >
                     Resend
                   </Button>
@@ -335,7 +334,7 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
                     disabled={!isPending || isLoading}
                     onPress={() => void handleCancel(invitation.id)}
                     accessibilityLabel={`Cancel invitation for ${invitation.email ?? invitation.invitedUserId ?? 'team member'}`}
-                    w={isSmallScreen ? '100%' : undefined}
+                    width={isSmallScreen ? '100%' : undefined}
                   >
                     Cancel
                   </Button>
