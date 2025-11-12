@@ -291,7 +291,7 @@ export function WorkLogDetailScreen() {
         <Text fontSize="$6" fontWeight="700">
           Work log not found
         </Text>
-        <Paragraph color="$color10" textAlign="center">
+        <Paragraph color="$color10" style={{ textAlign: "center" }}>
           This work log may have been deleted or you no longer have access.
         </Paragraph>
         <Button
@@ -428,7 +428,7 @@ export function WorkLogDetailScreen() {
         </YStack>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Card.Body gap="$3">
+          <YStack gap="$3" p="$3">
             <Text fontSize="$6" fontWeight="700">
               Summary
             </Text>
@@ -448,11 +448,11 @@ export function WorkLogDetailScreen() {
                 {workLog.work_description || "No description provided."}
               </Paragraph>
             </YStack>
-          </Card.Body>
+          </YStack>
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Card.Body gap="$3">
+          <YStack gap="$3" p="$3">
             <Text fontSize="$6" fontWeight="700">
               Profile visibility
             </Text>
@@ -509,7 +509,7 @@ export function WorkLogDetailScreen() {
                   color={isVerified ? "$green11" : "$yellow11"}
                   px="$3"
                   py="$1"
-                  borderRadius="$4"
+                  rounded="$4"
                   fontWeight="600"
                 >
                   {isVerified ? "Verified" : "Pending"}
@@ -527,11 +527,11 @@ export function WorkLogDetailScreen() {
                 </YStack>
               </XStack>
             </YStack>
-          </Card.Body>
+          </YStack>
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Card.Body gap="$3">
+          <YStack gap="$3" p="$3">
             <Text fontSize="$6" fontWeight="700">
               Time entries
             </Text>
@@ -546,7 +546,7 @@ export function WorkLogDetailScreen() {
                     bg="$color3"
                     px="$3"
                     py="$2"
-                    borderRadius="$4"
+                    rounded="$4"
                   >
                     <Text fontWeight="600">
                       {entry.start}–{entry.end}
@@ -558,11 +558,11 @@ export function WorkLogDetailScreen() {
                 ))
               )}
             </YStack>
-          </Card.Body>
+          </YStack>
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Card.Body gap="$3">
+          <YStack gap="$3" p="$3">
             <Text fontSize="$6" fontWeight="700">
               Tasks completed
             </Text>
@@ -576,7 +576,7 @@ export function WorkLogDetailScreen() {
                     bg="$color3"
                     px="$3"
                     py="$2"
-                    borderRadius="$4"
+                    rounded="$4"
                   >
                     <Text>{task.task}</Text>
                   </XStack>
@@ -594,18 +594,18 @@ export function WorkLogDetailScreen() {
             ) : (
               <XStack gap="$2" flexWrap="wrap">
                 {skillNames.map((skill) => (
-                  <Text key={skill} bg="$color3" px="$3" py="$1" borderRadius="$4">
+                  <Text key={skill} bg="$color3" px="$3" py="$1" rounded="$4">
                     {skill}
                   </Text>
                 ))}
               </XStack>
             )}
-          </Card.Body>
+          </YStack>
         </Card>
 
         {photos.length > 0 && (
           <Card borderColor="$color6" borderWidth={1}>
-            <Card.Body gap="$3">
+            <YStack gap="$3" p="$3">
               <Text fontSize="$6" fontWeight="700">
                 Photos
               </Text>
@@ -636,12 +636,12 @@ export function WorkLogDetailScreen() {
               isRefreshingUrl: false,
             }))}
           />
-            </Card.Body>
+            </YStack>
           </Card>
         )}
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Card.Body gap="$3">
+          <YStack gap="$3" p="$3">
             <XStack justify="space-between" items="center">
               <Text fontSize="$6" fontWeight="700">
                 Collaborators
@@ -711,11 +711,11 @@ export function WorkLogDetailScreen() {
                 Add collaborator
               </Button>
             </YStack>
-          </Card.Body>
+          </YStack>
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Card.Body gap="$3">
+          <YStack gap="$3" p="$3">
             <XStack justify="space-between" items="center">
               <Text fontSize="$6" fontWeight="700">
                 Conversation
@@ -763,11 +763,11 @@ export function WorkLogDetailScreen() {
                 Post message
               </Button>
             </YStack>
-          </Card.Body>
+          </YStack>
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <Card.Body gap="$3">
+          <YStack gap="$3" p="$3">
             <Text fontSize="$6" fontWeight="700">
               Exports
             </Text>
@@ -807,7 +807,7 @@ export function WorkLogDetailScreen() {
                 Export CSV
               </Button>
             </XStack>
-          </Card.Body>
+          </YStack>
         </Card>
       </YStack>
     </ScrollView>
@@ -826,7 +826,7 @@ function SummaryMetric({ icon: IconComponent, label, value }: SummaryMetricProps
       bg="$color3"
       px="$3"
       py="$2"
-      borderRadius="$4"
+      rounded="$4"
       gap="$2"
       items="center"
     >
@@ -863,7 +863,7 @@ function CollaboratorRow({
 
   return (
     <Card borderWidth={1} borderColor="$color6">
-      <Card.Body gap="$2">
+      <YStack gap="$2" p="$3">
         <Text fontWeight="600">{displayName}</Text>
         <Text color="$color10">
           Permission: {permission === "edit" ? "Can edit" : "View only"}
@@ -887,7 +887,7 @@ function CollaboratorRow({
             Remove
           </Button>
         </XStack>
-      </Card.Body>
+      </YStack>
     </Card>
   );
 }
@@ -916,7 +916,7 @@ function ConversationEntry({ entry, currentUserId }: ConversationEntryProps) {
       }
       px="$3"
       py="$2"
-      borderRadius="$4"
+      rounded="$4"
       gap="$1"
     >
       <XStack justify="space-between">

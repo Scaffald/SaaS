@@ -1,4 +1,4 @@
-import { useCallback, useMemo, type ComponentType } from "react";
+import { useCallback, useMemo } from "react";
 import { RefreshControl, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import {
@@ -20,8 +20,9 @@ import { api } from "@app/core/utils/api";
 import { useOfflineWorkLogs } from "../hooks/useOfflineWorkLogs";
 import { useWorkLogSync } from "../hooks/useWorkLogSync";
 import { getStatusColor, getStatusLabel } from "../utils/status-formatting";
+import type { WorkLogListItem } from "../schemas";
 
-type IconRenderer = ComponentType<{ size?: number; color?: string }>;
+type IconRenderer = typeof Activity;
 
 export function WorkLogListScreen() {
   const router = useRouter();
@@ -52,8 +53,11 @@ export function WorkLogListScreen() {
     void listQuery.refetch();
   }, [listQuery]);
 
-  const aggregates = useMemo(() => listQuery.data?.aggregates, [listQuery.data]);
-  const items = listQuery.data?.items ?? [];
+  const aggregates = useMemo(
+    () => listQuery.data?.aggregates ?? null,
+    [listQuery.data],
+  );
+  const items: WorkLogListItem[] = listQuery.data?.items ?? [];
 
   return (
     <ScrollView
@@ -86,7 +90,7 @@ export function WorkLogListScreen() {
 
         {hasOfflineQueue && (
           <Card bg="$yellow3" borderColor="$yellow7" borderWidth={1}>
-            <Card.Body gap="$3">
+            <YStack gap="$3" p="$3">
               <XStack gap="$3" items="center">
                 <CloudOff color="#b45309" />
                 <YStack gap="$1" flex={1}>
@@ -108,7 +112,7 @@ export function WorkLogListScreen() {
                   {syncManager.isSyncing ? "Syncing…" : "Sync Now"}
                 </Button>
               </XStack>
-            </Card.Body>
+            </YStack>
           </Card>
         )}
 
@@ -122,7 +126,7 @@ export function WorkLogListScreen() {
         <Separator />
 
         {listQuery.isLoading ? (
-          <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
+          <YStack flex={1} items="center" justify="center" gap="$3">
             <Spinner size="large" />
             <Text color="$color10">Loading work logs…</Text>
           </YStack>
@@ -142,7 +146,7 @@ export function WorkLogListScreen() {
                     RouteBuilder.dashboardWorkLogDetail(item.id),
                   )}
               >
-                <Card.Body gap="$3">
+                <YStack gap="$3" p="$3">
                   <XStack justify="space-between" items="center">
                     <YStack gap="$1">
                       <Text fontWeight="700" fontSize="$6">
@@ -154,38 +158,35 @@ export function WorkLogListScreen() {
                     </YStack>
                     <Text
                       fontWeight="600"
-                      color={getStatusColor(item.status)}
+                      color={getStatusColor(item.status) as never}
                     >
                       {getStatusLabel(item.status)}
                     </Text>
                   </XStack>
 
-            <XStack gap="$2" flexWrap="wrap">
-              <Text
-                fontSize="$2"
-                px="$2"
-                py="$1"
-                borderRadius="$3"
-                bg={item.visibility === "public" ? "$green4" : "$gray4"}
-                color={item.visibility === "public" ? "$green11" : "$gray11"}
-                fontWeight="600"
-              >
-                {item.visibility === "public" ? "Public" : "Private"}
-              </Text>
-              {item.showOnProfile && (
-                <Text
-                  fontSize="$2"
-                  px="$2"
-                  py="$1"
-                  borderRadius="$3"
-                  bg="$blue4"
-                  color="$blue11"
-                  fontWeight="600"
-                >
-                  On profile
-                </Text>
-              )}
-            </XStack>
+                  <XStack gap="$2" flexWrap="wrap">
+                    <YStack
+                      px="$2"
+                      py="$1"
+                      rounded="$3"
+                      bg={item.visibility === "public" ? "$green4" : "$gray4"}
+                    >
+                      <Text
+                        fontSize="$2"
+                        color={item.visibility === "public" ? "$green11" : "$gray11"}
+                        fontWeight="600"
+                      >
+                        {item.visibility === "public" ? "Public" : "Private"}
+                      </Text>
+                    </YStack>
+                    {item.showOnProfile && (
+                      <YStack px="$2" py="$1" rounded="$3" bg="$blue4">
+                        <Text fontSize="$2" color="$blue11" fontWeight="600">
+                          On profile
+                        </Text>
+                      </YStack>
+                    )}
+                  </XStack>
 
                   <XStack gap="$4" flexWrap="wrap">
                     <MetricPill
@@ -226,7 +227,7 @@ export function WorkLogListScreen() {
                       View Details
                     </Button>
                   </XStack>
-                </Card.Body>
+                </YStack>
               </Card>
             ))}
           </YStack>
@@ -256,7 +257,7 @@ function AnalyticsBanner({
 }: AnalyticsBannerProps) {
   return (
     <Card borderColor="$color6" borderWidth={1}>
-      <Card.Body gap="$3">
+      <YStack gap="$3" p="$3">
         <Text fontWeight="700" fontSize="$5">
           Quick summary
         </Text>
@@ -294,7 +295,7 @@ function AnalyticsBanner({
             </XStack>
           </YStack>
         )}
-      </Card.Body>
+      </YStack>
     </Card>
   );
 }
@@ -310,16 +311,16 @@ function SummaryTile({ label, value, subtitle, color = "$color12" }: SummaryTile
   return (
     <YStack
       bg="$color2"
-      borderRadius="$4"
+      rounded="$4"
       px="$4"
       py="$3"
       gap="$1"
-      flexShrink={0}
+      shrink={0}
     >
       <Text fontWeight="600" color="$color10">
         {label}
       </Text>
-      <Text fontSize="$6" fontWeight="700" color={color}>
+      <Text fontSize="$6" fontWeight="700" color={color as never}>
         {value}
       </Text>
       {subtitle && (
@@ -343,11 +344,11 @@ function MetricPill({ icon: IconComponent, label, value }: MetricPillProps) {
       bg="$color3"
       px="$3"
       py="$2"
-      borderRadius="$4"
+      rounded="$4"
       gap="$2"
       items="center"
     >
-      <IconComponent size={16} color="currentColor" />
+      <IconComponent size={16} color="$color10" />
       <Text fontWeight="600">{value}</Text>
       <Text fontSize="$3" color="$color10">
         {label}
@@ -363,17 +364,17 @@ interface EmptyStateProps {
 function EmptyState({ onCreate }: EmptyStateProps) {
   return (
     <Card borderColor="$color6" borderWidth={1}>
-      <Card.Body gap="$3" alignItems="center" py="$8">
+      <YStack gap="$3" items="center" py="$8" px="$4">
         <Text fontSize="$6" fontWeight="700">
           No work logs yet
         </Text>
-        <Paragraph color="$color10" textAlign="center" px="$6">
+        <Paragraph color="$color10" px="$6" style={{ textAlign: "center" }}>
           Create your first work log to start tracking hours, documenting tasks, and collaborating with your team.
         </Paragraph>
         <Button size="$4" icon={DownloadCloud} onPress={onCreate}>
           Record Work Log
         </Button>
-      </Card.Body>
+      </YStack>
     </Card>
   );
 }

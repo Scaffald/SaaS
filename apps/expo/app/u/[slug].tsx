@@ -9,6 +9,7 @@ import {
   SkillsWidget,
   CertificationsWidget,
   ReviewsWidget,
+  WorkLogPortfolioWidget,
 } from '@app/core/features/profile/widgets'
 import { api } from '@app/core/utils/api'
 import { useAuth } from '@app/core/provider/auth/useAuth'
@@ -116,6 +117,7 @@ export default function PublicUserProfilePage() {
           {visibility.work_experience && (
             <ExperienceWidget userId={profileData.id} showEdit={false} />
           )}
+          <WorkLogPortfolioWidget userId={profileData.id} />
           {visibility.education && <EducationWidget userId={profileData.id} showEdit={false} />}
         </YStack>
       }

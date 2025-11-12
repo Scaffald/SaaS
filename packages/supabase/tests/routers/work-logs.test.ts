@@ -125,6 +125,8 @@ Deno.test({
           submitted_at: now,
           verified_at: now,
           show_on_profile: true,
+          show_date_range_on_profile: true,
+          visibility: "public",
         });
 
       await admin
@@ -150,6 +152,7 @@ Deno.test({
           work_log_id: verifiedWorkLogId,
           file_path: `${userId}/${verifiedWorkLogId}/progress.jpg`,
           file_size_bytes: 1_024,
+          show_on_profile: true,
         });
 
       await admin
@@ -268,6 +271,21 @@ Deno.test({
 
       assertExists(auditRows?.[0], "Expected audit log entry for export");
       assertEquals(auditRows[0].action, "export_generated");
+
+      const publicResponse = await callTRPCEndpoint(
+        "workLogs.publicProfileFeed",
+        { userId },
+      );
+      const publicPayload = publicResponse[0]?.result?.data;
+      assertExists(publicPayload, "Expected public feed payload");
+      const publicLogs = publicPayload.workLogs ?? [];
+      assertEquals(publicLogs.length, 1, "Only one log should be public");
+      assertEquals(publicLogs[0]?.id, verifiedWorkLogId);
+      assertEquals(
+        Array.isArray(publicLogs[0]?.photos),
+        true,
+        "Public feed should include photos array",
+      );
     } finally {
       if (exportPath) {
         await admin.storage

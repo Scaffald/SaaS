@@ -19,3 +19,4 @@ export { ReviewsWidget } from "./ReviewsWidget";
 export { ProfileCompletionWidget } from "./ProfileCompletionWidget";
 export { PortfolioManager } from "./PortfolioManager";
 export { PortfolioGallery } from "./PortfolioGallery";
+export { WorkLogPortfolioWidget } from "./WorkLogPortfolioWidget";

@@ -2,12 +2,12 @@ import { useRouter } from "expo-router";
 import { Button, Paragraph, Spinner, Text, XStack, YStack } from "tamagui";
 import { useToastController } from "@tamagui/toast";
 
-import { DashboardWidget } from "@app/ui";
-import { ToggleSwitch } from "@app/ui";
+import { DashboardWidget, ToggleSwitch } from "@app/ui";
 import { RouteBuilder } from "@app/core/constants/routes";
 import { formatDate } from "@app/core/features/profile/utils/date-formatting";
 import { api } from "@app/core/utils/api";
 import { getStatusColor, getStatusLabel } from "../utils/status-formatting";
+import type { WorkLogListItem } from "../schemas";
 
 export function WorkLogVisibilitySettingsCard() {
   const router = useRouter();
@@ -29,14 +29,15 @@ export function WorkLogVisibilitySettingsCard() {
         toast.show("Visibility updated");
         await trpcUtils.workLogs.list.invalidate();
       },
-      onError: (error) => {
+      onError: (error: unknown) => {
+        const message = error instanceof Error ? error.message : undefined;
         toast.show("Unable to update visibility", {
-          message: error?.message ?? "Please try again.",
+          message: message ?? "Please try again.",
         });
       },
     });
 
-  const items = listQuery.data?.items ?? [];
+  const items: WorkLogListItem[] = listQuery.data?.items ?? [];
 
   return (
     <DashboardWidget>
@@ -62,12 +63,13 @@ export function WorkLogVisibilitySettingsCard() {
           <YStack gap="$3">
             {items.map((item) => {
               const isVerified = item.status === "verified";
+              const statusColor = getStatusColor(item.status);
               return (
                 <YStack
                   key={item.id}
                   borderWidth={1}
                   borderColor="$color6"
-                  borderRadius="$4"
+                  rounded="$4"
                   px="$3"
                   py="$3"
                   gap="$3"
@@ -82,7 +84,7 @@ export function WorkLogVisibilitySettingsCard() {
                         {item.logDate ? formatDate(item.logDate) : "Date not recorded"}
                       </Text>
                     </YStack>
-                    <Text color={getStatusColor(item.status)} fontWeight="600">
+                    <Text color={statusColor as never} fontWeight="600">
                       {getStatusLabel(item.status)}
                     </Text>
                   </XStack>

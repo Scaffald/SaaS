@@ -307,9 +307,8 @@ export function PhotoCard({
                 handleUpdateType(value as WorkLogPhotoType)
               }
               disablePreventBodyScroll
-              disabled={disabled}
             >
-              <Select.Trigger width="100%">
+              <Select.Trigger width="100%" disabled={disabled}>
                 <Select.Value placeholder="Choose category" />
               </Select.Trigger>
               <Select.Content>
