@@ -14,7 +14,7 @@
     "android": "expo run:android",
     "ios": "pnpm ios:check-xcode-version && pnpm ios:run",
     "ios:check-xcode-version": "sh -c 'XC_VERSION=$(xcodebuild -version | grep Xcode | awk \"{print \\$2}\"); if [ $(echo $XC_VERSION | awk \"{print int(\\$1)}\") -lt 16 ]; then echo \"⚠️ Xcode ≥ 16 is required for Expo SDK 53. You have $XC_VERSION. You can bypass this check by running \\\"pnpm ios:run\\\" but you may encounter native build errors.\"; exit 1; fi'",
-    "ios:run": "expo run:ios",
+    "ios:run": "cross-env LANG=en_US.UTF-8 RCT_NEW_ARCH_ENABLED=1 expo run:ios",
     "eas:build:dev:simulator:ios:local": "cross-env NODE_ENV=development APP_ENV=development eas build --profile development:simulator --platform ios --local",
     "eas:build:dev:simulator:android": "cross-env NODE_ENV=development APP_ENV=development eas build --profile development:simulator --platform android",
     "eas:build:dev:android": "cross-env NODE_ENV=development APP_ENV=development eas build --profile development --platform android",
@@ -90,7 +90,8 @@
     "react-native-screens": "catalog:",
     "react-native-svg": "catalog:",
     "react-native-url-polyfill": "catalog:",
-    "react-native-web": "catalog:"
+    "react-native-web": "catalog:",
+    "react-native-webview": "13.15.0"
   },
   "devDependencies": {
     "@babel/core": "catalog:",

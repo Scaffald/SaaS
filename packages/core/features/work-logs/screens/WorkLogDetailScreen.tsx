@@ -19,6 +19,7 @@ import { useToastController } from "@tamagui/toast";
 import { RouteBuilder } from "@app/core/constants/routes";
 import { formatDate } from "@app/core/features/profile/utils/date-formatting";
 import { api } from "@app/core/utils/api";
+import { ToggleSwitch } from "@app/ui";
 
 import { PhotoGallery } from "../components/PhotoGallery";
 import { getStatusColor, getStatusLabel } from "../utils/status-formatting";
@@ -60,6 +61,7 @@ export function WorkLogDetailScreen() {
   const { workLogId } = useLocalSearchParams<{ workLogId: string }>();
   const router = useRouter();
   const toast = useToastController();
+  const trpcUtils = api.useContext();
 
   const workLogQuery = api.workLogs.getById.useQuery(
     { workLogId: String(workLogId) },
@@ -155,6 +157,35 @@ export function WorkLogDetailScreen() {
       });
     },
   });
+
+  const updateProfileVisibilityMutation =
+    api.workLogs.updateProfileVisibility.useMutation({
+      onSuccess: async () => {
+        toast.show("Profile visibility updated");
+        await Promise.all([
+          workLogQuery.refetch(),
+          trpcUtils.workLogs.list.invalidate(),
+        ]);
+      },
+      onError: (error) => {
+        toast.show("Unable to update visibility", {
+          message: error?.message ?? "Please try again.",
+        });
+      },
+    });
+
+  const updatePhotoVisibilityMutation =
+    api.workLogs.updatePhotoVisibility.useMutation({
+      onSuccess: async () => {
+        toast.show("Photo visibility updated");
+        await workLogQuery.refetch();
+      },
+      onError: (error) => {
+        toast.show("Unable to update photo", {
+          message: error?.message ?? "Please try again.",
+        });
+      },
+    });
 
   const [commentDraft, setCommentDraft] = useState("");
   const [collaboratorIdInput, setCollaboratorIdInput] = useState("");
@@ -332,6 +363,42 @@ export function WorkLogDetailScreen() {
 
   const conversation = (conversationQuery.data ?? []) as ConversationEntryRecord[];
   const collaborators = (collaboratorsQuery.data ?? []) as CollaboratorRecord[];
+  const isVerified = workLog?.status === "verified";
+  const includeOnProfile = Boolean(workLog?.show_on_profile);
+  const showDateRange = Boolean(workLog?.show_date_range_on_profile);
+  const isPublicVisibility = workLog?.visibility === "public";
+  const visibilityMutationPending = updateProfileVisibilityMutation.isLoading;
+  const photoVisibilityMutationPending = updatePhotoVisibilityMutation.isLoading;
+
+  const handleShowOnProfileToggle = (next: boolean) => {
+    if (!workLogId) return;
+    if (next && !isVerified) {
+      toast.show("Pending verification", {
+        message: "Work logs must be verified before they can appear on your profile.",
+      });
+      return;
+    }
+    updateProfileVisibilityMutation.mutate({
+      workLogId: String(workLogId),
+      showOnProfile: next,
+      visibility: next ? "public" : "private",
+    });
+  };
+
+  const handleShowDateRangeToggle = (next: boolean) => {
+    if (!workLogId) return;
+    updateProfileVisibilityMutation.mutate({
+      workLogId: String(workLogId),
+      showDateRangeOnProfile: next,
+    });
+  };
+
+  const handlePhotoVisibilityToggle = (photoId: string, showOnProfileValue: boolean) => {
+    updatePhotoVisibilityMutation.mutate({
+      photoId,
+      showOnProfile: showOnProfileValue,
+    });
+  };
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
@@ -380,6 +447,85 @@ export function WorkLogDetailScreen() {
               <Paragraph color="$color10">
                 {workLog.work_description || "No description provided."}
               </Paragraph>
+            </YStack>
+          </Card.Body>
+        </Card>
+
+        <Card borderColor="$color6" borderWidth={1}>
+          <Card.Body gap="$3">
+            <Text fontSize="$6" fontWeight="700">
+              Profile visibility
+            </Text>
+            <Paragraph color="$color10">
+              Control how this work log appears on your public profile.
+            </Paragraph>
+            {!isVerified && (
+              <Paragraph color="$orange10" fontWeight="600">
+                This work log must be verified before it can be shared publicly.
+              </Paragraph>
+            )}
+            <YStack gap="$4">
+              <XStack justify="space-between" items="center" gap="$4">
+                <YStack gap="$1" flex={1}>
+                  <Text fontWeight="600">Show on public profile</Text>
+                  <Paragraph color="$color10">
+                    Display this work log on your public profile. Only verified work is eligible.
+                  </Paragraph>
+                </YStack>
+                <ToggleSwitch
+                  checked={includeOnProfile}
+                  disabled={!isVerified || visibilityMutationPending}
+                  onCheckedChange={handleShowOnProfileToggle}
+                  testID="work-log-profile-toggle"
+                />
+              </XStack>
+
+              <XStack justify="space-between" items="center" gap="$4">
+                <YStack gap="$1" flex={1}>
+                  <Text fontWeight="600">Show date on profile</Text>
+                  <Paragraph color="$color10">
+                    When enabled, the logged date is shown on your public profile.
+                  </Paragraph>
+                </YStack>
+                <ToggleSwitch
+                  checked={showDateRange}
+                  disabled={!includeOnProfile || visibilityMutationPending}
+                  onCheckedChange={handleShowDateRangeToggle}
+                  testID="work-log-date-toggle"
+                />
+              </XStack>
+
+              <XStack justify="space-between" items="center">
+                <YStack gap="$1">
+                  <Text fontWeight="600">Verification status</Text>
+                  <Paragraph color="$color10">
+                    {isVerified
+                      ? "Verified entries display a “Verified by Scaffald” badge on your public profile."
+                      : "Awaiting verification. Visibility controls unlock once this log is verified."}
+                  </Paragraph>
+                </YStack>
+                <Text
+                  bg={isVerified ? "$green4" : "$yellow4"}
+                  color={isVerified ? "$green11" : "$yellow11"}
+                  px="$3"
+                  py="$1"
+                  borderRadius="$4"
+                  fontWeight="600"
+                >
+                  {isVerified ? "Verified" : "Pending"}
+                </Text>
+              </XStack>
+
+              <XStack justify="space-between" items="center">
+                <YStack gap="$1">
+                  <Text fontWeight="600">Current visibility</Text>
+                  <Paragraph color="$color10">
+                    {isPublicVisibility
+                      ? "This work log is set to public visibility."
+                      : "This work log is currently private."}
+                  </Paragraph>
+                </YStack>
+              </XStack>
             </YStack>
           </Card.Body>
         </Card>
@@ -464,7 +610,8 @@ export function WorkLogDetailScreen() {
                 Photos
               </Text>
           <PhotoGallery
-            disabled
+            disabled={photoVisibilityMutationPending}
+            onToggleVisibility={handlePhotoVisibilityToggle}
             photos={photos.map((photo) => ({
               id: String(photo.id),
               workLogId: String(workLogId),

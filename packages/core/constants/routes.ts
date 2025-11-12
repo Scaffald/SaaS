@@ -203,6 +203,21 @@ const ROUTES_CONFIG = {
     title: "Team Invitations",
     isProtected: true,
   },
+  DASHBOARD_WORK_LOGS: {
+    path: "/dashboard/work-logs",
+    title: "Work Logs",
+    isProtected: true,
+  },
+  DASHBOARD_WORK_LOGS_CREATE: {
+    path: "/dashboard/work-logs/create",
+    title: "Create Work Log",
+    isProtected: true,
+  },
+  DASHBOARD_WORK_LOGS_DETAIL: {
+    path: "/dashboard/work-logs/:workLogId",
+    title: "Work Log Detail",
+    isProtected: true,
+  },
 
   // Dashboard > Users (dynamic)
   DASHBOARD_USER: {
@@ -454,6 +469,10 @@ export const RouteBuilder = {
   dashboardTeamDetail: (teamId: string | number) =>
     buildRoute(ROUTES.DASHBOARD_TEAM_DETAIL, { teamId }),
   dashboardTeamsInvitations: () => ROUTES.DASHBOARD_TEAMS_INVITATIONS.path,
+  dashboardWorkLogs: () => ROUTES.DASHBOARD_WORK_LOGS.path,
+  dashboardWorkLogDetail: (workLogId: string | number) =>
+    buildRoute(ROUTES.DASHBOARD_WORK_LOGS_DETAIL, { workLogId }),
+  dashboardWorkLogCreate: () => ROUTES.DASHBOARD_WORK_LOGS_CREATE.path,
 } as const;
 
 // ============================================================================
@@ -483,6 +502,9 @@ export const DASHBOARD_ROUTES = {
   TEAMS: ROUTES.DASHBOARD_TEAMS,
   TEAM_DETAIL: ROUTES.DASHBOARD_TEAM_DETAIL,
   INVITATIONS: ROUTES.DASHBOARD_TEAMS_INVITATIONS,
+  WORK_LOGS: ROUTES.DASHBOARD_WORK_LOGS,
+  WORK_LOGS_CREATE: ROUTES.DASHBOARD_WORK_LOGS_CREATE,
+  WORK_LOGS_DETAIL: ROUTES.DASHBOARD_WORK_LOGS_DETAIL,
 } as const;
 
 /**

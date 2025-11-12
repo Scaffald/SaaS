@@ -70,6 +70,9 @@ export default function Layout() {
           name="assessments/occupation/index"
           options={{ title: 'Occupation Preferences' }}
         />
+        <Drawer.Screen name="work-logs/index" options={{ title: 'Work Logs' }} />
+        <Drawer.Screen name="work-logs/create" options={{ title: 'New Work Log' }} />
+        <Drawer.Screen name="work-logs/[workLogId]/index" options={{ title: 'Work Log Detail' }} />
       </DrawerLayout>
     </ErrorBoundary>
   )

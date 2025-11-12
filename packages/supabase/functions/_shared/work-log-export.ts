@@ -68,6 +68,14 @@ export interface WorkLogExportSnapshot {
   totalHours: number;
   tasks: string[];
   skills: string[];
+  skillSummaries: Array<{
+    id: string;
+    label: string;
+    taxonomy: "csi" | "onet";
+    tradeId: string | null;
+    tradeName: string | null;
+    tradeSlug: string | null;
+  }>;
   timeEntries: WorkLogExportTimeEntry[];
   collaborators: WorkLogExportCollaborator[];
   photoCount: number;

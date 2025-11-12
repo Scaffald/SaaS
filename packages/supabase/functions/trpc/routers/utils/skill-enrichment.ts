@@ -6,12 +6,16 @@ type DbClient = SupabaseClient<Database>;
 type UserSkillRow = Database["core"]["Tables"]["user_skills"]["Row"];
 type MasterformatRow = Database["data"]["Tables"]["masterformat"]["Row"];
 type OnetOccupationRow = Database["onet"]["Tables"]["occupation_data"]["Row"];
+type TradeRow = Database["data"]["Tables"]["trades"]["Row"];
 
 export interface EnrichedUserSkill {
   id: string;
   taxonomy: "csi" | "onet";
   csiSkillId: string | null;
   onetOccupationId: string | null;
+  tradeId: string | null;
+  tradeSlug: string | null;
+  tradeName: string | null;
   name: string;
   code: string | null;
   displayCode: string | null;
@@ -52,6 +56,10 @@ export async function enrichUserSkills(
     .filter((skill) => skill.skill_taxonomy === "onet" && skill.onet_occupation_id)
     .map((skill) => normaliseOnetCode(skill.onet_occupation_id));
 
+  const tradeIds = skills
+    .map((skill) => skill.trade_id)
+    .filter((value): value is string => typeof value === "string");
+
   const [csiResult, onetResult] = await Promise.all([
     csiIds.length > 0
       ? supabase
@@ -85,8 +93,28 @@ export async function enrichUserSkills(
     (onetResult.data ?? []).map((row) => [normaliseOnetCode(row.onetsoc_code), row]),
   );
 
+  const tradeMap = new Map<string, TradeRow>();
+  if (tradeIds.length > 0) {
+    const { data: tradeRows, error: tradeError } = await supabase
+      .schema("data")
+      .from("trades")
+      .select("id, slug, name")
+      .in("id", tradeIds);
+
+    if (tradeError) {
+      throw new Error(`Failed to load trades: ${tradeError.message}`);
+    }
+
+    for (const trade of tradeRows ?? []) {
+      if (trade?.id) {
+        tradeMap.set(trade.id, trade);
+      }
+    }
+  }
+
   return skills.map((skill) => {
     const taxonomy = skill.skill_taxonomy === "csi" ? "csi" : "onet";
+    const trade = skill.trade_id ? tradeMap.get(skill.trade_id) ?? null : null;
 
     if (taxonomy === "csi") {
       const csi = csiMap.get(skill.csi_skill_id ?? "");
@@ -99,6 +127,9 @@ export async function enrichUserSkills(
         taxonomy,
         csiSkillId: skill.csi_skill_id,
         onetOccupationId: null,
+        tradeId: trade?.id ?? null,
+        tradeSlug: trade?.slug ?? null,
+        tradeName: trade?.name ?? null,
         name,
         code: csi?.code_key ?? null,
         displayCode,
@@ -124,6 +155,9 @@ export async function enrichUserSkills(
       taxonomy,
       csiSkillId: null,
       onetOccupationId: skill.onet_occupation_id,
+      tradeId: trade?.id ?? null,
+      tradeSlug: trade?.slug ?? null,
+      tradeName: trade?.name ?? null,
       name,
       code,
       displayCode: code,

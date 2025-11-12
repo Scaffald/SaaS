@@ -6,7 +6,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL ||
   "http://127.0.0.1:54321";
-const supabaseServiceKey = process.env.SUPABASE_SECRET ||
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY ||
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU";
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -34,26 +34,34 @@ async function verifyJobs() {
     console.log(`   Company: ${job.company_name}`);
     console.log(`   Category: ${job.job_category || "N/A"}`);
     console.log(`   Location: ${job.job_location}`);
-    
+
     if (job.compensation_min) {
-      console.log(`   Compensation: $${job.compensation_min.toLocaleString()}${job.compensation_max ? ` - $${job.compensation_max.toLocaleString()}` : "+"}`);
+      console.log(
+        `   Compensation: $${job.compensation_min.toLocaleString()}${
+          job.compensation_max
+            ? ` - $${job.compensation_max.toLocaleString()}`
+            : "+"
+        }`,
+      );
     }
-    
-    console.log(`\n   📝 Responsibilities: ${job.responsibilities?.length || 0} items`);
+
+    console.log(
+      `\n   📝 Responsibilities: ${job.responsibilities?.length || 0} items`,
+    );
     if (job.responsibilities && job.responsibilities.length > 0) {
       console.log(`      • ${job.responsibilities[0].substring(0, 80)}...`);
     }
-    
+
     console.log(`   ✓ Requirements: ${job.requirements?.length || 0} items`);
     if (job.requirements && job.requirements.length > 0) {
       console.log(`      • ${job.requirements[0].substring(0, 80)}...`);
     }
-    
+
     console.log(`   🎁 Benefits: ${job.benefits?.length || 0} items`);
     if (job.benefits && job.benefits.length > 0) {
       console.log(`      • ${job.benefits[0].substring(0, 80)}...`);
     }
-    
+
     console.log("");
   }
 
@@ -81,9 +89,21 @@ async function verifyJobs() {
 
   console.log("\n📈 Summary Statistics:");
   console.log(`   Total Jobs: ${totalJobs}`);
-  console.log(`   Jobs with Responsibilities: ${jobsWithResp} (${Math.round((jobsWithResp! / totalJobs!) * 100)}%)`);
-  console.log(`   Jobs with Requirements: ${jobsWithReq} (${Math.round((jobsWithReq! / totalJobs!) * 100)}%)`);
-  console.log(`   Jobs with Benefits: ${jobsWithBen} (${Math.round((jobsWithBen! / totalJobs!) * 100)}%)`);
+  console.log(
+    `   Jobs with Responsibilities: ${jobsWithResp} (${
+      Math.round((jobsWithResp! / totalJobs!) * 100)
+    }%)`,
+  );
+  console.log(
+    `   Jobs with Requirements: ${jobsWithReq} (${
+      Math.round((jobsWithReq! / totalJobs!) * 100)
+    }%)`,
+  );
+  console.log(
+    `   Jobs with Benefits: ${jobsWithBen} (${
+      Math.round((jobsWithBen! / totalJobs!) * 100)
+    }%)`,
+  );
   console.log("");
 }
 

@@ -229,7 +229,6 @@ Full documentation available in:
 
 ```json
 {
-  "@10play/tentap-editor": "^0.7.4",
   "@tiptap/core": "^2.27.1",
   "@tiptap/react": "^2.27.1",
   "@tiptap/starter-kit": "^2.27.1",
@@ -239,3 +238,6 @@ Full documentation available in:
 ```
 
 Added to `packages/ui/package.json`.
+
+> **Note:** The Expo/native implementation currently renders a plain textarea-style input that
+> converts text to TipTap JSON. A dedicated native rich text editor can be reintroduced later.

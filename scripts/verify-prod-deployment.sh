@@ -40,11 +40,11 @@ else
     echo -e "${GREEN}✅ EXPO_PUBLIC_SUPABASE_URL: $EXPO_PUBLIC_SUPABASE_URL${NC}"
 fi
 
-if [ -z "$SUPABASE_SECRET" ]; then
-    echo -e "${RED}❌ SUPABASE_SECRET not set${NC}"
+if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+    echo -e "${RED}❌ SUPABASE_SERVICE_ROLE_KEY not set${NC}"
     ((ERRORS++))
 else
-    echo -e "${GREEN}✅ SUPABASE_SECRET: [REDACTED]${NC}"
+    echo -e "${GREEN}✅ SUPABASE_SERVICE_ROLE_KEY: [REDACTED]${NC}"
 fi
 
 # Verify Supabase connection

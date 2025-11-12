@@ -59,6 +59,9 @@ type CollaboratorRow =
 
 const WORK_LOG_PHOTO_BUCKET = "work-log-photos";
 const SIGNED_UPLOAD_URL_TTL_SECONDS = 60 * 5;
+const WORK_LOG_EXPORT_BUCKET = "work-log-exports";
+const SIGNED_EXPORT_URL_TTL_SECONDS = 60 * 10;
+const PUBLIC_WORK_LOG_PHOTO_TTL_SECONDS = 60 * 5;
 
 const WORK_LOG_SELECT =
   "id, user_id, status, project_id, time_entries, tasks_completed, skills_used, visibility, show_on_profile, show_date_range_on_profile, entry_type, log_date, work_description, total_hours, submitted_at, verified_at, disputed_at, dispute_reason, gps_location, gps_accuracy_meters, gps_captured_at, device_type, location_permission_status, created_at, updated_at, verified_by_user_id, pending_move_to_project_id, pending_move_reason, pending_move_requested_at, pending_move_requested_by";
@@ -97,6 +100,322 @@ const projectOptionsInputSchema = z
     includeArchived: z.boolean().optional(),
   })
   .optional();
+
+const DATE_ONLY_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
+const LIST_SORT_FIELDS = [
+  "log_date",
+  "created_at",
+  "updated_at",
+  "total_hours",
+] as const;
+
+const listSortFieldSchema = z.enum(LIST_SORT_FIELDS);
+const sortDirectionSchema = z.enum(["asc", "desc"]);
+
+const listWorkLogsInputSchema = z.object({
+  page: z.number().int().min(0).default(0),
+  pageSize: z.number().int().min(1).max(100).default(20),
+  statuses: z.array(workLogStatusSchema).min(1).optional(),
+  projectId: z.string().uuid().optional(),
+  dateFrom: z
+    .string()
+    .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+    .optional(),
+  dateTo: z
+    .string()
+    .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+    .optional(),
+  search: z.string().min(2).max(120).optional(),
+  sortField: listSortFieldSchema.default("log_date"),
+  sortDirection: sortDirectionSchema.default("desc"),
+});
+
+const ownerOverviewInputSchema = z.object({
+  dateFrom: z
+    .string()
+    .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+    .optional(),
+  dateTo: z
+    .string()
+    .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+    .optional(),
+}).default({});
+
+const projectAnalyticsInputSchema = z.object({
+  projectId: z.string().uuid(),
+  dateFrom: z
+    .string()
+    .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+    .optional(),
+  dateTo: z
+    .string()
+    .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+    .optional(),
+});
+
+const projectRollupInputSchema = projectAnalyticsInputSchema;
+
+const publicWorkLogsInputSchema = z.object({
+  userId: z.string().uuid(),
+  limit: z.number().int().min(1).max(50).default(12),
+});
+
+const WORK_LOG_LIST_SELECT = `
+  id,
+  user_id,
+  project_id,
+  status,
+  log_date,
+  total_hours,
+  entry_type,
+  visibility,
+  show_on_profile,
+  show_date_range_on_profile,
+  submitted_at,
+  verified_at,
+  disputed_at,
+  dispute_reason,
+  created_at,
+  updated_at,
+  work_description
+`;
+
+const WORK_LOG_STATUSES = [
+  "draft",
+  "pending_verification",
+  "verified",
+  "disputed",
+] as const;
+
+type WorkLogStatusKey = typeof WORK_LOG_STATUSES[number];
+
+const WORK_LOG_STATUS_SET = new Set<WorkLogStatusKey>(WORK_LOG_STATUSES);
+
+const createEmptyStatusSummary = () =>
+  WORK_LOG_STATUSES.reduce(
+    (acc, status) => {
+      acc[status] = { count: 0, hours: 0 };
+      return acc;
+    },
+    {} as Record<WorkLogStatusKey, { count: number; hours: number }>,
+  );
+
+const accumulateStatusSummary = (
+  summary: Record<WorkLogStatusKey, { count: number; hours: number }>,
+  status: string | null | undefined,
+  hours: number,
+) => {
+  if (!status || !WORK_LOG_STATUS_SET.has(status as WorkLogStatusKey)) {
+    return;
+  }
+
+  const key = status as WorkLogStatusKey;
+  summary[key].count += 1;
+  summary[key].hours += hours;
+};
+
+const coerceNumber = (value: unknown): number => {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  return 0;
+};
+
+const resolveActivityTimestamp = (
+  log: Pick<WorkLogRow, "updated_at" | "created_at" | "log_date">,
+): string | null => {
+  if (log.updated_at) return log.updated_at;
+  if (log.created_at) return log.created_at;
+  if (log.log_date) return `${log.log_date}T00:00:00.000Z`;
+  return null;
+};
+
+interface RelationshipCounts {
+  photoCount: Map<string, number>;
+  collaboratorCount: Map<string, number>;
+  commentCount: Map<string, number>;
+  uniqueCollaboratorIds: Set<string>;
+  collaboratorsByWorkLog: Map<string, string[]>;
+}
+
+const fetchWorkLogRelationshipCounts = async (
+  supabase: DbClient,
+  workLogIds: string[],
+): Promise<RelationshipCounts> => {
+  if (!workLogIds.length) {
+    return {
+      photoCount: new Map(),
+      collaboratorCount: new Map(),
+      commentCount: new Map(),
+      uniqueCollaboratorIds: new Set(),
+      collaboratorsByWorkLog: new Map(),
+    };
+  }
+
+  const [
+    photoResult,
+    collaboratorResult,
+    conversationResult,
+  ] = await Promise.all([
+    supabase
+      .schema("core")
+      .from("work_log_photos")
+      .select("work_log_id")
+      .in("work_log_id", workLogIds),
+    supabase
+      .schema("core")
+      .from("work_log_collaborators")
+      .select("work_log_id, collaborator_user_id")
+      .in("work_log_id", workLogIds),
+    supabase
+      .schema("core")
+      .from("work_log_conversations")
+      .select("work_log_id")
+      .in("work_log_id", workLogIds),
+  ]);
+
+  if (photoResult.error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to load photo counts for work logs.",
+    });
+  }
+
+  if (collaboratorResult.error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to load collaborator counts for work logs.",
+    });
+  }
+
+  if (conversationResult.error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to load conversation counts for work logs.",
+    });
+  }
+
+  const photoCount = new Map<string, number>();
+  for (const row of photoResult.data ?? []) {
+    const workLogId = typeof row?.work_log_id === "string"
+      ? row.work_log_id
+      : null;
+    if (!workLogId) continue;
+    photoCount.set(workLogId, (photoCount.get(workLogId) ?? 0) + 1);
+  }
+
+  const collaboratorCount = new Map<string, number>();
+  const collaboratorsByWorkLog = new Map<string, string[]>();
+  const uniqueCollaboratorIds = new Set<string>();
+  for (const row of collaboratorResult.data ?? []) {
+    const workLogId = typeof row?.work_log_id === "string"
+      ? row.work_log_id
+      : null;
+    if (!workLogId) continue;
+    collaboratorCount.set(workLogId, (collaboratorCount.get(workLogId) ?? 0) + 1);
+
+    if (typeof row?.collaborator_user_id === "string") {
+      uniqueCollaboratorIds.add(row.collaborator_user_id);
+      const existing = collaboratorsByWorkLog.get(workLogId) ?? [];
+      collaboratorsByWorkLog.set(
+        workLogId,
+        existing.includes(row.collaborator_user_id)
+          ? existing
+          : [...existing, row.collaborator_user_id],
+      );
+    }
+  }
+
+  const commentCount = new Map<string, number>();
+  for (const row of conversationResult.data ?? []) {
+    const workLogId = typeof row?.work_log_id === "string"
+      ? row.work_log_id
+      : null;
+    if (!workLogId) continue;
+    commentCount.set(workLogId, (commentCount.get(workLogId) ?? 0) + 1);
+  }
+
+  return {
+    photoCount,
+    collaboratorCount,
+    commentCount,
+    uniqueCollaboratorIds,
+    collaboratorsByWorkLog,
+  };
+};
+
+interface ProjectMetadata {
+  id: string;
+  name: string;
+  status: string | null;
+  isArchived: boolean;
+  organizationId: string | null;
+  projectNumber: string | null;
+}
+
+const fetchProjectMetadata = async (
+  supabase: DbClient,
+  projectIds: string[],
+): Promise<Map<string, ProjectMetadata>> => {
+  if (!projectIds.length) {
+    return new Map();
+  }
+
+  const { data, error } = await supabase
+    .schema("core")
+    .from("construction_projects")
+    .select("*")
+    .in("id", projectIds);
+
+  if (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to load project metadata.",
+    });
+  }
+
+  const map = new Map<string, ProjectMetadata>();
+  for (const project of data ?? []) {
+    if (!project?.id) continue;
+    const record = project as Record<string, unknown>;
+    const id = typeof record.id === "string" ? record.id : String(record.id ?? "");
+    map.set(id, toProjectMetadata(record));
+  }
+
+  return map;
+};
+
+const toProjectMetadata = (
+  project: Record<string, unknown>,
+): ProjectMetadata => {
+  const id = typeof project.id === "string"
+    ? project.id
+    : String(project.id ?? "");
+
+  const status = resolveStringField(project, ["status", "project_status"]);
+  const organizationId = resolveStringField(project, ["organization_id"]);
+  const projectNumber = resolveStringField(project, [
+    "project_number",
+    "project_code",
+    "job_number",
+  ]);
+
+  return {
+    id,
+    name: resolveProjectDisplayName(project),
+    status,
+    isArchived: isArchivedProject(project),
+    organizationId,
+    projectNumber,
+  };
+};
 
 const validateGpsCapture = (capture: {
   latitude: number;
@@ -296,18 +615,6 @@ const notifyMoveEvent = async (
   );
 };
 
-const bytesToBase64 = (bytes: Uint8Array): string => {
-  let binary = "";
-  const chunkSize = 0x8000;
-
-  for (let index = 0; index < bytes.length; index += chunkSize) {
-    const chunk = bytes.subarray(index, index + chunkSize);
-    binary += String.fromCharCode(...chunk);
-  }
-
-  return btoa(binary);
-};
-
 const toMinutesFromTimeString = (value: string): number => {
   const match = /^(\d{1,2}):(\d{2})$/.exec(value);
   if (!match) {
@@ -397,9 +704,9 @@ const resolveStringField = (
   return null;
 };
 
-const resolveProjectDisplayName = (
+function resolveProjectDisplayName(
   project: Record<string, unknown> | null | undefined,
-): string => {
+): string {
   const name = resolveStringField(project, [
     "name",
     "project_name",
@@ -419,9 +726,9 @@ const resolveProjectDisplayName = (
       : "unknown";
 
   return `Project ${fallbackId}`;
-};
+}
 
-const isArchivedProject = (project: Record<string, unknown>): boolean => {
+function isArchivedProject(project: Record<string, unknown>): boolean {
   if (typeof project.is_archived === "boolean") {
     return project.is_archived;
   }
@@ -435,7 +742,7 @@ const isArchivedProject = (project: Record<string, unknown>): boolean => {
   }
 
   return false;
-};
+}
 
 const buildWorkLogExportSnapshot = async (
   supabase: DbClient,
@@ -525,13 +832,55 @@ const buildWorkLogExportSnapshot = async (
       )
       : [];
 
-  const skills =
+  const skillIds =
     Array.isArray(workLog.skills_used) && workLog.skills_used.length > 0
       ? workLog.skills_used.filter(
         (skill): skill is string =>
           typeof skill === "string" && skill.trim().length > 0,
       )
       : [];
+
+  let skillLabels: string[] = [];
+  let skillSummaries: Array<
+    {
+      id: string;
+      label: string;
+      taxonomy: "csi" | "onet";
+      tradeId: string | null;
+      tradeName: string | null;
+      tradeSlug: string | null;
+    }
+  > = [];
+
+  if (skillIds.length > 0) {
+    const { data: userSkillRows, error: userSkillError } = await supabase
+      .schema("core")
+      .from("user_skills")
+      .select("*")
+      .in("id", skillIds);
+
+    if (userSkillError) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to load work log skills for export.",
+      });
+    }
+
+    const enrichedSkills = await enrichUserSkills(
+      supabase,
+      userSkillRows ?? [],
+    );
+
+    skillLabels = enrichedSkills.map((skill) => skill.label);
+    skillSummaries = enrichedSkills.map((skill) => ({
+      id: skill.id,
+      label: skill.label,
+      taxonomy: skill.taxonomy,
+      tradeId: skill.tradeId,
+      tradeName: skill.tradeName,
+      tradeSlug: skill.tradeSlug,
+    }));
+  }
 
   const totalHours = typeof workLog.total_hours === "number"
     ? workLog.total_hours
@@ -567,7 +916,8 @@ const buildWorkLogExportSnapshot = async (
     ]),
     totalHours,
     tasks,
-    skills,
+    skills: skillLabels,
+    skillSummaries,
     timeEntries: parseTimeEntries(workLog.time_entries),
     collaborators,
     photoCount: photoRows?.length ?? 0,
@@ -1090,7 +1440,8 @@ const recordAuditLog = async (
       | "move_approved"
       | "collaborator_added"
       | "photo_added"
-      | "photo_removed";
+      | "photo_removed"
+      | "export_generated";
     oldValue?: Record<string, unknown> | null;
     newValue?: Record<string, unknown> | null;
     reason?: string | null;
@@ -1336,6 +1687,1072 @@ export const workLogsRouter = t.router({
       return {
         organizations,
         projects,
+      };
+    }),
+
+  getProjectRollup: protectedProcedure
+    .input(projectRollupInputSchema)
+    .query(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      if (!user?.id) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      let query = supabase
+        .schema("core")
+        .from("work_logs")
+        .select(
+          `
+            id,
+            user_id,
+            project_id,
+            status,
+            log_date,
+            total_hours,
+            submitted_at,
+            verified_at,
+            disputed_at,
+            created_at,
+            updated_at
+          `,
+        )
+        .eq("user_id", user.id)
+        .eq("project_id", input.projectId);
+
+      if (input.dateFrom) {
+        query = query.gte("log_date", input.dateFrom);
+      }
+
+      if (input.dateTo) {
+        query = query.lte("log_date", input.dateTo);
+      }
+
+      const { data: rows, error } = await query;
+
+      if (error) {
+        console.error("[workLogs.getProjectRollup] Failed to load work logs", {
+          error: error.message,
+          userId: user.id,
+          projectId: input.projectId,
+        });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Unable to load project rollup.",
+        });
+      }
+
+      const workLogs = rows ?? [];
+      const workLogIds = workLogs
+        .map((row) => typeof row.id === "string" ? row.id : null)
+        .filter((value): value is string => Boolean(value));
+
+      const projectMap = await fetchProjectMetadata(
+        supabase,
+        [input.projectId],
+      );
+
+      const project = projectMap.get(input.projectId) ?? null;
+
+      if (!project) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Project not found or inaccessible.",
+        });
+      }
+
+      const relationshipCounts = await fetchWorkLogRelationshipCounts(
+        supabase,
+        workLogIds,
+      );
+
+      const statusSummary = createEmptyStatusSummary();
+      const hoursByDay = new Map<string, { totalHours: number; verifiedHours: number }>();
+      let totalHours = 0;
+      let verifiedHours = 0;
+      let photoCount = 0;
+      let commentCount = 0;
+      let disputedCount = 0;
+      let pendingVerificationCount = 0;
+      const collaboratorSet = new Set<string>();
+
+      for (const log of workLogs) {
+        const logId = typeof log.id === "string" ? log.id : String(log.id);
+        const hours = coerceNumber(log.total_hours);
+        totalHours += hours;
+        if (log.status === "verified") {
+          verifiedHours += hours;
+        }
+        if (log.status === "disputed") {
+          disputedCount += 1;
+        }
+        if (log.status === "pending_verification") {
+          pendingVerificationCount += 1;
+        }
+
+        accumulateStatusSummary(statusSummary, log.status, hours);
+
+        const dateKey = log.log_date ?? null;
+        if (dateKey) {
+          const entry = hoursByDay.get(dateKey) ?? { totalHours: 0, verifiedHours: 0 };
+          entry.totalHours += hours;
+          if (log.status === "verified") {
+            entry.verifiedHours += hours;
+          }
+          hoursByDay.set(dateKey, entry);
+        }
+
+        photoCount += relationshipCounts.photoCount.get(logId) ?? 0;
+        commentCount += relationshipCounts.commentCount.get(logId) ?? 0;
+
+        const collaborators = relationshipCounts.collaboratorsByWorkLog.get(
+          logId,
+        ) ?? [];
+        for (const collaborator of collaborators) {
+          collaboratorSet.add(collaborator);
+        }
+      }
+
+      const recentActivity = workLogs
+        .map((log) => {
+          const logId = typeof log.id === "string" ? log.id : String(log.id);
+          const activityTimestamp = resolveActivityTimestamp(log);
+          return {
+            id: logId,
+            status: typeof log.status === "string" ? log.status : "draft",
+            logDate: log.log_date ?? null,
+            totalHours: coerceNumber(log.total_hours),
+            photoCount: relationshipCounts.photoCount.get(logId) ?? 0,
+            commentCount: relationshipCounts.commentCount.get(logId) ?? 0,
+            updatedAt: activityTimestamp,
+          };
+        })
+        .sort((a, b) => {
+          const timeA = a.updatedAt ? Number(new Date(a.updatedAt)) : 0;
+          const timeB = b.updatedAt ? Number(new Date(b.updatedAt)) : 0;
+          return timeB - timeA;
+        })
+        .slice(0, 5);
+
+      const timeline = Array.from(hoursByDay.entries())
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([logDate, value]) => ({
+          logDate,
+          totalHours: value.totalHours,
+          verifiedHours: value.verifiedHours,
+        }));
+
+      return {
+        projectId: input.projectId,
+        project,
+        totals: {
+          totalLogs: workLogs.length,
+          totalHours,
+          verifiedHours,
+          statusSummary,
+          pendingVerificationCount,
+          disputedCount,
+          photoCount,
+          commentCount,
+          collaboratorCount: collaboratorSet.size,
+        },
+        timeline,
+        recentActivity,
+        filtersApplied: {
+          dateFrom: input.dateFrom ?? null,
+          dateTo: input.dateTo ?? null,
+        },
+      };
+    }),
+
+  publicProfileFeed: publicProcedure
+    .input(publicWorkLogsInputSchema)
+    .query(async ({ ctx, input }) => {
+      const { supabaseAdmin } = ctx;
+
+      const { userId, limit } = input;
+
+      const { data: workLogRows, error: workLogError } = await supabaseAdmin
+        .schema("core")
+        .from("work_logs")
+        .select(
+          "id, project_id, log_date, show_on_profile, show_date_range_on_profile, visibility, status, verified_at, created_at",
+        )
+        .eq("user_id", userId)
+        .eq("show_on_profile", true)
+        .eq("visibility", "public")
+        .eq("status", "verified")
+        .order("log_date", { ascending: false })
+        .limit(limit);
+
+      if (workLogError) {
+        console.error("[workLogs.publicProfileFeed] Failed to load logs", {
+          userId,
+          message: workLogError.message,
+        });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Unable to load public work logs.",
+        });
+      }
+
+      const workLogs = workLogRows ?? [];
+
+      if (workLogs.length === 0) {
+        return { workLogs: [] };
+      }
+
+      const logIds = workLogs
+        .map((log) => log.id)
+        .filter((value): value is string => typeof value === "string");
+
+      const projectIds = workLogs
+        .map((log) => log.project_id)
+        .filter((value): value is string => typeof value === "string");
+
+      const projectMap = new Map<
+        string,
+        { name: string | null; organizationName: string | null }
+      >();
+
+      if (projectIds.length > 0) {
+        const { data: projectRows, error: projectError } = await supabaseAdmin
+          .schema("core")
+          .from("construction_projects")
+          .select("id, name, organization_id, organizations(name)")
+          .in("id", Array.from(new Set(projectIds)));
+
+        if (projectError) {
+          console.warn(
+            "[workLogs.publicProfileFeed] Unable to load project metadata",
+            { message: projectError.message },
+          );
+        } else {
+          for (const project of projectRows ?? []) {
+            if (!project?.id) continue;
+            const id = String(project.id);
+            const name =
+              typeof project.name === "string" ? project.name : null;
+            const organizationName =
+              typeof project.organizations?.name === "string"
+                ? project.organizations.name
+                : null;
+            projectMap.set(id, { name, organizationName });
+          }
+        }
+      }
+
+      const photosByWorkLog = new Map<
+        string,
+        Array<{
+          id: string;
+          caption: string | null;
+          signedUrl: string | null;
+          thumbnailSignedUrl: string | null;
+        }>
+      >();
+
+      if (logIds.length > 0) {
+        const { data: photoRows, error: photoError } = await supabaseAdmin
+          .schema("core")
+          .from("work_log_photos")
+          .select(
+            "id, work_log_id, file_path, thumbnail_path, caption, display_order",
+          )
+          .in("work_log_id", logIds)
+          .eq("show_on_profile", true)
+          .order("display_order", { ascending: true });
+
+        if (photoError) {
+          console.warn(
+            "[workLogs.publicProfileFeed] Unable to load photos",
+            { message: photoError.message },
+          );
+        } else {
+          const signedPhotos = await Promise.all(
+            (photoRows ?? []).map(async (photo) => {
+              if (typeof photo.id !== "string") {
+                return null;
+              }
+
+              const filePath = typeof photo.file_path === "string"
+                ? photo.file_path
+                : null;
+              const thumbnailPath = typeof photo.thumbnail_path === "string"
+                ? photo.thumbnail_path
+                : null;
+
+              let signedUrl: string | null = null;
+              let thumbnailSignedUrl: string | null = null;
+
+              try {
+                if (filePath) {
+                  const { data: signed } = await supabaseAdmin.storage
+                    .from(WORK_LOG_PHOTO_BUCKET)
+                    .createSignedUrl(
+                      filePath,
+                      PUBLIC_WORK_LOG_PHOTO_TTL_SECONDS,
+                    );
+                  signedUrl = signed?.signedUrl ?? null;
+                }
+              } catch (error) {
+                console.warn(
+                  "[workLogs.publicProfileFeed] Failed to sign photo URL",
+                  { filePath, error },
+                );
+              }
+
+              try {
+                if (thumbnailPath) {
+                  const { data: signedThumb } = await supabaseAdmin.storage
+                    .from(WORK_LOG_PHOTO_BUCKET)
+                    .createSignedUrl(
+                      thumbnailPath,
+                      PUBLIC_WORK_LOG_PHOTO_TTL_SECONDS,
+                    );
+                  thumbnailSignedUrl = signedThumb?.signedUrl ?? null;
+                }
+              } catch (error) {
+                console.warn(
+                  "[workLogs.publicProfileFeed] Failed to sign thumbnail URL",
+                  { thumbnailPath, error },
+                );
+              }
+
+              return {
+                id: photo.id,
+                workLogId: typeof photo.work_log_id === "string"
+                  ? photo.work_log_id
+                  : null,
+                caption: typeof photo.caption === "string"
+                  ? photo.caption
+                  : null,
+                signedUrl,
+                thumbnailSignedUrl,
+              };
+            }),
+          );
+
+          for (const photo of signedPhotos) {
+            if (!photo?.workLogId) continue;
+            const existing = photosByWorkLog.get(photo.workLogId) ?? [];
+            existing.push({
+              id: photo.id,
+              caption: photo.caption,
+              signedUrl: photo.signedUrl,
+              thumbnailSignedUrl: photo.thumbnailSignedUrl,
+            });
+            photosByWorkLog.set(photo.workLogId, existing);
+          }
+        }
+      }
+
+      const result = workLogs.map((log) => {
+        const logId = String(log.id);
+        const project = typeof log.project_id === "string"
+          ? projectMap.get(log.project_id) ?? null
+          : null;
+
+        const photos = photosByWorkLog.get(logId) ?? [];
+
+        return {
+          id: logId,
+          projectId: typeof log.project_id === "string" ? log.project_id : null,
+          projectName: project?.name ?? null,
+          organizationName: project?.organizationName ?? null,
+          logDate: log.show_date_range_on_profile ? log.log_date ?? null : null,
+          showDateOnProfile: Boolean(log.show_date_range_on_profile),
+          verifiedAt: log.verified_at ?? null,
+          photos,
+        };
+      });
+
+      return { workLogs: result };
+    }),
+
+  projectAnalytics: officeProcedure
+    .input(projectAnalyticsInputSchema)
+    .query(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      if (!user?.id) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      const projectRecord = await fetchProjectRecord(
+        supabase,
+        input.projectId,
+        "Project not found.",
+      );
+
+      const organizationSettings = await fetchOrganizationMoveSettings(
+        supabase,
+        projectRecord.organization_id,
+      );
+
+      await assertUserIsOrganizationManager(
+        supabase,
+        user.id,
+        organizationSettings,
+      );
+
+      let query = supabase
+        .schema("core")
+        .from("work_logs")
+        .select(
+          `
+            id,
+            user_id,
+            project_id,
+            status,
+            log_date,
+            total_hours,
+            submitted_at,
+            verified_at,
+            disputed_at,
+            created_at,
+            updated_at
+          `,
+        )
+        .eq("project_id", input.projectId);
+
+      if (input.dateFrom) {
+        query = query.gte("log_date", input.dateFrom);
+      }
+
+      if (input.dateTo) {
+        query = query.lte("log_date", input.dateTo);
+      }
+
+      const { data: rows, error } = await query;
+
+      if (error) {
+        console.error("[workLogs.projectAnalytics] Failed to load work logs", {
+          error: error.message,
+          projectId: input.projectId,
+          userId: user.id,
+        });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Unable to load project analytics.",
+        });
+      }
+
+      const workLogs = rows ?? [];
+      const workLogIds = workLogs
+        .map((row) => typeof row.id === "string" ? row.id : null)
+        .filter((value): value is string => Boolean(value));
+
+      const workerIds = workLogs
+        .map((row) => typeof row.user_id === "string" ? row.user_id : null)
+        .filter((value): value is string => Boolean(value));
+
+      const [projectMap, relationshipCounts, workerRows] = await Promise.all([
+        fetchProjectMetadata(supabase, [input.projectId]),
+        fetchWorkLogRelationshipCounts(supabase, workLogIds),
+        workerIds.length
+          ? supabase
+            .schema("core")
+            .from("users")
+            .select("id, display_name, username")
+            .in("id", Array.from(new Set(workerIds)))
+          : Promise.resolve({ data: [] as Array<Record<string, unknown>>, error: null }),
+      ]);
+
+      if (workerRows.error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Unable to load worker profiles for analytics.",
+        });
+      }
+
+      const project = projectMap.get(input.projectId) ?? {
+        id: input.projectId,
+        name: "Unknown Project",
+        status: null,
+        isArchived: false,
+        organizationId: projectRecord.organization_id,
+        projectNumber: null,
+      };
+
+      const workerMetadata = new Map<
+        string,
+        { displayName: string; username: string | null }
+      >();
+      for (const row of workerRows.data ?? []) {
+        const id = typeof row?.id === "string" ? row.id : null;
+        if (!id) continue;
+        const displayName = typeof row?.display_name === "string" &&
+            row.display_name.trim().length > 0
+          ? row.display_name.trim()
+          : typeof row?.username === "string"
+          ? row.username
+          : "Member";
+        const username = typeof row?.username === "string" ? row.username : null;
+        workerMetadata.set(id, { displayName, username });
+      }
+
+      const statusSummary = createEmptyStatusSummary();
+      let totalHours = 0;
+      let verifiedHours = 0;
+      let photoCount = 0;
+      let commentCount = 0;
+      let disputedCount = 0;
+      let pendingVerificationCount = 0;
+      const collaboratorSet = new Set<string>();
+      const hoursByDay = new Map<string, { totalHours: number; verifiedHours: number }>();
+
+      const workerAggregates = new Map<
+        string,
+        {
+          userId: string;
+          totalLogs: number;
+          totalHours: number;
+          verifiedHours: number;
+          disputedCount: number;
+          pendingVerificationCount: number;
+          photoCount: number;
+          commentCount: number;
+          statusSummary: ReturnType<typeof createEmptyStatusSummary>;
+          latestActivity: string | null;
+        }
+      >();
+
+      for (const log of workLogs) {
+        const logId = typeof log.id === "string" ? log.id : String(log.id);
+        const workerId = typeof log.user_id === "string" ? log.user_id : null;
+        const hours = coerceNumber(log.total_hours);
+
+        totalHours += hours;
+        if (log.status === "verified") {
+          verifiedHours += hours;
+        }
+        if (log.status === "disputed") {
+          disputedCount += 1;
+        }
+        if (log.status === "pending_verification") {
+          pendingVerificationCount += 1;
+        }
+
+        accumulateStatusSummary(statusSummary, log.status, hours);
+
+        const dateKey = log.log_date ?? null;
+        if (dateKey) {
+          const entry = hoursByDay.get(dateKey) ?? { totalHours: 0, verifiedHours: 0 };
+          entry.totalHours += hours;
+          if (log.status === "verified") {
+            entry.verifiedHours += hours;
+          }
+          hoursByDay.set(dateKey, entry);
+        }
+
+        photoCount += relationshipCounts.photoCount.get(logId) ?? 0;
+        commentCount += relationshipCounts.commentCount.get(logId) ?? 0;
+
+        const collaborators = relationshipCounts.collaboratorsByWorkLog.get(
+          logId,
+        ) ?? [];
+        for (const collaborator of collaborators) {
+          collaboratorSet.add(collaborator);
+        }
+
+        if (workerId) {
+          const aggregate = workerAggregates.get(workerId) ?? {
+            userId: workerId,
+            totalLogs: 0,
+            totalHours: 0,
+            verifiedHours: 0,
+            disputedCount: 0,
+            pendingVerificationCount: 0,
+            photoCount: 0,
+            commentCount: 0,
+            statusSummary: createEmptyStatusSummary(),
+            latestActivity: null,
+          };
+
+          aggregate.totalLogs += 1;
+          aggregate.totalHours += hours;
+          if (log.status === "verified") {
+            aggregate.verifiedHours += hours;
+          }
+          if (log.status === "disputed") {
+            aggregate.disputedCount += 1;
+          }
+          if (log.status === "pending_verification") {
+            aggregate.pendingVerificationCount += 1;
+          }
+          aggregate.photoCount += relationshipCounts.photoCount.get(logId) ?? 0;
+          aggregate.commentCount += relationshipCounts.commentCount.get(logId) ??
+            0;
+          accumulateStatusSummary(aggregate.statusSummary, log.status, hours);
+
+          const activityTimestamp = resolveActivityTimestamp(log);
+          if (
+            activityTimestamp &&
+            (!aggregate.latestActivity ||
+              Number(new Date(activityTimestamp)) >
+                Number(new Date(aggregate.latestActivity)))
+          ) {
+            aggregate.latestActivity = activityTimestamp;
+          }
+
+          workerAggregates.set(workerId, aggregate);
+        }
+      }
+
+      const workers = Array.from(workerAggregates.values())
+        .map((aggregate) => {
+          const profile = workerMetadata.get(aggregate.userId);
+          return {
+            userId: aggregate.userId,
+            displayName: profile?.displayName ?? "Member",
+            username: profile?.username ?? null,
+            totalLogs: aggregate.totalLogs,
+            totalHours: aggregate.totalHours,
+            verifiedHours: aggregate.verifiedHours,
+            disputedCount: aggregate.disputedCount,
+            pendingVerificationCount: aggregate.pendingVerificationCount,
+            photoCount: aggregate.photoCount,
+            commentCount: aggregate.commentCount,
+            statusSummary: aggregate.statusSummary,
+            latestActivity: aggregate.latestActivity,
+          };
+        })
+        .sort((a, b) => b.totalHours - a.totalHours);
+
+      const timeline = Array.from(hoursByDay.entries())
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([logDate, value]) => ({
+          logDate,
+          totalHours: value.totalHours,
+          verifiedHours: value.verifiedHours,
+        }));
+
+      const recentActivity = workLogs
+        .map((log) => {
+          const logId = typeof log.id === "string" ? log.id : String(log.id);
+          const workerId = typeof log.user_id === "string" ? log.user_id : null;
+          const worker = workerId ? workerMetadata.get(workerId) ?? null : null;
+          const activityTimestamp = resolveActivityTimestamp(log);
+          return {
+            id: logId,
+            workerId,
+            workerName: worker?.displayName ?? "Member",
+            status: typeof log.status === "string" ? log.status : "draft",
+            logDate: log.log_date ?? null,
+            totalHours: coerceNumber(log.total_hours),
+            photoCount: relationshipCounts.photoCount.get(logId) ?? 0,
+            commentCount: relationshipCounts.commentCount.get(logId) ?? 0,
+            updatedAt: activityTimestamp,
+          };
+        })
+        .sort((a, b) => {
+          const timeA = a.updatedAt ? Number(new Date(a.updatedAt)) : 0;
+          const timeB = b.updatedAt ? Number(new Date(b.updatedAt)) : 0;
+          return timeB - timeA;
+        })
+        .slice(0, 10);
+
+      return {
+        projectId: input.projectId,
+        project,
+        totals: {
+          totalLogs: workLogs.length,
+          totalHours,
+          verifiedHours,
+          statusSummary,
+          pendingVerificationCount,
+          disputedCount,
+          photoCount,
+          commentCount,
+          collaboratorCount: collaboratorSet.size,
+          uniqueWorkers: new Set(workerIds).size,
+        },
+        workers,
+        timeline,
+        recentActivity,
+        filtersApplied: {
+          dateFrom: input.dateFrom ?? null,
+          dateTo: input.dateTo ?? null,
+        },
+      };
+    }),
+
+  list: protectedProcedure
+    .input(listWorkLogsInputSchema)
+    .query(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      if (!user?.id) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      const page = input.page ?? 0;
+      const pageSize = input.pageSize ?? 20;
+
+      let query = supabase
+        .schema("core")
+        .from("work_logs")
+        .select(WORK_LOG_LIST_SELECT, { count: "exact" })
+        .eq("user_id", user.id);
+
+      if (input.statuses?.length) {
+        query = query.in("status", input.statuses);
+      }
+
+      if (input.projectId) {
+        query = query.eq("project_id", input.projectId);
+      }
+
+      if (input.dateFrom) {
+        query = query.gte("log_date", input.dateFrom);
+      }
+
+      if (input.dateTo) {
+        query = query.lte("log_date", input.dateTo);
+      }
+
+      if (input.search) {
+        const normalized = input.search.trim();
+        if (normalized.length > 0) {
+          query = query.ilike("work_description", `%${normalized}%`);
+        }
+      }
+
+      const offset = page * pageSize;
+
+      query = query
+        .order(input.sortField, {
+          ascending: input.sortDirection === "asc",
+          nullsLast: true,
+        })
+        .range(offset, offset + pageSize - 1);
+
+      const { data: rows, count, error } = await query;
+
+      if (error) {
+        console.error("[workLogs.list] Failed to load work logs", {
+          error: error.message,
+          userId: user.id,
+        });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Unable to load work logs.",
+        });
+      }
+
+      const workLogs = rows ?? [];
+      const workLogIds = workLogs
+        .map((row) => typeof row.id === "string" ? row.id : null)
+        .filter((value): value is string => Boolean(value));
+
+      const projectIds = workLogs
+        .map((row) => typeof row.project_id === "string" ? row.project_id : null)
+        .filter((value): value is string => Boolean(value));
+
+      const [projectMap, relationshipCounts] = await Promise.all([
+        fetchProjectMetadata(supabase, Array.from(new Set(projectIds))),
+        fetchWorkLogRelationshipCounts(supabase, workLogIds),
+      ]);
+
+      const items = workLogs.map((row) => {
+        const id = typeof row.id === "string" ? row.id : String(row.id);
+        const projectId = typeof row.project_id === "string"
+          ? row.project_id
+          : null;
+        const project = projectId ? projectMap.get(projectId) ?? null : null;
+        const status = typeof row.status === "string" ? row.status : "draft";
+        const totalHours = coerceNumber(row.total_hours);
+
+        return {
+          id,
+          projectId,
+          project,
+          status,
+          logDate: row.log_date ?? null,
+          entryType: typeof row.entry_type === "string"
+            ? row.entry_type
+            : "daily",
+          totalHours,
+          submittedAt: row.submitted_at ?? null,
+          verifiedAt: row.verified_at ?? null,
+          disputedAt: row.disputed_at ?? null,
+          disputeReason: row.dispute_reason ?? null,
+          visibility: typeof row.visibility === "string"
+            ? row.visibility
+            : "private",
+          showOnProfile: Boolean(row.show_on_profile),
+          showDateRangeOnProfile: Boolean(row.show_date_range_on_profile),
+          createdAt: row.created_at ?? null,
+          updatedAt: row.updated_at ?? null,
+          photoCount: relationshipCounts.photoCount.get(id) ?? 0,
+          collaboratorCount: relationshipCounts.collaboratorCount.get(id) ?? 0,
+          commentCount: relationshipCounts.commentCount.get(id) ?? 0,
+          descriptionPreview: typeof row.work_description === "string"
+            ? shorten(row.work_description, 220)
+            : null,
+        };
+      });
+
+      const statusSummary = createEmptyStatusSummary();
+      let totalHours = 0;
+      let totalPhotos = 0;
+      let totalComments = 0;
+
+      for (const item of items) {
+        totalHours += item.totalHours;
+        totalPhotos += item.photoCount;
+        totalComments += item.commentCount;
+        accumulateStatusSummary(statusSummary, item.status, item.totalHours);
+      }
+
+      const totalItems = count ?? items.length;
+      const totalPages = Math.max(
+        1,
+        Math.ceil(totalItems / Math.max(pageSize, 1)),
+      );
+
+      return {
+        items,
+        pagination: {
+          page,
+          pageSize,
+          totalItems,
+          totalPages,
+        },
+        aggregates: {
+          totalHours,
+          totalPhotos,
+          totalComments,
+          statusSummary,
+        },
+        filtersApplied: {
+          statuses: input.statuses ?? null,
+          projectId: input.projectId ?? null,
+          dateFrom: input.dateFrom ?? null,
+          dateTo: input.dateTo ?? null,
+          search: input.search ?? null,
+          sortField: input.sortField,
+          sortDirection: input.sortDirection,
+        },
+      };
+    }),
+
+  getOverview: protectedProcedure
+    .input(ownerOverviewInputSchema)
+    .query(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      if (!user?.id) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      let query = supabase
+        .schema("core")
+        .from("work_logs")
+        .select(
+          `
+            id,
+            user_id,
+            project_id,
+            status,
+            log_date,
+            total_hours,
+            submitted_at,
+            verified_at,
+            disputed_at,
+            created_at,
+            updated_at
+          `,
+        )
+        .eq("user_id", user.id);
+
+      if (input.dateFrom) {
+        query = query.gte("log_date", input.dateFrom);
+      }
+
+      if (input.dateTo) {
+        query = query.lte("log_date", input.dateTo);
+      }
+
+      const { data: rows, error } = await query;
+
+      if (error) {
+        console.error("[workLogs.getOverview] Failed to load work logs", {
+          error: error.message,
+          userId: user.id,
+        });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Unable to build work log overview.",
+        });
+      }
+
+      const workLogs = rows ?? [];
+      const workLogIds = workLogs
+        .map((row) => typeof row.id === "string" ? row.id : null)
+        .filter((value): value is string => Boolean(value));
+
+      const projectIds = workLogs
+        .map((row) => typeof row.project_id === "string" ? row.project_id : null)
+        .filter((value): value is string => Boolean(value));
+
+      const [projectMap, relationshipCounts] = await Promise.all([
+        fetchProjectMetadata(supabase, Array.from(new Set(projectIds))),
+        fetchWorkLogRelationshipCounts(supabase, workLogIds),
+      ]);
+
+      const statusSummary = createEmptyStatusSummary();
+      let totalHours = 0;
+      let verifiedHours = 0;
+      let totalPhotos = 0;
+      let totalComments = 0;
+
+      for (const log of workLogs) {
+        const hours = coerceNumber(log.total_hours);
+        totalHours += hours;
+        if (log.status === "verified") {
+          verifiedHours += hours;
+        }
+        accumulateStatusSummary(statusSummary, log.status, hours);
+      }
+
+      for (const value of relationshipCounts.photoCount.values()) {
+        totalPhotos += value;
+      }
+
+      for (const value of relationshipCounts.commentCount.values()) {
+        totalComments += value;
+      }
+
+      const needsAttentionCount =
+        statusSummary.pending_verification.count + statusSummary.disputed.count;
+
+      const projectGroups = new Map<string, typeof workLogs>();
+      for (const log of workLogs) {
+        const projectId = typeof log.project_id === "string"
+          ? log.project_id
+          : null;
+        if (!projectId) continue;
+        const group = projectGroups.get(projectId) ?? [];
+        group.push(log);
+        projectGroups.set(projectId, group);
+      }
+
+      const projectSummaries = Array.from(projectGroups.entries()).map(
+        ([projectId, logs]) => {
+          const project = projectMap.get(projectId) ?? null;
+          const projectStatusSummary = createEmptyStatusSummary();
+          let projectTotalHours = 0;
+          let projectVerifiedHours = 0;
+          let projectPhotoCount = 0;
+          let projectCommentCount = 0;
+          let projectDisputedCount = 0;
+          let projectPendingCount = 0;
+          const collaboratorSet = new Set<string>();
+
+          let latestActivity: string | null = null;
+
+          for (const log of logs) {
+            const logId = typeof log.id === "string" ? log.id : String(log.id);
+            const hours = coerceNumber(log.total_hours);
+            projectTotalHours += hours;
+            if (log.status === "verified") {
+              projectVerifiedHours += hours;
+            }
+            if (log.status === "disputed") {
+              projectDisputedCount += 1;
+            }
+            if (log.status === "pending_verification") {
+              projectPendingCount += 1;
+            }
+            accumulateStatusSummary(projectStatusSummary, log.status, hours);
+
+            projectPhotoCount += relationshipCounts.photoCount.get(logId) ?? 0;
+            projectCommentCount += relationshipCounts.commentCount.get(logId) ??
+              0;
+
+            const collaborators = relationshipCounts.collaboratorsByWorkLog
+              .get(logId) ?? [];
+            for (const collaboratorId of collaborators) {
+              collaboratorSet.add(collaboratorId);
+            }
+
+            const activityTimestamp = resolveActivityTimestamp(log);
+            if (
+              activityTimestamp &&
+              (!latestActivity ||
+                Number(new Date(activityTimestamp)) >
+                  Number(new Date(latestActivity)))
+            ) {
+              latestActivity = activityTimestamp;
+            }
+          }
+
+          return {
+            projectId,
+            project,
+            totalLogs: logs.length,
+            totalHours: projectTotalHours,
+            verifiedHours: projectVerifiedHours,
+            disputedCount: projectDisputedCount,
+            pendingVerificationCount: projectPendingCount,
+            photoCount: projectPhotoCount,
+            commentCount: projectCommentCount,
+            collaboratorCount: collaboratorSet.size,
+            statusSummary: projectStatusSummary,
+            lastActivityAt: latestActivity,
+          };
+        },
+      ).sort((a, b) => b.totalHours - a.totalHours);
+
+      const recentActivity = workLogs
+        .map((log) => {
+          const id = typeof log.id === "string" ? log.id : String(log.id);
+          const projectId = typeof log.project_id === "string"
+            ? log.project_id
+            : null;
+          const activityTimestamp = resolveActivityTimestamp(log);
+          return {
+            id,
+            projectId,
+            project: projectId ? projectMap.get(projectId) ?? null : null,
+            status: typeof log.status === "string" ? log.status : "draft",
+            logDate: log.log_date ?? null,
+            totalHours: coerceNumber(log.total_hours),
+            photoCount: relationshipCounts.photoCount.get(id) ?? 0,
+            commentCount: relationshipCounts.commentCount.get(id) ?? 0,
+            updatedAt: activityTimestamp,
+          };
+        })
+        .sort((a, b) => {
+          const timeA = a.updatedAt ? Number(new Date(a.updatedAt)) : 0;
+          const timeB = b.updatedAt ? Number(new Date(b.updatedAt)) : 0;
+          return timeB - timeA;
+        })
+        .slice(0, 5);
+
+      return {
+        totals: {
+          totalLogs: workLogs.length,
+          totalHours,
+          verifiedHours,
+          statusSummary,
+          pendingVerificationCount: statusSummary.pending_verification.count,
+          disputedCount: statusSummary.disputed.count,
+          needsAttentionCount,
+        },
+        media: {
+          totalPhotos,
+          totalComments,
+          uniqueCollaborators: relationshipCounts.uniqueCollaboratorIds.size,
+        },
+        projectSummaries,
+        recentActivity,
+        filtersApplied: {
+          dateFrom: input.dateFrom ?? null,
+          dateTo: input.dateTo ?? null,
+        },
       };
     }),
 
@@ -3362,24 +4779,77 @@ export const workLogsRouter = t.router({
         ? proposedName
         : `work-log-${workLog.id.slice(0, 8)}`;
 
+      let fileBytes: Uint8Array;
+      let mimeType: string;
+      let extension: "pdf" | "csv";
+
       if (input.format === "pdf") {
         const pdfBytes = await buildWorkLogPdf(snapshot);
-        return {
-          fileName: `${fileBaseName}.pdf`,
-          mimeType: "application/pdf",
-          base64: bytesToBase64(pdfBytes),
-          byteLength: pdfBytes.length,
-        };
+        fileBytes = pdfBytes;
+        mimeType = "application/pdf";
+        extension = "pdf";
+      } else {
+        const csvContent = buildWorkLogCsv(snapshot);
+        const csvBytes = new TextEncoder().encode(csvContent);
+        fileBytes = csvBytes;
+        mimeType = "text/csv";
+        extension = "csv";
       }
 
-      const csvContent = buildWorkLogCsv(snapshot);
-      const csvBytes = new TextEncoder().encode(csvContent);
+      const timestampSuffix = new Date()
+        .toISOString()
+        .replace(/[-:TZ.]/g, "")
+        .slice(0, 14);
+
+      const storagePath =
+        `${user.id}/${workLog.id}/${fileBaseName}-${timestampSuffix}.${extension}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from(WORK_LOG_EXPORT_BUCKET)
+        .upload(storagePath, fileBytes, {
+          contentType: mimeType,
+          upsert: true,
+        });
+
+      if (uploadError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to persist work log export.",
+        });
+      }
+
+      const { data: signedUrlData, error: signedUrlError } = await supabase
+        .storage
+        .from(WORK_LOG_EXPORT_BUCKET)
+        .createSignedUrl(storagePath, SIGNED_EXPORT_URL_TTL_SECONDS);
+
+      if (signedUrlError || !signedUrlData?.signedUrl) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to generate download link for work log export.",
+        });
+      }
+
+      const expiresAtIso = signedUrlData.expiresAt ??
+        new Date(Date.now() + SIGNED_EXPORT_URL_TTL_SECONDS * 1000).toISOString();
+
+      await recordAuditLog(supabase, {
+        workLogId: workLog.id,
+        userId: user.id,
+        action: "export_generated",
+        newValue: {
+          format: extension,
+          storagePath,
+        },
+      });
 
       return {
-        fileName: `${fileBaseName}.csv`,
-        mimeType: "text/csv",
-        base64: bytesToBase64(csvBytes),
-        byteLength: csvBytes.length,
+        fileName: `${fileBaseName}.${extension}`,
+        mimeType,
+        byteLength: fileBytes.length,
+        downloadUrl: signedUrlData.signedUrl,
+        expiresAt: expiresAtIso,
+        storagePath,
       };
     }),
 

@@ -4,6 +4,7 @@ import { YStack, Text, H3, H4 } from 'tamagui'
 import { DashboardWidget, StackedCards, spacing } from '@app/ui'
 import { ResumeUploadButton, ResumeUploadModal } from '@app/core/features/resume'
 import { VanityUrlSection } from './components/VanityUrlSection'
+import { WorkLogVisibilitySettingsCard } from '@app/core/features/work-logs/components/WorkLogVisibilitySettingsCard'
 
 /**
  * Profile General Right Component
@@ -95,6 +96,7 @@ export function ProfileGeneralRight() {
         </DashboardWidget>
 
         <VanityUrlSection />
+        <WorkLogVisibilitySettingsCard />
 
         <StackedCards
           cards={profileTipCards}

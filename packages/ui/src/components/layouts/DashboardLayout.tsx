@@ -41,13 +41,6 @@ export const DashboardLayout = ({
 
   const leftColumnWidth = !hasBothColumns ? '100%' : isDesktop ? '70%' : isTablet ? '60%' : '100%'
   const rightColumnWidth = !hasBothColumns ? '100%' : isDesktop ? '30%' : isTablet ? '40%' : '100%'
-  const rightColumnMaxHeight = hasBothColumns
-    ? isDesktop
-      ? 620
-      : isTablet
-        ? 540
-        : undefined
-    : undefined
 
   return (
     <ScrollView flex={1} bg="$color2" showsVerticalScrollIndicator={false}>
@@ -82,15 +75,8 @@ export const DashboardLayout = ({
               width={rightColumnWidth}
               maxW={rightColumnWidth}
               flexBasis={rightColumnWidth}
-              style={rightColumnMaxHeight ? { maxHeight: rightColumnMaxHeight } : undefined}
             >
-              {rightColumnMaxHeight ? (
-                <ScrollView showsVerticalScrollIndicator={false}>
-                  <YStack pb="$4">{rightContent}</YStack>
-                </ScrollView>
-              ) : (
-                rightContent
-              )}
+              {rightContent}
             </YStack>
           )}
         </XStack>

@@ -25,6 +25,9 @@ npm-debug.log*
 .env.production.local
 .env.production
 
+# Local certs or signers
+certs/
+
 # typescript
 *.tsbuildinfo
 

@@ -6,10 +6,8 @@ import { extractPlainText, plainTextToTipTap } from './utils/sanitize'
 /**
  * RichTextEditor - React Native Implementation
  *
- * This is a temporary fallback that uses a plain TextArea.
- * TODO: Implement full rich text support using @10play/tentap-editor
- *
- * @see https://github.com/10play/10tap-editor for native implementation
+ * Native currently renders a plain textarea-style input and converts
+ * the value to TipTap JSON so the web client can apply rich formatting.
  */
 export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   value,
@@ -18,8 +16,12 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   showCharacterCount = false,
   minHeight = 100,
   disabled = false,
+  readOnly = false,
   error,
   placeholder = 'Enter text...',
+  maxLength,
+  autoFocus = false,
+  testID,
 }) => {
   // Extract plain text from TipTap JSON or use directly if string
   const plainText = value ? extractPlainText(value) : ''
@@ -42,19 +44,24 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     return limits[fieldType] || 500
   }
 
-  const characterLimit = getCharacterLimit()
+  const characterLimit = maxLength ?? getCharacterLimit()
   const characterCount = plainText.length
+  const isDisabled = disabled || readOnly
 
   return (
-    <YStack gap="$2">
+    <YStack gap="$2" testID={testID}>
       <TextArea
         value={plainText}
         onChangeText={handleChange}
         placeholder={placeholder}
         height={minHeight}
-        disabled={disabled}
+        disabled={isDisabled}
         borderColor={error ? '$red8' : '$borderColor'}
         numberOfLines={6}
+        multiline
+        autoFocus={autoFocus}
+        maxLength={characterLimit}
+        textAlignVertical="top"
       />
 
       {/* Character Count and Error */}

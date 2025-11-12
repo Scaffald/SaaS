@@ -147,6 +147,92 @@ const adminGetCheckOutputSchema = z.object({
   disputes: z.array(adminDisputeSummarySchema),
 });
 
+const adminCheckTypeSchema = z.object({
+  id: z.string().uuid(),
+  slug: z.string(),
+  display_name: z.string(),
+  description: z.string().nullable(),
+  category: z.string().nullable(),
+  provider_check_code: z.string().nullable(),
+  validity_days: z.number().nullable(),
+  platform_cost_cents: z.number(),
+  retail_cost_cents: z.number().nullable(),
+  estimated_completion_days: z.number().nullable(),
+  required_documents: z.array(z.string()),
+  provider_configuration: z.record(z.unknown()).default({}),
+  metadata: z.record(z.unknown()).default({}),
+  is_active: z.boolean(),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+});
+
+const adminPackageSchema = z.object({
+  id: z.string().uuid(),
+  slug: z.string(),
+  display_name: z.string(),
+  description: z.string().nullable(),
+  provider_package_code: z.string().nullable(),
+  check_type_ids: z.array(z.string().uuid()),
+  component_overrides: z.array(z.record(z.unknown())).default([]),
+  platform_cost_cents: z.number(),
+  retail_cost_cents: z.number(),
+  estimated_completion_days: z.number().nullable(),
+  is_active: z.boolean(),
+  metadata: z.record(z.unknown()).default({}),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+  components: z.array(
+    adminCheckTypeSchema.pick({
+      id: true,
+      slug: true,
+      display_name: true,
+      category: true,
+      validity_days: true,
+      estimated_completion_days: true,
+      platform_cost_cents: true,
+      retail_cost_cents: true,
+      is_active: true,
+    }),
+  ),
+});
+
+const adminUpsertCheckTypeInputSchema = z.object({
+  id: z.string().uuid().optional(),
+  slug: z.string().min(1).max(120),
+  display_name: z.string().min(1).max(180),
+  description: z.string().max(2000).nullable().optional(),
+  category: z.string().max(120).nullable().optional(),
+  provider_check_code: z.string().max(120).nullable().optional(),
+  validity_days: z.number().int().positive().nullable().optional(),
+  platform_cost_cents: z.number().int().min(0),
+  retail_cost_cents: z.number().int().min(0).nullable().optional(),
+  estimated_completion_days: z.number().int().min(0).nullable().optional(),
+  required_documents: z.array(z.string().min(1)).optional(),
+  provider_configuration: z.record(z.unknown()).optional(),
+  metadata: z.record(z.unknown()).optional(),
+  is_active: z.boolean().optional(),
+});
+
+const adminUpsertPackageInputSchema = z.object({
+  id: z.string().uuid().optional(),
+  slug: z.string().min(1).max(120),
+  display_name: z.string().min(1).max(180),
+  description: z.string().max(2000).nullable().optional(),
+  provider_package_code: z.string().max(120).nullable().optional(),
+  check_type_ids: z.array(z.string().uuid()).min(1),
+  platform_cost_cents: z.number().int().min(0),
+  retail_cost_cents: z.number().int().min(0),
+  estimated_completion_days: z.number().int().min(0).nullable().optional(),
+  metadata: z.record(z.unknown()).optional(),
+  component_overrides: z.array(z.record(z.unknown())).optional(),
+  is_active: z.boolean().optional(),
+});
+
+const adminToggleActiveInputSchema = z.object({
+  id: z.string().uuid(),
+  is_active: z.boolean(),
+});
+
 const BACKGROUND_CHECK_BUCKET_ID = "background-check-documents";
 const SIGNED_UPLOAD_URL_TTL_SECONDS = 60 * 5;
 const SIGNED_DOWNLOAD_URL_TTL_SECONDS = 60 * 60;
@@ -289,6 +375,219 @@ async function syncBackgroundCheckFromProvider(params: {
   }
 }
 
+type RawAdminCheckTypeRow = {
+  id: string;
+  slug: string;
+  display_name: string;
+  description: string | null;
+  category: string | null;
+  provider_check_code: string | null;
+  validity_days: number | null;
+  platform_cost_cents: number;
+  retail_cost_cents: number | null;
+  estimated_completion_days: number | null;
+  required_documents: unknown;
+  provider_configuration: unknown;
+  metadata: unknown;
+  is_active: boolean | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type RawAdminPackageRow = {
+  id: string;
+  slug: string;
+  display_name: string;
+  description: string | null;
+  provider_package_code: string | null;
+  check_type_ids: string[] | null;
+  component_overrides: unknown;
+  platform_cost_cents: number;
+  retail_cost_cents: number;
+  estimated_completion_days: number | null;
+  is_active: boolean | null;
+  metadata: unknown;
+  created_at: string;
+  updated_at: string;
+};
+
+type AdminCheckTypeRecord = z.infer<typeof adminCheckTypeSchema>;
+type AdminPackageRecord = z.infer<typeof adminPackageSchema>;
+
+function mapAdminCheckType(row: RawAdminCheckTypeRow): AdminCheckTypeRecord {
+  const requiredDocuments = Array.isArray(row.required_documents)
+    ? row.required_documents.filter(
+      (doc): doc is string => typeof doc === "string",
+    )
+    : [];
+
+  const providerConfiguration =
+    row.provider_configuration && typeof row.provider_configuration === "object" &&
+      !Array.isArray(row.provider_configuration)
+      ? row.provider_configuration as Record<string, unknown>
+      : {};
+
+  const metadata =
+    row.metadata && typeof row.metadata === "object" &&
+      !Array.isArray(row.metadata)
+      ? row.metadata as Record<string, unknown>
+      : {};
+
+  return adminCheckTypeSchema.parse({
+    id: row.id,
+    slug: row.slug,
+    display_name: row.display_name,
+    description: row.description ?? null,
+    category: row.category ?? null,
+    provider_check_code: row.provider_check_code ?? null,
+    validity_days: row.validity_days ?? null,
+    platform_cost_cents: row.platform_cost_cents,
+    retail_cost_cents: row.retail_cost_cents ?? null,
+    estimated_completion_days: row.estimated_completion_days ?? null,
+    required_documents: requiredDocuments,
+    provider_configuration: providerConfiguration,
+    metadata,
+    is_active: Boolean(row.is_active ?? true),
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  });
+}
+
+async function fetchAdminCheckTypes(
+  ctx: Context,
+  ids?: string[],
+): Promise<AdminCheckTypeRecord[]> {
+  const { supabaseAdmin } = ctx;
+
+  let query = supabaseAdmin
+    .schema("core")
+    .from("background_check_types")
+    .select(
+      "id, slug, display_name, description, category, provider_check_code, validity_days, platform_cost_cents, retail_cost_cents, estimated_completion_days, required_documents, provider_configuration, metadata, is_active, created_at, updated_at",
+    )
+    .order("display_name", { ascending: true });
+
+  if (ids && ids.length > 0) {
+    query = query.in(
+      "id",
+      ids.length > 0 ? ids : ["00000000-0000-0000-0000-000000000000"],
+    );
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to load background check types",
+      cause: error,
+    });
+  }
+
+  return (data ?? []).map((row) =>
+    mapAdminCheckType(row as RawAdminCheckTypeRow)
+  );
+}
+
+function mapAdminPackage(
+  row: RawAdminPackageRow,
+  typeMap: Map<string, AdminCheckTypeRecord>,
+): AdminPackageRecord {
+  const metadata =
+    row.metadata && typeof row.metadata === "object" &&
+      !Array.isArray(row.metadata)
+      ? row.metadata as Record<string, unknown>
+      : {};
+
+  const componentOverrides = Array.isArray(row.component_overrides)
+    ? row.component_overrides
+    : [];
+
+  const components = (row.check_type_ids ?? [])
+    .map((id) => typeMap.get(id))
+    .filter((type): type is AdminCheckTypeRecord => Boolean(type));
+
+  return adminPackageSchema.parse({
+    id: row.id,
+    slug: row.slug,
+    display_name: row.display_name,
+    description: row.description ?? null,
+    provider_package_code: row.provider_package_code ?? null,
+    check_type_ids: (row.check_type_ids ?? []).filter(
+      (value): value is string => typeof value === "string",
+    ),
+    component_overrides: componentOverrides,
+    platform_cost_cents: row.platform_cost_cents,
+    retail_cost_cents: row.retail_cost_cents,
+    estimated_completion_days: row.estimated_completion_days ?? null,
+    is_active: Boolean(row.is_active ?? true),
+    metadata,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+    components,
+  });
+}
+
+async function fetchAdminPackages(
+  ctx: Context,
+  packageIds?: string[],
+): Promise<AdminPackageRecord[]> {
+  const { supabaseAdmin } = ctx;
+
+  let query = supabaseAdmin
+    .schema("core")
+    .from("background_check_packages")
+    .select(
+      "id, slug, display_name, description, provider_package_code, check_type_ids, component_overrides, platform_cost_cents, retail_cost_cents, estimated_completion_days, is_active, metadata, created_at, updated_at",
+    )
+    .order("display_name", { ascending: true });
+
+  if (packageIds && packageIds.length > 0) {
+    query = query.in(
+      "id",
+      packageIds.length > 0
+        ? packageIds
+        : ["00000000-0000-0000-0000-000000000000"],
+    );
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to load background check packages",
+      cause: error,
+    });
+  }
+
+  const packageRows = data ?? [];
+  if (packageRows.length === 0) {
+    return [];
+  }
+
+  const typeIds = new Set<string>();
+  for (const pkg of packageRows) {
+    for (const typeId of pkg.check_type_ids ?? []) {
+      if (typeof typeId === "string") {
+        typeIds.add(typeId);
+      }
+    }
+  }
+
+  const typeMap = new Map<string, AdminCheckTypeRecord>();
+  if (typeIds.size > 0) {
+    const typeRecords = await fetchAdminCheckTypes(ctx, Array.from(typeIds));
+    for (const typeRecord of typeRecords) {
+      typeMap.set(typeRecord.id, typeRecord);
+    }
+  }
+
+  return packageRows.map((pkg) =>
+    mapAdminPackage(pkg as RawAdminPackageRow, typeMap)
+  );
+}
+
 export const backgroundChecksRouter = t.router({
   /**
    * List active NationSearch packages with resolved component metadata.
@@ -359,6 +658,210 @@ export const backgroundChecksRouter = t.router({
 
     return listPackagesOutputSchema.array().parse(result);
   }),
+
+  /**
+   * List all background check packages for administrators (including inactive).
+   */
+  adminListPackages: officeProcedure.query(async ({ ctx }) => {
+    const packages = await fetchAdminPackages(ctx);
+    return adminPackageSchema.array().parse(packages);
+  }),
+
+  /**
+   * List all background check types for administrators.
+   */
+  adminListCheckTypes: officeProcedure.query(async ({ ctx }) => {
+    const types = await fetchAdminCheckTypes(ctx);
+    return adminCheckTypeSchema.array().parse(types);
+  }),
+
+  /**
+   * Create or update a background check type.
+   */
+  adminUpsertCheckType: officeProcedure
+    .input(adminUpsertCheckTypeInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabaseAdmin } = ctx;
+
+      const payload = {
+        slug: input.slug,
+        display_name: input.display_name,
+        description: input.description ?? null,
+        category: input.category ?? null,
+        provider_check_code: input.provider_check_code ?? null,
+        validity_days: input.validity_days ?? null,
+        platform_cost_cents: input.platform_cost_cents,
+        retail_cost_cents: input.retail_cost_cents ?? null,
+        estimated_completion_days: input.estimated_completion_days ?? null,
+        required_documents:
+          input.required_documents?.filter((doc) => doc.trim().length > 0) ?? [],
+        provider_configuration:
+          input.provider_configuration &&
+              typeof input.provider_configuration === "object" &&
+              !Array.isArray(input.provider_configuration)
+            ? input.provider_configuration
+            : {},
+        metadata:
+          input.metadata && typeof input.metadata === "object" &&
+              !Array.isArray(input.metadata)
+            ? input.metadata
+            : input.metadata === undefined
+            ? {}
+            : input.metadata,
+        is_active: input.is_active ?? true,
+      };
+
+      const query = supabaseAdmin
+        .schema("core")
+        .from("background_check_types");
+
+      const { data, error } = input.id
+        ? await query
+          .update(payload)
+          .eq("id", input.id)
+          .select(
+            "id, slug, display_name, description, category, provider_check_code, validity_days, platform_cost_cents, retail_cost_cents, estimated_completion_days, required_documents, provider_configuration, metadata, is_active, created_at, updated_at",
+          )
+          .maybeSingle()
+        : await query
+          .insert(payload)
+          .select(
+            "id, slug, display_name, description, category, provider_check_code, validity_days, platform_cost_cents, retail_cost_cents, estimated_completion_days, required_documents, provider_configuration, metadata, is_active, created_at, updated_at",
+          )
+          .maybeSingle();
+
+      if (error || !data) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to save background check type",
+          cause: error ?? undefined,
+        });
+      }
+
+      return adminCheckTypeSchema.parse(
+        mapAdminCheckType(data as RawAdminCheckTypeRow),
+      );
+    }),
+
+  /**
+   * Create or update a background check package.
+   */
+  adminUpsertPackage: officeProcedure
+    .input(adminUpsertPackageInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabaseAdmin } = ctx;
+
+      const payload = {
+        slug: input.slug,
+        display_name: input.display_name,
+        description: input.description ?? null,
+        provider_package_code: input.provider_package_code ?? null,
+        check_type_ids: input.check_type_ids,
+        component_overrides: Array.isArray(input.component_overrides)
+          ? input.component_overrides
+          : [],
+        platform_cost_cents: input.platform_cost_cents,
+        retail_cost_cents: input.retail_cost_cents,
+        estimated_completion_days: input.estimated_completion_days ?? null,
+        metadata:
+          input.metadata && typeof input.metadata === "object" &&
+              !Array.isArray(input.metadata)
+            ? input.metadata
+            : input.metadata === undefined
+            ? {}
+            : input.metadata,
+        is_active: input.is_active ?? true,
+      };
+
+      const query = supabaseAdmin
+        .schema("core")
+        .from("background_check_packages");
+
+      const { data, error } = input.id
+        ? await query
+          .update(payload)
+          .eq("id", input.id)
+          .select(
+            "id, slug, display_name, description, provider_package_code, check_type_ids, component_overrides, platform_cost_cents, retail_cost_cents, estimated_completion_days, is_active, metadata, created_at, updated_at",
+          )
+          .maybeSingle()
+        : await query
+          .insert(payload)
+          .select(
+            "id, slug, display_name, description, provider_package_code, check_type_ids, component_overrides, platform_cost_cents, retail_cost_cents, estimated_completion_days, is_active, metadata, created_at, updated_at",
+          )
+          .maybeSingle();
+
+      if (error || !data) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to save background check package",
+          cause: error ?? undefined,
+        });
+      }
+
+      const packages = await fetchAdminPackages(ctx, [data.id as string]);
+      const [record] = packages;
+
+      if (!record) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load updated background check package",
+        });
+      }
+
+      return adminPackageSchema.parse(record);
+    }),
+
+  /**
+   * Set active state for a background check type.
+   */
+  adminSetCheckTypeActive: officeProcedure
+    .input(adminToggleActiveInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabaseAdmin } = ctx;
+
+      const { error } = await supabaseAdmin
+        .schema("core")
+        .from("background_check_types")
+        .update({ is_active: input.is_active })
+        .eq("id", input.id);
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update check type status",
+          cause: error,
+        });
+      }
+
+      return { success: true };
+    }),
+
+  /**
+   * Set active state for a background check package.
+   */
+  adminSetPackageActive: officeProcedure
+    .input(adminToggleActiveInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabaseAdmin } = ctx;
+
+      const { error } = await supabaseAdmin
+        .schema("core")
+        .from("background_check_packages")
+        .update({ is_active: input.is_active })
+        .eq("id", input.id);
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update package status",
+          cause: error,
+        });
+      }
+
+      return { success: true };
+    }),
 
   /**
    * Initiate a background check for the current user.

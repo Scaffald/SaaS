@@ -85,6 +85,10 @@ export function PhotoCard({
   const [isSavingCaption, setIsSavingCaption] = useState(false);
   const [, setIsUpdatingType] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const canToggleVisibility = Boolean(onToggleVisibility);
+  const canEditCaption = Boolean(onUpdateCaption);
+  const canChangeType = Boolean(onUpdatePhotoType);
+  const canDelete = Boolean(onDelete);
 
   useEffect(() => {
     setCaptionDraft(photo.caption ?? "");
@@ -206,24 +210,32 @@ export function PhotoCard({
             </Text>
           </XStack>
           <XStack gap="$2">
-            <Button
-              size="$2"
-              variant="outlined"
-              icon={photo.showOnProfile ? Eye : EyeOff}
-              disabled={disabled}
-              onPress={handleToggleVisibility}
-            >
-              {photo.showOnProfile ? "Public" : "Private"}
-            </Button>
-            <Button
-              size="$2"
-              variant="outlined"
-              icon={Trash2}
-              disabled={disabled || isDeleting}
-              onPress={handleDelete}
-            >
-              Delete
-            </Button>
+            {canToggleVisibility ? (
+              <Button
+                size="$2"
+                variant="outlined"
+                icon={photo.showOnProfile ? Eye : EyeOff}
+                disabled={disabled}
+                onPress={handleToggleVisibility}
+              >
+                {photo.showOnProfile ? "Public" : "Private"}
+              </Button>
+            ) : (
+              <Text fontSize="$2" color="$color10">
+                {photo.showOnProfile ? "Visible on profile" : "Hidden from profile"}
+              </Text>
+            )}
+            {canDelete ? (
+              <Button
+                size="$2"
+                variant="outlined"
+                icon={Trash2}
+                disabled={disabled || isDeleting}
+                onPress={handleDelete}
+              >
+                Delete
+              </Button>
+            ) : null}
           </XStack>
         </XStack>
 
@@ -231,7 +243,7 @@ export function PhotoCard({
           <Text fontWeight="600" fontSize="$3">
             Caption
           </Text>
-          {isEditingCaption ? (
+          {canEditCaption && isEditingCaption ? (
             <YStack gap="$2">
               <Input
                 value={captionDraft}
@@ -260,7 +272,7 @@ export function PhotoCard({
                 </Button>
               </XStack>
             </YStack>
-          ) : (
+          ) : canEditCaption ? (
             <XStack gap="$2" items="center">
               <Text flex={1} color={photo.caption ? "$color12" : "$color9"}>
                 {photo.caption ?? "No caption provided."}
@@ -275,6 +287,10 @@ export function PhotoCard({
                 Edit
               </Button>
             </XStack>
+          ) : (
+            <Text flex={1} color={photo.caption ? "$color12" : "$color9"}>
+              {photo.caption ?? "No caption provided."}
+            </Text>
           )}
         </YStack>
 
@@ -284,28 +300,35 @@ export function PhotoCard({
           <Text fontWeight="600" fontSize="$3">
             Photo Type
           </Text>
-          <Select
-            value={(photo.photoType ?? "general") as Exclude<WorkLogPhotoType, null>}
-            onValueChange={(value) =>
-              handleUpdateType(value as WorkLogPhotoType)
-            }
-            disablePreventBodyScroll
-          >
-            <Select.Trigger width="100%">
-              <Select.Value placeholder="Choose category" />
-            </Select.Trigger>
-            <Select.Content>
-              {PHOTO_TYPE_OPTIONS.map((option, index) => (
-                <Select.Item
-                  key={option.value}
-                  value={option.value}
-                  index={index}
-                >
-                  <Select.ItemText>{option.label}</Select.ItemText>
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select>
+          {canChangeType ? (
+            <Select
+              value={(photo.photoType ?? "general") as Exclude<WorkLogPhotoType, null>}
+              onValueChange={(value) =>
+                handleUpdateType(value as WorkLogPhotoType)
+              }
+              disablePreventBodyScroll
+              disabled={disabled}
+            >
+              <Select.Trigger width="100%">
+                <Select.Value placeholder="Choose category" />
+              </Select.Trigger>
+              <Select.Content>
+                {PHOTO_TYPE_OPTIONS.map((option, index) => (
+                  <Select.Item
+                    key={option.value}
+                    value={option.value}
+                    index={index}
+                  >
+                    <Select.ItemText>{option.label}</Select.ItemText>
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select>
+          ) : (
+            <Text color="$color10">
+              {typeOption?.label ?? "Uncategorized"}
+            </Text>
+          )}
         </YStack>
 
         <Separator />

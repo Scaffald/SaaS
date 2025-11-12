@@ -25,4 +25,7 @@ export {
   verifyWorkLogSchema,
   workLogStatusSchema,
   workLogVisibilitySchema,
+  publicWorkLogSchema,
+  publicWorkLogPhotoSchema,
+  publicWorkLogsResponseSchema,
 } from "../../../core/features/work-logs/schemas.ts";

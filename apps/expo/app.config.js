@@ -35,7 +35,7 @@ export default {
     name: IS_PRODUCTION ? 'SCF-Neue' : `SCF-Neue (${APP_ENV})`,
     slug: 'scf-neue',
     jsEngine: 'hermes',
-    scheme: 'myapp',
+    scheme: 'com.scaffald',
     version: APP_VERSION,
     orientation: 'portrait',
     icon: './assets/icon.png',

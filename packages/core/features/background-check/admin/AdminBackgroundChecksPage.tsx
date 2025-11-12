@@ -20,13 +20,14 @@ import { AdminCheckReviewDialog } from './AdminCheckReviewDialog'
 import { AdminDisputeResolutionDialog } from './AdminDisputeResolutionDialog'
 import { AdminMetricsPanel } from './AdminMetricsPanel'
 import { AdminAuditLogPanel } from './AdminAuditLogPanel'
+import { AdminCatalogManager } from './AdminCatalogManager'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 
 type AdminCheckSummary = RouterOutputs['backgroundChecks']['adminListChecks'][number]
 type AdminDisputeSummary = RouterOutputs['backgroundChecks']['adminListDisputes'][number]
 
-type AdminTab = 'checks' | 'disputes' | 'metrics' | 'audit'
+type AdminTab = 'checks' | 'disputes' | 'metrics' | 'audit' | 'catalog'
 
 interface CheckRow {
   id: string
@@ -446,6 +447,15 @@ export function AdminBackgroundChecksPage() {
                 Metrics
               </Tabs.Tab>
               <Tabs.Tab
+                value="catalog"
+                borderBottomWidth={activeTab === 'catalog' ? 2 : 0}
+                borderBottomColor="$blue10"
+                px="$3"
+                py="$2"
+              >
+                Catalog
+              </Tabs.Tab>
+              <Tabs.Tab
                 value="audit"
                 borderBottomWidth={activeTab === 'audit' ? 2 : 0}
                 borderBottomColor="$blue10"
@@ -572,6 +582,12 @@ export function AdminBackgroundChecksPage() {
             isLoading={metricsQuery.isLoading}
             onRefresh={() => void metricsQuery.refetch()}
           />
+        </YStack>
+      ) : null}
+
+      {activeTab === 'catalog' ? (
+        <YStack px="$4" pb="$4">
+          <AdminCatalogManager />
         </YStack>
       ) : null}
 

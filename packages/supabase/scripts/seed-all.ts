@@ -12,10 +12,10 @@ const execAsync = promisify(exec);
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL ||
   "http://127.0.0.1:54321";
-const supabaseServiceKey = process.env.SUPABASE_SECRET || "";
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 if (!supabaseServiceKey) {
-  console.error("❌ SUPABASE_SECRET is required");
+  console.error("❌ SUPABASE_SERVICE_ROLE_KEY is required");
   console.error("💡 Get it from: pnpm supa status");
   process.exit(1);
 }

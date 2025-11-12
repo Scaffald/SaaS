@@ -19,6 +19,19 @@ const WORK_LOG_PHOTO_TYPES = [
   "general",
 ] as const;
 
+export const WORK_LOG_LIST_SORT_FIELDS = [
+  "log_date",
+  "created_at",
+  "updated_at",
+  "total_hours",
+] as const;
+
+export const workLogListSortFieldSchema = z.enum(WORK_LOG_LIST_SORT_FIELDS);
+export type WorkLogListSortField = z.infer<typeof workLogListSortFieldSchema>;
+
+export const workLogSortDirectionSchema = z.enum(["asc", "desc"]);
+export type WorkLogSortDirection = z.infer<typeof workLogSortDirectionSchema>;
+
 const TWO_MB_IN_BYTES = 2 * 1024 * 1024;
 const MAX_MINUTES_PER_DAY = 24 * 60;
 
@@ -389,3 +402,287 @@ export const addSkillToProfileSchema = z.discriminatedUnion("taxonomy", [
 ]);
 
 export type AddSkillToProfileInput = z.infer<typeof addSkillToProfileSchema>;
+
+const DATE_ONLY_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
+const statusSummaryEntrySchema = z.object({
+  count: z.number().int().nonnegative(),
+  hours: z.number().min(0),
+});
+
+export const workLogStatusSummarySchema = z.object({
+  draft: statusSummaryEntrySchema,
+  pending_verification: statusSummaryEntrySchema,
+  verified: statusSummaryEntrySchema,
+  disputed: statusSummaryEntrySchema,
+});
+
+export type WorkLogStatusSummary = z.infer<typeof workLogStatusSummarySchema>;
+
+const workLogProjectMetadataSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  status: z.string().nullable(),
+  isArchived: z.boolean(),
+  organizationId: z.string().uuid().nullable(),
+  projectNumber: z.string().nullable(),
+});
+
+export type WorkLogProjectMetadata = z.infer<
+  typeof workLogProjectMetadataSchema
+>;
+
+export const workLogListQuerySchema = z.object({
+  page: z.number().int().min(0).default(0),
+  pageSize: z.number().int().min(1).max(100).default(20),
+  statuses: z.array(workLogStatusSchema).optional(),
+  projectId: z.string().uuid().optional(),
+  dateFrom: z
+    .string()
+    .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+    .optional(),
+  dateTo: z
+    .string()
+    .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+    .optional(),
+  search: z.string().min(2).max(120).optional(),
+  sortField: workLogListSortFieldSchema.default("log_date"),
+  sortDirection: workLogSortDirectionSchema.default("desc"),
+});
+
+export type WorkLogListQuery = z.infer<typeof workLogListQuerySchema>;
+
+const workLogPaginationSchema = z.object({
+  page: z.number().int().min(0),
+  pageSize: z.number().int().min(1),
+  totalItems: z.number().int().min(0),
+  totalPages: z.number().int().min(1),
+});
+
+const workLogListItemSchema = z.object({
+  id: z.string().uuid(),
+  projectId: z.string().uuid().nullable(),
+  project: workLogProjectMetadataSchema.nullable(),
+  status: workLogStatusSchema,
+  logDate: z.string().nullable(),
+  entryType: z.string(),
+  totalHours: z.number().min(0),
+  submittedAt: z.string().nullable(),
+  verifiedAt: z.string().nullable(),
+  disputedAt: z.string().nullable(),
+  disputeReason: z.string().nullable(),
+  visibility: workLogVisibilitySchema,
+  showOnProfile: z.boolean(),
+  showDateRangeOnProfile: z.boolean(),
+  createdAt: z.string().nullable(),
+  updatedAt: z.string().nullable(),
+  photoCount: z.number().int().min(0),
+  collaboratorCount: z.number().int().min(0),
+  commentCount: z.number().int().min(0),
+  descriptionPreview: z.string().nullable(),
+});
+
+export type WorkLogListItem = z.infer<typeof workLogListItemSchema>;
+
+export const workLogListResponseSchema = z.object({
+  items: z.array(workLogListItemSchema),
+  pagination: workLogPaginationSchema,
+  aggregates: z.object({
+    totalHours: z.number().min(0),
+    totalPhotos: z.number().int().min(0),
+    totalComments: z.number().int().min(0),
+    statusSummary: workLogStatusSummarySchema,
+  }),
+  filtersApplied: z.object({
+    statuses: z.array(workLogStatusSchema).nullable(),
+    projectId: z.string().uuid().nullable(),
+    dateFrom: z.string().regex(DATE_ONLY_REGEX).nullable(),
+    dateTo: z.string().regex(DATE_ONLY_REGEX).nullable(),
+    search: z.string().nullable(),
+    sortField: workLogListSortFieldSchema,
+    sortDirection: workLogSortDirectionSchema,
+  }),
+});
+
+export type WorkLogListResponse = z.infer<typeof workLogListResponseSchema>;
+
+const workLogOverviewProjectSummarySchema = z.object({
+  projectId: z.string().uuid(),
+  project: workLogProjectMetadataSchema.nullable(),
+  totalLogs: z.number().int().min(0),
+  totalHours: z.number().min(0),
+  verifiedHours: z.number().min(0),
+  disputedCount: z.number().int().min(0),
+  pendingVerificationCount: z.number().int().min(0),
+  photoCount: z.number().int().min(0),
+  commentCount: z.number().int().min(0),
+  collaboratorCount: z.number().int().min(0),
+  statusSummary: workLogStatusSummarySchema,
+  lastActivityAt: z.string().nullable(),
+});
+
+const workLogRecentActivitySchema = z.object({
+  id: z.string().uuid(),
+  projectId: z.string().uuid().nullable(),
+  project: workLogProjectMetadataSchema.nullable(),
+  status: workLogStatusSchema,
+  logDate: z.string().nullable(),
+  totalHours: z.number().min(0),
+  photoCount: z.number().int().min(0),
+  commentCount: z.number().int().min(0),
+  updatedAt: z.string().nullable(),
+});
+
+export const workLogOverviewResponseSchema = z.object({
+  totals: z.object({
+    totalLogs: z.number().int().min(0),
+    totalHours: z.number().min(0),
+    verifiedHours: z.number().min(0),
+    statusSummary: workLogStatusSummarySchema,
+    pendingVerificationCount: z.number().int().min(0),
+    disputedCount: z.number().int().min(0),
+    needsAttentionCount: z.number().int().min(0),
+  }),
+  media: z.object({
+    totalPhotos: z.number().int().min(0),
+    totalComments: z.number().int().min(0),
+    uniqueCollaborators: z.number().int().min(0),
+  }),
+  projectSummaries: z.array(workLogOverviewProjectSummarySchema),
+  recentActivity: z.array(workLogRecentActivitySchema),
+  filtersApplied: z.object({
+    dateFrom: z.string().regex(DATE_ONLY_REGEX).nullable(),
+    dateTo: z.string().regex(DATE_ONLY_REGEX).nullable(),
+  }),
+});
+
+export type WorkLogOverviewResponse = z.infer<
+  typeof workLogOverviewResponseSchema
+>;
+
+const workLogProjectTimelineEntrySchema = z.object({
+  logDate: z.string().regex(DATE_ONLY_REGEX),
+  totalHours: z.number().min(0),
+  verifiedHours: z.number().min(0),
+});
+
+const workLogProjectRecentActivitySchema = z.object({
+  id: z.string().uuid(),
+  status: workLogStatusSchema,
+  logDate: z.string().nullable(),
+  totalHours: z.number().min(0),
+  photoCount: z.number().int().min(0),
+  commentCount: z.number().int().min(0),
+  updatedAt: z.string().nullable(),
+});
+
+export const workLogProjectRollupResponseSchema = z.object({
+  projectId: z.string().uuid(),
+  project: workLogProjectMetadataSchema,
+  totals: z.object({
+    totalLogs: z.number().int().min(0),
+    totalHours: z.number().min(0),
+    verifiedHours: z.number().min(0),
+    statusSummary: workLogStatusSummarySchema,
+    pendingVerificationCount: z.number().int().min(0),
+    disputedCount: z.number().int().min(0),
+    photoCount: z.number().int().min(0),
+    commentCount: z.number().int().min(0),
+    collaboratorCount: z.number().int().min(0),
+  }),
+  timeline: z.array(workLogProjectTimelineEntrySchema),
+  recentActivity: z.array(workLogProjectRecentActivitySchema),
+  filtersApplied: z.object({
+    dateFrom: z.string().regex(DATE_ONLY_REGEX).nullable(),
+    dateTo: z.string().regex(DATE_ONLY_REGEX).nullable(),
+  }),
+});
+
+export type WorkLogProjectRollupResponse = z.infer<
+  typeof workLogProjectRollupResponseSchema
+>;
+
+const workLogProjectWorkerSummarySchema = z.object({
+  userId: z.string().uuid(),
+  displayName: z.string(),
+  username: z.string().nullable(),
+  totalLogs: z.number().int().min(0),
+  totalHours: z.number().min(0),
+  verifiedHours: z.number().min(0),
+  disputedCount: z.number().int().min(0),
+  pendingVerificationCount: z.number().int().min(0),
+  photoCount: z.number().int().min(0),
+  commentCount: z.number().int().min(0),
+  statusSummary: workLogStatusSummarySchema,
+  latestActivity: z.string().nullable(),
+});
+
+const workLogProjectManagerActivitySchema = z.object({
+  id: z.string().uuid(),
+  workerId: z.string().uuid().nullable(),
+  workerName: z.string(),
+  status: workLogStatusSchema,
+  logDate: z.string().nullable(),
+  totalHours: z.number().min(0),
+  photoCount: z.number().int().min(0),
+  commentCount: z.number().int().min(0),
+  updatedAt: z.string().nullable(),
+});
+
+export const workLogProjectAnalyticsResponseSchema = z.object({
+  projectId: z.string().uuid(),
+  project: workLogProjectMetadataSchema,
+  totals: z.object({
+    totalLogs: z.number().int().min(0),
+    totalHours: z.number().min(0),
+    verifiedHours: z.number().min(0),
+    statusSummary: workLogStatusSummarySchema,
+    pendingVerificationCount: z.number().int().min(0),
+    disputedCount: z.number().int().min(0),
+    photoCount: z.number().int().min(0),
+    commentCount: z.number().int().min(0),
+    collaboratorCount: z.number().int().min(0),
+    uniqueWorkers: z.number().int().min(0),
+  }),
+  workers: z.array(workLogProjectWorkerSummarySchema),
+  timeline: z.array(workLogProjectTimelineEntrySchema),
+  recentActivity: z.array(workLogProjectManagerActivitySchema),
+  filtersApplied: z.object({
+    dateFrom: z.string().regex(DATE_ONLY_REGEX).nullable(),
+    dateTo: z.string().regex(DATE_ONLY_REGEX).nullable(),
+  }),
+});
+
+export type WorkLogProjectAnalyticsResponse = z.infer<
+  typeof workLogProjectAnalyticsResponseSchema
+>;
+
+export const publicWorkLogPhotoSchema = z.object({
+  id: z.string().uuid(),
+  caption: z.string().nullable(),
+  signedUrl: z.string().nullable(),
+  thumbnailSignedUrl: z.string().nullable(),
+});
+
+export type PublicWorkLogPhoto = z.infer<typeof publicWorkLogPhotoSchema>;
+
+export const publicWorkLogSchema = z.object({
+  id: z.string().uuid(),
+  projectId: z.string().uuid().nullable(),
+  projectName: z.string().nullable(),
+  organizationName: z.string().nullable(),
+  logDate: z.string().nullable(),
+  showDateOnProfile: z.boolean(),
+  verifiedAt: z.string().nullable(),
+  photos: z.array(publicWorkLogPhotoSchema),
+});
+
+export type PublicWorkLog = z.infer<typeof publicWorkLogSchema>;
+
+export const publicWorkLogsResponseSchema = z.object({
+  workLogs: z.array(publicWorkLogSchema),
+});
+
+export type PublicWorkLogsResponse = z.infer<
+  typeof publicWorkLogsResponseSchema
+>;

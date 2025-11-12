@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useCallback, useMemo, type ComponentType } from "react";
 import { RefreshControl, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
@@ -160,6 +159,33 @@ export function WorkLogListScreen() {
                       {getStatusLabel(item.status)}
                     </Text>
                   </XStack>
+
+            <XStack gap="$2" flexWrap="wrap">
+              <Text
+                fontSize="$2"
+                px="$2"
+                py="$1"
+                borderRadius="$3"
+                bg={item.visibility === "public" ? "$green4" : "$gray4"}
+                color={item.visibility === "public" ? "$green11" : "$gray11"}
+                fontWeight="600"
+              >
+                {item.visibility === "public" ? "Public" : "Private"}
+              </Text>
+              {item.showOnProfile && (
+                <Text
+                  fontSize="$2"
+                  px="$2"
+                  py="$1"
+                  borderRadius="$3"
+                  bg="$blue4"
+                  color="$blue11"
+                  fontWeight="600"
+                >
+                  On profile
+                </Text>
+              )}
+            </XStack>
 
                   <XStack gap="$4" flexWrap="wrap">
                     <MetricPill
