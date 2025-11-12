@@ -450,6 +450,7 @@ export function PortfolioManager({
                 Cancel
               </UIButton>
               <UIButton
+                variant="primary"
                 onPress={handleSave}
                 disabled={createMutation.isPending || updateMutation.isPending}
               >

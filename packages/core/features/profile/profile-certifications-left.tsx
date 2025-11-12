@@ -1,19 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import {
-  YStack,
-  XStack,
-  Text,
-  H4,
-  Spinner,
-  ScrollView,
-  Button,
-  Input,
-  Separator,
-  Card,
-  TextArea,
-} from 'tamagui'
+import { YStack, XStack, Text, H4, Spinner, ScrollView, Input, Separator, Card, TextArea } from 'tamagui'
 import { Award, PlusCircle, UploadCloud } from '@tamagui/lucide-icons'
-import { DashboardWidget, MonthYearPicker } from '@app/ui'
+import { UIButton as Button, DashboardWidget, MonthYearPicker } from '@app/ui'
 import { CertificationSearch, CertificationChip, CertificationCheckbox, ToggleCard } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { ProfileEmptyState } from './components'
@@ -696,7 +684,7 @@ export function ProfileCertificationsLeft({
                   >
                     Cancel
                   </Button>
-                  <Button theme="info" onPress={handleCustomFormSubmit} disabled={isSavingCustom}>
+                  <Button variant="primary" onPress={handleCustomFormSubmit} disabled={isSavingCustom}>
                     {showAdaptiveCustomSaving ? 'Saving...' : 'Save Certification'}
                   </Button>
                 </XStack>

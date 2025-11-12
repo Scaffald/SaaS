@@ -1,21 +1,5 @@
 import { useEffect, useState, useRef, useMemo, useCallback } from 'react'
-import {
-  YStack,
-  XStack,
-  Text,
-  Button,
-  Input,
-  H4,
-  TextArea,
-  Select,
-  Adapt,
-  Sheet,
-  useWindowDimensions,
-  Spinner,
-  Label,
-  Card,
-  Separator,
-} from 'tamagui'
+import { YStack, XStack, Text, Input, H4, TextArea, Select, Adapt, Sheet, useWindowDimensions, Spinner, Label, Card, Separator } from 'tamagui'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -40,13 +24,7 @@ import {
   EMPLOYMENT_TYPE_OPTIONS,
   CAREER_LEVEL_OPTIONS,
 } from './config'
-import {
-  CustomCheckbox,
-  DashboardWidget,
-  ConfirmationDialog,
-  MonthYearPicker,
-  AddressAutocomplete,
-} from '@app/ui'
+import { UIButton as Button, CustomCheckbox, DashboardWidget, ConfirmationDialog, MonthYearPicker, AddressAutocomplete } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
@@ -666,6 +644,7 @@ export function ProfileExperienceLeft() {
             Cancel
           </Button>
           <Button
+            variant="primary"
             onPress={handleSubmit(onSubmit)}
             disabled={!isDirty || saveState === 'saving'}
             opacity={!isDirty || saveState === 'saving' ? 0.5 : 1}

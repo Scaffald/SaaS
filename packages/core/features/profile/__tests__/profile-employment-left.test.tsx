@@ -46,14 +46,6 @@ vi.mock('@tamagui/toast', () => ({
   }),
 }))
 
-vi.mock('@app/core/utils/sentry/client', () => ({
-  initSentry: vi.fn(),
-  Sentry: {
-    captureException: vi.fn(),
-    startTransaction: vi.fn(),
-  },
-}))
-
 vi.mock('@tamagui/lucide-icons', () => ({
   Flag: () => null,
   MapPin: () => null,

@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Input, Button, Spinner, H4 } from 'tamagui'
+import { YStack, XStack, Text, Input, Spinner, H4 } from 'tamagui'
 import { Copy, Check, AlertCircle, Clock } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { api } from '@app/core/utils/api'
 import { isSlugValid, isReservedSlug } from '@app/core/utils/slugify'
 import { copyToClipboard } from '@app/core/utils/clipboard'
-import { DashboardWidget } from '@app/ui'
+import { UIButton as Button, DashboardWidget } from '@app/ui'
 
 type UpdateSlugResult = {
   success: boolean
@@ -358,6 +358,7 @@ export function VanityUrlSection() {
                   Cancel
                 </Button>
                 <Button
+                  variant="primary"
                   size="$3"
                   onPress={handleSave}
                   disabled={

@@ -8,8 +8,7 @@
     "start:dev-client": "expo start --dev-client",
     "web": "expo start --web",
     "web:build": "expo export --platform web",
-    "web:upload-sourcemaps": "pnpm --workspace-root sourcemaps:upload scf-neue@$npm_package_version",
-    "web:build:release": "pnpm web:build && pnpm web:upload-sourcemaps",
+    "web:build:release": "pnpm web:build",
     "web:serve": "serve dist",
     "prebuild": "expo prebuild --skip-dependency-update react-native,react",
     "android": "expo run:android",
@@ -51,7 +50,6 @@
     "@react-native-community/netinfo": "catalog:",
     "@react-native-google-signin/google-signin": "catalog:",
     "@rnmapbox/maps": "catalog:",
-    "@sentry/react-native": "catalog:",
     "@tamagui/lucide-icons": "catalog:",
     "@tamagui/metro-plugin": "catalog:",
     "@tamagui/toast": "catalog:",
@@ -92,8 +90,7 @@
     "react-native-screens": "catalog:",
     "react-native-svg": "catalog:",
     "react-native-url-polyfill": "catalog:",
-    "react-native-web": "catalog:",
-    "sentry-expo": "catalog:"
+    "react-native-web": "catalog:"
   },
   "devDependencies": {
     "@babel/core": "catalog:",

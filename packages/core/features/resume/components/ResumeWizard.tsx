@@ -1,17 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'expo-router'
-import {
-  Button,
-  Checkbox,
-  Input,
-  Paragraph,
-  ScrollView,
-  Separator,
-  Spinner,
-  Text,
-  XStack,
-  YStack,
-} from 'tamagui'
+import { Checkbox, Input, Paragraph, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 import {
   AlertCircle,
   CheckCircle2,
@@ -19,7 +8,7 @@ import {
   SkipForward,
   UploadCloud,
 } from '@tamagui/lucide-icons'
-import { spacing } from '@app/ui'
+import { UIButton as Button, spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import {
   useResumeWizard,
@@ -620,8 +609,8 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         </XStack>
 
         <Button
+          variant="primary"
           size="$4"
-          theme="blue"
           icon={isSaving ? Spinner : UploadCloud}
           disabled={isSaving}
           onPress={() => void handleSaveCurrentStep()}

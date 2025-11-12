@@ -1,7 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
 
-import { Sentry } from "../_shared/sentry.ts";
-
 const DEFAULT_LOCAL_SUPABASE_URL = "http://127.0.0.1:54321";
 const DEFAULT_LOCAL_SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
@@ -158,23 +156,6 @@ export const createTRPCContext = async (opts: { req: Request }) => {
     "Final user context:",
     userId ? { id: userId, email: userEmail } : "undefined",
   );
-
-  if (Sentry.getCurrentHub().getClient()) {
-    if (userId) {
-      Sentry.setUser({
-        id: userId,
-        email: userEmail ?? undefined,
-      });
-    } else {
-      Sentry.setUser(null);
-    }
-
-    Sentry.setContext("request", {
-      procedureUserId: userId,
-      hasAuthorizationHeader: Boolean(authorizationHeader),
-      isAnonKey,
-    });
-  }
 
   return {
     user: userId ? { id: userId, email: userEmail } : undefined,

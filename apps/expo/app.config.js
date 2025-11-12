@@ -4,7 +4,6 @@ const APP_ENV = process.env.APP_ENV || 'development'
 // Load environment-specific variables
 const IS_PRODUCTION = APP_ENV === 'production'
 const APP_VERSION = process.env.APP_VERSION || '1.0.0'
-const SENTRY_RELEASE = process.env.SENTRY_RELEASE || `scf-neue@${APP_VERSION}`
 
 const posthogKeyByEnv = {
   development: process.env.POSTHOG_KEY_DEV,
@@ -136,13 +135,6 @@ export default {
       'expo-build-properties',
       'expo-font',
       [
-        'sentry-expo',
-        {
-          organization: process.env.SENTRY_ORG,
-          project: process.env.SENTRY_PROJECT,
-        },
-      ],
-      [
         '@rnmapbox/maps',
         {
           RNMapboxMapsDownloadToken: process.env.EXPO_PUBLIC_MAPBOX_TOKEN,
@@ -173,19 +165,6 @@ export default {
       posthogHost: POSTHOG_HOST,
       posthogKey: POSTHOG_KEY,
       posthogProject: EXPO_PUBLIC_POSTHOG_PROJECT,
-      sentryRelease: SENTRY_RELEASE,
-    },
-    hooks: {
-      postPublish: [
-        {
-          file: 'sentry-expo/upload-sourcemaps',
-          config: {
-            organization: process.env.SENTRY_ORG,
-            project: process.env.SENTRY_PROJECT,
-            authToken: process.env.SENTRY_AUTH_TOKEN,
-          },
-        },
-      ],
     },
     runtimeVersion: {
       policy: 'appVersion',

@@ -1,7 +1,6 @@
 import '../tamagui-web.css'
 import type { Session } from '@supabase/supabase-js'
 import { Provider, loadThemePromise } from '@app/core/provider'
-import { initSentry } from '@app/core/utils/sentry/client'
 import { supabase } from '@app/core/utils/supabase/client'
 import { useFonts } from 'expo-font'
 import { SplashScreen, Stack, useSegments } from 'expo-router'
@@ -10,8 +9,6 @@ import { LogBox, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import { ErrorBoundary } from '@app/core/components/ErrorBoundary'
-
-initSentry()
 
 SplashScreen.preventAutoHideAsync()
 

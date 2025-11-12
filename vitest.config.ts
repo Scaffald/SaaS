@@ -42,6 +42,7 @@ export default defineConfig({
       '**/.expo/**',
       '**/.tamagui/**',
       'packages/supabase/functions/trpc/__tests__/**',
+      'packages/supabase/tests/**',
     ],
     setupFiles: [resolve(workspaceRoot, 'test/setup.ts')],
     server: {
@@ -95,6 +96,7 @@ export default defineConfig({
         '**/*.config.{js,ts}',
         '**/*.d.ts',
         'packages/supabase/functions/trpc/__tests__/**',
+        'packages/supabase/tests/**',
         'packages/schemas/src/**/index.ts',
         'packages/schemas/src/jobs/job-update.schema.ts',
         'packages/schemas/src/jobs/types.ts',

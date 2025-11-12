@@ -26,18 +26,16 @@ export const workersRouter = t.router({
       let query = ctx.supabase
         .schema("core")
         .from("users")
-        .select(
-          `
+        .select(`
           id,
-          name,
-          first_name,
-          last_name,
+          display_name,
+          username,
+          slug,
           about,
           avatar_path,
           created_at,
           updated_at
-        `,
-        )
+        `)
         .order("created_at", { ascending: false });
 
       // Apply limit

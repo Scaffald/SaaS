@@ -50,10 +50,6 @@ vi.mock('@app/core/provider/react-query/queryClient', () => ({
   getGlobalQueryClient: getGlobalQueryClientMock,
 }))
 
-vi.mock('../sentry/client', () => ({
-  Sentry: {},
-}))
-
 describe('createTrpcClient', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -65,7 +61,7 @@ describe('createTrpcClient', () => {
     createClientMock.mockReturnValue({ client: true })
   })
 
-  it('creates a TRPC client with performance, session, and HTTP links', async () => {
+  it('creates a TRPC client with session and HTTP links', async () => {
     const { createTrpcClient } = await import('../api')
     const client = createTrpcClient()
 
@@ -74,7 +70,7 @@ describe('createTrpcClient', () => {
 
     const config = createClientMock.mock.calls[0]?.[0]
     expect(Array.isArray(config.links)).toBe(true)
-    expect(config.links).toHaveLength(3)
+    expect(config.links).toHaveLength(2)
 
     const batchLinkOptions = httpBatchLinkMock.mock.calls.at(-1)?.[0] as {
       url: string
@@ -110,7 +106,7 @@ describe('createTrpcClient', () => {
     createTrpcClient()
 
     const links = createClientMock.mock.calls.at(-1)?.[0]?.links ?? []
-    const [, sessionLink] = links
+    const [sessionLink] = links
     const next = vi.fn().mockReturnValue({
       subscribe: (handlers: { error: (err: unknown) => void }) => {
         handlers.error(new Error('boom'))

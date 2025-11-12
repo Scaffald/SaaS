@@ -2,11 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 import type { ComponentType } from 'react'
 import { useRouter } from 'expo-router'
 import type { Href } from 'expo-router'
-import { YStack, XStack, Text, Button, Spinner, Separator, ScrollView, Label, Input } from 'tamagui'
+import { YStack, XStack, Text, Spinner, Separator, ScrollView, Label, Input } from 'tamagui'
 import { AlertCircle, Info, ShieldAlert, ExternalLink } from '@tamagui/lucide-icons'
 
 import { api } from '@app/core/utils/api'
-import { NotificationTag, ToggleSwitch, type NotificationItem } from '@app/ui'
+import { UIButton as Button, NotificationTag, ToggleSwitch, type NotificationItem } from '@app/ui'
 
 interface ApiNotification {
   id: string
@@ -258,6 +258,7 @@ export default function NotificationsCenterScreen() {
               </Text>
             </YStack>
             <Button
+              variant="primary"
               size="$2"
               disabled={savePreferencesMutation.isLoading}
               onPress={handleSavePreferences}

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { YStack, Text, H4, Card, XStack, Button, Input, ScrollView } from 'tamagui'
+import { YStack, Text, H4, Card, XStack, Input, ScrollView } from 'tamagui'
 import {
   Award,
   ChevronDown,
@@ -8,7 +8,7 @@ import {
   Trash2,
   Upload,
 } from '@tamagui/lucide-icons'
-import { DashboardWidget } from '@app/ui'
+import { UIButton as Button, DashboardWidget } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
 
@@ -276,6 +276,7 @@ export function ProfileCertificationsRight() {
                             }
                           />
                           <Button
+                            variant="primary"
                             icon={<ExternalLink size={16} />}
                             onPress={() => handleSaveUrl(cert.id)}
                             disabled={!urlInputs[cert.id] || updateProof.isLoading}

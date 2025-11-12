@@ -1,30 +1,10 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
-import {
-  YStack,
-  XStack,
-  Text,
-  Button,
-  Input,
-  TextArea,
-  Select,
-  Adapt,
-  Sheet,
-  useWindowDimensions,
-  Label,
-  Spinner,
-} from 'tamagui'
+import { YStack, XStack, Text, Input, TextArea, Select, Adapt, Sheet, useWindowDimensions, Label, Spinner } from 'tamagui'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChevronDown } from '@tamagui/lucide-icons'
 import { singleEducationEntrySchema, DEGREE_TYPE_OPTIONS } from '../config'
-import {
-  CustomCheckbox,
-  ResponsiveModal,
-  UniversityAutocomplete,
-  ConfirmationDialog,
-  MonthYearPicker,
-  FieldError,
-} from '@app/ui'
+import { UIButton as Button, CustomCheckbox, ResponsiveModal, UniversityAutocomplete, ConfirmationDialog, MonthYearPicker, FieldError } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
 import type { EducationEntry, EducationEntryFormValues } from '../types/education'
@@ -559,6 +539,7 @@ export function EducationEntryEditModal({
               Cancel
             </Button>
             <Button
+              variant="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}

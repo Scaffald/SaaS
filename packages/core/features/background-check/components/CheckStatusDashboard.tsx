@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react'
+import { Platform } from 'react-native'
 import { RefreshCcw, ShieldCheck } from '@tamagui/lucide-icons'
 import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 import { useRouter } from 'expo-router'
 
 import { api } from '@app/core/utils/api'
+import { RouteBuilder } from '@app/core/constants/routes'
 
 import { CheckStatusCard } from './CheckStatusCard'
 import { ResultsViewer } from './ResultsViewer'
@@ -28,6 +30,7 @@ export function CheckStatusDashboard() {
   const [activeFilter, setActiveFilter] = useState<FilterValue>('active')
   const [selectedCheckId, setSelectedCheckId] = useState<string | null>(null)
   const [disputeCheck, setDisputeCheck] = useState<BackgroundCheckSummary | null>(null)
+  const isWeb = Platform.OS === 'web'
 
   const checksQuery = api.backgroundChecks.listChecks.useQuery(undefined, {
     refetchOnWindowFocus: true,
@@ -66,7 +69,7 @@ export function CheckStatusDashboard() {
   }, [checksQuery.data, activeFilter])
 
   const handleStartNewCheck = () => {
-    router.push('/dashboard/profile/background-check/initiate')
+    router.push(RouteBuilder.dashboardBackgroundCheckInitiate())
   }
 
   const handleViewDetails = (check: BackgroundCheckSummary) => {
@@ -75,7 +78,16 @@ export function CheckStatusDashboard() {
 
   const handleRenew = (check: BackgroundCheckSummary) => {
     setSelectedCheckId(check.id)
-    router.push('/dashboard/profile/background-check/initiate')
+    router.push(RouteBuilder.dashboardBackgroundCheckInitiate())
+  }
+
+  const handleDisputeNavigation = (check: BackgroundCheckSummary) => {
+    if (isWeb) {
+      setDisputeCheck(check)
+      return
+    }
+    const disputePath = RouteBuilder.dashboardBackgroundCheckDispute(check.id)
+    router.push(disputePath)
   }
 
   return (
@@ -161,7 +173,7 @@ export function CheckStatusDashboard() {
               onDispute={
                 canDisputeStatus(check.status)
                   ? (selected) => {
-                      setDisputeCheck(selected)
+                      handleDisputeNavigation(selected)
                     }
                   : undefined
               }
@@ -193,7 +205,7 @@ export function CheckStatusDashboard() {
                       (item: BackgroundCheckSummary) => item.id === id,
                     ) ?? null
                   if (candidate) {
-                    setDisputeCheck(candidate)
+                    handleDisputeNavigation(candidate)
                   }
                 }}
               />
@@ -202,19 +214,21 @@ export function CheckStatusDashboard() {
         </YStack>
       </ScrollView>
 
-      <DisputeBackgroundCheckDialog
-        open={Boolean(disputeCheck)}
-        check={disputeCheck}
-        onOpenChange={(open) => {
-          if (!open) {
+      {isWeb && (
+        <DisputeBackgroundCheckDialog
+          open={Boolean(disputeCheck)}
+          check={disputeCheck}
+          onOpenChange={(open) => {
+            if (!open) {
+              setDisputeCheck(null)
+            }
+          }}
+          onSubmitted={() => {
             setDisputeCheck(null)
-          }
-        }}
-        onSubmitted={() => {
-          setDisputeCheck(null)
-          void checksQuery.refetch()
-        }}
-      />
+            void checksQuery.refetch()
+          }}
+        />
+      )}
     </YStack>
   )
 }

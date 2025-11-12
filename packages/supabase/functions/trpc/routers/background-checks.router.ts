@@ -112,8 +112,44 @@ const updatePrivacyInputSchema = z.object({
   shared_with_organization_ids: z.array(z.string().uuid()).default([]),
 });
 
+const adminCheckWorkerSchema = z.object({
+  id: z.string().uuid().nullable(),
+  display_name: z.string().nullable(),
+  username: z.string().nullable(),
+  email: z.string().nullable(),
+  avatar_path: z.string().nullable(),
+});
+
+const adminCheckOrganizationSchema = z.object({
+  id: z.string().uuid().nullable(),
+  name: z.string().nullable(),
+});
+
+const adminDisputeSummarySchema = z.object({
+  id: z.string().uuid(),
+  status: z.string(),
+  dispute_reason: z.string().nullable(),
+  dispute_details: z.string().nullable(),
+  supporting_documents: z.record(z.unknown()).nullable(),
+  created_at: z.string().datetime(),
+  resolved_at: z.string().datetime().nullable(),
+  resolution: z.string().nullable(),
+  resolution_notes: z.string().nullable(),
+});
+
+const adminGetCheckOutputSchema = z.object({
+  check: getCheckOutputSchema.shape.check.extend({
+    metadata: z.record(z.unknown()).nullable(),
+    worker: adminCheckWorkerSchema.nullable(),
+    organization: adminCheckOrganizationSchema.nullable(),
+  }),
+  documents: getCheckOutputSchema.shape.documents,
+  disputes: z.array(adminDisputeSummarySchema),
+});
+
 const BACKGROUND_CHECK_BUCKET_ID = "background-check-documents";
 const SIGNED_UPLOAD_URL_TTL_SECONDS = 60 * 5;
+const SIGNED_DOWNLOAD_URL_TTL_SECONDS = 60 * 60;
 const MAX_DOCUMENT_SIZE_BYTES = 10 * 1024 * 1024;
 
 function sanitizeFileName(fileName: string): string {
@@ -635,6 +671,138 @@ export const backgroundChecksRouter = t.router({
     }),
 
   /**
+   * Get detailed background check information for administrators.
+   */
+  adminGetCheck: officeProcedure
+    .input(z.object({ background_check_id: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const { supabase, supabaseAdmin } = ctx;
+
+      const { data: checkRecord, error: checkError } = await supabase
+        .schema("core")
+        .from("background_checks")
+        .select(
+          `
+            id,
+            status,
+            status_history,
+            package_id,
+            check_type_ids,
+            provider_check_id,
+            summary,
+            findings,
+            component_statuses,
+            metadata,
+            created_at,
+            updated_at,
+            expires_at,
+            estimated_completion_date,
+            user:users!background_checks_user_id_fkey(id, display_name, username, email, avatar_path),
+            organization:organizations!background_checks_organization_id_fkey(id, name),
+            package:background_check_packages(id, display_name, slug)
+          `,
+        )
+        .eq("id", input.background_check_id)
+        .maybeSingle();
+
+      if (checkError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load background check for admin review",
+          cause: checkError,
+        });
+      }
+
+      if (!checkRecord) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Background check not found",
+        });
+      }
+
+      let hydratedCheck = checkRecord as BackgroundCheckRecord & {
+        metadata?: unknown;
+        worker?: unknown;
+        organization?: unknown;
+        package?: unknown;
+      };
+
+      if (shouldSyncStatus(hydratedCheck.status)) {
+        const nationSearch = createNationSearchClient();
+        const synced = await syncBackgroundCheckFromProvider({
+          nationSearch,
+          supabaseAdmin,
+          check: hydratedCheck,
+        });
+
+        if (synced) {
+          hydratedCheck = {
+            ...hydratedCheck,
+            ...synced,
+          };
+        }
+      }
+
+      const { data: documents, error: documentsError } = await supabase
+        .schema("core")
+        .from("background_check_documents")
+        .select(
+          "id, document_type, file_path, file_name, file_size, mime_type, uploaded_at, verified",
+        )
+        .eq("background_check_id", input.background_check_id)
+        .order("uploaded_at", { ascending: false });
+
+      if (documentsError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load background check documents",
+          cause: documentsError,
+        });
+      }
+
+      const { data: disputes, error: disputesError } = await supabase
+        .schema("core")
+        .from("background_check_disputes")
+        .select(
+          `
+            id,
+            status,
+            dispute_reason,
+            dispute_details,
+            supporting_documents,
+            created_at,
+            resolved_at,
+            resolution,
+            resolution_notes
+          `,
+        )
+        .eq("background_check_id", input.background_check_id)
+        .order("created_at", { ascending: true });
+
+      if (disputesError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load background check disputes",
+          cause: disputesError,
+        });
+      }
+
+      return adminGetCheckOutputSchema.parse({
+        check: {
+          ...hydratedCheck,
+          metadata:
+            hydratedCheck.metadata && typeof hydratedCheck.metadata === "object"
+              ? (hydratedCheck.metadata as Record<string, unknown>)
+              : null,
+          worker: checkRecord.user ?? null,
+          organization: checkRecord.organization ?? null,
+        },
+        documents: documents ?? [],
+        disputes: disputes ?? [],
+      });
+    }),
+
+  /**
    * List disputes for the authenticated user's background check.
    */
   listDisputesForCheck: protectedProcedure
@@ -898,6 +1066,137 @@ export const backgroundChecksRouter = t.router({
 
       return {
         privacy: updatedPrivacy,
+      };
+    }),
+
+  /**
+   * Update privacy controls for a background check (admin override).
+   */
+  adminUpdatePrivacy: officeProcedure
+    .input(updatePrivacyInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabase } = ctx;
+
+      const { data: existing, error: fetchError } = await supabase
+        .schema("core")
+        .from("background_checks")
+        .select("metadata")
+        .eq("id", input.background_check_id)
+        .maybeSingle();
+
+      if (fetchError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load background check metadata for admin update",
+          cause: fetchError,
+        });
+      }
+
+      if (!existing) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Background check not found",
+        });
+      }
+
+      const existingMetadata =
+        existing.metadata && typeof existing.metadata === "object" &&
+          !Array.isArray(existing.metadata)
+          ? (existing.metadata as Record<string, unknown>)
+          : {};
+
+      const updatedPrivacy = {
+        share_publicly: input.share_publicly,
+        shared_with_organization_ids: input.shared_with_organization_ids,
+      };
+
+      const updatedMetadata = mergeMetadata(existingMetadata, {
+        privacy: updatedPrivacy,
+      });
+
+      const { error: updateError } = await supabase
+        .schema("core")
+        .from("background_checks")
+        .update({ metadata: updatedMetadata })
+        .eq("id", input.background_check_id);
+
+      if (updateError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update background check privacy settings",
+          cause: updateError,
+        });
+      }
+
+      return {
+        privacy: updatedPrivacy,
+      };
+    }),
+
+  /**
+   * Generate an admin download URL for a background check document.
+   */
+  adminGetDocumentDownloadUrl: officeProcedure
+    .input(z.object({ document_id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, supabaseAdmin, user } = ctx;
+
+      const { data: document, error: fetchError } = await supabase
+        .schema("core")
+        .from("background_check_documents")
+        .select("file_path, file_name, background_check_id")
+        .eq("id", input.document_id)
+        .maybeSingle();
+
+      if (fetchError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to load document metadata",
+          cause: fetchError,
+        });
+      }
+
+      if (!document) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Document not found",
+        });
+      }
+
+      const { data: signedUrlData, error: signedUrlError } =
+        await supabaseAdmin.storage
+          .from(BACKGROUND_CHECK_BUCKET_ID)
+          .createSignedUrl(
+            document.file_path,
+            SIGNED_DOWNLOAD_URL_TTL_SECONDS,
+            {
+              download: document.file_name ?? undefined,
+            },
+          );
+
+      if (signedUrlError || !signedUrlData?.signedUrl) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to generate download URL",
+          cause: signedUrlError,
+        });
+      }
+
+      await supabase
+        .schema("core")
+        .from("background_check_access_log")
+        .insert({
+          background_check_id: document.background_check_id,
+          accessed_by_user_id: user!.id,
+          access_type: "document_download",
+          accessed_data: {
+            document_id: input.document_id,
+            file_name: document.file_name,
+          },
+        });
+
+      return {
+        signedUrl: signedUrlData.signedUrl,
       };
     }),
 

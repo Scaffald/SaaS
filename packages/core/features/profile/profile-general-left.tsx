@@ -1,31 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react'
-import {
-  YStack,
-  XStack,
-  Text,
-  Button,
-  Input,
-  Avatar,
-  H4,
-  Spinner,
-  AnimatePresence,
-  ScrollView,
-} from 'tamagui'
+import { YStack, XStack, Text, Input, Avatar, H4, Spinner, AnimatePresence, ScrollView } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { generalProfileSchema, type GeneralProfileFormData, generalProfileDefaults } from './config'
-import { PhoneNumberInput } from '@app/ui'
+import { UIButton as Button, PhoneNumberInput } from '@app/ui'
 import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
-import {
-  DashboardWidget,
-  AvatarImagePicker,
-  RichTextEditor,
-  plainTextToTipTap,
-  ConfirmationDialog,
-} from '@app/ui'
+import { DashboardWidget, AvatarImagePicker, RichTextEditor, plainTextToTipTap, ConfirmationDialog } from '@app/ui'
 import type { JSONContent } from '@tiptap/core'
 import { isValidPhoneNumber } from '@app/schemas/common/phone'
 import { invalidateProfileQueries } from './utils/profile-sync'
@@ -410,6 +393,7 @@ export function ProfileGeneralLeft() {
             Cancel
           </Button>
           <Button
+            variant="primary"
             onPress={handleSubmit(onSubmit, onError)}
             disabled={!isDirty || isLoading || Object.keys(errors).length > 0}
             opacity={!isDirty || isLoading || Object.keys(errors).length > 0 ? 0.5 : 1}

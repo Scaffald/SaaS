@@ -1,8 +1,6 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import type { Context } from "./context.ts";
 
-import { captureTRPCError } from "../_shared/sentry.ts";
-
 // Initialize tRPC with context type
 export const t = initTRPC.context<Context>().create();
 
@@ -55,11 +53,12 @@ const errorHandlingMiddleware = t.middleware(async ({
   try {
     return await next();
   } catch (error) {
-    captureTRPCError(error, {
+    console.error("[trpc] unhandled error", {
       procedure: path,
       input,
       userId: ctx.user?.id,
       userEmail: ctx.user?.email,
+      message: error instanceof Error ? error.message : String(error),
     });
     throw error;
   }

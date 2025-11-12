@@ -15,8 +15,6 @@ catalog:
   '@react-native-community/netinfo': ~11.4.1
   '@react-native-google-signin/google-signin': ~16.0.0
   '@rnmapbox/maps': ~10.1.45
-  '@sentry/cli': ~2.58.0
-  '@sentry/react-native': 5.17.0
   '@supabase/supabase-js': ~2.58.0
   '@tamagui/animations-moti': ^1.135.0
   '@tamagui/animations-react-native': ^1.135.0
@@ -95,7 +93,6 @@ catalog:
   react-native-web: ^0.21.1
   react-refresh: ~0.14.0
   serve: ~14.2.5
-  sentry-expo: ~7.2.0
   supabase: 2.47.2
   superjson: ~1.13.1
   swr: ~2.0.0

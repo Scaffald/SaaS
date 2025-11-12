@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Button, Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from 'tamagui'
 import type { MainColor } from 'luscher-test'
 import { shuffleColors, type Color } from '../lib/luscher/utils'
+import { UIButton as Button } from '@app/ui'
 
 export interface LuscherTestStepProps {
   step: 'luscher1' | 'luscher2'
@@ -185,7 +186,7 @@ export function LuscherTestStep({
       {/* Manual Save Button (if not auto-saved) */}
       {isComplete && !isLoading && (
         <XStack justify="center">
-          <Button size="$4" onPress={() => onSave(selectedOrder)}>
+          <Button variant="primary" size="$4" onPress={() => onSave(selectedOrder)}>
             Continue
           </Button>
         </XStack>

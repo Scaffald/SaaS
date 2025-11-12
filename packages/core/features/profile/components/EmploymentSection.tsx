@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Button, Input, Spinner, AnimatePresence, Slider } from 'tamagui'
+import { YStack, XStack, Text, Input, Spinner, AnimatePresence, Slider } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -11,7 +11,7 @@ import {
   MILITARY_STATUS_OPTIONS,
   AVAILABILITY_OPTIONS,
 } from '../config/employment-schema'
-import { CustomCheckbox, DashboardWidget, LocationListInput, ToggleCard } from '@app/ui'
+import { UIButton as Button, CustomCheckbox, DashboardWidget, LocationListInput, ToggleCard } from '@app/ui'
 import { Flag, MapPin, Plane, Car, Shield, Calendar } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
 
@@ -469,6 +469,7 @@ export function EmploymentSection({
         {!readOnly && (
           <XStack justify="flex-end" pt="$4">
             <Button
+              variant="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}

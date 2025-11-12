@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Button, Input, TextArea, Spinner, AnimatePresence } from 'tamagui'
+import { YStack, XStack, Text, Input, TextArea, Spinner, AnimatePresence } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -8,7 +8,7 @@ import {
   type GeneralProfileFormData,
   generalProfileDefaults,
 } from '../config/general-schema'
-import { PhoneNumberInput, AddressForm, DashboardWidget, AvatarImagePicker } from '@app/ui'
+import { UIButton as Button, PhoneNumberInput, AddressForm, DashboardWidget, AvatarImagePicker } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
 
@@ -388,6 +388,7 @@ export function GeneralProfileSection({
         {!readOnly && (
           <XStack justify="flex-end" pt="$4">
             <Button
+              variant="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}

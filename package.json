@@ -17,7 +17,6 @@
     "deploy:reset": "./scripts/deploy-reset.sh",
     "deploy:netlify": "./scripts/deploy-netlify.sh",
     "deploy:netlify:prod": "./scripts/deploy-netlify.sh --prod",
-    "sourcemaps:upload": "bash ./scripts/upload-sourcemaps.sh",
     "secrets:add": "./scripts/add-github-secrets.sh",
     "netlify:env:sync": "./scripts/sync-netlify-env.sh",
     "watch": "turbo watch",
@@ -76,7 +75,6 @@
   "devDependencies": {
     "@biomejs/biome": "catalog:",
     "@playwright/test": "^1.56.1",
-    "@sentry/cli": "catalog:",
     "@tamagui/cli": "catalog:",
     "@tamagui/config": "catalog:",
     "@testing-library/jest-dom": "^6.4.2",

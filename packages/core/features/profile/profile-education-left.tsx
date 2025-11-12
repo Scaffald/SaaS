@@ -1,18 +1,5 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react'
-import {
-  YStack,
-  XStack,
-  Text,
-  Button,
-  Input,
-  H4,
-  TextArea,
-  ScrollView,
-  Spinner,
-  Label,
-  Popover,
-  Separator,
-} from 'tamagui'
+import { YStack, XStack, Text, Input, H4, TextArea, ScrollView, Spinner, Label, Popover, Separator } from 'tamagui'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, X, ChevronDown } from '@tamagui/lucide-icons'
@@ -25,14 +12,7 @@ import {
   createNewEducationEntry,
 } from './config'
 import type { EducationEntry, EducationEntryFormValues } from './types/education'
-import {
-  CustomCheckbox,
-  DashboardWidget,
-  UniversityAutocomplete,
-  ConfirmationDialog,
-  MonthYearPicker,
-  FieldError,
-} from '@app/ui'
+import { UIButton as Button, CustomCheckbox, DashboardWidget, UniversityAutocomplete, ConfirmationDialog, MonthYearPicker, FieldError } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import { useToastController } from '@tamagui/toast'
@@ -789,6 +769,7 @@ export function ProfileEducationLeft() {
             Cancel
           </Button>
           <Button
+            variant="primary"
             onPress={handleSubmit(onSubmit)}
             disabled={!isDirty || isLoading}
             opacity={!isDirty || isLoading ? 0.5 : 1}

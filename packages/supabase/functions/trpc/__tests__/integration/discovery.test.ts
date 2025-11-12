@@ -4,17 +4,23 @@ import {
 } from "jsr:@std/assert";
 
 import { callTRPCEndpoint, loadCachedTokens } from "../setup.ts";
+import { ensurePublicWorker } from "./seed-utils.ts";
 
 Deno.test({
   name: "Workers router - getWorkers returns list",
   sanitizeResources: false,
   sanitizeOps: false,
   async fn() {
+    await ensurePublicWorker();
+
     const response = await callTRPCEndpoint("workers.getWorkers", { limit: 5 });
 
     assertEquals(Array.isArray(response), true);
     const result = response[0]?.result?.data;
-    assertExists(result, "Workers response should include data");
+    assertExists(
+      result,
+      `Workers response should include data. Received: ${JSON.stringify(response, null, 2)}`,
+    );
     assertEquals(Array.isArray(result.workers), true);
     assertEquals(typeof result.total, "number");
   },

@@ -22,6 +22,7 @@ export const jobsRouter = t.router({
     const { supabase } = ctx;
 
     const { data, error } = await supabase
+      .schema("core")
       .from("external_jobs")
       .select(`
         id,
@@ -97,6 +98,7 @@ export const jobsRouter = t.router({
     const { supabase } = ctx;
 
     const { data, error } = await supabase
+      .schema("core")
       .from("external_jobs")
       .select(`
         job_type,

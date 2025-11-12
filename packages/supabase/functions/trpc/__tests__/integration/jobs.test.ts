@@ -4,18 +4,25 @@ import {
 } from "jsr:@std/assert";
 
 import { callTRPCEndpoint } from "../setup.ts";
+import { seedExternalJob } from "./seed-utils.ts";
 
 Deno.test({
   name: "Jobs router - getExternalJobs returns payload",
   sanitizeResources: false,
   sanitizeOps: false,
   async fn() {
-    const response = await callTRPCEndpoint("jobs.getExternalJobs");
+    const seeded = await seedExternalJob();
 
-    assertEquals(Array.isArray(response), true);
-    const result = response[0]?.result?.data;
-    assertExists(result, "TRPC response should include data");
-    assertEquals(Array.isArray(result.jobs), true);
+    try {
+      const response = await callTRPCEndpoint("jobs.getExternalJobs");
+
+      assertEquals(Array.isArray(response), true);
+      const result = response[0]?.result?.data;
+      assertExists(result, "TRPC response should include data");
+      assertEquals(Array.isArray(result.jobs), true);
+    } finally {
+      await seeded.cleanup();
+    }
   },
 });
 
