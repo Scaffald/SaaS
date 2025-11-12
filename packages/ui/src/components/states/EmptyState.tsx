@@ -71,7 +71,9 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
         fontSize={typography.xl}
         fontWeight={typography.fontWeightSemibold}
         color="$color11"
-        style={{ textAlign: 'center' }}
+        text="center"
+        maxWidth={400}
+        px="$4"
       >
         {title}
       </Text>
@@ -81,7 +83,9 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
         <Text
           fontSize={typography.base}
           color="$color10"
-          style={{ textAlign: 'center', maxWidth: 400 }}
+          text="center"
+          maxWidth={400}
+          px="$4"
           lineHeight={typography.lineHeightRelaxed}
         >
           {description}

@@ -1,4 +1,6 @@
-import type { PDFFont, PDFPage } from "pdf-lib";
+// Types imported dynamically when pdf-lib is loaded
+type PDFFont = unknown;
+type PDFPage = unknown;
 
 import type { Database } from "./database.types.ts";
 
@@ -167,7 +169,7 @@ export const buildWorkLogCsv = (snapshot: WorkLogExportSnapshot): string => {
   return `${header}\n${body}`;
 };
 
-type PdfLibModule = typeof import("pdf-lib");
+type PdfLibModule = typeof import("npm:pdf-lib@1.17.1");
 
 const wrapText = (
   text: string,
@@ -223,7 +225,7 @@ const formatHours = (value: number) => `${value.toFixed(2)}h`;
 export const buildWorkLogPdf = async (
   snapshot: WorkLogExportSnapshot,
 ): Promise<Uint8Array> => {
-  const pdfLibModule = (await import("pdf-lib")) as PdfLibModule;
+  const pdfLibModule = (await import("npm:pdf-lib@1.17.1")) as PdfLibModule;
   const { PDFDocument, StandardFonts } = pdfLibModule;
 
   const document = await PDFDocument.create();
