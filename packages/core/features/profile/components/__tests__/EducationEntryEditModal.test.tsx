@@ -24,11 +24,6 @@ vi.mock('@tamagui/lucide-icons', () => ({
 vi.mock('@app/ui', () => {
   const React = require('react') as typeof import('react')
 
-  const createView = (element = 'div') =>
-    React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ children, ...rest }, ref) =>
-      React.createElement(element, { ref, ...rest }, children),
-    )
-
   const UIButton = ({ children, onPress }: { children?: React.ReactNode; onPress?: () => void }) => (
     <button type="button" onClick={onPress}>
       {children}
@@ -98,21 +93,26 @@ vi.mock('@app/ui', () => {
     onChange: (date: Date | null) => void
     label?: string
     disabled?: boolean
-  }) => (
-    <div>
-      {label ? <label>{label}</label> : null}
-      <input
-        aria-label={label}
-        type="month"
-        disabled={disabled}
-        value={value ? value.toISOString().slice(0, 7) : ''}
-        onChange={(event) => {
-          const nextValue = event.target.value
-          onChange(nextValue ? new Date(`${nextValue}-01T12:00:00Z`) : null)
-        }}
-      />
-    </div>
-  )
+  }) => {
+    const inputId = React.useId()
+
+    return (
+      <div>
+        {label ? <label htmlFor={inputId}>{label}</label> : null}
+        <input
+          id={label ? inputId : undefined}
+          aria-label={label}
+          type="month"
+          disabled={disabled}
+          value={value ? value.toISOString().slice(0, 7) : ''}
+          onChange={(event) => {
+            const nextValue = event.target.value
+            onChange(nextValue ? new Date(`${nextValue}-01T12:00:00Z`) : null)
+          }}
+        />
+      </div>
+    )
+  }
 
   return {
     ResponsiveModal: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,

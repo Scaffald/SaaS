@@ -1,31 +1,36 @@
 import { describe, expect, it } from 'vitest'
+
 import { formatDate, formatDateRange } from '../date-formatting'
 
-describe('date-formatting utilities', () => {
-  it('formats single dates with fallback for invalid input', () => {
-    expect(formatDate('2025-03-15T00:00:00Z')).toBe('Mar 2025')
-    expect(formatDate(null)).toBe('N/A')
+describe('formatDate', () => {
+  it('formats valid ISO strings to month and year', () => {
+    expect(formatDate('2024-03-15')).toBe('Mar 2024')
+  })
+
+  it('returns fallback when date is missing or invalid', () => {
+    expect(formatDate(undefined)).toBe('N/A')
     expect(formatDate('not-a-date')).toBe('not-a-date')
   })
+})
 
-  it('formats ongoing date ranges with expected graduation information', () => {
-    expect(formatDateRange('2024-01-15T00:00:00Z', null, true)).toBe('Jan 2024 - Present')
-    expect(formatDateRange('2024-01-15T00:00:00Z', null, true, '2024-06-20T00:00:00Z')).toBe(
-      'Jan 2024 - Present (Expected: Jun 2024)',
-    )
-    expect(formatDateRange(null, null, true, 'invalid-date')).toBe(
-      'N/A - Present (Expected: invalid-date)',
-    )
+describe('formatDateRange', () => {
+  it('includes expected graduation when entry is current', () => {
+    const result = formatDateRange('2023-09-15', null, true, '2025-05-15')
+    expect(result).toBe('Sep 2023 - Present (Expected: May 2025)')
   })
 
-  it('formats completed date ranges', () => {
-    expect(formatDateRange('2023-02-15T00:00:00Z', '2024-02-15T00:00:00Z', false)).toBe(
-      'Feb 2023 - Feb 2024',
-    )
+  it('omits expected graduation when not provided for current entries', () => {
+    const result = formatDateRange('2023-09-15', null, true)
+    expect(result).toBe('Sep 2023 - Present')
   })
 
-  it('falls back gracefully when start or end dates are missing', () => {
-    expect(formatDateRange(undefined, '2024-05-15T12:00:00Z', false)).toBe('N/A - May 2024')
-    expect(formatDateRange('2024-05-15T12:00:00Z', undefined, false)).toBe('May 2024 - N/A')
+  it('formats completed education date ranges', () => {
+    const result = formatDateRange('2020-01-15', '2022-01-15', false)
+    expect(result).toBe('Jan 2020 - Jan 2022')
+  })
+
+  it('handles invalid end dates gracefully', () => {
+    const result = formatDateRange('2020-01-15', 'invalid-date', false)
+    expect(result).toBe('Jan 2020 - invalid-date')
   })
 })

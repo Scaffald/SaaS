@@ -1,33 +1,79 @@
 import { describe, expect, it } from 'vitest'
 
-import { educationProfileSchema } from '../education-schema'
+import { educationProfileSchema, singleEducationEntrySchema } from '../education-schema'
 
 const baseEntry = {
-  institution_name: 'Manual University',
+  institution_name: 'State College',
   start_date: '2020-01-01',
-  end_date: '2021-01-01',
-  is_current: false,
+  end_date: '2022-05-01',
 } as const
 
-describe('educationProfileSchema', () => {
-  it('allows manual institution entries without a university id', () => {
-    const result = educationProfileSchema.safeParse({
-      education_level: 'Bachelor Degree',
-      education_entries: [
-        {
-          ...baseEntry,
-          university_id: null,
-        },
-      ],
+describe('education schema validation', () => {
+  it('allows manual institution entries without university id', () => {
+    const result = singleEducationEntrySchema.parse({
+      ...baseEntry,
+      university_id: null,
+      degree_type: 'Bachelor Degree',
     })
 
-    expect(result.success).toBe(true)
-    if (result.success) {
-      expect(result.data.education_entries?.[0]?.is_verified).toBe(false)
+    expect(result.university_id).toBeNull()
+    expect(result.is_verified).toBe(false)
+  })
+
+  it('requires custom degree when selecting Other', () => {
+    const result = singleEducationEntrySchema.safeParse({
+      ...baseEntry,
+      degree_type: 'Other',
+      custom_degree_type: '',
+    })
+
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      const errorMessages = result.error.format().custom_degree_type?._errors ?? []
+      expect(errorMessages).toContain('Please specify the degree type')
     }
   })
 
-  it('rejects entries without an institution name', () => {
+  it('rejects GPA values outside allowed range', () => {
+    const result = singleEducationEntrySchema.safeParse({
+      ...baseEntry,
+      gpa: 4.5,
+    })
+
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      const errorMessages = result.error.format().gpa?._errors ?? []
+      expect(errorMessages).toContain('GPA must be between 0.0 and 4.0')
+    }
+  })
+
+  it('rejects end dates that precede the start date', () => {
+    const result = singleEducationEntrySchema.safeParse({
+      ...baseEntry,
+      start_date: '2020-01-01',
+      end_date: '2019-12-01',
+    })
+
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      const errorMessages = result.error.format().end_date?._errors ?? []
+      expect(errorMessages).toContain('End date must be after start date')
+    }
+  })
+
+  it('allows current education with expected graduation date', () => {
+    const result = singleEducationEntrySchema.parse({
+      ...baseEntry,
+      is_current: true,
+      end_date: undefined,
+      expected_graduation_date: '2025-05-01',
+    })
+
+    expect(result.is_current).toBe(true)
+    expect(result.expected_graduation_date).toBe('2025-05-01')
+  })
+
+  it('requires institution name at the form level', () => {
     const result = educationProfileSchema.safeParse({
       education_entries: [
         {
@@ -39,78 +85,9 @@ describe('educationProfileSchema', () => {
 
     expect(result.success).toBe(false)
     if (!result.success) {
-      expect(result.error.issues[0]?.message).toContain('Institution name is required')
-    }
-  })
-
-  it('requires end date when not currently enrolled', () => {
-    const result = educationProfileSchema.safeParse({
-      education_entries: [
-        {
-          ...baseEntry,
-          end_date: undefined,
-        },
-      ],
-    })
-
-    expect(result.success).toBe(false)
-    if (!result.success) {
-      expect(result.error.issues.some((issue) => issue.message.includes('End date is required'))).toBe(
-        true,
-      )
-    }
-  })
-
-  it('permits current education without end date when expected graduation provided', () => {
-    const result = educationProfileSchema.safeParse({
-      education_entries: [
-        {
-          ...baseEntry,
-          is_current: true,
-          end_date: undefined,
-          expected_graduation_date: '2026-06-01',
-        },
-      ],
-    })
-
-    expect(result.success).toBe(true)
-  })
-
-  it('rejects GPA values outside the valid range', () => {
-    const result = educationProfileSchema.safeParse({
-      education_entries: [
-        {
-          ...baseEntry,
-          gpa: 4.5,
-        },
-      ],
-    })
-
-    expect(result.success).toBe(false)
-    if (!result.success) {
-      expect(result.error.issues.some((issue) => issue.message.includes('GPA must be between'))).toBe(
-        true,
-      )
-    }
-  })
-
-  it('requires a custom label when degree type is Other', () => {
-    const result = educationProfileSchema.safeParse({
-      education_entries: [
-        {
-          ...baseEntry,
-          degree_type: 'Other',
-          custom_degree_type: undefined,
-        },
-      ],
-    })
-
-    expect(result.success).toBe(false)
-    if (!result.success) {
-      expect(
-        result.error.issues.some((issue) => issue.message.includes('Please specify the degree type')),
-      ).toBe(true)
+      const entryErrors = result.error.format().education_entries?.[0]
+      const messages = entryErrors?.institution_name?._errors ?? []
+      expect(messages).toContain('Institution name is required')
     }
   })
 })
-

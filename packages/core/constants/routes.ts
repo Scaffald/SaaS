@@ -148,6 +148,11 @@ const ROUTES_CONFIG = {
   },
 
   // Dashboard > Discover
+  DASHBOARD_DISCOVER: {
+    path: "/dashboard/discover",
+    title: "Discover",
+    isProtected: true,
+  },
   DASHBOARD_DISCOVER_MAP: {
     path: "/dashboard/discover/map",
     title: "Map",
@@ -267,6 +272,11 @@ const ROUTES_CONFIG = {
     title: "Office",
     isProtected: true,
   },
+  OFFICE_CMS: {
+    path: "/office/cms",
+    title: "Content Management",
+    isProtected: true,
+  },
   OFFICE_NOTIFICATIONS: {
     path: "/office/notifications",
     title: "Notifications",
@@ -283,7 +293,7 @@ const ROUTES_CONFIG = {
     isProtected: true,
   },
   OFFICE_ATS_DETAIL: {
-    path: "/office/applications/:id",
+    path: "/office/ats/:id",
     title: "Application Detail",
     isProtected: true,
   },
@@ -318,32 +328,32 @@ const ROUTES_CONFIG = {
     isProtected: true,
   },
   OFFICE_CMS_JOBS: {
-    path: "/office/jobs",
+    path: "/office/cms/jobs",
     title: "Manage Jobs",
     isProtected: true,
   },
   OFFICE_CMS_JOBS_CREATE: {
-    path: "/office/jobs/create",
+    path: "/office/cms/jobs/create",
     title: "Create Job",
     isProtected: true,
   },
   OFFICE_CMS_JOBS_EDIT: {
-    path: "/office/jobs/:id/edit",
+    path: "/office/cms/jobs/:id/edit",
     title: "Edit Job",
     isProtected: true,
   },
   OFFICE_CMS_UNIVERSITIES: {
-    path: "/office/universities",
+    path: "/office/cms/universities",
     title: "Manage Universities",
     isProtected: true,
   },
   OFFICE_CMS_UNIVERSITIES_CREATE: {
-    path: "/office/universities/create",
+    path: "/office/cms/universities/create",
     title: "Create University",
     isProtected: true,
   },
   OFFICE_CMS_UNIVERSITIES_EDIT: {
-    path: "/office/universities/:id/edit",
+    path: "/office/cms/universities/:id/edit",
     title: "Edit University",
     isProtected: true,
   },
@@ -353,12 +363,12 @@ const ROUTES_CONFIG = {
     isProtected: true,
   },
   OFFICE_CMS_ORGANIZATIONS_CREATE: {
-    path: "/office/organizations/create",
+    path: "/office/cms/organizations/create",
     title: "Create Organization",
     isProtected: true,
   },
   OFFICE_CMS_ORGANIZATIONS_EDIT: {
-    path: "/office/organizations/:id/edit",
+    path: "/office/cms/organizations/:id/edit",
     title: "Edit Organization",
     isProtected: true,
   },
@@ -393,17 +403,17 @@ const ROUTES_CONFIG = {
     isProtected: true,
   },
   OFFICE_CMS_WELCOME: {
-    path: "/office/cms",
-    title: "CMS",
+    path: "/office/cms/welcome",
+    title: "Welcome Slides",
     isProtected: true,
   },
   OFFICE_CMS_WELCOME_CREATE: {
-    path: "/office/cms/create",
+    path: "/office/cms/welcome/create",
     title: "Create Slide",
     isProtected: true,
   },
   OFFICE_CMS_WELCOME_EDIT: {
-    path: "/office/cms/:id/edit",
+    path: "/office/cms/welcome/:id/edit",
     title: "Edit Slide",
     isProtected: true,
   },
@@ -421,7 +431,7 @@ export const ROUTES = ROUTES_CONFIG;
 
 /**
  * Build a route with dynamic parameters
- * @example buildRoute(ROUTES.OFFICE_CMS_JOBS_EDIT, { id: 123 }) => '/office/jobs/123/edit'
+ * @example buildRoute(ROUTES.OFFICE_CMS_JOBS_EDIT, { id: 123 }) => '/office/cms/jobs/123/edit'
  */
 export function buildRoute(
   route: RouteConfig,
@@ -486,6 +496,165 @@ export const RouteBuilder = {
     buildRoute(ROUTES.DASHBOARD_WORK_LOGS_DETAIL, { workLogId }),
   dashboardWorkLogCreate: () => ROUTES.DASHBOARD_WORK_LOGS_CREATE.path,
 } as const;
+
+// ============================================================================
+// Navigation Hierarchy
+// ============================================================================
+
+export type RouteHierarchyNode = {
+  key: keyof typeof ROUTES;
+  children?: readonly RouteHierarchyNode[];
+};
+
+export const ROUTE_HIERARCHY: readonly RouteHierarchyNode[] = [
+  {
+    key: "DASHBOARD",
+    children: [
+      {
+        key: "DASHBOARD_PROFILE",
+        children: [
+          { key: "DASHBOARD_PROFILE_GENERAL" },
+          { key: "DASHBOARD_PROFILE_EMPLOYMENT" },
+          { key: "DASHBOARD_PROFILE_SKILLS" },
+          { key: "DASHBOARD_PROFILE_CERTIFICATIONS" },
+          { key: "DASHBOARD_PROFILE_IMPORT_REVIEW" },
+          { key: "DASHBOARD_PROFILE_EDUCATION" },
+          { key: "DASHBOARD_PROFILE_EXPERIENCE" },
+          {
+            key: "DASHBOARD_PROFILE_BACKGROUND_CHECK",
+            children: [
+              { key: "DASHBOARD_PROFILE_BACKGROUND_CHECK_INITIATE" },
+              { key: "DASHBOARD_PROFILE_BACKGROUND_CHECK_DISPUTE" },
+            ],
+          },
+        ],
+      },
+      {
+        key: "DASHBOARD_SETTINGS",
+        children: [
+          { key: "DASHBOARD_SETTINGS_GENERAL" },
+          { key: "DASHBOARD_SETTINGS_SECURITY" },
+          { key: "DASHBOARD_SETTINGS_AUTHENTICATION" },
+          { key: "DASHBOARD_NOTIFICATIONS" },
+        ],
+      },
+      {
+        key: "DASHBOARD_DISCOVER",
+        children: [
+          { key: "DASHBOARD_DISCOVER_MAP" },
+          {
+            key: "DASHBOARD_DISCOVER_WORKERS",
+            children: [{ key: "DASHBOARD_DISCOVER_WORKER_DETAIL" }],
+          },
+          {
+            key: "DASHBOARD_DISCOVER_EMPLOYERS",
+            children: [{ key: "DASHBOARD_DISCOVER_EMPLOYER_DETAIL" }],
+          },
+          {
+            key: "DASHBOARD_DISCOVER_JOBS",
+            children: [{ key: "DASHBOARD_DISCOVER_JOB_DETAIL" }],
+          },
+        ],
+      },
+      {
+        key: "DASHBOARD_ASSESSMENTS",
+        children: [
+          { key: "DASHBOARD_ASSESSMENT_LUSCHER_1" },
+          { key: "DASHBOARD_ASSESSMENT_IPIP" },
+          { key: "DASHBOARD_ASSESSMENT_RIASEC" },
+          { key: "DASHBOARD_ASSESSMENT_OCCUPATION" },
+          { key: "DASHBOARD_ASSESSMENT_PERSONALITY" },
+        ],
+      },
+      {
+        key: "DASHBOARD_TEAMS",
+        children: [
+          { key: "DASHBOARD_TEAMS_INVITATIONS" },
+          { key: "DASHBOARD_TEAM_DETAIL" },
+        ],
+      },
+      {
+        key: "DASHBOARD_WORK_LOGS",
+        children: [
+          { key: "DASHBOARD_WORK_LOGS_CREATE" },
+          { key: "DASHBOARD_WORK_LOGS_DETAIL" },
+        ],
+      },
+      { key: "DASHBOARD_ORGANIZATIONS_CREATE" },
+      { key: "DASHBOARD_USER" },
+    ],
+  },
+  {
+    key: "OFFICE",
+    children: [
+      {
+        key: "OFFICE_CMS",
+        children: [
+          {
+            key: "OFFICE_CMS_WELCOME",
+            children: [
+              { key: "OFFICE_CMS_WELCOME_CREATE" },
+              { key: "OFFICE_CMS_WELCOME_EDIT" },
+            ],
+          },
+          {
+            key: "OFFICE_CMS_WORKERS",
+            children: [
+              { key: "OFFICE_CMS_WORKERS_CREATE" },
+              { key: "OFFICE_CMS_WORKERS_EDIT" },
+            ],
+          },
+          {
+            key: "OFFICE_CMS_JOBS",
+            children: [
+              { key: "OFFICE_CMS_JOBS_CREATE" },
+              { key: "OFFICE_CMS_JOBS_EDIT" },
+            ],
+          },
+          {
+            key: "OFFICE_CMS_ORGANIZATIONS",
+            children: [
+              { key: "OFFICE_CMS_ORGANIZATIONS_CREATE" },
+              { key: "OFFICE_CMS_ORGANIZATIONS_EDIT" },
+            ],
+          },
+          {
+            key: "OFFICE_CMS_TEAMS",
+            children: [
+              { key: "OFFICE_CMS_TEAMS_CREATE" },
+              {
+                key: "OFFICE_CMS_TEAMS_DETAIL",
+                children: [
+                  { key: "OFFICE_CMS_TEAMS_EDIT" },
+                  { key: "OFFICE_CMS_TEAMS_ANALYTICS" },
+                  { key: "OFFICE_CMS_TEAMS_SETTINGS" },
+                ],
+              },
+            ],
+          },
+          {
+            key: "OFFICE_CMS_UNIVERSITIES",
+            children: [
+              { key: "OFFICE_CMS_UNIVERSITIES_CREATE" },
+              { key: "OFFICE_CMS_UNIVERSITIES_EDIT" },
+            ],
+          },
+        ],
+      },
+      {
+        key: "OFFICE_ATS",
+        children: [
+          { key: "OFFICE_ATS_CHECKS" },
+          { key: "OFFICE_ATS_CHECKS_REQUEST" },
+          { key: "OFFICE_ATS_CHECKS_ADMIN" },
+          { key: "OFFICE_ATS_DETAIL" },
+        ],
+      },
+      { key: "OFFICE_NOTIFICATIONS" },
+      { key: "OFFICE_STORAGE" },
+    ],
+  },
+] as const;
 
 // ============================================================================
 // Legacy Compatibility (for gradual migration)

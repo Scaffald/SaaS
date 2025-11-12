@@ -63,13 +63,14 @@ vi.mock('@app/ui', () => {
     HTMLButtonElement,
     React.ComponentPropsWithoutRef<'button'> & {
       onPress?: () => void
+      'data-testid'?: string
     }
-  >(({ children, onPress, ...rest }, ref) => (
+  >(({ children, onPress, 'data-testid': dataTestId, ...rest }, ref) => (
     <button
       ref={ref}
       type="button"
       onClick={onPress}
-      data-testid={rest['data-testid']}
+      data-testid={dataTestId}
       {...rest}
     >
       {children}
@@ -157,22 +158,27 @@ vi.mock('@app/ui', () => {
     label?: string
     disabled?: boolean
     error?: string
-  }) => (
-    <div>
-      {label ? <label>{label}</label> : null}
-      <input
-        aria-label={label}
-        type="month"
-        disabled={disabled}
-        value={value ? value.toISOString().slice(0, 7) : ''}
-        onChange={(event) => {
-          const nextValue = event.target.value
-          onChange(nextValue ? new Date(`${nextValue}-01T12:00:00Z`) : null)
-        }}
-      />
-      {error ? <span>{error}</span> : null}
-    </div>
-  )
+  }) => {
+    const inputId = React.useId()
+
+    return (
+      <div>
+        {label ? <label htmlFor={inputId}>{label}</label> : null}
+        <input
+          id={label ? inputId : undefined}
+          aria-label={label}
+          type="month"
+          disabled={disabled}
+          value={value ? value.toISOString().slice(0, 7) : ''}
+          onChange={(event) => {
+            const nextValue = event.target.value
+            onChange(nextValue ? new Date(`${nextValue}-01T12:00:00Z`) : null)
+          }}
+        />
+        {error ? <span>{error}</span> : null}
+      </div>
+    )
+  }
 
   const FieldError = ({ message }: { message?: string }) =>
     message ? <span>{message}</span> : null

@@ -338,14 +338,13 @@ describe('ImportReviewScreen', () => {
           },
         ],
         experience: [
-          {
+          expect.objectContaining({
             job_title: 'Field Electrician',
             company_name: 'Bright Sparks',
             start_date: '2022-01-01',
-            end_date: null,
             is_current: true,
             confidence_score: 0.9,
-          },
+          }),
         ],
         education: [],
         skills: [

@@ -68,4 +68,26 @@ describe('normalizeEducationEntry', () => {
 
     expect(result.expected_graduation_date).toBe('2026-06-01')
   })
+
+  it('keeps current status and normalizes null end date', () => {
+    const result = normalizeEducationEntry({
+      ...baseEntry,
+      is_current: true,
+      end_date: null,
+    } as unknown as typeof baseEntry)
+
+    expect(result.is_current).toBe(true)
+    expect(result.end_date).toBeUndefined()
+  })
+
+  it('returns undefined degree type when no value provided', () => {
+    const result = normalizeEducationEntry({
+      ...baseEntry,
+      degree_type: undefined,
+      custom_degree_type: undefined,
+    } as unknown as typeof baseEntry)
+
+    expect(result.degree_type).toBeUndefined()
+    expect(result.custom_degree_type).toBeUndefined()
+  })
 })
