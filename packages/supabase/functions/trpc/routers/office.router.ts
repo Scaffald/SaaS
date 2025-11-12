@@ -1442,6 +1442,7 @@ export const officeRouter = t.router({
         throw new TRPCError({
           code: "CONFLICT",
           message: "An organization with this vanity URL already exists",
+        });
       }
 
       // Update organization including locations in JSONB column

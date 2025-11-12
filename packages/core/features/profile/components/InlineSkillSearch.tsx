@@ -252,8 +252,8 @@ export function InlineSkillSearch({
             step={1}
             size="$3"
           >
-            <Slider.Track>
-              <Slider.TrackActive />
+            <Slider.Track bg="$color4" height={6}>
+              <Slider.TrackActive bg="$green9" />
             </Slider.Track>
             <Slider.Thumb index={0} circular size="$1" />
           </Slider>
