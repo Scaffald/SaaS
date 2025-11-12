@@ -43,6 +43,12 @@ import {
   teamMemberSelfRemovalSchema,
   teamActivityCommentSchema,
 } from "../../_shared/team-schemas.ts";
+import { assignApplicationToMember } from "../../_shared/utils/application-assignment.ts";
+const teamApplicationAssignmentSchema = z.object({
+  teamId: teamIdSchema,
+  applicationId: z.string().uuid(),
+  assigneeUserId: z.string().uuid(),
+});
 
 type SupabaseAdminClient = Context["supabaseAdmin"];
 type AuthenticatedProcedure = typeof protectedProcedure;
@@ -2356,6 +2362,93 @@ function buildAnalyticsRouter(procedure: AuthenticatedProcedure) {
         };
       }),
 
+    comments: procedure
+      .input(
+        z.object({
+          teamId: teamIdSchema,
+          applicationId: z.string().uuid().optional(),
+          limit: z.number().int().min(1).max(100).default(50),
+          cursor: z.string().datetime().optional(),
+        }),
+      )
+      .query(async ({ ctx, input }) => {
+        const { supabaseAdmin } = ctx;
+
+        const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
+        await ensureTeamActionPermission({
+          ctx,
+          team,
+          permission: TeamPermissions.PARTICIPATE_DISCUSSION,
+        });
+
+        let query = supabaseAdmin
+          .schema("core")
+          .from("team_activity_events")
+          .select(
+            `
+            id,
+            team_id,
+            organization_id,
+            event_type,
+            actor_user_id,
+            related_application_id,
+            payload,
+            occurred_at,
+            created_at,
+            actor:users(id, display_name, username)
+          `,
+          )
+          .eq("team_id", input.teamId)
+          .eq("event_type", "discussion.comment")
+          .order("occurred_at", { ascending: false })
+          .limit(input.limit);
+
+        if (input.applicationId) {
+          query = query.eq("related_application_id", input.applicationId);
+        }
+
+        if (input.cursor) {
+          query = query.lt("occurred_at", input.cursor);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to load comments: ${error.message}`,
+          });
+        }
+
+        const comments = (data ?? []).map((record) => {
+          const payload = (record.payload as Record<string, unknown> | null) ?? {};
+          return {
+            id: record.id as string,
+            teamId: record.team_id as string,
+            organizationId: record.organization_id as string,
+            eventType: record.event_type as string,
+            actorUserId: record.actor_user_id as string | null,
+            actorDisplayName: record.actor
+              ? ((record.actor.display_name as string | null) ??
+                (record.actor.username as string | null) ??
+                null)
+              : null,
+            relatedApplicationId: record.related_application_id as string | null,
+            body: typeof payload.body === "string" ? payload.body : "",
+            mentions: Array.isArray(payload.mentions)
+              ? (payload.mentions as string[]).map((mention) => String(mention))
+              : [],
+            occurredAt: record.occurred_at as string,
+            createdAt: record.created_at as string,
+          };
+        });
+
+        return {
+          comments,
+          nextCursor: comments.length === input.limit ? comments[comments.length - 1]?.occurredAt ?? null : null,
+        };
+      }),
+
     workload: procedure
       .input(teamWorkloadSnapshotInputSchema)
       .query(async ({ ctx, input }) => {
@@ -2464,6 +2557,7 @@ function buildAnalyticsRouter(procedure: AuthenticatedProcedure) {
             team_id: input.teamId,
             event_type: "discussion.comment",
             actor_user_id: user.id,
+            related_application_id: input.applicationId ?? null,
             payload,
           })
           .select(
@@ -2858,6 +2952,7 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
   const invitationsRouter = buildInvitationsRouter(procedure);
   const analyticsRouter = buildAnalyticsRouter(procedure);
   const jobsRouter = buildJobAssignmentsRouter(procedure);
+  const applicationsRouter = buildApplicationAssignmentsRouter(procedure);
 
   return t.router({
     list: procedure
@@ -3385,6 +3480,7 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
     members: membersRouter,
     invitations: invitationsRouter,
     analytics: analyticsRouter,
+    applications: applicationsRouter,
     jobs: jobsRouter,
 
     respondToInvitation: publicProcedure
@@ -3545,6 +3641,98 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
           .eq("id", invitation.id);
 
         return { status: "declined", teamId: team.id };
+      }),
+  });
+}
+
+function buildApplicationAssignmentsRouter(procedure: AuthenticatedProcedure) {
+  return t.router({
+    assign: procedure
+      .input(teamApplicationAssignmentSchema)
+      .mutation(async ({ ctx, input }) => {
+        const { supabaseAdmin, user } = ctx;
+
+        if (!user) {
+          throw new TRPCError({ code: "UNAUTHORIZED" });
+        }
+
+        const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
+        await ensureTeamActionPermission({
+          ctx,
+          team,
+          permission: TeamPermissions.MANAGE_APPLICATIONS,
+        });
+
+        const { data: applicationRecord, error: applicationError } = await supabaseAdmin
+          .schema("core")
+          .from("applications")
+          .select("id, job_id")
+          .eq("id", input.applicationId)
+          .maybeSingle();
+
+        if (applicationError || !applicationRecord) {
+          throw new TRPCError({
+            code: applicationError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+            message: applicationError ? `Failed to load application: ${applicationError.message}` : "Application not found",
+          });
+        }
+
+        const jobId = applicationRecord.job_id as string;
+
+        const { data: jobRecord, error: jobError } = await supabaseAdmin
+          .schema("core")
+          .from("jobs")
+          .select("id, assigned_team_id, organization_id")
+          .eq("id", jobId)
+          .maybeSingle();
+
+        if (jobError || !jobRecord) {
+          throw new TRPCError({
+            code: jobError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+            message: jobError ? `Failed to load job: ${jobError.message}` : "Job not found",
+          });
+        }
+
+        const teamIds = new Set<string>();
+        if (jobRecord.assigned_team_id) {
+          teamIds.add(jobRecord.assigned_team_id as string);
+        }
+
+        const { data: jobTeams, error: jobTeamsError } = await supabaseAdmin
+          .schema("core")
+          .from("job_team_assignments")
+          .select("team_id")
+          .eq("job_id", jobId);
+
+        if (jobTeamsError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to load job-team assignments: ${jobTeamsError.message}`,
+          });
+        }
+
+        for (const record of jobTeams ?? []) {
+          teamIds.add(record.team_id as string);
+        }
+
+        if (!teamIds.has(input.teamId)) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "This team is not assigned to the selected job.",
+          });
+        }
+
+        await assignApplicationToMember({
+          supabaseAdmin,
+          applicationId: input.applicationId,
+          teamId: input.teamId,
+          assigneeUserId: input.assigneeUserId,
+          actorUserId: user.id,
+          organizationId: jobRecord.organization_id as string | null,
+          source: "manual",
+        });
+
+        return { success: true };
       }),
   });
 }

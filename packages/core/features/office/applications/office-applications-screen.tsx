@@ -91,6 +91,10 @@ export const OfficeApplicationsScreen = () => {
           location: app.job_location || '',
           payRange: '', // Not displayed in kanban view
         },
+        team: {
+          id: (app.job as { assigned_team_id?: string | null } | null)?.assigned_team_id ?? null,
+          assignedUserId: (app as { assigned_to?: string | null }).assigned_to ?? null,
+        },
       }
     })
   }, [applications])

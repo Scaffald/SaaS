@@ -1,11 +1,13 @@
 import { Button, Theme } from 'tamagui'
 import { supabase } from '@app/core/utils/supabase/client'
 import { captureEvent } from '@app/core/utils/analytics/client'
+import { useTranslation } from '@app/core/utils/useTranslation'
 
 import { IconGoogle } from './IconGoogle'
 
 export function GoogleSignIn() {
   // Using supabase directly from import
+  const { t } = useTranslation()
   const handleOAuthSignIn = async () => {
     captureEvent('auth_social_sign_in_started', { provider: 'google' })
     const { error } = await supabase.auth.signInWithOAuth({
@@ -39,7 +41,7 @@ export function GoogleSignIn() {
         onPress={() => handleOAuthSignIn()}
         icon={IconGoogle}
       >
-        Login with Google
+        {t('auth.login.googleButton')}
       </Button>
     </Theme>
   )

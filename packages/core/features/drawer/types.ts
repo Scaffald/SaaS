@@ -1,6 +1,7 @@
 import type { JSX } from "react";
 import type { GestureResponderEvent } from "react-native";
 import type { DrawerContentComponentProps } from "@react-navigation/drawer";
+import type { TranslationKey } from "@app/core/locales";
 import type { BarChart3 } from "@tamagui/lucide-icons";
 
 /**
@@ -8,7 +9,8 @@ import type { BarChart3 } from "@tamagui/lucide-icons";
  */
 export type DrawerItemConfig = {
   key: string;
-  title: string;
+  title?: string;
+  titleKey?: TranslationKey;
   href: string;
   icon?: typeof BarChart3;
   description?: string;

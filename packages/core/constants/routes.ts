@@ -382,6 +382,11 @@ const ROUTES_CONFIG = {
     title: "Edit Team",
     isProtected: true,
   },
+  OFFICE_TEAMS_ANALYTICS: {
+    path: "/office/teams/:id/analytics",
+    title: "Team Analytics",
+    isProtected: true,
+  },
   OFFICE_TEAMS_SETTINGS: {
     path: "/office/teams/:id/settings",
     title: "Team Settings",
@@ -446,6 +451,8 @@ export const RouteBuilder = {
     buildRoute(ROUTES.OFFICE_TEAMS_EDIT, { id }),
   officeTeamsDetail: (id: string | number) =>
     buildRoute(ROUTES.OFFICE_TEAMS_DETAIL, { id }),
+  officeTeamsAnalytics: (id: string | number) =>
+    buildRoute(ROUTES.OFFICE_TEAMS_ANALYTICS, { id }),
   officeTeamsSettings: (id: string | number) =>
     buildRoute(ROUTES.OFFICE_TEAMS_SETTINGS, { id }),
   officeBackgroundChecksRequest: () =>
@@ -522,6 +529,7 @@ export const OFFICE_ROUTES = {
   JOBS: ROUTES.OFFICE_JOBS,
   TEAMS: ROUTES.OFFICE_TEAMS,
   TEAMS_DETAIL: ROUTES.OFFICE_TEAMS_DETAIL,
+  TEAMS_ANALYTICS: ROUTES.OFFICE_TEAMS_ANALYTICS,
   TEAMS_SETTINGS: ROUTES.OFFICE_TEAMS_SETTINGS,
   UNIVERSITIES: ROUTES.OFFICE_UNIVERSITIES,
   BACKGROUND_CHECKS: ROUTES.OFFICE_BACKGROUND_CHECKS,

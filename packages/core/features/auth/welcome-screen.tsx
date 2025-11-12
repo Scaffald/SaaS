@@ -4,20 +4,21 @@ import { Onboarding, type OnboardingStepInfo, StepContent, Spinner, YStack } fro
 import * as LucideIcons from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
 import type { WelcomeSlide } from '@app/schemas'
+import { useTranslation } from '@app/core/utils/useTranslation'
 
 interface WelcomeScreenProps {
   onOnboarded?: () => void
 }
 
 // Default fallback slides in case API fails or returns empty
-const DEFAULT_SLIDES: OnboardingStepInfo[] = [
+const createDefaultSlides = (t: (key: string, params?: Record<string, unknown>) => string): OnboardingStepInfo[] => [
   {
     backgroundImage: 'https://images.pexels.com/photos/271667/pexels-photo-271667.jpeg',
     Content: () => (
       <StepContent
-        title="Discover"
+        title={t('auth.welcome.steps.discover.title')}
         icon={LucideIcons.UserSearch}
-        description="Explore tailored content that matches your interests and goals."
+        description={t('auth.welcome.steps.discover.description')}
       />
     ),
   },
@@ -25,9 +26,9 @@ const DEFAULT_SLIDES: OnboardingStepInfo[] = [
     backgroundImage: 'https://images.pexels.com/photos/574073/pexels-photo-574073.jpeg',
     Content: () => (
       <StepContent
-        title="Connect"
+        title={t('auth.welcome.steps.connect.title')}
         icon={LucideIcons.Share2}
-        description="Engage with experts and peers to grow your knowledge and network."
+        description={t('auth.welcome.steps.connect.description')}
       />
     ),
   },
@@ -36,9 +37,9 @@ const DEFAULT_SLIDES: OnboardingStepInfo[] = [
       'https://images.pexels.com/photos/40568/medical-appointment-doctor-healthcare-40568.jpeg',
     Content: () => (
       <StepContent
-        title="Grow"
+        title={t('auth.welcome.steps.grow.title')}
         icon={LucideIcons.Sprout}
-        description="Track your progress and unlock new opportunities as you learn."
+        description={t('auth.welcome.steps.grow.description')}
       />
     ),
   },
@@ -49,6 +50,7 @@ const DEFAULT_SLIDES: OnboardingStepInfo[] = [
  */
 export const WelcomeScreen = ({ onOnboarded }: WelcomeScreenProps = {}) => {
   const { data, isLoading } = api.cms.getActiveWelcomeSlides.useQuery()
+  const { t } = useTranslation()
 
   if (isLoading) {
     return (
@@ -77,7 +79,7 @@ export const WelcomeScreen = ({ onOnboarded }: WelcomeScreenProps = {}) => {
             ),
           }
         })
-      : DEFAULT_SLIDES
+      : createDefaultSlides(t)
 
   return <Onboarding autoSwipe onOnboarded={onOnboarded} steps={steps} />
 }

@@ -1,15 +1,18 @@
 import { H1, Paragraph, View } from 'tamagui'
 import { Mail } from '@tamagui/lucide-icons'
+import { useTranslation } from '@app/core/utils/useTranslation'
 
 interface EmailHeaderProps {
   email: string
 }
 
 export function EmailHeader({ email }: EmailHeaderProps) {
+  const { t } = useTranslation()
+
   return (
     <View items="center" gap="$3" width="100%">
       <H1 fontWeight="700" fontSize="$7" color="$color12">
-        Check your email
+        {t('auth.verify.title')}
       </H1>
 
       <View flexDirection="row" items="center" justify="center" gap="$2">
@@ -27,7 +30,7 @@ export function EmailHeader({ email }: EmailHeaderProps) {
       </View>
 
       <Paragraph text="center" size="$2" $gtSm={{ size: '$3' }}>
-        Open the link in your email or enter the code below to sign in.
+        {t('auth.verify.instructions')}
       </Paragraph>
     </View>
   )

@@ -5,18 +5,20 @@ import { Stack } from 'expo-router'
 import { useState } from 'react'
 import { useWindowDimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useTranslation } from '@app/core/utils/useTranslation'
 
 export default function Screen() {
   const [hasOnboarded, setHasOnboarded] = useState(false)
   const { width } = useWindowDimensions()
   const isSmallScreen = width < 640
+  const { t } = useTranslation()
 
   if (isSmallScreen && !hasOnboarded) {
     return (
       <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
         <Stack.Screen
           options={{
-            title: 'Welcome',
+            title: t('auth.welcome.title'),
           }}
         />
         <WelcomeScreen onOnboarded={() => setHasOnboarded(true)} />
@@ -28,7 +30,7 @@ export default function Screen() {
     <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
       <Stack.Screen
         options={{
-          title: 'Sign In',
+          title: t('auth.login.title'),
         }}
       />
 

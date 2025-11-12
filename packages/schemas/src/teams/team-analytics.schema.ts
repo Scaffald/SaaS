@@ -75,4 +75,5 @@ export const teamActivityCommentSchema = z.object({
   teamId: z.string().uuid(),
   body: z.string().min(1).max(2000),
   mentions: z.array(z.string().uuid()).default([]),
+  applicationId: z.string().uuid().optional(),
 })

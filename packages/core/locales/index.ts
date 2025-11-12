@@ -68,14 +68,13 @@ const isDevEnvironment =
     process.env.NODE_ENV !== "production");
 
 if (isDevEnvironment) {
-  const originalMissingTranslation = i18n.missingTranslation;
-
-  i18n.missingTranslation = (scope, options) => {
+  i18n.missingTranslation.register("dev-console", (_i18n, scope) => {
+    const key = Array.isArray(scope) ? scope.join(".") : String(scope);
     console.warn(
-      `[i18n] Missing translation for key "${scope}" (locale: "${i18n.locale}")`,
+      `[i18n] Missing translation for key "${key}" (locale: "${i18n.locale}")`,
     );
-    return originalMissingTranslation?.(scope, options) ?? scope;
-  };
+    return key;
+  });
 }
 
 export const supportedLocales = Object.keys(

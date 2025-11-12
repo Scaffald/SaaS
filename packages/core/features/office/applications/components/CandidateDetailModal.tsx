@@ -1,11 +1,19 @@
-import { useState } from 'react'
-import { XStack, YStack, Text, Button, Avatar, Tabs } from 'tamagui'
+import { useMemo, useState } from 'react'
+import { XStack, YStack, Text, Button, Avatar, Tabs, Spinner } from 'tamagui'
+import { useToastController } from '@tamagui/toast'
 import { ResponsiveModal } from '@app/ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
 import { CandidateProfileTab } from './CandidateProfileTab'
 import { ApplicationDetailsTab } from './ApplicationDetailsTab'
 import { NotesTab } from './NotesTab'
 import { MessagesTab } from './MessagesTab'
+import { api } from '@app/core/utils/api'
+import { useUser } from '@app/core/utils/useUser'
+import type { AppRouter } from '@app/supabase/client-types'
+import type { inferRouterOutputs } from '@trpc/server'
+
+type MembersListOutput = inferRouterOutputs<AppRouter>['teams']['members']['list']
+type MemberRecord = NonNullable<MembersListOutput['members']>[number]
 
 interface CandidateDetailModalProps {
   application: MockApplication | null
@@ -19,6 +27,49 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
   )
 
   if (!application) return null
+
+  const teamId = application.team?.id ?? null
+  const teamIdForQuery = teamId ?? '00000000-0000-0000-0000-000000000000'
+  const { user: currentUser } = useUser()
+  const toast = useToastController()
+  const utils = api.useUtils()
+
+  const membersQuery = api.teams.members.list.useQuery(
+    { teamId: teamIdForQuery },
+    { enabled: Boolean(teamId) },
+  )
+
+  const mentionOptions = useMemo((): Array<{ id: string; label: string }> => {
+    if (!membersQuery.data?.members) return []
+    return (membersQuery.data.members as MemberRecord[])
+      .filter((member: MemberRecord) => Boolean(member.user?.id))
+      .map((member: MemberRecord) => ({
+        id: member.user?.id as string,
+        label:
+          member.user?.displayName ??
+          member.user?.username ??
+          `User ${member.user?.id?.slice(0, 6) ?? ''}`,
+      }))
+  }, [membersQuery.data?.members])
+
+  const assignMutation = api.teams.applications.assign.useMutation({
+    onSuccess: async () => {
+      toast.show('Application assigned', {
+        message: 'You are now responsible for follow-up.',
+      })
+      if (teamId) {
+        await utils.teams.analytics.activity.invalidate({ teamId, pageSize: 20 })
+        await utils.teams.analytics.comments.invalidate({
+          teamId,
+          applicationId: application.id,
+          limit: 50,
+        })
+      }
+    },
+    onError: (error: Error) => {
+      toast.show('Unable to assign application', { message: error.message })
+    },
+  })
 
   const scoreColor =
     application.score >= 80 ? '$green10' : application.score >= 60 ? '$blue10' : '$red10'
@@ -76,6 +127,36 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
       <Button flex={1} size="$4">
         Send Message
       </Button>
+      {teamId && currentUser?.id ? (
+        <Button
+          flex={1}
+          size="$4"
+          variant="outlined"
+          onPress={() =>
+            assignMutation.mutate({
+              teamId,
+              applicationId: application.id,
+              assigneeUserId: currentUser.id,
+            })
+          }
+          disabled={assignMutation.isPending}
+        >
+          {assignMutation.isPending ? <Spinner size="small" /> : 'Assign to me'}
+        </Button>
+      ) : null}
+      {teamId ? (
+        <YStack gap="$1">
+          <Text fontSize="$3" opacity={0.6}>
+            Current assignee
+          </Text>
+          <Text fontSize="$4" fontWeight="600">
+            {application.team?.assignedUserId
+              ? mentionOptions.find((option) => option.id === application.team?.assignedUserId)?.label ??
+                `User ${application.team?.assignedUserId.slice(0, 6)}`
+              : 'Unassigned'}
+          </Text>
+        </YStack>
+      ) : null}
 
       {/* Application Meta */}
       <XStack gap="$4" flexWrap="wrap">
@@ -149,7 +230,11 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
         </Tabs.Content>
 
         <Tabs.Content value="notes" pt="$4">
-          <NotesTab notes={application.notes} applicationId={application.id} />
+          <NotesTab
+            applicationId={application.id}
+            teamId={teamId}
+            mentionOptions={mentionOptions}
+          />
         </Tabs.Content>
 
         <Tabs.Content value="messages" pt="$4">

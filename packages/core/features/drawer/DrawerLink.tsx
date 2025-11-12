@@ -1,8 +1,10 @@
-import { ChevronRight, ChevronDown, ChevronUp, Check, Clock } from '@tamagui/lucide-icons'
+import { useCallback, useMemo } from 'react'
+import { ChevronRight, ChevronDown, Check, Clock } from '@tamagui/lucide-icons'
 import type { GestureResponderEvent } from 'react-native'
 import { XStack, Paragraph, YStack } from 'tamagui'
 import { Link } from 'expo-router'
-import type { DrawerItemConfig, DrawerLinkProps } from './types'
+import { useTranslation } from '@app/core/utils/useTranslation'
+import type { DrawerLinkProps } from './types'
 import { isActivePath } from './utils'
 
 export const DrawerLink = ({
@@ -16,26 +18,85 @@ export const DrawerLink = ({
   const active = isActivePath(pathname, item.href)
   const Icon = item.icon
   const isExpanded = expandedItems?.has(item.key) || false
-  const handleToggle = (event: GestureResponderEvent) => {
-    event.preventDefault()
-    if (item.isExpandable && onToggleExpanded) {
-      onToggleExpanded(item.key)
-    }
-  }
+  const { t } = useTranslation()
 
-  // If item is disabled, render as non-interactive element
+  const resolveTitle = useCallback(() => {
+    if (item.titleKey) {
+      return t(item.titleKey)
+    }
+
+    return item.title ?? item.key
+  }, [item.key, item.title, item.titleKey, t])
+
+  const title = useMemo(() => resolveTitle(), [resolveTitle])
+
+  const handleToggle = useCallback(
+    (event: GestureResponderEvent) => {
+      event.preventDefault()
+      if (item.isExpandable && onToggleExpanded) {
+        onToggleExpanded(item.key)
+      }
+    },
+    [item.isExpandable, item.key, onToggleExpanded],
+  )
+
+  const renderIcon = useCallback(() => {
+    if (!Icon) return null
+
+    return (
+      <XStack items="center" justify="center" width={25} height={20} rounded="$6">
+        <Icon size={20} color={active ? '$color1' : '$color12'} />
+      </XStack>
+    )
+  }, [Icon, active])
+
+  const renderContent = useCallback(
+    () => (
+      <XStack items="center" gap="$3">
+        {renderIcon()}
+        <Paragraph size="$4" fontWeight="600" color={active ? '$color1' : '$color12'}>
+          {title}
+        </Paragraph>
+      </XStack>
+    ),
+    [active, renderIcon, title],
+  )
+
+  const renderRightSide = useCallback(
+    () => (
+      <XStack items="center" gap="$2">
+        {item.badge && (
+          <XStack px="$2" py="$1" rounded="$10" bg="$red9" minW={20} items="center">
+            <Paragraph size="$1" color={active ? '$color1' : '$color12'} fontWeight="600">
+              {item.badge}
+            </Paragraph>
+          </XStack>
+        )}
+        {item.isExpandable ? (
+          isExpanded ? (
+            <ChevronDown size={16} color={active ? '$color1' : '$color10'} />
+          ) : (
+            <ChevronRight size={16} color="$color10" />
+          )
+        ) : (
+          item.hasChevron && <ChevronRight size={16} color="$color10" />
+        )}
+      </XStack>
+    ),
+    [active, isExpanded, item.badge, item.hasChevron, item.isExpandable],
+  )
+
   if (item.disabled) {
     return (
       <XStack items="center" gap="$3" px="$3" py="$2" opacity={0.5} cursor="not-allowed" flex={1}>
         {Icon && <Icon size={18} color="$color12" />}
         <Paragraph size="$3" fontWeight="500" color="$color12">
-          {item.title}
+          {title}
         </Paragraph>
       </XStack>
     )
   }
 
-  // For sub-items (depth > 0), render as simple link
   if (depth > 0) {
     return (
       <Link href={item.href} asChild>
@@ -52,7 +113,7 @@ export const DrawerLink = ({
           flex={1}
         >
           <Paragraph size="$4" fontWeight="500" color={active ? '$blue9' : '$color12'}>
-            {item.title}
+            {title}
           </Paragraph>
           {item.isOnCooldown ? (
             <Clock size={16} color="$blue9" />
@@ -64,52 +125,6 @@ export const DrawerLink = ({
     )
   }
 
-  // Common icon rendering logic
-  const renderIcon = () => {
-    if (!Icon) return null
-
-    return (
-      <XStack items="center" justify="center" width={25} height={20} rounded="$6">
-        <Icon size={20} color={active ? '$color1' : '$color12'} />
-      </XStack>
-    )
-  }
-
-  // Common content rendering logic
-  const renderContent = () => (
-    <XStack items="center" gap="$3">
-      {renderIcon()}
-      <Paragraph size="$4" fontWeight="600" color={active ? '$color1' : '$color12'}>
-        {item.title}
-      </Paragraph>
-    </XStack>
-  )
-
-  // Common right side elements (badge, chevron)
-  const renderRightSide = () => (
-    <XStack items="center" gap="$2">
-      {item.badge && (
-        <XStack px="$2" py="$1" rounded="$10" bg="$red9" minW={20} items="center">
-          <Paragraph size="$1" color={active ? '$color1' : '$color12'} fontWeight="600">
-            {item.badge}
-          </Paragraph>
-        </XStack>
-      )}
-
-      {/* Chevron logic */}
-      {item.isExpandable ? (
-        isExpanded ? (
-          <ChevronDown size={16} color={active ? '$color1' : '$color10'} />
-        ) : (
-          <ChevronRight size={16} color="$color10" />
-        )
-      ) : (
-        item.hasChevron && <ChevronRight size={16} color="$color10" />
-      )}
-    </XStack>
-  )
-
-  // If item is expandable, render with toggle functionality and sub-items
   if (item.isExpandable) {
     return (
       <YStack flex={1}>
@@ -148,7 +163,6 @@ export const DrawerLink = ({
     )
   }
 
-  // If item has subItems but is not expandable, render parent as link with always-visible subItems
   if (item.subItems && item.subItems.length > 0) {
     return (
       <YStack flex={1}>
@@ -186,7 +200,6 @@ export const DrawerLink = ({
     )
   }
 
-  // For regular main items, render with proper touch handling
   return (
     <Link href={item.href} asChild>
       <XStack

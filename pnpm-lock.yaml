@@ -168,6 +168,9 @@ catalogs:
     expo-linking:
       specifier: ~8.0.8
       version: 8.0.8
+    expo-localization:
+      specifier: ~16.0.0
+      version: 16.0.1
     expo-location:
       specifier: ~19.0.7
       version: 19.0.7
@@ -195,6 +198,9 @@ catalogs:
     fast-xml-parser:
       specifier: ~5.2.5
       version: 5.2.5
+    i18n-js:
+      specifier: ^4.4.3
+      version: 4.5.1
     mapbox-gl:
       specifier: ~3.15.0
       version: 3.15.0
@@ -447,6 +453,9 @@ importers:
       expo-linking:
         specifier: 'catalog:'
         version: 8.0.8(expo@54.0.10)(react-native@0.81.4(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
+      expo-localization:
+        specifier: 'catalog:'
+        version: 16.0.1(expo@54.0.10)(react@19.1.0)
       expo-location:
         specifier: 'catalog:'
         version: 19.0.7(expo@54.0.10)
@@ -474,6 +483,9 @@ importers:
       expo-web-browser:
         specifier: 'catalog:'
         version: 13.0.3(expo@54.0.10)
+      i18n-js:
+        specifier: 'catalog:'
+        version: 4.5.1
       react:
         specifier: 'catalog:'
         version: 19.1.0
@@ -616,6 +628,9 @@ importers:
       expo-linking:
         specifier: 'catalog:'
         version: 8.0.8(expo@54.0.10)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
+      expo-localization:
+        specifier: 'catalog:'
+        version: 16.0.1(expo@54.0.10)(react@19.1.0)
       expo-location:
         specifier: 'catalog:'
         version: 19.0.7(expo@54.0.10)
@@ -628,6 +643,9 @@ importers:
       hast-util-to-html:
         specifier: ^9.0.0
         version: 9.0.5
+      i18n-js:
+        specifier: 'catalog:'
+        version: 4.5.1
       luscher-test:
         specifier: ^2.2.1
         version: 2.2.1
@@ -639,7 +657,7 @@ importers:
         version: 1.3.0
       posthog-react-native:
         specifier: ^3.16.1
-        version: 3.16.1(@react-native-async-storage/async-storage@2.2.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0)))(@react-navigation/native@7.1.17(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(expo-application@7.0.7(expo@54.0.10))(expo-device@8.0.8(expo@54.0.10))(expo-file-system@19.0.15(expo@54.0.10)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0)))(react-native-safe-area-context@5.6.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(react-native-svg@15.12.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))
+        version: 3.16.1(@react-native-async-storage/async-storage@2.2.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0)))(@react-navigation/native@7.1.17(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(expo-application@7.0.7(expo@54.0.10))(expo-device@8.0.8(expo@54.0.10))(expo-file-system@19.0.15(expo@54.0.10)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0)))(expo-localization@16.0.1(expo@54.0.10)(react@19.1.0))(react-native-safe-area-context@5.6.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(react-native-svg@15.12.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))
       react:
         specifier: 'catalog:'
         version: 19.1.0
@@ -4103,12 +4121,6 @@ packages:
     peerDependencies:
       '@tiptap/core': ^2.7.0
 
-  '@tiptap/extension-color@2.27.1':
-    resolution: {integrity: sha512-raYRsdG2tZvVvY1LV/VTZnDG44Y0xRBwo5CZEat0OUqdx34dfvCtYm8HIOTyWBwr7OOW+yR4O1Vc2zFkmfthZw==}
-    peerDependencies:
-      '@tiptap/core': ^2.7.0
-      '@tiptap/extension-text-style': ^2.7.0
-
   '@tiptap/extension-document@2.27.1':
     resolution: {integrity: sha512-NtJzJY7Q/6XWjpOm5OXKrnEaofrcc1XOTYlo/SaTwl8k2bZo918Vl0IDBWhPVDsUN7kx767uHwbtuQZ+9I82hA==}
     peerDependencies:
@@ -4142,11 +4154,6 @@ packages:
     peerDependencies:
       '@tiptap/core': ^2.7.0
 
-  '@tiptap/extension-highlight@2.27.1':
-    resolution: {integrity: sha512-ntuYX09tvHQE/R/8WbTOxbFuQhRr2jhTkKz/gLwDD2o8IhccSy3f0nm+mVmVamKQnbsBBbLohojd5IGOnX9f1A==}
-    peerDependencies:
-      '@tiptap/core': ^2.7.0
-
   '@tiptap/extension-history@2.27.1':
     resolution: {integrity: sha512-K8PHC9gegSAt0wzSlsd4aUpoEyIJYOmVVeyniHr1P1mIblW1KYEDbRGbDlrLALTyUEfMcBhdIm8zrB9X2Nihvg==}
     peerDependencies:
@@ -4159,21 +4166,10 @@ packages:
       '@tiptap/core': ^2.7.0
       '@tiptap/pm': ^2.7.0
 
-  '@tiptap/extension-image@2.27.1':
-    resolution: {integrity: sha512-wu3vMKDYWJwKS6Hrw5PPCKBO2RxyHNeFLiA/uDErEV7axzNpievK/U9DyaDXmtK3K/h1XzJAJz19X+2d/pY68w==}
-    peerDependencies:
-      '@tiptap/core': ^2.7.0
-
   '@tiptap/extension-italic@2.27.1':
     resolution: {integrity: sha512-rcm0GyniWW0UhcNI9+1eIK64GqWQLyIIrWGINslvqSUoBc+WkfocLvv4CMpRkzKlfsAxwVIBuH2eLxHKDtAREA==}
     peerDependencies:
       '@tiptap/core': ^2.7.0
-
-  '@tiptap/extension-link@2.10.3':
-    resolution: {integrity: sha512-8esKlkZBzEiNcpt7I8Cd6l1mWmCc/66pPbUq9LfnIniDXE3U+ahBf4m3TJltYFBGbiiTR/xqMtJyVHOpuLDtAw==}
-    peerDependencies:
-      '@tiptap/core': ^2.7.0
-      '@tiptap/pm': ^2.7.0
 
   '@tiptap/extension-list-item@2.27.1':
     resolution: {integrity: sha512-dtsxvtzxfwOJP6dKGf0vb2MJAoDF2NxoiWzpq0XTvo7NGGYUHfuHjX07Zp0dYqb4seaDXjwsi5BIQUOp3+WMFQ==}
@@ -4198,17 +4194,6 @@ packages:
 
   '@tiptap/extension-strike@2.27.1':
     resolution: {integrity: sha512-S9I//K8KPgfFTC5I5lorClzXk0g4lrAv9y5qHzHO5EOWt7AFl0YTg2oN8NKSIBK4bHRnPIrjJJKv+dDFnUp5jQ==}
-    peerDependencies:
-      '@tiptap/core': ^2.7.0
-
-  '@tiptap/extension-task-item@2.27.1':
-    resolution: {integrity: sha512-vaEtdos+9jApD6yRfD6F/xShikiZFHi7I0nswAmGKT/kE1wmHCUxme8OFMe7642e2OK0lqgHsUaOLxP/0nZJ5A==}
-    peerDependencies:
-      '@tiptap/core': ^2.7.0
-      '@tiptap/pm': ^2.7.0
-
-  '@tiptap/extension-task-list@2.27.1':
-    resolution: {integrity: sha512-KRlYOZ6kdURvAspUrLVsC7mLkVW2DYhpj+7QxH7gVDZuAuoPUEmpJVcBVPq7GhPF9PccaRLru+n1Ege5VqvZ+Q==}
     peerDependencies:
       '@tiptap/core': ^2.7.0
 
@@ -5063,6 +5048,9 @@ packages:
   big-integer@1.6.52:
     resolution: {integrity: sha512-QxD8cf2eVqJOOz63z6JIN9BzvVs/dlySa5HGSBH5xtR8dPteIRQnBxxKqkNTiT6jbDTF6jAfrd4oMcND9RGbQg==}
     engines: {node: '>=0.6'}
+
+  bignumber.js@9.3.1:
+    resolution: {integrity: sha512-Ko0uX15oIUS7wJ3Rb30Fs6SkVbLmPBAKdlm7q9+ak9bbIeFf0MwuBsQV6z7+X768/cHsfg+WlysDWJcmthjsjQ==}
 
   bin-links@5.0.0:
     resolution: {integrity: sha512-sdleLVfCjBtgO5cNjA2HVRvWBJAHs4zwenaCPMNJAJU0yNxpzj80IpjOIimkpkr+mhlA+how5poQtt53PygbHA==}
@@ -6313,6 +6301,12 @@ packages:
       react: '*'
       react-native: '*'
 
+  expo-localization@16.0.1:
+    resolution: {integrity: sha512-kUrXiV/Pq9r7cG+TMt+Qa49IUQ9Y/czVwen4hmiboTclTopcWdIeCzYZv6JGtufoPpjEO9vVx1QJrXYl9V2u0Q==}
+    peerDependencies:
+      expo: '*'
+      react: '*'
+
   expo-location@19.0.7:
     resolution: {integrity: sha512-YNkh4r9E6ECbPkBCAMG5A5yHDgS0pw+Rzyd0l2ZQlCtjkhlODB55nMCKr5CZnUI0mXTkaSm8CwfoCO8n2MpYfg==}
     peerDependencies:
@@ -7106,6 +7100,9 @@ packages:
   hyphenate-style-name@1.1.0:
     resolution: {integrity: sha512-WDC/ui2VVRrz3jOVi+XtjqkDjiVjTtFaAGiW37k6b+ohyQ5wYDOGkvCZa8+H0nx3gyvv0+BST9xuOgIyGQ00gw==}
 
+  i18n-js@4.5.1:
+    resolution: {integrity: sha512-n7jojFj1WC0tztgr0I8jqTXuIlY1xNzXnC3mjKX/YjJhimdM+jXM8vOmn9d3xQFNC6qDHJ4ovhdrGXrRXLIGkA==}
+
   iconv-lite@0.4.24:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}
     engines: {node: '>=0.10.0'}
@@ -7799,9 +7796,6 @@ packages:
   linkify-it@5.0.0:
     resolution: {integrity: sha512-5aHCbzQRADcdP+ATqnDuhhJ/MRIqDkZX5pyjFHRRysS8vZ5AbqGEoFIb6pYHPZ+L/OC2Lc+xT8uHVVR5CAK/wQ==}
 
-  linkifyjs@4.3.2:
-    resolution: {integrity: sha512-NT1CJtq3hHIreOianA8aSXn6Cw0JzYOuDQbOrSPe7gqFnCpKP++MQe3ODgO3oh2GJFORkAAdqredOa60z63GbA==}
-
   listhen@1.9.0:
     resolution: {integrity: sha512-I8oW2+QL5KJo8zXNWX046M134WchxsXC7SawLPvRQpogCbkyQIaFxPE89A2HiwR7vAK2Dm2ERBAmyjTYGYEpBg==}
     hasBin: true
@@ -7957,6 +7951,9 @@ packages:
 
   make-error@1.3.6:
     resolution: {integrity: sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==}
+
+  make-plural@7.4.0:
+    resolution: {integrity: sha512-4/gC9KVNTV6pvYg2gFeQYTW3mWaoJt7WZE5vrp1KnQDgW92JtYZnzmZT81oj/dUTqAIu0ufI2x3dkgu3bB1tYg==}
 
   makeerror@1.0.12:
     resolution: {integrity: sha512-JmqCvUhmt43madlpFzG4BQzG2Z3m6tvQDNKdClZnO3VbIudJYmxsT0FNJMeiB2+JTSlTQTSbU8QdesVmwJcmLg==}
@@ -9364,11 +9361,6 @@ packages:
   react-devtools-core@6.1.5:
     resolution: {integrity: sha512-ePrwPfxAnB+7hgnEr8vpKxL9cmnp7F322t8oqcPshbIQQhDKgFDW4tjhF2wjVbdXF9O/nyuy3sQWd9JGpiLPvA==}
 
-  react-dom@18.3.1:
-    resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
-    peerDependencies:
-      react: ^18.3.1
-
   react-dom@19.1.0:
     resolution: {integrity: sha512-Xs1hdnE+DyKgeHJeJznQmYMIBG3TKIHJJT95Q58nHLSrElKlGQqDTR2HQ9fx5CN/Gk6Vh/kupBTDLU11/nDk/g==}
     peerDependencies:
@@ -9835,6 +9827,9 @@ packages:
   rrweb-cssom@0.8.0:
     resolution: {integrity: sha512-guoltQEx+9aMf2gDZ0s62EcV8lsXR+0w8915TC3ITdn2YueuNjdAYh/levpU9nFaoChh9RUS5ZdQMrKfVEN9tw==}
 
+  rtl-detect@1.1.2:
+    resolution: {integrity: sha512-PGMBq03+TTG/p/cRB7HCLKJ1MgDIi07+QU1faSjiYRfmY5UsAttV9Hs08jDAHVwcOwmVLcSJkpwyfXszVjWfIQ==}
+
   run-applescript@7.1.0:
     resolution: {integrity: sha512-DPe5pVFaAsinSaV6QjQ6gdiedWDcRCbUuiQfQa2wmWV7+xC9bGulGI8+TdRmoFkAPaBXk8CrAbnlY2ISniJ47Q==}
     engines: {node: '>=18'}
@@ -9885,9 +9880,6 @@ packages:
 
   scheduler@0.19.1:
     resolution: {integrity: sha512-n/zwRWRYSUj0/3g/otKDRPMh6qv2SYMWNq85IEa8iZyAv8od9zDYpGSnpBEjNgcMNq6Scbu5KfIPxNF72R/2EA==}
-
-  scheduler@0.23.2:
-    resolution: {integrity: sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==}
 
   scheduler@0.26.0:
     resolution: {integrity: sha512-NlHwttCI/l5gCPR3D1nNXtWABUmBwvZpEQiD4IXSbIDq8BzLIK/7Ir5gTFSGZDUu37K5cMNp0hFtzO38sC7gWA==}
@@ -16900,33 +16892,13 @@ snapshots:
     dependencies:
       '@tiptap/pm': 3.10.1
 
-  '@tiptap/extension-blockquote@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-
   '@tiptap/extension-blockquote@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))':
     dependencies:
       '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
 
-  '@tiptap/extension-bold@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-
   '@tiptap/extension-bold@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))':
     dependencies:
       '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
-
-  '@tiptap/extension-bubble-menu@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/pm@2.27.1)':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-      '@tiptap/pm': 2.27.1
-      tippy.js: 6.3.7
-
-  '@tiptap/extension-bubble-menu@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))(@tiptap/pm@2.27.1)':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
-      '@tiptap/pm': 2.27.1
-      tippy.js: 6.3.7
 
   '@tiptap/extension-bubble-menu@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))(@tiptap/pm@3.10.1)':
     dependencies:
@@ -16934,71 +16906,27 @@ snapshots:
       '@tiptap/pm': 3.10.1
       tippy.js: 6.3.7
 
-  '@tiptap/extension-bullet-list@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-
   '@tiptap/extension-bullet-list@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))':
     dependencies:
       '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
-
-  '@tiptap/extension-code-block@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/pm@2.27.1)':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-      '@tiptap/pm': 2.27.1
 
   '@tiptap/extension-code-block@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))(@tiptap/pm@2.27.1)':
     dependencies:
       '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
       '@tiptap/pm': 2.27.1
 
-  '@tiptap/extension-code@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-
   '@tiptap/extension-code@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))':
     dependencies:
       '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
-
-  '@tiptap/extension-color@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/extension-text-style@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1)))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-      '@tiptap/extension-text-style': 2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))
-
-  '@tiptap/extension-color@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))(@tiptap/extension-text-style@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1)))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
-      '@tiptap/extension-text-style': 2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))
-
-  '@tiptap/extension-document@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
 
   '@tiptap/extension-document@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))':
     dependencies:
       '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
 
-  '@tiptap/extension-dropcursor@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/pm@2.27.1)':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-      '@tiptap/pm': 2.27.1
-
   '@tiptap/extension-dropcursor@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))(@tiptap/pm@2.27.1)':
     dependencies:
       '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
       '@tiptap/pm': 2.27.1
-
-  '@tiptap/extension-floating-menu@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/pm@2.27.1)':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-      '@tiptap/pm': 2.27.1
-      tippy.js: 6.3.7
-
-  '@tiptap/extension-floating-menu@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))(@tiptap/pm@2.27.1)':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
-      '@tiptap/pm': 2.27.1
-      tippy.js: 6.3.7
 
   '@tiptap/extension-floating-menu@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))(@tiptap/pm@3.10.1)':
     dependencies:
@@ -17011,43 +16939,17 @@ snapshots:
       '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
       '@tiptap/pm': 2.27.1
 
-  '@tiptap/extension-hard-break@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-
   '@tiptap/extension-hard-break@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))':
     dependencies:
       '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
-
-  '@tiptap/extension-heading@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
 
   '@tiptap/extension-heading@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))':
     dependencies:
       '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
 
-  '@tiptap/extension-highlight@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-
-  '@tiptap/extension-highlight@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
-
-  '@tiptap/extension-history@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/pm@2.27.1)':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-      '@tiptap/pm': 2.27.1
-
   '@tiptap/extension-history@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))(@tiptap/pm@2.27.1)':
     dependencies:
       '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
-      '@tiptap/pm': 2.27.1
-
-  '@tiptap/extension-horizontal-rule@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/pm@2.27.1)':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
       '@tiptap/pm': 2.27.1
 
   '@tiptap/extension-horizontal-rule@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))(@tiptap/pm@2.27.1)':
@@ -17055,45 +16957,13 @@ snapshots:
       '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
       '@tiptap/pm': 2.27.1
 
-  '@tiptap/extension-image@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-
-  '@tiptap/extension-image@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
-
-  '@tiptap/extension-italic@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-
   '@tiptap/extension-italic@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))':
     dependencies:
       '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
 
-  '@tiptap/extension-link@2.10.3(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/pm@2.27.1)':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-      '@tiptap/pm': 2.27.1
-      linkifyjs: 4.3.2
-
-  '@tiptap/extension-link@2.10.3(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))(@tiptap/pm@2.27.1)':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
-      '@tiptap/pm': 2.27.1
-      linkifyjs: 4.3.2
-
-  '@tiptap/extension-list-item@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-
   '@tiptap/extension-list-item@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))':
     dependencies:
       '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
-
-  '@tiptap/extension-ordered-list@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
 
   '@tiptap/extension-ordered-list@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))':
     dependencies:
@@ -17103,50 +16973,14 @@ snapshots:
     dependencies:
       '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
 
-  '@tiptap/extension-placeholder@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/pm@2.27.1)':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-      '@tiptap/pm': 2.27.1
-
-  '@tiptap/extension-placeholder@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))(@tiptap/pm@2.27.1)':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
-      '@tiptap/pm': 2.27.1
-
   '@tiptap/extension-placeholder@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))(@tiptap/pm@3.10.1)':
     dependencies:
       '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
       '@tiptap/pm': 3.10.1
 
-  '@tiptap/extension-strike@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-
   '@tiptap/extension-strike@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))':
     dependencies:
       '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
-
-  '@tiptap/extension-task-item@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/pm@2.27.1)':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-      '@tiptap/pm': 2.27.1
-
-  '@tiptap/extension-task-item@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))(@tiptap/pm@2.27.1)':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
-      '@tiptap/pm': 2.27.1
-
-  '@tiptap/extension-task-list@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-
-  '@tiptap/extension-task-list@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
-
-  '@tiptap/extension-text-style@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
 
   '@tiptap/extension-text-style@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))':
     dependencies:
@@ -17155,10 +16989,6 @@ snapshots:
   '@tiptap/extension-text@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))':
     dependencies:
       '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
-
-  '@tiptap/extension-underline@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
 
   '@tiptap/extension-underline@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))':
     dependencies:
@@ -17205,30 +17035,6 @@ snapshots:
       prosemirror-trailing-node: 3.0.0(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.3)
       prosemirror-transform: 1.10.4
       prosemirror-view: 1.41.3
-
-  '@tiptap/react@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/pm@2.27.1)(react-dom@18.3.1(react@19.1.0))(react@19.1.0)':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-      '@tiptap/extension-bubble-menu': 2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/pm@2.27.1)
-      '@tiptap/extension-floating-menu': 2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/pm@2.27.1)
-      '@tiptap/pm': 2.27.1
-      '@types/use-sync-external-store': 0.0.6
-      fast-deep-equal: 3.1.3
-      react: 19.1.0
-      react-dom: 18.3.1(react@19.1.0)
-      use-sync-external-store: 1.5.0(react@19.1.0)
-
-  '@tiptap/react@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))(@tiptap/pm@2.27.1)(react-dom@18.3.1(react@19.1.0))(react@19.1.0)':
-    dependencies:
-      '@tiptap/core': 2.27.1(@tiptap/pm@3.10.1)
-      '@tiptap/extension-bubble-menu': 2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))(@tiptap/pm@2.27.1)
-      '@tiptap/extension-floating-menu': 2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))(@tiptap/pm@2.27.1)
-      '@tiptap/pm': 2.27.1
-      '@types/use-sync-external-store': 0.0.6
-      fast-deep-equal: 3.1.3
-      react: 19.1.0
-      react-dom: 18.3.1(react@19.1.0)
-      use-sync-external-store: 1.5.0(react@19.1.0)
 
   '@tiptap/react@2.27.1(@tiptap/core@2.27.1(@tiptap/pm@3.10.1))(@tiptap/pm@3.10.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
@@ -18416,6 +18222,8 @@ snapshots:
       open: 8.4.2
 
   big-integer@1.6.52: {}
+
+  bignumber.js@9.3.1: {}
 
   bin-links@5.0.0:
     dependencies:
@@ -19841,6 +19649,12 @@ snapshots:
       - expo
       - supports-color
 
+  expo-localization@16.0.1(expo@54.0.10)(react@19.1.0):
+    dependencies:
+      expo: 54.0.10(@babel/core@7.26.10)(@expo/metro-runtime@5.0.5(react-native@0.81.4(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0)))(expo-router@6.0.8)(graphql@16.12.0)(react-native-webview@13.15.0(react-native@0.81.4(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      rtl-detect: 1.1.2
+
   expo-location@19.0.7(expo@54.0.10):
     dependencies:
       expo: 54.0.10(@babel/core@7.26.10)(@expo/metro-runtime@5.0.5(react-native@0.81.4(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0)))(expo-router@6.0.8)(graphql@16.12.0)(react-native-webview@13.15.0(react-native@0.81.4(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
@@ -20941,6 +20755,12 @@ snapshots:
 
   hyphenate-style-name@1.1.0: {}
 
+  i18n-js@4.5.1:
+    dependencies:
+      bignumber.js: 9.3.1
+      lodash: 4.17.21
+      make-plural: 7.4.0
+
   iconv-lite@0.4.24:
     dependencies:
       safer-buffer: 2.1.2
@@ -21663,8 +21483,6 @@ snapshots:
     dependencies:
       uc.micro: 2.1.0
 
-  linkifyjs@4.3.2: {}
-
   listhen@1.9.0:
     dependencies:
       '@parcel/watcher': 2.5.1
@@ -21830,6 +21648,8 @@ snapshots:
       semver: 7.7.2
 
   make-error@1.3.6: {}
+
+  make-plural@7.4.0: {}
 
   makeerror@1.0.12:
     dependencies:
@@ -23300,7 +23120,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  posthog-react-native@3.16.1(@react-native-async-storage/async-storage@2.2.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0)))(@react-navigation/native@7.1.17(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(expo-application@7.0.7(expo@54.0.10))(expo-device@8.0.8(expo@54.0.10))(expo-file-system@19.0.15(expo@54.0.10)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0)))(react-native-safe-area-context@5.6.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(react-native-svg@15.12.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)):
+  posthog-react-native@3.16.1(@react-native-async-storage/async-storage@2.2.0(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0)))(@react-navigation/native@7.1.17(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(expo-application@7.0.7(expo@54.0.10))(expo-device@8.0.8(expo@54.0.10))(expo-file-system@19.0.15(expo@54.0.10)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0)))(expo-localization@16.0.1(expo@54.0.10)(react@19.1.0))(react-native-safe-area-context@5.6.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(react-native-svg@15.12.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)):
     dependencies:
       react-native-svg: 15.12.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
     optionalDependencies:
@@ -23309,6 +23129,7 @@ snapshots:
       expo-application: 7.0.7(expo@54.0.10)
       expo-device: 8.0.8(expo@54.0.10)
       expo-file-system: 19.0.15(expo@54.0.10)(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))
+      expo-localization: 16.0.1(expo@54.0.10)(react@19.1.0)
       react-native-safe-area-context: 5.6.1(react-native@0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
 
   potpack@2.1.0: {}
@@ -23653,12 +23474,6 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  react-dom@18.3.1(react@19.1.0):
-    dependencies:
-      loose-envify: 1.4.0
-      react: 19.1.0
-      scheduler: 0.23.2
-
   react-dom@19.1.0(react@19.1.0):
     dependencies:
       react: 19.1.0
@@ -23919,6 +23734,7 @@ snapshots:
       invariant: 2.2.4
       react: 19.1.0
       react-native: 0.81.4(@babel/core@7.28.4)(@types/react@19.1.16)(react@19.1.0)
+    optional: true
 
   react-native-worklets@0.6.0(@babel/core@7.26.10)(react-native@0.81.4(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0):
     dependencies:
@@ -24343,6 +24159,8 @@ snapshots:
 
   rrweb-cssom@0.8.0: {}
 
+  rtl-detect@1.1.2: {}
+
   run-applescript@7.1.0: {}
 
   run-async@2.4.1: {}
@@ -24389,10 +24207,6 @@ snapshots:
     dependencies:
       loose-envify: 1.4.0
       object-assign: 4.1.1
-
-  scheduler@0.23.2:
-    dependencies:
-      loose-envify: 1.4.0
 
   scheduler@0.26.0: {}
 

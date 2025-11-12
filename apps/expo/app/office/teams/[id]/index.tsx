@@ -1,7 +1,14 @@
 import type { ComponentType } from 'react'
 import { useMemo, useState } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { ArrowLeft, Briefcase, Pencil, RefreshCcw, UserPlus } from '@tamagui/lucide-icons'
+import {
+  ArrowLeft,
+  BarChart3,
+  Briefcase,
+  Pencil,
+  RefreshCcw,
+  UserPlus,
+} from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
 
@@ -157,6 +164,15 @@ export default function OfficeTeamDetailPage() {
         >
           Edit team
         </Button>,
+        <Button
+          key="analytics"
+          size="$2"
+          variant="outlined"
+          icon={BarChart3}
+          onPress={() => router.push(RouteBuilder.officeTeamsAnalytics(team.id))}
+        >
+          View analytics
+        </Button>,
         <Button key="invite" size="$2" icon={UserPlus} onPress={() => setIsInviteModalOpen(true)}>
           Invite member
         </Button>,
@@ -208,6 +224,15 @@ export default function OfficeTeamDetailPage() {
               pendingInvitations: pendingInvitationsCount,
             }}
           />
+
+          <Button
+            size="$3"
+            variant="outlined"
+            icon={BarChart3}
+            onPress={() => router.push(RouteBuilder.officeTeamsAnalytics(team.id))}
+          >
+            View analytics
+          </Button>
 
           <YStack gap="$4">
             <TeamMembersList teamId={team.id} organizationId={team.organizationId} />

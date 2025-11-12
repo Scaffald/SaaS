@@ -1,10 +1,13 @@
 import { Paragraph, Spinner, Text, View, YStack } from 'tamagui'
+import { useTranslation } from '@app/core/utils/useTranslation'
 
 interface SuccessViewProps {
   isVisible: boolean
 }
 
 export function SuccessView({ isVisible }: SuccessViewProps) {
+  const { t } = useTranslation()
+
   return (
     <View
       position="absolute"
@@ -33,11 +36,11 @@ export function SuccessView({ isVisible }: SuccessViewProps) {
         >
           <YStack flex={1} justify="center" items="center" width="100%" gap="$2">
             <Text fontWeight="bold" fontSize="$6">
-              Code Verified
+              {t('auth.success.title')}
             </Text>
 
             <Paragraph color="$color10" text="center">
-              We are logging you in. Please wait...
+              {t('auth.success.description')}
             </Paragraph>
 
             {/* Insert loading spinner here */}

@@ -42,6 +42,7 @@ export default function OfficeLayout() {
         <Drawer.Screen name="teams/create" options={{ title: 'Create Team' }} />
         <Drawer.Screen name="teams/[id]/index" options={{ title: 'Team Detail' }} />
         <Drawer.Screen name="teams/[id]/edit" options={{ title: 'Edit Team' }} />
+        <Drawer.Screen name="teams/[id]/analytics" options={{ title: 'Team Analytics' }} />
         <Drawer.Screen name="teams/[id]/settings" options={{ title: 'Team Settings' }} />
         <Drawer.Screen name="universities/index" options={{ title: 'Manage Universities' }} />
         <Drawer.Screen name="universities/create" options={{ title: 'Create University' }} />

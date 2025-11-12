@@ -22,12 +22,18 @@ import { captureEvent } from '@app/core/utils/analytics/client'
 import { captureEventWithQueue } from '@app/core/utils/analytics/queue'
 import { api } from '@app/core/utils/api'
 import { TRPCClientError } from '@trpc/client'
+import { useTranslation } from '@app/core/utils/useTranslation'
+import { translateError } from '@app/core/utils/errors/translateError'
+import { i18n } from '@app/core/locales'
+import { applyZodErrorMap } from '@app/core/utils/zodErrorMap'
+
+applyZodErrorMap()
 
 const LoginSchema = z.object({
   email: z
     .string()
-    .email('Please enter a valid email address')
-    .describe('Email // your@email.acme'),
+    .email(i18n.t('validation.email.invalid'))
+    .describe(i18n.t('auth.login.emailPlaceholder')),
 })
 
 export const LoginScreen = () => {
@@ -38,6 +44,7 @@ export const LoginScreen = () => {
   const { isLoadingSession } = useUser()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const requestMagicLink = api.auth.requestMagicLink.useMutation()
+  const { t } = useTranslation()
 
   useEffect(() => {
     // remove the persisted email from the url, mostly to not leak user's email in case they share it
@@ -59,7 +66,7 @@ export const LoginScreen = () => {
     const trimmedEmail = data.email?.trim()
 
     if (!trimmedEmail) {
-      form.setError('email', { type: 'custom', message: 'Email is required' })
+      form.setError('email', { type: 'custom', message: t('validation.email.required') })
       setIsSubmitting(false)
       return
     }
@@ -99,20 +106,17 @@ export const LoginScreen = () => {
       })
 
       if (error instanceof TRPCClientError) {
-        const lowerMessage = error.message.toLowerCase()
-        if (lowerMessage.includes('email')) {
-          form.setError('email', { type: 'custom', message: error.message })
-          return
-        }
+        form.setError('email', {
+          type: 'custom',
+          message: translateError(error),
+        })
+        return
       }
       form.setError(
         'email',
         {
           type: 'custom',
-          message:
-            error instanceof Error
-              ? error.message
-              : 'Something went wrong while sending your magic link.',
+          message: translateError(error),
         }
       )
     } finally {
@@ -128,14 +132,14 @@ export const LoginScreen = () => {
         <YStack gap="$4" mb="$3" items="center">
           <ScaffaldLogo width={200} height={33} />
           <YStack gap="$2" items="center">
-            <Paragraph text="center">Email works for both login and signup</Paragraph>
+            <Paragraph text="center">{t('auth.login.description')}</Paragraph>
           </YStack>
         </YStack>
 
         <Form onSubmit={handleSubmit}>
           <YStack gap="$4">
             <Input
-              placeholder="your@email.acme"
+              placeholder={t('auth.login.emailPlaceholder')}
               value={form.watch('email')}
               onChangeText={(text) => form.setValue('email', text)}
               keyboardType="email-address"
@@ -159,14 +163,14 @@ export const LoginScreen = () => {
               hoverStyle={{ scale: 1.02, bg: '$blue9' }}
               pressStyle={{ scale: 0.98 }}
             >
-              {isSubmitting || requestMagicLink.isLoading ? 'Sending...' : 'Sign In or Register'}
+              {isSubmitting || requestMagicLink.isLoading
+                ? t('auth.login.sending')
+                : t('auth.login.submitButton')}
             </Button>
 
             <SocialLogin />
             <Paragraph text="center">
-              If you login with Apple or Google and already have an account with the same email we
-              will link it for you. If you don&apos;t currently have an account, this will register
-              one.
+              {t('auth.login.socialDescription')}
             </Paragraph>
           </YStack>
         </Form>

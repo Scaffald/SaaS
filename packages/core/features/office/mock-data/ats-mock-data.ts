@@ -49,6 +49,11 @@ export interface MockApplication {
     location: string;
     payRange: string;
   };
+  team?: {
+    id: string | null;
+    name?: string | null;
+    assignedUserId?: string | null;
+  };
   status: ApplicationStatus;
   appliedAt: string;
   updatedAt: string;

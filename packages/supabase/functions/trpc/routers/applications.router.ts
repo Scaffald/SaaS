@@ -9,6 +9,7 @@ import {
   fileUploadSchema,
 } from "../../_shared/application-schemas.ts";
 import { trackServerEvent } from "../../_shared/analytics.ts";
+import { autoAssignApplicationToTeam } from "../../_shared/utils/application-assignment.ts";
 import { t } from "../middleware.ts";
 
 const publicProcedure = t.procedure;
@@ -53,7 +54,7 @@ export const applicationsRouter = router({
       const { data: job, error: jobError } = await supabase
         .schema("core")
         .from("jobs")
-        .select("id, status, application_deadline")
+        .select("id, status, application_deadline, assigned_team_id, organization_id")
         .eq("id", input.job_id)
         .single();
 
@@ -125,6 +126,19 @@ export const applicationsRouter = router({
       });
 
       // Scoring and auto-rejection will be handled by database triggers
+
+      if (job.assigned_team_id) {
+        const supabaseAdmin = ctx.supabaseAdmin ?? ctx.supabase;
+        if (supabaseAdmin) {
+          await autoAssignApplicationToTeam({
+            supabaseAdmin,
+            applicationId: application.id,
+            teamId: job.assigned_team_id as string,
+            jobId: application.job_id,
+            organizationId: job.organization_id as string | null,
+          });
+        }
+      }
 
       return application;
     }),

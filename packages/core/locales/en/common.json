@@ -1,0 +1,14 @@
+{
+  "actions": {
+    "cancel": "Cancel",
+    "close": "Close",
+    "continue": "Continue",
+    "save": "Save"
+  },
+  "status": {
+    "loading": "Loading...",
+    "error": "Something went wrong"
+  },
+  "or": "Or"
+}
+

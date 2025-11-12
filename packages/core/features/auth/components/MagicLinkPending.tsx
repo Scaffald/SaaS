@@ -7,6 +7,8 @@ import { ROUTES } from '@app/core/constants/routes'
 import { supabase } from '@app/core/utils/supabase/client'
 import { api } from '@app/core/utils/api'
 import { TRPCClientError } from '@trpc/client'
+import { useTranslation } from '@app/core/utils/useTranslation'
+import { translateError } from '@app/core/utils/errors/translateError'
 
 import { CodeConfirmation } from './CodeConfirmation'
 import { EmailHeader } from './EmailHeader'
@@ -23,6 +25,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
   const [_isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const requestMagicLink = api.auth.requestMagicLink.useMutation()
+  const { t } = useTranslation()
 
   const handleEnter = useCallback(
     async (code: number) => {
@@ -32,7 +35,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
 
       try {
         if (!email) {
-          throw new Error('Please go back and request a new code.')
+          throw new Error(t('auth.verify.missingEmail'))
         }
 
         const { error } = await supabase.auth.verifyOtp({
@@ -50,11 +53,11 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
             error.message.includes('otp_expired') ||
             error.message.includes('Token has expired')
           ) {
-            userMessage = 'The verification code has expired. Please request a new one.'
+            userMessage = t('auth.verify.expired')
           } else if (error.message.includes('invalid') || error.message.includes('otp_not_found')) {
-            userMessage = 'Invalid verification code. Please check and try again.'
+            userMessage = t('auth.verify.invalid')
           } else if (error.message.includes('too_many_requests')) {
-            userMessage = 'Too many attempts. Please wait before trying again.'
+            userMessage = t('auth.verify.throttled')
           }
 
           throw new Error(userMessage)
@@ -65,7 +68,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
         router.push(ROUTES.AUTH_SUCCESS.path)
       } catch (err) {
         console.error('Error during OTP verification:', err)
-        setError(err instanceof Error ? err.message : 'An error occurred')
+        setError(translateError(err))
         // Reset the code and UI state on error
         setCode(undefined)
         setCodeEntered(false)
@@ -74,7 +77,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
         setIsSubmitting(false)
       }
     },
-    [email]
+    [email, t]
   )
 
   const handleResendComplete = useCallback(() => {
@@ -91,14 +94,14 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
       })
     } catch (err) {
       if (err instanceof TRPCClientError) {
-        setError(err.message)
+        setError(translateError(err))
         return
       }
-      setError(err instanceof Error ? err.message : 'Failed to resend code')
+      setError(translateError(err))
     }
   }, [email, requestMagicLink])
 
-  const displayEmail = email ?? 'your email address'
+  const displayEmail = email ?? t('auth.verify.fallbackEmail')
 
   return (
     <View flex={1} items="center" justify="center" p="$4" width="100%">
@@ -127,7 +130,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
                     exitStyle={{ opacity: 0, x: 15, scale: 0.5 }}
                     animation="200ms"
                   >
-                    Success
+                    {t('auth.verify.successBanner')}
                   </Paragraph>
                 )}
               </AnimatePresence>

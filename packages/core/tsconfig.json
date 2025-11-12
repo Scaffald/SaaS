@@ -6,6 +6,7 @@
     "forms",
     "provider",
     "utils",
+    "locales",
     "constants",
     "index.ts",
     "types.d.ts",

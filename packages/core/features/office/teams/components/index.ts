@@ -9,6 +9,8 @@ export { TeamOverviewCard } from './TeamOverviewCard'
 export { TeamJobsList } from './TeamJobsList'
 export { TeamActivityFeed } from './TeamActivityFeed'
 export { TeamAnalyticsSummary } from './TeamAnalyticsSummary'
+export { TeamAnalyticsCharts } from './TeamAnalyticsCharts'
+export { TeamCommentThread } from './TeamCommentThread'
 export { TeamAutomationSettings } from './TeamAutomationSettings'
 
 

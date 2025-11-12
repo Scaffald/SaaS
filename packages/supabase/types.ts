@@ -1022,12 +1022,77 @@ export type Database = {
           },
         ];
       };
+      application_assignment_history: {
+        Row: {
+          application_id: string;
+          assigned_at: string;
+          assigned_by: string | null;
+          assigned_to: string | null;
+          id: string;
+          metadata: Json;
+          source: string;
+          team_id: string;
+        };
+        Insert: {
+          application_id: string;
+          assigned_at?: string;
+          assigned_by?: string | null;
+          assigned_to?: string | null;
+          id?: string;
+          metadata?: Json;
+          source?: string;
+          team_id: string;
+        };
+        Update: {
+          application_id?: string;
+          assigned_at?: string;
+          assigned_by?: string | null;
+          assigned_to?: string | null;
+          id?: string;
+          metadata?: Json;
+          source?: string;
+          team_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "application_assignment_history_application_id_fkey";
+            columns: ["application_id"];
+            isOneToOne: false;
+            referencedRelation: "applications";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "application_assignment_history_assigned_by_fkey";
+            columns: ["assigned_by"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "application_assignment_history_assigned_to_fkey";
+            columns: ["assigned_to"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "application_assignment_history_team_id_fkey";
+            columns: ["team_id"];
+            isOneToOne: false;
+            referencedRelation: "teams";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       applications: {
         Row: {
           answers: Json | null;
           archived_at: string | null;
           cover_letter_url: string | null;
           created_at: string;
+          assigned_at: string | null;
+          assigned_by: string | null;
+          assigned_to: string | null;
           id: string;
           is_shortlisted: boolean | null;
           job_id: string;
@@ -1044,6 +1109,9 @@ export type Database = {
           archived_at?: string | null;
           cover_letter_url?: string | null;
           created_at?: string;
+          assigned_at?: string | null;
+          assigned_by?: string | null;
+          assigned_to?: string | null;
           id?: string;
           is_shortlisted?: boolean | null;
           job_id: string;
@@ -1060,6 +1128,9 @@ export type Database = {
           archived_at?: string | null;
           cover_letter_url?: string | null;
           created_at?: string;
+          assigned_at?: string | null;
+          assigned_by?: string | null;
+          assigned_to?: string | null;
           id?: string;
           is_shortlisted?: boolean | null;
           job_id?: string;
@@ -1077,6 +1148,20 @@ export type Database = {
             columns: ["job_id"];
             isOneToOne: false;
             referencedRelation: "jobs";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "applications_assigned_by_fkey";
+            columns: ["assigned_by"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "applications_assigned_to_fkey";
+            columns: ["assigned_to"];
+            isOneToOne: false;
+            referencedRelation: "users";
             referencedColumns: ["id"];
           },
           {
