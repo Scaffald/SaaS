@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useWindowDimensions } from 'react-native'
 import { Button, Card, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
 import { MessageCircle, Send } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
@@ -30,6 +31,8 @@ export function TeamCommentThread({
   const utils = api.useUtils()
   const [commentBody, setCommentBody] = useState('')
   const [selectedMentionId, setSelectedMentionId] = useState<string | null>(null)
+  const { width } = useWindowDimensions()
+  const isSmallScreen = width < 640
 
   const mentionLookup = useMemo(() => {
     return new Map(mentionOptions.map((option) => [option.id, option.label]))
@@ -80,7 +83,14 @@ export function TeamCommentThread({
   }, [selectedMentionId, mentionOptions])
 
   return (
-    <Card borderWidth={1} borderColor="$borderColor" bg="$color2" p="$4" gap="$4">
+    <Card
+      borderWidth={1}
+      borderColor="$borderColor"
+      bg="$color2"
+      p="$4"
+      gap="$4"
+      px={isSmallScreen ? '$3' : undefined}
+    >
       <YStack gap="$2">
         <XStack gap="$2" items="center">
           <MessageCircle size={18} accessibilityLabel="Team discussion icon" />
@@ -102,10 +112,16 @@ export function TeamCommentThread({
           disabled={isSubmitting}
           accessibilityLabel="Team discussion comment"
           accessibilityHint="Describe your update and optionally mention a teammate"
+          w="100%"
         />
 
         {mentionOptions.length > 0 ? (
-          <XStack gap="$2" flexWrap="wrap">
+          <XStack
+            gap="$2"
+            flexWrap="wrap"
+            flexDirection={isSmallScreen ? 'column' : 'row'}
+            alignItems={isSmallScreen ? 'stretch' : 'center'}
+          >
             {mentionOptions.map((option) => (
               <Button
                 key={option.id}
@@ -119,6 +135,7 @@ export function TeamCommentThread({
                     ? `Remove mention ${option.label}`
                     : `Mention ${option.label}`
                 }
+                w={isSmallScreen ? '100%' : undefined}
               >
                 @{option.label}
               </Button>
@@ -142,6 +159,7 @@ export function TeamCommentThread({
             disabled={isSubmitting || commentBody.trim().length === 0}
             accessibilityLabel="Post comment"
             accessibilityHint="Shares this comment with the team"
+            w={isSmallScreen ? '100%' : undefined}
           >
             {isSubmitting ? <Spinner size="small" color="$color1" /> : 'Post comment'}
           </Button>
@@ -186,6 +204,7 @@ export function TeamCommentThread({
                 accessible
                 accessibilityRole="summary"
                 accessibilityLabel={commentAccessibilityLabel}
+                w="100%"
               >
                 <Text fontWeight="600">
                   {actorName}

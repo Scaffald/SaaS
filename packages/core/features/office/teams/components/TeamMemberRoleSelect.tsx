@@ -13,6 +13,7 @@ interface TeamMemberRoleSelectProps {
   roles: TeamRoleOption[]
   disabled?: boolean
   onRoleChanged?: (roleId: string) => void
+  fullWidth?: boolean
 }
 
 export function TeamMemberRoleSelect({
@@ -22,6 +23,7 @@ export function TeamMemberRoleSelect({
   roles,
   disabled = false,
   onRoleChanged,
+  fullWidth = false,
 }: TeamMemberRoleSelectProps) {
   const toast = useToastController()
   const [selectedRoleId, setSelectedRoleId] = useState(currentRoleId ?? '')
@@ -80,6 +82,7 @@ export function TeamMemberRoleSelect({
             activeRole ? `Team role ${activeRole.name}. Double tap to change.` : 'Select team role'
           }
           accessibilityHint="Opens a list of available team roles"
+          w={fullWidth ? '100%' : undefined}
         >
           <Select.Value placeholder="Select role">
             {activeRole ? activeRole.name : 'Select role'}

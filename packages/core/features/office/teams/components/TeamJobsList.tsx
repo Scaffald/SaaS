@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useWindowDimensions } from 'react-native'
 import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
 import { AlertTriangle, ArrowRight, RefreshCcw } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
@@ -29,17 +30,30 @@ export function TeamJobsList({
   onCreateJob,
 }: TeamJobsListProps) {
   const router = useRouter()
+  const { width } = useWindowDimensions()
+  const isSmallScreen = width < 640
 
   const derivedJobs = useMemo(() => jobs ?? [], [jobs])
   const hasJobs = derivedJobs.length > 0
 
   return (
-    <YStack gap="$3">
-      <XStack justify="space-between" items="center" flexWrap="wrap" gap="$3">
+    <YStack gap="$3" px={isSmallScreen ? '$3' : undefined}>
+      <XStack
+        justify="space-between"
+        items={isSmallScreen ? 'flex-start' : 'center'}
+        flexWrap="wrap"
+        gap="$3"
+        flexDirection={isSmallScreen ? 'column' : 'row'}
+      >
         <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
           Team jobs
         </Text>
-        <XStack gap="$2" items="center">
+        <XStack
+          gap="$2"
+          items={isSmallScreen ? 'flex-start' : 'center'}
+          flexDirection={isSmallScreen ? 'column' : 'row'}
+          w={isSmallScreen ? '100%' : undefined}
+        >
           <Button
             size="$2"
             variant="outlined"
@@ -47,6 +61,7 @@ export function TeamJobsList({
             onPress={() => onRefresh?.()}
             disabled={isLoading}
             accessibilityLabel="Refresh assigned jobs list"
+            w={isSmallScreen ? '100%' : undefined}
           >
             Refresh
           </Button>
@@ -64,6 +79,7 @@ export function TeamJobsList({
               })
             }}
             accessibilityLabel="Assign a job to this team"
+            w={isSmallScreen ? '100%' : undefined}
           >
             Assign job
           </Button>
@@ -103,9 +119,16 @@ export function TeamJobsList({
               accessible
               accessibilityRole="summary"
               accessibilityLabel={`Job ${job.title}. Status ${job.status ?? 'draft'}. Updated ${job.updated_at ? new Date(job.updated_at).toLocaleDateString() : 'recently'}`}
+              w="100%"
             >
-              <XStack justify="space-between" items="flex-start" gap="$3" flexWrap="wrap">
-                <YStack gap="$1" flex={1}>
+              <XStack
+                justify="space-between"
+                items="flex-start"
+                gap="$3"
+                flexWrap="wrap"
+                flexDirection={isSmallScreen ? 'column' : 'row'}
+              >
+                <YStack gap="$1" flex={1} w="100%">
                   <Text fontSize="$5" fontWeight="700">
                     {job.title}
                   </Text>
@@ -124,17 +147,23 @@ export function TeamJobsList({
                   ))}
                 </XStack>
               ) : null}
-              <XStack gap="$2" items="center">
+              <XStack
+                gap="$2"
+                items={isSmallScreen ? 'flex-start' : 'center'}
+                flexDirection={isSmallScreen ? 'column' : 'row'}
+                alignItems={isSmallScreen ? 'stretch' : 'center'}
+              >
                 <Text fontSize="$3" color="$color10">
                   Updated {job.updated_at ? new Date(job.updated_at).toLocaleDateString() : 'recently'}
                 </Text>
               </XStack>
-              <XStack>
+              <XStack w="100%">
                 <Button
                   size="$3"
                   variant="outlined"
                   onPress={() => router.push(RouteBuilder.officeJobsEdit(job.id))}
                   accessibilityLabel={`View job ${job.title}`}
+                  w={isSmallScreen ? '100%' : undefined}
                 >
                   View job
                 </Button>
@@ -143,7 +172,7 @@ export function TeamJobsList({
           ))}
         </YStack>
       ) : (
-        <Card borderWidth={1} borderColor="$borderColor" bg="$color2" p="$4" gap="$2">
+        <Card borderWidth={1} borderColor="$borderColor" bg="$color2" p="$4" gap="$2" w="100%">
           <Text fontWeight="600">No jobs assigned yet</Text>
           <Text color="$color11">
             Assign this team to a job to keep the hiring workflow organized. Jobs assigned to this
@@ -162,6 +191,7 @@ export function TeamJobsList({
                 params: { teamId },
               })
             }}
+            w={isSmallScreen ? '100%' : undefined}
           >
             Create job
           </Button>

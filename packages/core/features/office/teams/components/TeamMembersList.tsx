@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useWindowDimensions } from 'react-native'
 import {
   AlertDialog,
   Avatar,
@@ -55,6 +56,8 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
   const [leaveReason, setLeaveReason] = useState('')
   const router = useRouter()
   const { user: currentUser } = useUser()
+  const { width } = useWindowDimensions()
+  const isSmallScreen = width < 640
 
   const membersQuery = api.teams.members.list.useQuery(
     { teamId },
@@ -165,8 +168,14 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
   const workloadErrorMessage = workloadQuery.error?.message ?? null
 
   return (
-    <YStack gap="$4" flex={1}>
-      <XStack justify="space-between" items="center">
+    <YStack gap="$4" flex={1} px={isSmallScreen ? '$3' : undefined}>
+      <XStack
+        justify="space-between"
+        items={isSmallScreen ? 'flex-start' : 'center'}
+        gap="$3"
+        flexDirection={isSmallScreen ? 'column' : 'row'}
+        w="100%"
+      >
         <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
           Team members
         </Text>
@@ -177,6 +186,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
           color="$color1"
           size="$3"
           accessibilityLabel="Add a new team member"
+          w={isSmallScreen ? '100%' : undefined}
         >
           Add Member
         </Button>
@@ -218,9 +228,22 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                 accessible
                 accessibilityRole="summary"
                 accessibilityLabel={`${member.displayName ?? 'Team member'} · Role ${memberRoleName} · Status ${memberStatusLabel}`}
+                w="100%"
               >
-                <XStack gap="$3" items="center" justify="space-between">
-                  <XStack gap="$3" items="center">
+                <XStack
+                  gap="$3"
+                  items={isSmallScreen ? 'flex-start' : 'center'}
+                  justify="space-between"
+                  flexDirection={isSmallScreen ? 'column' : 'row'}
+                  w="100%"
+                >
+                  <XStack
+                    gap="$3"
+                    items="center"
+                    w="100%"
+                    flexDirection={isSmallScreen ? 'column' : 'row'}
+                    alignItems={isSmallScreen ? 'flex-start' : 'center'}
+                  >
                     <Avatar circular size="$4">
                       <Avatar.Image
                         accessibilityLabel={member.displayName ?? 'Member avatar'}
@@ -237,7 +260,15 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                       ) : null}
                     </YStack>
                   </XStack>
-                  <XStack gap="$3" items="center" flexWrap="wrap">
+                  <XStack
+                    gap="$3"
+                    items="center"
+                    flexWrap="wrap"
+                    w="100%"
+                    flexDirection={isSmallScreen ? 'column' : 'row'}
+                    justify={isSmallScreen ? 'flex-start' : 'flex-end'}
+                    alignItems={isSmallScreen ? 'stretch' : 'center'}
+                  >
                     <TeamMemberRoleSelect
                       teamId={teamId}
                       teamMemberId={member.id}
@@ -245,6 +276,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                       roles={roles as TeamRoleOption[]}
                       disabled={isLoadingRoles}
                       onRoleChanged={handleRoleChange}
+                      fullWidth={isSmallScreen}
                     />
                     {canTransferToMember ? (
                       <Button
@@ -255,6 +287,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                         onPress={() => void handleTransferOwnership(member)}
                         accessibilityLabel={`Promote ${member.displayName ?? 'this member'} to team owner`}
                         accessibilityHint="Updates the member's permissions and notifies the team"
+                        w={isSmallScreen ? '100%' : undefined}
                       >
                         Make owner
                       </Button>
@@ -277,6 +310,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                       }
                       accessibilityLabel={`Remove ${member.displayName ?? 'this member'} from the team`}
                       accessibilityHint="Opens a dialog to confirm removal"
+                      w={isSmallScreen ? '100%' : undefined}
                     >
                       Remove
                     </Button>
@@ -329,6 +363,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
           onPress={() => setIsLeaveDialogOpen(true)}
           accessibilityLabel="Open leave team dialog"
           accessibilityHint="Opens a confirmation dialog to leave this team"
+          w={isSmallScreen ? '100%' : undefined}
         >
           Leave team
         </Button>

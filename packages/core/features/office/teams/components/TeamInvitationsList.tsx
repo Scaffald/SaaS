@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useState } from 'react';
+import { useWindowDimensions } from 'react-native';
 import {
   Button,
   Card,
@@ -47,6 +48,8 @@ interface TeamInvitationsListProps {
 export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamInvitationsListProps) {
   const toast = useToastController();
   const [statusFilter, setStatusFilter] = useState<InvitationStatus | 'all'>('pending');
+  const { width } = useWindowDimensions();
+  const isSmallScreen = width < 640;
 
   const invitationsQuery = api.teams.invitations.list.useQuery(
     {
@@ -104,23 +107,37 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
   };
 
   return (
-    <YStack gap="$4">
-      <XStack justify="space-between" items="center" flexWrap="wrap" gap="$3">
+    <YStack gap="$4" px={isSmallScreen ? '$3' : undefined}>
+      <XStack
+        justify="space-between"
+        items={isSmallScreen ? 'flex-start' : 'center'}
+        flexWrap="wrap"
+        gap="$3"
+        flexDirection={isSmallScreen ? 'column' : 'row'}
+        w="100%"
+      >
         <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
           Invitations
         </Text>
-        <XStack gap="$2" items="center">
+        <XStack
+          gap="$2"
+          items={isSmallScreen ? 'flex-start' : 'center'}
+          flexDirection={isSmallScreen ? 'column' : 'row'}
+          w={isSmallScreen ? '100%' : undefined}
+        >
           {headerAction}
           <Select
             native
             value={statusFilter}
             onValueChange={(value) => setStatusFilter(value as InvitationStatus | 'all')}
             disablePreventBodyScroll
+            w={isSmallScreen ? '100%' : undefined}
           >
             <Select.Trigger
               iconAfter={ChevronDown}
               accessibilityLabel="Filter invitations by status"
               accessibilityHint="Opens a menu of invitation statuses"
+              w="100%"
             >
               <Select.Value placeholder="Filter status">
                 {statusFilter === 'all'
@@ -160,7 +177,7 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
           <Spinner size="large" />
           <Text color="$color11">Loading invitations…</Text>
         </YStack>
-      ) : invitations.length === 0 ? (
+    ) : invitations.length === 0 ? (
         <YStack gap="$2" borderWidth={1} borderColor="$borderColor" rounded="$4" p="$4" bg="$color2">
           <Text fontWeight="600">No invitations yet</Text>
           <Text color="$color11">
@@ -242,7 +259,12 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
                   </Text>
                 </XStack>
 
-                <XStack gap="$2" items="center">
+                <XStack
+                  gap="$2"
+                  items={isSmallScreen ? 'flex-start' : 'center'}
+                  flexDirection={isSmallScreen ? 'column' : 'row'}
+                  alignItems={isSmallScreen ? 'stretch' : 'center'}
+                >
                   <Text fontSize="$3" color="$color11">
                     Role:
                   </Text>
@@ -273,7 +295,12 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
                   </YStack>
                 ) : null}
 
-                <XStack gap="$2" items="center">
+                <XStack
+                  gap="$2"
+                  items={isSmallScreen ? 'flex-start' : 'center'}
+                  flexDirection={isSmallScreen ? 'column' : 'row'}
+                  alignItems={isSmallScreen ? 'stretch' : 'center'}
+                >
                   <Text fontSize="$3" color="$color11">
                     Type:
                   </Text>
@@ -282,7 +309,13 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
                   </Text>
                 </XStack>
 
-        <XStack gap="$2" justify="flex-end" flexWrap="wrap">
+                <XStack
+                  gap="$2"
+                  justify={isSmallScreen ? 'flex-start' : 'flex-end'}
+                  flexWrap="wrap"
+                  flexDirection={isSmallScreen ? 'column' : 'row'}
+                  alignItems={isSmallScreen ? 'stretch' : 'center'}
+                >
                   <Button
                     size="$2"
                     variant="outlined"
@@ -290,6 +323,7 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
                     disabled={!isPending || isLoading}
                     onPress={() => void handleResend(invitation.id)}
                     accessibilityLabel={`Resend invitation to ${invitation.email ?? invitation.invitedUserId ?? 'team member'}`}
+                    w={isSmallScreen ? '100%' : undefined}
                   >
                     Resend
                   </Button>
@@ -301,6 +335,7 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
                     disabled={!isPending || isLoading}
                     onPress={() => void handleCancel(invitation.id)}
                     accessibilityLabel={`Cancel invitation for ${invitation.email ?? invitation.invitedUserId ?? 'team member'}`}
+                    w={isSmallScreen ? '100%' : undefined}
                   >
                     Cancel
                   </Button>

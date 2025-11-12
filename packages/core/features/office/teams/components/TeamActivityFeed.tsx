@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
+import { useWindowDimensions } from 'react-native'
 import {
   Button,
   Select,
@@ -48,6 +49,8 @@ export function TeamActivityFeed({
   const [commentBody, setCommentBody] = useState('')
   const [mentions, setMentions] = useState<MentionOption[]>([])
   const [mentionSelection, setMentionSelection] = useState('none')
+  const { width } = useWindowDimensions()
+  const isSmallScreen = width < 640
 
   const activityQuery = api.teams.analytics.activity.useInfiniteQuery(
     {
@@ -289,8 +292,14 @@ export function TeamActivityFeed({
   const disableSubmit = isPosting || commentBody.trim().length === 0
 
   return (
-    <YStack gap="$4">
-      <XStack gap="$2" items="center" justify="space-between" flexWrap="wrap">
+    <YStack gap="$4" px={isSmallScreen ? '$3' : undefined}>
+      <XStack
+        gap="$2"
+        items={isSmallScreen ? 'flex-start' : 'center'}
+        justify="space-between"
+        flexWrap="wrap"
+        flexDirection={isSmallScreen ? 'column' : 'row'}
+      >
         <XStack gap="$2" items="center">
           <MessageCircle size={20} accessibilityLabel="Team activity icon" />
           <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
@@ -304,6 +313,7 @@ export function TeamActivityFeed({
           disabled={activityQuery.isFetching}
           accessibilityLabel="Refresh team activity feed"
           accessibilityHint="Reloads the most recent team events"
+          w={isSmallScreen ? '100%' : undefined}
         >
           Refresh
         </Button>
@@ -321,6 +331,7 @@ export function TeamActivityFeed({
           accessibilityLabel="Team update message"
           accessibilityHint="Enter the update you want to share with your team"
           disabled={isPosting}
+          w="100%"
         />
 
         {mentionOptions.length > 0 ? (
@@ -328,7 +339,12 @@ export function TeamActivityFeed({
             <Text fontSize="$3" color="$color11">
               Mention a teammate (optional)
             </Text>
-            <XStack gap="$2" flexWrap="wrap">
+            <XStack
+              gap="$2"
+              flexWrap="wrap"
+              flexDirection={isSmallScreen ? 'column' : 'row'}
+              alignItems={isSmallScreen ? 'stretch' : 'center'}
+            >
               {mentions.map((mention) => (
                 <Button
                   key={mention.id}
@@ -336,6 +352,7 @@ export function TeamActivityFeed({
                   variant="outlined"
                   accessibilityLabel={`Remove mention ${mention.label}`}
                   onPress={() => handleRemoveMention(mention.id)}
+                  w={isSmallScreen ? '100%' : undefined}
                 >
                   @{mention.label}
                 </Button>
@@ -346,7 +363,11 @@ export function TeamActivityFeed({
                   onValueChange={(value) => handleMentionSelection(value)}
                   disablePreventBodyScroll
                 >
-                  <Select.Trigger iconAfter={ChevronDown} size="$2">
+                  <Select.Trigger
+                    iconAfter={ChevronDown}
+                    size="$2"
+                    w={isSmallScreen ? '100%' : undefined}
+                  >
                     <Select.Value placeholder="Mention teammate">
                       {mentionSelection === 'none' ? 'Add mention' : 'Mention added'}
                     </Select.Value>
@@ -390,6 +411,7 @@ export function TeamActivityFeed({
             disabled={disableSubmit}
             accessibilityLabel="Post update"
             accessibilityHint="Shares your message with the team"
+            w={isSmallScreen ? '100%' : undefined}
           >
             {isPosting ? <Spinner size="small" color="$color1" /> : 'Post update'}
           </Button>

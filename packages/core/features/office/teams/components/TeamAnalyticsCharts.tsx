@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import type { ReactNode } from 'react'
+import { ScrollView, useWindowDimensions } from 'react-native'
 import { Card, Spinner, Text, YStack } from 'tamagui'
 
 import { api } from '@app/core/utils/api'
@@ -18,6 +19,8 @@ interface TeamAnalyticsChartsProps {
 }
 
 export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsChartsProps) {
+  const { width } = useWindowDimensions()
+  const isSmallScreen = width < 640
   const now = useMemo(() => new Date(), [teamId, rangeDays])
 
   const start = useMemo(() => {
@@ -171,15 +174,31 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
         description="Recent daily totals for applications reviewed by this team."
         summary={applicationsSummary ?? undefined}
       >
-        <YStack
-          gap="$2"
-          accessible
-          accessibilityRole="image"
-          accessibilityLabel={`Applications reviewed bar chart for the past ${applicationsTrend.length} days`}
-          accessibilityHint={applicationsSummary ?? undefined}
+        <ScrollView
+          horizontal={isSmallScreen}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={
+            isSmallScreen
+              ? { paddingVertical: 8, paddingRight: 24 }
+              : undefined
+          }
         >
-          <BarChart data={applicationsTrend} height={220} spacing={12} />
-        </YStack>
+          <YStack
+            gap="$2"
+            accessible
+            accessibilityRole="image"
+            accessibilityLabel={`Applications reviewed bar chart for the past ${applicationsTrend.length} days`}
+            accessibilityHint={applicationsSummary ?? undefined}
+            minWidth={isSmallScreen ? Math.max(width - 48, 320) : undefined}
+          >
+            <BarChart
+              data={applicationsTrend}
+              height={220}
+              spacing={isSmallScreen ? 16 : 12}
+              width={isSmallScreen ? Math.max(width - 80, 360) : undefined}
+            />
+          </YStack>
+        </ScrollView>
       </AnalyticsCard>
 
       <AnalyticsCard
@@ -187,15 +206,30 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
         description="How quickly the team responds to new applications."
         summary={timeToFirstReviewSummary ?? undefined}
       >
-        <YStack
-          gap="$2"
-          accessible
-          accessibilityRole="image"
-          accessibilityLabel={`Average time to first review line chart for the past ${timeToFirstReviewTrend.length} days`}
-          accessibilityHint={timeToFirstReviewSummary ?? undefined}
+        <ScrollView
+          horizontal={isSmallScreen}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={
+            isSmallScreen
+              ? { paddingVertical: 8, paddingRight: 24 }
+              : undefined
+          }
         >
-          <LineChart data={timeToFirstReviewTrend} height={220} />
-        </YStack>
+          <YStack
+            gap="$2"
+            accessible
+            accessibilityRole="image"
+            accessibilityLabel={`Average time to first review line chart for the past ${timeToFirstReviewTrend.length} days`}
+            accessibilityHint={timeToFirstReviewSummary ?? undefined}
+            minWidth={isSmallScreen ? Math.max(width - 48, 320) : undefined}
+          >
+            <LineChart
+              data={timeToFirstReviewTrend}
+              height={220}
+              width={isSmallScreen ? Math.max(width - 80, 360) : undefined}
+            />
+          </YStack>
+        </ScrollView>
       </AnalyticsCard>
 
       <AnalyticsCard
@@ -207,22 +241,39 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
         {workloadBreakdown.length === 0 ? (
           <Text color="$color11">No workload snapshots available.</Text>
         ) : (
-          <YStack
-            gap="$2"
-            accessible
-            accessibilityRole="image"
-            accessibilityLabel="Donut chart of active and pending assignments per team member"
-            accessibilityHint={workloadSummary ?? undefined}
+          <ScrollView
+            horizontal={isSmallScreen}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={
+              isSmallScreen
+                ? { paddingVertical: 8, paddingRight: 24 }
+                : undefined
+            }
           >
-            <PieChart data={workloadBreakdown} radius={110} donut showValuesAsLabels textColor="#111" />
-            <YStack gap="$1">
-              {workloadBreakdown.map((entry) => (
-                <Text key={entry.text} fontSize="$2" color="$color11">
-                  {entry.text}: {entry.value} assignments
-                </Text>
-              ))}
+            <YStack
+              gap="$2"
+              accessible
+              accessibilityRole="image"
+              accessibilityLabel="Donut chart of active and pending assignments per team member"
+              accessibilityHint={workloadSummary ?? undefined}
+              minWidth={isSmallScreen ? Math.max(width - 48, 320) : undefined}
+            >
+              <PieChart
+                data={workloadBreakdown}
+                radius={isSmallScreen ? 100 : 110}
+                donut
+                showValuesAsLabels
+                textColor="#111"
+              />
+              <YStack gap="$1">
+                {workloadBreakdown.map((entry) => (
+                  <Text key={entry.text} fontSize="$2" color="$color11">
+                    {entry.text}: {entry.value} assignments
+                  </Text>
+                ))}
+              </YStack>
             </YStack>
-          </YStack>
+          </ScrollView>
         )}
       </AnalyticsCard>
     </YStack>
