@@ -1,6 +1,7 @@
 {
   "files": [],
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "outDir": "/tmp",
     "typeRoots": ["node_modules/@types"],
     "skipDefaultLibCheck": true,
