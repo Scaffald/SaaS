@@ -24,7 +24,7 @@ import { api } from '@app/core/utils/api'
 
 const certificationSchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  slug: z.string().min(1, 'Slug is required'),
+  slug: z.string().min(1, 'Vanity URL is required'),
   issuing_organization: z.string().optional(),
   category: z.enum(['safety', 'trade', 'equipment', 'license', 'management', 'other']),
   description: z.string().optional(),
@@ -214,13 +214,13 @@ export function OfficeCertificationsLeft({
             )}
           </YStack>
 
-          {/* Slug */}
+          {/* Vanity URL */}
           <YStack gap="$2">
             <Text fontWeight="600">
-              Slug <Text color="$red10">*</Text>
+              Vanity URL <Text color="$red10">*</Text>
             </Text>
             <Text fontSize="$2" color="$color11">
-              URL-friendly identifier (auto-generated from name)
+              URL-friendly username (auto-generated from name)
             </Text>
             <Controller
               name="slug"

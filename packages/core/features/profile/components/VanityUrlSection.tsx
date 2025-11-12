@@ -34,16 +34,20 @@ export function VanityUrlSection() {
   const utils = api.useUtils()
 
   // Get current user's profile data
-  const { data: profileData, isLoading: isLoadingProfile, refetch: refetchProfile } =
-    api.profile.widgets.getGeneralInfo.useQuery()
+  const {
+    data: profileData,
+    isLoading: isLoadingProfile,
+    refetch: refetchProfile,
+  } = api.profile.widgets.getGeneralInfo.useQuery()
 
   // Get slug history
-  const { data: slugHistory, refetch: refetchHistory } = api.profile.vanity.getSlugHistory.useQuery()
+  const { data: slugHistory, refetch: refetchHistory } =
+    api.profile.vanity.getSlugHistory.useQuery()
 
   // Update slug
   const updateSlugMutation = api.profile.vanity.updateSlug.useMutation({
     onSuccess: (data: UpdateSlugResult) => {
-      toast.show('Slug Updated', {
+      toast.show('Vanity URL Updated', {
         message: `Your profile URL has been updated to /u/${data.slug}`,
       })
       setIsEditing(false)
@@ -58,7 +62,7 @@ export function VanityUrlSection() {
     },
     onError: (error: VanityMutationError) => {
       toast.show('Error', {
-        message: error.message || 'Failed to update slug. Please try again.',
+        message: error.message || 'Failed to update vanity URL. Please try again.',
       })
       setIsUpdating(false)
     },
@@ -154,15 +158,15 @@ export function VanityUrlSection() {
     const normalized = slugInput.toLowerCase().trim()
 
     if (!isSlugValid(normalized)) {
-      toast.show('Invalid Slug', {
-        message: 'Please enter a valid slug (3-50 characters, alphanumeric and dashes only)',
+      toast.show('Invalid Vanity URL', {
+        message: 'Please enter a valid vanity URL (3-50 characters, alphanumeric and dashes only)',
       })
       return
     }
 
     if (isReservedSlug(normalized)) {
-      toast.show('Reserved Slug', {
-        message: 'This slug is reserved and cannot be used',
+      toast.show('Reserved Vanity URL', {
+        message: 'This vanity URL is reserved and cannot be used',
       })
       return
     }
@@ -239,23 +243,18 @@ export function VanityUrlSection() {
                   ? `${window.location.origin}${vanityUrl}`
                   : vanityUrl}
               </Text>
-              <Button
-                size="$3"
-                icon={Copy}
-                onPress={handleCopyUrl}
-                variant="outlined"
-              >
+              <Button size="$3" icon={Copy} onPress={handleCopyUrl} variant="outlined">
                 Copy
               </Button>
             </XStack>
           </YStack>
         )}
 
-        {/* Slug Input */}
+        {/* Vanity URL Input */}
         <YStack gap="$2">
           <XStack items="center" justify="space-between">
             <Text fontWeight="600" fontSize="$3">
-              Profile Slug
+              Profile Vanity URL
             </Text>
             {!isEditing && (
               <Button
@@ -278,7 +277,7 @@ export function VanityUrlSection() {
                   flex={1}
                   value={slugInput}
                   onChangeText={setSlugInput}
-                  placeholder="your-slug"
+                  placeholder="your-username"
                   autoCapitalize="none"
                   autoCorrect={false}
                   borderColor={
@@ -341,7 +340,7 @@ export function VanityUrlSection() {
                     </Text>
                   ) : isReservedSlug(slugInput.toLowerCase().trim()) ? (
                     <Text fontSize="$2" color="$red10">
-                      This slug is reserved and cannot be used.
+                      This vanity URL is reserved and cannot be used.
                     </Text>
                   ) : null}
                 </YStack>
@@ -349,12 +348,7 @@ export function VanityUrlSection() {
 
               {/* Action Buttons */}
               <XStack gap="$2" justify="flex-end">
-                <Button
-                  size="$3"
-                  variant="outlined"
-                  onPress={handleCancel}
-                  disabled={isUpdating}
-                >
+                <Button size="$3" variant="outlined" onPress={handleCancel} disabled={isUpdating}>
                   Cancel
                 </Button>
                 <Button
@@ -383,7 +377,7 @@ export function VanityUrlSection() {
               borderColor="$color6"
             >
               <Text flex={1} style={{ fontFamily: 'monospace' }} fontSize="$3" color="$color11">
-                {currentSlug || 'No slug set'}
+                {currentSlug || 'No vanity URL set'}
               </Text>
             </XStack>
           )}
@@ -403,11 +397,12 @@ export function VanityUrlSection() {
             <Clock size={16} color="$orange10" />
             <YStack flex={1} gap="$1">
               <Text fontSize="$2" fontWeight="600" color="$yellow11">
-                Slug Change Cooldown
+                Vanity URL Change Cooldown
               </Text>
               <Text fontSize="$2" color="$yellow10">
-                You can change your slug again in {daysRemaining} day
-                {daysRemaining !== 1 ? 's' : ''} ({new Date(nextChangeAllowed).toLocaleDateString()})
+                You can change your vanity URL again in {daysRemaining} day
+                {daysRemaining !== 1 ? 's' : ''} ({new Date(nextChangeAllowed).toLocaleDateString()}
+                )
               </Text>
             </YStack>
           </XStack>
@@ -429,21 +424,21 @@ export function VanityUrlSection() {
               )
                 .slice(0, 5)
                 .map((entry) => (
-                <XStack
-                  key={`${entry.changed_at}-${entry.new_slug}`}
-                  gap="$2"
-                  p="$2"
-                  bg="$color3"
-                  rounded="$2"
-                >
-                  <Text fontSize="$2" color="$color10" flex={1}>
-                    {entry.old_slug || '(initial)'} → {entry.new_slug}
-                  </Text>
-                  <Text fontSize="$2" color="$color8">
-                    {new Date(entry.changed_at).toLocaleDateString()}
-                  </Text>
-                </XStack>
-              ))}
+                  <XStack
+                    key={`${entry.changed_at}-${entry.new_slug}`}
+                    gap="$2"
+                    p="$2"
+                    bg="$color3"
+                    rounded="$2"
+                  >
+                    <Text fontSize="$2" color="$color10" flex={1}>
+                      {entry.old_slug || '(initial)'} → {entry.new_slug}
+                    </Text>
+                    <Text fontSize="$2" color="$color8">
+                      {new Date(entry.changed_at).toLocaleDateString()}
+                    </Text>
+                  </XStack>
+                ))}
             </YStack>
           </YStack>
         )}
@@ -451,4 +446,3 @@ export function VanityUrlSection() {
     </DashboardWidget>
   )
 }
-

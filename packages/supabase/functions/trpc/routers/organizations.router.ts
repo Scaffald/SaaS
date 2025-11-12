@@ -6,7 +6,7 @@ const organizationRequestInputSchema = z.object({
   name: z.string().min(1, "Name is required").max(255),
   slug: z
     .string()
-    .min(1, "Slug is required")
+    .min(1, "Vanity URL is required")
     .max(120, "Slug must be 120 characters or fewer"),
   website: z
     .string()

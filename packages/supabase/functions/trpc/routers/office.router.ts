@@ -1355,7 +1355,7 @@ export const officeRouter = t.router({
     .input(
       z.object({
         name: z.string().min(1, "Name is required"),
-        slug: z.string().min(1, "Slug is required").toLowerCase(),
+        slug: z.string().min(1, "Vanity URL is required").toLowerCase(),
         industry_id: z.string().uuid().optional(),
         logo_url: z.string().url().optional().or(z.literal("")),
         visibility: z.enum(["public", "private"]).default("public"),
@@ -1372,7 +1372,7 @@ export const officeRouter = t.router({
         });
       }
 
-      // Check if slug is unique
+      // Check if vanity URL is unique
       const { data: existing } = await ctx.supabaseAdmin
         .schema("core")
         .from("organizations")
@@ -1383,7 +1383,7 @@ export const officeRouter = t.router({
       if (existing) {
         throw new TRPCError({
           code: "CONFLICT",
-          message: "An organization with this slug already exists",
+          message: "An organization with this vanity URL already exists",
         });
       }
 
@@ -1415,7 +1415,7 @@ export const officeRouter = t.router({
       z.object({
         id: z.string().uuid(),
         name: z.string().min(1, "Name is required"),
-        slug: z.string().min(1, "Slug is required").toLowerCase(),
+        slug: z.string().min(1, "Vanity URL is required").toLowerCase(),
         industry_id: z.string().uuid().optional(),
         logo_url: z.string().url().optional().or(z.literal("")),
         visibility: z.enum(["public", "private"]),
@@ -1429,7 +1429,7 @@ export const officeRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       const { id, ...updateData } = input;
 
-      // Check if slug is unique (excluding current organization)
+      // Check if vanity URL is unique (excluding current organization)
       const { data: existing } = await ctx.supabaseAdmin
         .schema("core")
         .from("organizations")
@@ -1441,8 +1441,7 @@ export const officeRouter = t.router({
       if (existing) {
         throw new TRPCError({
           code: "CONFLICT",
-          message: "An organization with this slug already exists",
-        });
+          message: "An organization with this vanity URL already exists",
       }
 
       // Update organization including locations in JSONB column
@@ -1728,7 +1727,7 @@ export const officeRouter = t.router({
     .input(
       z.object({
         name: z.string().min(1, "Name is required"),
-        slug: z.string().min(1, "Slug is required"),
+        slug: z.string().min(1, "Vanity URL is required"),
         issuing_organization: z.string().optional(),
         category: z.enum([
           "safety",

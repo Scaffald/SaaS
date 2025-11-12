@@ -179,7 +179,7 @@ export const officeUniversitiesRouter = t.router({
     .input(
       z.object({
         name: z.string().min(1, "Name is required"),
-        slug: z.string().min(1, "Slug is required"),
+        slug: z.string().min(1, "Vanity URL is required"),
         country: z.string().min(1, "Country is required"),
         alpha_two_code: z.string().length(2, "Must be 2-letter country code"),
         domains: z.array(z.string()).default([]),
@@ -254,7 +254,7 @@ export const officeUniversitiesRouter = t.router({
       z.object({
         id: z.string().uuid(),
         name: z.string().min(1, "Name is required"),
-        slug: z.string().min(1, "Slug is required"),
+        slug: z.string().min(1, "Vanity URL is required"),
         country: z.string().min(1, "Country is required"),
         alpha_two_code: z.string().length(2, "Must be 2-letter country code"),
         domains: z.array(z.string()).default([]),

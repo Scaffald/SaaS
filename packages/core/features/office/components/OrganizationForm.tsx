@@ -32,7 +32,11 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
   useEffect(() => {
     const fetchIndustries = async () => {
       try {
-        const { data, error } = await supabase.schema('core').from('industries').select('id, name').order('name')
+        const { data, error } = await supabase
+          .schema('core')
+          .from('industries')
+          .select('id, name')
+          .order('name')
 
         if (error) throw error
         setIndustries(data || [])
@@ -317,7 +321,12 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
 
       {/* Submit buttons */}
       <XStack justify="flex-end" gap="$2" mt="$4">
-        <Button testID="org-form-cancel-btn" variant="outlined" onPress={() => router.back()} disabled={isLoading}>
+        <Button
+          testID="org-form-cancel-btn"
+          variant="outlined"
+          onPress={() => router.back()}
+          disabled={isLoading}
+        >
           Cancel
         </Button>
         <Button

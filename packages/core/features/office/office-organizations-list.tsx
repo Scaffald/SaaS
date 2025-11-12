@@ -347,113 +347,113 @@ export function OfficeOrganizationsList() {
         rightContent={
           <QuickLinksSidebar>
             <YStack gap="$4">
-            <DashboardWidget gap="$4">
-              <XStack justify="space-between" items="center">
-                <Text fontSize="$5" fontWeight="700">
-                  Moderation Summary
-                </Text>
-                <Button
-                  size="$2"
-                  variant="outlined"
-                  icon={RefreshCw}
-                  disabled={isRequestsLoading || isRequestsRefetching}
-                  onPress={refreshRequests}
-                >
-                  Refresh
-                </Button>
-              </XStack>
-              <XStack gap="$4" $sm={{ flexDirection: 'column', gap: '$3' }}>
-                <YStack gap="$1">
-                  <Text fontSize="$2" color="$color11">
-                    Pending
+              <DashboardWidget gap="$4">
+                <XStack justify="space-between" items="center">
+                  <Text fontSize="$5" fontWeight="700">
+                    Moderation Summary
                   </Text>
-                  <Text fontSize="$7" fontWeight="700">
-                    {moderationCounts.pending}
-                  </Text>
-                </YStack>
-                <YStack gap="$1">
-                  <Text fontSize="$2" color="$color11">
-                    Approved
-                  </Text>
-                  <Text fontSize="$7" fontWeight="700" color="$green10">
-                    {moderationCounts.approved}
-                  </Text>
-                </YStack>
-                <YStack gap="$1">
-                  <Text fontSize="$2" color="$color11">
-                    Rejected
-                  </Text>
-                  <Text fontSize="$7" fontWeight="700" color="$red10">
-                    {moderationCounts.rejected}
-                  </Text>
-                </YStack>
-              </XStack>
-            </DashboardWidget>
-
-            <DashboardWidget gap="$4">
-              <Text fontSize="$5" fontWeight="700">
-                Pending Approvals
-              </Text>
-              {isRequestsLoading ? (
-                <XStack justify="center" py="$4">
-                  <Spinner size="large" />
+                  <Button
+                    size="$2"
+                    variant="outlined"
+                    icon={RefreshCw}
+                    disabled={isRequestsLoading || isRequestsRefetching}
+                    onPress={refreshRequests}
+                  >
+                    Refresh
+                  </Button>
                 </XStack>
-              ) : pendingRequests.length === 0 ? (
-                <Text fontSize="$3" color="$color11">
-                  No pending organization requests. Check back soon!
+                <XStack gap="$4" $sm={{ flexDirection: 'column', gap: '$3' }}>
+                  <YStack gap="$1">
+                    <Text fontSize="$2" color="$color11">
+                      Pending
+                    </Text>
+                    <Text fontSize="$7" fontWeight="700">
+                      {moderationCounts.pending}
+                    </Text>
+                  </YStack>
+                  <YStack gap="$1">
+                    <Text fontSize="$2" color="$color11">
+                      Approved
+                    </Text>
+                    <Text fontSize="$7" fontWeight="700" color="$green10">
+                      {moderationCounts.approved}
+                    </Text>
+                  </YStack>
+                  <YStack gap="$1">
+                    <Text fontSize="$2" color="$color11">
+                      Rejected
+                    </Text>
+                    <Text fontSize="$7" fontWeight="700" color="$red10">
+                      {moderationCounts.rejected}
+                    </Text>
+                  </YStack>
+                </XStack>
+              </DashboardWidget>
+
+              <DashboardWidget gap="$4">
+                <Text fontSize="$5" fontWeight="700">
+                  Pending Approvals
                 </Text>
-              ) : (
-                <YStack gap="$4">
-                  {pendingRequests.map((request, index) => (
-                    <YStack key={request.id} gap="$3">
-                      <YStack gap="$1.5">
-                        <Text fontSize="$4" fontWeight="600">
-                          {request.name}
-                        </Text>
-                        <Text fontSize="$2" color="$color11">
-                          Vanity URL: {request.slug}
-                        </Text>
-                        {request.website ? (
-                          <Text fontSize="$2" color="$blue10">
-                            {request.website}
+                {isRequestsLoading ? (
+                  <XStack justify="center" py="$4">
+                    <Spinner size="large" />
+                  </XStack>
+                ) : pendingRequests.length === 0 ? (
+                  <Text fontSize="$3" color="$color11">
+                    No pending organization requests. Check back soon!
+                  </Text>
+                ) : (
+                  <YStack gap="$4">
+                    {pendingRequests.map((request, index) => (
+                      <YStack key={request.id} gap="$3">
+                        <YStack gap="$1.5">
+                          <Text fontSize="$4" fontWeight="600">
+                            {request.name}
                           </Text>
-                        ) : null}
-                        <Text fontSize="$2" color="$color11">
-                          Submitted {new Date(request.created_at).toLocaleString()}
-                        </Text>
-                        {request.notes ? (
                           <Text fontSize="$2" color="$color11">
-                            {request.notes}
+                            Vanity URL: {request.slug}
                           </Text>
-                        ) : null}
+                          {request.website ? (
+                            <Text fontSize="$2" color="$blue10">
+                              {request.website}
+                            </Text>
+                          ) : null}
+                          <Text fontSize="$2" color="$color11">
+                            Submitted {new Date(request.created_at).toLocaleString()}
+                          </Text>
+                          {request.notes ? (
+                            <Text fontSize="$2" color="$color11">
+                              {request.notes}
+                            </Text>
+                          ) : null}
+                        </YStack>
+                        <XStack gap="$2">
+                          <Button
+                            size="$2"
+                            theme="success"
+                            icon={isProcessingAction(request.id) ? Loader2 : Check}
+                            disabled={reviewMutation.isLoading}
+                            onPress={() => handleApprove(request)}
+                          >
+                            Approve
+                          </Button>
+                          <Button
+                            size="$2"
+                            variant="outlined"
+                            theme="error"
+                            icon={XIcon}
+                            disabled={reviewMutation.isLoading}
+                            onPress={() => openRejectDialog(request)}
+                          >
+                            Reject
+                          </Button>
+                        </XStack>
+                        {index < pendingRequests.length - 1 ? <Separator /> : null}
                       </YStack>
-                      <XStack gap="$2">
-                        <Button
-                          size="$2"
-                          theme="success"
-                          icon={isProcessingAction(request.id) ? Loader2 : Check}
-                          disabled={reviewMutation.isLoading}
-                          onPress={() => handleApprove(request)}
-                        >
-                          Approve
-                        </Button>
-                        <Button
-                          size="$2"
-                          variant="outlined"
-                          theme="error"
-                          icon={XIcon}
-                          disabled={reviewMutation.isLoading}
-                          onPress={() => openRejectDialog(request)}
-                        >
-                          Reject
-                        </Button>
-                      </XStack>
-                      {index < pendingRequests.length - 1 ? <Separator /> : null}
-                    </YStack>
-                  ))}
-                </YStack>
-              )}
-            </DashboardWidget>
+                    ))}
+                  </YStack>
+                )}
+              </DashboardWidget>
 
               <DashboardWidget gap="$3" elevated>
                 <Text fontSize="$5" fontWeight="700">

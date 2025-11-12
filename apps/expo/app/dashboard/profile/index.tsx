@@ -5,9 +5,9 @@ import {
   ExperienceWidget,
   EducationWidget,
   SkillsWidget,
-  CertificationsWidget,
   PreferencesWidget,
 } from '@app/core/features/profile/widgets'
+import { ProfileCertificationsRight } from '@app/core/features/profile/profile-certifications-right'
 import { useUser } from '@app/core/utils/useUser'
 
 /**
@@ -34,7 +34,7 @@ export default function ProfileIndexScreen() {
         <QuickLinksSidebar>
           <YStack gap="$4">
             <SkillsWidget userId={user.id} showEdit />
-            <CertificationsWidget userId={user.id} showEdit />
+            <ProfileCertificationsRight />
             <PreferencesWidget showEdit />
           </YStack>
         </QuickLinksSidebar>

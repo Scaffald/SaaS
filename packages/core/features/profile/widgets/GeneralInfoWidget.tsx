@@ -13,24 +13,14 @@ import type { ProfileWidgetProps } from './types'
  * @param showEdit - Show edit button for own profile
  * @param variant - Display variant (compact or full)
  */
-export function GeneralInfoWidget({
-  userId,
-  showEdit = false,
-  variant = 'full',
-}: ProfileWidgetProps) {
-  const router = useRouter()
-  const {
-    data,
-    isLoading,
-    error,
-    refetch,
-    isFetching,
-  } = api.profile.widgets.getGeneralInfo.useQuery(
-    { userId },
-    {
-      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    }
-  )
+export function GeneralInfoWidget({ userId, variant = 'full' }: ProfileWidgetProps) {
+  const { data, isLoading, error, refetch, isFetching } =
+    api.profile.widgets.getGeneralInfo.useQuery(
+      { userId },
+      {
+        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+      }
+    )
 
   if (isLoading) {
     return (
@@ -84,20 +74,6 @@ export function GeneralInfoWidget({
   return (
     <DashboardWidget>
       <YStack gap={spacing.md}>
-        {/* Header */}
-        <XStack justify="space-between" items="center">
-          <Heading variant="h4">General Information</Heading>
-          {showEdit && (
-            <UIButton
-              variant="outlined"
-              size="$2"
-              onPress={() => router.push('/dashboard/profile/general')}
-            >
-              Edit
-            </UIButton>
-          )}
-        </XStack>
-
         {/* Avatar & Name Section */}
         <YStack gap="$3" items="center">
           <Avatar circular size="$10">

@@ -176,7 +176,13 @@ export function OfficeUniversitiesForm({
         <XStack justify="space-between" items="center">
           <H4>{isEditing ? 'Edit University' : 'New University'}</H4>
           {isEditing && (
-            <Button size="$2" variant="outlined" onPress={onCancel} icon={X} data-testid="cancel-button">
+            <Button
+              size="$2"
+              variant="outlined"
+              onPress={onCancel}
+              icon={X}
+              data-testid="cancel-button"
+            >
               Cancel
             </Button>
           )}
@@ -355,7 +361,12 @@ export function OfficeUniversitiesForm({
           {/* Submit Button */}
           <XStack justify="flex-end" pt="$4" gap="$2">
             {isEditing && (
-              <Button variant="outlined" onPress={onCancel} disabled={isLoading} data-testid="cancel-button">
+              <Button
+                variant="outlined"
+                onPress={onCancel}
+                disabled={isLoading}
+                data-testid="cancel-button"
+              >
                 Cancel
               </Button>
             )}

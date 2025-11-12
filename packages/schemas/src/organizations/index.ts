@@ -8,7 +8,7 @@ export const organizationLocationSchema = z.object({
 
 export const organizationCreateSchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  slug: z.string().min(1, 'Slug is required').toLowerCase(),
+  slug: z.string().min(1, 'Vanity URL is required').toLowerCase(),
   industry_id: z.string().uuid().optional(),
   logo_url: z.string().url().optional().or(z.literal('')),
   visibility: z.enum(['public', 'private']).default('public'),
@@ -24,11 +24,11 @@ export const organizationRequestSchema = z.object({
   name: z.string().min(1, 'Name is required').max(255, 'Name is too long'),
   slug: z
     .string()
-    .min(1, 'Slug is required')
-    .max(120, 'Slug must be 120 characters or fewer')
+    .min(1, 'Vanity URL is required')
+    .max(120, 'Vanity URL must be 120 characters or fewer')
     .transform((value) => value.trim().toLowerCase())
     .refine((value) => /^[a-z0-9-]+$/.test(value), {
-      message: 'Slug can only contain lowercase letters, numbers, and hyphens',
+      message: 'Vanity URL can only contain lowercase letters, numbers, and hyphens',
     }),
   website: z
     .string()
