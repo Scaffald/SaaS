@@ -1,6 +1,16 @@
 import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Input, Button, Spinner, ScrollView, AddressForm } from '@app/ui'
-import { TextArea, Adapt, Sheet, Select } from 'tamagui'
+import {
+  YStack,
+  XStack,
+  Text,
+  Input,
+  Button,
+  Spinner,
+  ScrollView,
+  AddressForm,
+  CustomCheckbox,
+} from '@app/ui'
+import { TextArea, Adapt, Sheet, Select, Card } from 'tamagui'
 import type { AddressResult } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
@@ -26,6 +36,8 @@ type JobFormData = {
   description: string
   organization_id: string
   assigned_team_id?: string | null
+  team_ids?: string[]
+  primary_team_id?: string | null
   employment_type?: string
   remote_option?: string
   location?: string
@@ -160,11 +172,21 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   const toast = useToastController()
   const { data: organizationsData } = useAllOrganizations()
 
+  const initialTeamIds =
+    initialData?.team_ids ?? (initialData?.assigned_team_id ? [initialData.assigned_team_id] : [])
+  const initialPrimaryTeamId =
+    initialData?.primary_team_id ??
+    initialData?.assigned_team_id ??
+    (initialTeamIds.length > 0 ? initialTeamIds[0] : null)
+  const [primaryTeamId, setPrimaryTeamId] = useState<string | null>(initialPrimaryTeamId)
+
   const [formData, setFormData] = useState<JobFormData>({
     title: initialData?.title || '',
     description: initialData?.description || '',
     organization_id: initialData?.organization_id || '',
-    assigned_team_id: initialData?.assigned_team_id ?? null,
+    assigned_team_id: initialPrimaryTeamId ?? null,
+    team_ids: initialTeamIds,
+    primary_team_id: initialPrimaryTeamId ?? null,
     employment_type: initialData?.employment_type,
     remote_option: initialData?.remote_option,
     location: initialData?.location || '',
@@ -194,6 +216,35 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     }
   }, [organizationsData, formData.organization_id])
 
+  const toggleTeamSelection = (teamId: string, checked: boolean) => {
+    setFormData((prev) => {
+      const current = prev.team_ids ?? []
+      let next = current
+      if (checked) {
+        if (!current.includes(teamId)) {
+          next = [...current, teamId]
+        }
+      } else {
+        next = current.filter((id) => id !== teamId)
+      }
+
+      if (next === current) {
+        return prev
+      }
+
+      return {
+        ...prev,
+        team_ids: next,
+      }
+    })
+
+    if (checked) {
+      setPrimaryTeamId((prev) => prev ?? teamId)
+    } else {
+      setPrimaryTeamId((prev) => (prev === teamId ? null : prev))
+    }
+  }
+
   const teamsQueryEnabled = Boolean(formData.organization_id)
   const { data: teamsData, isLoading: teamsLoading } = api.teams.list.useQuery(
     {
@@ -205,30 +256,107 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   const teams = (teamsData?.teams ?? []) as Array<{ id: string; name: string | null }>
 
   useEffect(() => {
-    if (!formData.organization_id && formData.assigned_team_id) {
-      setFormData((prev) => ({
-        ...prev,
-        assigned_team_id: null,
-      }))
+    if (formData.organization_id) {
+      return
     }
-  }, [formData.organization_id, formData.assigned_team_id])
+
+    if (
+      (formData.team_ids && formData.team_ids.length > 0) ||
+      formData.assigned_team_id ||
+      formData.primary_team_id
+    ) {
+      setFormData((prev) => {
+        if (
+          (!prev.team_ids || prev.team_ids.length === 0) &&
+          prev.assigned_team_id === null &&
+          prev.primary_team_id === null
+        ) {
+          return prev
+        }
+
+        return {
+          ...prev,
+          team_ids: [],
+          assigned_team_id: null,
+          primary_team_id: null,
+        }
+      })
+      setPrimaryTeamId(null)
+    }
+  }, [
+    formData.organization_id,
+    formData.team_ids,
+    formData.assigned_team_id,
+    formData.primary_team_id,
+  ])
 
   useEffect(() => {
     if (teamsLoading) {
       return
     }
-    if (!formData.assigned_team_id) {
+
+    const availableIds = new Set(teams.map((team) => team.id))
+
+    setFormData((prev) => {
+      const currentTeamIds = prev.team_ids ?? []
+      const filtered = currentTeamIds.filter((id) => availableIds.has(id))
+      const nextAssigned = prev.assigned_team_id && availableIds.has(prev.assigned_team_id)
+        ? prev.assigned_team_id
+        : null
+      const nextPrimary = prev.primary_team_id && availableIds.has(prev.primary_team_id)
+        ? prev.primary_team_id
+        : null
+
+      if (
+        filtered.length === currentTeamIds.length &&
+        nextAssigned === prev.assigned_team_id &&
+        nextPrimary === prev.primary_team_id
+      ) {
+        return prev
+      }
+
+      return {
+        ...prev,
+        team_ids: filtered,
+        assigned_team_id: nextAssigned,
+        primary_team_id: nextPrimary,
+      }
+    })
+  }, [teamsLoading, teams])
+
+  useEffect(() => {
+    const selectedTeamIds = formData.team_ids ?? []
+    if (selectedTeamIds.length === 0) {
+      if (primaryTeamId !== null) {
+        setPrimaryTeamId(null)
+      }
       return
     }
 
-    const hasTeamInScope = teams.some((team) => team.id === formData.assigned_team_id)
-    if (!hasTeamInScope) {
-      setFormData((prev) => ({
-        ...prev,
-        assigned_team_id: null,
-      }))
+    if (!primaryTeamId || !selectedTeamIds.includes(primaryTeamId)) {
+      const nextPrimary = selectedTeamIds[0] ?? null
+      if (nextPrimary !== primaryTeamId) {
+        setPrimaryTeamId(nextPrimary)
+      }
     }
-  }, [teamsLoading, teams, formData.assigned_team_id])
+  }, [formData.team_ids, primaryTeamId])
+
+  useEffect(() => {
+    setFormData((prev) => {
+      if (
+        prev.assigned_team_id === primaryTeamId &&
+        prev.primary_team_id === primaryTeamId
+      ) {
+        return prev
+      }
+
+      return {
+        ...prev,
+        assigned_team_id: primaryTeamId ?? null,
+        primary_team_id: primaryTeamId ?? null,
+      }
+    })
+  }, [primaryTeamId])
 
   const createJob = api.office.createJob.useMutation({
     onSuccess: () => {
@@ -305,15 +433,6 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
 
   const isLoading = createJob.isPending || updateJob.isPending
   const organizations = organizationsData?.organizations || []
-
-  const assignedTeamSelectValue = formData.assigned_team_id ?? '__UNASSIGNED__'
-  const assignedTeamPlaceholder = !formData.organization_id
-    ? 'Select an organization first'
-    : teamsLoading
-    ? 'Loading teams...'
-    : teams.length > 0
-    ? 'Select a team (optional)'
-    : 'No teams available'
 
   type Organization = { id: string; name: string; slug: string; owner_user_id: string | null }
 
@@ -478,68 +597,67 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           </Select>
         </YStack>
 
-        {/* Assigned Team */}
+        {/* Assigned Teams */}
         <YStack gap="$2">
-          <Text fontWeight="600">Assigned Team</Text>
-          <Select
-            value={assignedTeamSelectValue}
-            onValueChange={(value: string) =>
-              setFormData((prev) => ({
-                ...prev,
-                assigned_team_id: value === '__UNASSIGNED__' ? null : value,
-              }))
-            }
-          >
-            <Select.Trigger iconAfter={ChevronDown} disabled={!formData.organization_id || teamsLoading}>
-              <Select.Value placeholder={assignedTeamPlaceholder} />
-            </Select.Trigger>
-
-            <Adapt when="sm" platform="touch">
-              <Sheet modal dismissOnSnapToBottom>
-                <Sheet.Frame>
-                  <Sheet.ScrollView>
-                    <Adapt.Contents />
-                  </Sheet.ScrollView>
-                </Sheet.Frame>
-                <Sheet.Overlay />
-              </Sheet>
-            </Adapt>
-
-            <Select.Content zIndex={200000}>
-              <Select.ScrollUpButton />
-              <Select.Viewport>
-                <Select.Group>
-                  <Select.Label>Teams</Select.Label>
-                  <Select.Item value="__UNASSIGNED__" index={0}>
-                    <Select.ItemText>No team</Select.ItemText>
-                    <Select.ItemIndicator>
-                      <Check size={16} />
-                    </Select.ItemIndicator>
-                  </Select.Item>
-                  {teams.map((team, index) => (
-                    <Select.Item key={team.id} value={team.id} index={index + 1}>
-                      <Select.ItemText>{team.name ?? 'Untitled Team'}</Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Viewport>
-              <Select.ScrollDownButton />
-            </Select.Content>
-          </Select>
+          <Text fontWeight="600">Assigned Teams</Text>
           {!formData.organization_id ? (
             <Text fontSize="$2" color="$color10">
               Select an organization to load available teams.
             </Text>
           ) : teamsLoading ? (
             <Text fontSize="$2" color="$color10">
-              Loading teams...
+              Loading teams…
             </Text>
           ) : teams.length === 0 ? (
             <Text fontSize="$2" color="$color10">
               No teams available for this organization.
+            </Text>
+          ) : (
+            <YStack gap="$2">
+              {teams.map((team) => {
+                const isSelected = (formData.team_ids ?? []).includes(team.id)
+                const isPrimary = primaryTeamId === team.id
+                return (
+                  <Card
+                    key={team.id}
+                    borderWidth={1}
+                    borderColor={isPrimary ? '$color8' : '$borderColor'}
+                    bg="$color2"
+                    p="$3"
+                  >
+                    <XStack gap="$3" items="center" justify="space-between" flexWrap="wrap">
+                      <XStack gap="$3" items="center">
+                        <CustomCheckbox
+                          aria-label={team.name ?? 'Team'}
+                          checked={isSelected}
+                          onCheckedChange={(value) => toggleTeamSelection(team.id, Boolean(value))}
+                        />
+                        <YStack>
+                          <Text fontWeight="600">{team.name ?? 'Untitled team'}</Text>
+                          <Text fontSize="$2" color="$color10">
+                            {isPrimary ? 'Primary team' : 'Collaborator'}
+                          </Text>
+                        </YStack>
+                      </XStack>
+                      {isSelected ? (
+                        <Button
+                          size="$2"
+                          variant="outlined"
+                          onPress={() => setPrimaryTeamId(team.id)}
+                          disabled={isPrimary}
+                        >
+                          {isPrimary ? 'Primary' : 'Make primary'}
+                        </Button>
+                      ) : null}
+                    </XStack>
+                  </Card>
+                )
+              })}
+            </YStack>
+          )}
+          {formData.team_ids && formData.team_ids.length > 1 ? (
+            <Text fontSize="$2" color="$color10">
+              The first primary team is shared with legacy integrations.
             </Text>
           ) : null}
         </YStack>

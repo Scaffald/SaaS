@@ -18,7 +18,6 @@
     "baseUrl": ".",
     "paths": {
       "@app/core": ["./packages/core"],
-      "@app/core/*": ["./packages/core/*"],
       "@app/ui": ["./packages/ui"],
       "@app/styleguide": ["./packages/ui/src/styleguide/index.ts"],
       "@app/styleguide/*": ["./packages/ui/src/styleguide/*"],

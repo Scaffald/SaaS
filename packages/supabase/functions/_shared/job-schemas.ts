@@ -77,6 +77,7 @@ const baseJobSchema = z.object({
 
   // Team management and visibility
   assigned_team_id: z.string().uuid().optional(),
+  team_ids: z.array(z.string().uuid()).optional(),
   team_visibility: z.enum(['internal_only', 'external_only', 'both']).optional(),
   show_team_on_posting: z.boolean().optional(),
 

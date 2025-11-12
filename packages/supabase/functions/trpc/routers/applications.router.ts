@@ -82,6 +82,38 @@ export const applicationsRouter = router({
         }
       }
 
+      const { data: teamAssignments, error: teamAssignmentsError } = await supabase
+        .schema("core")
+        .from("job_team_assignments")
+        .select("team_id, is_primary")
+        .eq("job_id", input.job_id);
+
+      if (teamAssignmentsError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to load team assignments: ${teamAssignmentsError.message}`,
+        });
+      }
+
+      const orderedTeamIds: string[] = [];
+      if (job.assigned_team_id) {
+        orderedTeamIds.push(job.assigned_team_id as string);
+      }
+
+      const sortedAssignments = (teamAssignments ?? []).sort((a, b) => {
+        if (a.is_primary === b.is_primary) {
+          return 0;
+        }
+        return a.is_primary ? -1 : 1;
+      });
+
+      for (const assignment of sortedAssignments) {
+        const teamId = assignment.team_id as string;
+        if (!orderedTeamIds.includes(teamId)) {
+          orderedTeamIds.push(teamId);
+        }
+      }
+
       // Create application
       const { data: application, error } = await supabase
         .schema("core")
@@ -127,13 +159,15 @@ export const applicationsRouter = router({
 
       // Scoring and auto-rejection will be handled by database triggers
 
-      if (job.assigned_team_id) {
+      if (orderedTeamIds.length > 0) {
         const supabaseAdmin = ctx.supabaseAdmin ?? ctx.supabase;
         if (supabaseAdmin) {
+          const targetIndex = Math.floor(Math.random() * orderedTeamIds.length);
+          const targetTeamId = orderedTeamIds[targetIndex];
           await autoAssignApplicationToTeam({
             supabaseAdmin,
             applicationId: application.id,
-            teamId: job.assigned_team_id as string,
+            teamId: targetTeamId,
             jobId: application.job_id,
             organizationId: job.organization_id as string | null,
           });

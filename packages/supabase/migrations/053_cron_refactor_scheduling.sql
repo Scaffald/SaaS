@@ -226,8 +226,10 @@ GRANT SELECT ON public.v_active_cron_jobs TO authenticated;
 COMMENT ON VIEW public.v_active_cron_jobs IS
   'Lists active pg_cron jobs for monitoring and verification.';
 
-COMMENT ON SCHEMA cron IS
-  'Managed by pg_cron. Key schedules:
+DO $$
+DECLARE
+  v_owner REGROLE;
+  v_comment TEXT := 'Managed by pg_cron. Key schedules:
     - import-external-jobs: Daily 1 AM
     - notifications-send-worker: Every minute
     - notifications-check-receipts: Every 15 minutes
@@ -237,6 +239,19 @@ COMMENT ON SCHEMA cron IS
     - update-stale-applications: Daily 3 AM
     - cleanup-old-notifications: Sundays 4 AM
     - archive-expired-jobs: Daily 2 AM';
+BEGIN
+  SELECT nspowner::REGROLE
+  INTO v_owner
+  FROM pg_namespace
+  WHERE nspname = 'cron';
+
+  IF v_owner = current_user::REGROLE THEN
+    EXECUTE format('COMMENT ON SCHEMA cron IS %L', v_comment);
+  ELSE
+    RAISE NOTICE 'Skipping COMMENT ON SCHEMA cron; current user "%" lacks ownership (schema owner: "%").', current_user, v_owner;
+  END IF;
+END;
+$$;
 
 COMMIT;
 

@@ -3693,14 +3693,9 @@ function buildApplicationAssignmentsRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        const teamIds = new Set<string>();
-        if (jobRecord.assigned_team_id) {
-          teamIds.add(jobRecord.assigned_team_id as string);
-        }
-
         const { data: jobTeams, error: jobTeamsError } = await supabaseAdmin
           .schema("core")
-          .from("job_team_assignments")
+          .from("job_teams")
           .select("team_id")
           .eq("job_id", jobId);
 
@@ -3711,8 +3706,12 @@ function buildApplicationAssignmentsRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        for (const record of jobTeams ?? []) {
-          teamIds.add(record.team_id as string);
+        const teamIds = new Set(
+          (jobTeams ?? []).map((record) => record.team_id as string),
+        );
+
+        if (jobRecord.assigned_team_id) {
+          teamIds.add(jobRecord.assigned_team_id as string);
         }
 
         if (!teamIds.has(input.teamId)) {

@@ -19,4 +19,43 @@ test.describe('Regular • /dashboard/profile/employment', () => {
     const pageContent = await page.locator('body').textContent() || ''
     expect(pageContent.length).toBeGreaterThan(0)
   })
+
+  test('travel slider supports 250 mile maximum and renders all license options', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
+    await signInAsTestUser(page)
+    await ensureProfileComplete(page)
+    await page.goto('/dashboard/profile/employment', { waitUntil: 'domcontentloaded' })
+
+    await page.waitForSelector('text=Willing to Travel', { state: 'visible' })
+
+    const travelToggle = page.getByRole('switch', { name: /willing to travel/i })
+    await travelToggle.click()
+
+    const slider = page.getByRole('slider', { name: /travel/i })
+    await expect(slider).toHaveAttribute('aria-valuemax', '250')
+    await slider.press('End')
+
+    await expect(page.getByText('250 miles')).toBeVisible()
+
+    const driversToggle = page.getByRole('switch', { name: /driver/i })
+    await driversToggle.click()
+
+    const licenseOptions = [
+      'Class M',
+      'Class A',
+      'Class B',
+      'Class C',
+      'Class D',
+      'CDL A',
+      'CDL B',
+      'CDL C',
+    ]
+
+    for (const option of licenseOptions) {
+      await expect(page.getByRole('checkbox', { name: new RegExp(option, 'i') })).toBeVisible()
+    }
+  })
 })

@@ -23,6 +23,17 @@ type Job = {
   created_at: string
   updated_at: string
   assigned_team_id: string | null
+  team_ids?: string[]
+  primary_team_id?: string | null
+  teamAssignments?: Array<{
+    teamId: string
+    isPrimary: boolean
+    team?: {
+      id?: string
+      name?: string | null
+      organization_id?: string | null
+    } | null
+  }>
   organization: {
     id: string
     name: string
@@ -41,6 +52,7 @@ type Job = {
 }
 
 const columnHelper = createColumnHelper<Job>()
+type JobTeamAssignment = NonNullable<Job['teamAssignments']>[number]
 
 const formatPayRange = (job: Job) => {
   if (!job.pay_range_min_cents || !job.pay_range_max_cents) {
@@ -74,7 +86,18 @@ const createColumns = (
   columnHelper.display({
     id: 'team',
     header: 'Team',
-    cell: (info) => info.row.original.team?.name ?? 'Unassigned',
+    cell: (info) => {
+      const assignments = info.row.original.teamAssignments ?? []
+      if (assignments.length === 0) {
+        return info.row.original.team?.name ?? 'Unassigned'
+      }
+      return assignments
+        .map((assignment: JobTeamAssignment) => {
+          const name = assignment.team?.name ?? 'Untitled team'
+          return assignment.isPrimary ? `${name} (Primary)` : name
+        })
+        .join(', ')
+    },
   }),
   columnHelper.accessor('location', {
     header: 'Location',
@@ -148,12 +171,15 @@ export function OfficeJobsList() {
     }
 
     return jobs.filter((job: Job) => {
-      const teamName = job.team?.name ?? ''
+      const teamNames =
+        job.teamAssignments?.map((assignment: JobTeamAssignment) => assignment.team?.name ?? '') ?? [
+          job.team?.name ?? '',
+        ]
       const organizationName = job.organization?.name ?? ''
 
       return (
         job.title.toLowerCase().includes(query) ||
-        teamName.toLowerCase().includes(query) ||
+        teamNames.some((name) => name.toLowerCase().includes(query)) ||
         organizationName.toLowerCase().includes(query)
       )
     })

@@ -36,6 +36,20 @@ export const OfficeApplicationsScreen = () => {
   // Data comes from v_applications_with_user_profiles view with flattened fields
   const transformedApplications = useMemo(() => {
     return applications.map((app: Applications[number]): MockApplication => {
+      const jobInfo = app.job as {
+        primary_team_id?: string | null
+        teamAssignments?: Array<{
+          teamId: string
+          isPrimary: boolean
+          team?: { name: string | null }
+        }>
+      } | null
+      const assignments = jobInfo?.teamAssignments ?? []
+      const primaryAssignment =
+        assignments.find((assignment) => assignment.isPrimary) ?? assignments[0] ?? null
+      const primaryTeamId = jobInfo?.primary_team_id ?? primaryAssignment?.teamId ?? null
+      const primaryTeamName = primaryAssignment?.team?.name ?? null
+
       // Map database status to UI status
       const statusMap: Record<string, ApplicationStatus> = {
         pending: 'new',
@@ -92,7 +106,8 @@ export const OfficeApplicationsScreen = () => {
           payRange: '', // Not displayed in kanban view
         },
         team: {
-          id: (app.job as { assigned_team_id?: string | null } | null)?.assigned_team_id ?? null,
+          id: primaryTeamId,
+          name: primaryTeamName,
           assignedUserId: (app as { assigned_to?: string | null }).assigned_to ?? null,
         },
       }

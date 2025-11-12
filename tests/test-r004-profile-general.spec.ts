@@ -17,4 +17,23 @@ test.describe('Regular • /dashboard/profile/general', () => {
     const pageContent = await page.locator('body').textContent() || ''
     expect(pageContent.length).toBeGreaterThan(0)
   })
+
+  test('About editor focuses on click and keeps a stable height', async ({ page }: { page: Page }) => {
+    await signInAsTestUser(page)
+    await ensureProfileComplete(page)
+    await page.goto('/dashboard/profile/general', { waitUntil: 'domcontentloaded' })
+
+    const editorContainer = page.locator('.rich-text-editor-container').first()
+    await expect(editorContainer).toBeVisible()
+
+    const initialHeight = await editorContainer.evaluate((element) => element.clientHeight)
+    await editorContainer.click()
+    await page.keyboard.type(' Automated test input.')
+
+    const aboutText = await editorContainer.locator('p').first().textContent()
+    expect(aboutText).toContain('Automated test input.')
+
+    const afterHeight = await editorContainer.evaluate((element) => element.clientHeight)
+    expect(afterHeight).toBe(initialHeight)
+  })
 })

@@ -201,31 +201,41 @@ export const officeRouter = t.router({
     .query(async ({ ctx, input }) => {
       const { supabaseAdmin, user } = ctx;
 
+      const jobTeamsRelationship =
+        input.team_id || input.myTeamsOnly
+          ? "job_team_assignments!inner"
+          : "job_team_assignments";
+      const selectClause = `
+        id,
+        title,
+        description,
+        status,
+        employment_type,
+        remote_option,
+        location,
+        pay_range_min_cents,
+        pay_range_max_cents,
+        pay_range_type,
+        posted_at,
+        created_at,
+        assigned_team_id,
+        updated_at,
+        organization:organizations!organization_id(id, name, slug),
+        team:teams(id, name, organization_id),
+        team_assignments:${jobTeamsRelationship}(
+          team_id,
+          is_primary,
+          role_key,
+          assigned_at,
+          team:teams(id, name, organization_id)
+        ),
+        created_by:users!created_by_user_id(id, username, display_name)
+      `;
+
       let query = supabaseAdmin
         .schema("core")
         .from("jobs")
-        .select(
-          `
-          id,
-          title,
-          description,
-          status,
-          employment_type,
-          remote_option,
-          location,
-          pay_range_min_cents,
-          pay_range_max_cents,
-          pay_range_type,
-          posted_at,
-          created_at,
-          assigned_team_id,
-          updated_at,
-          organization:organizations!organization_id(id, name, slug),
-          team:teams(id, name, organization_id),
-          created_by:users!created_by_user_id(id, username, display_name)
-        `,
-          { count: "exact" },
-        )
+        .select(selectClause, { count: "exact" })
         .order("created_at", { ascending: false })
         .range(input.offset, input.offset + input.limit - 1);
 
@@ -238,7 +248,7 @@ export const officeRouter = t.router({
       }
 
       if (input.team_id) {
-        query = query.eq("assigned_team_id", input.team_id);
+        query = query.eq("team_assignments.team_id", input.team_id);
       }
 
       if (input.myTeamsOnly) {
@@ -274,7 +284,7 @@ export const officeRouter = t.router({
           };
         }
 
-        query = query.in("assigned_team_id", teamIds);
+        query = query.in("team_assignments.team_id", teamIds);
       }
 
       const { data, error, count } = await query;
@@ -286,16 +296,35 @@ export const officeRouter = t.router({
         });
       }
 
-      const jobs = (data ?? []).map((job) => ({
-        ...job,
-        team: job.team
-          ? {
-            id: job.team.id,
-            name: job.team.name,
-            organization_id: job.team.organization_id,
-          }
-          : null,
-      }));
+      const jobs = (data ?? []).map((job) => {
+        const { team_assignments: jobTeamsRaw, ...rest } = job as Record<string, unknown>;
+        const assignments = (jobTeamsRaw as Array<Record<string, unknown>> | null)?.map(
+          (assignment) => ({
+            teamId: assignment.team_id as string,
+            isPrimary: Boolean(assignment.is_primary),
+            roleKey: assignment.role_key as string,
+            assignedAt: assignment.assigned_at as string,
+            team: assignment.team
+              ? {
+                id: (assignment.team as Record<string, unknown>).id as string,
+                name: (assignment.team as Record<string, unknown>).name as string | null,
+                organization_id: (assignment.team as Record<string, unknown>).organization_id as string,
+              }
+              : null,
+          }),
+        ) ?? [];
+
+        const primaryAssignment =
+          assignments.find((assignment) => assignment.isPrimary) ?? null;
+
+        return {
+          ...rest,
+          teamAssignments: assignments,
+          team_ids: assignments.map((assignment) => assignment.teamId),
+          primary_team_id: primaryAssignment?.teamId ?? null,
+          team: primaryAssignment?.team ?? null,
+        };
+      });
 
       return {
         jobs,
@@ -317,6 +346,13 @@ export const officeRouter = t.router({
           *,
           organization:organizations!organization_id(id, name, slug),
           team:teams(id, name),
+          team_assignments:job_team_assignments(
+            team_id,
+            is_primary,
+            role_key,
+            assigned_at,
+            team:teams(id, name, organization_id)
+          ),
           created_by:users!created_by_user_id(id, username, display_name),
           job_certifications(
             certification:certifications(id, name, slug, issuing_organization)
@@ -338,10 +374,41 @@ export const officeRouter = t.router({
         });
       }
 
+      const {
+        job_skills: jobSkills,
+        team_assignments: jobTeamsRaw,
+        ...rest
+      } = data as Record<string, unknown>;
+
+      const assignments =
+        (jobTeamsRaw as Array<Record<string, unknown>> | null)?.map(
+          (assignment) => ({
+            teamId: assignment.team_id as string,
+            isPrimary: Boolean(assignment.is_primary),
+            roleKey: assignment.role_key as string,
+            assignedAt: assignment.assigned_at as string,
+            team: assignment.team
+              ? {
+                id: (assignment.team as Record<string, unknown>).id as string,
+                name: (assignment.team as Record<string, unknown>).name as string | null,
+                organization_id: (assignment.team as Record<string, unknown>).organization_id as string,
+              }
+              : null,
+          }),
+        ) ?? [];
+
+      const primaryAssignment =
+        assignments.find((assignment) => assignment.isPrimary) ?? null;
+
       return {
         job: {
-          ...data,
-          skills: transformJobSkills(data.job_skills || []),
+          ...rest,
+          job_skills: jobSkills,
+          skills: transformJobSkills(jobSkills || []),
+          teamAssignments: assignments,
+          team_ids: assignments.map((assignment) => assignment.teamId),
+          primary_team_id: primaryAssignment?.teamId ?? null,
+          team: primaryAssignment?.team ?? null,
         },
       };
     }),
@@ -362,7 +429,23 @@ export const officeRouter = t.router({
       }
 
       // Extract certification_ids and skill_ids before inserting job
-      const { certification_ids, skill_ids, ...jobData } = input;
+      const {
+        certification_ids,
+        skill_ids,
+        team_ids: inputTeamIds,
+        ...jobData
+      } = input;
+
+      const requestedTeamIds = Array.from(new Set(inputTeamIds ?? []));
+      let primaryTeamId = jobData.assigned_team_id ?? null;
+
+      if (requestedTeamIds.length > 0) {
+        if (primaryTeamId && !requestedTeamIds.includes(primaryTeamId)) {
+          requestedTeamIds.unshift(primaryTeamId);
+        } else if (!primaryTeamId) {
+          primaryTeamId = requestedTeamIds[0] ?? null;
+        }
+      }
 
       if (
         Object.prototype.hasOwnProperty.call(jobData, "assigned_team_id") &&
@@ -372,12 +455,49 @@ export const officeRouter = t.router({
         jobData.assigned_team_id = null;
       }
 
-      if (jobData.assigned_team_id) {
+      if (requestedTeamIds.length > 0) {
+        const { data: teamRecords, error: teamsError } = await supabaseAdmin
+          .schema("core")
+          .from("teams")
+          .select("id, organization_id")
+          .in("id", requestedTeamIds);
+
+        if (teamsError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to validate team assignments: ${teamsError.message}`,
+          });
+        }
+
+        const missingTeams = requestedTeamIds.filter(
+          (teamId) => !(teamRecords ?? []).some((team) => team.id === teamId),
+        );
+
+        if (missingTeams.length > 0) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "One or more selected teams could not be found.",
+          });
+        }
+
+        const invalidTeams = (teamRecords ?? []).filter(
+          (team) => team.organization_id !== jobData.organization_id,
+        );
+
+        if (invalidTeams.length > 0) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "All teams must belong to the selected organization.",
+          });
+        }
+      }
+
+      if (primaryTeamId) {
         const { data: teamRecord, error: teamError } = await supabaseAdmin
           .schema("core")
           .from("teams")
           .select("id, organization_id")
-          .eq("id", jobData.assigned_team_id)
+          .eq("id", primaryTeamId)
           .single();
 
         if (teamError || !teamRecord) {
@@ -395,6 +515,10 @@ export const officeRouter = t.router({
             message: "Assigned team must belong to the same organization as the job.",
           });
         }
+
+        jobData.assigned_team_id = primaryTeamId;
+      } else {
+        jobData.assigned_team_id = null;
       }
 
       // Insert job using admin client to bypass RLS
@@ -413,6 +537,33 @@ export const officeRouter = t.router({
           code: "INTERNAL_SERVER_ERROR",
           message: `Failed to create job: ${jobError.message}`,
         });
+      }
+
+      if (requestedTeamIds.length > 0) {
+        const effectivePrimaryId = jobData.assigned_team_id ?? requestedTeamIds[0] ?? null;
+        const rows = requestedTeamIds.map((teamId) => ({
+          job_id: job.id,
+          team_id: teamId,
+          organization_id: job.organization_id,
+          assigned_by: user.id,
+          is_primary: effectivePrimaryId === teamId,
+          metadata: {
+            source: "manual",
+            created_by: user.id,
+          },
+        }));
+
+        const { error: jobTeamsError } = await supabaseAdmin
+          .schema("core")
+          .from("job_team_assignments")
+          .insert(rows);
+
+        if (jobTeamsError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to assign teams to job: ${jobTeamsError.message}`,
+          });
+        }
       }
 
       // Insert certifications if provided
@@ -473,6 +624,10 @@ export const officeRouter = t.router({
       const currentOrganizationId = existingJob.organization_id as string;
       const nextOrganizationId = jobData.organization_id ?? currentOrganizationId;
 
+      const requestedTeamIds = inputTeamIds
+        ? Array.from(new Set(inputTeamIds))
+        : undefined;
+
       if (
         Object.prototype.hasOwnProperty.call(jobData, "assigned_team_id") &&
         (!jobData.assigned_team_id || jobData.assigned_team_id === "")
@@ -480,7 +635,62 @@ export const officeRouter = t.router({
         jobData.assigned_team_id = null;
       }
 
-      if (jobData.assigned_team_id) {
+      if (requestedTeamIds) {
+        if (requestedTeamIds.length > 0) {
+          const { data: teamRecords, error: teamsError } = await supabaseAdmin
+            .schema("core")
+            .from("teams")
+            .select("id, organization_id")
+            .in("id", requestedTeamIds);
+
+          if (teamsError) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: `Failed to validate team assignments: ${teamsError.message}`,
+            });
+          }
+
+          const missingTeams = requestedTeamIds.filter(
+            (teamId) => !(teamRecords ?? []).some((team) => team.id === teamId),
+          );
+
+          if (missingTeams.length > 0) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "One or more selected teams could not be found.",
+            });
+          }
+
+          const invalidTeams = (teamRecords ?? []).filter(
+            (team) => team.organization_id !== nextOrganizationId,
+          );
+
+          if (invalidTeams.length > 0) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "All teams must belong to the job's organization.",
+            });
+          }
+        }
+
+        let nextPrimaryTeamId =
+          jobData.assigned_team_id ??
+          existingJob.assigned_team_id ??
+          (requestedTeamIds[0] ?? null);
+
+        if (
+          nextPrimaryTeamId &&
+          requestedTeamIds.length > 0 &&
+          !requestedTeamIds.includes(nextPrimaryTeamId)
+        ) {
+          requestedTeamIds.unshift(nextPrimaryTeamId);
+        }
+
+        jobData.assigned_team_id =
+          requestedTeamIds.length > 0
+            ? nextPrimaryTeamId ?? requestedTeamIds[0]
+            : null;
+      } else if (jobData.assigned_team_id) {
         const { data: teamRecord, error: teamError } = await supabaseAdmin
           .schema("core")
           .from("teams")
@@ -547,6 +757,111 @@ export const officeRouter = t.router({
           code: "INTERNAL_SERVER_ERROR",
           message: `Failed to update job: ${jobError.message}`,
         });
+      }
+
+      if (requestedTeamIds) {
+        const effectivePrimaryTeamId =
+          jobData.assigned_team_id ??
+          existingJob.assigned_team_id ??
+          (requestedTeamIds[0] ?? null);
+
+        const { data: existingAssignments, error: assignmentsError } = await supabaseAdmin
+          .schema("core")
+          .from("job_team_assignments")
+          .select("team_id")
+          .eq("job_id", id);
+
+        if (assignmentsError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to load existing team assignments: ${assignmentsError.message}`,
+          });
+        }
+
+        const existingTeamIds = (existingAssignments ?? []).map(
+          (assignment) => assignment.team_id as string,
+        );
+
+        const teamIdsToInsert = requestedTeamIds.filter(
+          (teamId) => !existingTeamIds.includes(teamId),
+        );
+        const teamIdsToRemove = existingTeamIds.filter(
+          (teamId) => !requestedTeamIds.includes(teamId),
+        );
+
+        if (teamIdsToRemove.length > 0) {
+          const { error: deleteError } = await supabaseAdmin
+            .schema("core")
+            .from("job_team_assignments")
+            .delete()
+            .eq("job_id", id)
+            .in("team_id", teamIdsToRemove);
+
+          if (deleteError) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: `Failed to remove previous team assignments: ${deleteError.message}`,
+            });
+          }
+        }
+
+        if (teamIdsToInsert.length > 0) {
+          const rows = teamIdsToInsert.map((teamId) => ({
+            job_id: id,
+            team_id: teamId,
+            organization_id: nextOrganizationId,
+            assigned_by: ctx.user?.id ?? null,
+            is_primary: (effectivePrimaryTeamId ?? requestedTeamIds[0]) === teamId,
+            metadata: {
+              source: "manual",
+              updated_by: ctx.user?.id ?? null,
+            },
+          }));
+
+          const { error: insertError } = await supabaseAdmin
+            .schema("core")
+            .from("job_team_assignments")
+            .insert(rows);
+
+          if (insertError) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: `Failed to assign teams to job: ${insertError.message}`,
+            });
+          }
+        }
+
+        const { error: resetPrimaryError } = await supabaseAdmin
+          .schema("core")
+          .from("job_team_assignments")
+          .update({ is_primary: false })
+          .eq("job_id", id);
+
+        if (resetPrimaryError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to reset primary team flag: ${resetPrimaryError.message}`,
+          });
+        }
+
+        if (requestedTeamIds.length > 0) {
+          const primaryId = effectivePrimaryTeamId ?? requestedTeamIds[0] ?? null;
+          if (primaryId) {
+            const { error: setPrimaryError } = await supabaseAdmin
+              .schema("core")
+              .from("job_team_assignments")
+              .update({ is_primary: true })
+              .eq("job_id", id)
+              .eq("team_id", primaryId);
+
+            if (setPrimaryError) {
+              throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: `Failed to update primary team: ${setPrimaryError.message}`,
+              });
+            }
+          }
+        }
       }
 
       // Update certifications if provided

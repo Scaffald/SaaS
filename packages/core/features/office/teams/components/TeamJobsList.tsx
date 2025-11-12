@@ -9,6 +9,7 @@ import type { AppRouter } from '@app/supabase/client-types'
 
 type OfficeJobsOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
 type TeamJobRecord = NonNullable<OfficeJobsOutput['jobs']>[number]
+type TeamAssignment = NonNullable<TeamJobRecord['teamAssignments']>[number]
 
 interface TeamJobsListProps {
   teamId: string
@@ -107,6 +108,17 @@ export function TeamJobsList({
                 </YStack>
                 <StatusChip status={job.status ?? 'draft'} />
               </XStack>
+              {job.teamAssignments && job.teamAssignments.length > 0 ? (
+                <XStack gap="$2" flexWrap="wrap">
+                  {job.teamAssignments.map((assignment: TeamAssignment) => (
+                    <TeamBadge
+                      key={`${job.id}-${assignment.teamId}`}
+                      name={assignment.team?.name ?? 'Untitled team'}
+                      isPrimary={assignment.isPrimary}
+                    />
+                  ))}
+                </XStack>
+              ) : null}
               <XStack gap="$2" items="center">
                 <Text fontSize="$3" color="$color10">
                   Updated {job.updated_at ? new Date(job.updated_at).toLocaleDateString() : 'recently'}
@@ -164,6 +176,21 @@ function StatusChip({ status }: { status: string }) {
     <XStack px="$2" py="$1" borderWidth={1} borderColor={border} bg={background} rounded="$4">
       <Text fontSize="$2" color={textColor}>
         {normalized}
+      </Text>
+    </XStack>
+  )
+}
+
+function TeamBadge({ name, isPrimary }: { name: string; isPrimary: boolean }) {
+  const background = isPrimary ? '$blue4' : '$color3'
+  const border = isPrimary ? '$blue8' : '$borderColor'
+  const textColor = isPrimary ? '$blue11' : '$color11'
+
+  return (
+    <XStack px="$2" py="$1" borderWidth={1} borderColor={border} bg={background} rounded="$4">
+      <Text fontSize="$2" color={textColor}>
+        {name}
+        {isPrimary ? ' • Primary' : ''}
       </Text>
     </XStack>
   )

@@ -254,6 +254,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                           userId: member.userId,
                           displayName: member.displayName,
                           status: member.status,
+                        record: member.record,
                         })
                       }
                     >

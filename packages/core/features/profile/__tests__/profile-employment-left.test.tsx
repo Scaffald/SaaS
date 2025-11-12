@@ -389,7 +389,7 @@ import { ProfileEmploymentLeft } from '../profile-employment-left'
 
 const renderEmploymentForm = () => render(<ProfileEmploymentLeft />)
 
-describe.skip('ProfileEmploymentLeft', () => {
+describe('ProfileEmploymentLeft', () => {
   beforeEach(() => {
     employmentData = {
       ...profileEmploymentDefaults,
@@ -455,6 +455,35 @@ describe.skip('ProfileEmploymentLeft', () => {
     press(slider)
 
     expect(isChecked(getByRole('switch', { name: /willing to travel/i }) as HTMLElement)).toBe(true)
+  })
+
+  it('displays the travel slider within the 10-250 mile range', () => {
+    const { getByRole, getByText } = renderEmploymentForm()
+
+    const travelSwitch = getByRole('switch', { name: /willing to travel/i }) as HTMLElement
+    press(travelSwitch)
+
+    const slider = getByRole('slider', { name: /travel slider/i }) as HTMLElement
+    expect(slider.getAttribute('aria-valuemin')).toBe('10')
+    expect(slider.getAttribute('aria-valuemax')).toBe('250')
+    getByText('25 miles')
+
+    press(slider)
+    getByText('30 miles')
+  })
+
+  it('renders all driver license options when enabled', () => {
+    const { getByRole } = renderEmploymentForm()
+
+    const driversSwitch = getByRole('switch', { name: /driver/i }) as HTMLElement
+    press(driversSwitch)
+
+    for (const option of DRIVERS_LICENSE_OPTIONS) {
+      const checkbox = getByRole('checkbox', {
+        name: new RegExp(option, 'i'),
+      }) as HTMLElement
+      expect(checkbox).toBeInstanceOf(HTMLElement)
+    }
   })
 
   it('shows saved values after a successful save', async () => {

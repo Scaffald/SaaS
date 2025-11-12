@@ -41,6 +41,8 @@ export default function EditJobPage() {
         description: data.job.description || '',
         organization_id: data.job.organization_id,
         assigned_team_id: data.job.assigned_team_id || null,
+        primary_team_id: data.job.primary_team_id || null,
+        team_ids: data.job.team_ids || [],
         employment_type: data.job.employment_type || undefined,
         remote_option: data.job.remote_option || undefined,
         location: data.job.location || undefined,
