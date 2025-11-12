@@ -1,5 +1,16 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { YStack, XStack, Text, H4, Spinner, ScrollView, Input, Separator, Card, TextArea } from 'tamagui'
+import {
+  YStack,
+  XStack,
+  Text,
+  H4,
+  Spinner,
+  ScrollView,
+  Input,
+  Separator,
+  Card,
+  TextArea,
+} from 'tamagui'
 import { Award, PlusCircle, UploadCloud } from '@tamagui/lucide-icons'
 import { UIButton as Button, DashboardWidget, MonthYearPicker } from '@app/ui'
 import { CertificationSearch, CertificationChip, CertificationCheckbox, ToggleCard } from '@app/ui'
@@ -68,7 +79,9 @@ export function ProfileCertificationsLeft({
     description: '',
     file: null as File | null,
   })
-  const [recentlyChangedCerts, setRecentlyChangedCerts] = useState<Record<string, 'added' | 'removed'>>({})
+  const [recentlyChangedCerts, setRecentlyChangedCerts] = useState<
+    Record<string, 'added' | 'removed'>
+  >({})
   const highlightTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({})
   const toast = useToastController()
 
@@ -163,7 +176,7 @@ export function ProfileCertificationsLeft({
         enabled: searchQuery.length > 0,
         staleTime: 5 * 60 * 1000, // Cache for 5 minutes
         gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes (formerly cacheTime)
-      },
+      }
     )
 
   // Mutations
@@ -264,9 +277,7 @@ export function ProfileCertificationsLeft({
       console.error('Error saving custom certification:', error)
       toast.show('Error', {
         message:
-          error instanceof Error
-            ? error.message
-            : 'Unable to save that certification right now.',
+          error instanceof Error ? error.message : 'Unable to save that certification right now.',
       })
       failProfileSync()
     }
@@ -377,16 +388,18 @@ export function ProfileCertificationsLeft({
       console.error('Error removing top-level certification:', error)
       toast.show('Error', {
         message:
-          error instanceof Error
-            ? error.message
-            : 'Unable to remove that certification right now.',
+          error instanceof Error ? error.message : 'Unable to remove that certification right now.',
       })
       failProfileSync()
     }
   }
 
   // Handle toggling a depth 1 category
-  const handleToggleCategory = async (categoryId: string, parentId: string, categoryTitle: string) => {
+  const handleToggleCategory = async (
+    categoryId: string,
+    parentId: string,
+    categoryTitle: string
+  ) => {
     const isExpanded = expandedCategories.has(categoryId)
 
     if (!isExpanded) {
@@ -414,9 +427,7 @@ export function ProfileCertificationsLeft({
           console.error('Error adding category:', error)
           toast.show('Error', {
             message:
-              error instanceof Error
-                ? error.message
-                : 'Unable to add that category right now.',
+              error instanceof Error ? error.message : 'Unable to add that category right now.',
           })
           failProfileSync()
           return
@@ -471,9 +482,7 @@ export function ProfileCertificationsLeft({
       console.error('Error toggling certification:', error)
       toast.show('Error', {
         message:
-          error instanceof Error
-            ? error.message
-            : 'Unable to update that certification right now.',
+          error instanceof Error ? error.message : 'Unable to update that certification right now.',
       })
       failProfileSync()
     }
@@ -560,7 +569,8 @@ export function ProfileCertificationsLeft({
             <Card bordered bg="$color2">
               <YStack gap="$3" p="$4">
                 <Text fontSize="$2" color="$color11">
-                  Add certifications that are not in our catalog. These appear alongside saved certifications on the right panel.
+                  Add certifications that are not in our catalog. These appear alongside saved
+                  certifications on the right panel.
                 </Text>
 
                 <YStack gap="$2">
@@ -583,7 +593,9 @@ export function ProfileCertificationsLeft({
                   <Input
                     placeholder="Issuing organization"
                     value={customForm.organization}
-                    onChangeText={(text) => setCustomForm((prev) => ({ ...prev, organization: text }))}
+                    onChangeText={(text) =>
+                      setCustomForm((prev) => ({ ...prev, organization: text }))
+                    }
                     disabled={isSavingCustom}
                   />
                   {customErrors.organization && (
@@ -607,7 +619,9 @@ export function ProfileCertificationsLeft({
                     <Text fontWeight="600">Expiration Date</Text>
                     <MonthYearPicker
                       value={customForm.expirationDate}
-                      onChange={(date) => setCustomForm((prev) => ({ ...prev, expirationDate: date }))}
+                      onChange={(date) =>
+                        setCustomForm((prev) => ({ ...prev, expirationDate: date }))
+                      }
                       disabled={isSavingCustom}
                       error={customErrors.expirationDate}
                     />
@@ -620,7 +634,9 @@ export function ProfileCertificationsLeft({
                     <Input
                       placeholder="Credential ID or number"
                       value={customForm.credentialId}
-                      onChangeText={(text) => setCustomForm((prev) => ({ ...prev, credentialId: text }))}
+                      onChangeText={(text) =>
+                        setCustomForm((prev) => ({ ...prev, credentialId: text }))
+                      }
                       disabled={isSavingCustom}
                     />
                   </YStack>
@@ -629,7 +645,9 @@ export function ProfileCertificationsLeft({
                     <Input
                       placeholder="https://..."
                       value={customForm.credentialUrl}
-                      onChangeText={(text) => setCustomForm((prev) => ({ ...prev, credentialUrl: text }))}
+                      onChangeText={(text) =>
+                        setCustomForm((prev) => ({ ...prev, credentialUrl: text }))
+                      }
                       keyboardType="url"
                       autoCapitalize="none"
                       disabled={isSavingCustom}
@@ -648,7 +666,9 @@ export function ProfileCertificationsLeft({
                     rows={3}
                     placeholder="Add notes about this certification"
                     value={customForm.description}
-                    onChangeText={(text) => setCustomForm((prev) => ({ ...prev, description: text }))}
+                    onChangeText={(text) =>
+                      setCustomForm((prev) => ({ ...prev, description: text }))
+                    }
                     disabled={isSavingCustom}
                   />
                 </YStack>
@@ -666,7 +686,12 @@ export function ProfileCertificationsLeft({
                       {customForm.file ? customForm.file.name : 'Upload PDF or image'}
                     </Button>
                     {customForm.file && (
-                      <Button size="$2" variant="outlined" onPress={handleClearCustomFile} disabled={isSavingCustom}>
+                      <Button
+                        size="$2"
+                        variant="outlined"
+                        onPress={handleClearCustomFile}
+                        disabled={isSavingCustom}
+                      >
                         Remove file
                       </Button>
                     )}
@@ -684,7 +709,11 @@ export function ProfileCertificationsLeft({
                   >
                     Cancel
                   </Button>
-                  <Button variant="primary" onPress={handleCustomFormSubmit} disabled={isSavingCustom}>
+                  <Button
+                    variant="primary"
+                    onPress={handleCustomFormSubmit}
+                    disabled={isSavingCustom}
+                  >
                     {showAdaptiveCustomSaving ? 'Saving...' : 'Save Certification'}
                   </Button>
                 </XStack>
@@ -694,38 +723,36 @@ export function ProfileCertificationsLeft({
         </YStack>
 
         {/* Depth 1 categories and depth 2 certifications */}
-        <ScrollView height={600}>
-          <YStack gap="$3">
-            {certTree?.depth0 && certTree.depth0.length > 0 ? (
-              certTree.depth0.map((topLevel: UserCertification) => {
-                return (
-                  <YStack key={topLevel.id} gap="$2">
-                    <Text fontWeight="600" fontSize="$5" color="$blue11">
-                      {topLevel.catalog.title}
-                    </Text>
+        <YStack gap="$3">
+          {certTree?.depth0 && certTree.depth0.length > 0 ? (
+            certTree.depth0.map((topLevel: UserCertification) => {
+              return (
+                <YStack key={topLevel.id} gap="$2">
+                  <Text fontWeight="600" fontSize="$5" color="$blue11">
+                    {topLevel.catalog.title}
+                  </Text>
 
-                    {/* Fetch and display depth 1 categories */}
-                    <Depth1Categories
-                      parentId={topLevel.certification_id}
-                      expandedCategories={expandedCategories}
-                      onToggle={handleToggleCategory}
-                      certTree={certTree}
-                      onCheckCertification={handleCheckCertification}
-                      onSelectForProof={onSelectCertificationForProof}
-                      toggleCertMutation={toggleCert}
-                      recentlyChangedCerts={recentlyChangedCerts}
-                    />
-                  </YStack>
-                )
-              })
-            ) : (
-              <ProfileEmptyState
-                icon={Award}
-                message="Search and select certification categories above to get started."
-              />
-            )}
-          </YStack>
-        </ScrollView>
+                  {/* Fetch and display depth 1 categories */}
+                  <Depth1Categories
+                    parentId={topLevel.certification_id}
+                    expandedCategories={expandedCategories}
+                    onToggle={handleToggleCategory}
+                    certTree={certTree}
+                    onCheckCertification={handleCheckCertification}
+                    onSelectForProof={onSelectCertificationForProof}
+                    toggleCertMutation={toggleCert}
+                    recentlyChangedCerts={recentlyChangedCerts}
+                  />
+                </YStack>
+              )
+            })
+          ) : (
+            <ProfileEmptyState
+              icon={Award}
+              message="Search and select certification categories above to get started."
+            />
+          )}
+        </YStack>
       </YStack>
     </DashboardWidget>
   )

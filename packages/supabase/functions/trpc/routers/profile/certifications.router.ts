@@ -362,6 +362,8 @@ export const profileCertificationsRouter = t.router({
               .select("id, is_active")
               .eq("user_id", user.id)
               .eq("certification_id", certificationId)
+              .order("created_at", { ascending: false })
+              .limit(1)
               .maybeSingle();
 
             if (existingError) {
