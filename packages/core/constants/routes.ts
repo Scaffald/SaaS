@@ -109,6 +109,21 @@ const ROUTES_CONFIG = {
     title: "Experience",
     isProtected: true,
   },
+  DASHBOARD_PROFILE_BACKGROUND_CHECK: {
+    path: "/dashboard/profile/background-check",
+    title: "Background Checks",
+    isProtected: true,
+  },
+  DASHBOARD_PROFILE_BACKGROUND_CHECK_INITIATE: {
+    path: "/dashboard/profile/background-check/initiate",
+    title: "Start Background Check",
+    isProtected: true,
+  },
+  DASHBOARD_PROFILE_BACKGROUND_CHECK_DISPUTE: {
+    path: "/dashboard/profile/background-check/:checkId/dispute",
+    title: "Dispute Background Check",
+    isProtected: true,
+  },
 
   // Dashboard > Settings
   DASHBOARD_SETTINGS: {
@@ -337,9 +352,19 @@ const ROUTES_CONFIG = {
     title: "Create Team",
     isProtected: true,
   },
+  OFFICE_TEAMS_DETAIL: {
+    path: "/office/teams/:id",
+    title: "Team Detail",
+    isProtected: true,
+  },
   OFFICE_TEAMS_EDIT: {
     path: "/office/teams/:id/edit",
     title: "Edit Team",
+    isProtected: true,
+  },
+  OFFICE_TEAMS_SETTINGS: {
+    path: "/office/teams/:id/settings",
+    title: "Team Settings",
     isProtected: true,
   },
   OFFICE_CMS: {
@@ -399,9 +424,21 @@ export const RouteBuilder = {
     buildRoute(ROUTES.OFFICE_UNIVERSITIES_EDIT, { id }),
   officeTeamsEdit: (id: string | number) =>
     buildRoute(ROUTES.OFFICE_TEAMS_EDIT, { id }),
+  officeTeamsDetail: (id: string | number) =>
+    buildRoute(ROUTES.OFFICE_TEAMS_DETAIL, { id }),
+  officeTeamsSettings: (id: string | number) =>
+    buildRoute(ROUTES.OFFICE_TEAMS_SETTINGS, { id }),
   officeBackgroundChecksRequest: () =>
     ROUTES.OFFICE_BACKGROUND_CHECKS_REQUEST.path,
   officeBackgroundChecksAdmin: () => ROUTES.OFFICE_BACKGROUND_CHECKS_ADMIN.path,
+  dashboardBackgroundCheck: () =>
+    ROUTES.DASHBOARD_PROFILE_BACKGROUND_CHECK.path,
+  dashboardBackgroundCheckInitiate: () =>
+    ROUTES.DASHBOARD_PROFILE_BACKGROUND_CHECK_INITIATE.path,
+  dashboardBackgroundCheckDispute: (checkId: string | number) =>
+    buildRoute(ROUTES.DASHBOARD_PROFILE_BACKGROUND_CHECK_DISPUTE, {
+      checkId,
+    }),
 
   // Dashboard routes
   dashboardUser: (userId: string | number) =>
@@ -438,6 +475,9 @@ export const AUTH_ROUTES = {
 export const DASHBOARD_ROUTES = {
   INDEX: ROUTES.DASHBOARD,
   PROFILE: ROUTES.DASHBOARD_PROFILE,
+  PROFILE_BACKGROUND_CHECK: ROUTES.DASHBOARD_PROFILE_BACKGROUND_CHECK,
+  PROFILE_BACKGROUND_CHECK_INITIATE:
+    ROUTES.DASHBOARD_PROFILE_BACKGROUND_CHECK_INITIATE,
   SETTINGS: ROUTES.DASHBOARD_SETTINGS,
   NOTIFICATIONS: ROUTES.DASHBOARD_NOTIFICATIONS,
   TEAMS: ROUTES.DASHBOARD_TEAMS,
@@ -453,6 +493,8 @@ export const OFFICE_ROUTES = {
   USERS: ROUTES.OFFICE_USERS,
   JOBS: ROUTES.OFFICE_JOBS,
   TEAMS: ROUTES.OFFICE_TEAMS,
+  TEAMS_DETAIL: ROUTES.OFFICE_TEAMS_DETAIL,
+  TEAMS_SETTINGS: ROUTES.OFFICE_TEAMS_SETTINGS,
   UNIVERSITIES: ROUTES.OFFICE_UNIVERSITIES,
   BACKGROUND_CHECKS: ROUTES.OFFICE_BACKGROUND_CHECKS,
   BACKGROUND_CHECKS_ADMIN: ROUTES.OFFICE_BACKGROUND_CHECKS_ADMIN,

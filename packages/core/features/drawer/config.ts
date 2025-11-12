@@ -38,6 +38,7 @@ export interface AssessmentStatus {
 export const generateDashboardDrawerItems = (options?: {
   includeOfficeLink?: boolean;
   assessmentStatus?: AssessmentStatus;
+  includeTeamManagementLink?: boolean;
 }): DrawerItemConfig[] => {
   const items: DrawerItemConfig[] = [];
 
@@ -54,6 +55,18 @@ export const generateDashboardDrawerItems = (options?: {
         title: ROUTES.OFFICE_JOBS.title,
         href: ROUTES.OFFICE_JOBS.path,
       },
+    ];
+
+    if (options?.includeTeamManagementLink) {
+      officeSubItems.splice(2, 0, {
+        key: "office-teams",
+        title: ROUTES.OFFICE_TEAMS.title,
+        href: ROUTES.OFFICE_TEAMS.path,
+        icon: Users,
+      });
+    }
+
+    officeSubItems.push(
       {
         key: "office-universities",
         title: ROUTES.OFFICE_UNIVERSITIES.title,
@@ -94,7 +107,7 @@ export const generateDashboardDrawerItems = (options?: {
         title: ROUTES.STYLEGUIDE.title,
         href: ROUTES.STYLEGUIDE.path,
       },
-    ];
+    );
 
     items.push({
       key: "office",
@@ -234,6 +247,7 @@ export const generateDashboardDrawerItems = (options?: {
 export const getDrawerSections = (options?: {
   includeOfficeLink?: boolean;
   assessmentStatus?: AssessmentStatus;
+  includeTeamManagementLink?: boolean;
 }): DrawerSectionConfig[] => [
   {
     key: "main",

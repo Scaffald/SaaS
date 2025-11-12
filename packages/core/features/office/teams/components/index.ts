@@ -5,5 +5,7 @@ export { RemoveMemberModal } from './RemoveMemberModal'
 export { TeamMemberRoleSelect } from './TeamMemberRoleSelect'
 export { TeamInviteModal } from './TeamInviteModal'
 export { TeamInvitationsList } from './TeamInvitationsList'
+export { TeamOverviewCard } from './TeamOverviewCard'
+export { TeamJobsList } from './TeamJobsList'
 
 
