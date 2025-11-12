@@ -1,0 +1,10 @@
+{
+  "imports": {
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.38.4",
+    "@trpc/server": "https://esm.sh/@trpc/server@10.45.0",
+    "@trpc/server/adapters/fetch": "https://esm.sh/@trpc/server@10.45.0/adapters/fetch",
+    "zod": "https://esm.sh/zod@3.22.4",
+    "std/path": "https://deno.land/std@0.208.0/path/mod.ts",
+    "std/assert": "https://deno.land/std@0.208.0/assert/mod.ts"
+  }
+}
