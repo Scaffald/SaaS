@@ -114,6 +114,7 @@ SELECT
   )) AND j.status IN ('open', 'active')),
   0,
   0,
+  0,
   (SELECT COUNT(*) FROM core.team_invitations ti WHERE ti.team_id = t.id AND ti.status = 'pending'),
   NULL,
   NULL,
