@@ -15,7 +15,7 @@ import { OfficePageLayout } from '../components/OfficePageLayout'
 import { DeleteButton } from '../components/DeleteButton'
 
 type TeamVisibility = (typeof TEAM_VISIBILITIES)[number]
-type TeamRoleKey = ReturnType<typeof teamRoleKeySchema['parse']>
+type TeamRoleKey = ReturnType<(typeof teamRoleKeySchema)['parse']>
 
 type TeamsListOutput = inferRouterOutputs<AppRouter>['teams']['list']
 type TeamRecord = NonNullable<TeamsListOutput['teams']>[number]
@@ -31,65 +31,64 @@ type TeamRow = {
 
 const createColumns = (
   router: ReturnType<typeof useRouter>,
-  onArchive: (team: TeamRow) => Promise<void>,
-): ColumnDef<TeamRow, unknown>[] =>
-  [
-    {
-      accessorKey: 'name',
-      header: 'Team Name',
-      cell: ({ row }: CellContext<TeamRow, unknown>) => row.original.name,
-      meta: {
-        width: '$20',
-      },
+  onArchive: (team: TeamRow) => Promise<void>
+): ColumnDef<TeamRow, unknown>[] => [
+  {
+    accessorKey: 'name',
+    header: 'Team Name',
+    cell: ({ row }: CellContext<TeamRow, unknown>) => row.original.name,
+    meta: {
+      width: '$20',
     },
-    {
-      accessorKey: 'visibility',
-      header: 'Visibility',
-      cell: ({ row }: CellContext<TeamRow, unknown>) => {
-        const value = row.original.visibility
-        return value.charAt(0).toUpperCase() + value.slice(1)
-      },
+  },
+  {
+    accessorKey: 'visibility',
+    header: 'Visibility',
+    cell: ({ row }: CellContext<TeamRow, unknown>) => {
+      const value = row.original.visibility
+      return value.charAt(0).toUpperCase() + value.slice(1)
     },
-    {
-      accessorKey: 'defaultRoleName',
-      header: 'Default Role',
-      cell: ({ row }: CellContext<TeamRow, unknown>) =>
-        row.original.defaultRoleName ?? row.original.defaultRoleKey ?? 'Member',
+  },
+  {
+    accessorKey: 'defaultRoleName',
+    header: 'Default Role',
+    cell: ({ row }: CellContext<TeamRow, unknown>) =>
+      row.original.defaultRoleName ?? row.original.defaultRoleKey ?? 'Member',
+  },
+  {
+    accessorKey: 'updatedAt',
+    header: 'Updated',
+    cell: ({ row }: CellContext<TeamRow, unknown>) => {
+      const value = row.original.updatedAt
+      return value ? new Date(value).toLocaleDateString() : '—'
     },
-    {
-      accessorKey: 'updatedAt',
-      header: 'Updated',
-      cell: ({ row }: CellContext<TeamRow, unknown>) => {
-        const value = row.original.updatedAt
-        return value ? new Date(value).toLocaleDateString() : '—'
-      },
+  },
+  {
+    id: 'actions',
+    header: 'Actions',
+    cell: ({ row }: CellContext<TeamRow, unknown>) => {
+      const team = row.original
+      return (
+        <XStack gap="$2">
+          <Button
+            size="$2"
+            variant="outlined"
+            icon={Pencil}
+            onPress={() => router.push(RouteBuilder.officeTeamsEdit(team.id))}
+          >
+            Edit
+          </Button>
+          <DeleteButton
+            itemName={team.name}
+            itemType="team"
+            onDelete={() => onArchive(team)}
+            size="$2"
+          />
+        </XStack>
+      )
     },
-    {
-      id: 'actions',
-      header: 'Actions',
-      cell: ({ row }: CellContext<TeamRow, unknown>) => {
-        const team = row.original
-        return (
-          <XStack gap="$2">
-            <Button
-              size="$2"
-              variant="outlined"
-              icon={Pencil}
-              onPress={() => router.push(RouteBuilder.officeTeamsEdit(team.id))}
-            >
-              Edit
-            </Button>
-            <DeleteButton
-              itemName={team.name}
-              itemType="team"
-              onDelete={() => onArchive(team)}
-              size="$2"
-            />
-          </XStack>
-        )
-      },
-    },
-  ]
+  },
+]
 
 export function OfficeTeamsList() {
   const router = useRouter()
@@ -118,9 +117,7 @@ export function OfficeTeamsList() {
     }
 
     return (data.teams as TeamRecord[]).map((team) => {
-      const parsedVisibility = TEAM_VISIBILITIES.includes(
-        team.visibility as TeamVisibility,
-      )
+      const parsedVisibility = TEAM_VISIBILITIES.includes(team.visibility as TeamVisibility)
         ? (team.visibility as TeamVisibility)
         : 'organization'
 
@@ -147,7 +144,7 @@ export function OfficeTeamsList() {
       (team) =>
         team.name.toLowerCase().includes(query) ||
         (team.defaultRoleName ?? '').toLowerCase().includes(query) ||
-        (team.defaultRoleKey ?? '').toLowerCase().includes(query),
+        (team.defaultRoleKey ?? '').toLowerCase().includes(query)
     )
   }, [teams, search])
 
@@ -161,7 +158,7 @@ export function OfficeTeamsList() {
           reason: 'Archived from office dashboard',
         })
       }),
-    [router, archiveTeam],
+    [router, archiveTeam]
   )
 
   return (
@@ -172,7 +169,7 @@ export function OfficeTeamsList() {
         searchValue={search}
         onSearchChange={setSearch}
         createButtonLabel="Create Team"
-        onCreateClick={() => router.push(ROUTES.OFFICE_TEAMS_CREATE.path)}
+        onCreateClick={() => router.push(ROUTES.OFFICE_CMS_TEAMS_CREATE.path)}
         columns={columns}
         data={filteredTeams}
         isLoading={isLoading || archiveMutation.isPending}
@@ -195,4 +192,3 @@ export function OfficeTeamsList() {
     </YStack>
   )
 }
-

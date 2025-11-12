@@ -98,7 +98,7 @@ export function AdminBackgroundChecksPage() {
       refetchOnWindowFocus: true,
       staleTime: 30_000,
       enabled: isAdmin,
-    },
+    }
   )
 
   const disputesQuery = api.backgroundChecks.adminListDisputes.useQuery(undefined, {
@@ -118,7 +118,7 @@ export function AdminBackgroundChecksPage() {
       enabled: isAdmin && activeTab === 'audit',
       refetchOnWindowFocus: true,
       staleTime: 30_000,
-    },
+    }
   )
 
   const checkRows = useMemo<CheckRow[]>(() => {
@@ -243,7 +243,7 @@ export function AdminBackgroundChecksPage() {
         ),
       },
     ],
-    [setSelectedCheck],
+    [setSelectedCheck]
   )
 
   const disputeColumns: ColumnDef<DisputeRow>[] = useMemo(
@@ -294,7 +294,7 @@ export function AdminBackgroundChecksPage() {
         ),
       },
     ],
-    [setSelectedDispute],
+    [setSelectedDispute]
   )
 
   const summaryStats = useMemo(() => {
@@ -304,9 +304,8 @@ export function AdminBackgroundChecksPage() {
     const pendingDisputes =
       disputesQuery.data?.filter(
         (dispute: AdminDisputeSummary) =>
-          dispute.status === 'pending' || dispute.status === 'under_review',
-      ) ??
-      []
+          dispute.status === 'pending' || dispute.status === 'under_review'
+      ) ?? []
     return {
       total,
       underReview: underReview.length,
@@ -332,13 +331,13 @@ export function AdminBackgroundChecksPage() {
           Admin access required
         </Text>
         <Text fontSize="$3" color="$color10" style={{ textAlign: 'center' }}>
-          Background check review tools are restricted to compliance administrators. Contact an administrator if you
-          believe this is an error.
+          Background check review tools are restricted to compliance administrators. Contact an
+          administrator if you believe this is an error.
         </Text>
         <Button
           size="$3"
           variant="outlined"
-          onPress={() => router.push(ROUTES.OFFICE_BACKGROUND_CHECKS.path)}
+          onPress={() => router.push(ROUTES.OFFICE_ATS_CHECKS.path)}
         >
           Go to organization background checks
         </Button>
@@ -513,7 +512,7 @@ export function AdminBackgroundChecksPage() {
             <Button
               size="$3"
               variant="outlined"
-              onPress={() => router.push(ROUTES.OFFICE_BACKGROUND_CHECKS.path)}
+              onPress={() => router.push(ROUTES.OFFICE_ATS_CHECKS.path)}
             >
               Organization view
             </Button>
@@ -569,7 +568,9 @@ export function AdminBackgroundChecksPage() {
           columns={disputeColumns}
           isLoading={disputesQuery.isLoading}
           emptyMessage={
-            disputesQuery.isLoading ? 'Loading disputes…' : 'No disputes require attention right now.'
+            disputesQuery.isLoading
+              ? 'Loading disputes…'
+              : 'No disputes require attention right now.'
           }
           onRowClick={(row) => setSelectedDispute(row.raw)}
         />
@@ -625,4 +626,3 @@ export function AdminBackgroundChecksPage() {
     </YStack>
   )
 }
-

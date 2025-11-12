@@ -1,17 +1,7 @@
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
-import {
-  Button,
-  Dialog,
-  Label,
-  Separator,
-  Spinner,
-  Text,
-  TextArea,
-  XStack,
-  YStack,
-} from 'tamagui'
+import { Button, Dialog, Label, Separator, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import {
   ArrowRightCircle,
@@ -291,8 +281,8 @@ export function OfficeOrganizationsList() {
           >
             <Dialog.Title>Reject Request</Dialog.Title>
             <Dialog.Description>
-              Provide a short reason for rejecting <Text fontWeight="600">{rejectDialog.name}</Text>. This helps the
-              requester understand what to do next.
+              Provide a short reason for rejecting <Text fontWeight="600">{rejectDialog.name}</Text>
+              . This helps the requester understand what to do next.
             </Dialog.Description>
             <YStack gap="$2">
               <Label htmlFor="organization-reject-reason">Rejection Reason</Label>
@@ -345,7 +335,7 @@ export function OfficeOrganizationsList() {
             searchValue={search}
             onSearchChange={setSearch}
             createButtonLabel="Create Organization"
-            onCreateClick={() => router.push(ROUTES.OFFICE_ORGANIZATIONS_CREATE.path)}
+            onCreateClick={() => router.push(ROUTES.OFFICE_CMS_ORGANIZATIONS_CREATE.path)}
             columns={columns as ColumnDef<Organization, unknown>[]}
             data={filteredOrganizations}
             isLoading={isLoading}
@@ -472,7 +462,7 @@ export function OfficeOrganizationsList() {
                 <Button
                   theme="info"
                   icon={ArrowRightCircle}
-                  onPress={() => router.push(ROUTES.OFFICE_ORGANIZATIONS_CREATE.path)}
+                  onPress={() => router.push(ROUTES.OFFICE_CMS_ORGANIZATIONS_CREATE.path)}
                 >
                   Create Organization
                 </Button>

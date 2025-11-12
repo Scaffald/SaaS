@@ -82,7 +82,12 @@ const createColumns = (
           >
             Edit
           </Button>
-          <DeleteButton data-testid={`user-delete-button-${user.id}`} itemName={displayName} itemType="user" onDelete={() => onDelete(user.id)} />
+          <DeleteButton
+            data-testid={`user-delete-button-${user.id}`}
+            itemName={displayName}
+            itemType="user"
+            onDelete={() => onDelete(user.id)}
+          />
         </XStack>
       )
     },
@@ -169,7 +174,7 @@ export function OfficeUsersList() {
       searchValue={search}
       onSearchChange={setSearch}
       createButtonLabel="Create User"
-      onCreateClick={() => router.push(ROUTES.OFFICE_USERS_CREATE.path)}
+      onCreateClick={() => router.push(ROUTES.OFFICE_CMS_WORKERS_CREATE.path)}
       columns={columns as ColumnDef<User, unknown>[]}
       data={filteredUsers}
       isLoading={isLoading}
@@ -198,7 +203,7 @@ export function OfficeUsersList() {
           primaryActionLabel: 'Open full create flow',
           onPrimaryAction: () => {
             setAddModalOpen(false)
-            router.push(ROUTES.OFFICE_USERS_CREATE.path)
+            router.push(ROUTES.OFFICE_CMS_WORKERS_CREATE.path)
           },
           children: (
             <YStack gap="$3">

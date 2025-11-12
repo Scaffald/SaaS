@@ -48,12 +48,12 @@ export const generateDashboardDrawerItems = (options?: {
       {
         key: "office-users",
         titleKey: "navigation.officeUsers",
-        href: ROUTES.OFFICE_USERS.path,
+        href: ROUTES.OFFICE_CMS_WORKERS.path,
       },
       {
         key: "office-jobs",
         titleKey: "navigation.officeJobs",
-        href: ROUTES.OFFICE_JOBS.path,
+        href: ROUTES.OFFICE_CMS_JOBS.path,
       },
     ];
 
@@ -61,7 +61,7 @@ export const generateDashboardDrawerItems = (options?: {
       officeSubItems.splice(2, 0, {
         key: "office-teams",
         titleKey: "navigation.officeTeams",
-        href: ROUTES.OFFICE_TEAMS.path,
+        href: ROUTES.OFFICE_CMS_TEAMS.path,
         icon: Users,
       });
     }
@@ -70,22 +70,22 @@ export const generateDashboardDrawerItems = (options?: {
       {
         key: "office-universities",
         titleKey: "navigation.officeUniversities",
-        href: ROUTES.OFFICE_UNIVERSITIES.path,
+        href: ROUTES.OFFICE_CMS_UNIVERSITIES.path,
       },
       {
         key: "office-applications",
         titleKey: "navigation.officeApplications",
-        href: ROUTES.OFFICE_APPLICATIONS.path,
+        href: ROUTES.OFFICE_ATS.path,
       },
       {
         key: "office-organizations",
         titleKey: "navigation.officeOrganizations",
-        href: ROUTES.OFFICE_ORGANIZATIONS.path,
+        href: ROUTES.OFFICE_CMS_ORGANIZATIONS.path,
       },
       {
         key: "office-background-checks",
         titleKey: "navigation.officeBackgroundChecks",
-        href: ROUTES.OFFICE_BACKGROUND_CHECKS.path,
+        href: ROUTES.OFFICE_ATS_CHECKS.path,
       },
       {
         key: "office-notifications",
@@ -95,7 +95,7 @@ export const generateDashboardDrawerItems = (options?: {
       {
         key: "office-cms",
         titleKey: "navigation.officeCms",
-        href: ROUTES.OFFICE_CMS.path,
+        href: ROUTES.OFFICE_CMS_WELCOME.path,
       },
       {
         key: "office-styleguide",

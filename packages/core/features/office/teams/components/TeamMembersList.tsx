@@ -1,16 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useWindowDimensions } from 'react-native'
-import {
-  AlertDialog,
-  Avatar,
-  Button,
-  Card,
-  Spinner,
-  Text,
-  TextArea,
-  XStack,
-  YStack,
-} from 'tamagui'
+import { AlertDialog, Avatar, Button, Card, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
 import { Crown, LogOut, Plus, UserMinus } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
@@ -63,7 +53,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
     { teamId },
     {
       refetchOnWindowFocus: true,
-    },
+    }
   )
 
   const workloadQuery = api.teams.analytics.workload.useQuery(
@@ -71,7 +61,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
     {
       enabled: Boolean(teamId),
       refetchOnWindowFocus: true,
-    },
+    }
   )
 
   const { roles, isLoading: isLoadingRoles } = useTeamFormOptions({ organizationId })
@@ -95,7 +85,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
       })
       setLeaveReason('')
       setIsLeaveDialogOpen(false)
-      router.replace(ROUTES.OFFICE_TEAMS.path)
+      router.replace(ROUTES.OFFICE_CMS_TEAMS.path)
     },
     onError: (error: Error) => {
       toast.show('Unable to leave team', { message: error.message })
@@ -129,7 +119,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
   const hasMembers = members.length > 0
   const viewerMembership = useMemo(
     () => members.find((member) => member.userId === currentUser?.id) ?? null,
-    [members, currentUser?.id],
+    [members, currentUser?.id]
   )
   const canTransferOwnership = viewerMembership?.roleKey === 'admin'
 
@@ -213,7 +203,8 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                   : workload.availabilityScore.toFixed(0)
                 : null
             const isSelf = member.userId === currentUser?.id
-            const canTransferToMember = canTransferOwnership && !isSelf && member.status === 'active'
+            const canTransferToMember =
+              canTransferOwnership && !isSelf && member.status === 'active'
 
             const memberRoleName = member.record.role?.name ?? 'Member'
             const memberStatusLabel = member.status === 'active' ? 'Active' : member.status
@@ -345,9 +336,18 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
           })}
         </YStack>
       ) : (
-        <YStack gap="$2" borderWidth={1} borderColor="$borderColor" rounded="$4" p="$4" bg="$color2">
+        <YStack
+          gap="$2"
+          borderWidth={1}
+          borderColor="$borderColor"
+          rounded="$4"
+          p="$4"
+          bg="$color2"
+        >
           <Text fontWeight="600">No team members yet</Text>
-          <Text color="$color11">Add collaborators to this team to manage jobs and applications together.</Text>
+          <Text color="$color11">
+            Add collaborators to this team to manage jobs and applications together.
+          </Text>
         </YStack>
       )}
 
@@ -407,8 +407,8 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
           >
             <AlertDialog.Title>Leave team</AlertDialog.Title>
             <AlertDialog.Description>
-              You will lose access to jobs, applications, and notifications for this team. This action cannot
-              be undone.
+              You will lose access to jobs, applications, and notifications for this team. This
+              action cannot be undone.
             </AlertDialog.Description>
             <YStack gap="$2">
               <Text fontSize="$3" color="$color11">
@@ -435,7 +435,11 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                   onPress={() => void handleLeaveTeam()}
                   disabled={selfRemoveMutation.isPending}
                 >
-                  {selfRemoveMutation.isPending ? <Spinner size="small" color="$color1" /> : 'Leave team'}
+                  {selfRemoveMutation.isPending ? (
+                    <Spinner size="small" color="$color1" />
+                  ) : (
+                    'Leave team'
+                  )}
                 </Button>
               </AlertDialog.Action>
             </XStack>
@@ -445,5 +449,3 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
     </YStack>
   )
 }
-
-

@@ -62,9 +62,14 @@ function buildUserStub(email: string, userId: string) {
 }
 
 async function injectSession(page: Page, session: SupabaseSessionShape) {
+  const safeUser = JSON.parse(JSON.stringify(session.user))
+  const safeSession: SupabaseSessionShape = {
+    ...session,
+    user: safeUser,
+  }
   const payload = {
-    currentSession: session,
-    expiresAt: session.expires_at,
+    currentSession: safeSession,
+    expiresAt: safeSession.expires_at,
   }
 
   await page.addInitScript(
@@ -78,13 +83,15 @@ async function injectSession(page: Page, session: SupabaseSessionShape) {
         console.error('[TEST AUTH] Failed to populate localStorage', error)
       }
     },
-    { storageKey: STORAGE_KEY, payload, user: session.user },
+    { storageKey: STORAGE_KEY, payload, user: safeUser },
   )
 
   await page.goto(`${APP_BASE_URL}/dashboard`, { waitUntil: 'domcontentloaded' })
   await page.waitForTimeout(1000)
   const keys = await page.evaluate(() => Object.keys(window.localStorage))
   console.log('[TEST AUTH] localStorage keys after injection:', keys)
+  const tokenValue = await page.evaluate(() => window.localStorage.getItem('supabase.auth.token'))
+  console.log('[TEST AUTH] supabase.auth.token value:', tokenValue)
 }
 
 async function confirmAuthenticated(page: Page) {
@@ -108,13 +115,14 @@ async function tryCachedToken(page: Page, persona: TestPersona): Promise<boolean
 
   const nowSeconds = Math.floor(Date.now() / 1000)
   const expiresSeconds = Math.floor(cached.expiresAt / 1000)
+  const user = buildUserStub(cached.email, cached.userId)
   const session: SupabaseSessionShape = {
     access_token: cached.token,
     refresh_token: cached.token,
     expires_at: expiresSeconds,
     expires_in: Math.max(60, expiresSeconds - nowSeconds),
     token_type: 'bearer',
-    user: buildUserStub(cached.email, cached.userId),
+    user,
   }
 
   console.log(`[TEST AUTH] Injecting cached ${persona} session`)
@@ -138,6 +146,7 @@ async function signInViaPassword(email: string, password: string): Promise<Supab
   }
 
   const { session } = data
+  const plainUser = JSON.parse(JSON.stringify(session.user))
   if (!session.expires_at) {
     session.expires_at = Math.floor(Date.now() / 1000) + (session.expires_in ?? 3600)
   }
@@ -148,7 +157,7 @@ async function signInViaPassword(email: string, password: string): Promise<Supab
     expires_at: session.expires_at,
     expires_in: session.expires_in ?? 3600,
     token_type: session.token_type ?? 'bearer',
-    user: session.user,
+    user: plainUser,
   }
 }
 

@@ -74,7 +74,7 @@ export function TeamJobsList({
                 return
               }
               router.push({
-                pathname: ROUTES.OFFICE_JOBS_CREATE.path,
+                pathname: ROUTES.OFFICE_CMS_JOBS_CREATE.path,
                 params: { teamId },
               })
             }}
@@ -153,7 +153,8 @@ export function TeamJobsList({
                 items={isSmallScreen ? 'stretch' : 'center'}
               >
                 <Text fontSize="$3" color="$color10">
-                  Updated {job.updated_at ? new Date(job.updated_at).toLocaleDateString() : 'recently'}
+                  Updated{' '}
+                  {job.updated_at ? new Date(job.updated_at).toLocaleDateString() : 'recently'}
                 </Text>
               </XStack>
               <XStack width="100%">
@@ -186,7 +187,7 @@ export function TeamJobsList({
                 return
               }
               router.push({
-                pathname: ROUTES.OFFICE_JOBS_CREATE.path,
+                pathname: ROUTES.OFFICE_CMS_JOBS_CREATE.path,
                 params: { teamId },
               })
             }}
@@ -250,4 +251,3 @@ function TeamBadge({ name, isPrimary }: { name: string; isPrimary: boolean }) {
     </XStack>
   )
 }
-

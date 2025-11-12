@@ -39,4 +39,33 @@ describe('normalizeEducationEntry', () => {
     expect(result.end_date).toBeUndefined()
     expect(result.expected_graduation_date).toBeUndefined()
   })
+
+  it('parses numeric GPA strings and strips whitespace', () => {
+    const result = normalizeEducationEntry({
+      ...baseEntry,
+      gpa: ' 3.2 ',
+      is_verified: null,
+    } as unknown as typeof baseEntry)
+
+    expect(result.gpa).toBeCloseTo(3.2)
+    expect(result.is_verified).toBe(false)
+  })
+
+  it('returns undefined for empty GPA values', () => {
+    const result = normalizeEducationEntry({
+      ...baseEntry,
+      gpa: '',
+    } as unknown as typeof baseEntry)
+
+    expect(result.gpa).toBeUndefined()
+  })
+
+  it('preserves expected graduation date when present', () => {
+    const result = normalizeEducationEntry({
+      ...baseEntry,
+      expected_graduation_date: '2026-06-01',
+    } as unknown as typeof baseEntry)
+
+    expect(result.expected_graduation_date).toBe('2026-06-01')
+  })
 })

@@ -105,7 +105,7 @@ export function OfficeUniversitiesList() {
       searchValue={search}
       onSearchChange={setSearch}
       createButtonLabel="Create University"
-      onCreateClick={() => router.push(ROUTES.OFFICE_UNIVERSITIES_CREATE.path)}
+      onCreateClick={() => router.push(ROUTES.OFFICE_CMS_UNIVERSITIES_CREATE.path)}
       columns={columns as ColumnDef<University, unknown>[]}
       data={universities}
       isLoading={isLoading}

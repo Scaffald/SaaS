@@ -3,3 +3,4 @@
 xx_*.sql
 tokens.json
 onet/
+node_modules

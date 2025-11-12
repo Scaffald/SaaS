@@ -57,7 +57,7 @@ export function OfficeCMSList() {
         <YStack flex={1} gap="$4">
           <XStack justify="space-between" items="center">
             <H2>Welcome Slides CMS</H2>
-            <Link href={ROUTES.OFFICE_CMS_CREATE.path} asChild>
+            <Link href={ROUTES.OFFICE_CMS_WELCOME_CREATE.path} asChild>
               <Button icon={Plus}>Create Slide</Button>
             </Link>
           </XStack>
@@ -125,7 +125,10 @@ export function OfficeCMSList() {
                         onPress={() => handleToggleActive(slide)}
                         chromeless
                       />
-                      <Link href={ROUTES.OFFICE_CMS_EDIT.path.replace(':id', slide.id)} asChild>
+                      <Link
+                        href={ROUTES.OFFICE_CMS_WELCOME_EDIT.path.replace(':id', slide.id)}
+                        asChild
+                      >
                         <Button size="$3" icon={Pencil} chromeless />
                       </Link>
                       <Button
@@ -143,7 +146,7 @@ export function OfficeCMSList() {
               {(!data?.slides || data.slides.length === 0) && (
                 <YStack items="center" justify="center" gap="$4" py="$8">
                   <Text opacity={0.5}>No slides found</Text>
-                  <Link href={ROUTES.OFFICE_CMS_CREATE.path} asChild>
+                  <Link href={ROUTES.OFFICE_CMS_WELCOME_CREATE.path} asChild>
                     <Button icon={Plus}>Create First Slide</Button>
                   </Link>
                 </YStack>

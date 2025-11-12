@@ -13,11 +13,19 @@ describe('date-formatting utilities', () => {
     expect(formatDateRange('2024-01-15T00:00:00Z', null, true, '2024-06-20T00:00:00Z')).toBe(
       'Jan 2024 - Present (Expected: Jun 2024)',
     )
+    expect(formatDateRange(null, null, true, 'invalid-date')).toBe(
+      'N/A - Present (Expected: invalid-date)',
+    )
   })
 
   it('formats completed date ranges', () => {
     expect(formatDateRange('2023-02-15T00:00:00Z', '2024-02-15T00:00:00Z', false)).toBe(
       'Feb 2023 - Feb 2024',
     )
+  })
+
+  it('falls back gracefully when start or end dates are missing', () => {
+    expect(formatDateRange(undefined, '2024-05-15T12:00:00Z', false)).toBe('N/A - May 2024')
+    expect(formatDateRange('2024-05-15T12:00:00Z', undefined, false)).toBe('May 2024 - N/A')
   })
 })

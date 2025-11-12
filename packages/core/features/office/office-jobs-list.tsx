@@ -128,7 +128,12 @@ const createColumns = (
           >
             Edit
           </Button>
-          <DeleteButton data-testid={`job-delete-button-${job.id}`} itemName={job.title} itemType="job" onDelete={() => onDelete(job.id)} />
+          <DeleteButton
+            data-testid={`job-delete-button-${job.id}`}
+            itemName={job.title}
+            itemType="job"
+            onDelete={() => onDelete(job.id)}
+          />
         </XStack>
       )
     },
@@ -171,10 +176,9 @@ export function OfficeJobsList() {
     }
 
     return jobs.filter((job: Job) => {
-      const teamNames =
-        job.teamAssignments?.map((assignment: JobTeamAssignment) => assignment.team?.name ?? '') ?? [
-          job.team?.name ?? '',
-        ]
+      const teamNames = job.teamAssignments?.map(
+        (assignment: JobTeamAssignment) => assignment.team?.name ?? ''
+      ) ?? [job.team?.name ?? '']
       const organizationName = job.organization?.name ?? ''
 
       return (
@@ -256,7 +260,7 @@ export function OfficeJobsList() {
       searchValue={search}
       onSearchChange={setSearch}
       createButtonLabel="Create Job"
-      onCreateClick={() => router.push(ROUTES.OFFICE_JOBS_CREATE.path)}
+      onCreateClick={() => router.push(ROUTES.OFFICE_CMS_JOBS_CREATE.path)}
       columns={columns as ColumnDef<Job, unknown>[]}
       data={filteredJobs}
       isLoading={isLoading}
@@ -265,7 +269,7 @@ export function OfficeJobsList() {
       actionBarConfig={{
         bar: {
           addLabel: 'Create Job',
-          onAddPress: () => router.push(ROUTES.OFFICE_JOBS_CREATE.path),
+          onAddPress: () => router.push(ROUTES.OFFICE_CMS_JOBS_CREATE.path),
           showDisabled: true,
           searchValue: search,
           onSearchChange: setSearch,

@@ -21,7 +21,9 @@ type OrganizationInitiateInput = RouterInputs['backgroundChecks']['organizationI
 
 const formatCurrency = (cents: number | null | undefined) => {
   if (typeof cents !== 'number') return '—'
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(cents / 100)
+  return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(
+    cents / 100
+  )
 }
 
 export function OrganizationBackgroundCheckRequestForm() {
@@ -47,7 +49,7 @@ export function OrganizationBackgroundCheckRequestForm() {
   const { data: organizationsData, isLoading: isLoadingOrganizations } = useAllOrganizations()
   const organizations = useMemo<OrganizationSummary[]>(
     () => (organizationsData?.organizations ?? []) as OrganizationSummary[],
-    [organizationsData?.organizations],
+    [organizationsData?.organizations]
   )
 
   useEffect(() => {
@@ -56,18 +58,22 @@ export function OrganizationBackgroundCheckRequestForm() {
     }
   }, [organizations, organizationId])
 
-  const { data: packagesData, isLoading: isLoadingPackages } = api.backgroundChecks.listPackages.useQuery(undefined, {
-    staleTime: 5 * 60 * 1000,
-  })
+  const { data: packagesData, isLoading: isLoadingPackages } =
+    api.backgroundChecks.listPackages.useQuery(undefined, {
+      staleTime: 5 * 60 * 1000,
+    })
   const packages = useMemo<PackageSummary[]>(() => packagesData ?? [], [packagesData])
 
   const workersQuery = api.workers.getWorkers.useQuery(
     { search: workerSearch || undefined, limit: 50 },
     {
       staleTime: 30 * 1000,
-    },
+    }
   )
-  const workers = useMemo<WorkerSummary[]>(() => workersQuery.data?.workers ?? [], [workersQuery.data?.workers])
+  const workers = useMemo<WorkerSummary[]>(
+    () => workersQuery.data?.workers ?? [],
+    [workersQuery.data?.workers]
+  )
 
   const jobsQuery = api.office.listJobs.useQuery(
     {
@@ -79,7 +85,7 @@ export function OrganizationBackgroundCheckRequestForm() {
     {
       enabled: Boolean(organizationId),
       staleTime: 60 * 1000,
-    },
+    }
   )
   const jobs = useMemo<JobSummary[]>(() => jobsQuery.data?.jobs ?? [], [jobsQuery.data?.jobs])
 
@@ -95,7 +101,7 @@ export function OrganizationBackgroundCheckRequestForm() {
           organization_id: orgId,
         })
         router.replace({
-          pathname: ROUTES.OFFICE_BACKGROUND_CHECKS.path,
+          pathname: ROUTES.OFFICE_ATS_CHECKS.path,
           params: { organizationId: orgId },
         })
       }
@@ -127,7 +133,9 @@ export function OrganizationBackgroundCheckRequestForm() {
 
   const handleSubmit = async () => {
     if (!organizationId) {
-      toast.show('Select an organization', { message: 'Choose an organization before requesting a check.' })
+      toast.show('Select an organization', {
+        message: 'Choose an organization before requesting a check.',
+      })
       return
     }
     if (!selectedPackage) {
@@ -185,7 +193,8 @@ export function OrganizationBackgroundCheckRequestForm() {
             Request Background Check
           </Text>
           <Text fontSize="$3" color="$color11">
-            Invite a worker to complete the required screening package on behalf of your organization.
+            Invite a worker to complete the required screening package on behalf of your
+            organization.
           </Text>
         </YStack>
 
@@ -205,7 +214,8 @@ export function OrganizationBackgroundCheckRequestForm() {
                 <Select.Value
                   placeholder={
                     organizationId
-                      ? organizations.find((org) => org.id === organizationId)?.name ?? 'Select organization'
+                      ? (organizations.find((org) => org.id === organizationId)?.name ??
+                        'Select organization')
                       : 'Select organization'
                   }
                 />
@@ -217,7 +227,9 @@ export function OrganizationBackgroundCheckRequestForm() {
                     <Select.Label>Organizations</Select.Label>
                     {organizations.map((org, index) => (
                       <Select.Item key={org.id as string} value={org.id as string} index={index}>
-                        <Select.ItemText>{(org.name as string) ?? 'Untitled organization'}</Select.ItemText>
+                        <Select.ItemText>
+                          {(org.name as string) ?? 'Untitled organization'}
+                        </Select.ItemText>
                         <Select.ItemIndicator>
                           <Check size={16} />
                         </Select.ItemIndicator>
@@ -292,7 +304,8 @@ export function OrganizationBackgroundCheckRequestForm() {
                 <Select.Value
                   placeholder={
                     selectedWorker
-                      ? selectedWorker.name ?? `${selectedWorker.first_name ?? ''} ${selectedWorker.last_name ?? ''}`.trim()
+                      ? (selectedWorker.name ??
+                        `${selectedWorker.first_name ?? ''} ${selectedWorker.last_name ?? ''}`.trim())
                       : workersQuery.isLoading
                         ? 'Loading workers…'
                         : 'Select worker'
@@ -313,10 +326,17 @@ export function OrganizationBackgroundCheckRequestForm() {
                       </Select.Item>
                     ) : (
                       workers.map((worker, index) => {
-                        const fullName = `${worker.first_name ?? ''} ${worker.last_name ?? ''}`.trim()
-                        const displayName = worker.name ?? (fullName.length > 0 ? fullName : worker.id.substring(0, 8))
+                        const fullName =
+                          `${worker.first_name ?? ''} ${worker.last_name ?? ''}`.trim()
+                        const displayName =
+                          worker.name ??
+                          (fullName.length > 0 ? fullName : worker.id.substring(0, 8))
                         return (
-                          <Select.Item key={worker.id as string} value={worker.id as string} index={index}>
+                          <Select.Item
+                            key={worker.id as string}
+                            value={worker.id as string}
+                            index={index}
+                          >
                             <Select.ItemText>{displayName}</Select.ItemText>
                             <Select.ItemIndicator>
                               <Check size={16} />
@@ -343,7 +363,9 @@ export function OrganizationBackgroundCheckRequestForm() {
               <Select.Trigger iconAfter={ChevronDown}>
                 <Select.Value
                   placeholder={
-                    selectedJob ? selectedJob.title ?? `Job ${selectedJob.id.substring(0, 8)}` : 'Select job'
+                    selectedJob
+                      ? (selectedJob.title ?? `Job ${selectedJob.id.substring(0, 8)}`)
+                      : 'Select job'
                   }
                 />
               </Select.Trigger>
@@ -359,7 +381,11 @@ export function OrganizationBackgroundCheckRequestForm() {
                       </Select.ItemIndicator>
                     </Select.Item>
                     {jobs.map((job, index) => (
-                      <Select.Item key={job.id as string} value={job.id as string} index={index + 1}>
+                      <Select.Item
+                        key={job.id as string}
+                        value={job.id as string}
+                        index={index + 1}
+                      >
                         <Select.ItemText>{(job.title as string) ?? 'Untitled job'}</Select.ItemText>
                         <Select.ItemIndicator>
                           <Check size={16} />

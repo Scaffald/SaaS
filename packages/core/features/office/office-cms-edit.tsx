@@ -16,7 +16,7 @@ export function OfficeCMSEdit() {
   const handleSubmit = async (formData: WelcomeSlideCreate | WelcomeSlideUpdate) => {
     // In edit mode, we always have an id, so this is always WelcomeSlideUpdate
     await updateSlide.mutateAsync(formData as WelcomeSlideUpdate)
-    router.push(ROUTES.OFFICE_CMS.path)
+    router.push(ROUTES.OFFICE_CMS_WELCOME.path)
   }
 
   if (isLoading) {

@@ -267,54 +267,9 @@ const ROUTES_CONFIG = {
     title: "Office",
     isProtected: true,
   },
-  OFFICE_USERS: {
-    path: "/office/users",
-    title: "Manage Users",
-    isProtected: true,
-  },
-  OFFICE_USERS_CREATE: {
-    path: "/office/users/create",
-    title: "Create User",
-    isProtected: true,
-  },
-  OFFICE_USERS_EDIT: {
-    path: "/office/users/:id/edit",
-    title: "Edit User",
-    isProtected: true,
-  },
-  OFFICE_JOBS: {
-    path: "/office/jobs",
-    title: "Manage Jobs",
-    isProtected: true,
-  },
-  OFFICE_JOBS_CREATE: {
-    path: "/office/jobs/create",
-    title: "Create Job",
-    isProtected: true,
-  },
-  OFFICE_JOBS_EDIT: {
-    path: "/office/jobs/:id/edit",
-    title: "Edit Job",
-    isProtected: true,
-  },
-  OFFICE_UNIVERSITIES: {
-    path: "/office/universities",
-    title: "Manage Universities",
-    isProtected: true,
-  },
-  OFFICE_BACKGROUND_CHECKS: {
-    path: "/office/background-checks",
-    title: "Background Checks",
-    isProtected: true,
-  },
-  OFFICE_BACKGROUND_CHECKS_ADMIN: {
-    path: "/office/background-checks/admin",
-    title: "Review Background Checks",
-    isProtected: true,
-  },
-  OFFICE_BACKGROUND_CHECKS_REQUEST: {
-    path: "/office/background-checks/request",
-    title: "Request Background Check",
+  OFFICE_NOTIFICATIONS: {
+    path: "/office/notifications",
+    title: "Notifications",
     isProtected: true,
   },
   OFFICE_STORAGE: {
@@ -322,87 +277,132 @@ const ROUTES_CONFIG = {
     title: "Storage Analytics",
     isProtected: true,
   },
-  OFFICE_UNIVERSITIES_CREATE: {
-    path: "/office/universities/create",
-    title: "Create University",
-    isProtected: true,
-  },
-  OFFICE_UNIVERSITIES_EDIT: {
-    path: "/office/universities/:id/edit",
-    title: "Edit University",
-    isProtected: true,
-  },
-  OFFICE_APPLICATIONS: {
-    path: "/office/applications",
+  OFFICE_ATS: {
+    path: "/office/ats",
     title: "Applications",
     isProtected: true,
   },
-  OFFICE_APPLICATIONS_DETAIL: {
+  OFFICE_ATS_DETAIL: {
     path: "/office/applications/:id",
     title: "Application Detail",
     isProtected: true,
   },
-  OFFICE_ORGANIZATIONS: {
-    path: "/office/organizations",
+  OFFICE_ATS_CHECKS: {
+    path: "/office/ats/checks",
+    title: "Background Checks",
+    isProtected: true,
+  },
+  OFFICE_ATS_CHECKS_ADMIN: {
+    path: "/office/ats/admin",
+    title: "Review Background Checks",
+    isProtected: true,
+  },
+  OFFICE_ATS_CHECKS_REQUEST: {
+    path: "/office/ats/request",
+    title: "Request Background Check",
+    isProtected: true,
+  },
+  OFFICE_CMS_WORKERS: {
+    path: "/office/cms/workers",
+    title: "Workers",
+    isProtected: true,
+  },
+  OFFICE_CMS_WORKERS_CREATE: {
+    path: "/office/cms/workers/create",
+    title: "Create Worker",
+    isProtected: true,
+  },
+  OFFICE_CMS_WORKERS_EDIT: {
+    path: "/office/cms/workers/:id/edit",
+    title: "Edit Worker",
+    isProtected: true,
+  },
+  OFFICE_CMS_JOBS: {
+    path: "/office/jobs",
+    title: "Manage Jobs",
+    isProtected: true,
+  },
+  OFFICE_CMS_JOBS_CREATE: {
+    path: "/office/jobs/create",
+    title: "Create Job",
+    isProtected: true,
+  },
+  OFFICE_CMS_JOBS_EDIT: {
+    path: "/office/jobs/:id/edit",
+    title: "Edit Job",
+    isProtected: true,
+  },
+  OFFICE_CMS_UNIVERSITIES: {
+    path: "/office/universities",
+    title: "Manage Universities",
+    isProtected: true,
+  },
+  OFFICE_CMS_UNIVERSITIES_CREATE: {
+    path: "/office/universities/create",
+    title: "Create University",
+    isProtected: true,
+  },
+  OFFICE_CMS_UNIVERSITIES_EDIT: {
+    path: "/office/universities/:id/edit",
+    title: "Edit University",
+    isProtected: true,
+  },
+  OFFICE_CMS_ORGANIZATIONS: {
+    path: "/office/cms/organizations",
     title: "Organizations",
     isProtected: true,
   },
-  OFFICE_NOTIFICATIONS: {
-    path: "/office/notifications",
-    title: "Notifications",
-    isProtected: true,
-  },
-  OFFICE_ORGANIZATIONS_CREATE: {
+  OFFICE_CMS_ORGANIZATIONS_CREATE: {
     path: "/office/organizations/create",
     title: "Create Organization",
     isProtected: true,
   },
-  OFFICE_ORGANIZATIONS_EDIT: {
+  OFFICE_CMS_ORGANIZATIONS_EDIT: {
     path: "/office/organizations/:id/edit",
     title: "Edit Organization",
     isProtected: true,
   },
-  OFFICE_TEAMS: {
-    path: "/office/teams",
+  OFFICE_CMS_TEAMS: {
+    path: "/office/cms/teams",
     title: "Teams",
     isProtected: true,
   },
-  OFFICE_TEAMS_CREATE: {
-    path: "/office/teams/create",
+  OFFICE_CMS_TEAMS_CREATE: {
+    path: "/office/cms/teams/create",
     title: "Create Team",
     isProtected: true,
   },
-  OFFICE_TEAMS_DETAIL: {
-    path: "/office/teams/:id",
+  OFFICE_CMS_TEAMS_DETAIL: {
+    path: "/office/cms/teams/:id",
     title: "Team Detail",
     isProtected: true,
   },
-  OFFICE_TEAMS_EDIT: {
-    path: "/office/teams/:id/edit",
+  OFFICE_CMS_TEAMS_EDIT: {
+    path: "/office/cms/teams/:id/edit",
     title: "Edit Team",
     isProtected: true,
   },
-  OFFICE_TEAMS_ANALYTICS: {
-    path: "/office/teams/:id/analytics",
+  OFFICE_CMS_TEAMS_ANALYTICS: {
+    path: "/office/cms/teams/:id/analytics",
     title: "Team Analytics",
     isProtected: true,
   },
-  OFFICE_TEAMS_SETTINGS: {
-    path: "/office/teams/:id/settings",
+  OFFICE_CMS_TEAMS_SETTINGS: {
+    path: "/office/cms/teams/:id/settings",
     title: "Team Settings",
     isProtected: true,
   },
-  OFFICE_CMS: {
+  OFFICE_CMS_WELCOME: {
     path: "/office/cms",
     title: "CMS",
     isProtected: true,
   },
-  OFFICE_CMS_CREATE: {
+  OFFICE_CMS_WELCOME_CREATE: {
     path: "/office/cms/create",
     title: "Create Slide",
     isProtected: true,
   },
-  OFFICE_CMS_EDIT: {
+  OFFICE_CMS_WELCOME_EDIT: {
     path: "/office/cms/:id/edit",
     title: "Edit Slide",
     isProtected: true,
@@ -421,7 +421,7 @@ export const ROUTES = ROUTES_CONFIG;
 
 /**
  * Build a route with dynamic parameters
- * @example buildRoute(ROUTES.OFFICE_JOBS_EDIT, { id: 123 }) => '/office/jobs/123/edit'
+ * @example buildRoute(ROUTES.OFFICE_CMS_JOBS_EDIT, { id: 123 }) => '/office/jobs/123/edit'
  */
 export function buildRoute(
   route: RouteConfig,
@@ -442,22 +442,21 @@ export function buildRoute(
 export const RouteBuilder = {
   // Office routes
   officeUsersEdit: (id: string | number) =>
-    buildRoute(ROUTES.OFFICE_USERS_EDIT, { id }),
+    buildRoute(ROUTES.OFFICE_CMS_WORKERS_EDIT, { id }),
   officeJobsEdit: (id: string | number) =>
-    buildRoute(ROUTES.OFFICE_JOBS_EDIT, { id }),
+    buildRoute(ROUTES.OFFICE_CMS_JOBS_EDIT, { id }),
   officeUniversitiesEdit: (id: string | number) =>
-    buildRoute(ROUTES.OFFICE_UNIVERSITIES_EDIT, { id }),
+    buildRoute(ROUTES.OFFICE_CMS_UNIVERSITIES_EDIT, { id }),
   officeTeamsEdit: (id: string | number) =>
-    buildRoute(ROUTES.OFFICE_TEAMS_EDIT, { id }),
+    buildRoute(ROUTES.OFFICE_CMS_TEAMS_EDIT, { id }),
   officeTeamsDetail: (id: string | number) =>
-    buildRoute(ROUTES.OFFICE_TEAMS_DETAIL, { id }),
+    buildRoute(ROUTES.OFFICE_CMS_TEAMS_DETAIL, { id }),
   officeTeamsAnalytics: (id: string | number) =>
-    buildRoute(ROUTES.OFFICE_TEAMS_ANALYTICS, { id }),
+    buildRoute(ROUTES.OFFICE_CMS_TEAMS_ANALYTICS, { id }),
   officeTeamsSettings: (id: string | number) =>
-    buildRoute(ROUTES.OFFICE_TEAMS_SETTINGS, { id }),
-  officeBackgroundChecksRequest: () =>
-    ROUTES.OFFICE_BACKGROUND_CHECKS_REQUEST.path,
-  officeBackgroundChecksAdmin: () => ROUTES.OFFICE_BACKGROUND_CHECKS_ADMIN.path,
+    buildRoute(ROUTES.OFFICE_CMS_TEAMS_SETTINGS, { id }),
+  officeBackgroundChecksRequest: () => ROUTES.OFFICE_ATS_CHECKS_REQUEST.path,
+  officeBackgroundChecksAdmin: () => ROUTES.OFFICE_ATS_CHECKS_ADMIN.path,
   officeStorage: () => ROUTES.OFFICE_STORAGE.path,
   dashboardBackgroundCheck: () =>
     ROUTES.DASHBOARD_PROFILE_BACKGROUND_CHECK.path,
@@ -525,15 +524,15 @@ export const DASHBOARD_ROUTES = {
  */
 export const OFFICE_ROUTES = {
   INDEX: ROUTES.OFFICE,
-  USERS: ROUTES.OFFICE_USERS,
-  JOBS: ROUTES.OFFICE_JOBS,
-  TEAMS: ROUTES.OFFICE_TEAMS,
-  TEAMS_DETAIL: ROUTES.OFFICE_TEAMS_DETAIL,
-  TEAMS_ANALYTICS: ROUTES.OFFICE_TEAMS_ANALYTICS,
-  TEAMS_SETTINGS: ROUTES.OFFICE_TEAMS_SETTINGS,
-  UNIVERSITIES: ROUTES.OFFICE_UNIVERSITIES,
-  BACKGROUND_CHECKS: ROUTES.OFFICE_BACKGROUND_CHECKS,
-  BACKGROUND_CHECKS_ADMIN: ROUTES.OFFICE_BACKGROUND_CHECKS_ADMIN,
+  USERS: ROUTES.OFFICE_CMS_WORKERS,
+  JOBS: ROUTES.OFFICE_CMS_JOBS,
+  TEAMS: ROUTES.OFFICE_CMS_TEAMS,
+  TEAMS_DETAIL: ROUTES.OFFICE_CMS_TEAMS_DETAIL,
+  TEAMS_ANALYTICS: ROUTES.OFFICE_CMS_TEAMS_ANALYTICS,
+  TEAMS_SETTINGS: ROUTES.OFFICE_CMS_TEAMS_SETTINGS,
+  UNIVERSITIES: ROUTES.OFFICE_CMS_UNIVERSITIES,
+  BACKGROUND_CHECKS: ROUTES.OFFICE_ATS_CHECKS,
+  BACKGROUND_CHECKS_ADMIN: ROUTES.OFFICE_ATS_CHECKS_ADMIN,
   NOTIFICATIONS: ROUTES.OFFICE_NOTIFICATIONS,
 } as const;
 

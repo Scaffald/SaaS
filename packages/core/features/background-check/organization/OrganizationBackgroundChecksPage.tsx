@@ -80,7 +80,7 @@ export function OrganizationBackgroundChecksPage() {
   const { data: organizationsData, isLoading: isLoadingOrganizations } = useAllOrganizations()
   const organizations = useMemo<OrganizationOption[]>(
     () => (organizationsData?.organizations ?? []) as OrganizationOption[],
-    [organizationsData?.organizations],
+    [organizationsData?.organizations]
   )
 
   useEffect(() => {
@@ -95,7 +95,7 @@ export function OrganizationBackgroundChecksPage() {
       enabled: Boolean(selectedOrganizationId),
       refetchOnWindowFocus: true,
       staleTime: 60_000,
-    },
+    }
   )
 
   const rows = useMemo(() => {
@@ -123,7 +123,7 @@ export function OrganizationBackgroundChecksPage() {
   const handleNavigateToRequest = () => {
     if (!selectedOrganizationId) return
     router.push({
-      pathname: ROUTES.OFFICE_BACKGROUND_CHECKS_REQUEST.path,
+      pathname: ROUTES.OFFICE_ATS_CHECKS_REQUEST.path,
       params: { organizationId: selectedOrganizationId },
     })
   }
@@ -168,7 +168,8 @@ export function OrganizationBackgroundChecksPage() {
         {
           accessorKey: 'completedAt',
           header: 'Completed',
-          cell: ({ row }: CellContext<CheckRow, unknown>) => formatDateTime(row.original.completedAt),
+          cell: ({ row }: CellContext<CheckRow, unknown>) =>
+            formatDateTime(row.original.completedAt),
         },
         {
           accessorKey: 'expiresAt',
@@ -195,7 +196,7 @@ export function OrganizationBackgroundChecksPage() {
           ),
         },
       ] satisfies ColumnDef<CheckRow, unknown>[],
-    [],
+    []
   )
 
   if (isLoadingOrganizations) {
@@ -240,7 +241,8 @@ export function OrganizationBackgroundChecksPage() {
               <Select.Value
                 placeholder={
                   selectedOrganizationId
-                    ? organizations.find((org) => org.id === selectedOrganizationId)?.name ?? 'Select organization'
+                    ? (organizations.find((org) => org.id === selectedOrganizationId)?.name ??
+                      'Select organization')
                     : 'Select organization'
                 }
               />
@@ -252,7 +254,9 @@ export function OrganizationBackgroundChecksPage() {
                   <Select.Label>Organizations</Select.Label>
                   {organizations.map((org, index) => (
                     <Select.Item key={org.id as string} value={org.id as string} index={index}>
-                      <Select.ItemText>{(org.name as string) ?? 'Untitled organization'}</Select.ItemText>
+                      <Select.ItemText>
+                        {(org.name as string) ?? 'Untitled organization'}
+                      </Select.ItemText>
                       <Select.ItemIndicator>
                         <Check size={16} />
                       </Select.ItemIndicator>
@@ -304,7 +308,7 @@ export function OrganizationBackgroundChecksPage() {
               ? 'Loading background checks…'
               : 'No background checks found for this organization yet.'
           }
-      onRowClick={(row: CheckRow) => setSelectedCheckId(row.id)}
+          onRowClick={(row: CheckRow) => setSelectedCheckId(row.id)}
         />
       ) : (
         <YStack flex={1} p="$4" gap="$3" items="center" justify="center">
@@ -329,4 +333,3 @@ export function OrganizationBackgroundChecksPage() {
     </YStack>
   )
 }
-
