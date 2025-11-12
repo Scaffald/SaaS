@@ -3798,6 +3798,349 @@ export type Database = {
         }
         Relationships: []
       }
+      job_team_assignments: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          id: string
+          is_primary: boolean
+          job_id: string
+          metadata: Json
+          organization_id: string
+          role_key: string
+          team_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          is_primary?: boolean
+          job_id: string
+          metadata?: Json
+          organization_id: string
+          role_key?: string
+          team_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          is_primary?: boolean
+          job_id?: string
+          metadata?: Json
+          organization_id?: string
+          role_key?: string
+          team_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_team_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_team_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_team_assignments_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_team_assignments_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_team_assignments_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_activity_events: {
+        Row: {
+          actor_user_id: string | null
+          created_at: string
+          event_type: Database["core"]["Enums"]["team_activity_event_type"] | string
+          id: string
+          occurred_at: string
+          organization_id: string
+          payload: Json
+          related_application_id: string | null
+          related_job_id: string | null
+          related_member_id: string | null
+          subject_user_id: string | null
+          team_id: string
+        }
+        Insert: {
+          actor_user_id?: string | null
+          created_at?: string
+          event_type: Database["core"]["Enums"]["team_activity_event_type"] | string
+          id?: string
+          occurred_at?: string
+          organization_id: string
+          payload?: Json
+          related_application_id?: string | null
+          related_job_id?: string | null
+          related_member_id?: string | null
+          subject_user_id?: string | null
+          team_id: string
+        }
+        Update: {
+          actor_user_id?: string | null
+          created_at?: string
+          event_type?: Database["core"]["Enums"]["team_activity_event_type"] | string
+          id?: string
+          occurred_at?: string
+          organization_id?: string
+          payload?: Json
+          related_application_id?: string | null
+          related_job_id?: string | null
+          related_member_id?: string | null
+          subject_user_id?: string | null
+          team_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_activity_events_actor_user_id_fkey"
+            columns: ["actor_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_activity_events_actor_user_id_fkey"
+            columns: ["actor_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_activity_events_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_activity_events_related_application_id_fkey"
+            columns: ["related_application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_activity_events_related_job_id_fkey"
+            columns: ["related_job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_activity_events_related_member_id_fkey"
+            columns: ["related_member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_activity_events_subject_user_id_fkey"
+            columns: ["subject_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_activity_events_subject_user_id_fkey"
+            columns: ["subject_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_activity_events_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_daily_metrics: {
+        Row: {
+          applications_active: number
+          applications_escalated: number
+          applications_reviewed: number
+          avg_time_to_first_review_seconds: number | null
+          created_at: string
+          id: string
+          jobs_active: number
+          members_active: number
+          members_pending: number
+          members_total: number
+          median_time_to_first_review_seconds: number | null
+          metadata: Json
+          metric_date: string
+          organization_id: string
+          pending_invitations: number
+          team_id: string
+          updated_at: string
+          workload_pressure_score: number | null
+        }
+        Insert: {
+          applications_active?: number
+          applications_escalated?: number
+          applications_reviewed?: number
+          avg_time_to_first_review_seconds?: number | null
+          created_at?: string
+          id?: string
+          jobs_active?: number
+          members_active?: number
+          members_pending?: number
+          members_total?: number
+          median_time_to_first_review_seconds?: number | null
+          metadata?: Json
+          metric_date: string
+          organization_id: string
+          pending_invitations?: number
+          team_id: string
+          updated_at?: string
+          workload_pressure_score?: number | null
+        }
+        Update: {
+          applications_active?: number
+          applications_escalated?: number
+          applications_reviewed?: number
+          avg_time_to_first_review_seconds?: number | null
+          created_at?: string
+          id?: string
+          jobs_active?: number
+          members_active?: number
+          members_pending?: number
+          members_total?: number
+          median_time_to_first_review_seconds?: number | null
+          metadata?: Json
+          metric_date?: string
+          organization_id?: string
+          pending_invitations?: number
+          team_id?: string
+          updated_at?: string
+          workload_pressure_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_daily_metrics_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_daily_metrics_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_member_workloads: {
+        Row: {
+          active_assignments: number
+          availability_score: number | null
+          captured_at: string
+          completed_reviews: number
+          id: string
+          metadata: Json
+          organization_id: string
+          overdue_assignments: number
+          pending_assignments: number
+          team_id: string
+          team_member_id: string
+          user_id: string
+          weekly_capacity: number | null
+        }
+        Insert: {
+          active_assignments?: number
+          availability_score?: number | null
+          captured_at?: string
+          completed_reviews?: number
+          id?: string
+          metadata?: Json
+          organization_id: string
+          overdue_assignments?: number
+          pending_assignments?: number
+          team_id: string
+          team_member_id: string
+          user_id: string
+          weekly_capacity?: number | null
+        }
+        Update: {
+          active_assignments?: number
+          availability_score?: number | null
+          captured_at?: string
+          completed_reviews?: number
+          id?: string
+          metadata?: Json
+          organization_id?: string
+          overdue_assignments?: number
+          pending_assignments?: number
+          team_id?: string
+          team_member_id?: string
+          user_id?: string
+          weekly_capacity?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_member_workloads_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_member_workloads_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_member_workloads_team_member_id_fkey"
+            columns: ["team_member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_member_workloads_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_member_workloads_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       team_invitations: {
         Row: {
           accepted_at: string | null
@@ -3812,20 +4155,20 @@ export type Database = {
           invited_user_id: string | null
           invitee_user_id: string | null
           inviter_user_id: string | null
+          last_delivery_channels: string[] | null
+          last_delivery_error: string | null
+          last_delivery_status: string | null
           metadata: Json
+          notification_id: string | null
           organization_id: string
           responded_at: string | null
           responded_by: string | null
           response_message: string | null
           role_id: string
+          sent_at: string | null
           status: string
           team_id: string
           token_hash: string
-        sent_at: string | null
-        notification_id: string | null
-        last_delivery_status: string | null
-        last_delivery_error: string | null
-        last_delivery_channels: string[] | null
           updated_at: string
           updated_by: string | null
         }
@@ -3842,20 +4185,20 @@ export type Database = {
           invited_user_id?: string | null
           invitee_user_id?: string | null
           inviter_user_id?: string | null
+          last_delivery_channels?: string[] | null
+          last_delivery_error?: string | null
+          last_delivery_status?: string | null
           metadata?: Json
+          notification_id?: string | null
           organization_id: string
           responded_at?: string | null
           responded_by?: string | null
           response_message?: string | null
           role_id: string
+          sent_at?: string | null
           status?: string
           team_id: string
           token_hash: string
-        sent_at?: string | null
-        notification_id?: string | null
-        last_delivery_status?: string | null
-        last_delivery_error?: string | null
-        last_delivery_channels?: string[] | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -3872,20 +4215,20 @@ export type Database = {
           invited_user_id?: string | null
           invitee_user_id?: string | null
           inviter_user_id?: string | null
+          last_delivery_channels?: string[] | null
+          last_delivery_error?: string | null
+          last_delivery_status?: string | null
           metadata?: Json
+          notification_id?: string | null
           organization_id?: string
           responded_at?: string | null
           responded_by?: string | null
           response_message?: string | null
           role_id?: string
+          sent_at?: string | null
           status?: string
           team_id?: string
           token_hash?: string
-        sent_at?: string | null
-        notification_id?: string | null
-        last_delivery_status?: string | null
-        last_delivery_error?: string | null
-        last_delivery_channels?: string[] | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -3958,6 +4301,13 @@ export type Database = {
             columns: ["inviter_user_id"]
             isOneToOne: false
             referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invitations_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
             referencedColumns: ["id"]
           },
           {
@@ -4305,6 +4655,9 @@ export type Database = {
       teams: {
         Row: {
           allow_self_join: boolean
+          analytics_last_refreshed_at: string | null
+          analytics_metadata: Json
+          analytics_refresh_interval_minutes: number
           archived_at: string | null
           archived_by: string | null
           archived_reason: string | null
@@ -4329,9 +4682,14 @@ export type Database = {
           updated_at: string
           updated_by: string | null
           visibility: string
+          workload_settings: Json
+          workload_strategy: string
         }
         Insert: {
           allow_self_join?: boolean
+          analytics_last_refreshed_at?: string | null
+          analytics_metadata?: Json
+          analytics_refresh_interval_minutes?: number
           archived_at?: string | null
           archived_by?: string | null
           archived_reason?: string | null
@@ -4356,9 +4714,14 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
           visibility?: string
+          workload_settings?: Json
+          workload_strategy?: string
         }
         Update: {
           allow_self_join?: boolean
+          analytics_last_refreshed_at?: string | null
+          analytics_metadata?: Json
+          analytics_refresh_interval_minutes?: number
           archived_at?: string | null
           archived_by?: string | null
           archived_reason?: string | null
@@ -4383,6 +4746,8 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
           visibility?: string
+          workload_settings?: Json
+          workload_strategy?: string
         }
         Relationships: [
           {
@@ -5309,6 +5674,98 @@ export type Database = {
         }
         Relationships: []
       }
+      v_team_daily_metrics_latest: {
+        Row: {
+          applications_active: number
+          applications_escalated: number
+          applications_reviewed: number
+          avg_time_to_first_review_seconds: number | null
+          created_at: string
+          id: string
+          jobs_active: number
+          members_active: number
+          members_pending: number
+          members_total: number
+          median_time_to_first_review_seconds: number | null
+          metadata: Json
+          metric_date: string
+          organization_id: string
+          pending_invitations: number
+          team_id: string
+          updated_at: string
+          workload_pressure_score: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_daily_metrics_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_daily_metrics_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_team_member_workloads_latest: {
+        Row: {
+          active_assignments: number
+          availability_score: number | null
+          captured_at: string
+          completed_reviews: number
+          id: string
+          metadata: Json
+          organization_id: string
+          overdue_assignments: number
+          pending_assignments: number
+          team_id: string
+          team_member_id: string
+          user_id: string
+          weekly_capacity: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_member_workloads_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_member_workloads_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_member_workloads_team_member_id_fkey"
+            columns: ["team_member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_member_workloads_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_member_workloads_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       calculate_time_entries_total_hours: {
@@ -5459,6 +5916,20 @@ export type Database = {
         | "platform.update"
         | "message.received"
       organization_request_status: "pending" | "approved" | "rejected"
+      team_activity_event_type:
+        | "team.created"
+        | "team.updated"
+        | "team.archived"
+        | "member.invited"
+        | "member.joined"
+        | "member.removed"
+        | "member.role_changed"
+        | "job.assigned"
+        | "job.unassigned"
+        | "application.assigned"
+        | "application.reassigned"
+        | "application.review_submitted"
+        | "workload.rebalanced"
       team_permission:
         | "team.view"
         | "team.manage"
@@ -9090,6 +9561,21 @@ export const Constants = {
         "message.received",
       ],
       organization_request_status: ["pending", "approved", "rejected"],
+      team_activity_event_type: [
+        "team.created",
+        "team.updated",
+        "team.archived",
+        "member.invited",
+        "member.joined",
+        "member.removed",
+        "member.role_changed",
+        "job.assigned",
+        "job.unassigned",
+        "application.assigned",
+        "application.reassigned",
+        "application.review_submitted",
+        "workload.rebalanced",
+      ],
       team_permission: [
         "team.view",
         "team.manage",

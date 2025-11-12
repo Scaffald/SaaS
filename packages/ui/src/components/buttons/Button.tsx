@@ -54,16 +54,22 @@ import { Button as TamaguiButton, type ButtonProps as TamaguiButtonProps } from 
  * ```
  */
 
+type ButtonTone = 'blue' | 'gray' | 'info' | 'success' | 'error' | 'accent'
+
 export interface ButtonProps extends Omit<TamaguiButtonProps, 'variant' | 'theme'> {
   /**
    * Visual style variant
    * @default 'primary'
    */
   variant?: 'primary' | 'secondary' | 'outlined' | 'ghost' | 'danger'
+  /**
+   * Optional tone overrides for brand-aligned styling
+   */
+  theme?: ButtonTone
 }
 
 const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', ...props }, ref) => {
+  ({ variant = 'primary', theme, ...props }, ref) => {
     /**
      * Variant style definitions
      * Each variant has specific colors, borders, and interaction states
@@ -160,12 +166,60 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
       },
     }
 
+    const toneStyles: Record<ButtonTone, Partial<TamaguiButtonProps>> = {
+      blue: {
+        bg: '$blue7',
+        color: '$color1',
+        borderWidth: 0,
+        hoverStyle: { bg: '$blue8' },
+        pressStyle: { bg: '$blue9', scale: 0.97 },
+      },
+      gray: {
+        bg: '$color3',
+        color: '$color11',
+        borderWidth: 0,
+        hoverStyle: { bg: '$color4' },
+        pressStyle: { bg: '$color5', scale: 0.97 },
+      },
+      info: {
+        bg: '$blue6',
+        color: '$color1',
+        borderWidth: 0,
+        hoverStyle: { bg: '$blue7' },
+        pressStyle: { bg: '$blue8', scale: 0.97 },
+      },
+      success: {
+        bg: '$green8',
+        color: '$color1',
+        borderWidth: 0,
+        hoverStyle: { bg: '$green9' },
+        pressStyle: { bg: '$green10', scale: 0.97 },
+      },
+      error: {
+        bg: '$red8',
+        color: '$color1',
+        borderWidth: 0,
+        hoverStyle: { bg: '$red9' },
+        pressStyle: { bg: '$red10', scale: 0.97 },
+      },
+      accent: {
+        bg: '$purple8',
+        color: '$color1',
+        borderWidth: 0,
+        hoverStyle: { bg: '$purple9' },
+        pressStyle: { bg: '$purple10', scale: 0.97 },
+      },
+    }
+
+    const toneStyle = theme ? toneStyles[theme] : undefined
+
     return (
       <TamaguiButton
         ref={ref}
         fontWeight="600" // Semibold for all buttons
         animation="quick" // Fast, responsive animations
         {...variantStyles[variant]}
+        {...toneStyle}
         {...props}
       />
     )
