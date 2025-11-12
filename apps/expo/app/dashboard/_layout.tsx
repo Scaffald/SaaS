@@ -71,10 +71,6 @@ export default function Layout() {
         {/* New isolated assessment routes */}
         <Drawer.Screen name="assessments/pulse/index" options={{ title: 'Weekly Pulse' }} />
         <Drawer.Screen name="assessments/ipip/index" options={{ title: 'Personality Questions' }} />
-        <Drawer.Screen
-          name="assessments/luscher-2/index"
-          options={{ title: 'Aspirational Color Test' }}
-        />
         <Drawer.Screen name="assessments/riasec/index" options={{ title: 'Career Interests' }} />
         <Drawer.Screen
           name="assessments/occupation/index"

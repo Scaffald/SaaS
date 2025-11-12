@@ -8,6 +8,42 @@ import {
 import { protectedProcedure, t } from "../../middleware.ts";
 import type { Context } from "../../context.ts";
 
+function formatErrorPayload(error: unknown): string {
+  if (error instanceof Error) {
+    const serialized: Record<string, unknown> = {
+      name: error.name,
+      message: error.message,
+    };
+    const errorRecord = error as Record<string, unknown>;
+
+    if (typeof errorRecord.code === "string") {
+      serialized.code = errorRecord.code;
+    }
+    if (typeof errorRecord.details === "string") {
+      serialized.details = errorRecord.details;
+    }
+    if (typeof errorRecord.hint === "string") {
+      serialized.hint = errorRecord.hint;
+    }
+
+    try {
+      return JSON.stringify(serialized);
+    } catch {
+      return `${error.name}: ${error.message}`;
+    }
+  }
+
+  if (typeof error === "object" && error !== null) {
+    try {
+      return JSON.stringify(error);
+    } catch {
+      return String(error);
+    }
+  }
+
+  return String(error);
+}
+
 const COMPLETION_MILESTONES = [25, 50, 75, 100] as const;
 type CompletionMilestoneThreshold = typeof COMPLETION_MILESTONES[number];
 
@@ -859,11 +895,11 @@ export const profileCompletionRouter = t.router({
       });
       return status;
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      console.error("[profileCompletion] getStatus error:", message);
+      console.error("[profileCompletion] getStatus error:", error);
+      const formattedError = formatErrorPayload(error);
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
-        message: `Failed to compute completion status: ${message}`,
+        message: `Failed to compute completion status: ${formattedError}`,
       });
     }
   }),
@@ -918,11 +954,11 @@ export const profileCompletionRouter = t.router({
           nudgeHistory: updatedHistory,
         };
       } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        console.error("[profileCompletion] dismissNudge error:", message);
+        console.error("[profileCompletion] dismissNudge error:", error);
+        const formattedError = formatErrorPayload(error);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to dismiss nudge: ${message}`,
+          message: `Failed to dismiss nudge: ${formattedError}`,
         });
       }
     }),
@@ -967,14 +1003,11 @@ export const profileCompletionRouter = t.router({
         updatedAt: status.updatedAt,
       };
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      console.error(
-        "[profileCompletion] getPersonalizedBenefits error:",
-        message,
-      );
+      console.error("[profileCompletion] getPersonalizedBenefits error:", error);
+      const formattedError = formatErrorPayload(error);
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
-        message: `Failed to generate personalized benefits: ${message}`,
+        message: `Failed to generate personalized benefits: ${formattedError}`,
       });
     }
   }),

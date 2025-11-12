@@ -1,13 +1,7 @@
 import { useRouter } from 'expo-router'
 import type { RouteConfig } from '@app/core/constants/routes'
 import { ROUTES } from '@app/core/constants/routes'
-import {
-  DashboardWidget,
-  Text,
-  YStack,
-  UIButton as StyledButton,
-  spacing,
-} from '@app/ui'
+import { DashboardWidget, Text, YStack, UIButton as StyledButton, spacing } from '@app/ui'
 
 type AssessmentLandingCard = {
   readonly key: string
@@ -36,15 +30,6 @@ const ASSESSMENT_LANDING_CARDS: AssessmentLandingCard[] = [
     ctaLabel: 'Start Personality Questions',
     route: ROUTES.DASHBOARD_ASSESSMENT_IPIP,
     estimatedTime: 'Takes ~12 minutes',
-  },
-  {
-    key: 'luscher-2',
-    title: 'Aspirational Color Test',
-    description:
-      'Choose color combinations that reveal momentum, motivation, and stress patterns that influence your work.',
-    ctaLabel: 'Explore Color Insights',
-    route: ROUTES.DASHBOARD_ASSESSMENT_LUSCHER_2,
-    estimatedTime: 'Takes ~5 minutes',
   },
   {
     key: 'riasec',
@@ -107,5 +92,3 @@ export const AssessmentsLandingLeft = () => {
     </YStack>
   )
 }
-
-

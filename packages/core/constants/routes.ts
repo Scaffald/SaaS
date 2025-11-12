@@ -198,11 +198,6 @@ const ROUTES_CONFIG = {
     title: "Personality Questions",
     isProtected: true,
   },
-  DASHBOARD_ASSESSMENT_LUSCHER_2: {
-    path: "/dashboard/assessments/luscher-2",
-    title: "Aspirational Color Test",
-    isProtected: true,
-  },
   // Dashboard > Assessments > Career Tests
   DASHBOARD_ASSESSMENT_RIASEC: {
     path: "/dashboard/assessments/riasec",
@@ -389,7 +384,8 @@ export const RouteBuilder = {
     buildRoute(ROUTES.OFFICE_UNIVERSITIES_EDIT, { id }),
   officeTeamsEdit: (id: string | number) =>
     buildRoute(ROUTES.OFFICE_TEAMS_EDIT, { id }),
-  officeBackgroundChecksRequest: () => ROUTES.OFFICE_BACKGROUND_CHECKS_REQUEST.path,
+  officeBackgroundChecksRequest: () =>
+    ROUTES.OFFICE_BACKGROUND_CHECKS_REQUEST.path,
   officeBackgroundChecksAdmin: () => ROUTES.OFFICE_BACKGROUND_CHECKS_ADMIN.path,
 
   // Dashboard routes
@@ -401,8 +397,7 @@ export const RouteBuilder = {
     buildRoute(ROUTES.DASHBOARD_DISCOVER_JOB_DETAIL, { id }),
   dashboardEmployer: (id: string | number) =>
     buildRoute(ROUTES.DASHBOARD_DISCOVER_EMPLOYER_DETAIL, { id }),
-  dashboardOrganizationCreate: () =>
-    ROUTES.DASHBOARD_ORGANIZATIONS_CREATE.path,
+  dashboardOrganizationCreate: () => ROUTES.DASHBOARD_ORGANIZATIONS_CREATE.path,
 } as const;
 
 // ============================================================================

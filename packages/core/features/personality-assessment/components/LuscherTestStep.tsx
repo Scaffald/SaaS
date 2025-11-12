@@ -75,7 +75,7 @@ export function LuscherTestStep({
     <YStack gap="$6" maxW={800} width="100%" mx="auto">
       <YStack gap="$2" items="center">
         <Text fontSize="$6" fontWeight="600" color="$color12" text="center">
-          {step === 'luscher1' ? 'First Color Test' : 'Second Color Test (Aspirational)'}
+          {step === 'luscher1' ? 'First Color Test' : 'Second Color Test'}
         </Text>
         <Text fontSize="$4" color="$color11" text="center">
           Click the colors in order based on what makes you feel the best.

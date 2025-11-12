@@ -131,3 +131,4 @@ export const ResultsSidebar = ({ xpAwarded = 5, nextAvailableAt }: ResultsSideba
   )
 }
 
+
