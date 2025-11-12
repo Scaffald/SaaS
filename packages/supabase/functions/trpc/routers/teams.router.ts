@@ -41,6 +41,7 @@ import {
   teamJobAssignmentListSchema,
   teamOwnershipTransferSchema,
   teamMemberSelfRemovalSchema,
+  teamActivityCommentSchema,
 } from "../../_shared/team-schemas.ts";
 
 type SupabaseAdminClient = Context["supabaseAdmin"];

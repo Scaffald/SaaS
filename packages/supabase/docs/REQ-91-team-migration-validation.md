@@ -26,5 +26,5 @@
 - ✅ Fixture + integration test suite updates (`packages/supabase/functions/trpc/__tests__/integration/teams.test.ts`, `team-invitations.test.ts`)
 - ✅ Migration artefacts ready (`098_migrate_existing_teams_data.sql`, `migrate-teams-data.ts`)
 
-The Supabase script logs the number of teams and members updated, making it easy to compare before/after counts during QA. Use the SQL assertions above after running in staging to confirm a clean backfill before promoting to production.*** End Patch
+The Supabase script logs the number of teams and members updated, making it easy to compare before/after counts during QA. Use the SQL assertions above after running in staging to confirm a clean backfill before promoting to production.
 

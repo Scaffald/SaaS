@@ -87,5 +87,5 @@
   - Optional rollback to backup tables.
   - Summary logs (counts of updated teams, members, roles seeded).
 
-This document guides the actual SQL + script implementation in subsequent steps.*** End Patch***
+This document guides the actual SQL + script implementation in subsequent steps.
 
