@@ -4,6 +4,7 @@ import { z } from "zod";
 import { officeProcedure, protectedProcedure, publicProcedure, t } from "../middleware.ts";
 import type { Context } from "../context.ts";
 import { recordTeamAuditLog } from "../../_shared/team-audit-log.ts";
+import { refreshTeamMetricsSnapshot } from "../../_shared/utils/team-metrics.ts";
 import { buildAppUrl } from "../../_shared/app-url.ts";
 import {
   TeamPermissions,
@@ -2278,6 +2279,35 @@ function buildAnalyticsRouter(procedure: AuthenticatedProcedure) {
         return {
           metrics,
           refreshedAt: (team.analytics_last_refreshed_at as string | null) ?? null,
+        };
+      }),
+
+    refresh: procedure
+      .input(
+        z.object({
+          teamId: teamIdSchema,
+          metricDate: z.string().date().optional(),
+        }),
+      )
+      .mutation(async ({ ctx, input }) => {
+        const { supabaseAdmin } = ctx;
+
+        const team = await fetchTeamOrThrow(supabaseAdmin, input.teamId);
+        await ensureTeamActionPermission({
+          ctx,
+          team,
+          permission: TeamPermissions.MANAGE,
+        });
+
+        const metrics = await refreshTeamMetricsSnapshot({
+          supabaseAdmin,
+          teamId: input.teamId,
+          metricDate: input.metricDate ?? undefined,
+        });
+
+        return {
+          refreshedAt: new Date().toISOString(),
+          metrics,
         };
       }),
 
