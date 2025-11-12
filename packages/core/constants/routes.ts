@@ -173,6 +173,11 @@ const ROUTES_CONFIG = {
     title: "Request Organization",
     isProtected: true,
   },
+  DASHBOARD_TEAMS_INVITATIONS: {
+    path: "/dashboard/teams/invitations",
+    title: "Team Invitations",
+    isProtected: true,
+  },
 
   // Dashboard > Users (dynamic)
   DASHBOARD_USER: {
@@ -398,6 +403,7 @@ export const RouteBuilder = {
   dashboardEmployer: (id: string | number) =>
     buildRoute(ROUTES.DASHBOARD_DISCOVER_EMPLOYER_DETAIL, { id }),
   dashboardOrganizationCreate: () => ROUTES.DASHBOARD_ORGANIZATIONS_CREATE.path,
+  dashboardTeamsInvitations: () => ROUTES.DASHBOARD_TEAMS_INVITATIONS.path,
 } as const;
 
 // ============================================================================
@@ -421,6 +427,7 @@ export const DASHBOARD_ROUTES = {
   PROFILE: ROUTES.DASHBOARD_PROFILE,
   SETTINGS: ROUTES.DASHBOARD_SETTINGS,
   NOTIFICATIONS: ROUTES.DASHBOARD_NOTIFICATIONS,
+  INVITATIONS: ROUTES.DASHBOARD_TEAMS_INVITATIONS,
 } as const;
 
 /**

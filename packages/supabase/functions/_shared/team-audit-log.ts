@@ -30,7 +30,9 @@ export async function recordTeamAuditLog({
   memberUserId,
   metadata,
 }: RecordTeamAuditLogOptions): Promise<void> {
-  const { error } = await supabaseAdmin
+  const adminClient = supabaseAdmin as SupabaseClient<any>;
+
+  const { error } = await adminClient
     .schema("core")
     .from("team_member_audit_log")
     .insert({

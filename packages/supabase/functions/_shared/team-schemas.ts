@@ -15,6 +15,7 @@ export {
   teamInvitationIdSchema,
   teamInvitationResendSchema,
   teamInvitationRespondSchema,
+  teamInvitationUserRespondSchema,
   teamInvitationStatusFilterSchema,
   teamMemberAddSchema,
   teamMemberIdSchema,

@@ -228,9 +228,8 @@ export function TeamInviteModal({
               value={selectedRoleId || defaultRoleId || roleOptions[0]?.id}
               onValueChange={setSelectedRoleId}
               disablePreventBodyScroll
-              disabled={inviteMutation.isPending}
             >
-              <Select.Trigger iconAfter={ChevronDown}>
+              <Select.Trigger iconAfter={ChevronDown} disabled={inviteMutation.isPending}>
                 <Select.Value placeholder="Select a team role">
                   {roleOptions.find((role) => role.id === (selectedRoleId || defaultRoleId))?.name ??
                     'Select a team role'}

@@ -8,7 +8,12 @@ import {
   teamInvitationPolicySchema,
   teamRoleKeySchema,
 } from '@app/schemas'
-import { TeamForm, TeamMembersList, TeamInviteModal, TeamInvitationsList } from '@app/core/features/office/teams'
+import {
+  TeamForm,
+  TeamMembersList,
+  TeamInviteModal,
+  TeamInvitationsList,
+} from '@app/core/features/office/teams'
 import { api } from '@app/core/utils/api'
 
 export default function EditTeamPage() {
@@ -126,12 +131,7 @@ export default function EditTeamPage() {
         teamId={team.id}
         refreshKey={inviteRefreshKey}
         headerAction={
-          <Button
-            bg="$color9"
-            color="$color1"
-            size="$3"
-            onPress={() => setIsInviteModalOpen(true)}
-          >
+          <Button bg="$color9" color="$color1" size="$3" onPress={() => setIsInviteModalOpen(true)}>
             Invite member
           </Button>
         }

@@ -1,6 +1,15 @@
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Card, Select, Spinner, Text, XStack, YStack } from 'tamagui';
+import {
+  Button,
+  Card,
+  Select,
+  Spinner,
+  Text,
+  XStack,
+  YStack,
+  type GetThemeValueForKey,
+} from 'tamagui';
 import { Check, ChevronDown, Clock, RefreshCw, XCircle } from '@tamagui/lucide-icons';
 import { useToastController } from '@tamagui/toast';
 import type { AppRouter } from '@app/supabase/client-types';
@@ -21,7 +30,7 @@ const STATUS_LABELS: Record<InvitationStatus, string> = {
   revoked: 'Revoked',
 };
 
-const STATUS_COLORS: Record<InvitationStatus, string> = {
+const STATUS_COLORS: Record<InvitationStatus, GetThemeValueForKey<'color'>> = {
   pending: '$orange10',
   accepted: '$green10',
   declined: '$red10',
@@ -219,7 +228,7 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
                   </Text>
                 </XStack>
 
-                <XStack gap="$2" justify="flex-end" flexWrap="wrap">
+        <XStack gap="$2" justify="flex-end" flexWrap="wrap">
                   <Button
                     size="$2"
                     variant="outlined"
