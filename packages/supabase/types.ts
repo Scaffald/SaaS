@@ -3821,6 +3821,11 @@ export type Database = {
           status: string
           team_id: string
           token_hash: string
+        sent_at: string | null
+        notification_id: string | null
+        last_delivery_status: string | null
+        last_delivery_error: string | null
+        last_delivery_channels: string[] | null
           updated_at: string
           updated_by: string | null
         }
@@ -3846,6 +3851,11 @@ export type Database = {
           status?: string
           team_id: string
           token_hash: string
+        sent_at?: string | null
+        notification_id?: string | null
+        last_delivery_status?: string | null
+        last_delivery_error?: string | null
+        last_delivery_channels?: string[] | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -3871,6 +3881,11 @@ export type Database = {
           status?: string
           team_id?: string
           token_hash?: string
+        sent_at?: string | null
+        notification_id?: string | null
+        last_delivery_status?: string | null
+        last_delivery_error?: string | null
+        last_delivery_channels?: string[] | null
           updated_at?: string
           updated_by?: string | null
         }

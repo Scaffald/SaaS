@@ -1,10 +1,7 @@
 {
   "name": "scaffald",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "reset": "rm -rf node_modules apps/*/node_modules packages/*/node_modules .turbo apps/*/.turbo packages/*/.turbo apps/expo/.expo apps/expo/.netlify apps/expo/.tamagui apps/expo/dist apps/expo/android/build apps/expo/ios/build apps/expo/.next **/tsconfig.tsbuildinfo **/.DS_Store && pnpm store prune && echo '✅ Cache cleared! Run pnpm install to reinstall dependencies.'",
     "reset:full": "pnpm reset && rm -rf apps/expo/android apps/expo/ios && echo '✅ Full reset complete! Run pnpm prebuild to regenerate native directories.'",
@@ -38,6 +35,7 @@
     "tamagui:upgrade": "pnpm up '*tamagui*'@latest '@tamagui/*'@latest",
     "tamagui:upgrade:canary": "pnpm up '*tamagui*'@canary '@tamagui/*'@canary",
     "supa": "pnpm env-local pnpx supabase --workdir packages",
+    "supa:functions": "pnpm supa functions serve --env-file ./packages/supabase/.env",
     "supa:prod": "pnpm env-prod pnpx supabase --workdir packages",
     "supa:config:push": "pnpm env-local pnpx supabase --workdir packages config push",
     "supa:config:push:prod": "pnpm env-prod pnpx supabase --workdir packages config push",

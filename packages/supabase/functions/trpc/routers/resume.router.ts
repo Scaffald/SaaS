@@ -210,8 +210,10 @@ async function downloadResumeFile(
     });
   }
 
-  if (typeof (data as unknown as { arrayBuffer?: () => Promise<ArrayBuffer> })
-    ?.arrayBuffer === "function") {
+  if (
+    typeof (data as unknown as { arrayBuffer?: () => Promise<ArrayBuffer> })
+      ?.arrayBuffer === "function"
+  ) {
     const arrayBuffer = await (data as Blob).arrayBuffer();
     return new Uint8Array(arrayBuffer);
   }
@@ -297,6 +299,92 @@ ${resumeText}
 Return JSON with keys general, experience, education, skills, certifications, employment.`;
 }
 
+function collectOpenAIContentFragments(
+  content: unknown,
+  visited = new Set<unknown>(),
+): string[] {
+  if (content === undefined || content === null) {
+    return [];
+  }
+
+  if (typeof content === "string") {
+    return [content];
+  }
+
+  if (typeof content !== "object") {
+    return [];
+  }
+
+  if (visited.has(content)) {
+    return [];
+  }
+
+  visited.add(content);
+
+  if (Array.isArray(content)) {
+    return content.flatMap((item) =>
+      collectOpenAIContentFragments(item, visited)
+    );
+  }
+
+  const record = content as Record<string, unknown>;
+  const fragments: string[] = [];
+
+  if (record.json) {
+    if (typeof record.json === "string") {
+      fragments.push(record.json);
+    } else if (typeof record.json === "object") {
+      try {
+        fragments.push(JSON.stringify(record.json));
+      } catch {
+        // ignore serialization errors and fall through
+      }
+    }
+  }
+
+  for (const key of ["text", "content", "value"]) {
+    if (key in record) {
+      fragments.push(
+        ...collectOpenAIContentFragments(record[key], visited),
+      );
+    }
+  }
+
+  return fragments;
+}
+
+function extractJsonPayloadFromOpenAI(content: unknown): string | null {
+  const fragments = collectOpenAIContentFragments(content);
+  if (fragments.length === 0) {
+    return null;
+  }
+
+  const joined = fragments.join("\n").trim();
+  if (!joined) {
+    return null;
+  }
+
+  const fencedMatch = joined.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fencedMatch) {
+    return fencedMatch[1].trim();
+  }
+
+  if (
+    (joined.startsWith("{") && joined.endsWith("}")) ||
+    (joined.startsWith("[") && joined.endsWith("]"))
+  ) {
+    return joined;
+  }
+
+  const firstBrace = joined.indexOf("{");
+  const lastBrace = joined.lastIndexOf("}");
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    return joined.slice(firstBrace, lastBrace + 1).trim();
+  }
+
+  return joined;
+}
+
 async function callOpenAIForResume(
   resumeText: string,
   openAiKey: string,
@@ -363,7 +451,8 @@ async function callOpenAIForResume(
       usage: completion?.usage,
     }),
   );
-  const content: string | undefined = completion?.choices?.[0]?.message?.content;
+  const rawContent = completion?.choices?.[0]?.message?.content;
+  const content = extractJsonPayloadFromOpenAI(rawContent);
 
   if (!content) {
     throw new TRPCError({
@@ -858,15 +947,19 @@ async function upsertSkills(
   }>,
   strategy: "replace" | "append" | "keepExisting",
 ): Promise<void> {
-  const userScopedClient = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-    global: {
-      headers: {},
+  const userScopedClient = createClient<Database>(
+    supabaseUrl,
+    supabaseAnonKey,
+    {
+      global: {
+        headers: {},
+      },
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
     },
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
+  );
 
   userScopedClient.auth.setSession({
     access_token: "",
@@ -1056,7 +1149,9 @@ export const resumeRouter = t.router({
           JSON.stringify({
             resumeId: input.resumeId,
             bytes: fileBytes.length,
-            downloadDurationMs: Math.round(performance.now() - downloadStartedAt),
+            downloadDurationMs: Math.round(
+              performance.now() - downloadStartedAt,
+            ),
             mimeType: resume.mime_type,
           }),
         );
@@ -1069,7 +1164,8 @@ export const resumeRouter = t.router({
         if (!resumeText || resumeText.trim().length === 0) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Unable to process resume. Please try again or contact support.",
+            message:
+              "Unable to process resume. Please try again or contact support.",
           });
         }
 
@@ -1134,7 +1230,8 @@ export const resumeRouter = t.router({
             (section === "experience" && !parsedData.experience?.length) ||
             (section === "education" && !parsedData.education?.length) ||
             (section === "skills" && !parsedData.skills?.length) ||
-            (section === "certifications" && !parsedData.certifications?.length) ||
+            (section === "certifications" &&
+              !parsedData.certifications?.length) ||
             (section === "employment" && !parsedData.employment)
           ) {
             errors.push({
@@ -1239,7 +1336,9 @@ export const resumeRouter = t.router({
         currentStep: data.current_step ?? 0,
         completedSteps: data.completed_steps ?? [],
         parsedData: data.parsed_data as z.infer<typeof parsedResumeSchema>,
-        errors: data.errors as Array<z.infer<typeof parseErrorSchema>> | undefined,
+        errors: data.errors as
+          | Array<z.infer<typeof parseErrorSchema>>
+          | undefined,
         startedAt: data.started_at,
         updatedAt: data.updated_at,
         completedAt: data.completed_at ?? null,
@@ -1276,10 +1375,15 @@ export const resumeRouter = t.router({
           break;
         }
         case "employment": {
-          const employmentPayload = profileEmploymentInputSchema.partial().parse(
-            input.data,
+          const employmentPayload = profileEmploymentInputSchema.partial()
+            .parse(
+              input.data,
+            );
+          await upsertEmploymentPreferences(
+            supabase,
+            user.id,
+            employmentPayload,
           );
-          await upsertEmploymentPreferences(supabase, user.id, employmentPayload);
           break;
         }
         case "experience": {
@@ -1307,7 +1411,9 @@ export const resumeRouter = t.router({
           break;
         }
         case "certifications": {
-          const certArray = z.array(parsedCertificationSchema).parse(input.data);
+          const certArray = z.array(parsedCertificationSchema).parse(
+            input.data,
+          );
           await upsertCertifications(
             supabase,
             user.id,
@@ -1364,7 +1470,8 @@ export const resumeRouter = t.router({
       if (updateWizardError) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to update wizard progress: ${updateWizardError.message}`,
+          message:
+            `Failed to update wizard progress: ${updateWizardError.message}`,
         });
       }
 
@@ -1420,5 +1527,3 @@ export const resumeRouter = t.router({
       return { hasUploaded: Boolean(data) };
     }),
 });
-
-

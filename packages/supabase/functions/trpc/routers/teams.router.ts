@@ -4,6 +4,7 @@ import { z } from "zod";
 import { officeProcedure, protectedProcedure, publicProcedure, t } from "../middleware.ts";
 import type { Context } from "../context.ts";
 import { recordTeamAuditLog } from "../../_shared/team-audit-log.ts";
+import { buildAppUrl } from "../../_shared/app-url.ts";
 import {
   TeamPermissions,
   type TeamPermissionKey,
@@ -135,6 +136,149 @@ async function hashInvitationToken(token: string): Promise<string> {
     .join("");
 }
 
+async function callEdgeFunction(path: string, payload: unknown) {
+  const baseUrl = Deno.env.get("SUPABASE_FUNCTIONS_URL");
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+  if (!baseUrl || !serviceKey) {
+    console.warn(`[teams] Skipping ${path} call: missing Supabase function configuration.`);
+    return null;
+  }
+
+  const url = `${baseUrl.replace(/\/$/, "")}/${path}`;
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${serviceKey}`,
+        "apikey": serviceKey,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const text = await response.text();
+    let data: unknown = null;
+
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = text;
+      }
+    }
+
+    if (!response.ok) {
+      console.error(`[teams] ${path} responded with status ${response.status}`, data);
+      return null;
+    }
+
+    return data as Record<string, unknown> | null;
+  } catch (error) {
+    console.error(`[teams] Failed to call ${path}`, error);
+    return null;
+  }
+}
+
+async function sendTeamInvitationNotification(payload: {
+  invitationId: string;
+  token: string;
+  actorId: string;
+  resend?: boolean;
+}) {
+  await callEdgeFunction("send-team-invitation", payload);
+}
+
+async function publishTeamNotification(event: Record<string, unknown>) {
+  await callEdgeFunction("notify-publish", event);
+}
+
+function buildTeamDashboardUrl(teamId: string): string {
+  return buildAppUrl(`/dashboard/teams/${teamId}`);
+}
+
+async function notifyTeamMemberAdded(options: {
+  member: ReturnType<typeof transformMember>;
+  team: { id: string; name: string | null; organization_id: string };
+  actorId: string;
+}) {
+  const { member, team, actorId } = options;
+  if (!member.userId) {
+    return;
+  }
+
+  const teamName = team.name ?? "your team";
+  const roleName = member.role?.name ?? "team member";
+
+  await publishTeamNotification({
+    id: `team-assigned:${team.id}:${member.userId}:${Date.now()}`,
+    type: "team.assigned",
+    severity: "important",
+    title: `Added to ${teamName}`,
+    message: `You were added to ${teamName} as ${roleName}.`,
+    recipients: [member.userId],
+    channels: ["in_app", "email", "push"],
+    body: {
+      teamId: team.id,
+      organizationId: team.organization_id,
+      roleId: member.roleId,
+      roleKey: member.role?.key ?? null,
+      roleName,
+    },
+    metadata: {
+      actorId,
+      event: "team_member_added",
+    },
+    cta: {
+      label: "View team",
+      url: buildTeamDashboardUrl(team.id),
+    },
+    actorId,
+  });
+}
+
+async function notifyTeamMemberRemoved(options: {
+  member: ReturnType<typeof transformMember>;
+  team: { id: string; name: string | null; organization_id: string };
+  actorId: string | null;
+  reason?: string | null;
+}) {
+  const { member, team, actorId, reason } = options;
+  if (!member.userId) {
+    return;
+  }
+
+  const teamName = team.name ?? "the team";
+
+  await publishTeamNotification({
+    id: `team-removed:${team.id}:${member.userId}:${Date.now()}`,
+    type: "team.role_changed",
+    severity: "info",
+    title: `Removed from ${teamName}`,
+    message: `Your access to ${teamName} has been removed.`,
+    recipients: [member.userId],
+    channels: ["in_app", "email", "push"],
+    body: {
+      teamId: team.id,
+      organizationId: team.organization_id,
+      previousRoleId: member.roleId,
+      previousRoleKey: member.role?.key ?? null,
+      reason: reason ?? null,
+    },
+    metadata: {
+      actorId,
+      event: "team_member_removed",
+      reason: reason ?? null,
+    },
+    cta: {
+      label: "View invitations",
+      url: buildAppUrl("/dashboard/teams/invitations"),
+    },
+    actorId: actorId ?? undefined,
+  });
+}
+
 function transformTeam(record: Record<string, any>) {
   const defaultRole = record.default_role as Record<string, any> | null;
 
@@ -244,7 +388,7 @@ async function fetchTeamOrThrow(supabaseAdmin: SupabaseAdminClient, teamId: stri
   const { data, error } = await supabaseAdmin
     .schema("core")
     .from("teams")
-    .select("id, organization_id, default_role_id, is_archived")
+    .select("id, name, organization_id, default_role_id, is_archived")
     .eq("id", teamId)
     .single();
 
@@ -257,6 +401,7 @@ async function fetchTeamOrThrow(supabaseAdmin: SupabaseAdminClient, teamId: stri
 
   return data as {
     id: string;
+    name: string | null;
     organization_id: string;
     default_role_id: string | null;
     is_archived: boolean;
@@ -673,6 +818,10 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           },
         });
 
+        if (member.status === "active") {
+          await notifyTeamMemberAdded({ member, team, actorId: user.id });
+        }
+
         return { member };
       }),
 
@@ -841,6 +990,13 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
                 removalReason: input.removedAt ? "timestamp_update" : null,
               },
             });
+
+            await notifyTeamMemberRemoved({
+              member,
+              team,
+              actorId: user.id,
+              reason: input.removedAt ? "timestamp_update" : null,
+            });
           } else if (
             newStatus === "active" &&
             existingMember.status === "removed"
@@ -939,6 +1095,13 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           metadata: {
             reason: input.reason ?? null,
           },
+        });
+
+        await notifyTeamMemberRemoved({
+          member,
+          team,
+          actorId: user.id,
+          reason: input.reason ?? null,
         });
 
         return { member };
@@ -1284,6 +1447,12 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
           },
         });
 
+        await sendTeamInvitationNotification({
+          invitationId: invitation.id,
+          token: rawToken,
+          actorId: user.id,
+        });
+
         return {
           invitation,
           token: rawToken,
@@ -1309,7 +1478,7 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
         const { data: invitation, error: fetchError } = await supabaseAdmin
           .schema("core")
           .from("team_invitations")
-          .select("metadata")
+          .select("metadata, status, expires_at")
           .eq("id", input.invitationId)
           .eq("team_id", input.teamId)
           .single();
@@ -1321,16 +1490,38 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
+        if ((invitation.status as string) !== "pending" && (invitation.status as string) !== "expired") {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Invitation cannot be resent while in status "${invitation.status}".`,
+          });
+        }
+
         const metadata = (invitation.metadata as Record<string, unknown> | null) ?? {};
         const resendCount = Number(metadata.resendCount ?? 0) + 1;
         metadata.resendCount = resendCount;
         metadata.lastResentAt = nowIso();
+        metadata.lastTokenIssuedAt = nowIso();
+
+        const rawToken = generateInvitationToken();
+        const tokenHash = await hashInvitationToken(rawToken);
+        const currentExpiry = invitation.expires_at ? new Date(invitation.expires_at as string) : null;
+        const suggestedExpiry = addDays(new Date(), TEAM_INVITATION_TTL_DEFAULT);
+        const nextExpiry = currentExpiry && currentExpiry > suggestedExpiry ? currentExpiry : suggestedExpiry;
 
         const { error } = await supabaseAdmin
           .schema("core")
           .from("team_invitations")
           .update({
+            token: tokenHash,
+            expires_at: nextExpiry.toISOString(),
+            status: "pending",
             metadata,
+            sent_at: null,
+            notification_id: null,
+            last_delivery_status: null,
+            last_delivery_error: null,
+            last_delivery_channels: null,
           })
           .eq("id", input.invitationId)
           .eq("team_id", input.teamId);
@@ -1343,6 +1534,13 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
               : `Failed to update invitation: ${error.message}`,
           });
         }
+
+        await sendTeamInvitationNotification({
+          invitationId: input.invitationId,
+          token: rawToken,
+          actorId: user.id,
+          resend: true,
+        });
 
         return { success: true };
       }),

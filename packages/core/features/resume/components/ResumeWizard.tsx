@@ -327,6 +327,14 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     [errors]
   )
 
+  useEffect(() => {
+    if (aiParsingDisabled) {
+      console.warn(
+        '[ResumeWizard] AI parsing is disabled because the OpenAI API key is not configured.'
+      )
+    }
+  }, [aiParsingDisabled])
+
   const mergedErrors = useMemo(() => {
     if (!errors?.length) return null
     return errors
@@ -552,23 +560,6 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         completedSteps={completedSteps}
         onStepChange={setCurrentIndex}
       />
-
-      {aiParsingDisabled ? (
-        <YStack gap="$2" bg="$yellow3" p="$3" rounded="$4">
-          <XStack gap="$2" items="center">
-            <AlertCircle color="$yellow11" />
-            <Text fontWeight="700" color="$yellow11">
-              AI resume parsing is currently disabled.
-            </Text>
-          </XStack>
-          <Text color="$yellow11">
-            We couldn’t extract data automatically because no OpenAI API key is configured. You can
-            still review and edit each section manually. To enable parsing locally, add a key with{' '}
-            <Text fontWeight="700">pnpm supa secrets set OPENAI_API_KEY=&lt;your-key&gt;</Text> and
-            restart your Supabase services.
-          </Text>
-        </YStack>
-      ) : null}
 
       {hasExistingProfileData ? (
         <YStack gap="$2" bg="$blue3" p="$3" rounded="$4">
