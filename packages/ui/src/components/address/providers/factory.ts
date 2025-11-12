@@ -26,7 +26,15 @@ export function createProvider(config: ProviderConfig): GeocodingProvider {
  * Create provider from environment variables
  */
 export function createFromEnvironment(): GeocodingProvider {
-  const provider = (process.env.GEOCODING_PROVIDER || 'mapbox') as 'mapbox'
+  const envProvider = process.env.GEOCODING_PROVIDER?.toLowerCase()
+  const provider: 'mapbox' = envProvider === 'mapbox' ? 'mapbox' : 'mapbox'
+
+  if (envProvider && envProvider !== 'mapbox') {
+    console.warn(
+      `Unsupported geocoding provider "${envProvider}" found in environment. Falling back to Mapbox.`
+    )
+  }
+
   const apiKey = getApiKeyFromEnvironment(provider)
 
   if (!apiKey) {

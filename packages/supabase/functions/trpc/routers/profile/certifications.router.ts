@@ -351,22 +351,96 @@ export const profileCertificationsRouter = t.router({
         const { supabase, user } = ctx;
 
         if (input.checked) {
-          // Add certification
-          const { data: parentCert } = await supabase
-            .schema("core")
-            .from("user_certifications")
-            .select("id")
-            .eq("user_id", user.id)
-            .eq("certification_id", input.parent_id)
-            .eq("is_active", true)
-            .single();
+          // Ensure the parent category (depth 1) and its top-level ancestor (depth 0) exist and are active
+          const ensureActiveUserCertification = async (
+            certificationId: string,
+            context: string,
+          ) => {
+            const { data: existing, error: existingError } = await supabase
+              .schema("core")
+              .from("user_certifications")
+              .select("id, is_active")
+              .eq("user_id", user.id)
+              .eq("certification_id", certificationId)
+              .maybeSingle();
 
-          if (!parentCert) {
+            if (existingError) {
+              throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: `Failed to verify ${context}: ${existingError.message}`,
+              });
+            }
+
+            if (existing?.is_active) {
+              return existing;
+            }
+
+            if (existing && !existing.is_active) {
+              const { data: reactivated, error: reactivateError } = await supabase
+                .schema("core")
+                .from("user_certifications")
+                .update({ is_active: true })
+                .eq("id", existing.id)
+                .select("id")
+                .single();
+
+              if (reactivateError) {
+                throw new TRPCError({
+                  code: "INTERNAL_SERVER_ERROR",
+                  message: `Failed to reactivate ${context}: ${reactivateError.message}`,
+                });
+              }
+
+              return reactivated;
+            }
+
+            const { data: created, error: createError } = await supabase
+              .schema("core")
+              .from("user_certifications")
+              .insert({
+                user_id: user.id,
+                certification_id: certificationId,
+                is_active: true,
+                verification_status: "unverified",
+              })
+              .select("id")
+              .single();
+
+            if (createError) {
+              throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: `Failed to add ${context}: ${createError.message}`,
+              });
+            }
+
+            return created;
+          };
+
+          const { data: parentCatalog, error: parentCatalogError } = await supabase
+            .schema("data")
+            .from("certifications")
+            .select("id, depth, parent_id, is_active")
+            .eq("id", input.parent_id)
+            .maybeSingle();
+
+          if (
+            parentCatalogError ||
+            !parentCatalog ||
+            parentCatalog.depth !== 1 ||
+            !parentCatalog.is_active ||
+            !parentCatalog.parent_id
+          ) {
             throw new TRPCError({
               code: "BAD_REQUEST",
               message: "Parent category not found in your profile",
             });
           }
+
+          await ensureActiveUserCertification(
+            parentCatalog.parent_id,
+            "top-level certification",
+          );
+          await ensureActiveUserCertification(parentCatalog.id, "parent category");
 
           const { data: cert, error: certError } = await supabase
             .schema("data")
