@@ -16,8 +16,10 @@ const normalizePath = (value: string | null | undefined) => {
   return value.replace(/\/+$/, '')
 }
 
-const isDashboardIndex = (path: string) => {
-  return path === '/dashboard' || path === '/dashboard/index'
+const shouldRenderQuickLinks = (path: string) => {
+  if (path === '/dashboard' || path === '/dashboard/index') return false
+  if (path.startsWith('/dashboard/profile')) return false
+  return true
 }
 
 export const useQuickLinks = (options: UseQuickLinksOptions = {}) => {
@@ -27,7 +29,7 @@ export const useQuickLinks = (options: UseQuickLinksOptions = {}) => {
   const normalizedPathname = normalizePath(pathname)
 
   return useMemo(() => {
-    if (!enabled || isDashboardIndex(normalizedPathname)) return null
+    if (!enabled || !shouldRenderQuickLinks(normalizedPathname)) return null
 
     return (
       <QuickLinksWidget

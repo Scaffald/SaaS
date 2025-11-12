@@ -65,7 +65,7 @@ export interface SearchOptions {
 
 // Provider configuration
 export interface ProviderConfig {
-  provider: 'google' | 'mapbox'
+  provider: 'mapbox'
   apiKey: string
   defaultCountry?: string
   language?: string
@@ -100,7 +100,7 @@ export interface AddressAutocompleteProps {
   /** Disabled state */
   disabled?: boolean
   /** Provider override */
-  provider?: 'google' | 'mapbox'
+  provider?: 'mapbox'
   /** API key override */
   apiKey?: string
   /** Search options */

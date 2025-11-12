@@ -40,7 +40,7 @@ export function AddressAutocomplete({
   placeholder = 'Search addresses...',
   error,
   disabled = false,
-  provider = 'google',
+  provider = 'mapbox',
   apiKey,
   searchOptions = {},
   zoomLevel,

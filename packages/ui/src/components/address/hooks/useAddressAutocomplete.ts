@@ -51,12 +51,18 @@ export function useAddressAutocomplete(
   const [query, setQuery] = useState('')
 
   // Provider setup
-  const { provider: hookProvider, isReady } = useGeocodingProvider(
-    config || {
-      provider: 'google',
-      apiKey: process.env.GOOGLE_PLACES_API_KEY || '',
+  const defaultConfig: ProviderConfig = useMemo(() => {
+    if (config) return config
+
+    return {
+      provider: 'mapbox',
+      apiKey: process.env.EXPO_PUBLIC_MAPBOX_TOKEN || '',
+      defaultCountry: process.env.GEOCODING_DEFAULT_COUNTRY || 'US',
+      language: process.env.GEOCODING_LANGUAGE || 'en',
     }
-  )
+  }, [config])
+
+  const { provider: hookProvider, isReady } = useGeocodingProvider(defaultConfig)
 
   const provider = externalProvider || hookProvider
   const abortControllerRef = useRef<AbortController | null>(null)
@@ -172,13 +178,13 @@ export function useAddressAutocomplete(
  * Simplified hook for basic address search
  *
  * @param apiKey - API key for the geocoding provider
- * @param provider - Provider type ('google' | 'mapbox')
+ * @param provider - Provider type ('mapbox')
  * @param options - Additional options
  * @returns Autocomplete functionality
  */
 export function useSimpleAddressAutocomplete(
   apiKey: string,
-  provider: 'google' | 'mapbox' = 'google',
+  provider: 'mapbox' = 'mapbox',
   options: Omit<UseAddressAutocompleteOptions, 'config' | 'provider'> = {}
 ): UseAddressAutocompleteReturn {
   return useAddressAutocomplete({

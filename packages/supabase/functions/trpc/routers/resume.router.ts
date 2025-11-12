@@ -104,6 +104,142 @@ const parsedResumeSchema = z.object({
   employment: parsedEmploymentSchema.optional(),
 });
 
+export function normalizeOpenAiResumePayload(
+  payload: unknown,
+): Record<string, unknown> {
+  if (
+    !payload ||
+    typeof payload !== "object" ||
+    Array.isArray(payload)
+  ) {
+    return {};
+  }
+
+  const record = payload as Record<string, unknown>;
+  const normalized: Record<string, unknown> = { ...record };
+
+  const coerceArrayOfObjects = (
+    value: unknown,
+  ): Array<Record<string, unknown>> | undefined => {
+    if (value === undefined || value === null) {
+      return undefined;
+    }
+
+    const source = Array.isArray(value) ? value : [value];
+    const objects = source.filter(
+      (entry): entry is Record<string, unknown> =>
+        Boolean(entry) && typeof entry === "object" && !Array.isArray(entry),
+    );
+
+    return objects.length > 0 ? objects : undefined;
+  };
+
+  const coerceSkills = (
+    value: unknown,
+  ): Array<Record<string, unknown>> | undefined => {
+    if (value === undefined || value === null) {
+      return undefined;
+    }
+
+    const source = Array.isArray(value) ? value : [value];
+    const entries: Array<Record<string, unknown>> = [];
+
+    for (const item of source) {
+      if (typeof item === "string") {
+        const parts = item
+          .split(/[,;•\n]+/g)
+          .map((part) => part.trim())
+          .filter(Boolean);
+        if (parts.length === 0) {
+          continue;
+        }
+        for (const name of parts) {
+          entries.push({ name });
+        }
+        continue;
+      }
+
+      if (
+        item &&
+        typeof item === "object" &&
+        !Array.isArray(item)
+      ) {
+        const recordItem = item as Record<string, unknown>;
+        if (typeof recordItem.name === "string") {
+          entries.push(recordItem);
+        } else if (typeof recordItem.skill === "string") {
+          entries.push({ ...recordItem, name: recordItem.skill });
+        }
+      }
+    }
+
+    return entries.length > 0 ? entries : undefined;
+  };
+
+  if ("general" in record) {
+    const general = coerceArrayOfObjects(record.general);
+    if (general) normalized.general = general;
+    else delete normalized.general;
+  }
+
+  if ("experience" in record) {
+    const experience = coerceArrayOfObjects(record.experience);
+    if (experience) normalized.experience = experience;
+    else delete normalized.experience;
+  }
+
+  if ("education" in record) {
+    const education = coerceArrayOfObjects(record.education);
+    if (education) normalized.education = education;
+    else delete normalized.education;
+  }
+
+  if ("certifications" in record) {
+    const certifications = coerceArrayOfObjects(record.certifications);
+    if (certifications) normalized.certifications = certifications;
+    else delete normalized.certifications;
+  }
+
+  if ("skills" in record) {
+    const skills = coerceSkills(record.skills);
+    if (skills) normalized.skills = skills;
+    else delete normalized.skills;
+  }
+
+  if ("employment" in record) {
+    const employment = record.employment;
+    if (
+      employment &&
+      typeof employment === "object" &&
+      !Array.isArray(employment)
+    ) {
+      normalized.employment = employment;
+    } else if (
+      typeof employment === "string" &&
+      employment.trim().startsWith("{")
+    ) {
+      try {
+        const parsedEmployment = JSON.parse(employment);
+        if (
+          parsedEmployment &&
+          typeof parsedEmployment === "object" &&
+          !Array.isArray(parsedEmployment)
+        ) {
+          normalized.employment = parsedEmployment;
+        } else {
+          delete normalized.employment;
+        }
+      } catch {
+        delete normalized.employment;
+      }
+    } else {
+      delete normalized.employment;
+    }
+  }
+
+  return normalized;
+}
+
 const parseErrorSchema = z.object({
   section: z.enum(RESUME_SECTIONS),
   message: z.string(),
@@ -285,18 +421,20 @@ async function extractResumeText(
 }
 
 function buildParsingPrompt(resumeText: string): string {
-  return `Parse this resume and extract structured data for the following sections:
-1. General Info
-2. Work Experience
-3. Education
-4. Skills
-5. Certifications
-6. Employment Preferences
+  return `Parse this resume and return JSON that matches the following rules exactly:
+- Always respond with an object containing only the keys: general, experience, education, skills, certifications, employment.
+- Each of general, experience, education, skills, certifications MUST be arrays. Use an empty array [] if no data is found. Do not return plain strings.
+- The employment key MUST be an object with key/value pairs (or omit the key entirely if no structured data is found). Never return a string for employment.
+- Skill entries MUST be objects shaped like: { "name": string, "confidence": number (0-1, optional) }.
+- General entries MUST be objects shaped like: { "firstName": string?, "lastName": string?, "headline": string?, "bio": string? }.
+- Experience entries MUST be objects shaped like: { "title": string?, "company": string?, "startDate": string?, "endDate": string|null?, "isCurrent": boolean?, "summary": string? }.
+- Education entries MUST be objects shaped like: { "school": string?, "degree": string?, "fieldOfStudy": string?, "startDate": string?, "endDate": string|null? }.
+- Certification entries MUST be objects shaped like: { "name": string?, "issuer": string?, "issuedOn": string|null?, "expiresOn": string|null? }.
+- For sections with no reliable data, return an empty array (or omit employment).
+- Do not include any explanatory text—return raw JSON only.
 
-Resume text:
-${resumeText}
-
-Return JSON with keys general, experience, education, skills, certifications, employment.`;
+Resume text to parse:
+${resumeText}`;
 }
 
 function collectOpenAIContentFragments(
@@ -463,7 +601,8 @@ async function callOpenAIForResume(
 
   try {
     const parsed = JSON.parse(content);
-    return parsedResumeSchema.parse(parsed);
+    const normalized = normalizeOpenAiResumePayload(parsed);
+    return parsedResumeSchema.parse(normalized);
   } catch (error) {
     console.error("[resume] Failed to parse OpenAI response", error, content);
     throw new TRPCError({
@@ -1375,10 +1514,9 @@ export const resumeRouter = t.router({
           break;
         }
         case "employment": {
-          const employmentPayload = profileEmploymentInputSchema.partial()
-            .parse(
-              input.data,
-            );
+          const employmentPayload = profileEmploymentInputSchema.parse(
+            input.data ?? {},
+          );
           await upsertEmploymentPreferences(
             supabase,
             user.id,

@@ -86,7 +86,7 @@ export function AddressForm({
   placeholder = 'Search for your address...',
   error,
   disabled = false,
-  provider = 'google',
+  provider = 'mapbox',
   apiKey,
   searchOptions = {},
   zoomLevel = 'street',

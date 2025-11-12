@@ -18,7 +18,7 @@ export function ProfileGeneralRight() {
       setResumeModalOpen(false)
       router.push(`/dashboard/profile/resume/review?resumeId=${resumeId}`)
     },
-    [router],
+    [router]
   )
 
   // Profile improvement tip cards with marked-up children
@@ -85,8 +85,8 @@ export function ProfileGeneralRight() {
           <YStack gap={spacing.sm}>
             <H4>Import from your resume</H4>
             <Text color="$color11" fontSize="$3">
-              Upload a PDF or Word document under 1MB and we’ll walk you through reviewing the details before
-              they’re saved to your profile.
+              Upload a PDF or Word document under 1MB and we’ll walk you through reviewing the
+              details before they’re saved to your profile.
             </Text>
             <Text color="$color10" fontSize="$2">
               Accepted formats: PDF, DOC, DOCX. You can re-import your resume at any time.
@@ -96,7 +96,8 @@ export function ProfileGeneralRight() {
         </DashboardWidget>
 
         <VanityUrlSection />
-        <WorkLogVisibilitySettingsCard />
+        {/* TODO: Uncomment this when we implement fully */}
+        {/* <WorkLogVisibilitySettingsCard /> */}
 
         <StackedCards
           cards={profileTipCards}

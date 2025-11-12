@@ -76,27 +76,31 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
   completionStatus,
   isStatusLoading,
 }: EnhancedProfileCompletionWidgetProps) {
+  console.log('onOpenImport', onOpenImport)
   const showCarouselControls = hasMultipleBenefits && totalBenefits > 1
   const benefitDotIndices = useMemo(
     () => Array.from({ length: totalBenefits }, (_, idx) => idx),
-    [totalBenefits],
+    [totalBenefits]
   )
 
   const [suggestionHeight, setSuggestionHeight] = useState<number | null>(null)
 
-  const handleSuggestionLayout = useCallback((event: { nativeEvent: { layout: { height: number } } }) => {
-    const {
-      nativeEvent: {
-        layout: { height },
-      },
-    } = event
-    setSuggestionHeight((previous) => {
-      if (previous === null || Math.abs(previous - height) > 1) {
-        return height
-      }
-      return previous
-    })
-  }, [])
+  const handleSuggestionLayout = useCallback(
+    (event: { nativeEvent: { layout: { height: number } } }) => {
+      const {
+        nativeEvent: {
+          layout: { height },
+        },
+      } = event
+      setSuggestionHeight((previous) => {
+        if (previous === null || Math.abs(previous - height) > 1) {
+          return height
+        }
+        return previous
+      })
+    },
+    []
+  )
 
   const rotationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -246,8 +250,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                         {currentBenefit.description}
                       </Text>
                       <Text fontSize="$3" color="$color10">
-                        Suggested section:{' '}
-                        {(() => {
+                        Suggested section: {(() => {
                           try {
                             const sectionId = currentBenefit.relatedSection as ProfileWizardStepId
                             const metadata = resolveSectionMetadata(sectionId)
@@ -264,7 +267,8 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                   ) : (
                     <AnimatedSuggestion key="empty" onLayout={handleSuggestionLayout}>
                       <Text fontSize="$3" color="$color11">
-                        Stay on track by finishing your remaining sections. We’ll surface targeted ideas here once more data is available.
+                        Stay on track by finishing your remaining sections. We’ll surface targeted
+                        ideas here once more data is available.
                       </Text>
                     </AnimatedSuggestion>
                   )}
@@ -319,9 +323,11 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
           <Button size="$4" flex={1} themeInverse iconAfter={ChevronRight} onPress={onStartWizard}>
             Complete Profile
           </Button>
-          <Button size="$4" flex={1} icon={UploadCloud} onPress={onOpenImport}>
+          {/* TODO: Uncomment this when we fix the route
+          <Button size="$4" flex={1} icon={UploadCloud} onPress={() => {}}>
             Import Data
           </Button>
+          */}
         </XStack>
       </YStack>
     </DashboardWidget>

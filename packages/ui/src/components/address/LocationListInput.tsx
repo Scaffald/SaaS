@@ -11,7 +11,7 @@ interface LocationListInputProps {
   maxLocations?: number
   helpText?: string
   placeholder?: string
-  provider?: 'google' | 'mapbox'
+  provider?: 'mapbox'
   apiKey?: string
   disabled?: boolean
 }
