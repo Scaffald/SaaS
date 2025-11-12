@@ -13,6 +13,10 @@ export interface PersonalizedBenefit {
 interface UseCompletionNudgesReturn {
   currentBenefit: PersonalizedBenefit | null
   advanceMessage: () => void
+  retreatMessage: () => void
+  goToMessage: (index: number) => void
+  currentIndex: number
+  totalCount: number
   hasMultiple: boolean
   isLoading: boolean
   refetch: () => Promise<unknown>
@@ -55,6 +59,20 @@ export function useCompletionNudges(): UseCompletionNudgesReturn {
     setCurrentIndex((previous) => (previous + 1) % benefits.length)
   }, [benefits])
 
+  const retreatMessage = useCallback(() => {
+    if (benefits.length === 0) return
+    setCurrentIndex((previous) => (previous - 1 + benefits.length) % benefits.length)
+  }, [benefits])
+
+  const goToMessage = useCallback(
+    (index: number) => {
+      if (benefits.length === 0) return
+      const clampedIndex = Math.max(0, Math.min(index, benefits.length - 1))
+      setCurrentIndex(clampedIndex)
+    },
+    [benefits],
+  )
+
   const currentBenefit = benefits.length > 0 ? benefits[currentIndex] : null
 
   useEffect(() => {
@@ -67,6 +85,10 @@ export function useCompletionNudges(): UseCompletionNudgesReturn {
   return {
     currentBenefit,
     advanceMessage,
+    retreatMessage,
+    goToMessage,
+    currentIndex,
+    totalCount: benefits.length,
     hasMultiple: benefits.length > 1,
     isLoading,
     refetch,

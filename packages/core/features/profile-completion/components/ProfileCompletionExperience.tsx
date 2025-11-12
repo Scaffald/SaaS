@@ -16,6 +16,10 @@ export function ProfileCompletionExperience() {
   const {
     currentBenefit,
     advanceMessage,
+    retreatMessage,
+    goToMessage,
+    currentIndex,
+    totalCount,
     hasMultiple,
     isLoading: isBenefitLoading,
   } = useCompletionNudges()
@@ -108,6 +112,10 @@ export function ProfileCompletionExperience() {
         onOpenImport={navigateToImportReview}
         currentBenefit={currentBenefit}
         advanceBenefit={advanceMessage}
+        retreatBenefit={retreatMessage}
+        goToBenefit={goToMessage}
+        currentBenefitIndex={currentIndex}
+        totalBenefits={totalCount}
         hasMultipleBenefits={hasMultiple}
         isBenefitLoading={isBenefitLoading}
       />
