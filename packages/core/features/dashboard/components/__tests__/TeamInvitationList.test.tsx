@@ -4,6 +4,13 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { TeamInvitationList } from '../TeamInvitationsWidget'
 
+vi.mock('expo-router', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+  }),
+}))
+
 const invitation = {
   id: 'inv-1',
   teamId: 'team-1',
@@ -15,9 +22,20 @@ const invitation = {
   acceptedAt: null,
   declinedAt: null,
   revokedAt: null,
+  sentAt: new Date().toISOString(),
+  notificationId: 'notif-1',
+  lastDeliveryStatus: 'queued',
+  lastDeliveryError: null,
+  lastDeliveryChannels: ['email'],
   createdAt: new Date().toISOString(),
   createdBy: 'user-admin',
-  metadata: {},
+  metadata: {
+    lastDelivery: {
+      status: 'queued',
+      channels: ['email'],
+      updatedAt: new Date().toISOString(),
+    },
+  },
   role: {
     id: 'role-1',
     key: 'member',
@@ -47,6 +65,8 @@ describe('TeamInvitationList', () => {
         onRespond={onRespond}
       />,
     )
+
+    expect(screen.getByText(/Sent/i)).toBeVisible()
 
     await user.click(screen.getByRole('button', { name: /accept/i }))
     expect(onRespond).toHaveBeenCalledWith(invitation.id, 'accept')

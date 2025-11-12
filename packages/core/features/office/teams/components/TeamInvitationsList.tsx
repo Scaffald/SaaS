@@ -170,12 +170,37 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
             const statusColor =
               STATUS_COLORS[invitation.status as InvitationStatus] ?? '$color11';
 
-            const createdAt = invitation.createdAt
-              ? new Date(invitation.createdAt).toLocaleString()
+            const sentAt = invitation.sentAt
+              ? new Date(invitation.sentAt).toLocaleString()
               : null;
             const expiresAt = invitation.expiresAt
               ? new Date(invitation.expiresAt).toLocaleDateString()
               : null;
+
+            const lastDeliveryMetadata =
+              (invitation.metadata as Record<string, unknown> | null)?.lastDelivery ?? null;
+            const lastDelivery =
+              lastDeliveryMetadata && typeof lastDeliveryMetadata === 'object'
+                ? (lastDeliveryMetadata as Record<string, unknown>)
+                : null;
+
+            const lastDeliveryStatus =
+              invitation.lastDeliveryStatus ??
+              (typeof lastDelivery?.status === 'string' ? (lastDelivery.status as string) : null);
+            const lastDeliveryAt =
+              invitation.sentAt
+                ? new Date(invitation.sentAt).toLocaleString()
+                : typeof lastDelivery?.updatedAt === 'string'
+                  ? new Date(lastDelivery.updatedAt as string).toLocaleString()
+                  : null;
+            const deliveryChannels =
+              invitation.lastDeliveryChannels ??
+              (Array.isArray(lastDelivery?.channels)
+                ? (lastDelivery.channels as string[])
+                : null);
+            const lastDeliveryError =
+              invitation.lastDeliveryError ??
+              (typeof lastDelivery?.error === 'string' ? (lastDelivery.error as string) : null);
 
             const isPending = invitation.status === 'pending';
 
@@ -200,7 +225,7 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
                     <XStack gap="$2" items="center">
                       <Clock size={16} color="$color11" />
                       <Text fontSize="$3" color="$color11">
-                        Sent {createdAt ?? 'recently'}
+                        Sent {sentAt ?? 'recently'}
                         {expiresAt ? ` · Expires ${expiresAt}` : null}
                       </Text>
                     </XStack>
@@ -218,6 +243,28 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
                     {invitation.role?.name ?? 'Member'}
                   </Text>
                 </XStack>
+
+                {lastDeliveryStatus ? (
+                  <YStack gap="$1">
+                    <Text fontSize="$3" color="$color11">
+                      Delivery status:{' '}
+                      <Text fontWeight="600" color="$color12">
+                        {lastDeliveryStatus}
+                      </Text>
+                      {lastDeliveryAt ? ` · ${lastDeliveryAt}` : null}
+                    </Text>
+                    {deliveryChannels && deliveryChannels.length > 0 ? (
+                      <Text fontSize="$2" color="$color10">
+                        Channels: {deliveryChannels.join(', ')}
+                      </Text>
+                    ) : null}
+                    {lastDeliveryError ? (
+                      <Text fontSize="$2" color="$red10">
+                        Last error: {lastDeliveryError}
+                      </Text>
+                    ) : null}
+                  </YStack>
+                ) : null}
 
                 <XStack gap="$2" items="center">
                   <Text fontSize="$3" color="$color11">

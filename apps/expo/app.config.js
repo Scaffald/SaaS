@@ -2,8 +2,6 @@ import 'dotenv/config'
 
 const APP_ENV = process.env.APP_ENV || 'development'
 // Load environment-specific variables
-const IS_DEV = APP_ENV === 'development'
-const IS_STAGING = APP_ENV === 'staging'
 const IS_PRODUCTION = APP_ENV === 'production'
 const APP_VERSION = process.env.APP_VERSION || '1.0.0'
 const SENTRY_RELEASE = process.env.SENTRY_RELEASE || `scf-neue@${APP_VERSION}`

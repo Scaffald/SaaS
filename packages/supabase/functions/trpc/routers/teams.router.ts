@@ -363,6 +363,13 @@ function transformInvitation(record: Record<string, any>) {
     acceptedAt: (record.accepted_at as string) ?? null,
     declinedAt: (record.declined_at as string) ?? null,
     revokedAt: (record.revoked_at as string) ?? null,
+    sentAt: (record.sent_at as string) ?? null,
+    notificationId: (record.notification_id as string) ?? null,
+    lastDeliveryStatus: (record.last_delivery_status as string) ?? null,
+    lastDeliveryError: (record.last_delivery_error as string) ?? null,
+    lastDeliveryChannels: Array.isArray(record.last_delivery_channels)
+      ? (record.last_delivery_channels as string[])
+      : null,
     createdAt: record.created_at as string,
     createdBy: (record.created_by as string) ?? null,
     metadata: (record.metadata as Record<string, unknown>) ?? {},
@@ -1244,6 +1251,11 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
             created_at,
             created_by,
             metadata,
+            sent_at,
+            notification_id,
+            last_delivery_status,
+            last_delivery_error,
+            last_delivery_channels,
             role:team_roles(id, key, name)
           `,
           )
@@ -1502,6 +1514,7 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
         metadata.resendCount = resendCount;
         metadata.lastResentAt = nowIso();
         metadata.lastTokenIssuedAt = nowIso();
+        metadata.lastResentBy = user.id;
 
         const rawToken = generateInvitationToken();
         const tokenHash = await hashInvitationToken(rawToken);

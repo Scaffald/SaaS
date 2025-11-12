@@ -173,6 +173,16 @@ const ROUTES_CONFIG = {
     title: "Request Organization",
     isProtected: true,
   },
+  DASHBOARD_TEAMS: {
+    path: "/dashboard/teams",
+    title: "Teams",
+    isProtected: true,
+  },
+  DASHBOARD_TEAM_DETAIL: {
+    path: "/dashboard/teams/:teamId",
+    title: "Team Details",
+    isProtected: true,
+  },
   DASHBOARD_TEAMS_INVITATIONS: {
     path: "/dashboard/teams/invitations",
     title: "Team Invitations",
@@ -403,6 +413,9 @@ export const RouteBuilder = {
   dashboardEmployer: (id: string | number) =>
     buildRoute(ROUTES.DASHBOARD_DISCOVER_EMPLOYER_DETAIL, { id }),
   dashboardOrganizationCreate: () => ROUTES.DASHBOARD_ORGANIZATIONS_CREATE.path,
+  dashboardTeams: () => ROUTES.DASHBOARD_TEAMS.path,
+  dashboardTeamDetail: (teamId: string | number) =>
+    buildRoute(ROUTES.DASHBOARD_TEAM_DETAIL, { teamId }),
   dashboardTeamsInvitations: () => ROUTES.DASHBOARD_TEAMS_INVITATIONS.path,
 } as const;
 
@@ -427,6 +440,8 @@ export const DASHBOARD_ROUTES = {
   PROFILE: ROUTES.DASHBOARD_PROFILE,
   SETTINGS: ROUTES.DASHBOARD_SETTINGS,
   NOTIFICATIONS: ROUTES.DASHBOARD_NOTIFICATIONS,
+  TEAMS: ROUTES.DASHBOARD_TEAMS,
+  TEAM_DETAIL: ROUTES.DASHBOARD_TEAM_DETAIL,
   INVITATIONS: ROUTES.DASHBOARD_TEAMS_INVITATIONS,
 } as const;
 

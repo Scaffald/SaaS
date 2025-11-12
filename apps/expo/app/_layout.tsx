@@ -15,14 +15,6 @@ initSentry()
 
 SplashScreen.preventAutoHideAsync()
 
-// LogBox.ignoreLogs([
-//   'Cannot update a component',
-//   'You are setting the style',
-//   'No route',
-//   'duplicate ID',
-//   'Require cycle',
-// ])
-
 export default function DashboardLayout() {
   const segments = useSegments()
   const [fontLoaded] = useFonts({

@@ -46,7 +46,7 @@ export function TeamInvitationList({
       {invitations.map((invitation) => {
         const teamName = invitation.team?.name ?? 'Team';
         const organizationName = invitation.team?.organizationName ?? 'Organization';
-        const createdAt = invitation.createdAt ? new Date(invitation.createdAt).toLocaleString() : null;
+        const sentAt = invitation.sentAt ? new Date(invitation.sentAt).toLocaleString() : null;
         const expiresAt = invitation.expiresAt ? new Date(invitation.expiresAt).toLocaleDateString() : null;
 
         const isPending = pendingId === invitation.id;
@@ -69,7 +69,7 @@ export function TeamInvitationList({
                 <XStack gap="$2" items="center" mt="$2">
                   <Clock size={16} color="$color11" />
                   <Text fontSize="$3" color="$color11">
-                    Invited {createdAt ?? 'recently'}
+                    Sent {sentAt ?? 'recently'}
                     {expiresAt ? ` · Expires ${expiresAt}` : null}
                   </Text>
                 </XStack>
