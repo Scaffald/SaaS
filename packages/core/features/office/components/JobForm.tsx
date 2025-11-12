@@ -25,6 +25,7 @@ type JobFormData = {
   title: string
   description: string
   organization_id: string
+  assigned_team_id?: string | null
   employment_type?: string
   remote_option?: string
   location?: string
@@ -163,6 +164,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     title: initialData?.title || '',
     description: initialData?.description || '',
     organization_id: initialData?.organization_id || '',
+    assigned_team_id: initialData?.assigned_team_id ?? null,
     employment_type: initialData?.employment_type,
     remote_option: initialData?.remote_option,
     location: initialData?.location || '',
@@ -191,6 +193,42 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
       }
     }
   }, [organizationsData, formData.organization_id])
+
+  const teamsQueryEnabled = Boolean(formData.organization_id)
+  const { data: teamsData, isLoading: teamsLoading } = api.teams.list.useQuery(
+    {
+      organizationId: formData.organization_id || undefined,
+      includeArchived: false,
+    },
+    { enabled: teamsQueryEnabled },
+  )
+  const teams = (teamsData?.teams ?? []) as Array<{ id: string; name: string | null }>
+
+  useEffect(() => {
+    if (!formData.organization_id && formData.assigned_team_id) {
+      setFormData((prev) => ({
+        ...prev,
+        assigned_team_id: null,
+      }))
+    }
+  }, [formData.organization_id, formData.assigned_team_id])
+
+  useEffect(() => {
+    if (teamsLoading) {
+      return
+    }
+    if (!formData.assigned_team_id) {
+      return
+    }
+
+    const hasTeamInScope = teams.some((team) => team.id === formData.assigned_team_id)
+    if (!hasTeamInScope) {
+      setFormData((prev) => ({
+        ...prev,
+        assigned_team_id: null,
+      }))
+    }
+  }, [teamsLoading, teams, formData.assigned_team_id])
 
   const createJob = api.office.createJob.useMutation({
     onSuccess: () => {
@@ -267,6 +305,15 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
 
   const isLoading = createJob.isPending || updateJob.isPending
   const organizations = organizationsData?.organizations || []
+
+  const assignedTeamSelectValue = formData.assigned_team_id ?? '__UNASSIGNED__'
+  const assignedTeamPlaceholder = !formData.organization_id
+    ? 'Select an organization first'
+    : teamsLoading
+    ? 'Loading teams...'
+    : teams.length > 0
+    ? 'Select a team (optional)'
+    : 'No teams available'
 
   type Organization = { id: string; name: string; slug: string; owner_user_id: string | null }
 
@@ -429,6 +476,72 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
               <Select.ScrollDownButton />
             </Select.Content>
           </Select>
+        </YStack>
+
+        {/* Assigned Team */}
+        <YStack gap="$2">
+          <Text fontWeight="600">Assigned Team</Text>
+          <Select
+            value={assignedTeamSelectValue}
+            onValueChange={(value: string) =>
+              setFormData((prev) => ({
+                ...prev,
+                assigned_team_id: value === '__UNASSIGNED__' ? null : value,
+              }))
+            }
+          >
+            <Select.Trigger iconAfter={ChevronDown} disabled={!formData.organization_id || teamsLoading}>
+              <Select.Value placeholder={assignedTeamPlaceholder} />
+            </Select.Trigger>
+
+            <Adapt when="sm" platform="touch">
+              <Sheet modal dismissOnSnapToBottom>
+                <Sheet.Frame>
+                  <Sheet.ScrollView>
+                    <Adapt.Contents />
+                  </Sheet.ScrollView>
+                </Sheet.Frame>
+                <Sheet.Overlay />
+              </Sheet>
+            </Adapt>
+
+            <Select.Content zIndex={200000}>
+              <Select.ScrollUpButton />
+              <Select.Viewport>
+                <Select.Group>
+                  <Select.Label>Teams</Select.Label>
+                  <Select.Item value="__UNASSIGNED__" index={0}>
+                    <Select.ItemText>No team</Select.ItemText>
+                    <Select.ItemIndicator>
+                      <Check size={16} />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                  {teams.map((team, index) => (
+                    <Select.Item key={team.id} value={team.id} index={index + 1}>
+                      <Select.ItemText>{team.name ?? 'Untitled Team'}</Select.ItemText>
+                      <Select.ItemIndicator>
+                        <Check size={16} />
+                      </Select.ItemIndicator>
+                    </Select.Item>
+                  ))}
+                </Select.Group>
+              </Select.Viewport>
+              <Select.ScrollDownButton />
+            </Select.Content>
+          </Select>
+          {!formData.organization_id ? (
+            <Text fontSize="$2" color="$color10">
+              Select an organization to load available teams.
+            </Text>
+          ) : teamsLoading ? (
+            <Text fontSize="$2" color="$color10">
+              Loading teams...
+            </Text>
+          ) : teams.length === 0 ? (
+            <Text fontSize="$2" color="$color10">
+              No teams available for this organization.
+            </Text>
+          ) : null}
         </YStack>
 
         {/* Location with Smart Autocomplete */}

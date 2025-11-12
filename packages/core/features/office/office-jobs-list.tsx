@@ -1,10 +1,10 @@
 import { api } from '@app/core/utils/api'
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useRouter } from 'expo-router'
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
-import { Button, XStack } from 'tamagui'
-import { Pencil } from '@tamagui/lucide-icons'
+import { Adapt, Button, Select, Sheet, Switch, Text, XStack } from 'tamagui'
+import { Check, ChevronDown, Pencil } from '@tamagui/lucide-icons'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { DeleteButton } from './components/DeleteButton'
 
@@ -22,10 +22,16 @@ type Job = {
   posted_at: string | null
   created_at: string
   updated_at: string
+  assigned_team_id: string | null
   organization: {
     id: string
     name: string
     slug: string
+  } | null
+  team: {
+    id: string
+    name: string | null
+    organization_id?: string | null
   } | null
   created_by: {
     id: string
@@ -64,6 +70,11 @@ const createColumns = (
   columnHelper.accessor('organization', {
     header: 'Organization',
     cell: (info) => info.getValue()?.name || '-',
+  }),
+  columnHelper.display({
+    id: 'team',
+    header: 'Team',
+    cell: (info) => info.row.original.team?.name ?? 'Unassigned',
   }),
   columnHelper.accessor('location', {
     header: 'Location',
@@ -104,10 +115,19 @@ const createColumns = (
 export function OfficeJobsList() {
   const router = useRouter()
   const [search, setSearch] = useState('')
+  const [teamFilter, setTeamFilter] = useState<string | null>(null)
+  const [myTeamsOnly, setMyTeamsOnly] = useState(false)
+
+  const { data: teamsData, isLoading: teamsLoading } = api.teams.list.useQuery({
+    includeArchived: false,
+  })
+  const teams = (teamsData?.teams ?? []) as Array<{ id: string; name: string | null }>
 
   const { data, isLoading, refetch } = api.office.listJobs.useQuery({
     limit: 50,
     offset: 0,
+    team_id: teamFilter ?? undefined,
+    myTeamsOnly,
   })
 
   const deleteMutation = api.office.deleteJob.useMutation({
@@ -121,11 +141,87 @@ export function OfficeJobsList() {
   }
 
   const jobs = data?.jobs ?? []
-  const filteredJobs = jobs.filter((job: Job) =>
-    job.title.toLowerCase().includes(search.toLowerCase())
-  )
+  const filteredJobs = useMemo(() => {
+    const query = search.trim().toLowerCase()
+    if (!query) {
+      return jobs
+    }
+
+    return jobs.filter((job: Job) => {
+      const teamName = job.team?.name ?? ''
+      const organizationName = job.organization?.name ?? ''
+
+      return (
+        job.title.toLowerCase().includes(query) ||
+        teamName.toLowerCase().includes(query) ||
+        organizationName.toLowerCase().includes(query)
+      )
+    })
+  }, [jobs, search])
+
+  const teamFilterSelectValue = teamFilter ?? 'all'
+  const teamFilterPlaceholder = teamsLoading ? 'Loading teams...' : 'All teams'
 
   const columns = createColumns(router, handleDelete)
+
+  const filtersAccessory = (
+    <XStack gap="$3" items="center">
+      <XStack gap="$2" items="center">
+        <Text fontSize="$2" color="$color11">
+          Team
+        </Text>
+        <Select
+          value={teamFilterSelectValue}
+          onValueChange={(value: string) => setTeamFilter(value === 'all' ? null : value)}
+        >
+          <Select.Trigger iconAfter={ChevronDown} disabled={teamsLoading}>
+            <Select.Value placeholder={teamFilterPlaceholder} />
+          </Select.Trigger>
+          <Adapt when="sm" platform="touch">
+            <Sheet modal dismissOnSnapToBottom>
+              <Sheet.Frame>
+                <Sheet.ScrollView>
+                  <Adapt.Contents />
+                </Sheet.ScrollView>
+              </Sheet.Frame>
+              <Sheet.Overlay />
+            </Sheet>
+          </Adapt>
+          <Select.Content zIndex={200000}>
+            <Select.ScrollUpButton />
+            <Select.Viewport>
+              <Select.Group>
+                <Select.Label>Teams</Select.Label>
+                <Select.Item value="all" index={0}>
+                  <Select.ItemText>All teams</Select.ItemText>
+                  <Select.ItemIndicator>
+                    <Check size={16} />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                {teams.map((team, index) => (
+                  <Select.Item key={team.id} value={team.id} index={index + 1}>
+                    <Select.ItemText>{team.name ?? 'Untitled Team'}</Select.ItemText>
+                    <Select.ItemIndicator>
+                      <Check size={16} />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                ))}
+              </Select.Group>
+            </Select.Viewport>
+            <Select.ScrollDownButton />
+          </Select.Content>
+        </Select>
+      </XStack>
+      <XStack gap="$2" items="center">
+        <Text fontSize="$2" color="$color11">
+          My teams only
+        </Text>
+        <Switch size="$2" checked={myTeamsOnly} onCheckedChange={setMyTeamsOnly}>
+          <Switch.Thumb />
+        </Switch>
+      </XStack>
+    </XStack>
+  )
 
   return (
     <OfficePageLayout
@@ -140,6 +236,17 @@ export function OfficeJobsList() {
       isLoading={isLoading}
       pageSize={50}
       emptyMessage="No jobs found"
+      actionBarConfig={{
+        bar: {
+          addLabel: 'Create Job',
+          onAddPress: () => router.push(ROUTES.OFFICE_JOBS_CREATE.path),
+          showDisabled: true,
+          searchValue: search,
+          onSearchChange: setSearch,
+          searchPlaceholder: 'Search jobs...',
+          rightAccessory: filtersAccessory,
+        },
+      }}
     />
   )
 }

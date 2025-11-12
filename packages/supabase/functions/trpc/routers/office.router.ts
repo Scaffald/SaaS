@@ -190,12 +190,16 @@ export const officeRouter = t.router({
       z.object({
         organization_id: z.string().uuid().optional(),
         status: z.enum(["draft", "open", "paused", "closed"]).optional(),
+        team_id: z.string().uuid().optional(),
+        myTeamsOnly: z.boolean().optional(),
         limit: z.number().min(1).max(100).default(50),
         offset: z.number().min(0).default(0),
       }),
     )
     .query(async ({ ctx, input }) => {
-      let query = ctx.supabaseAdmin
+      const { supabaseAdmin, user } = ctx;
+
+      let query = supabaseAdmin
         .schema("core")
         .from("jobs")
         .select(
@@ -212,8 +216,10 @@ export const officeRouter = t.router({
           pay_range_type,
           posted_at,
           created_at,
+          assigned_team_id,
           updated_at,
           organization:organizations!organization_id(id, name, slug),
+          team:teams(id, name, organization_id),
           created_by:users!created_by_user_id(id, username, display_name)
         `,
           { count: "exact" },
@@ -229,6 +235,46 @@ export const officeRouter = t.router({
         query = query.eq("status", input.status);
       }
 
+      if (input.team_id) {
+        query = query.eq("assigned_team_id", input.team_id);
+      }
+
+      if (input.myTeamsOnly) {
+        if (!user) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "User not authenticated",
+          });
+        }
+
+        const { data: memberships, error: membershipsError } = await supabaseAdmin
+          .schema("core")
+          .from("team_members")
+          .select("team_id")
+          .eq("user_id", user.id)
+          .neq("status", "removed");
+
+        if (membershipsError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to load team memberships: ${membershipsError.message}`,
+          });
+        }
+
+        const teamIds = (memberships ?? [])
+          .map((membership) => membership.team_id as string | null)
+          .filter((teamId): teamId is string => Boolean(teamId));
+
+        if (teamIds.length === 0) {
+          return {
+            jobs: [],
+            total: 0,
+          };
+        }
+
+        query = query.in("assigned_team_id", teamIds);
+      }
+
       const { data, error, count } = await query;
 
       if (error) {
@@ -238,8 +284,19 @@ export const officeRouter = t.router({
         });
       }
 
+      const jobs = (data ?? []).map((job) => ({
+        ...job,
+        team: job.team
+          ? {
+            id: job.team.id,
+            name: job.team.name,
+            organization_id: job.team.organization_id,
+          }
+          : null,
+      }));
+
       return {
-        jobs: data ?? [],
+        jobs,
         total: count ?? 0,
       };
     }),
@@ -305,6 +362,39 @@ export const officeRouter = t.router({
       // Extract certification_ids and skill_ids before inserting job
       const { certification_ids, skill_ids, ...jobData } = input;
 
+      if (
+        Object.prototype.hasOwnProperty.call(jobData, "assigned_team_id") &&
+        (!jobData.assigned_team_id || jobData.assigned_team_id === "")
+      ) {
+        // Normalize falsy values to null for Supabase
+        jobData.assigned_team_id = null;
+      }
+
+      if (jobData.assigned_team_id) {
+        const { data: teamRecord, error: teamError } = await supabaseAdmin
+          .schema("core")
+          .from("teams")
+          .select("id, organization_id")
+          .eq("id", jobData.assigned_team_id)
+          .single();
+
+        if (teamError || !teamRecord) {
+          throw new TRPCError({
+            code: teamError?.code === "PGRST116" ? "BAD_REQUEST" : "INTERNAL_SERVER_ERROR",
+            message: teamError
+              ? `Failed to validate assigned team: ${teamError.message}`
+              : "Assigned team not found",
+          });
+        }
+
+        if (teamRecord.organization_id !== jobData.organization_id) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Assigned team must belong to the same organization as the job.",
+          });
+        }
+      }
+
       // Insert job using admin client to bypass RLS
       const { data: job, error: jobError } = await supabaseAdmin
         .schema("core")
@@ -361,6 +451,85 @@ export const officeRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       const { supabaseAdmin } = ctx;
       const { id, certification_ids, skill_ids, ...jobData } = input;
+
+      const { data: existingJob, error: existingJobError } = await supabaseAdmin
+        .schema("core")
+        .from("jobs")
+        .select("organization_id, assigned_team_id")
+        .eq("id", id)
+        .single();
+
+      if (existingJobError || !existingJob) {
+        throw new TRPCError({
+          code: existingJobError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+          message: existingJobError
+            ? `Failed to load job: ${existingJobError.message}`
+            : "Job not found",
+        });
+      }
+
+      const currentOrganizationId = existingJob.organization_id as string;
+      const nextOrganizationId = jobData.organization_id ?? currentOrganizationId;
+
+      if (
+        Object.prototype.hasOwnProperty.call(jobData, "assigned_team_id") &&
+        (!jobData.assigned_team_id || jobData.assigned_team_id === "")
+      ) {
+        jobData.assigned_team_id = null;
+      }
+
+      if (jobData.assigned_team_id) {
+        const { data: teamRecord, error: teamError } = await supabaseAdmin
+          .schema("core")
+          .from("teams")
+          .select("id, organization_id")
+          .eq("id", jobData.assigned_team_id)
+          .single();
+
+        if (teamError || !teamRecord) {
+          throw new TRPCError({
+            code: teamError?.code === "PGRST116" ? "BAD_REQUEST" : "INTERNAL_SERVER_ERROR",
+            message: teamError
+              ? `Failed to validate assigned team: ${teamError.message}`
+              : "Assigned team not found",
+          });
+        }
+
+        if (teamRecord.organization_id !== nextOrganizationId) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Assigned team must belong to the job's organization.",
+          });
+        }
+      } else if (
+        jobData.organization_id &&
+        existingJob.assigned_team_id &&
+        jobData.assigned_team_id === undefined
+      ) {
+        const { data: teamRecord, error: teamError } = await supabaseAdmin
+          .schema("core")
+          .from("teams")
+          .select("id, organization_id")
+          .eq("id", existingJob.assigned_team_id as string)
+          .single();
+
+        if (teamError || !teamRecord) {
+          throw new TRPCError({
+            code: teamError?.code === "PGRST116" ? "BAD_REQUEST" : "INTERNAL_SERVER_ERROR",
+            message: teamError
+              ? `Failed to validate existing assigned team: ${teamError.message}`
+              : "Assigned team not found",
+          });
+        }
+
+        if (teamRecord.organization_id !== jobData.organization_id) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message:
+              "Assigned team must belong to the new organization. Provide a team from the new organization or clear the team assignment.",
+          });
+        }
+      }
 
       // Update job
       const { data: job, error: jobError } = await supabaseAdmin

@@ -40,6 +40,7 @@ export default function EditJobPage() {
         title: data.job.title,
         description: data.job.description || '',
         organization_id: data.job.organization_id,
+        assigned_team_id: data.job.assigned_team_id || null,
         employment_type: data.job.employment_type || undefined,
         remote_option: data.job.remote_option || undefined,
         location: data.job.location || undefined,
