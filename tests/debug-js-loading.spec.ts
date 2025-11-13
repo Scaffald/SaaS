@@ -160,3 +160,202 @@ test('debug authentication state loading', async ({ page }) => {
   await page.screenshot({ path: '.playwright-mcp/admin-debug-auth-state.png', fullPage: true })
   console.log('Screenshot saved to: .playwright-mcp/admin-debug-auth-state.png')
 })
+
+test('verify routing and route protection', async ({ page }) => {
+  console.log('\n=== ROUTING VERIFICATION TEST START ===\n')
+
+  // Track URL changes and redirects
+  const urlHistory: string[] = []
+  const redirects: Array<{ from: string; to: string }> = []
+
+  page.on('framenavigated', frame => {
+    if (frame === page.mainFrame()) {
+      const url = frame.url()
+      urlHistory.push(url)
+      if (urlHistory.length > 1) {
+        redirects.push({
+          from: urlHistory[urlHistory.length - 2],
+          to: url
+        })
+      }
+      console.log(`NAVIGATED TO: ${url}`)
+    }
+  })
+
+  // Capture console messages
+  page.on('console', msg => console.log(`BROWSER [${msg.type()}]:`, msg.text()))
+
+  // Test 1: Direct navigation to /office/organizations
+  console.log('\n=== TEST 1: Direct Navigation ===\n')
+  const targetUrl = 'http://localhost:8081/office/organizations'
+  console.log(`Navigating directly to: ${targetUrl}`)
+  
+  await page.goto(targetUrl, { waitUntil: 'domcontentloaded' })
+  
+  await page.waitForTimeout(3000) // Wait for React to initialize and any redirects
+  
+  const finalUrl1 = page.url()
+  console.log(`Final URL after direct navigation: ${finalUrl1}`)
+  console.log(`Expected URL: ${targetUrl}`)
+  console.log(`URL matches: ${finalUrl1 === targetUrl}`)
+  
+  if (redirects.length > 0) {
+    console.log('Redirects detected:')
+    redirects.forEach((r, i) => {
+      console.log(`  ${i + 1}. ${r.from} -> ${r.to}`)
+    })
+  }
+
+  // Check if we're still on the expected route or were redirected
+  const isOnExpectedRoute = finalUrl1.includes('/office/organizations')
+  console.log(`On expected route: ${isOnExpectedRoute}`)
+  
+  if (!isOnExpectedRoute) {
+    console.log(`WARNING: Redirected from /office/organizations to ${finalUrl1}`)
+  }
+
+  // Check auth state persists
+  const authAfterDirectNav = await page.evaluate(() => {
+    const localStorageKeys = Object.keys(localStorage)
+    const authKeys = localStorageKeys.filter(k => 
+      k.includes('auth') || k.includes('supabase')
+    )
+    return {
+      hasAuthKeys: authKeys.length > 0,
+      authKeys: authKeys
+    }
+  })
+  console.log('Auth state after direct nav:', authAfterDirectNav)
+
+  // Test 2: Programmatic navigation (simulate link click)
+  console.log('\n=== TEST 2: Programmatic Navigation ===\n')
+  urlHistory.length = 0
+  redirects.length = 0
+
+  // Navigate to office dashboard first
+  console.log('Navigating to /office first...')
+  await page.goto('http://localhost:8081/office', { waitUntil: 'domcontentloaded' })
+  await page.waitForTimeout(2000)
+
+  const initialUrl = page.url()
+  console.log(`Initial URL: ${initialUrl}`)
+
+  // Now navigate programmatically to organizations
+  console.log('Programmatically navigating to /office/organizations...')
+  urlHistory.length = 0
+  redirects.length = 0
+
+  await page.evaluate(() => {
+    window.location.href = '/office/organizations'
+  })
+
+  // Wait for navigation
+  await page.waitForURL(/\/office\/organizations/, { timeout: 10000 }).catch(() => {
+    console.log('Timeout waiting for /office/organizations URL')
+  })
+
+  await page.waitForTimeout(2000)
+
+  const finalUrl2 = page.url()
+  console.log(`Final URL after programmatic navigation: ${finalUrl2}`)
+  
+  if (redirects.length > 0) {
+    console.log('Redirects during programmatic nav:')
+    redirects.forEach((r, i) => {
+      console.log(`  ${i + 1}. ${r.from} -> ${r.to}`)
+    })
+  }
+
+  const isOnExpectedRoute2 = finalUrl2.includes('/office/organizations')
+  console.log(`On expected route after programmatic nav: ${isOnExpectedRoute2}`)
+
+  // Check auth state persists after programmatic navigation
+  const authAfterProgrammaticNav = await page.evaluate(() => {
+    const localStorageKeys = Object.keys(localStorage)
+    const authKeys = localStorageKeys.filter(k => 
+      k.includes('auth') || k.includes('supabase')
+    )
+    return {
+      hasAuthKeys: authKeys.length > 0,
+      authKeys: authKeys
+    }
+  })
+  console.log('Auth state after programmatic nav:', authAfterProgrammaticNav)
+
+  // Test 3: Check route protection - verify we can access office routes
+  console.log('\n=== TEST 3: Route Protection Check ===\n')
+
+  const officeRoutes = [
+    '/office',
+    '/office/organizations',
+    '/office/jobs',
+    '/office/users'
+  ]
+
+  for (const route of officeRoutes) {
+    console.log(`\nTesting route: ${route}`)
+    urlHistory.length = 0
+    redirects.length = 0
+
+    await page.goto(`http://localhost:8081${route}`, { waitUntil: 'domcontentloaded' })
+    await page.waitForTimeout(2000)
+
+    const routeUrl = page.url()
+    const isAccessible = routeUrl.includes(route) || routeUrl.includes('/office')
+    const wasRedirected = !routeUrl.includes(route) && routeUrl !== `http://localhost:8081${route}`
+
+    console.log(`  Final URL: ${routeUrl}`)
+    console.log(`  Accessible: ${isAccessible}`)
+    console.log(`  Was redirected: ${wasRedirected}`)
+
+    if (wasRedirected && redirects.length > 0) {
+      console.log(`  Redirected from ${route} to: ${routeUrl}`)
+    }
+
+    // Check for access denied messages
+    const accessDenied = await page.getByText(/access denied|unauthorized|forbidden|sign in/i)
+      .first()
+      .isVisible()
+      .catch(() => false)
+
+    console.log(`  Access denied message visible: ${accessDenied}`)
+  }
+
+  // Test 4: Verify root content is rendered
+  console.log('\n=== TEST 4: Root Content Check ===\n')
+  
+  await page.goto('http://localhost:8081/office/organizations', { waitUntil: 'domcontentloaded' })
+  await page.waitForTimeout(3000)
+
+  const rootContent = await page.locator('#root').innerHTML()
+  const rootContentLength = rootContent.length
+  const hasSubstantialContent = rootContentLength > 500
+
+  console.log(`Root content length: ${rootContentLength}`)
+  console.log(`Has substantial content (>500 bytes): ${hasSubstantialContent}`)
+
+  if (!hasSubstantialContent) {
+    console.log(`WARNING: Root content is too small (${rootContentLength} bytes)`)
+    console.log(`Root content preview: ${rootContent.substring(0, 200)}`)
+  }
+
+  // Check for specific elements
+  const hasOrganizationsTable = await page.locator('[data-testid="organizations-table"]')
+    .count()
+    .then(count => count > 0)
+    .catch(() => false)
+
+  const hasCreateButton = await page.getByRole('button', { name: /create organization/i })
+    .count()
+    .then(count => count > 0)
+    .catch(() => false)
+
+  console.log(`Has organizations table: ${hasOrganizationsTable}`)
+  console.log(`Has create button: ${hasCreateButton}`)
+
+  console.log('\n=== ROUTING VERIFICATION TEST COMPLETE ===\n')
+
+  // Take a screenshot for debugging
+  await page.screenshot({ path: '.playwright-mcp/admin-debug-routing.png', fullPage: true })
+  console.log('Screenshot saved to: .playwright-mcp/admin-debug-routing.png')
+})
