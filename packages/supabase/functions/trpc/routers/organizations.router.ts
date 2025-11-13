@@ -201,4 +201,155 @@ export const organizationsRouter = t.router({
 
       return organization;
     }),
+
+  /**
+   * Update organization's default project location visibility
+   */
+  updateLocationVisibility: protectedProcedure
+    .input(
+      z.object({
+        organization_id: z.string().uuid(),
+        default_project_location_visibility: z.enum([
+          "public",
+          "authenticated",
+          "organization_only",
+          "private",
+        ]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.user) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      // Check if user is organization admin
+      const { data: org } = await ctx.supabase
+        .schema("core")
+        .from("organizations")
+        .select("owner_user_id")
+        .eq("id", input.organization_id)
+        .single();
+
+      if (!org) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization not found",
+        });
+      }
+
+      // Check if user is owner or admin
+      const isOwner = org.owner_user_id === ctx.user.id;
+      const { data: roleAssignments } = await ctx.supabase
+        .schema("core")
+        .from("role_assignments")
+        .select("role:roles(name, scope), scope_org_id")
+        .eq("user_id", ctx.user.id);
+
+      const isAdmin = roleAssignments?.some(
+        (assignment: any) =>
+          assignment.role &&
+          (assignment.scope_org_id === input.organization_id ||
+            (assignment.role.name === "admin" &&
+              assignment.role.scope === "platform") ||
+            (assignment.role.name === "super_admin" &&
+              assignment.role.scope === "platform")),
+      );
+
+      if (!isOwner && !isAdmin) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only organization admins can update location visibility settings",
+        });
+      }
+
+      const { data: organization, error } = await ctx.supabase
+        .schema("core")
+        .from("organizations")
+        .update({
+          default_project_location_visibility: input.default_project_location_visibility,
+        })
+        .eq("id", input.organization_id)
+        .select()
+        .single();
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to update location visibility: ${error.message}`,
+        });
+      }
+
+      return { organization };
+    }),
+
+  /**
+   * Get projects that override organization's default location visibility
+   */
+  getProjectsWithOverrides: protectedProcedure
+    .input(
+      z.object({
+        organization_id: z.string().uuid(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      if (!ctx.user) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      // Check if user is organization admin
+      const { data: org } = await ctx.supabase
+        .schema("core")
+        .from("organizations")
+        .select("owner_user_id")
+        .eq("id", input.organization_id)
+        .single();
+
+      if (!org) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization not found",
+        });
+      }
+
+      const isOwner = org.owner_user_id === ctx.user.id;
+      const { data: roleAssignments } = await ctx.supabase
+        .schema("core")
+        .from("role_assignments")
+        .select("role:roles(name, scope), scope_org_id")
+        .eq("user_id", ctx.user.id);
+
+      const isAdmin = roleAssignments?.some(
+        (assignment: any) =>
+          assignment.role &&
+          (assignment.scope_org_id === input.organization_id ||
+            (assignment.role.name === "admin" &&
+              assignment.role.scope === "platform") ||
+            (assignment.role.name === "super_admin" &&
+              assignment.role.scope === "platform")),
+      );
+
+      if (!isOwner && !isAdmin) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only organization admins can view projects with overrides",
+        });
+      }
+
+      const { data: projects, error } = await ctx.supabase
+        .schema("core")
+        .from("projects")
+        .select("id, name, status, location_visibility, location_visibility_override, created_at")
+        .eq("organization_id", input.organization_id)
+        .eq("location_visibility_override", true)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch projects with overrides: ${error.message}`,
+        });
+      }
+
+      return { projects: projects || [] };
+    }),
 });
