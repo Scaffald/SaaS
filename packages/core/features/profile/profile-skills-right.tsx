@@ -42,16 +42,21 @@ export function ProfileSkillsRight() {
   const {
     data: userSkillsData,
     isLoading: isLoadingSkills,
-    refetch: refetchSkills,
   } = api.profile.skillsMultiTaxonomy.getUserSkills.useQuery()
+
+  // React Query utils for cache invalidation
+  const utils = api.useUtils()
 
   // Remove skill mutation
   const removeSkillMutation = api.profile.skillsMultiTaxonomy.removeSkill.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
+      // Invalidate cache to trigger automatic refetch
+      await Promise.all([
+        utils.profile.skillsMultiTaxonomy.getUserSkills.invalidate(),
+      ])
       toast.show('Skill Removed', {
         message: 'Skill has been removed from your profile',
       })
-      refetchSkills()
     },
     // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
     onError: (error: any) => {
