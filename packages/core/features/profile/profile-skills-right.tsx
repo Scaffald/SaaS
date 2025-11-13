@@ -1,10 +1,10 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { YStack, XStack, Text, Button, Progress } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { Award, Sparkles } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
 import { ProfileResultsPanel, ProfileResultCard } from './components'
-import { DashboardWidget } from '@app/ui'
+import { DashboardWidget, ConfirmationDialog } from '@app/ui'
 import { useProfileSkillsContext } from './profile-skills-context'
 
 /**
@@ -33,6 +33,9 @@ export function ProfileSkillsRight() {
     handleSuggestionSelect,
   } = useProfileSkillsContext()
 
+  // Confirmation modal state
+  const [confirmRemoveSkillId, setConfirmRemoveSkillId] = useState<string | null>(null)
+
   // Fetch user's skills
   const {
     data: userSkillsData,
@@ -56,18 +59,54 @@ export function ProfileSkillsRight() {
     },
   })
 
-  // Handle remove skill
+  // Handle remove skill - opens confirmation modal
   const handleRemoveSkill = useCallback(
-    async (userSkillId: string) => {
-      await removeSkillMutation.mutateAsync({ userSkillId })
+    (userSkillId: string) => {
+      setConfirmRemoveSkillId(userSkillId)
     },
-    [removeSkillMutation]
+    []
   )
+
+  // Handle confirmed removal
+  const handleConfirmRemove = useCallback(async () => {
+    if (!confirmRemoveSkillId) return
+    await removeSkillMutation.mutateAsync({ userSkillId: confirmRemoveSkillId })
+    setConfirmRemoveSkillId(null)
+  }, [confirmRemoveSkillId, removeSkillMutation])
 
   const userSkills = userSkillsData?.skills || []
 
+  // Find skill name for confirmation modal
+  const skillToRemove = userSkills.find(
+    (skill: {
+      id: string
+      skill_details: {
+        name: string
+        display_code: string
+        hierarchy_level: number | null
+      } | null
+      proficiency_level: number | null
+    }) => skill.id === confirmRemoveSkillId
+  )
+  const skillName = skillToRemove?.skill_details?.name || 'this skill'
+
   return (
     <YStack gap="$4" flex={1}>
+      <ConfirmationDialog
+        open={confirmRemoveSkillId !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setConfirmRemoveSkillId(null)
+          }
+        }}
+        title="Remove Skill?"
+        message={`Are you sure you want to remove "${skillName}" from your profile?`}
+        confirmLabel="Remove Skill"
+        cancelLabel="Cancel"
+        confirmTheme="red"
+        onConfirm={handleConfirmRemove}
+        isLoading={removeSkillMutation.isPending}
+      />
       <DashboardWidget>
         <YStack gap="$3">
           <YStack
