@@ -22,6 +22,7 @@ import { resumeRouter } from "./resume.router.ts";
 import { feedbackRouter } from "./feedback.router.ts";
 import { workLogsRouter } from "./work-logs.router.ts";
 import { teamsRouter } from "./teams.router.ts";
+import { projectsRouter } from "./projects.router.ts";
 
 /**
  * Main application router
@@ -51,6 +52,7 @@ export const appRouter = t.router({
   backgroundChecks: backgroundChecksRouter,
   workLogs: workLogsRouter,
   teams: teamsRouter,
+  projects: projectsRouter,
 });
 
 // Export the router type for client-side usage
