@@ -271,6 +271,9 @@ export function ProfileSkillsRight() {
                   onRemove={() => handleRemoveSkill(skill.id)}
                   removeDisabled={removeSkillMutation.isPending || removingSkillId === skill.id}
                   isRemoving={removingSkillId === skill.id}
+                  isLoading={
+                    removingSkillId === skill.id || removeSkillMutation.isPending
+                  }
                 >
                   {/* Skill Name and Code */}
                   <YStack gap="$2">

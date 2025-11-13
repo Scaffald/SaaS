@@ -1,4 +1,4 @@
-import { Card, XStack, YStack, Button, type CardProps } from 'tamagui'
+import { Card, XStack, YStack, Button, Spinner, type CardProps } from 'tamagui'
 import { X } from '@tamagui/lucide-icons'
 
 interface ProfileResultCardProps extends CardProps {
@@ -10,6 +10,8 @@ interface ProfileResultCardProps extends CardProps {
   removeDisabled?: boolean
   /** Whether skill is currently being removed (for animation state) */
   isRemoving?: boolean
+  /** Whether remove action is in progress (shows loading spinner) */
+  isLoading?: boolean
   /** Custom action buttons to display */
   actions?: React.ReactNode
   /** Whether to show the card border */
@@ -38,6 +40,7 @@ export function ProfileResultCard({
   onRemove,
   removeDisabled = false,
   isRemoving = false,
+  isLoading = false,
   actions,
   bordered = true,
   ...props
@@ -57,11 +60,11 @@ export function ProfileResultCard({
               <Button
                 size="$2"
                 variant="outlined"
-                icon={X}
+                icon={isLoading ? Spinner : X}
                 onPress={onRemove}
-                disabled={removeDisabled || isRemoving}
+                disabled={removeDisabled || isRemoving || isLoading}
               >
-                Remove
+                {isLoading ? 'Removing...' : 'Remove'}
               </Button>
             )}
           </XStack>
