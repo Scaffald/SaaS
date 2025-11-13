@@ -2344,6 +2344,14 @@ export const officeRouter = t.router({
           profile_avatar_path: candidate?.avatar_path || null,
           job_title: job?.title || "Unknown Job",
           job_location: job?.location || null,
+          // Include nested job object for component compatibility
+          job: job ? {
+            id: job.id,
+            title: job.title,
+            location: job.location,
+            organization_id: job.organization_id,
+            status: job.status,
+          } : null,
         };
       });
 

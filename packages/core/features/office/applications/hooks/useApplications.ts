@@ -5,7 +5,7 @@ import type { inferRouterOutputs } from "@trpc/server";
 type RouterOutputs = inferRouterOutputs<AppRouter>;
 
 /**
- * Hook to fetch applications for the current user or job
+ * Hook to fetch applications for organization's jobs (office admin context)
  */
 export function useApplications(filters?: {
   status?:
@@ -18,12 +18,20 @@ export function useApplications(filters?: {
     | "withdrawn";
   limit?: number;
   offset?: number;
+  organization_id?: string;
+  job_id?: string;
+  date_from?: string;
+  date_to?: string;
 }) {
-  const query = api.applications.getUserApplications.useQuery(
+  const query = api.office.listApplications.useQuery(
     {
       status: filters?.status,
       limit: filters?.limit,
       offset: filters?.offset,
+      organization_id: filters?.organization_id,
+      job_id: filters?.job_id,
+      date_from: filters?.date_from,
+      date_to: filters?.date_to,
     },
     {
       enabled: true,
@@ -32,7 +40,7 @@ export function useApplications(filters?: {
   );
 
   return {
-    applications: query.data || [],
+    applications: query.data?.applications || [],
     isLoading: query.isLoading,
     isError: query.isError,
     error: query.error,
@@ -211,4 +219,4 @@ export function useCalculateScore() {
 
 // Type exports for convenience
 export type Application = NonNullable<RouterOutputs["applications"]["getById"]>;
-export type Applications = RouterOutputs["applications"]["getByUser"];
+export type Applications = NonNullable<RouterOutputs["office"]["listApplications"]>["applications"];
