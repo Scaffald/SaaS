@@ -126,6 +126,26 @@ export async function waitForLoadingComplete(
 }
 
 /**
+ * Wait for root element to have substantial content
+ * Useful for ensuring React has rendered content before checking page text
+ */
+export async function waitForRootContent(
+  page: Page,
+  options?: { minLength?: number; timeout?: number }
+): Promise<void> {
+  const minLength = options?.minLength ?? 500
+  const timeout = options?.timeout ?? 10000
+
+  await page.waitForFunction(
+    () => {
+      const root = document.querySelector('#root')
+      return root && root.innerHTML.length > minLength
+    },
+    { timeout }
+  )
+}
+
+/**
  * Navigate back to previous page
  */
 export async function navigateBack(

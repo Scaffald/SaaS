@@ -18,6 +18,7 @@ import {
   OFFICE_ROUTES,
   waitForPageLoad,
   waitForNavigation,
+  waitForRootContent,
 } from './helpers/office-navigation'
 
 // Use super-admin auth state (Zach) who has 'office' role required for /office routes

@@ -24,7 +24,8 @@ import {
   navigateToOfficeRoute,
   OFFICE_ROUTES,
   waitForPageLoad,
-  waitForNavigation
+  waitForNavigation,
+  waitForRootContent
 } from './helpers/office-navigation'
 
 // Use super-admin auth state (Zach) who has 'office' role required for /office routes
@@ -124,7 +125,12 @@ test.describe('Office • Organizations Management', () => {
       // Search for a specific term
       const searchInput = page.getByPlaceholder(/search organizations/i)
       await searchInput.fill('zzz_nonexistent_org_name_xyz')
-      await page.waitForTimeout(500)
+      
+      // Wait for search results or empty state to appear
+      await page.waitForSelector('text=/no organizations found|no results/i', { timeout: 5000 }).catch(() => {
+        // If no error message selector found, wait for root content to update
+      })
+      await waitForRootContent(page, { timeout: 5000 })
 
       // Should show "no organizations found" or similar
       const afterSearchContent = await page.locator('#root').textContent() || ''
@@ -140,11 +146,11 @@ test.describe('Office • Organizations Management', () => {
 
       // Search for something
       await searchInput.fill('test_search')
-      await page.waitForTimeout(300)
+      await waitForRootContent(page, { timeout: 5000 })
 
       // Clear search
       await searchInput.clear()
-      await page.waitForTimeout(300)
+      await waitForRootContent(page, { timeout: 5000 })
 
       // Should show organizations again (or empty state)
       const pageContent = await page.locator('#root').textContent() || ''
@@ -214,7 +220,15 @@ test.describe('Office • Organizations Management', () => {
 
       // Enter organization name
       await nameInput.fill('Test Organization Name')
-      await page.waitForTimeout(500)
+      
+      // Wait for slug to be auto-generated (check for expected value)
+      await page.waitForFunction(
+        () => {
+          const slugInput = document.querySelector('[data-testid="org-form-slug"]') as HTMLInputElement
+          return slugInput && slugInput.value === 'test-organization-name'
+        },
+        { timeout: 5000 }
+      )
 
       // Slug should be auto-generated
       const slugValue = await slugInput.inputValue()
@@ -247,12 +261,14 @@ test.describe('Office • Organizations Management', () => {
       // Fill form fields
       const nameInput = page.locator('[data-testid="org-form-name"]')
       await nameInput.fill(uniqueName)
+      // Wait for slug to be auto-generated (small delay for debounce)
       await page.waitForTimeout(300)
 
       // Override auto-generated slug with our unique one
       const slugInput = page.locator('[data-testid="org-form-slug"]')
       await slugInput.clear()
       await slugInput.fill(uniqueSlug)
+      // Small delay for input debounce
       await page.waitForTimeout(300)
 
       // Select industry
