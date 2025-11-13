@@ -81,7 +81,7 @@ export function InlineSkillSearch({
   const [searchResults, setSearchResults] = useState<ParentSkill[]>([])
   const [selectedSkill, setSelectedSkill] = useState<ParentSkill | null>(null)
   const [selectedTaxonomy, setSelectedTaxonomy] = useState<string>('csi')
-  const [proficiency, setProficiency] = useState(3)
+  const [proficiency, setProficiency] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [searchCSI, setSearchCSI] = useState(true)
   const [searchONET, setSearchONET] = useState(false)
@@ -191,7 +191,7 @@ export function InlineSkillSearch({
   const handleSkillSelect = useCallback((skill: ParentSkill, taxonomy: string) => {
     setSelectedSkill(skill)
     setSelectedTaxonomy(taxonomy)
-    setProficiency(3) // Reset to default
+    setProficiency(1) // Reset to default (Beginner)
   }, [])
 
   // Handle add skill
@@ -203,19 +203,21 @@ export function InlineSkillSearch({
         selectedTaxonomy,
         selectedSkill
       )
-      // Reset state
+      // Remove added skill from search results, keep query and other results
+      setSearchResults((prev) =>
+        prev.filter((skill) => skill.id !== selectedSkill.id)
+      )
+      // Reset to search mode but keep search query
       setSelectedSkill(null)
       setSelectedTaxonomy('csi')
-      setSearchQuery('')
-      setSearchResults([])
-      setProficiency(3)
+      setProficiency(1) // Reset to default (Beginner)
     }
   }, [selectedSkill, proficiency, selectedTaxonomy, onSelectSkill])
 
   // Handle cancel
   const handleCancel = useCallback(() => {
     setSelectedSkill(null)
-    setProficiency(3)
+    setProficiency(1) // Reset to default (Beginner)
   }, [])
 
   // Get current proficiency level details
