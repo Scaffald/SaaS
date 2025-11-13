@@ -7,7 +7,7 @@ import { YStack, Text, Spinner } from 'tamagui'
 
 export default function OfficeLayout() {
   const { isAuthorized, isLoading } = useRoleProtectedRoute(['office'])
-  const { isTabletOrAbove: _isTabletOrAbove } = useOfficeRouteProtection()
+  const { isTabletOrAbove } = useOfficeRouteProtection()
 
   // Show loading state BEFORE rendering the drawer
   if (isLoading) {

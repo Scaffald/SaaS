@@ -2085,4 +2085,276 @@ export const officeRouter = t.router({
 
       return { success: true };
     }),
+
+  /**
+   * List applications for organization's jobs
+   * Super admins can view applications for jobs belonging to their organization(s)
+   */
+  listApplications: officeProcedure
+    .input(
+      z.object({
+        organization_id: z.string().uuid().optional(),
+        job_id: z.string().uuid().optional(),
+        status: z
+          .enum([
+            "pending",
+            "reviewing",
+            "interview",
+            "offer",
+            "hired",
+            "rejected",
+            "withdrawn",
+          ])
+          .optional(),
+        limit: z.number().min(1).max(100).default(50),
+        offset: z.number().min(0).default(0),
+        date_from: z.string().optional(),
+        date_to: z.string().optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { supabaseAdmin, user } = ctx;
+
+      if (!user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not authenticated",
+        });
+      }
+
+      // Get user's organization IDs
+      // 1. Organizations owned by user
+      const { data: ownedOrgs, error: ownedError } = await supabaseAdmin
+        .schema("core")
+        .from("organizations")
+        .select("id")
+        .eq("owner_user_id", user.id);
+
+      if (ownedError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch owned organizations: ${ownedError.message}`,
+        });
+      }
+
+      // 2. Organizations where user is a team member
+      const { data: teamMemberships, error: membershipsError } = await supabaseAdmin
+        .schema("core")
+        .from("team_members")
+        .select("teams!inner(organization_id)")
+        .eq("user_id", user.id)
+        .neq("status", "removed");
+
+      if (membershipsError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to load team memberships: ${membershipsError.message}`,
+        });
+      }
+
+      const organizationIds = new Set<string>();
+
+      // Add owned organizations
+      for (const org of ownedOrgs ?? []) {
+        if (org.id) {
+          organizationIds.add(org.id as string);
+        }
+      }
+
+      // Add organizations from team memberships
+      for (const membership of teamMemberships ?? []) {
+        const orgId = membership.teams?.organization_id;
+        if (orgId && typeof orgId === "string") {
+          organizationIds.add(orgId);
+        }
+      }
+
+      // If user has no organization access, return empty result
+      if (organizationIds.size === 0) {
+        return {
+          applications: [],
+          total: 0,
+          page_info: {
+            has_more: false,
+            offset: input.offset,
+            limit: input.limit,
+          },
+        };
+      }
+
+      // If organization_id filter is provided, verify user has access
+      if (input.organization_id) {
+        if (!organizationIds.has(input.organization_id)) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "You do not have access to this organization",
+          });
+        }
+        organizationIds.clear();
+        organizationIds.add(input.organization_id);
+      }
+
+      // First, get job IDs for jobs in user's organizations
+      const { data: jobs, error: jobsError } = await supabaseAdmin
+        .schema("core")
+        .from("jobs")
+        .select("id")
+        .in("organization_id", Array.from(organizationIds));
+
+      if (jobsError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch jobs: ${jobsError.message}`,
+        });
+      }
+
+      const jobIds = (jobs ?? []).map((j) => j.id as string).filter(Boolean);
+
+      // If no jobs found, return empty result
+      if (jobIds.length === 0) {
+        return {
+          applications: [],
+          total: 0,
+          page_info: {
+            has_more: false,
+            offset: input.offset,
+            limit: input.limit,
+          },
+        };
+      }
+
+      // Apply job_id filter if provided
+      const filteredJobIds = input.job_id
+        ? jobIds.filter((id) => id === input.job_id)
+        : jobIds;
+
+      if (filteredJobIds.length === 0) {
+        return {
+          applications: [],
+          total: 0,
+          page_info: {
+            has_more: false,
+            offset: input.offset,
+            limit: input.limit,
+          },
+        };
+      }
+
+      // Build query to get applications for jobs in user's organizations
+      let query = supabaseAdmin
+        .schema("core")
+        .from("applications")
+        .select(
+          `
+          *,
+          job:jobs!inner(
+            id,
+            title,
+            location,
+            organization_id,
+            status
+          ),
+          candidate:users!user_id(
+            id,
+            username,
+            display_name,
+            about,
+            avatar_path
+          )
+        `,
+          { count: "exact" },
+        )
+        .in("job_id", filteredJobIds)
+        .order("created_at", { ascending: false })
+        .range(input.offset, input.offset + input.limit - 1);
+
+      // Apply filters
+      if (input.status) {
+        query = query.eq("status", input.status);
+      }
+
+      if (input.date_from) {
+        query = query.gte("created_at", input.date_from);
+      }
+
+      if (input.date_to) {
+        query = query.lte("created_at", input.date_to);
+      }
+
+      const { data, error, count } = await query;
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch applications: ${error.message}`,
+        });
+      }
+
+      // Transform data to match expected output format
+      const applications = (data ?? []).map((app) => {
+        const job = app.job as
+          | {
+              id: string;
+              title: string | null;
+              location: string | null;
+              organization_id: string;
+              status: string;
+            }
+          | null;
+        const candidate = app.candidate as
+          | {
+              id: string;
+              username: string | null;
+              display_name: string | null;
+              about: string | null;
+              avatar_path: string | null;
+            }
+          | null;
+
+        // Extract data from answers JSONB if it exists
+        const answers = (app.answers as Record<string, unknown> | null) || {};
+        const customQuestionAnswers = (answers.custom_question_answers as Array<{
+          question: string;
+          answer: string;
+        }> || []);
+
+        return {
+          id: app.id,
+          job_id: app.job_id,
+          user_id: app.user_id,
+          status: app.status,
+          applied_at: app.created_at,
+          updated_at: app.stage_changed_at || app.created_at,
+          application_score: (answers.application_score as number | null) || null,
+          auto_rejected: (answers.auto_rejected as boolean | null) || false,
+          current_location: (answers.current_location as string | null) || null,
+          willing_to_relocate:
+            (answers.willing_to_relocate as boolean | null) || false,
+          years_experience: (answers.years_experience as number | null) || 0,
+          is_authorized_to_work:
+            (answers.is_authorized_to_work as boolean | null) || false,
+          earliest_start_date:
+            (answers.earliest_start_date as string | null) || null,
+          custom_question_answers: customQuestionAnswers,
+          attachments: (answers.attachments as Record<string, unknown> | null) || {},
+          candidate_id: candidate?.id || app.user_id,
+          candidate_name:
+            candidate?.display_name || candidate?.username || "Unknown",
+          profile_about: candidate?.about || null,
+          profile_avatar_path: candidate?.avatar_path || null,
+          job_title: job?.title || "Unknown Job",
+          job_location: job?.location || null,
+        };
+      });
+
+      return {
+        applications,
+        total: count ?? 0,
+        page_info: {
+          has_more: (count ?? 0) > input.offset + input.limit,
+          offset: input.offset,
+          limit: input.limit,
+        },
+      };
+    }),
 });

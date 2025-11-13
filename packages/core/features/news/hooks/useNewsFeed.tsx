@@ -22,6 +22,24 @@ function getProxiedUrl(originalUrl: string): string {
 }
 
 /**
+ * Get headers for Supabase Edge Function requests
+ * Supabase requires apikey and Authorization headers for all Edge Function calls
+ */
+function getSupabaseHeaders(): HeadersInit {
+  const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
+  const headers: HeadersInit = {}
+  
+  if (anonKey) {
+    headers['apikey'] = anonKey
+    // Supabase Edge Functions require an Authorization header
+    // Use anon key for public endpoints
+    headers['Authorization'] = `Bearer ${anonKey}`
+  }
+  
+  return headers
+}
+
+/**
  * Parse response based on whether we're using CORS proxy or direct fetch
  * Supabase proxy returns XML directly, not JSON-wrapped
  */
@@ -46,7 +64,8 @@ export function useNewsFeed({
       try {
         // Fetch RSS feed with CORS proxy for web
         const proxiedUrl = getProxiedUrl(feedUrl)
-        const response = await fetch(proxiedUrl)
+        const headers = Platform.OS === 'web' ? getSupabaseHeaders() : undefined
+        const response = await fetch(proxiedUrl, { headers })
 
         if (!response.ok) {
           // Try to parse error message from JSON response (Edge Function errors)
@@ -103,7 +122,8 @@ export function useMultipleNewsFeeds(feedUrls: string[], maxItemsPerFeed = 3) {
       const feedPromises = feedUrls.map(async (feedUrl) => {
         try {
           const proxiedUrl = getProxiedUrl(feedUrl)
-          const response = await fetch(proxiedUrl)
+          const headers = Platform.OS === 'web' ? getSupabaseHeaders() : undefined
+          const response = await fetch(proxiedUrl, { headers })
           if (!response.ok) {
             // Try to parse error message from JSON response (Edge Function errors)
             try {

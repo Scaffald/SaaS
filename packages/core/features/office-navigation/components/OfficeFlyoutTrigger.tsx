@@ -60,7 +60,7 @@ export const OfficeFlyout = () => {
   }
 
   return (
-    <>
+    <Popover placement="bottom-end" open={isOpen} onOpenChange={setIsOpen}>
       <OfficeFlyoutTrigger
         isOpen={isOpen}
         onMouseEnter={handleMouseEnter}
@@ -75,7 +75,7 @@ export const OfficeFlyout = () => {
         onNavigate={handleNavigate}
         triggerRef={triggerRef}
       />
-    </>
+    </Popover>
   )
 }
 

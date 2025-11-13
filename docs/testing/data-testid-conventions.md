@@ -11,7 +11,7 @@ Standardized naming conventions for `data-testid` attributes used in Playwright 
 | Prefix | Component | Example |
 |--------|-----------|---------|
 | `job-` | Job-related fields | `job-title-input` |
-| `org-` | Organization-related fields | `org-name-input` |
+| `org-` | Organization-related fields | `org-form-name` |
 | `user-` | User-related fields | `user-first-name-input` |
 | `university-` | University-related fields | `university-name-input` |
 | `prereq-` | Prerequisites form fields | `prereq-first-name-input` |
@@ -295,7 +295,7 @@ Some test IDs include dynamic values for entity-specific elements:
 await page.waitForSelector('[data-testid="org-name-input"]')
 
 // Interact with element
-await page.getByTestId('org-name-input').fill('Test Organization')
+await page.getByTestId('org-form-name').fill('Test Organization')
 
 // Verify element state
 await expect(page.getByTestId('save-button')).toBeEnabled()
@@ -351,9 +351,9 @@ Use the same naming pattern across similar components:
 
 ```typescript
 // Consistent pattern for all form fields
-org-name-input
-org-slug-input
-org-industry-select
+org-form-name
+org-form-slug
+org-form-industry
 
 // Consistent pattern for all buttons
 save-button

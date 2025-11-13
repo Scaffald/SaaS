@@ -80,8 +80,8 @@ const useOrganizedRoutes = (): OrganizedRoutes => {
 }
 
 export const OfficeFlyoutMenu = ({
-  isOpen,
-  onOpenChange,
+  isOpen: _isOpen,
+  onOpenChange: _onOpenChange,
   pathname,
   onNavigate,
   triggerRef: _triggerRef,
@@ -108,8 +108,7 @@ export const OfficeFlyoutMenu = ({
   }
 
   return (
-    <Popover placement="bottom-end" open={isOpen} onOpenChange={onOpenChange}>
-      <Popover.Content
+    <Popover.Content
         role="menu"
         aria-label="Office navigation menu"
         rounded="$4"
@@ -198,7 +197,6 @@ export const OfficeFlyoutMenu = ({
           </YStack>
         </ScrollView>
       </Popover.Content>
-    </Popover>
   )
 }
 
