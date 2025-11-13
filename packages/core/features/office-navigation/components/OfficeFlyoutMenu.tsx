@@ -135,14 +135,11 @@ export const OfficeFlyoutMenu = ({
             {showTopShadow && (
               <YStack
                 position="absolute"
-                t={0}
-                l={0}
-                r={0}
-                h={20}
+                style={{ top: 0, left: 0, right: 0, height: 20 }}
                 bg="$color2"
                 opacity={0.8}
                 pointerEvents="none"
-                zi={1}
+                zIndex={1}
               />
             )}
 
@@ -187,14 +184,11 @@ export const OfficeFlyoutMenu = ({
             {showBottomShadow && (
               <YStack
                 position="absolute"
-                b={0}
-                l={0}
-                r={0}
-                h={20}
+                style={{ bottom: 0, left: 0, right: 0, height: 20 }}
                 bg="$color2"
                 opacity={0.8}
                 pointerEvents="none"
-                zi={1}
+                zIndex={1}
               />
             )}
           </YStack>

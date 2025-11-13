@@ -31,7 +31,7 @@ export const OfficeFlyoutMenuItem = ({
     if (!Icon) return null
 
     return (
-      <XStack items="center" justify="center" w={20} h={20}>
+      <XStack items="center" justify="center" width={20} height={20}>
         <Icon size={16} color={active ? '$color1' : '$color11'} />
       </XStack>
     )
@@ -64,7 +64,7 @@ export const OfficeFlyoutMenuItem = ({
           <XStack items="center" gap="$2" flex={1}>
             {depth === 0 && renderIcon()}
             {depth > 2 && (
-              <XStack w={2} h="100%" bg="$color6" mr="$2" />
+              <XStack style={{ width: 2, height: '100%', marginRight: 8 }} bg="$color6" />
             )}
             <Paragraph
               size={depth === 0 ? '$4' : '$3'}
