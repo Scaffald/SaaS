@@ -474,6 +474,7 @@ export function EmploymentSection({
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}
               space={isLoading ? '$2' : 0}
+              $sm={{ minHeight: 44, minWidth: 44 }}
             >
               <AnimatePresence>
                 {isLoading && (

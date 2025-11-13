@@ -411,7 +411,11 @@ export function EducationEntryEditModal({
 
           {/* Start and End Dates */}
           <YStack gap="$2">
-            <XStack gap="$3">
+            <XStack 
+              gap="$3"
+              $sm={{ flexDirection: 'column' }}
+              $gtSm={{ flexDirection: 'row' }}
+            >
               <YStack gap="$2" flex={1}>
                 <Controller
                   name="start_date"
@@ -529,12 +533,20 @@ export function EducationEntryEditModal({
           </YStack>
 
           {/* Action Buttons */}
-          <XStack justify="flex-end" gap="$3" pt="$4">
+          <XStack 
+            justify="flex-end" 
+            gap="$3" 
+            pt="$4"
+            $sm={{ flexDirection: 'column' }}
+            $gtSm={{ flexDirection: 'row' }}
+          >
             <Button
               variant="outlined"
               disabled={!isDirty}
               onPress={() => setShowCancelDialog(true)}
               opacity={!isDirty ? 0.5 : 1}
+              $sm={{ minHeight: 44, width: '100%' }}
+              $gtSm={{ minHeight: undefined, width: undefined }}
             >
               Cancel
             </Button>
@@ -543,6 +555,8 @@ export function EducationEntryEditModal({
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}
+              $sm={{ minHeight: 44, width: '100%' }}
+              $gtSm={{ minHeight: undefined, width: undefined }}
             >
               {isLoading ? (
                 <XStack gap="$2" items="center">

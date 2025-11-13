@@ -211,7 +211,11 @@ export function GeneralProfileSection({
         </YStack>
 
         {/* Name Fields */}
-        <XStack gap="$3">
+        <XStack 
+          gap="$3"
+          $sm={{ flexDirection: 'column' }}
+          $gtSm={{ flexDirection: 'row' }}
+        >
           <YStack gap="$2" flex={1}>
             <Text fontWeight="600">First Name *</Text>
             <Controller
@@ -393,6 +397,7 @@ export function GeneralProfileSection({
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}
               space={isLoading ? '$2' : 0}
+              $sm={{ minHeight: 44, minWidth: 44 }}
             >
               <AnimatePresence>
                 {isLoading && (
