@@ -125,9 +125,14 @@ export function InlineSkillSearch({
 
           const results = await onSearchSkills(text, taxonomies)
 
+          // Filter out existing skills to prevent duplicates
+          const filteredResults = results.filter(
+            (skill) => !existingSkillIds.includes(skill.id)
+          )
+
           // Only update if not aborted
           if (!currentAbortController.signal.aborted) {
-            setSearchResults(results)
+            setSearchResults(filteredResults)
             setIsLoading(false)
           }
         } catch (error) {
@@ -140,7 +145,7 @@ export function InlineSkillSearch({
         }
       }, 300)
     },
-    [onSearchSkills, searchCSI, searchONET],
+    [onSearchSkills, searchCSI, searchONET, existingSkillIds],
   )
 
   // Cleanup on unmount
