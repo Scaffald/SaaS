@@ -1,4 +1,4 @@
-import type { PostgrestError } from '@supabase/supabase-js'
+import type { PostgrestError } from '@supabase/postgrest-js'
 import type { Database } from './types'
 
 export type Tables<T extends keyof Database['public']['Tables']> =

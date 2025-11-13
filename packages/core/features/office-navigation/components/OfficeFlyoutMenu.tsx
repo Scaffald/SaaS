@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import type { NativeSyntheticEvent, NativeScrollEvent } from 'react-native'
 import { Popover, YStack, ScrollView, Separator, Text, useWindowDimensions } from 'tamagui'
 import { ROUTES } from '@app/core/constants/routes'
 import { OfficeFlyoutMenuItem } from './OfficeFlyoutMenuItem'
@@ -23,8 +24,8 @@ const useOrganizedRoutes = (): OrganizedRoutes => {
   return useMemo(() => {
     // Filter Office routes with menu metadata
     const officeRoutes = Object.entries(ROUTES)
-      .filter(([key, route]) => key.startsWith('OFFICE_') && route.menuCategory)
-      .map(([key, route]) => ({ ...route, key })) as (RouteConfig & { key: string })[]
+      .filter(([key, route]) => key.startsWith('OFFICE_') && 'menuCategory' in route && route.menuCategory)
+      .map(([key, route]) => ({ ...route, key })) as (RouteConfig & { key: string; menuCategory?: string })[]
 
     // Also include STYLEGUIDE if it has menuCategory
     const styleguideRoute = ROUTES.STYLEGUIDE
@@ -101,10 +102,10 @@ export const OfficeFlyoutMenu = ({
     system: 'System',
   }
 
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const { scrollTop, scrollHeight, clientHeight } = event.currentTarget
-    setShowTopShadow(scrollTop > 0)
-    setShowBottomShadow(scrollTop + clientHeight < scrollHeight - 5)
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent
+    setShowTopShadow(contentOffset.y > 0)
+    setShowBottomShadow(contentOffset.y + layoutMeasurement.height < contentSize.height - 5)
   }
 
   return (
@@ -113,7 +114,7 @@ export const OfficeFlyoutMenu = ({
         aria-label="Office navigation menu"
         rounded="$4"
         p={0}
-        maxH="calc(100vh - 80px)"
+        maxH="90vh"
         elevate
         borderWidth={1}
         borderColor="$borderColor"
@@ -127,20 +128,21 @@ export const OfficeFlyoutMenu = ({
           showsVerticalScrollIndicator={false}
           onScroll={handleScroll}
           scrollEventThrottle={16}
-          style={{ maxHeight: 'calc(100vh - 80px)' }}
+          maxH="90vh"
         >
           <YStack py="$2" position="relative">
             {/* Top shadow overlay */}
             {showTopShadow && (
               <YStack
                 position="absolute"
-                top={0}
-                left={0}
-                right={0}
-                height={20}
-                bg="linear-gradient(to bottom, $color2, transparent)"
+                t={0}
+                l={0}
+                r={0}
+                h={20}
+                bg="$color2"
+                opacity={0.8}
                 pointerEvents="none"
-                zIndex={1}
+                zi={1}
               />
             )}
 
@@ -185,13 +187,14 @@ export const OfficeFlyoutMenu = ({
             {showBottomShadow && (
               <YStack
                 position="absolute"
-                bottom={0}
-                left={0}
-                right={0}
-                height={20}
-                bg="linear-gradient(to top, $color2, transparent)"
+                b={0}
+                l={0}
+                r={0}
+                h={20}
+                bg="$color2"
+                opacity={0.8}
                 pointerEvents="none"
-                zIndex={1}
+                zi={1}
               />
             )}
           </YStack>

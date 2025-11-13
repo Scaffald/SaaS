@@ -99,7 +99,7 @@ export const useOrganizations = (options: UseOrganizationsOptions = {}) => {
             employeeCount: org.employee_count_range || undefined,
           };
         })
-        .filter((org): org is OrganizationMapPin => org !== null);
+        .filter((org: OrganizationMapPin | null): org is OrganizationMapPin => org !== null);
 
       // Apply limit (max 200 employers per viewport)
       return filtered.slice(0, Math.min(limit, 200));

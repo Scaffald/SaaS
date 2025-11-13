@@ -1,5 +1,5 @@
 import '../tamagui-web.css'
-import type { Session } from '@supabase/supabase-js'
+import type { Session } from '@supabase/auth-js'
 import { Provider, loadThemePromise } from '@app/core/provider'
 import { supabase } from '@app/core/utils/supabase/client'
 import { useFonts } from 'expo-font'

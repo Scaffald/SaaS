@@ -5,7 +5,7 @@ import { ChevronRight } from '@tamagui/lucide-icons'
 import { isActivePath } from '@app/core/features/drawer/utils'
 import type { RouteConfig } from '@app/core/constants/routes'
 
-interface OfficeFlyoutMenuItemProps {
+export interface OfficeFlyoutMenuItemProps {
   route: RouteConfig & { key: string }
   pathname: string
   depth?: number
@@ -31,7 +31,7 @@ export const OfficeFlyoutMenuItem = ({
     if (!Icon) return null
 
     return (
-      <XStack items="center" justify="center" width={20} height={20}>
+      <XStack items="center" justify="center" w={20} h={20}>
         <Icon size={16} color={active ? '$color1' : '$color11'} />
       </XStack>
     )

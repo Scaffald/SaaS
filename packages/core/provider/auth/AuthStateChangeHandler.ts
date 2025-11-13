@@ -11,7 +11,7 @@ import { clearAllAuthStorage } from "@app/core/utils/auth/clearAuthStorage";
 const useRedirectAfterSignOut = () => {
   const router = useRouter();
   useEffect(() => {
-    const signOutListener = supabase.auth.onAuthStateChange((event) => {
+    const signOutListener = supabase.auth.onAuthStateChange((event: string) => {
       if (event === "SIGNED_OUT") {
         console.log(
           "[AuthStateChangeHandler] SIGNED_OUT event - redirecting to auth",

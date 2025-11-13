@@ -98,7 +98,7 @@ export const useJobs = (options: UseJobsOptions = {}) => {
 
       // Transform to JobMapPin format and filter by viewport bounds if provided
       return (jobs || [])
-        .map((job): JobMapPin | null => {
+        .map((job: JobWithCoords): JobMapPin | null => {
           // Extract coordinates from address JSONB
           const address = job.address as
             | {
@@ -148,7 +148,7 @@ export const useJobs = (options: UseJobsOptions = {}) => {
             position_level: job.position_level || undefined,
           };
         })
-        .filter((job): job is JobMapPin => job !== null);
+        .filter((job: JobMapPin | null): job is JobMapPin => job !== null);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes - jobs change frequently
   });
