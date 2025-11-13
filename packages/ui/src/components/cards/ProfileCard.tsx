@@ -184,7 +184,12 @@ export const ProfileCard = memo(
           </XStack>
 
           {/* Title/Role */}
-          <Paragraph size="$3" color={isSelected ? '$color1' : '$color11'} numberOfLines={2}>
+          <Paragraph 
+            size="$3" 
+            color={isSelected ? '$color1' : '$color11'} 
+            $sm={{ numberOfLines: 3 }}
+            $gtSm={{ numberOfLines: 2 }}
+          >
             {title}
           </Paragraph>
 

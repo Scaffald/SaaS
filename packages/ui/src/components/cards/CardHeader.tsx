@@ -27,12 +27,23 @@ export const CardHeader = memo(
         <XStack items="center" gap="$2" flex={1}>
           {icon && <YStack>{icon}</YStack>}
           <YStack flex={1} gap="$1">
-            <SizableText size="$5" fontWeight="700" color={titleColor} numberOfLines={1}>
+            <SizableText 
+              size="$5" 
+              fontWeight="700" 
+              color={titleColor} 
+              $sm={{ numberOfLines: 2 }}
+              $gtSm={{ numberOfLines: 1 }}
+            >
               {title}
             </SizableText>
             {subtitle &&
               (typeof subtitle === 'string' ? (
-                <SizableText size="$3" color={subtitleColor} numberOfLines={1}>
+                <SizableText 
+                  size="$3" 
+                  color={subtitleColor} 
+                  $sm={{ numberOfLines: 2 }}
+                  $gtSm={{ numberOfLines: 1 }}
+                >
                   {subtitle}
                 </SizableText>
               ) : (

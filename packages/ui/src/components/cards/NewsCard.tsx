@@ -161,13 +161,26 @@ export const NewsCard = ({
         {/* Bottom Content Section */}
         <YStack gap="$3" justify="flex-end">
           {/* Title */}
-          <Text fontSize="$6" fontWeight="700" color="$color12" lineHeight="$7" numberOfLines={2}>
+          <Text 
+            fontSize="$6" 
+            fontWeight="700" 
+            color="$color12" 
+            lineHeight="$7" 
+            $sm={{ numberOfLines: 3 }}
+            $gtSm={{ numberOfLines: 2 }}
+          >
             {title}
           </Text>
 
           {/* Description */}
           {description && (
-            <Text fontSize="$4" color="$color11" lineHeight="$5" numberOfLines={3}>
+            <Text 
+              fontSize="$4" 
+              color="$color11" 
+              lineHeight="$5" 
+              $sm={{ numberOfLines: 4 }}
+              $gtSm={{ numberOfLines: 3 }}
+            >
               {description}
             </Text>
           )}
