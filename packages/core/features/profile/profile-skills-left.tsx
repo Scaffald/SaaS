@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { YStack, XStack, Text, Select, Adapt, Sheet, Separator, Spinner, Button } from 'tamagui'
 import { ChevronDown, Check } from '@tamagui/lucide-icons'
+import { useRouter } from 'expo-router'
 import { ProfileFormPanel, InlineSkillSearch } from './components'
-import { SaveStatusIndicator, type SaveStatus } from '@app/ui'
+import { SaveStatusIndicator, SavingModal, type SaveStatus } from '@app/ui'
 import { useProfileSkillsContext } from './profile-skills-context'
 import { api } from '@app/core/utils/api'
 
@@ -23,34 +24,96 @@ export function ProfileSkillsLeft() {
     isSearchingSkills,
     existingSkillIds,
     isAddingSkill,
+    isRemovingSkill,
   } = useProfileSkillsContext()
 
+  const router = useRouter()
   const utils = api.useUtils()
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
   const [lastSavedAt, setLastSavedAt] = useState<Date | undefined>()
   const [saveError, setSaveError] = useState<string | undefined>()
   const [saveButtonState, setSaveButtonState] = useState<'idle' | 'saving' | 'saved'>('idle')
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveModalError, setSaveModalError] = useState<string | undefined>()
+
+  // Track unsaved changes
+  useEffect(() => {
+    setHasUnsavedChanges(isAddingSkill || isRemovingSkill)
+  }, [isAddingSkill, isRemovingSkill])
 
   // Track save status from context mutation
   useEffect(() => {
-    if (isAddingSkill) {
+    if (isAddingSkill || isRemovingSkill) {
       setSaveStatus('saving')
       setSaveError(undefined)
     }
-  }, [isAddingSkill])
+  }, [isAddingSkill, isRemovingSkill])
 
-  // Track successful saves by monitoring when skills are added
-  // This is a simplified approach - in production you'd want to expose callbacks from context
+  // Track successful saves by monitoring when mutations complete
   useEffect(() => {
-    if (!isAddingSkill && saveStatus === 'saving') {
+    if (!isAddingSkill && !isRemovingSkill && saveStatus === 'saving') {
       setSaveStatus('saved')
       setLastSavedAt(new Date())
       setTimeout(() => {
         setSaveStatus('idle')
       }, 3000)
     }
-  }, [isAddingSkill, saveStatus])
+  }, [isAddingSkill, isRemovingSkill, saveStatus])
+
+  // Browser navigation guard
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault()
+        e.returnValue = '' // Required for Chrome
+      }
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [hasUnsavedChanges])
   
+  // Handle forced save before navigation
+  const handleForcedSave = async (): Promise<boolean> => {
+    if (!hasUnsavedChanges) return true
+
+    setIsSaving(true)
+    setSaveModalError(undefined)
+
+    try {
+      // Wait for pending mutations to complete with timeout
+      await Promise.race([
+        new Promise<void>((resolve) => {
+          const checkInterval = setInterval(() => {
+            if (!isAddingSkill && !isRemovingSkill) {
+              clearInterval(checkInterval)
+              resolve()
+            }
+          }, 100)
+        }),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Save timeout')), 5000)
+        ),
+      ])
+      setIsSaving(false)
+      return true
+    } catch (error) {
+      setIsSaving(false)
+      setSaveModalError(
+        error instanceof Error ? error.message : 'Failed to save changes'
+      )
+      return false
+    }
+  }
+
+  // Handle retry save
+  const handleRetrySave = async () => {
+    const success = await handleForcedSave()
+    if (success) {
+      setSaveModalError(undefined)
+    }
+  }
+
   // Handle force save
   const handleForceSave = async () => {
     setSaveStatus('saving')
@@ -207,6 +270,18 @@ export function ProfileSkillsLeft() {
           )}
         </Button>
       </XStack>
+
+      {/* Saving Modal for Navigation Safety */}
+      <SavingModal
+        open={isSaving}
+        onClose={() => {
+          setIsSaving(false)
+          setSaveModalError(undefined)
+        }}
+        isError={!!saveModalError}
+        errorMessage={saveModalError}
+        onRetry={handleRetrySave}
+      />
     </ProfileFormPanel>
   )
 }

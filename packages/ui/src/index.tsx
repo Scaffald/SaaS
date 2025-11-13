@@ -67,6 +67,10 @@ export {
   type SaveStatus,
   type SaveStatusIndicatorProps,
 } from './components/SaveStatusIndicator'
+export {
+  SavingModal,
+  type SavingModalProps,
+} from './components/SavingModal'
 export * from './components/Onboarding'
 export { OnboardingControls } from './components/OnboardingControls'
 export { StepContent } from './components/OnboardingStepContent'

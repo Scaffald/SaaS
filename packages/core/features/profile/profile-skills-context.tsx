@@ -52,6 +52,7 @@ interface ProfileSkillsContextValue {
   isSearchingSkills: boolean
   existingSkillIds: string[]
   isAddingSkill: boolean
+  isRemovingSkill: boolean
 }
 
 const DEFAULT_INDUSTRY_SLUG = 'construction'
@@ -77,6 +78,13 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
 
   // Store skill details for optimistic updates (accessed in onMutate)
   const pendingSkillDetailsRef = useRef<ParentSkill | null>(null)
+
+  // Remove skill mutation (for tracking status only - actual removal is in profile-skills-right.tsx)
+  const removeSkillMutation = api.profile.skillsMultiTaxonomy.removeSkill.useMutation({
+    onSuccess: async () => {
+      await utils.profile.skillsMultiTaxonomy.getUserSkills.invalidate()
+    },
+  })
 
   const addSkillMutation = api.profile.skillsMultiTaxonomy.addSkill.useMutation({
     async onMutate(variables: { taxonomy: 'csi' | 'onet'; skillId: string; proficiencyLevel: number }) {
@@ -356,6 +364,7 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
     isSearchingSkills: searchSkillsMutation.isPending,
     existingSkillIds,
     isAddingSkill: addSkillMutation.isPending,
+    isRemovingSkill: removeSkillMutation.isPending,
   }
 
   return <ProfileSkillsContext.Provider value={value}>{children}</ProfileSkillsContext.Provider>
