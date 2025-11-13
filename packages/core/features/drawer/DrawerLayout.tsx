@@ -1,9 +1,8 @@
 import type { ReactNode } from 'react'
-import { Button, useTheme, YStack, Text, XStack } from 'tamagui'
+import { Button, useTheme, YStack, Text, XStack, useMedia } from 'tamagui'
 import { DrawerActions } from '@react-navigation/native'
 import { Menu } from '@tamagui/lucide-icons'
 import { Drawer } from 'expo-router/drawer'
-import { useWindowDimensions } from 'tamagui'
 import { NotificationDropdown } from '@app/ui'
 import { UserMenuAvatar } from './UserMenuAvatar'
 import { DrawerMenu } from './DrawerMenu'
@@ -39,9 +38,13 @@ export function DrawerLayout({
   children,
   hideDrawer = false,
 }: DrawerLayoutProps) {
-  const { width } = useWindowDimensions()
+  // Use Tamagui media hook to check breakpoint
+  // $gtLg = minWidth: 1281px (permanent drawer)
+  // When width > 1280px: gtLg is true, permanent drawer
+  // When width <= 1280px: gtLg is false, front drawer
+  const media = useMedia()
   const theme = useTheme()
-  const isSmall = width < 1400
+  const isSmall = !media.gtLg // Permanent drawer when gtLg, front drawer otherwise
   const { hasOfficeRole } = useUserRoles()
   const { data: preferencesData } = api.notifications.preferences.get.useQuery(undefined, {
     staleTime: 5 * 60 * 1000,
