@@ -168,12 +168,12 @@ export const OfficeFlyoutMenu = ({
                   {/* Category Items */}
                   <YStack>
                     {items.map((route) => (
-                      // biome-ignore lint/correctness/noChildrenProp: children here is route config data, not React children
                       <OfficeFlyoutMenuItem
                         key={route.key}
                         route={route}
                         pathname={pathname}
                         onNavigate={onNavigate}
+                        // biome-ignore lint/correctness/noChildrenProp: children here is route config data, not React children
                         children={route.children}
                       />
                     ))}

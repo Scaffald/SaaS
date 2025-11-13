@@ -15,13 +15,13 @@ export const useOfficeRouteProtection = () => {
   useEffect(() => {
     // Only redirect if on mobile
     if (!isTabletOrAbove) {
-      toast.show('Office features are only available on tablet and desktop devices', {
-        type: 'warning',
+      toast.show('Office features unavailable', {
+        message: 'Office features are only available on tablet and desktop devices',
         duration: 4000,
       })
 
       // Redirect to dashboard
-      router.replace(ROUTES.DASHBOARD.path as any)
+      router.replace(ROUTES.DASHBOARD.path as Parameters<typeof router.replace>[0])
     }
   }, [isTabletOrAbove, router, toast])
 

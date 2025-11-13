@@ -6,30 +6,28 @@ import type { UseNewsFeedOptions, NewsItem } from '../config/types'
 
 /**
  * CORS proxy for web browsers - only needed for web, not React Native
- * Using allorigins.win as a reliable CORS proxy service
+ * Uses Supabase Edge Function to proxy RSS feeds with proper CORS headers
  */
 function getProxiedUrl(originalUrl: string): string {
   // Only use proxy for web browsers, React Native doesn't have CORS restrictions
   if (Platform.OS === 'web') {
-    return `https://api.allorigins.win/get?url=${encodeURIComponent(originalUrl)}`
+    const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL
+    if (!supabaseUrl) {
+      console.warn('EXPO_PUBLIC_SUPABASE_URL is not set, falling back to direct fetch')
+      return originalUrl
+    }
+    return `${supabaseUrl}/functions/v1/news?url=${encodeURIComponent(originalUrl)}`
   }
   return originalUrl
 }
 
 /**
  * Parse response based on whether we're using CORS proxy or direct fetch
+ * Supabase proxy returns XML directly, not JSON-wrapped
  */
-function parseProxyResponse(response: Response, text: string): string {
-  if (Platform.OS === 'web' && response.url.includes('allorigins.win')) {
-    // Parse the proxied response
-    try {
-      const parsed = JSON.parse(text)
-      return parsed.contents || ''
-    } catch (error) {
-      console.warn('Failed to parse proxy response:', error)
-      return text
-    }
-  }
+function parseProxyResponse(_response: Response, text: string): string {
+  // Supabase Edge Function returns XML directly, so no parsing needed
+  // React Native uses direct fetch, so also no parsing needed
   return text
 }
 

@@ -1,4 +1,5 @@
 import { useRoleProtectedRoute } from '@app/core/utils/auth/useRoleProtectedRoute'
+import { useOfficeRouteProtection } from '@app/core/utils/auth/useOfficeRouteProtection'
 import { ErrorBoundary } from '@app/core/components/ErrorBoundary'
 import { DrawerLayout } from '@app/core/features/drawer/DrawerLayout'
 import { Drawer } from 'expo-router/drawer'
@@ -6,6 +7,7 @@ import { YStack, Text, Spinner } from 'tamagui'
 
 export default function OfficeLayout() {
   const { isAuthorized, isLoading } = useRoleProtectedRoute(['office'])
+  const { isTabletOrAbove: _isTabletOrAbove } = useOfficeRouteProtection()
 
   // Show loading state BEFORE rendering the drawer
   if (isLoading) {
@@ -22,7 +24,13 @@ export default function OfficeLayout() {
     return null
   }
 
-  // Only render drawer once auth is confirmed
+  // If on mobile, useOfficeRouteProtection will handle redirect
+  // This check prevents flash of content before redirect
+  if (!isTabletOrAbove) {
+    return null
+  }
+
+  // Only render drawer once auth is confirmed AND on tablet+
   return (
     <ErrorBoundary
       context={{
