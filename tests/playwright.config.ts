@@ -52,14 +52,55 @@ export default defineConfig({
       use: { ...devices['Desktop Safari'] },
     },
 
-    /* Test against mobile viewports. */
+    /* Multi-viewport responsive testing - Priority 1 viewports */
     {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
+      name: 'iPhone SE',
+      use: {
+        ...devices['iPhone SE'],
+        viewport: { width: 375, height: 667 },
+      },
     },
     {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 12'] },
+      name: 'iPhone 12',
+      use: {
+        ...devices['iPhone 12'],
+        viewport: { width: 390, height: 844 },
+      },
+    },
+    {
+      name: 'iPhone Pro Max',
+      use: {
+        ...devices['iPhone 12 Pro Max'],
+        viewport: { width: 428, height: 926 },
+      },
+    },
+    {
+      name: 'iPad',
+      use: {
+        ...devices['iPad'],
+        viewport: { width: 768, height: 1024 },
+      },
+    },
+    {
+      name: 'iPad Pro',
+      use: {
+        ...devices['iPad Pro'],
+        viewport: { width: 1024, height: 1366 },
+      },
+    },
+    {
+      name: 'Desktop 1080p',
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1920, height: 1080 },
+      },
+    },
+    {
+      name: 'Desktop 1440p',
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 2560, height: 1440 },
+      },
     },
   ],
 
