@@ -31,3 +31,6 @@ export * from './feedback'
 
 // Team management schemas
 export * from './teams'
+
+// Project schemas
+export * from './projects'
