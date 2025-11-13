@@ -62,8 +62,27 @@ export function ProfileSkillsRight() {
     },
     // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
     onError: (error: any) => {
+      // Fade skill back in by clearing removing state
+      setRemovingSkillId(null)
+
+      // Determine error message based on error type
+      let errorMessage = 'Something went wrong. Please try again.'
+
+      if (
+        error.message?.includes('fetch') ||
+        error.message?.includes('network') ||
+        error.message?.includes('Failed to fetch')
+      ) {
+        errorMessage =
+          'Unable to remove skill. Check your connection and try again.'
+      } else if (error.data?.code === 'INTERNAL_SERVER_ERROR') {
+        errorMessage = 'Failed to remove skill. Please try again.'
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+
       toast.show('Error', {
-        message: error.message || 'Failed to remove skill',
+        message: errorMessage,
       })
     },
   })
