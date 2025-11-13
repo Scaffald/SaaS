@@ -5,19 +5,19 @@ import { useOfficeFlyoutMenu } from '../hooks/useOfficeFlyoutMenu'
 
 export interface OfficeFlyoutTriggerProps {
   isOpen: boolean
-  onMouseEnter: () => void
-  onMouseLeave: () => void
   onToggle: () => void
   triggerRef: React.RefObject<HTMLElement | null>
 }
 
 export const OfficeFlyoutTrigger = ({
   isOpen,
-  onMouseEnter,
-  onMouseLeave,
   onToggle,
   triggerRef,
 }: OfficeFlyoutTriggerProps) => {
+  const handlePress = () => {
+    onToggle()
+  }
+
   return (
     <Popover.Trigger asChild>
       <Button
@@ -30,9 +30,7 @@ export const OfficeFlyoutTrigger = ({
         display={{ xs: 'none', $gtSm: 'flex' }}
         aria-label="Office navigation menu"
         aria-expanded={isOpen}
-        onPress={onToggle}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
+        onPress={handlePress}
         hoverStyle={{ bg: '$color3' }}
         pressStyle={{ bg: '$color4' }}
         cursor="pointer"
@@ -49,8 +47,6 @@ export const OfficeFlyout = () => {
     isOpen,
     setIsOpen,
     activeRoute,
-    handleMouseEnter,
-    handleMouseLeave,
     toggleMenu,
     triggerRef,
   } = useOfficeFlyoutMenu()
@@ -63,8 +59,6 @@ export const OfficeFlyout = () => {
     <Popover placement="bottom-end" open={isOpen} onOpenChange={setIsOpen}>
       <OfficeFlyoutTrigger
         isOpen={isOpen}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
         onToggle={toggleMenu}
         triggerRef={triggerRef}
       />

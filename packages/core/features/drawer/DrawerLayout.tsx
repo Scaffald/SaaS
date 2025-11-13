@@ -12,7 +12,7 @@ import type { NotificationItem } from '@app/ui'
 import { useNotificationDeviceRegistration } from '@app/core/hooks/useNotificationDeviceRegistration'
 import { FeedbackWidget } from '@app/core/features/feedback'
 import { OfficeFlyout } from '@app/core/features/office-navigation'
-import { usePathname } from '@app/core/utils/usePathname'
+import { useUserRoles } from '@app/core/utils/auth/useUserRoles'
 
 interface DrawerLayoutProps {
   /**
@@ -42,8 +42,7 @@ export function DrawerLayout({
   const { width } = useWindowDimensions()
   const theme = useTheme()
   const isSmall = width < 1400
-  const pathname = usePathname()
-  const isOfficeContext = pathname?.startsWith('/office') || false
+  const { hasOfficeRole } = useUserRoles()
   const { data: preferencesData } = api.notifications.preferences.get.useQuery(undefined, {
     staleTime: 5 * 60 * 1000,
     refetchOnMount: false,
@@ -160,8 +159,8 @@ export function DrawerLayout({
                 ),
                 headerRight: () => (
                   <XStack gap="$3" items="center" px="$4">
-                    {/* Only show OfficeFlyout in office context */}
-                    {isOfficeContext && <OfficeFlyout />}
+                    {/* Show OfficeFlyout if user has office role */}
+                    {hasOfficeRole && <OfficeFlyout />}
                     <NotificationDropdown
                       notifications={transformedNotifications}
                       unreadCount={unreadCount}
