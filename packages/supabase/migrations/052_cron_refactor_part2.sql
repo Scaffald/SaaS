@@ -6,10 +6,10 @@
 --   - ALTER TABLE core.external_job_feeds DROP COLUMN retention_days, DROP COLUMN last_cleanup_at;
 --   - DROP TABLE IF EXISTS core.archived_external_jobs;
 --   - DROP TABLE IF EXISTS core.archived_notifications;
---   - DROP FUNCTION IF EXISTS public.archive_expired_external_jobs();
---   - DROP FUNCTION IF EXISTS public.send_profile_completion_reminders();
---   - DROP FUNCTION IF EXISTS public.update_stale_applications();
---   - DROP FUNCTION IF EXISTS public.cleanup_old_notifications();
+--   - DROP FUNCTION IF EXISTS core.archive_expired_external_jobs();
+--   - DROP FUNCTION IF EXISTS core.send_profile_completion_reminders();
+--   - DROP FUNCTION IF EXISTS core.update_stale_applications();
+--   - DROP FUNCTION IF EXISTS core.cleanup_old_notifications();
 --   - Consider restoring application status constraint to previous set if required.
 -- =========================================================
 
@@ -102,11 +102,11 @@ UPDATE core.applications
 -- =========================================================
 -- Function: archive expired/aged external jobs using retention rules
 -- =========================================================
-CREATE OR REPLACE FUNCTION public.archive_expired_external_jobs()
+CREATE OR REPLACE FUNCTION core.archive_expired_external_jobs()
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, core
+SET search_path = core, public
 AS $$
 DECLARE
   v_now TIMESTAMPTZ := NOW();
@@ -185,17 +185,17 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.archive_expired_external_jobs() IS
+COMMENT ON FUNCTION core.archive_expired_external_jobs() IS
   'Archives external jobs based on feed-specific retention periods and snapshots metadata.';
 
 -- =========================================================
 -- Function: profile completion reminders
 -- =========================================================
-CREATE OR REPLACE FUNCTION public.send_profile_completion_reminders()
+CREATE OR REPLACE FUNCTION core.send_profile_completion_reminders()
 RETURNS INTEGER
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, core
+SET search_path = core, public
 AS $$
 DECLARE
   v_record RECORD;
@@ -261,7 +261,7 @@ BEGIN
 
       v_sent := v_sent + 1;
     EXCEPTION WHEN OTHERS THEN
-      PERFORM public.notify_admins_of_cron_failure(
+      PERFORM core.notify_admins_of_cron_failure(
         'profile-completion-reminders',
         format('Failed to send reminder to user %s: %s', v_record.user_id, SQLERRM)
       );
@@ -273,17 +273,17 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.send_profile_completion_reminders() IS
+COMMENT ON FUNCTION core.send_profile_completion_reminders() IS
   'Sends notifications to users with incomplete profiles who have not been reminded within the past week.';
 
 -- =========================================================
 -- Function: mark stale applications
 -- =========================================================
-CREATE OR REPLACE FUNCTION public.update_stale_applications()
+CREATE OR REPLACE FUNCTION core.update_stale_applications()
 RETURNS INTEGER
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, core
+SET search_path = core, public
 AS $$
 DECLARE
   v_application RECORD;
@@ -349,7 +349,7 @@ BEGIN
 
       v_updated := v_updated + 1;
     EXCEPTION WHEN OTHERS THEN
-      PERFORM public.notify_admins_of_cron_failure(
+      PERFORM core.notify_admins_of_cron_failure(
         'update-stale-applications',
         format('Failed to update application %s: %s', v_application.id, SQLERRM)
       );
@@ -361,17 +361,17 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.update_stale_applications() IS
+COMMENT ON FUNCTION core.update_stale_applications() IS
   'Marks reviewing applications older than 30 days as stale and notifies applicants.';
 
 -- =========================================================
 -- Function: notification cleanup (delete + archive)
 -- =========================================================
-CREATE OR REPLACE FUNCTION public.cleanup_old_notifications()
+CREATE OR REPLACE FUNCTION core.cleanup_old_notifications()
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, core
+SET search_path = core, public
 AS $$
 DECLARE
   v_now TIMESTAMPTZ := NOW();
@@ -424,7 +424,7 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.cleanup_old_notifications() IS
+COMMENT ON FUNCTION core.cleanup_old_notifications() IS
   'Deletes read notifications older than 90 days, archives unread items older than 180 days, and trims the digest queue.';
 
 COMMIT;

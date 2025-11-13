@@ -4,10 +4,10 @@
 -- =========================================================
 
 BEGIN;
--- Ensure the trigram operator class is resolvable (extensions first, fallback to public)
-SET LOCAL search_path TO onet, extensions, public;
+-- Ensure the trigram operator class is resolvable
+SET LOCAL search_path TO onet, public;
 -- Ensure trigram extension is available for similarity search
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
 -- Supporting GIN index for faster text lookup
 CREATE INDEX IF NOT EXISTS onet_occupation_title_trgm_idx
   ON onet.occupation_data

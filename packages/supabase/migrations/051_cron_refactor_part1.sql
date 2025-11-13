@@ -6,20 +6,20 @@
 --   - Re-run legacy cron setup in packages/supabase/migrations-old/044_setup_job_import_cron.sql
 --     and reapply notification cron scheduling from 025_req_89_notifications_expansion.sql
 --   - DROP the functions created in this migration if they must be removed:
---       DROP FUNCTION IF EXISTS public.process_weekly_digest();
---       DROP FUNCTION IF EXISTS public.process_daily_digest();
---       DROP FUNCTION IF EXISTS public.process_notification_queue();
---       DROP FUNCTION IF EXISTS public.record_delivery_event(UUID,BIGINT,TEXT,TEXT,JSONB);
---       DROP FUNCTION IF EXISTS public.calculate_next_attempt(INTEGER);
---       DROP FUNCTION IF EXISTS public.import_external_jobs();
---       DROP FUNCTION IF EXISTS public.map_job_to_industry(TEXT,TEXT,TEXT);
+--       DROP FUNCTION IF EXISTS core.process_weekly_digest();
+--       DROP FUNCTION IF EXISTS core.process_daily_digest();
+--       DROP FUNCTION IF EXISTS core.process_notification_queue();
+--       DROP FUNCTION IF EXISTS core.record_delivery_event(UUID,BIGINT,TEXT,TEXT,JSONB);
+--       DROP FUNCTION IF EXISTS core.calculate_next_attempt(INTEGER);
+--       DROP FUNCTION IF EXISTS core.import_external_jobs();
+--       DROP FUNCTION IF EXISTS core.map_job_to_industry(TEXT,TEXT,TEXT);
 -- =========================================================
 
 BEGIN;
 
 -- Ensure required extensions exist (idempotent)
-CREATE EXTENSION IF NOT EXISTS pg_cron;
-CREATE EXTENSION IF NOT EXISTS pg_net;
+CREATE EXTENSION IF NOT EXISTS pg_cron WITH SCHEMA public;
+CREATE EXTENSION IF NOT EXISTS pg_net WITH SCHEMA public;
 
 -- Unschedule legacy HTTP-based cron jobs so they can be replaced with SQL versions
 DO $$
@@ -55,12 +55,13 @@ END;
 $$;
 
 -- Temporary helper stub; will be replaced with full implementation in 053_cron_refactor_scheduling.sql
-CREATE OR REPLACE FUNCTION public.notify_admins_of_cron_failure(
+CREATE OR REPLACE FUNCTION core.notify_admins_of_cron_failure(
   p_job_name TEXT,
   p_error_message TEXT
 )
 RETURNS INTEGER
 LANGUAGE plpgsql
+SET search_path = core, public
 AS $$
 BEGIN
   RAISE WARNING 'Cron job % reported: %', p_job_name, p_error_message;
@@ -68,20 +69,20 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.notify_admins_of_cron_failure(TEXT, TEXT) IS
+COMMENT ON FUNCTION core.notify_admins_of_cron_failure(TEXT, TEXT) IS
   'Stub for admin notification helper; replaced with full implementation in later migration.';
 
 -- =========================================================
 -- Helper: map job content to an industry
 -- =========================================================
-CREATE OR REPLACE FUNCTION public.map_job_to_industry(
+CREATE OR REPLACE FUNCTION core.map_job_to_industry(
   p_title TEXT,
   p_description TEXT,
   p_category TEXT
 )
 RETURNS UUID
 LANGUAGE plpgsql
-SET search_path = public, core
+SET search_path = core, public
 AS $$
 DECLARE
   v_text TEXT;
@@ -126,17 +127,17 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.map_job_to_industry(TEXT, TEXT, TEXT) IS
+COMMENT ON FUNCTION core.map_job_to_industry(TEXT, TEXT, TEXT) IS
   'Maps external job content to an industry using heuristics; returns matching industry UUID or NULL.';
 
 -- =========================================================
 -- Job Import Orchestrator (pg_net + XML parsing)
 -- =========================================================
-CREATE OR REPLACE FUNCTION public.import_external_jobs()
+CREATE OR REPLACE FUNCTION core.import_external_jobs()
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, core
+SET search_path = core, public
 AS $$
 DECLARE
   v_feed RECORD;
@@ -189,7 +190,7 @@ BEGIN
                updated_at = NOW()
          WHERE id = v_feed.id;
 
-        PERFORM public.notify_admins_of_cron_failure(
+        PERFORM core.notify_admins_of_cron_failure(
           'import-external-jobs',
           format('Feed %s returned HTTP status %s', v_feed.url, v_response.status)
         );
@@ -210,7 +211,7 @@ BEGIN
                last_error = 'Empty feed response',
                updated_at = NOW()
          WHERE id = v_feed.id;
-        PERFORM public.notify_admins_of_cron_failure(
+        PERFORM core.notify_admins_of_cron_failure(
           'import-external-jobs',
           format('Feed %s returned no parsable XML', v_feed.url)
         );
@@ -241,7 +242,7 @@ BEGIN
           v_job_guid := md5(coalesce(v_job_title, '') || coalesce(v_job_link, '') || coalesce(v_job_description, ''));
         END IF;
 
-        v_industry_id := public.map_job_to_industry(v_job_title, v_job_description, NULL);
+        v_industry_id := core.map_job_to_industry(v_job_title, v_job_description, NULL);
 
         INSERT INTO core.external_jobs AS ej (
           id,
@@ -318,7 +319,7 @@ BEGIN
              updated_at = NOW()
        WHERE id = v_feed.id;
 
-      PERFORM public.notify_admins_of_cron_failure(
+      PERFORM core.notify_admins_of_cron_failure(
         'import-external-jobs',
         format('Feed %s processing error: %s', v_feed.url, SQLERRM)
       );
@@ -336,17 +337,18 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.import_external_jobs() IS
+COMMENT ON FUNCTION core.import_external_jobs() IS
   'Fetches active external job feeds via pg_net, parses RSS XML, upserts jobs, maps industries, and returns summary counts.';
 
 -- =========================================================
 -- Notification queue helper functions
 -- =========================================================
-CREATE OR REPLACE FUNCTION public.calculate_next_attempt(
+CREATE OR REPLACE FUNCTION core.calculate_next_attempt(
   p_attempts INTEGER
 )
 RETURNS TIMESTAMPTZ
 LANGUAGE plpgsql
+SET search_path = core, public
 AS $$
 DECLARE
   v_delay_minutes INTEGER;
@@ -366,10 +368,10 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.calculate_next_attempt(INTEGER) IS
+COMMENT ON FUNCTION core.calculate_next_attempt(INTEGER) IS
   'Returns next retry timestamp using exponential backoff (1,2,4,8,16 minutes).';
 
-CREATE OR REPLACE FUNCTION public.record_delivery_event(
+CREATE OR REPLACE FUNCTION core.record_delivery_event(
   p_notification_id UUID,
   p_delivery_id BIGINT,
   p_channel TEXT,
@@ -379,7 +381,7 @@ CREATE OR REPLACE FUNCTION public.record_delivery_event(
 RETURNS VOID
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, core
+SET search_path = core, public
 AS $$
 BEGIN
   INSERT INTO core.notification_events (
@@ -401,14 +403,14 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.record_delivery_event(UUID, BIGINT, TEXT, TEXT, JSONB) IS
+COMMENT ON FUNCTION core.record_delivery_event(UUID, BIGINT, TEXT, TEXT, JSONB) IS
   'Records lifecycle events for notification deliveries into core.notification_events.';
 
-CREATE OR REPLACE FUNCTION public.process_notification_queue()
+CREATE OR REPLACE FUNCTION core.process_notification_queue()
 RETURNS INTEGER
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, core
+SET search_path = core, public
 AS $$
 DECLARE
   v_delivery RECORD;
@@ -443,7 +445,7 @@ BEGIN
        WHERE id = v_delivery.id;
 
       -- Placeholder for adapter invocation (handled externally)
-      PERFORM public.record_delivery_event(
+      PERFORM core.record_delivery_event(
         v_delivery.notification_id,
         v_delivery.id,
         v_delivery.channel::TEXT,
@@ -451,7 +453,7 @@ BEGIN
         jsonb_build_object('note', 'Queued by SQL processor')
       );
 
-      v_next_attempt := public.calculate_next_attempt(v_delivery.attempts);
+      v_next_attempt := core.calculate_next_attempt(v_delivery.attempts);
 
       UPDATE core.notification_deliveries
          SET status = CASE
@@ -470,7 +472,7 @@ BEGIN
              updated_at = NOW()
        WHERE id = v_delivery.id;
 
-      PERFORM public.record_delivery_event(
+      PERFORM core.record_delivery_event(
         v_delivery.notification_id,
         v_delivery.id,
         v_delivery.channel::TEXT,
@@ -478,7 +480,7 @@ BEGIN
         jsonb_build_object('error', SQLERRM)
       );
 
-      PERFORM public.notify_admins_of_cron_failure(
+      PERFORM core.notify_admins_of_cron_failure(
         'notifications-send-worker',
         format('Delivery %s failed: %s', v_delivery.id, SQLERRM)
       );
@@ -490,14 +492,14 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.process_notification_queue() IS
+COMMENT ON FUNCTION core.process_notification_queue() IS
   'Processes up to 200 pending notification deliveries, manages retry scheduling, and records delivery events.';
 
-CREATE OR REPLACE FUNCTION public.check_notification_receipts()
+CREATE OR REPLACE FUNCTION core.check_notification_receipts()
 RETURNS INTEGER
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, core
+SET search_path = core, public
 AS $$
 DECLARE
   v_delivery RECORD;
@@ -551,7 +553,7 @@ BEGIN
              updated_at = NOW()
        WHERE id = v_delivery.id;
 
-      PERFORM public.notify_admins_of_cron_failure(
+      PERFORM core.notify_admins_of_cron_failure(
         'notifications-check-receipts',
         format(
           'Delivery %s reported failure event %s',
@@ -576,17 +578,17 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.check_notification_receipts() IS
+COMMENT ON FUNCTION core.check_notification_receipts() IS
   'Evaluates provider delivery events to update notification delivery statuses.';
 
 -- =========================================================
 -- Notification digest processors
 -- =========================================================
-CREATE OR REPLACE FUNCTION public.process_daily_digest()
+CREATE OR REPLACE FUNCTION core.process_daily_digest()
 RETURNS INTEGER
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, core
+SET search_path = core, public
 AS $$
 DECLARE
   v_entry RECORD;
@@ -646,7 +648,7 @@ BEGIN
 
       v_created := v_created + 1;
     EXCEPTION WHEN OTHERS THEN
-      PERFORM public.notify_admins_of_cron_failure(
+      PERFORM core.notify_admins_of_cron_failure(
         'notify-digest-daily',
         format('Failed to create daily digest for user %s: %s', v_entry.user_id, SQLERRM)
       );
@@ -658,14 +660,14 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.process_daily_digest() IS
+COMMENT ON FUNCTION core.process_daily_digest() IS
   'Aggregates daily notification digest entries and creates consolidated notifications.';
 
-CREATE OR REPLACE FUNCTION public.process_weekly_digest()
+CREATE OR REPLACE FUNCTION core.process_weekly_digest()
 RETURNS INTEGER
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, core
+SET search_path = core, public
 AS $$
 DECLARE
   v_entry RECORD;
@@ -725,7 +727,7 @@ BEGIN
 
       v_created := v_created + 1;
     EXCEPTION WHEN OTHERS THEN
-      PERFORM public.notify_admins_of_cron_failure(
+      PERFORM core.notify_admins_of_cron_failure(
         'notify-digest-weekly',
         format('Failed to create weekly digest for user %s: %s', v_entry.user_id, SQLERRM)
       );
@@ -737,7 +739,7 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.process_weekly_digest() IS
+COMMENT ON FUNCTION core.process_weekly_digest() IS
   'Aggregates weekly notification digest entries and creates consolidated notifications.';
 
 COMMIT;

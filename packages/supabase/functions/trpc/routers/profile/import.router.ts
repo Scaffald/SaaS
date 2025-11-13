@@ -1,6 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { Buffer } from "node:buffer";
+import JSZip from "jszip";
+import OpenAI from "openai";
 
 import {
   clearImportDataInputSchema,
@@ -72,7 +74,8 @@ async function scanForMalware(fileBytes: Uint8Array, fileName: string): Promise<
 
 async function extractTextFromPdf(fileBytes: Uint8Array): Promise<string> {
   try {
-    const { default: pdfParse } = await import("npm:pdf-parse");
+    // Dynamic import to avoid module initialization issues with test files
+    const pdfParse = (await import("pdf-parse")).default;
     const buffer = Buffer.from(fileBytes);
     const parsed = await pdfParse(buffer);
     if (parsed.text && parsed.text.trim().length > 0) {
@@ -91,7 +94,6 @@ async function extractTextFromPdf(fileBytes: Uint8Array): Promise<string> {
 
 async function extractTextFromDocx(fileBytes: Uint8Array): Promise<string> {
   try {
-    const { default: JSZip } = await import("npm:jszip");
     const zip = await JSZip.loadAsync(fileBytes.buffer);
     const docFile = zip.file("word/document.xml");
     if (!docFile) {
@@ -323,7 +325,6 @@ async function generateStructuredPayload(
     try {
       const apiKey = Deno.env.get("OPENAI_API_KEY");
       if (apiKey) {
-        const { default: OpenAI } = await import("npm:openai");
         const openai = new OpenAI({ apiKey });
         const prompt = `
 Extract resume details into the following JSON schema:

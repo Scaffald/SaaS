@@ -176,8 +176,8 @@ SELECT
   pp.travel_mileage,
   pp.open_to_travel,
   pp.education_level,
-  core.jitter_coordinate_deterministic(ST_X(pp.geo::public.geometry), u.id, 'lng') AS longitude,
-  core.jitter_coordinate_deterministic(ST_Y(pp.geo::public.geometry), u.id, 'lat') AS latitude,
+  core.jitter_coordinate_deterministic(ST_X(pp.geo::geometry), u.id, 'lng') AS longitude,
+  core.jitter_coordinate_deterministic(ST_Y(pp.geo::geometry), u.id, 'lat') AS latitude,
   ROUND(
     LEAST(
       COALESCE(u.years_of_experience, 0) * 3 + 

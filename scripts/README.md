@@ -1,27 +1,83 @@
 # Deployment Scripts
 
-This directory contains simplified deployment scripts for the SCF-Neue project.
+This directory contains deployment scripts for the SCF-Neue project.
 
-## Available Scripts
+## Interactive Deployment (Recommended)
 
-### `pnpm deploy`
+### `pnpm prod`
 
-**Safe production deployment** - Pushes migrations, deploys functions, and triggers web deployment.
+**Interactive production deployment** - Prompts you to select which components to deploy with guards and dry runs.
 
 **What it does:**
-- Pushes database migrations (no reset - safe)
-- Deploys Edge Functions (trpc, job-import, news)
-- Triggers web app deployment via GitHub Actions
-
-**When to use:**
-- Regular production deployments
-- After adding new migrations
-- When updating functions or web app
+- Interactive menu to select deployment components:
+  - Migrations (with `db diff` guard)
+  - Functions (selective deployment)
+  - Seed (production warning)
+  - Netlify (preview/production choice)
+  - Database Reset (DESTRUCTIVE - with strong warnings)
+- Pre-flight checks (uncommitted changes, Supabase link, .env.production)
+- Guards and dry runs before each deployment step
+- Non-blocking error handling (continues with other deployments if one fails)
 
 **Usage:**
 ```bash
-pnpm deploy
+pnpm prod
 ```
+
+### `pnpm preview`
+
+**Interactive preview deployment** - Deploys to preview environment (Supabase fork and Netlify preview branch) to avoid cross-contamination with production.
+
+**What it does:**
+- Uses `.env.preview` instead of `.env.production`
+- Deploys to preview Supabase project (database fork)
+- Deploys to Netlify preview branch/context
+- Same interactive menu as `pnpm prod` but with preview context
+- Pre-flight checks verify you're deploying to preview, not production
+- Interactive menu to select deployment components:
+  - Migrations (with `db diff` guard)
+  - Functions (selective deployment)
+  - Seed (preview warning)
+  - Netlify (preview deployment only)
+  - Database Reset (DESTRUCTIVE - resets preview database)
+
+**Usage:**
+```bash
+pnpm preview
+```
+
+**Prerequisites:**
+- Create `.env.preview` with preview Supabase credentials
+- Link to preview Supabase project: `pnpm supa link --project-ref YOUR-PREVIEW-PROJECT-REF`
+- Ensure you're on the preview branch (or confirm if on different branch)
+
+**Example Workflow:**
+1. Run `pnpm preview`
+2. Select options (e.g., `1,2,4` for migrations, functions, and netlify)
+3. Review migration diff (if migrations selected)
+4. Confirm each step as prompted
+5. Review deployment summary
+
+**Note:** The script will warn you if you're not on the preview branch and verify the linked Supabase project is the preview fork, not production.
+
+**Aliases:**
+- `pnpm deploy` → `pnpm prod`
+
+**Example Workflow:**
+1. Run `pnpm prod`
+2. Select options (e.g., `1,2,4` for migrations, functions, and netlify)
+3. Review migration diff (if migrations selected)
+4. Confirm each step as prompted
+5. Review deployment summary
+
+**Guards and Safety Features:**
+- **Migrations**: Shows `pnpm supa db diff --linked` before applying changes
+- **Functions**: Lists available functions and allows selective deployment
+- **Seed**: Shows production warning before seeding
+- **Netlify**: Prompts for preview vs production deployment
+- **Reset**: Requires typing "RESET" to confirm destructive operation
+
+## Legacy Scripts (Backward Compatibility)
 
 ### `pnpm deploy:reset`
 
@@ -30,14 +86,9 @@ pnpm deploy
 **What it does:**
 - **DROPS and recreates the entire database** ⚠️
 - Applies all migrations
-- Seeds production data (CSI codes, universities, certifications, jobs)
+- Seeds production data
 - Deploys Edge Functions
 - Triggers web app deployment
-
-**When to use:**
-- Initial production setup
-- When database needs to be reset to match local state
-- **Temporary measure** - will be phased out once database is stable
 
 **Usage:**
 ```bash
@@ -46,15 +97,95 @@ pnpm deploy:reset
 
 **Warning:** This command requires typing `RESET` to confirm, as it's destructive.
 
+**Note:** This functionality is also available in the interactive `pnpm prod` script (option 5).
+
+### `pnpm deploy:netlify` / `pnpm deploy:netlify:prod`
+
+**Local Netlify deployment** - Build and deploy web app directly to Netlify from local machine.
+
+**Usage:**
+```bash
+# Preview deployment
+pnpm deploy:netlify
+
+# Production deployment
+pnpm deploy:netlify:prod
+```
+
+**Note:** This functionality is also available in the interactive `pnpm prod` script (option 4).
+
+### `pnpm deploy:verify`
+
+**Production deployment verification** - Runs health checks on production deployment.
+
+**Usage:**
+```bash
+pnpm deploy:verify
+```
+
+**What it checks:**
+- Environment variables
+- Database connection
+- Migration status
+- Edge Functions availability
+- API endpoint health
+
+## Database Migration Scripts
+
+### `pnpm supa:db:push`
+
+Push database migrations to linked remote project (uses local environment).
+
+**Usage:**
+```bash
+pnpm supa:db:push
+```
+
+### `pnpm supa:db:push:prod`
+
+Push database migrations to linked remote project (uses production environment).
+
+**Usage:**
+```bash
+pnpm supa:db:push:prod
+```
+
+### `pnpm supa:db:push:preview`
+
+Push database migrations to linked preview project (uses preview environment).
+
+**Usage:**
+```bash
+pnpm supa:db:push:preview
+```
+
+### `pnpm supa:seed:preview`
+
+Seed preview database (uses preview environment).
+
+**Usage:**
+```bash
+pnpm supa:seed:preview
+```
+
+**Note:** These scripts are also integrated into the interactive `pnpm prod` and `pnpm preview` scripts.
+
 ## Prerequisites
 
 ### Required Environment Files
 
-**`.env.production`** - Must contain:
+**`.env.production`** - For production deployments (`pnpm prod`):
 ```bash
 EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SECRET=your-service-role-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 # ... other production configs
+```
+
+**`.env.preview`** - For preview deployments (`pnpm preview`):
+```bash
+EXPO_PUBLIC_SUPABASE_URL=https://your-preview-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-preview-service-role-key
+# ... other preview configs (should point to preview Supabase fork)
 ```
 
 ### Required Setup
@@ -64,72 +195,98 @@ SUPABASE_SECRET=your-service-role-key
    pnpm supa link --project-ref YOUR-PROJECT-REF
    ```
 
-2. **GitHub CLI (optional but recommended):**
+2. **GitHub CLI (optional but recommended for GitHub Actions triggers):**
    ```bash
    brew install gh
    gh auth login
    ```
 
+3. **Netlify CLI (optional, for direct Netlify deployments):**
+   ```bash
+   npm install -g netlify-cli
+   netlify login
+   ```
+
 ## Deployment Workflow
 
-### Standard Deployment
+### Standard Interactive Deployment
 
 ```bash
 # 1. Make your changes
 git add .
 git commit -m "feat: add new feature"
 
-# 2. Run code quality checks
+# 2. Run code quality checks (optional, script will warn if skipped)
 pnpm check
 
-# 3. Deploy to production
-pnpm deploy
+# 3. Deploy interactively
+pnpm prod
+# Select options: 1,2,4 (migrations, functions, netlify)
+# Review diff, confirm each step
 ```
 
-### Reset Deployment (Destructive)
+### Selective Component Deployment
 
 ```bash
-# 1. Ensure local database is in desired state
-pnpm supa:reset
+# Deploy only migrations
+pnpm prod
+# Select: 1
 
-# 2. Test locally
-pnpm dev
+# Deploy only functions
+pnpm prod
+# Select: 2
 
-# 3. Deploy to production with reset
-pnpm deploy:reset
+# Deploy only Netlify (preview)
+pnpm prod
+# Select: 4, then choose preview
 ```
 
 ## What Gets Deployed
 
-### Database
-- **`pnpm deploy`**: Pushes new migrations only
-- **`pnpm deploy:reset`**: Full reset + migrations + seed
+### Database Migrations
+- Shows diff before applying (`pnpm supa db diff --linked`)
+- Prompts for confirmation if changes detected
+- Pushes migrations safely (no reset unless option 5 selected)
 
 ### Edge Functions
-Both scripts deploy:
-- `trpc` - Main API router
-- `job-import` - Job import function
-- `news` - News aggregation function
+- Available functions:
+  - `trpc` - Main API router
+  - `job-import` - Job import function
+  - `news` - News aggregation function
+- Select which functions to deploy
+- Deploys individually with status feedback
 
-### Web App
-- Triggers GitHub Actions workflow
-- Builds and deploys to Netlify
-- Can monitor at: `gh run list --workflow=deploy-web.yml`
+### Database Seeding
+- Shows production warning
+- Requires confirmation before seeding
+- Uses production environment variables
+
+### Netlify Deployment
+- Two methods:
+  1. **Direct deployment** - Build locally and deploy
+     - Choose preview or production
+  2. **GitHub Actions trigger** - Trigger remote build
+     - Uses GitHub Actions workflow
+- Builds workspace packages first
+- Verifies build output before deployment
 
 ## Troubleshooting
 
-### Database Migration Fails
-```bash
-# Check what migrations haven't been applied
-pnpm supa db diff
+### Migration Diff Shows No Changes
+This means your remote database is already up to date. No action needed.
 
-# If migrations conflict, may need reset
-pnpm deploy:reset
+### Migration Push Fails
+```bash
+# Check migration status
+pnpm supa db diff --linked
+
+# If needed, check remote status
+pnpm supa projects list
 ```
 
 ### Function Deployment Fails
 ```bash
-# Deploy individual function
+# Deploy individual function manually
 cd packages/supabase
 pnpx supabase functions deploy trpc
 ```
@@ -137,7 +294,16 @@ pnpx supabase functions deploy trpc
 ### Seeding Fails
 ```bash
 # Run seeding manually
-pnpm env-prod pnpm --filter @app/supabase seed
+pnpm supa:seed:prod
+```
+
+### Netlify Build Fails
+```bash
+# Check build locally first
+pnpm web:build
+
+# Verify environment variables
+cat .env.production
 ```
 
 ### GitHub Actions Not Triggered
@@ -154,6 +320,9 @@ git push origin production
 ### Check Deployment Status
 
 ```bash
+# Verify deployment health
+pnpm deploy:verify
+
 # Check Supabase functions
 pnpm supa functions list
 
@@ -170,25 +339,31 @@ pnpm supa status
 - **Netlify Dashboard**: https://app.netlify.com/
 - **GitHub Actions**: https://github.com/YOUR-ORG/SCF-Neue/actions
 
-## Migration Path
+## Legacy Scripts Archive
 
-**Current State:**
-- `pnpm deploy` - Safe, incremental deployments
-- `pnpm deploy:reset` - Temporary, destructive reset
+Legacy deployment scripts have been archived to `scripts/archive/`:
+- `deploy.sh.legacy` - Original safe deployment script
+- `deploy-netlify.sh.legacy` - Original Netlify deployment script
+- `deploy-preview.sh.legacy` - Original preview deployment script (replaced by `deploy.sh preview`)
+- `deploy-production.sh.legacy` - Original production deployment script (replaced by `deploy.sh production`)
 
-**Future State:**
-- `pnpm deploy` - Only deployment command needed
-- `pnpm deploy:reset` - Will be removed once database is stable
+These scripts are kept for reference but are superseded by the unified `deploy.sh` script. The following scripts remain available for specific use cases:
+- `deploy-reset.sh` - Standalone database reset script (`pnpm deploy:reset`)
+- `deploy-netlify.sh` - Standalone Netlify deployment script (`pnpm deploy:netlify`)
+- `verify-prod-deployment.sh` - Production deployment verification (`pnpm deploy:verify`)
 
 ## Security Notes
 
 - Never commit `.env.production` to git
 - Store production secrets in GitHub Secrets
-- Use `SUPABASE_SECRET` (service role key) only for deployments
+- Use `SUPABASE_SERVICE_ROLE_KEY` (service role key) only for deployments
 - Regular users should use `SUPABASE_ANON_KEY`
+- Always review migration diffs before applying
+- Use preview deployments for testing before production
 
 ## Additional Resources
 
 - [Production Deployment Guide](../docs/deployment/PRODUCTION_DEPLOYMENT.md)
 - [Supabase Cloud Setup](../docs/deployment/supabase-cloud-setup.md)
 - [GitHub Actions Setup](../docs/deployment/github-actions-netlify-setup.md)
+- [Netlify Local Deployment](../docs/deployment/netlify-local-deployment.md)

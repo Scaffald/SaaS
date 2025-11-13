@@ -5,7 +5,7 @@
 --
 -- ROLLBACK INSTRUCTIONS:
 --   - DROP VIEW IF EXISTS public.v_active_cron_jobs;
---   - DROP FUNCTION IF EXISTS public.notify_admins_of_cron_failure(TEXT, TEXT);
+--   - DROP FUNCTION IF EXISTS core.notify_admins_of_cron_failure(TEXT, TEXT);
 --   - Manually unschedule jobs introduced here (cron.unschedule with job names)
 --     and re-run legacy scheduling migrations if needed.
 -- =========================================================
@@ -39,14 +39,14 @@ $$;
 -- =========================================================
 -- Replace stub helper with production implementation
 -- =========================================================
-CREATE OR REPLACE FUNCTION public.notify_admins_of_cron_failure(
+CREATE OR REPLACE FUNCTION core.notify_admins_of_cron_failure(
   p_job_name TEXT,
   p_error_message TEXT
 )
 RETURNS INTEGER
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, core
+SET search_path = core, public
 AS $$
 DECLARE
   v_count INTEGER;
@@ -87,7 +87,7 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.notify_admins_of_cron_failure(TEXT, TEXT) IS
+COMMENT ON FUNCTION core.notify_admins_of_cron_failure(TEXT, TEXT) IS
   'Sends critical notifications to super_admin users when cron executions fail.';
 
 -- =========================================================
@@ -150,55 +150,55 @@ BEGIN
   PERFORM cron.schedule(
     'import-external-jobs',
     '0 1 * * *',
-    'SELECT public.import_external_jobs();'
+    'SELECT core.import_external_jobs();'
   );
 
   PERFORM cron.schedule(
     'notifications-send-worker',
     '*/1 * * * *',
-    'SELECT public.process_notification_queue();'
+    'SELECT core.process_notification_queue();'
   );
 
   PERFORM cron.schedule(
     'notifications-check-receipts',
     '*/15 * * * *',
-    'SELECT public.check_notification_receipts();'
+    'SELECT core.check_notification_receipts();'
   );
 
   PERFORM cron.schedule(
     'notify-digest-daily',
     '0 7 * * *',
-    'SELECT public.process_daily_digest();'
+    'SELECT core.process_daily_digest();'
   );
 
   PERFORM cron.schedule(
     'notify-digest-weekly',
     '0 8 * * 1',
-    'SELECT public.process_weekly_digest();'
+    'SELECT core.process_weekly_digest();'
   );
 
   PERFORM cron.schedule(
     'profile-completion-reminders',
     '0 10 * * 3',
-    'SELECT public.send_profile_completion_reminders();'
+    'SELECT core.send_profile_completion_reminders();'
   );
 
   PERFORM cron.schedule(
     'update-stale-applications',
     '0 3 * * *',
-    'SELECT public.update_stale_applications();'
+    'SELECT core.update_stale_applications();'
   );
 
   PERFORM cron.schedule(
     'cleanup-old-notifications',
     '0 4 * * 0',
-    'SELECT public.cleanup_old_notifications();'
+    'SELECT core.cleanup_old_notifications();'
   );
 
   PERFORM cron.schedule(
     'archive-expired-jobs',
     '0 2 * * *',
-    'SELECT public.archive_expired_external_jobs();'
+    'SELECT core.archive_expired_external_jobs();'
   );
 END;
 $$;

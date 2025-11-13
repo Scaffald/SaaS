@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { Buffer } from "node:buffer";
 import { z } from "zod";
+import { extractRawText } from "mammoth";
 
 import { protectedProcedure, t } from "../middleware.ts";
 import { supabaseAnonKey, supabaseUrl } from "../context.ts";
@@ -370,7 +371,8 @@ async function downloadResumeFile(
 
 async function extractTextFromPdf(bytes: Uint8Array): Promise<string> {
   try {
-    const { default: pdfParse } = await import("npm:pdf-parse");
+    // Dynamic import to avoid module initialization issues with test files
+    const pdfParse = (await import("pdf-parse")).default;
     const buffer = Buffer.from(bytes);
     const parsed = await pdfParse(buffer);
     if (parsed.text && parsed.text.trim().length > 0) {
@@ -385,7 +387,6 @@ async function extractTextFromPdf(bytes: Uint8Array): Promise<string> {
 
 async function extractTextFromDocLike(bytes: Uint8Array): Promise<string> {
   try {
-    const { extractRawText } = await import("npm:mammoth");
     const result = await extractRawText({ buffer: Buffer.from(bytes) });
     if (result.value.trim().length > 0) {
       return result.value;

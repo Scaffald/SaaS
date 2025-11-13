@@ -1,4 +1,4 @@
-import { Expo } from "https://esm.sh/expo-server-sdk@4.9.1";
+import { Expo } from "expo-server-sdk";
 
 import { normalizeMetadata } from "../utils.ts";
 import type { ChannelAdapter } from "../types.ts";

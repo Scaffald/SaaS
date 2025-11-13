@@ -18,19 +18,19 @@ GRANT USAGE ON SCHEMA cms TO authenticated, service_role, anon;
 -- =========================================================
 -- EXTENSIONS
 -- =========================================================
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA extensions;
-CREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA extensions;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
+CREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA public;
 CREATE EXTENSION IF NOT EXISTS "citext" WITH SCHEMA public;
 CREATE EXTENSION IF NOT EXISTS "postgis";
 -- Must be in public schema for GEOGRAPHY type
-CREATE EXTENSION IF NOT EXISTS "pg_trgm" WITH SCHEMA extensions;
-CREATE EXTENSION IF NOT EXISTS "pg_cron" WITH SCHEMA extensions;
+CREATE EXTENSION IF NOT EXISTS "pg_trgm" WITH SCHEMA public;
+CREATE EXTENSION IF NOT EXISTS "pg_cron" WITH SCHEMA public;
 -- =========================================================
 -- CUSTOM TYPES (ENUMS)
 -- =========================================================
-CREATE TYPE public.app_role AS ENUM ('user', 'moderator', 'admin', 'super_admin');
-CREATE TYPE public.review_status AS ENUM ('pending', 'approved', 'rejected', 'flagged');
-CREATE TYPE public.application_status AS ENUM (
+CREATE TYPE core.app_role AS ENUM ('user', 'moderator', 'admin', 'super_admin');
+CREATE TYPE core.review_status AS ENUM ('pending', 'approved', 'rejected', 'flagged');
+CREATE TYPE core.application_status AS ENUM (
   'draft',
   'submitted',
   'under_review',

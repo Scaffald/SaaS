@@ -25,7 +25,24 @@ This guide explains how to deploy your web app directly to Netlify from your loc
 
 ## 🚀 Deployment Methods
 
-### Method 1: Using pnpm Commands (Recommended)
+### Method 1: Interactive Deployment (Recommended)
+
+Use the interactive deployment script to deploy Netlify along with other components:
+
+```bash
+pnpm prod
+```
+
+When prompted, select option `4` for Netlify deployment. You'll then be asked to choose:
+- **Direct Netlify deployment** (local build) - Choose preview or production
+- **GitHub Actions trigger** (remote build) - Triggers GitHub Actions workflow
+
+This method allows you to deploy Netlify along with migrations, functions, or seed in a single workflow.
+
+**Aliases:**
+- `pnpm deploy` → `pnpm prod`
+
+### Method 2: Legacy Commands (Backward Compatibility)
 
 #### Preview Deployment
 ```bash
@@ -47,17 +64,7 @@ This will:
 - Build and deploy to production URL (https://preview.scaffald.com)
 - **⚠️ Use with caution** - deploys directly to production
 
-### Method 2: Using Script Directly
-
-```bash
-# Preview deployment
-./scripts/deploy-netlify.sh
-
-# Production deployment
-./scripts/deploy-netlify.sh --prod
-# or
-./scripts/deploy-netlify.sh -p
-```
+**Note:** These commands are kept for backward compatibility. The interactive `pnpm prod` script is recommended for new deployments.
 
 ## 📊 Deployment Process
 

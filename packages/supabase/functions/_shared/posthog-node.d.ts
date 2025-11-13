@@ -1,4 +1,4 @@
-declare module "npm:posthog-node" {
+declare module "posthog-node" {
   interface PostHogOptions {
     host?: string;
     flushAt?: number;

@@ -5,7 +5,7 @@ project_id = "supabase"
 [api]
 port = 54321
 schemas = ["auth", "public", "core", "cms", "storage", "data", "onet"]
-extra_search_path = ["public", "core", "cms", "data", "onet", "extensions"]
+extra_search_path = ["public", "core", "cms", "data", "onet"]
 max_rows = 1000
 
 [db]

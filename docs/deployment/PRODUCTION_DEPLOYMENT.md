@@ -4,32 +4,46 @@ Complete guide for deploying SCF-Neue to production, including database, Edge Fu
 
 ## 🎯 Quick Start
 
-### One-Command Full Deployment
+### Interactive Deployment (Recommended)
 
 ```bash
-pnpm deploy:prod:full
+pnpm prod
 ```
 
-This single command orchestrates:
-1. ✅ Database reset + migrations + seeding
-2. ✅ Edge Functions deployment
-3. ✅ Web app deployment (via GitHub Actions)
+This interactive command prompts you to select which components to deploy:
+1. **Migrations** - Database schema changes (with diff guard)
+2. **Functions** - Supabase Edge Functions (selective deployment)
+3. **Seed** - Database seeding (with production warning)
+4. **Netlify** - Web app deployment (preview or production)
+5. **Database Reset** - DESTRUCTIVE database reset (requires "RESET" confirmation)
 
-### Individual Component Deployment
+**Example:**
+```bash
+pnpm prod
+# Select options: 1,2,4 (migrations, functions, netlify)
+# Review migration diff, confirm each step
+```
+
+**Aliases:**
+- `pnpm deploy` → `pnpm prod`
+
+### Legacy Commands (Backward Compatibility)
 
 ```bash
-# Database only (reset + migrations + seed)
-pnpm deploy:prod:db
+# Destructive database reset deployment
+pnpm deploy:reset
 
-# Edge Functions only
-pnpm deploy:prod:functions
+# Netlify deployment (preview)
+pnpm deploy:netlify
 
-# Web app only (triggers GitHub Actions)
-pnpm deploy:prod:web
+# Netlify deployment (production)
+pnpm deploy:netlify:prod
 
 # Verify deployment health
-pnpm deploy:verify:prod
+pnpm deploy:verify
 ```
+
+**Note:** The interactive `pnpm prod` script is recommended for new deployments. Legacy commands are kept for backward compatibility.
 
 ## 📋 Prerequisites
 
@@ -102,90 +116,84 @@ NETLIFY_SITE_ID
 
 ## 🚀 Deployment Workflow
 
-### Full Production Deployment
+### Interactive Deployment (Recommended)
 
 ```bash
-# Complete deployment
-pnpm deploy:prod:full
+pnpm prod
 ```
 
 **What it does:**
-1. Pre-flight checks (uncommitted changes, env files)
-2. Code quality checks (`pnpm check`)
-3. Database deployment:
-   - Reset production database
-   - Apply all 9 migrations
-   - Seed production data (industries, CSI codes, universities, certifications, jobs)
-4. Edge Functions deployment:
-   - Deploy tRPC router
-   - Deploy job-import function
-   - Deploy news function
-5. Web app deployment:
-   - Trigger GitHub Actions workflow
-   - Build via GitHub Actions
-   - Deploy to Netlify
-6. Verification:
-   - Generate TypeScript types from production
-   - Display deployment summary
+1. Pre-flight checks (uncommitted changes, Supabase link, .env.production)
+2. Interactive menu to select deployment components:
+   - Migrations (with `db diff` guard)
+   - Functions (selective deployment)
+   - Seed (with production warning)
+   - Netlify (preview or production)
+   - Database Reset (DESTRUCTIVE - requires "RESET" confirmation)
+3. Guards and dry runs before each deployment step
+4. Non-blocking error handling (continues with other deployments if one fails)
+5. Deployment summary at end
 
-**Interactive Prompts:**
-- Confirm production deployment (y/n)
-- Confirm database reset (type 'yes')
-- Confirm functions deployment (y/n)
-
-### Database-Only Deployment
-
+**Example Workflow:**
 ```bash
-pnpm deploy:prod:db
+pnpm prod
+# Select: 1,2,4 (migrations, functions, netlify)
+# Review migration diff
+# Confirm migrations (y/n)
+# Select functions to deploy (1,2,3 or 'all')
+# Confirm function deployment (y/n)
+# Choose Netlify method (direct or GitHub Actions)
+# Choose Netlify environment (preview or production)
+# Review deployment summary
 ```
 
-**Use when:**
-- Schema changes (new migrations)
-- Data updates (seeding changes)
-- Database reset needed
+### Selective Component Deployment
 
-**Process:**
-1. Confirms reset (destructive)
-2. Checks Supabase project link
-3. Pushes all migrations to production
-4. Runs seed scripts:
-   - CSI MasterFormat codes
-   - Universities catalog
-   - Certifications catalog
-   - External jobs from RSS feeds
-5. Generates TypeScript types
-
-### Functions-Only Deployment
-
+**Migrations Only:**
 ```bash
-pnpm deploy:prod:functions
+pnpm prod
+# Select: 1
+# Review diff, confirm
 ```
 
-**Use when:**
-- tRPC router changes
-- Function logic updates
-- New function endpoints
-
-**Deploys:**
-- `trpc` - Main API router
-- `job-import` - Job import functionality
-- `news` - News aggregation
-
-### Web-Only Deployment
-
+**Functions Only:**
 ```bash
-pnpm deploy:prod:web
+pnpm prod
+# Select: 2
+# Choose functions, confirm
 ```
 
-**Use when:**
-- UI changes only
-- Frontend updates
-- No database/function changes
+**Netlify Only:**
+```bash
+pnpm prod
+# Select: 4
+# Choose method and environment
+```
 
-**Process:**
-- Triggers GitHub Actions `deploy-web.yml` workflow
-- GitHub Actions builds the app
-- Deploys to Netlify automatically
+**Database Reset (Destructive):**
+```bash
+pnpm prod
+# Select: 5
+# Type 'RESET' to confirm
+```
+
+### Legacy Deployment Workflows
+
+**Full Production Deployment (Legacy):**
+```bash
+pnpm deploy:reset
+```
+
+**Netlify Deployment (Legacy):**
+```bash
+# Preview
+pnpm deploy:netlify
+
+# Production
+pnpm deploy:netlify:prod
+```
+
+**Note:** Legacy commands are kept for backward compatibility. The interactive `pnpm prod` script is recommended for new deployments.
 
 ## 🔍 Deployment Verification
 

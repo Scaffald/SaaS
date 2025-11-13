@@ -1,12 +1,8 @@
-declare module "https://esm.sh/@supabase/supabase-js@2.39.0" {
+declare module "@supabase/supabase-js" {
   export * from "@supabase/supabase-js";
 }
 
-declare module "https://esm.sh/@supabase/supabase-js@2.38.4" {
-  export * from "@supabase/supabase-js";
-}
-
-declare module "https://esm.sh/expo-server-sdk@4.9.1" {
+declare module "expo-server-sdk" {
   type ExpoPushMessage = {
     to: string;
     data?: Record<string, unknown>;

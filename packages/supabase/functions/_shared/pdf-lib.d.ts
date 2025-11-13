@@ -1,4 +1,4 @@
-declare module "npm:pdf-lib" {
+declare module "pdf-lib" {
   export * from "pdf-lib";
 }
 

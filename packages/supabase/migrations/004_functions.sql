@@ -490,7 +490,7 @@ RETURNS TABLE (
 )
 LANGUAGE sql
 SECURITY DEFINER
-SET search_path = core, extensions, public
+SET search_path = core, public
 AS $$
   SELECT 
     o.id,
@@ -532,8 +532,8 @@ SELECT
   pp.open_to_travel,
   pp.education_level,
   -- Jittered coordinates for privacy (not exact location)
-  core.jitter_coordinate(ST_X(pp.geo::public.geometry)) AS longitude,
-  core.jitter_coordinate(ST_Y(pp.geo::public.geometry)) AS latitude,
+  core.jitter_coordinate(ST_X(pp.geo::geometry)) AS longitude,
+  core.jitter_coordinate(ST_Y(pp.geo::geometry)) AS latitude,
   -- Gamified score calculation
   LEAST(
     COALESCE(u.years_of_experience, 0) * 3 + 

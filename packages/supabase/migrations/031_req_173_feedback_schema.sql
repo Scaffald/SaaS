@@ -6,8 +6,7 @@
 BEGIN;
 
 -- Ensure uuid extension is available for ID generation
-CREATE SCHEMA IF NOT EXISTS extensions;
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA extensions;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 
 -- Create logs schema for feedback data
 CREATE SCHEMA IF NOT EXISTS logs;
@@ -19,7 +18,7 @@ GRANT ALL ON SCHEMA logs TO service_role;
 
 -- Create feedback table
 CREATE TABLE IF NOT EXISTS logs.user_feedback (
-  id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 
   -- User metadata
   user_id UUID NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
