@@ -9,7 +9,7 @@ export const DrawerHeader = () => {
   return (
     <YStack gap="$4" shrink={0}>
       {/* Logo Section */}
-      <XStack justify="center" py="$2">
+      <XStack justify="flex-start" py="$2">
         <ScaffaldLogo height={20} />
       </XStack>
     </YStack>
