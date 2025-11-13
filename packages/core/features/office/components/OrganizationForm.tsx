@@ -13,6 +13,7 @@ import { api } from '@app/core/utils/api'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
 import { supabase } from '@app/core/utils/supabase/client'
 import { OrganizationLocationsInput } from './OrganizationLocationsInput'
+import { OrganizationProjectPrivacySettings } from './OrganizationProjectPrivacySettings'
 
 type OrganizationFormData = OrganizationCreate
 
@@ -318,6 +319,11 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
           </YStack>
         )}
       />
+
+      {/* Project Location Privacy - Only in edit mode */}
+      {mode === 'edit' && organizationId && (
+        <OrganizationProjectPrivacySettings organizationId={organizationId} />
+      )}
 
       {/* Submit buttons */}
       <XStack
