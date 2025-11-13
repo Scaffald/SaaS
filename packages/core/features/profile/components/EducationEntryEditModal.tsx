@@ -545,8 +545,8 @@ export function EducationEntryEditModal({
               disabled={!isDirty}
               onPress={() => setShowCancelDialog(true)}
               opacity={!isDirty ? 0.5 : 1}
-              $sm={{ minHeight: 44, width: '100%' }}
-              $gtSm={{ minHeight: undefined, width: undefined }}
+              $sm={{ height: 44, width: '100%' }}
+              $gtSm={{ height: undefined, width: undefined }}
             >
               Cancel
             </Button>
@@ -555,8 +555,8 @@ export function EducationEntryEditModal({
               onPress={handleSubmit(onSubmit)}
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}
-              $sm={{ minHeight: 44, width: '100%' }}
-              $gtSm={{ minHeight: undefined, width: undefined }}
+              $sm={{ height: 44, width: '100%' }}
+              $gtSm={{ height: undefined, width: undefined }}
             >
               {isLoading ? (
                 <XStack gap="$2" items="center">

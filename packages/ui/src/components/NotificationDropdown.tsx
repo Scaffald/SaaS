@@ -9,7 +9,7 @@ import {
   Card,
   Separator,
   Spinner,
-  useWindowDimensions,
+  useMedia,
   type StackProps,
   type TextProps,
 } from 'tamagui'
@@ -158,8 +158,8 @@ export function NotificationDropdown({
 }: NotificationDropdownProps) {
   const [open, setOpen] = useState(false)
   const router = useRouter()
-  const { width } = useWindowDimensions()
-  const isMobile = width < 768
+  const media = useMedia()
+  const isMobile = media.sm // sm = maxWidth: 800px
   const triggerRef = useRef<ButtonRef>(null)
 
   // Separate notifications into unread and read

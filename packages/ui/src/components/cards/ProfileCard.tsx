@@ -1,6 +1,6 @@
 import { memo, forwardRef } from 'react'
 import type { TamaguiElement } from 'tamagui'
-import { Paragraph, Text, XStack, YStack } from 'tamagui'
+import { Paragraph, Text, XStack, YStack, useMedia } from 'tamagui'
 import { Award, BadgeCheck, Clock3, DollarSign, Star } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
 import { SelectableCard } from './SelectableCard'
@@ -78,6 +78,9 @@ export const ProfileCard = memo(
       },
       forwardedRef
     ) => {
+      const media = useMedia()
+      // Use responsive numberOfLines: 3 lines on small screens, 2 lines on larger screens
+      const titleNumberOfLines = media.sm ? 3 : 2
       // Build metadata items
       const metadataItems: MetadataItem[] = []
 
@@ -184,11 +187,10 @@ export const ProfileCard = memo(
           </XStack>
 
           {/* Title/Role */}
-          <Paragraph 
-            size="$3" 
-            color={isSelected ? '$color1' : '$color11'} 
-            $sm={{ numberOfLines: 3 }}
-            $gtSm={{ numberOfLines: 2 }}
+          <Paragraph
+            size="$3"
+            color={isSelected ? '$color1' : '$color11'}
+            numberOfLines={titleNumberOfLines}
           >
             {title}
           </Paragraph>

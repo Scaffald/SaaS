@@ -359,9 +359,9 @@ export function OfficeUniversitiesForm({
           </YStack>
 
           {/* Submit Button */}
-          <XStack 
-            justify="flex-end" 
-            pt="$4" 
+          <XStack
+            justify="flex-end"
+            pt="$4"
             gap="$2"
             $sm={{ flexDirection: 'column' }}
             $gtSm={{ flexDirection: 'row' }}

@@ -10,6 +10,7 @@ import {
   Anchor,
   type CardProps,
   useTheme,
+  useMedia,
 } from 'tamagui'
 import * as Linking from 'expo-linking'
 import { borderRadius } from '../../config/radii'
@@ -72,7 +73,12 @@ export const NewsCard = ({
 }: NewsCardProps) => {
   const [imageError, setImageError] = useState(false)
   const theme = useTheme()
+  const media = useMedia()
   const isDark = theme.background.val.includes('8%')
+  // Use responsive numberOfLines: 3 lines on small screens, 2 lines on larger screens for title
+  // 4 lines on small screens, 3 lines on larger screens for description
+  const titleNumberOfLines = media.sm ? 3 : 2
+  const descriptionNumberOfLines = media.sm ? 4 : 3
 
   // Generate random abstract image as fallback
   const fallbackImage = `https://picsum.photos/800/600?random=${Math.floor(Math.random() * 1000)}`
@@ -161,25 +167,23 @@ export const NewsCard = ({
         {/* Bottom Content Section */}
         <YStack gap="$3" justify="flex-end">
           {/* Title */}
-          <Text 
-            fontSize="$6" 
-            fontWeight="700" 
-            color="$color12" 
-            lineHeight="$7" 
-            $sm={{ numberOfLines: 3 }}
-            $gtSm={{ numberOfLines: 2 }}
+          <Text
+            fontSize="$6"
+            fontWeight="700"
+            color="$color12"
+            lineHeight="$7"
+            numberOfLines={titleNumberOfLines}
           >
             {title}
           </Text>
 
           {/* Description */}
           {description && (
-            <Text 
-              fontSize="$4" 
-              color="$color11" 
-              lineHeight="$5" 
-              $sm={{ numberOfLines: 4 }}
-              $gtSm={{ numberOfLines: 3 }}
+            <Text
+              fontSize="$4"
+              color="$color11"
+              lineHeight="$5"
+              numberOfLines={descriptionNumberOfLines}
             >
               {description}
             </Text>

@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { ChevronRight, ChevronDown } from '@tamagui/lucide-icons'
-import { Text, XStack, YStack, Popover, Sheet, Adapt, ScrollView } from 'tamagui'
+import { Text, XStack, YStack, Popover, Sheet, Adapt, ScrollView, useMedia } from 'tamagui'
 import { Link, useRouter } from 'expo-router'
-import { useWindowDimensions } from 'tamagui'
 import { Button as UIButton } from './buttons/Button'
 
 export interface BreadcrumbSibling {
@@ -90,8 +89,8 @@ export const Breadcrumb = React.memo(function Breadcrumb({
   onItemPress,
   showEllipsisDropdown = true,
 }: BreadcrumbProps) {
-  const { width } = useWindowDimensions()
-  const isMobile = width < 640
+  const media = useMedia()
+  const isMobile = media.sm // sm = maxWidth: 800px
   const router = useRouter()
   const [ellipsisOpen, setEllipsisOpen] = useState(false)
 

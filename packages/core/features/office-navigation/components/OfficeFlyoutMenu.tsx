@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
-import type { NativeSyntheticEvent, NativeScrollEvent } from 'react-native'
-import { Popover, YStack, ScrollView, Separator, Text, useWindowDimensions } from 'tamagui'
+import type { NativeSyntheticEvent, NativeScrollEvent, ViewStyle } from 'react-native'
+import { Popover, YStack, ScrollView, Separator, Text, useWindowDimensions, useMedia } from 'tamagui'
 import { ROUTES } from '@app/core/constants/routes'
 import { OfficeFlyoutMenuItem } from './OfficeFlyoutMenuItem'
 import type { RouteConfig } from '@app/core/constants/routes'
@@ -87,13 +87,16 @@ export const OfficeFlyoutMenu = ({
   onNavigate,
   triggerRef: _triggerRef,
 }: OfficeFlyoutMenuProps) => {
-  const { width } = useWindowDimensions()
+  const { width } = useWindowDimensions() // Keep for actual dimension calculation
+  const media = useMedia()
   const routes = useOrganizedRoutes()
   const [showTopShadow, setShowTopShadow] = useState(false)
   const [showBottomShadow, setShowBottomShadow] = useState(true)
 
-  // Calculate responsive width
-  const menuWidth = width < 768 ? Math.min(width - 32, 400) : 360
+  // Calculate responsive width using Tamagui breakpoint
+  // sm = maxWidth: 800px (small screen), gtSm = minWidth: 801px (tablet/desktop)
+  const isSmallScreen = media.sm
+  const menuWidth = isSmallScreen ? Math.min(width - 32, 400) : 360
 
   const categoryLabels: Record<keyof OrganizedRoutes, string> = {
     content: 'Content Management',
@@ -133,9 +136,10 @@ export const OfficeFlyoutMenu = ({
           <YStack py="$2" position="relative">
             {/* Top shadow overlay */}
             {showTopShadow && (
+              // @ts-expect-error - Tamagui positioning props work at runtime but TypeScript doesn't recognize them
               <YStack
                 position="absolute"
-                style={{ top: 0, left: 0, right: 0, height: 20 }}
+                style={{ top: 0, left: 0, right: 0, height: 20 } as ViewStyle}
                 bg="$color2"
                 opacity={0.8}
                 pointerEvents="none"
@@ -182,9 +186,10 @@ export const OfficeFlyoutMenu = ({
 
             {/* Bottom shadow overlay */}
             {showBottomShadow && (
+              // @ts-expect-error - Tamagui positioning props work at runtime but TypeScript doesn't recognize them
               <YStack
                 position="absolute"
-                style={{ bottom: 0, left: 0, right: 0, height: 20 }}
+                style={{ bottom: 0, left: 0, right: 0, height: 20 } as ViewStyle}
                 bg="$color2"
                 opacity={0.8}
                 pointerEvents="none"

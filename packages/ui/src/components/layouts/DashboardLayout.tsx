@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { useWindowDimensions, ScrollView, XStack, YStack } from 'tamagui'
+import { useMedia, ScrollView, XStack, YStack } from 'tamagui'
 import { Breadcrumb, type BreadcrumbItem } from '../Breadcrumb'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
@@ -21,10 +21,14 @@ export const DashboardLayout = ({
   breadcrumbItems,
   autoGenerateBreadcrumbs = true,
 }: DashboardLayoutProps) => {
-  const { width } = useWindowDimensions()
-  const isSmallScreen = width < 640
-  const isTablet = width >= 640 && width < 1024
-  const isDesktop = width >= 1024
+  // Use Tamagui media hook to check breakpoints
+  // $sm = maxWidth: 800px (small screen)
+  // $gtSm = minWidth: 801px (tablet/desktop)
+  // $gtMd = minWidth: 981px (desktop)
+  const media = useMedia()
+  const isSmallScreen = media.sm // sm = maxWidth: 800px
+  const isTablet = media.gtSm && !media.gtMd // gtSm but not gtMd = 801px to 980px
+  const isDesktop = media.gtMd // gtMd = minWidth: 981px
 
   // Auto-generate breadcrumbs if enabled and no manual override
   const { breadcrumbs } = useBreadcrumbs({

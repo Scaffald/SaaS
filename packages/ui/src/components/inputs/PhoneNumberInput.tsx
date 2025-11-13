@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { XStack, YStack, Text, Select, Input, Adapt, Sheet, useWindowDimensions } from 'tamagui'
+import { XStack, YStack, Text, Select, Input, Adapt, Sheet, useMedia } from 'tamagui'
 import { FieldError } from '../FieldError'
 import {
   COUNTRIES,
@@ -66,8 +66,8 @@ export const PhoneNumberInput = ({
   storeFormatted = false,
   countries = COUNTRIES,
 }: PhoneNumberInputProps) => {
-  const { width } = useWindowDimensions()
-  const isMobile = width < 640
+  const media = useMedia()
+  const isMobile = media.sm // sm = maxWidth: 800px
 
   // Helper function to format phone number for display
   const formatPhoneForDisplay = useCallback((phoneValue: string, countryCode: string) => {

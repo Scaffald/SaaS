@@ -3,7 +3,7 @@ import { YStack, XStack, Text, Button, Popover, Separator, type TamaguiElement }
 import { Image } from 'expo-image'
 import { User, Settings, Sun, Moon, LogOut, Eye, Pencil } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { useWindowDimensions } from 'tamagui'
+import { useMedia } from 'tamagui'
 import { useUser } from '@app/core/utils/useUser'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
@@ -37,8 +37,8 @@ import { supabase } from '@app/core/utils/supabase/client'
 export function UserMenuAvatar() {
   const [open, setOpen] = useState(false)
   const router = useRouter()
-  const { width } = useWindowDimensions()
-  const isMobile = width < 768
+  const media = useMedia()
+  const isMobile = media.sm // sm = maxWidth: 800px
   const triggerRef = useRef<TamaguiElement | null>(null)
 
   const { user, profile } = useUser()

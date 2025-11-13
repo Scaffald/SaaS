@@ -320,9 +320,9 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       />
 
       {/* Submit buttons */}
-      <XStack 
-        justify="flex-end" 
-        gap="$2" 
+      <XStack
+        justify="flex-end"
+        gap="$2"
         mt="$4"
         $sm={{ flexDirection: 'column' }}
         $gtSm={{ flexDirection: 'row' }}

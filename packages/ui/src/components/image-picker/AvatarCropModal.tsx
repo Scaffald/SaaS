@@ -19,6 +19,7 @@ import {
   Image as TamaguiImage,
   View,
   Circle,
+  useMedia,
   useWindowDimensions,
 } from 'tamagui'
 import {
@@ -71,8 +72,9 @@ export function AvatarCropModal({
   cropSize = 300,
   onError,
 }: AvatarCropModalProps) {
-  const { width, height } = useWindowDimensions()
-  const isMobile = width < 768
+  const { width, height } = useWindowDimensions() // Keep for actual dimensions (landscape detection)
+  const media = useMedia()
+  const isMobile = media.sm // sm = maxWidth: 800px
   const isLandscape = width > height
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 })

@@ -30,9 +30,12 @@ export const OfficeFlyoutMenuItem = ({
   const renderIcon = useCallback(() => {
     if (!Icon) return null
 
+    // Type assertion for lucide-icons components which accept size and color props
+    const IconComponent = Icon as React.ComponentType<{ size?: number; color?: string }>
+
     return (
       <XStack items="center" justify="center" width={20} height={20}>
-        <Icon size={16} color={active ? '$color1' : '$color11'} />
+        <IconComponent size={16} color={active ? '$color1' : '$color11'} />
       </XStack>
     )
   }, [Icon, active])

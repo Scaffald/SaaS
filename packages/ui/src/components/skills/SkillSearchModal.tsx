@@ -11,7 +11,7 @@ import {
   Slider,
   Card,
   Separator,
-  useWindowDimensions,
+  useMedia,
   Sheet,
   type GetThemeValueForKey,
 } from 'tamagui'
@@ -106,8 +106,8 @@ export function SkillSearchModal({
   isSearching = false,
   existingSkillIds = [],
 }: SkillSearchModalProps) {
-  const { width } = useWindowDimensions()
-  const isMobile = width < 640
+  const media = useMedia()
+  const isMobile = media.sm // sm = maxWidth: 800px
   const [step, setStep] = useState<SelectionStep>('search-parent')
   const [searchQuery, setSearchQuery] = useState('')
   const [parentResults, setParentResults] = useState<ParentSkill[]>([])
@@ -409,7 +409,7 @@ export function SkillSearchModal({
               step={1}
               size="$3"
             >
-            <Slider.Track bg="$color4" height={6}>
+              <Slider.Track bg="$color4" height={6}>
                 <Slider.TrackActive bg={getProficiencyColor(proficiency)} />
               </Slider.Track>
               <Slider.Thumb index={0} circular size="$1" />

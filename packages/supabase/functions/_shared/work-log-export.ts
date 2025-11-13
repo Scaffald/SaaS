@@ -1,4 +1,5 @@
-import { PDFDocument, StandardFonts, type PDFFont, type PDFPage } from "pdf-lib";
+import { PDFDocument, StandardFonts } from "pdf-lib";
+import type { PDFFont, PDFPage } from "pdf-lib";
 
 import type { Database } from "./database.types.ts";
 
