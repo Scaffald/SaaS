@@ -269,8 +269,21 @@ const handler = async (req: Request) => {
       });
     } catch (error) {
       console.warn("RSS proxy error:", error);
+      
+      // Provide more specific error messages
+      let errorMessage = "Unable to fetch RSS feed";
+      if (error instanceof Error) {
+        if (error.name === "AbortError" || error.message.includes("timeout")) {
+          errorMessage = "Request timeout: RSS feed took too long to respond";
+        } else if (error.message.includes("Failed to fetch")) {
+          errorMessage = "Network error: Unable to reach RSS feed";
+        } else {
+          errorMessage = `Error fetching RSS feed: ${error.message}`;
+        }
+      }
+      
       return new Response(
-        JSON.stringify({ error: "Unable to fetch RSS feed" }),
+        JSON.stringify({ error: errorMessage }),
         {
           status: 502,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
