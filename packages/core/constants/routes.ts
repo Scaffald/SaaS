@@ -483,6 +483,35 @@ const ROUTES_CONFIG = {
     menuCategory: "content",
     menuParent: "OFFICE_CMS_TEAMS_DETAIL",
   },
+  OFFICE_CMS_PROJECTS: {
+    path: "/office/cms/projects",
+    title: "Projects",
+    isProtected: true,
+    menuCategory: "content",
+    menuOrder: 7,
+    menuIcon: ClipboardCheck,
+  },
+  OFFICE_CMS_PROJECTS_CREATE: {
+    path: "/office/cms/projects/create",
+    title: "Create Project",
+    isProtected: true,
+    menuCategory: "content",
+    menuParent: "OFFICE_CMS_PROJECTS",
+  },
+  OFFICE_CMS_PROJECTS_DETAIL: {
+    path: "/office/cms/projects/:id",
+    title: "Project Detail",
+    isProtected: true,
+    menuCategory: "content",
+    menuParent: "OFFICE_CMS_PROJECTS",
+  },
+  OFFICE_CMS_PROJECTS_EDIT: {
+    path: "/office/cms/projects/:id/edit",
+    title: "Edit Project",
+    isProtected: true,
+    menuCategory: "content",
+    menuParent: "OFFICE_CMS_PROJECTS_DETAIL",
+  },
   OFFICE_CMS_WELCOME: {
     path: "/office/cms/welcome",
     title: "Welcome Slides",
@@ -553,6 +582,10 @@ export const RouteBuilder = {
     buildRoute(ROUTES.OFFICE_CMS_TEAMS_ANALYTICS, { id }),
   officeTeamsSettings: (id: string | number) =>
     buildRoute(ROUTES.OFFICE_CMS_TEAMS_SETTINGS, { id }),
+  projectEdit: (id: string | number) =>
+    buildRoute(ROUTES.OFFICE_CMS_PROJECTS_EDIT, { id }),
+  projectDetail: (id: string | number) =>
+    buildRoute(ROUTES.OFFICE_CMS_PROJECTS_DETAIL, { id }),
   officeBackgroundChecksRequest: () => ROUTES.OFFICE_ATS_CHECKS_REQUEST.path,
   officeBackgroundChecksAdmin: () => ROUTES.OFFICE_ATS_CHECKS_ADMIN.path,
   officeStorage: () => ROUTES.OFFICE_STORAGE.path,
@@ -721,6 +754,18 @@ export const ROUTE_HIERARCHY: readonly RouteHierarchyNode[] = [
             ],
           },
           {
+            key: "OFFICE_CMS_PROJECTS",
+            children: [
+              { key: "OFFICE_CMS_PROJECTS_CREATE" },
+              {
+                key: "OFFICE_CMS_PROJECTS_DETAIL",
+                children: [
+                  { key: "OFFICE_CMS_PROJECTS_EDIT" },
+                ],
+              },
+            ],
+          },
+          {
             key: "OFFICE_CMS_UNIVERSITIES",
             children: [
               { key: "OFFICE_CMS_UNIVERSITIES_CREATE" },
@@ -787,6 +832,9 @@ export const OFFICE_ROUTES = {
   TEAMS_DETAIL: ROUTES.OFFICE_CMS_TEAMS_DETAIL,
   TEAMS_ANALYTICS: ROUTES.OFFICE_CMS_TEAMS_ANALYTICS,
   TEAMS_SETTINGS: ROUTES.OFFICE_CMS_TEAMS_SETTINGS,
+  PROJECTS: ROUTES.OFFICE_CMS_PROJECTS,
+  PROJECTS_DETAIL: ROUTES.OFFICE_CMS_PROJECTS_DETAIL,
+  PROJECTS_EDIT: ROUTES.OFFICE_CMS_PROJECTS_EDIT,
   UNIVERSITIES: ROUTES.OFFICE_CMS_UNIVERSITIES,
   BACKGROUND_CHECKS: ROUTES.OFFICE_ATS_CHECKS,
   BACKGROUND_CHECKS_ADMIN: ROUTES.OFFICE_ATS_CHECKS_ADMIN,

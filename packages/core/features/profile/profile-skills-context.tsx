@@ -51,6 +51,7 @@ interface ProfileSkillsContextValue {
   ) => Promise<void>
   isSearchingSkills: boolean
   existingSkillIds: string[]
+  isAddingSkill: boolean
 }
 
 const DEFAULT_INDUSTRY_SLUG = 'construction'
@@ -354,6 +355,7 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
     selectSkill,
     isSearchingSkills: searchSkillsMutation.isPending,
     existingSkillIds,
+    isAddingSkill: addSkillMutation.isPending,
   }
 
   return <ProfileSkillsContext.Provider value={value}>{children}</ProfileSkillsContext.Provider>

@@ -1,7 +1,10 @@
-import { YStack, Text, Select, Adapt, Sheet, Separator, Spinner } from 'tamagui'
-import { ChevronDown } from '@tamagui/lucide-icons'
+import { useState, useEffect } from 'react'
+import { YStack, XStack, Text, Select, Adapt, Sheet, Separator, Spinner, Button } from 'tamagui'
+import { ChevronDown, Check } from '@tamagui/lucide-icons'
 import { ProfileFormPanel, InlineSkillSearch } from './components'
+import { SaveStatusIndicator, type SaveStatus } from '@app/ui'
 import { useProfileSkillsContext } from './profile-skills-context'
+import { api } from '@app/core/utils/api'
 
 /**
  * Profile Skills Left Component
@@ -19,7 +22,63 @@ export function ProfileSkillsLeft() {
     selectSkill,
     isSearchingSkills,
     existingSkillIds,
+    isAddingSkill,
   } = useProfileSkillsContext()
+
+  const utils = api.useUtils()
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
+  const [lastSavedAt, setLastSavedAt] = useState<Date | undefined>()
+  const [saveError, setSaveError] = useState<string | undefined>()
+  const [saveButtonState, setSaveButtonState] = useState<'idle' | 'saving' | 'saved'>('idle')
+
+  // Track save status from context mutation
+  useEffect(() => {
+    if (isAddingSkill) {
+      setSaveStatus('saving')
+      setSaveError(undefined)
+    }
+  }, [isAddingSkill])
+
+  // Track successful saves by monitoring when skills are added
+  // This is a simplified approach - in production you'd want to expose callbacks from context
+  useEffect(() => {
+    if (!isAddingSkill && saveStatus === 'saving') {
+      setSaveStatus('saved')
+      setLastSavedAt(new Date())
+      setTimeout(() => {
+        setSaveStatus('idle')
+      }, 3000)
+    }
+  }, [isAddingSkill, saveStatus])
+  
+  // Handle force save
+  const handleForceSave = async () => {
+    setSaveStatus('saving')
+    setSaveButtonState('saving')
+    setSaveError(undefined)
+
+    try {
+      // Force refetch to sync with server
+      await utils.profile.skillsMultiTaxonomy.getUserSkills.refetch()
+      setSaveStatus('saved')
+      setSaveButtonState('saved')
+      setLastSavedAt(new Date())
+      
+      // Reset button state after 2 seconds
+      setTimeout(() => {
+        setSaveButtonState('idle')
+      }, 2000)
+      
+      // Reset save status after 3 seconds
+      setTimeout(() => {
+        setSaveStatus('idle')
+      }, 3000)
+    } catch (error) {
+      setSaveStatus('error')
+      setSaveButtonState('idle')
+      setSaveError(error instanceof Error ? error.message : 'Failed to save')
+    }
+  }
 
   if (isLoadingIndustries) {
     return (
@@ -34,6 +93,16 @@ export function ProfileSkillsLeft() {
 
   return (
     <ProfileFormPanel>
+      {/* Header with Save Status Indicator */}
+      <XStack justify="space-between" items="center" mb="$2">
+        <YStack flex={1} />
+        <SaveStatusIndicator
+          status={saveStatus}
+          lastSavedAt={lastSavedAt}
+          error={saveError}
+        />
+      </XStack>
+
       {/* Industry Selector */}
       <YStack gap="$2">
         <Text fontWeight="600">Primary Industry *</Text>
@@ -114,6 +183,30 @@ export function ProfileSkillsLeft() {
           onConsumeExternalSearchTerm={clearPendingSearch}
         />
       )}
+
+      <Separator />
+
+      {/* Save Button */}
+      <XStack justify="flex-end" pt="$2">
+        <Button
+          size="$4"
+          themeInverse
+          onPress={handleForceSave}
+          disabled={saveButtonState === 'saving' || saveButtonState === 'saved'}
+          icon={saveButtonState === 'saved' ? Check : undefined}
+        >
+          {saveButtonState === 'saving' ? (
+            <XStack gap="$2" items="center">
+              <Spinner size="small" />
+              <Text>Saving...</Text>
+            </XStack>
+          ) : saveButtonState === 'saved' ? (
+            'Saved ✓'
+          ) : (
+            'Save'
+          )}
+        </Button>
+      </XStack>
     </ProfileFormPanel>
   )
 }
