@@ -1,14 +1,5 @@
 import type { ReactNode } from 'react'
-import {
-  Dialog,
-  Sheet,
-  XStack,
-  YStack,
-  Text,
-  Button,
-  ScrollView,
-  useWindowDimensions,
-} from 'tamagui'
+import { Dialog, Sheet, XStack, YStack, Text, Button, ScrollView, useMedia } from 'tamagui'
 import { X } from '@tamagui/lucide-icons'
 
 /**
@@ -48,11 +39,11 @@ export interface ResponsiveModalProps {
  * ResponsiveModal Component
  *
  * A cross-platform modal component that automatically adapts to viewport size:
- * - Desktop (≥768px): Renders as centered Dialog with configurable size
- * - Mobile (<768px): Renders as full-screen Sheet
+ * - Desktop (>800px, $gtSm): Renders as centered Dialog with configurable size
+ * - Mobile (≤800px, $sm): Renders as full-screen Sheet
  *
  * Features:
- * - Automatic responsive behavior based on viewport width
+ * - Automatic responsive behavior based on Tamagui breakpoints
  * - Consistent header with title and close button
  * - ScrollView wrapper for content overflow
  * - Size presets (small, medium, large, full)
@@ -82,8 +73,12 @@ export function ResponsiveModal({
   dialogHeight,
   sheetSnapPoints = [90],
 }: ResponsiveModalProps) {
-  const { width } = useWindowDimensions()
-  const isMobile = width < 768
+  // Use Tamagui media hook to check breakpoint
+  // $sm = maxWidth: 800px, $gtSm = minWidth: 801px
+  // On mobile (≤800px): sm is true, gtSm is false
+  // On desktop (>800px): sm is false, gtSm is true
+  const media = useMedia()
+  const isMobile = media.sm // sm = maxWidth: 800px, so true when ≤800px
 
   // Get size configuration
   const sizeConfig = MODAL_SIZES[size]
