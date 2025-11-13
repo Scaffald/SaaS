@@ -58,7 +58,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
     })
 
     test('displays correct column labels', async ({ page }: { page: Page }) => {
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = await page.locator('#root').textContent() || ''
 
       expect(pageContent).toContain('New Applications')
       expect(pageContent).toContain('Screening')
@@ -224,7 +224,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       await expect(modal.first()).toBeVisible()
 
       // Verify modal title
-      const modalContent = await page.locator('body').textContent() || ''
+      const modalContent = await page.locator('#root').textContent() || ''
       expect(modalContent).toMatch(/reject|rejection/i)
     })
 
@@ -307,7 +307,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       const modal = page.getByRole('dialog').or(page.locator('[role="alertdialog"]'))
       await expect(modal.first()).toBeVisible()
 
-      const modalContent = await page.locator('body').textContent() || ''
+      const modalContent = await page.locator('#root').textContent() || ''
       expect(modalContent).toMatch(/hired|hire/i)
     })
 

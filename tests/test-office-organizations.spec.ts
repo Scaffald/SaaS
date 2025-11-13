@@ -47,7 +47,7 @@ test.describe('Office • Organizations Management', () => {
       await waitForPageLoad(page)
 
       // Check for page title
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = await page.locator('#root').textContent() || ''
       expect(pageContent).toMatch(/organizations/i)
     })
 
@@ -57,7 +57,7 @@ test.describe('Office • Organizations Management', () => {
       await waitForPageLoad(page)
 
       // Check for table headers
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = await page.locator('#root').textContent() || ''
       expect(pageContent).toMatch(/name/i)
       expect(pageContent).toMatch(/slug/i)
       expect(pageContent).toMatch(/industry/i)
@@ -119,7 +119,7 @@ test.describe('Office • Organizations Management', () => {
       await waitForPageLoad(page)
 
       // Get initial organization count
-      const initialContent = await page.locator('body').textContent() || ''
+      const initialContent = await page.locator('#root').textContent() || ''
 
       // Search for a specific term
       const searchInput = page.getByPlaceholder(/search organizations/i)
@@ -127,7 +127,7 @@ test.describe('Office • Organizations Management', () => {
       await page.waitForTimeout(500)
 
       // Should show "no organizations found" or similar
-      const afterSearchContent = await page.locator('body').textContent() || ''
+      const afterSearchContent = await page.locator('#root').textContent() || ''
       expect(afterSearchContent).toMatch(/no organizations found|no results/i)
     })
 
@@ -147,7 +147,7 @@ test.describe('Office • Organizations Management', () => {
       await page.waitForTimeout(300)
 
       // Should show organizations again (or empty state)
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = await page.locator('#root').textContent() || ''
       expect(pageContent.length).toBeGreaterThan(0)
     })
   })
@@ -328,7 +328,7 @@ test.describe('Office • Organizations Management', () => {
       
       // Verify organization appears in list (wait for it to appear)
       await expect(async () => {
-        const pageContent = await page.locator('body').textContent() || ''
+        const pageContent = await page.locator('#root').textContent() || ''
         expect(pageContent).toContain(uniqueName)
       }).toPass({ timeout: 10000 })
     })
@@ -529,7 +529,7 @@ test.describe('Office • Organizations Management', () => {
       
       // Verify updated name appears (wait for it to appear)
       await expect(async () => {
-        const pageContent = await page.locator('body').textContent() || ''
+        const pageContent = await page.locator('#root').textContent() || ''
         expect(pageContent).toContain(updatedName)
       }).toPass({ timeout: 10000 })
     })
@@ -544,7 +544,7 @@ test.describe('Office • Organizations Management', () => {
 
       if (buttonCount > 0) {
         // Get original name
-        const pageContent = await page.locator('body').textContent() || ''
+        const pageContent = await page.locator('#root').textContent() || ''
 
         await editButton.click()
         await waitForNavigation(page)
@@ -586,10 +586,9 @@ test.describe('Office • Organizations Management', () => {
       await waitForPageLoad(page)
 
       // Check for pagination controls (may not exist if < 50 orgs)
-      const pageContent = await page.locator('body').textContent() || ''
-
       // Pagination controls may appear if there are many items
       // This test just verifies the page loads without errors
+      const pageContent = await page.locator('#root').textContent() || ''
       expect(pageContent.length).toBeGreaterThan(0)
     })
   })
@@ -640,7 +639,7 @@ test.describe('Office • Organizations Management', () => {
       await page.waitForTimeout(300)
 
       // Check for helper text about slug format
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = await page.locator('#root').textContent() || ''
       expect(pageContent).toMatch(/url-friendly|lowercase|hyphens/i)
     })
 
