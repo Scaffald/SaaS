@@ -54,8 +54,10 @@ export function ProfileSkillsRight() {
       await Promise.all([
         utils.profile.skillsMultiTaxonomy.getUserSkills.invalidate(),
       ])
+      // Clear removing state after cache invalidation
+      setRemovingSkillId(null)
       toast.show('Skill Removed', {
-        message: 'Skill has been removed from your profile',
+        message: 'Skill removed from your profile',
       })
     },
     // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
@@ -77,11 +79,28 @@ export function ProfileSkillsRight() {
   // Handle confirmed removal
   const handleConfirmRemove = useCallback(async () => {
     if (!confirmRemoveSkillId) return
-    // Set removing state to trigger animation
-    setRemovingSkillId(confirmRemoveSkillId)
+
+    // Prevent concurrent removals
+    if (removingSkillId !== null) {
+      toast.show('Please Wait', {
+        message: 'Please wait for the current removal to complete',
+      })
+      setConfirmRemoveSkillId(null)
+      return
+    }
+
+    const skillIdToRemove = confirmRemoveSkillId
+
+    // Start fade-out animation
+    setRemovingSkillId(skillIdToRemove)
     setConfirmRemoveSkillId(null)
-    // Mutation will be called in next task
-  }, [confirmRemoveSkillId])
+
+    // Wait for animation to complete (300ms)
+    await new Promise((resolve) => setTimeout(resolve, 300))
+
+    // Execute removal mutation
+    await removeSkillMutation.mutateAsync({ userSkillId: skillIdToRemove })
+  }, [confirmRemoveSkillId, removingSkillId, removeSkillMutation, toast])
 
   const userSkills = userSkillsData?.skills || []
 
