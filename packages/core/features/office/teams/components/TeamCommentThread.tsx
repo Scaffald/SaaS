@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useWindowDimensions } from 'react-native'
-import { Button, Card, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Button, Card, Spinner, Text, TextArea, XStack, YStack, useMedia } from 'tamagui'
 import { MessageCircle, Send } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 
@@ -31,8 +30,8 @@ export function TeamCommentThread({
   const utils = api.useUtils()
   const [commentBody, setCommentBody] = useState('')
   const [selectedMentionId, setSelectedMentionId] = useState<string | null>(null)
-  const { width } = useWindowDimensions()
-  const isSmallScreen = width < 640
+  const media = useMedia()
+  const isSmallScreen = media.sm // sm = maxWidth: 800px
 
   const mentionLookup = useMemo(() => {
     return new Map(mentionOptions.map((option) => [option.id, option.label]))

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import type { ReactNode } from 'react'
 import { ScrollView, useWindowDimensions } from 'react-native'
-import { Card, Spinner, Text, YStack } from 'tamagui'
+import { Card, Spinner, Text, YStack, useMedia } from 'tamagui'
 
 import { api } from '@app/core/utils/api'
 import { BarChart, LineChart, PieChart } from '@app/ui/components/charts'
@@ -19,8 +19,9 @@ interface TeamAnalyticsChartsProps {
 }
 
 export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsChartsProps) {
-  const { width } = useWindowDimensions()
-  const isSmallScreen = width < 640
+  const { width } = useWindowDimensions() // Keep for actual dimension calculations
+  const media = useMedia()
+  const isSmallScreen = media.sm // sm = maxWidth: 800px
   const now = useMemo(() => new Date(), [teamId, rangeDays])
 
   const start = useMemo(() => {

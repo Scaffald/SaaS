@@ -1,5 +1,4 @@
-import type { PostgrestError } from "@supabase/postgrest-js";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 
 type SupabaseAdminClient = SupabaseClient;
 

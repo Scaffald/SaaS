@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useState } from 'react';
-import { useWindowDimensions } from 'react-native';
 import {
   Button,
   Card,
@@ -9,6 +8,7 @@ import {
   Text,
   XStack,
   YStack,
+  useMedia,
   type GetThemeValueForKey,
 } from 'tamagui';
 import { Check, ChevronDown, Clock, RefreshCw, XCircle } from '@tamagui/lucide-icons';
@@ -48,8 +48,8 @@ interface TeamInvitationsListProps {
 export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamInvitationsListProps) {
   const toast = useToastController();
   const [statusFilter, setStatusFilter] = useState<InvitationStatus | 'all'>('pending');
-  const { width } = useWindowDimensions();
-  const isSmallScreen = width < 640;
+  const media = useMedia();
+  const isSmallScreen = media.sm; // sm = maxWidth: 800px
 
   const invitationsQuery = api.teams.invitations.list.useQuery(
     {

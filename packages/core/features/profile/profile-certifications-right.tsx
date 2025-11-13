@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { YStack, Text, H4, Card, XStack, Input, ScrollView } from 'tamagui'
 import {
   Award,
@@ -20,6 +20,7 @@ interface UserCertification {
   catalog: {
     title: string
     description: string | null
+    depth: number
   }
 }
 
@@ -31,12 +32,16 @@ interface CertificationTree {
 
 /**
  * Profile Certifications Right Component
- * Displays all checked certifications with proof management
+ * Displays all certifications at all depth levels with proof management
  */
 export function ProfileCertificationsRight() {
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set())
   const [selectedFiles, setSelectedFiles] = useState<Record<string, File | null>>({})
   const [urlInputs, setUrlInputs] = useState<Record<string, string>>({})
+  // Note: recentlyChangedCerts would be used for highlight animations
+  // Currently not implemented as highlights are handled in left panel
+  const recentlyChangedCerts: Record<string, 'added' | 'removed'> = {}
+  const highlightTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({})
 
   const { data: certTree, refetch: refetchTree } =
     api.profile.certifications.getUserCertificationTree.useQuery()
@@ -49,17 +54,49 @@ export function ProfileCertificationsRight() {
     onSuccess: () => refetchTree(),
   })
 
-  // Get all depth 2 certifications (the ones with checkboxes)
-  const allDepth2Certs: UserCertification[] = []
-  if (certTree) {
-    const typedTree = certTree as unknown as CertificationTree
-    const depth2ByParent = typedTree.depth2ByParent || {}
-    for (const items of Object.values(depth2ByParent)) {
-      if (Array.isArray(items)) {
-        allDepth2Certs.push(...items)
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      for (const timer of Object.values(highlightTimers.current)) {
+        clearTimeout(timer)
       }
     }
+  }, [])
+
+  // Get all certifications at all depth levels
+  const getAllCertifications = (): {
+    depth0: UserCertification[]
+    depth1: UserCertification[]
+    depth2: UserCertification[]
+  } => {
+    const typedTree = certTree as unknown as CertificationTree | undefined
+    if (!typedTree) {
+      return { depth0: [], depth1: [], depth2: [] }
+    }
+
+    const depth0 = typedTree.depth0 || []
+    const depth1: UserCertification[] = []
+    const depth2: UserCertification[] = []
+
+    // Flatten depth 1 certifications
+    for (const items of Object.values(typedTree.depth1ByParent || {})) {
+      if (Array.isArray(items)) {
+        depth1.push(...items)
+      }
+    }
+
+    // Flatten depth 2 certifications
+    for (const items of Object.values(typedTree.depth2ByParent || {})) {
+      if (Array.isArray(items)) {
+        depth2.push(...items)
+      }
+    }
+
+    return { depth0, depth1, depth2 }
   }
+
+  const { depth0, depth1, depth2 } = getAllCertifications()
+  const allCerts = [...depth0, ...depth1, ...depth2]
 
   const toggleExpand = (certId: string) => {
     setExpandedCards((prev) => {
@@ -134,14 +171,14 @@ export function ProfileCertificationsRight() {
     }
   }
 
-  if (allDepth2Certs.length === 0) {
+  if (allCerts.length === 0) {
     return (
       <DashboardWidget>
         <YStack gap="$4" items="center" pt="$8">
           <Award size={48} color="$color11" />
           <YStack gap="$2" items="center">
             <H4>Your Certifications</H4>
-            <Text color="$color11">Check certifications on the left to add them here</Text>
+            <Text color="$color11">Search and add certifications on the left</Text>
           </YStack>
         </YStack>
       </DashboardWidget>
@@ -154,36 +191,208 @@ export function ProfileCertificationsRight() {
         <H4>Your Certifications</H4>
 
         <ScrollView height={700}>
-          <YStack gap="$3">
-            {allDepth2Certs.map((cert) => {
-              const isExpanded = expandedCards.has(cert.id)
-              const hasProof = !!(cert.credential_url || cert.certificate_file_path)
+          <YStack gap="$4">
+            {/* Depth 0 - Top Level Categories */}
+            {depth0.length > 0 && (
+              <YStack gap="$2">
+                <Text fontWeight="600" fontSize="$4" color="$blue11">
+                  Top-Level Categories
+                </Text>
+                {depth0.map((cert) => {
+                  const changeStatus = recentlyChangedCerts[cert.certification_id]
+                  return (
+                    <Card
+                      key={cert.id}
+                      p="$3"
+                      bordered
+                      animation="quick"
+                      bg={
+                        changeStatus === 'added'
+                          ? '$green2'
+                          : changeStatus === 'removed'
+                            ? '$red2'
+                            : '$color1'
+                      }
+                      borderColor={
+                        changeStatus === 'added'
+                          ? '$green7'
+                          : changeStatus === 'removed'
+                            ? '$red7'
+                            : '$borderColor'
+                      }
+                    >
+                      <XStack justify="space-between" items="center">
+                        <YStack flex={1} gap="$1">
+                          <XStack gap="$2" items="center">
+                            <Text fontWeight="600">{cert.catalog.title}</Text>
+                            <Text
+                              fontSize="$1"
+                              color="$blue9"
+                              bg="$blue2"
+                              px="$2"
+                              py="$0.5"
+                              rounded="$2"
+                            >
+                              Top Level
+                            </Text>
+                          </XStack>
+                          {cert.catalog.description && (
+                            <Text fontSize="$2" color="$color11">
+                              {cert.catalog.description}
+                            </Text>
+                          )}
+                        </YStack>
+                      </XStack>
+                      {changeStatus === 'added' && (
+                        <Text mt="$2" fontSize="$2" color="$green11">
+                          ✓ Added to profile
+                        </Text>
+                      )}
+                    </Card>
+                  )
+                })}
+              </YStack>
+            )}
 
-              return (
-                <Card key={cert.id} p="$0" bordered>
-                  {/* Header - Always Visible */}
-                  <XStack
-                    p="$3"
-                    gap="$3"
-                    items="center"
-                    pressStyle={{ bg: '$backgroundHover' }}
-                    cursor="pointer"
-                    onPress={() => toggleExpand(cert.id)}
-                  >
+            {/* Depth 1 - Categories */}
+            {depth1.length > 0 && (
+              <YStack gap="$2">
+                <Text fontWeight="600" fontSize="$4" color="$green11">
+                  Sub-Categories
+                </Text>
+                {depth1.map((cert) => {
+                  const changeStatus = recentlyChangedCerts[cert.certification_id]
+                  return (
+                    <Card
+                      key={cert.id}
+                      p="$3"
+                      bordered
+                      animation="quick"
+                      bg={
+                        changeStatus === 'added'
+                          ? '$green2'
+                          : changeStatus === 'removed'
+                            ? '$red2'
+                            : '$color1'
+                      }
+                      borderColor={
+                        changeStatus === 'added'
+                          ? '$green7'
+                          : changeStatus === 'removed'
+                            ? '$red7'
+                            : '$borderColor'
+                      }
+                    >
+                      <XStack justify="space-between" items="center">
+                        <YStack flex={1} gap="$1">
+                          <XStack gap="$2" items="center">
+                            <Text fontWeight="600">{cert.catalog.title}</Text>
+                            <Text
+                              fontSize="$1"
+                              color="$green9"
+                              bg="$green2"
+                              px="$2"
+                              py="$0.5"
+                              rounded="$2"
+                            >
+                              Category
+                            </Text>
+                          </XStack>
+                          {cert.catalog.description && (
+                            <Text fontSize="$2" color="$color11">
+                              {cert.catalog.description}
+                            </Text>
+                          )}
+                        </YStack>
+                      </XStack>
+                      {changeStatus === 'added' && (
+                        <Text mt="$2" fontSize="$2" color="$green11">
+                          ✓ Added to profile
+                        </Text>
+                      )}
+                    </Card>
+                  )
+                })}
+              </YStack>
+            )}
+
+            {/* Depth 2 - Specific Certifications */}
+            {depth2.length > 0 && (
+              <YStack gap="$2">
+                <Text fontWeight="600" fontSize="$4" color="$purple11">
+                  Specific Certifications
+                </Text>
+                {depth2.map((cert) => {
+                  const isExpanded = expandedCards.has(cert.id)
+                  const hasProof = !!(cert.credential_url || cert.certificate_file_path)
+                  const changeStatus = recentlyChangedCerts[cert.certification_id]
+
+                  return (
+                    <Card
+                      key={cert.id}
+                      p="$0"
+                      bordered
+                      animation="quick"
+                      bg={
+                        changeStatus === 'added'
+                          ? '$green2'
+                          : changeStatus === 'removed'
+                            ? '$red2'
+                            : undefined
+                      }
+                      borderColor={
+                        changeStatus === 'added'
+                          ? '$green7'
+                          : changeStatus === 'removed'
+                            ? '$red7'
+                            : '$borderColor'
+                      }
+                    >
+                      {/* Header - Always Visible */}
+                      <XStack
+                        p="$3"
+                        gap="$3"
+                        items="center"
+                        pressStyle={{ bg: '$backgroundHover' }}
+                        cursor="pointer"
+                        onPress={() => toggleExpand(cert.id)}
+                      >
                     {isExpanded ? (
                       <ChevronDown size={20} color="$color11" />
                     ) : (
                       <ChevronRight size={20} color="$color11" />
                     )}
 
-                    <YStack flex={1} gap="$1">
-                      <Text fontWeight="600">{cert.catalog.title}</Text>
-                      {hasProof && (
-                        <Text fontSize="$2" color="$green10">
-                          ✓ Proof added
-                        </Text>
-                      )}
-                    </YStack>
+                        <YStack flex={1} gap="$1">
+                          <XStack gap="$2" items="center" flexWrap="wrap">
+                            <Text fontWeight="600">{cert.catalog.title}</Text>
+                            <Text
+                              fontSize="$1"
+                              color="$purple9"
+                              bg="$purple2"
+                              px="$2"
+                              py="$0.5"
+                              rounded="$2"
+                            >
+                              Certification
+                            </Text>
+                          </XStack>
+                          {hasProof && (
+                            <Text fontSize="$2" color="$green10">
+                              ✓ Proof added
+                            </Text>
+                          )}
+                          {changeStatus === 'added' && (
+                            <Text fontSize="$2" color="$green11">
+                              ✓ Added to profile
+                            </Text>
+                          )}
+                          {changeStatus === 'removed' && (
+                            <Text fontSize="$2" color="$red11">
+                              Removed from profile
+                            </Text>
+                          )}
+                        </YStack>
 
                     <XStack gap="$2">
                       {hasProof && (
@@ -202,23 +411,23 @@ export function ProfileCertificationsRight() {
                           View
                         </Button>
                       )}
-                      <Button
-                        size="$2"
-                        chromeless
-                        icon={<Trash2 size={16} />}
-                        onPress={(e) => {
-                          e.stopPropagation()
-                          handleRemove(cert)
-                        }}
-                        theme="error"
-                      >
-                        Remove
-                      </Button>
+                        <Button
+                          size="$2"
+                          chromeless
+                          icon={<Trash2 size={16} />}
+                          onPress={(e) => {
+                            e.stopPropagation()
+                            handleRemove(cert)
+                          }}
+                          theme="error"
+                        >
+                          Remove
+                        </Button>
+                      </XStack>
                     </XStack>
-                  </XStack>
 
-                  {/* Expanded Content - File Upload & URL */}
-                  {isExpanded && (
+                    {/* Expanded Content - File Upload & URL */}
+                    {isExpanded && (
                     <YStack p="$3" pt="$0" gap="$4" borderTopWidth={1} borderColor="$borderColor">
                       {/* File Upload */}
                       <YStack gap="$2">
@@ -291,10 +500,12 @@ export function ProfileCertificationsRight() {
                         )}
                       </YStack>
                     </YStack>
-                  )}
-                </Card>
-              )
-            })}
+                    )}
+                  </Card>
+                )
+              })}
+              </YStack>
+            )}
           </YStack>
         </ScrollView>
       </YStack>

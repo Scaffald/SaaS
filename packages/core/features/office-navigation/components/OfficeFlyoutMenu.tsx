@@ -136,13 +136,13 @@ export const OfficeFlyoutMenu = ({
           <YStack py="$2" position="relative">
             {/* Top shadow overlay */}
             {showTopShadow && (
-              // @ts-expect-error - Tamagui positioning props work at runtime but TypeScript doesn't recognize them
               <YStack
                 position="absolute"
                 style={{ top: 0, left: 0, right: 0, height: 20 } as ViewStyle}
                 bg="$color2"
                 opacity={0.8}
                 pointerEvents="none"
+                // @ts-expect-error - Tamagui positioning props work at runtime but TypeScript doesn't recognize them
                 zIndex={1}
               />
             )}
@@ -186,13 +186,13 @@ export const OfficeFlyoutMenu = ({
 
             {/* Bottom shadow overlay */}
             {showBottomShadow && (
-              // @ts-expect-error - Tamagui positioning props work at runtime but TypeScript doesn't recognize them
               <YStack
                 position="absolute"
                 style={{ bottom: 0, left: 0, right: 0, height: 20 } as ViewStyle}
                 bg="$color2"
                 opacity={0.8}
                 pointerEvents="none"
+                // @ts-expect-error - Tamagui positioning props work at runtime but TypeScript doesn't recognize them
                 zIndex={1}
               />
             )}

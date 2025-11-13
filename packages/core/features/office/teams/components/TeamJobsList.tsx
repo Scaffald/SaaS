@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
-import { useWindowDimensions } from 'react-native'
-import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Spinner, Text, XStack, YStack, useMedia } from 'tamagui'
 import { AlertTriangle, ArrowRight, RefreshCcw } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import type { inferRouterOutputs } from '@trpc/server'
@@ -30,8 +29,8 @@ export function TeamJobsList({
   onCreateJob,
 }: TeamJobsListProps) {
   const router = useRouter()
-  const { width } = useWindowDimensions()
-  const isSmallScreen = width < 640
+  const media = useMedia()
+  const isSmallScreen = media.sm // sm = maxWidth: 800px
 
   const derivedJobs = useMemo(() => jobs ?? [], [jobs])
   const hasJobs = derivedJobs.length > 0

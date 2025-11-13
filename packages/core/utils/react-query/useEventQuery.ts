@@ -11,10 +11,11 @@ function useEventsQuery() {
   const queryFn = async () => {
     if (!user?.id) return [];
     
-    // @ts-expect-error - events table may not exist in database types yet
-    const result = await supabase
+    const result = await (supabase
       .schema("core")
-      .from("events")
+      // @ts-expect-error - events table may not exist in database types yet
+      // biome-ignore lint/suspicious/noExplicitAny: events table may not exist in database types yet
+      .from("events") as any)
       .select("*")
       .eq("profile_id", user.id)
       .order("created_at", { ascending: false })

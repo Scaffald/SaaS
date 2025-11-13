@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { useWindowDimensions } from 'react-native'
 import {
   Button,
   Select,
@@ -10,6 +9,7 @@ import {
   TextArea,
   XStack,
   YStack,
+  useMedia,
 } from 'tamagui'
 import { Check, ChevronDown, MessageCircle, Send } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
@@ -49,8 +49,8 @@ export function TeamActivityFeed({
   const [commentBody, setCommentBody] = useState('')
   const [mentions, setMentions] = useState<MentionOption[]>([])
   const [mentionSelection, setMentionSelection] = useState('none')
-  const { width } = useWindowDimensions()
-  const isSmallScreen = width < 640
+  const media = useMedia()
+  const isSmallScreen = media.sm // sm = maxWidth: 800px
 
   const activityQuery = api.teams.analytics.activity.useInfiniteQuery(
     {

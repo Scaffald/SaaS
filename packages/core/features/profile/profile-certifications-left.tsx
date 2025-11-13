@@ -33,6 +33,9 @@ interface Certification {
   description: string | null
   depth: number
   sort_order: number
+  parent_id: string | null
+  parent_title: string | null
+  parent_slug: string | null
 }
 
 interface CertificationWithParent extends Certification {
@@ -180,7 +183,14 @@ export function ProfileCertificationsLeft({
     )
 
   // Mutations
-  const addTopLevel = api.profile.certifications.addTopLevelCertification.useMutation({
+  // Unified mutation for adding certifications at any depth level
+  const addCertification = api.profile.certifications.addCertification.useMutation({
+    onSuccess: () => refetchTree(),
+  })
+
+  // Legacy mutations (kept for backwards compatibility with existing UI flows)
+  // Note: addTopLevel is still used by handleRemoveTopLevel, so we keep it
+  const _addTopLevel = api.profile.certifications.addTopLevelCertification.useMutation({
     onSuccess: () => refetchTree(),
   })
 
@@ -325,25 +335,53 @@ export function ProfileCertificationsLeft({
     setSearchQuery(query)
   }
 
-  // Handle selecting a depth 0 certification
+  // Handle selecting any certification (depth 0, 1, or 2) - immediate add
   const handleSelectTopLevel = async (cert: Certification): Promise<void> => {
+    // Check for duplicate optimistically using helper function
+    const allUserCertIds = new Set(getAllSelectedCertIds())
+
+    if (allUserCertIds.has(cert.id)) {
+      toast.show('Already Added', {
+        message: 'You already have this certification',
+      })
+      return
+    }
+
     try {
       resetProfileSyncError()
       startProfileSync()
-      await addTopLevel.mutateAsync({ certification_id: cert.id })
-      toast.show('Category Added', {
-        message: `${cert.title} is now part of your certifications.`,
+
+      // Use unified mutation that works for any depth level
+      await addCertification.mutateAsync({ certification_id: cert.id })
+
+      // Remove from search results state
+      setSearchResults((prev) => prev.filter((c) => c.id !== cert.id))
+
+      // Show success toast
+      toast.show('Certification Added', {
+        message: `${cert.title} added successfully`,
       })
+
+      // Trigger highlight animation in right panel (will be handled by refetchTree)
+      triggerHighlight(cert.id, 'added')
+
       await invalidateProfileQueries(utils)
+      await refetchTree()
       completeProfileSync()
     } catch (error) {
-      console.error('Error adding top-level certification:', error)
-      toast.show('Error', {
-        message:
-          error instanceof Error
-            ? error.message
-            : 'Unable to add this certification category right now.',
-      })
+      console.error('Error adding certification:', error)
+
+      // Handle duplicate error specifically
+      if (error instanceof Error && error.message.includes('already have this certification')) {
+        toast.show('Already Added', {
+          message: 'You already have this certification',
+        })
+      } else {
+        toast.show('Error', {
+          message:
+            error instanceof Error ? error.message : 'Unable to add this certification right now.',
+        })
+      }
       failProfileSync()
     }
   }
@@ -488,10 +526,32 @@ export function ProfileCertificationsLeft({
     }
   }
 
-  // Get selected top-level certification IDs
-  const selectedTopLevelIds = (certTree?.depth0 || []).map(
-    (item: UserCertification) => item.certification_id
-  )
+  // Get all selected certification IDs (all depth levels)
+  const getAllSelectedCertIds = useCallback(() => {
+    const typedTree = certTree as unknown as CertificationTree | undefined
+    const allIds = new Set<string>()
+    if (typedTree) {
+      // Add depth 0 certs
+      for (const item of typedTree.depth0 || []) {
+        allIds.add(item.certification_id)
+      }
+      // Add depth 1 certs
+      for (const items of Object.values(typedTree.depth1ByParent || {})) {
+        for (const item of items) {
+          allIds.add((item as UserCertification).certification_id)
+        }
+      }
+      // Add depth 2 certs
+      for (const items of Object.values(typedTree.depth2ByParent || {})) {
+        for (const item of items) {
+          allIds.add((item as UserCertification).certification_id)
+        }
+      }
+    }
+    return Array.from(allIds)
+  }, [certTree])
+
+  const selectedTopLevelIds = getAllSelectedCertIds()
 
   if (isLoadingTree) {
     return (

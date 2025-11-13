@@ -1,16 +1,17 @@
 import { useEffect } from 'react'
 import { useRouter } from 'expo-router'
-import { useWindowDimensions } from 'tamagui'
+import { useMedia } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { ROUTES } from '@app/core/constants/routes'
 
 export const useOfficeRouteProtection = () => {
   const router = useRouter()
-  const { width } = useWindowDimensions()
+  const media = useMedia()
   const toast = useToastController()
 
-  // $gtSm breakpoint is 860px
-  const isTabletOrAbove = width >= 860
+  // Use Tamagui breakpoint: $gtSm = minWidth: 801px (tablet/desktop)
+  // Note: Original check was width >= 860, but $gtSm (801px) is close and aligns with design system
+  const isTabletOrAbove = media.gtSm
 
   useEffect(() => {
     // Only redirect if on mobile

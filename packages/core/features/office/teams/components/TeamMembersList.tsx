@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useWindowDimensions } from 'react-native'
-import { AlertDialog, Avatar, Button, Card, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import { AlertDialog, Avatar, Button, Card, Spinner, Text, TextArea, XStack, YStack, useMedia } from 'tamagui'
 import { Crown, LogOut, Plus, UserMinus } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
@@ -46,8 +45,8 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
   const [leaveReason, setLeaveReason] = useState('')
   const router = useRouter()
   const { user: currentUser } = useUser()
-  const { width } = useWindowDimensions()
-  const isSmallScreen = width < 640
+  const media = useMedia()
+  const isSmallScreen = media.sm // sm = maxWidth: 800px
 
   const membersQuery = api.teams.members.list.useQuery(
     { teamId },

@@ -21,7 +21,9 @@ import {
 export const profileCertificationsRouter = t.router({
   certifications: t.router({
     /**
-     * Get top-level certifications (depth 0) for initial selection
+     * Get certifications at all depth levels (0, 1, 2) for search
+     * Returns certifications with parent hierarchy information
+     * Excludes certifications the user already has
      */
     getTopLevelCertifications: protectedProcedure
       .input(
@@ -31,31 +33,85 @@ export const profileCertificationsRouter = t.router({
         }),
       )
       .query(async ({ ctx, input }) => {
-        const { supabase } = ctx;
+        const { supabase, user } = ctx;
 
+        // Get user's existing certification IDs to exclude
+        const { data: userCerts } = await supabase
+          .schema("core")
+          .from("user_certifications")
+          .select("certification_id")
+          .eq("user_id", user.id)
+          .eq("is_active", true);
+
+        const existingCertIds = new Set(
+          userCerts?.map((uc) => uc.certification_id) || [],
+        );
+
+        // Build base query for all depth levels
         let query = supabase
           .schema("data")
           .from("certifications")
           .select("*")
-          .eq("depth", 0)
-          .eq("is_active", true)
-          .order("sort_order");
+          .in("depth", [0, 1, 2])
+          .eq("is_active", true);
 
+        // Apply search filter if provided
         if (input.search) {
-          query = query.ilike("title", `%${input.search}%`);
+          query = query.or(
+            `title.ilike.%${input.search}%,description.ilike.%${input.search}%`,
+          );
         }
 
-        const { data, error } = await query.limit(input.limit);
+        // Order by depth, then sort_order
+        query = query.order("depth", { ascending: true }).order("sort_order", {
+          ascending: true,
+        });
+
+        // Fetch more than limit to account for filtering
+        const { data, error } = await query.limit(input.limit * 2);
 
         if (error) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message:
-              `Failed to fetch top-level certifications: ${error.message}`,
+              `Failed to fetch certifications: ${error.message}`,
           });
         }
 
-        return { certifications: data || [] };
+        // Filter out certifications user already has
+        const certifications = (data || []).filter(
+          (cert: any) => !existingCertIds.has(cert.id),
+        ).slice(0, input.limit);
+        const parentIds = certifications
+          .filter((c: any) => c.parent_id)
+          .map((c: any) => c.parent_id);
+
+        let parentMap = new Map<string, any>();
+        if (parentIds.length > 0) {
+          const { data: parents } = await supabase
+            .schema("data")
+            .from("certifications")
+            .select("id, title, slug")
+            .in("id", parentIds);
+
+          if (parents) {
+            for (const parent of parents) {
+              parentMap.set(parent.id, parent);
+            }
+          }
+        }
+
+        // Transform results to include parent information
+        const certificationsWithParent = certifications.map((cert: any) => {
+          const parent = cert.parent_id ? parentMap.get(cert.parent_id) : null;
+          return {
+            ...cert,
+            parent_title: parent?.title || null,
+            parent_slug: parent?.slug || null,
+          };
+        });
+
+        return { certifications: certificationsWithParent };
       }),
 
     /**
@@ -183,7 +239,166 @@ export const profileCertificationsRouter = t.router({
     }),
 
     /**
+     * Add certification at any depth level (0, 1, 2) with automatic parent creation
+     * Unified mutation that handles all depth levels
+     */
+    addCertification: protectedProcedure
+      .input(z.object({ certification_id: z.string().uuid() }))
+      .mutation(async ({ ctx, input }) => {
+        const { supabase, user } = ctx;
+
+        // Verify certification exists and is active
+        const { data: cert, error: certError } = await supabase
+          .schema("data")
+          .from("certifications")
+          .select("*")
+          .eq("id", input.certification_id)
+          .eq("is_active", true)
+          .single();
+
+        if (certError || !cert) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Certification not found",
+          });
+        }
+
+        // Check for duplicate before insertion
+        const { data: existing } = await supabase
+          .schema("core")
+          .from("user_certifications")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("certification_id", input.certification_id)
+          .eq("is_active", true)
+          .maybeSingle();
+
+        if (existing) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "You already have this certification",
+          });
+        }
+
+        // Helper function to ensure a certification exists (create if needed, activate if inactive)
+        const ensureActiveUserCertification = async (
+          certificationId: string,
+        ) => {
+          const { data: existing, error: existingError } = await supabase
+            .schema("core")
+            .from("user_certifications")
+            .select("id, is_active")
+            .eq("user_id", user.id)
+            .eq("certification_id", certificationId)
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          if (existingError) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: `Failed to verify parent certification: ${existingError.message}`,
+            });
+          }
+
+          // If already active, nothing to do
+          if (existing?.is_active) {
+            return existing.id;
+          }
+
+          // If exists but inactive, reactivate
+          if (existing && !existing.is_active) {
+            const { data: reactivated, error: reactivateError } = await supabase
+              .schema("core")
+              .from("user_certifications")
+              .update({ is_active: true })
+              .eq("id", existing.id)
+              .select("id")
+              .single();
+
+            if (reactivateError) {
+              throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: `Failed to reactivate parent certification: ${reactivateError.message}`,
+              });
+            }
+
+            return reactivated.id;
+          }
+
+          // Doesn't exist, create it
+          const { data: created, error: createError } = await supabase
+            .schema("core")
+            .from("user_certifications")
+            .insert({
+              user_id: user.id,
+              certification_id: certificationId,
+              is_active: true,
+              verification_status: "unverified",
+            })
+            .select("id")
+            .single();
+
+          if (createError) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: `Failed to create parent certification: ${createError.message}`,
+            });
+          }
+
+          return created.id;
+        };
+
+        // For depth 1 or 2, ensure parent chain exists
+        if (cert.depth === 2 && cert.parent_id) {
+          // Get parent category (depth 1)
+          const { data: parentCategory } = await supabase
+            .schema("data")
+            .from("certifications")
+            .select("id, depth, parent_id")
+            .eq("id", cert.parent_id)
+            .maybeSingle();
+
+          if (parentCategory && parentCategory.parent_id) {
+            // Ensure top-level (depth 0) exists
+            await ensureActiveUserCertification(parentCategory.parent_id);
+          }
+
+          // Ensure category (depth 1) exists
+          if (parentCategory) {
+            await ensureActiveUserCertification(parentCategory.id);
+          }
+        } else if (cert.depth === 1 && cert.parent_id) {
+          // Ensure top-level (depth 0) exists
+          await ensureActiveUserCertification(cert.parent_id);
+        }
+
+        // Create the user certification
+        const { data, error } = await supabase
+          .schema("core")
+          .from("user_certifications")
+          .insert({
+            user_id: user.id,
+            certification_id: input.certification_id,
+            is_active: true,
+            verification_status: "unverified",
+          })
+          .select()
+          .single();
+
+        if (error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to add certification: ${error.message}`,
+          });
+        }
+
+        return { success: true, certification: data };
+      }),
+
+    /**
      * Add top-level certification (depth 0) - creates when chip is added
+     * @deprecated Use addCertification instead - this endpoint is maintained for backwards compatibility
      */
     addTopLevelCertification: protectedProcedure
       .input(z.object({ certification_id: z.string().uuid() }))

@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
-import { Input, YStack, Text, ScrollView, Card } from 'tamagui'
-import { Search } from '@tamagui/lucide-icons'
+import { useState, useEffect, useMemo } from 'react'
+import { Input, YStack, Text, ScrollView, Card, XStack } from 'tamagui'
+import { Search, Award } from '@tamagui/lucide-icons'
 
 interface Certification {
   id: string
@@ -9,6 +9,9 @@ interface Certification {
   description: string | null
   depth: number
   sort_order: number
+  parent_id: string | null
+  parent_title: string | null
+  parent_slug: string | null
 }
 
 interface CertificationSearchProps {
@@ -20,8 +23,8 @@ interface CertificationSearchProps {
 }
 
 /**
- * Search component for top-level certifications (depth 0)
- * Provides autocomplete-style search with debouncing
+ * Search component for certifications at all depth levels (0, 1, 2)
+ * Provides autocomplete-style search with debouncing and hierarchical grouping
  */
 export function CertificationSearch({
   onSelect,
@@ -55,16 +58,75 @@ export function CertificationSearch({
 
   const handleSelect = (cert: Certification) => {
     onSelect(cert)
-    setSearchQuery('')
-    setShowResults(false)
+    // Keep search query active (don't clear) to allow adding multiple certs
+    // setSearchQuery('')
+    // setShowResults(false)
   }
 
   const filteredResults = searchResults.filter((cert) => !selectedIds.includes(cert.id))
 
+  // Group results by parent category and depth
+  const groupedResults = useMemo(() => {
+    const groups: {
+      depth0: Certification[]
+      depth1ByParent: Record<string, Certification[]>
+      depth2ByParent: Record<string, Certification[]>
+    } = {
+      depth0: [],
+      depth1ByParent: {},
+      depth2ByParent: {},
+    }
+
+    for (const cert of filteredResults) {
+      if (cert.depth === 0) {
+        groups.depth0.push(cert)
+      } else if (cert.depth === 1) {
+        const parentId = cert.parent_id || 'none'
+        if (!groups.depth1ByParent[parentId]) {
+          groups.depth1ByParent[parentId] = []
+        }
+        groups.depth1ByParent[parentId].push(cert)
+      } else if (cert.depth === 2) {
+        const parentId = cert.parent_id || 'none'
+        if (!groups.depth2ByParent[parentId]) {
+          groups.depth2ByParent[parentId] = []
+        }
+        groups.depth2ByParent[parentId].push(cert)
+      }
+    }
+
+    return groups
+  }, [filteredResults])
+
+  // Get parent title for grouping display
+  const getParentTitle = (parentId: string | null): string => {
+    if (!parentId) return 'Other'
+    const cert = searchResults.find((c) => c.id === parentId)
+    return cert?.title || 'Unknown Parent'
+  }
+
+  // Depth badge component
+  const DepthBadge = ({ depth }: { depth: number }) => {
+    const labels = ['Top Level', 'Category', 'Certification']
+    const colors: Array<'$blue9' | '$green9' | '$purple9' | '$gray9'> = [
+      '$blue9',
+      '$green9',
+      '$purple9',
+    ]
+    const bgColor = (colors[depth] || '$gray9') as '$blue9' | '$green9' | '$purple9' | '$gray9'
+    return (
+      <XStack bg={bgColor} px="$2" py="$0.5" rounded="$2" borderWidth={1} borderColor={bgColor}>
+        <Text color="$background" fontSize="$1" fontWeight="600">
+          {labels[depth] || `Depth ${depth}`}
+        </Text>
+      </XStack>
+    )
+  }
+
   return (
     <YStack gap="$2" position="relative">
       <Text fontWeight="600" fontSize="$4">
-        Add Certification Category
+        Search Certifications
       </Text>
       <Input
         placeholder="Search certifications (e.g., OSHA, First Aid, Welding)"
@@ -89,45 +151,188 @@ export function CertificationSearch({
           right={0}
           zIndex={1000}
           elevation="$4"
-          height={300}
+          height={400}
           overflow="hidden"
         >
-          <ScrollView height={300}>
+          <ScrollView height={400}>
             {isLoading ? (
-              <YStack p="$4">
+              <YStack p="$4" items="center" gap="$2">
                 <Text color="$color11">Searching...</Text>
               </YStack>
             ) : filteredResults.length === 0 ? (
-              <YStack p="$4">
-                <Text color="$color11">
-                  {searchQuery.length > 0
-                    ? 'No certifications found'
-                    : 'Type to search certifications'}
-                </Text>
+              <YStack p="$4" items="center" gap="$2">
+                {searchQuery.length > 0 ? (
+                  <>
+                    <Search size={32} color="$color11" />
+                    <Text color="$color11">No certifications found</Text>
+                    <Text fontSize="$2" color="$color11" style={{ textAlign: 'center' }}>
+                      Try a different search term
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <Search size={32} color="$color11" />
+                    <Text color="$color11">Type to search certifications</Text>
+                    <Text fontSize="$2" color="$color11" style={{ textAlign: 'center' }}>
+                      Search for certifications like "OSHA" or "First Aid"
+                    </Text>
+                  </>
+                )}
               </YStack>
             ) : (
               <YStack>
-                {filteredResults.map((cert) => (
-                  <Card
-                    key={cert.id}
-                    p="$3"
-                    borderRadius={0}
-                    borderWidth={0}
-                    borderBottomWidth={1}
-                    borderColor="$borderColor"
-                    pressStyle={{ bg: '$backgroundHover' }}
-                    cursor="pointer"
-                    onPress={() => handleSelect(cert)}
-                  >
-                    <YStack gap="$1">
-                      <Text fontWeight="600">{cert.title}</Text>
-                      {cert.description && (
-                        <Text fontSize="$2" color="$color11" numberOfLines={2}>
-                          {cert.description}
-                        </Text>
-                      )}
-                    </YStack>
-                  </Card>
+                {/* Depth 0 - Top Level */}
+                {groupedResults.depth0.length > 0 && (
+                  <YStack>
+                    <XStack
+                      p="$3"
+                      bg="$color3"
+                      borderBottomWidth={1}
+                      borderColor="$borderColor"
+                      items="center"
+                      gap="$2"
+                    >
+                      <Award size={16} color="$color10" />
+                      <Text fontWeight="600" fontSize="$3" color="$color11">
+                        Top Level Categories
+                      </Text>
+                    </XStack>
+                    {groupedResults.depth0.map((cert) => (
+                      <Card
+                        key={cert.id}
+                        p="$3"
+                        borderRadius={0}
+                        borderWidth={0}
+                        borderBottomWidth={1}
+                        borderColor="$borderColor"
+                        pressStyle={{ bg: '$backgroundHover' }}
+                        cursor="pointer"
+                        onPress={() => handleSelect(cert)}
+                      >
+                        <YStack gap="$2">
+                          <XStack gap="$2" items="center" flexWrap="wrap">
+                            <Text fontWeight="600" flex={1}>
+                              {cert.title}
+                            </Text>
+                            <DepthBadge depth={cert.depth} />
+                          </XStack>
+                          {cert.description && (
+                            <Text fontSize="$2" color="$color11" numberOfLines={2}>
+                              {cert.description}
+                            </Text>
+                          )}
+                        </YStack>
+                      </Card>
+                    ))}
+                  </YStack>
+                )}
+
+                {/* Depth 1 - Categories grouped by parent */}
+                {Object.entries(groupedResults.depth1ByParent).map(([parentId, certs]) => (
+                  <YStack key={parentId}>
+                    <XStack
+                      p="$3"
+                      bg="$color3"
+                      borderBottomWidth={1}
+                      borderColor="$borderColor"
+                      items="center"
+                      gap="$2"
+                    >
+                      <Award size={16} color="$color10" />
+                      <Text fontWeight="600" fontSize="$3" color="$color11">
+                        {parentId === 'none'
+                          ? 'Categories'
+                          : `${getParentTitle(parentId)} > Categories`}
+                      </Text>
+                    </XStack>
+                    {certs.map((cert) => (
+                      <Card
+                        key={cert.id}
+                        p="$3"
+                        borderRadius={0}
+                        borderWidth={0}
+                        borderBottomWidth={1}
+                        borderColor="$borderColor"
+                        pressStyle={{ bg: '$backgroundHover' }}
+                        cursor="pointer"
+                        onPress={() => handleSelect(cert)}
+                      >
+                        <YStack gap="$2">
+                          <XStack gap="$2" items="center" flexWrap="wrap">
+                            <Text fontWeight="600" flex={1}>
+                              {cert.title}
+                            </Text>
+                            <DepthBadge depth={cert.depth} />
+                          </XStack>
+                          {cert.description && (
+                            <Text fontSize="$2" color="$color11" numberOfLines={2}>
+                              {cert.description}
+                            </Text>
+                          )}
+                        </YStack>
+                      </Card>
+                    ))}
+                  </YStack>
+                ))}
+
+                {/* Depth 2 - Specific certifications grouped by parent */}
+                {Object.entries(groupedResults.depth2ByParent).map(([parentId, certs]) => (
+                  <YStack key={parentId}>
+                    <XStack
+                      p="$3"
+                      bg="$color3"
+                      borderBottomWidth={1}
+                      borderColor="$borderColor"
+                      items="center"
+                      gap="$2"
+                    >
+                      <Award size={16} color="$color10" />
+                      <Text fontWeight="600" fontSize="$3" color="$color11">
+                        {parentId === 'none'
+                          ? 'Specific Certifications'
+                          : `${getParentTitle(parentId)} > Certifications`}
+                      </Text>
+                    </XStack>
+                    {certs.map((cert) => {
+                      // Build hierarchy path
+                      const hierarchyPath = cert.parent_title
+                        ? `${cert.parent_title} > ${cert.title}`
+                        : cert.title
+
+                      return (
+                        <Card
+                          key={cert.id}
+                          p="$3"
+                          borderRadius={0}
+                          borderWidth={0}
+                          borderBottomWidth={1}
+                          borderColor="$borderColor"
+                          pressStyle={{ bg: '$backgroundHover' }}
+                          cursor="pointer"
+                          onPress={() => handleSelect(cert)}
+                        >
+                          <YStack gap="$2">
+                            <XStack gap="$2" items="center" flexWrap="wrap">
+                              <YStack flex={1} gap="$1">
+                                <Text fontWeight="600">{cert.title}</Text>
+                                {cert.parent_title && (
+                                  <Text fontSize="$2" color="$color10">
+                                    {hierarchyPath}
+                                  </Text>
+                                )}
+                              </YStack>
+                              <DepthBadge depth={cert.depth} />
+                            </XStack>
+                            {cert.description && (
+                              <Text fontSize="$2" color="$color11" numberOfLines={2}>
+                                {cert.description}
+                              </Text>
+                            )}
+                          </YStack>
+                        </Card>
+                      )
+                    })}
+                  </YStack>
                 ))}
               </YStack>
             )}
