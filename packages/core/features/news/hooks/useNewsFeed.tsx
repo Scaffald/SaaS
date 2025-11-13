@@ -49,14 +49,32 @@ export function useNewsFeed({
         const response = await fetch(proxiedUrl)
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch feed: ${response.status} ${response.statusText}`)
+          // Try to parse error message from JSON response (Edge Function errors)
+          try {
+            const errorText = await response.text()
+            const errorJson = JSON.parse(errorText)
+            throw new Error(errorJson.error || `Failed to fetch feed: ${response.status} ${response.statusText}`)
+          } catch {
+            throw new Error(`Failed to fetch feed: ${response.status} ${response.statusText}`)
+          }
         }
 
         const responseText = await response.text()
+        
+        // Check if response is empty
+        if (!responseText || responseText.trim().length === 0) {
+          throw new Error('Empty response from feed')
+        }
+
         const xmlText = parseProxyResponse(response, responseText)
 
         // Parse RSS feed
         const parsedFeed = await parseRSSFeed(xmlText)
+        
+        // Check if parsing resulted in no items
+        if (!parsedFeed.items || parsedFeed.items.length === 0) {
+          throw new Error('No items found in RSS feed')
+        }
 
         // Enhance items with reading time and limit results
         const enhancedItems = parsedFeed.items.slice(0, maxItems).map((item) => ({
@@ -87,12 +105,30 @@ export function useMultipleNewsFeeds(feedUrls: string[], maxItemsPerFeed = 3) {
           const proxiedUrl = getProxiedUrl(feedUrl)
           const response = await fetch(proxiedUrl)
           if (!response.ok) {
-            throw new Error(`Failed to fetch ${feedUrl}`)
+            // Try to parse error message from JSON response (Edge Function errors)
+            try {
+              const errorText = await response.text()
+              const errorJson = JSON.parse(errorText)
+              throw new Error(errorJson.error || `Failed to fetch ${feedUrl}`)
+            } catch {
+              throw new Error(`Failed to fetch ${feedUrl}: ${response.status}`)
+            }
           }
 
           const responseText = await response.text()
+          
+          // Check if response is empty
+          if (!responseText || responseText.trim().length === 0) {
+            throw new Error('Empty response from feed')
+          }
+
           const xmlText = parseProxyResponse(response, responseText)
           const parsedFeed = await parseRSSFeed(xmlText)
+          
+          // Check if parsing resulted in no items
+          if (!parsedFeed.items || parsedFeed.items.length === 0) {
+            throw new Error('No items found in RSS feed')
+          }
 
           const enhancedItems = parsedFeed.items.slice(0, maxItemsPerFeed).map((item) => ({
             ...item,
