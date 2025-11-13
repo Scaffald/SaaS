@@ -2,6 +2,8 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure, t } from "../middleware.ts";
 
+const DATE_ONLY_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
 /**
  * Helper function to check if user can edit a project
  */
@@ -93,8 +95,14 @@ export const projectsRouter = t.router({
         name: z.string().min(1, "Name is required").max(255),
         description: z.string().optional(),
         status: z.enum(["planning", "active", "completed", "on_hold"]).optional(),
-        start_date: z.string().date().optional(),
-        end_date: z.string().date().optional(),
+        start_date: z
+          .string()
+          .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+          .optional(),
+        end_date: z
+          .string()
+          .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+          .optional(),
         location_visibility: z
           .enum(["public", "authenticated", "organization_only", "private"])
           .optional(),
@@ -170,8 +178,16 @@ export const projectsRouter = t.router({
         name: z.string().min(1).max(255).optional(),
         description: z.string().optional().nullable(),
         status: z.enum(["planning", "active", "completed", "on_hold"]).optional(),
-        start_date: z.string().date().optional().nullable(),
-        end_date: z.string().date().optional().nullable(),
+        start_date: z
+          .string()
+          .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+          .optional()
+          .nullable(),
+        end_date: z
+          .string()
+          .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+          .optional()
+          .nullable(),
         location_visibility: z
           .enum(["public", "authenticated", "organization_only", "private"])
           .optional(),
@@ -473,8 +489,14 @@ export const projectsRouter = t.router({
         project_id: z.string().uuid(),
         user_id: z.string().uuid(),
         job_id: z.string().uuid().optional(),
-        start_date: z.string().date().optional(),
-        end_date: z.string().date().optional(),
+        start_date: z
+          .string()
+          .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+          .optional(),
+        end_date: z
+          .string()
+          .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+          .optional(),
         role_on_project: z.string().optional(),
         notes: z.string().optional(),
       }),
@@ -535,8 +557,14 @@ export const projectsRouter = t.router({
       z.object({
         project_id: z.string().uuid(),
         job_id: z.string().uuid().optional(),
-        start_date: z.string().date().optional(),
-        end_date: z.string().date().optional(),
+        start_date: z
+          .string()
+          .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+          .optional(),
+        end_date: z
+          .string()
+          .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+          .optional(),
         role_on_project: z.string().optional(),
         notes: z.string().optional(),
       }),

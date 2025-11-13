@@ -14,7 +14,7 @@ export const sitesRouter = t.router({
     .input(
       z.object({
         site_identifier: z.string().optional(),
-        boundary: z.array(z.array(z.number().length(2))), // Array of [lng, lat] pairs
+        boundary: z.array(z.array(z.number()).length(2)), // Array of [lng, lat] pairs
         area_sqft: z.number().optional(),
         zoning_classification: z.string().optional(),
         jurisdiction: z.string().optional(),
@@ -86,7 +86,7 @@ export const sitesRouter = t.router({
       z.object({
         id: z.string().uuid(),
         site_identifier: z.string().optional().nullable(),
-        boundary: z.array(z.array(z.number().length(2))).optional(),
+        boundary: z.array(z.array(z.number()).length(2)).optional(),
         area_sqft: z.number().optional().nullable(),
         zoning_classification: z.string().optional().nullable(),
         jurisdiction: z.string().optional().nullable(),
@@ -206,7 +206,7 @@ export const sitesRouter = t.router({
   checkOverlap: protectedProcedure
     .input(
       z.object({
-        boundary: z.array(z.array(z.number().length(2))),
+        boundary: z.array(z.array(z.number()).length(2)),
         site_id: z.string().uuid().optional(),
       }),
     )

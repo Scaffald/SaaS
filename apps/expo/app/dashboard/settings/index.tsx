@@ -7,6 +7,7 @@ import { AlertCircle, Info, ShieldAlert, ExternalLink } from '@tamagui/lucide-ic
 
 import { api } from '@app/core/utils/api'
 import { UIButton as Button, NotificationTag, ToggleSwitch, type NotificationItem } from '@app/ui'
+import { SiteOverlapNotification } from '@app/core/features/notifications/components/SiteOverlapNotification'
 
 interface ApiNotification {
   id: string
@@ -16,6 +17,13 @@ interface ApiNotification {
   body?: { preview?: string | null } | null
   preview?: string | null
   message?: string | null
+  metadata?: {
+    notification_type?: string
+    site_id?: string
+    overlapping_site_id?: string
+    overlap_percent?: number
+    threshold?: number
+  } | null
   created_at: string
   read?: boolean | null
   cta_url?: string | null
@@ -566,7 +574,24 @@ export default function NotificationsCenterScreen() {
 
                   <Separator bg="$color3" />
 
-                  <XStack p="$3" gap="$3" justify="flex-end" flexWrap="wrap">
+                  {/* Render site overlap notification with actions if type matches */}
+                  {notification.metadata?.notification_type === 'site_overlap' &&
+                  notification.metadata?.site_id &&
+                  notification.metadata?.overlapping_site_id ? (
+                    <XStack p="$3">
+                      <SiteOverlapNotification
+                        notificationId={notification.id}
+                        siteId={notification.metadata.site_id}
+                        overlappingSiteId={notification.metadata.overlapping_site_id}
+                        overlapPercent={notification.metadata.overlap_percent || 0}
+                        threshold={notification.metadata.threshold || 2.0}
+                        onDismiss={(id) => {
+                          archiveMutation.mutate({ ids: [id] })
+                        }}
+                      />
+                    </XStack>
+                  ) : (
+                    <XStack p="$3" gap="$3" justify="flex-end" flexWrap="wrap">
                     {!notification.read ? (
                       <Button
                         size="$2"
