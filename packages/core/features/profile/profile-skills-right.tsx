@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect, useRef } from 'react'
 import { YStack, XStack, Text, Button, Progress } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { Award, Sparkles } from '@tamagui/lucide-icons'
@@ -37,6 +37,9 @@ export function ProfileSkillsRight() {
   const [confirmRemoveSkillId, setConfirmRemoveSkillId] = useState<string | null>(null)
   // Animation state for skill removal
   const [removingSkillId, setRemovingSkillId] = useState<string | null>(null)
+  // Track newly added skill for highlight animation
+  const [newSkillId, setNewSkillId] = useState<string | null>(null)
+  const previousSkillsRef = useRef<string[]>([])
 
   // Fetch user's skills
   const {
@@ -132,6 +135,33 @@ export function ProfileSkillsRight() {
   }, [confirmRemoveSkillId, removingSkillId, removeSkillMutation, toast])
 
   const userSkills = userSkillsData?.skills || []
+
+  // Detect newly added skills for highlight animation
+  useEffect(() => {
+    const currentSkillIds = userSkills.map((skill) => skill.id)
+    const previousSkillIds = previousSkillsRef.current
+
+    // Find skills that are new (in current but not in previous)
+    const newSkills = currentSkillIds.filter(
+      (id) => !previousSkillIds.includes(id)
+    )
+
+    if (newSkills.length > 0) {
+      // Highlight the most recently added skill (first in array if sorted by created_at)
+      const latestNewSkill = newSkills[0]
+      setNewSkillId(latestNewSkill)
+
+      // Remove highlight after 3 seconds
+      const timer = setTimeout(() => {
+        setNewSkillId(null)
+      }, 3000)
+
+      return () => clearTimeout(timer)
+    }
+
+    // Update ref for next comparison
+    previousSkillsRef.current = currentSkillIds
+  }, [userSkills])
 
   // Find skill name for confirmation modal
   const skillToRemove = userSkills.find(
@@ -284,6 +314,7 @@ export function ProfileSkillsRight() {
                   isLoading={
                     removingSkillId === skill.id || removeSkillMutation.isPending
                   }
+                  isNew={newSkillId === skill.id}
                 >
                   {/* Skill Name and Code */}
                   <YStack gap="$2">

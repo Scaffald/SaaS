@@ -12,6 +12,8 @@ interface ProfileResultCardProps extends CardProps {
   isRemoving?: boolean
   /** Whether remove action is in progress (shows loading spinner) */
   isLoading?: boolean
+  /** Whether this is a newly added skill (for highlight animation) */
+  isNew?: boolean
   /** Custom action buttons to display */
   actions?: React.ReactNode
   /** Whether to show the card border */
@@ -41,12 +43,21 @@ export function ProfileResultCard({
   removeDisabled = false,
   isRemoving = false,
   isLoading = false,
+  isNew = false,
   actions,
   bordered = true,
   ...props
 }: ProfileResultCardProps) {
   return (
-    <Card bordered={bordered} size="$4" {...props}>
+    <Card
+      bordered={bordered}
+      size="$4"
+      bg={isNew ? '$green2' : undefined}
+      borderColor={isNew ? '$green9' : undefined}
+      borderWidth={isNew ? 2 : undefined}
+      animation={isNew ? 'quick' : undefined}
+      {...props}
+    >
       <Card.Header gap="$2">
         <YStack gap="$3" flex={1}>
           {children}
