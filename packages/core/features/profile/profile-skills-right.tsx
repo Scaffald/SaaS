@@ -138,12 +138,12 @@ export function ProfileSkillsRight() {
 
   // Detect newly added skills for highlight animation
   useEffect(() => {
-    const currentSkillIds = userSkills.map((skill) => skill.id)
+    const currentSkillIds = userSkills.map((skill: { id: string }) => skill.id)
     const previousSkillIds = previousSkillsRef.current
 
     // Find skills that are new (in current but not in previous)
     const newSkills = currentSkillIds.filter(
-      (id) => !previousSkillIds.includes(id)
+      (id: string) => !previousSkillIds.includes(id)
     )
 
     if (newSkills.length > 0) {

@@ -78,7 +78,7 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
   const pendingSkillDetailsRef = useRef<ParentSkill | null>(null)
 
   const addSkillMutation = api.profile.skillsMultiTaxonomy.addSkill.useMutation({
-    async onMutate(variables) {
+    async onMutate(variables: { taxonomy: 'csi' | 'onet'; skillId: string; proficiencyLevel: number }) {
       resetProfileSyncError()
       startProfileSync()
 
@@ -96,7 +96,7 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
       if (skillDetails) {
         utils.profile.skillsMultiTaxonomy.getUserSkills.setData(
           undefined,
-          (old) => {
+          (old: { skills: unknown[] } | undefined) => {
             if (!old) return old
             const tempId = `temp-${Date.now()}`
             const newSkill = {
@@ -124,7 +124,7 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
 
       return { previousSkills }
     },
-    onError: (error: Error, _variables, context) => {
+    onError: (error: Error, _variables: unknown, context: { previousSkills?: unknown } | undefined) => {
       // Rollback optimistic update
       if (context?.previousSkills !== undefined) {
         utils.profile.skillsMultiTaxonomy.getUserSkills.setData(

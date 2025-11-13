@@ -62,6 +62,11 @@ export * from './components/charts'
 export * from './components/checklist'
 export { FullscreenSpinner } from './components/FullscreenSpinner'
 export { LoadingOverlay } from './components/LoadingOverlay'
+export {
+  SaveStatusIndicator,
+  type SaveStatus,
+  type SaveStatusIndicatorProps,
+} from './components/SaveStatusIndicator'
 export * from './components/Onboarding'
 export { OnboardingControls } from './components/OnboardingControls'
 export { StepContent } from './components/OnboardingStepContent'
