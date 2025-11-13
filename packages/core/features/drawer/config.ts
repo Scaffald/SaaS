@@ -31,7 +31,7 @@ export interface AssessmentStatus {
 /**
  * Generates drawer items dynamically from dashboard routes
  * @param options - Optional configuration for drawer items
- * @param options.includeOfficeLink - Whether to include the Office link (for admin users)
+ * @param options.includeOfficeLink - DEPRECATED: Office navigation now in header flyout menu
  * @param options.assessmentStatus - Assessment completion status for checkmarks
  * @returns Array of drawer item configurations
  */
@@ -42,83 +42,8 @@ export const generateDashboardDrawerItems = (options?: {
 }): DrawerItemConfig[] => {
   const items: DrawerItemConfig[] = [];
 
-  // Office section (for admin users only) - Make expandable with Users and Jobs
-  if (options?.includeOfficeLink) {
-    const officeSubItems: DrawerItemConfig[] = [
-      {
-        key: "office-jobs",
-        titleKey: "navigation.officeJobs",
-        href: ROUTES.OFFICE_CMS_JOBS.path,
-        routeKey: "OFFICE_CMS_JOBS",
-      },
-    ];
-
-    if (options?.includeTeamManagementLink) {
-      officeSubItems.splice(2, 0, {
-        key: "office-teams",
-        titleKey: "navigation.officeTeams",
-        href: ROUTES.OFFICE_CMS_TEAMS.path,
-        routeKey: "OFFICE_CMS_TEAMS",
-        icon: Users,
-      });
-    }
-
-    officeSubItems.push(
-      {
-        key: "office-universities",
-        titleKey: "navigation.officeUniversities",
-        href: ROUTES.OFFICE_CMS_UNIVERSITIES.path,
-        routeKey: "OFFICE_CMS_UNIVERSITIES",
-      },
-      {
-        key: "office-applications",
-        titleKey: "navigation.officeApplications",
-        href: ROUTES.OFFICE_ATS.path,
-        routeKey: "OFFICE_ATS",
-      },
-      {
-        key: "office-organizations",
-        titleKey: "navigation.officeOrganizations",
-        href: ROUTES.OFFICE_CMS_ORGANIZATIONS.path,
-        routeKey: "OFFICE_CMS_ORGANIZATIONS",
-      },
-      {
-        key: "office-background-checks",
-        titleKey: "navigation.officeBackgroundChecks",
-        href: ROUTES.OFFICE_ATS_CHECKS.path,
-        routeKey: "OFFICE_ATS_CHECKS",
-      },
-      {
-        key: "office-notifications",
-        titleKey: "navigation.notifications",
-        href: ROUTES.OFFICE_NOTIFICATIONS.path,
-        routeKey: "OFFICE_NOTIFICATIONS",
-      },
-      {
-        key: "office-cms",
-        titleKey: "navigation.officeCms",
-        href: ROUTES.OFFICE_CMS_WELCOME.path,
-        routeKey: "OFFICE_CMS_WELCOME",
-      },
-      {
-        key: "office-styleguide",
-        titleKey: "navigation.styleguide",
-        href: ROUTES.STYLEGUIDE.path,
-        routeKey: "STYLEGUIDE",
-      },
-    );
-
-    items.push({
-      key: "office",
-      titleKey: "navigation.office",
-      href: ROUTES.OFFICE.path,
-      routeKey: "OFFICE",
-      icon: Building2,
-      isExpandable: true,
-      expandOnActive: true,
-      subItems: officeSubItems,
-    });
-  }
+  // Office section removed - now accessed via header flyout menu
+  // includeOfficeLink parameter kept for backward compatibility but not used
 
   // Main dashboard item
   items.push({

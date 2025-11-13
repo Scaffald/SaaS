@@ -279,9 +279,17 @@ test.describe('Office • Organizations Management', () => {
 
       // Submit form
       const saveButton = page.locator('[data-testid="org-form-save-btn"]')
+      
+      // Wait for button to be enabled (form should be dirty)
+      await expect(saveButton).toBeEnabled({ timeout: 5000 })
+      
+      // Click save button
       await saveButton.click()
+      
+      // Wait a moment for mutation to start
+      await page.waitForTimeout(500)
 
-      // Wait for navigation back to list
+      // Wait for navigation back to list (this will wait for mutation to complete)
       await waitForNavigation(page, { timeout: 15000 })
 
       // Verify we're back at the list page
@@ -293,11 +301,15 @@ test.describe('Office • Organizations Management', () => {
       // Search for our new organization
       const searchInput = page.getByPlaceholder(/search organizations/i)
       await searchInput.fill(uniqueName)
-      await page.waitForTimeout(500)
-
-      // Verify organization appears in list
-      const pageContent = await page.locator('body').textContent() || ''
-      expect(pageContent).toContain(uniqueName)
+      
+      // Wait for search results to appear (with retry logic)
+      await page.waitForTimeout(1000)
+      
+      // Verify organization appears in list (wait for it to appear)
+      await expect(async () => {
+        const pageContent = await page.locator('body').textContent() || ''
+        expect(pageContent).toContain(uniqueName)
+      }).toPass({ timeout: 10000 })
     })
 
     test('creates organization with minimal required fields', async ({ page }: { page: Page }) => {
@@ -473,17 +485,32 @@ test.describe('Office • Organizations Management', () => {
 
       // Save changes
       const updateButton = page.locator('[data-testid="org-form-save-btn"]')
+      
+      // Wait for button to be enabled (form should be dirty after changes)
+      await expect(updateButton).toBeEnabled({ timeout: 5000 })
+      
+      // Click save button
       await updateButton.click()
+      
+      // Wait a moment for mutation to start
+      await page.waitForTimeout(500)
+      
+      // Wait for navigation back to list (this will wait for mutation to complete)
       await waitForNavigation(page, { timeout: 15000 })
       await waitForPageLoad(page)
 
       // Verify updated name appears in list
       const listSearchInput = page.getByPlaceholder(/search organizations/i)
       await listSearchInput.fill(updatedName)
-      await page.waitForTimeout(500)
-
-      const pageContent = await page.locator('body').textContent() || ''
-      expect(pageContent).toContain(updatedName)
+      
+      // Wait for search results to appear (with retry logic)
+      await page.waitForTimeout(1000)
+      
+      // Verify updated name appears (wait for it to appear)
+      await expect(async () => {
+        const pageContent = await page.locator('body').textContent() || ''
+        expect(pageContent).toContain(updatedName)
+      }).toPass({ timeout: 10000 })
     })
 
     test('cancel button on edit returns to list without saving changes', async ({ page }: { page: Page }) => {
@@ -514,7 +541,9 @@ test.describe('Office • Organizations Management', () => {
         // Click cancel
         const cancelButton = page.locator('[data-testid="org-form-cancel-btn"]')
         await cancelButton.click()
-        await page.waitForTimeout(1000)
+        
+        // Wait for navigation back to list
+        await waitForNavigation(page, { timeout: 10000 })
 
         // Should be back at list
         expect(page.url()).toContain('/office/organizations')

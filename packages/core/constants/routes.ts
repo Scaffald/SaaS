@@ -9,6 +9,20 @@
  * - Centralized route management
  */
 
+import type { ComponentType } from 'react'
+import {
+  FileText,
+  Users,
+  Briefcase,
+  Building2,
+  GraduationCap,
+  ClipboardCheck,
+  ShieldCheck,
+  Bell,
+  HardDrive,
+  Palette,
+} from '@tamagui/lucide-icons'
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -21,6 +35,11 @@ export interface RouteConfig {
   readonly description?: string;
   readonly isProtected?: boolean;
   readonly isAuth?: boolean;
+  // Flyout menu metadata
+  readonly menuCategory?: 'content' | 'recruitment' | 'management' | 'system';
+  readonly menuOrder?: number;
+  readonly menuIcon?: ComponentType;
+  readonly menuParent?: string;
 }
 
 // ============================================================================
@@ -37,6 +56,9 @@ const ROUTES_CONFIG = {
   STYLEGUIDE: {
     path: "/styleguide",
     title: "Styleguide",
+    menuCategory: 'system',
+    menuOrder: 3,
+    menuIcon: Palette,
   },
 
   // Auth Routes
@@ -281,141 +303,207 @@ const ROUTES_CONFIG = {
     path: "/office/notifications",
     title: "Notifications",
     isProtected: true,
+    menuCategory: 'system',
+    menuOrder: 1,
+    menuIcon: Bell,
   },
   OFFICE_STORAGE: {
     path: "/office/storage",
     title: "Storage Analytics",
     isProtected: true,
+    menuCategory: 'system',
+    menuOrder: 2,
+    menuIcon: HardDrive,
   },
   OFFICE_ATS: {
     path: "/office/ats",
     title: "Applications",
     isProtected: true,
+    menuCategory: 'recruitment',
+    menuOrder: 1,
+    menuIcon: ClipboardCheck,
   },
   OFFICE_ATS_DETAIL: {
     path: "/office/ats/:id",
     title: "Application Detail",
     isProtected: true,
+    menuCategory: 'recruitment',
+    menuParent: 'OFFICE_ATS',
   },
   OFFICE_ATS_CHECKS: {
     path: "/office/ats/checks",
     title: "Background Checks",
     isProtected: true,
+    menuCategory: 'recruitment',
+    menuOrder: 2,
+    menuIcon: ShieldCheck,
   },
   OFFICE_ATS_CHECKS_ADMIN: {
     path: "/office/ats/admin",
     title: "Review Background Checks",
     isProtected: true,
+    menuCategory: 'recruitment',
+    menuParent: 'OFFICE_ATS_CHECKS',
   },
   OFFICE_ATS_CHECKS_REQUEST: {
     path: "/office/ats/request",
     title: "Request Background Check",
     isProtected: true,
+    menuCategory: 'recruitment',
+    menuParent: 'OFFICE_ATS_CHECKS',
   },
   OFFICE_CMS_WORKERS: {
     path: "/office/cms/workers",
     title: "Workers",
     isProtected: true,
+    menuCategory: 'content',
+    menuOrder: 2,
+    menuIcon: Users,
   },
   OFFICE_CMS_WORKERS_CREATE: {
     path: "/office/cms/workers/create",
     title: "Create Worker",
     isProtected: true,
+    menuCategory: 'content',
+    menuParent: 'OFFICE_CMS_WORKERS',
   },
   OFFICE_CMS_WORKERS_EDIT: {
     path: "/office/cms/workers/:id/edit",
     title: "Edit Worker",
     isProtected: true,
+    menuCategory: 'content',
+    menuParent: 'OFFICE_CMS_WORKERS',
   },
   OFFICE_CMS_JOBS: {
     path: "/office/cms/jobs",
     title: "Manage Jobs",
     isProtected: true,
+    menuCategory: 'content',
+    menuOrder: 3,
+    menuIcon: Briefcase,
   },
   OFFICE_CMS_JOBS_CREATE: {
     path: "/office/cms/jobs/create",
     title: "Create Job",
     isProtected: true,
+    menuCategory: 'content',
+    menuParent: 'OFFICE_CMS_JOBS',
   },
   OFFICE_CMS_JOBS_EDIT: {
     path: "/office/cms/jobs/:id/edit",
     title: "Edit Job",
     isProtected: true,
+    menuCategory: 'content',
+    menuParent: 'OFFICE_CMS_JOBS',
   },
   OFFICE_CMS_UNIVERSITIES: {
     path: "/office/cms/universities",
     title: "Manage Universities",
     isProtected: true,
+    menuCategory: 'content',
+    menuOrder: 6,
+    menuIcon: GraduationCap,
   },
   OFFICE_CMS_UNIVERSITIES_CREATE: {
     path: "/office/cms/universities/create",
     title: "Create University",
     isProtected: true,
+    menuCategory: 'content',
+    menuParent: 'OFFICE_CMS_UNIVERSITIES',
   },
   OFFICE_CMS_UNIVERSITIES_EDIT: {
     path: "/office/cms/universities/:id/edit",
     title: "Edit University",
     isProtected: true,
+    menuCategory: 'content',
+    menuParent: 'OFFICE_CMS_UNIVERSITIES',
   },
   OFFICE_CMS_ORGANIZATIONS: {
     path: "/office/cms/organizations",
     title: "Organizations",
     isProtected: true,
+    menuCategory: 'content',
+    menuOrder: 4,
+    menuIcon: Building2,
   },
   OFFICE_CMS_ORGANIZATIONS_CREATE: {
     path: "/office/cms/organizations/create",
     title: "Create Organization",
     isProtected: true,
+    menuCategory: 'content',
+    menuParent: 'OFFICE_CMS_ORGANIZATIONS',
   },
   OFFICE_CMS_ORGANIZATIONS_EDIT: {
     path: "/office/cms/organizations/:id/edit",
     title: "Edit Organization",
     isProtected: true,
+    menuCategory: 'content',
+    menuParent: 'OFFICE_CMS_ORGANIZATIONS',
   },
   OFFICE_CMS_TEAMS: {
     path: "/office/cms/teams",
     title: "Teams",
     isProtected: true,
+    menuCategory: 'content',
+    menuOrder: 5,
+    menuIcon: Users,
   },
   OFFICE_CMS_TEAMS_CREATE: {
     path: "/office/cms/teams/create",
     title: "Create Team",
     isProtected: true,
+    menuCategory: 'content',
+    menuParent: 'OFFICE_CMS_TEAMS',
   },
   OFFICE_CMS_TEAMS_DETAIL: {
     path: "/office/cms/teams/:id",
     title: "Team Detail",
     isProtected: true,
+    menuCategory: 'content',
+    menuParent: 'OFFICE_CMS_TEAMS',
   },
   OFFICE_CMS_TEAMS_EDIT: {
     path: "/office/cms/teams/:id/edit",
     title: "Edit Team",
     isProtected: true,
+    menuCategory: 'content',
+    menuParent: 'OFFICE_CMS_TEAMS_DETAIL',
   },
   OFFICE_CMS_TEAMS_ANALYTICS: {
     path: "/office/cms/teams/:id/analytics",
     title: "Team Analytics",
     isProtected: true,
+    menuCategory: 'content',
+    menuParent: 'OFFICE_CMS_TEAMS_DETAIL',
   },
   OFFICE_CMS_TEAMS_SETTINGS: {
     path: "/office/cms/teams/:id/settings",
     title: "Team Settings",
     isProtected: true,
+    menuCategory: 'content',
+    menuParent: 'OFFICE_CMS_TEAMS_DETAIL',
   },
   OFFICE_CMS_WELCOME: {
     path: "/office/cms/welcome",
     title: "Welcome Slides",
     isProtected: true,
+    menuCategory: 'content',
+    menuOrder: 1,
+    menuIcon: FileText,
   },
   OFFICE_CMS_WELCOME_CREATE: {
     path: "/office/cms/welcome/create",
     title: "Create Slide",
     isProtected: true,
+    menuCategory: 'content',
+    menuParent: 'OFFICE_CMS_WELCOME',
   },
   OFFICE_CMS_WELCOME_EDIT: {
     path: "/office/cms/welcome/:id/edit",
     title: "Edit Slide",
     isProtected: true,
+    menuCategory: 'content',
+    menuParent: 'OFFICE_CMS_WELCOME',
   },
 } as const satisfies Record<string, RouteConfig>;
 

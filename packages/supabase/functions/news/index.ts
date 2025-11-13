@@ -1,5 +1,6 @@
 // @ts-expect-error - Deno imports are not recognized by TypeScript in non-Deno environments
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { corsHeaders } from "../_shared/cors.ts";
 
 type NewsSource = {
   id: string;
@@ -190,29 +191,110 @@ const createFallbackArticles = (source?: NewsSource): NewsArticle[] => {
   ];
 };
 
+/**
+ * Validate that a URL is a valid HTTP/HTTPS URL
+ */
+const isValidUrl = (urlString: string): boolean => {
+  try {
+    const url = new URL(urlString);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
 const handler = async (req: Request) => {
+  // Handle CORS preflight requests
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
   if (req.method !== "GET") {
     return new Response("Method Not Allowed", {
       status: 405,
-      headers: { Allow: "GET" },
+      headers: { ...corsHeaders, Allow: "GET" },
     });
   }
 
   const url = new URL(req.url);
+  const feedUrl = url.searchParams.get("url");
   const source = url.searchParams.get("source");
 
+  // Handle generic RSS proxy endpoint (?url=)
+  if (feedUrl) {
+    // Validate URL
+    if (!isValidUrl(feedUrl)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid URL. Must be a valid HTTP or HTTPS URL." }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    try {
+      const response = await fetch(feedUrl, {
+        headers: {
+          Accept: "application/xml, text/xml;q=0.9, */*;q=0.8",
+          "User-Agent": "SCF-Neue/1.0 (+https://scaffald.com)",
+        },
+        signal: AbortSignal.timeout(8000), // 8 second timeout
+      });
+
+      if (!response.ok) {
+        return new Response(
+          JSON.stringify({
+            error: `Feed request failed with status ${response.status}`,
+          }),
+          {
+            status: 502,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          },
+        );
+      }
+
+      const xml = await response.text();
+
+      // Return raw XML with CORS headers for client-side parsing
+      return new Response(xml, {
+        status: 200,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/xml; charset=utf-8",
+          "Cache-Control":
+            `s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${STALE_WHILE_REVALIDATE_SECONDS}`,
+          Vary: "Accept-Encoding",
+        },
+      });
+    } catch (error) {
+      console.warn("RSS proxy error:", error);
+      return new Response(
+        JSON.stringify({ error: "Unable to fetch RSS feed" }),
+        {
+          status: 502,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+  }
+
+  // Handle existing source-based endpoint (?source=)
   if (!source) {
-    return new Response(JSON.stringify({ error: "Missing source parameter" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: "Missing parameter. Provide either 'source' or 'url' parameter." }),
+      {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
 
   const newsSource = NEWS_SOURCE_LOOKUP[source];
   if (!newsSource) {
     return new Response(JSON.stringify({ error: "Unsupported news source" }), {
       status: 400,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
@@ -233,7 +315,7 @@ const handler = async (req: Request) => {
         }),
         {
           status: 502,
-          headers: { "Content-Type": "application/json" },
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         },
       );
     }
@@ -244,6 +326,7 @@ const handler = async (req: Request) => {
     return new Response(JSON.stringify({ articles }), {
       status: 200,
       headers: {
+        ...corsHeaders,
         "Content-Type": "application/json; charset=utf-8",
         "Cache-Control":
           `s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${STALE_WHILE_REVALIDATE_SECONDS}`,
@@ -259,7 +342,7 @@ const handler = async (req: Request) => {
       const fallbackArticles = createFallbackArticles(newsSource);
       return new Response(JSON.stringify({ articles: fallbackArticles }), {
         status: 200,
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -267,7 +350,7 @@ const handler = async (req: Request) => {
       JSON.stringify({ error: "Unable to reach RSS source" }),
       {
         status: 502,
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       },
     );
   }
