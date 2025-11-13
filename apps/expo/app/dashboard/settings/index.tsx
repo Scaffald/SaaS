@@ -592,53 +592,54 @@ export default function NotificationsCenterScreen() {
                     </XStack>
                   ) : (
                     <XStack p="$3" gap="$3" justify="flex-end" flexWrap="wrap">
-                    {!notification.read ? (
-                      <Button
-                        size="$2"
-                        theme="info"
-                        onPress={() => markReadMutation.mutate({ ids: [notification.id] })}
-                      >
-                        Mark as read
-                      </Button>
-                    ) : (
-                      <Button
-                        size="$2"
-                        theme="gray"
-                        onPress={() => markUnreadMutation.mutate({ ids: [notification.id] })}
-                      >
-                        Mark unread
-                      </Button>
-                    )}
+                      {!notification.read ? (
+                        <Button
+                          size="$2"
+                          theme="info"
+                          onPress={() => markReadMutation.mutate({ ids: [notification.id] })}
+                        >
+                          Mark as read
+                        </Button>
+                      ) : (
+                        <Button
+                          size="$2"
+                          theme="gray"
+                          onPress={() => markUnreadMutation.mutate({ ids: [notification.id] })}
+                        >
+                          Mark unread
+                        </Button>
+                      )}
 
-                    {filter === 'archived' ? (
-                      <Button
-                        size="$2"
-                        theme="success"
-                        onPress={() => restoreMutation.mutate({ ids: [notification.id] })}
-                      >
-                        Restore
-                      </Button>
-                    ) : (
-                      <Button
-                        size="$2"
-                        theme="gray"
-                        onPress={() => archiveMutation.mutate({ ids: [notification.id] })}
-                      >
-                        Archive
-                      </Button>
-                    )}
+                      {filter === 'archived' ? (
+                        <Button
+                          size="$2"
+                          theme="success"
+                          onPress={() => restoreMutation.mutate({ ids: [notification.id] })}
+                        >
+                          Restore
+                        </Button>
+                      ) : (
+                        <Button
+                          size="$2"
+                          theme="gray"
+                          onPress={() => archiveMutation.mutate({ ids: [notification.id] })}
+                        >
+                          Archive
+                        </Button>
+                      )}
 
-                    {notification.ctaUrl && (
-                      <Button size="$2" theme="info" onPress={() => handleNavigate(notification)}>
-                        <XStack gap="$2" items="center">
-                          <Text fontSize="$2" fontWeight="600" color="$color12">
-                            {notification.ctaLabel ?? 'Open'}
-                          </Text>
-                          <ExternalLink size={16} color="#ffffff" />
-                        </XStack>
-                      </Button>
-                    )}
-                  </XStack>
+                      {notification.ctaUrl && (
+                        <Button size="$2" theme="info" onPress={() => handleNavigate(notification)}>
+                          <XStack gap="$2" items="center">
+                            <Text fontSize="$2" fontWeight="600" color="$color12">
+                              {notification.ctaLabel ?? 'Open'}
+                            </Text>
+                            <ExternalLink size={16} color="#ffffff" />
+                          </XStack>
+                        </Button>
+                      )}
+                    </XStack>
+                  )}
                 </YStack>
               )
             })}

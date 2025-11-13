@@ -27,9 +27,8 @@ export default function GeographicSettingsPage() {
         }
 
         if (data?.value) {
-          const value = typeof data.value === 'string' 
-            ? parseFloat(data.value) 
-            : (data.value as number)
+          const value =
+            typeof data.value === 'string' ? Number.parseFloat(data.value) : (data.value as number)
           setThreshold(value.toString())
         }
       } catch (error) {
@@ -44,31 +43,28 @@ export default function GeographicSettingsPage() {
   }, [toast])
 
   const handleSave = async () => {
-    const numValue = parseFloat(threshold)
-    
+    const numValue = Number.parseFloat(threshold)
+
     // Validate range
-    if (isNaN(numValue) || numValue < 0.1 || numValue > 10) {
-      toast.show('Error', { 
-        message: 'Threshold must be between 0.1% and 10%' 
+    if (Number.isNaN(numValue) || numValue < 0.1 || numValue > 10) {
+      toast.show('Error', {
+        message: 'Threshold must be between 0.1% and 10%',
       })
       return
     }
 
     setIsSaving(true)
     try {
-      const { error } = await supabase
-        .schema('core')
-        .from('system_config')
-        .upsert({
-          key: 'site_overlap_threshold_percent',
-          value: numValue,
-          description: 'Percentage threshold for site overlap notifications',
-        })
+      const { error } = await supabase.schema('core').from('system_config').upsert({
+        key: 'site_overlap_threshold_percent',
+        value: numValue,
+        description: 'Percentage threshold for site overlap notifications',
+      })
 
       if (error) throw error
 
-      toast.show('Success', { 
-        message: 'Overlap threshold updated successfully' 
+      toast.show('Success', {
+        message: 'Overlap threshold updated successfully',
       })
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to save threshold'
@@ -95,10 +91,13 @@ export default function GeographicSettingsPage() {
         <Card p="$4">
           <YStack gap="$4">
             <YStack gap="$2">
-              <Text fontSize="$6" fontWeight="600">Site Overlap Threshold</Text>
+              <Text fontSize="$6" fontWeight="600">
+                Site Overlap Threshold
+              </Text>
               <Text fontSize="$3" color="$gray11">
-                When site boundaries overlap by more than this percentage, admins will receive notifications.
-                This helps identify potential data quality issues or survey discrepancies.
+                When site boundaries overlap by more than this percentage, admins will receive
+                notifications. This helps identify potential data quality issues or survey
+                discrepancies.
               </Text>
             </YStack>
 
@@ -122,7 +121,9 @@ export default function GeographicSettingsPage() {
 
             <Card p="$3" bg="$blue2" borderColor="$blue8" borderWidth={1}>
               <YStack gap="$2">
-                <Text fontWeight="600" fontSize="$3">Current Setting</Text>
+                <Text fontWeight="600" fontSize="$3">
+                  Current Setting
+                </Text>
                 <Text fontSize="$5" fontWeight="600" color="$blue11">
                   {threshold}%
                 </Text>
@@ -146,7 +147,11 @@ export default function GeographicSettingsPage() {
               <Button
                 theme="blue"
                 onPress={handleSave}
-                disabled={isSaving || parseFloat(threshold) < 0.1 || parseFloat(threshold) > 10}
+                disabled={
+                  isSaving ||
+                  Number.parseFloat(threshold) < 0.1 ||
+                  Number.parseFloat(threshold) > 10
+                }
               >
                 {isSaving ? <Spinner /> : 'Save Threshold'}
               </Button>
@@ -156,7 +161,9 @@ export default function GeographicSettingsPage() {
 
         <Card p="$4" bg="$yellow2" borderColor="$yellow8" borderWidth={1}>
           <YStack gap="$2">
-            <Text fontWeight="600" fontSize="$3">About Site Overlaps</Text>
+            <Text fontWeight="600" fontSize="$3">
+              About Site Overlaps
+            </Text>
             <Text fontSize="$2" color="$gray11">
               Site overlaps can occur when:
               {'\n'}• Multiple projects are assigned to adjacent or overlapping geographic areas
@@ -174,4 +181,3 @@ export default function GeographicSettingsPage() {
     </OfficePageLayout>
   )
 }
-
