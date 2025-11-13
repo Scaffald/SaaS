@@ -63,22 +63,32 @@ export function ProfileSkillsRight() {
     // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
     onError: (error: any) => {
       // Fade skill back in by clearing removing state
+      // This triggers the fade-in animation (opacity 0 → 1, height 0 → auto)
       setRemovingSkillId(null)
 
       // Determine error message based on error type
+      // Match REQ-28 requirements for specific error messages
       let errorMessage = 'Something went wrong. Please try again.'
 
+      // Network errors (connection issues, fetch failures)
       if (
         error.message?.includes('fetch') ||
         error.message?.includes('network') ||
-        error.message?.includes('Failed to fetch')
+        error.message?.includes('Failed to fetch') ||
+        error.message?.includes('NetworkError') ||
+        error.code === 'ECONNREFUSED' ||
+        error.code === 'ETIMEDOUT'
       ) {
         errorMessage =
           'Unable to remove skill. Check your connection and try again.'
-      } else if (error.data?.code === 'INTERNAL_SERVER_ERROR') {
+      }
+      // Server errors (5xx, internal server errors)
+      else if (
+        error.data?.code === 'INTERNAL_SERVER_ERROR' ||
+        error.data?.code === 'BAD_REQUEST' ||
+        error.data?.httpStatus >= 500
+      ) {
         errorMessage = 'Failed to remove skill. Please try again.'
-      } else if (error.message) {
-        errorMessage = error.message
       }
 
       toast.show('Error', {

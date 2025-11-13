@@ -1,4 +1,4 @@
-import { Card, XStack, YStack, Button, Spinner, type CardProps } from 'tamagui'
+import { Card, XStack, YStack, Button, Spinner, Text, type CardProps } from 'tamagui'
 import { X } from '@tamagui/lucide-icons'
 
 interface ProfileResultCardProps extends CardProps {
@@ -60,11 +60,18 @@ export function ProfileResultCard({
               <Button
                 size="$2"
                 variant="outlined"
-                icon={isLoading ? Spinner : X}
+                icon={isLoading ? undefined : X}
                 onPress={onRemove}
                 disabled={removeDisabled || isRemoving || isLoading}
               >
-                {isLoading ? 'Removing...' : 'Remove'}
+                {isLoading ? (
+                  <XStack gap="$2" items="center">
+                    <Spinner size="small" />
+                    <Text>Removing...</Text>
+                  </XStack>
+                ) : (
+                  'Remove'
+                )}
               </Button>
             )}
           </XStack>
