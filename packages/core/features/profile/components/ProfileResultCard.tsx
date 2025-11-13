@@ -8,6 +8,8 @@ interface ProfileResultCardProps extends CardProps {
   onRemove?: () => void
   /** Whether remove action is disabled */
   removeDisabled?: boolean
+  /** Whether skill is currently being removed (for animation state) */
+  isRemoving?: boolean
   /** Custom action buttons to display */
   actions?: React.ReactNode
   /** Whether to show the card border */
@@ -35,6 +37,7 @@ export function ProfileResultCard({
   children,
   onRemove,
   removeDisabled = false,
+  isRemoving = false,
   actions,
   bordered = true,
   ...props
@@ -56,7 +59,7 @@ export function ProfileResultCard({
                 variant="outlined"
                 icon={X}
                 onPress={onRemove}
-                disabled={removeDisabled}
+                disabled={removeDisabled || isRemoving}
               >
                 Remove
               </Button>

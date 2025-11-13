@@ -35,6 +35,8 @@ export function ProfileSkillsRight() {
 
   // Confirmation modal state
   const [confirmRemoveSkillId, setConfirmRemoveSkillId] = useState<string | null>(null)
+  // Animation state for skill removal
+  const [removingSkillId, setRemovingSkillId] = useState<string | null>(null)
 
   // Fetch user's skills
   const {
@@ -70,9 +72,11 @@ export function ProfileSkillsRight() {
   // Handle confirmed removal
   const handleConfirmRemove = useCallback(async () => {
     if (!confirmRemoveSkillId) return
-    await removeSkillMutation.mutateAsync({ userSkillId: confirmRemoveSkillId })
+    // Set removing state to trigger animation
+    setRemovingSkillId(confirmRemoveSkillId)
     setConfirmRemoveSkillId(null)
-  }, [confirmRemoveSkillId, removeSkillMutation])
+    // Mutation will be called in next task
+  }, [confirmRemoveSkillId])
 
   const userSkills = userSkillsData?.skills || []
 
@@ -213,39 +217,47 @@ export function ProfileSkillsRight() {
               } | null
               proficiency_level: number | null
             }) => (
-              <ProfileResultCard
+              <YStack
                 key={skill.id}
-                onRemove={() => handleRemoveSkill(skill.id)}
-                removeDisabled={removeSkillMutation.isPending}
+                animation="quick"
+                opacity={removingSkillId === skill.id ? 0 : 1}
+                height={removingSkillId === skill.id ? 0 : 'auto'}
+                overflow="hidden"
               >
-                {/* Skill Name and Code */}
-                <YStack gap="$2">
-                  <Text fontSize="$4" fontWeight="600">
-                    {skill.skill_details?.name || 'Unknown Skill'}
-                  </Text>
-                  {skill.skill_details?.display_code && (
-                    <Text fontSize="$2" color="$color10">
-                      Code: {skill.skill_details.display_code}
+                <ProfileResultCard
+                  onRemove={() => handleRemoveSkill(skill.id)}
+                  removeDisabled={removeSkillMutation.isPending || removingSkillId === skill.id}
+                  isRemoving={removingSkillId === skill.id}
+                >
+                  {/* Skill Name and Code */}
+                  <YStack gap="$2">
+                    <Text fontSize="$4" fontWeight="600">
+                      {skill.skill_details?.name || 'Unknown Skill'}
                     </Text>
-                  )}
+                    {skill.skill_details?.display_code && (
+                      <Text fontSize="$2" color="$color10">
+                        Code: {skill.skill_details.display_code}
+                      </Text>
+                    )}
 
-                  {/* Proficiency Level */}
-                  <XStack justify="space-between" items="center" pt="$2">
-                    <YStack gap="$1">
-                      <Text fontSize="$2" color="$color11">
-                        Proficiency
-                      </Text>
-                      <Text fontWeight="600" fontSize="$3">
-                        {skill.proficiency_level &&
-                          PROFICIENCY_LABELS[
-                            skill.proficiency_level as keyof typeof PROFICIENCY_LABELS
-                          ]}{' '}
-                        ({skill.proficiency_level}/5)
-                      </Text>
-                    </YStack>
-                  </XStack>
-                </YStack>
-              </ProfileResultCard>
+                    {/* Proficiency Level */}
+                    <XStack justify="space-between" items="center" pt="$2">
+                      <YStack gap="$1">
+                        <Text fontSize="$2" color="$color11">
+                          Proficiency
+                        </Text>
+                        <Text fontWeight="600" fontSize="$3">
+                          {skill.proficiency_level &&
+                            PROFICIENCY_LABELS[
+                              skill.proficiency_level as keyof typeof PROFICIENCY_LABELS
+                            ]}{' '}
+                          ({skill.proficiency_level}/5)
+                        </Text>
+                      </YStack>
+                    </XStack>
+                  </YStack>
+                </ProfileResultCard>
+              </YStack>
             )
           )}
         </YStack>
