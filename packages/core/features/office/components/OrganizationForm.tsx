@@ -320,12 +320,20 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       />
 
       {/* Submit buttons */}
-      <XStack justify="flex-end" gap="$2" mt="$4">
+      <XStack 
+        justify="flex-end" 
+        gap="$2" 
+        mt="$4"
+        $sm={{ flexDirection: 'column' }}
+        $gtSm={{ flexDirection: 'row' }}
+      >
         <Button
           testID="org-form-cancel-btn"
           variant="outlined"
           onPress={() => router.back()}
           disabled={isLoading}
+          $sm={{ height: 44, width: '100%' }}
+          $gtSm={{ height: undefined, width: undefined }}
         >
           Cancel
         </Button>
@@ -334,6 +342,8 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
           onPress={handleSubmit(onSubmit)}
           disabled={!isDirty || isLoading}
           icon={isLoading ? <Spinner /> : undefined}
+          $sm={{ height: 44, width: '100%' }}
+          $gtSm={{ height: undefined, width: undefined }}
         >
           {isLoading ? 'Saving...' : mode === 'create' ? 'Create' : 'Update'}
         </Button>

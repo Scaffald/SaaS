@@ -709,7 +709,11 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         {/* Pay Range */}
         <YStack gap="$2">
           <Text fontWeight="600">Pay Range</Text>
-          <XStack gap="$2">
+          <XStack 
+            gap="$2"
+            $sm={{ flexDirection: 'column' }}
+            $gtSm={{ flexDirection: 'row' }}
+          >
             <YStack gap="$2" flex={1}>
               <Text fontSize="$2">Min ($)</Text>
               <Input
@@ -910,8 +914,21 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         />
 
         {/* Actions */}
-        <XStack gap="$3" pt="$4">
-          <Button data-testid="job-cancel-button" flex={1} variant="outlined" onPress={() => router.back()} disabled={isLoading}>
+        <XStack 
+          gap="$3" 
+          pt="$4"
+          $sm={{ flexDirection: 'column' }}
+          $gtSm={{ flexDirection: 'row' }}
+        >
+          <Button 
+            data-testid="job-cancel-button" 
+            flex={1} 
+            variant="outlined" 
+            onPress={() => router.back()} 
+            disabled={isLoading}
+            $sm={{ height: 44, width: '100%' }}
+            $gtSm={{ height: undefined, width: undefined }}
+          >
             Cancel
           </Button>
           <Button
@@ -921,6 +938,8 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             disabled={
               isLoading || !formData.title || !formData.description || !formData.organization_id
             }
+            $sm={{ height: 44, width: '100%' }}
+            $gtSm={{ height: undefined, width: undefined }}
           >
             {isLoading && <Spinner />}
             {!isLoading && 'Save as Draft'}
@@ -937,6 +956,8 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
               !formData.location ||
               !formData.organization_id
             }
+            $sm={{ height: 44, width: '100%' }}
+            $gtSm={{ height: undefined, width: undefined }}
           >
             {isLoading && <Spinner />}
             {!isLoading && 'Publish'}
