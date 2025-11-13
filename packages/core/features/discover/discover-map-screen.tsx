@@ -1,7 +1,6 @@
 import { useMemo, useState, useRef, useCallback } from 'react'
-import { Sheet, YStack } from 'tamagui'
+import { Sheet, YStack, useMedia } from 'tamagui'
 import { MapContainer, type MapContainerRef, type MapPinType, type ViewportBounds } from '@app/ui'
-import { useWindowDimensions } from 'react-native'
 
 import { FilterBar } from './components/FilterBar'
 import { FilterPopup } from './components/FilterPopup'
@@ -20,8 +19,12 @@ import { useUserLocation } from './hooks/useUserLocation'
 import { useMapState } from './providers/MapStateProvider'
 
 export const DiscoverMapScreen = () => {
-  const { width } = useWindowDimensions()
-  const isSmallScreen = width < 640
+  // Use Tamagui media hook to check breakpoint
+  // $sm = maxWidth: 800px
+  // On mobile (≤800px): sm is true
+  // On desktop (>800px): sm is false
+  const media = useMedia()
+  const isSmallScreen = media.sm // sm = maxWidth: 800px, so true when ≤800px
   const resultListRef = useRef<ResultListRef>(null)
   const mapRef = useRef<MapContainerRef>(null)
 

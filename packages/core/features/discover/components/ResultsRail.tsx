@@ -39,6 +39,9 @@ export const ResultsRail = memo(function ResultsRail({
       px="$3"
       overflow="hidden"
       animation="quick"
+      // Hide on mobile ($sm and below), show on desktop ($gtSm)
+      $sm={{ display: 'none' }}
+      $gtSm={{ display: 'flex' }}
       x={isVisible ? 0 : 420}
       opacity={isVisible ? 1 : 0}
       bg="$color2"
