@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -42,7 +43,12 @@ interface ProfileSkillsContextValue {
   pendingSearch: PendingSearch | null
   clearPendingSearch: () => void
   searchSkills: (query: string, taxonomies: string[]) => Promise<ParentSkill[]>
-  selectSkill: (skillId: string, proficiency: number, taxonomy: string) => Promise<void>
+  selectSkill: (
+    skillId: string,
+    proficiency: number,
+    taxonomy: string,
+    skillDetails?: ParentSkill
+  ) => Promise<void>
   isSearchingSkills: boolean
   existingSkillIds: string[]
 }
@@ -68,22 +74,78 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
 
   const userSkillsQuery = api.profile.skillsMultiTaxonomy.getUserSkills.useQuery()
 
+  // Store skill details for optimistic updates (accessed in onMutate)
+  const pendingSkillDetailsRef = useRef<ParentSkill | null>(null)
+
   const addSkillMutation = api.profile.skillsMultiTaxonomy.addSkill.useMutation({
-    onMutate: () => {
+    async onMutate(variables) {
       resetProfileSyncError()
       startProfileSync()
+
+      // Cancel outgoing refetches to avoid overwriting optimistic update
+      await utils.profile.skillsMultiTaxonomy.getUserSkills.cancel()
+
+      // Snapshot previous value for rollback
+      const previousSkills =
+        utils.profile.skillsMultiTaxonomy.getUserSkills.getData()
+
+      // Get skill details from ref (set by selectSkill before mutation)
+      const skillDetails = pendingSkillDetailsRef.current
+
+      // Optimistically update cache
+      if (skillDetails) {
+        utils.profile.skillsMultiTaxonomy.getUserSkills.setData(
+          undefined,
+          (old) => {
+            if (!old) return old
+            const tempId = `temp-${Date.now()}`
+            const newSkill = {
+              id: tempId,
+              skill_details: {
+                name: skillDetails.name,
+                display_code: skillDetails.code,
+                hierarchy_level: skillDetails.depth,
+              },
+              proficiency_level: variables.proficiencyLevel,
+              csi_skill_id: variables.taxonomy === 'csi' ? variables.skillId : null,
+              onet_occupation_id:
+                variables.taxonomy === 'onet' ? variables.skillId : null,
+              created_at: new Date().toISOString(),
+            }
+            return {
+              ...old,
+              skills: [newSkill, ...(old.skills || [])],
+            }
+          }
+        )
+        // Clear ref after use
+        pendingSkillDetailsRef.current = null
+      }
+
+      return { previousSkills }
+    },
+    onError: (error: Error, _variables, context) => {
+      // Rollback optimistic update
+      if (context?.previousSkills !== undefined) {
+        utils.profile.skillsMultiTaxonomy.getUserSkills.setData(
+          undefined,
+          context.previousSkills
+        )
+      }
+      // Clear ref on error
+      pendingSkillDetailsRef.current = null
+      toast.show('Error', {
+        message: error.message || 'Failed to add skill',
+      })
+      failProfileSync()
     },
     onSuccess: async () => {
       toast.show('Skill Added', {
         message: 'Skill has been added to your profile!',
       })
-      await invalidateProfileQueries(utils)
-    },
-    onError: (error: Error) => {
-      toast.show('Error', {
-        message: error.message || 'Failed to add skill',
-      })
-      failProfileSync()
+      // Invalidate to get real server data (replaces temporary ID)
+      await utils.profile.skillsMultiTaxonomy.getUserSkills.invalidate()
+      completeProfileSync()
     },
     onSettled: (_data: unknown, error: unknown) => {
       if (!error) {
@@ -250,7 +312,16 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
   )
 
   const selectSkill = useCallback(
-    async (skillId: string, proficiency: number, taxonomy: string) => {
+    async (
+      skillId: string,
+      proficiency: number,
+      taxonomy: string,
+      skillDetails?: ParentSkill
+    ) => {
+      // Store skill details in ref for optimistic update
+      if (skillDetails) {
+        pendingSkillDetailsRef.current = skillDetails
+      }
       await addSkillMutation.mutateAsync({
         taxonomy,
         skillId,

@@ -20,7 +20,12 @@ export interface InlineSkillSearchProps {
   /** Function to search skills with taxonomies */
   onSearchSkills: (query: string, taxonomies: string[]) => Promise<ParentSkill[]>
   /** Callback when skill is selected and added */
-  onSelectSkill: (skillId: string, proficiency: number, taxonomy: string) => void
+  onSelectSkill: (
+    skillId: string,
+    proficiency: number,
+    taxonomy: string,
+    skillDetails?: ParentSkill
+  ) => void
   /** Whether search is loading */
   isSearching?: boolean
   /** Existing skill IDs that user has already added */
@@ -192,7 +197,12 @@ export function InlineSkillSearch({
   // Handle add skill
   const handleAddSkill = useCallback(() => {
     if (selectedSkill) {
-      onSelectSkill(selectedSkill.id, proficiency, selectedTaxonomy)
+      onSelectSkill(
+        selectedSkill.id,
+        proficiency,
+        selectedTaxonomy,
+        selectedSkill
+      )
       // Reset state
       setSelectedSkill(null)
       setSelectedTaxonomy('csi')

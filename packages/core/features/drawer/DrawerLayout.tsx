@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
+import { useEffect } from 'react'
 import { Button, useTheme, YStack, Text, XStack, useMedia } from 'tamagui'
-import { DrawerActions } from '@react-navigation/native'
+import { DrawerActions, useNavigation } from '@react-navigation/native'
 import { Menu } from '@tamagui/lucide-icons'
 import { Drawer } from 'expo-router/drawer'
 import { NotificationDropdown } from '@app/ui'
@@ -39,13 +40,22 @@ export function DrawerLayout({
   hideDrawer = false,
 }: DrawerLayoutProps) {
   // Use Tamagui media hook to check breakpoint
-  // $gtLg = minWidth: 1281px (permanent drawer)
-  // When width > 1280px: gtLg is true, permanent drawer
-  // When width <= 1280px: gtLg is false, front drawer
+  // $gtMd = minWidth: 981px (permanent drawer)
+  // When width > 980px: gtMd is true, permanent drawer
+  // When width <= 980px: gtMd is false, front drawer
   const media = useMedia()
   const theme = useTheme()
-  const isSmall = !media.gtLg // Permanent drawer when gtLg, front drawer otherwise
+  const isSmall = !media.gtMd // Permanent drawer when gtMd, front drawer otherwise
+  const navigation = useNavigation()
   const { hasOfficeRole } = useUserRoles()
+
+  // Automatically open drawer on large screens (permanent drawer mode)
+  useEffect(() => {
+    if (!hideDrawer && !isSmall) {
+      // Open drawer when screen is large enough for permanent drawer
+      navigation.dispatch(DrawerActions.openDrawer())
+    }
+  }, [hideDrawer, isSmall, navigation])
   const { data: preferencesData } = api.notifications.preferences.get.useQuery(undefined, {
     staleTime: 5 * 60 * 1000,
     refetchOnMount: false,
@@ -177,7 +187,8 @@ export function DrawerLayout({
               }),
           overlayColor: hideDrawer ? 'transparent' : 'rgba(0, 0, 0, 0.15)',
           drawerStyle: hideDrawer ? { width: 0, display: 'none' } : { width: 300 },
-        })}
+          }
+        }}
         drawerContent={hideDrawer ? () => null : (props) => <DrawerMenu {...props} />}
       >
         {children}
