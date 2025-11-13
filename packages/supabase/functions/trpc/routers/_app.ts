@@ -23,6 +23,8 @@ import { feedbackRouter } from "./feedback.router.ts";
 import { workLogsRouter } from "./work-logs.router.ts";
 import { teamsRouter } from "./teams.router.ts";
 import { projectsRouter } from "./projects.router.ts";
+import { sitesRouter } from "./sites.router.ts";
+import { addressesRouter } from "./addresses.router.ts";
 
 /**
  * Main application router
@@ -53,6 +55,8 @@ export const appRouter = t.router({
   workLogs: workLogsRouter,
   teams: teamsRouter,
   projects: projectsRouter,
+  sites: sitesRouter,
+  addresses: addressesRouter,
 });
 
 // Export the router type for client-side usage
