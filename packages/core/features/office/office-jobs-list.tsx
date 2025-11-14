@@ -3,11 +3,12 @@ import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { useMemo, useState } from 'react'
 import { useRouter } from 'expo-router'
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
-import { Adapt, Button, Select, Sheet, Switch, Text, XStack, YStack } from 'tamagui'
+import { Adapt, Button, Select, Sheet, Switch, Text, XStack, YStack, H2 } from 'tamagui'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
 import { DashboardLayout } from '@app/ui'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { QuickActionsWidget } from './components/QuickActionsWidget'
+import { JobsKanbanBoard } from './components/JobsKanbanBoard'
 
 type Job = {
   id: string
@@ -119,6 +120,7 @@ export interface OfficeJobsListProps {
 
 export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) {
   const router = useRouter()
+  const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list')
   const [search, setSearch] = useState('')
   const [teamFilter, setTeamFilter] = useState<string | null>(null)
   const [myTeamsOnly, setMyTeamsOnly] = useState(false)
@@ -240,6 +242,50 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
     </XStack>
   )
 
+  // Kanban view
+  if (viewMode === 'kanban') {
+    return (
+      <YStack flex={1} bg="$background">
+        {showHeader && (
+          <XStack justify="space-between" items="center" p="$4" pb="$3">
+            <YStack>
+              <H2>Jobs</H2>
+              <Text color="$color11" fontSize="$3">
+                {filteredJobs.length} total jobs
+              </Text>
+            </YStack>
+            <XStack gap="$2">
+              <Button
+                size="$3"
+                onPress={() => setViewMode('kanban')}
+                variant={viewMode === 'kanban' ? 'outlined' : undefined}
+              >
+                Kanban
+              </Button>
+              <Button
+                size="$3"
+                onPress={() => setViewMode('list')}
+                variant={viewMode === 'list' ? 'outlined' : undefined}
+              >
+                List
+              </Button>
+              <Button
+                size="$3"
+                onPress={() => router.push(ROUTES.OFFICE_CMS_JOBS_CREATE.path)}
+              >
+                Create Job
+              </Button>
+            </XStack>
+          </XStack>
+        )}
+        <YStack flex={1}>
+          <JobsKanbanBoard jobs={filteredJobs} onJobUpdate={() => refetch()} />
+        </YStack>
+      </YStack>
+    )
+  }
+
+  // List view
   return (
     <DashboardLayout
       leftContent={
@@ -268,7 +314,25 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
               searchValue: search,
               onSearchChange: setSearch,
               searchPlaceholder: 'Search jobs...',
-              rightAccessory: filtersAccessory,
+              rightAccessory: (
+                <XStack gap="$2" items="center">
+                  {filtersAccessory}
+                  <Button
+                    size="$2"
+                    onPress={() => setViewMode('kanban')}
+                    variant={viewMode === 'kanban' ? 'outlined' : undefined}
+                  >
+                    Kanban
+                  </Button>
+                  <Button
+                    size="$2"
+                    onPress={() => setViewMode('list')}
+                    variant={viewMode === 'list' ? 'outlined' : undefined}
+                  >
+                    List
+                  </Button>
+                </XStack>
+              ),
             },
           }}
         />
