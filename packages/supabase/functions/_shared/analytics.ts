@@ -4,11 +4,20 @@ const POSTHOG_API_KEY = Deno.env.get("POSTHOG_KEY_SERVER") ??
 const POSTHOG_HOST = Deno.env.get("POSTHOG_HOST") ?? "https://app.posthog.com";
 const APP_ENV = Deno.env.get("APP_ENV") ?? "development";
 
-// Lazy-loaded PostHog instance - only loaded when actually needed
-let posthogInstance: Awaited<ReturnType<typeof getPostHogInstance>> | null =
-  null;
+// Define PostHog type for proper typing
+type PostHogInstance = {
+  capture: (data: {
+    distinctId: string;
+    event: string;
+    properties?: Record<string, unknown>;
+  }) => void;
+  flush: () => Promise<void>;
+};
 
-async function getPostHogInstance() {
+// Lazy-loaded PostHog instance - only loaded when actually needed
+let posthogInstance: PostHogInstance | null = null;
+
+async function getPostHogInstance(): Promise<PostHogInstance | null> {
   if (!POSTHOG_API_KEY) {
     return null;
   }

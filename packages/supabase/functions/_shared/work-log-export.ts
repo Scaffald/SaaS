@@ -1,5 +1,7 @@
 // Types imported dynamically when pdf-lib is loaded
-type PDFFont = unknown;
+type PDFFont = {
+  widthOfTextAtSize: (text: string, fontSize: number) => number;
+};
 type PDFPage = unknown;
 
 import type { Database } from "./database.types.ts";

@@ -67,29 +67,29 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
       </YStack>
 
       {/* Title */}
-      <Text
-        fontSize={typography.xl}
-        fontWeight={typography.fontWeightSemibold}
-        color="$color11"
-        text="center"
-        maxWidth={400}
-        px="$4"
-      >
-        {title}
-      </Text>
+      <YStack maxW={400} width="100%" px="$4">
+        <Text
+          fontSize={typography.xl}
+          fontWeight={typography.fontWeightSemibold}
+          color="$color11"
+          style={{ textAlign: 'center' }}
+        >
+          {title}
+        </Text>
+      </YStack>
 
       {/* Description */}
       {description && (
-        <Text
-          fontSize={typography.base}
-          color="$color10"
-          text="center"
-          maxWidth={400}
-          px="$4"
-          lineHeight={typography.lineHeightRelaxed}
-        >
-          {description}
-        </Text>
+        <YStack maxW={400} width="100%" px="$4">
+          <Text
+            fontSize={typography.base}
+            color="$color10"
+            style={{ textAlign: 'center' }}
+            lineHeight={typography.lineHeightRelaxed}
+          >
+            {description}
+          </Text>
+        </YStack>
       )}
 
       {/* Action */}
