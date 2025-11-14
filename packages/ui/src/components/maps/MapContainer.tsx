@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState, useCallback } from 'react'
 import { View } from 'tamagui'
-import type { MapContainerProps, MapContainerRef, ViewportBounds } from './types'
+import type { MapContainerProps, MapContainerRef, ViewportBounds, ClusterInfo } from './types'
 import { MapFallback } from './MapFallback'
 import { CustomMarker } from './CustomMarker'
 import { generateCirclePolygon, validateGeoJSONFeatureCollection } from './utils'
@@ -36,6 +36,8 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       onPinHover,
       onViewportChange,
       onMapReady,
+      onClustersChange,
+      pinStates,
       style,
     },
     ref
@@ -494,9 +496,56 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
                     return null
                   })
                   .filter((item): item is NonNullable<typeof item> => item !== null)
+
+                // Extract cluster info with member pin IDs for state management
+                if (onClustersChange && pinsSource) {
+                  const clusterInfos: ClusterInfo[] = []
+                  let processedClusters = 0
+                  const totalClusters = clusterFeatures.length
+
+                  if (totalClusters === 0) {
+                    // No clusters - call callback with empty array
+                    onClustersChange([])
+                  } else {
+                    // Process each cluster to get member pin IDs
+                    for (const cluster of clusterFeatures) {
+                      pinsSource.getClusterLeaves(
+                        cluster.clusterId,
+                        Number.MAX_SAFE_INTEGER,
+                        0,
+                        (err, leaves) => {
+                          if (!err && leaves) {
+                            const memberPinIds = leaves
+                              .map((leaf) => leaf.properties?.id as string)
+                              .filter((id): id is string => typeof id === 'string')
+
+                            clusterInfos.push({
+                              clusterId: cluster.clusterId,
+                              coordinates: cluster.coordinates,
+                              pointCount: cluster.pointCount,
+                              memberPinIds,
+                            })
+                          }
+
+                          processedClusters++
+                          // Call callback when all clusters are processed
+                          if (processedClusters === totalClusters) {
+                            onClustersChange(clusterInfos)
+                          }
+                        }
+                      )
+                    }
+                  }
+                }
               } catch (error) {
                 console.warn('Failed to query source clusters:', error)
+                if (onClustersChange) {
+                  onClustersChange([])
+                }
               }
+            } else if (onClustersChange) {
+              // No clusters at this zoom level
+              onClustersChange([])
             }
 
             // Helper to check if a pin is in a cluster
@@ -612,7 +661,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
               }
             }
 
-            // Create new markers only for pins that are NOT in clusters
+            // Create new markers only for pins that are NOT in clusters and are visible
             for (const pin of pins) {
               // Validate pin data
               if (
@@ -644,9 +693,17 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
                 continue
               }
 
-              // Skip if pin is in a cluster
-              if (isPinInCluster(pin)) {
-                continue
+              // Check pin state - skip if hidden or transitioning out
+              const pinState = pinStates?.get(pin.id)
+              if (pinState) {
+                if (pinState.visibility === 'hidden' || pinState.visibility === 'transitioning-out') {
+                  continue
+                }
+              } else {
+                // If no state, fall back to cluster check
+                if (isPinInCluster(pin)) {
+                  continue
+                }
               }
 
               try {
@@ -659,6 +716,14 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
                   zoom: currentZoom,
                 })
 
+                // Apply opacity based on pin state
+                const markerElement = marker.getElement()
+                if (markerElement && pinState) {
+                  markerElement.style.opacity = String(pinState.opacity)
+                  markerElement.style.transition = 'opacity 300ms ease-in-out'
+                  markerElement.setAttribute('data-pin-state', pinState.visibility)
+                }
+
                 marker.setLngLat(pin.coordinate).addTo(map)
                 markersRef.current.set(pin.id, marker)
               } catch (error) {
@@ -670,7 +735,33 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       } catch (error) {
         console.error('Error updating markers:', error)
       }
-    }, [pins, isMapReady, currentZoom, onPinPress, onPinHover])
+    }, [pins, isMapReady, currentZoom, onPinPress, onPinHover, pinStates, onClustersChange])
+
+    // Update existing markers' opacity when pin states change
+    useEffect(() => {
+      if (!pinStates || markersRef.current.size === 0) {
+        return
+      }
+
+      for (const [pinId, marker] of markersRef.current.entries()) {
+        const pinState = pinStates.get(pinId)
+        if (pinState) {
+          const markerElement = marker.getElement()
+          if (markerElement) {
+            markerElement.style.opacity = String(pinState.opacity)
+            markerElement.style.transition = 'opacity 300ms ease-in-out'
+            markerElement.setAttribute('data-pin-state', pinState.visibility)
+
+            // Hide marker if transitioning out or hidden
+            if (pinState.visibility === 'hidden' || pinState.visibility === 'transitioning-out') {
+              markerElement.style.display = 'none'
+            } else {
+              markerElement.style.display = ''
+            }
+          }
+        }
+      }
+    }, [pinStates])
 
     // Update radius circle when radius or centerLocation changes
     useEffect(() => {

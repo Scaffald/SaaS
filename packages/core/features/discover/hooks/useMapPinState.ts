@@ -32,6 +32,7 @@ export interface ClusterInfo {
   clusterId: number
   coordinates: [number, number]
   pointCount: number
+  memberPinIds?: string[]
 }
 
 /**

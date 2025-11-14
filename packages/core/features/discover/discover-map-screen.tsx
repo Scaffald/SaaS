@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef, useCallback } from 'react'
+import { useMemo, useState, useRef, useCallback, useEffect } from 'react'
 import { Sheet, YStack, XStack, useMedia } from 'tamagui'
 import { MapContainer, type MapContainerRef, type MapPinType, type ViewportBounds } from '@app/ui'
 
@@ -63,6 +63,12 @@ export const DiscoverMapScreen = () => {
   const [hoverCardPosition, setHoverCardPosition] = useState<{ x: number; y: number } | undefined>(
     undefined
   )
+
+  // Pin state management for transitions and clustering
+  const [clusters, setClusters] = useState<ClusterInfo[]>([])
+  const { pinStates, processPins, setPinCluster } = useMapPinState({
+    transitionDuration: 300,
+  })
 
   // Use persisted state from context
   const showRail = state.resultsRailVisible
@@ -156,6 +162,35 @@ export const DiscoverMapScreen = () => {
     showOrganizations,
     showJobs,
   ])
+
+  // Process pins with cluster information for state management
+  useEffect(() => {
+    if (mapPins.length > 0 || clusters.length > 0) {
+      processPins(mapPins, clusters)
+    }
+  }, [mapPins, clusters, processPins])
+
+  // Update pin cluster membership when clusters change
+  useEffect(() => {
+    // Create a map of pin IDs to cluster IDs
+    const pinToClusterMap = new Map<string, number>()
+    for (const cluster of clusters) {
+      for (const pinId of cluster.memberPinIds) {
+        pinToClusterMap.set(pinId, cluster.clusterId)
+      }
+    }
+
+    // Update pin states based on cluster membership
+    for (const pin of mapPins) {
+      const clusterId = pinToClusterMap.get(pin.id)
+      setPinCluster(pin.id, clusterId)
+    }
+  }, [clusters, mapPins, setPinCluster])
+
+  // Handle cluster changes from MapContainer
+  const handleClustersChange = useCallback((newClusters: ClusterInfo[]) => {
+    setClusters(newClusters)
+  }, [])
 
   // Handle pin hover - show preview card
   const handlePinHover = useCallback(
@@ -378,6 +413,8 @@ export const DiscoverMapScreen = () => {
           onPinHover={handlePinHover}
           onViewportChange={handleViewportChange}
           onMapReady={handleMapReady}
+          onClustersChange={handleClustersChange}
+          pinStates={pinStates}
           style={{ flex: 1 }}
         />
 
