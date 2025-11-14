@@ -10,7 +10,7 @@ import { OrganizationPreviewModal } from './components/OrganizationPreviewModal'
 import { UserProfilePanel } from './components/UserProfilePanel'
 import { ProfileHoverCard } from './components/ProfileHoverCard'
 import { Platform } from 'react-native'
-import type { ResultListRef } from './components/ResultList'
+import { ResultList, type ResultListRef } from './components/ResultList'
 import { defaultCenter } from './data/mockProfiles'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
 import { useOrganizations } from './hooks/useOrganizations'
@@ -44,11 +44,11 @@ export const DiscoverMapScreen = () => {
 
   // Modal states
   const [workerModalOpen, setWorkerModalOpen] = useState(false)
-  const [workerModalUserId, setWorkerModalUserId] = useState<string | null>(null)
+  const [workerModalUserId] = useState<string | null>(null)
   const [jobModalOpen, setJobModalOpen] = useState(false)
-  const [jobModalId, setJobModalId] = useState<string | null>(null)
+  const [jobModalId] = useState<string | null>(null)
   const [orgModalOpen, setOrgModalOpen] = useState(false)
-  const [orgModalId, setOrgModalId] = useState<string | null>(null)
+  const [orgModalId] = useState<string | null>(null)
   const [mobileViewMode, setMobileViewMode] = useState<'map' | 'list'>('map')
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false)
   const [userPanelOpen, setUserPanelOpen] = useState(false)
@@ -61,6 +61,8 @@ export const DiscoverMapScreen = () => {
   const [hoverCardPosition, setHoverCardPosition] = useState<{ x: number; y: number } | undefined>(
     undefined
   )
+  const [isHoverCardPinned, setIsHoverCardPinned] = useState(false)
+  const hoverDismissPendingRef = useRef(false)
 
   // Pin state management for transitions and clustering
   const [clusters, setClusters] = useState<ClusterInfo[]>([])
@@ -195,16 +197,26 @@ export const DiscoverMapScreen = () => {
     setClusters(newClusters)
   }, [])
 
+  const clearHoverState = useCallback(() => {
+    setHoveredPinId(null)
+    setHoveredPinType(null)
+    setHoverCardVisible(false)
+    setHoverCardPosition(undefined)
+  }, [])
+
   // Handle pin hover - show preview card
   const handlePinHover = useCallback(
     (pinId: string | null) => {
       if (pinId === null) {
-        setHoveredPinId(null)
-        setHoveredPinType(null)
-        setHoverCardVisible(false)
-        setHoverCardPosition(undefined)
+        if (isHoverCardPinned) {
+          hoverDismissPendingRef.current = true
+          return
+        }
+        clearHoverState()
         return
       }
+
+      hoverDismissPendingRef.current = false
 
       // Determine pin type
       const isWorker = talentProfiles.some((p) => p.id === pinId)
@@ -223,62 +235,57 @@ export const DiscoverMapScreen = () => {
           }
         }
       } else {
-        setHoveredPinId(null)
-        setHoveredPinType(null)
-        setHoverCardVisible(false)
-        setHoverCardPosition(undefined)
+        clearHoverState()
       }
     },
-    [talentProfiles, organizations]
+    [talentProfiles, organizations, isHoverCardPinned, clearHoverState]
   )
 
-  // Handle pin click - open appropriate modal
+  const handleHoverCardEnter = useCallback(() => {
+    setIsHoverCardPinned(true)
+  }, [])
+
+  const handleHoverCardLeave = useCallback(() => {
+    setIsHoverCardPinned(false)
+    if (hoverDismissPendingRef.current) {
+      hoverDismissPendingRef.current = false
+      clearHoverState()
+    }
+  }, [clearHoverState])
+
+  // Handle pin click - focus corresponding card
   const handleMarkerPress = useCallback(
     (pinId: string | null) => {
-      if (pinId === null) {
-        // Clicking empty space - clear selection
+      if (!pinId) {
         setSelectedProfileId(null)
+        setUserPanelOpen(false)
+        setUserPanelUserId(null)
+        setWorkerModalOpen(false)
+        setJobModalOpen(false)
+        setOrgModalOpen(false)
+        clearHoverState()
         return
       }
 
-      // Clear hover state when opening modal
-      setHoveredPinId(null)
-      setHoveredPinType(null)
-      setHoverCardVisible(false)
+      clearHoverState()
+      setSelectedProfileId(pinId)
+      setUserPanelOpen(false)
+      setUserPanelUserId(null)
+      setWorkerModalOpen(false)
+      setJobModalOpen(false)
+      setOrgModalOpen(false)
 
-      // Determine entity type by checking which array contains the ID
-      const isWorker = talentProfiles.some((p) => p.id === pinId)
-      const isJob = jobs.some((j) => j.id === pinId)
-      const isOrg = organizations.some((o) => o.id === pinId)
-
-      // Open appropriate modal or panel
-      if (isWorker) {
-        // For workers, show UserProfilePanel on map (lightweight preview)
-        setUserPanelUserId(pinId)
-        setUserPanelOpen(true)
-        // Also open full modal for detailed view (optional - can be removed if only panel is desired)
-        setWorkerModalUserId(pinId)
-        setWorkerModalOpen(true)
-      } else if (isJob) {
-        setJobModalId(pinId)
-        setJobModalOpen(true)
-      } else if (isOrg) {
-        setOrgModalId(pinId)
-        setOrgModalOpen(true)
-      }
-
-      // Also select in rail for desktop view
-      if (!isSmallScreen) {
-        setSelectedProfileId(pinId)
+      if (isSmallScreen) {
+        setMobileViewMode('list')
+      } else {
         updateResultsRailVisible(true)
-        setTimeout(() => {
-          if (resultListRef.current?.scrollToCard) {
-            resultListRef.current.scrollToCard(pinId)
-          }
-        }, 200)
       }
+
+      setTimeout(() => {
+        resultListRef.current?.scrollToCard(pinId)
+      }, 200)
     },
-    [isSmallScreen, talentProfiles, jobs, organizations, updateResultsRailVisible]
+    [clearHoverState, isSmallScreen, updateResultsRailVisible, setMobileViewMode]
   )
 
   const handleReset = useCallback(() => {
@@ -392,7 +399,18 @@ export const DiscoverMapScreen = () => {
     setMobileViewMode(value === 'list' ? 'list' : 'map')
   }, [])
 
-  const mobileListSheetOpen = isSmallScreen && mobileViewMode === 'list'
+  const mobileListActive = isSmallScreen && mobileViewMode === 'list'
+
+  const handleMobileResultSelect = useCallback(
+    (id: string) => {
+      setSelectedProfileId(id)
+      setMobileViewMode('map')
+      if (mapRef.current?.centerOnPin) {
+        mapRef.current.centerOnPin(id)
+      }
+    },
+    []
+  )
 
   return (
     <YStack flex={1} height="100vh" overflow="hidden" position="relative">
@@ -420,76 +438,71 @@ export const DiscoverMapScreen = () => {
         />
       )}
 
-      {/* Map and Results Rail Container */}
+      {/* Map and Results Container */}
       <XStack flex={1} overflow="hidden" position="relative">
-        {/* Map Container */}
-        <MapContainer
-          ref={mapRef}
-          pins={mapPins}
-          center={mapCenter}
-          zoom={7}
-          radius={state.lastSearchLocation ? 50 : undefined} // Default 50 miles radius when search location is set
-          centerLocation={state.lastSearchLocation?.coordinates}
-          onPinPress={handleMarkerPress}
-          onPinHover={handlePinHover}
-          onViewportChange={handleViewportChange}
-          onMapReady={handleMapReady}
-          onClustersChange={handleClustersChange}
-          pinStates={pinStates}
-          style={{ flex: 1 }}
-        />
-
-        {/* Results Rail - Desktop only */}
-        {!isSmallScreen && (
-          <ResultsRail
-            isVisible={showRail}
-            profiles={
-              showWorkers
-                ? talentProfiles.filter((profile) => {
-                    const pinState = pinStates.get(profile.id)
-                    return (
-                      !pinState ||
-                      (pinState.visibility !== 'hidden' &&
-                        pinState.visibility !== 'transitioning-out')
-                    )
-                  })
-                : []
-            }
-            organizations={
-              showOrganizations
-                ? organizations.filter((org) => {
-                    const pinState = pinStates.get(org.id)
-                    return (
-                      !pinState ||
-                      (pinState.visibility !== 'hidden' &&
-                        pinState.visibility !== 'transitioning-out')
-                    )
-                  })
-                : []
-            }
-            jobs={
-              showJobs
-                ? jobs.filter((job) => {
-                    const pinState = pinStates.get(job.id)
-                    return (
-                      !pinState ||
-                      (pinState.visibility !== 'hidden' &&
-                        pinState.visibility !== 'transitioning-out')
-                    )
-                  })
-                : []
-            }
-            selectedId={selectedProfileId}
-            onSelect={(id) => {
-              setSelectedProfileId(id)
-              // Center map on selected pin
-              if (mapRef.current?.centerOnPin) {
-                mapRef.current.centerOnPin(id)
-              }
-            }}
-            isLoading={isLoading}
-            resultListRef={resultListRef}
-          />
+        {isSmallScreen ? (
+          mobileListActive ? (
+            <YStack flex={1} bg="$background" px="$3" py="$3">
+              <ResultList
+                ref={resultListRef}
+                profiles={visibleProfiles}
+                organizations={visibleOrganizations}
+                jobs={visibleJobs}
+                selectedId={selectedProfileId}
+                onSelect={handleMobileResultSelect}
+                isLoading={isLoading || isLoadingOrgs || isLoadingJobs}
+              />
+            </YStack>
+          ) : (
+            <MapContainer
+              ref={mapRef}
+              pins={mapPins}
+              center={mapCenter}
+              zoom={7}
+              radius={state.lastSearchLocation ? 50 : undefined}
+              centerLocation={state.lastSearchLocation?.coordinates}
+              onPinPress={handleMarkerPress}
+              onPinHover={handlePinHover}
+              onViewportChange={handleViewportChange}
+              onMapReady={handleMapReady}
+              onClustersChange={handleClustersChange}
+              pinStates={pinStates}
+              style={{ flex: 1 }}
+            />
+          )
+        ) : (
+          <>
+            <MapContainer
+              ref={mapRef}
+              pins={mapPins}
+              center={mapCenter}
+              zoom={7}
+              radius={state.lastSearchLocation ? 50 : undefined}
+              centerLocation={state.lastSearchLocation?.coordinates}
+              onPinPress={handleMarkerPress}
+              onPinHover={handlePinHover}
+              onViewportChange={handleViewportChange}
+              onMapReady={handleMapReady}
+              onClustersChange={handleClustersChange}
+              pinStates={pinStates}
+              style={{ flex: 1 }}
+            />
+            <ResultsRail
+              isVisible={showRail}
+              profiles={visibleProfiles}
+              organizations={visibleOrganizations}
+              jobs={visibleJobs}
+              selectedId={selectedProfileId}
+              onSelect={(id) => {
+                setSelectedProfileId(id)
+                if (mapRef.current?.centerOnPin) {
+                  mapRef.current.centerOnPin(id)
+                }
+              }}
+              isLoading={isLoading}
+              resultListRef={resultListRef}
+            />
+          </>
         )}
       </XStack>
 
@@ -500,6 +513,8 @@ export const DiscoverMapScreen = () => {
           pinType={hoveredPinType}
           visible={hoverCardVisible}
           position={hoverCardPosition}
+          onHoverCardEnter={handleHoverCardEnter}
+          onHoverCardLeave={handleHoverCardLeave}
         />
       )}
 
@@ -515,77 +530,6 @@ export const DiscoverMapScreen = () => {
         open={orgModalOpen}
         onOpenChange={setOrgModalOpen}
       />
-
-      {/* Mobile Results Sheet */}
-      {isSmallScreen && (
-        <Sheet
-          modal
-          open={mobileListSheetOpen}
-          onOpenChange={(open: boolean) => {
-            if (!open) {
-              setMobileViewMode('map')
-            }
-          }}
-          snapPoints={[90, 70, 50]}
-          dismissOnSnapToBottom
-        >
-          <Sheet.Overlay />
-          <Sheet.Handle />
-          <Sheet.Frame>
-            <YStack flex={1} overflow="hidden">
-              <ResultsRail
-                isVisible={true}
-                profiles={
-                  showWorkers
-                    ? talentProfiles.filter((profile) => {
-                        const pinState = pinStates.get(profile.id)
-                        return (
-                          !pinState ||
-                          (pinState.visibility !== 'hidden' &&
-                            pinState.visibility !== 'transitioning-out')
-                        )
-                      })
-                    : []
-                }
-                organizations={
-                  showOrganizations
-                    ? organizations.filter((org) => {
-                        const pinState = pinStates.get(org.id)
-                        return (
-                          !pinState ||
-                          (pinState.visibility !== 'hidden' &&
-                            pinState.visibility !== 'transitioning-out')
-                        )
-                      })
-                    : []
-                }
-                jobs={
-                  showJobs
-                    ? jobs.filter((job) => {
-                        const pinState = pinStates.get(job.id)
-                        return (
-                          !pinState ||
-                          (pinState.visibility !== 'hidden' &&
-                            pinState.visibility !== 'transitioning-out')
-                        )
-                      })
-                    : []
-                }
-                selectedId={selectedProfileId}
-                onSelect={(id) => {
-                  setSelectedProfileId(id)
-                  setMobileViewMode('map')
-                  if (mapRef.current?.centerOnPin) {
-                    mapRef.current.centerOnPin(id)
-                  }
-                }}
-                isLoading={isLoading || isLoadingOrgs || isLoadingJobs}
-                resultListRef={resultListRef}
-              />
-            </YStack>
-          </Sheet.Frame>
-        </Sheet>
-      )}
 
       {/* Mobile Search & Filters Sheet */}
       {isSmallScreen && (

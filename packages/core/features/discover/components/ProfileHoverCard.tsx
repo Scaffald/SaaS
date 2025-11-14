@@ -1,5 +1,6 @@
-import { YStack, XStack, Text, View, Spinner } from 'tamagui'
-import { MapPin, Star, Building2, Briefcase, User } from '@tamagui/lucide-icons'
+import { YStack, XStack, Text, View, Spinner, Button } from 'tamagui'
+import { MapPin, Building2, Briefcase, User, ExternalLink } from '@tamagui/lucide-icons'
+import { RouteBuilder } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
 
@@ -12,6 +13,10 @@ interface ProfileHoverCardProps {
   visible: boolean
   /** Position of the card relative to the pin */
   position?: { x: number; y: number }
+  /** Callback when the hover card gains pointer focus */
+  onHoverCardEnter?: () => void
+  /** Callback when the hover card loses pointer focus */
+  onHoverCardLeave?: () => void
 }
 
 /**
@@ -25,6 +30,8 @@ export function ProfileHoverCard({
   pinType,
   visible,
   position,
+  onHoverCardEnter,
+  onHoverCardLeave,
 }: ProfileHoverCardProps) {
   // Fetch worker preview data (lightweight)
   const { data: workerPreview, isLoading: isLoadingWorker } =
@@ -58,6 +65,22 @@ export function ProfileHoverCard({
       ? getStorageUrl('avatars', workerPreview.avatarPath)
       : workerPreview?.avatarUrl || null
 
+  const profileUrl =
+    pinType === 'worker'
+      ? RouteBuilder.discoverWorkerDetail(pinId)
+      : pinType === 'organization'
+        ? RouteBuilder.dashboardEmployer(pinId)
+        : null
+
+  const handleOpenProfile = () => {
+    if (!profileUrl) {
+      return
+    }
+    if (typeof window !== 'undefined') {
+      window.open(profileUrl, '_blank', 'noopener,noreferrer')
+    }
+  }
+
   return (
     <View
       position="absolute"
@@ -74,8 +97,10 @@ export function ProfileHoverCard({
         top: position?.y ?? 0,
         left: position?.x ?? 0,
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-        pointerEvents: 'none', // Don't block map interactions
+        pointerEvents: 'auto',
       }}
+      onMouseEnter={onHoverCardEnter}
+      onMouseLeave={onHoverCardLeave}
     >
       {isLoading ? (
         <YStack items="center" py="$4" gap="$2">
@@ -124,6 +149,16 @@ export function ProfileHoverCard({
                 </Text>
               )}
             </YStack>
+            {profileUrl ? (
+              <Button
+                size="$2"
+                circular
+                variant="outlined"
+                icon={ExternalLink}
+                aria-label="View full profile in new tab"
+                onPress={handleOpenProfile}
+              />
+            ) : null}
           </XStack>
 
           {/* Location */}
@@ -185,6 +220,16 @@ export function ProfileHoverCard({
                 </Text>
               )}
             </YStack>
+            {profileUrl ? (
+              <Button
+                size="$2"
+                circular
+                variant="outlined"
+                icon={ExternalLink}
+                aria-label="View organization in new tab"
+                onPress={handleOpenProfile}
+              />
+            ) : null}
           </XStack>
 
           {/* Location */}
