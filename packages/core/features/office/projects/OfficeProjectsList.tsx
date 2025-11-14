@@ -93,28 +93,7 @@ const createColumns = (router: ReturnType<typeof useRouter>) => [
       )
     },
   }),
-  columnHelper.display({
-    id: 'actions',
-    header: 'Actions',
-    cell: (info) => {
-      const project = info.row.original
-      return (
-        <XStack gap="$2">
-          <Button
-            size="$2"
-            icon={Pencil}
-            onPress={() => {
-              router.push(
-                RouteBuilder.projectEdit(project.id)
-              )
-            }}
-          >
-            Edit
-          </Button>
-        </XStack>
-      )
-    },
-  }),
+  // Actions column removed - using RowActionOverlay instead
 ]
 
 export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean }) {
@@ -131,9 +110,15 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
     offset: 0,
   })
 
-  const _columns = useMemo(() => createColumns(router), [router])
+  const columns = useMemo(() => createColumns(router), [router])
 
   const projects = data?.projects || []
+  
+  const handleRowEdit = (project: Project) => {
+    router.push(RouteBuilder.projectEdit(project.id))
+  }
+  
+  const getItemName = (project: Project) => project.name
 
   return (
     <DashboardLayout

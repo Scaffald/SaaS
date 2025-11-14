@@ -23,6 +23,14 @@ export function useNewsFeedByIndustry({
   region?: string
   staleTime?: number
 }) {
+  // Validate industryId is a valid UUID before making the query
+  // UUID v4 format: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+  const isValidUUID =
+    industryId.length > 0 &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      industryId
+    )
+
   const query = api.news.getByIndustry.useQuery(
     {
       industryId,
@@ -33,6 +41,7 @@ export function useNewsFeedByIndustry({
     {
       staleTime,
       retry: 2,
+      enabled: isValidUUID, // Only run query if industryId is a valid UUID
     }
   )
 
@@ -80,10 +89,10 @@ export function useAggregatedNews({
 // Legacy exports for backward compatibility during migration
 // These will be removed in Task 12
 export function useNewsFeed({
-  feedUrl,
-  maxItems = 5,
-  staleTime = 15 * 60 * 1000,
-  retry = 2,
+  feedUrl: _feedUrl,
+  maxItems: _maxItems = 5,
+  staleTime: _staleTime = 15 * 60 * 1000,
+  retry: _retry = 2,
 }: {
   feedUrl: string
   maxItems?: number
@@ -102,7 +111,7 @@ export function useNewsFeed({
   }
 }
 
-export function useMultipleNewsFeeds(feedUrls: string[], maxItemsPerFeed = 3) {
+export function useMultipleNewsFeeds(_feedUrls: string[], _maxItemsPerFeed = 3) {
   // This is deprecated - use useNewsFeedByIndustry instead
   console.warn(
     'useMultipleNewsFeeds is deprecated. Use useNewsFeedByIndustry with industryId instead.'

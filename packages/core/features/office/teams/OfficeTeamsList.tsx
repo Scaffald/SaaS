@@ -31,10 +31,7 @@ type TeamRow = {
   updatedAt?: string
 }
 
-const createColumns = (
-  router: ReturnType<typeof useRouter>,
-  onArchive: (team: TeamRow) => Promise<void>
-): ColumnDef<TeamRow, unknown>[] => [
+const createColumns = (router: ReturnType<typeof useRouter>): ColumnDef<TeamRow, unknown>[] => [
   {
     accessorKey: 'name',
     header: 'Team Name',
@@ -65,31 +62,7 @@ const createColumns = (
       return value ? new Date(value).toLocaleDateString() : '—'
     },
   },
-  {
-    id: 'actions',
-    header: 'Actions',
-    cell: ({ row }: CellContext<TeamRow, unknown>) => {
-      const team = row.original
-      return (
-        <XStack gap="$2">
-          <Button
-            size="$2"
-            variant="outlined"
-            icon={Pencil}
-            onPress={() => router.push(RouteBuilder.officeTeamsEdit(team.id))}
-          >
-            Edit
-          </Button>
-          <DeleteButton
-            itemName={team.name}
-            itemType="team"
-            onDelete={() => onArchive(team)}
-            size="$2"
-          />
-        </XStack>
-      )
-    },
-  },
+  // Actions column removed - using RowActionOverlay instead
 ]
 
 export function OfficeTeamsList() {
@@ -152,16 +125,20 @@ export function OfficeTeamsList() {
 
   const archiveTeam = archiveMutation.mutateAsync
 
-  const columns = useMemo(
-    () =>
-      createColumns(router, async (team) => {
-        await archiveTeam({
-          teamId: team.id,
-          reason: 'Archived from office dashboard',
-        })
-      }),
-    [router, archiveTeam]
-  )
+  const columns = useMemo(() => createColumns(router), [router])
+  
+  const handleRowEdit = (team: TeamRow) => {
+    router.push(RouteBuilder.officeTeamsEdit(team.id))
+  }
+  
+  const handleRowDelete = async (team: TeamRow) => {
+    await archiveTeam({
+      teamId: team.id,
+      reason: 'Archived from office dashboard',
+    })
+  }
+  
+  const getItemName = (team: TeamRow) => team.name
 
   return (
     <DashboardLayout
@@ -178,6 +155,10 @@ export function OfficeTeamsList() {
             data={filteredTeams}
             isLoading={isLoading || archiveMutation.isPending}
             emptyMessage="No teams found"
+            onRowEdit={handleRowEdit}
+            onRowDelete={handleRowDelete}
+            getItemName={getItemName}
+            itemType="team"
           />
           {archiveMutation.isPending ? (
             <YStack

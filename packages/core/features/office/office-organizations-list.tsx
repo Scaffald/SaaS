@@ -16,7 +16,6 @@ import { QuickActionsWidget } from './components/QuickActionsWidget'
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { OfficePageLayout } from './components/OfficePageLayout'
-import { DeleteButton } from './components/DeleteButton'
 
 type Organization = {
   id: string
@@ -49,10 +48,7 @@ type OrganizationRequestRow = {
 
 const columnHelper = createColumnHelper<Organization>()
 
-const createColumns = (
-  router: ReturnType<typeof useRouter>,
-  onDelete: (id: string) => Promise<void>
-) => [
+const createColumns = (router: ReturnType<typeof useRouter>) => [
   columnHelper.accessor('name', {
     header: 'Name',
     cell: (info) => info.getValue(),
@@ -75,30 +71,7 @@ const createColumns = (
     header: 'Created',
     cell: (info) => new Date(info.getValue()).toLocaleDateString(),
   }),
-  columnHelper.display({
-    id: 'actions',
-    header: 'Actions',
-    cell: (info) => {
-      const org = info.row.original
-      return (
-        <XStack gap="$2">
-          <Button
-            size="$2"
-            variant="outlined"
-            icon={Pencil}
-            onPress={() => router.push(`/office/organizations/${org.id}/edit`)}
-          >
-            Edit
-          </Button>
-          <DeleteButton
-            itemName={org.name}
-            itemType="organization"
-            onDelete={() => onDelete(org.id)}
-          />
-        </XStack>
-      )
-    },
-  }),
+  // Actions column removed - using RowActionOverlay instead
 ]
 
 export function OfficeOrganizationsList() {
@@ -229,7 +202,17 @@ export function OfficeOrganizationsList() {
       org.slug.toLowerCase().includes(search.toLowerCase())
   )
 
-  const columns = createColumns(router, handleDelete)
+  const columns = createColumns(router)
+  
+  const handleRowEdit = (org: Organization) => {
+    router.push(`/office/organizations/${org.id}/edit`)
+  }
+  
+  const handleRowDelete = async (org: Organization) => {
+    await handleDelete(org.id)
+  }
+  
+  const getItemName = (org: Organization) => org.name
 
   const refreshRequests = () => {
     void refetchRequests()
@@ -343,6 +326,10 @@ export function OfficeOrganizationsList() {
             pageSize={50}
             emptyMessage="No organizations found"
             hideCreateButton
+            onRowEdit={handleRowEdit}
+            onRowDelete={handleRowDelete}
+            getItemName={getItemName}
+            itemType="organization"
           />
         }
         rightContent={

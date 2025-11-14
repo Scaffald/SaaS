@@ -147,15 +147,28 @@ export function NewsWidget({
         return
       }
 
-      // Fallback: lookup industry by slug
+      // Fallback: lookup industry by slug (from prop or default to 'construction')
+      const industrySlug = industry || 'construction'
       const { data: industryData } = await supabase
         .schema('core')
         .from('industries')
         .select('id')
-        .eq('slug', industry)
+        .eq('slug', industrySlug)
         .single()
 
-      setIndustryId(industryData?.id || null)
+      if (industryData?.id) {
+        setIndustryId(industryData.id)
+      } else {
+        // Final fallback: try to get construction industry
+        const { data: fallbackData } = await supabase
+          .schema('core')
+          .from('industries')
+          .select('id')
+          .eq('slug', 'construction')
+          .single()
+
+        setIndustryId(fallbackData?.id || null)
+      }
     }
 
     void resolveIndustryId()
@@ -168,7 +181,7 @@ export function NewsWidget({
     error,
     refetch,
   } = useAggregatedNews({
-    industryId: industryId || '',
+    industryId: industryId || '', // Will be validated in hook - query disabled if invalid
     maxTotalItems: fetchCount,
   })
 
