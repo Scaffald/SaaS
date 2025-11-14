@@ -1,10 +1,8 @@
 import { useMemo, useState, useRef, useCallback } from 'react'
-import { Sheet, YStack, useMedia } from 'tamagui'
+import { Sheet, YStack, XStack, useMedia } from 'tamagui'
 import { MapContainer, type MapContainerRef, type MapPinType, type ViewportBounds } from '@app/ui'
 
-import { FilterBar } from './components/FilterBar'
-import { FilterPopup } from './components/FilterPopup'
-import { MapSearchInput } from './components/MapSearchInput'
+import { MapFilterBar } from './components/MapFilterBar'
 import { ResultsRail } from './components/ResultsRail'
 import { WorkerPreviewModal } from './components/WorkerPreviewModal'
 import { JobPreviewModal } from './components/JobPreviewModal'
@@ -41,7 +39,6 @@ export const DiscoverMapScreen = () => {
   } = useMapState()
 
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
-  const [filtersOpen, setFiltersOpen] = useState(false)
   const [viewportBounds, setViewportBounds] = useState<ViewportBounds | null>(null)
   const [mapReady, setMapReady] = useState(false)
 
@@ -52,10 +49,14 @@ export const DiscoverMapScreen = () => {
   const [jobModalId, setJobModalId] = useState<string | null>(null)
   const [orgModalOpen, setOrgModalOpen] = useState(false)
   const [orgModalId, setOrgModalId] = useState<string | null>(null)
-  const [showSearchInput, setShowSearchInput] = useState(false)
   const [showResultsSheet, setShowResultsSheet] = useState(false)
   const [userPanelOpen, setUserPanelOpen] = useState(false)
   const [userPanelUserId, setUserPanelUserId] = useState<string | null>(null)
+
+  // Hover state management (will be used in Task 6)
+  const [_hoveredPinId, setHoveredPinId] = useState<string | null>(null)
+  const [_hoveredPinType, setHoveredPinType] = useState<'worker' | 'organization' | null>(null)
+  const [_hoverCardVisible, setHoverCardVisible] = useState(false)
 
   // Use persisted state from context
   const showRail = state.resultsRailVisible
@@ -150,17 +151,46 @@ export const DiscoverMapScreen = () => {
     showJobs,
   ])
 
+  // Handle pin hover - show preview card (will be connected to MapContainer in Task 5)
+  const _handlePinHover = useCallback(
+    (pinId: string | null) => {
+      if (pinId === null) {
+        setHoveredPinId(null)
+        setHoveredPinType(null)
+        setHoverCardVisible(false)
+        return
+      }
+
+      // Determine pin type
+      const isWorker = talentProfiles.some((p) => p.id === pinId)
+      const isOrg = organizations.some((o) => o.id === pinId)
+
+      if (isWorker || isOrg) {
+        setHoveredPinId(pinId)
+        setHoveredPinType(isWorker ? 'worker' : 'organization')
+        setHoverCardVisible(true)
+      } else {
+        setHoveredPinId(null)
+        setHoveredPinType(null)
+        setHoverCardVisible(false)
+      }
+    },
+    [talentProfiles, organizations]
+  )
+
   // Handle pin click - open appropriate modal
   const handleMarkerPress = useCallback(
     (pinId: string | null) => {
-      // Hide search input when user interacts with map
-      setShowSearchInput(false)
-
       if (pinId === null) {
         // Clicking empty space - clear selection
         setSelectedProfileId(null)
         return
       }
+
+      // Clear hover state when opening modal
+      setHoveredPinId(null)
+      setHoveredPinType(null)
+      setHoverCardVisible(false)
 
       // Determine entity type by checking which array contains the ID
       const isWorker = talentProfiles.some((p) => p.id === pinId)
@@ -199,13 +229,16 @@ export const DiscoverMapScreen = () => {
 
   const handleReset = useCallback(() => {
     setSelectedProfileId(null)
-    setShowSearchInput(false)
     // Close any open modals and panels
     setWorkerModalOpen(false)
     setJobModalOpen(false)
     setOrgModalOpen(false)
     setUserPanelOpen(false)
     setUserPanelUserId(null)
+    // Clear hover state
+    setHoveredPinId(null)
+    setHoveredPinType(null)
+    setHoverCardVisible(false)
     // Clear persisted state
     clearState()
   }, [clearState])
@@ -290,52 +323,49 @@ export const DiscoverMapScreen = () => {
     setMapReady(true)
   }, [])
 
+  const resultsCount = talentProfiles.length + organizations.length + jobs.length
+
   return (
     <YStack flex={1} height="100vh" overflow="hidden" position="relative">
-      {/* Map as base layer */}
-      <MapContainer
-        ref={mapRef}
-        pins={mapPins}
-        center={mapCenter}
-        zoom={7}
-        radius={state.lastSearchLocation ? 50 : undefined} // Default 50 miles radius when search location is set
-        centerLocation={state.lastSearchLocation?.coordinates}
-        onPinPress={handleMarkerPress}
-        onViewportChange={handleViewportChange}
-        onMapReady={handleMapReady}
-        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-      />
-
-      {/* Search Input Overlay */}
-      <MapSearchInput
-        isVisible={showSearchInput}
-        onClose={() => setShowSearchInput(false)}
+      {/* Filter Bar - Full width at top */}
+      <MapFilterBar
         onLocationSelect={handleLocationSelect}
+        showWorkers={showWorkers}
+        showOrganizations={showOrganizations}
+        showJobs={showJobs}
+        onShowWorkersChange={(value) => updateFilters({ showWorkers: value })}
+        onShowOrganizationsChange={(value) => updateFilters({ showOrganizations: value })}
+        onShowJobsChange={(value) => updateFilters({ showJobs: value })}
+        resultsCount={resultsCount}
+        onResultsPress={() => {
+          if (isSmallScreen) {
+            setShowResultsSheet(true)
+          } else {
+            updateResultsRailVisible(!showRail)
+          }
+        }}
+        onReset={handleReset}
         railVisible={!isSmallScreen && showRail}
       />
 
-      {/* Overlay elements */}
-      {isSmallScreen ? (
-        <>
-          {/* Filter Bar */}
-          <FilterBar
-            onResultsPress={() => setShowResultsSheet(true)}
-            resultsCount={talentProfiles.length + organizations.length + jobs.length}
-            onSearchPress={() => {
-              setShowSearchInput(!showSearchInput)
-            }}
-            onFilterPress={() => {
-              setFiltersOpen(!filtersOpen)
-            }}
-            onResetPress={handleReset}
-            railVisible={false}
-            searchActive={showSearchInput}
-            filterActive={filtersOpen}
-          />
-        </>
-      ) : (
-        <>
-          {/* Results Rail */}
+      {/* Map and Results Rail Container */}
+      <XStack flex={1} overflow="hidden" position="relative">
+        {/* Map Container */}
+        <MapContainer
+          ref={mapRef}
+          pins={mapPins}
+          center={mapCenter}
+          zoom={7}
+          radius={state.lastSearchLocation ? 50 : undefined} // Default 50 miles radius when search location is set
+          centerLocation={state.lastSearchLocation?.coordinates}
+          onPinPress={handleMarkerPress}
+          onViewportChange={handleViewportChange}
+          onMapReady={handleMapReady}
+          style={{ flex: 1 }}
+        />
+
+        {/* Results Rail - Desktop only */}
+        {!isSmallScreen && (
           <ResultsRail
             isVisible={showRail}
             profiles={showWorkers ? talentProfiles : []}
@@ -352,24 +382,8 @@ export const DiscoverMapScreen = () => {
             isLoading={isLoading}
             resultListRef={resultListRef}
           />
-
-          {/* Filter Bar */}
-          <FilterBar
-            onResultsPress={() => updateResultsRailVisible(!showRail)}
-            resultsCount={talentProfiles.length + organizations.length + jobs.length}
-            onSearchPress={() => {
-              setShowSearchInput(!showSearchInput)
-            }}
-            onFilterPress={() => {
-              setFiltersOpen(!filtersOpen)
-            }}
-            onResetPress={handleReset}
-            railVisible={showRail}
-            searchActive={showSearchInput}
-            filterActive={filtersOpen}
-          />
-        </>
-      )}
+        )}
+      </XStack>
 
       {/* Modals - Rendered for both mobile and desktop */}
       <WorkerPreviewModal
@@ -412,25 +426,16 @@ export const DiscoverMapScreen = () => {
         </Sheet.Frame>
       </Sheet>
 
-      {/* Filter Popup */}
-      <FilterPopup
-        isOpen={filtersOpen}
-        onClose={() => setFiltersOpen(false)}
-        railVisible={!isSmallScreen && showRail}
-        showWorkers={showWorkers}
-        showOrganizations={showOrganizations}
-        showJobs={showJobs}
-        onShowWorkersChange={(value) => updateFilters({ showWorkers: value })}
-        onShowOrganizationsChange={(value) => updateFilters({ showOrganizations: value })}
-        onShowJobsChange={(value) => updateFilters({ showJobs: value })}
-      />
-
       {/* User Profile Panel (map overlay) */}
       <UserProfilePanel
         userId={userPanelUserId}
         open={userPanelOpen}
         onOpenChange={setUserPanelOpen}
-        position={isSmallScreen ? { top: 16, left: 16, right: 16 } : { top: 16, right: showRail ? 460 : 16 }}
+        position={
+          isSmallScreen
+            ? { top: 80, left: 16, right: 16 }
+            : { top: 80, right: showRail ? 460 : 16 }
+        }
       />
     </YStack>
   )
