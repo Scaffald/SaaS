@@ -93,12 +93,14 @@ To keep the `preview` branch completely isolated from production, duplicate the 
 | `PREVIEW_EXPO_PUBLIC_GOOGLE_IOS_SCHEME` | Preview custom URL scheme |
 | `PREVIEW_EXPO_PUBLIC_MAPBOX_TOKEN` | Preview Mapbox token |
 | `PREVIEW_EXPO_PUBLIC_MAPBOX_API_URL` | Preview Mapbox API URL override |
-| `PREVIEW_NETLIFY_SITE_ID` | Dedicated Netlify site for preview deploys |
-| `PREVIEW_NETLIFY_AUTH_TOKEN` | (Optional) Netlify access token scoped to the preview site |
+| `PREVIEW_NETLIFY_SITE_ID` | Dedicated Netlify site for preview deploys *(optional if using one site)* |
+| `PREVIEW_NETLIFY_AUTH_TOKEN` | Netlify access token scoped to the preview site *(optional)* |
 | `PREVIEW_SUPABASE_ACCESS_TOKEN` | Supabase access token for preview |
 | `PREVIEW_SUPABASE_PROJECT_ID` | Preview Supabase project ref |
 
-> ⚠️ The GitHub Action intentionally fails for the `preview` branch when these secrets are missing. Configure them before pushing to avoid accidentally deploying preview builds into production infrastructure.
+> ⚠️ The GitHub Action intentionally fails for the `preview` branch when Supabase/App secrets are missing. For Netlify, you only need `PREVIEW_NETLIFY_*` if you operate a dedicated preview site. When using a single Netlify site with branch deploys (e.g., `preview.scaffald.com` mapped to the `preview` branch), you can reuse the main `NETLIFY_*` secrets.
+
+> ✅ **Single-site Netlify tip:** In Netlify → Domain management → Branch subdomains, add `preview` mapped to `preview.scaffald.com`. Our workflow sets `branch: preview` and `alias: preview`, so each push to the `preview` branch updates that subdomain while `main` continues to drive `app.scaffald.com`.
 
 ## 🔧 Adding Secrets to GitHub
 
@@ -117,11 +119,11 @@ To keep the `preview` branch completely isolated from production, duplicate the 
 ### Via GitHub CLI (Alternative)
 
 ```bash
-# Netlify secrets
+# Netlify secrets (add preview variants only if you have a separate site)
 gh secret set NETLIFY_AUTH_TOKEN
 gh secret set NETLIFY_SITE_ID
-gh secret set PREVIEW_NETLIFY_AUTH_TOKEN   # optional if sharing the same token
-gh secret set PREVIEW_NETLIFY_SITE_ID
+# gh secret set PREVIEW_NETLIFY_AUTH_TOKEN   # optional when using two sites
+# gh secret set PREVIEW_NETLIFY_SITE_ID
 
 # Supabase secrets
 gh secret set SUPABASE_ACCESS_TOKEN
@@ -225,7 +227,7 @@ DATABASE_URL=postgresql://postgres:[password]@db.[project].supabase.co:5432/post
 ### GitHub Secrets
 - [ ] `NETLIFY_AUTH_TOKEN` set
 - [ ] `NETLIFY_SITE_ID` set
-- [ ] `PREVIEW_NETLIFY_SITE_ID` set
+- [ ] `PREVIEW_NETLIFY_SITE_ID` set *(only when using a separate Netlify site)*
 - [ ] `SUPABASE_ACCESS_TOKEN` set (optional)
 - [ ] `SUPABASE_PROJECT_ID` set (optional)
 - [ ] `PREVIEW_SUPABASE_PROJECT_ID` set (optional)
