@@ -410,15 +410,55 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           return
         }
 
-        // Remove old markers
-        for (const marker of markersRef.current.values()) {
-          marker.remove()
+        // Viewport culling: only process pins within viewport bounds + 10% buffer
+        const bounds = map.getBounds()
+        const viewportPins = pins.filter((pin) => {
+          const [lng, lat] = pin.coordinate
+          // Add 10% buffer to prevent pins from disappearing at edges
+          const lngRange = bounds.getEast() - bounds.getWest()
+          const latRange = bounds.getNorth() - bounds.getSouth()
+          const lngBuffer = lngRange * 0.1
+          const latBuffer = latRange * 0.1
+
+          return (
+            lng >= bounds.getWest() - lngBuffer &&
+            lng <= bounds.getEast() + lngBuffer &&
+            lat >= bounds.getSouth() - latBuffer &&
+            lat <= bounds.getNorth() + latBuffer
+          )
+        })
+
+        // Track which pins should exist
+        const pinsToKeep = new Set<string>()
+        const pinsToRemove = new Set<string>()
+
+        // Determine which markers to keep vs remove
+        for (const [pinId] of markersRef.current.entries()) {
+          const pinExists = viewportPins.some((p) => p.id === pinId)
+          if (!pinExists) {
+            pinsToRemove.add(pinId)
+          } else {
+            pinsToKeep.add(pinId)
+          }
         }
-        markersRef.current.clear()
+
+        // Remove markers that are no longer needed
+        for (const pinId of pinsToRemove) {
+          const marker = markersRef.current.get(pinId)
+          if (marker) {
+            marker.remove()
+            markersRef.current.delete(pinId)
+          }
+        }
+
+        // Update existing markers instead of recreating
+        const pinsToUpdate = viewportPins.filter((pin) => pinsToKeep.has(pin.id))
+        const pinsToCreate = viewportPins.filter((pin) => !pinsToKeep.has(pin.id))
 
         const CLUSTER_MAX_ZOOM = 17
 
         // Update GeoJSON source FIRST so clusters can render
+        // Use all pins for clustering (not just viewport), as clusters may span viewport
         const geojsonData: GeoJSON.FeatureCollection = {
           type: 'FeatureCollection',
           features: pins
@@ -661,8 +701,28 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
               }
             }
 
+            // Update existing markers (position, state, etc.)
+            for (const pin of pinsToUpdate) {
+              const existingMarker = markersRef.current.get(pin.id)
+              if (existingMarker) {
+                // Update marker position if coordinates changed
+                const [lng, lat] = pin.coordinate
+                existingMarker.setLngLat([lng, lat])
+
+                // Update opacity based on pin state
+                const pinState = pinStates?.get(pin.id)
+                if (pinState) {
+                  const markerElement = existingMarker.getElement()
+                  if (markerElement) {
+                    markerElement.style.opacity = String(pinState.opacity)
+                    markerElement.setAttribute('data-pin-state', pinState.visibility)
+                  }
+                }
+              }
+            }
+
             // Create new markers only for pins that are NOT in clusters and are visible
-            for (const pin of pins) {
+            for (const pin of pinsToCreate) {
               // Validate pin data
               if (
                 !pin.id ||
@@ -696,7 +756,10 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
               // Check pin state - skip if hidden or transitioning out
               const pinState = pinStates?.get(pin.id)
               if (pinState) {
-                if (pinState.visibility === 'hidden' || pinState.visibility === 'transitioning-out') {
+                if (
+                  pinState.visibility === 'hidden' ||
+                  pinState.visibility === 'transitioning-out'
+                ) {
                   continue
                 }
               } else {
