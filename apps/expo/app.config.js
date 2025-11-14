@@ -150,7 +150,13 @@ export default {
       },
       mapbox: {
         accessToken: process.env.EXPO_PUBLIC_MAPBOX_TOKEN,
-        styleURL: process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL,
+        styleURL:
+          process.env.EXPO_PUBLIC_MAPBOX_STYLE_LIGHT ??
+          process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL,
+        styleURLDark:
+          process.env.EXPO_PUBLIC_MAPBOX_STYLE_DARK ??
+          process.env.EXPO_PUBLIC_MAPBOX_STYLE_LIGHT ??
+          process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL,
         apiBaseUrl: process.env.EXPO_PUBLIC_MAPBOX_API_URL,
       },
       analytics: {

@@ -5,6 +5,7 @@ import { MapFallback } from './MapFallback'
 import type { MapView, Camera, PointAnnotation } from '@rnmapbox/maps'
 import MapboxGL from '@rnmapbox/maps'
 import { useThemeSetting } from '@app/core/provider/theme/UniversalThemeProvider'
+import { getMapStyleUrl } from './mapboxStyleConfig'
 
 export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
   ({ pins, center = [-84.5555, 42.7325], zoom = 7, onPinPress, onMapReady, style }, ref) => {
@@ -13,10 +14,8 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
     const [isMapReady, setIsMapReady] = useState(false)
 
     // Determine map style based on app theme
-    const mapStyle =
-      resolvedTheme === 'dark'
-        ? 'mapbox://styles/mapbox/dark-v11'
-        : 'mapbox://styles/mapbox/streets-v12'
+    const themeMode = resolvedTheme === 'dark' ? 'dark' : 'light'
+    const mapStyle = getMapStyleUrl(themeMode)
 
     // Expose map methods to parent (native has limited support)
     useImperativeHandle(ref, () => ({

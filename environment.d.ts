@@ -15,6 +15,9 @@ declare global {
       EXPO_PUBLIC_SUPABASE_ANON_KEY: string
 
       EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN: string
+      EXPO_PUBLIC_MAPBOX_STYLE_URL?: string
+      EXPO_PUBLIC_MAPBOX_STYLE_LIGHT?: string
+      EXPO_PUBLIC_MAPBOX_STYLE_DARK?: string
 
       POSTHOG_HOST?: string
       POSTHOG_KEY?: string

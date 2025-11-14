@@ -1,10 +1,31 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { View } from 'tamagui'
-import type { MapContainerProps, MapContainerRef, ViewportBounds, ClusterInfo } from './types'
+import type {
+  MapContainerProps,
+  MapContainerRef,
+  ViewportBounds,
+  ClusterInfo,
+  MapPinCategory,
+  MapPin,
+} from './types'
 import type { CustomMarker } from './CustomMarker'
 import { generateCirclePolygon, validateGeoJSONFeatureCollection } from './utils'
 import { useThemeSetting } from '../../../../core/provider/theme/UniversalThemeProvider'
 import { createPulsingDot } from './PulsingDot'
+import {
+  primaryDarkColor,
+  primaryLightColor,
+  purpleDark,
+  purpleLight,
+  yellowDark,
+  yellowLight,
+} from '../../themes/scaffald-theme'
+import {
+  getMapStyleUrl,
+  getStandardStyleConfigIfNeeded,
+  shouldApplyStandardConfig,
+  getStandardStyleConfig,
+} from './mapboxStyleConfig'
 
 import 'mapbox-gl/dist/mapbox-gl.css'
 
@@ -39,6 +60,142 @@ function ensurePulsingDotImage(map: mapboxgl.Map) {
   map.addImage('pulsing-dot', pulsingDot, { pixelRatio: 2 })
 }
 
+const PIN_TYPE_ORDER: MapPinCategory[] = ['worker', 'organization', 'job']
+
+const PIN_SOURCE_CONFIGS: Record<
+  MapPinCategory,
+  {
+    sourceId: string
+    clusterLayerId: string
+    clusterCountLayerId: string
+    pointLayerId: string
+    avatarLayerId?: string
+    clusterIdOffset: number
+  }
+> = {
+  worker: {
+    sourceId: 'worker-pins',
+    clusterLayerId: 'worker-clusters',
+    clusterCountLayerId: 'worker-cluster-count',
+    pointLayerId: 'worker-unclustered',
+    avatarLayerId: 'worker-avatar-layer',
+    clusterIdOffset: 0,
+  },
+  organization: {
+    sourceId: 'organization-pins',
+    clusterLayerId: 'organization-clusters',
+    clusterCountLayerId: 'organization-cluster-count',
+    pointLayerId: 'organization-unclustered',
+    clusterIdOffset: 1_000_000,
+  },
+  job: {
+    sourceId: 'job-pins',
+    clusterLayerId: 'job-clusters',
+    clusterCountLayerId: 'job-cluster-count',
+    pointLayerId: 'job-unclustered',
+    clusterIdOffset: 2_000_000,
+  },
+}
+
+const clusterLayerIds = PIN_TYPE_ORDER.map((type) => PIN_SOURCE_CONFIGS[type].clusterLayerId)
+const pointLayerIds = PIN_TYPE_ORDER.map((type) => PIN_SOURCE_CONFIGS[type].pointLayerId)
+const avatarLayerIds = PIN_TYPE_ORDER.map((type) => PIN_SOURCE_CONFIGS[type].avatarLayerId).filter(
+  (id): id is string => Boolean(id)
+)
+const layerToPinType = PIN_TYPE_ORDER.reduce<Record<string, MapPinCategory>>((acc, type) => {
+  const config = PIN_SOURCE_CONFIGS[type]
+  acc[config.clusterLayerId] = type
+  acc[config.pointLayerId] = type
+  if (config.avatarLayerId) {
+    acc[config.avatarLayerId] = type
+  }
+  return acc
+}, {})
+
+const CLUSTER_MAX_ZOOM = 14
+const CLUSTER_RADIUS_PX = 50
+const AVATAR_IMAGE_PREFIX = 'avatar-pin'
+const AVATAR_BASE_SIZE = 96
+const AVATAR_BORDER_WIDTH = 6
+
+type PinColorMap = Record<MapPinCategory, string>
+
+const determinePinType = (pin: MapPin): MapPinCategory => {
+  if (pin.pinType) {
+    return pin.pinType
+  }
+
+  if (pin.organization === 'Organization') {
+    return 'organization'
+  }
+
+  if (pin.organization === 'Job') {
+    return 'job'
+  }
+
+  return 'worker'
+}
+
+const createAvatarCanvas = (
+  url: string,
+  {
+    size = AVATAR_BASE_SIZE,
+    borderColor = '#ffffff',
+    borderWidth = AVATAR_BORDER_WIDTH,
+  }: { size?: number; borderColor?: string; borderWidth?: number }
+): Promise<HTMLCanvasElement> => {
+  return new Promise((resolve, reject) => {
+    const image = new Image()
+    image.crossOrigin = 'anonymous'
+    image.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = size
+      canvas.height = size
+      const ctx = canvas.getContext('2d')
+      if (!ctx) {
+        reject(new Error('Unable to acquire 2D context for avatar canvas'))
+        return
+      }
+
+      const radius = size / 2
+
+      ctx.clearRect(0, 0, size, size)
+      ctx.save()
+      ctx.beginPath()
+      ctx.arc(radius, radius, radius - borderWidth, 0, Math.PI * 2)
+      ctx.closePath()
+      ctx.clip()
+      ctx.drawImage(image, 0, 0, size, size)
+      ctx.restore()
+
+      ctx.lineWidth = borderWidth
+      ctx.strokeStyle = borderColor
+      ctx.beginPath()
+      ctx.arc(radius, radius, radius - borderWidth / 2, 0, Math.PI * 2)
+      ctx.stroke()
+
+      resolve(canvas)
+    }
+    image.onerror = (error) => {
+      reject(error)
+    }
+    image.src = url
+  })
+}
+
+function applyStandardStyleConfig(
+  map: mapboxgl.Map,
+  themeMode: 'light' | 'dark',
+  styleUrl?: string
+) {
+  if (!shouldApplyStandardConfig(styleUrl)) {
+    return
+  }
+
+  const config = getStandardStyleConfig(themeMode)
+  ;(map as mapboxgl.Map & { setConfig?: (config: unknown) => void }).setConfig?.(config)
+}
+
 export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
   (
     {
@@ -61,17 +218,26 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
     const mapContainerRef = useRef<HTMLDivElement | null>(null)
     const mapRef = useRef<mapboxgl.Map | null>(null)
     const markersRef = useRef(new Map<string, CustomMarker>())
+    const avatarImageCacheRef = useRef(new Map<string, string>())
+    const loadingAvatarIdsRef = useRef(new Set<string>())
     const cardMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const centerMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const [isMapReady, setIsMapReady] = useState(false)
     const [currentZoom, setCurrentZoom] = useState(zoom)
     // Determine map style based on app theme
-    const mapStyle =
-      resolvedTheme === 'dark'
-        ? 'mapbox://styles/mapbox/dark-v11'
-        : 'mapbox://styles/mapbox/streets-v12'
+    const themeMode = resolvedTheme === 'dark' ? 'dark' : 'light'
+    const mapStyle = getMapStyleUrl(themeMode)
     const isStyleLoadingRef = useRef(false)
     const latestPinsRef = useRef(pins)
+    const pinColors = useMemo<PinColorMap>(() => {
+      const isDark = resolvedTheme === 'dark'
+      return {
+        worker: isDark ? primaryDarkColor : primaryLightColor,
+        organization: isDark ? purpleDark.purple9 : purpleLight.purple9,
+        job: isDark ? yellowDark.yellow9 : yellowLight.yellow9,
+      }
+    }, [resolvedTheme])
+    const pinColorsRef = useRef(pinColors)
     const currentStyleRef = useRef(mapStyle)
     const onPinPressRef = useRef(onPinPress)
     const onPinHoverRef = useRef(onPinHover)
@@ -80,6 +246,10 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
     useEffect(() => {
       latestPinsRef.current = pins
     }, [pins])
+
+    useEffect(() => {
+      pinColorsRef.current = pinColors
+    }, [pinColors])
 
     useEffect(() => {
       onPinPressRef.current = onPinPress
@@ -177,12 +347,14 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
 
       try {
         // Theme-aware map style: dark theme for dark mode, streets for light mode
+        const standardStyleConfig = getStandardStyleConfigIfNeeded(themeMode, mapStyle)
         const map = new mapboxgl.Map({
           container: mapContainerRef.current,
           style: mapStyle,
           center,
           zoom,
           attributionControl: false,
+          ...(standardStyleConfig ? { config: standardStyleConfig } : {}),
         })
 
         // Add navigation controls
@@ -190,139 +362,151 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         map.addControl(new mapboxgl.ScaleControl({ unit: 'imperial' }))
 
         map.on('load', () => {
-          // Add clustered source for performance with large datasets
-          map.addSource('pins', {
-            type: 'geojson',
-            data: {
-              type: 'FeatureCollection',
-              features: [],
-            },
-            cluster: true,
-            clusterMaxZoom: 14, // Max zoom to cluster points on
-            clusterRadius: 50, // Radius of each cluster when clustering points (px)
-            generateId: true, // Generate IDs for features
-          })
+          applyStandardStyleConfig(map, themeMode, mapStyle)
 
-          // Add cluster circle layer
-          map.addLayer({
-            id: 'clusters',
-            type: 'circle',
-            source: 'pins',
-            filter: ['has', 'point_count'],
-            paint: {
-              'circle-color': [
-                'step',
-                ['get', 'point_count'],
-                '#51bbd6', // Blue for clusters with < 100 points
-                100,
-                '#f1f075', // Yellow for clusters with 100-749 points
-                750,
-                '#f28cb1', // Pink for clusters with 750+ points
-              ],
-              'circle-radius': [
-                'step',
-                ['get', 'point_count'],
-                20, // 20px radius for < 100 points
-                100,
-                30, // 30px radius for 100-749 points
-                750,
-                40, // 40px radius for 750+ points
-              ],
-              'circle-emissive-strength': 1,
-            },
-          })
+          for (const type of PIN_TYPE_ORDER) {
+            const { sourceId, clusterLayerId, clusterCountLayerId, pointLayerId, avatarLayerId } =
+              PIN_SOURCE_CONFIGS[type]
 
-          // Add cluster count text layer
-          map.addLayer({
-            id: 'cluster-count',
-            type: 'symbol',
-            source: 'pins',
-            filter: ['has', 'point_count'],
-            layout: {
-              'text-field': ['get', 'point_count_abbreviated'],
-              'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-              'text-size': 12,
-            },
-          })
-
-          // Add unclustered point layer
-          map.addLayer({
-            id: 'unclustered-point',
-            type: 'circle',
-            source: 'pins',
-            filter: ['!', ['has', 'point_count']],
-            paint: {
-              'circle-color': [
-                'case',
-                ['has', 'color'],
-                ['get', 'color'],
-                '#11b4da', // Default blue color
-              ],
-              'circle-radius': 4,
-              'circle-stroke-width': 1,
-              'circle-stroke-color': '#fff',
-              'circle-emissive-strength': 1,
-            },
-          })
-
-          // Handle cluster clicks - zoom in
-          map.on('click', 'clusters', (e) => {
-            const features = map.queryRenderedFeatures(e.point, {
-              layers: ['clusters'],
+            map.addSource(sourceId, {
+              type: 'geojson',
+              data: {
+                type: 'FeatureCollection',
+                features: [],
+              },
+              cluster: true,
+              clusterMaxZoom: CLUSTER_MAX_ZOOM,
+              clusterRadius: CLUSTER_RADIUS_PX,
+              generateId: true,
             })
-            if (!features.length) {
-              return
+
+            map.addLayer({
+              id: clusterLayerId,
+              type: 'circle',
+              source: sourceId,
+              filter: ['has', 'point_count'],
+              paint: {
+                'circle-color': pinColorsRef.current[type],
+                'circle-radius': ['step', ['get', 'point_count'], 30, 100, 45, 750, 60],
+                'circle-opacity': 0.9,
+                'circle-stroke-color': '#fff',
+                'circle-stroke-width': 2,
+                'circle-emissive-strength': 1,
+              },
+            })
+
+            map.addLayer({
+              id: clusterCountLayerId,
+              type: 'symbol',
+              source: sourceId,
+              filter: ['has', 'point_count'],
+              layout: {
+                'text-field': ['get', 'point_count_abbreviated'],
+                'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                'text-size': 12,
+              },
+              paint: {
+                'text-color': '#0f172a',
+              },
+            })
+
+            map.addLayer({
+              id: pointLayerId,
+              type: 'circle',
+              source: sourceId,
+              filter: ['all', ['!', ['has', 'point_count']], ['!', ['has', 'avatarImageId']]],
+              paint: {
+                'circle-color': pinColorsRef.current[type],
+                'circle-radius': 6,
+                'circle-stroke-width': 2,
+                'circle-stroke-color': '#fff',
+                'circle-emissive-strength': 1,
+              },
+            })
+
+            if (avatarLayerId) {
+              map.addLayer({
+                id: avatarLayerId,
+                type: 'symbol',
+                source: sourceId,
+                filter: ['all', ['!', ['has', 'point_count']], ['has', 'avatarImageId']],
+                layout: {
+                  'icon-image': ['get', 'avatarImageId'],
+                  'icon-size': 0.55,
+                  'icon-anchor': 'bottom',
+                  'icon-offset': [0, -6],
+                  'icon-allow-overlap': true,
+                },
+              })
             }
-            const clusterFeature = features[0]
-            const clusterId = clusterFeature.properties?.cluster_id
-            if (typeof clusterId !== 'number') {
-              return
-            }
-            const source = map.getSource('pins') as mapboxgl.GeoJSONSource | undefined
-            if (!source) {
-              return
-            }
-            source.getClusterExpansionZoom(clusterId, (err, zoom) => {
-              if (err || typeof zoom !== 'number') return
-              map.easeTo({
-                center: (clusterFeature.geometry as GeoJSON.Point).coordinates as [number, number],
-                zoom,
+          }
+
+          const registerClusterHandlers = (layerId: string, sourceId: string) => {
+            map.on('click', layerId, (e) => {
+              const features = map.queryRenderedFeatures(e.point, {
+                layers: [layerId],
+              })
+              if (!features.length) {
+                return
+              }
+              const clusterFeature = features[0]
+              const clusterId = clusterFeature.properties?.cluster_id
+              if (typeof clusterId !== 'number') {
+                return
+              }
+              const source = map.getSource(sourceId) as mapboxgl.GeoJSONSource | undefined
+              if (!source) {
+                return
+              }
+              source.getClusterExpansionZoom(clusterId, (err, zoomLevel) => {
+                if (err || typeof zoomLevel !== 'number') return
+                map.easeTo({
+                  center: (clusterFeature.geometry as GeoJSON.Point).coordinates as [
+                    number,
+                    number,
+                  ],
+                  zoom: zoomLevel,
+                })
               })
             })
-          })
 
-          // Handle unclustered point clicks
-          map.on('click', 'unclustered-point', (e) => {
-            const pinId = e.features?.[0]?.properties?.id
-            if (pinId) {
-              onPinPressRef.current?.(pinId)
-            }
-          })
+            map.on('mouseenter', layerId, () => {
+              map.getCanvas().style.cursor = 'pointer'
+            })
+            map.on('mouseleave', layerId, () => {
+              map.getCanvas().style.cursor = ''
+            })
+          }
 
-          // Change cursor on hover
-          map.on('mouseenter', 'clusters', () => {
-            map.getCanvas().style.cursor = 'pointer'
-          })
-          map.on('mouseleave', 'clusters', () => {
-            map.getCanvas().style.cursor = ''
-          })
-          map.on('mouseenter', 'unclustered-point', () => {
-            map.getCanvas().style.cursor = 'pointer'
-          })
-          map.on('mouseleave', 'unclustered-point', () => {
-            map.getCanvas().style.cursor = ''
-          })
+          for (const layerId of clusterLayerIds) {
+            const type = layerToPinType[layerId]
+            const sourceId = PIN_SOURCE_CONFIGS[type].sourceId
+            registerClusterHandlers(layerId, sourceId)
+          }
 
-          // Handle unclustered point hover for tooltip
-          map.on('mouseenter', 'unclustered-point', (e) => {
-            const pinId = e.features?.[0]?.properties?.id
-            if (pinId) {
-              onPinHoverRef.current?.(pinId)
-            }
-          })
-          map.on('mouseleave', 'unclustered-point', () => {
-            onPinHoverRef.current?.(null)
-          })
+          const interactivePointLayers = [...pointLayerIds, ...avatarLayerIds]
+
+          for (const layerId of interactivePointLayers) {
+            map.on('click', layerId, (e) => {
+              const pinId = e.features?.[0]?.properties?.id
+              if (pinId) {
+                onPinPressRef.current?.(pinId)
+              }
+            })
+
+            map.on('mouseenter', layerId, (e) => {
+              map.getCanvas().style.cursor = 'pointer'
+              const pinId = e.features?.[0]?.properties?.id
+              if (pinId) {
+                onPinHoverRef.current?.(pinId)
+              }
+            })
+
+            map.on('mouseleave', layerId, () => {
+              map.getCanvas().style.cursor = ''
+              onPinHoverRef.current?.(null)
+            })
+          }
 
           // Add pulsing dot image for selected pins
           ensurePulsingDotImage(map)
@@ -410,7 +594,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       } catch (error) {
         console.error('Failed to initialize map:', error)
       }
-    }, [center, zoom, onViewportChange, onMapReady, mapStyle])
+    }, [center, zoom, onViewportChange, onMapReady, mapStyle, themeMode])
 
     // Update map style when theme changes
     useEffect(() => {
@@ -427,79 +611,96 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
 
       const handleStyleData = () => {
         isStyleLoadingRef.current = false
+        applyStandardStyleConfig(map, themeMode, mapStyle)
 
-        // Re-add pins source if it doesn't exist
-        if (!map.getSource('pins')) {
-          map.addSource('pins', {
-            type: 'geojson',
-            data: {
-              type: 'FeatureCollection',
-              features: [],
-            },
-            cluster: true,
-            clusterMaxZoom: 14,
-            clusterRadius: 50,
-            generateId: true,
-          })
-        }
+        for (const type of PIN_TYPE_ORDER) {
+          const {
+            sourceId,
+            clusterLayerId,
+            clusterCountLayerId,
+            pointLayerId,
+            avatarLayerId,
+          } = PIN_SOURCE_CONFIGS[type]
 
-        // Re-add cluster layers
-        if (!map.getLayer('clusters')) {
-          map.addLayer({
-            id: 'clusters',
-            type: 'circle',
-            source: 'pins',
-            filter: ['has', 'point_count'],
-            paint: {
-              'circle-color': [
-                'step',
-                ['get', 'point_count'],
-                '#51bbd6',
-                100,
-                '#f1f075',
-                750,
-                '#f28cb1',
-              ],
-              'circle-radius': ['step', ['get', 'point_count'], 20, 100, 30, 750, 40],
-              'circle-emissive-strength': 1,
-            },
-          })
-        }
+          if (!map.getSource(sourceId)) {
+            map.addSource(sourceId, {
+              type: 'geojson',
+              data: {
+                type: 'FeatureCollection',
+                features: [],
+              },
+              cluster: true,
+              clusterMaxZoom: CLUSTER_MAX_ZOOM,
+              clusterRadius: CLUSTER_RADIUS_PX,
+              generateId: true,
+            })
+          }
 
-        if (!map.getLayer('cluster-count')) {
-          map.addLayer({
-            id: 'cluster-count',
-            type: 'symbol',
-            source: 'pins',
-            filter: ['has', 'point_count'],
-            layout: {
-              'text-field': ['get', 'point_count_abbreviated'],
-              'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-              'text-size': 12,
-            },
-          })
-        }
+          if (!map.getLayer(clusterLayerId)) {
+            map.addLayer({
+              id: clusterLayerId,
+              type: 'circle',
+              source: sourceId,
+              filter: ['has', 'point_count'],
+              paint: {
+                'circle-color': pinColorsRef.current[type],
+                'circle-radius': ['step', ['get', 'point_count'], 30, 100, 45, 750, 60],
+                'circle-opacity': 0.9,
+                'circle-stroke-color': '#fff',
+                'circle-stroke-width': 2,
+                'circle-emissive-strength': 1,
+              },
+            })
+          }
 
-        // Re-add unclustered point layer
-        if (!map.getLayer('unclustered-point')) {
-          map.addLayer({
-            id: 'unclustered-point',
-            type: 'circle',
-            source: 'pins',
-            filter: ['!', ['has', 'point_count']],
-            paint: {
-              'circle-color': [
-                'case',
-                ['has', 'color'],
-                ['get', 'color'],
-                '#11b4da', // Default blue color
-              ],
-              'circle-radius': 4,
-              'circle-stroke-width': 1,
-              'circle-stroke-color': '#fff',
-              'circle-emissive-strength': 1,
-            },
-          })
+          if (!map.getLayer(clusterCountLayerId)) {
+            map.addLayer({
+              id: clusterCountLayerId,
+              type: 'symbol',
+              source: sourceId,
+              filter: ['has', 'point_count'],
+              layout: {
+                'text-field': ['get', 'point_count_abbreviated'],
+                'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                'text-size': 12,
+              },
+              paint: {
+                'text-color': '#0f172a',
+              },
+            })
+          }
+
+          if (!map.getLayer(pointLayerId)) {
+            map.addLayer({
+              id: pointLayerId,
+              type: 'circle',
+              source: sourceId,
+              filter: ['all', ['!', ['has', 'point_count']], ['!', ['has', 'avatarImageId']]],
+              paint: {
+                'circle-color': pinColorsRef.current[type],
+                'circle-radius': 6,
+                'circle-stroke-width': 2,
+                'circle-stroke-color': '#fff',
+                'circle-emissive-strength': 1,
+              },
+            })
+          }
+
+          if (avatarLayerId && !map.getLayer(avatarLayerId)) {
+            map.addLayer({
+              id: avatarLayerId,
+              type: 'symbol',
+              source: sourceId,
+              filter: ['all', ['!', ['has', 'point_count']], ['has', 'avatarImageId']],
+              layout: {
+                'icon-image': ['get', 'avatarImageId'],
+                'icon-size': 0.55,
+                'icon-anchor': 'bottom',
+                'icon-offset': [0, -6],
+                'icon-allow-overlap': true,
+              },
+            })
+          }
         }
 
         // Re-add pulsing dot image
@@ -575,7 +776,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       return () => {
         map.off('styledata', handleStyleData)
       }
-    }, [mapStyle, isMapReady])
+    }, [mapStyle, isMapReady, themeMode])
 
     // Handle map resize events
     useEffect(() => {
@@ -629,7 +830,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       const handleMapClick = (e: mapboxgl.MapMouseEvent) => {
         // Check if clicking on any map feature (clusters, unclustered points, or other layers)
         const features = map.queryRenderedFeatures(e.point, {
-          layers: ['clusters', 'unclustered-point', 'selected-pin-pulse-layer'],
+          layers: [...clusterLayerIds, ...pointLayerIds, ...avatarLayerIds, 'selected-pin-pulse-layer'],
         })
 
         // If not clicking on any feature, deselect
