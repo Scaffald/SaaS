@@ -480,31 +480,52 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         updateMarkers()
       }
 
-      // Debounce marker updates during zoom/pan to avoid performance issues
-      let updateTimeout: ReturnType<typeof setTimeout> | null = null
+      // Debounce marker updates during pan to avoid performance issues
+      // But update immediately on zoom since positioning is critical
+      let moveUpdateTimeout: ReturnType<typeof setTimeout> | null = null
       const handleMove = () => {
-        if (updateTimeout) {
-          clearTimeout(updateTimeout)
+        if (moveUpdateTimeout) {
+          clearTimeout(moveUpdateTimeout)
         }
-        updateTimeout = setTimeout(() => {
+        moveUpdateTimeout = setTimeout(() => {
           updateMarkers()
-        }, 50) // Debounce to 50ms
+        }, 100) // Debounce pan to 100ms
       }
 
+      // Zoom events need immediate updates - use requestAnimationFrame for smooth updates
+      let zoomFrameId: number | null = null
       const handleZoom = () => {
-        if (updateTimeout) {
-          clearTimeout(updateTimeout)
+        // Clear any pending move updates
+        if (moveUpdateTimeout) {
+          clearTimeout(moveUpdateTimeout)
+          moveUpdateTimeout = null
         }
-        updateTimeout = setTimeout(() => {
+        // Cancel any pending zoom frame
+        if (zoomFrameId !== null) {
+          cancelAnimationFrame(zoomFrameId)
+        }
+        // Schedule update for next frame to ensure map has finished rendering
+        zoomFrameId = requestAnimationFrame(() => {
           updateMarkers()
-        }, 50) // Debounce to 50ms
+          zoomFrameId = null
+        })
+      }
+
+      const handleZoomEnd = () => {
+        // Cancel any pending zoom frame
+        if (zoomFrameId !== null) {
+          cancelAnimationFrame(zoomFrameId)
+          zoomFrameId = null
+        }
+        // Final update after zoom completes
+        updateMarkers()
       }
 
       source.on('data', handleData)
       map.on('moveend', handleMoveEnd)
-      map.on('zoomend', handleZoom)
-      map.on('move', handleMove)
+      map.on('zoomend', handleZoomEnd)
       map.on('zoom', handleZoom)
+      map.on('move', handleMove)
 
       // Initial update - wait a bit for layers to be ready
       setTimeout(() => {
@@ -512,14 +533,17 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       }, 200)
 
       return () => {
-        if (updateTimeout) {
-          clearTimeout(updateTimeout)
+        if (moveUpdateTimeout) {
+          clearTimeout(moveUpdateTimeout)
+        }
+        if (zoomFrameId !== null) {
+          cancelAnimationFrame(zoomFrameId)
         }
         source.off('data', handleData)
         map.off('moveend', handleMoveEnd)
-        map.off('zoomend', handleZoom)
-        map.off('move', handleMove)
+        map.off('zoomend', handleZoomEnd)
         map.off('zoom', handleZoom)
+        map.off('move', handleMove)
         for (const marker of markersRef.current.values()) {
           marker.remove()
         }
