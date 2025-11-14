@@ -177,8 +177,7 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
     const syncAnalyticsConsent = async () => {
       try {
         if (hasPerformanceConsent) {
-          // TODO: Uncomment this when we have a way to test analytics
-          // await initAnalytics({ hasConsent: true, debug: __DEV__ })
+          await initAnalytics({ hasConsent: true, debug: __DEV__ })
           if (cancelled) return
           const client = getAnalyticsClient()
           if (client) {
@@ -218,8 +217,7 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
 
     const syncAnalyticsIdentity = async () => {
       try {
-        // TODO: Uncomment this when we have a way to test analytics
-        // await initAnalytics({ hasConsent: true, debug: __DEV__ })
+        await initAnalytics({ hasConsent: true, debug: __DEV__ })
         if (cancelled) return
 
         const client = getAnalyticsClient()
