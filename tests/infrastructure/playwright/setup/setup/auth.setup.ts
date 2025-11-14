@@ -60,10 +60,15 @@ setup('authenticate as admin', async ({ page }) => {
   console.log('✓ API authentication successful')
 
   // Prepare session data (match format from auth.ts injectSession)
-  const safeUser = JSON.parse(JSON.stringify(session.user))
+  // Convert getSession result to SupabaseSessionShape format
+  const plainUser = JSON.parse(JSON.stringify(session.user))
   const safeSession = {
-    ...session.session,
-    user: safeUser,
+    access_token: session.session.access_token,
+    refresh_token: session.session.refresh_token ?? session.session.access_token,
+    expires_at: session.session.expires_at ?? Math.floor(Date.now() / 1000) + (session.session.expires_in ?? 3600),
+    expires_in: session.session.expires_in ?? 3600,
+    token_type: session.session.token_type ?? 'bearer',
+    user: plainUser,
   }
   const payload = {
     currentSession: safeSession,
@@ -83,7 +88,7 @@ setup('authenticate as admin', async ({ page }) => {
         console.error('[SETUP] Failed to populate localStorage', error)
       }
     },
-    { storageKey, payload, user: safeUser }
+    { storageKey, payload, user: plainUser }
   )
 
   console.log('✓ Browser session initialized')
@@ -128,10 +133,15 @@ setup('authenticate as user', async ({ page }) => {
   console.log('✓ API authentication successful')
 
   // Prepare session data (match format from auth.ts injectSession)
-  const safeUser = JSON.parse(JSON.stringify(session.user))
+  // Convert getSession result to SupabaseSessionShape format
+  const plainUser = JSON.parse(JSON.stringify(session.user))
   const safeSession = {
-    ...session.session,
-    user: safeUser,
+    access_token: session.session.access_token,
+    refresh_token: session.session.refresh_token ?? session.session.access_token,
+    expires_at: session.session.expires_at ?? Math.floor(Date.now() / 1000) + (session.session.expires_in ?? 3600),
+    expires_in: session.session.expires_in ?? 3600,
+    token_type: session.session.token_type ?? 'bearer',
+    user: plainUser,
   }
   const payload = {
     currentSession: safeSession,
@@ -151,7 +161,7 @@ setup('authenticate as user', async ({ page }) => {
         console.error('[SETUP] Failed to populate localStorage', error)
       }
     },
-    { storageKey, payload, user: safeUser }
+    { storageKey, payload, user: plainUser }
   )
 
   console.log('✓ Browser session initialized')
@@ -195,10 +205,15 @@ setup('authenticate as super admin', async ({ page }) => {
   console.log('✓ API authentication successful')
 
   // Prepare session data (match format from auth.ts injectSession)
-  const safeUser = JSON.parse(JSON.stringify(session.user))
+  // Convert getSession result to SupabaseSessionShape format
+  const plainUser = JSON.parse(JSON.stringify(session.user))
   const safeSession = {
-    ...session.session,
-    user: safeUser,
+    access_token: session.session.access_token,
+    refresh_token: session.session.refresh_token ?? session.session.access_token,
+    expires_at: session.session.expires_at ?? Math.floor(Date.now() / 1000) + (session.session.expires_in ?? 3600),
+    expires_in: session.session.expires_in ?? 3600,
+    token_type: session.session.token_type ?? 'bearer',
+    user: plainUser,
   }
   const payload = {
     currentSession: safeSession,
@@ -218,7 +233,7 @@ setup('authenticate as super admin', async ({ page }) => {
         console.error('[SETUP] Failed to populate localStorage', error)
       }
     },
-    { storageKey, payload, user: safeUser }
+    { storageKey, payload, user: plainUser }
   )
 
   console.log('✓ Browser session initialized')
