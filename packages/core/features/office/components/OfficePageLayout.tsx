@@ -40,6 +40,8 @@ interface OfficePageLayoutProps<TData> {
   onRowEdit?: (row: TData) => void
   /** Delete action handler (opens overlay on row click) */
   onRowDelete?: (row: TData) => Promise<void>
+  /** Duplicate action handler (opens overlay on row click) */
+  onRowDuplicate?: (row: TData) => Promise<void>
   /** Function to get item name from row data (for delete confirmation) */
   getItemName?: (row: TData) => string
   /** Type of item (for delete confirmation) */
@@ -67,6 +69,7 @@ export function OfficePageLayout<TData>({
   onRowView,
   onRowEdit,
   onRowDelete,
+  onRowDuplicate,
   getItemName,
   itemType = 'item',
   pageSize = 50,
@@ -112,6 +115,7 @@ export function OfficePageLayout<TData>({
         onRowView={onRowView}
         onRowEdit={onRowEdit}
         onRowDelete={onRowDelete}
+        onRowDuplicate={onRowDuplicate}
         getItemName={getItemName}
         itemType={itemType}
         pageSize={pageSize}

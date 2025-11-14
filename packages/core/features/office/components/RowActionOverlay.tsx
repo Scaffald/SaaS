@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { Button, YStack, XStack } from 'tamagui'
-import { Eye, Pencil, Trash2, X } from '@tamagui/lucide-icons'
+import { Eye, Pencil, Trash2, X, Copy } from '@tamagui/lucide-icons'
 import { DeleteButton } from './DeleteButton'
+import { DuplicateButton } from './DuplicateButton'
 
 export interface RowActionOverlayProps<TData> {
   /** The row data */
@@ -12,6 +13,8 @@ export interface RowActionOverlayProps<TData> {
   onEdit: (row: TData) => void
   /** Delete action handler */
   onDelete: (row: TData) => Promise<void>
+  /** Duplicate action handler */
+  onDuplicate?: (row: TData) => Promise<void>
   /** Position of the overlay */
   position: { x: number; y: number }
   /** Close handler */
@@ -46,6 +49,7 @@ export function RowActionOverlay<TData>({
   onView,
   onEdit,
   onDelete,
+  onDuplicate,
   position,
   onClose,
   itemName,
@@ -91,6 +95,13 @@ export function RowActionOverlay<TData>({
     onClose()
   }
 
+  const handleDuplicate = async () => {
+    if (onDuplicate) {
+      await onDuplicate(row)
+      onClose()
+    }
+  }
+
   return (
     <XStack
       ref={overlayRef}
@@ -132,6 +143,15 @@ export function RowActionOverlay<TData>({
       >
         Edit
       </Button>
+      {onDuplicate && (
+        <DuplicateButton
+          itemName={itemName}
+          itemType={itemType}
+          onDuplicate={handleDuplicate}
+          size="$2"
+          variant="outlined"
+        />
+      )}
       <DeleteButton
         itemName={itemName}
         itemType={itemType}

@@ -32,6 +32,8 @@ export interface DataTableProps<TData> {
   onRowEdit?: (row: TData) => void
   /** Delete action handler (opens overlay on row click) */
   onRowDelete?: (row: TData) => Promise<void>
+  /** Duplicate action handler (opens overlay on row click) */
+  onRowDuplicate?: (row: TData) => Promise<void>
   /** Function to get item name from row data (for delete confirmation) */
   getItemName?: (row: TData) => string
   /** Type of item (for delete confirmation) */
@@ -55,6 +57,7 @@ export function DataTable<TData>({
   onRowView,
   onRowEdit,
   onRowDelete,
+  onRowDuplicate,
   getItemName,
   itemType = 'item',
   onRowClick,
@@ -74,7 +77,7 @@ export function DataTable<TData>({
 
   // Determine if we should use overlay (new props) or old onRowClick behavior
   // Note: Overlay only works on web due to RowActionOverlay using DOM APIs
-  const useOverlay = isWeb && Boolean(onRowView || onRowEdit || onRowDelete)
+  const useOverlay = isWeb && Boolean(onRowView || onRowEdit || onRowDelete || onRowDuplicate)
   const table = useReactTable({
     data,
     columns,
@@ -167,6 +170,13 @@ export function DataTable<TData>({
   const handleDelete = async (row: TData) => {
     if (onRowDelete) {
       await onRowDelete(row)
+      handleCloseOverlay()
+    }
+  }
+
+  const handleDuplicate = async (row: TData) => {
+    if (onRowDuplicate) {
+      await onRowDuplicate(row)
       handleCloseOverlay()
     }
   }
@@ -338,6 +348,7 @@ export function DataTable<TData>({
             onView={onRowView}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onDuplicate={onRowDuplicate ? handleDuplicate : undefined}
             onClose={handleCloseOverlay}
             itemName={
               getItemName

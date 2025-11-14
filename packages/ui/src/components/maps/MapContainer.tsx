@@ -323,6 +323,11 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         const zoom = map.getZoom()
         const bounds = map.getBounds()
 
+        // Check if layers exist
+        if (!map.getLayer('clusters') || !map.getLayer('unclustered-point')) {
+          return
+        }
+
         // Query rendered features from the invisible layers
         // This will include clusters and individual points
         const allFeatures = map.queryRenderedFeatures(undefined, {
@@ -330,6 +335,49 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         })
 
         if (allFeatures.length === 0) {
+          // If no rendered features, try querying source features as fallback
+          const sourceFeatures = map.querySourceFeatures('pins', {
+            sourceLayer: undefined,
+            filter: undefined,
+          })
+          if (sourceFeatures.length === 0) {
+            return
+          }
+          // Process source features (these might not have cluster properties yet)
+          for (const feature of sourceFeatures) {
+            if (!feature.geometry || feature.geometry.type !== 'Point' || !feature.properties) {
+              continue
+            }
+            const coords = (feature.geometry as GeoJSON.Point).coordinates as [number, number]
+            const props = feature.properties
+
+            // Only process individual points from source (clusters need to be rendered)
+            if (!props.cluster && props.id) {
+              const pinType = (props.type as 'worker' | 'organization' | 'job') || 'worker'
+              const selected = props.selected === true
+              const pinId = props.id as string
+
+              const html = createPinMarkerHTML(pinType, selected, 48)
+              const el = document.createElement('div')
+              el.innerHTML = html
+              const markerEl = el.firstElementChild as HTMLElement
+              if (!markerEl) continue
+
+              markerEl.addEventListener('click', (e) => {
+                e.stopPropagation()
+                onPinPress?.(pinId)
+              })
+
+              const marker = new mapboxgl.Marker({
+                element: markerEl,
+                anchor: 'center',
+              })
+                .setLngLat(coords)
+                .addTo(map)
+
+              markersRef.current.set(pinId, marker)
+            }
+          }
           return
         }
 
@@ -417,8 +465,14 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       }
 
       // Update markers when source data changes
-      const handleData = () => {
-        updateMarkers()
+      const handleData = (e: { dataType?: string }) => {
+        // Only update if it's a data change, not a style change
+        if (e.dataType === 'source' || e.dataType === undefined) {
+          // Use setTimeout to ensure the data is fully processed
+          setTimeout(() => {
+            updateMarkers()
+          }, 100)
+        }
       }
 
       // Update markers on zoom/move to handle clustering changes
@@ -430,8 +484,10 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       map.on('moveend', handleMoveEnd)
       map.on('zoomend', handleMoveEnd)
 
-      // Initial update
-      updateMarkers()
+      // Initial update - wait a bit for layers to be ready
+      setTimeout(() => {
+        updateMarkers()
+      }, 200)
 
       return () => {
         source.off('data', handleData)

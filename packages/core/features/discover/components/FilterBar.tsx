@@ -27,14 +27,20 @@ export const FilterBar = ({
   searchActive = false,
   filterActive = false,
 }: FilterBarProps) => {
+  // Calculate center offset when rail is visible
+  // Rail is 420px wide, so we need to offset by half (210px) to center
+  const centerOffset = railVisible ? 210 : 0
+
   return (
     <XStack
       position="absolute"
       b="$4"
-      left={0}
-      right={0}
-      $sm={{ right: 0 }}
-      $gtSm={{ right: railVisible ? 440 : 0 }}
+      left="50%"
+      $sm={{ left: '50%', transform: [{ translateX: -50 }] }}
+      $gtSm={{
+        left: '50%',
+        transform: [{ translateX: -50 }, { translateX: -centerOffset }],
+      }}
       z={50}
       items="center"
       justify="center"

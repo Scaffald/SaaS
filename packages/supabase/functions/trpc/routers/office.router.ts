@@ -1531,6 +1531,191 @@ export const officeRouter = t.router({
     }),
 
   /**
+   * Duplicate job
+   * Creates a copy of an existing job with status set to draft
+   */
+  duplicateJob: officeProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const { supabaseAdmin, user } = ctx;
+
+      if (!user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not authenticated",
+        });
+      }
+
+      // Get the original job
+      const { data: originalJob, error: jobError } = await supabaseAdmin
+        .schema("core")
+        .from("jobs")
+        .select("*")
+        .eq("id", input.id)
+        .single();
+
+      if (jobError || !originalJob) {
+        throw new TRPCError({
+          code: jobError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+          message: jobError
+            ? `Failed to load job: ${jobError.message}`
+            : "Job not found",
+        });
+      }
+
+      // Verify organization access (unless super admin)
+      const { loadUserRoleAssignments, isSuperAdmin } = await import(
+        "../_shared/permissions/team-permissions"
+      );
+      const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
+      const superAdmin = isSuperAdmin(assignments);
+
+      if (!superAdmin) {
+        const organizationId = originalJob.organization_id as string;
+
+        // Get user's accessible organization IDs
+        const organizationIds = new Set<string>();
+
+        // 1. Organizations owned by user
+        const { data: ownedOrgs } = await supabaseAdmin
+          .schema("core")
+          .from("organizations")
+          .select("id")
+          .eq("owner_user_id", user.id);
+
+        for (const org of ownedOrgs ?? []) {
+          if (org.id) {
+            organizationIds.add(org.id as string);
+          }
+        }
+
+        // 2. Organizations where user is a team member
+        const { data: teamMemberships } = await supabaseAdmin
+          .schema("core")
+          .from("team_members")
+          .select("teams!inner(organization_id)")
+          .eq("user_id", user.id)
+          .neq("status", "removed");
+
+        for (const membership of teamMemberships ?? []) {
+          const orgId = membership.teams?.organization_id;
+          if (orgId && typeof orgId === "string") {
+            organizationIds.add(orgId);
+          }
+        }
+
+        // Verify user has access to the organization
+        if (!organizationIds.has(organizationId)) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "You do not have access to this job's organization",
+          });
+        }
+      }
+
+      // Prepare job data for duplication (exclude id, timestamps, and set status to draft)
+      const {
+        id: _id,
+        created_at: _created_at,
+        updated_at: _updated_at,
+        posted_at: _posted_at,
+        created_by_user_id: _created_by_user_id,
+        ...jobData
+      } = originalJob;
+
+      // Create new job as draft
+      const { data: newJob, error: createError } = await supabaseAdmin
+        .schema("core")
+        .from("jobs")
+        .insert({
+          ...jobData,
+          status: "draft",
+          title: `${jobData.title} (Copy)`,
+          created_by_user_id: user.id,
+        })
+        .select()
+        .single();
+
+      if (createError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to duplicate job: ${createError.message}`,
+        });
+      }
+
+      // Duplicate job certifications
+      const { data: certifications } = await supabaseAdmin
+        .schema("core")
+        .from("job_certifications")
+        .select("certification_id, is_required")
+        .eq("job_id", input.id);
+
+      if (certifications && certifications.length > 0) {
+        await supabaseAdmin
+          .schema("core")
+          .from("job_certifications")
+          .insert(
+            certifications.map((cert) => ({
+              job_id: newJob.id,
+              certification_id: cert.certification_id,
+              is_required: cert.is_required,
+            }))
+          );
+      }
+
+      // Duplicate job skills (if any exist)
+      const { data: skills } = await supabaseAdmin
+        .schema("core")
+        .from("job_skills")
+        .select("*")
+        .eq("job_id", input.id);
+
+      if (skills && skills.length > 0) {
+        await supabaseAdmin
+          .schema("core")
+          .from("job_skills")
+          .insert(
+            skills.map((skill) => ({
+              job_id: newJob.id,
+              skill_taxonomy: skill.skill_taxonomy,
+              csi_skill_id: skill.csi_skill_id,
+              onet_occupation_id: skill.onet_occupation_id,
+            }))
+          );
+      }
+
+      // Duplicate job team assignments
+      const { data: teamAssignments } = await supabaseAdmin
+        .schema("core")
+        .from("job_team_assignments")
+        .select("team_id, is_primary, role_key, organization_id")
+        .eq("job_id", input.id);
+
+      if (teamAssignments && teamAssignments.length > 0) {
+        await supabaseAdmin
+          .schema("core")
+          .from("job_team_assignments")
+          .insert(
+            teamAssignments.map((assignment) => ({
+              job_id: newJob.id,
+              team_id: assignment.team_id,
+              is_primary: assignment.is_primary,
+              role_key: assignment.role_key,
+              organization_id: assignment.organization_id,
+              assigned_by: user.id,
+              metadata: {
+                source: "duplicate",
+                original_job_id: input.id,
+                created_by: user.id,
+              },
+            }))
+          );
+      }
+
+      return { job: newJob };
+    }),
+
+  /**
    * Get all organizations (admin view)
    * Super admins can see and manage jobs for any organization
    */

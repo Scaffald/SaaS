@@ -1,0 +1,147 @@
+import { useState } from 'react'
+import { Button, Dialog, XStack, YStack, Text, Spinner } from 'tamagui'
+import { Copy } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+
+interface DuplicateButtonProps {
+  /**
+   * Name of the item being duplicated (displayed in confirmation)
+   */
+  itemName: string
+  /**
+   * Type of item (e.g., "job", "user", "university")
+   */
+  itemType: string
+  /**
+   * Async function to execute the duplicate operation
+   */
+  onDuplicate: () => Promise<void>
+  /**
+   * Optional size for the button
+   */
+  size?: '$2' | '$3' | '$4'
+  /**
+   * Optional variant for the button
+   */
+  variant?: 'outlined'
+}
+
+/**
+ * Reusable duplicate button with confirmation dialog
+ *
+ * Shows a confirmation dialog before executing the duplicate operation.
+ * Displays loading state during duplication and shows success/error toasts.
+ *
+ * @example
+ * ```tsx
+ * <DuplicateButton
+ *   itemName="Software Engineer"
+ *   itemType="job"
+ *   onDuplicate={async () => {
+ *     await duplicateMutation.mutateAsync({ id: jobId })
+ *   }}
+ * />
+ * ```
+ */
+export function DuplicateButton({
+  itemName,
+  itemType,
+  onDuplicate,
+  size = '$2',
+  variant = 'outlined',
+}: DuplicateButtonProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [isDuplicating, setIsDuplicating] = useState(false)
+  const toast = useToastController()
+
+  const handleDuplicate = async () => {
+    setIsDuplicating(true)
+    try {
+      await onDuplicate()
+      toast.show('Success', {
+        message: `${itemType.charAt(0).toUpperCase() + itemType.slice(1)} duplicated successfully`,
+      })
+      setIsOpen(false)
+    } catch (error) {
+      toast.show('Error', {
+        message: error instanceof Error ? error.message : `Failed to duplicate ${itemType}`,
+      })
+    } finally {
+      setIsDuplicating(false)
+    }
+  }
+
+  return (
+    <>
+      <Button
+        size={size}
+        variant={variant}
+        icon={Copy}
+        onPress={() => setIsOpen(true)}
+        disabled={isDuplicating}
+      >
+        Duplicate
+      </Button>
+
+      <Dialog modal open={isOpen} onOpenChange={setIsOpen}>
+        <Dialog.Portal>
+          <Dialog.Overlay
+            key="overlay"
+            animation="quick"
+            opacity={0.5}
+            enterStyle={{ opacity: 0 }}
+            exitStyle={{ opacity: 0 }}
+          />
+
+          <Dialog.Content
+            bordered
+            elevate
+            key="content"
+            animateOnly={['transform', 'opacity']}
+            animation={[
+              'quick',
+              {
+                opacity: {
+                  overshootClamping: true,
+                },
+              },
+            ]}
+            enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
+            exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
+            gap="$4"
+            width={500}
+          >
+            <Dialog.Title>Duplicate {itemType.charAt(0).toUpperCase() + itemType.slice(1)}</Dialog.Title>
+            <Dialog.Description>
+              Create a copy of <Text fontWeight="600">"{itemName}"</Text>?
+            </Dialog.Description>
+
+            <YStack gap="$2">
+              <Text color="$color11" fontSize="$3">
+                A new {itemType} will be created as a draft with "(Copy)" appended to the title.
+                All settings, requirements, and team assignments will be copied.
+              </Text>
+            </YStack>
+
+            <XStack gap="$3" items="center" justify="flex-end">
+              <Dialog.Close asChild>
+                <Button variant="outlined" disabled={isDuplicating}>
+                  Cancel
+                </Button>
+              </Dialog.Close>
+
+              <Button
+                onPress={handleDuplicate}
+                disabled={isDuplicating}
+                icon={isDuplicating ? <Spinner /> : Copy}
+              >
+                {isDuplicating ? 'Duplicating...' : 'Duplicate'}
+              </Button>
+            </XStack>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog>
+    </>
+  )
+}
+

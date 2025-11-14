@@ -151,8 +151,18 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
     },
   })
 
+  const duplicateMutation = api.office.duplicateJob.useMutation({
+    onSuccess: () => {
+      refetch()
+    },
+  })
+
   const handleDelete = async (id: string) => {
     await deleteMutation.mutateAsync({ id })
+  }
+
+  const handleDuplicate = async (id: string) => {
+    await duplicateMutation.mutateAsync({ id })
   }
 
   const jobs = data?.jobs ?? []
@@ -215,6 +225,10 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
   
   const handleRowDelete = async (job: Job) => {
     await handleDelete(job.id)
+  }
+
+  const handleRowDuplicate = async (job: Job) => {
+    await handleDuplicate(job.id)
   }
   
   const getItemName = (job: Job) => job.title
@@ -528,6 +542,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           hideHeader={!showHeader}
           onRowEdit={handleRowEdit}
           onRowDelete={handleRowDelete}
+          onRowDuplicate={handleRowDuplicate}
           getItemName={getItemName}
           itemType="job"
           actionBarConfig={{
