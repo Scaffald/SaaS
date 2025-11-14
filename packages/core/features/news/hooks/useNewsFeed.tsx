@@ -3,6 +3,9 @@ import { api } from '@app/core/utils/api'
 import { calculateReadingTime } from '../utils/rss-parser'
 import type { NewsItem } from '../config/types'
 
+// Note: parseRSSFeed is no longer used but kept for backward compatibility
+// during migration period. It can be removed after confirming no other code uses it.
+
 /**
  * Hook for fetching cached news articles by industry via tRPC
  * Replaces the old proxy-based RSS fetching
