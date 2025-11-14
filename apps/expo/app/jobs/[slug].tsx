@@ -4,6 +4,7 @@ import { YStack, Spinner, Text } from 'tamagui'
 import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 import { DiscoverJobDetailScreen } from '@app/core/features/discover/discover-job-detail-screen'
 import { api } from '@app/core/utils/api'
+import { ROUTES } from '@app/core/constants/routes'
 import type { BreadcrumbItem } from '@app/ui'
 
 /**
@@ -31,7 +32,7 @@ export default function PublicJobDetailPage() {
   // Build breadcrumb items
   const breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Home', href: '/' },
-    { label: 'Jobs', href: '/dashboard/discover/jobs' },
+    { label: 'Jobs', href: ROUTES.DASHBOARD_DISCOVER_JOBS.path },
     {
       label: jobData?.title || 'Loading...',
       isActive: true,

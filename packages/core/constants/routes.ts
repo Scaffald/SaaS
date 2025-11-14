@@ -169,44 +169,42 @@ const ROUTES_CONFIG = {
     isProtected: true,
   },
 
-  // Dashboard > Discover
-  DASHBOARD_DISCOVER: {
-    path: "/dashboard/discover",
-    title: "Discover",
-    isProtected: true,
-  },
+  // Dashboard > Map
   DASHBOARD_DISCOVER_MAP: {
-    path: "/dashboard/discover/map",
+    path: "/dashboard/map",
     title: "Map",
     isProtected: true,
   },
+  // Dashboard > Workers
   DASHBOARD_DISCOVER_WORKERS: {
-    path: "/dashboard/discover/workers",
+    path: "/dashboard/workers",
     title: "Workers",
     isProtected: true,
   },
   DASHBOARD_DISCOVER_WORKER_DETAIL: {
-    path: "/dashboard/discover/workers/:id",
+    path: "/dashboard/workers/:id",
     title: "Worker Details",
     isProtected: true,
   },
+  // Dashboard > Employers
   DASHBOARD_DISCOVER_EMPLOYERS: {
-    path: "/dashboard/discover/employers",
+    path: "/dashboard/employers",
     title: "Employers",
     isProtected: true,
   },
   DASHBOARD_DISCOVER_EMPLOYER_DETAIL: {
-    path: "/dashboard/discover/employers/:id",
+    path: "/dashboard/employers/:id",
     title: "Employer Details",
     isProtected: true,
   },
+  // Dashboard > Jobs
   DASHBOARD_DISCOVER_JOBS: {
-    path: "/dashboard/discover/jobs",
+    path: "/dashboard/jobs",
     title: "Jobs",
     isProtected: true,
   },
   DASHBOARD_DISCOVER_JOB_DETAIL: {
-    path: "/dashboard/discover/jobs/:id",
+    path: "/dashboard/jobs/:id",
     title: "Job Details",
     isProtected: true,
   },
@@ -659,23 +657,18 @@ export const ROUTE_HIERARCHY: readonly RouteHierarchyNode[] = [
           { key: "DASHBOARD_NOTIFICATIONS" },
         ],
       },
+      { key: "DASHBOARD_DISCOVER_MAP" },
       {
-        key: "DASHBOARD_DISCOVER",
-        children: [
-          { key: "DASHBOARD_DISCOVER_MAP" },
-          {
-            key: "DASHBOARD_DISCOVER_WORKERS",
-            children: [{ key: "DASHBOARD_DISCOVER_WORKER_DETAIL" }],
-          },
-          {
-            key: "DASHBOARD_DISCOVER_EMPLOYERS",
-            children: [{ key: "DASHBOARD_DISCOVER_EMPLOYER_DETAIL" }],
-          },
-          {
-            key: "DASHBOARD_DISCOVER_JOBS",
-            children: [{ key: "DASHBOARD_DISCOVER_JOB_DETAIL" }],
-          },
-        ],
+        key: "DASHBOARD_DISCOVER_WORKERS",
+        children: [{ key: "DASHBOARD_DISCOVER_WORKER_DETAIL" }],
+      },
+      {
+        key: "DASHBOARD_DISCOVER_EMPLOYERS",
+        children: [{ key: "DASHBOARD_DISCOVER_EMPLOYER_DETAIL" }],
+      },
+      {
+        key: "DASHBOARD_DISCOVER_JOBS",
+        children: [{ key: "DASHBOARD_DISCOVER_JOB_DETAIL" }],
       },
       {
         key: "DASHBOARD_ASSESSMENTS",

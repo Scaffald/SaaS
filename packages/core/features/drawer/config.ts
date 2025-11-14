@@ -54,41 +54,40 @@ export const generateDashboardDrawerItems = (options?: {
     icon: BarChart3,
   });
 
-  // Discover route - Always show subItems, parent is clickable
+  // Map - top-level item
   items.push({
-    key: "discover",
-    titleKey: "navigation.discover",
-    href: ROUTES.DASHBOARD_DISCOVER.path,
-    routeKey: "DASHBOARD_DISCOVER",
+    key: "map",
+    titleKey: "navigation.discoverMap",
+    href: ROUTES.DASHBOARD_DISCOVER_MAP.path,
+    routeKey: "DASHBOARD_DISCOVER_MAP",
     icon: MapIcon,
-    isExpandable: true,
-    expandOnActive: true,
-    subItems: [
-      {
-        key: "discover-map",
-        titleKey: "navigation.discoverMap",
-        href: ROUTES.DASHBOARD_DISCOVER_MAP.path,
-        routeKey: "DASHBOARD_DISCOVER_MAP",
-      },
-      {
-        key: "discover-workers",
-        titleKey: "navigation.discoverWorkers",
-        href: ROUTES.DASHBOARD_DISCOVER_WORKERS.path,
-        routeKey: "DASHBOARD_DISCOVER_WORKERS",
-      },
-      {
-        key: "discover-employers",
-        titleKey: "navigation.discoverEmployers",
-        href: ROUTES.DASHBOARD_DISCOVER_EMPLOYERS.path,
-        routeKey: "DASHBOARD_DISCOVER_EMPLOYERS",
-      },
-      {
-        key: "discover-jobs",
-        titleKey: "navigation.discoverJobs",
-        href: ROUTES.DASHBOARD_DISCOVER_JOBS.path,
-        routeKey: "DASHBOARD_DISCOVER_JOBS",
-      },
-    ],
+  });
+
+  // Workers - top-level item
+  items.push({
+    key: "workers",
+    titleKey: "navigation.discoverWorkers",
+    href: ROUTES.DASHBOARD_DISCOVER_WORKERS.path,
+    routeKey: "DASHBOARD_DISCOVER_WORKERS",
+    icon: Users,
+  });
+
+  // Employers - top-level item
+  items.push({
+    key: "employers",
+    titleKey: "navigation.discoverEmployers",
+    href: ROUTES.DASHBOARD_DISCOVER_EMPLOYERS.path,
+    routeKey: "DASHBOARD_DISCOVER_EMPLOYERS",
+    icon: Building2,
+  });
+
+  // Jobs - top-level item
+  items.push({
+    key: "jobs",
+    titleKey: "navigation.discoverJobs",
+    href: ROUTES.DASHBOARD_DISCOVER_JOBS.path,
+    routeKey: "DASHBOARD_DISCOVER_JOBS",
+    icon: Briefcase,
   });
 
   // Profile route - Always show subItems, parent is clickable

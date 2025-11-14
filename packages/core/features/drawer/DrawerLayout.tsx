@@ -147,7 +147,7 @@ export function DrawerLayout({
                     borderWidth={0}
                     bg="transparent"
                     display={isSmall ? 'flex' : 'none'}
-                    ml="$5"
+                    ml="$4"
                     px="$4"
                     height={30}
                     onPress={() => {

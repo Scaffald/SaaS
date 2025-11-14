@@ -4,7 +4,8 @@ import { useMemo, useState } from 'react'
 import { useRouter } from 'expo-router'
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
 import { Adapt, Button, Select, Sheet, Text, XStack, YStack } from 'tamagui'
-import { Check, ChevronDown, Pencil, Eye, EyeOff } from '@tamagui/lucide-icons'
+import { Check, ChevronDown, Pencil, Eye, EyeOff, ArrowRightCircle, RefreshCw } from '@tamagui/lucide-icons'
+import { OfficeLayout, DashboardWidget, QuickLinksSidebar } from '@app/ui'
 import { OfficePageLayout } from '../components/OfficePageLayout'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
 
@@ -121,7 +122,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
   const [selectedOrg, setSelectedOrg] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<string | null>(null)
 
-  const { data, isLoading } = api.projects.list.useQuery({
+  const { data, isLoading, refetch } = api.projects.list.useQuery({
     organization_id: selectedOrg || undefined,
     // biome-ignore lint/suspicious/noExplicitAny: Status filter type needs to match API schema
     status: statusFilter as any || undefined,
@@ -134,11 +135,13 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
   const projects = data?.projects || []
 
   return (
-    <OfficePageLayout
-      title={showHeader ? 'Projects' : undefined}
-      description={showHeader ? 'Manage construction projects with geographic data' : undefined}
-    >
-      <YStack gap="$4" p="$4">
+    <OfficeLayout
+      leftContent={
+        <OfficePageLayout
+          title={showHeader ? 'Projects' : undefined}
+          description={showHeader ? 'Manage construction projects with geographic data' : undefined}
+        >
+          <YStack gap="$4" p="$4">
         <XStack gap="$4" ai="center" jc="space-between" flexWrap="wrap">
           <XStack gap="$4" ai="center" flexWrap="wrap">
             {organizationsData && (
@@ -288,7 +291,37 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
           </YStack>
         )}
       </YStack>
-    </OfficePageLayout>
+        </OfficePageLayout>
+      }
+      rightContent={
+        <QuickLinksSidebar>
+          <YStack gap="$4">
+            <DashboardWidget gap="$3" elevated>
+              <Text fontSize="$5" fontWeight="700">
+                Quick Actions
+              </Text>
+              <YStack gap="$2">
+                <Button
+                  theme="info"
+                  icon={ArrowRightCircle}
+                  onPress={() => router.push(ROUTES.OFFICE_CMS_PROJECTS_CREATE)}
+                >
+                  Create Project
+                </Button>
+                <Button
+                  variant="outlined"
+                  icon={RefreshCw}
+                  onPress={() => refetch()}
+                  disabled={isLoading}
+                >
+                  Refresh
+                </Button>
+              </YStack>
+            </DashboardWidget>
+          </YStack>
+        </QuickLinksSidebar>
+      }
+    />
   )
 }
 

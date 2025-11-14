@@ -8,8 +8,8 @@ import { ScaffaldLogo } from '@app/core/assets'
 export const DrawerHeader = () => {
   return (
     <YStack gap="$4" shrink={0}>
-      {/* Logo Section */}
-      <XStack justify="flex-start" py="$2" width="100%" maxW="100%">
+      {/* Logo Section - Aligned with menu items (px="$3" to match DrawerLink) */}
+      <XStack justify="flex-start" py="$2" px="$3" width="100%" maxW="100%">
         <XStack maxW="100%" overflow="hidden">
           <ScaffaldLogo height={20} />
         </XStack>

@@ -43,7 +43,7 @@ export const DashboardLayout = ({
       <YStack gap="$3" pt="$3" pb="$5">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
-          <XStack px={isMobile ? '$3' : '$7'} pt="$3">
+          <XStack px={isMobile ? '$2' : '$7'} pt="$3">
             <Breadcrumb items={displayBreadcrumbs} />
           </XStack>
         )}
@@ -51,7 +51,7 @@ export const DashboardLayout = ({
         {/* Content Area - Use programmatic responsive flexDirection */}
         <XStack
           gap={isMobile ? '$3' : '$8'}
-          p={isMobile ? '$3' : '$7'}
+          p={isMobile ? '$2' : '$7'}
           flexDirection={isMobile ? 'column' : 'row'}
         >
           {hasLeftContent && (

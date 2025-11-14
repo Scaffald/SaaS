@@ -13,6 +13,7 @@ import {
 } from '@app/core/features/profile/widgets'
 import { api } from '@app/core/utils/api'
 import { useAuth } from '@app/core/provider/auth/useAuth'
+import { ROUTES } from '@app/core/constants/routes'
 import type { BreadcrumbItem } from '@app/ui'
 
 /**
@@ -74,7 +75,7 @@ export default function UserProfilePage() {
   const breadcrumbItems = useMemo<BreadcrumbItem[]>(
     () => [
       { label: 'Dashboard', href: '/dashboard' },
-      { label: 'Discover Workers', href: '/dashboard/discover/workers' },
+      { label: 'Discover Workers', href: ROUTES.DASHBOARD_DISCOVER_WORKERS.path },
       {
         label: isOwnProfile ? 'My Profile' : displayName || 'Loading...',
         isActive: true,
