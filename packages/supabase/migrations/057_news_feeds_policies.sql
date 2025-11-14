@@ -44,6 +44,9 @@ CREATE POLICY news_feeds_office_manage
 -- Service role has full access (for cron jobs)
 GRANT ALL ON core.news_feeds TO service_role;
 
+-- Grant table-level permissions for news_feeds
+GRANT SELECT ON core.news_feeds TO anon, authenticated;
+
 -- =========================================================
 -- Cached News Articles Policies
 -- =========================================================
@@ -64,6 +67,10 @@ CREATE POLICY cached_news_articles_service_role
   TO service_role
   USING (true)
   WITH CHECK (true);
+
+-- Grant table-level permissions for cached_news_articles
+GRANT SELECT ON core.cached_news_articles TO anon, authenticated;
+GRANT ALL ON core.cached_news_articles TO service_role;
 
 COMMIT;
 
