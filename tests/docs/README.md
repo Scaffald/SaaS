@@ -174,6 +174,20 @@ test('admin can access office', async ({ page }) => {
 })
 ```
 
+**Auth Setup** (`setup/auth.setup.ts`):
+The auth setup system creates reusable authentication state files that tests can use. See [Auth Setup README](../infrastructure/playwright/setup/README.md) for details.
+
+**Using Storage State** (Recommended):
+```typescript
+test.use({ storageState: 'tests/.auth/admin.json' })
+
+test('admin can access office', async ({ page }) => {
+  // Already authenticated!
+  await page.goto('/office')
+  // Test implementation
+})
+```
+
 **Office Helpers** (`helpers/office-forms.ts`, `helpers/office-navigation.ts`):
 - Form helpers for office CRUD operations
 - Navigation helpers for office routes

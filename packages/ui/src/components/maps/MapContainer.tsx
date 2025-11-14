@@ -4,6 +4,7 @@ import type { MapContainerProps, MapContainerRef, ViewportBounds } from './types
 import { MapFallback } from './MapFallback'
 import { CustomMarker } from './CustomMarker'
 import { generateCirclePolygon, validateGeoJSONFeatureCollection } from './utils'
+import { useThemeSetting } from '@app/core/provider/theme/UniversalThemeProvider'
 
 import 'mapbox-gl/dist/mapbox-gl.css'
 
@@ -39,6 +40,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
     },
     ref
   ) => {
+    const { resolvedTheme } = useThemeSetting()
     const mapContainerRef = useRef<HTMLDivElement | null>(null)
     const mapRef = useRef<mapboxgl.Map | null>(null)
     const markersRef = useRef(new Map<string, CustomMarker>())
@@ -46,6 +48,12 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
     const centerMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const [isMapReady, setIsMapReady] = useState(false)
     const [currentZoom, setCurrentZoom] = useState(zoom)
+
+    // Determine map style based on app theme
+    const mapStyle =
+      resolvedTheme === 'dark'
+        ? 'mapbox://styles/mapbox/dark-v11'
+        : 'mapbox://styles/mapbox/streets-v12'
 
     // Viewport change handler ref for debouncing
     const viewportChangeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -130,9 +138,10 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       }
 
       try {
+        // Theme-aware map style: dark theme for dark mode, streets for light mode
         const map = new mapboxgl.Map({
           container: mapContainerRef.current,
-          style: 'mapbox://styles/mapbox/streets-v12',
+          style: mapStyle,
           center,
           zoom,
           attributionControl: false,
@@ -306,7 +315,16 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       } catch (error) {
         console.error('Failed to initialize map:', error)
       }
-    }, [center, zoom, onViewportChange, onMapReady])
+    }, [center, zoom, onViewportChange, onMapReady, mapStyle])
+
+    // Update map style when theme changes
+    useEffect(() => {
+      const map = mapRef.current
+      if (!map || !isMapReady) return
+
+      // Update map style to match app theme
+      map.setStyle(mapStyle)
+    }, [mapStyle, isMapReady])
 
     // Handle map resize events
     useEffect(() => {

@@ -13,7 +13,7 @@ import {
   assertNoHorizontalScroll,
   assertFormResponsive,
   getViewportCategory,
-} from '../helpers/responsive'
+} from '../../infrastructure/playwright/helpers/helpers/responsive'
 
 // Priority 2 viewports: tablet and desktop only
 const viewports = [

@@ -1,15 +1,32 @@
 import { test as setup, expect } from '@playwright/test'
 import * as fs from 'node:fs'
-import * as path from 'node:path'
+import { getSession } from '../../playwright-helpers/playwright-helpers/auth'
 
 const authFile = 'tests/.auth/admin.json'
 const userFile = 'tests/.auth/user.json'
 const superAdminFile = 'tests/.auth/super-admin.json'
 
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321'
+const APP_BASE_URL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:8081'
+
+/**
+ * Normalize hostname for localStorage key (matches auth.ts helper)
+ */
+function normaliseHost(url: string): string {
+  return new URL(url).host.replace(/[.:]/g, '-')
+}
+
+/**
+ * Get the storage key for Supabase auth token
+ */
+function getStorageKey(): string {
+  return `sb-${normaliseHost(SUPABASE_URL)}-auth-token`
+}
+
 /**
  * Check if auth file exists and is recent (less than 7 days old)
  */
-function authFileIsValid(filePath: string): boolean {
+export function authFileIsValid(filePath: string): boolean {
   try {
     const stat = fs.statSync(filePath)
     const ageInDays = (Date.now() - stat.mtimeMs) / (1000 * 60 * 60 * 24)
@@ -35,60 +52,45 @@ setup('authenticate as admin', async ({ page }) => {
 
   console.log('🔐 Setting up admin authentication...')
 
-  // Navigate to auth page
-  await page.goto('http://localhost:8081/auth')
-  await page.waitForLoadState('domcontentloaded')
-
-  // Sign in via API (faster than UI)
+  // Get session via API (no CDN dependency)
   const email = 'ewongagent@gmail.com'
   const password = 'password123'
-  // Use localhost Supabase (from .env file)
-  const supabaseUrl = 'http://127.0.0.1:54321'
-  const supabaseKey = 'sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH'
-
-  const response = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      apikey: supabaseKey,
-    },
-    body: JSON.stringify({ email, password }),
-  })
-
-  const data = await response.json()
-
-  if (!data.access_token) {
-    throw new Error(`Admin authentication failed: ${JSON.stringify(data)}`)
-  }
+  const session = await getSession(email, password)
 
   console.log('✓ API authentication successful')
 
-  // Set the session in the browser using Supabase's sign-in
+  // Navigate to app and set session in localStorage
+  await page.goto(`${APP_BASE_URL}/`)
+  await page.waitForLoadState('domcontentloaded')
+
+  // Set the session in localStorage directly (no browser-side Supabase import needed)
+  const storageKey = getStorageKey()
   await page.evaluate(
-    async ({ supabaseUrl, supabaseKey, email, password }) => {
-      // Import Supabase client in the browser context
-      const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2')
-      const supabase = createClient(supabaseUrl, supabaseKey)
-
-      // Sign in - this properly initializes Supabase's session
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
-      if (error) {
-        throw new Error(`Browser sign-in failed: ${error.message}`)
-      }
-
-      console.log('[SETUP] Browser session initialized')
+    ({ storageKey, sessionData }) => {
+      // Store session in the correct localStorage key
+      localStorage.setItem(storageKey, JSON.stringify({
+        currentSession: sessionData,
+        expiresAt: sessionData.expires_at,
+      }))
+      // Also set the generic keys for compatibility
+      localStorage.setItem('supabase.auth.token', JSON.stringify({
+        currentSession: sessionData,
+        expiresAt: sessionData.expires_at,
+      }))
+      localStorage.setItem('supabase.auth.user', JSON.stringify(sessionData.user))
+      console.log('[SETUP] Browser session initialized in localStorage')
     },
-    { supabaseUrl, supabaseKey, email, password }
+    { storageKey, sessionData: session.session }
   )
 
   console.log('✓ Browser session initialized')
 
+  // Reload page to let Supabase read the session
+  await page.reload({ waitUntil: 'domcontentloaded' })
+  await page.waitForTimeout(2000)
+
   // Navigate to dashboard to verify auth works
-  await page.goto('http://localhost:8081/dashboard')
+  await page.goto(`${APP_BASE_URL}/dashboard`)
   await page.waitForLoadState('networkidle', { timeout: 30000 })
 
   // Verify we're authenticated (not redirected to /auth)
@@ -120,29 +122,43 @@ setup('authenticate as user', async ({ page }) => {
 
   console.log('🔐 Setting up user authentication...')
 
+  // Get session via API (no CDN dependency)
   const email = 'lexis.salah@eths.education.com'
   const password = 'password123'
-  const supabaseUrl = 'http://127.0.0.1:54321'
-  const supabaseKey = 'sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH'
+  const session = await getSession(email, password)
 
-  await page.goto('http://localhost:8081/auth')
+  console.log('✓ API authentication successful')
 
+  // Navigate to app and set session in localStorage
+  await page.goto(`${APP_BASE_URL}/`)
+  await page.waitForLoadState('domcontentloaded')
+
+  // Set the session in localStorage directly
+  const storageKey = getStorageKey()
   await page.evaluate(
-    async ({ supabaseUrl, supabaseKey, email, password }) => {
-      const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2')
-      const supabase = createClient(supabaseUrl, supabaseKey)
-
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
-      if (error) throw new Error(`User sign-in failed: ${error.message}`)
+    ({ storageKey, sessionData }) => {
+      localStorage.setItem(storageKey, JSON.stringify({
+        currentSession: sessionData,
+        expiresAt: sessionData.expires_at,
+      }))
+      localStorage.setItem('supabase.auth.token', JSON.stringify({
+        currentSession: sessionData,
+        expiresAt: sessionData.expires_at,
+      }))
+      localStorage.setItem('supabase.auth.user', JSON.stringify(sessionData.user))
+      console.log('[SETUP] Browser session initialized in localStorage')
     },
-    { supabaseUrl, supabaseKey, email, password }
+    { storageKey, sessionData: session.session }
   )
 
-  await page.goto('http://localhost:8081/dashboard')
+  console.log('✓ Browser session initialized')
+
+  // Reload page to let Supabase read the session
+  await page.reload({ waitUntil: 'domcontentloaded' })
+  await page.waitForTimeout(2000)
+
+  // Navigate to dashboard to verify auth works
+  await page.goto(`${APP_BASE_URL}/dashboard`)
   await page.waitForLoadState('networkidle', { timeout: 30000 })
   await expect(page).toHaveURL(/dashboard/)
   await page.waitForTimeout(2000)
@@ -167,29 +183,43 @@ setup('authenticate as super admin', async ({ page }) => {
 
   console.log('🔐 Setting up super admin authentication...')
 
+  // Get session via API (no CDN dependency)
   const email = 'zach@unicorn.love'
   const password = 'password123'
-  const supabaseUrl = 'http://127.0.0.1:54321'
-  const supabaseKey = 'sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH'
+  const session = await getSession(email, password)
 
-  await page.goto('http://localhost:8081/auth')
+  console.log('✓ API authentication successful')
 
+  // Navigate to app and set session in localStorage
+  await page.goto(`${APP_BASE_URL}/`)
+  await page.waitForLoadState('domcontentloaded')
+
+  // Set the session in localStorage directly
+  const storageKey = getStorageKey()
   await page.evaluate(
-    async ({ supabaseUrl, supabaseKey, email, password }) => {
-      const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2')
-      const supabase = createClient(supabaseUrl, supabaseKey)
-
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
-      if (error) throw new Error(`Super admin sign-in failed: ${error.message}`)
+    ({ storageKey, sessionData }) => {
+      localStorage.setItem(storageKey, JSON.stringify({
+        currentSession: sessionData,
+        expiresAt: sessionData.expires_at,
+      }))
+      localStorage.setItem('supabase.auth.token', JSON.stringify({
+        currentSession: sessionData,
+        expiresAt: sessionData.expires_at,
+      }))
+      localStorage.setItem('supabase.auth.user', JSON.stringify(sessionData.user))
+      console.log('[SETUP] Browser session initialized in localStorage')
     },
-    { supabaseUrl, supabaseKey, email, password }
+    { storageKey, sessionData: session.session }
   )
 
-  await page.goto('http://localhost:8081/dashboard')
+  console.log('✓ Browser session initialized')
+
+  // Reload page to let Supabase read the session
+  await page.reload({ waitUntil: 'domcontentloaded' })
+  await page.waitForTimeout(2000)
+
+  // Navigate to dashboard to verify auth works
+  await page.goto(`${APP_BASE_URL}/dashboard`)
   await page.waitForLoadState('networkidle', { timeout: 30000 })
   await expect(page).toHaveURL(/dashboard/)
   await page.waitForTimeout(2000)

@@ -14,7 +14,7 @@ import {
   assertFormResponsive,
   assertModalResponsive,
   getViewportCategory,
-} from '../helpers/responsive'
+} from '../../infrastructure/playwright/helpers/helpers/responsive'
 
 // Define all Priority 1 viewports from REQ-11 spec
 const viewports = [

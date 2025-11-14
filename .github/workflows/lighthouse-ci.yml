@@ -1,0 +1,63 @@
+name: Lighthouse CI
+
+on:
+  pull_request:
+    branches: [main, dev]
+  push:
+    branches: [main, dev]
+  workflow_dispatch:
+
+jobs:
+  lighthouse:
+    name: Lighthouse Performance Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.20.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build application
+        run: pnpm build
+        env:
+          NODE_ENV: production
+
+      - name: Start server
+        run: |
+          pnpm web:build
+          pnpm web:serve &
+          sleep 10
+        env:
+          PORT: 8081
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v11
+        with:
+          urls: |
+            http://localhost:8081/
+            http://localhost:8081/dashboard
+            http://localhost:8081/dashboard/profile/general
+            http://localhost:8081/dashboard/discover/workers
+            http://localhost:8081/dashboard/discover/jobs
+            http://localhost:8081/dashboard/discover/employers
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          configPath: '.lighthouserc.json'
+
+    # Note: Create .lighthouserc.json with performance budgets
+    # See: https://github.com/GoogleChrome/lighthouse-ci/blob/main/docs/configuration.md
+

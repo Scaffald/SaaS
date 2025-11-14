@@ -1,0 +1,64 @@
+name: Weekly Load Tests
+
+on:
+  schedule:
+    # Run every Monday at 2 AM UTC
+    - cron: '0 2 * * 1'
+  workflow_dispatch:
+
+jobs:
+  load-tests:
+    name: API Load Testing
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.20.0
+
+      - name: Install k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run load tests
+        run: |
+          cd tests/performance/api-load-tests
+          k6 run trpc-routers.k6.js --out json=load-test-results.json
+        env:
+          BASE_URL: ${{ secrets.STAGING_URL || 'http://localhost:8081' }}
+
+      - name: Upload load test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: load-test-results
+          path: tests/performance/api-load-tests/load-test-results.json
+          retention-days: 30
+
+      - name: Parse and report results
+        if: always()
+        run: |
+          echo "Load test results uploaded as artifact"
+          echo "Check artifacts for detailed performance metrics"
+
+    # Note: Update BASE_URL to match your staging environment
+    # Note: Load tests should run against staging, not production
+
