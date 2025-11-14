@@ -50,6 +50,27 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
+# timeout helper (macOS doesn't ship GNU timeout)
+TIMEOUT_CMD=""
+if command -v timeout >/dev/null 2>&1; then
+    TIMEOUT_CMD="timeout"
+elif command -v gtimeout >/dev/null 2>&1; then
+    TIMEOUT_CMD="gtimeout"
+else
+    echo -e "${YELLOW}⚠️  'timeout' command not found; long-running Supabase commands will run without a guard timer${NC}"
+    echo "   Install via: brew install coreutils"
+fi
+
+run_with_timeout() {
+    local duration=$1
+    shift
+    if [ -n "$TIMEOUT_CMD" ]; then
+        "$TIMEOUT_CMD" "$duration" "$@"
+    else
+        "$@"
+    fi
+}
+
 # Check if we're in the right directory
 if [ ! -f "package.json" ]; then
     echo -e "${RED}❌ Error: Please run this script from the project root directory${NC}"
@@ -345,7 +366,7 @@ if [ "$DEPLOY_MIGRATIONS" = true ]; then
             cd packages/supabase
             set +e
             # Add timeout to prevent indefinite hanging
-            DIFF_OUTPUT=$(timeout 120 dotenv -e ../../${ENV_FILE} -- pnpx supabase db diff --db-url "$DB_URL" 2>&1)
+            DIFF_OUTPUT=$(run_with_timeout 120 dotenv -e ../../${ENV_FILE} -- pnpx supabase db diff --db-url "$DB_URL" 2>&1)
             DIFF_EXIT_CODE=$?
             set -e
             cd ../..
@@ -364,7 +385,7 @@ if [ "$DEPLOY_MIGRATIONS" = true ]; then
         cd packages/supabase
         set +e
         # Add timeout to prevent indefinite hanging (2 minutes should be enough)
-        DIFF_OUTPUT=$(timeout 120 dotenv -e ../../${ENV_FILE} -- pnpx supabase db diff --db-url "$DB_URL" 2>&1)
+        DIFF_OUTPUT=$(run_with_timeout 120 dotenv -e ../../${ENV_FILE} -- pnpx supabase db diff --db-url "$DB_URL" 2>&1)
         DIFF_EXIT_CODE=$?
         set -e
         cd ../..
@@ -422,7 +443,7 @@ if [ "$DEPLOY_MIGRATIONS" = true ]; then
                         cd packages/supabase
                         set +e
                         # Add timeout to prevent indefinite hanging (5 minutes for push)
-                        PUSH_OUTPUT=$(timeout 300 dotenv -e ../../${ENV_FILE} -- pnpx supabase db push --db-url "$DB_URL" --include-all 2>&1)
+                        PUSH_OUTPUT=$(run_with_timeout 300 dotenv -e ../../${ENV_FILE} -- pnpx supabase db push --db-url "$DB_URL" --include-all 2>&1)
                         PUSH_EXIT_CODE=$?
                         set -e
                         cd ../..
@@ -480,7 +501,7 @@ if [ "$DEPLOY_MIGRATIONS" = true ]; then
                     cd packages/supabase
                     set +e
                     # Add timeout to prevent indefinite hanging (5 minutes for push)
-                    PUSH_OUTPUT=$(timeout 300 dotenv -e ../../${ENV_FILE} -- pnpx supabase db push --db-url "$DB_URL" --include-all 2>&1)
+                    PUSH_OUTPUT=$(run_with_timeout 300 dotenv -e ../../${ENV_FILE} -- pnpx supabase db push --db-url "$DB_URL" --include-all 2>&1)
                     PUSH_EXIT_CODE=$?
                     set -e
                     cd ../..

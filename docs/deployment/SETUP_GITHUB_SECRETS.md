@@ -77,6 +77,28 @@ These are your actual app configuration values:
 
 #### Mapbox (if using)
 - `EXPO_PUBLIC_MAPBOX_TOKEN`
+- `EXPO_PUBLIC_MAPBOX_API_URL` (optional override)
+
+### 4. Preview Environment Overrides
+
+To keep the `preview` branch completely isolated from production, duplicate the required secrets with a `PREVIEW_` prefix. These values should point to your preview Supabase project, Netlify site, and any preview-specific OAuth/Mapbox credentials.
+
+| Secret | Purpose |
+| --- | --- |
+| `PREVIEW_EXPO_PUBLIC_SUPABASE_URL` | Preview Supabase project URL |
+| `PREVIEW_EXPO_PUBLIC_SUPABASE_ANON_KEY` | Preview Supabase anon key |
+| `PREVIEW_EXPO_PUBLIC_URL` | Preview web base URL |
+| `PREVIEW_EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` | Preview Google OAuth web client |
+| `PREVIEW_EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` | Preview Google OAuth iOS client |
+| `PREVIEW_EXPO_PUBLIC_GOOGLE_IOS_SCHEME` | Preview custom URL scheme |
+| `PREVIEW_EXPO_PUBLIC_MAPBOX_TOKEN` | Preview Mapbox token |
+| `PREVIEW_EXPO_PUBLIC_MAPBOX_API_URL` | Preview Mapbox API URL override |
+| `PREVIEW_NETLIFY_SITE_ID` | Dedicated Netlify site for preview deploys |
+| `PREVIEW_NETLIFY_AUTH_TOKEN` | (Optional) Netlify access token scoped to the preview site |
+| `PREVIEW_SUPABASE_ACCESS_TOKEN` | Supabase access token for preview |
+| `PREVIEW_SUPABASE_PROJECT_ID` | Preview Supabase project ref |
+
+> ⚠️ The GitHub Action intentionally fails for the `preview` branch when these secrets are missing. Configure them before pushing to avoid accidentally deploying preview builds into production infrastructure.
 
 ## 🔧 Adding Secrets to GitHub
 
@@ -98,10 +120,14 @@ These are your actual app configuration values:
 # Netlify secrets
 gh secret set NETLIFY_AUTH_TOKEN
 gh secret set NETLIFY_SITE_ID
+gh secret set PREVIEW_NETLIFY_AUTH_TOKEN   # optional if sharing the same token
+gh secret set PREVIEW_NETLIFY_SITE_ID
 
 # Supabase secrets
 gh secret set SUPABASE_ACCESS_TOKEN
 gh secret set SUPABASE_PROJECT_ID
+gh secret set PREVIEW_SUPABASE_ACCESS_TOKEN
+gh secret set PREVIEW_SUPABASE_PROJECT_ID
 
 # App environment variables
 gh secret set EXPO_PUBLIC_SUPABASE_URL
@@ -111,6 +137,17 @@ gh secret set EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
 gh secret set EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID
 gh secret set EXPO_PUBLIC_GOOGLE_IOS_SCHEME
 gh secret set EXPO_PUBLIC_MAPBOX_TOKEN
+gh secret set EXPO_PUBLIC_MAPBOX_API_URL
+
+# Preview overrides
+gh secret set PREVIEW_EXPO_PUBLIC_SUPABASE_URL
+gh secret set PREVIEW_EXPO_PUBLIC_SUPABASE_ANON_KEY
+gh secret set PREVIEW_EXPO_PUBLIC_URL
+gh secret set PREVIEW_EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
+gh secret set PREVIEW_EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID
+gh secret set PREVIEW_EXPO_PUBLIC_GOOGLE_IOS_SCHEME
+gh secret set PREVIEW_EXPO_PUBLIC_MAPBOX_TOKEN
+gh secret set PREVIEW_EXPO_PUBLIC_MAPBOX_API_URL
 ```
 
 ## 📝 Netlify Site Setup (Simplified)
@@ -188,9 +225,12 @@ DATABASE_URL=postgresql://postgres:[password]@db.[project].supabase.co:5432/post
 ### GitHub Secrets
 - [ ] `NETLIFY_AUTH_TOKEN` set
 - [ ] `NETLIFY_SITE_ID` set
+- [ ] `PREVIEW_NETLIFY_SITE_ID` set
 - [ ] `SUPABASE_ACCESS_TOKEN` set (optional)
 - [ ] `SUPABASE_PROJECT_ID` set (optional)
+- [ ] `PREVIEW_SUPABASE_PROJECT_ID` set (optional)
 - [ ] All `EXPO_PUBLIC_*` variables set
+- [ ] All `PREVIEW_EXPO_PUBLIC_*` variables set
 
 ### Netlify
 - [ ] Site created
