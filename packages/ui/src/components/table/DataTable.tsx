@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useState, useRef } from 'react'
 import { Button, Input, ScrollView, Text, View, XGroup, isWeb } from 'tamagui'
 import {
   ChevronDown,
@@ -18,12 +19,24 @@ import {
   flexRender,
 } from '@tanstack/react-table'
 import { Table } from './TableParts'
+import { RowActionOverlay } from '@app/core/features/office/components/RowActionOverlay'
 
 const HEADER_ROW_HEIGHT = 48
 
 export interface DataTableProps<TData> {
   columns: ColumnDef<TData, unknown>[]
   data: TData[]
+  /** View action handler (opens overlay on row click) */
+  onRowView?: (row: TData) => void
+  /** Edit action handler (opens overlay on row click) */
+  onRowEdit?: (row: TData) => void
+  /** Delete action handler (opens overlay on row click) */
+  onRowDelete?: (row: TData) => Promise<void>
+  /** Function to get item name from row data (for delete confirmation) */
+  getItemName?: (row: TData) => string
+  /** Type of item (for delete confirmation) */
+  itemType?: string
+  /** @deprecated Use onRowView, onRowEdit, onRowDelete instead */
   onRowClick?: (row: TData) => void
   pageSize?: number
   isLoading?: boolean
@@ -39,6 +52,11 @@ export interface DataTableProps<TData> {
 export function DataTable<TData>({
   columns,
   data,
+  onRowView,
+  onRowEdit,
+  onRowDelete,
+  getItemName,
+  itemType = 'item',
   onRowClick,
   pageSize = 50,
   isLoading = false,
@@ -50,6 +68,13 @@ export function DataTable<TData>({
   columnVisibility,
   onColumnVisibilityChange,
 }: DataTableProps<TData>) {
+  const [activeRowId, setActiveRowId] = useState<string | null>(null)
+  const [overlayPosition, setOverlayPosition] = useState<{ x: number; y: number } | null>(null)
+  const tableContainerRef = useRef<HTMLDivElement | null>(null)
+
+  // Determine if we should use overlay (new props) or old onRowClick behavior
+  // Note: Overlay only works on web due to RowActionOverlay using DOM APIs
+  const useOverlay = isWeb && Boolean(onRowView || onRowEdit || onRowDelete)
   const table = useReactTable({
     data,
     columns,
@@ -76,6 +101,78 @@ export function DataTable<TData>({
   const headerGroups = table.getHeaderGroups()
   const tableRows = table.getRowModel().rows
 
+  // Find active row data
+  const activeRow = activeRowId
+    ? tableRows.find((row) => row.id === activeRowId)?.original
+    : null
+
+  // Handle row click - calculate position and open overlay or use legacy onRowClick
+  const handleRowClick = (row: TData, rowId: string, event?: any) => {
+    if (useOverlay && isWeb) {
+      // Calculate position relative to table container
+      // Try to get position from event or from row element
+      let x = 0
+      let y = 0
+      
+      if (event) {
+        // Try to get position from mouse/touch event
+        const clientX = (event as any).nativeEvent?.clientX ?? (event as any).clientX
+        const clientY = (event as any).nativeEvent?.clientY ?? (event as any).clientY
+        
+        if (clientX !== undefined && clientY !== undefined) {
+          const containerRect = (tableContainerRef.current as HTMLElement)?.getBoundingClientRect()
+          if (containerRect) {
+            x = clientX - containerRect.left
+            y = clientY - containerRect.top
+          }
+        }
+      }
+      
+      // Fallback: position at row center if we couldn't get event position
+      if (x === 0 && y === 0 && event?.currentTarget) {
+        const rowElement = event.currentTarget as HTMLElement
+        const rect = rowElement.getBoundingClientRect()
+        const containerRect = (tableContainerRef.current as HTMLElement)?.getBoundingClientRect()
+        if (containerRect) {
+          x = rect.left - containerRect.left + rect.width / 2
+          y = rect.top - containerRect.top + rect.height / 2
+        }
+      }
+      
+      if (x !== 0 || y !== 0) {
+        setOverlayPosition({ x, y })
+        setActiveRowId(rowId)
+      }
+    } else if (onRowClick) {
+      // Legacy behavior
+      onRowClick(row)
+    }
+  }
+
+  // Close overlay handler
+  const handleCloseOverlay = () => {
+    setActiveRowId(null)
+    setOverlayPosition(null)
+  }
+
+  // Handle overlay actions
+  const handleView = (row: TData) => {
+    onRowView?.(row)
+    handleCloseOverlay()
+  }
+
+  const handleEdit = (row: TData) => {
+    onRowEdit?.(row)
+    handleCloseOverlay()
+  }
+
+  const handleDelete = async (row: TData) => {
+    if (onRowDelete) {
+      await onRowDelete(row)
+      handleCloseOverlay()
+    }
+  }
+
   if (isLoading) {
     return (
       <View flex={1} items="center" justify="center">
@@ -93,22 +190,23 @@ export function DataTable<TData>({
   }
 
   return (
-    <View flex={1} flexDirection="column">
-      <ScrollView flex={1} showsVerticalScrollIndicator showsHorizontalScrollIndicator>
-        <ScrollView horizontal>
-          <View width="100%">
-            <Table
-              data-testid={testID}
-              alignCells={{ x: 'left', y: 'center' }}
-              alignHeaderCells={{ y: 'center', x: 'left' }}
-              cellWidth={cellWidth as never}
-              cellHeight={cellHeight as never}
-              borderWidth={0.5}
-              borderTopRightRadius="$4"
-              borderTopLeftRadius="$4"
-              borderBottomLeftRadius="$2"
-              borderBottomRightRadius="$2"
-            >
+    <View flex={1} flexDirection="column" position="relative">
+      <View ref={tableContainerRef as any} position="relative" flex={1}>
+        <ScrollView flex={1} showsVerticalScrollIndicator showsHorizontalScrollIndicator>
+          <ScrollView horizontal>
+            <View width="100%">
+              <Table
+                data-testid={testID}
+                alignCells={{ x: 'left', y: 'center' }}
+                alignHeaderCells={{ y: 'center', x: 'left' }}
+                cellWidth={cellWidth as never}
+                cellHeight={cellHeight as never}
+                borderWidth={0.5}
+                borderTopRightRadius="$4"
+                borderTopLeftRadius="$4"
+                borderBottomLeftRadius="$2"
+                borderBottomRightRadius="$2"
+              >
               {/* Header */}
               <Table.Head position="absolute" t={0} z={5} bg="$background">
                 {headerGroups.map((headerGroup, groupIndex) => (
@@ -191,8 +289,14 @@ export function DataTable<TData>({
                     key={row.id}
                     hoverStyle={{ bg: '$color2' }}
                     pressStyle={{ opacity: 0.8 }}
-                    cursor={onRowClick ? 'pointer' : 'default'}
-                    onPress={() => onRowClick?.(row.original)}
+                    cursor={useOverlay || onRowClick ? 'pointer' : 'default'}
+                    onPress={(event) => {
+                      if (useOverlay) {
+                        handleRowClick(row.original, row.id, event)
+                      } else if (onRowClick) {
+                        onRowClick(row.original)
+                      }
+                    }}
                     rowLocation={rowIdx === tableRows.length - 1 ? 'last' : 'middle'}
                   >
                     {row.getVisibleCells().map((cell, cellIdx) => {
@@ -227,6 +331,29 @@ export function DataTable<TData>({
           </View>
         </ScrollView>
       </ScrollView>
+
+      {/* Row Action Overlay */}
+      {useOverlay && activeRow && overlayPosition && onRowEdit && (
+        <RowActionOverlay
+          row={activeRow}
+          position={overlayPosition}
+          onView={onRowView}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onClose={handleCloseOverlay}
+          itemName={
+            getItemName
+              ? getItemName(activeRow)
+              : String(
+                  (activeRow as { name?: string; title?: string }).name ||
+                    (activeRow as { title?: string }).title ||
+                    'Item',
+                )
+          }
+          itemType={itemType}
+        />
+      )}
+      </View>
 
       {/* Pagination Footer */}
       {!hidePagination && (

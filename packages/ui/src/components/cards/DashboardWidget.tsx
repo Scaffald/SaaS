@@ -81,7 +81,7 @@ export const DashboardWidget = ({
   return (
     <Card
       boxShadow={shadow}
-      p={isSmallScreen ? spacing.md : spacing.lg}
+      p={isSmallScreen ? spacing.xs : spacing.lg}
       gap={gap}
       rounded={borderRadius['3xl']}
       bg="$background"

@@ -6,6 +6,10 @@
 
 BEGIN;
 
+-- Temporarily disable the slug format constraint to allow inserts with invalid slugs
+-- We'll sanitize them after the trigger runs
+ALTER TABLE core.users DROP CONSTRAINT IF EXISTS users_slug_format_check;
+
 -- Insert users into auth.users with metadata
 -- Password for all users: password123
 INSERT INTO auth.users (
@@ -31,7 +35,7 @@ SELECT
   users.id::uuid,
   users.email,
   NULLIF(users.phone, ''),  -- Convert empty strings to NULL
-  extensions.crypt('password123', extensions.gen_salt('bf')),
+  public.crypt('password123', public.gen_salt('bf')),
   NOW(),
   '{"provider": "email", "providers": ["email"]}'::jsonb,
   jsonb_build_object(
@@ -115,12 +119,75 @@ FROM (VALUES
 ) AS users(id, email, name, first_name, last_name, phone, location)
 ON CONFLICT (id) DO NOTHING;
 
+-- Sanitize slugs to match constraint format (trigger sets slug to username which may be invalid)
+-- Constraint requires: ^[a-z0-9-]+$ with length 3-50
+-- Use a CTE to sanitize slugs and handle conflicts
+WITH sanitized_slugs AS (
+  SELECT 
+    id,
+    REGEXP_REPLACE(
+      REGEXP_REPLACE(
+        REGEXP_REPLACE(LOWER(COALESCE(username, display_name)), '[^a-z0-9]+', '-', 'g'),
+        '-+', '-', 'g'
+      ),
+      '^-+|-+$', '', 'g'
+    ) AS sanitized_slug
+  FROM core.users
+  WHERE slug IS NOT NULL
+    AND (
+      slug !~ '^[a-z0-9-]+$' OR
+      LENGTH(slug) < 3 OR
+      LENGTH(slug) > 50
+    )
+)
+UPDATE core.users u
+SET slug = CASE
+  WHEN ss.sanitized_slug IS NULL THEN NULL
+  WHEN LENGTH(ss.sanitized_slug) < 3 THEN NULL
+  WHEN LENGTH(ss.sanitized_slug) > 50 THEN NULL
+  ELSE ss.sanitized_slug
+END
+FROM sanitized_slugs ss
+WHERE u.id = ss.id;
+
+-- Handle duplicate slugs by setting conflicting ones to NULL (except the first one)
+-- This ensures unique constraint is satisfied
+WITH ranked_users AS (
+  SELECT 
+    id,
+    slug,
+    ROW_NUMBER() OVER (PARTITION BY slug ORDER BY created_at) AS rn
+  FROM core.users
+  WHERE slug IS NOT NULL
+    AND LENGTH(slug) >= 3
+    AND LENGTH(slug) <= 50
+    AND slug ~ '^[a-z0-9-]+$'
+)
+UPDATE core.users u
+SET slug = NULL
+FROM ranked_users r
+WHERE u.id = r.id
+  AND r.rn > 1;
+
+-- Re-enable the constraint now that all slugs are valid
+ALTER TABLE core.users
+ADD CONSTRAINT users_slug_format_check 
+CHECK (
+  slug IS NULL OR (
+    LENGTH(slug) >= 3 AND 
+    LENGTH(slug) <= 50 AND 
+    slug ~ '^[a-z0-9-]+$'
+  )
+);
+
 -- Assign 'office' role to core team members
 -- (They already have 'worker' role from trigger)
-INSERT INTO core.role_assignments (role_id, user_id)
+INSERT INTO core.role_assignments (role_id, user_id, scope_org_id, scope_team_id)
 SELECT 
   r.id as role_id,
-  u.id as user_id
+  u.id as user_id,
+  NULL as scope_org_id,
+  NULL as scope_team_id
 FROM core.roles r
 CROSS JOIN auth.users u
 WHERE r.name = 'office'
@@ -130,7 +197,7 @@ WHERE r.name = 'office'
     OR u.email ILIKE '%@circleave.com'
     OR u.email ILIKE '%@scaffald.com'
   )
-ON CONFLICT DO NOTHING; -- Skip if role assignment already exists
+ON CONFLICT (role_id, user_id, scope_org_id, scope_team_id) DO NOTHING; -- Skip if role assignment already exists
 
 -- Update geo coordinates for users based on their location
 -- This populates the PostGIS geography field for the v_profile_search view

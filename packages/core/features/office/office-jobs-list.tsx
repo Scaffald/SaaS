@@ -7,7 +7,6 @@ import { Adapt, Button, Select, Sheet, Switch, Text, XStack, YStack } from 'tama
 import { Check, ChevronDown, Pencil, ArrowRightCircle, RefreshCw } from '@tamagui/lucide-icons'
 import { OfficeLayout, DashboardWidget, QuickLinksSidebar } from '@app/ui'
 import { OfficePageLayout } from './components/OfficePageLayout'
-import { DeleteButton } from './components/DeleteButton'
 
 type Job = {
   id: string
@@ -65,10 +64,7 @@ const formatPayRange = (job: Job) => {
   return `$${min}-$${max} ${type === 'hourly' ? '/hr' : type === 'salary' ? '/yr' : ''}`
 }
 
-const createColumns = (
-  router: ReturnType<typeof useRouter>,
-  onDelete: (id: string) => Promise<void>
-) => [
+const createColumns = (router: ReturnType<typeof useRouter>) => [
   columnHelper.accessor('title', {
     header: 'Title',
     cell: (info) => info.getValue(),
@@ -113,32 +109,7 @@ const createColumns = (
     header: 'Created',
     cell: (info) => new Date(info.getValue()).toLocaleDateString(),
   }),
-  columnHelper.display({
-    id: 'actions',
-    header: 'Actions',
-    cell: (info) => {
-      const job = info.row.original
-      return (
-        <XStack gap="$2">
-          <Button
-            data-testid={`job-edit-button-${job.id}`}
-            size="$2"
-            variant="outlined"
-            icon={Pencil}
-            onPress={() => router.push(RouteBuilder.officeJobsEdit(job.id))}
-          >
-            Edit
-          </Button>
-          <DeleteButton
-            data-testid={`job-delete-button-${job.id}`}
-            itemName={job.title}
-            itemType="job"
-            onDelete={() => onDelete(job.id)}
-          />
-        </XStack>
-      )
-    },
-  }),
+  // Actions column removed - using RowActionOverlay instead
 ]
 
 export interface OfficeJobsListProps {
@@ -197,7 +168,17 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
   const teamFilterSelectValue = teamFilter ?? 'all'
   const teamFilterPlaceholder = teamsLoading ? 'Loading teams...' : 'All teams'
 
-  const columns = createColumns(router, handleDelete)
+  const columns = createColumns(router)
+  
+  const handleRowEdit = (job: Job) => {
+    router.push(RouteBuilder.officeJobsEdit(job.id))
+  }
+  
+  const handleRowDelete = async (job: Job) => {
+    await handleDelete(job.id)
+  }
+  
+  const getItemName = (job: Job) => job.title
 
   const filtersAccessory = (
     <XStack gap="$3" items="center">
@@ -274,6 +255,10 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           pageSize={50}
           emptyMessage="No jobs found"
           hideHeader={!showHeader}
+          onRowEdit={handleRowEdit}
+          onRowDelete={handleRowDelete}
+          getItemName={getItemName}
+          itemType="job"
           actionBarConfig={{
             bar: {
               addLabel: 'Create Job',

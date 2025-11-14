@@ -32,7 +32,18 @@ interface OfficePageLayoutProps<TData> {
   columns: ColumnDef<TData, unknown>[]
   data: TData[]
   isLoading?: boolean
+  /** @deprecated Use onRowView, onRowEdit, onRowDelete instead */
   onRowClick?: (row: TData) => void
+  /** View action handler (opens overlay on row click) */
+  onRowView?: (row: TData) => void
+  /** Edit action handler (opens overlay on row click) */
+  onRowEdit?: (row: TData) => void
+  /** Delete action handler (opens overlay on row click) */
+  onRowDelete?: (row: TData) => Promise<void>
+  /** Function to get item name from row data (for delete confirmation) */
+  getItemName?: (row: TData) => string
+  /** Type of item (for delete confirmation) */
+  itemType?: string
   pageSize?: number
   emptyMessage?: string
   hideCreateButton?: boolean
@@ -53,6 +64,11 @@ export function OfficePageLayout<TData>({
   data,
   isLoading = false,
   onRowClick,
+  onRowView,
+  onRowEdit,
+  onRowDelete,
+  getItemName,
+  itemType = 'item',
   pageSize = 50,
   emptyMessage = 'No data found',
   hideCreateButton = false,
@@ -93,6 +109,11 @@ export function OfficePageLayout<TData>({
         data={data}
         isLoading={isLoading}
         onRowClick={onRowClick}
+        onRowView={onRowView}
+        onRowEdit={onRowEdit}
+        onRowDelete={onRowDelete}
+        getItemName={getItemName}
+        itemType={itemType}
         pageSize={pageSize}
         emptyMessage={emptyMessage}
         columnVisibility={columnVisibility}
