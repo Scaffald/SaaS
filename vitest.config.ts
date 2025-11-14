@@ -22,11 +22,11 @@ export default defineConfig({
       { find: '@app/schemas', replacement: resolve(workspaceRoot, 'packages/schemas/src') },
       {
         find: '@testing-library/react-native',
-        replacement: resolve(workspaceRoot, 'test/mocks/testing-library-react-native.ts'),
+        replacement: resolve(workspaceRoot, 'tests/infrastructure/vitest/mocks/testing-library-react-native.ts'),
       },
       {
         find: 'expo-constants',
-        replacement: resolve(workspaceRoot, 'test/mocks/expo-constants.ts'),
+        replacement: resolve(workspaceRoot, 'tests/infrastructure/vitest/mocks/expo-constants.ts'),
       },
       { find: '@app/styleguide', replacement: resolve(workspaceRoot, 'packages/ui/src/styleguide') },
     ],
@@ -43,8 +43,10 @@ export default defineConfig({
       '**/.tamagui/**',
       'packages/supabase/functions/trpc/__tests__/**',
       'packages/supabase/tests/**',
+      'tests/e2e/**',
+      'tests/infrastructure/**',
     ],
-    setupFiles: [resolve(workspaceRoot, 'test/setup.ts')],
+    setupFiles: [resolve(workspaceRoot, 'tests/infrastructure/vitest/setup.ts')],
     server: {
       deps: {
         inline: ['@testing-library/react-native', 'expo-router'],
@@ -88,6 +90,8 @@ export default defineConfig({
       ],
       exclude: [
         'test/**',
+        'tests/infrastructure/**',
+        'tests/e2e/**',
         '**/node_modules/**',
         '**/dist/**',
         '**/.expo/**',

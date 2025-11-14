@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
-  testDir: './tests/playwright',
+  testDir: './tests/e2e',
   
   // Global timeout for entire test run (30 minutes) - prevents SIGTERM from timeout
   globalTimeout: 30 * 60 * 1000,

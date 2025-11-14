@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createServiceRoleClient } from '../../../../../test/helpers/database'
+import { createServiceRoleClient } from '../../../../../../tests/infrastructure/vitest/helpers/database'
 
 describe('Office Role Access', () => {
   describe('Database: @unicorn.love emails have office role', () => {

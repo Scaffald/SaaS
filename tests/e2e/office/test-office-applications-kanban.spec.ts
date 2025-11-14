@@ -5,11 +5,9 @@
  * Tests drag-and-drop functionality for the applications Kanban board
  * using @dnd-kit/core implementation with status change modals
  *
- * ⚠️ BLOCKED TESTS: 11 tests blocked by REQ-63
- * Issue: Missing office.applications.list API endpoint
- * Status: Backend implementation required
- * BrainGrid: REQ-63, Task 21
- * See: docs/testing/SESSION-CONTINUATION-2025-11-05.md
+ * ✅ REQ-63 COMPLETED: office.applications.list API endpoint implemented
+ * All tests are now enabled and should pass with the backend implementation.
+ * BrainGrid: REQ-63
  */
 
 import { test, expect, type Page } from '@playwright/test'
@@ -102,16 +100,16 @@ test.describe('Office • /office/applications - Kanban Board', () => {
     })
   })
 
-  // BLOCKED: REQ-63 - Missing office.applications.list API endpoint
-  // These tests require backend implementation before they can pass
-  test.describe.skip('Basic Drag and Drop', () => {
+  // REQ-63 COMPLETED: office.applications.list endpoint is now available
+  // All drag and drop tests should work with the implemented endpoint
+  test.describe('Basic Drag and Drop', () => {
     test('drags application from new to screen column', async ({ page }: { page: Page }) => {
       // Get initial counts
       const initialSummary = await getKanbanSummary(page)
 
       // Skip if no applications in new column
       if (initialSummary.new === 0) {
-        test.skip()
+        test.skip('No applications in new column to test')
       }
 
       // Find first card in new column
@@ -146,7 +144,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
 
       // Skip if no applications in screen column
       if (initialSummary.screen === 0) {
-        test.skip()
+        test.skip('No applications in screen column to test')
       }
 
       // Find first card in screen column
@@ -171,7 +169,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       const initialSummary = await getKanbanSummary(page)
 
       if (initialSummary.interview === 0) {
-        test.skip()
+        test.skip('No applications in interview column to test')
       }
 
       const interviewColumn = await getKanbanColumn(page, KANBAN_COLUMNS.INTERVIEW)
@@ -204,7 +202,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       } else if (initialSummary.offer > 0) {
         sourceColumn = KANBAN_COLUMNS.OFFER
       } else {
-        test.skip()
+        test.skip('No applications available to test rejection modal')
       }
 
       const column = await getKanbanColumn(page, sourceColumn)
@@ -237,7 +235,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       } else if (initialSummary.screen > 0) {
         sourceColumn = KANBAN_COLUMNS.SCREEN
       } else {
-        test.skip()
+        test.skip('No applications available to test rejection with reason')
       }
 
       const column = await getKanbanColumn(page, sourceColumn)
@@ -289,7 +287,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       } else if (initialSummary.new > 0) {
         sourceColumn = KANBAN_COLUMNS.NEW
       } else {
-        test.skip()
+        test.skip('No applications available to test hiring modal')
       }
 
       const column = await getKanbanColumn(page, sourceColumn)
@@ -320,7 +318,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       } else if (initialSummary.interview > 0) {
         sourceColumn = KANBAN_COLUMNS.INTERVIEW
       } else {
-        test.skip()
+        test.skip('No applications available to test hiring with notes')
       }
 
       const column = await getKanbanColumn(page, sourceColumn)
@@ -357,7 +355,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       } else if (initialSummary.screen > 0) {
         sourceColumn = KANBAN_COLUMNS.SCREEN
       } else {
-        test.skip()
+        test.skip('No applications available to test rejection cancel')
       }
 
       const column = await getKanbanColumn(page, sourceColumn)
@@ -399,7 +397,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       } else if (initialSummary.interview > 0) {
         sourceColumn = KANBAN_COLUMNS.INTERVIEW
       } else {
-        test.skip()
+        test.skip('No applications available to test hiring cancel')
       }
 
       const column = await getKanbanColumn(page, sourceColumn)
@@ -497,7 +495,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       const initialSummary = await getKanbanSummary(page)
 
       if (initialSummary.new === 0) {
-        test.skip()
+        test.skip('No applications in new column to test card data preservation')
       }
 
       const newColumn = await getKanbanColumn(page, KANBAN_COLUMNS.NEW)
