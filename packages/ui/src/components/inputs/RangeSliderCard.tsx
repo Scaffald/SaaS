@@ -96,9 +96,9 @@ export function RangeSliderCard({
   // Ensure value is within bounds
   const clampedValue = Math.max(min, Math.min(max, value))
 
-  // Slider height based on size
-  const sliderHeight = sliderSize === 'small' ? 16 : sliderSize === 'large' ? 24 : 20
-  const thumbSize = sliderSize === 'small' ? 16 : sliderSize === 'large' ? 24 : 20
+  // Slider dimensions - thinner track, smaller thumb
+  const trackHeight = 8
+  const thumbSize = 16
 
   return (
     <YStack
@@ -110,7 +110,7 @@ export function RangeSliderCard({
       rounded="$3"
       px="$4"
       py="$3"
-      gap="$3"
+      gap="$2.5"
       theme={theme}
       opacity={disabled ? 0.5 : 1}
     >
@@ -134,7 +134,7 @@ export function RangeSliderCard({
       </XStack>
 
       {/* Slider */}
-      <YStack gap="$3">
+      <YStack gap="$2" py="$2">
         <Slider
           value={[clampedValue]}
           onValueChange={(values) => {
@@ -146,11 +146,11 @@ export function RangeSliderCard({
           step={step}
           disabled={disabled}
           flex={1}
-          height={sliderHeight}
+          height={24}
           testID={testID ? `${testID}-slider` : undefined}
         >
-          <Slider.Track bg="$color4" rounded="$2">
-            <Slider.TrackActive bg="$blue9" rounded="$2" />
+          <Slider.Track bg="$color4" rounded="$1" height={trackHeight}>
+            <Slider.TrackActive bg="$blue9" rounded="$1" />
           </Slider.Track>
           <Slider.Thumb
             index={0}
@@ -160,13 +160,14 @@ export function RangeSliderCard({
             borderColor="$blue9"
             width={thumbSize}
             height={thumbSize}
-            style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+            style={{
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            }}
             hoverStyle={{
-              scale: 1.1,
               boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
+              borderColor: '$blue10',
             }}
             pressStyle={{
-              scale: 0.95,
               boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
             }}
           />
