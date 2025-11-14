@@ -100,6 +100,7 @@ const baseJobSchema = z.object({
   application_deadline: z.string().datetime().optional(),
   target_start_date: z.string().datetime().optional(),
   estimated_hire_date: z.string().datetime().optional(),
+  scheduled_publish_at: z.string().datetime().optional(),
 
   // Enhanced requirements (Migration 069)
   minimum_education_level: z.enum(['none', 'high_school', 'associate', 'bachelor', 'master', 'phd']).optional(),

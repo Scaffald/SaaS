@@ -76,6 +76,7 @@ export const MapSearchInput = ({
           position="absolute"
           t={100}
           l={0}
+          r={0}
           $sm={{ r: 0 }}
           $gtSm={{ r: railVisible ? 440 : 0 }}
           z={60}

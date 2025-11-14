@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Input, Spinner, AnimatePresence, Slider } from 'tamagui'
+import { YStack, XStack, Text, Input, Spinner, AnimatePresence } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -11,7 +11,7 @@ import {
   MILITARY_STATUS_OPTIONS,
   AVAILABILITY_OPTIONS,
 } from '../config/employment-schema'
-import { UIButton as Button, CustomCheckbox, DashboardWidget, LocationListInput, ToggleCard } from '@app/ui'
+import { UIButton as Button, CustomCheckbox, DashboardWidget, LocationListInput, ToggleCard, RangeSliderCard } from '@app/ui'
 import { Flag, MapPin, Plane, Car, Shield, Calendar } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
 
@@ -112,12 +112,18 @@ export function EmploymentSection({
   const onSubmit = async (data: EmploymentProfileFormData) => {
     if (readOnly) return
 
+    // Always set open_to_travel to true (all users are willing to travel)
+    const updatedData = {
+      ...data,
+      open_to_travel: true,
+    }
+
     setIsLoading(true)
     try {
       if (mode === 'admin' && userId) {
-        await updateEmploymentMutation.mutateAsync({ userId, data })
+        await updateEmploymentMutation.mutateAsync({ userId, data: updatedData })
       } else {
-        await updateEmploymentMutation.mutateAsync(data)
+        await updateEmploymentMutation.mutateAsync(updatedData)
       }
     } finally {
       setIsLoading(false)
@@ -191,56 +197,22 @@ export function EmploymentSection({
         <YStack gap="$3">
           <Text fontWeight="600">Travel Preferences</Text>
           <Controller
-            name="open_to_travel"
+            name="travel_distance_miles"
             control={control}
             render={({ field }) => (
-              <ToggleCard
+              <RangeSliderCard
                 icon={<Plane size="$2" color="$color11" />}
-                title="Willing to Travel"
-                description="I am available for work assignments that require travel"
-                checked={(field.value as boolean) || false}
-                onCheckedChange={field.onChange}
+                title="Maximum Travel Distance"
+                description="Select your maximum travel distance to find opportunities that match your preferences"
+                value={field.value ?? 25}
+                onValueChange={field.onChange}
+                min={10}
+                max={250}
+                step={5}
                 disabled={readOnly}
-                expandedContent={
-                  <YStack gap="$3" pt="$2">
-                    <Text fontSize="$3" fontWeight="500" color="$color11">
-                      Maximum Travel Distance
-                    </Text>
-                    <Controller
-                      name="travel_distance_miles"
-                      control={control}
-                      render={({ field: distanceField }) => (
-                        <YStack gap="$3">
-                          <Slider
-                            value={[distanceField.value ?? 25]}
-                            onValueChange={([value]) => distanceField.onChange(value)}
-                            min={10}
-                            max={250}
-                            step={5}
-                            size="$1"
-                            disabled={readOnly}
-                          >
-                            <Slider.Track bg="$color4">
-                              <Slider.TrackActive bg="$blue9" />
-                            </Slider.Track>
-                            <Slider.Thumb index={0} circular />
-                          </Slider>
-                          <XStack justify="space-between" items="center">
-                            <Text fontSize="$2" color="$color9">
-                              10 miles
-                            </Text>
-                            <Text fontSize="$3" fontWeight="600" color="$color12">
-                              {distanceField.value ?? 25} miles
-                            </Text>
-                            <Text fontSize="$2" color="$color9">
-                              250 miles
-                            </Text>
-                          </XStack>
-                        </YStack>
-                      )}
-                    />
-                  </YStack>
-                }
+                formatValue={(v) => `${v} miles`}
+                formatMin={(v) => `${v} miles`}
+                formatMax={(v) => `${v}+ miles`}
               />
             )}
           />

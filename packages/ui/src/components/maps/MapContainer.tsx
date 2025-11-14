@@ -239,7 +239,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
 
       const map = mapRef.current
 
-      const handleMapClick = (e: mapboxgl.MapMouseEvent) => {
+      const handleMapClick = () => {
         // Only deselect if clicking on empty space (not on a marker)
         // Markers handle their own clicks
         onPinPress?.(null)
@@ -319,10 +319,6 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         }
         clusterMarkersRef.current.clear()
 
-        // Get current zoom and bounds
-        const zoom = map.getZoom()
-        const bounds = map.getBounds()
-
         // Check if layers exist
         if (!map.getLayer('clusters') || !map.getLayer('unclustered-point')) {
           return
@@ -330,9 +326,16 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
 
         // Query rendered features from the invisible layers
         // This will include clusters and individual points
-        const allFeatures = map.queryRenderedFeatures(undefined, {
-          layers: ['clusters', 'unclustered-point'],
-        })
+        // Query the entire viewport
+        const allFeatures = map.queryRenderedFeatures(
+          [
+            [0, 0],
+            [map.getContainer().clientWidth, map.getContainer().clientHeight],
+          ],
+          {
+            layers: ['clusters', 'unclustered-point'],
+          }
+        )
 
         if (allFeatures.length === 0) {
           // If no rendered features, try querying source features as fallback
@@ -465,14 +468,11 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       }
 
       // Update markers when source data changes
-      const handleData = (e: { dataType?: string }) => {
-        // Only update if it's a data change, not a style change
-        if (e.dataType === 'source' || e.dataType === undefined) {
-          // Use setTimeout to ensure the data is fully processed
-          setTimeout(() => {
-            updateMarkers()
-          }, 100)
-        }
+      const handleData = () => {
+        // Use setTimeout to ensure the data is fully processed
+        setTimeout(() => {
+          updateMarkers()
+        }, 100)
       }
 
       // Update markers on zoom/move to handle clustering changes
@@ -480,9 +480,31 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         updateMarkers()
       }
 
+      // Debounce marker updates during zoom/pan to avoid performance issues
+      let updateTimeout: ReturnType<typeof setTimeout> | null = null
+      const handleMove = () => {
+        if (updateTimeout) {
+          clearTimeout(updateTimeout)
+        }
+        updateTimeout = setTimeout(() => {
+          updateMarkers()
+        }, 50) // Debounce to 50ms
+      }
+
+      const handleZoom = () => {
+        if (updateTimeout) {
+          clearTimeout(updateTimeout)
+        }
+        updateTimeout = setTimeout(() => {
+          updateMarkers()
+        }, 50) // Debounce to 50ms
+      }
+
       source.on('data', handleData)
       map.on('moveend', handleMoveEnd)
-      map.on('zoomend', handleMoveEnd)
+      map.on('zoomend', handleZoom)
+      map.on('move', handleMove)
+      map.on('zoom', handleZoom)
 
       // Initial update - wait a bit for layers to be ready
       setTimeout(() => {
@@ -490,9 +512,14 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       }, 200)
 
       return () => {
+        if (updateTimeout) {
+          clearTimeout(updateTimeout)
+        }
         source.off('data', handleData)
         map.off('moveend', handleMoveEnd)
-        map.off('zoomend', handleMoveEnd)
+        map.off('zoomend', handleZoom)
+        map.off('move', handleMove)
+        map.off('zoom', handleZoom)
         for (const marker of markersRef.current.values()) {
           marker.remove()
         }

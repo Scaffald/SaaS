@@ -35,9 +35,9 @@ export const FilterBar = ({
     <XStack
       position="absolute"
       b="$4"
-      left="50%"
-      $sm={{ left: '50%' }}
-      $gtSm={{ left: '50%' }}
+      l="50%"
+      $sm={{ l: '50%' }}
+      $gtSm={{ l: '50%' }}
       z={50}
       items="center"
       justify="center"

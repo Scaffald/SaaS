@@ -325,10 +325,8 @@ export const profileEmploymentInputSchema = z
       }
     }
 
-    if (
-      data.open_to_travel === true &&
-      (data.travel_distance_miles === undefined || data.travel_distance_miles === null)
-    ) {
+    // All users are willing to travel, so travel_distance_miles is always required
+    if (data.travel_distance_miles === undefined || data.travel_distance_miles === null) {
       ctx.addIssue({
         path: ['travel_distance_miles'],
         code: z.ZodIssueCode.custom,

@@ -1556,7 +1556,9 @@ export const officeRouter = t.router({
 
       if (jobError || !originalJob) {
         throw new TRPCError({
-          code: jobError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+          code: jobError?.code === "PGRST116"
+            ? "NOT_FOUND"
+            : "INTERNAL_SERVER_ERROR",
           message: jobError
             ? `Failed to load job: ${jobError.message}`
             : "Job not found",
@@ -1659,7 +1661,7 @@ export const officeRouter = t.router({
               job_id: newJob.id,
               certification_id: cert.certification_id,
               is_required: cert.is_required,
-            }))
+            })),
           );
       }
 
@@ -1680,7 +1682,7 @@ export const officeRouter = t.router({
               skill_taxonomy: skill.skill_taxonomy,
               csi_skill_id: skill.csi_skill_id,
               onet_occupation_id: skill.onet_occupation_id,
-            }))
+            })),
           );
       }
 
@@ -1708,7 +1710,7 @@ export const officeRouter = t.router({
                 original_job_id: input.id,
                 created_by: user.id,
               },
-            }))
+            })),
           );
       }
 

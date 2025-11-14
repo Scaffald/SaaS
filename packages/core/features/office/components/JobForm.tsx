@@ -19,7 +19,8 @@ import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
-import { Check, ChevronDown, X, Eye } from '@tamagui/lucide-icons'
+import { Check, ChevronDown, X, Eye, Calendar } from '@tamagui/lucide-icons'
+import { Switch } from 'tamagui'
 import { JobPreviewModal } from './JobPreviewModal'
 import {
   ApplicationScreeningSection,
@@ -94,6 +95,7 @@ type JobFormData = {
   application_deadline?: string
   target_start_date?: string
   estimated_hire_date?: string
+  scheduled_publish_at?: string
 
   // Enhanced Requirements
   minimum_education_level?: 'none' | 'high_school' | 'associate' | 'bachelor' | 'master' | 'phd'
@@ -1165,6 +1167,85 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           onUpdate={handleSectionUpdate}
         />
 
+        {/* Schedule Publish Section */}
+        <YStack gap="$3" p="$4" bg="$color2" rounded="$4" borderWidth={1} borderColor="$borderColor">
+          <XStack gap="$3" items="center" justify="space-between">
+            <YStack flex={1} gap="$1">
+              <Text fontSize="$4" fontWeight="600" color="$color12">
+                Schedule Publish
+              </Text>
+              <Text fontSize="$2" color="$color11">
+                Set a date and time to automatically publish this job
+              </Text>
+            </YStack>
+            <Switch
+              checked={!!formData.scheduled_publish_at}
+              onCheckedChange={(checked) => {
+                if (checked) {
+                  // Set default to 1 hour from now
+                  const defaultDate = new Date()
+                  defaultDate.setHours(defaultDate.getHours() + 1)
+                  defaultDate.setMinutes(0) // Round to nearest hour
+                  setFormData((prev) => ({
+                    ...prev,
+                    scheduled_publish_at: defaultDate.toISOString(),
+                  }))
+                } else {
+                  setFormData((prev) => ({
+                    ...prev,
+                    scheduled_publish_at: undefined,
+                  }))
+                }
+              }}
+            >
+              <Switch.Thumb />
+            </Switch>
+          </XStack>
+          {formData.scheduled_publish_at && (
+            <YStack gap="$2">
+              <Text fontSize="$3" fontWeight="600" color="$color11">
+                Publish Date & Time
+              </Text>
+              <Input
+                value={
+                  formData.scheduled_publish_at
+                    ? new Date(formData.scheduled_publish_at).toISOString().slice(0, 16)
+                    : ''
+                }
+                onChangeText={(text) => {
+                  if (text) {
+                    try {
+                      // Parse datetime-local format (YYYY-MM-DDTHH:mm)
+                      const date = new Date(text)
+                      if (!isNaN(date.getTime())) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          scheduled_publish_at: date.toISOString(),
+                        }))
+                      }
+                    } catch (error) {
+                      // Invalid date, ignore
+                    }
+                  } else {
+                    setFormData((prev) => ({
+                      ...prev,
+                      scheduled_publish_at: undefined,
+                    }))
+                  }
+                }}
+                placeholder="YYYY-MM-DDTHH:mm (e.g., 2024-12-25T09:00)"
+                icon={Calendar}
+                disabled={isLoading}
+                keyboardType="default"
+              />
+              <Text fontSize="$2" color="$color10">
+                {formData.scheduled_publish_at &&
+                  `Will be published on ${new Date(formData.scheduled_publish_at).toLocaleString()}`}
+              </Text>
+            </YStack>
+          )}
+        </YStack>
+
         {/* Actions */}
         <XStack 
           gap="$3" 
@@ -1225,13 +1306,15 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
               !formData.title ||
               !formData.description ||
               !formData.location ||
-              !formData.organization_id
+              !formData.organization_id ||
+              (formData.scheduled_publish_at &&
+                new Date(formData.scheduled_publish_at) <= new Date())
             }
             $sm={{ height: 44, width: '100%' }}
             $gtSm={{ height: undefined, width: undefined }}
           >
             {isLoading && <Spinner />}
-            {!isLoading && 'Post'}
+            {!isLoading && (formData.scheduled_publish_at ? 'Schedule' : 'Post')}
           </Button>
         </XStack>
         {jobId && (

@@ -1,7 +1,7 @@
 import type React from 'react'
 import { useState, useEffect, useRef } from 'react'
 import { useWindowDimensions } from 'react-native'
-import { YStack, XStack, Text, Input, H4, AnimatePresence, Slider, Label } from 'tamagui'
+import { YStack, XStack, Text, Input, H4, AnimatePresence, Label } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { useForm, Controller, useController, type Control } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -22,7 +22,7 @@ import {
   resetProfileSyncError,
   useAdaptiveProfileSync,
 } from './utils/profile-sync-store'
-import { UIButton as Button, CustomCheckbox, DashboardWidget, LocationListInput, ToggleCard, ConfirmationDialog, SkeletonForm } from '@app/ui'
+import { UIButton as Button, CustomCheckbox, DashboardWidget, LocationListInput, ToggleCard, RangeSliderCard, ConfirmationDialog, SkeletonForm } from '@app/ui'
 import { Flag, MapPin, Plane, DollarSign, Car, Shield, Calendar } from '@tamagui/lucide-icons'
 
 type MultiSelectFieldName = 'drivers_license_classes' | 'military_status' | 'availability'
@@ -198,7 +198,6 @@ export function ProfileEmploymentLeft() {
     mode: 'onChange', // Real-time validation
   })
 
-  const _openToTravel = watch('open_to_travel')
   const usResidentValue = watch('us_resident')
   const usPassportValue = watch('us_passport')
   const authorizedCountriesValue = watch('authorized_countries')
@@ -287,7 +286,8 @@ export function ProfileEmploymentLeft() {
       return
     }
 
-    if (data.open_to_travel && (data.travel_distance_miles === undefined || data.travel_distance_miles === null)) {
+    // Ensure open_to_travel is always true (all users are willing to travel)
+    if (data.travel_distance_miles === undefined || data.travel_distance_miles === null) {
       setError('travel_distance_miles', {
         type: 'manual',
         message: 'Please select a travel distance',
@@ -297,6 +297,9 @@ export function ProfileEmploymentLeft() {
       })
       return
     }
+    
+    // Always set open_to_travel to true
+    data.open_to_travel = true
 
     setIsLoading(true)
     try {
@@ -402,55 +405,21 @@ export function ProfileEmploymentLeft() {
             <YStack gap="$3">
               <Text fontWeight="600">Travel Preferences</Text>
               <Controller
-                name="open_to_travel"
+                name="travel_distance_miles"
                 control={control}
                 render={({ field }) => (
-                  <ToggleCard
+                  <RangeSliderCard
                     icon={<Plane size="$2" color="$color11" />}
-                    title="Willing to Travel"
-                    description="I am available for work assignments that require travel"
-                    checked={field.value ?? false}
-                    onCheckedChange={(checked) => field.onChange(Boolean(checked))}
-                    cardPressDisabled
-                    expandedContent={
-                      <YStack gap="$3" pt="$2">
-                        <Text fontSize="$3" fontWeight="500" color="$color11">
-                          Maximum Travel Distance
-                        </Text>
-                        <Controller
-                          name="travel_distance_miles"
-                          control={control}
-                          render={({ field: distanceField }) => (
-                            <YStack gap="$3">
-                              <Slider
-                                value={[distanceField.value ?? 25]}
-                                onValueChange={([value]) => distanceField.onChange(value)}
-                                min={10}
-                                max={250}
-                                step={5}
-                                size="$1"
-                              >
-                                <Slider.Track bg="$color4">
-                                  <Slider.TrackActive bg="$blue9" />
-                                </Slider.Track>
-                                <Slider.Thumb index={0} circular />
-                              </Slider>
-                              <XStack justify="space-between" items="center">
-                                <Text fontSize="$2" color="$color9">
-                                  10 miles
-                                </Text>
-                                <Text fontSize="$3" fontWeight="600" color="$color12">
-                                  {distanceField.value ?? 25} miles
-                                </Text>
-                                <Text fontSize="$2" color="$color9">
-                                  250 miles
-                                </Text>
-                              </XStack>
-                            </YStack>
-                          )}
-                        />
-                      </YStack>
-                    }
+                    title="Maximum Travel Distance"
+                    description="Select your maximum travel distance to find opportunities that match your preferences"
+                    value={field.value ?? 25}
+                    onValueChange={field.onChange}
+                    min={10}
+                    max={250}
+                    step={5}
+                    formatValue={(v) => `${v} miles`}
+                    formatMin={(v) => `${v} miles`}
+                    formatMax={(v) => `${v}+ miles`}
                   />
                 )}
               />
