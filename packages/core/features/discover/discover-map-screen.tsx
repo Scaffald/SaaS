@@ -422,9 +422,42 @@ export const DiscoverMapScreen = () => {
         {!isSmallScreen && (
           <ResultsRail
             isVisible={showRail}
-            profiles={showWorkers ? talentProfiles : []}
-            organizations={showOrganizations ? organizations : []}
-            jobs={showJobs ? jobs : []}
+            profiles={
+              showWorkers
+                ? talentProfiles.filter((profile) => {
+                    const pinState = pinStates.get(profile.id)
+                    return (
+                      !pinState ||
+                      (pinState.visibility !== 'hidden' &&
+                        pinState.visibility !== 'transitioning-out')
+                    )
+                  })
+                : []
+            }
+            organizations={
+              showOrganizations
+                ? organizations.filter((org) => {
+                    const pinState = pinStates.get(org.id)
+                    return (
+                      !pinState ||
+                      (pinState.visibility !== 'hidden' &&
+                        pinState.visibility !== 'transitioning-out')
+                    )
+                  })
+                : []
+            }
+            jobs={
+              showJobs
+                ? jobs.filter((job) => {
+                    const pinState = pinStates.get(job.id)
+                    return (
+                      !pinState ||
+                      (pinState.visibility !== 'hidden' &&
+                        pinState.visibility !== 'transitioning-out')
+                    )
+                  })
+                : []
+            }
             selectedId={selectedProfileId}
             onSelect={(id) => {
               setSelectedProfileId(id)
@@ -476,9 +509,42 @@ export const DiscoverMapScreen = () => {
           <YStack flex={1} overflow="hidden">
             <ResultsRail
               isVisible={true}
-              profiles={showWorkers ? talentProfiles : []}
-              organizations={showOrganizations ? organizations : []}
-              jobs={showJobs ? jobs : []}
+              profiles={
+                showWorkers
+                  ? talentProfiles.filter((profile) => {
+                      const pinState = pinStates.get(profile.id)
+                      return (
+                        !pinState ||
+                        (pinState.visibility !== 'hidden' &&
+                          pinState.visibility !== 'transitioning-out')
+                      )
+                    })
+                  : []
+              }
+              organizations={
+                showOrganizations
+                  ? organizations.filter((org) => {
+                      const pinState = pinStates.get(org.id)
+                      return (
+                        !pinState ||
+                        (pinState.visibility !== 'hidden' &&
+                          pinState.visibility !== 'transitioning-out')
+                      )
+                    })
+                  : []
+              }
+              jobs={
+                showJobs
+                  ? jobs.filter((job) => {
+                      const pinState = pinStates.get(job.id)
+                      return (
+                        !pinState ||
+                        (pinState.visibility !== 'hidden' &&
+                          pinState.visibility !== 'transitioning-out')
+                      )
+                    })
+                  : []
+              }
               selectedId={selectedProfileId}
               onSelect={(id) => {
                 setSelectedProfileId(id)
