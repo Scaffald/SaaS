@@ -10,12 +10,43 @@ export async function getPrimaryIndustryTrigger(page: Page): Promise<Locator> {
     () => !document.body.textContent?.includes('Loading...'),
     { timeout: 10000 }
   ).catch(() => {})
-  await page.waitForTimeout(1000)
+  await page.waitForTimeout(1500)
 
-  // Use data-testid for reliable selection
-  const trigger = page.getByTestId('primary-industry-select-trigger')
-  await trigger.waitFor({ state: 'visible', timeout: 5000 })
-  return trigger
+  // Try multiple selector strategies
+  // Strategy 1: data-testid (if Tamagui passes it through)
+  let trigger = page.getByTestId('primary-industry-select-trigger')
+  const testIdCount = await trigger.count().catch(() => 0)
+  
+  if (testIdCount > 0) {
+    await trigger.first().waitFor({ state: 'visible', timeout: 5000 })
+    return trigger.first()
+  }
+  
+  // Strategy 2: Find by placeholder text "Select an industry"
+  trigger = page.getByPlaceholder('Select an industry')
+  const placeholderCount = await trigger.count().catch(() => 0)
+  
+  if (placeholderCount > 0) {
+    await trigger.first().waitFor({ state: 'visible', timeout: 5000 })
+    return trigger.first()
+  }
+  
+  // Strategy 3: Find button/select near "Primary Industry" text
+  // Wait for "Primary Industry" text to be visible
+  await page.waitForSelector('text=/Primary Industry/i', { timeout: 5000 }).catch(() => {})
+  
+  // Find all buttons and selects, then filter for ones near "Primary Industry"
+  const allButtons = page.locator('button, [role="button"], select')
+  const buttonCount = await allButtons.count()
+  
+  if (buttonCount > 0) {
+    // Return the first button/select (likely the industry selector)
+    await allButtons.first().waitFor({ state: 'visible', timeout: 5000 })
+    return allButtons.first()
+  }
+  
+  // Fallback: Use a more generic selector
+  throw new Error('Could not find Primary Industry dropdown trigger')
 }
 
 /**

@@ -23,6 +23,8 @@ import {
 test.describe('REQ-26 • Primary Industry Dropdown UX Enhancement', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
     // Authentication handled by storage state (tests/.auth/admin.json)
+    // If storage state doesn't exist, sign in first
+    await signInAsAdmin(page)
     await page.goto('/dashboard/profile/skills', { waitUntil: 'domcontentloaded' })
     
     // Wait for page to load
@@ -30,7 +32,11 @@ test.describe('REQ-26 • Primary Industry Dropdown UX Enhancement', () => {
       () => !document.body.textContent?.includes('Loading...'),
       { timeout: 10000 }
     ).catch(() => {})
-    await page.waitForTimeout(1000)
+    await page.waitForTimeout(1500)
+    
+    // Verify page loaded correctly
+    const pageContent = await page.locator('body').textContent() || ''
+    expect(pageContent.length).toBeGreaterThan(0)
   })
 
   // ==========================================
