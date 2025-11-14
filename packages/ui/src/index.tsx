@@ -79,6 +79,7 @@ export { ResponsiveModal, type ResponsiveModalProps } from './components/Respons
 
 // Layout components
 export { DashboardLayout } from './components/layouts/DashboardLayout'
+export { OfficeLayout } from './components/layouts/OfficeLayout'
 export {
   QuickLinksWidget,
   type QuickLinksWidgetProps,

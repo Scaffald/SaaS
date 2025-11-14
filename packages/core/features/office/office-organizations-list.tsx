@@ -11,7 +11,7 @@ import {
   RefreshCw,
   X as XIcon,
 } from '@tamagui/lucide-icons'
-import { DashboardLayout, DashboardWidget, QuickLinksSidebar } from '@app/ui'
+import { OfficeLayout, DashboardWidget, QuickLinksSidebar } from '@app/ui'
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { OfficePageLayout } from './components/OfficePageLayout'
@@ -327,7 +327,7 @@ export function OfficeOrganizationsList() {
         </Dialog.Portal>
       </Dialog>
 
-      <DashboardLayout
+      <OfficeLayout
         leftContent={
           <OfficePageLayout
             title="Organizations"

@@ -26,7 +26,6 @@ import {
 DASHBOARD_ROUTES.INDEX.fullPath        // "/dashboard"
 DASHBOARD_ROUTES.PROFILE.fullPath      // "/dashboard/profile"
 DASHBOARD_ROUTES.SETTINGS.fullPath     // "/dashboard/settings"
-DASHBOARD_ROUTES.Discover.fullPath     // "/dashboard/discover"
 
 // Office routes (admin only)
 OFFICE_ROUTES.INDEX.fullPath           // "/office"

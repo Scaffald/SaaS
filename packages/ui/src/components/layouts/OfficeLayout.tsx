@@ -3,7 +3,7 @@ import { ScrollView, XStack, YStack, useMedia } from 'tamagui'
 import { Breadcrumb, type BreadcrumbItem } from '../Breadcrumb'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
-type DashboardLayoutProps = {
+type OfficeLayoutProps = {
   rightContent?: ReactNode
   leftContent?: ReactNode
   /** Whether to show breadcrumb navigation (default: true) */
@@ -14,13 +14,27 @@ type DashboardLayoutProps = {
   autoGenerateBreadcrumbs?: boolean
 }
 
-export const DashboardLayout = ({
+/**
+ * OfficeLayout component for Office section pages
+ *
+ * A thin wrapper around DashboardLayout with Office-specific defaults.
+ * Provides consistent two-column layout with breadcrumbs for all Office pages.
+ *
+ * @example
+ * ```tsx
+ * <OfficeLayout
+ *   leftContent={<OfficePageLayout ... />}
+ *   rightContent={<QuickActionsWidget ... />}
+ * />
+ * ```
+ */
+export const OfficeLayout = ({
   rightContent,
   leftContent,
   showBreadcrumb = true,
   breadcrumbItems,
   autoGenerateBreadcrumbs = true,
-}: DashboardLayoutProps) => {
+}: OfficeLayoutProps) => {
   // Auto-generate breadcrumbs if enabled and no manual override
   const { breadcrumbs } = useBreadcrumbs({
     autoGenerate: autoGenerateBreadcrumbs && !breadcrumbItems,

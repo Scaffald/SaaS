@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { ChevronRight, ChevronDown, Check, Clock } from '@tamagui/lucide-icons'
+import { ChevronRight, Check, Clock } from '@tamagui/lucide-icons'
 import type { GestureResponderEvent } from 'react-native'
 import { XStack, Paragraph, YStack } from 'tamagui'
 import { Link } from 'expo-router'
@@ -17,15 +17,9 @@ export const DrawerLink = ({
 }: DrawerLinkProps) => {
   const active = isActivePath(pathname, item.href)
   const Icon = item.icon
-  const isExpanded = expandedItems?.has(item.key) || false
   const hasSubItems = Boolean(item.subItems?.length)
+  // Always show sub-items when they exist
   const shouldShowSubItems = hasSubItems
-    ? item.expandOnActive
-      ? active || isExpanded
-      : item.isExpandable
-        ? isExpanded
-        : true
-    : false
   const isManualExpandable = item.isExpandable && !item.expandOnActive
   const isAutoExpandable = item.isExpandable && item.expandOnActive
   const { t } = useTranslation()
@@ -39,16 +33,6 @@ export const DrawerLink = ({
   }, [item.key, item.title, item.titleKey, t])
 
   const title = useMemo(() => resolveTitle(), [resolveTitle])
-
-  const handleToggle = useCallback(
-    (event: GestureResponderEvent) => {
-      event.preventDefault()
-      if (item.isExpandable && onToggleExpanded) {
-        onToggleExpanded(item.key)
-      }
-    },
-    [item.isExpandable, item.key, onToggleExpanded],
-  )
 
   const renderIcon = useCallback(() => {
     if (!Icon) return null
@@ -82,18 +66,12 @@ export const DrawerLink = ({
             </Paragraph>
           </XStack>
         )}
-        {item.isExpandable ? (
-          shouldShowSubItems ? (
-            <ChevronDown size={16} color={active ? '$color1' : '$color10'} />
-          ) : (
-            <ChevronRight size={16} color="$color10" />
-          )
-        ) : (
-          item.hasChevron && <ChevronRight size={16} color="$color10" />
+        {!item.isExpandable && item.hasChevron && (
+          <ChevronRight size={16} color="$color10" />
         )}
       </XStack>
     ),
-    [active, item.badge, item.hasChevron, item.isExpandable, shouldShowSubItems],
+    [active, item.badge, item.hasChevron, item.isExpandable],
   )
 
   if (item.disabled) {
@@ -138,22 +116,23 @@ export const DrawerLink = ({
   if (isManualExpandable) {
     return (
       <YStack flex={1}>
-        <XStack
-          onPress={handleToggle}
-          items="center"
-          justify="space-between"
-          px="$3"
-          py="$2"
-          rounded="$4"
-          my="$1"
-          bg={active ? '$blue9' : 'transparent'}
-          hoverStyle={{ bg: active ? '$blue9' : '$color3' }}
-          pressStyle={{ bg: active ? '$blue9' : '$color3' }}
-          cursor="pointer"
-        >
-          {renderContent()}
-          {renderRightSide()}
-        </XStack>
+        <Link href={item.href} asChild>
+          <XStack
+            items="center"
+            justify="space-between"
+            px="$3"
+            py="$2"
+            rounded="$4"
+            my="$1"
+            bg={active ? '$blue9' : 'transparent'}
+            hoverStyle={{ bg: active ? '$blue9' : '$color3' }}
+            pressStyle={{ bg: active ? '$blue9' : '$color3' }}
+            cursor="pointer"
+          >
+            {renderContent()}
+            {renderRightSide()}
+          </XStack>
+        </Link>
         {shouldShowSubItems && item.subItems && (
           <YStack rounded="$4" my="$2" gap="$2" flex={1}>
             {item.subItems.map((subItem) => (

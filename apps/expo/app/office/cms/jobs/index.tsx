@@ -1,20 +1,5 @@
 import { OfficeJobsList } from '@app/core/features/office/office-jobs-list'
-import { OfficeContentLayout } from '@app/core/features/office/components/OfficeContentLayout'
-import {
-  CMS_ACCORDION_SECTIONS,
-  CMS_TABS,
-} from '@app/core/features/office/navigation/officeCmsNavigation'
 
 export default function OfficeJobsPage() {
-  return (
-    <OfficeContentLayout
-      title="Job Management"
-      description="Track open roles, manage assignments, and collaborate with teams."
-      tabs={CMS_TABS}
-      accordionSections={CMS_ACCORDION_SECTIONS}
-      rightContentHeading="Quick Links"
-    >
-      <OfficeJobsList showHeader={false} />
-    </OfficeContentLayout>
-  )
+  return <OfficeJobsList showHeader={true} />
 }

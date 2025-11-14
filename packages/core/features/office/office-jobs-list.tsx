@@ -3,8 +3,9 @@ import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { useMemo, useState } from 'react'
 import { useRouter } from 'expo-router'
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
-import { Adapt, Button, Select, Sheet, Switch, Text, XStack } from 'tamagui'
-import { Check, ChevronDown, Pencil } from '@tamagui/lucide-icons'
+import { Adapt, Button, Select, Sheet, Switch, Text, XStack, YStack } from 'tamagui'
+import { Check, ChevronDown, Pencil, ArrowRightCircle, RefreshCw } from '@tamagui/lucide-icons'
+import { OfficeLayout, DashboardWidget, QuickLinksSidebar } from '@app/ui'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { DeleteButton } from './components/DeleteButton'
 
@@ -258,30 +259,62 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
   )
 
   return (
-    <OfficePageLayout
-      title="Jobs"
-      searchPlaceholder="Search jobs..."
-      searchValue={search}
-      onSearchChange={setSearch}
-      createButtonLabel="Create Job"
-      onCreateClick={() => router.push(ROUTES.OFFICE_CMS_JOBS_CREATE.path)}
-      columns={columns as ColumnDef<Job, unknown>[]}
-      data={filteredJobs}
-      isLoading={isLoading}
-      pageSize={50}
-      emptyMessage="No jobs found"
-      hideHeader={!showHeader}
-      actionBarConfig={{
-        bar: {
-          addLabel: 'Create Job',
-          onAddPress: () => router.push(ROUTES.OFFICE_CMS_JOBS_CREATE.path),
-          showDisabled: true,
-          searchValue: search,
-          onSearchChange: setSearch,
-          searchPlaceholder: 'Search jobs...',
-          rightAccessory: filtersAccessory,
-        },
-      }}
+    <OfficeLayout
+      leftContent={
+        <OfficePageLayout
+          title="Jobs"
+          searchPlaceholder="Search jobs..."
+          searchValue={search}
+          onSearchChange={setSearch}
+          createButtonLabel="Create Job"
+          onCreateClick={() => router.push(ROUTES.OFFICE_CMS_JOBS_CREATE.path)}
+          columns={columns as ColumnDef<Job, unknown>[]}
+          data={filteredJobs}
+          isLoading={isLoading}
+          pageSize={50}
+          emptyMessage="No jobs found"
+          hideHeader={!showHeader}
+          actionBarConfig={{
+            bar: {
+              addLabel: 'Create Job',
+              onAddPress: () => router.push(ROUTES.OFFICE_CMS_JOBS_CREATE.path),
+              showDisabled: true,
+              searchValue: search,
+              onSearchChange: setSearch,
+              searchPlaceholder: 'Search jobs...',
+              rightAccessory: filtersAccessory,
+            },
+          }}
+        />
+      }
+      rightContent={
+        <QuickLinksSidebar>
+          <YStack gap="$4">
+            <DashboardWidget gap="$3" elevated>
+              <Text fontSize="$5" fontWeight="700">
+                Quick Actions
+              </Text>
+              <YStack gap="$2">
+                <Button
+                  theme="info"
+                  icon={ArrowRightCircle}
+                  onPress={() => router.push(ROUTES.OFFICE_CMS_JOBS_CREATE.path)}
+                >
+                  Create Job
+                </Button>
+                <Button
+                  variant="outlined"
+                  icon={RefreshCw}
+                  onPress={() => refetch()}
+                  disabled={isLoading}
+                >
+                  Refresh
+                </Button>
+              </YStack>
+            </DashboardWidget>
+          </YStack>
+        </QuickLinksSidebar>
+      }
     />
   )
 }

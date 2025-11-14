@@ -4,7 +4,8 @@ import { useMemo, useState } from 'react'
 import { useRouter } from 'expo-router'
 import { createColumnHelper, type ColumnDef, type VisibilityState } from '@tanstack/react-table'
 import { Button, Paragraph, XStack, YStack } from 'tamagui'
-import { Pencil } from '@tamagui/lucide-icons'
+import { Pencil, ArrowRightCircle, RefreshCw } from '@tamagui/lucide-icons'
+import { OfficeLayout, DashboardWidget, QuickLinksSidebar, Text } from '@app/ui'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { DeleteButton } from './components/DeleteButton'
 import type { TableColumnVisibilityOption } from '@app/ui'
@@ -172,62 +173,94 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
   }
 
   return (
-    <OfficePageLayout
-      title="Users"
-      searchPlaceholder="Search users..."
-      searchValue={search}
-      onSearchChange={setSearch}
-      createButtonLabel="Create User"
-      onCreateClick={() => router.push(ROUTES.OFFICE_CMS_WORKERS_CREATE.path)}
-      columns={columns as ColumnDef<User, unknown>[]}
-      data={filteredUsers}
-      isLoading={isLoading}
-      pageSize={50}
-      emptyMessage="No users found"
-      hideCreateButton
-      columnVisibility={columnVisibility}
-      onColumnVisibilityChange={setColumnVisibility}
-      actionBarConfig={{
-        bar: {
-          addLabel: 'Add',
-          onAddPress: () => setAddModalOpen(true),
-          showLabel: 'Show',
-          onShowPress: () => setColumnModalOpen(true),
-          searchValue: search,
-          onSearchChange: setSearch,
-          searchPlaceholder: 'Search users...',
-          helperText: 'List all the filterable items.',
-        },
-        addModalProps: {
-          open: addModalOpen,
-          onOpenChange: setAddModalOpen,
-          title: 'Create User',
-          description:
-            'Quickly add a new office user. The fully featured form is coming soon, but you can jump to the dedicated page now.',
-          primaryActionLabel: 'Open full create flow',
-          onPrimaryAction: () => {
-            setAddModalOpen(false)
-            router.push(ROUTES.OFFICE_CMS_WORKERS_CREATE.path)
-          },
-          children: (
-            <YStack gap="$3">
-              <Paragraph size="$4" color="$color11">
-                This modal will collect user details in an upcoming iteration. Until then, use the
-                primary action below to launch the full create page.
-              </Paragraph>
-            </YStack>
-          ),
-        },
-        columnVisibilityModalProps: {
-          open: columnModalOpen,
-          onOpenChange: setColumnModalOpen,
-          columns: columnVisibilityOptions,
-          visibility: columnVisibility,
-          onVisibilityChange: handleColumnVisibilityChange,
-          minimumVisibleColumns: 2,
-        },
-      }}
-      hideHeader={!showHeader}
+    <OfficeLayout
+      leftContent={
+        <OfficePageLayout
+          title="Users"
+          searchPlaceholder="Search users..."
+          searchValue={search}
+          onSearchChange={setSearch}
+          createButtonLabel="Create User"
+          onCreateClick={() => router.push(ROUTES.OFFICE_CMS_WORKERS_CREATE.path)}
+          columns={columns as ColumnDef<User, unknown>[]}
+          data={filteredUsers}
+          isLoading={isLoading}
+          pageSize={50}
+          emptyMessage="No users found"
+          hideCreateButton
+          columnVisibility={columnVisibility}
+          onColumnVisibilityChange={setColumnVisibility}
+          actionBarConfig={{
+            bar: {
+              addLabel: 'Add',
+              onAddPress: () => setAddModalOpen(true),
+              showLabel: 'Show',
+              onShowPress: () => setColumnModalOpen(true),
+              searchValue: search,
+              onSearchChange: setSearch,
+              searchPlaceholder: 'Search users...',
+              helperText: 'List all the filterable items.',
+            },
+            addModalProps: {
+              open: addModalOpen,
+              onOpenChange: setAddModalOpen,
+              title: 'Create User',
+              description:
+                'Quickly add a new office user. The fully featured form is coming soon, but you can jump to the dedicated page now.',
+              primaryActionLabel: 'Open full create flow',
+              onPrimaryAction: () => {
+                setAddModalOpen(false)
+                router.push(ROUTES.OFFICE_CMS_WORKERS_CREATE.path)
+              },
+              children: (
+                <YStack gap="$3">
+                  <Paragraph size="$4" color="$color11">
+                    This modal will collect user details in an upcoming iteration. Until then, use the
+                    primary action below to launch the full create page.
+                  </Paragraph>
+                </YStack>
+              ),
+            },
+            columnVisibilityModalProps: {
+              open: columnModalOpen,
+              onOpenChange: setColumnModalOpen,
+              columns: columnVisibilityOptions,
+              visibility: columnVisibility,
+              onVisibilityChange: handleColumnVisibilityChange,
+              minimumVisibleColumns: 2,
+            },
+          }}
+          hideHeader={!showHeader}
+        />
+      }
+      rightContent={
+        <QuickLinksSidebar>
+          <YStack gap="$4">
+            <DashboardWidget gap="$3" elevated>
+              <Text fontSize="$5" fontWeight="700">
+                Quick Actions
+              </Text>
+              <YStack gap="$2">
+                <Button
+                  theme="info"
+                  icon={ArrowRightCircle}
+                  onPress={() => router.push(ROUTES.OFFICE_CMS_WORKERS_CREATE.path)}
+                >
+                  Create User
+                </Button>
+                <Button
+                  variant="outlined"
+                  icon={RefreshCw}
+                  onPress={() => refetch()}
+                  disabled={isLoading}
+                >
+                  Refresh
+                </Button>
+              </YStack>
+            </DashboardWidget>
+          </YStack>
+        </QuickLinksSidebar>
+      }
     />
   )
 }

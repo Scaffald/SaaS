@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
-import { Button, Text } from '@app/ui'
-import { XStack } from 'tamagui'
+import { Button, Text, OfficeLayout, DashboardWidget, QuickLinksSidebar } from '@app/ui'
+import { XStack, YStack } from 'tamagui'
 import { api } from '@app/core/utils/api'
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
-import { Pencil } from '@tamagui/lucide-icons'
+import { Pencil, ArrowRightCircle, RefreshCw } from '@tamagui/lucide-icons'
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { DeleteButton } from './components/DeleteButton'
@@ -99,18 +99,50 @@ export function OfficeUniversitiesList() {
   const columns = createColumns(router, handleDelete)
 
   return (
-    <OfficePageLayout
-      title="Universities"
-      searchPlaceholder="Search universities..."
-      searchValue={search}
-      onSearchChange={setSearch}
-      createButtonLabel="Create University"
-      onCreateClick={() => router.push(ROUTES.OFFICE_CMS_UNIVERSITIES_CREATE.path)}
-      columns={columns as ColumnDef<University, unknown>[]}
-      data={universities}
-      isLoading={isLoading}
-      pageSize={50}
-      emptyMessage="No universities found"
+    <OfficeLayout
+      leftContent={
+        <OfficePageLayout
+          title="Universities"
+          searchPlaceholder="Search universities..."
+          searchValue={search}
+          onSearchChange={setSearch}
+          createButtonLabel="Create University"
+          onCreateClick={() => router.push(ROUTES.OFFICE_CMS_UNIVERSITIES_CREATE.path)}
+          columns={columns as ColumnDef<University, unknown>[]}
+          data={universities}
+          isLoading={isLoading}
+          pageSize={50}
+          emptyMessage="No universities found"
+        />
+      }
+      rightContent={
+        <QuickLinksSidebar>
+          <YStack gap="$4">
+            <DashboardWidget gap="$3" elevated>
+              <Text fontSize="$5" fontWeight="700">
+                Quick Actions
+              </Text>
+              <YStack gap="$2">
+                <Button
+                  theme="info"
+                  icon={ArrowRightCircle}
+                  onPress={() => router.push(ROUTES.OFFICE_CMS_UNIVERSITIES_CREATE.path)}
+                >
+                  Create University
+                </Button>
+                <Button
+                  variant="outlined"
+                  icon={RefreshCw}
+                  onPress={() => refetch()}
+                  disabled={isLoading}
+                >
+                  Refresh
+                </Button>
+              </YStack>
+            </DashboardWidget>
+          </YStack>
+        </QuickLinksSidebar>
+      }
     />
   )
 }

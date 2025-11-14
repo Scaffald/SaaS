@@ -10,10 +10,10 @@ VALUES
   ('regular','/dashboard/profile/certifications','discovered'),
   ('regular','/dashboard/profile/education','discovered'),
   ('regular','/dashboard/profile/experience','discovered'),
-  ('regular','/dashboard/discover/workers','discovered'),
-  ('regular','/dashboard/discover/employers','discovered'),
-  ('regular','/dashboard/discover/jobs','discovered'),
-  ('regular','/dashboard/discover/map','discovered'),
+  ('regular','/dashboard/workers','discovered'),
+  ('regular','/dashboard/employers','discovered'),
+  ('regular','/dashboard/jobs','discovered'),
+  ('regular','/dashboard/map','discovered'),
   ('regular','/dashboard/users/:id','discovered')
 ON CONFLICT(user_level, route) DO UPDATE SET
   status=COALESCE(
@@ -23,5 +23,5 @@ ON CONFLICT(user_level, route) DO UPDATE SET
 
 -- Known bug for jobs discovery 500
 INSERT INTO bugs (bug_sig, bug_id, route, user_level, severity)
-VALUES ('regular|/dashboard/discover/jobs|http_500|list_view', 'BUG-0005', '/dashboard/discover/jobs', 'regular', 'high')
+VALUES ('regular|/dashboard/jobs|http_500|list_view', 'BUG-0005', '/dashboard/jobs', 'regular', 'high')
 ON CONFLICT(bug_sig) DO UPDATE SET bug_id=excluded.bug_id, severity=excluded.severity;

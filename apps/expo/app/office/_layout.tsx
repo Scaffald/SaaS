@@ -41,9 +41,9 @@ export default function OfficeLayout() {
       <DrawerLayout protectionComponent={null}>
         <Drawer.Screen name="index" options={{ title: 'Office' }} />
         <Drawer.Screen name="applications/index" options={{ title: 'Applications' }} />
-        <Drawer.Screen name="cms/index" options={{ title: 'Manage Users' }} />
+        <Drawer.Screen name="cms/index" options={{ title: 'Users' }} />
         <Drawer.Screen name="users/[id]/edit" options={{ title: 'Edit User' }} />
-        <Drawer.Screen name="jobs/index" options={{ title: 'Manage Jobs' }} />
+        <Drawer.Screen name="jobs/index" options={{ title: 'Jobs' }} />
         <Drawer.Screen name="jobs/create" options={{ title: 'Create Job' }} />
         <Drawer.Screen name="jobs/[id]/edit" options={{ title: 'Edit Job' }} />
         <Drawer.Screen name="teams/index" options={{ title: 'Teams' }} />
@@ -52,10 +52,10 @@ export default function OfficeLayout() {
         <Drawer.Screen name="teams/[id]/edit" options={{ title: 'Edit Team' }} />
         <Drawer.Screen name="teams/[id]/analytics" options={{ title: 'Team Analytics' }} />
         <Drawer.Screen name="teams/[id]/settings" options={{ title: 'Team Settings' }} />
-        <Drawer.Screen name="universities/index" options={{ title: 'Manage Universities' }} />
+        <Drawer.Screen name="universities/index" options={{ title: 'Universities' }} />
         <Drawer.Screen name="universities/create" options={{ title: 'Create University' }} />
         <Drawer.Screen name="universities/[id]/edit" options={{ title: 'Edit University' }} />
-        <Drawer.Screen name="organizations/index" options={{ title: 'Manage Organizations' }} />
+        <Drawer.Screen name="organizations/index" options={{ title: 'Organizations' }} />
         <Drawer.Screen name="organizations/create" options={{ title: 'Create Organization' }} />
         <Drawer.Screen name="organizations/[id]/edit" options={{ title: 'Edit Organization' }} />
         <Drawer.Screen name="background-checks/index" options={{ title: 'Background Checks' }} />

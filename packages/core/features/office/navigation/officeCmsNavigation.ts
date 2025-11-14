@@ -4,7 +4,7 @@ import type { OfficeAccordionSection, OfficeTabsItem } from '@app/ui'
 export const CMS_TABS: OfficeTabsItem[] = [
   {
     key: 'cms-manage-users',
-    label: 'Manage Users',
+    label: 'Users',
     href: ROUTES.OFFICE_CMS.path,
   },
   {
@@ -42,7 +42,7 @@ export const CMS_TABS: OfficeTabsItem[] = [
 export const CMS_ACCORDION_SECTIONS: OfficeAccordionSection[] = [
   {
     key: 'cms-users',
-    title: 'Manage Users',
+    title: 'Users',
     defaultOpen: true,
     links: [
       {

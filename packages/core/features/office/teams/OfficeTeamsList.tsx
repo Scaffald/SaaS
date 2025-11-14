@@ -3,7 +3,8 @@ import { useRouter } from 'expo-router'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import { XStack, Text, YStack, Spinner, Button } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
-import { Pencil } from '@tamagui/lucide-icons'
+import { Pencil, ArrowRightCircle, RefreshCw } from '@tamagui/lucide-icons'
+import { OfficeLayout, DashboardWidget, QuickLinksSidebar } from '@app/ui'
 import type { AppRouter } from '@app/supabase/client-types'
 import type { inferRouterOutputs } from '@trpc/server'
 
@@ -162,33 +163,65 @@ export function OfficeTeamsList() {
   )
 
   return (
-    <YStack flex={1}>
-      <OfficePageLayout
-        title="Teams"
-        searchPlaceholder="Search teams..."
-        searchValue={search}
-        onSearchChange={setSearch}
-        createButtonLabel="Create Team"
-        onCreateClick={() => router.push(ROUTES.OFFICE_CMS_TEAMS_CREATE.path)}
-        columns={columns}
-        data={filteredTeams}
-        isLoading={isLoading || archiveMutation.isPending}
-        emptyMessage="No teams found"
-      />
-      {archiveMutation.isPending ? (
-        <YStack
-          bg="$color2"
-          p="$3"
-          rounded="$4"
-          shadowColor="$color10"
-          style={{ alignSelf: 'flex-end', marginRight: 16, marginBottom: 16 }}
-        >
-          <XStack gap="$3" items="center">
-            <Spinner size="small" />
-            <Text>Archiving team...</Text>
-          </XStack>
+    <OfficeLayout
+      leftContent={
+        <YStack flex={1}>
+          <OfficePageLayout
+            title="Teams"
+            searchPlaceholder="Search teams..."
+            searchValue={search}
+            onSearchChange={setSearch}
+            createButtonLabel="Create Team"
+            onCreateClick={() => router.push(ROUTES.OFFICE_CMS_TEAMS_CREATE.path)}
+            columns={columns}
+            data={filteredTeams}
+            isLoading={isLoading || archiveMutation.isPending}
+            emptyMessage="No teams found"
+          />
+          {archiveMutation.isPending ? (
+            <YStack
+              bg="$color2"
+              p="$3"
+              rounded="$4"
+              shadowColor="$color10"
+              style={{ alignSelf: 'flex-end', marginRight: 16, marginBottom: 16 }}
+            >
+              <XStack gap="$3" items="center">
+                <Spinner size="small" />
+                <Text>Archiving team...</Text>
+              </XStack>
+            </YStack>
+          ) : null}
         </YStack>
-      ) : null}
-    </YStack>
+      }
+      rightContent={
+        <QuickLinksSidebar>
+          <YStack gap="$4">
+            <DashboardWidget gap="$3" elevated>
+              <Text fontSize="$5" fontWeight="700">
+                Quick Actions
+              </Text>
+              <YStack gap="$2">
+                <Button
+                  theme="info"
+                  icon={ArrowRightCircle}
+                  onPress={() => router.push(ROUTES.OFFICE_CMS_TEAMS_CREATE.path)}
+                >
+                  Create Team
+                </Button>
+                <Button
+                  variant="outlined"
+                  icon={RefreshCw}
+                  onPress={() => refetch()}
+                  disabled={isLoading || archiveMutation.isPending}
+                >
+                  Refresh
+                </Button>
+              </YStack>
+            </DashboardWidget>
+          </YStack>
+        </QuickLinksSidebar>
+      }
+    />
   )
 }

@@ -376,7 +376,7 @@ const ROUTES_CONFIG = {
   },
   OFFICE_CMS_JOBS: {
     path: "/office/cms/jobs",
-    title: "Manage Jobs",
+    title: "Jobs",
     isProtected: true,
     menuCategory: "content",
     menuOrder: 3,
@@ -398,7 +398,7 @@ const ROUTES_CONFIG = {
   },
   OFFICE_CMS_UNIVERSITIES: {
     path: "/office/cms/universities",
-    title: "Manage Universities",
+    title: "Universities",
     isProtected: true,
     menuCategory: "content",
     menuOrder: 6,
