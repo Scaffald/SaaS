@@ -1,209 +1,113 @@
-import React, { useMemo } from 'react'
-import { Platform } from 'react-native'
-import { useQuery } from '@tanstack/react-query'
-import { parseRSSFeed, calculateReadingTime } from '../utils/rss-parser'
-import type { UseNewsFeedOptions, NewsItem } from '../config/types'
+import { useMemo } from 'react'
+import { api } from '@app/core/utils/api'
+import { calculateReadingTime } from '../utils/rss-parser'
+import type { NewsItem } from '../config/types'
 
 /**
- * CORS proxy for web browsers - only needed for web, not React Native
- * Uses Supabase Edge Function to proxy RSS feeds with proper CORS headers
+ * Hook for fetching cached news articles by industry via tRPC
+ * Replaces the old proxy-based RSS fetching
  */
-function getProxiedUrl(originalUrl: string): string {
-  // Only use proxy for web browsers, React Native doesn't have CORS restrictions
-  if (Platform.OS === 'web') {
-    const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL
-    if (!supabaseUrl) {
-      console.warn('EXPO_PUBLIC_SUPABASE_URL is not set, falling back to direct fetch')
-      return originalUrl
+export function useNewsFeedByIndustry({
+  industryId,
+  maxItems = 10,
+  category,
+  region,
+  staleTime = 15 * 60 * 1000, // 15 minutes
+}: {
+  industryId: string
+  maxItems?: number
+  category?: string
+  region?: string
+  staleTime?: number
+}) {
+  const query = api.news.getByIndustry.useQuery(
+    {
+      industryId,
+      limit: maxItems,
+      category,
+      region,
+    },
+    {
+      staleTime,
+      retry: 2,
     }
-    return `${supabaseUrl}/functions/v1/news?url=${encodeURIComponent(originalUrl)}`
+  )
+
+  // Transform and enhance items with reading time
+  const enhancedData = useMemo(() => {
+    if (!query.data) return undefined
+
+    return query.data.map((item) => ({
+      ...item,
+      readTime: calculateReadingTime(item.description),
+      image: item.imageUrl,
+    }))
+  }, [query.data])
+
+  return {
+    ...query,
+    data: enhancedData,
   }
-  return originalUrl
 }
 
 /**
- * Get headers for Supabase Edge Function requests
- * Supabase requires apikey and Authorization headers for all Edge Function calls
+ * Hook to get aggregated news items from cached articles
+ * Combines and sorts items by publication date
+ * Replaces the old useAggregatedNews that fetched from RSS feeds
  */
-function getSupabaseHeaders(): HeadersInit {
-  const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
-  const headers: HeadersInit = {}
-  
-  if (anonKey) {
-    headers['apikey'] = anonKey
-    // Supabase Edge Functions require an Authorization header
-    // Use anon key for public endpoints
-    headers['Authorization'] = `Bearer ${anonKey}`
-  }
-  
-  return headers
+export function useAggregatedNews({
+  industryId,
+  maxTotalItems = 10,
+  category,
+  region,
+}: {
+  industryId: string
+  maxTotalItems?: number
+  category?: string
+  region?: string
+}) {
+  return useNewsFeedByIndustry({
+    industryId,
+    maxItems: maxTotalItems,
+    category,
+    region,
+  })
 }
 
-/**
- * Parse response based on whether we're using CORS proxy or direct fetch
- * Supabase proxy returns XML directly, not JSON-wrapped
- */
-function parseProxyResponse(_response: Response, text: string): string {
-  // Supabase Edge Function returns XML directly, so no parsing needed
-  // React Native uses direct fetch, so also no parsing needed
-  return text
-}
-
-/**
- * Hook for fetching and parsing RSS feeds with React Query
- */
+// Legacy exports for backward compatibility during migration
+// These will be removed in Task 12
 export function useNewsFeed({
   feedUrl,
   maxItems = 5,
-  staleTime = 15 * 60 * 1000, // 15 minutes
+  staleTime = 15 * 60 * 1000,
   retry = 2,
-}: UseNewsFeedOptions) {
-  return useQuery({
-    queryKey: ['news-feed', feedUrl, maxItems],
-    queryFn: async (): Promise<NewsItem[]> => {
-      try {
-        // Fetch RSS feed with CORS proxy for web
-        const proxiedUrl = getProxiedUrl(feedUrl)
-        const headers = Platform.OS === 'web' ? getSupabaseHeaders() : undefined
-        const response = await fetch(proxiedUrl, { headers })
-
-        if (!response.ok) {
-          // Try to parse error message from JSON response (Edge Function errors)
-          try {
-            const errorText = await response.text()
-            const errorJson = JSON.parse(errorText)
-            throw new Error(errorJson.error || `Failed to fetch feed: ${response.status} ${response.statusText}`)
-          } catch {
-            throw new Error(`Failed to fetch feed: ${response.status} ${response.statusText}`)
-          }
-        }
-
-        const responseText = await response.text()
-        
-        // Check if response is empty
-        if (!responseText || responseText.trim().length === 0) {
-          throw new Error('Empty response from feed')
-        }
-
-        const xmlText = parseProxyResponse(response, responseText)
-
-        // Parse RSS feed
-        const parsedFeed = await parseRSSFeed(xmlText)
-        
-        // Check if parsing resulted in no items
-        if (!parsedFeed.items || parsedFeed.items.length === 0) {
-          throw new Error('No items found in RSS feed')
-        }
-
-        // Enhance items with reading time and limit results
-        const enhancedItems = parsedFeed.items.slice(0, maxItems).map((item) => ({
-          ...item,
-          readTime: calculateReadingTime(item.description),
-        }))
-
-        return enhancedItems
-      } catch (error) {
-        console.warn(`Failed to fetch news feed from ${feedUrl}:`, error)
-        throw error
-      }
-    },
-    staleTime,
-    retry,
-  })
-}
-
-/**
- * Hook for fetching multiple RSS feeds
- */
-export function useMultipleNewsFeeds(feedUrls: string[], maxItemsPerFeed = 3) {
-  const queries = useQuery({
-    queryKey: ['multiple-news-feeds', feedUrls, maxItemsPerFeed],
-    queryFn: async (): Promise<{ [feedUrl: string]: NewsItem[] }> => {
-      const feedPromises = feedUrls.map(async (feedUrl) => {
-        try {
-          const proxiedUrl = getProxiedUrl(feedUrl)
-          const headers = Platform.OS === 'web' ? getSupabaseHeaders() : undefined
-          const response = await fetch(proxiedUrl, { headers })
-          if (!response.ok) {
-            // Try to parse error message from JSON response (Edge Function errors)
-            try {
-              const errorText = await response.text()
-              const errorJson = JSON.parse(errorText)
-              throw new Error(errorJson.error || `Failed to fetch ${feedUrl}`)
-            } catch {
-              throw new Error(`Failed to fetch ${feedUrl}: ${response.status}`)
-            }
-          }
-
-          const responseText = await response.text()
-          
-          // Check if response is empty
-          if (!responseText || responseText.trim().length === 0) {
-            throw new Error('Empty response from feed')
-          }
-
-          const xmlText = parseProxyResponse(response, responseText)
-          const parsedFeed = await parseRSSFeed(xmlText)
-          
-          // Check if parsing resulted in no items
-          if (!parsedFeed.items || parsedFeed.items.length === 0) {
-            throw new Error('No items found in RSS feed')
-          }
-
-          const enhancedItems = parsedFeed.items.slice(0, maxItemsPerFeed).map((item) => ({
-            ...item,
-            readTime: calculateReadingTime(item.description),
-          }))
-
-          return { feedUrl, items: enhancedItems }
-        } catch (error) {
-          console.warn(`Failed to fetch feed ${feedUrl}:`, error)
-          return { feedUrl, items: [] }
-        }
-      })
-
-      const results = await Promise.allSettled(feedPromises)
-      const feedResults: { [feedUrl: string]: NewsItem[] } = {}
-
-      for (const result of results) {
-        if (result.status === 'fulfilled') {
-          feedResults[result.value.feedUrl] = result.value.items
-        }
-      }
-
-      return feedResults
-    },
-    staleTime: 15 * 60 * 1000, // 15 minutes
-    retry: 1,
-  })
-
-  return queries
-}
-
-/**
- * Hook to get aggregated news items from multiple feeds
- * Combines and sorts items by publication date
- */
-export function useAggregatedNews(feedUrls: string[], maxTotalItems = 10) {
-  const multipleFeeds = useMultipleNewsFeeds(feedUrls)
-
-  const aggregatedItems: NewsItem[] = useMemo(() => {
-    if (!multipleFeeds.data) return []
-
-    const allItems: NewsItem[] = []
-
-    for (const items of Object.values(multipleFeeds.data)) {
-      allItems.push(...items)
-    }
-
-    // Sort by publication date (newest first) and limit
-    return allItems
-      .sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime())
-      .slice(0, maxTotalItems)
-  }, [multipleFeeds.data, maxTotalItems])
-
+}: {
+  feedUrl: string
+  maxItems?: number
+  staleTime?: number
+  retry?: number
+}) {
+  // This is deprecated - use useNewsFeedByIndustry instead
+  console.warn(
+    'useNewsFeed with feedUrl is deprecated. Use useNewsFeedByIndustry with industryId instead.'
+  )
   return {
-    ...multipleFeeds,
-    data: aggregatedItems,
+    data: undefined,
+    isLoading: false,
+    isError: true,
+    error: new Error('useNewsFeed with feedUrl is deprecated'),
+  }
+}
+
+export function useMultipleNewsFeeds(feedUrls: string[], maxItemsPerFeed = 3) {
+  // This is deprecated - use useNewsFeedByIndustry instead
+  console.warn(
+    'useMultipleNewsFeeds is deprecated. Use useNewsFeedByIndustry with industryId instead.'
+  )
+  return {
+    data: {},
+    isLoading: false,
+    isError: true,
+    error: new Error('useMultipleNewsFeeds is deprecated'),
   }
 }

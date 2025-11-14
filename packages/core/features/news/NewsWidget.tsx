@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { Platform, Pressable } from 'react-native'
 import { Text, YStack, XStack, Spinner, Switch, Paragraph, Sheet } from 'tamagui'
 import { Settings2, RefreshCw, AlertCircle, ExternalLink } from '@tamagui/lucide-icons'
@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
 import { api } from '@app/core/utils/api'
 import { useAggregatedNews } from './hooks/useNewsFeed'
+import { supabase } from '@app/core/utils/supabase/client'
 import { getDefaultFeeds, findFeedById } from './config/news-feeds'
 import type { NewsWidgetProps, NewsItem } from './config/types'
 import { redirect } from '@app/core/utils/redirect'
@@ -127,14 +128,38 @@ export function NewsWidget({
   const headlineLimit = Math.max(1, maxItems)
   const fetchCount = headlineLimit * FETCH_MULTIPLIER
 
-  const defaultFeedIds = useMemo(() => getDefaultFeeds(industry), [industry])
-  const selectedFeedUrls = useMemo(
-    () =>
-      defaultFeedIds
-        .map((feedId) => findFeedById(industry, feedId)?.url)
-        .filter((url): url is string => Boolean(url)),
-    [defaultFeedIds, industry]
+  const { data: user } = api.profile.useUser.useQuery()
+  const userId = user?.id
+
+  const { data: generalInfo } = api.profile.widgets.getGeneralInfo.useQuery(
+    { userId },
+    { enabled: !!userId, staleTime: 5 * 60 * 1000 }
   )
+
+  // Get industry ID from user profile or lookup by slug
+  const [industryId, setIndustryId] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function resolveIndustryId() {
+      // First try to get from user's profile
+      if (generalInfo?.industries?.id) {
+        setIndustryId(generalInfo.industries.id)
+        return
+      }
+
+      // Fallback: lookup industry by slug
+      const { data: industryData } = await supabase
+        .schema('core')
+        .from('industries')
+        .select('id')
+        .eq('slug', industry)
+        .single()
+
+      setIndustryId(industryData?.id || null)
+    }
+
+    void resolveIndustryId()
+  }, [generalInfo?.industries?.id, industry])
 
   const {
     data: newsItems = [],
@@ -142,7 +167,10 @@ export function NewsWidget({
     isError,
     error,
     refetch,
-  } = useAggregatedNews(selectedFeedUrls, fetchCount)
+  } = useAggregatedNews({
+    industryId: industryId || '',
+    maxTotalItems: fetchCount,
+  })
 
   const [preferences, setPreferences] = useState<NewsPreferences>({
     prioritizeTrending: true,
