@@ -500,36 +500,98 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
             }
 
             // Helper to check if a pin is in a cluster
-            // Uses queryRenderedFeatures to check if there's a cluster at the pin's screen position
+            // Uses multiple detection methods for reliability
             const isPinInCluster = (pin: (typeof pins)[0]): boolean => {
               if (currentZoom > CLUSTER_MAX_ZOOM || !pinsSource) {
                 return false
               }
 
               try {
-                // Project pin to screen coordinates
+                // Method 1: Query rendered features to find clusters at pin's screen position
+                // This is the most direct method - if a cluster is rendered at the pin location, the pin is in it
                 const pinPoint = map.project(pin.coordinate)
-
-                // Query for clusters at this screen position (with a small buffer)
-                // Clusters have a visual radius, so check within that radius
-                const buffer = 50 // pixels - cluster visual radius + buffer
+                const buffer = 60 // pixels - cluster visual radius + buffer for reliability
                 const bbox: [[number, number], [number, number]] = [
                   [pinPoint.x - buffer, pinPoint.y - buffer],
                   [pinPoint.x + buffer, pinPoint.y + buffer],
                 ]
 
-                const featuresAtPin = map.queryRenderedFeatures(bbox, {
+                const clusterFeaturesAtPin = map.queryRenderedFeatures(bbox, {
                   layers: ['clusters'],
                 })
 
-                // If there's a cluster at this position, the pin is in a cluster
-                if (featuresAtPin.length > 0) {
-                  return true
+                if (clusterFeaturesAtPin.length > 0) {
+                  // Found a cluster at this position - pin is likely in it
+                  // Verify by checking if pin coordinates are very close to cluster center
+                  for (const clusterFeature of clusterFeaturesAtPin) {
+                    if (clusterFeature.geometry.type === 'Point') {
+                      const clusterCoords = clusterFeature.geometry.coordinates as [
+                        number,
+                        number
+                      ]
+                      const [pinLng, pinLat] = pin.coordinate
+                      const [clusterLng, clusterLat] = clusterCoords
+
+                      // Quick distance check - if very close, definitely in cluster
+                      const latDiff = Math.abs(clusterLat - pinLat)
+                      const lngDiff = Math.abs(clusterLng - pinLng)
+                      const distance = Math.sqrt(latDiff ** 2 + lngDiff ** 2)
+
+                      // At zoom 10, 50px cluster radius ≈ 0.01 degrees
+                      // Use zoom-adaptive threshold
+                      const threshold = 0.01 / 1.5 ** Math.max(0, currentZoom - 10)
+                      if (distance < threshold) {
+                        return true
+                      }
+                    }
+                  }
+                  // Cluster found but coordinates don't match exactly - still likely clustered
+                  // Use screen distance as additional check
+                  const clusterCoords = clusterFeaturesAtPin[0].geometry as GeoJSON.Point
+                  if (clusterCoords.coordinates) {
+                    const clusterPoint = map.project(
+                      clusterCoords.coordinates as [number, number]
+                    )
+                    const screenDistance = Math.sqrt(
+                      (pinPoint.x - clusterPoint.x) ** 2 + (pinPoint.y - clusterPoint.y) ** 2
+                    )
+                    // Use zoom-adaptive threshold
+                    const screenThreshold = Math.max(40, 60 / 1.2 ** Math.max(0, currentZoom - 10))
+                    if (screenDistance < screenThreshold) {
+                      return true
+                    }
+                  }
+                }
+
+                // Method 2: Check against known cluster features using geographic distance
+                // This is more reliable than screen distance as it accounts for map projection
+                for (const cluster of clusterFeatures) {
+                  const [pinLng, pinLat] = pin.coordinate
+                  const [clusterLng, clusterLat] = cluster.coordinates
+
+                  // Haversine distance calculation (approximate, good enough for clustering)
+                  const dLat = (clusterLat - pinLat) * (Math.PI / 180)
+                  const dLng = (clusterLng - pinLng) * (Math.PI / 180)
+                  const a =
+                    Math.sin(dLat / 2) ** 2 +
+                    Math.cos(pinLat * (Math.PI / 180)) *
+                      Math.cos(clusterLat * (Math.PI / 180)) *
+                      Math.sin(dLng / 2) ** 2
+                  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+                  const distanceKm = 6371 * c // Earth radius in km
+
+                  // Cluster radius is approximately 50 pixels, which at zoom 10 is about 0.5km
+                  // Use a conservative threshold based on zoom level
+                  const clusterRadiusKm = 0.5 / 2 ** Math.max(0, 10 - currentZoom)
+                  if (distanceKm < clusterRadiusKm * 1.5) {
+                    // Pin is within cluster radius - likely in cluster
+                    return true
+                  }
                 }
 
                 return false
               } catch (error) {
-                // If query fails, fall back to checking screen distance to cluster centers
+                // If all methods fail, fall back to screen distance check
                 try {
                   const pinPoint = map.project(pin.coordinate)
                   let minScreenDistance = Number.POSITIVE_INFINITY
@@ -545,8 +607,9 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
                     }
                   }
 
-                  // If pin is very close to a cluster center (within 50px), it's likely in the cluster
-                  return minScreenDistance < 50
+                  // Use zoom-adaptive threshold: larger clusters at lower zoom levels
+                  const threshold = Math.max(30, 50 / 1.2 ** Math.max(0, currentZoom - 10))
+                  return minScreenDistance < threshold
                 } catch (fallbackError) {
                   // If all checks fail, assume not clustered to avoid hiding pins incorrectly
                   return false
