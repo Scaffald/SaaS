@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { test, expect, type Page } from '@playwright/test'
-import { signInAsAdmin } from './playwright-helpers/auth'
+import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('Admin • /auth/success', () => {
   test('shows success page when accessed directly (unauthenticated)', async ({ page }: { page: Page }) => {

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { signInAsAdmin } from './playwright-helpers/auth'
+import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 /**
  * Test the fixed authentication helper

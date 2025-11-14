@@ -13,7 +13,7 @@ import {
   signInAsAdmin,
   getBearerToken,
   TEST_USERS,
-} from './playwright-helpers/auth'
+} from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 // Example: Basic login test
 test.describe('Authentication', () => {

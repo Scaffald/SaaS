@@ -7,7 +7,7 @@
 
 // @ts-nocheck
 import { test, expect, type Page } from '@playwright/test'
-import { signInAsTestUser } from './playwright-helpers/auth'
+import { signInAsTestUser } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 // Increase timeout for tests with external RSS feeds
 test.setTimeout(60000)

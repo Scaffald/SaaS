@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { test, expect, type Page } from '@playwright/test'
-import { signInAsAdmin } from './playwright-helpers/auth'
+import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('Admin • /', () => {
   test('navigates to dashboard and page loads correctly', async ({ page }: { page: Page }) => {

@@ -1,5 +1,5 @@
 import { test } from '@playwright/test'
-import { getSession } from './playwright-helpers/auth'
+import { getSession } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 /**
  * Debug localStorage format to understand what Supabase expects
