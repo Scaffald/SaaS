@@ -1,7 +1,9 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState, useCallback } from 'react'
 import { View } from 'tamagui'
 import type { MapContainerProps, MapContainerRef, ViewportBounds } from './types'
 import { MapFallback } from './MapFallback'
+import { CustomMarker } from './CustomMarker'
+import { generateCirclePolygon, validateGeoJSONFeatureCollection } from './utils'
 
 import 'mapbox-gl/dist/mapbox-gl.css'
 
@@ -27,6 +29,8 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       pins,
       center = [-84.5555, 42.7325],
       zoom = 7,
+      radius,
+      centerLocation,
       onPinPress,
       onViewportChange,
       onMapReady,
@@ -36,11 +40,15 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
   ) => {
     const mapContainerRef = useRef<HTMLDivElement | null>(null)
     const mapRef = useRef<mapboxgl.Map | null>(null)
+    const markersRef = useRef(new Map<string, CustomMarker>())
     const cardMarkerRef = useRef<mapboxgl.Marker | null>(null)
+    const centerMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const [isMapReady, setIsMapReady] = useState(false)
 
     // Viewport change handler ref for debouncing
     const viewportChangeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+    // Resize handler ref for debouncing
+    const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
     // Expose map methods to parent
     useImperativeHandle(ref, () => ({
@@ -119,197 +127,100 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           'pk.eyJ1Ijoic2NhZmZhbGQiLCJhIjoiY204Nmh5NWZ5MDRycTJrcHo0NHc1em5vZCJ9.w8FJ5p2msraGyyOeeLanhg'
       }
 
-      const map = new mapboxgl.Map({
-        container: mapContainerRef.current,
-        style: 'mapbox://styles/mapbox/streets-v12',
-        center,
-        zoom,
-        attributionControl: false,
-      })
-
-      // Add navigation controls
-      map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right')
-      map.addControl(new mapboxgl.ScaleControl({ unit: 'imperial' }))
-
-      map.on('load', () => {
-        // Add clustered source
-        map.addSource('pins', {
-          type: 'geojson',
-          data: {
-            type: 'FeatureCollection',
-            features: [],
-          },
-          cluster: true,
-          clusterMaxZoom: 17, // Max zoom to cluster points on
-          clusterRadius: 50, // Radius of each cluster when clustering points (px)
-          clusterProperties: {
-            worker_count: ['+', ['case', ['==', ['get', 'type'], 'worker'], 1, 0]],
-            org_count: ['+', ['case', ['==', ['get', 'type'], 'organization'], 1, 0]],
-            job_count: ['+', ['case', ['==', ['get', 'type'], 'job'], 1, 0]],
-          },
+      try {
+        const map = new mapboxgl.Map({
+          container: mapContainerRef.current,
+          style: 'mapbox://styles/mapbox/streets-v12',
+          center,
+          zoom,
+          attributionControl: false,
         })
 
-        // Add cluster circle layer
-        map.addLayer({
-          id: 'clusters',
-          type: 'circle',
-          source: 'pins',
-          filter: ['has', 'point_count'],
-          paint: {
-            'circle-color': [
-              'step',
-              ['get', 'point_count'],
-              '#51bbd6', // Color for clusters with < 10 points
-              10,
-              '#f1f075', // Color for clusters with 10-99 points
-              100,
-              '#f28cb1', // Color for clusters with 100+ points
-            ],
-            'circle-radius': [
-              'step',
-              ['get', 'point_count'],
-              20, // 40px diameter for < 10 points
-              10,
-              30, // 60px diameter for 10-99 points
-              100,
-              40, // 80px diameter for 100+ points
-            ],
-            'circle-stroke-width': 2,
-            'circle-stroke-color': '#fff',
-          },
-        })
+        // Add navigation controls
+        map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right')
+        map.addControl(new mapboxgl.ScaleControl({ unit: 'imperial' }))
 
-        // Add cluster count text layer
-        map.addLayer({
-          id: 'cluster-count',
-          type: 'symbol',
-          source: 'pins',
-          filter: ['has', 'point_count'],
-          layout: {
-            'text-field': ['get', 'point_count_abbreviated'],
-            'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-            'text-size': [
-              'step',
-              ['get', 'point_count'],
-              14, // Text size for < 10 points
-              10,
-              16, // Text size for 10-99 points
-              100,
-              18, // Text size for 100+ points
-            ],
-          },
-          paint: {
-            'text-color': '#ffffff',
-          },
-        })
-
-        // Add layer for worker pins (circles)
-        map.addLayer({
-          id: 'worker-point',
-          type: 'circle',
-          source: 'pins',
-          filter: [
-            'all',
-            ['!', ['has', 'point_count']],
-            ['!=', ['get', 'organization'], 'Organization'],
-          ],
-          paint: {
-            'circle-color': [
-              'case',
-              ['boolean', ['get', 'selected'], false],
-              '#3B82F6', // Blue color for selected pins
-              '#22C55E', // Green for available workers
-            ],
-            'circle-radius': 24,
-            'circle-stroke-width': [
-              'case',
-              ['boolean', ['get', 'selected'], false],
-              3, // Thicker stroke for selected
-              2,
-            ],
-            'circle-stroke-color': '#ffffff',
-          },
-        })
-
-        // Add text layer for worker icons
-        map.addLayer({
-          id: 'worker-point-icon',
-          type: 'symbol',
-          source: 'pins',
-          filter: [
-            'all',
-            ['!', ['has', 'point_count']],
-            ['!=', ['get', 'organization'], 'Organization'],
-          ],
-          layout: {
-            'text-field': '👤',
-            'text-size': 20,
-            'text-allow-overlap': true,
-            'text-ignore-placement': true,
-          },
-          paint: {
-            'text-color': '#ffffff',
-          },
-        })
-
-        // Add layer for organization pins (larger purple squares)
-        map.addLayer({
-          id: 'org-point',
-          type: 'circle',
-          source: 'pins',
-          filter: [
-            'all',
-            ['!', ['has', 'point_count']],
-            ['==', ['get', 'organization'], 'Organization'],
-          ],
-          paint: {
-            'circle-color': [
-              'case',
-              ['boolean', ['get', 'selected'], false],
-              '#3B82F6', // Blue for selected
-              '#A855F7', // Purple for organizations
-            ],
-            'circle-radius': 24,
-            'circle-stroke-width': [
-              'case',
-              ['boolean', ['get', 'selected'], false],
-              3, // Thicker stroke for selected
-              2,
-            ],
-            'circle-stroke-color': '#ffffff',
-          },
-        })
-
-        // Add text layer for organization icons
-        map.addLayer({
-          id: 'org-point-icon',
-          type: 'symbol',
-          source: 'pins',
-          filter: [
-            'all',
-            ['!', ['has', 'point_count']],
-            ['==', ['get', 'organization'], 'Organization'],
-          ],
-          layout: {
-            'text-field': '🏢',
-            'text-size': 20,
-            'text-allow-overlap': true,
-            'text-ignore-placement': true,
-          },
-          paint: {
-            'text-color': '#ffffff',
-          },
-        })
-
-        // Handle cluster clicks
-        map.on('click', 'clusters', (e) => {
-          const features = map.queryRenderedFeatures(e.point, {
-            layers: ['clusters'],
+        map.on('load', () => {
+          // Add clustered source for performance with large datasets
+          map.addSource('pins', {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: [],
+            },
+            cluster: true,
+            clusterMaxZoom: 17, // Max zoom to cluster points on
+            clusterRadius: 50, // Radius of each cluster when clustering points (px)
           })
-          const clusterId = features[0]?.properties?.cluster_id
-          const source = map.getSource('pins') as mapboxgl.GeoJSONSource
 
-          if (clusterId !== undefined && source) {
+          // Add cluster circle layer
+          map.addLayer({
+            id: 'clusters',
+            type: 'circle',
+            source: 'pins',
+            filter: ['has', 'point_count'],
+            paint: {
+              'circle-color': [
+                'step',
+                ['get', 'point_count'],
+                '#51bbd6', // Color for clusters with < 10 points
+                10,
+                '#f1f075', // Color for clusters with 10-99 points
+                100,
+                '#f28cb1', // Color for clusters with 100+ points
+              ],
+              'circle-radius': [
+                'step',
+                ['get', 'point_count'],
+                20, // 40px diameter for < 10 points
+                10,
+                30, // 60px diameter for 10-99 points
+                100,
+                40, // 80px diameter for 100+ points
+              ],
+              'circle-stroke-width': 2,
+              'circle-stroke-color': '#fff',
+            },
+          })
+
+          // Add cluster count text layer
+          map.addLayer({
+            id: 'cluster-count',
+            type: 'symbol',
+            source: 'pins',
+            filter: ['has', 'point_count'],
+            layout: {
+              'text-field': ['get', 'point_count_abbreviated'],
+              'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+              'text-size': [
+                'step',
+                ['get', 'point_count'],
+                14, // Text size for < 10 points
+                10,
+                16, // Text size for 10-99 points
+                100,
+                18, // Text size for 100+ points
+              ],
+            },
+            paint: {
+              'text-color': '#ffffff',
+            },
+          })
+
+          // Handle cluster clicks - zoom in
+          map.on('click', 'clusters', (e) => {
+            const features = map.queryRenderedFeatures(e.point, {
+              layers: ['clusters'],
+            })
+            if (!features || features.length === 0 || !features[0].properties?.cluster_id) {
+              return
+            }
+            const clusterId = features[0].properties.cluster_id
+            const source = map.getSource('pins') as mapboxgl.GeoJSONSource | null
+            if (!source) {
+              console.error('No source found')
+              return
+            }
             source.getClusterExpansionZoom(clusterId, (err, zoom) => {
               if (err) return
 
@@ -318,98 +229,117 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
                 zoom: zoom as number,
               })
             })
-          }
-        })
-
-        // Handle worker pin clicks
-        map.on('click', 'worker-point', (e) => {
-          const features = map.queryRenderedFeatures(e.point, {
-            layers: ['worker-point'],
           })
-          if (features[0]?.properties?.id) {
-            onPinPress?.(features[0].properties.id as string)
-          }
-        })
 
-        // Handle organization pin clicks
-        map.on('click', 'org-point', (e) => {
-          const features = map.queryRenderedFeatures(e.point, {
-            layers: ['org-point'],
+          // Change cursor on cluster hover
+          map.on('mouseenter', 'clusters', () => {
+            map.getCanvas().style.cursor = 'pointer'
           })
-          if (features[0]?.properties?.id) {
-            onPinPress?.(features[0].properties.id as string)
-          }
-        })
+          map.on('mouseleave', 'clusters', () => {
+            map.getCanvas().style.cursor = ''
+          })
 
-        // Change cursor on hover
-        map.on('mouseenter', 'worker-point', () => {
-          map.getCanvas().style.cursor = 'pointer'
-        })
-        map.on('mouseleave', 'worker-point', () => {
-          map.getCanvas().style.cursor = ''
-        })
-        map.on('mouseenter', 'org-point', () => {
-          map.getCanvas().style.cursor = 'pointer'
-        })
-        map.on('mouseleave', 'org-point', () => {
-          map.getCanvas().style.cursor = ''
-        })
-        map.on('mouseenter', 'clusters', () => {
-          map.getCanvas().style.cursor = 'pointer'
-        })
-        map.on('mouseleave', 'clusters', () => {
-          map.getCanvas().style.cursor = ''
-        })
+          // Track viewport changes (pan and zoom) with debouncing (500ms)
+          // Use 'moveend' and 'zoomend' events which fire after pan/zoom completes
+          if (onViewportChange) {
+            const handleViewportChangeDebounced = () => {
+              // Clear existing timeout
+              if (viewportChangeTimeoutRef.current) {
+                clearTimeout(viewportChangeTimeoutRef.current)
+              }
 
-        // Track viewport changes (pan and zoom) with debouncing (500ms)
-        // Use 'moveend' and 'zoomend' events which fire after pan/zoom completes
-        if (onViewportChange) {
-          const handleViewportChangeDebounced = () => {
-            // Clear existing timeout
-            if (viewportChangeTimeoutRef.current) {
-              clearTimeout(viewportChangeTimeoutRef.current)
+              // Set new timeout
+              viewportChangeTimeoutRef.current = setTimeout(() => {
+                const bounds = extractViewportBounds(map)
+                const currentZoom = map.getZoom()
+                onViewportChange(bounds, currentZoom)
+              }, 500)
             }
 
-            // Set new timeout
-            viewportChangeTimeoutRef.current = setTimeout(() => {
-              const bounds = extractViewportBounds(map)
-              const currentZoom = map.getZoom()
-              onViewportChange(bounds, currentZoom)
-            }, 500)
+            map.on('moveend', handleViewportChangeDebounced)
+            map.on('zoomend', handleViewportChangeDebounced)
           }
 
-          map.on('moveend', handleViewportChangeDebounced)
-          map.on('zoomend', handleViewportChangeDebounced)
+          setIsMapReady(true)
+
+          if (onMapReady) {
+            const initialBounds = extractViewportBounds(map)
+            onMapReady({
+              bounds: initialBounds,
+              zoom: map.getZoom(),
+            })
+          }
+        })
+
+        // Handle map errors
+        map.on('error', (e) => {
+          console.error('Mapbox error:', e.error)
+        })
+
+        mapRef.current = map
+
+        return () => {
+          // Clear any pending timeouts
+          if (viewportChangeTimeoutRef.current) {
+            clearTimeout(viewportChangeTimeoutRef.current)
+            viewportChangeTimeoutRef.current = null
+          }
+          if (resizeTimeoutRef.current) {
+            clearTimeout(resizeTimeoutRef.current)
+            resizeTimeoutRef.current = null
+          }
+
+          if (map) {
+            map.remove()
+            mapRef.current = null
+            markersRef.current.clear()
+          }
         }
-
-        setIsMapReady(true)
-
-        if (onMapReady) {
-          const initialBounds = extractViewportBounds(map)
-          onMapReady({
-            bounds: initialBounds,
-            zoom: map.getZoom(),
-          })
-        }
-      })
-
-      mapRef.current = map
-
-      return () => {
-        // Clear any pending viewport change timeout
-        if (viewportChangeTimeoutRef.current) {
-          clearTimeout(viewportChangeTimeoutRef.current)
-          viewportChangeTimeoutRef.current = null
-        }
-
-        if (map) {
-          map.remove()
-          mapRef.current = null
-        }
+      } catch (error) {
+        console.error('Failed to initialize map:', error)
       }
     }, [center, zoom, onViewportChange, onMapReady])
 
-    // Handle map clicks for deselection (only on empty space, not on layers)
+    // Handle map resize events
+    useEffect(() => {
+      if (!mapRef.current || !isMapReady) {
+        return
+      }
+
+      const map = mapRef.current
+
+      const handleResize = () => {
+        // Debounce resize calls
+        if (resizeTimeoutRef.current) {
+          clearTimeout(resizeTimeoutRef.current)
+        }
+
+        resizeTimeoutRef.current = setTimeout(() => {
+          try {
+            map.resize()
+          } catch (error) {
+            console.error('Error resizing map:', error)
+          }
+        }, 150)
+      }
+
+      // Listen for window resize
+      window.addEventListener('resize', handleResize)
+
+      // Listen for custom sidebar expansion events (if applicable)
+      window.addEventListener('sidebar-expand', handleResize)
+
+      return () => {
+        window.removeEventListener('resize', handleResize)
+        window.removeEventListener('sidebar-expand', handleResize)
+        if (resizeTimeoutRef.current) {
+          clearTimeout(resizeTimeoutRef.current)
+          resizeTimeoutRef.current = null
+        }
+      }
+    }, [isMapReady])
+
+    // Handle pin clicks and empty map clicks
     useEffect(() => {
       if (!mapRef.current || !isMapReady) {
         return
@@ -418,14 +348,18 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       const map = mapRef.current
 
       const handleMapClick = (e: mapboxgl.MapMouseEvent) => {
-        // Check if click was on a layer - if so, don't deselect
-        const features = map.queryRenderedFeatures(e.point)
+        // Check if clicking on a cluster
+        const features = map.queryRenderedFeatures(e.point, {
+          layers: ['clusters'],
+        })
+
+        // If not clicking on any feature, deselect
         if (features.length === 0) {
-          // Click was on empty space, deselect
           onPinPress?.(null)
         }
       }
 
+      // Add click handler for empty space
       map.on('click', handleMapClick)
 
       return () => {
@@ -433,7 +367,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       }
     }, [isMapReady, onPinPress])
 
-    // Update GeoJSON source when pins change
+    // Update markers when pins change
     useEffect(() => {
       if (!mapRef.current || !isMapReady) {
         return
@@ -441,39 +375,246 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
 
       const map = mapRef.current
 
-      // Convert pins to GeoJSON features
-      const geojsonData: GeoJSON.FeatureCollection = {
-        type: 'FeatureCollection',
-        features: pins.map((pin) => ({
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: pin.coordinate,
-          },
-          properties: {
-            id: pin.id,
-            title: pin.title,
-            subtitle: pin.subtitle,
-            availability: pin.availability,
-            organization: pin.organization,
-            type:
-              pin.type ||
-              (pin.organization === 'Individual'
-                ? 'worker'
-                : pin.organization === 'Organization'
-                  ? 'organization'
-                  : 'job'),
-            selected: pin.selected || false, // Include selected state
-          },
-        })),
+      try {
+        // Validate pins data
+        if (!Array.isArray(pins)) {
+          console.warn('Invalid pins data: expected array')
+          return
+        }
+
+        // Remove old markers
+        for (const marker of markersRef.current.values()) {
+          marker.remove()
+        }
+        markersRef.current.clear()
+
+        // Create new markers for each pin
+        for (const pin of pins) {
+          // Validate pin data
+          if (
+            !pin.id ||
+            !pin.coordinate ||
+            !Array.isArray(pin.coordinate) ||
+            pin.coordinate.length !== 2
+          ) {
+            console.warn('Invalid pin data:', pin)
+            continue
+          }
+
+          const [lng, lat] = pin.coordinate
+
+          // Validate coordinates
+          if (
+            typeof lng !== 'number' ||
+            typeof lat !== 'number' ||
+            Number.isNaN(lng) ||
+            Number.isNaN(lat)
+          ) {
+            console.warn('Invalid pin coordinates:', pin.coordinate)
+            continue
+          }
+
+          // Check if coordinates are within valid range
+          if (lng < -180 || lng > 180 || lat < -90 || lat > 90) {
+            console.warn('Pin coordinates out of range:', pin.coordinate)
+            continue
+          }
+
+          try {
+            const marker = new CustomMarker({
+              pin,
+              onClick: (pinId) => {
+                onPinPress?.(pinId)
+              },
+            })
+
+            marker.setLngLat(pin.coordinate).addTo(map)
+            markersRef.current.set(pin.id, marker)
+          } catch (error) {
+            console.error('Error creating marker for pin:', pin.id, error)
+          }
+        }
+
+        // Update GeoJSON source for clustering (used for clusters only)
+        const geojsonData: GeoJSON.FeatureCollection = {
+          type: 'FeatureCollection',
+          features: pins
+            .filter((pin) => {
+              // Only include valid pins
+              return (
+                pin.id &&
+                pin.coordinate &&
+                Array.isArray(pin.coordinate) &&
+                pin.coordinate.length === 2 &&
+                typeof pin.coordinate[0] === 'number' &&
+                typeof pin.coordinate[1] === 'number' &&
+                !Number.isNaN(pin.coordinate[0]) &&
+                !Number.isNaN(pin.coordinate[1])
+              )
+            })
+            .map((pin) => ({
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: pin.coordinate,
+              },
+              properties: {
+                id: pin.id,
+                title: pin.title,
+                subtitle: pin.subtitle,
+                availability: pin.availability,
+                organization: pin.organization,
+              },
+            })),
+        }
+
+        // Validate GeoJSON before updating
+        if (validateGeoJSONFeatureCollection(geojsonData)) {
+          const source = map.getSource('pins') as mapboxgl.GeoJSONSource
+          if (source) {
+            source.setData(geojsonData)
+          }
+        } else {
+          console.warn('Invalid GeoJSON data generated from pins')
+        }
+      } catch (error) {
+        console.error('Error updating markers:', error)
+      }
+    }, [pins, isMapReady, onPinPress])
+
+    // Update radius circle when radius or centerLocation changes
+    useEffect(() => {
+      if (!mapRef.current || !isMapReady || !radius || !centerLocation) {
+        return
       }
 
-      // Update the source data
-      const source = map.getSource('pins') as mapboxgl.GeoJSONSource
-      if (source) {
-        source.setData(geojsonData)
+      const map = mapRef.current
+
+      try {
+        // Validate radius
+        if (radius < 0 || radius > 200) {
+          console.warn('Invalid radius value:', radius, 'Expected 0-200 miles')
+          return
+        }
+
+        // Validate centerLocation
+        const [lng, lat] = centerLocation
+        if (
+          typeof lng !== 'number' ||
+          typeof lat !== 'number' ||
+          Number.isNaN(lng) ||
+          Number.isNaN(lat)
+        ) {
+          console.warn('Invalid centerLocation coordinates:', centerLocation)
+          return
+        }
+
+        if (lng < -180 || lng > 180 || lat < -90 || lat > 90) {
+          console.warn('centerLocation coordinates out of range:', centerLocation)
+          return
+        }
+
+        // Generate circle polygon
+        const circlePolygon = generateCirclePolygon(centerLocation, radius)
+
+        // Check if source exists, create if not
+        const source = map.getSource('locationCircle') as mapboxgl.GeoJSONSource | null
+        if (!source) {
+          map.addSource('locationCircle', {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: [circlePolygon],
+            },
+          })
+
+          // Add fill layer
+          map.addLayer({
+            id: 'circle-fill',
+            type: 'fill',
+            source: 'locationCircle',
+            paint: {
+              'fill-color': 'hsl(0, 0%, 13%)',
+              'fill-opacity': 0.04,
+            },
+            filter: ['==', ['geometry-type'], 'Polygon'],
+          })
+
+          // Add outline layer
+          map.addLayer({
+            id: 'circle-outline',
+            type: 'line',
+            source: 'locationCircle',
+            paint: {
+              'line-color': 'hsl(0, 0%, 13%)',
+              'line-opacity': 0.24,
+            },
+            filter: ['==', ['geometry-type'], 'Polygon'],
+          })
+        } else {
+          // Update existing source
+          source.setData({
+            type: 'FeatureCollection',
+            features: [circlePolygon],
+          })
+        }
+      } catch (error) {
+        console.error('Error updating radius circle:', error)
       }
-    }, [pins, isMapReady])
+    }, [radius, centerLocation, isMapReady])
+
+    // Update center location marker
+    useEffect(() => {
+      if (!mapRef.current || !isMapReady || !centerLocation) {
+        // Remove marker if centerLocation is not provided
+        if (centerMarkerRef.current) {
+          centerMarkerRef.current.remove()
+          centerMarkerRef.current = null
+        }
+        return
+      }
+
+      const map = mapRef.current
+
+      try {
+        // Validate centerLocation
+        const [lng, lat] = centerLocation
+        if (
+          typeof lng !== 'number' ||
+          typeof lat !== 'number' ||
+          Number.isNaN(lng) ||
+          Number.isNaN(lat)
+        ) {
+          console.warn('Invalid centerLocation coordinates:', centerLocation)
+          return
+        }
+
+        if (lng < -180 || lng > 180 || lat < -90 || lat > 90) {
+          console.warn('centerLocation coordinates out of range:', centerLocation)
+          return
+        }
+
+        // Remove existing marker
+        if (centerMarkerRef.current) {
+          centerMarkerRef.current.remove()
+        }
+
+        // Create new center marker
+        const el = document.createElement('div')
+        el.style.width = '12px'
+        el.style.height = '12px'
+        el.style.borderRadius = '50%'
+        el.style.backgroundColor = 'hsl(212, 92%, 41%)'
+        el.style.border = '2px solid white'
+        el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)'
+
+        centerMarkerRef.current = new mapboxgl.Marker({ element: el })
+          .setLngLat(centerLocation)
+          .addTo(map)
+      } catch (error) {
+        console.error('Error updating center location marker:', error)
+      }
+    }, [centerLocation, isMapReady])
 
     return (
       <View flex={1} position="relative" overflow="hidden" rounded="$5" style={style}>

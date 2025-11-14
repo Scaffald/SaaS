@@ -298,6 +298,8 @@ export const DiscoverMapScreen = () => {
         pins={mapPins}
         center={mapCenter}
         zoom={7}
+        radius={state.lastSearchLocation ? 50 : undefined} // Default 50 miles radius when search location is set
+        centerLocation={state.lastSearchLocation?.coordinates}
         onPinPress={handleMarkerPress}
         onViewportChange={handleViewportChange}
         onMapReady={handleMapReady}
