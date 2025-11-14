@@ -9,6 +9,8 @@ import { PinMarker } from './PinMarker'
 interface CustomMarkerOptions {
   pin: MapPin
   onClick?: (pinId: string) => void
+  onHover?: (pinId: string | null) => void
+  zoom?: number
 }
 
 /**
@@ -17,10 +19,11 @@ interface CustomMarkerOptions {
  */
 export class CustomMarker extends mapboxgl.Marker {
   private _handleClick?: () => void
+  private _handleHover?: (pinId: string | null) => void
   public pin: MapPin
 
   constructor(options: CustomMarkerOptions) {
-    const { pin, onClick } = options
+    const { pin, onClick, onHover, zoom = 0 } = options
 
     // Create a div element for the marker
     const el = document.createElement('div')
@@ -28,7 +31,19 @@ export class CustomMarker extends mapboxgl.Marker {
 
     // Render the PinMarker component to HTML
     const color = getPinColor(pin)
-    const tooltip = pin.subtitle ? `${pin.title} - ${pin.subtitle}` : pin.title
+
+    // Only show tooltip when zoomed in very close (>= 12)
+    // For users and orgs, show only the name (title), not subtitle
+    let tooltip: string | undefined
+    if (zoom >= 12) {
+      if (pin.organization === 'Individual' || pin.organization === 'Organization') {
+        // Show only name for users and orgs
+        tooltip = pin.title
+      } else {
+        // For jobs, show title (job title)
+        tooltip = pin.title
+      }
+    }
 
     el.innerHTML = renderToString(React.createElement(PinMarker, { color, tooltip }))
 
@@ -37,6 +52,16 @@ export class CustomMarker extends mapboxgl.Marker {
       el.style.cursor = 'pointer'
       el.addEventListener('click', () => {
         onClick(pin.id)
+      })
+    }
+
+    // Add hover handlers (only for worker and organization pins)
+    if (onHover && (pin.organization === 'Individual' || pin.organization === 'Organization')) {
+      el.addEventListener('mouseenter', () => {
+        onHover(pin.id)
+      })
+      el.addEventListener('mouseleave', () => {
+        onHover(null)
       })
     }
 
@@ -50,6 +75,7 @@ export class CustomMarker extends mapboxgl.Marker {
 
     this.pin = pin
     this._handleClick = onClick ? () => onClick(pin.id) : undefined
+    this._handleHover = onHover
   }
 
   /**

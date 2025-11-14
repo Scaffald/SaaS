@@ -32,6 +32,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       radius,
       centerLocation,
       onPinPress,
+      onPinHover,
       onViewportChange,
       onMapReady,
       style,
@@ -44,6 +45,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
     const cardMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const centerMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const [isMapReady, setIsMapReady] = useState(false)
+    const [currentZoom, setCurrentZoom] = useState(zoom)
 
     // Viewport change handler ref for debouncing
     const viewportChangeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -207,6 +209,9 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
             },
           })
 
+          // Don't add a layer for unclustered points - we'll handle them with CustomMarkers
+          // This ensures the GeoJSON source only shows clusters, not individual points
+
           // Handle cluster clicks - zoom in
           map.on('click', 'clusters', (e) => {
             const features = map.queryRenderedFeatures(e.point, {
@@ -251,8 +256,9 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
               // Set new timeout
               viewportChangeTimeoutRef.current = setTimeout(() => {
                 const bounds = extractViewportBounds(map)
-                const currentZoom = map.getZoom()
-                onViewportChange(bounds, currentZoom)
+                const newZoom = map.getZoom()
+                setCurrentZoom(newZoom)
+                onViewportChange(bounds, newZoom)
               }, 500)
             }
 
@@ -264,9 +270,11 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
 
           if (onMapReady) {
             const initialBounds = extractViewportBounds(map)
+            const initialZoom = map.getZoom()
+            setCurrentZoom(initialZoom)
             onMapReady({
               bounds: initialBounds,
-              zoom: map.getZoom(),
+              zoom: initialZoom,
             })
           }
         })
@@ -367,7 +375,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       }
     }, [isMapReady, onPinPress])
 
-    // Update markers when pins change
+    // Update markers when pins or zoom change
     useEffect(() => {
       if (!mapRef.current || !isMapReady) {
         return
@@ -388,54 +396,9 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         }
         markersRef.current.clear()
 
-        // Create new markers for each pin
-        for (const pin of pins) {
-          // Validate pin data
-          if (
-            !pin.id ||
-            !pin.coordinate ||
-            !Array.isArray(pin.coordinate) ||
-            pin.coordinate.length !== 2
-          ) {
-            console.warn('Invalid pin data:', pin)
-            continue
-          }
+        const CLUSTER_MAX_ZOOM = 17
 
-          const [lng, lat] = pin.coordinate
-
-          // Validate coordinates
-          if (
-            typeof lng !== 'number' ||
-            typeof lat !== 'number' ||
-            Number.isNaN(lng) ||
-            Number.isNaN(lat)
-          ) {
-            console.warn('Invalid pin coordinates:', pin.coordinate)
-            continue
-          }
-
-          // Check if coordinates are within valid range
-          if (lng < -180 || lng > 180 || lat < -90 || lat > 90) {
-            console.warn('Pin coordinates out of range:', pin.coordinate)
-            continue
-          }
-
-          try {
-            const marker = new CustomMarker({
-              pin,
-              onClick: (pinId) => {
-                onPinPress?.(pinId)
-              },
-            })
-
-            marker.setLngLat(pin.coordinate).addTo(map)
-            markersRef.current.set(pin.id, marker)
-          } catch (error) {
-            console.error('Error creating marker for pin:', pin.id, error)
-          }
-        }
-
-        // Update GeoJSON source for clustering (used for clusters only)
+        // Update GeoJSON source FIRST so clusters can render
         const geojsonData: GeoJSON.FeatureCollection = {
           type: 'FeatureCollection',
           features: pins
@@ -477,10 +440,128 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         } else {
           console.warn('Invalid GeoJSON data generated from pins')
         }
+
+        // Wait for clusters to render, then create markers for unclustered pins
+        // Use requestAnimationFrame to ensure clusters are rendered before checking
+        requestAnimationFrame(() => {
+          const pinsSource = map.getSource('pins') as mapboxgl.GeoJSONSource | null
+
+          // Get all rendered clusters to check against
+          let renderedClusters: Array<{ point: mapboxgl.Point; feature: GeoJSON.Feature }> = []
+          try {
+            // Get all cluster features that are currently rendered
+            const allClusterFeatures = map.queryRenderedFeatures(undefined, {
+              layers: ['clusters'],
+            })
+
+            // Store their screen positions for quick lookup
+            renderedClusters = allClusterFeatures
+              .map((feature) => {
+                if (feature.geometry.type === 'Point') {
+                  const coords = feature.geometry.coordinates as [number, number]
+                  return {
+                    point: map.project(coords),
+                    feature: feature as GeoJSON.Feature,
+                  }
+                }
+                return null
+              })
+              .filter(
+                (item): item is { point: mapboxgl.Point; feature: GeoJSON.Feature } => item !== null
+              )
+          } catch (error) {
+            console.warn('Failed to query rendered clusters:', error)
+          }
+
+          // Helper to check if a pin is in a cluster
+          const isPinInCluster = (pin: (typeof pins)[0]): boolean => {
+            if (currentZoom > CLUSTER_MAX_ZOOM || !pinsSource) {
+              return false
+            }
+
+            try {
+              // Project pin to screen coordinates
+              const pinPoint = map.project(pin.coordinate)
+
+              // Check if pin is near any rendered cluster
+              // Clusters have a visual radius, so check within that radius
+              const clusterRadius = 60 // Max cluster visual radius + buffer
+              for (const cluster of renderedClusters) {
+                const dx = Math.abs(pinPoint.x - cluster.point.x)
+                const dy = Math.abs(pinPoint.y - cluster.point.y)
+                const distance = Math.sqrt(dx * dx + dy * dy)
+
+                // If pin is within cluster radius, it's part of the cluster
+                if (distance < clusterRadius) {
+                  return true
+                }
+              }
+
+              return false
+            } catch (error) {
+              // If query fails, assume NOT clustered to avoid hiding pins incorrectly
+              return false
+            }
+          }
+
+          // Create new markers only for pins that are NOT in clusters
+          for (const pin of pins) {
+            // Validate pin data
+            if (
+              !pin.id ||
+              !pin.coordinate ||
+              !Array.isArray(pin.coordinate) ||
+              pin.coordinate.length !== 2
+            ) {
+              console.warn('Invalid pin data:', pin)
+              continue
+            }
+
+            const [lng, lat] = pin.coordinate
+
+            // Validate coordinates
+            if (
+              typeof lng !== 'number' ||
+              typeof lat !== 'number' ||
+              Number.isNaN(lng) ||
+              Number.isNaN(lat)
+            ) {
+              console.warn('Invalid pin coordinates:', pin.coordinate)
+              continue
+            }
+
+            // Check if coordinates are within valid range
+            if (lng < -180 || lng > 180 || lat < -90 || lat > 90) {
+              console.warn('Pin coordinates out of range:', pin.coordinate)
+              continue
+            }
+
+            // Skip if pin is in a cluster
+            if (isPinInCluster(pin)) {
+              continue
+            }
+
+            try {
+              const marker = new CustomMarker({
+                pin,
+                onClick: (pinId) => {
+                  onPinPress?.(pinId)
+                },
+                onHover: onPinHover,
+                zoom: currentZoom,
+              })
+
+              marker.setLngLat(pin.coordinate).addTo(map)
+              markersRef.current.set(pin.id, marker)
+            } catch (error) {
+              console.error('Error creating marker for pin:', pin.id, error)
+            }
+          }
+        })
       } catch (error) {
         console.error('Error updating markers:', error)
       }
-    }, [pins, isMapReady, onPinPress])
+    }, [pins, isMapReady, currentZoom, onPinPress, onPinHover])
 
     // Update radius circle when radius or centerLocation changes
     useEffect(() => {
