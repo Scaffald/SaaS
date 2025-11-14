@@ -70,7 +70,7 @@ export function ProfileHoverCard({
       maxW={300}
       zIndex={1000}
       style={{
-        transform: 'translate(-50%, calc(-100% - 12px))',
+        transform: 'translate(-50%, calc(-100% - 4px))',
         top: position?.y ?? 0,
         left: position?.x ?? 0,
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
