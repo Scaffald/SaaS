@@ -410,11 +410,15 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         : extractPlainText(formData.description as JSONContent)
       : ''
 
+    // If scheduled_publish_at is set, always keep as draft (cron will publish it)
+    // Otherwise, use the asDraft parameter
+    const shouldBeDraft = asDraft || !!formData.scheduled_publish_at
+
     const submitData: Record<string, unknown> = {
       title: formData.title,
       description: descriptionValue,
       organization_id: formData.organization_id,
-      status: asDraft ? ('draft' as const) : ('open' as const),
+      status: shouldBeDraft ? ('draft' as const) : ('open' as const),
     }
 
     // Include all optional fields if they have values
