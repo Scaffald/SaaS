@@ -147,7 +147,7 @@ test.describe('Responsive Office Admin', () => {
 
       test('ATS Kanban board is responsive', async ({ page }: { page: Page }) => {
         // Navigate to applications/kanban (if route exists)
-        await page.goto('/office/applications')
+        await page.goto('/office/ats')
         await page.waitForLoadState('networkidle')
         await page.waitForTimeout(3000)
 

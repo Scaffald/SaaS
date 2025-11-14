@@ -577,7 +577,10 @@ async function ensureOrganizationRoleAssignment(
   organizationId: string,
   userId: string,
 ): Promise<void> {
-  const { data: role, error: roleError } = await client
+  const now = new Date().toISOString();
+  
+  // First, ensure the organization admin role exists
+  const { data: existingRole, error: readRoleError } = await client
     .schema("core")
     .from("roles")
     .select("id")
@@ -585,32 +588,73 @@ async function ensureOrganizationRoleAssignment(
     .eq("name", "admin")
     .maybeSingle();
 
-  if (roleError) {
+  if (readRoleError) {
     throw new Error(
-      `Failed to load organization admin role: ${roleError.message}`,
+      `Failed to load organization admin role: ${readRoleError.message}`,
     );
   }
 
-  if (!role) {
-    throw new Error("Organization admin role (scope=organization, name=admin) is not configured.");
+  let roleId = existingRole?.id ?? null;
+
+  // Create the role if it doesn't exist
+  if (!roleId) {
+    const { data: newRole, error: insertRoleError } = await client
+      .schema("core")
+      .from("roles")
+      .insert({
+        name: "admin",
+        scope: "organization",
+        description: "Organization administrator",
+        created_at: now,
+      })
+      .select("id")
+      .single();
+
+    if (insertRoleError) {
+      throw new Error(
+        `Failed to create organization admin role: ${insertRoleError.message}`,
+      );
+    }
+
+    roleId = newRole?.id ?? null;
   }
 
-  const { error: assignmentError } = await client
+  if (!roleId) {
+    throw new Error("Organization admin role ID could not be determined.");
+  }
+
+  // Check if assignment already exists
+  const { data: existingAssignment, error: checkError } = await client
     .schema("core")
     .from("role_assignments")
-    .upsert(
-      {
-        role_id: role.id,
+    .select("id")
+    .eq("role_id", roleId)
+    .eq("user_id", userId)
+    .eq("scope_org_id", organizationId)
+    .maybeSingle();
+
+  if (checkError) {
+    throw new Error(
+      `Failed to check existing role assignment: ${checkError.message}`,
+    );
+  }
+
+  // Only insert if it doesn't exist
+  if (!existingAssignment) {
+    const { error: insertError } = await client
+      .schema("core")
+      .from("role_assignments")
+      .insert({
+        role_id: roleId,
         user_id: userId,
         scope_org_id: organizationId,
-      },
-      { onConflict: "role_id,user_id,scope_org_id" },
-    );
+      });
 
-  if (assignmentError) {
-    throw new Error(
-      `Failed to upsert organization role assignment: ${assignmentError.message}`,
-    );
+    if (insertError) {
+      throw new Error(
+        `Failed to insert organization role assignment: ${insertError.message}`,
+      );
+    }
   }
 }
 
