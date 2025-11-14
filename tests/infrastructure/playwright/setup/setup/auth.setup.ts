@@ -89,12 +89,7 @@ setup('authenticate as admin', async ({ page }) => {
   console.log('✓ Browser session initialized')
 
   // Navigate to dashboard (localStorage will be set before page loads)
-  await page.goto(`${APP_BASE_URL}/dashboard`, { waitUntil: 'domcontentloaded' })
-  await page.waitForTimeout(2000)
-
-  // Navigate to dashboard to verify auth works
-  await page.goto(`${APP_BASE_URL}/dashboard`)
-  await page.waitForLoadState('networkidle', { timeout: 30000 })
+  await page.goto(`${APP_BASE_URL}/dashboard`, { waitUntil: 'networkidle', timeout: 30000 })
 
   // Verify we're authenticated (not redirected to /auth)
   await expect(page).toHaveURL(/dashboard/)
@@ -132,38 +127,44 @@ setup('authenticate as user', async ({ page }) => {
 
   console.log('✓ API authentication successful')
 
-  // Navigate to app and set session in localStorage
-  await page.goto(`${APP_BASE_URL}/`)
-  await page.waitForLoadState('domcontentloaded')
+  // Prepare session data (match format from auth.ts injectSession)
+  const safeUser = JSON.parse(JSON.stringify(session.user))
+  const safeSession = {
+    ...session.session,
+    user: safeUser,
+  }
+  const payload = {
+    currentSession: safeSession,
+    expiresAt: safeSession.expires_at,
+  }
 
-  // Set the session in localStorage directly
+  // Set localStorage BEFORE page loads using addInitScript
   const storageKey = getStorageKey()
-  await page.evaluate(
-    ({ storageKey, sessionData }) => {
-      localStorage.setItem(storageKey, JSON.stringify({
-        currentSession: sessionData,
-        expiresAt: sessionData.expires_at,
-      }))
-      localStorage.setItem('supabase.auth.token', JSON.stringify({
-        currentSession: sessionData,
-        expiresAt: sessionData.expires_at,
-      }))
-      localStorage.setItem('supabase.auth.user', JSON.stringify(sessionData.user))
-      console.log('[SETUP] Browser session initialized in localStorage')
+  await page.addInitScript(
+    ({ storageKey, payload, user }) => {
+      try {
+        window.localStorage.setItem(storageKey, JSON.stringify(payload))
+        window.localStorage.setItem('supabase.auth.token', JSON.stringify(payload))
+        window.localStorage.setItem('supabase.auth.user', JSON.stringify(user))
+        console.log('[SETUP] Browser session initialized in localStorage')
+      } catch (error) {
+        console.error('[SETUP] Failed to populate localStorage', error)
+      }
     },
-    { storageKey, sessionData: session.session }
+    { storageKey, payload, user: safeUser }
   )
 
   console.log('✓ Browser session initialized')
 
-  // Reload page to let Supabase read the session
-  await page.reload({ waitUntil: 'domcontentloaded' })
-  await page.waitForTimeout(2000)
+  // Navigate to dashboard (localStorage will be set before page loads)
+  await page.goto(`${APP_BASE_URL}/dashboard`, { waitUntil: 'networkidle', timeout: 30000 })
 
-  // Navigate to dashboard to verify auth works
-  await page.goto(`${APP_BASE_URL}/dashboard`)
-  await page.waitForLoadState('networkidle', { timeout: 30000 })
+  // Verify we're authenticated (not redirected to /auth)
   await expect(page).toHaveURL(/dashboard/)
+
+  console.log('✓ Authentication verified')
+
+  // Wait a bit for Supabase to fully settle
   await page.waitForTimeout(2000)
 
   await page.context().storageState({ path: userFile })
@@ -193,38 +194,44 @@ setup('authenticate as super admin', async ({ page }) => {
 
   console.log('✓ API authentication successful')
 
-  // Navigate to app and set session in localStorage
-  await page.goto(`${APP_BASE_URL}/`)
-  await page.waitForLoadState('domcontentloaded')
+  // Prepare session data (match format from auth.ts injectSession)
+  const safeUser = JSON.parse(JSON.stringify(session.user))
+  const safeSession = {
+    ...session.session,
+    user: safeUser,
+  }
+  const payload = {
+    currentSession: safeSession,
+    expiresAt: safeSession.expires_at,
+  }
 
-  // Set the session in localStorage directly
+  // Set localStorage BEFORE page loads using addInitScript
   const storageKey = getStorageKey()
-  await page.evaluate(
-    ({ storageKey, sessionData }) => {
-      localStorage.setItem(storageKey, JSON.stringify({
-        currentSession: sessionData,
-        expiresAt: sessionData.expires_at,
-      }))
-      localStorage.setItem('supabase.auth.token', JSON.stringify({
-        currentSession: sessionData,
-        expiresAt: sessionData.expires_at,
-      }))
-      localStorage.setItem('supabase.auth.user', JSON.stringify(sessionData.user))
-      console.log('[SETUP] Browser session initialized in localStorage')
+  await page.addInitScript(
+    ({ storageKey, payload, user }) => {
+      try {
+        window.localStorage.setItem(storageKey, JSON.stringify(payload))
+        window.localStorage.setItem('supabase.auth.token', JSON.stringify(payload))
+        window.localStorage.setItem('supabase.auth.user', JSON.stringify(user))
+        console.log('[SETUP] Browser session initialized in localStorage')
+      } catch (error) {
+        console.error('[SETUP] Failed to populate localStorage', error)
+      }
     },
-    { storageKey, sessionData: session.session }
+    { storageKey, payload, user: safeUser }
   )
 
   console.log('✓ Browser session initialized')
 
-  // Reload page to let Supabase read the session
-  await page.reload({ waitUntil: 'domcontentloaded' })
-  await page.waitForTimeout(2000)
+  // Navigate to dashboard (localStorage will be set before page loads)
+  await page.goto(`${APP_BASE_URL}/dashboard`, { waitUntil: 'networkidle', timeout: 30000 })
 
-  // Navigate to dashboard to verify auth works
-  await page.goto(`${APP_BASE_URL}/dashboard`)
-  await page.waitForLoadState('networkidle', { timeout: 30000 })
+  // Verify we're authenticated (not redirected to /auth)
   await expect(page).toHaveURL(/dashboard/)
+
+  console.log('✓ Authentication verified')
+
+  // Wait a bit for Supabase to fully settle
   await page.waitForTimeout(2000)
 
   await page.context().storageState({ path: superAdminFile })
