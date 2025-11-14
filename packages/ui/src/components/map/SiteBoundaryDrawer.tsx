@@ -13,10 +13,10 @@ export interface SiteBoundaryDrawerProps {
 
 /**
  * Site Boundary Drawer Component
- * 
+ *
  * Interactive map interface for drawing site boundaries using Mapbox.
  * Supports complex polygons with multiple coordinate points.
- * 
+ *
  * TODO: Full Mapbox GL Draw integration for interactive polygon drawing
  * This is a placeholder structure - full implementation requires:
  * - Mapbox GL Draw library integration
@@ -39,7 +39,7 @@ export function SiteBoundaryDrawer({
   // Calculate area in square feet (simplified calculation)
   const calculateArea = (coords: Boundary): number => {
     if (coords.length < 3) return 0
-    
+
     // Use shoelace formula for polygon area
     let area = 0
     for (let i = 0; i < coords.length; i++) {
@@ -47,10 +47,10 @@ export function SiteBoundaryDrawer({
       area += coords[i][0] * coords[j][1]
       area -= coords[j][0] * coords[i][1]
     }
-    
+
     // Convert to square feet (approximate, assumes WGS84)
     // More accurate calculation would use PostGIS on the backend
-    const areaSqMeters = Math.abs(area) / 2 * 111000 * 111000 // Rough conversion
+    const areaSqMeters = (Math.abs(area) / 2) * 111000 * 111000 // Rough conversion
     return areaSqMeters * 10.764 // Convert to square feet
   }
 
@@ -91,7 +91,9 @@ export function SiteBoundaryDrawer({
       <Card p="$4">
         <YStack gap="$4">
           <XStack jc="space-between" ai="center">
-            <Text fontSize="$6" fontWeight="600">Site Boundary</Text>
+            <Text fontSize="$6" fontWeight="600">
+              Site Boundary
+            </Text>
             <Button size="$2" icon={Plus} onPress={handleAddPoint}>
               Add Point
             </Button>
@@ -119,7 +121,8 @@ export function SiteBoundaryDrawer({
           {areaSqft > 0 && (
             <Card p="$3" bg="$blue2" borderColor="$blue8" borderWidth={1}>
               <Text fontWeight="600" color="$blue11">
-                Calculated Area: {areaSqft.toLocaleString(undefined, { maximumFractionDigits: 2 })} sq ft
+                Calculated Area: {areaSqft.toLocaleString(undefined, { maximumFractionDigits: 2 })}{' '}
+                sq ft
               </Text>
             </Card>
           )}
@@ -132,17 +135,19 @@ export function SiteBoundaryDrawer({
             ) : (
               <YStack gap="$2">
                 {coordinates.map((coord, index) => (
-                  <Card key={index} p="$2" bg="$gray2">
+                  <Card key={`${coord[0]}-${coord[1]}-${index}`} p="$2" bg="$gray2">
                     <XStack gap="$2" ai="center" jc="space-between">
                       <XStack gap="$2" flex={1}>
-                        <Text fontSize="$2" color="$gray10">Point {index + 1}:</Text>
+                        <Text fontSize="$2" color="$gray10">
+                          Point {index + 1}:
+                        </Text>
                         {editingIndex === index ? (
                           <XStack gap="$2" flex={1}>
                             <Input
                               size="$2"
                               value={coord[0].toString()}
                               onChangeText={(value) => {
-                                const lng = parseFloat(value) || 0
+                                const lng = Number.parseFloat(value) || 0
                                 handleCoordinateChange(index, [lng, coord[1]])
                               }}
                               placeholder="Longitude"
@@ -152,16 +157,13 @@ export function SiteBoundaryDrawer({
                               size="$2"
                               value={coord[1].toString()}
                               onChangeText={(value) => {
-                                const lat = parseFloat(value) || 0
+                                const lat = Number.parseFloat(value) || 0
                                 handleCoordinateChange(index, [coord[0], lat])
                               }}
                               placeholder="Latitude"
                               keyboardType="numeric"
                             />
-                            <Button
-                              size="$2"
-                              onPress={() => setEditingIndex(null)}
-                            >
+                            <Button size="$2" onPress={() => setEditingIndex(null)}>
                               Save
                             </Button>
                           </XStack>
@@ -210,4 +212,3 @@ export function SiteBoundaryDrawer({
     </YStack>
   )
 }
-

@@ -79,7 +79,7 @@
     "expo-splash-screen": "catalog:",
     "expo-status-bar": "catalog:",
     "expo-system-ui": "catalog:",
-    "expo-updates": "~0.25.28",
+    "expo-updates": "~29.0.12",
     "expo-web-browser": "catalog:",
     "i18n-js": "catalog:",
     "react": "catalog:",

@@ -18,10 +18,9 @@ export const propertyTypeSchema = z.enum([
  */
 export const addressCreateSchema = z.object({
   site_id: z.string().uuid('Invalid site ID').optional(),
-  address: addressSchema.refine(
-    (addr) => addr !== null && addr !== undefined,
-    { message: 'Address is required' }
-  ),
+  address: addressSchema.refine((addr) => addr !== null && addr !== undefined, {
+    message: 'Address is required',
+  }),
   property_type: propertyTypeSchema.optional(),
   metadata: z.record(z.any()).optional(),
 })

@@ -3,8 +3,51 @@ import { z } from "zod";
 import { protectedProcedure, t } from "../../middleware.ts";
 
 /**
+ * Location formatting helper
+ */
+function formatLocation(location: string | object | null | undefined, isRemote: boolean): string {
+  if (!location) return '';
+  const locationStr = typeof location === 'string' 
+    ? location 
+    : (typeof location === 'object' && 'formattedAddress' in location)
+      ? location.formattedAddress || `${location.city || ''}, ${location.state || ''}`.trim()
+      : '';
+  return isRemote ? `${locationStr} (Remote)` : locationStr;
+}
+
+/**
+ * Convert location to structured format for storage
+ */
+function getStructuredLocation(location: string | object | null | undefined): object | null {
+  if (!location) return null;
+  if (typeof location === 'object') return location;
+  // If it's a string, we can't convert it reliably - return null and keep using text column
+  return null;
+}
+
+/**
+ * Get formatted location string for display/storage in TEXT column
+ */
+function getFormattedLocationString(location: string | object | null | undefined, isRemote: boolean): string | null {
+  const formatted = formatLocation(location, isRemote);
+  return formatted || null;
+}
+
+/**
  * Experience Input/Output Schemas
  */
+const locationSchema = z.union([
+  z.string(), // Backward compatibility
+  z.object({
+    street: z.string().optional(),
+    city: z.string(),
+    state: z.string(),
+    zip: z.string().optional(),
+    country: z.string(),
+    formattedAddress: z.string(),
+  })
+]).optional().nullable();
+
 const experienceEntrySchema = z.object({
   id: z.string().uuid().optional(),
   user_id: z.string().uuid().optional(),
@@ -12,7 +55,7 @@ const experienceEntrySchema = z.object({
   job_title: z.string().min(1, "Job title is required"),
   company_name: z.string().min(1, "Company name is required"),
   employment_type: z.string().optional().nullable(),
-  location: z.string().optional().nullable(),
+  location: locationSchema,
   is_remote: z.boolean().default(false),
   start_date: z.string().optional().nullable(),
   end_date: z.string().optional().nullable(),
@@ -68,7 +111,11 @@ export const profileExperienceRouter = t.router({
         });
       }
 
-      return data || [];
+      // Transform data to prefer location_structured, fallback to location TEXT
+      return (data || []).map((exp) => ({
+        ...exp,
+        location: exp.location_structured || exp.location || null,
+      }));
     }),
 
   /**
@@ -137,24 +184,32 @@ export const profileExperienceRouter = t.router({
         const savedExperience = [];
 
         for (const exp of input.experience_entries) {
+          // Prepare location data - write to both columns for backward compatibility
+          const structuredLocation = getStructuredLocation(exp.location);
+          const formattedLocationString = getFormattedLocationString(exp.location, exp.is_remote);
+
+          const updateData: Record<string, unknown> = {
+            organization_id: exp.organization_id || null,
+            job_title: exp.job_title,
+            company_name: exp.company_name,
+            employment_type: exp.employment_type || null,
+            location: formattedLocationString,
+            location_structured: structuredLocation,
+            is_remote: exp.is_remote,
+            start_date: exp.start_date || null,
+            end_date: exp.end_date || null,
+            is_current: exp.is_current,
+            description: exp.description || null,
+          };
+
           if (exp.id) {
             // Update existing experience
+            updateData.updated_at = new Date().toISOString();
+
             const { data, error } = await supabase
               .schema("core")
               .from("user_experience")
-              .update({
-                organization_id: exp.organization_id || null,
-                job_title: exp.job_title,
-                company_name: exp.company_name,
-                employment_type: exp.employment_type || null,
-                location: exp.location || null,
-                is_remote: exp.is_remote,
-                start_date: exp.start_date || null,
-                end_date: exp.end_date || null,
-                is_current: exp.is_current,
-                description: exp.description || null,
-                updated_at: new Date().toISOString(),
-              })
+              .update(updateData)
               .eq("id", exp.id)
               .eq("user_id", user.id)
               .select()
@@ -167,7 +222,11 @@ export const profileExperienceRouter = t.router({
               });
             }
 
-            savedExperience.push(data);
+            // Transform response to prefer location_structured
+            savedExperience.push({
+              ...data,
+              location: data.location_structured || data.location || null,
+            });
           } else {
             // Create new experience
             const { data, error } = await supabase
@@ -175,16 +234,7 @@ export const profileExperienceRouter = t.router({
               .from("user_experience")
               .insert({
                 user_id: user.id,
-                organization_id: exp.organization_id || null,
-                job_title: exp.job_title,
-                company_name: exp.company_name,
-                employment_type: exp.employment_type || null,
-                location: exp.location || null,
-                is_remote: exp.is_remote,
-                start_date: exp.start_date || null,
-                end_date: exp.end_date || null,
-                is_current: exp.is_current,
-                description: exp.description || null,
+                ...updateData,
               })
               .select()
               .single();
@@ -196,7 +246,11 @@ export const profileExperienceRouter = t.router({
               });
             }
 
-            savedExperience.push(data);
+            // Transform response to prefer location_structured
+            savedExperience.push({
+              ...data,
+              location: data.location_structured || data.location || null,
+            });
           }
         }
 

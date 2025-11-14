@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { useMedia, ScrollView, XStack, YStack } from 'tamagui'
+import { ScrollView, XStack, YStack } from 'tamagui'
 import { Breadcrumb, type BreadcrumbItem } from '../Breadcrumb'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
@@ -21,15 +21,6 @@ export const DashboardLayout = ({
   breadcrumbItems,
   autoGenerateBreadcrumbs = true,
 }: DashboardLayoutProps) => {
-  // Use Tamagui media hook to check breakpoints
-  // $sm = maxWidth: 800px (small screen)
-  // $gtSm = minWidth: 801px (tablet/desktop)
-  // $gtMd = minWidth: 981px (desktop)
-  const media = useMedia()
-  const isSmallScreen = media.sm // sm = maxWidth: 800px
-  const isTablet = media.gtSm && !media.gtMd // gtSm but not gtMd = 801px to 980px
-  const isDesktop = media.gtMd // gtMd = minWidth: 981px
-
   // Auto-generate breadcrumbs if enabled and no manual override
   const { breadcrumbs } = useBreadcrumbs({
     autoGenerate: autoGenerateBreadcrumbs && !breadcrumbItems,
@@ -43,47 +34,77 @@ export const DashboardLayout = ({
   const hasRightContent = Boolean(rightContent)
   const hasBothColumns = hasLeftContent && hasRightContent
 
-  const leftColumnWidth =
-    !hasBothColumns || isSmallScreen ? '100%' : isDesktop ? '70%' : isTablet ? '60%' : '100%'
-  const rightColumnWidth =
-    !hasBothColumns || isSmallScreen ? '100%' : isDesktop ? '30%' : isTablet ? '40%' : '100%'
-
-  const ContentStack = isSmallScreen ? YStack : XStack
-
   return (
     <ScrollView flex={1} bg="$color2" showsVerticalScrollIndicator={false}>
       <YStack gap="$3" pt="$3" pb="$5">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
-          <XStack px={isSmallScreen ? '$3' : '$7'} pt="$3">
+          <XStack px="$7" $sm={{ px: '$3' }} pt="$3">
             <Breadcrumb items={displayBreadcrumbs} />
           </XStack>
         )}
 
-        {/* Content Area */}
-        <ContentStack gap={isSmallScreen ? '$3' : '$8'} p={isSmallScreen ? '$3' : '$7'}>
+        {/* Content Area - Use responsive flexDirection */}
+        <XStack
+          gap="$8"
+          p="$7"
+          $sm={{
+            flexDirection: 'column',
+            gap: '$3',
+            p: '$3',
+          }}
+          $gtSm={{
+            flexDirection: 'row',
+          }}
+        >
           {hasLeftContent && (
             <YStack
-              minW={isSmallScreen ? '100%' : 300}
-              width={isSmallScreen ? '100%' : leftColumnWidth}
-              maxW={isSmallScreen ? '100%' : leftColumnWidth}
-              flexBasis={!isSmallScreen && hasBothColumns ? leftColumnWidth : 'auto'}
-              flex={!isSmallScreen && hasBothColumns ? 1 : undefined}
+              minW={300}
+              width="100%"
+              maxW="100%"
+              flexBasis="auto"
+              flex={1}
+              $sm={{
+                minW: '100%',
+                width: '100%',
+                maxW: '100%',
+                flexBasis: 'auto',
+                flex: undefined,
+              }}
+              $gtSm={{
+                minW: hasBothColumns ? 300 : 'auto',
+                width: hasBothColumns ? '60%' : '100%',
+                maxW: hasBothColumns ? '60%' : '100%',
+                flexBasis: hasBothColumns ? '60%' : 'auto',
+                flex: hasBothColumns ? 1 : undefined,
+              }}
             >
               {leftContent}
             </YStack>
           )}
           {hasRightContent && (
             <YStack
-              minW={isSmallScreen ? '100%' : 300}
-              width={isSmallScreen ? '100%' : rightColumnWidth}
-              maxW={isSmallScreen ? '100%' : rightColumnWidth}
-              flexBasis={!isSmallScreen && hasBothColumns ? rightColumnWidth : 'auto'}
+              minW={300}
+              width="100%"
+              maxW="100%"
+              flexBasis="auto"
+              $sm={{
+                minW: '100%',
+                width: '100%',
+                maxW: '100%',
+                flexBasis: 'auto',
+              }}
+              $gtSm={{
+                minW: hasBothColumns ? 300 : 'auto',
+                width: hasBothColumns ? '40%' : '100%',
+                maxW: hasBothColumns ? '40%' : '100%',
+                flexBasis: hasBothColumns ? '40%' : 'auto',
+              }}
             >
               {rightContent}
             </YStack>
           )}
-        </ContentStack>
+        </XStack>
       </YStack>
     </ScrollView>
   )

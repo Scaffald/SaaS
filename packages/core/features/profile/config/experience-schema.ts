@@ -23,7 +23,17 @@ export const experienceProfileSchema = z.object({
             "Freelance",
           ])
           .optional(),
-        location: z.string().optional(),
+        location: z.union([
+          z.string(), // Backward compatibility
+          z.object({
+            street: z.string().optional(),
+            city: z.string(),
+            state: z.string(),
+            zip: z.string().optional(),
+            country: z.string(),
+            formattedAddress: z.string(),
+          })
+        ]).optional(),
         is_remote: z.boolean().default(false),
         start_date: z.string().optional(), // ISO date string
         end_date: z.string().optional(), // ISO date string
@@ -59,7 +69,7 @@ export const createNewExperienceEntry = () => ({
   job_title: "",
   company_name: "",
   employment_type: undefined,
-  location: "",
+  location: undefined,
   is_remote: false,
   start_date: "",
   end_date: "",

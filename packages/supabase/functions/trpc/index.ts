@@ -11,19 +11,23 @@ export type { AppRouter };
  */
 Deno.serve(async (req: Request) => {
   console.log("[tRPC handler] Request received:", req.method, req.url);
-  
+
   // CORS headers to be applied to all responses
   const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
     "Access-Control-Allow-Headers":
       "authorization, x-client-info, apikey, content-type, x-trpc-source",
+    "Access-Control-Max-Age": "86400", // Cache preflight for 24 hours
   };
 
-  // Handle CORS preflight requests
+  // Handle CORS preflight requests - MUST return early with explicit 200 status
   if (req.method === "OPTIONS") {
     console.log("[tRPC handler] CORS preflight");
-    return new Response("ok", { headers: corsHeaders });
+    return new Response(null, {
+      status: 200,
+      headers: corsHeaders,
+    });
   }
 
   try {
@@ -52,37 +56,49 @@ Deno.serve(async (req: Request) => {
   } catch (error) {
     // Log the full error for debugging
     console.error("tRPC handler error:", error);
-    console.error("Error stack:", error instanceof Error ? error.stack : "No stack trace");
-    console.error("Error details:", JSON.stringify({
-      name: error instanceof Error ? error.name : typeof error,
-      message: error instanceof Error ? error.message : String(error),
-      cause: error instanceof Error && 'cause' in error ? error.cause : undefined,
-    }, null, 2));
-    
+    console.error(
+      "Error stack:",
+      error instanceof Error ? error.stack : "No stack trace",
+    );
+    console.error(
+      "Error details:",
+      JSON.stringify(
+        {
+          name: error instanceof Error ? error.name : typeof error,
+          message: error instanceof Error ? error.message : String(error),
+          cause: error instanceof Error && "cause" in error
+            ? error.cause
+            : undefined,
+        },
+        null,
+        2,
+      ),
+    );
+
     // Return error details only in development, generic message in production
     const isDevelopment = Deno.env.get("ENVIRONMENT") === "development" ||
-                          Deno.env.get("DENO_DEPLOYMENT_ID") === undefined;
+      Deno.env.get("DENO_DEPLOYMENT_ID") === undefined;
 
-    const errorMessage = error instanceof Error
-      ? error.message
-      : String(error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     const errorName = error instanceof Error ? error.name : "UnknownError";
 
     // In production, return generic error without sensitive details
-    const responseBody = isDevelopment ? {
-      error: "Internal server error",
-      message: errorMessage,
-      type: errorName,
-    } : {
-      error: "Internal server error",
-      message: "An unexpected error occurred. Please try again later.",
-    };
+    const responseBody = isDevelopment
+      ? {
+        error: "Internal server error",
+        message: errorMessage,
+        type: errorName,
+      }
+      : {
+        error: "Internal server error",
+        message: "An unexpected error occurred. Please try again later.",
+      };
 
     return new Response(JSON.stringify(responseBody), {
       status: 500,
       headers: {
         "Content-Type": "application/json",
-        ...corsHeaders
+        ...corsHeaders,
       },
     });
   }

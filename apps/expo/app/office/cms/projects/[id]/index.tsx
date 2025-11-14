@@ -8,10 +8,7 @@ import { Eye, EyeOff, Plus, CheckCircle, Clock, XCircle } from '@tamagui/lucide-
 export default function ProjectDetailPage() {
   const { id } = useLocalSearchParams<{ id: string }>()
 
-  const { data, isLoading } = api.projects.get.useQuery(
-    { id: id! },
-    { enabled: !!id }
-  )
+  const { data, isLoading } = api.projects.get.useQuery({ id: id as string }, { enabled: !!id })
 
   if (!id) {
     return (
@@ -94,16 +91,15 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <OfficePageLayout
-      title={project.name}
-      description={project.description || undefined}
-    >
+    <OfficePageLayout title={project.name} description={project.description || undefined}>
       <YStack gap="$4" p="$4">
         {/* Project Info */}
         <Card p="$4">
           <YStack gap="$4">
             <XStack jc="space-between" ai="center">
-              <Text fontSize="$8" fontWeight="600">{project.name}</Text>
+              <Text fontSize="$8" fontWeight="600">
+                {project.name}
+              </Text>
               <Button
                 onPress={() => {
                   // Navigate to edit page
@@ -114,37 +110,47 @@ export default function ProjectDetailPage() {
               </Button>
             </XStack>
 
-            {project.description && (
-              <Text>{project.description}</Text>
-            )}
+            {project.description && <Text>{project.description}</Text>}
 
             <XStack gap="$4" flexWrap="wrap">
               <YStack gap="$1">
-                <Text fontSize="$2" color="$gray10">Status</Text>
-                <Text fontWeight="600">{project.status.charAt(0).toUpperCase() + project.status.slice(1)}</Text>
+                <Text fontSize="$2" color="$gray10">
+                  Status
+                </Text>
+                <Text fontWeight="600">
+                  {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
+                </Text>
               </YStack>
 
               {project.start_date && (
                 <YStack gap="$1">
-                  <Text fontSize="$2" color="$gray10">Start Date</Text>
+                  <Text fontSize="$2" color="$gray10">
+                    Start Date
+                  </Text>
                   <Text fontWeight="600">{project.start_date}</Text>
                 </YStack>
               )}
 
               {project.end_date && (
                 <YStack gap="$1">
-                  <Text fontSize="$2" color="$gray10">End Date</Text>
+                  <Text fontSize="$2" color="$gray10">
+                    End Date
+                  </Text>
                   <Text fontWeight="600">{project.end_date}</Text>
                 </YStack>
               )}
 
               <YStack gap="$1">
-                <Text fontSize="$2" color="$gray10">Location Visibility</Text>
+                <Text fontSize="$2" color="$gray10">
+                  Location Visibility
+                </Text>
                 <XStack gap="$2" ai="center">
                   {getVisibilityIcon(project.location_visibility)({ size: 16 })}
                   <Text fontWeight="600">{getVisibilityLabel(project.location_visibility)}</Text>
                   {project.location_visibility_override && (
-                    <Text fontSize="$1" color="$yellow10">(Override)</Text>
+                    <Text fontSize="$1" color="$yellow10">
+                      (Override)
+                    </Text>
                   )}
                 </XStack>
               </YStack>
@@ -156,8 +162,12 @@ export default function ProjectDetailPage() {
         <Card p="$4">
           <YStack gap="$4">
             <XStack jc="space-between" ai="center">
-              <Text fontSize="$6" fontWeight="600">Location</Text>
-              <Button size="$2" icon={Plus}>Add Site</Button>
+              <Text fontSize="$6" fontWeight="600">
+                Location
+              </Text>
+              <Button size="$2" icon={Plus}>
+                Add Site
+              </Button>
             </XStack>
 
             {sites.length === 0 && addresses.length === 0 ? (
@@ -167,9 +177,11 @@ export default function ProjectDetailPage() {
                 {sites.length > 0 && (
                   <YStack gap="$2">
                     <Text fontWeight="600">Site Boundaries</Text>
-                    {sites.map((ps: any) => (
+                    {sites.map((ps) => (
                       <Card key={ps.id} p="$2" bg="$gray2">
-                        <Text>{ps.site?.site_identifier || `Site ${ps.site?.id?.slice(0, 8)}`}</Text>
+                        <Text>
+                          {ps.site?.site_identifier || `Site ${ps.site?.id?.slice(0, 8)}`}
+                        </Text>
                         {ps.site?.area_sqft && (
                           <Text fontSize="$2" color="$gray10">
                             Area: {ps.site.area_sqft.toLocaleString()} sq ft
@@ -183,7 +195,7 @@ export default function ProjectDetailPage() {
                 {addresses.length > 0 && (
                   <YStack gap="$2">
                     <Text fontWeight="600">Property Addresses</Text>
-                    {addresses.map((pa: any) => (
+                    {addresses.map((pa) => (
                       <Card key={pa.id} p="$2" bg="$gray2">
                         <Text>
                           {pa.address?.address?.street || ''}
@@ -214,18 +226,22 @@ export default function ProjectDetailPage() {
         <Card p="$4">
           <YStack gap="$4">
             <XStack jc="space-between" ai="center">
-              <Text fontSize="$6" fontWeight="600">Workers</Text>
-              <Button size="$2" icon={Plus}>Add Worker</Button>
+              <Text fontSize="$6" fontWeight="600">
+                Workers
+              </Text>
+              <Button size="$2" icon={Plus}>
+                Add Worker
+              </Button>
             </XStack>
 
             {workers.length === 0 ? (
               <Text color="$gray10">No workers assigned yet</Text>
             ) : (
               <YStack gap="$2">
-                {workers.map((worker: any) => {
+                {workers.map((worker) => {
                   const StatusIcon = getWorkerStatusIcon(worker.status)
                   const statusColor = getWorkerStatusColor(worker.status)
-                  
+
                   return (
                     <Card key={worker.id} p="$3" bg="$gray2">
                       <XStack jc="space-between" ai="center">
@@ -302,4 +318,3 @@ export default function ProjectDetailPage() {
     </OfficePageLayout>
   )
 }
-

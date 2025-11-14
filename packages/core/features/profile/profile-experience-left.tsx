@@ -1,21 +1,18 @@
 import { useEffect, useState, useRef, useMemo, useCallback } from 'react'
-import { YStack, XStack, Text, Input, H4, TextArea, Select, Adapt, Sheet, useWindowDimensions, Spinner, Label, Card, Separator } from 'tamagui'
+import { YStack, XStack, Text, Input, H4, TextArea, Select, Adapt, Sheet, useWindowDimensions, Spinner, Label } from 'tamagui'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Plus,
   X,
   ChevronDown,
-  Briefcase,
-  Calendar,
-  MapPin,
   Check,
   CheckCircle,
   AlertTriangle,
 } from '@tamagui/lucide-icons'
-import { ProfileEmptyState } from './components'
 import { formatDateRange } from './utils/date-formatting'
 import { randomUUID } from 'expo-crypto'
+import { useExperienceEdit } from './contexts/experience-edit-context'
 import {
   experienceProfileSchema,
   type ExperienceProfileFormData,
@@ -24,7 +21,8 @@ import {
   EMPLOYMENT_TYPE_OPTIONS,
   CAREER_LEVEL_OPTIONS,
 } from './config'
-import { UIButton as Button, CustomCheckbox, DashboardWidget, ConfirmationDialog, MonthYearPicker, AddressAutocomplete } from '@app/ui'
+import { UIButton as Button, CustomCheckbox, DashboardWidget, ConfirmationDialog, MonthYearPicker } from '@app/ui'
+import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
@@ -58,6 +56,7 @@ export function ProfileExperienceLeft() {
   const isMobile = width < 640
   const syncStatus = useAdaptiveProfileSync(300)
   const isSyncing = syncStatus === 'syncing'
+  const { editingEntryId, cancelEditing } = useExperienceEdit()
 
   // Queries
   const experienceQuery = api.profile.getExperience.useQuery()
@@ -113,6 +112,8 @@ export function ProfileExperienceLeft() {
     handleSubmit,
     reset,
     watch,
+    setValue,
+    trigger,
     formState: { errors, isDirty },
   } = useForm<ExperienceProfileFormData>({
     resolver: zodResolver(experienceProfileSchema),
@@ -131,24 +132,37 @@ export function ProfileExperienceLeft() {
       const formData = {
         career_level: experienceSummaryQuery.data.career_level || undefined,
         // biome-ignore lint/suspicious/noExplicitAny: API response type
-        experience_entries: experienceQuery.data.map((exp: any) => ({
-          id: exp.id,
-          organization_id: exp.organization_id || undefined,
-          job_title: exp.job_title,
-          company_name: exp.company_name,
-          employment_type: exp.employment_type || undefined,
-          location: exp.location || undefined,
-          is_remote: exp.is_remote,
-          start_date: exp.start_date || undefined,
-          end_date: exp.end_date || undefined,
-          is_current: exp.is_current,
-          description: exp.description || undefined,
-        })),
+        experience_entries: experienceQuery.data.map((exp: any) => {
+          // Handle location: prefer location_structured, fallback to location TEXT
+          // If location is string, keep as string for backward compatibility
+          // ControlledAddressForm will handle conversion to structured format on edit
+          const location = exp.location_structured || exp.location || undefined
+          
+          // If location is a string and we need structured format, we'll let ControlledAddressForm handle it
+          // For now, keep the raw location value (API already transforms it)
+          return {
+            id: exp.id,
+            organization_id: exp.organization_id || undefined,
+            job_title: exp.job_title,
+            company_name: exp.company_name,
+            employment_type: exp.employment_type || undefined,
+            location,
+            is_remote: exp.is_remote,
+            start_date: exp.start_date || undefined,
+            end_date: exp.end_date || undefined,
+            is_current: exp.is_current,
+            description: exp.description || undefined,
+          }
+        }),
       }
       reset(formData)
       originalDataRef.current = formData
     }
   }, [experienceQuery.data, experienceSummaryQuery.data, reset])
+
+  // Handle edit mode - entries are already loaded in form from API
+  // When editingEntryId is set, the entry should already exist in form fields
+  // The form will display it automatically since all entries are loaded
 
   const clearTimers = useCallback(() => {
     if (bannerTimeoutRef.current) {
@@ -200,6 +214,10 @@ export function ProfileExperienceLeft() {
         experience_entries: experienceEntries,
       })
       showSuccessFeedback()
+      // Clear edit mode after successful save
+      if (editingEntryId) {
+        cancelEditing()
+      }
     } catch (error) {
       console.error('Error saving experience:', error)
       setSaveState('idle')
@@ -461,31 +479,26 @@ export function ProfileExperienceLeft() {
                 </YStack>
 
                 <YStack gap="$2" flex={1}>
-                  <Text>Location</Text>
-                  <Controller
-                    name={`experience_entries.${index}.location`}
+                  <ControlledAddressForm
                     control={control}
-                    render={({ field }) => (
-                      <AddressAutocomplete
-                        value={field.value || ''}
-                        onChange={(value) => field.onChange(value)}
-                        onAddressSelect={(address) => {
-                          // Format address and store as string
-                          const parts = [
-                            address.streetAddress,
-                            address.locality,
-                            address.stateAbbreviation,
-                            address.postalCode,
-                          ].filter(Boolean)
-                          const formattedAddress = parts.join(', ')
-                          field.onChange(formattedAddress)
-                        }}
-                        placeholder="Search for work location..."
-                        zoomLevel="city"
-                        error={errors.experience_entries?.[index]?.location?.message}
-                      />
-                    )}
+                    name={`experience_entries.${index}.location`}
+                    setValue={setValue}
+                    trigger={trigger}
+                    label="Location"
+                    placeholder="Search for company location..."
+                    required={false}
+                    fieldMapping="nested"
+                    storeCoordinates={false}
+                    mode="hybrid"
+                    provider="mapbox"
+                    zoomLevel="city"
+                    error={errors.experience_entries?.[index]?.location?.message}
                   />
+                  {watch(`experience_entries.${index}.is_remote`) && (
+                    <Text fontSize="$2" color="$color11">
+                      Enter company headquarters location
+                    </Text>
+                  )}
                   {errors.experience_entries?.[index]?.location && (
                     <Text color="$red10" fontSize="$2">
                       {errors.experience_entries[index]?.location?.message}
@@ -635,14 +648,25 @@ export function ProfileExperienceLeft() {
 
         {/* Action Buttons */}
         <XStack justify="flex-end" gap="$3" pt="$4">
-          <Button
-            variant="outlined"
-            disabled={!isDirty}
-            onPress={() => setShowCancelDialog(true)}
-            opacity={!isDirty ? 0.5 : 1}
-          >
-            Cancel
-          </Button>
+          {(editingEntryId || isDirty) && (
+            <Button
+              variant="outlined"
+              disabled={!isDirty && !editingEntryId}
+              onPress={() => {
+                if (editingEntryId) {
+                  cancelEditing()
+                  if (originalDataRef.current) {
+                    reset(originalDataRef.current)
+                  }
+                } else {
+                  setShowCancelDialog(true)
+                }
+              }}
+              opacity={!isDirty && !editingEntryId ? 0.5 : 1}
+            >
+              Cancel
+            </Button>
+          )}
           <Button
             variant="primary"
             onPress={handleSubmit(onSubmit)}
@@ -659,6 +683,8 @@ export function ProfileExperienceLeft() {
                 <Spinner size="small" color="$color12" />
                 <Text>Saving...</Text>
               </XStack>
+            ) : editingEntryId ? (
+              'Update Experience'
             ) : (
               'Save Changes'
             )}
@@ -678,106 +704,12 @@ export function ProfileExperienceLeft() {
             if (originalDataRef.current) {
               reset(originalDataRef.current)
               setShowCancelDialog(false)
+              if (editingEntryId) {
+                cancelEditing()
+              }
             }
           }}
         />
-
-        <Separator />
-
-        {/* Saved Experience Display */}
-        <YStack gap="$3">
-          <Text fontWeight="600" fontSize="$5">
-            Saved Experience
-          </Text>
-
-          {!experienceQuery.data || experienceQuery.data.length === 0 ? (
-            <ProfileEmptyState
-              icon={Briefcase}
-              message="No work experience saved yet. Add your first experience entry above and click Save Changes."
-            />
-          ) : (
-            <YStack gap="$3">
-              {/* biome-ignore lint/suspicious/noExplicitAny: tRPC types not yet generated */}
-              {experienceQuery.data.map((exp: any) => (
-                <Card key={exp.id} bordered size="$4">
-                  <Card.Header gap="$3">
-                    {/* Header */}
-                    <YStack gap="$2">
-                      <XStack justify="space-between" items="flex-start">
-                        <YStack gap="$1" flex={1}>
-                          <H4>{exp.job_title}</H4>
-                          <XStack gap="$2" items="center" flexWrap="wrap">
-                            <Text color="$color11" fontSize="$3" fontWeight="600">
-                              {exp.company_name}
-                            </Text>
-                            {exp.employment_type && (
-                              <>
-                                <Text color="$color11" fontSize="$2">
-                                  •
-                                </Text>
-                                <Text color="$color11" fontSize="$2">
-                                  {exp.employment_type}
-                                </Text>
-                              </>
-                            )}
-                            {exp.is_current && (
-                              <>
-                                <Text color="$color11" fontSize="$2">
-                                  •
-                                </Text>
-                                <Text color="$green10" fontSize="$2" fontWeight="600">
-                                  Current Position
-                                </Text>
-                              </>
-                            )}
-                          </XStack>
-                        </YStack>
-                      </XStack>
-                    </YStack>
-
-                    <Separator />
-
-                    {/* Details */}
-                    <YStack gap="$2">
-                      {/* Dates */}
-                      {(exp.start_date || exp.end_date) && (
-                        <XStack gap="$2" items="center">
-                          <Calendar size={16} color="$color11" />
-                          <Text fontSize="$2" color="$color11">
-                            {formatDateRange(exp.start_date, exp.end_date, exp.is_current)}
-                          </Text>
-                        </XStack>
-                      )}
-
-                      {/* Location */}
-                      {exp.location && (
-                        <XStack gap="$2" items="center">
-                          <MapPin size={16} color="$color11" />
-                          <Text fontSize="$2" color="$color11">
-                            {exp.location}
-                            {exp.is_remote && ' (Remote)'}
-                          </Text>
-                        </XStack>
-                      )}
-
-                      {/* Description */}
-                      {exp.description && (
-                        <YStack gap="$1">
-                          <Text fontSize="$2" fontWeight="600" color="$color11">
-                            Description:
-                          </Text>
-                          <Text fontSize="$3" color="$color11">
-                            {exp.description}
-                          </Text>
-                        </YStack>
-                      )}
-                    </YStack>
-                  </Card.Header>
-                </Card>
-              ))}
-            </YStack>
-          )}
-        </YStack>
       </YStack>
     </DashboardWidget>
   )
