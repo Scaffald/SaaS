@@ -180,14 +180,6 @@ export function NewsWidget({
   })
   const [preferencesOpen, setPreferencesOpen] = useState(false)
 
-  const { data: user } = api.profile.useUser.useQuery()
-  const userId = user?.id
-
-  const { data: generalInfo } = api.profile.widgets.getGeneralInfo.useQuery(
-    { userId },
-    { enabled: !!userId, staleTime: 5 * 60 * 1000 }
-  )
-
   const { data: userSkills } = api.profile.widgets.getSkills.useQuery(
     { userId },
     { enabled: !!userId, staleTime: 5 * 60 * 1000 }
