@@ -42,6 +42,7 @@ export default defineConfig({
     {
       name: 'setup',
       testMatch: /.*\.setup\.ts/,
+      testDir: './tests', // Search in all test directories, not just e2e
     },
     {
       name: 'chromium',
