@@ -27,9 +27,7 @@ export function useNewsFeedByIndustry({
   // UUID v4 format: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
   const isValidUUID =
     industryId.length > 0 &&
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-      industryId
-    )
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(industryId)
 
   const query = api.news.getByIndustry.useQuery(
     {
@@ -49,11 +47,17 @@ export function useNewsFeedByIndustry({
   const enhancedData = useMemo(() => {
     if (!query.data) return undefined
 
-    return query.data.map((item) => ({
-      ...item,
-      readTime: calculateReadingTime(item.description),
-      image: item.imageUrl,
-    }))
+    return query.data.map((item: (typeof query.data)[0]) => {
+      // Ensure pubDate is a Date object (tRPC serializes Date to string)
+      const pubDate = item.pubDate instanceof Date ? item.pubDate : new Date(item.pubDate)
+
+      return {
+        ...item,
+        pubDate, // Ensure it's a Date object
+        readTime: calculateReadingTime(item.description),
+        image: item.imageUrl,
+      }
+    })
   }, [query.data])
 
   return {

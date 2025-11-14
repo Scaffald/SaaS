@@ -65,21 +65,37 @@ export const newsRouter = t.router({
 
       // Sort and limit after fetching (Supabase doesn't support limit with joins easily)
       const sorted = (data || [])
-        .sort((a, b) => new Date(b.pub_date).getTime() - new Date(a.pub_date).getTime())
+        .sort((a, b) => {
+          const dateA = a.pub_date instanceof Date ? a.pub_date : new Date(a.pub_date);
+          const dateB = b.pub_date instanceof Date ? b.pub_date : new Date(b.pub_date);
+          return dateB.getTime() - dateA.getTime();
+        })
         .slice(0, input.limit);
 
       // Transform to match NewsItem format expected by frontend
-      return sorted.map((article) => ({
-        id: article.id,
-        title: article.title,
-        description: article.description || "",
-        link: article.link,
-        pubDate: new Date(article.pub_date),
-        imageUrl: article.image_url || undefined,
-        source: article.source_name,
-        category: (article.feed as { category?: string } | null)?.category || undefined,
-        region: (article.feed as { region?: string } | null)?.region || undefined,
-      }));
+      return sorted.map((article) => {
+        // Ensure pub_date is converted to a Date object
+        const pubDate = article.pub_date instanceof Date 
+          ? article.pub_date 
+          : new Date(article.pub_date);
+        
+        // Validate the date is valid
+        if (Number.isNaN(pubDate.getTime())) {
+          console.warn(`Invalid date for article ${article.id}: ${article.pub_date}`);
+        }
+        
+        return {
+          id: article.id,
+          title: article.title,
+          description: article.description || "",
+          link: article.link,
+          pubDate,
+          imageUrl: article.image_url || undefined,
+          source: article.source_name,
+          category: (article.feed as { category?: string } | null)?.category || undefined,
+          region: (article.feed as { region?: string } | null)?.region || undefined,
+        };
+      });
     }),
 
   /**

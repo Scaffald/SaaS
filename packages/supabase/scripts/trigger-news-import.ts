@@ -9,6 +9,9 @@ const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL ||
   process.env.SUPABASE_URL ||
   "http://127.0.0.1:54321";
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.SUPABASE_ANON_KEY ||
+  "";
 
 if (!supabaseServiceKey) {
   console.error("❌ SUPABASE_SERVICE_ROLE_KEY is required");
@@ -20,17 +23,34 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 async function triggerNewsImport() {
   console.log("🔄 Triggering News Import...\n");
+  console.log("⚠️  Note: This requires Supabase Edge Functions to be running.");
+  console.log("   Start them in a separate terminal with: pnpm supa:functions\n");
 
   try {
     // Call the Edge Function directly via HTTP
+    // Supabase Edge Functions require both apikey and Authorization headers
     const functionUrl = `${supabaseUrl}/functions/v1/news-import`;
+    
+    // Use anon key for Authorization header (required by Supabase Edge Function runtime)
+    // The function itself uses service role key from environment variables
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    
+    // Add apikey header (required by Supabase Edge Functions)
+    if (supabaseAnonKey) {
+      headers["apikey"] = supabaseAnonKey;
+      headers["Authorization"] = `Bearer ${supabaseAnonKey}`;
+    } else {
+      // Fallback to service role key if anon key not available
+      headers["Authorization"] = `Bearer ${supabaseServiceKey}`;
+    }
+    
+    console.log(`Calling Edge Function: ${functionUrl}`);
     
     const response = await fetch(functionUrl, {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${supabaseServiceKey}`,
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify({}),
     });
 
@@ -44,12 +64,16 @@ async function triggerNewsImport() {
       console.error("❌ Edge Function not available:", text);
       console.error("\n💡 Make sure Supabase functions are running:");
       console.error("   pnpm supa:functions");
-      console.error("\n   Or use the tRPC endpoint via the app instead.");
+      console.error("\n   Then run this command again.");
       process.exit(1);
     }
 
     if (!response.ok) {
       console.error("❌ Error triggering news import:", data);
+      if (data.code === "BOOT_ERROR") {
+        console.error("\n💡 Edge Functions are not running. Start them with:");
+        console.error("   pnpm supa:functions");
+      }
       process.exit(1);
     }
 
@@ -79,6 +103,7 @@ async function triggerNewsImport() {
       }
       process.exit(1);
     }
+
   } catch (error) {
     console.error("❌ Error triggering news import:", error);
     process.exit(1);

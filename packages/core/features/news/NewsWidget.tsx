@@ -42,20 +42,26 @@ const sanitize = (value: string) =>
     .replace(/\s+/g, ' ')
     .trim()
 
-const getHoursSince = (date: Date) => {
-  const diffMs = Date.now() - date.getTime()
+const getHoursSince = (date: Date | string) => {
+  const dateObj = date instanceof Date ? date : new Date(date)
+  if (Number.isNaN(dateObj.getTime())) {
+    console.warn('Invalid date provided to getHoursSince:', date)
+    return 0
+  }
+  const diffMs = Date.now() - dateObj.getTime()
   return diffMs / (1000 * 60 * 60)
 }
 
-const formatTimeAgo = (date: Date) => {
-  const hours = Math.floor(getHoursSince(date))
+const formatTimeAgo = (date: Date | string) => {
+  const dateObj = date instanceof Date ? date : new Date(date)
+  const hours = Math.floor(getHoursSince(dateObj))
   const days = Math.floor(hours / 24)
 
   if (hours < 1) return 'Just now'
   if (hours < 24) return `${hours}h ago`
   if (days === 1) return '1 day ago'
   if (days < 7) return `${days} days ago`
-  return date.toLocaleDateString()
+  return dateObj.toLocaleDateString()
 }
 
 const capitalise = (value?: string | null) => {
@@ -255,7 +261,7 @@ export function NewsWidget({
   const enrichedNews = useMemo(() => {
     if (!newsItems.length) return [] as EnrichedNewsItem[]
 
-    const scored = newsItems.map((item) => {
+    const scored = newsItems.map((item: NewsItem) => {
       const { score, reasons, hoursSincePublished } = computeRelevance(
         item,
         relevanceContext,
@@ -270,13 +276,16 @@ export function NewsWidget({
     })
 
     const filtered = preferences.recentOnly
-      ? scored.filter((item) => item.hoursSincePublished <= RECENT_CUTOFF_HOURS)
+      ? scored.filter((item: EnrichedNewsItem) => item.hoursSincePublished <= RECENT_CUTOFF_HOURS)
       : scored
 
     const sorted = filtered
-      .sort((a, b) => {
+      .sort((a: EnrichedNewsItem, b: EnrichedNewsItem) => {
         if (b.relevanceScore === a.relevanceScore) {
-          return b.pubDate.getTime() - a.pubDate.getTime()
+          // Ensure pubDate is a Date object
+          const dateA = a.pubDate instanceof Date ? a.pubDate : new Date(a.pubDate)
+          const dateB = b.pubDate instanceof Date ? b.pubDate : new Date(b.pubDate)
+          return dateB.getTime() - dateA.getTime()
         }
         return b.relevanceScore - a.relevanceScore
       })
@@ -287,10 +296,17 @@ export function NewsWidget({
     }
 
     const fallback = newsItems
-      .filter((item) => !sorted.some((existing) => existing.id === item.id))
-      .sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime())
+      .filter(
+        (item: NewsItem) => !sorted.some((existing: EnrichedNewsItem) => existing.id === item.id)
+      )
+      .sort((a: NewsItem, b: NewsItem) => {
+        // Ensure pubDate is a Date object
+        const dateA = a.pubDate instanceof Date ? a.pubDate : new Date(a.pubDate)
+        const dateB = b.pubDate instanceof Date ? b.pubDate : new Date(b.pubDate)
+        return dateB.getTime() - dateA.getTime()
+      })
       .slice(0, headlineLimit - sorted.length)
-      .map((item) => ({
+      .map((item: NewsItem) => ({
         ...item,
         relevanceScore: 0,
         reasons: [],
@@ -407,7 +423,7 @@ export function NewsWidget({
 
       {enrichedNews.length > 0 && (
         <YStack gap="$3" px={spacing.lg} pb={spacing.sm}>
-          {enrichedNews.map((item) => (
+          {enrichedNews.map((item: EnrichedNewsItem) => (
             <Pressable key={item.id} onPress={() => handleNewsClick(item)}>
               {({ pressed }) => (
                 <YStack
@@ -446,7 +462,7 @@ export function NewsWidget({
                   </XStack>
                   {item.reasons.length > 0 && (
                     <XStack gap="$2" flexWrap="wrap">
-                      {item.reasons.slice(0, 2).map((reason, index) => (
+                      {item.reasons.slice(0, 2).map((reason: string, index: number) => (
                         <YStack
                           key={`${item.id}-reason-${index}`}
                           px="$2"
