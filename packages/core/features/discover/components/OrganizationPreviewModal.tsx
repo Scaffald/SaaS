@@ -41,6 +41,13 @@ export function OrganizationPreviewModal({
     onOpenChange(false)
   }
 
+  const handleOpenInNewTab = () => {
+    if (!organizationId) return
+    if (typeof window !== 'undefined') {
+      window.open(`${ROUTES.DASHBOARD_DISCOVER_JOBS.path}?org=${organizationId}`, '_blank')
+    }
+  }
+
   const formatAddress = (address: unknown) => {
     if (!address || typeof address !== 'object') return null
 
@@ -186,6 +193,17 @@ export function OrganizationPreviewModal({
 
           {/* CTA Buttons */}
           <YStack gap="$3">
+            {typeof window !== 'undefined' && (
+              <Button
+                size="$5"
+                theme="blue"
+                variant="outlined"
+                iconAfter={<ExternalLink size={18} />}
+                onPress={handleOpenInNewTab}
+              >
+                Open in New Tab
+              </Button>
+            )}
             {jobsCount > 0 ? (
               <Button
                 size="$5"
