@@ -102,7 +102,7 @@ await updateMutation.mutateAsync({ id: organizationId!, ...data }) // Line 117
 **Category 2: Environment Variables (2 instances)**
 ```typescript
 // File: packages/core/provider/geocoding/GeocodingProvider.tsx
-mapboxToken: process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN!, // Line 36
+mapboxToken: process.env.EXPO_PUBLIC_MAPBOX_TOKEN!, // Line 36
 googleApiKey: process.env.EXPO_PUBLIC_GOOGLE_PLACES_API_KEY!, // Line 37
 ```
 **Fix Strategy:** Add environment variable validation at app startup

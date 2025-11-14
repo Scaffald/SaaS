@@ -46,12 +46,6 @@ npx netlify env:set EXPO_PUBLIC_SUPABASE_ANON_KEY "$EXPO_PUBLIC_SUPABASE_ANON_KE
 echo "Setting EXPO_PUBLIC_MAPBOX_TOKEN..."
 npx netlify env:set EXPO_PUBLIC_MAPBOX_TOKEN "$EXPO_PUBLIC_MAPBOX_TOKEN" --context production
 
-echo "Setting EXPO_PUBLIC_MAPBOX_STYLE_URL..."
-npx netlify env:set EXPO_PUBLIC_MAPBOX_STYLE_URL "$EXPO_PUBLIC_MAPBOX_STYLE_URL" --context production
-
-echo "Setting EXPO_PUBLIC_MAPBOX_API_URL..."
-npx netlify env:set EXPO_PUBLIC_MAPBOX_API_URL "$EXPO_PUBLIC_MAPBOX_API_URL" --context production
-
 echo "Setting EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID..."
 npx netlify env:set EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID "$EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID" --context production
 

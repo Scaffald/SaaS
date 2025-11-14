@@ -1,4 +1,9 @@
+import dotenv from 'dotenv'
 import 'dotenv/config'
+import {
+  MAP_STYLE_CONFIG,
+  MAPBOX_API_BASE_URL,
+} from '../packages/ui/src/components/maps/mapboxStyleConfig'
 
 const APP_ENV = process.env.APP_ENV || 'development'
 // Load environment-specific variables
@@ -27,7 +32,7 @@ const androidPackage = IS_PRODUCTION ? ANDROID_PACKAGE_BASE : `${ANDROID_PACKAGE
 
 // Load production environment variables if in production mode
 if (IS_PRODUCTION) {
-  require('dotenv').config({ path: '.env.production' })
+  dotenv.config({ path: '.env.production' })
 }
 
 export default {
@@ -150,14 +155,9 @@ export default {
       },
       mapbox: {
         accessToken: process.env.EXPO_PUBLIC_MAPBOX_TOKEN,
-        styleURL:
-          process.env.EXPO_PUBLIC_MAPBOX_STYLE_LIGHT ??
-          process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL,
-        styleURLDark:
-          process.env.EXPO_PUBLIC_MAPBOX_STYLE_DARK ??
-          process.env.EXPO_PUBLIC_MAPBOX_STYLE_LIGHT ??
-          process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL,
-        apiBaseUrl: process.env.EXPO_PUBLIC_MAPBOX_API_URL,
+        styleURL: MAP_STYLE_CONFIG.light,
+        styleURLDark: MAP_STYLE_CONFIG.dark,
+        apiBaseUrl: MAPBOX_API_BASE_URL,
       },
       analytics: {
         posthog: {

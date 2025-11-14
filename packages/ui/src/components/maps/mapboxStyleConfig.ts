@@ -1,28 +1,31 @@
 type ThemeMode = 'light' | 'dark'
 
-const STANDARD_STYLE_URL = 'mapbox://styles/mapbox/standard'
+export const MAP_STYLE_CONFIG = {
+  light: 'mapbox://styles/mapbox/standard',
+  dark: 'mapbox://styles/scaffald/cmhzad6vd001b01rs4rbn93p9',
+} as const
 
-const getStyleFallback = () => process.env.EXPO_PUBLIC_MAPBOX_STYLE_URL ?? STANDARD_STYLE_URL
+export const MAPBOX_API_BASE_URL = 'https://api.mapbox.com' as const
 
 export function getMapStyleUrl(theme: ThemeMode) {
-  const light = process.env.EXPO_PUBLIC_MAPBOX_STYLE_LIGHT ?? getStyleFallback()
-  const dark = process.env.EXPO_PUBLIC_MAPBOX_STYLE_DARK ?? light
-
-  return theme === 'dark' ? dark : light
+  return MAP_STYLE_CONFIG[theme]
 }
 
 export function shouldApplyStandardConfig(styleUrl?: string) {
   if (!styleUrl) {
-    return true
+    return false
   }
-  return styleUrl.startsWith(STANDARD_STYLE_URL)
+  return styleUrl.startsWith(MAP_STYLE_CONFIG.light)
 }
 
 export function getStandardStyleConfig(theme: ThemeMode) {
+  if (theme === 'dark') {
+    return undefined
+  }
   return {
     basemap: {
       colorScheme: 'faded',
-      lightPreset: theme === 'dark' ? 'dusk' : 'dawn',
+      lightPreset: 'dawn',
     },
   }
 }

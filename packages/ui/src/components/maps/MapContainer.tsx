@@ -193,7 +193,12 @@ function applyStandardStyleConfig(
   }
 
   const config = getStandardStyleConfig(themeMode)
-  ;(map as mapboxgl.Map & { setConfig?: (config: unknown) => void }).setConfig?.(config)
+  if (!config) {
+    return
+  }
+
+  // Mapbox GL JS' experimental setConfig API behaves inconsistently across styles.
+  // Avoid calling it until a stable API is available.
 }
 
 export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
@@ -218,7 +223,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
     const mapContainerRef = useRef<HTMLDivElement | null>(null)
     const mapRef = useRef<mapboxgl.Map | null>(null)
     const markersRef = useRef(new Map<string, CustomMarker>())
-    const avatarImageCacheRef = useRef(new Map<string, string>())
+    const avatarImageCacheRef = useRef(new Map<string, { url: string; borderColor: string }>())
     const loadingAvatarIdsRef = useRef(new Set<string>())
     const cardMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const centerMarkerRef = useRef<mapboxgl.Marker | null>(null)
@@ -614,13 +619,8 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         applyStandardStyleConfig(map, themeMode, mapStyle)
 
         for (const type of PIN_TYPE_ORDER) {
-          const {
-            sourceId,
-            clusterLayerId,
-            clusterCountLayerId,
-            pointLayerId,
-            avatarLayerId,
-          } = PIN_SOURCE_CONFIGS[type]
+          const { sourceId, clusterLayerId, clusterCountLayerId, pointLayerId, avatarLayerId } =
+            PIN_SOURCE_CONFIGS[type]
 
           if (!map.getSource(sourceId)) {
             map.addSource(sourceId, {
@@ -817,6 +817,205 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       }
     }, [isMapReady])
 
+    useEffect(() => {
+      if (!mapRef.current || !isMapReady) {
+        return
+      }
+
+      const map = mapRef.current
+
+      try {
+        if (!Array.isArray(pins)) {
+          console.warn('Invalid pins data: expected array')
+          return
+        }
+
+        const pinsByType: Record<MapPinCategory, MapPin[]> = {
+          worker: [],
+          organization: [],
+          job: [],
+        }
+
+        for (const pin of pins) {
+          if (
+            pin.id &&
+            pin.coordinate &&
+            Array.isArray(pin.coordinate) &&
+            pin.coordinate.length === 2 &&
+            typeof pin.coordinate[0] === 'number' &&
+            typeof pin.coordinate[1] === 'number' &&
+            !Number.isNaN(pin.coordinate[0]) &&
+            !Number.isNaN(pin.coordinate[1])
+          ) {
+            const type = determinePinType(pin)
+            pinsByType[type].push(pin)
+          }
+        }
+
+        for (const type of PIN_TYPE_ORDER) {
+          const source = map.getSource(
+            PIN_SOURCE_CONFIGS[type].sourceId
+          ) as mapboxgl.GeoJSONSource | null
+          if (!source) {
+            return
+          }
+
+          const features: GeoJSON.Feature<GeoJSON.Point>[] = pinsByType[type].map((pin) => {
+            const baseProperties: Record<string, unknown> = {
+              id: pin.id,
+              title: pin.title,
+              subtitle: pin.subtitle,
+              availability: pin.availability,
+              organization: pin.organization,
+            }
+
+            if (type === 'worker' && pin.avatarUrl) {
+              baseProperties.avatarImageId = `${AVATAR_IMAGE_PREFIX}-${pin.id}`
+            }
+
+            return {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: pin.coordinate,
+              },
+              properties: baseProperties,
+            }
+          })
+
+          const geojsonData: GeoJSON.FeatureCollection = {
+            type: 'FeatureCollection',
+            features,
+          }
+
+          if (validateGeoJSONFeatureCollection(geojsonData)) {
+            try {
+              source.setData(geojsonData)
+            } catch (error) {
+              console.warn(`Error updating ${type} pins source:`, error)
+            }
+          } else {
+            console.warn(`Invalid GeoJSON data generated from ${type} pins`)
+          }
+        }
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            try {
+              const notifyClusters = (clusters: ClusterInfo[]) => {
+                onClustersChangeRef.current?.(clusters)
+              }
+
+              if (!map.isStyleLoaded() || !map.loaded()) {
+                notifyClusters([])
+                return
+              }
+
+              if (currentZoom > CLUSTER_MAX_ZOOM) {
+                notifyClusters([])
+                return
+              }
+
+              const clusterInfos: ClusterInfo[] = []
+              const clusterTasks: Array<{
+                type: MapPinCategory
+                clusterId: number
+                pointCount: number
+                coordinates: [number, number]
+              }> = []
+
+              for (const type of PIN_TYPE_ORDER) {
+                const sourceId = PIN_SOURCE_CONFIGS[type].sourceId
+                const pinsSource = map.getSource(sourceId) as mapboxgl.GeoJSONSource | null
+                if (!pinsSource) {
+                  return
+                }
+
+                try {
+                  const sourceFeatures = map.querySourceFeatures(sourceId, {
+                    sourceLayer: undefined,
+                    filter: ['has', 'point_count'],
+                  })
+
+                  for (const feature of sourceFeatures) {
+                    if (feature.geometry.type === 'Point' && feature.properties?.cluster_id) {
+                      clusterTasks.push({
+                        type,
+                        clusterId: feature.properties.cluster_id as number,
+                        pointCount: (feature.properties.point_count as number) || 0,
+                        coordinates: feature.geometry.coordinates as [number, number],
+                      })
+                    }
+                  }
+                } catch (error) {
+                  console.warn(`Failed to query clusters for source ${sourceId}:`, error)
+                }
+              }
+
+              if (clusterTasks.length === 0) {
+                notifyClusters([])
+                return
+              }
+
+              let processedClusters = 0
+              const totalClusters = clusterTasks.length
+
+              const finishIfDone = () => {
+                if (processedClusters === totalClusters) {
+                  notifyClusters(clusterInfos)
+                }
+              }
+
+              for (const { type, clusterId, pointCount, coordinates } of clusterTasks) {
+                const source = map.getSource(
+                  PIN_SOURCE_CONFIGS[type].sourceId
+                ) as mapboxgl.GeoJSONSource | null
+                if (!source) {
+                  processedClusters++
+                  finishIfDone()
+                  return
+                }
+
+                source.getClusterLeaves(clusterId, Number.MAX_SAFE_INTEGER, 0, (err, leaves) => {
+                  if (!err && leaves) {
+                    const memberPinIds = leaves
+                      .map((leaf) => leaf.properties?.id as string)
+                      .filter((id): id is string => typeof id === 'string')
+
+                    clusterInfos.push({
+                      clusterId: clusterId + PIN_SOURCE_CONFIGS[type].clusterIdOffset,
+                      coordinates,
+                      pointCount,
+                      memberPinIds,
+                    })
+                  }
+
+                  processedClusters++
+                  finishIfDone()
+                })
+              }
+            } catch (error) {
+              console.warn('Error processing clusters:', error)
+              onClustersChangeRef.current?.([])
+            }
+          })
+        })
+
+        for (const [pinId, marker] of markersRef.current.entries()) {
+          if (marker !== cardMarkerRef.current) {
+            try {
+              marker.remove()
+              markersRef.current.delete(pinId)
+            } catch (error) {
+              console.warn('Error removing marker:', error)
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error updating markers:', error)
+      }
+    }, [pins, isMapReady, currentZoom])
+
     // Handle empty map clicks (deselect when clicking on empty space)
     // Note: Layer-specific click handlers are set up in map.on('load') and style change handlers
     // This handler only fires for clicks that don't hit any layer
@@ -830,7 +1029,12 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       const handleMapClick = (e: mapboxgl.MapMouseEvent) => {
         // Check if clicking on any map feature (clusters, unclustered points, or other layers)
         const features = map.queryRenderedFeatures(e.point, {
-          layers: [...clusterLayerIds, ...pointLayerIds, ...avatarLayerIds, 'selected-pin-pulse-layer'],
+          layers: [
+            ...clusterLayerIds,
+            ...pointLayerIds,
+            ...avatarLayerIds,
+            'selected-pin-pulse-layer',
+          ],
         })
 
         // If not clicking on any feature, deselect
@@ -849,194 +1053,81 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       }
     }, [isMapReady])
 
-    // Update markers when pins or zoom change
     useEffect(() => {
       if (!mapRef.current || !isMapReady) {
         return
       }
 
       const map = mapRef.current
+      let isCancelled = false
 
-      try {
-        // Validate pins data
-        if (!Array.isArray(pins)) {
-          console.warn('Invalid pins data: expected array')
+      const workerPinsWithAvatars = pins.filter(
+        (pin) =>
+          determinePinType(pin) === 'worker' && typeof pin.avatarUrl === 'string' && pin.avatarUrl
+      )
+
+      const activeImageIds = new Set(
+        workerPinsWithAvatars.map((pin) => `${AVATAR_IMAGE_PREFIX}-${pin.id}`)
+      )
+
+      for (const [imageId, metadata] of avatarImageCacheRef.current.entries()) {
+        if (!activeImageIds.has(imageId) || metadata.borderColor !== pinColors.worker) {
+          if (map.hasImage(imageId)) {
+            map.removeImage(imageId)
+          }
+          avatarImageCacheRef.current.delete(imageId)
+        }
+      }
+
+      for (const pin of workerPinsWithAvatars) {
+        const imageId = `${AVATAR_IMAGE_PREFIX}-${pin.id}`
+        const currentEntry = avatarImageCacheRef.current.get(imageId)
+        const nextUrl = pin.avatarUrl as string
+
+        if (
+          currentEntry &&
+          currentEntry.url === nextUrl &&
+          currentEntry.borderColor === pinColors.worker &&
+          map.hasImage(imageId)
+        ) {
           return
         }
 
-        const CLUSTER_MAX_ZOOM = 14
+        if (loadingAvatarIdsRef.current.has(imageId)) {
+          return
+        }
 
-        // Update GeoJSON source with all pins
-        // Mapbox handles clustering and rendering automatically
-        const geojsonData: GeoJSON.FeatureCollection = {
-          type: 'FeatureCollection',
-          features: pins
-            .filter((pin) => {
-              // Only include valid pins
-              return (
-                pin.id &&
-                pin.coordinate &&
-                Array.isArray(pin.coordinate) &&
-                pin.coordinate.length === 2 &&
-                typeof pin.coordinate[0] === 'number' &&
-                typeof pin.coordinate[1] === 'number' &&
-                !Number.isNaN(pin.coordinate[0]) &&
-                !Number.isNaN(pin.coordinate[1])
-              )
+        loadingAvatarIdsRef.current.add(imageId)
+
+        createAvatarCanvas(nextUrl, { borderColor: pinColors.worker })
+          .then((canvas) => {
+            if (isCancelled) {
+              return
+            }
+
+            if (map.hasImage(imageId)) {
+              map.removeImage(imageId)
+            }
+
+            map.addImage(imageId, canvas, { pixelRatio: 2 })
+            avatarImageCacheRef.current.set(imageId, {
+              url: nextUrl,
+              borderColor: pinColors.worker,
             })
-            .map((pin) => ({
-              type: 'Feature',
-              geometry: {
-                type: 'Point',
-                coordinates: pin.coordinate,
-              },
-              properties: {
-                id: pin.id,
-                title: pin.title,
-                subtitle: pin.subtitle,
-                availability: pin.availability,
-                organization: pin.organization,
-                ...(pin.color && { color: pin.color }),
-              },
-            })),
-        }
-
-        // Validate GeoJSON before updating
-        if (validateGeoJSONFeatureCollection(geojsonData)) {
-          try {
-            const source = map.getSource('pins') as mapboxgl.GeoJSONSource | null
-            if (source) {
-              source.setData(geojsonData)
-            }
-          } catch (error) {
-            console.warn('Error updating pins source:', error)
-          }
-        } else {
-          console.warn('Invalid GeoJSON data generated from pins')
-        }
-
-        // Update cluster info for state management
-        // Use requestAnimationFrame to ensure source is updated
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            try {
-              const notifyClusters = (clusters: ClusterInfo[]) => {
-                onClustersChangeRef.current?.(clusters)
-              }
-
-              // Verify map is loaded and source exists
-              if (!map.isStyleLoaded() || !map.loaded()) {
-                notifyClusters([])
-                return
-              }
-
-              const pinsSource = map.getSource('pins') as mapboxgl.GeoJSONSource | null
-              if (!pinsSource) {
-                return
-              }
-
-              // Only query clusters if we're at a zoom level where clustering occurs
-              if (currentZoom > CLUSTER_MAX_ZOOM) {
-                notifyClusters([])
-                return
-              }
-
-              // Query source features to get all clusters
-              // Wrap in try-catch to handle cases where source might not be ready
-              try {
-                const sourceFeatures = map.querySourceFeatures('pins', {
-                  sourceLayer: undefined,
-                  filter: ['has', 'point_count'],
-                })
-
-                // Extract cluster information
-                const clusterFeatures = sourceFeatures
-                  .map((feature) => {
-                    if (feature.geometry.type === 'Point' && feature.properties?.cluster_id) {
-                      return {
-                        coordinates: feature.geometry.coordinates as [number, number],
-                        clusterId: feature.properties.cluster_id as number,
-                        pointCount: (feature.properties.point_count as number) || 0,
-                      }
-                    }
-                    return null
-                  })
-                  .filter((item): item is NonNullable<typeof item> => item !== null)
-
-                if (clusterFeatures.length === 0) {
-                  notifyClusters([])
-                  return
-                }
-
-                // Extract cluster info with member pin IDs for state management
-                const clusterInfos: ClusterInfo[] = []
-                let processedClusters = 0
-                const totalClusters = clusterFeatures.length
-
-                // Process each cluster to get member pin IDs
-                for (const cluster of clusterFeatures) {
-                  try {
-                    pinsSource.getClusterLeaves(
-                      cluster.clusterId,
-                      Number.MAX_SAFE_INTEGER,
-                      0,
-                      (err, leaves) => {
-                        if (!err && leaves) {
-                          const memberPinIds = leaves
-                            .map((leaf) => leaf.properties?.id as string)
-                            .filter((id): id is string => typeof id === 'string')
-
-                          clusterInfos.push({
-                            clusterId: cluster.clusterId,
-                            coordinates: cluster.coordinates,
-                            pointCount: cluster.pointCount,
-                            memberPinIds,
-                          })
-                        }
-
-                        processedClusters++
-                        // Call callback when all clusters are processed
-                        if (processedClusters === totalClusters) {
-                          notifyClusters(clusterInfos)
-                        }
-                      }
-                    )
-                  } catch (error) {
-                    console.warn('Error getting cluster leaves:', error)
-                    processedClusters++
-                    if (processedClusters === totalClusters) {
-                      notifyClusters(clusterInfos)
-                    }
-                  }
-                }
-              } catch (error) {
-                console.warn('Failed to query source clusters:', error)
-                notifyClusters([])
-              }
-            } catch (error) {
-              console.warn('Error processing clusters:', error)
-              onClustersChangeRef.current?.([])
-            }
           })
-        })
-
-        // Remove all CustomMarkers since we're using layer-based rendering
-        // Only keep markers for special cases (like card overlays)
-        for (const [pinId, marker] of markersRef.current.entries()) {
-          // Don't remove card marker
-          if (marker !== cardMarkerRef.current) {
-            try {
-              marker.remove()
-              markersRef.current.delete(pinId)
-            } catch (error) {
-              console.warn('Error removing marker:', error)
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error updating markers:', error)
+          .catch((error) => {
+            console.warn('Failed to load avatar marker image:', error)
+            avatarImageCacheRef.current.delete(imageId)
+          })
+          .finally(() => {
+            loadingAvatarIdsRef.current.delete(imageId)
+          })
       }
-    }, [pins, isMapReady, currentZoom])
+
+      return () => {
+        isCancelled = true
+      }
+    }, [pins, isMapReady, pinColors.worker, mapStyle])
 
     // Pin states are now handled by Mapbox layers
     // Opacity and visibility can be controlled via layer paint properties if needed

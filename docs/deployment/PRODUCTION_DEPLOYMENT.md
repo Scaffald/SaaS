@@ -67,8 +67,6 @@ EXPO_PUBLIC_GOOGLE_IOS_SCHEME=com.yourapp.scaffald
 
 # Mapbox
 EXPO_PUBLIC_MAPBOX_TOKEN=your-mapbox-token
-EXPO_PUBLIC_MAPBOX_STYLE_URL=your-style-url
-EXPO_PUBLIC_MAPBOX_API_URL=https://api.mapbox.com
 
 # Database Connection (for seeding scripts)
 DATABASE_URL=postgresql://postgres:[password]@db.[project].supabase.co:5432/postgres
@@ -101,8 +99,6 @@ EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
 EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID
 EXPO_PUBLIC_GOOGLE_IOS_SCHEME
 EXPO_PUBLIC_MAPBOX_TOKEN
-EXPO_PUBLIC_MAPBOX_STYLE_URL
-EXPO_PUBLIC_MAPBOX_API_URL
 NETLIFY_AUTH_TOKEN
 NETLIFY_SITE_ID
 ```

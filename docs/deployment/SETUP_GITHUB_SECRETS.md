@@ -77,8 +77,6 @@ These are your actual app configuration values:
 
 #### Mapbox (if using)
 - `EXPO_PUBLIC_MAPBOX_TOKEN`
-- `EXPO_PUBLIC_MAPBOX_STYLE_URL`
-- `EXPO_PUBLIC_MAPBOX_API_URL`
 
 ## 🔧 Adding Secrets to GitHub
 
@@ -113,8 +111,6 @@ gh secret set EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
 gh secret set EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID
 gh secret set EXPO_PUBLIC_GOOGLE_IOS_SCHEME
 gh secret set EXPO_PUBLIC_MAPBOX_TOKEN
-gh secret set EXPO_PUBLIC_MAPBOX_STYLE_URL
-gh secret set EXPO_PUBLIC_MAPBOX_API_URL
 ```
 
 ## 📝 Netlify Site Setup (Simplified)
@@ -180,8 +176,6 @@ EXPO_PUBLIC_GOOGLE_IOS_SCHEME=com.yourapp.scaffald
 
 # Mapbox
 EXPO_PUBLIC_MAPBOX_TOKEN=your-token
-EXPO_PUBLIC_MAPBOX_STYLE_URL=your-style-url
-EXPO_PUBLIC_MAPBOX_API_URL=https://api.mapbox.com
 
 # Database (for local seeding scripts)
 DATABASE_URL=postgresql://postgres:[password]@db.[project].supabase.co:5432/postgres

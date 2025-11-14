@@ -97,8 +97,6 @@ Add these secrets:
 | Secret Name | Value | Where to Get It |
 |------------|-------|-----------------|
 | `EXPO_PUBLIC_MAPBOX_TOKEN` | `pk.eyJ1xxx...` | Mapbox Dashboard |
-| `EXPO_PUBLIC_MAPBOX_STYLE_URL` | `mapbox://styles/xxx` | Mapbox Studio |
-| `EXPO_PUBLIC_MAPBOX_API_URL` | `https://api.mapbox.com` | Fixed value |
 
 ### Step 3: Update Netlify Site Settings
 
