@@ -118,23 +118,31 @@ export interface OfficeJobsListProps {
   showHeader?: boolean
 }
 
+type SortOption = 'created_desc' | 'created_asc' | 'title_asc' | 'title_desc' | 'status_asc' | 'status_desc'
+
 export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) {
   const router = useRouter()
   const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list')
   const [search, setSearch] = useState('')
   const [teamFilter, setTeamFilter] = useState<string | null>(null)
   const [myTeamsOnly, setMyTeamsOnly] = useState(false)
+  const [statusFilter, setStatusFilter] = useState<string | null>(null)
+  const [organizationFilter, setOrganizationFilter] = useState<string | null>(null)
+  const [sortBy, setSortBy] = useState<SortOption>('created_desc')
 
   const { data: teamsData, isLoading: teamsLoading } = api.teams.list.useQuery({
     includeArchived: false,
   })
   const teams = (teamsData?.teams ?? []) as Array<{ id: string; name: string | null }>
 
+  const { data: organizationsData } = api.office.getOrganizations.useQuery()
+
   const { data, isLoading, refetch } = api.office.listJobs.useQuery({
-    limit: 50,
+    limit: 100, // Increased to support better filtering
     offset: 0,
     team_id: teamFilter ?? undefined,
     myTeamsOnly,
+    status: statusFilter ? (statusFilter as 'draft' | 'open' | 'paused' | 'closed') : undefined,
   })
 
   const deleteMutation = api.office.deleteJob.useMutation({
@@ -148,25 +156,53 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
   }
 
   const jobs = data?.jobs ?? []
-  const filteredJobs = useMemo(() => {
+  const filteredAndSortedJobs = useMemo(() => {
+    let filtered = jobs
+
+    // Apply search filter
     const query = search.trim().toLowerCase()
-    if (!query) {
-      return jobs
+    if (query) {
+      filtered = filtered.filter((job: Job) => {
+        const teamNames = job.teamAssignments?.map(
+          (assignment: JobTeamAssignment) => assignment.team?.name ?? ''
+        ) ?? [job.team?.name ?? '']
+        const organizationName = job.organization?.name ?? ''
+
+        return (
+          job.title.toLowerCase().includes(query) ||
+          teamNames.some((name) => name.toLowerCase().includes(query)) ||
+          organizationName.toLowerCase().includes(query)
+        )
+      })
     }
 
-    return jobs.filter((job: Job) => {
-      const teamNames = job.teamAssignments?.map(
-        (assignment: JobTeamAssignment) => assignment.team?.name ?? ''
-      ) ?? [job.team?.name ?? '']
-      const organizationName = job.organization?.name ?? ''
+    // Apply organization filter
+    if (organizationFilter) {
+      filtered = filtered.filter((job: Job) => job.organization?.id === organizationFilter)
+    }
 
-      return (
-        job.title.toLowerCase().includes(query) ||
-        teamNames.some((name) => name.toLowerCase().includes(query)) ||
-        organizationName.toLowerCase().includes(query)
-      )
+    // Apply sorting
+    const sorted = [...filtered].sort((a: Job, b: Job) => {
+      switch (sortBy) {
+        case 'created_desc':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        case 'created_asc':
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        case 'title_asc':
+          return a.title.localeCompare(b.title)
+        case 'title_desc':
+          return b.title.localeCompare(a.title)
+        case 'status_asc':
+          return a.status.localeCompare(b.status)
+        case 'status_desc':
+          return b.status.localeCompare(a.status)
+        default:
+          return 0
+      }
     })
-  }, [jobs, search])
+
+    return sorted
+  }, [jobs, search, organizationFilter, sortBy])
 
   const teamFilterSelectValue = teamFilter ?? 'all'
   const teamFilterPlaceholder = teamsLoading ? 'Loading teams...' : 'All teams'
@@ -184,7 +220,117 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
   const getItemName = (job: Job) => job.title
 
   const filtersAccessory = (
-    <XStack gap="$3" items="center">
+    <XStack gap="$3" items="center" flexWrap="wrap">
+      <XStack gap="$2" items="center">
+        <Text fontSize="$2" color="$color11">
+          Status
+        </Text>
+        <Select
+          value={statusFilter ?? 'all'}
+          onValueChange={(value: string) => setStatusFilter(value === 'all' ? null : value)}
+        >
+          <Select.Trigger iconAfter={ChevronDown} size="$2">
+            <Select.Value placeholder="All statuses" />
+          </Select.Trigger>
+          <Adapt when="sm" platform="touch">
+            <Sheet modal dismissOnSnapToBottom>
+              <Sheet.Frame>
+                <Sheet.ScrollView>
+                  <Adapt.Contents />
+                </Sheet.ScrollView>
+              </Sheet.Frame>
+              <Sheet.Overlay />
+            </Sheet>
+          </Adapt>
+          <Select.Content zIndex={200000}>
+            <Select.ScrollUpButton />
+            <Select.Viewport>
+              <Select.Group>
+                <Select.Label>Status</Select.Label>
+                <Select.Item value="all" index={0}>
+                  <Select.ItemText>All statuses</Select.ItemText>
+                  <Select.ItemIndicator>
+                    <Check size={16} />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item value="draft" index={1}>
+                  <Select.ItemText>Draft</Select.ItemText>
+                  <Select.ItemIndicator>
+                    <Check size={16} />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item value="open" index={2}>
+                  <Select.ItemText>Open</Select.ItemText>
+                  <Select.ItemIndicator>
+                    <Check size={16} />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item value="paused" index={3}>
+                  <Select.ItemText>Paused</Select.ItemText>
+                  <Select.ItemIndicator>
+                    <Check size={16} />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item value="closed" index={4}>
+                  <Select.ItemText>Closed</Select.ItemText>
+                  <Select.ItemIndicator>
+                    <Check size={16} />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Group>
+            </Select.Viewport>
+            <Select.ScrollDownButton />
+          </Select.Content>
+        </Select>
+      </XStack>
+      {organizationsData?.organizations && organizationsData.organizations.length > 0 && (
+        <XStack gap="$2" items="center">
+          <Text fontSize="$2" color="$color11">
+            Organization
+          </Text>
+          <Select
+            value={organizationFilter ?? 'all'}
+            onValueChange={(value: string) => setOrganizationFilter(value === 'all' ? null : value)}
+          >
+            <Select.Trigger iconAfter={ChevronDown} size="$2">
+              <Select.Value placeholder="All organizations" />
+            </Select.Trigger>
+            <Adapt when="sm" platform="touch">
+              <Sheet modal dismissOnSnapToBottom>
+                <Sheet.Frame>
+                  <Sheet.ScrollView>
+                    <Adapt.Contents />
+                  </Sheet.ScrollView>
+                </Sheet.Frame>
+                <Sheet.Overlay />
+              </Sheet>
+            </Adapt>
+            <Select.Content zIndex={200000}>
+              <Select.ScrollUpButton />
+              <Select.Viewport>
+                <Select.Group>
+                  <Select.Label>Organizations</Select.Label>
+                  <Select.Item value="all" index={0}>
+                    <Select.ItemText>All organizations</Select.ItemText>
+                    <Select.ItemIndicator>
+                      <Check size={16} />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                  {organizationsData.organizations.map((org, index) => (
+                    <Select.Item key={org.id} value={org.id} index={index + 1}>
+                      <Select.ItemText>{org.name}</Select.ItemText>
+                      <Select.ItemIndicator>
+                        <Check size={16} />
+                      </Select.ItemIndicator>
+                    </Select.Item>
+                  ))}
+                </Select.Group>
+              </Select.Viewport>
+              <Select.ScrollDownButton />
+            </Select.Content>
+          </Select>
+        </XStack>
+      )}
       <XStack gap="$2" items="center">
         <Text fontSize="$2" color="$color11">
           Team
@@ -193,7 +339,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           value={teamFilterSelectValue}
           onValueChange={(value: string) => setTeamFilter(value === 'all' ? null : value)}
         >
-          <Select.Trigger iconAfter={ChevronDown} disabled={teamsLoading}>
+          <Select.Trigger iconAfter={ChevronDown} disabled={teamsLoading} size="$2">
             <Select.Value placeholder={teamFilterPlaceholder} />
           </Select.Trigger>
           <Adapt when="sm" platform="touch">
@@ -239,6 +385,78 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           <Switch.Thumb />
         </Switch>
       </XStack>
+      <XStack gap="$2" items="center">
+        <Text fontSize="$2" color="$color11">
+          Sort
+        </Text>
+        <Select value={sortBy} onValueChange={(value: string) => setSortBy(value as SortOption)}>
+          <Select.Trigger iconAfter={ChevronDown} size="$2">
+            <Select.Value>
+              {sortBy === 'created_desc' && 'Newest first'}
+              {sortBy === 'created_asc' && 'Oldest first'}
+              {sortBy === 'title_asc' && 'Title A-Z'}
+              {sortBy === 'title_desc' && 'Title Z-A'}
+              {sortBy === 'status_asc' && 'Status A-Z'}
+              {sortBy === 'status_desc' && 'Status Z-A'}
+            </Select.Value>
+          </Select.Trigger>
+          <Adapt when="sm" platform="touch">
+            <Sheet modal dismissOnSnapToBottom>
+              <Sheet.Frame>
+                <Sheet.ScrollView>
+                  <Adapt.Contents />
+                </Sheet.ScrollView>
+              </Sheet.Frame>
+              <Sheet.Overlay />
+            </Sheet>
+          </Adapt>
+          <Select.Content zIndex={200000}>
+            <Select.ScrollUpButton />
+            <Select.Viewport>
+              <Select.Group>
+                <Select.Label>Sort by</Select.Label>
+                <Select.Item value="created_desc" index={0}>
+                  <Select.ItemText>Newest first</Select.ItemText>
+                  <Select.ItemIndicator>
+                    <Check size={16} />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item value="created_asc" index={1}>
+                  <Select.ItemText>Oldest first</Select.ItemText>
+                  <Select.ItemIndicator>
+                    <Check size={16} />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item value="title_asc" index={2}>
+                  <Select.ItemText>Title A-Z</Select.ItemText>
+                  <Select.ItemIndicator>
+                    <Check size={16} />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item value="title_desc" index={3}>
+                  <Select.ItemText>Title Z-A</Select.ItemText>
+                  <Select.ItemIndicator>
+                    <Check size={16} />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item value="status_asc" index={4}>
+                  <Select.ItemText>Status A-Z</Select.ItemText>
+                  <Select.ItemIndicator>
+                    <Check size={16} />
+                  </Select.ItemIndicator>
+                </Select.Item>
+                <Select.Item value="status_desc" index={5}>
+                  <Select.ItemText>Status Z-A</Select.ItemText>
+                  <Select.ItemIndicator>
+                    <Check size={16} />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              </Select.Group>
+            </Select.Viewport>
+            <Select.ScrollDownButton />
+          </Select.Content>
+        </Select>
+      </XStack>
     </XStack>
   )
 
@@ -247,13 +465,14 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
     return (
       <YStack flex={1} bg="$background">
         {showHeader && (
-          <XStack justify="space-between" items="center" p="$4" pb="$3">
-            <YStack>
-              <H2>Jobs</H2>
-              <Text color="$color11" fontSize="$3">
-                {filteredJobs.length} total jobs
-              </Text>
-            </YStack>
+          <YStack p="$4" pb="$3" gap="$3">
+            <XStack justify="space-between" items="center">
+              <YStack>
+                <H2>Jobs</H2>
+                <Text color="$color11" fontSize="$3">
+                  {filteredAndSortedJobs.length} total jobs
+                </Text>
+              </YStack>
             <XStack gap="$2">
               <Button
                 size="$3"
@@ -276,10 +495,15 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
                 Create Job
               </Button>
             </XStack>
-          </XStack>
+            </XStack>
+            {/* Filters for Kanban view */}
+            <XStack gap="$2" items="center" flexWrap="wrap">
+              {filtersAccessory}
+            </XStack>
+          </YStack>
         )}
         <YStack flex={1}>
-          <JobsKanbanBoard jobs={filteredJobs} onJobUpdate={() => refetch()} />
+          <JobsKanbanBoard jobs={filteredAndSortedJobs} onJobUpdate={() => refetch()} />
         </YStack>
       </YStack>
     )
@@ -297,7 +521,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           createButtonLabel="Create Job"
           onCreateClick={() => router.push(ROUTES.OFFICE_CMS_JOBS_CREATE.path)}
           columns={columns as ColumnDef<Job, unknown>[]}
-          data={filteredJobs}
+          data={filteredAndSortedJobs}
           isLoading={isLoading}
           pageSize={50}
           emptyMessage="No jobs found"
