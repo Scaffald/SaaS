@@ -65,7 +65,7 @@ const formatPayRange = (job: Job) => {
   return `$${min}-$${max} ${type === 'hourly' ? '/hr' : type === 'salary' ? '/yr' : ''}`
 }
 
-const createColumns = (router: ReturnType<typeof useRouter>) => [
+const createColumns = (_router: ReturnType<typeof useRouter>) => [
   columnHelper.accessor('title', {
     header: 'Title',
     cell: (info) => info.getValue(),

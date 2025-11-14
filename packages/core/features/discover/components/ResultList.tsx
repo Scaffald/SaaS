@@ -1,4 +1,4 @@
-import { ScrollView, Separator, Text, XStack, YStack, Spinner } from 'tamagui'
+import { ScrollView, Separator, Text, XStack, YStack } from 'tamagui'
 import { forwardRef, useImperativeHandle, useRef, useMemo, memo } from 'react'
 import { Platform } from 'react-native'
 
@@ -8,6 +8,7 @@ import type { JobMapPin } from '../hooks/useJobs'
 import { ResultCard } from './ResultCard'
 import { OrganizationCard } from './OrganizationCard'
 import { JobCard } from './JobCard'
+import { SkeletonList } from '@app/ui'
 
 type ResultItem =
   | ({ type: 'profile' } & TalentProfile)
@@ -125,9 +126,8 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
 
     if (isLoading) {
       return (
-        <YStack flex={1} gap="$3" items="center" justify="center">
-          <Spinner size="large" />
-          <Text color="$color10">Loading talent profiles...</Text>
+        <YStack flex={1} gap="$3" p="$3">
+          <SkeletonList count={5} gap="$2" variant="profile" />
         </YStack>
       )
     }

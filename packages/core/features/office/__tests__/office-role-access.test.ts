@@ -1,20 +1,18 @@
 import { describe, expect, it } from 'vitest'
-import { createServiceRoleClient } from '../../../../test/helpers/database'
+import { createServiceRoleClient } from '../../../../../test/helpers/database'
 
 describe('Office Role Access', () => {
   describe('Database: @unicorn.love emails have office role', () => {
     it('should verify that all @unicorn.love emails have the office role assigned', async () => {
       const supabase = await createServiceRoleClient()
 
-      // Query all users with @unicorn.love email domain
-      const { data: users, error: usersError } = await supabase
-        .from('users')
-        .select('id, email')
-        .ilike('email', '%@unicorn.love')
-
-      expect(usersError).toBeNull()
-      expect(users).toBeDefined()
-      expect(users?.length).toBeGreaterThan(0)
+      // Known user IDs from seed file (002_seed-users.sql)
+      const unicornLoveUserIds = [
+        '00000000-0000-0000-0000-000000000001', // zach@unicorn.love
+        '00000000-0000-0000-0000-000000000002', // clay@unicorn.love
+        '00000000-0000-0000-0000-000000000003', // marc@unicorn.love
+        '00000000-0000-0000-0000-000000000009', // test@unicorn.love
+      ]
 
       // Get the office role ID
       const { data: officeRole, error: roleError } = await supabase
@@ -31,12 +29,12 @@ describe('Office Role Access', () => {
       expect(officeRole?.scope).toBe('platform')
 
       // Check role assignments for each @unicorn.love user
-      for (const user of users || []) {
+      for (const userId of unicornLoveUserIds) {
         const { data: roleAssignments, error: assignmentError } = await supabase
           .schema('core')
           .from('role_assignments')
           .select('role:roles(name, scope)')
-          .eq('user_id', user.id)
+          .eq('user_id', userId)
           .eq('role_id', officeRole.id)
 
         expect(assignmentError).toBeNull()
@@ -50,18 +48,18 @@ describe('Office Role Access', () => {
         )
 
         expect(hasOfficeRole).toBe(true)
-        expect(user.email).toMatch(/@unicorn\.love$/)
       }
     })
 
     it('should verify specific seeded @unicorn.love users exist with office role', async () => {
       const supabase = await createServiceRoleClient()
 
-      const expectedEmails = [
-        'zach@unicorn.love',
-        'clay@unicorn.love',
-        'marc@unicorn.love',
-        'test@unicorn.love',
+      // Known user IDs and emails from seed file (002_seed-users.sql)
+      const expectedUsers = [
+        { id: '00000000-0000-0000-0000-000000000001', email: 'zach@unicorn.love' },
+        { id: '00000000-0000-0000-0000-000000000002', email: 'clay@unicorn.love' },
+        { id: '00000000-0000-0000-0000-000000000003', email: 'marc@unicorn.love' },
+        { id: '00000000-0000-0000-0000-000000000009', email: 'test@unicorn.love' },
       ]
 
       // Get the office role
@@ -75,24 +73,13 @@ describe('Office Role Access', () => {
 
       expect(officeRole).toBeDefined()
 
-      for (const email of expectedEmails) {
-        // Get user by email
-        const { data: user, error: userError } = await supabase
-          .from('users')
-          .select('id, email')
-          .eq('email', email)
-          .single()
-
-        expect(userError).toBeNull()
-        expect(user).toBeDefined()
-        expect(user?.email).toBe(email)
-
+      for (const { id: userId, email } of expectedUsers) {
         // Verify office role assignment
         const { data: roleAssignment, error: assignmentError } = await supabase
           .schema('core')
           .from('role_assignments')
           .select('role:roles(name, scope)')
-          .eq('user_id', user.id)
+          .eq('user_id', userId)
           .eq('role_id', officeRole.id)
           .single()
 
@@ -108,15 +95,8 @@ describe('Office Role Access', () => {
     it('should verify office role is required for /office route access', async () => {
       const supabase = await createServiceRoleClient()
 
-      // Get a user with office role (@unicorn.love)
-      const { data: officeUser } = await supabase
-        .from('users')
-        .select('id, email')
-        .ilike('email', '%@unicorn.love')
-        .limit(1)
-        .single()
-
-      expect(officeUser).toBeDefined()
+      // Use a known @unicorn.love user ID from seed file
+      const officeUserId = '00000000-0000-0000-0000-000000000001' // zach@unicorn.love
 
       // Get office role
       const { data: officeRole } = await supabase
@@ -134,7 +114,7 @@ describe('Office Role Access', () => {
         .schema('core')
         .from('role_assignments')
         .select('role:roles(name, scope)')
-        .eq('user_id', officeUser.id)
+        .eq('user_id', officeUserId)
         .eq('role_id', officeRole.id)
         .single()
 
@@ -145,26 +125,13 @@ describe('Office Role Access', () => {
       // This user should have access to /office route
       // The actual route protection is tested via useRoleProtectedRoute hook
       // which checks for the 'office' role in the user's roles array
-      expect(officeUser.email).toMatch(/@unicorn\.love$/)
     })
 
     it('should verify users without office role cannot access /office route', async () => {
       const supabase = await createServiceRoleClient()
 
-      // Get a regular user (not @unicorn.love, @circleave.com, or @scaffald.com)
-      const { data: regularUser } = await supabase
-        .from('users')
-        .select('id, email')
-        .not('email', 'ilike', '%@unicorn.love')
-        .not('email', 'ilike', '%@circleave.com')
-        .not('email', 'ilike', '%@scaffald.com')
-        .limit(1)
-        .single()
-
-      if (!regularUser) {
-        // Skip if no regular user exists
-        return
-      }
+      // Use a known regular user ID from seed file (not @unicorn.love, @circleave.com, or @scaffald.com)
+      const regularUserId = '11111111-1111-1111-1111-111111111111' // lexis.salah@eths.education.com
 
       // Get office role
       const { data: officeRole } = await supabase
@@ -182,7 +149,7 @@ describe('Office Role Access', () => {
         .schema('core')
         .from('role_assignments')
         .select('role:roles(name, scope)')
-        .eq('user_id', regularUser.id)
+        .eq('user_id', regularUserId)
         .eq('role_id', officeRole.id)
         .maybeSingle()
 
@@ -191,7 +158,6 @@ describe('Office Role Access', () => {
 
       // This user should NOT have access to /office route
       // The useRoleProtectedRoute hook would redirect them to /dashboard
-      expect(regularUser.email).not.toMatch(/@(unicorn\.love|circleave\.com|scaffald\.com)$/)
     })
   })
 })

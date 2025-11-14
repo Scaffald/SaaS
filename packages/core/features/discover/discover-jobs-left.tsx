@@ -1,7 +1,8 @@
-import { YStack, ScrollView, Text, Spinner, XStack } from 'tamagui'
+import { YStack, ScrollView, Text, XStack } from 'tamagui'
 import { ExternalJobCard, type ExternalJob } from './components/ExternalJobCard'
 import { InternalJobCard, type InternalJob } from './components/InternalJobCard'
 import { api } from '@app/core/utils/api'
+import { SkeletonList } from '@app/ui'
 
 interface DiscoverJobsLeftProps {
   searchQuery: string
@@ -120,11 +121,8 @@ export function DiscoverJobsLeft({
 
   if (isLoading) {
     return (
-      <YStack flex={1} items="center" justify="center" p="$4">
-        <Spinner size="large" color="$blue10" />
-        <Text mt="$2" color="$color11">
-          Loading jobs...
-        </Text>
+      <YStack flex={1} p="$4">
+        <SkeletonList count={5} gap="$3" variant="job" />
       </YStack>
     )
   }

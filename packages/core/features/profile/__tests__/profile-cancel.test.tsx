@@ -189,10 +189,10 @@ describe('Profile Cancel Button Pattern', () => {
 
     const dialog = showDialog ? (
       <div data-testid="confirmation-dialog">
-        <button onClick={() => setShowDialog(false)} data-testid="keep-editing-button">
+        <button type="button" onClick={() => setShowDialog(false)} data-testid="keep-editing-button">
           Keep Editing
         </button>
-        <button onClick={() => reset()}>Discard Changes</button>
+        <button type="button" onClick={() => reset()}>Discard Changes</button>
       </div>
     ) : null
 

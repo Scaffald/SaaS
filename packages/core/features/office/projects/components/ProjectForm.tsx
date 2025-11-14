@@ -45,7 +45,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
   const { data: organizationsData } = useAllOrganizations()
 
   const { data: projectData } = api.projects.get.useQuery(
-    { id: projectId! },
+    { id: projectId ?? '' },
     { enabled: mode === 'edit' && !!projectId }
   )
 
@@ -60,8 +60,6 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
     location_visibility_override: initialData?.location_visibility_override || projectData?.project?.location_visibility_override || false,
   })
 
-  const [orgDefaultVisibility, setOrgDefaultVisibility] = useState<string | null>(null)
-
   const { data: orgData } = api.organizations.getOrganization.useQuery(
     { id: formData.organization_id },
     { enabled: !!formData.organization_id }
@@ -70,11 +68,13 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
   // Update visibility when organization changes
   useEffect(() => {
     if (orgData?.default_project_location_visibility && !formData.location_visibility_override) {
-      setOrgDefaultVisibility(orgData.default_project_location_visibility)
-      setFormData(prev => ({
-        ...prev,
-        location_visibility: orgData.default_project_location_visibility as any
-      }))
+      const orgVisibility = orgData.default_project_location_visibility
+      if (orgVisibility === 'public' || orgVisibility === 'authenticated' || orgVisibility === 'organization_only' || orgVisibility === 'private') {
+        setFormData(prev => ({
+          ...prev,
+          location_visibility: orgVisibility
+        }))
+      }
     }
   }, [orgData?.default_project_location_visibility, formData.location_visibility_override])
 
@@ -188,7 +188,11 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
               <Text fontWeight="600">Status</Text>
               <Select
                 value={formData.status}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, status: value as any }))}
+                onValueChange={(value) => {
+                  if (value === 'planning' || value === 'active' || value === 'completed' || value === 'on_hold') {
+                    setFormData(prev => ({ ...prev, status: value }))
+                  }
+                }}
               >
                 <Select.Trigger>
                   <Select.Value />
@@ -263,7 +267,11 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
                 <Text fontWeight="600">Visibility Level</Text>
                 <Select
                   value={formData.location_visibility}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, location_visibility: value as any }))}
+                  onValueChange={(value) => {
+                    if (value === 'public' || value === 'authenticated' || value === 'organization_only' || value === 'private') {
+                      setFormData(prev => ({ ...prev, location_visibility: value }))
+                    }
+                  }}
                   disabled={!formData.location_visibility_override}
                 >
                   <Select.Trigger>

@@ -1,7 +1,7 @@
 import type React from 'react'
 import { useState, useEffect, useRef } from 'react'
 import { useWindowDimensions } from 'react-native'
-import { YStack, XStack, Text, Input, H4, Spinner, AnimatePresence, Slider, Label } from 'tamagui'
+import { YStack, XStack, Text, Input, H4, AnimatePresence, Slider, Label } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { useForm, Controller, useController, type Control } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -22,7 +22,7 @@ import {
   resetProfileSyncError,
   useAdaptiveProfileSync,
 } from './utils/profile-sync-store'
-import { UIButton as Button, CustomCheckbox, DashboardWidget, LocationListInput, ToggleCard, ConfirmationDialog } from '@app/ui'
+import { UIButton as Button, CustomCheckbox, DashboardWidget, LocationListInput, ToggleCard, ConfirmationDialog, SkeletonForm } from '@app/ui'
 import { Flag, MapPin, Plane, DollarSign, Car, Shield, Calendar } from '@tamagui/lucide-icons'
 
 type MultiSelectFieldName = 'drivers_license_classes' | 'military_status' | 'availability'
@@ -325,9 +325,8 @@ export function ProfileEmploymentLeft() {
 
   if (isLoadingEmployment) {
     return (
-      <YStack gap="$4" p="$4" flex={1} justify="center" items="center">
-        <Spinner size="large" />
-        <Text>Loading employment preferences...</Text>
+      <YStack gap="$4" p="$4">
+        <SkeletonForm fields={5} />
       </YStack>
     )
   }

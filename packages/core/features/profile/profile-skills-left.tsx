@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Select, Adapt, Sheet, Separator, Spinner, Button } from 'tamagui'
+import { YStack, XStack, Text, Select, Adapt, Sheet, Separator, Button } from 'tamagui'
 import { ChevronDown, Check } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { ProfileFormPanel, InlineSkillSearch } from './components'
-import { SaveStatusIndicator, SavingModal, type SaveStatus } from '@app/ui'
+import { SaveStatusIndicator, SavingModal, SkeletonForm, type SaveStatus } from '@app/ui'
 import { useProfileSkillsContext } from './profile-skills-context'
 import { api } from '@app/core/utils/api'
 
@@ -27,7 +27,7 @@ export function ProfileSkillsLeft() {
     isRemovingSkill,
   } = useProfileSkillsContext()
 
-  const router = useRouter()
+  const _router = useRouter()
   const utils = api.useUtils()
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
   const [lastSavedAt, setLastSavedAt] = useState<Date | undefined>()
@@ -146,9 +146,8 @@ export function ProfileSkillsLeft() {
   if (isLoadingIndustries) {
     return (
       <ProfileFormPanel>
-        <YStack items="center" justify="center" p="$8" gap="$4">
-          <Spinner size="large" />
-          <Text color="$color11">Loading...</Text>
+        <YStack gap="$4" p="$4">
+          <SkeletonForm fields={4} />
         </YStack>
       </ProfileFormPanel>
     )

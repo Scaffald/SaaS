@@ -42,7 +42,7 @@ vi.mock('@app/ui', () => {
     MonthYearPicker,
     DashboardWidget: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
     UIButton: ({ children, onPress, disabled }: { children: React.ReactNode; onPress?: () => void; disabled?: boolean }) => (
-      <button onClick={onPress} disabled={disabled}>
+      <button type="button" onClick={onPress} disabled={disabled}>
         {children}
       </button>
     ),

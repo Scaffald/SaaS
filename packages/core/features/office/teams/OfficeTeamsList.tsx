@@ -3,7 +3,6 @@ import { useRouter } from 'expo-router'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import { XStack, Text, YStack, Spinner, Button } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
-import { Pencil, ArrowRightCircle, RefreshCw } from '@tamagui/lucide-icons'
 import { DashboardLayout } from '@app/ui'
 import { QuickActionsWidget } from '../components/QuickActionsWidget'
 import type { AppRouter } from '@app/supabase/client-types'
@@ -14,7 +13,6 @@ import { api } from '@app/core/utils/api'
 import { TEAM_VISIBILITIES, teamRoleKeySchema } from '@app/schemas'
 
 import { OfficePageLayout } from '../components/OfficePageLayout'
-import { DeleteButton } from '../components/DeleteButton'
 
 type TeamVisibility = (typeof TEAM_VISIBILITIES)[number]
 type TeamRoleKey = ReturnType<(typeof teamRoleKeySchema)['parse']>
@@ -31,7 +29,7 @@ type TeamRow = {
   updatedAt?: string
 }
 
-const createColumns = (router: ReturnType<typeof useRouter>): ColumnDef<TeamRow, unknown>[] => [
+const createColumns = (_router: ReturnType<typeof useRouter>): ColumnDef<TeamRow, unknown>[] => [
   {
     accessorKey: 'name',
     header: 'Team Name',

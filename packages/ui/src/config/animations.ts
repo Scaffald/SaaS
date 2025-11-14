@@ -47,6 +47,11 @@ export const animations = createAnimations({
     mass: 0.9,
     stiffness: 100,
   },
+  pulse: {
+    type: 'timing',
+    duration: 1500,
+    loop: true,
+  },
 })
 
 export type AnimationDurationName = keyof typeof animationDurations

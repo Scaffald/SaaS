@@ -58,7 +58,7 @@ const getVisibilityLabel = (visibility: Project['location_visibility']) => {
   }
 }
 
-const createColumns = (router: ReturnType<typeof useRouter>) => [
+const createColumns = (_router: ReturnType<typeof useRouter>) => [
   columnHelper.accessor('name', {
     header: 'Name',
     cell: (info) => info.getValue(),
@@ -110,15 +110,15 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
     offset: 0,
   })
 
-  const columns = useMemo(() => createColumns(router), [router])
+  const _columns = useMemo(() => createColumns(router), [router])
 
   const projects = data?.projects || []
   
-  const handleRowEdit = (project: Project) => {
+  const _handleRowEdit = (project: Project) => {
     router.push(RouteBuilder.projectEdit(project.id))
   }
   
-  const getItemName = (project: Project) => project.name
+  const _getItemName = (project: Project) => project.name
 
   return (
     <DashboardLayout

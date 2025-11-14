@@ -9,12 +9,14 @@ interface OrganizationProjectPrivacySettingsProps {
   organizationId: string
 }
 
+type ProjectLocationVisibility = 'public' | 'authenticated' | 'organization_only' | 'private'
+
 const VISIBILITY_OPTIONS = [
   { value: 'public', label: 'Public', description: 'Anyone can see exact locations' },
   { value: 'authenticated', label: 'Authenticated', description: 'Only logged-in users see exact locations' },
   { value: 'organization_only', label: 'Organization Only', description: 'Only organization members see exact locations' },
   { value: 'private', label: 'Private', description: 'Only project team and admins see exact locations' },
-]
+] as const
 
 export function OrganizationProjectPrivacySettings({
   organizationId,
@@ -30,7 +32,7 @@ export function OrganizationProjectPrivacySettings({
     { enabled: !!organizationId }
   )
 
-  const [selectedVisibility, setSelectedVisibility] = useState<string>('organization_only')
+  const [selectedVisibility, setSelectedVisibility] = useState<ProjectLocationVisibility>('organization_only')
   const updateMutation = api.organizations.updateLocationVisibility.useMutation()
 
   useEffect(() => {
@@ -43,7 +45,7 @@ export function OrganizationProjectPrivacySettings({
     try {
       await updateMutation.mutateAsync({
         organization_id: organizationId,
-        default_project_location_visibility: selectedVisibility as any,
+        default_project_location_visibility: selectedVisibility as ProjectLocationVisibility,
       })
       toast.show('Success', { message: 'Location visibility setting updated' })
     } catch (error) {
@@ -53,7 +55,7 @@ export function OrganizationProjectPrivacySettings({
   }
 
   const overrideCount = projectsWithOverrides?.projects?.length || 0
-  const totalProjects = 0 // TODO: Get total project count
+  const _totalProjects = 0 // TODO: Get total project count
 
   if (isLoading) {
     return (

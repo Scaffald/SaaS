@@ -48,7 +48,7 @@ type OrganizationRequestRow = {
 
 const columnHelper = createColumnHelper<Organization>()
 
-const createColumns = (router: ReturnType<typeof useRouter>) => [
+const createColumns = (_router: ReturnType<typeof useRouter>) => [
   columnHelper.accessor('name', {
     header: 'Name',
     cell: (info) => info.getValue(),

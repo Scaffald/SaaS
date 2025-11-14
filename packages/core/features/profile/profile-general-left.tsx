@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { YStack, XStack, Text, Input, Avatar, H4, Spinner, AnimatePresence, ScrollView } from 'tamagui'
+import { YStack, XStack, Text, Input, Avatar, H4, AnimatePresence, ScrollView } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { generalProfileSchema, type GeneralProfileFormData, generalProfileDefaults } from './config'
-import { UIButton as Button, PhoneNumberInput } from '@app/ui'
+import { UIButton as Button, PhoneNumberInput, SkeletonForm } from '@app/ui'
 import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
@@ -194,9 +194,8 @@ export function ProfileGeneralLeft() {
 
   if (isLoadingProfile) {
     return (
-      <YStack gap="$4" p="$4" flex={1} justify="center" items="center">
-        <Spinner size="large" />
-        <Text>Loading profile...</Text>
+      <YStack gap="$4" p="$4">
+        <SkeletonForm fields={6} />
       </YStack>
     )
   }

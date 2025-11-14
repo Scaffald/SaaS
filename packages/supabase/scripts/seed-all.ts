@@ -161,6 +161,72 @@ async function seedOnet() {
   }
 }
 
+async function seedNewsFeeds() {
+  console.log("\n📰 Seeding News Feeds...");
+
+  try {
+    const scriptDir = path.dirname(new URL(import.meta.url).pathname);
+    const newsFeedsScriptPath = path.join(scriptDir, "seed-news-feeds.ts");
+
+    // Run the news feeds seeding script with inherited environment
+    const { stdout, stderr } = await execAsync(
+      `pnpx tsx "${newsFeedsScriptPath}"`,
+      {
+        env: process.env, // Inherit all environment variables
+      },
+    );
+
+    if (stdout) console.log(stdout);
+    if (stderr) console.error(stderr);
+
+    return true;
+  } catch (error) {
+    console.error("❌ Error seeding news feeds:", error);
+    return false;
+  }
+}
+
+async function triggerNewsImport() {
+  console.log("\n🔄 Triggering News Import...");
+
+  try {
+    // Call the Edge Function directly via HTTP
+    const functionUrl = `${supabaseUrl}/functions/v1/news-import`;
+    
+    const response = await fetch(functionUrl, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${supabaseServiceKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({}),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("❌ Error triggering news import:", data);
+      return false;
+    }
+
+    if (data?.success) {
+      console.log("✅ News import completed successfully");
+      if (data.results) {
+        console.log(`   Processed: ${data.results.processed || 0} articles`);
+        console.log(`   Imported: ${data.results.imported || 0} articles`);
+        console.log(`   Feeds processed: ${data.results.feeds_processed || 0}`);
+      }
+      return true;
+    } else {
+      console.error("❌ News import failed:", data?.error || "Unknown error");
+      return false;
+    }
+  } catch (error) {
+    console.error("❌ Error triggering news import:", error);
+    return false;
+  }
+}
+
 async function verifySkills() {
   console.log("\n📊 Verifying CSI MasterFormat Data...");
 
@@ -366,6 +432,23 @@ async function displayStats() {
     console.log(`CSI MasterFormat Codes: ${csiCount || 0}`);
   }
 
+  // News stats
+  const { count: newsCount, error: newsError } = await supabase
+    .schema("core")
+    .from("cached_news_articles")
+    .select("*", { count: "exact", head: true });
+
+  if (!newsError) {
+    const { count: feedCount } = await supabase
+      .schema("core")
+      .from("news_feeds")
+      .select("*", { count: "exact", head: true })
+      .eq("is_active", true);
+
+    console.log(`News Articles: ${newsCount || 0}`);
+    console.log(`Active News Feeds: ${feedCount || 0}`);
+  }
+
   // Skills stats
   const { count: skillCount, error: skillError } = await supabase
     .schema("core")
@@ -484,12 +567,37 @@ async function main() {
     process.exit(1);
   }
 
+  // Seed news feeds
+  console.log(`\n${"=".repeat(50)}`);
+  console.log("📋 Step 6: Seeding News Feeds");
+  console.log("=".repeat(50));
+  const newsFeedsSeeded = await seedNewsFeeds();
+
+  if (!newsFeedsSeeded) {
+    console.error("\n❌ News feeds seeding failed. Check errors above.");
+    process.exit(1);
+  }
+
+  // Trigger news import to fetch articles
+  console.log(`\n${"=".repeat(50)}`);
+  console.log("📋 Step 7: Importing News Articles");
+  console.log("=".repeat(50));
+  const newsImported = await triggerNewsImport();
+
+  if (!newsImported) {
+    console.warn("\n⚠️  News import failed. You can manually trigger it later with: pnpm supa:news:import");
+  }
+
   console.log(`\n✅ Seeding complete!`);
   console.log(`   - CSI codes seeded ✓`);
   console.log(`   - Universities seeded ✓`);
   console.log(`   - Certifications seeded ✓`);
   console.log(`   - External jobs seeded ✓`);
   console.log(`   - O*NET database seeded ✓`);
+  console.log(`   - News feeds seeded ✓`);
+  if (newsImported) {
+    console.log(`   - News articles imported ✓`);
+  }
 
   // Display stats
   await displayStats();
