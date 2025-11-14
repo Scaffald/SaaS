@@ -19,7 +19,8 @@ import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
-import { Check, ChevronDown, X } from '@tamagui/lucide-icons'
+import { Check, ChevronDown, X, Eye } from '@tamagui/lucide-icons'
+import { JobPreviewModal } from './JobPreviewModal'
 import {
   ApplicationScreeningSection,
   AutoRejectionSection,
@@ -445,6 +446,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
 
   const isLoading = createJob.isPending || updateJob.isPending
   const organizations = organizationsData?.organizations || []
+  const [previewOpen, setPreviewOpen] = useState(false)
 
   type Organization = { id: string; name: string; slug: string; owner_user_id: string | null }
 
@@ -1181,6 +1183,19 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           >
             Cancel
           </Button>
+          {jobId && (
+            <Button
+              data-testid="job-preview-button"
+              variant="outlined"
+              icon={Eye}
+              onPress={() => setPreviewOpen(true)}
+              disabled={isLoading || !formData.title || !formData.organization_id}
+              $sm={{ height: 44 }}
+              $gtSm={{ height: undefined }}
+            >
+              Preview
+            </Button>
+          )}
           <Button
             data-testid="job-save-draft-button"
             flex={1}
@@ -1219,6 +1234,13 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             {!isLoading && 'Post'}
           </Button>
         </XStack>
+        {jobId && (
+          <JobPreviewModal
+            jobId={jobId}
+            open={previewOpen}
+            onOpenChange={setPreviewOpen}
+          />
+        )}
       </YStack>
     </ScrollView>
   )
