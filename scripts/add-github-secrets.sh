@@ -1,11 +1,21 @@
 #!/bin/bash
 
-# Add GitHub Secrets for Production Deployment
-# This script reads from .env.production and adds secrets to GitHub
+# Add GitHub Secrets for Production or Preview Deployment
+# Usage: ./scripts/add-github-secrets.sh [production|preview]
 
-set -e
+set -euo pipefail
 
-echo "🔐 Adding GitHub Secrets for Production Deployment"
+ENVIRONMENT="${1:-production}"
+if [[ "$ENVIRONMENT" != "production" && "$ENVIRONMENT" != "preview" ]]; then
+  echo "Usage: $0 [production|preview]"
+  exit 1
+fi
+
+ENV_FILE=".env.${ENVIRONMENT}"
+ENV_LABEL=$( [[ "$ENVIRONMENT" == "production" ]] && echo "Production" || echo "Preview" )
+SECRET_PREFIX=$( [[ "$ENVIRONMENT" == "preview" ]] && echo "PREVIEW_" || echo "" )
+
+echo "🔐 Adding GitHub Secrets for ${ENV_LABEL} Deployment"
 echo "=================================================="
 
 # Color codes
@@ -15,9 +25,9 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# Check if .env.production exists
-if [ ! -f ".env.production" ]; then
-    echo -e "${RED}❌ Error: .env.production file not found${NC}"
+# Check if env file exists
+if [ ! -f "${ENV_FILE}" ]; then
+    echo -e "${RED}❌ Error: ${ENV_FILE} file not found${NC}"
     exit 1
 fi
 
@@ -35,42 +45,66 @@ if ! gh auth status &> /dev/null; then
     exit 1
 fi
 
-# Source .env.production
+# Source environment file
 set -a
-source .env.production
+source "${ENV_FILE}"
 set +a
+
+echo ""
+echo -e "${BLUE}📋 Targeting ${ENV_LABEL} secrets (prefix: ${SECRET_PREFIX:-<none>})${NC}"
+echo ""
+
+add_secret() {
+    local var_name=$1
+    local secret_name="${SECRET_PREFIX}${var_name}"
+    local value="${!var_name:-}"
+
+    if [ -z "$value" ]; then
+        echo -e "${YELLOW}⚠️  Skipping ${secret_name} (not set in ${ENV_FILE})${NC}"
+        return
+    fi
+
+    echo "Adding ${secret_name}..."
+    echo "$value" | gh secret set "${secret_name}" >/dev/null
+}
 
 echo ""
 echo -e "${BLUE}📋 Adding EXPO_PUBLIC_* secrets...${NC}"
 echo ""
 
-# Add EXPO_PUBLIC secrets
-echo "Adding EXPO_PUBLIC_URL..."
-echo "$EXPO_PUBLIC_URL" | gh secret set EXPO_PUBLIC_URL
+EXPO_SECRETS=(
+  "EXPO_PUBLIC_URL"
+  "EXPO_PUBLIC_SUPABASE_URL"
+  "EXPO_PUBLIC_SUPABASE_ANON_KEY"
+  "EXPO_PUBLIC_MAPBOX_TOKEN"
+  "EXPO_PUBLIC_MAPBOX_API_URL"
+  "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID"
+  "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID"
+  "EXPO_PUBLIC_GOOGLE_IOS_SCHEME"
+  "EXPO_PUBLIC_GOOGLE_MAPS_KEY"
+)
 
-echo "Adding EXPO_PUBLIC_SUPABASE_URL..."
-echo "$EXPO_PUBLIC_SUPABASE_URL" | gh secret set EXPO_PUBLIC_SUPABASE_URL
-
-echo "Adding EXPO_PUBLIC_SUPABASE_ANON_KEY..."
-echo "$EXPO_PUBLIC_SUPABASE_ANON_KEY" | gh secret set EXPO_PUBLIC_SUPABASE_ANON_KEY
-
-echo "Adding EXPO_PUBLIC_MAPBOX_TOKEN..."
-echo "$EXPO_PUBLIC_MAPBOX_TOKEN" | gh secret set EXPO_PUBLIC_MAPBOX_TOKEN
-
-echo "Adding EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID..."
-echo "$EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID" | gh secret set EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
-
-echo "Adding EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID..."
-echo "$EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID" | gh secret set EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID
-
-echo "Adding EXPO_PUBLIC_GOOGLE_IOS_SCHEME..."
-echo "$EXPO_PUBLIC_GOOGLE_IOS_SCHEME" | gh secret set EXPO_PUBLIC_GOOGLE_IOS_SCHEME
-
-echo "Adding EXPO_PUBLIC_GOOGLE_MAPS_KEY..."
-echo "$EXPO_PUBLIC_GOOGLE_MAPS_KEY" | gh secret set EXPO_PUBLIC_GOOGLE_MAPS_KEY
+for secret in "${EXPO_SECRETS[@]}"; do
+  add_secret "${secret}"
+done
 
 echo ""
-echo -e "${GREEN}✅ All secrets added successfully!${NC}"
+echo -e "${BLUE}📋 Adding Supabase / Netlify secrets (if available)...${NC}"
+echo ""
+
+OPTIONAL_SECRETS=(
+  "SUPABASE_ACCESS_TOKEN"
+  "SUPABASE_PROJECT_ID"
+  "NETLIFY_AUTH_TOKEN"
+  "NETLIFY_SITE_ID"
+)
+
+for secret in "${OPTIONAL_SECRETS[@]}"; do
+  add_secret "${secret}"
+done
+
+echo ""
+echo -e "${GREEN}✅ Secret sync complete for ${ENV_LABEL}!${NC}"
 echo ""
 echo "📋 Verify secrets with:"
 echo "  gh secret list"

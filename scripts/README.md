@@ -2,6 +2,46 @@
 
 This directory contains deployment scripts for the SCF-Neue project.
 
+## Helper Scripts
+
+### `scripts/add-github-secrets.sh`
+
+Sync GitHub Actions secrets from your local environment files.
+
+**Usage:**
+```bash
+# Production (default)
+./scripts/add-github-secrets.sh
+
+# Preview
+./scripts/add-github-secrets.sh preview
+```
+
+**Details:**
+- Reads from `.env.production` or `.env.preview`
+- Automatically applies the `PREVIEW_` prefix for preview secrets (e.g., `PREVIEW_EXPO_PUBLIC_URL`)
+- Also sets optional Supabase and Netlify secrets when present
+- Requires GitHub CLI authentication (`gh auth login`)
+
+### `scripts/sync-netlify-env.sh`
+
+Push environment variables into the linked Netlify site.
+
+**Usage:**
+```bash
+# Production site (app.scaffald.com)
+./scripts/sync-netlify-env.sh
+
+# Preview site (preview.scaffald.com)
+./scripts/sync-netlify-env.sh preview
+```
+
+**Details:**
+- Reads from `.env.production` or `.env.preview`
+- If `NETLIFY_SITE_ID` is present, automatically links the appropriate site before syncing
+- Sets the `production` context for each site so custom domains point at the latest deploy
+- Requires Netlify CLI login (`npx netlify login`)
+
 ## Interactive Deployment (Recommended)
 
 ### `pnpm prod`
