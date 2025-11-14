@@ -2,12 +2,6 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import { View } from 'tamagui'
 import type { MapContainerProps, MapContainerRef, ViewportBounds } from './types'
 import { MapFallback } from './MapFallback'
-import {
-  createClusterMarkerHTML,
-  createPinMarkerHTML,
-  getTypeColor,
-  getDominantType,
-} from './markerUtils'
 
 import 'mapbox-gl/dist/mapbox-gl.css'
 
@@ -42,8 +36,6 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
   ) => {
     const mapContainerRef = useRef<HTMLDivElement | null>(null)
     const mapRef = useRef<mapboxgl.Map | null>(null)
-    const markersRef = useRef(new Map<string, mapboxgl.Marker>())
-    const clusterMarkersRef = useRef(new Map<string, mapboxgl.Marker>())
     const cardMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const [isMapReady, setIsMapReady] = useState(false)
 
@@ -157,29 +149,216 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           },
         })
 
-        // Add invisible cluster layer so Mapbox creates clusters
-        // We'll overlay HTML markers on top for custom styling
+        // Add cluster circle layer
         map.addLayer({
           id: 'clusters',
           type: 'circle',
           source: 'pins',
           filter: ['has', 'point_count'],
           paint: {
-            'circle-opacity': 0, // Invisible - we use HTML markers instead
-            'circle-radius': 1,
+            'circle-color': [
+              'step',
+              ['get', 'point_count'],
+              '#51bbd6', // Color for clusters with < 10 points
+              10,
+              '#f1f075', // Color for clusters with 10-99 points
+              100,
+              '#f28cb1', // Color for clusters with 100+ points
+            ],
+            'circle-radius': [
+              'step',
+              ['get', 'point_count'],
+              20, // 40px diameter for < 10 points
+              10,
+              30, // 60px diameter for 10-99 points
+              100,
+              40, // 80px diameter for 100+ points
+            ],
+            'circle-stroke-width': 2,
+            'circle-stroke-color': '#fff',
           },
         })
 
-        // Add invisible individual point layers so they're queryable
+        // Add cluster count text layer
         map.addLayer({
-          id: 'unclustered-point',
+          id: 'cluster-count',
+          type: 'symbol',
+          source: 'pins',
+          filter: ['has', 'point_count'],
+          layout: {
+            'text-field': ['get', 'point_count_abbreviated'],
+            'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+            'text-size': [
+              'step',
+              ['get', 'point_count'],
+              14, // Text size for < 10 points
+              10,
+              16, // Text size for 10-99 points
+              100,
+              18, // Text size for 100+ points
+            ],
+          },
+          paint: {
+            'text-color': '#ffffff',
+          },
+        })
+
+        // Add layer for worker pins (circles)
+        map.addLayer({
+          id: 'worker-point',
           type: 'circle',
           source: 'pins',
-          filter: ['!', ['has', 'point_count']],
+          filter: [
+            'all',
+            ['!', ['has', 'point_count']],
+            ['!=', ['get', 'organization'], 'Organization'],
+          ],
           paint: {
-            'circle-opacity': 0, // Invisible - we use HTML markers instead
-            'circle-radius': 1,
+            'circle-color': [
+              'case',
+              ['boolean', ['get', 'selected'], false],
+              '#3B82F6', // Blue color for selected pins
+              '#22C55E', // Green for available workers
+            ],
+            'circle-radius': 24,
+            'circle-stroke-width': [
+              'case',
+              ['boolean', ['get', 'selected'], false],
+              3, // Thicker stroke for selected
+              2,
+            ],
+            'circle-stroke-color': '#ffffff',
           },
+        })
+
+        // Add text layer for worker icons
+        map.addLayer({
+          id: 'worker-point-icon',
+          type: 'symbol',
+          source: 'pins',
+          filter: [
+            'all',
+            ['!', ['has', 'point_count']],
+            ['!=', ['get', 'organization'], 'Organization'],
+          ],
+          layout: {
+            'text-field': '👤',
+            'text-size': 20,
+            'text-allow-overlap': true,
+            'text-ignore-placement': true,
+          },
+          paint: {
+            'text-color': '#ffffff',
+          },
+        })
+
+        // Add layer for organization pins (larger purple squares)
+        map.addLayer({
+          id: 'org-point',
+          type: 'circle',
+          source: 'pins',
+          filter: [
+            'all',
+            ['!', ['has', 'point_count']],
+            ['==', ['get', 'organization'], 'Organization'],
+          ],
+          paint: {
+            'circle-color': [
+              'case',
+              ['boolean', ['get', 'selected'], false],
+              '#3B82F6', // Blue for selected
+              '#A855F7', // Purple for organizations
+            ],
+            'circle-radius': 24,
+            'circle-stroke-width': [
+              'case',
+              ['boolean', ['get', 'selected'], false],
+              3, // Thicker stroke for selected
+              2,
+            ],
+            'circle-stroke-color': '#ffffff',
+          },
+        })
+
+        // Add text layer for organization icons
+        map.addLayer({
+          id: 'org-point-icon',
+          type: 'symbol',
+          source: 'pins',
+          filter: [
+            'all',
+            ['!', ['has', 'point_count']],
+            ['==', ['get', 'organization'], 'Organization'],
+          ],
+          layout: {
+            'text-field': '🏢',
+            'text-size': 20,
+            'text-allow-overlap': true,
+            'text-ignore-placement': true,
+          },
+          paint: {
+            'text-color': '#ffffff',
+          },
+        })
+
+        // Handle cluster clicks
+        map.on('click', 'clusters', (e) => {
+          const features = map.queryRenderedFeatures(e.point, {
+            layers: ['clusters'],
+          })
+          const clusterId = features[0]?.properties?.cluster_id
+          const source = map.getSource('pins') as mapboxgl.GeoJSONSource
+
+          if (clusterId !== undefined && source) {
+            source.getClusterExpansionZoom(clusterId, (err, zoom) => {
+              if (err) return
+
+              map.easeTo({
+                center: (features[0].geometry as GeoJSON.Point).coordinates as [number, number],
+                zoom: zoom as number,
+              })
+            })
+          }
+        })
+
+        // Handle worker pin clicks
+        map.on('click', 'worker-point', (e) => {
+          const features = map.queryRenderedFeatures(e.point, {
+            layers: ['worker-point'],
+          })
+          if (features[0]?.properties?.id) {
+            onPinPress?.(features[0].properties.id as string)
+          }
+        })
+
+        // Handle organization pin clicks
+        map.on('click', 'org-point', (e) => {
+          const features = map.queryRenderedFeatures(e.point, {
+            layers: ['org-point'],
+          })
+          if (features[0]?.properties?.id) {
+            onPinPress?.(features[0].properties.id as string)
+          }
+        })
+
+        // Change cursor on hover
+        map.on('mouseenter', 'worker-point', () => {
+          map.getCanvas().style.cursor = 'pointer'
+        })
+        map.on('mouseleave', 'worker-point', () => {
+          map.getCanvas().style.cursor = ''
+        })
+        map.on('mouseenter', 'org-point', () => {
+          map.getCanvas().style.cursor = 'pointer'
+        })
+        map.on('mouseleave', 'org-point', () => {
+          map.getCanvas().style.cursor = ''
+        })
+        map.on('mouseenter', 'clusters', () => {
+          map.getCanvas().style.cursor = 'pointer'
+        })
+        map.on('mouseleave', 'clusters', () => {
+          map.getCanvas().style.cursor = ''
         })
 
         // Track viewport changes (pan and zoom) with debouncing (500ms)
@@ -226,12 +405,11 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         if (map) {
           map.remove()
           mapRef.current = null
-          markersRef.current.clear()
         }
       }
     }, [center, zoom, onViewportChange, onMapReady])
 
-    // Handle map clicks for deselection
+    // Handle map clicks for deselection (only on empty space, not on layers)
     useEffect(() => {
       if (!mapRef.current || !isMapReady) {
         return
@@ -239,10 +417,13 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
 
       const map = mapRef.current
 
-      const handleMapClick = () => {
-        // Only deselect if clicking on empty space (not on a marker)
-        // Markers handle their own clicks
-        onPinPress?.(null)
+      const handleMapClick = (e: mapboxgl.MapMouseEvent) => {
+        // Check if click was on a layer - if so, don't deselect
+        const features = map.queryRenderedFeatures(e.point)
+        if (features.length === 0) {
+          // Click was on empty space, deselect
+          onPinPress?.(null)
+        }
       }
 
       map.on('click', handleMapClick)
@@ -293,267 +474,6 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         source.setData(geojsonData)
       }
     }, [pins, isMapReady])
-
-    // Render HTML markers for clusters and individual pins
-    useEffect(() => {
-      if (!mapRef.current || !isMapReady) {
-        return
-      }
-
-      const map = mapRef.current
-      const source = map.getSource('pins') as mapboxgl.GeoJSONSource | null
-
-      if (!source) {
-        return
-      }
-
-      // Function to update markers based on current map state
-      const updateMarkers = () => {
-        // Remove all existing markers
-        for (const marker of markersRef.current.values()) {
-          marker.remove()
-        }
-        markersRef.current.clear()
-        for (const marker of clusterMarkersRef.current.values()) {
-          marker.remove()
-        }
-        clusterMarkersRef.current.clear()
-
-        // Check if layers exist
-        if (!map.getLayer('clusters') || !map.getLayer('unclustered-point')) {
-          return
-        }
-
-        // Query rendered features from the invisible layers
-        // This will include clusters and individual points
-        // Query the entire viewport
-        const allFeatures = map.queryRenderedFeatures(
-          [
-            [0, 0],
-            [map.getContainer().clientWidth, map.getContainer().clientHeight],
-          ],
-          {
-            layers: ['clusters', 'unclustered-point'],
-          }
-        )
-
-        if (allFeatures.length === 0) {
-          // If no rendered features, try querying source features as fallback
-          const sourceFeatures = map.querySourceFeatures('pins', {
-            sourceLayer: undefined,
-            filter: undefined,
-          })
-          if (sourceFeatures.length === 0) {
-            return
-          }
-          // Process source features (these might not have cluster properties yet)
-          for (const feature of sourceFeatures) {
-            if (!feature.geometry || feature.geometry.type !== 'Point' || !feature.properties) {
-              continue
-            }
-            const coords = (feature.geometry as GeoJSON.Point).coordinates as [number, number]
-            const props = feature.properties
-
-            // Only process individual points from source (clusters need to be rendered)
-            if (!props.cluster && props.id) {
-              const pinType = (props.type as 'worker' | 'organization' | 'job') || 'worker'
-              const selected = props.selected === true
-              const pinId = props.id as string
-
-              const html = createPinMarkerHTML(pinType, selected, 48)
-              const el = document.createElement('div')
-              el.innerHTML = html
-              const markerEl = el.firstElementChild as HTMLElement
-              if (!markerEl) continue
-
-              markerEl.addEventListener('click', (e) => {
-                e.stopPropagation()
-                onPinPress?.(pinId)
-              })
-
-              const marker = new mapboxgl.Marker({
-                element: markerEl,
-                anchor: 'center',
-              })
-                .setLngLat(coords)
-                .addTo(map)
-
-              markersRef.current.set(pinId, marker)
-            }
-          }
-          return
-        }
-
-        for (const feature of allFeatures) {
-          if (!feature.geometry || feature.geometry.type !== 'Point' || !feature.properties) {
-            continue
-          }
-
-          const coords = (feature.geometry as GeoJSON.Point).coordinates as [number, number]
-          const props = feature.properties
-
-          // Check if it's a cluster
-          if (props.cluster === true && props.point_count) {
-            const workerCount = (props.worker_count as number) || 0
-            const orgCount = (props.org_count as number) || 0
-            const jobCount = (props.job_count as number) || 0
-            const totalCount = props.point_count as number
-
-            // Determine cluster size based on count
-            const size = totalCount < 10 ? 60 : totalCount < 100 ? 70 : 80
-
-            // Create cluster marker HTML
-            const html = createClusterMarkerHTML(workerCount, orgCount, jobCount, totalCount, size)
-
-            // Create marker element
-            const el = document.createElement('div')
-            el.innerHTML = html
-            const markerEl = el.firstElementChild as HTMLElement
-            if (!markerEl) return
-
-            // Add click handler to zoom in
-            markerEl.addEventListener('click', (e) => {
-              e.stopPropagation()
-              const clusterId = props.cluster_id as number
-              source.getClusterExpansionZoom(clusterId, (err, zoom) => {
-                if (err) return
-                map.easeTo({
-                  center: coords,
-                  zoom: zoom as number,
-                })
-              })
-            })
-
-            // Create and add marker
-            const marker = new mapboxgl.Marker({
-              element: markerEl,
-              anchor: 'center',
-            })
-              .setLngLat(coords)
-              .addTo(map)
-
-            clusterMarkersRef.current.set(`cluster-${props.cluster_id}`, marker)
-          } else if (!props.cluster && props.id) {
-            // Individual pin
-            const pinType = (props.type as 'worker' | 'organization' | 'job') || 'worker'
-            const selected = props.selected === true
-            const pinId = props.id as string
-
-            // Create pin marker HTML
-            const html = createPinMarkerHTML(pinType, selected, 48)
-
-            // Create marker element
-            const el = document.createElement('div')
-            el.innerHTML = html
-            const markerEl = el.firstElementChild as HTMLElement
-            if (!markerEl) return
-
-            // Add click handler
-            markerEl.addEventListener('click', (e) => {
-              e.stopPropagation()
-              onPinPress?.(pinId)
-            })
-
-            // Create and add marker
-            const marker = new mapboxgl.Marker({
-              element: markerEl,
-              anchor: 'center',
-            })
-              .setLngLat(coords)
-              .addTo(map)
-
-            markersRef.current.set(pinId, marker)
-          }
-        }
-      }
-
-      // Update markers when source data changes
-      const handleData = () => {
-        // Use setTimeout to ensure the data is fully processed
-        setTimeout(() => {
-          updateMarkers()
-        }, 100)
-      }
-
-      // Update markers on zoom/move to handle clustering changes
-      const handleMoveEnd = () => {
-        updateMarkers()
-      }
-
-      // Debounce marker updates during pan to avoid performance issues
-      // But update immediately on zoom since positioning is critical
-      let moveUpdateTimeout: ReturnType<typeof setTimeout> | null = null
-      const handleMove = () => {
-        if (moveUpdateTimeout) {
-          clearTimeout(moveUpdateTimeout)
-        }
-        moveUpdateTimeout = setTimeout(() => {
-          updateMarkers()
-        }, 100) // Debounce pan to 100ms
-      }
-
-      // Zoom events need immediate updates - use requestAnimationFrame for smooth updates
-      let zoomFrameId: number | null = null
-      const handleZoom = () => {
-        // Clear any pending move updates
-        if (moveUpdateTimeout) {
-          clearTimeout(moveUpdateTimeout)
-          moveUpdateTimeout = null
-        }
-        // Cancel any pending zoom frame
-        if (zoomFrameId !== null) {
-          cancelAnimationFrame(zoomFrameId)
-        }
-        // Schedule update for next frame to ensure map has finished rendering
-        zoomFrameId = requestAnimationFrame(() => {
-          updateMarkers()
-          zoomFrameId = null
-        })
-      }
-
-      const handleZoomEnd = () => {
-        // Cancel any pending zoom frame
-        if (zoomFrameId !== null) {
-          cancelAnimationFrame(zoomFrameId)
-          zoomFrameId = null
-        }
-        // Final update after zoom completes
-        updateMarkers()
-      }
-
-      source.on('data', handleData)
-      map.on('moveend', handleMoveEnd)
-      map.on('zoomend', handleZoomEnd)
-      map.on('zoom', handleZoom)
-      map.on('move', handleMove)
-
-      // Initial update - wait a bit for layers to be ready
-      setTimeout(() => {
-        updateMarkers()
-      }, 200)
-
-      return () => {
-        if (moveUpdateTimeout) {
-          clearTimeout(moveUpdateTimeout)
-        }
-        if (zoomFrameId !== null) {
-          cancelAnimationFrame(zoomFrameId)
-        }
-        source.off('data', handleData)
-        map.off('moveend', handleMoveEnd)
-        map.off('zoomend', handleZoomEnd)
-        map.off('zoom', handleZoom)
-        map.off('move', handleMove)
-        for (const marker of markersRef.current.values()) {
-          marker.remove()
-        }
-        markersRef.current.clear()
-        for (const marker of clusterMarkersRef.current.values()) {
-          marker.remove()
-        }
-        clusterMarkersRef.current.clear()
-      }
-    }, [pins, isMapReady, onPinPress])
 
     return (
       <View flex={1} position="relative" overflow="hidden" rounded="$5" style={style}>
