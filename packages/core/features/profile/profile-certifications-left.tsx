@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   YStack,
   XStack,
@@ -25,6 +25,7 @@ import {
   resetProfileSyncError,
   useAdaptiveProfileSync,
 } from './utils/profile-sync-store'
+import { useProfileCertificationsHighlight } from './profile-certifications-highlight-context'
 
 interface Certification {
   id: string
@@ -82,36 +83,8 @@ export function ProfileCertificationsLeft({
     description: '',
     file: null as File | null,
   })
-  const [recentlyChangedCerts, setRecentlyChangedCerts] = useState<
-    Record<string, 'added' | 'removed'>
-  >({})
-  const highlightTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({})
+  const { highlights: recentlyChangedCerts, triggerHighlight } = useProfileCertificationsHighlight()
   const toast = useToastController()
-
-  useEffect(() => {
-    return () => {
-      for (const timer of Object.values(highlightTimers.current)) {
-        clearTimeout(timer)
-      }
-    }
-  }, [])
-
-  const triggerHighlight = useCallback((certId: string, status: 'added' | 'removed') => {
-    setRecentlyChangedCerts((prev) => ({ ...prev, [certId]: status }))
-
-    if (highlightTimers.current[certId]) {
-      clearTimeout(highlightTimers.current[certId])
-    }
-
-    highlightTimers.current[certId] = setTimeout(() => {
-      setRecentlyChangedCerts((prev) => {
-        const next = { ...prev }
-        delete next[certId]
-        return next
-      })
-      delete highlightTimers.current[certId]
-    }, 3000)
-  }, [])
 
   const formatMonthYear = useCallback((date: Date | null) => {
     if (!date) return undefined

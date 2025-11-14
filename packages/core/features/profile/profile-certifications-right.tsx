@@ -1,16 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { YStack, Text, H4, Card, XStack, Input, ScrollView } from 'tamagui'
-import {
-  Award,
-  ChevronDown,
-  ChevronRight,
-  ExternalLink,
-  Trash2,
-  Upload,
-} from '@tamagui/lucide-icons'
+import { Award, ChevronDown, ChevronRight, ExternalLink, Trash2, Upload } from '@tamagui/lucide-icons'
 import { UIButton as Button, DashboardWidget } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
+import { useProfileCertificationsHighlight } from './profile-certifications-highlight-context'
 
 interface UserCertification {
   id: string
@@ -38,10 +32,7 @@ export function ProfileCertificationsRight() {
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set())
   const [selectedFiles, setSelectedFiles] = useState<Record<string, File | null>>({})
   const [urlInputs, setUrlInputs] = useState<Record<string, string>>({})
-  // Note: recentlyChangedCerts would be used for highlight animations
-  // Currently not implemented as highlights are handled in left panel
-  const recentlyChangedCerts: Record<string, 'added' | 'removed'> = {}
-  const highlightTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({})
+  const { highlights: recentlyChangedCerts } = useProfileCertificationsHighlight()
 
   const { data: certTree, refetch: refetchTree } =
     api.profile.certifications.getUserCertificationTree.useQuery()
@@ -53,15 +44,6 @@ export function ProfileCertificationsRight() {
   const removeCert = api.profile.certifications.toggleSpecificCertification.useMutation({
     onSuccess: () => refetchTree(),
   })
-
-  // Cleanup timers on unmount
-  useEffect(() => {
-    return () => {
-      for (const timer of Object.values(highlightTimers.current)) {
-        clearTimeout(timer)
-      }
-    }
-  }, [])
 
   // Get all certifications at all depth levels
   const getAllCertifications = (): {

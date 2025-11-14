@@ -95,6 +95,17 @@ if [ -f "functions/trpc/__tests__/universities.test.ts" ]; then
   fi
 fi
 
+# Run REQ-30 certification tests if present
+if [ -f "functions/trpc/__tests__/certifications.req30.test.ts" ]; then
+  if deno test --allow-all --no-check functions/trpc/__tests__/certifications.req30.test.ts; then
+    echo -e "${GREEN}✅ Certification tests passed!${NC}"
+    echo ""
+  else
+    echo -e "${RED}❌ Certification tests failed${NC}"
+    exit 1
+  fi
+fi
+
 # Final summary
 echo -e "${BLUE}═══════════════════════════════════════════════════════════${NC}"
 echo -e "${GREEN}🎉 All tests completed successfully!${NC}"

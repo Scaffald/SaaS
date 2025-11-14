@@ -47,6 +47,9 @@ const tealDark = [
   'hsla(191, 55%, 95%, 1)', // 11: Lightest teal (text on dark)
 ]
 
+export const primaryLightColor = tealLight[7]
+export const primaryDarkColor = tealDark[7]
+
 export const grayLight = {
   gray1: 'hsla(42, 18%, 99%, 1)',
   gray2: 'hsla(40, 16%, 97%, 1)',

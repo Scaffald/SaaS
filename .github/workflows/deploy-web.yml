@@ -89,7 +89,6 @@ jobs:
           EXPO_PUBLIC_GOOGLE_IOS_SCHEME: ${{ secrets.EXPO_PUBLIC_GOOGLE_IOS_SCHEME }}
           # Mapbox
           EXPO_PUBLIC_MAPBOX_TOKEN: ${{ secrets.EXPO_PUBLIC_MAPBOX_TOKEN }}
-          EXPO_PUBLIC_MAPBOX_STYLE_URL: ${{ secrets.EXPO_PUBLIC_MAPBOX_STYLE_URL }}
           EXPO_PUBLIC_MAPBOX_API_URL: ${{ secrets.EXPO_PUBLIC_MAPBOX_API_URL }}
           # Build optimizations
           EXPO_USE_FAST_REFRESH: false

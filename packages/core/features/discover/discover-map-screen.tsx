@@ -59,11 +59,11 @@ export const DiscoverMapScreen = () => {
 
   // Modal states
   const [workerModalOpen, setWorkerModalOpen] = useState(false)
-  const [workerModalUserId] = useState<string | null>(null)
+  const [workerModalUserId, setWorkerModalUserId] = useState<string | null>(null)
   const [jobModalOpen, setJobModalOpen] = useState(false)
-  const [jobModalId] = useState<string | null>(null)
+  const [jobModalId, setJobModalId] = useState<string | null>(null)
   const [orgModalOpen, setOrgModalOpen] = useState(false)
-  const [orgModalId] = useState<string | null>(null)
+  const [orgModalId, setOrgModalId] = useState<string | null>(null)
   const [mobileViewMode, setMobileViewMode] = useState<'map' | 'list'>('map')
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false)
   const [userPanelOpen, setUserPanelOpen] = useState(false)
@@ -142,6 +142,8 @@ export const DiscoverMapScreen = () => {
           availability: 'available' as const,
           organization: 'Individual' as const,
           selected: profile.id === selectedProfileId,
+          pinType: 'worker' as const,
+          avatarUrl: profile.avatarUrl || null,
           type: 'worker' as const,
         }))
       : []
@@ -154,6 +156,7 @@ export const DiscoverMapScreen = () => {
           subtitle: org.industry || 'Organization',
           organization: 'Organization' as const,
           selected: org.id === selectedProfileId,
+          pinType: 'organization' as const,
           type: 'organization' as const,
         }))
       : []
@@ -165,8 +168,8 @@ export const DiscoverMapScreen = () => {
           title: job.title,
           subtitle: job.organization_name || 'Job Opening',
           organization: 'Job' as const,
-          color: '#FFD700', // Yellow for jobs
           selected: job.id === selectedProfileId,
+          pinType: 'job' as const,
           type: 'job' as const,
         }))
       : []
@@ -303,13 +306,7 @@ export const DiscoverMapScreen = () => {
         clearHoverState()
       }
     },
-    [
-      clearHoverState,
-      getPinType,
-      isHoverCardLocked,
-      isHoverCardPinned,
-      showHoverCardForPin,
-    ]
+    [clearHoverState, getPinType, isHoverCardLocked, isHoverCardPinned, showHoverCardForPin]
   )
 
   const handleHoverCardEnter = useCallback(() => {
@@ -702,7 +699,7 @@ const MobileSearchHeader = ({
   )
 
   return (
-    <YStack
+    <XStack
       width="100%"
       px="$4"
       py="$3"
@@ -710,6 +707,7 @@ const MobileSearchHeader = ({
       bg="$background"
       borderBottomWidth={1}
       borderBottomColor="$borderColor"
+      items="center"
     >
       {tokenValidation.valid ? (
         <AddressAutocomplete
@@ -731,11 +729,13 @@ const MobileSearchHeader = ({
             w: '100%',
             bg: '$background',
             rounded: '$5',
+            height: 25,
+            justifyContent: 'center',
           }}
         />
       ) : (
         <YStack
-          width="100%"
+          flex={1}
           bg="$background"
           p="$3"
           rounded="$4"
@@ -754,15 +754,13 @@ const MobileSearchHeader = ({
 
       <Button
         size="$4"
+        circular
         variant="outlined"
-        px="$4"
         icon={SlidersHorizontal}
         aria-label="Open filters"
         onPress={onFiltersPress}
-      >
-        Filters
-      </Button>
-    </YStack>
+      />
+    </XStack>
   )
 }
 

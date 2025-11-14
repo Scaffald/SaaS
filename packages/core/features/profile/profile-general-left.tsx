@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { YStack, XStack, Text, Input, Avatar, H4, AnimatePresence, ScrollView } from 'tamagui'
+import { YStack, XStack, Text, Input, Avatar, H4, AnimatePresence, ScrollView, Spinner } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'

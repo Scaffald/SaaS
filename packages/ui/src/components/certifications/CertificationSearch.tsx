@@ -131,6 +131,7 @@ export function CertificationSearch({
       <Input
         placeholder="Search certifications (e.g., OSHA, First Aid, Welding)"
         value={searchQuery}
+        testID="cert-search-input"
         onChangeText={(text) => {
           setSearchQuery(text)
           if (text.length > 0) {
@@ -153,6 +154,7 @@ export function CertificationSearch({
           elevation="$4"
           height={400}
           overflow="hidden"
+          testID="cert-search-results"
         >
           <ScrollView height={400}>
             {isLoading ? (
@@ -191,6 +193,7 @@ export function CertificationSearch({
                       borderColor="$borderColor"
                       items="center"
                       gap="$2"
+                      testID="cert-search-section-depth0"
                     >
                       <Award size={16} color="$color10" />
                       <Text fontWeight="600" fontSize="$3" color="$color11">
@@ -208,6 +211,7 @@ export function CertificationSearch({
                         pressStyle={{ bg: '$backgroundHover' }}
                         cursor="pointer"
                         onPress={() => handleSelect(cert)}
+                        testID="cert-search-card-0"
                       >
                         <YStack gap="$2">
                           <XStack gap="$2" items="center" flexWrap="wrap">
@@ -237,6 +241,7 @@ export function CertificationSearch({
                       borderColor="$borderColor"
                       items="center"
                       gap="$2"
+                      testID="cert-search-section-depth1"
                     >
                       <Award size={16} color="$color10" />
                       <Text fontWeight="600" fontSize="$3" color="$color11">
@@ -256,6 +261,7 @@ export function CertificationSearch({
                         pressStyle={{ bg: '$backgroundHover' }}
                         cursor="pointer"
                         onPress={() => handleSelect(cert)}
+                        testID="cert-search-card-1"
                       >
                         <YStack gap="$2">
                           <XStack gap="$2" items="center" flexWrap="wrap">
@@ -285,6 +291,7 @@ export function CertificationSearch({
                       borderColor="$borderColor"
                       items="center"
                       gap="$2"
+                      testID="cert-search-section-depth2"
                     >
                       <Award size={16} color="$color10" />
                       <Text fontWeight="600" fontSize="$3" color="$color11">
@@ -310,6 +317,7 @@ export function CertificationSearch({
                           pressStyle={{ bg: '$backgroundHover' }}
                           cursor="pointer"
                           onPress={() => handleSelect(cert)}
+                          testID="cert-search-card-2"
                         >
                           <YStack gap="$2">
                             <XStack gap="$2" items="center" flexWrap="wrap">

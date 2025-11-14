@@ -1,3 +1,5 @@
+export type MapPinCategory = 'worker' | 'organization' | 'job'
+
 export interface MapPin {
   id: string
   coordinate: [number, number] // [longitude, latitude]
@@ -8,6 +10,8 @@ export interface MapPin {
   availability?: 'available' | 'unavailable'
   organization?: 'Individual' | 'Organization' | 'Job'
   color?: string // Custom color for the pin (e.g., yellow for jobs)
+  pinType?: MapPinCategory
+  avatarUrl?: string | null
   badges?: Array<{
     id: string
     label: string
