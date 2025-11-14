@@ -3,11 +3,10 @@ import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { useMemo, useState } from 'react'
 import { useRouter } from 'expo-router'
 import { createColumnHelper, type ColumnDef, type VisibilityState } from '@tanstack/react-table'
-import { Button, Paragraph, XStack, YStack } from 'tamagui'
-import { Pencil, ArrowRightCircle, RefreshCw } from '@tamagui/lucide-icons'
-import { OfficeLayout, DashboardWidget, QuickLinksSidebar, Text } from '@app/ui'
+import { Paragraph, XStack, YStack } from 'tamagui'
+import { DashboardLayout, Text } from '@app/ui'
 import { OfficePageLayout } from './components/OfficePageLayout'
-import { DeleteButton } from './components/DeleteButton'
+import { QuickActionsWidget } from './components/QuickActionsWidget'
 import type { TableColumnVisibilityOption } from '@app/ui'
 
 type User = {
@@ -21,10 +20,7 @@ type User = {
 
 const columnHelper = createColumnHelper<User>()
 
-const createColumns = (
-  router: ReturnType<typeof useRouter>,
-  onDelete: (id: string) => Promise<void>
-) => [
+const createColumns = () => [
   columnHelper.accessor('first_name', {
     id: 'first_name',
     header: 'First Name',
@@ -61,38 +57,7 @@ const createColumns = (
       hideable: true,
     },
   }),
-  columnHelper.display({
-    id: 'actions',
-    header: 'Actions',
-    meta: {
-      label: 'Actions',
-      hideable: false,
-    },
-    cell: (info) => {
-      const user = info.row.original
-      const displayName =
-        `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.id.substring(0, 8)
-      return (
-        <XStack gap="$2">
-          <Button
-            data-testid={`user-edit-button-${user.id}`}
-            size="$2"
-            variant="outlined"
-            icon={Pencil}
-            onPress={() => router.push(RouteBuilder.officeUsersEdit(user.id))}
-          >
-            Edit
-          </Button>
-          <DeleteButton
-            data-testid={`user-delete-button-${user.id}`}
-            itemName={displayName}
-            itemType="user"
-            onDelete={() => onDelete(user.id)}
-          />
-        </XStack>
-      )
-    },
-  }),
+  // Actions column removed - using RowActionOverlay instead
 ]
 
 export interface OfficeUsersListProps {
@@ -129,7 +94,21 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
     return firstName.includes(searchLower) || lastName.includes(searchLower)
   })
 
-  const columns = createColumns(router, handleDelete)
+  const columns = createColumns()
+
+  const handleRowEdit = (user: User) => {
+    router.push(RouteBuilder.officeUsersEdit(user.id))
+  }
+
+  const handleRowDelete = async (user: User) => {
+    await handleDelete(user.id)
+  }
+
+  const getItemName = (user: User) => {
+    const displayName =
+      `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.id.substring(0, 8)
+    return displayName
+  }
 
   const columnVisibilityOptions = useMemo<TableColumnVisibilityOption[]>(() => {
     return columns
@@ -173,7 +152,7 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
   }
 
   return (
-    <OfficeLayout
+    <DashboardLayout
       leftContent={
         <OfficePageLayout
           title="Users"
@@ -190,6 +169,10 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
           hideCreateButton
           columnVisibility={columnVisibility}
           onColumnVisibilityChange={setColumnVisibility}
+          onRowEdit={handleRowEdit}
+          onRowDelete={handleRowDelete}
+          getItemName={getItemName}
+          itemType="user"
           actionBarConfig={{
             bar: {
               addLabel: 'Add',
@@ -234,32 +217,13 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
         />
       }
       rightContent={
-        <QuickLinksSidebar>
-          <YStack gap="$4">
-            <DashboardWidget gap="$3" elevated>
-              <Text fontSize="$5" fontWeight="700">
-                Quick Actions
-              </Text>
-              <YStack gap="$2">
-                <Button
-                  theme="info"
-                  icon={ArrowRightCircle}
-                  onPress={() => router.push(ROUTES.OFFICE_CMS_WORKERS_CREATE.path)}
-                >
-                  Create User
-                </Button>
-                <Button
-                  variant="outlined"
-                  icon={RefreshCw}
-                  onPress={() => refetch()}
-                  disabled={isLoading}
-                >
-                  Refresh
-                </Button>
-              </YStack>
-            </DashboardWidget>
-          </YStack>
-        </QuickLinksSidebar>
+        <QuickActionsWidget
+          context="list"
+          resourceName="User"
+          onCreate={() => router.push(ROUTES.OFFICE_CMS_WORKERS_CREATE.path)}
+          onRefresh={() => refetch()}
+          isLoading={isLoading}
+        />
       }
     />
   )

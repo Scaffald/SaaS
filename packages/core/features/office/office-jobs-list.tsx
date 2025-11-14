@@ -4,9 +4,10 @@ import { useMemo, useState } from 'react'
 import { useRouter } from 'expo-router'
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
 import { Adapt, Button, Select, Sheet, Switch, Text, XStack, YStack } from 'tamagui'
-import { Check, ChevronDown, Pencil, ArrowRightCircle, RefreshCw } from '@tamagui/lucide-icons'
-import { OfficeLayout, DashboardWidget, QuickLinksSidebar } from '@app/ui'
+import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import { DashboardLayout } from '@app/ui'
 import { OfficePageLayout } from './components/OfficePageLayout'
+import { QuickActionsWidget } from './components/QuickActionsWidget'
 
 type Job = {
   id: string
@@ -240,7 +241,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
   )
 
   return (
-    <OfficeLayout
+    <DashboardLayout
       leftContent={
         <OfficePageLayout
           title="Jobs"
@@ -273,32 +274,13 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
         />
       }
       rightContent={
-        <QuickLinksSidebar>
-          <YStack gap="$4">
-            <DashboardWidget gap="$3" elevated>
-              <Text fontSize="$5" fontWeight="700">
-                Quick Actions
-              </Text>
-              <YStack gap="$2">
-                <Button
-                  theme="info"
-                  icon={ArrowRightCircle}
-                  onPress={() => router.push(ROUTES.OFFICE_CMS_JOBS_CREATE.path)}
-                >
-                  Create Job
-                </Button>
-                <Button
-                  variant="outlined"
-                  icon={RefreshCw}
-                  onPress={() => refetch()}
-                  disabled={isLoading}
-                >
-                  Refresh
-                </Button>
-              </YStack>
-            </DashboardWidget>
-          </YStack>
-        </QuickLinksSidebar>
+        <QuickActionsWidget
+          context="list"
+          resourceName="Job"
+          onCreate={() => router.push(ROUTES.OFFICE_CMS_JOBS_CREATE.path)}
+          onRefresh={() => refetch()}
+          isLoading={isLoading}
+        />
       }
     />
   )

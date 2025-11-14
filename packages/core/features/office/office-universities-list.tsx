@@ -1,13 +1,11 @@
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
-import { Button, Text, OfficeLayout, DashboardWidget, QuickLinksSidebar } from '@app/ui'
-import { XStack, YStack } from 'tamagui'
+import { Text, DashboardLayout } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
-import { Pencil, ArrowRightCircle, RefreshCw } from '@tamagui/lucide-icons'
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { OfficePageLayout } from './components/OfficePageLayout'
-import { DeleteButton } from './components/DeleteButton'
+import { QuickActionsWidget } from './components/QuickActionsWidget'
 
 type University = {
   id: string
@@ -25,10 +23,7 @@ type University = {
 
 const columnHelper = createColumnHelper<University>()
 
-const createColumns = (
-  router: ReturnType<typeof useRouter>,
-  onDelete: (id: string) => Promise<void>
-) => [
+const createColumns = () => [
   columnHelper.accessor('name', {
     header: 'Name',
     cell: (info) => (
@@ -45,32 +40,7 @@ const createColumns = (
     header: 'State/Province',
     cell: (info) => info.getValue() || '-',
   }),
-  columnHelper.display({
-    id: 'actions',
-    header: 'Actions',
-    cell: (info) => {
-      const university = info.row.original
-      return (
-        <XStack gap="$2">
-          <Button
-            data-testid={`university-edit-button-${university.id}`}
-            size="$2"
-            variant="outlined"
-            icon={Pencil}
-            onPress={() => router.push(RouteBuilder.officeUniversitiesEdit(university.id))}
-          >
-            Edit
-          </Button>
-          <DeleteButton
-            data-testid={`university-delete-button-${university.id}`}
-            itemName={university.name}
-            itemType="university"
-            onDelete={() => onDelete(university.id)}
-          />
-        </XStack>
-      )
-    },
-  }),
+  // Actions column removed - using RowActionOverlay instead
 ]
 
 export function OfficeUniversitiesList() {
@@ -96,10 +66,20 @@ export function OfficeUniversitiesList() {
   }
 
   const universities = data?.universities ?? []
-  const columns = createColumns(router, handleDelete)
+  const columns = createColumns()
+
+  const handleRowEdit = (university: University) => {
+    router.push(RouteBuilder.officeUniversitiesEdit(university.id))
+  }
+
+  const handleRowDelete = async (university: University) => {
+    await handleDelete(university.id)
+  }
+
+  const getItemName = (university: University) => university.name
 
   return (
-    <OfficeLayout
+    <DashboardLayout
       leftContent={
         <OfficePageLayout
           title="Universities"
@@ -113,35 +93,20 @@ export function OfficeUniversitiesList() {
           isLoading={isLoading}
           pageSize={50}
           emptyMessage="No universities found"
+          onRowEdit={handleRowEdit}
+          onRowDelete={handleRowDelete}
+          getItemName={getItemName}
+          itemType="university"
         />
       }
       rightContent={
-        <QuickLinksSidebar>
-          <YStack gap="$4">
-            <DashboardWidget gap="$3" elevated>
-              <Text fontSize="$5" fontWeight="700">
-                Quick Actions
-              </Text>
-              <YStack gap="$2">
-                <Button
-                  theme="info"
-                  icon={ArrowRightCircle}
-                  onPress={() => router.push(ROUTES.OFFICE_CMS_UNIVERSITIES_CREATE.path)}
-                >
-                  Create University
-                </Button>
-                <Button
-                  variant="outlined"
-                  icon={RefreshCw}
-                  onPress={() => refetch()}
-                  disabled={isLoading}
-                >
-                  Refresh
-                </Button>
-              </YStack>
-            </DashboardWidget>
-          </YStack>
-        </QuickLinksSidebar>
+        <QuickActionsWidget
+          context="list"
+          resourceName="University"
+          onCreate={() => router.push(ROUTES.OFFICE_CMS_UNIVERSITIES_CREATE.path)}
+          onRefresh={() => refetch()}
+          isLoading={isLoading}
+        />
       }
     />
   )

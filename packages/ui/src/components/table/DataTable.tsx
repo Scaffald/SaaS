@@ -102,9 +102,7 @@ export function DataTable<TData>({
   const tableRows = table.getRowModel().rows
 
   // Find active row data
-  const activeRow = activeRowId
-    ? tableRows.find((row) => row.id === activeRowId)?.original
-    : null
+  const activeRow = activeRowId ? tableRows.find((row) => row.id === activeRowId)?.original : null
 
   // Handle row click - calculate position and open overlay or use legacy onRowClick
   const handleRowClick = (row: TData, rowId: string, event?: any) => {
@@ -113,12 +111,12 @@ export function DataTable<TData>({
       // Try to get position from event or from row element
       let x = 0
       let y = 0
-      
+
       if (event) {
         // Try to get position from mouse/touch event
         const clientX = (event as any).nativeEvent?.clientX ?? (event as any).clientX
         const clientY = (event as any).nativeEvent?.clientY ?? (event as any).clientY
-        
+
         if (clientX !== undefined && clientY !== undefined) {
           const containerRect = (tableContainerRef.current as HTMLElement)?.getBoundingClientRect()
           if (containerRect) {
@@ -127,7 +125,7 @@ export function DataTable<TData>({
           }
         }
       }
-      
+
       // Fallback: position at row center if we couldn't get event position
       if (x === 0 && y === 0 && event?.currentTarget) {
         const rowElement = event.currentTarget as HTMLElement
@@ -138,7 +136,7 @@ export function DataTable<TData>({
           y = rect.top - containerRect.top + rect.height / 2
         }
       }
-      
+
       if (x !== 0 || y !== 0) {
         setOverlayPosition({ x, y })
         setActiveRowId(rowId)
@@ -207,152 +205,152 @@ export function DataTable<TData>({
                 borderBottomLeftRadius="$2"
                 borderBottomRightRadius="$2"
               >
-              {/* Header */}
-              <Table.Head position="absolute" t={0} z={5} bg="$background">
-                {headerGroups.map((headerGroup, groupIndex) => (
-                  <Table.Row
-                    key={headerGroup.id}
-                    backgrounded
-                    bg="$color2"
-                    rowLocation="first"
-                    borderTopRightRadius="$4"
-                    borderTopLeftRadius="$4"
-                    position="absolute"
-                    t={groupIndex * HEADER_ROW_HEIGHT}
-                    z={5 + groupIndex}
-                  >
-                    {headerGroup.headers.map((header, idx) => {
-                      const cellLocation =
-                        idx === 0
-                          ? 'first'
-                          : idx === headerGroup.headers.length - 1
-                            ? 'last'
-                            : 'middle'
+                {/* Header */}
+                <Table.Head position="absolute" t={0} z={5} bg="$background">
+                  {headerGroups.map((headerGroup, groupIndex) => (
+                    <Table.Row
+                      key={headerGroup.id}
+                      backgrounded
+                      bg="$color2"
+                      rowLocation="first"
+                      borderTopRightRadius="$4"
+                      borderTopLeftRadius="$4"
+                      position="absolute"
+                      t={groupIndex * HEADER_ROW_HEIGHT}
+                      z={5 + groupIndex}
+                    >
+                      {headerGroup.headers.map((header, idx) => {
+                        const cellLocation =
+                          idx === 0
+                            ? 'first'
+                            : idx === headerGroup.headers.length - 1
+                              ? 'last'
+                              : 'middle'
 
-                      if (header.isPlaceholder) {
+                        if (header.isPlaceholder) {
+                          return (
+                            <Table.HeaderCell
+                              key={header.id}
+                              pl="$3"
+                              cellWidth={cellWidth as never}
+                              cellLocation={cellLocation}
+                            />
+                          )
+                        }
+
+                        const columnMeta = header.column.columnDef.meta as
+                          | { width?: string | number }
+                          | undefined
+                        const columnWidth = columnMeta?.width ?? cellWidth
+
                         return (
                           <Table.HeaderCell
                             key={header.id}
                             pl="$3"
-                            cellWidth={cellWidth as never}
+                            cellWidth={columnWidth as never}
                             cellLocation={cellLocation}
-                          />
-                        )
-                      }
-
-                      const columnMeta = header.column.columnDef.meta as
-                        | { width?: string | number }
-                        | undefined
-                      const columnWidth = columnMeta?.width ?? cellWidth
-
-                      return (
-                        <Table.HeaderCell
-                          key={header.id}
-                          pl="$3"
-                          cellWidth={columnWidth as never}
-                          cellLocation={cellLocation}
-                        >
-                          <View
-                            flexDirection="row"
-                            cursor={header.column.getCanSort() ? 'pointer' : 'default'}
-                            onPress={
-                              header.column.getCanSort()
-                                ? header.column.getToggleSortingHandler()
-                                : undefined
-                            }
-                            gap="$2"
-                            items="center"
                           >
-                            <Text fontSize="$4" selectable={false}>
-                              {flexRender(header.column.columnDef.header, header.getContext())}
+                            <View
+                              flexDirection="row"
+                              cursor={header.column.getCanSort() ? 'pointer' : 'default'}
+                              onPress={
+                                header.column.getCanSort()
+                                  ? header.column.getToggleSortingHandler()
+                                  : undefined
+                              }
+                              gap="$2"
+                              items="center"
+                            >
+                              <Text fontSize="$4" selectable={false}>
+                                {flexRender(header.column.columnDef.header, header.getContext())}
+                              </Text>
+                              {header.column.getCanSort() &&
+                                (header.column.getIsSorted() === 'asc' ? (
+                                  <ChevronUp size="$1" />
+                                ) : header.column.getIsSorted() === 'desc' ? (
+                                  <ChevronDown size="$1" />
+                                ) : (
+                                  <ChevronsUpDown size="$1" />
+                                ))}
+                            </View>
+                          </Table.HeaderCell>
+                        )
+                      })}
+                    </Table.Row>
+                  ))}
+                </Table.Head>
+
+                {/* Body */}
+                <Table.Body>
+                  {tableRows.map((row, rowIdx) => (
+                    <Table.Row
+                      key={row.id}
+                      hoverStyle={{ bg: '$color2' }}
+                      pressStyle={{ opacity: 0.8 }}
+                      cursor={useOverlay || onRowClick ? 'pointer' : 'default'}
+                      onPress={(event) => {
+                        if (useOverlay) {
+                          handleRowClick(row.original, row.id, event)
+                        } else if (onRowClick) {
+                          onRowClick(row.original)
+                        }
+                      }}
+                      rowLocation={rowIdx === tableRows.length - 1 ? 'last' : 'middle'}
+                    >
+                      {row.getVisibleCells().map((cell, cellIdx) => {
+                        const columnMeta = cell.column.columnDef.meta as
+                          | { width?: string | number }
+                          | undefined
+                        const columnWidth = columnMeta?.width ?? cellWidth
+
+                        return (
+                          <Table.Cell
+                            key={cell.id}
+                            pl="$3"
+                            cellWidth={columnWidth as never}
+                            cellLocation={
+                              cellIdx === 0
+                                ? 'first'
+                                : cellIdx === row.getVisibleCells().length - 1
+                                  ? 'last'
+                                  : 'middle'
+                            }
+                          >
+                            <Text fontSize="$4" color="$color11">
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </Text>
-                            {header.column.getCanSort() &&
-                              (header.column.getIsSorted() === 'asc' ? (
-                                <ChevronUp size="$1" />
-                              ) : header.column.getIsSorted() === 'desc' ? (
-                                <ChevronDown size="$1" />
-                              ) : (
-                                <ChevronsUpDown size="$1" />
-                              ))}
-                          </View>
-                        </Table.HeaderCell>
-                      )
-                    })}
-                  </Table.Row>
-                ))}
-              </Table.Head>
-
-              {/* Body */}
-              <Table.Body>
-                {tableRows.map((row, rowIdx) => (
-                  <Table.Row
-                    key={row.id}
-                    hoverStyle={{ bg: '$color2' }}
-                    pressStyle={{ opacity: 0.8 }}
-                    cursor={useOverlay || onRowClick ? 'pointer' : 'default'}
-                    onPress={(event) => {
-                      if (useOverlay) {
-                        handleRowClick(row.original, row.id, event)
-                      } else if (onRowClick) {
-                        onRowClick(row.original)
-                      }
-                    }}
-                    rowLocation={rowIdx === tableRows.length - 1 ? 'last' : 'middle'}
-                  >
-                    {row.getVisibleCells().map((cell, cellIdx) => {
-                      const columnMeta = cell.column.columnDef.meta as
-                        | { width?: string | number }
-                        | undefined
-                      const columnWidth = columnMeta?.width ?? cellWidth
-
-                      return (
-                        <Table.Cell
-                          key={cell.id}
-                          pl="$3"
-                          cellWidth={columnWidth as never}
-                          cellLocation={
-                            cellIdx === 0
-                              ? 'first'
-                              : cellIdx === row.getVisibleCells().length - 1
-                                ? 'last'
-                                : 'middle'
-                          }
-                        >
-                          <Text fontSize="$4" color="$color11">
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </Text>
-                        </Table.Cell>
-                      )
-                    })}
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table>
-          </View>
+                          </Table.Cell>
+                        )
+                      })}
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table>
+            </View>
+          </ScrollView>
         </ScrollView>
-      </ScrollView>
 
-      {/* Row Action Overlay */}
-      {useOverlay && activeRow && overlayPosition && onRowEdit && (
-        <RowActionOverlay
-          row={activeRow}
-          position={overlayPosition}
-          onView={onRowView}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onClose={handleCloseOverlay}
-          itemName={
-            getItemName
-              ? getItemName(activeRow)
-              : String(
-                  (activeRow as { name?: string; title?: string }).name ||
-                    (activeRow as { title?: string }).title ||
-                    'Item',
-                )
-          }
-          itemType={itemType}
-        />
-      )}
+        {/* Row Action Overlay */}
+        {useOverlay && activeRow && overlayPosition && onRowEdit && (
+          <RowActionOverlay
+            row={activeRow}
+            position={overlayPosition}
+            onView={onRowView}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onClose={handleCloseOverlay}
+            itemName={
+              getItemName
+                ? getItemName(activeRow)
+                : String(
+                    (activeRow as { name?: string; title?: string }).name ||
+                      (activeRow as { title?: string }).title ||
+                      'Item'
+                  )
+            }
+            itemType={itemType}
+          />
+        )}
       </View>
 
       {/* Pagination Footer */}
