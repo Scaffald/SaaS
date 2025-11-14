@@ -143,6 +143,11 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           cluster: true,
           clusterMaxZoom: 17, // Max zoom to cluster points on
           clusterRadius: 50, // Radius of each cluster when clustering points (px)
+          clusterProperties: {
+            worker_count: ['+', ['case', ['==', ['get', 'type'], 'worker'], 1, 0]],
+            org_count: ['+', ['case', ['==', ['get', 'type'], 'organization'], 1, 0]],
+            job_count: ['+', ['case', ['==', ['get', 'type'], 'job'], 1, 0]],
+          },
         })
 
         // Add cluster circle layer
@@ -463,6 +468,13 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
             subtitle: pin.subtitle,
             availability: pin.availability,
             organization: pin.organization,
+            type:
+              pin.type ||
+              (pin.organization === 'Individual'
+                ? 'worker'
+                : pin.organization === 'Organization'
+                  ? 'organization'
+                  : 'job'),
             selected: pin.selected || false, // Include selected state
           },
         })),

@@ -7,6 +7,7 @@ export interface MapPin {
   hourlyRate?: number
   availability?: 'available' | 'unavailable'
   organization?: 'Individual' | 'Organization' | 'Job'
+  type?: 'worker' | 'organization' | 'job'
   color?: string // Custom color for the pin (e.g., yellow for jobs)
   badges?: Array<{
     id: string

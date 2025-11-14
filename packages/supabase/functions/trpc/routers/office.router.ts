@@ -201,6 +201,90 @@ export const officeRouter = t.router({
     .query(async ({ ctx, input }) => {
       const { supabaseAdmin, user } = ctx;
 
+      if (!user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not authenticated",
+        });
+      }
+
+      // Check if user is super admin
+      const { loadUserRoleAssignments, isSuperAdmin } = await import(
+        "../_shared/permissions/team-permissions"
+      );
+      const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
+      const superAdmin = isSuperAdmin(assignments);
+
+      // Get user's accessible organization IDs (unless super admin)
+      let organizationIds: Set<string> | null = null;
+      if (!superAdmin) {
+        organizationIds = new Set<string>();
+
+        // 1. Organizations owned by user
+        const { data: ownedOrgs, error: ownedError } = await supabaseAdmin
+          .schema("core")
+          .from("organizations")
+          .select("id")
+          .eq("owner_user_id", user.id);
+
+        if (ownedError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to fetch owned organizations: ${ownedError.message}`,
+          });
+        }
+
+        // Add owned organizations
+        for (const org of ownedOrgs ?? []) {
+          if (org.id) {
+            organizationIds.add(org.id as string);
+          }
+        }
+
+        // 2. Organizations where user is a team member
+        const { data: teamMemberships, error: membershipsError } = await supabaseAdmin
+          .schema("core")
+          .from("team_members")
+          .select("teams!inner(organization_id)")
+          .eq("user_id", user.id)
+          .neq("status", "removed");
+
+        if (membershipsError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to load team memberships: ${membershipsError.message}`,
+          });
+        }
+
+        // Add organizations from team memberships
+        for (const membership of teamMemberships ?? []) {
+          const orgId = membership.teams?.organization_id;
+          if (orgId && typeof orgId === "string") {
+            organizationIds.add(orgId);
+          }
+        }
+
+        // If user has no organization access, return empty result
+        if (organizationIds.size === 0) {
+          return {
+            jobs: [],
+            total: 0,
+          };
+        }
+
+        // If organization_id filter is provided, verify user has access
+        if (input.organization_id) {
+          if (!organizationIds.has(input.organization_id)) {
+            throw new TRPCError({
+              code: "FORBIDDEN",
+              message: "You do not have access to this organization",
+            });
+          }
+          organizationIds.clear();
+          organizationIds.add(input.organization_id);
+        }
+      }
+
       const jobTeamsRelationship =
         input.team_id || input.myTeamsOnly
           ? "job_team_assignments!inner"
@@ -239,7 +323,10 @@ export const officeRouter = t.router({
         .order("created_at", { ascending: false })
         .range(input.offset, input.offset + input.limit - 1);
 
-      if (input.organization_id) {
+      // Apply organization filter (unless super admin)
+      if (!superAdmin && organizationIds && organizationIds.size > 0) {
+        query = query.in("organization_id", Array.from(organizationIds));
+      } else if (input.organization_id) {
         query = query.eq("organization_id", input.organization_id);
       }
 
@@ -338,7 +425,16 @@ export const officeRouter = t.router({
   getJob: officeProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      const { data, error } = await ctx.supabaseAdmin
+      const { supabaseAdmin, user } = ctx;
+
+      if (!user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not authenticated",
+        });
+      }
+
+      const { data, error } = await supabaseAdmin
         .schema("core")
         .from("jobs")
         .select(
@@ -372,6 +468,57 @@ export const officeRouter = t.router({
           code: "NOT_FOUND",
           message: `Job not found: ${error.message}`,
         });
+      }
+
+      // Verify organization access (unless super admin)
+      const { loadUserRoleAssignments, isSuperAdmin } = await import(
+        "../_shared/permissions/team-permissions"
+      );
+      const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
+      const superAdmin = isSuperAdmin(assignments);
+
+      if (!superAdmin && data) {
+        const organizationId = data.organization_id as string | null;
+        if (organizationId) {
+          // Get user's accessible organization IDs
+          const organizationIds = new Set<string>();
+
+          // 1. Organizations owned by user
+          const { data: ownedOrgs } = await supabaseAdmin
+            .schema("core")
+            .from("organizations")
+            .select("id")
+            .eq("owner_user_id", user.id);
+
+          for (const org of ownedOrgs ?? []) {
+            if (org.id) {
+              organizationIds.add(org.id as string);
+            }
+          }
+
+          // 2. Organizations where user is a team member
+          const { data: teamMemberships } = await supabaseAdmin
+            .schema("core")
+            .from("team_members")
+            .select("teams!inner(organization_id)")
+            .eq("user_id", user.id)
+            .neq("status", "removed");
+
+          for (const membership of teamMemberships ?? []) {
+            const orgId = membership.teams?.organization_id;
+            if (orgId && typeof orgId === "string") {
+              organizationIds.add(orgId);
+            }
+          }
+
+          // Verify user has access to the organization
+          if (!organizationIds.has(organizationId)) {
+            throw new TRPCError({
+              code: "FORBIDDEN",
+              message: "You do not have access to this job's organization",
+            });
+          }
+        }
       }
 
       const {
@@ -426,6 +573,54 @@ export const officeRouter = t.router({
           code: "UNAUTHORIZED",
           message: "User not authenticated",
         });
+      }
+
+      // Verify organization access (unless super admin)
+      const { loadUserRoleAssignments, isSuperAdmin } = await import(
+        "../_shared/permissions/team-permissions"
+      );
+      const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
+      const superAdmin = isSuperAdmin(assignments);
+
+      if (!superAdmin && input.organization_id) {
+        // Get user's accessible organization IDs
+        const organizationIds = new Set<string>();
+
+        // 1. Organizations owned by user
+        const { data: ownedOrgs } = await supabaseAdmin
+          .schema("core")
+          .from("organizations")
+          .select("id")
+          .eq("owner_user_id", user.id);
+
+        for (const org of ownedOrgs ?? []) {
+          if (org.id) {
+            organizationIds.add(org.id as string);
+          }
+        }
+
+        // 2. Organizations where user is a team member
+        const { data: teamMemberships } = await supabaseAdmin
+          .schema("core")
+          .from("team_members")
+          .select("teams!inner(organization_id)")
+          .eq("user_id", user.id)
+          .neq("status", "removed");
+
+        for (const membership of teamMemberships ?? []) {
+          const orgId = membership.teams?.organization_id;
+          if (orgId && typeof orgId === "string") {
+            organizationIds.add(orgId);
+          }
+        }
+
+        // Verify user has access to the organization
+        if (!organizationIds.has(input.organization_id)) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "You do not have access to this organization",
+          });
+        }
       }
 
       // Extract certification_ids and skill_ids before inserting job
@@ -602,8 +797,15 @@ export const officeRouter = t.router({
   updateJob: officeProcedure
     .input(jobUpdateSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabaseAdmin } = ctx;
-      const { id, certification_ids, skill_ids, ...jobData } = input;
+      const { supabaseAdmin, user } = ctx;
+      const { id, certification_ids, skill_ids, team_ids, ...jobData } = input;
+
+      if (!user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not authenticated",
+        });
+      }
 
       const { data: existingJob, error: existingJobError } = await supabaseAdmin
         .schema("core")
@@ -621,11 +823,72 @@ export const officeRouter = t.router({
         });
       }
 
+      // Verify organization access (unless super admin)
+      const { loadUserRoleAssignments, isSuperAdmin } = await import(
+        "../_shared/permissions/team-permissions"
+      );
+      const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
+      const superAdmin = isSuperAdmin(assignments);
+
+      if (!superAdmin) {
+        const currentOrganizationId = existingJob.organization_id as string;
+        const nextOrganizationId = jobData.organization_id ?? currentOrganizationId;
+
+        // Get user's accessible organization IDs
+        const organizationIds = new Set<string>();
+
+        // 1. Organizations owned by user
+        const { data: ownedOrgs } = await supabaseAdmin
+          .schema("core")
+          .from("organizations")
+          .select("id")
+          .eq("owner_user_id", user.id);
+
+        for (const org of ownedOrgs ?? []) {
+          if (org.id) {
+            organizationIds.add(org.id as string);
+          }
+        }
+
+        // 2. Organizations where user is a team member
+        const { data: teamMemberships } = await supabaseAdmin
+          .schema("core")
+          .from("team_members")
+          .select("teams!inner(organization_id)")
+          .eq("user_id", user.id)
+          .neq("status", "removed");
+
+        for (const membership of teamMemberships ?? []) {
+          const orgId = membership.teams?.organization_id;
+          if (orgId && typeof orgId === "string") {
+            organizationIds.add(orgId);
+          }
+        }
+
+        // Verify user has access to current organization
+        if (!organizationIds.has(currentOrganizationId)) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "You do not have access to this job's organization",
+          });
+        }
+
+        // If changing organization, verify access to new organization
+        if (jobData.organization_id && jobData.organization_id !== currentOrganizationId) {
+          if (!organizationIds.has(nextOrganizationId)) {
+            throw new TRPCError({
+              code: "FORBIDDEN",
+              message: "You do not have access to the target organization",
+            });
+          }
+        }
+      }
+
       const currentOrganizationId = existingJob.organization_id as string;
       const nextOrganizationId = jobData.organization_id ?? currentOrganizationId;
 
-      const requestedTeamIds = inputTeamIds
-        ? Array.from(new Set(inputTeamIds))
+      const requestedTeamIds = team_ids
+        ? Array.from(new Set(team_ids))
         : undefined;
 
       if (
@@ -915,7 +1178,83 @@ export const officeRouter = t.router({
   publishJob: officeProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      const { data: job, error } = await ctx.supabaseAdmin
+      const { supabaseAdmin, user } = ctx;
+
+      if (!user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not authenticated",
+        });
+      }
+
+      // First, get the job to verify organization access
+      const { data: existingJob, error: jobError } = await supabaseAdmin
+        .schema("core")
+        .from("jobs")
+        .select("organization_id")
+        .eq("id", input.id)
+        .single();
+
+      if (jobError || !existingJob) {
+        throw new TRPCError({
+          code: jobError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+          message: jobError
+            ? `Failed to load job: ${jobError.message}`
+            : "Job not found",
+        });
+      }
+
+      // Verify organization access (unless super admin)
+      const { loadUserRoleAssignments, isSuperAdmin } = await import(
+        "../_shared/permissions/team-permissions"
+      );
+      const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
+      const superAdmin = isSuperAdmin(assignments);
+
+      if (!superAdmin) {
+        const organizationId = existingJob.organization_id as string;
+
+        // Get user's accessible organization IDs
+        const organizationIds = new Set<string>();
+
+        // 1. Organizations owned by user
+        const { data: ownedOrgs } = await supabaseAdmin
+          .schema("core")
+          .from("organizations")
+          .select("id")
+          .eq("owner_user_id", user.id);
+
+        for (const org of ownedOrgs ?? []) {
+          if (org.id) {
+            organizationIds.add(org.id as string);
+          }
+        }
+
+        // 2. Organizations where user is a team member
+        const { data: teamMemberships } = await supabaseAdmin
+          .schema("core")
+          .from("team_members")
+          .select("teams!inner(organization_id)")
+          .eq("user_id", user.id)
+          .neq("status", "removed");
+
+        for (const membership of teamMemberships ?? []) {
+          const orgId = membership.teams?.organization_id;
+          if (orgId && typeof orgId === "string") {
+            organizationIds.add(orgId);
+          }
+        }
+
+        // Verify user has access to the organization
+        if (!organizationIds.has(organizationId)) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "You do not have access to this job's organization",
+          });
+        }
+      }
+
+      const { data: job, error } = await supabaseAdmin
         .schema("core")
         .from("jobs")
         .update({
@@ -942,7 +1281,83 @@ export const officeRouter = t.router({
   closeJob: officeProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      const { data: job, error } = await ctx.supabaseAdmin
+      const { supabaseAdmin, user } = ctx;
+
+      if (!user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not authenticated",
+        });
+      }
+
+      // First, get the job to verify organization access
+      const { data: existingJob, error: jobError } = await supabaseAdmin
+        .schema("core")
+        .from("jobs")
+        .select("organization_id")
+        .eq("id", input.id)
+        .single();
+
+      if (jobError || !existingJob) {
+        throw new TRPCError({
+          code: jobError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+          message: jobError
+            ? `Failed to load job: ${jobError.message}`
+            : "Job not found",
+        });
+      }
+
+      // Verify organization access (unless super admin)
+      const { loadUserRoleAssignments, isSuperAdmin } = await import(
+        "../_shared/permissions/team-permissions"
+      );
+      const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
+      const superAdmin = isSuperAdmin(assignments);
+
+      if (!superAdmin) {
+        const organizationId = existingJob.organization_id as string;
+
+        // Get user's accessible organization IDs
+        const organizationIds = new Set<string>();
+
+        // 1. Organizations owned by user
+        const { data: ownedOrgs } = await supabaseAdmin
+          .schema("core")
+          .from("organizations")
+          .select("id")
+          .eq("owner_user_id", user.id);
+
+        for (const org of ownedOrgs ?? []) {
+          if (org.id) {
+            organizationIds.add(org.id as string);
+          }
+        }
+
+        // 2. Organizations where user is a team member
+        const { data: teamMemberships } = await supabaseAdmin
+          .schema("core")
+          .from("team_members")
+          .select("teams!inner(organization_id)")
+          .eq("user_id", user.id)
+          .neq("status", "removed");
+
+        for (const membership of teamMemberships ?? []) {
+          const orgId = membership.teams?.organization_id;
+          if (orgId && typeof orgId === "string") {
+            organizationIds.add(orgId);
+          }
+        }
+
+        // Verify user has access to the organization
+        if (!organizationIds.has(organizationId)) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "You do not have access to this job's organization",
+          });
+        }
+      }
+
+      const { data: job, error } = await supabaseAdmin
         .schema("core")
         .from("jobs")
         .update({ status: "closed" })
@@ -967,7 +1382,81 @@ export const officeRouter = t.router({
   deleteJob: officeProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      const { supabaseAdmin } = ctx;
+      const { supabaseAdmin, user } = ctx;
+
+      if (!user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User not authenticated",
+        });
+      }
+
+      // First, get the job to verify organization access
+      const { data: existingJob, error: jobError } = await supabaseAdmin
+        .schema("core")
+        .from("jobs")
+        .select("organization_id")
+        .eq("id", input.id)
+        .single();
+
+      if (jobError || !existingJob) {
+        throw new TRPCError({
+          code: jobError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+          message: jobError
+            ? `Failed to load job: ${jobError.message}`
+            : "Job not found",
+        });
+      }
+
+      // Verify organization access (unless super admin)
+      const { loadUserRoleAssignments, isSuperAdmin } = await import(
+        "../_shared/permissions/team-permissions"
+      );
+      const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id);
+      const superAdmin = isSuperAdmin(assignments);
+
+      if (!superAdmin) {
+        const organizationId = existingJob.organization_id as string;
+
+        // Get user's accessible organization IDs
+        const organizationIds = new Set<string>();
+
+        // 1. Organizations owned by user
+        const { data: ownedOrgs } = await supabaseAdmin
+          .schema("core")
+          .from("organizations")
+          .select("id")
+          .eq("owner_user_id", user.id);
+
+        for (const org of ownedOrgs ?? []) {
+          if (org.id) {
+            organizationIds.add(org.id as string);
+          }
+        }
+
+        // 2. Organizations where user is a team member
+        const { data: teamMemberships } = await supabaseAdmin
+          .schema("core")
+          .from("team_members")
+          .select("teams!inner(organization_id)")
+          .eq("user_id", user.id)
+          .neq("status", "removed");
+
+        for (const membership of teamMemberships ?? []) {
+          const orgId = membership.teams?.organization_id;
+          if (orgId && typeof orgId === "string") {
+            organizationIds.add(orgId);
+          }
+        }
+
+        // Verify user has access to the organization
+        if (!organizationIds.has(organizationId)) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "You do not have access to this job's organization",
+          });
+        }
+      }
 
       // Delete related records first (due to foreign key constraints)
       // Delete job certifications
