@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { test, expect, type Page } from '@playwright/test'
-import { signInAsTestUser } from './playwright-helpers/auth'
-import { ensureProfileComplete } from './playwright-helpers/profile'
+import { signInAsTestUser } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
+import { ensureProfileComplete } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/profile'
 
 test.describe('Regular • /dashboard/discover/map', () => {
   test('navigates and shows map UI', async ({ page }: { page: Page }) => {

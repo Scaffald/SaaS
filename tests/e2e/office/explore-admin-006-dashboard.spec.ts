@@ -4,7 +4,7 @@
  * This script explores the main dashboard page as an admin user
  */
 import { test, expect, type Page } from '@playwright/test'
-import { signInAsAdmin } from './playwright-helpers/auth'
+import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('Admin • /dashboard exploration', () => {
   test('explore dashboard page', async ({ page }: { page: Page }) => {

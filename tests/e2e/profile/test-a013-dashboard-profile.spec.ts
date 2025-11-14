@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { test, expect, type Page } from '@playwright/test'
-import { signInAsAdmin } from './playwright-helpers/auth'
+import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('Admin • /dashboard/profile', () => {
   // Test 1: Profile page loads (no index page - shows subsection content)

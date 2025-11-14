@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
-import { signInAsUser, TEST_USERS } from './playwright-helpers/auth'
-import { PrerequisiteFormHelpers } from './playwright-helpers/prerequisites'
+import { signInAsUser, TEST_USERS } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
+import { PrerequisiteFormHelpers } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/prerequisites'
 
 async function loadPrerequisitesForm(page: Page): Promise<PrerequisiteFormHelpers> {
   await signInAsUser(page, TEST_USERS.regular.email, TEST_USERS.regular.password)

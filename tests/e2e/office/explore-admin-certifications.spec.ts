@@ -8,7 +8,7 @@
  */
 
 import { test, expect, type Page } from '@playwright/test'
-import { signInAsAdmin } from './playwright-helpers/auth'
+import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 import { writeFileSync } from 'fs'
 
 test.describe('EXPLORATION • Admin /dashboard/profile/certifications', () => {

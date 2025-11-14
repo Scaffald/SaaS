@@ -17,6 +17,7 @@ import { useOrganizations } from './hooks/useOrganizations'
 import { useJobs } from './hooks/useJobs'
 import { useUserLocation } from './hooks/useUserLocation'
 import { useMapState } from './providers/MapStateProvider'
+import { useMapPinState, type ClusterInfo } from './hooks/useMapPinState'
 
 export const DiscoverMapScreen = () => {
   // Use Tamagui media hook to check breakpoint

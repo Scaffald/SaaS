@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { test, expect, type Page } from '@playwright/test'
-import { signInAsAdmin } from './playwright-helpers/auth'
+import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('Admin • /dashboard/discover/workers', () => {
   // Set longer timeout for all tests in this suite

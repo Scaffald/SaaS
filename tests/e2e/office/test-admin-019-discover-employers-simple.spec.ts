@@ -5,7 +5,7 @@
  */
 
 import { test, expect, type Page } from '@playwright/test'
-import { signInAsAdmin } from './playwright-helpers/auth'
+import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 const ROUTE_PATH = '/dashboard/discover/employers'
 

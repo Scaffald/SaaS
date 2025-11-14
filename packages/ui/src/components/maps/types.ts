@@ -43,6 +43,13 @@ export interface MapTooltipData {
   }>
 }
 
+export interface ClusterInfo {
+  clusterId: number
+  coordinates: [number, number]
+  pointCount: number
+  memberPinIds: string[]
+}
+
 export interface MapContainerProps {
   pins: MapPin[]
   center?: [number, number]
@@ -55,6 +62,8 @@ export interface MapContainerProps {
   onPinHover?: (pinId: string | null) => void
   onViewportChange?: (bounds: ViewportBounds, zoom: number) => void
   onMapReady?: (payload: { bounds: ViewportBounds; zoom: number }) => void
+  onClustersChange?: (clusters: ClusterInfo[]) => void
+  pinStates?: Map<string, { visibility: string; opacity: number }>
   showControls?: boolean
   style?: object
 }

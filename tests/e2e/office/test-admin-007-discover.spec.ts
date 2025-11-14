@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { test, expect, type Page } from '@playwright/test'
-import { signInAsAdmin } from './playwright-helpers/auth'
+import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('Admin • /dashboard/discover', () => {
   test('explore discover route UI elements', async ({ page }: { page: Page }) => {

@@ -525,10 +525,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
                   // Verify by checking if pin coordinates are very close to cluster center
                   for (const clusterFeature of clusterFeaturesAtPin) {
                     if (clusterFeature.geometry.type === 'Point') {
-                      const clusterCoords = clusterFeature.geometry.coordinates as [
-                        number,
-                        number
-                      ]
+                      const clusterCoords = clusterFeature.geometry.coordinates as [number, number]
                       const [pinLng, pinLat] = pin.coordinate
                       const [clusterLng, clusterLat] = clusterCoords
 
@@ -549,9 +546,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
                   // Use screen distance as additional check
                   const clusterCoords = clusterFeaturesAtPin[0].geometry as GeoJSON.Point
                   if (clusterCoords.coordinates) {
-                    const clusterPoint = map.project(
-                      clusterCoords.coordinates as [number, number]
-                    )
+                    const clusterPoint = map.project(clusterCoords.coordinates as [number, number])
                     const screenDistance = Math.sqrt(
                       (pinPoint.x - clusterPoint.x) ** 2 + (pinPoint.y - clusterPoint.y) ** 2
                     )

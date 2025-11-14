@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { test, expect, type Page } from '@playwright/test'
-import { signInAsUser, TEST_USERS } from './playwright-helpers/auth'
+import { signInAsUser, TEST_USERS } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 /**
  * Test Prerequisites Form Flow

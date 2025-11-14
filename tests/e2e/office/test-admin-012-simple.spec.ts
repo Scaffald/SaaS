@@ -3,7 +3,7 @@
  */
 
 import { test, expect } from '@playwright/test'
-import { signInAsAdmin } from './playwright-helpers/auth'
+import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('Admin Discover Workers', () => {
   test('explore worker discovery interface', async ({ page }) => {
