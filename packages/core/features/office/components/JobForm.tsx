@@ -1221,13 +1221,13 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                     try {
                       // Parse datetime-local format (YYYY-MM-DDTHH:mm)
                       const date = new Date(text)
-                      if (!isNaN(date.getTime())) {
+                      if (!Number.isNaN(date.getTime())) {
                         setFormData((prev) => ({
                           ...prev,
                           scheduled_publish_at: date.toISOString(),
                         }))
                       }
-                    } catch (error) {
+                    } catch (_error) {
                       // Invalid date, ignore
                     }
                   } else {

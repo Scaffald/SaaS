@@ -53,7 +53,7 @@ export const DrawerLink = ({
         </Paragraph>
       </XStack>
     ),
-    [active, renderIcon, title],
+    [active, renderIcon, title]
   )
 
   const renderRightSide = useCallback(
@@ -66,12 +66,10 @@ export const DrawerLink = ({
             </Paragraph>
           </XStack>
         )}
-        {!item.isExpandable && item.hasChevron && (
-          <ChevronRight size={16} color="$color10" />
-        )}
+        {!item.isExpandable && item.hasChevron && <ChevronRight size={16} color="$color10" />}
       </XStack>
     ),
-    [active, item.badge, item.hasChevron, item.isExpandable],
+    [active, item.badge, item.hasChevron, item.isExpandable]
   )
 
   if (item.disabled) {
@@ -234,8 +232,8 @@ export const DrawerLink = ({
         items="center"
         justify="space-between"
         px="$3"
-        py="$2"
-        rounded="$4"
+        py="$3"
+        rounded="$2"
         my="$1"
         bg={active ? '$blue9' : 'transparent'}
         hoverStyle={{ bg: active ? '$blue9' : '$color3' }}

@@ -442,121 +442,154 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         }
 
         // Wait for clusters to render, then create markers for unclustered pins
-        // Use requestAnimationFrame to ensure clusters are rendered before checking
+        // Use double requestAnimationFrame to ensure clusters are fully rendered
         requestAnimationFrame(() => {
-          const pinsSource = map.getSource('pins') as mapboxgl.GeoJSONSource | null
+          requestAnimationFrame(() => {
+            const pinsSource = map.getSource('pins') as mapboxgl.GeoJSONSource | null
 
-          // Get all rendered clusters to check against
-          let renderedClusters: Array<{ point: mapboxgl.Point; feature: GeoJSON.Feature }> = []
-          try {
-            // Get all cluster features that are currently rendered
-            const allClusterFeatures = map.queryRenderedFeatures(undefined, {
-              layers: ['clusters'],
-            })
+            // Get all cluster features from the source (more reliable than rendered features)
+            let clusterFeatures: Array<{
+              coordinates: [number, number]
+              clusterId: number
+              pointCount: number
+            }> = []
 
-            // Store their screen positions for quick lookup
-            renderedClusters = allClusterFeatures
-              .map((feature) => {
-                if (feature.geometry.type === 'Point') {
-                  const coords = feature.geometry.coordinates as [number, number]
-                  return {
-                    point: map.project(coords),
-                    feature: feature as GeoJSON.Feature,
-                  }
-                }
-                return null
-              })
-              .filter(
-                (item): item is { point: mapboxgl.Point; feature: GeoJSON.Feature } => item !== null
-              )
-          } catch (error) {
-            console.warn('Failed to query rendered clusters:', error)
-          }
+            if (pinsSource && currentZoom <= CLUSTER_MAX_ZOOM) {
+              try {
+                // Query source features to get all clusters
+                const bounds = map.getBounds()
+                const sourceFeatures = map.querySourceFeatures('pins', {
+                  sourceLayer: undefined,
+                  filter: ['has', 'point_count'],
+                })
 
-          // Helper to check if a pin is in a cluster
-          const isPinInCluster = (pin: (typeof pins)[0]): boolean => {
-            if (currentZoom > CLUSTER_MAX_ZOOM || !pinsSource) {
-              return false
+                // Extract cluster information
+                clusterFeatures = sourceFeatures
+                  .map((feature) => {
+                    if (feature.geometry.type === 'Point' && feature.properties?.cluster_id) {
+                      return {
+                        coordinates: feature.geometry.coordinates as [number, number],
+                        clusterId: feature.properties.cluster_id as number,
+                        pointCount: (feature.properties.point_count as number) || 0,
+                      }
+                    }
+                    return null
+                  })
+                  .filter((item): item is NonNullable<typeof item> => item !== null)
+              } catch (error) {
+                console.warn('Failed to query source clusters:', error)
+              }
             }
 
-            try {
-              // Project pin to screen coordinates
-              const pinPoint = map.project(pin.coordinate)
-
-              // Check if pin is near any rendered cluster
-              // Clusters have a visual radius, so check within that radius
-              const clusterRadius = 60 // Max cluster visual radius + buffer
-              for (const cluster of renderedClusters) {
-                const dx = Math.abs(pinPoint.x - cluster.point.x)
-                const dy = Math.abs(pinPoint.y - cluster.point.y)
-                const distance = Math.sqrt(dx * dx + dy * dy)
-
-                // If pin is within cluster radius, it's part of the cluster
-                if (distance < clusterRadius) {
-                  return true
-                }
+            // Helper to check if a pin is in a cluster
+            // Uses queryRenderedFeatures to check if there's a cluster at the pin's screen position
+            const isPinInCluster = (pin: (typeof pins)[0]): boolean => {
+              if (currentZoom > CLUSTER_MAX_ZOOM || !pinsSource) {
+                return false
               }
 
-              return false
-            } catch (error) {
-              // If query fails, assume NOT clustered to avoid hiding pins incorrectly
-              return false
+              try {
+                // Project pin to screen coordinates
+                const pinPoint = map.project(pin.coordinate)
+
+                // Query for clusters at this screen position (with a small buffer)
+                // Clusters have a visual radius, so check within that radius
+                const buffer = 50 // pixels - cluster visual radius + buffer
+                const bbox: [[number, number], [number, number]] = [
+                  [pinPoint.x - buffer, pinPoint.y - buffer],
+                  [pinPoint.x + buffer, pinPoint.y + buffer],
+                ]
+
+                const featuresAtPin = map.queryRenderedFeatures(bbox, {
+                  layers: ['clusters'],
+                })
+
+                // If there's a cluster at this position, the pin is in a cluster
+                if (featuresAtPin.length > 0) {
+                  return true
+                }
+
+                return false
+              } catch (error) {
+                // If query fails, fall back to checking screen distance to cluster centers
+                try {
+                  const pinPoint = map.project(pin.coordinate)
+                  let minScreenDistance = Number.POSITIVE_INFINITY
+
+                  for (const cluster of clusterFeatures) {
+                    const clusterPoint = map.project(cluster.coordinates)
+                    const screenDistance = Math.sqrt(
+                      (pinPoint.x - clusterPoint.x) ** 2 + (pinPoint.y - clusterPoint.y) ** 2
+                    )
+
+                    if (screenDistance < minScreenDistance) {
+                      minScreenDistance = screenDistance
+                    }
+                  }
+
+                  // If pin is very close to a cluster center (within 50px), it's likely in the cluster
+                  return minScreenDistance < 50
+                } catch (fallbackError) {
+                  // If all checks fail, assume not clustered to avoid hiding pins incorrectly
+                  return false
+                }
+              }
             }
-          }
 
-          // Create new markers only for pins that are NOT in clusters
-          for (const pin of pins) {
-            // Validate pin data
-            if (
-              !pin.id ||
-              !pin.coordinate ||
-              !Array.isArray(pin.coordinate) ||
-              pin.coordinate.length !== 2
-            ) {
-              console.warn('Invalid pin data:', pin)
-              continue
+            // Create new markers only for pins that are NOT in clusters
+            for (const pin of pins) {
+              // Validate pin data
+              if (
+                !pin.id ||
+                !pin.coordinate ||
+                !Array.isArray(pin.coordinate) ||
+                pin.coordinate.length !== 2
+              ) {
+                console.warn('Invalid pin data:', pin)
+                continue
+              }
+
+              const [lng, lat] = pin.coordinate
+
+              // Validate coordinates
+              if (
+                typeof lng !== 'number' ||
+                typeof lat !== 'number' ||
+                Number.isNaN(lng) ||
+                Number.isNaN(lat)
+              ) {
+                console.warn('Invalid pin coordinates:', pin.coordinate)
+                continue
+              }
+
+              // Check if coordinates are within valid range
+              if (lng < -180 || lng > 180 || lat < -90 || lat > 90) {
+                console.warn('Pin coordinates out of range:', pin.coordinate)
+                continue
+              }
+
+              // Skip if pin is in a cluster
+              if (isPinInCluster(pin)) {
+                continue
+              }
+
+              try {
+                const marker = new CustomMarker({
+                  pin,
+                  onClick: (pinId) => {
+                    onPinPress?.(pinId)
+                  },
+                  onHover: onPinHover,
+                  zoom: currentZoom,
+                })
+
+                marker.setLngLat(pin.coordinate).addTo(map)
+                markersRef.current.set(pin.id, marker)
+              } catch (error) {
+                console.error('Error creating marker for pin:', pin.id, error)
+              }
             }
-
-            const [lng, lat] = pin.coordinate
-
-            // Validate coordinates
-            if (
-              typeof lng !== 'number' ||
-              typeof lat !== 'number' ||
-              Number.isNaN(lng) ||
-              Number.isNaN(lat)
-            ) {
-              console.warn('Invalid pin coordinates:', pin.coordinate)
-              continue
-            }
-
-            // Check if coordinates are within valid range
-            if (lng < -180 || lng > 180 || lat < -90 || lat > 90) {
-              console.warn('Pin coordinates out of range:', pin.coordinate)
-              continue
-            }
-
-            // Skip if pin is in a cluster
-            if (isPinInCluster(pin)) {
-              continue
-            }
-
-            try {
-              const marker = new CustomMarker({
-                pin,
-                onClick: (pinId) => {
-                  onPinPress?.(pinId)
-                },
-                onHover: onPinHover,
-                zoom: currentZoom,
-              })
-
-              marker.setLngLat(pin.coordinate).addTo(map)
-              markersRef.current.set(pin.id, marker)
-            } catch (error) {
-              console.error('Error creating marker for pin:', pin.id, error)
-            }
-          }
+          })
         })
       } catch (error) {
         console.error('Error updating markers:', error)

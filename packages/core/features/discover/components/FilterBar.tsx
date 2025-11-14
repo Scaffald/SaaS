@@ -32,7 +32,6 @@ export const FilterBar = ({
       position="absolute"
       b="$4"
       l={0}
-      r={0}
       $sm={{ r: 0 }}
       $gtSm={{ r: railVisible ? 440 : 0 }}
       z={50}

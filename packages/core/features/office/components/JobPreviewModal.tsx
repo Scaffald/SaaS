@@ -12,11 +12,7 @@ import {
   Award,
 } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
-import type { inferRouterOutputs } from '@trpc/server'
-import type { AppRouter } from '@app/supabase/client-types'
 import { extractPlainText } from '@app/ui/components/rich-text'
-
-type JobOutput = inferRouterOutputs<AppRouter>['office']['getJob']
 
 interface JobPreviewModalProps {
   jobId: string | null
@@ -230,14 +226,18 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                   </Text>
                 </XStack>
                 <XStack gap="$2" flexWrap="wrap">
-                  {job.job_skills.map((jobSkill, idx) => {
+                  {job.job_skills.map((jobSkill: (typeof job.job_skills)[number], idx: number) => {
                     const skillName =
                       jobSkill.csi_skill?.name ||
                       jobSkill.onet_occupation?.title ||
                       'Unknown Skill'
+                    const skillKey =
+                      jobSkill.csi_skill?.id?.toString() ||
+                      jobSkill.onet_occupation?.code?.toString() ||
+                      `skill-${idx}-${skillName}`
                     return (
                       <XStack
-                        key={idx}
+                        key={skillKey}
                         bg="$blue3"
                         px="$2"
                         py="$1"
@@ -263,18 +263,24 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                   </Text>
                 </XStack>
                 <YStack gap="$2">
-                  {job.job_certifications.map((jobCert, idx) => (
-                    <XStack key={idx} gap="$2" items="center">
-                      <Text fontSize="$3" color="$color11">
-                        {jobCert.certification?.name || 'Unknown Certification'}
-                      </Text>
-                      {jobCert.is_required && (
-                        <Text fontSize="$2" color="$red10">
-                          (Required)
+                  {job.job_certifications.map((jobCert: (typeof job.job_certifications)[number], idx: number) => {
+                    const certKey =
+                      jobCert.certification?.id?.toString() ||
+                      jobCert.id?.toString() ||
+                      `cert-${idx}-${jobCert.certification?.name || 'unknown'}`
+                    return (
+                      <XStack key={certKey} gap="$2" items="center">
+                        <Text fontSize="$3" color="$color11">
+                          {jobCert.certification?.name || 'Unknown Certification'}
                         </Text>
-                      )}
-                    </XStack>
-                  ))}
+                        {jobCert.is_required && (
+                          <Text fontSize="$2" color="$red10">
+                            (Required)
+                          </Text>
+                        )}
+                      </XStack>
+                    )
+                  })}
                 </YStack>
               </YStack>
             )}
