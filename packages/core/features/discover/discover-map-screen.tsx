@@ -1,6 +1,14 @@
 import { useMemo, useState, useRef, useCallback, useEffect } from 'react'
-import { Sheet, YStack, XStack, Tabs, Text, Button, useMedia } from 'tamagui'
-import { MapContainer, type MapContainerRef, type MapPinType, type ViewportBounds } from '@app/ui'
+import { Sheet, YStack, XStack, Tabs, Text, Button, useMedia, ScrollView } from 'tamagui'
+import {
+  MapContainer,
+  type MapContainerRef,
+  type MapPinType,
+  type ViewportBounds,
+  AddressAutocomplete,
+  type AddressResult,
+  ToggleSwitch,
+} from '@app/ui'
 
 import { MapFilterBar } from './components/MapFilterBar'
 import { ResultsRail } from './components/ResultsRail'
@@ -18,7 +26,14 @@ import { useJobs } from './hooks/useJobs'
 import { useUserLocation } from './hooks/useUserLocation'
 import { useMapState } from './providers/MapStateProvider'
 import { useMapPinState, type ClusterInfo } from './hooks/useMapPinState'
-import { List as ListIcon, Map as MapIcon, Search } from '@tamagui/lucide-icons'
+import {
+  List as ListIcon,
+  Map as MapIcon,
+  Search,
+  SlidersHorizontal,
+  RotateCcw,
+  X,
+} from '@tamagui/lucide-icons'
 
 export const DiscoverMapScreen = () => {
   // Use Tamagui media hook to check breakpoint
@@ -53,6 +68,9 @@ export const DiscoverMapScreen = () => {
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false)
   const [userPanelOpen, setUserPanelOpen] = useState(false)
   const [userPanelUserId, setUserPanelUserId] = useState<string | null>(null)
+  const [mobileSearchQuery, setMobileSearchQuery] = useState('')
+
+  const mapboxToken = process.env.EXPO_PUBLIC_MAPBOX_TOKEN
 
   // Hover state management
   const [hoveredPinId, setHoveredPinId] = useState<string | null>(null)
@@ -62,6 +80,7 @@ export const DiscoverMapScreen = () => {
     undefined
   )
   const [isHoverCardPinned, setIsHoverCardPinned] = useState(false)
+  const [isHoverCardLocked, setIsHoverCardLocked] = useState(false)
   const hoverDismissPendingRef = useRef(false)
 
   // Pin state management for transitions and clustering
@@ -163,6 +182,25 @@ export const DiscoverMapScreen = () => {
     showJobs,
   ])
 
+  const isPinVisible = useCallback(
+    (id: string) => {
+      const pinState = pinStates.get(id)
+      return (
+        !pinState ||
+        (pinState.visibility !== 'hidden' && pinState.visibility !== 'transitioning-out')
+      )
+    },
+    [pinStates]
+  )
+
+  const visibleProfiles = showWorkers
+    ? talentProfiles.filter((profile) => isPinVisible(profile.id))
+    : []
+  const visibleOrganizations = showOrganizations
+    ? organizations.filter((org) => isPinVisible(org.id))
+    : []
+  const visibleJobs = showJobs ? jobs.filter((job) => isPinVisible(job.id)) : []
+
   // Process pins with cluster information for state management
   const processPinsRef = useRef(processPins)
   useEffect(() => {
@@ -198,17 +236,51 @@ export const DiscoverMapScreen = () => {
   }, [])
 
   const clearHoverState = useCallback(() => {
+    hoverDismissPendingRef.current = false
+    setIsHoverCardPinned(false)
+    setIsHoverCardLocked(false)
     setHoveredPinId(null)
     setHoveredPinType(null)
     setHoverCardVisible(false)
     setHoverCardPosition(undefined)
   }, [])
 
+  const getPinType = useCallback(
+    (pinId: string): 'worker' | 'organization' | null => {
+      if (talentProfiles.some((p) => p.id === pinId)) {
+        return 'worker'
+      }
+      if (organizations.some((o) => o.id === pinId)) {
+        return 'organization'
+      }
+      return null
+    },
+    [talentProfiles, organizations]
+  )
+
+  const updateHoverCardPosition = useCallback((pinId: string) => {
+    const coords = mapRef.current?.getPinScreenCoordinates?.(pinId)
+    if (coords) {
+      setHoverCardPosition(coords)
+    }
+  }, [])
+
+  const showHoverCardForPin = useCallback(
+    (pinId: string, pinType: 'worker' | 'organization') => {
+      hoverDismissPendingRef.current = false
+      setHoveredPinId(pinId)
+      setHoveredPinType(pinType)
+      setHoverCardVisible(true)
+      updateHoverCardPosition(pinId)
+    },
+    [updateHoverCardPosition]
+  )
+
   // Handle pin hover - show preview card
   const handlePinHover = useCallback(
     (pinId: string | null) => {
       if (pinId === null) {
-        if (isHoverCardPinned) {
+        if (isHoverCardPinned || isHoverCardLocked) {
           hoverDismissPendingRef.current = true
           return
         }
@@ -216,42 +288,42 @@ export const DiscoverMapScreen = () => {
         return
       }
 
+      if (isHoverCardLocked) {
+        return
+      }
+
       hoverDismissPendingRef.current = false
 
-      // Determine pin type
-      const isWorker = talentProfiles.some((p) => p.id === pinId)
-      const isOrg = organizations.some((o) => o.id === pinId)
+      const pinType = getPinType(pinId)
 
-      if (isWorker || isOrg) {
-        setHoveredPinId(pinId)
-        setHoveredPinType(isWorker ? 'worker' : 'organization')
-        setHoverCardVisible(true)
-
-        // Get pin screen coordinates for positioning
-        if (mapRef.current?.getPinScreenCoordinates) {
-          const coords = mapRef.current.getPinScreenCoordinates(pinId)
-          if (coords) {
-            setHoverCardPosition(coords)
-          }
-        }
+      if (pinType) {
+        setIsHoverCardPinned(false)
+        showHoverCardForPin(pinId, pinType)
       } else {
         clearHoverState()
       }
     },
-    [talentProfiles, organizations, isHoverCardPinned, clearHoverState]
+    [
+      clearHoverState,
+      getPinType,
+      isHoverCardLocked,
+      isHoverCardPinned,
+      showHoverCardForPin,
+    ]
   )
 
   const handleHoverCardEnter = useCallback(() => {
+    hoverDismissPendingRef.current = false
     setIsHoverCardPinned(true)
   }, [])
 
   const handleHoverCardLeave = useCallback(() => {
     setIsHoverCardPinned(false)
-    if (hoverDismissPendingRef.current) {
+    if (hoverDismissPendingRef.current && !isHoverCardLocked) {
       hoverDismissPendingRef.current = false
       clearHoverState()
     }
-  }, [clearHoverState])
+  }, [clearHoverState, isHoverCardLocked])
 
   // Handle pin click - focus corresponding card
   const handleMarkerPress = useCallback(
@@ -267,25 +339,42 @@ export const DiscoverMapScreen = () => {
         return
       }
 
-      clearHoverState()
+      const pinType = getPinType(pinId)
+      if (pinType) {
+        setIsHoverCardLocked(true)
+        showHoverCardForPin(pinId, pinType)
+      } else {
+        setIsHoverCardLocked(false)
+        clearHoverState()
+      }
+
       setSelectedProfileId(pinId)
       setUserPanelOpen(false)
       setUserPanelUserId(null)
       setWorkerModalOpen(false)
+      setWorkerModalUserId(null)
       setJobModalOpen(false)
+      setJobModalId(null)
       setOrgModalOpen(false)
+      setOrgModalId(null)
 
       if (isSmallScreen) {
         setMobileViewMode('list')
       } else {
         updateResultsRailVisible(true)
+        setTimeout(() => {
+          resultListRef.current?.scrollToCard(pinId)
+        }, 200)
       }
-
-      setTimeout(() => {
-        resultListRef.current?.scrollToCard(pinId)
-      }, 200)
     },
-    [clearHoverState, isSmallScreen, updateResultsRailVisible, setMobileViewMode]
+    [
+      clearHoverState,
+      getPinType,
+      isSmallScreen,
+      showHoverCardForPin,
+      updateResultsRailVisible,
+      setMobileViewMode,
+    ]
   )
 
   const handleReset = useCallback(() => {
@@ -297,12 +386,10 @@ export const DiscoverMapScreen = () => {
     setUserPanelOpen(false)
     setUserPanelUserId(null)
     // Clear hover state
-    setHoveredPinId(null)
-    setHoveredPinType(null)
-    setHoverCardVisible(false)
+    clearHoverState()
     // Clear persisted state
     clearState()
-  }, [clearState])
+  }, [clearHoverState, clearState])
 
   const handleLocationSelect = useCallback(
     (location: { longitude: number; latitude: number; label: string }) => {
@@ -401,23 +488,23 @@ export const DiscoverMapScreen = () => {
 
   const mobileListActive = isSmallScreen && mobileViewMode === 'list'
 
-  const handleMobileResultSelect = useCallback(
-    (id: string) => {
-      setSelectedProfileId(id)
-      setMobileViewMode('map')
-      if (mapRef.current?.centerOnPin) {
-        mapRef.current.centerOnPin(id)
-      }
-    },
-    []
-  )
+  const handleMobileResultSelect = useCallback((id: string) => {
+    setSelectedProfileId(id)
+    setMobileViewMode('map')
+    if (mapRef.current?.centerOnPin) {
+      mapRef.current.centerOnPin(id)
+    }
+  }, [])
 
   return (
     <YStack flex={1} height="100vh" overflow="hidden" position="relative">
       {/* Filter Bar / Mobile Header */}
       {isSmallScreen ? (
-        <MobileTopControls
-          resultsCount={resultsCount}
+        <MobileSearchHeader
+          searchQuery={mobileSearchQuery}
+          onSearchQueryChange={setMobileSearchQuery}
+          mapboxToken={mapboxToken}
+          onLocationSelect={handleLocationSelect}
           onFiltersPress={() => setFiltersSheetOpen(true)}
         />
       ) : (
@@ -543,25 +630,16 @@ export const DiscoverMapScreen = () => {
           <Sheet.Overlay />
           <Sheet.Handle />
           <Sheet.Frame>
-            <YStack flex={1} p="$4" gap="$4">
-              <Text fontSize="$6" fontWeight="700">
-                Search & Filters
-              </Text>
-              <MapFilterBar
-                onLocationSelect={handleLocationSelect}
-                showWorkers={showWorkers}
-                showOrganizations={showOrganizations}
-                showJobs={showJobs}
-                onShowWorkersChange={(value) => updateFilters({ showWorkers: value })}
-                onShowOrganizationsChange={(value) => updateFilters({ showOrganizations: value })}
-                onShowJobsChange={(value) => updateFilters({ showJobs: value })}
-                resultsCount={resultsCount}
-                onResultsPress={() => {
-                  setMobileViewMode('list')
-                }}
-                onReset={handleReset}
-              />
-            </YStack>
+            <MobileFiltersContent
+              showWorkers={showWorkers}
+              showOrganizations={showOrganizations}
+              showJobs={showJobs}
+              onShowWorkersChange={(value) => updateFilters({ showWorkers: value })}
+              onShowOrganizationsChange={(value) => updateFilters({ showOrganizations: value })}
+              onShowJobsChange={(value) => updateFilters({ showJobs: value })}
+              onClose={() => setFiltersSheetOpen(false)}
+              onReset={handleReset}
+            />
           </Sheet.Frame>
         </Sheet>
       )}
@@ -584,43 +662,107 @@ export const DiscoverMapScreen = () => {
   )
 }
 
-type MobileTopControlsProps = {
-  resultsCount: number
+type MobileSearchHeaderProps = {
+  searchQuery: string
+  onSearchQueryChange: (value: string) => void
+  mapboxToken?: string
+  onLocationSelect: (location: { longitude: number; latitude: number; label: string }) => void
   onFiltersPress: () => void
 }
 
-const MobileTopControls = ({ resultsCount, onFiltersPress }: MobileTopControlsProps) => {
+const validateMapboxToken = (token: string | undefined): { valid: boolean; error?: string } => {
+  if (!token) {
+    return { valid: false, error: 'Map search unavailable. Please configure a Mapbox token.' }
+  }
+  if (!token.startsWith('pk.')) {
+    return { valid: false, error: 'Invalid Mapbox token format. Please verify configuration.' }
+  }
+  return { valid: true }
+}
+
+const MobileSearchHeader = ({
+  searchQuery,
+  onSearchQueryChange,
+  mapboxToken,
+  onLocationSelect,
+  onFiltersPress,
+}: MobileSearchHeaderProps) => {
+  const tokenValidation = useMemo(() => validateMapboxToken(mapboxToken), [mapboxToken])
+
+  const handleAddressSelect = useCallback(
+    (address: AddressResult) => {
+      onLocationSelect({
+        longitude: address.coordinates.lng,
+        latitude: address.coordinates.lat,
+        label: address.formattedAddress,
+      })
+      onSearchQueryChange('')
+    },
+    [onLocationSelect, onSearchQueryChange]
+  )
+
   return (
-    <XStack
+    <YStack
       width="100%"
       px="$4"
       py="$3"
       gap="$3"
-      items="center"
       bg="$background"
       borderBottomWidth={1}
       borderBottomColor="$borderColor"
     >
-      <YStack flex={1}>
-        <Text fontSize="$1" color="$color10">
-          Results
-        </Text>
-        <Text fontSize="$5" fontWeight="700">
-          {resultsCount}
-        </Text>
-      </YStack>
+      {tokenValidation.valid ? (
+        <AddressAutocomplete
+          value={searchQuery}
+          onChange={onSearchQueryChange}
+          onAddressSelect={handleAddressSelect}
+          placeholder="Search city, county, or region..."
+          provider="mapbox"
+          apiKey={mapboxToken}
+          zoomLevel="city"
+          searchOptions={{
+            types: ['place', 'region', 'district', 'locality'],
+          }}
+          minLength={2}
+          maxResults={5}
+          debounceMs={300}
+          containerProps={{
+            flex: 1,
+            w: '100%',
+            bg: '$background',
+            rounded: '$5',
+          }}
+        />
+      ) : (
+        <YStack
+          width="100%"
+          bg="$background"
+          p="$3"
+          rounded="$4"
+          borderWidth={1}
+          borderColor="$red8"
+          gap="$2"
+        >
+          <Text fontSize="$4" fontWeight="600" color="$red10">
+            Map Search Unavailable
+          </Text>
+          <Text fontSize="$2" color="$color10">
+            {tokenValidation.error}
+          </Text>
+        </YStack>
+      )}
 
       <Button
         size="$4"
         variant="outlined"
-        px="$5"
-        icon={Search}
-        aria-label="Open search and filters"
+        px="$4"
+        icon={SlidersHorizontal}
+        aria-label="Open filters"
         onPress={onFiltersPress}
       >
-        Search & Filters
+        Filters
       </Button>
-    </XStack>
+    </YStack>
   )
 }
 
@@ -682,5 +824,100 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
     </XStack>
   )
 }
+
+type MobileFiltersContentProps = {
+  showWorkers: boolean
+  showOrganizations: boolean
+  showJobs: boolean
+  onShowWorkersChange: (value: boolean) => void
+  onShowOrganizationsChange: (value: boolean) => void
+  onShowJobsChange: (value: boolean) => void
+  onClose: () => void
+  onReset: () => void
+}
+
+const MobileFiltersContent = ({
+  showWorkers,
+  showOrganizations,
+  showJobs,
+  onShowWorkersChange,
+  onShowOrganizationsChange,
+  onShowJobsChange,
+  onClose,
+  onReset,
+}: MobileFiltersContentProps) => {
+  return (
+    <YStack flex={1} p="$4" gap="$4">
+      <XStack justify="space-between" items="center">
+        <Text fontSize="$6" fontWeight="700">
+          Filters
+        </Text>
+        <Button
+          size="$3"
+          circular
+          variant="outlined"
+          icon={X}
+          aria-label="Close filters"
+          onPress={onClose}
+        />
+      </XStack>
+
+      <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+        <YStack gap="$4" pb="$6">
+          <FilterToggle
+            label="Workers"
+            description="Show worker profiles on the map"
+            value={showWorkers}
+            onValueChange={onShowWorkersChange}
+          />
+          <FilterToggle
+            label="Employers"
+            description="Show employer organizations on the map"
+            value={showOrganizations}
+            onValueChange={onShowOrganizationsChange}
+          />
+          <FilterToggle
+            label="Jobs"
+            description="Show job openings on the map"
+            value={showJobs}
+            onValueChange={onShowJobsChange}
+          />
+        </YStack>
+      </ScrollView>
+
+      <Button
+        size="$4"
+        variant="outlined"
+        icon={RotateCcw}
+        scaleIcon={1.2}
+        onPress={onReset}
+        aria-label="Reset filters"
+      >
+        Reset Filters
+      </Button>
+    </YStack>
+  )
+}
+
+type FilterToggleProps = {
+  label: string
+  description: string
+  value: boolean
+  onValueChange: (value: boolean) => void
+}
+
+const FilterToggle = ({ label, description, value, onValueChange }: FilterToggleProps) => (
+  <YStack gap="$2" bg="$color2" p="$3" rounded="$4" borderWidth={1} borderColor="$borderColor">
+    <XStack justify="space-between" items="center" gap="$2">
+      <Text fontSize="$4" fontWeight="600">
+        {label}
+      </Text>
+      <ToggleSwitch checked={value} onCheckedChange={onValueChange} aria-label={label} />
+    </XStack>
+    <Text fontSize="$2" color="$color10">
+      {description}
+    </Text>
+  </YStack>
+)
 
 export default DiscoverMapScreen
