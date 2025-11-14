@@ -8,6 +8,8 @@ import { WorkerPreviewModal } from './components/WorkerPreviewModal'
 import { JobPreviewModal } from './components/JobPreviewModal'
 import { OrganizationPreviewModal } from './components/OrganizationPreviewModal'
 import { UserProfilePanel } from './components/UserProfilePanel'
+import { ProfileHoverCard } from './components/ProfileHoverCard'
+import { Platform } from 'react-native'
 import type { ResultListRef } from './components/ResultList'
 import { defaultCenter } from './data/mockProfiles'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
@@ -53,10 +55,13 @@ export const DiscoverMapScreen = () => {
   const [userPanelOpen, setUserPanelOpen] = useState(false)
   const [userPanelUserId, setUserPanelUserId] = useState<string | null>(null)
 
-  // Hover state management (will be used in Task 6)
-  const [_hoveredPinId, setHoveredPinId] = useState<string | null>(null)
-  const [_hoveredPinType, setHoveredPinType] = useState<'worker' | 'organization' | null>(null)
-  const [_hoverCardVisible, setHoverCardVisible] = useState(false)
+  // Hover state management
+  const [hoveredPinId, setHoveredPinId] = useState<string | null>(null)
+  const [hoveredPinType, setHoveredPinType] = useState<'worker' | 'organization' | null>(null)
+  const [hoverCardVisible, setHoverCardVisible] = useState(false)
+  const [hoverCardPosition, setHoverCardPosition] = useState<{ x: number; y: number } | undefined>(
+    undefined
+  )
 
   // Use persisted state from context
   const showRail = state.resultsRailVisible
@@ -151,13 +156,14 @@ export const DiscoverMapScreen = () => {
     showJobs,
   ])
 
-  // Handle pin hover - show preview card (will be connected to MapContainer in Task 5)
-  const _handlePinHover = useCallback(
+  // Handle pin hover - show preview card
+  const handlePinHover = useCallback(
     (pinId: string | null) => {
       if (pinId === null) {
         setHoveredPinId(null)
         setHoveredPinType(null)
         setHoverCardVisible(false)
+        setHoverCardPosition(undefined)
         return
       }
 
@@ -169,10 +175,19 @@ export const DiscoverMapScreen = () => {
         setHoveredPinId(pinId)
         setHoveredPinType(isWorker ? 'worker' : 'organization')
         setHoverCardVisible(true)
+
+        // Get pin screen coordinates for positioning
+        if (mapRef.current?.getPinScreenCoordinates) {
+          const coords = mapRef.current.getPinScreenCoordinates(pinId)
+          if (coords) {
+            setHoverCardPosition(coords)
+          }
+        }
       } else {
         setHoveredPinId(null)
         setHoveredPinType(null)
         setHoverCardVisible(false)
+        setHoverCardPosition(undefined)
       }
     },
     [talentProfiles, organizations]
@@ -359,6 +374,7 @@ export const DiscoverMapScreen = () => {
           radius={state.lastSearchLocation ? 50 : undefined} // Default 50 miles radius when search location is set
           centerLocation={state.lastSearchLocation?.coordinates}
           onPinPress={handleMarkerPress}
+          onPinHover={handlePinHover}
           onViewportChange={handleViewportChange}
           onMapReady={handleMapReady}
           style={{ flex: 1 }}
@@ -384,6 +400,16 @@ export const DiscoverMapScreen = () => {
           />
         )}
       </XStack>
+
+      {/* Hover Card - Web only */}
+      {Platform.OS === 'web' && (
+        <ProfileHoverCard
+          pinId={hoveredPinId}
+          pinType={hoveredPinType}
+          visible={hoverCardVisible}
+          position={hoverCardPosition}
+        />
+      )}
 
       {/* Modals - Rendered for both mobile and desktop */}
       <WorkerPreviewModal
