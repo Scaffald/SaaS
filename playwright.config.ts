@@ -24,7 +24,7 @@ export default defineConfig({
   reporter: [['list']],
   
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:3000',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:8081',
     trace: 'on-first-retry',
     
     // Improve browser cleanup to prevent hanging processes
@@ -38,9 +38,15 @@ export default defineConfig({
   },
   
   projects: [
+    // Setup project - runs first to create auth state files
+    {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+    },
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      dependencies: ['setup'],
     },
     /* Multi-viewport responsive testing - Priority 1 viewports */
     {
@@ -49,6 +55,7 @@ export default defineConfig({
         ...devices['iPhone SE'],
         viewport: { width: 375, height: 667 },
       },
+      dependencies: ['setup'],
     },
     {
       name: 'iPhone 12',
@@ -56,6 +63,7 @@ export default defineConfig({
         ...devices['iPhone 12'],
         viewport: { width: 390, height: 844 },
       },
+      dependencies: ['setup'],
     },
     {
       name: 'iPhone Pro Max',
@@ -63,6 +71,7 @@ export default defineConfig({
         ...devices['iPhone 12 Pro Max'],
         viewport: { width: 428, height: 926 },
       },
+      dependencies: ['setup'],
     },
     {
       name: 'iPad',
@@ -70,6 +79,7 @@ export default defineConfig({
         ...devices['iPad'],
         viewport: { width: 768, height: 1024 },
       },
+      dependencies: ['setup'],
     },
     {
       name: 'iPad Pro',
@@ -77,6 +87,7 @@ export default defineConfig({
         ...devices['iPad Pro'],
         viewport: { width: 1024, height: 1366 },
       },
+      dependencies: ['setup'],
     },
     {
       name: 'Desktop 1080p',
@@ -84,6 +95,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         viewport: { width: 1920, height: 1080 },
       },
+      dependencies: ['setup'],
     },
     {
       name: 'Desktop 1440p',
@@ -91,6 +103,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         viewport: { width: 2560, height: 1440 },
       },
+      dependencies: ['setup'],
     },
   ],
 })

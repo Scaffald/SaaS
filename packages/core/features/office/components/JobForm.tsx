@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   YStack,
   XStack,
@@ -10,13 +10,16 @@ import {
   AddressForm,
   CustomCheckbox,
 } from '@app/ui'
-import { TextArea, Adapt, Sheet, Select, Card } from 'tamagui'
+import { Adapt, Sheet, Select, Card } from 'tamagui'
 import type { AddressResult } from '@app/ui'
+import type { JSONContent } from '@tiptap/core'
+import { RichTextEditor } from '@app/ui/components/rich-text'
+import { plainTextToTipTap, extractPlainText } from '@app/ui/components/rich-text'
 import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
-import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import { Check, ChevronDown, X } from '@tamagui/lucide-icons'
 import {
   ApplicationScreeningSection,
   AutoRejectionSection,
@@ -33,8 +36,10 @@ import {
 type JobFormData = {
   // Basic fields
   title: string
-  description: string
+  description: string | JSONContent | null
   organization_id: string
+  skill_ids?: string[]
+  certification_ids?: string[]
   assigned_team_id?: string | null
   team_ids?: string[]
   primary_team_id?: string | null
@@ -146,26 +151,6 @@ type JobFormProps = {
   onSuccess?: () => void
 }
 
-const EMPLOYMENT_TYPES = [
-  { value: 'full_time', label: 'Full Time' },
-  { value: 'part_time', label: 'Part Time' },
-  { value: 'contract', label: 'Contract' },
-  { value: 'temp', label: 'Temporary' },
-  { value: 'intern', label: 'Internship' },
-]
-
-const REMOTE_OPTIONS = [
-  { value: 'on_site', label: 'On-Site' },
-  { value: 'hybrid', label: 'Hybrid' },
-  { value: 'remote', label: 'Remote' },
-]
-
-const PAY_RANGE_TYPES = [
-  { value: 'hourly', label: 'Hourly' },
-  { value: 'salary', label: 'Salary' },
-  { value: 'contract', label: 'Contract' },
-  { value: 'project', label: 'Project' },
-]
 
 export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   const router = useRouter()
@@ -180,9 +165,19 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     (initialTeamIds.length > 0 ? initialTeamIds[0] : null)
   const [primaryTeamId, setPrimaryTeamId] = useState<string | null>(initialPrimaryTeamId)
 
+  // Convert description to JSONContent if it's a string
+  const getInitialDescription = (): JSONContent | null => {
+    const desc = initialData?.description
+    if (!desc) return null
+    if (typeof desc === 'string') {
+      return desc.trim() ? plainTextToTipTap(desc) : null
+    }
+    return desc as JSONContent
+  }
+
   const [formData, setFormData] = useState<JobFormData>({
     title: initialData?.title || '',
-    description: initialData?.description || '',
+    description: getInitialDescription(),
     organization_id: initialData?.organization_id || '',
     assigned_team_id: initialPrimaryTeamId ?? null,
     team_ids: initialTeamIds,
@@ -197,6 +192,8 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     position_level: initialData?.position_level || '',
     hiring_manager_id: initialData?.hiring_manager_id,
     recruiter_id: initialData?.recruiter_id,
+    skill_ids: initialData?.skill_ids || [],
+    certification_ids: initialData?.certification_ids || [],
   })
 
   // Auto-select organization if only one available
@@ -403,9 +400,16 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
 
   const handleSubmit = (asDraft = true) => {
     // Build submit data, excluding empty strings for optional enums
+    // Convert description to plain text or JSON based on API expectations
+    const descriptionValue = formData.description
+      ? typeof formData.description === 'string'
+        ? formData.description
+        : extractPlainText(formData.description as JSONContent)
+      : ''
+
     const submitData: Record<string, unknown> = {
       title: formData.title,
-      description: formData.description,
+      description: descriptionValue,
       organization_id: formData.organization_id,
       status: asDraft ? ('draft' as const) : ('open' as const),
     }
@@ -416,11 +420,19 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
       if (
         value !== undefined &&
         value !== '' &&
+        value !== null &&
         key !== 'title' &&
         key !== 'description' &&
         key !== 'organization_id'
       ) {
-        submitData[key] = value
+        // Handle arrays
+        if (Array.isArray(value)) {
+          if (value.length > 0) {
+            submitData[key] = value
+          }
+        } else {
+          submitData[key] = value
+        }
       }
     }
 
@@ -435,6 +447,375 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   const organizations = organizationsData?.organizations || []
 
   type Organization = { id: string; name: string; slug: string; owner_user_id: string | null }
+
+  // Skills and certifications handlers
+  const searchSkillsMutation = api.profile.skillsMultiTaxonomy.searchSkills.useMutation()
+  const { data: primaryIndustryData } = api.profile.skillsMultiTaxonomy.getPrimaryIndustry.useQuery()
+  const searchCertificationsQuery = api.office.searchCertifications.useQuery(
+    { query: '', limit: 50 },
+    { enabled: false }
+  )
+
+  const handleSearchSkills = useCallback(
+    async (query: string) => {
+      if (!query.trim()) return []
+      const industrySlug = primaryIndustryData?.industry?.slug ?? 'construction'
+      try {
+        const result = await searchSkillsMutation.mutateAsync({
+          query,
+          industrySlug,
+          taxonomy: 'both',
+          limit: 25,
+        })
+        return result.skills.map((skill: { skill_id: string; name: string; display_code?: string; code?: string }) => ({
+          id: skill.skill_id,
+          name: skill.name,
+          code: skill.display_code || skill.code || skill.skill_id,
+        }))
+      } catch (error) {
+        console.error('Failed to search skills', error)
+        return []
+      }
+    },
+    [searchSkillsMutation, primaryIndustryData]
+  )
+
+  const handleSearchCertifications = useCallback(
+    async (query: string) => {
+      if (!query.trim()) return []
+      try {
+        const result = await searchCertificationsQuery.refetch({ query, limit: 50 })
+        return (
+          result.data?.certifications?.map((cert: { id: string; name: string; slug: string }) => ({
+            id: cert.id,
+            name: cert.name,
+            slug: cert.slug,
+            parent_slug: null,
+          })) || []
+        )
+      } catch (error) {
+        console.error('Failed to search certifications', error)
+        return []
+      }
+    },
+    [searchCertificationsQuery]
+  )
+
+  // Inline component for skills input
+  const JobSkillsInput = ({
+    selectedSkillIds,
+    onSkillsChange,
+    onSearchSkills,
+    placeholder,
+    disabled,
+  }: {
+    selectedSkillIds: string[]
+    onSkillsChange: (skillIds: string[]) => void
+    onSearchSkills: (query: string) => Promise<Array<{ id: string; name: string; code: string }>>
+    placeholder: string
+    disabled?: boolean
+  }) => {
+    const [searchQuery, setSearchQuery] = useState('')
+    const [searchResults, setSearchResults] = useState<
+      Array<{ id: string; name: string; code: string }>
+    >([])
+    const [showResults, setShowResults] = useState(false)
+
+    const handleSearch = useCallback(
+      async (query: string) => {
+        if (!query.trim()) {
+          setSearchResults([])
+          setShowResults(false)
+          return
+        }
+        try {
+          const results = await onSearchSkills(query)
+          setSearchResults(results)
+          setShowResults(true)
+        } catch (error) {
+          console.error('Error searching skills:', error)
+        }
+      },
+      [onSearchSkills]
+    )
+
+    const debouncedSearch = useCallback(
+      (() => {
+        let timeout: ReturnType<typeof setTimeout>
+        return (query: string) => {
+          clearTimeout(timeout)
+          timeout = setTimeout(() => handleSearch(query), 300)
+        }
+      })(),
+      [handleSearch]
+    )
+
+    const handleAddSkill = (skill: { id: string; name: string; code: string }) => {
+      if (!selectedSkillIds.includes(skill.id)) {
+        setSelectedSkillsMap((prev) => new Map(prev).set(skill.id, skill))
+        onSkillsChange([...selectedSkillIds, skill.id])
+      }
+      setSearchQuery('')
+      setShowResults(false)
+    }
+
+    const handleRemoveSkill = (skillId: string) => {
+      onSkillsChange(selectedSkillIds.filter((id) => id !== skillId))
+    }
+
+    // Store selected skills with names in component state
+    const [selectedSkillsMap, setSelectedSkillsMap] = useState<
+      Map<string, { id: string; name: string; code: string }>
+    >(new Map())
+
+    // Update map when skillIds change
+    useEffect(() => {
+      // Keep existing skills, remove ones not in selectedSkillIds
+      setSelectedSkillsMap((prev) => {
+        const next = new Map(prev)
+        for (const [id] of next) {
+          if (!selectedSkillIds.includes(id)) {
+            next.delete(id)
+          }
+        }
+        return next
+      })
+    }, [selectedSkillIds])
+
+    const availableResults = searchResults.filter((skill) => !selectedSkillIds.includes(skill.id))
+    const selectedSkills = Array.from(selectedSkillsMap.values())
+
+    return (
+      <YStack gap="$2" position="relative">
+        <Input
+          placeholder={placeholder}
+          value={searchQuery}
+          onChangeText={(text) => {
+            setSearchQuery(text)
+            debouncedSearch(text)
+          }}
+          onFocus={() => searchQuery && setShowResults(true)}
+          disabled={disabled}
+        />
+        {selectedSkillIds.length > 0 && (
+          <XStack gap="$2" flexWrap="wrap">
+            {selectedSkills.map((skill) => (
+              <XStack
+                key={skill.id}
+                bg="$gray3"
+                px="$2"
+                py="$1"
+                rounded="$3"
+                gap="$1"
+                items="center"
+              >
+                <Text fontSize="$2">{skill.name}</Text>
+                <Button
+                  size="$1"
+                  circular
+                  unstyled
+                  onPress={() => handleRemoveSkill(skill.id)}
+                  disabled={disabled}
+                >
+                  <X size={12} />
+                </Button>
+              </XStack>
+            ))}
+          </XStack>
+        )}
+        {showResults && availableResults.length > 0 && (
+          <Card
+            position="absolute"
+            top="$12"
+            left={0}
+            right={0}
+            zIndex={1000}
+            elevation="$4"
+            height={300}
+            overflow="hidden"
+          >
+            <ScrollView height={300}>
+              <YStack>
+                {availableResults.map((skill) => (
+                  <Button
+                    key={skill.id}
+                    unstyled
+                    onPress={() => handleAddSkill(skill)}
+                    p="$3"
+                    hoverStyle={{ bg: '$gray2' }}
+                  >
+                    <Text>{skill.name}</Text>
+                  </Button>
+                ))}
+              </YStack>
+            </ScrollView>
+          </Card>
+        )}
+      </YStack>
+    )
+  }
+
+  // Inline component for certifications input
+  const JobCertificationsInput = ({
+    selectedCertificationIds,
+    onCertificationsChange,
+    onSearchCertifications,
+    placeholder,
+    disabled,
+  }: {
+    selectedCertificationIds: string[]
+    onCertificationsChange: (certIds: string[]) => void
+    onSearchCertifications: (
+      query: string
+    ) => Promise<Array<{ id: string; name: string; slug: string; parent_slug: string | null }>>
+    placeholder: string
+    disabled?: boolean
+  }) => {
+    const [searchQuery, setSearchQuery] = useState('')
+    const [searchResults, setSearchResults] = useState<
+      Array<{ id: string; name: string; slug: string; parent_slug: string | null }>
+    >([])
+    const [showResults, setShowResults] = useState(false)
+
+    const handleSearch = useCallback(
+      async (query: string) => {
+        if (!query.trim()) {
+          setSearchResults([])
+          setShowResults(false)
+          return
+        }
+        try {
+          const results = await onSearchCertifications(query)
+          setSearchResults(results)
+          setShowResults(true)
+        } catch (error) {
+          console.error('Error searching certifications:', error)
+        }
+      },
+      [onSearchCertifications]
+    )
+
+    const debouncedSearch = useCallback(
+      (() => {
+        let timeout: ReturnType<typeof setTimeout>
+        return (query: string) => {
+          clearTimeout(timeout)
+          timeout = setTimeout(() => handleSearch(query), 300)
+        }
+      })(),
+      [handleSearch]
+    )
+
+    const handleAddCertification = (cert: {
+      id: string
+      name: string
+      slug: string
+      parent_slug: string | null
+    }) => {
+      if (!selectedCertificationIds.includes(cert.id)) {
+        setSelectedCertsMap((prev) => new Map(prev).set(cert.id, cert))
+        onCertificationsChange([...selectedCertificationIds, cert.id])
+      }
+      setSearchQuery('')
+      setShowResults(false)
+    }
+
+    const handleRemoveCertification = (certId: string) => {
+      onCertificationsChange(selectedCertificationIds.filter((id) => id !== certId))
+    }
+
+    // Store selected certifications with names in component state
+    const [selectedCertsMap, setSelectedCertsMap] = useState<
+      Map<string, { id: string; name: string; slug: string; parent_slug: string | null }>
+    >(new Map())
+
+    // Update map when certIds change
+    useEffect(() => {
+      setSelectedCertsMap((prev) => {
+        const next = new Map(prev)
+        for (const [id] of next) {
+          if (!selectedCertificationIds.includes(id)) {
+            next.delete(id)
+          }
+        }
+        return next
+      })
+    }, [selectedCertificationIds])
+
+    const availableResults = searchResults.filter(
+      (cert) => !selectedCertificationIds.includes(cert.id)
+    )
+    const selectedCerts = Array.from(selectedCertsMap.values())
+
+    return (
+      <YStack gap="$2" position="relative">
+        <Input
+          placeholder={placeholder}
+          value={searchQuery}
+          onChangeText={(text) => {
+            setSearchQuery(text)
+            debouncedSearch(text)
+          }}
+          onFocus={() => searchQuery && setShowResults(true)}
+          disabled={disabled}
+        />
+        {selectedCertificationIds.length > 0 && (
+          <XStack gap="$2" flexWrap="wrap">
+            {selectedCerts.map((cert) => (
+              <XStack
+                key={cert.id}
+                bg="$gray3"
+                px="$2"
+                py="$1"
+                rounded="$3"
+                gap="$1"
+                items="center"
+              >
+                <Text fontSize="$2">{cert.name}</Text>
+                <Button
+                  size="$1"
+                  circular
+                  unstyled
+                  onPress={() => handleRemoveCertification(cert.id)}
+                  disabled={disabled}
+                >
+                  <X size={12} />
+                </Button>
+              </XStack>
+            ))}
+          </XStack>
+        )}
+        {showResults && availableResults.length > 0 && (
+          <Card
+            position="absolute"
+            top="$12"
+            left={0}
+            right={0}
+            zIndex={1000}
+            elevation="$4"
+            height={300}
+            overflow="hidden"
+          >
+            <ScrollView height={300}>
+              <YStack>
+                {availableResults.map((cert) => (
+                  <Button
+                    key={cert.id}
+                    unstyled
+                    onPress={() => handleAddCertification(cert)}
+                    p="$3"
+                    hoverStyle={{ bg: '$gray2' }}
+                  >
+                    <Text>{cert.name}</Text>
+                  </Button>
+                ))}
+              </YStack>
+            </ScrollView>
+          </Card>
+        )}
+      </YStack>
+    )
+  }
 
   return (
     <ScrollView>
@@ -482,333 +863,222 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           </Select>
         </YStack>
 
-        {/* Title */}
-        <YStack gap="$2">
-          <Text fontWeight="600">Job Title *</Text>
-          <Input
-            data-testid="job-title-input"
-            placeholder="e.g. Senior Construction Manager"
-            value={formData.title}
-            onChangeText={(text: string) => setFormData({ ...formData, title: text })}
-            disabled={isLoading}
-          />
-        </YStack>
+        {/* Details Section */}
+        <YStack
+          gap="$4"
+          p="$4"
+          bg="$background"
+          rounded="$4"
+          borderWidth={1}
+          borderColor="$borderColor"
+        >
+          <Text fontSize="$6" fontWeight="600">
+            Details
+          </Text>
 
-        {/* Description */}
-        <YStack gap="$2">
-          <Text fontWeight="600">Description *</Text>
-          <TextArea
-            data-testid="job-description-input"
-            placeholder="Describe the job role, responsibilities, and requirements..."
-            value={formData.description}
-            onChangeText={(text: string) => setFormData({ ...formData, description: text })}
-            disabled={isLoading}
-            height={150}
-          />
-        </YStack>
+          {/* Title */}
+          <YStack gap="$2">
+            <Text fontWeight="600">Job title *</Text>
+            <Input
+              data-testid="job-title-input"
+              placeholder="e.g. Senior Construction Manager"
+              value={formData.title}
+              onChangeText={(text: string) => setFormData({ ...formData, title: text })}
+              disabled={isLoading}
+            />
+          </YStack>
 
-        {/* Employment Type */}
-        <YStack gap="$2">
-          <Text fontWeight="600">Employment Type</Text>
-          <Select
-            data-testid="job-employment-type-select"
-            value={formData.employment_type || ''}
-            onValueChange={(value: string) =>
-              setFormData({ ...formData, employment_type: value || undefined })
-            }
-          >
-            <Select.Trigger iconAfter={ChevronDown}>
-              <Select.Value placeholder="Select employment type" />
-            </Select.Trigger>
+          {/* Description */}
+          <YStack gap="$2">
+            <Text fontWeight="600">Job description *</Text>
+            <RichTextEditor
+              data-testid="job-description-input"
+              value={formData.description as JSONContent | null}
+              onChange={(content: JSONContent) =>
+                setFormData({ ...formData, description: content })
+              }
+              fieldType="JOB_DESCRIPTION"
+              placeholder="e.g. responsibilities, expectations and requirements"
+              disabled={isLoading}
+              showCharacterCount
+              minHeight={200}
+            />
+          </YStack>
 
-            <Adapt when="sm" platform="touch">
-              <Sheet modal dismissOnSnapToBottom>
-                <Sheet.Frame>
-                  <Sheet.ScrollView>
-                    <Adapt.Contents />
-                  </Sheet.ScrollView>
-                </Sheet.Frame>
-                <Sheet.Overlay />
-              </Sheet>
-            </Adapt>
+          {/* Location with Smart Autocomplete */}
+          <YStack gap="$2">
+            <Text fontWeight="600">Location *</Text>
+            <AddressForm
+              mode="hybrid"
+              placeholder="Search location"
+              provider="mapbox"
+              apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
+              zoomLevel="city"
+              addressValue={{
+                streetAddress: formData.address?.street || '',
+                locality: formData.address?.city || '',
+                stateAbbreviation: formData.address?.state || '',
+                postalCode: formData.address?.zip || '',
+                country: formData.address?.country || '',
+                formattedAddress: formData.location || '',
+              }}
+              value={formData.location}
+              onChange={(text: string) => setFormData({ ...formData, location: text })}
+              onAddressSelect={(address: AddressResult) => {
+                console.log('Selected job location:', address)
+                setFormData({
+                  ...formData,
+                  location: address.formattedAddress,
+                  address: {
+                    street: address.streetAddress || address.route || '',
+                    city: address.locality || '',
+                    state: address.stateAbbreviation || address.administrativeAreaLevel1 || '',
+                    zip: address.postalCode || '',
+                    country: address.country || 'United States',
+                    latitude: address.coordinates?.lat,
+                    longitude: address.coordinates?.lng,
+                  },
+                })
+              }}
+            />
+          </YStack>
 
-            <Select.Content zIndex={200000}>
-              <Select.ScrollUpButton />
-              <Select.Viewport>
-                <Select.Group>
-                  <Select.Label>Employment Type</Select.Label>
-                  {EMPLOYMENT_TYPES.map((type, i) => (
-                    <Select.Item key={type.value} index={i} value={type.value}>
-                      <Select.ItemText>{type.label}</Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Viewport>
-              <Select.ScrollDownButton />
-            </Select.Content>
-          </Select>
-        </YStack>
+          {/* Minimum Elevate Score */}
+          <ScoreThresholdSection minimumScore={formData.minimum_score} onUpdate={handleScoreUpdate} />
 
-        {/* Remote Option */}
-        <YStack gap="$2">
-          <Text fontWeight="600">Work Location</Text>
-          <Select
-            data-testid="job-remote-option-select"
-            value={formData.remote_option || ''}
-            onValueChange={(value: string) =>
-              setFormData({ ...formData, remote_option: value || undefined })
-            }
-          >
-            <Select.Trigger iconAfter={ChevronDown}>
-              <Select.Value placeholder="Select work location type" />
-            </Select.Trigger>
-
-            <Adapt when="sm" platform="touch">
-              <Sheet modal dismissOnSnapToBottom>
-                <Sheet.Frame>
-                  <Sheet.ScrollView>
-                    <Adapt.Contents />
-                  </Sheet.ScrollView>
-                </Sheet.Frame>
-                <Sheet.Overlay />
-              </Sheet>
-            </Adapt>
-
-            <Select.Content zIndex={200000}>
-              <Select.ScrollUpButton />
-              <Select.Viewport>
-                <Select.Group>
-                  <Select.Label>Work Location</Select.Label>
-                  {REMOTE_OPTIONS.map((option, i) => (
-                    <Select.Item key={option.value} index={i} value={option.value}>
-                      <Select.ItemText>{option.label}</Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Viewport>
-              <Select.ScrollDownButton />
-            </Select.Content>
-          </Select>
-        </YStack>
-
-        {/* Assigned Teams */}
-        <YStack gap="$2">
-          <Text fontWeight="600">Assigned Teams</Text>
-          {!formData.organization_id ? (
-            <Text fontSize="$2" color="$color10">
-              Select an organization to load available teams.
-            </Text>
-          ) : teamsLoading ? (
-            <Text fontSize="$2" color="$color10">
-              Loading teams…
-            </Text>
-          ) : teams.length === 0 ? (
-            <Text fontSize="$2" color="$color10">
-              No teams available for this organization.
-            </Text>
-          ) : (
-            <YStack gap="$2">
-              {teams.map((team) => {
-                const isSelected = (formData.team_ids ?? []).includes(team.id)
-                const isPrimary = primaryTeamId === team.id
-                return (
-                  <Card
-                    key={team.id}
-                    borderWidth={1}
-                    borderColor={isPrimary ? '$color8' : '$borderColor'}
-                    bg="$color2"
-                    p="$3"
-                  >
-                    <XStack gap="$3" items="center" justify="space-between" flexWrap="wrap">
-                      <XStack gap="$3" items="center">
-                        <CustomCheckbox
-                          aria-label={team.name ?? 'Team'}
-                          checked={isSelected}
-                          onCheckedChange={(value) => toggleTeamSelection(team.id, Boolean(value))}
-                        />
-                        <YStack>
-                          <Text fontWeight="600">{team.name ?? 'Untitled team'}</Text>
-                          <Text fontSize="$2" color="$color10">
-                            {isPrimary ? 'Primary team' : 'Collaborator'}
-                          </Text>
-                        </YStack>
-                      </XStack>
-                      {isSelected ? (
-                        <Button
-                          size="$2"
-                          variant="outlined"
-                          onPress={() => setPrimaryTeamId(team.id)}
-                          disabled={isPrimary}
-                        >
-                          {isPrimary ? 'Primary' : 'Make primary'}
-                        </Button>
-                      ) : null}
-                    </XStack>
-                  </Card>
-                )
-              })}
-            </YStack>
-          )}
-          {formData.team_ids && formData.team_ids.length > 1 ? (
-            <Text fontSize="$2" color="$color10">
-              The first primary team is shared with legacy integrations.
-            </Text>
-          ) : null}
-        </YStack>
-
-        {/* Location with Smart Autocomplete */}
-        <YStack gap="$2">
-          <Text fontWeight="600">Location *</Text>
-          <AddressForm
-            mode="hybrid"
-            placeholder="Search for city or address..."
-            provider="mapbox"
-            apiKey={process.env.EXPO_PUBLIC_MAPBOX_TOKEN}
-            zoomLevel="city"
-            addressValue={{
-              streetAddress: formData.address?.street || '',
-              locality: formData.address?.city || '',
-              stateAbbreviation: formData.address?.state || '',
-              postalCode: formData.address?.zip || '',
-              country: formData.address?.country || '',
-              formattedAddress: formData.location || '',
-            }}
-            value={formData.location}
-            onChange={(text: string) => setFormData({ ...formData, location: text })}
-            onAddressSelect={(address: AddressResult) => {
-              console.log('Selected job location:', address)
-              setFormData({
-                ...formData,
-                location: address.formattedAddress,
-                address: {
-                  street: address.streetAddress || address.route || '',
-                  city: address.locality || '',
-                  state: address.stateAbbreviation || address.administrativeAreaLevel1 || '',
-                  zip: address.postalCode || '',
-                  country: address.country || 'United States',
-                  latitude: address.coordinates?.lat,
-                  longitude: address.coordinates?.lng,
-                },
-              })
-            }}
-          />
-          {formData.address?.latitude && formData.address?.longitude && (
-            <Text fontSize="$2" color="$color10">
-              📍 Coordinates: {formData.address.latitude.toFixed(4)},{' '}
-              {formData.address.longitude.toFixed(4)}
-            </Text>
-          )}
-        </YStack>
-
-        {/* Pay Range */}
-        <YStack gap="$2">
-          <Text fontWeight="600">Pay Range</Text>
-          <XStack 
-            gap="$2"
-            $sm={{ flexDirection: 'column' }}
-            $gtSm={{ flexDirection: 'row' }}
-          >
-            <YStack gap="$2" flex={1}>
-              <Text fontSize="$2">Min ($)</Text>
-              <Input
-                data-testid="job-pay-min-input"
-                placeholder="Min"
-                keyboardType="numeric"
-                value={
-                  formData.pay_range_min_cents
-                    ? (formData.pay_range_min_cents / 100).toString()
-                    : ''
-                }
-                onChangeText={(text: string) => {
-                  const value = Number.parseFloat(text) || 0
-                  setFormData({ ...formData, pay_range_min_cents: Math.round(value * 100) })
+          {/* Elevate Teams */}
+          <YStack gap="$2">
+            <Text fontWeight="600">Elevate Teams</Text>
+            {!formData.organization_id ? (
+              <Text fontSize="$2" color="$color10">
+                Select an organization to load available teams.
+              </Text>
+            ) : teamsLoading ? (
+              <Text fontSize="$2" color="$color10">
+                Loading teams…
+              </Text>
+            ) : teams.length === 0 ? (
+              <Text fontSize="$2" color="$color10">
+                No teams available for this organization.
+              </Text>
+            ) : (
+              <Select
+                value={primaryTeamId || ''}
+                onValueChange={(value: string) => {
+                  if (value) {
+                    setPrimaryTeamId(value)
+                    toggleTeamSelection(value, true)
+                  }
                 }}
-                disabled={isLoading}
-              />
-            </YStack>
-            <YStack gap="$2" flex={1}>
-              <Text fontSize="$2">Max ($)</Text>
-              <Input
-                data-testid="job-pay-max-input"
-                placeholder="Max"
-                keyboardType="numeric"
-                value={
-                  formData.pay_range_max_cents
-                    ? (formData.pay_range_max_cents / 100).toString()
-                    : ''
-                }
-                onChangeText={(text: string) => {
-                  const value = Number.parseFloat(text) || 0
-                  setFormData({ ...formData, pay_range_max_cents: Math.round(value * 100) })
-                }}
-                disabled={isLoading}
-              />
-            </YStack>
-          </XStack>
-          <Select
-            data-testid="job-pay-type-select"
-            value={formData.pay_range_type || ''}
-            onValueChange={(value: string) =>
-              setFormData({ ...formData, pay_range_type: value || undefined })
-            }
-          >
-            <Select.Trigger iconAfter={ChevronDown}>
-              <Select.Value placeholder="Select pay range type" />
-            </Select.Trigger>
-
-            <Adapt when="sm" platform="touch">
-              <Sheet modal dismissOnSnapToBottom>
-                <Sheet.Frame>
-                  <Sheet.ScrollView>
-                    <Adapt.Contents />
-                  </Sheet.ScrollView>
-                </Sheet.Frame>
-                <Sheet.Overlay />
-              </Sheet>
-            </Adapt>
-
-            <Select.Content zIndex={200000}>
-              <Select.ScrollUpButton />
-              <Select.Viewport>
-                <Select.Group>
-                  <Select.Label>Pay Range Type</Select.Label>
-                  {PAY_RANGE_TYPES.map((type, i) => (
-                    <Select.Item key={type.value} index={i} value={type.value}>
-                      <Select.ItemText>{type.label}</Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Viewport>
-              <Select.ScrollDownButton />
-            </Select.Content>
-          </Select>
+              >
+                <Select.Trigger iconAfter={ChevronDown}>
+                  <Select.Value placeholder="Select one" />
+                </Select.Trigger>
+                <Adapt when="sm" platform="touch">
+                  <Sheet modal dismissOnSnapToBottom>
+                    <Sheet.Frame>
+                      <Sheet.ScrollView>
+                        <Adapt.Contents />
+                      </Sheet.ScrollView>
+                    </Sheet.Frame>
+                    <Sheet.Overlay />
+                  </Sheet>
+                </Adapt>
+                <Select.Content zIndex={200000}>
+                  <Select.ScrollUpButton />
+                  <Select.Viewport>
+                    <Select.Group>
+                      <Select.Label>Teams</Select.Label>
+                      {teams.map((team, i) => (
+                        <Select.Item key={team.id} index={i} value={team.id}>
+                          <Select.ItemText>{team.name ?? 'Untitled Team'}</Select.ItemText>
+                          <Select.ItemIndicator>
+                            <Check size={16} />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                      ))}
+                    </Select.Group>
+                  </Select.Viewport>
+                  <Select.ScrollDownButton />
+                </Select.Content>
+              </Select>
+            )}
+            <Text fontSize="$2" color="$color10">
+              Not visible on job posting
+            </Text>
+          </YStack>
         </YStack>
 
-        {/* Position Level */}
-        <YStack gap="$2">
-          <Text fontWeight="600">Position Level</Text>
-          <Input
-            data-testid="job-position-level-input"
-            placeholder="e.g. Senior, Mid-Level, Entry Level"
-            value={formData.position_level}
-            onChangeText={(text: string) => setFormData({ ...formData, position_level: text })}
-            disabled={isLoading}
+        {/* Application Section */}
+        <YStack
+          gap="$4"
+          p="$4"
+          bg="$background"
+          rounded="$4"
+          borderWidth={1}
+          borderColor="$borderColor"
+        >
+          <Text fontSize="$6" fontWeight="600">
+            Application
+          </Text>
+
+          {/* Application Screening Section */}
+          <ApplicationScreeningSection
+            requireCurrentLocation={formData.require_current_location || false}
+            requireRelocationWillingness={formData.require_relocation_willingness || false}
+            minimumYearsExperience={formData.minimum_years_experience}
+            requireWorkAuthorization={formData.require_work_authorization || false}
+            requireEarliestStartDate={formData.require_earliest_start_date || false}
+            onUpdate={handleSectionUpdate}
+          />
+
+          {/* Required Skills */}
+          <YStack gap="$2">
+            <Text fontWeight="600">Required skills</Text>
+            <JobSkillsInput
+              selectedSkillIds={formData.skill_ids || []}
+              onSkillsChange={(skillIds) => setFormData({ ...formData, skill_ids: skillIds })}
+              onSearchSkills={handleSearchSkills}
+              placeholder="Search and add skills"
+              disabled={isLoading}
+            />
+          </YStack>
+
+          {/* Optional Skills */}
+          <YStack gap="$2">
+            <Text fontWeight="600">Optional skills</Text>
+            <JobSkillsInput
+              selectedSkillIds={[]}
+              onSkillsChange={() => {}}
+              onSearchSkills={handleSearchSkills}
+              placeholder="Search and add skills"
+              disabled={isLoading}
+            />
+          </YStack>
+
+          {/* Required Certificates */}
+          <YStack gap="$2">
+            <Text fontWeight="600">Required certificates</Text>
+            <JobCertificationsInput
+              selectedCertificationIds={formData.certification_ids || []}
+              onCertificationsChange={(certIds) =>
+                setFormData({ ...formData, certification_ids: certIds })
+              }
+              onSearchCertifications={handleSearchCertifications}
+              placeholder="Search certificates"
+              disabled={isLoading}
+            />
+          </YStack>
+
+          {/* Auto-Rejection Section */}
+          <AutoRejectionSection
+            enabled={formData.enable_auto_reject || false}
+            criteria={formData.auto_reject_criteria || {}}
+            onUpdate={handleAutoRejectUpdate}
           />
         </YStack>
 
-        {/* Divider */}
-        <YStack height={1} bg="$borderColor" my="$4" />
-
-        {/* Job Metadata Section */}
+        {/* Additional Sections (keep existing advanced sections) */}
         <JobMetadataSection
           internalJobCode={formData.internal_job_code}
           department={formData.department}
@@ -824,26 +1094,6 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           targetStartDate={formData.target_start_date}
           estimatedHireDate={formData.estimated_hire_date}
           onUpdate={handleSectionUpdate}
-        />
-
-        {/* Application Screening Section */}
-        <ApplicationScreeningSection
-          requireCurrentLocation={formData.require_current_location || false}
-          requireRelocationWillingness={formData.require_relocation_willingness || false}
-          minimumYearsExperience={formData.minimum_years_experience}
-          requireWorkAuthorization={formData.require_work_authorization || false}
-          requireEarliestStartDate={formData.require_earliest_start_date || false}
-          onUpdate={handleSectionUpdate}
-        />
-
-        {/* Score Threshold Section */}
-        <ScoreThresholdSection minimumScore={formData.minimum_score} onUpdate={handleScoreUpdate} />
-
-        {/* Auto-Rejection Section */}
-        <AutoRejectionSection
-          enabled={formData.enable_auto_reject || false}
-          criteria={formData.auto_reject_criteria || {}}
-          onUpdate={handleAutoRejectUpdate}
         />
 
         {/* Enhanced Requirements Section */}
@@ -936,7 +1186,13 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             flex={1}
             onPress={() => handleSubmit(true)}
             disabled={
-              isLoading || !formData.title || !formData.description || !formData.organization_id
+              isLoading ||
+              !formData.title ||
+              !formData.description ||
+              !formData.organization_id ||
+              (typeof formData.description === 'object' &&
+                formData.description !== null &&
+                extractPlainText(formData.description).trim().length === 0)
             }
             $sm={{ height: 44, width: '100%' }}
             $gtSm={{ height: undefined, width: undefined }}
@@ -960,7 +1216,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             $gtSm={{ height: undefined, width: undefined }}
           >
             {isLoading && <Spinner />}
-            {!isLoading && 'Publish'}
+            {!isLoading && 'Post'}
           </Button>
         </XStack>
       </YStack>

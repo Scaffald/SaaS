@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { YStack, XStack, Text, ToggleSwitch } from '@app/ui'
 import { Label } from 'tamagui'
+import { HelpCircle } from '@tamagui/lucide-icons'
 
 interface AutoRejectCriteria {
   score_minimum?: number
@@ -53,19 +54,20 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
       </YStack>
 
       {/* Enable Auto-Rejection */}
-      <XStack gap="$3">
-        <YStack gap="$1" flex={1}>
-          <Label fontWeight="600">
-            Enable auto-rejection
-          </Label>
-          <Text fontSize="$2">Automatically screen out unqualified applicants</Text>
-        </YStack>
+      <XStack gap="$3" items="center" justify="space-between">
+        <XStack gap="$2" items="center" flex={1}>
+          <Label fontWeight="600">Reject automatically</Label>
+          <HelpCircle size={16} color="$color10" />
+        </XStack>
         <ToggleSwitch
           checked={localState.enabled}
           onCheckedChange={handleToggle}
           aria-label="Enable auto-rejection"
         />
       </XStack>
+      <Text fontSize="$2" color="$color10">
+        Based on Elevate score, work authorization and required skills
+      </Text>
 
       {/* Criteria (only show when enabled) */}
       {localState.enabled && (

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Select, Adapt, Sheet, Separator, Button } from 'tamagui'
+import { YStack, XStack, Text, Select, Adapt, Sheet, Separator, Button, Spinner } from 'tamagui'
 import { ChevronDown, Check } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { ProfileFormPanel, InlineSkillSearch } from './components'
@@ -180,6 +180,7 @@ export function ProfileSkillsLeft() {
               borderColor: '$borderColorHover',
               bg: '$backgroundHover',
             }}
+            data-testid="primary-industry-select-trigger"
           >
             <Select.Value placeholder="Select an industry" />
           </Select.Trigger>
