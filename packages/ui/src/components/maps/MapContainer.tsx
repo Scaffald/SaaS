@@ -157,13 +157,30 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           },
         })
 
-        // Clusters will be rendered as HTML markers, not layers
-        // This allows us to use custom icons and colors
+        // Add invisible cluster layer so Mapbox creates clusters
+        // We'll overlay HTML markers on top for custom styling
+        map.addLayer({
+          id: 'clusters',
+          type: 'circle',
+          source: 'pins',
+          filter: ['has', 'point_count'],
+          paint: {
+            'circle-opacity': 0, // Invisible - we use HTML markers instead
+            'circle-radius': 1,
+          },
+        })
 
-        // Individual pins will be rendered as HTML markers, not layers
-        // This allows us to use custom icons and colors
-
-        // Cluster clicks will be handled via HTML marker click events
+        // Add invisible individual point layers so they're queryable
+        map.addLayer({
+          id: 'unclustered-point',
+          type: 'circle',
+          source: 'pins',
+          filter: ['!', ['has', 'point_count']],
+          paint: {
+            'circle-opacity': 0, // Invisible - we use HTML markers instead
+            'circle-radius': 1,
+          },
+        })
 
         // Track viewport changes (pan and zoom) with debouncing (500ms)
         // Use 'moveend' and 'zoomend' events which fire after pan/zoom completes
@@ -302,17 +319,21 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         }
         clusterMarkersRef.current.clear()
 
-        // Get bounds and zoom to query features
-        const bounds = map.getBounds()
+        // Get current zoom and bounds
         const zoom = map.getZoom()
+        const bounds = map.getBounds()
 
-        // Query all features from the source (clusters and points)
-        const features = map.querySourceFeatures('pins', {
-          sourceLayer: undefined,
-          filter: undefined,
+        // Query rendered features from the invisible layers
+        // This will include clusters and individual points
+        const allFeatures = map.queryRenderedFeatures(undefined, {
+          layers: ['clusters', 'unclustered-point'],
         })
 
-        for (const feature of features) {
+        if (allFeatures.length === 0) {
+          return
+        }
+
+        for (const feature of allFeatures) {
           if (!feature.geometry || feature.geometry.type !== 'Point' || !feature.properties) {
             continue
           }

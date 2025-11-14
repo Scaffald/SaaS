@@ -31,9 +31,10 @@ export const FilterBar = ({
     <XStack
       position="absolute"
       b="$4"
-      l={0}
-      $sm={{ r: 0 }}
-      $gtSm={{ r: railVisible ? 440 : 0 }}
+      left={0}
+      right={0}
+      $sm={{ right: 0 }}
+      $gtSm={{ right: railVisible ? 440 : 0 }}
       z={50}
       items="center"
       justify="center"

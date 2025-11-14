@@ -230,7 +230,8 @@ export const officeRouter = t.router({
         if (ownedError) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: `Failed to fetch owned organizations: ${ownedError.message}`,
+            message:
+              `Failed to fetch owned organizations: ${ownedError.message}`,
           });
         }
 
@@ -242,17 +243,19 @@ export const officeRouter = t.router({
         }
 
         // 2. Organizations where user is a team member
-        const { data: teamMemberships, error: membershipsError } = await supabaseAdmin
-          .schema("core")
-          .from("team_members")
-          .select("teams!inner(organization_id)")
-          .eq("user_id", user.id)
-          .neq("status", "removed");
+        const { data: teamMemberships, error: membershipsError } =
+          await supabaseAdmin
+            .schema("core")
+            .from("team_members")
+            .select("teams!inner(organization_id)")
+            .eq("user_id", user.id)
+            .neq("status", "removed");
 
         if (membershipsError) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: `Failed to load team memberships: ${membershipsError.message}`,
+            message:
+              `Failed to load team memberships: ${membershipsError.message}`,
           });
         }
 
@@ -285,10 +288,9 @@ export const officeRouter = t.router({
         }
       }
 
-      const jobTeamsRelationship =
-        input.team_id || input.myTeamsOnly
-          ? "job_team_assignments!inner"
-          : "job_team_assignments";
+      const jobTeamsRelationship = input.team_id || input.myTeamsOnly
+        ? "job_team_assignments!inner"
+        : "job_team_assignments";
       const selectClause = `
         id,
         title,
@@ -346,17 +348,19 @@ export const officeRouter = t.router({
           });
         }
 
-        const { data: memberships, error: membershipsError } = await supabaseAdmin
-          .schema("core")
-          .from("team_members")
-          .select("team_id")
-          .eq("user_id", user.id)
-          .neq("status", "removed");
+        const { data: memberships, error: membershipsError } =
+          await supabaseAdmin
+            .schema("core")
+            .from("team_members")
+            .select("team_id")
+            .eq("user_id", user.id)
+            .neq("status", "removed");
 
         if (membershipsError) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: `Failed to load team memberships: ${membershipsError.message}`,
+            message:
+              `Failed to load team memberships: ${membershipsError.message}`,
           });
         }
 
@@ -384,30 +388,38 @@ export const officeRouter = t.router({
       }
 
       const jobs = (data ?? []).map((job) => {
-        const { team_assignments: jobTeamsRaw, ...rest } = job as Record<string, unknown>;
-        const assignments = (jobTeamsRaw as Array<Record<string, unknown>> | null)?.map(
-          (assignment) => ({
-            teamId: assignment.team_id as string,
-            isPrimary: Boolean(assignment.is_primary),
-            roleKey: assignment.role_key as string,
-            assignedAt: assignment.assigned_at as string,
-            team: assignment.team
-              ? {
-                id: (assignment.team as Record<string, unknown>).id as string,
-                name: (assignment.team as Record<string, unknown>).name as string | null,
-                organization_id: (assignment.team as Record<string, unknown>).organization_id as string,
-              }
-              : null,
-          }),
-        ) ?? [];
+        const { team_assignments: jobTeamsRaw, ...rest } = job as Record<
+          string,
+          unknown
+        >;
+        const teamAssignments =
+          (jobTeamsRaw as Array<Record<string, unknown>> | null)?.map(
+            (assignment) => ({
+              teamId: assignment.team_id as string,
+              isPrimary: Boolean(assignment.is_primary),
+              roleKey: assignment.role_key as string,
+              assignedAt: assignment.assigned_at as string,
+              team: assignment.team
+                ? {
+                  id: (assignment.team as Record<string, unknown>).id as string,
+                  name: (assignment.team as Record<string, unknown>).name as
+                    | string
+                    | null,
+                  organization_id: (assignment.team as Record<string, unknown>)
+                    .organization_id as string,
+                }
+                : null,
+            }),
+          ) ?? [];
 
-        const primaryAssignment =
-          assignments.find((assignment) => assignment.isPrimary) ?? null;
+        const primaryAssignment = teamAssignments.find((assignment) =>
+          assignment.isPrimary
+        ) ?? null;
 
         return {
           ...rest,
-          teamAssignments: assignments,
-          team_ids: assignments.map((assignment) => assignment.teamId),
+          teamAssignments: teamAssignments,
+          team_ids: teamAssignments.map((assignment) => assignment.teamId),
           primary_team_id: primaryAssignment?.teamId ?? null,
           team: primaryAssignment?.team ?? null,
         };
@@ -527,7 +539,7 @@ export const officeRouter = t.router({
         ...rest
       } = data as Record<string, unknown>;
 
-      const assignments =
+      const teamAssignments =
         (jobTeamsRaw as Array<Record<string, unknown>> | null)?.map(
           (assignment) => ({
             teamId: assignment.team_id as string,
@@ -537,23 +549,27 @@ export const officeRouter = t.router({
             team: assignment.team
               ? {
                 id: (assignment.team as Record<string, unknown>).id as string,
-                name: (assignment.team as Record<string, unknown>).name as string | null,
-                organization_id: (assignment.team as Record<string, unknown>).organization_id as string,
+                name: (assignment.team as Record<string, unknown>).name as
+                  | string
+                  | null,
+                organization_id: (assignment.team as Record<string, unknown>)
+                  .organization_id as string,
               }
               : null,
           }),
         ) ?? [];
 
-      const primaryAssignment =
-        assignments.find((assignment) => assignment.isPrimary) ?? null;
+      const primaryAssignment = teamAssignments.find((assignment) =>
+        assignment.isPrimary
+      ) ?? null;
 
       return {
         job: {
           ...rest,
           job_skills: jobSkills,
           skills: transformJobSkills(jobSkills || []),
-          teamAssignments: assignments,
-          team_ids: assignments.map((assignment) => assignment.teamId),
+          teamAssignments: teamAssignments,
+          team_ids: teamAssignments.map((assignment) => assignment.teamId),
           primary_team_id: primaryAssignment?.teamId ?? null,
           team: primaryAssignment?.team ?? null,
         },
@@ -660,7 +676,8 @@ export const officeRouter = t.router({
         if (teamsError) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: `Failed to validate team assignments: ${teamsError.message}`,
+            message:
+              `Failed to validate team assignments: ${teamsError.message}`,
           });
         }
 
@@ -697,7 +714,9 @@ export const officeRouter = t.router({
 
         if (teamError || !teamRecord) {
           throw new TRPCError({
-            code: teamError?.code === "PGRST116" ? "BAD_REQUEST" : "INTERNAL_SERVER_ERROR",
+            code: teamError?.code === "PGRST116"
+              ? "BAD_REQUEST"
+              : "INTERNAL_SERVER_ERROR",
             message: teamError
               ? `Failed to validate assigned team: ${teamError.message}`
               : "Assigned team not found",
@@ -707,7 +726,8 @@ export const officeRouter = t.router({
         if (teamRecord.organization_id !== jobData.organization_id) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Assigned team must belong to the same organization as the job.",
+            message:
+              "Assigned team must belong to the same organization as the job.",
           });
         }
 
@@ -735,7 +755,8 @@ export const officeRouter = t.router({
       }
 
       if (requestedTeamIds.length > 0) {
-        const effectivePrimaryId = jobData.assigned_team_id ?? requestedTeamIds[0] ?? null;
+        const effectivePrimaryId = jobData.assigned_team_id ??
+          requestedTeamIds[0] ?? null;
         const rows = requestedTeamIds.map((teamId) => ({
           job_id: job.id,
           team_id: teamId,
@@ -816,7 +837,9 @@ export const officeRouter = t.router({
 
       if (existingJobError || !existingJob) {
         throw new TRPCError({
-          code: existingJobError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+          code: existingJobError?.code === "PGRST116"
+            ? "NOT_FOUND"
+            : "INTERNAL_SERVER_ERROR",
           message: existingJobError
             ? `Failed to load job: ${existingJobError.message}`
             : "Job not found",
@@ -832,7 +855,8 @@ export const officeRouter = t.router({
 
       if (!superAdmin) {
         const currentOrganizationId = existingJob.organization_id as string;
-        const nextOrganizationId = jobData.organization_id ?? currentOrganizationId;
+        const nextOrganizationId = jobData.organization_id ??
+          currentOrganizationId;
 
         // Get user's accessible organization IDs
         const organizationIds = new Set<string>();
@@ -874,7 +898,10 @@ export const officeRouter = t.router({
         }
 
         // If changing organization, verify access to new organization
-        if (jobData.organization_id && jobData.organization_id !== currentOrganizationId) {
+        if (
+          jobData.organization_id &&
+          jobData.organization_id !== currentOrganizationId
+        ) {
           if (!organizationIds.has(nextOrganizationId)) {
             throw new TRPCError({
               code: "FORBIDDEN",
@@ -885,7 +912,8 @@ export const officeRouter = t.router({
       }
 
       const currentOrganizationId = existingJob.organization_id as string;
-      const nextOrganizationId = jobData.organization_id ?? currentOrganizationId;
+      const nextOrganizationId = jobData.organization_id ??
+        currentOrganizationId;
 
       const requestedTeamIds = team_ids
         ? Array.from(new Set(team_ids))
@@ -909,7 +937,8 @@ export const officeRouter = t.router({
           if (teamsError) {
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
-              message: `Failed to validate team assignments: ${teamsError.message}`,
+              message:
+                `Failed to validate team assignments: ${teamsError.message}`,
             });
           }
 
@@ -936,8 +965,7 @@ export const officeRouter = t.router({
           }
         }
 
-        let nextPrimaryTeamId =
-          jobData.assigned_team_id ??
+        let nextPrimaryTeamId = jobData.assigned_team_id ??
           existingJob.assigned_team_id ??
           (requestedTeamIds[0] ?? null);
 
@@ -949,10 +977,9 @@ export const officeRouter = t.router({
           requestedTeamIds.unshift(nextPrimaryTeamId);
         }
 
-        jobData.assigned_team_id =
-          requestedTeamIds.length > 0
-            ? nextPrimaryTeamId ?? requestedTeamIds[0]
-            : null;
+        jobData.assigned_team_id = requestedTeamIds.length > 0
+          ? nextPrimaryTeamId ?? requestedTeamIds[0]
+          : null;
       } else if (jobData.assigned_team_id) {
         const { data: teamRecord, error: teamError } = await supabaseAdmin
           .schema("core")
@@ -963,7 +990,9 @@ export const officeRouter = t.router({
 
         if (teamError || !teamRecord) {
           throw new TRPCError({
-            code: teamError?.code === "PGRST116" ? "BAD_REQUEST" : "INTERNAL_SERVER_ERROR",
+            code: teamError?.code === "PGRST116"
+              ? "BAD_REQUEST"
+              : "INTERNAL_SERVER_ERROR",
             message: teamError
               ? `Failed to validate assigned team: ${teamError.message}`
               : "Assigned team not found",
@@ -990,7 +1019,9 @@ export const officeRouter = t.router({
 
         if (teamError || !teamRecord) {
           throw new TRPCError({
-            code: teamError?.code === "PGRST116" ? "BAD_REQUEST" : "INTERNAL_SERVER_ERROR",
+            code: teamError?.code === "PGRST116"
+              ? "BAD_REQUEST"
+              : "INTERNAL_SERVER_ERROR",
             message: teamError
               ? `Failed to validate existing assigned team: ${teamError.message}`
               : "Assigned team not found",
@@ -1023,21 +1054,22 @@ export const officeRouter = t.router({
       }
 
       if (requestedTeamIds) {
-        const effectivePrimaryTeamId =
-          jobData.assigned_team_id ??
+        const effectivePrimaryTeamId = jobData.assigned_team_id ??
           existingJob.assigned_team_id ??
           (requestedTeamIds[0] ?? null);
 
-        const { data: existingAssignments, error: assignmentsError } = await supabaseAdmin
-          .schema("core")
-          .from("job_team_assignments")
-          .select("team_id")
-          .eq("job_id", id);
+        const { data: existingAssignments, error: assignmentsError } =
+          await supabaseAdmin
+            .schema("core")
+            .from("job_team_assignments")
+            .select("team_id")
+            .eq("job_id", id);
 
         if (assignmentsError) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: `Failed to load existing team assignments: ${assignmentsError.message}`,
+            message:
+              `Failed to load existing team assignments: ${assignmentsError.message}`,
           });
         }
 
@@ -1063,7 +1095,8 @@ export const officeRouter = t.router({
           if (deleteError) {
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
-              message: `Failed to remove previous team assignments: ${deleteError.message}`,
+              message:
+                `Failed to remove previous team assignments: ${deleteError.message}`,
             });
           }
         }
@@ -1074,7 +1107,8 @@ export const officeRouter = t.router({
             team_id: teamId,
             organization_id: nextOrganizationId,
             assigned_by: ctx.user?.id ?? null,
-            is_primary: (effectivePrimaryTeamId ?? requestedTeamIds[0]) === teamId,
+            is_primary:
+              (effectivePrimaryTeamId ?? requestedTeamIds[0]) === teamId,
             metadata: {
               source: "manual",
               updated_by: ctx.user?.id ?? null,
@@ -1103,12 +1137,14 @@ export const officeRouter = t.router({
         if (resetPrimaryError) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: `Failed to reset primary team flag: ${resetPrimaryError.message}`,
+            message:
+              `Failed to reset primary team flag: ${resetPrimaryError.message}`,
           });
         }
 
         if (requestedTeamIds.length > 0) {
-          const primaryId = effectivePrimaryTeamId ?? requestedTeamIds[0] ?? null;
+          const primaryId = effectivePrimaryTeamId ?? requestedTeamIds[0] ??
+            null;
           if (primaryId) {
             const { error: setPrimaryError } = await supabaseAdmin
               .schema("core")
@@ -1120,7 +1156,8 @@ export const officeRouter = t.router({
             if (setPrimaryError) {
               throw new TRPCError({
                 code: "INTERNAL_SERVER_ERROR",
-                message: `Failed to update primary team: ${setPrimaryError.message}`,
+                message:
+                  `Failed to update primary team: ${setPrimaryError.message}`,
               });
             }
           }
@@ -1197,7 +1234,9 @@ export const officeRouter = t.router({
 
       if (jobError || !existingJob) {
         throw new TRPCError({
-          code: jobError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+          code: jobError?.code === "PGRST116"
+            ? "NOT_FOUND"
+            : "INTERNAL_SERVER_ERROR",
           message: jobError
             ? `Failed to load job: ${jobError.message}`
             : "Job not found",
@@ -1300,7 +1339,9 @@ export const officeRouter = t.router({
 
       if (jobError || !existingJob) {
         throw new TRPCError({
-          code: jobError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+          code: jobError?.code === "PGRST116"
+            ? "NOT_FOUND"
+            : "INTERNAL_SERVER_ERROR",
           message: jobError
             ? `Failed to load job: ${jobError.message}`
             : "Job not found",
@@ -1401,7 +1442,9 @@ export const officeRouter = t.router({
 
       if (jobError || !existingJob) {
         throw new TRPCError({
-          code: jobError?.code === "PGRST116" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+          code: jobError?.code === "PGRST116"
+            ? "NOT_FOUND"
+            : "INTERNAL_SERVER_ERROR",
           message: jobError
             ? `Failed to load job: ${jobError.message}`
             : "Job not found",
@@ -1683,7 +1726,8 @@ export const officeRouter = t.router({
       if (requestError) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to load organization request: ${requestError.message}`,
+          message:
+            `Failed to load organization request: ${requestError.message}`,
         });
       }
 
@@ -1704,7 +1748,9 @@ export const officeRouter = t.router({
       const moderationTimestamp = new Date().toISOString();
 
       if (input.action === "reject") {
-        if (!input.rejectionReason || input.rejectionReason.trim().length === 0) {
+        if (
+          !input.rejectionReason || input.rejectionReason.trim().length === 0
+        ) {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "Rejection reason is required when rejecting a request",
@@ -1727,7 +1773,8 @@ export const officeRouter = t.router({
         if (updateError) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: `Failed to reject organization request: ${updateError.message}`,
+            message:
+              `Failed to reject organization request: ${updateError.message}`,
           });
         }
 
@@ -1745,7 +1792,8 @@ export const officeRouter = t.router({
       if (existingOrgError && existingOrgError.code !== "PGRST116") {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to validate organization slug: ${existingOrgError.message}`,
+          message:
+            `Failed to validate organization slug: ${existingOrgError.message}`,
         });
       }
 
@@ -1802,7 +1850,8 @@ export const officeRouter = t.router({
 
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to update organization request: ${approveError.message}`,
+          message:
+            `Failed to update organization request: ${approveError.message}`,
         });
       }
 
@@ -2627,17 +2676,19 @@ export const officeRouter = t.router({
       }
 
       // 2. Organizations where user is a team member
-      const { data: teamMemberships, error: membershipsError } = await supabaseAdmin
-        .schema("core")
-        .from("team_members")
-        .select("teams!inner(organization_id)")
-        .eq("user_id", user.id)
-        .neq("status", "removed");
+      const { data: teamMemberships, error: membershipsError } =
+        await supabaseAdmin
+          .schema("core")
+          .from("team_members")
+          .select("teams!inner(organization_id)")
+          .eq("user_id", user.id)
+          .neq("status", "removed");
 
       if (membershipsError) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to load team memberships: ${membershipsError.message}`,
+          message:
+            `Failed to load team memberships: ${membershipsError.message}`,
         });
       }
 
@@ -2783,29 +2834,29 @@ export const officeRouter = t.router({
       const applications = (data ?? []).map((app) => {
         const job = app.job as
           | {
-              id: string;
-              title: string | null;
-              location: string | null;
-              organization_id: string;
-              status: string;
-            }
+            id: string;
+            title: string | null;
+            location: string | null;
+            organization_id: string;
+            status: string;
+          }
           | null;
         const candidate = app.candidate as
           | {
-              id: string;
-              username: string | null;
-              display_name: string | null;
-              about: string | null;
-              avatar_path: string | null;
-            }
+            id: string;
+            username: string | null;
+            display_name: string | null;
+            about: string | null;
+            avatar_path: string | null;
+          }
           | null;
 
         // Extract data from answers JSONB if it exists
         const answers = (app.answers as Record<string, unknown> | null) || {};
-        const customQuestionAnswers = (answers.custom_question_answers as Array<{
+        const customQuestionAnswers = answers.custom_question_answers as Array<{
           question: string;
           answer: string;
-        }> || []);
+        }> || [];
 
         return {
           id: app.id,
@@ -2814,7 +2865,8 @@ export const officeRouter = t.router({
           status: app.status,
           applied_at: app.created_at,
           updated_at: app.stage_changed_at || app.created_at,
-          application_score: (answers.application_score as number | null) || null,
+          application_score: (answers.application_score as number | null) ||
+            null,
           auto_rejected: (answers.auto_rejected as boolean | null) || false,
           current_location: (answers.current_location as string | null) || null,
           willing_to_relocate:
@@ -2822,25 +2874,28 @@ export const officeRouter = t.router({
           years_experience: (answers.years_experience as number | null) || 0,
           is_authorized_to_work:
             (answers.is_authorized_to_work as boolean | null) || false,
-          earliest_start_date:
-            (answers.earliest_start_date as string | null) || null,
+          earliest_start_date: (answers.earliest_start_date as string | null) ||
+            null,
           custom_question_answers: customQuestionAnswers,
-          attachments: (answers.attachments as Record<string, unknown> | null) || {},
+          attachments:
+            (answers.attachments as Record<string, unknown> | null) || {},
           candidate_id: candidate?.id || app.user_id,
-          candidate_name:
-            candidate?.display_name || candidate?.username || "Unknown",
+          candidate_name: candidate?.display_name || candidate?.username ||
+            "Unknown",
           profile_about: candidate?.about || null,
           profile_avatar_path: candidate?.avatar_path || null,
           job_title: job?.title || "Unknown Job",
           job_location: job?.location || null,
           // Include nested job object for component compatibility
-          job: job ? {
-            id: job.id,
-            title: job.title,
-            location: job.location,
-            organization_id: job.organization_id,
-            status: job.status,
-          } : null,
+          job: job
+            ? {
+              id: job.id,
+              title: job.title,
+              location: job.location,
+              organization_id: job.organization_id,
+              status: job.status,
+            }
+            : null,
         };
       });
 
