@@ -21,7 +21,7 @@ import {
   findApplicationCard,
   getColumnCardCount,
   KANBAN_COLUMNS,
-} from './helpers/kanban-helpers'
+} from '../../infrastructure/playwright/helpers/helpers/kanban-helpers'
 
 // Use super-admin auth state (Zach) who has 'office' role required for /office routes
 test.use({ storageState: 'tests/.auth/super-admin.json' })
