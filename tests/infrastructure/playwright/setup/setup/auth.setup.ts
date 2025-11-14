@@ -59,44 +59,120 @@ setup('authenticate as admin', async ({ page }) => {
 
   console.log('✓ API authentication successful')
 
-  // Prepare session data (match format from auth.ts injectSession)
-  // Convert getSession result to SupabaseSessionShape format
-  const plainUser = JSON.parse(JSON.stringify(session.user))
-  const safeSession = {
-    access_token: session.session.access_token,
-    refresh_token: session.session.refresh_token ?? session.session.access_token,
-    expires_at: session.session.expires_at ?? Math.floor(Date.now() / 1000) + (session.session.expires_in ?? 3600),
-    expires_in: session.session.expires_in ?? 3600,
-    token_type: session.session.token_type ?? 'bearer',
-    user: plainUser,
-  }
-  const payload = {
-    currentSession: safeSession,
-    expiresAt: safeSession.expires_at,
-  }
+  // Navigate to the app first (like create-auth-states.ts does)
+  await page.goto(`${APP_BASE_URL}/`)
+  await page.waitForLoadState('domcontentloaded')
 
-  // Set localStorage BEFORE page loads using addInitScript (like injectSession does)
-  const storageKey = getStorageKey()
-  await page.addInitScript(
-    ({ storageKey, payload, user }) => {
-      try {
-        window.localStorage.setItem(storageKey, JSON.stringify(payload))
-        window.localStorage.setItem('supabase.auth.token', JSON.stringify(payload))
-        window.localStorage.setItem('supabase.auth.user', JSON.stringify(user))
-        console.log('[SETUP] Browser session initialized in localStorage')
-      } catch (error) {
-        console.error('[SETUP] Failed to populate localStorage', error)
+  // Set the session in localStorage directly (flat format, like create-auth-states.ts)
+  // Find or create the correct storage key based on page hostname
+  const storageResult = await page.evaluate(
+    (sessionData) => {
+      // Find existing Supabase auth key (like create-auth-states.ts does)
+      const keys = Object.keys(localStorage)
+      let authKey = keys.find((k) => k.includes('sb-') && k.includes('-auth-token'))
+
+      if (!authKey) {
+        // Create the key based on current hostname (matches create-auth-states.ts)
+        // Use IP address format (127) instead of localhost for consistency with working files
+        const hostname = window.location.hostname
+        // Convert localhost to 127, or use hostname as-is
+        const normalizedHost = hostname === 'localhost' ? '127' : hostname.replace(/\./g, '-')
+        authKey = `sb-${normalizedHost}-auth-token`
+      }
+
+      // Store session in localStorage as flat object (not wrapped in currentSession)
+      // This matches the format used by create-auth-states.ts which works
+      localStorage.setItem(authKey, JSON.stringify(sessionData))
+      // Also set the generic keys for compatibility
+      localStorage.setItem('supabase.auth.token', JSON.stringify({
+        currentSession: sessionData,
+        expiresAt: sessionData.expires_at,
+      }))
+      localStorage.setItem('supabase.auth.user', JSON.stringify(sessionData.user))
+      
+      // Verify it was set
+      const stored = localStorage.getItem(authKey)
+      const allKeys = Object.keys(localStorage)
+      
+      return {
+        authKey,
+        stored: stored ? 'yes' : 'no',
+        storedLength: stored?.length || 0,
+        allKeys,
       }
     },
-    { storageKey, payload, user: plainUser }
+    {
+      access_token: session.session.access_token,
+      refresh_token: session.session.refresh_token,
+      expires_at: session.session.expires_at,
+      expires_in: session.session.expires_in,
+      token_type: session.session.token_type,
+      user: session.user,
+    }
   )
 
   console.log('✓ Browser session initialized')
+  console.log(`   Storage key: ${storageResult.authKey}`)
+  console.log(`   Stored: ${storageResult.stored}, Length: ${storageResult.storedLength}`)
 
-  // Navigate to dashboard (localStorage will be set before page loads)
-  await page.goto(`${APP_BASE_URL}/dashboard`, { waitUntil: 'networkidle', timeout: 30000 })
+  // Verify localStorage still has the data before reload
+  const beforeReload = await page.evaluate(() => {
+    const keys = Object.keys(localStorage)
+    const authKeys = keys.filter((k) => k.includes('auth') || k.includes('sb-'))
+    return { keys, authKeys }
+  })
+  console.log(`   Before reload - localStorage keys: ${beforeReload.authKeys.join(', ')}`)
+
+  // Reload to let Supabase read the session
+  await page.reload({ waitUntil: 'domcontentloaded' })
+  await page.waitForTimeout(3000) // Match create-auth-states.ts wait time
+
+  // Verify localStorage still has the data after reload
+  const afterReload = await page.evaluate(() => {
+    const keys = Object.keys(localStorage)
+    const authKeys = keys.filter((k) => k.includes('auth') || k.includes('sb-'))
+    return { keys, authKeys }
+  })
+  console.log(`   After reload - localStorage keys: ${afterReload.authKeys.join(', ')}`)
+
+  // Navigate to dashboard to verify auth works
+  // Use waitForURL to wait for either dashboard or auth (to detect redirect)
+  await page.goto(`${APP_BASE_URL}/dashboard`, { waitUntil: 'domcontentloaded', timeout: 30000 })
+  
+  // Wait a bit for Supabase to process the session
+  await page.waitForTimeout(3000)
+  
+  // Check what URL we ended up at
+  const currentUrl = page.url()
+  console.log(`📍 Current URL after navigation: ${currentUrl}`)
+  
+  // Check localStorage on the current page (might be /auth if redirected)
+  const localStorageOnCurrentPage = await page.evaluate(() => {
+    const keys = Object.keys(localStorage)
+    const authKeys = keys.filter((k) => k.includes('auth') || k.includes('sb-'))
+    return { keys, authKeys }
+  })
+  console.log(`   localStorage on ${currentUrl}: ${localStorageOnCurrentPage.authKeys.join(', ')}`)
 
   // Verify we're authenticated (not redirected to /auth)
+  if (currentUrl.includes('/auth')) {
+    // Debug: Check what's in localStorage
+    const localStorageCheck = await page.evaluate(() => {
+      const keys = Object.keys(localStorage)
+      const authKeys = keys.filter((k) => k.includes('auth') || k.includes('sb-'))
+      return {
+        allKeys: keys,
+        authKeys,
+        authValues: authKeys.map((k) => ({
+          key: k,
+          value: localStorage.getItem(k)?.substring(0, 100),
+        })),
+      }
+    })
+    console.log('🔍 localStorage debug:', JSON.stringify(localStorageCheck, null, 2))
+    throw new Error(`Authentication failed - redirected to /auth. localStorage keys: ${localStorageCheck.authKeys.join(', ')}`)
+  }
+
   await expect(page).toHaveURL(/dashboard/)
 
   console.log('✓ Authentication verified')
@@ -132,44 +208,120 @@ setup('authenticate as user', async ({ page }) => {
 
   console.log('✓ API authentication successful')
 
-  // Prepare session data (match format from auth.ts injectSession)
-  // Convert getSession result to SupabaseSessionShape format
-  const plainUser = JSON.parse(JSON.stringify(session.user))
-  const safeSession = {
-    access_token: session.session.access_token,
-    refresh_token: session.session.refresh_token ?? session.session.access_token,
-    expires_at: session.session.expires_at ?? Math.floor(Date.now() / 1000) + (session.session.expires_in ?? 3600),
-    expires_in: session.session.expires_in ?? 3600,
-    token_type: session.session.token_type ?? 'bearer',
-    user: plainUser,
-  }
-  const payload = {
-    currentSession: safeSession,
-    expiresAt: safeSession.expires_at,
-  }
+  // Navigate to the app first (like create-auth-states.ts does)
+  await page.goto(`${APP_BASE_URL}/`)
+  await page.waitForLoadState('domcontentloaded')
 
-  // Set localStorage BEFORE page loads using addInitScript
-  const storageKey = getStorageKey()
-  await page.addInitScript(
-    ({ storageKey, payload, user }) => {
-      try {
-        window.localStorage.setItem(storageKey, JSON.stringify(payload))
-        window.localStorage.setItem('supabase.auth.token', JSON.stringify(payload))
-        window.localStorage.setItem('supabase.auth.user', JSON.stringify(user))
-        console.log('[SETUP] Browser session initialized in localStorage')
-      } catch (error) {
-        console.error('[SETUP] Failed to populate localStorage', error)
+  // Set the session in localStorage directly (flat format, like create-auth-states.ts)
+  // Find or create the correct storage key based on page hostname
+  const storageResult = await page.evaluate(
+    (sessionData) => {
+      // Find existing Supabase auth key (like create-auth-states.ts does)
+      const keys = Object.keys(localStorage)
+      let authKey = keys.find((k) => k.includes('sb-') && k.includes('-auth-token'))
+
+      if (!authKey) {
+        // Create the key based on current hostname (matches create-auth-states.ts)
+        // Use IP address format (127) instead of localhost for consistency with working files
+        const hostname = window.location.hostname
+        // Convert localhost to 127, or use hostname as-is
+        const normalizedHost = hostname === 'localhost' ? '127' : hostname.replace(/\./g, '-')
+        authKey = `sb-${normalizedHost}-auth-token`
+      }
+
+      // Store session in localStorage as flat object (not wrapped in currentSession)
+      // This matches the format used by create-auth-states.ts which works
+      localStorage.setItem(authKey, JSON.stringify(sessionData))
+      // Also set the generic keys for compatibility
+      localStorage.setItem('supabase.auth.token', JSON.stringify({
+        currentSession: sessionData,
+        expiresAt: sessionData.expires_at,
+      }))
+      localStorage.setItem('supabase.auth.user', JSON.stringify(sessionData.user))
+      
+      // Verify it was set
+      const stored = localStorage.getItem(authKey)
+      const allKeys = Object.keys(localStorage)
+      
+      return {
+        authKey,
+        stored: stored ? 'yes' : 'no',
+        storedLength: stored?.length || 0,
+        allKeys,
       }
     },
-    { storageKey, payload, user: plainUser }
+    {
+      access_token: session.session.access_token,
+      refresh_token: session.session.refresh_token,
+      expires_at: session.session.expires_at,
+      expires_in: session.session.expires_in,
+      token_type: session.session.token_type,
+      user: session.user,
+    }
   )
 
   console.log('✓ Browser session initialized')
+  console.log(`   Storage key: ${storageResult.authKey}`)
+  console.log(`   Stored: ${storageResult.stored}, Length: ${storageResult.storedLength}`)
 
-  // Navigate to dashboard (localStorage will be set before page loads)
-  await page.goto(`${APP_BASE_URL}/dashboard`, { waitUntil: 'networkidle', timeout: 30000 })
+  // Verify localStorage still has the data before reload
+  const beforeReload = await page.evaluate(() => {
+    const keys = Object.keys(localStorage)
+    const authKeys = keys.filter((k) => k.includes('auth') || k.includes('sb-'))
+    return { keys, authKeys }
+  })
+  console.log(`   Before reload - localStorage keys: ${beforeReload.authKeys.join(', ')}`)
+
+  // Reload to let Supabase read the session
+  await page.reload({ waitUntil: 'domcontentloaded' })
+  await page.waitForTimeout(3000) // Match create-auth-states.ts wait time
+
+  // Verify localStorage still has the data after reload
+  const afterReload = await page.evaluate(() => {
+    const keys = Object.keys(localStorage)
+    const authKeys = keys.filter((k) => k.includes('auth') || k.includes('sb-'))
+    return { keys, authKeys }
+  })
+  console.log(`   After reload - localStorage keys: ${afterReload.authKeys.join(', ')}`)
+
+  // Navigate to dashboard to verify auth works
+  // Use waitForURL to wait for either dashboard or auth (to detect redirect)
+  await page.goto(`${APP_BASE_URL}/dashboard`, { waitUntil: 'domcontentloaded', timeout: 30000 })
+  
+  // Wait a bit for Supabase to process the session
+  await page.waitForTimeout(3000)
+  
+  // Check what URL we ended up at
+  const currentUrl = page.url()
+  console.log(`📍 Current URL after navigation: ${currentUrl}`)
+  
+  // Check localStorage on the current page (might be /auth if redirected)
+  const localStorageOnCurrentPage = await page.evaluate(() => {
+    const keys = Object.keys(localStorage)
+    const authKeys = keys.filter((k) => k.includes('auth') || k.includes('sb-'))
+    return { keys, authKeys }
+  })
+  console.log(`   localStorage on ${currentUrl}: ${localStorageOnCurrentPage.authKeys.join(', ')}`)
 
   // Verify we're authenticated (not redirected to /auth)
+  if (currentUrl.includes('/auth')) {
+    // Debug: Check what's in localStorage
+    const localStorageCheck = await page.evaluate(() => {
+      const keys = Object.keys(localStorage)
+      const authKeys = keys.filter((k) => k.includes('auth') || k.includes('sb-'))
+      return {
+        allKeys: keys,
+        authKeys,
+        authValues: authKeys.map((k) => ({
+          key: k,
+          value: localStorage.getItem(k)?.substring(0, 100),
+        })),
+      }
+    })
+    console.log('🔍 localStorage debug:', JSON.stringify(localStorageCheck, null, 2))
+    throw new Error(`Authentication failed - redirected to /auth. localStorage keys: ${localStorageCheck.authKeys.join(', ')}`)
+  }
+
   await expect(page).toHaveURL(/dashboard/)
 
   console.log('✓ Authentication verified')
