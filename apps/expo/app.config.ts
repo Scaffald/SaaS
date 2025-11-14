@@ -3,7 +3,7 @@ import 'dotenv/config'
 import {
   MAP_STYLE_CONFIG,
   MAPBOX_API_BASE_URL,
-} from '../packages/ui/src/components/maps/mapboxStyleConfig'
+} from '../../packages/ui/src/components/maps/mapboxStyleConfig'
 
 const APP_ENV = process.env.APP_ENV || 'development'
 // Load environment-specific variables
