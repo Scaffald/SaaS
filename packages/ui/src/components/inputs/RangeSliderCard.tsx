@@ -98,7 +98,7 @@ export function RangeSliderCard({
 
   // Slider dimensions - thinner track, smaller thumb
   const trackHeight = 8
-  const thumbSize = 16
+  const thumbSize = 10
 
   return (
     <YStack
@@ -134,7 +134,7 @@ export function RangeSliderCard({
       </XStack>
 
       {/* Slider */}
-      <YStack gap="$2" py="$2">
+      <YStack gap="$5" pt="$4" pb="$4">
         <Slider
           value={[clampedValue]}
           onValueChange={(values) => {
@@ -146,7 +146,7 @@ export function RangeSliderCard({
           step={step}
           disabled={disabled}
           flex={1}
-          height={24}
+          height={16}
           testID={testID ? `${testID}-slider` : undefined}
         >
           <Slider.Track bg="$color4" rounded="$1" height={trackHeight}>
