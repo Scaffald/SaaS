@@ -25,6 +25,7 @@ import { teamsRouter } from "./teams.router.ts";
 import { projectsRouter } from "./projects.router.ts";
 import { sitesRouter } from "./sites.router.ts";
 import { addressesRouter } from "./addresses.router.ts";
+import { newsRouter } from "./news.router.ts";
 
 /**
  * Main application router
@@ -57,6 +58,7 @@ export const appRouter = t.router({
   projects: projectsRouter,
   sites: sitesRouter,
   addresses: addressesRouter,
+  news: newsRouter,
 });
 
 // Export the router type for client-side usage
