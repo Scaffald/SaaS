@@ -83,6 +83,13 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
     }
   }
 
+  const handleOpenInNewTab = () => {
+    if (!userId) return
+    if (typeof window !== 'undefined') {
+      window.open(RouteBuilder.dashboardUser(userId), '_blank')
+    }
+  }
+
   const formatHourlyRate = (cents: number | null) => {
     if (!cents) return null
     const dollars = cents / 100
@@ -397,15 +404,28 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
 
           <Separator />
 
-          {/* CTA Button */}
-          <Button
-            size="$5"
-            theme="info"
-            iconAfter={<ExternalLink size={18} />}
-            onPress={handleViewFullProfile}
-          >
-            View Full Profile
-          </Button>
+          {/* CTA Buttons */}
+          <YStack gap="$3">
+            {typeof window !== 'undefined' && (
+              <Button
+                size="$5"
+                theme="blue"
+                variant="outlined"
+                iconAfter={<ExternalLink size={18} />}
+                onPress={handleOpenInNewTab}
+              >
+                Open in New Tab
+              </Button>
+            )}
+            <Button
+              size="$5"
+              theme="info"
+              iconAfter={<ExternalLink size={18} />}
+              onPress={handleViewFullProfile}
+            >
+              View Full Profile
+            </Button>
+          </YStack>
         </>
       )}
     </ResponsiveModal>
