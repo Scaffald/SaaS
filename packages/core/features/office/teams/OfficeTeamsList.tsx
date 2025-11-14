@@ -4,7 +4,8 @@ import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import { XStack, Text, YStack, Spinner, Button } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { Pencil, ArrowRightCircle, RefreshCw } from '@tamagui/lucide-icons'
-import { OfficeLayout, DashboardWidget, QuickLinksSidebar } from '@app/ui'
+import { DashboardLayout } from '@app/ui'
+import { QuickActionsWidget } from '../components/QuickActionsWidget'
 import type { AppRouter } from '@app/supabase/client-types'
 import type { inferRouterOutputs } from '@trpc/server'
 
@@ -163,7 +164,7 @@ export function OfficeTeamsList() {
   )
 
   return (
-    <OfficeLayout
+    <DashboardLayout
       leftContent={
         <YStack flex={1}>
           <OfficePageLayout
@@ -195,32 +196,13 @@ export function OfficeTeamsList() {
         </YStack>
       }
       rightContent={
-        <QuickLinksSidebar>
-          <YStack gap="$4">
-            <DashboardWidget gap="$3" elevated>
-              <Text fontSize="$5" fontWeight="700">
-                Quick Actions
-              </Text>
-              <YStack gap="$2">
-                <Button
-                  theme="info"
-                  icon={ArrowRightCircle}
-                  onPress={() => router.push(ROUTES.OFFICE_CMS_TEAMS_CREATE.path)}
-                >
-                  Create Team
-                </Button>
-                <Button
-                  variant="outlined"
-                  icon={RefreshCw}
-                  onPress={() => refetch()}
-                  disabled={isLoading || archiveMutation.isPending}
-                >
-                  Refresh
-                </Button>
-              </YStack>
-            </DashboardWidget>
-          </YStack>
-        </QuickLinksSidebar>
+        <QuickActionsWidget
+          context="list"
+          resourceName="Team"
+          onCreate={() => router.push(ROUTES.OFFICE_CMS_TEAMS_CREATE.path)}
+          onRefresh={() => refetch()}
+          isLoading={isLoading || archiveMutation.isPending}
+        />
       }
     />
   )

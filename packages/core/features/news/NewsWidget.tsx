@@ -66,7 +66,7 @@ const capitalise = (value?: string | null) => {
 function computeRelevance(
   article: NewsItem,
   context: RelevanceContext,
-  preferences: NewsPreferences,
+  preferences: NewsPreferences
 ): { score: number; reasons: string[]; hoursSincePublished: number } {
   const articleText = sanitize(`${article.title ?? ''} ${article.description ?? ''}`)
 
@@ -74,8 +74,8 @@ function computeRelevance(
   const reasons: string[] = []
 
   if (preferences.matchSkills && context.skillKeywords.length > 0) {
-    const matches = context.skillKeywords.filter((keyword) =>
-      keyword.length > 2 && articleText.includes(keyword)
+    const matches = context.skillKeywords.filter(
+      (keyword) => keyword.length > 2 && articleText.includes(keyword)
     )
     if (matches.length > 0) {
       score += 4 + Math.min(matches.length, 3)
@@ -198,8 +198,7 @@ export function NewsWidget({
       if (label && label.length > 2) {
         keywords.add(label)
       }
-      const displayCode =
-        typeof skill.displayCode === 'string' ? sanitize(skill.displayCode) : null
+      const displayCode = typeof skill.displayCode === 'string' ? sanitize(skill.displayCode) : null
       if (displayCode && displayCode.length > 1) {
         keywords.add(displayCode)
       }
@@ -408,7 +407,13 @@ export function NewsWidget({
                   style={{ borderRadius: 12 }}
                 >
                   <XStack justify="space-between" items="flex-start" gap="$3">
-                    <Text fontSize="$4" fontWeight="600" color="$color12" flex={1} numberOfLines={2}>
+                    <Text
+                      fontSize="$4"
+                      fontWeight="600"
+                      color="$color12"
+                      flex={1}
+                      numberOfLines={2}
+                    >
                       {item.title}
                     </Text>
                     <ExternalLink size={16} color="$color10" />
@@ -518,4 +523,3 @@ export function NewsWidget({
     </YStack>
   )
 }
-

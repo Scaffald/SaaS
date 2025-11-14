@@ -11,7 +11,8 @@ import {
   RefreshCw,
   X as XIcon,
 } from '@tamagui/lucide-icons'
-import { OfficeLayout, DashboardWidget, QuickLinksSidebar } from '@app/ui'
+import { DashboardLayout, DashboardWidget, QuickLinksSidebar } from '@app/ui'
+import { QuickActionsWidget } from './components/QuickActionsWidget'
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { OfficePageLayout } from './components/OfficePageLayout'
@@ -327,7 +328,7 @@ export function OfficeOrganizationsList() {
         </Dialog.Portal>
       </Dialog>
 
-      <OfficeLayout
+      <DashboardLayout
         leftContent={
           <OfficePageLayout
             title="Organizations"
@@ -455,28 +456,13 @@ export function OfficeOrganizationsList() {
                 )}
               </DashboardWidget>
 
-              <DashboardWidget gap="$3" elevated>
-                <Text fontSize="$5" fontWeight="700">
-                  Quick Actions
-                </Text>
-                <YStack gap="$2">
-                  <Button
-                    theme="info"
-                    icon={ArrowRightCircle}
-                    onPress={() => router.push(ROUTES.OFFICE_CMS_ORGANIZATIONS_CREATE.path)}
-                  >
-                    Create Organization
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    icon={RefreshCw}
-                    onPress={refreshRequests}
-                    disabled={isRequestsLoading || isRequestsRefetching}
-                  >
-                    Review Pending Requests
-                  </Button>
-                </YStack>
-              </DashboardWidget>
+              <QuickActionsWidget
+                context="list"
+                resourceName="Organization"
+                onCreate={() => router.push(ROUTES.OFFICE_CMS_ORGANIZATIONS_CREATE.path)}
+                onRefresh={refreshRequests}
+                isLoading={isRequestsLoading || isRequestsRefetching}
+              />
             </YStack>
           </QuickLinksSidebar>
         }
