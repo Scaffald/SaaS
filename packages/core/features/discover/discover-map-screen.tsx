@@ -1,5 +1,5 @@
 import { useMemo, useState, useRef, useCallback, useEffect } from 'react'
-import { Sheet, YStack, XStack, useMedia } from 'tamagui'
+import { Sheet, YStack, XStack, Tabs, Text, Button, useMedia } from 'tamagui'
 import { MapContainer, type MapContainerRef, type MapPinType, type ViewportBounds } from '@app/ui'
 
 import { MapFilterBar } from './components/MapFilterBar'
@@ -18,6 +18,7 @@ import { useJobs } from './hooks/useJobs'
 import { useUserLocation } from './hooks/useUserLocation'
 import { useMapState } from './providers/MapStateProvider'
 import { useMapPinState, type ClusterInfo } from './hooks/useMapPinState'
+import { List as ListIcon, Map as MapIcon, Search } from '@tamagui/lucide-icons'
 
 export const DiscoverMapScreen = () => {
   // Use Tamagui media hook to check breakpoint
@@ -25,7 +26,8 @@ export const DiscoverMapScreen = () => {
   // On mobile (≤800px): sm is true
   // On desktop (>800px): sm is false
   const media = useMedia()
-  const isSmallScreen = media.sm // sm = maxWidth: 800px, so true when ≤800px
+  const isNativeMobile = Platform.OS !== 'web'
+  const isSmallScreen = media.sm || isNativeMobile // ensure native mobile always treated as small
   const resultListRef = useRef<ResultListRef>(null)
   const mapRef = useRef<MapContainerRef>(null)
 
@@ -33,13 +35,8 @@ export const DiscoverMapScreen = () => {
   const { location } = useUserLocation()
 
   // Map state from context (persisted)
-  const {
-    state,
-    updateSearchLocation,
-    updateFilters,
-    updateResultsRailVisible,
-    clearState,
-  } = useMapState()
+  const { state, updateSearchLocation, updateFilters, updateResultsRailVisible, clearState } =
+    useMapState()
 
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
   const [viewportBounds, setViewportBounds] = useState<ViewportBounds | null>(null)
@@ -52,7 +49,8 @@ export const DiscoverMapScreen = () => {
   const [jobModalId, setJobModalId] = useState<string | null>(null)
   const [orgModalOpen, setOrgModalOpen] = useState(false)
   const [orgModalId, setOrgModalId] = useState<string | null>(null)
-  const [showResultsSheet, setShowResultsSheet] = useState(false)
+  const [mobileViewMode, setMobileViewMode] = useState<'map' | 'list'>('map')
+  const [filtersSheetOpen, setFiltersSheetOpen] = useState(false)
   const [userPanelOpen, setUserPanelOpen] = useState(false)
   const [userPanelUserId, setUserPanelUserId] = useState<string | null>(null)
 
@@ -164,18 +162,23 @@ export const DiscoverMapScreen = () => {
   ])
 
   // Process pins with cluster information for state management
+  const processPinsRef = useRef(processPins)
+  useEffect(() => {
+    processPinsRef.current = processPins
+  }, [processPins])
+
   useEffect(() => {
     if (mapPins.length > 0 || clusters.length > 0) {
-      processPins(mapPins, clusters)
+      processPinsRef.current(mapPins, clusters)
     }
-  }, [mapPins, clusters, processPins])
+  }, [mapPins, clusters])
 
   // Update pin cluster membership when clusters change
   useEffect(() => {
     // Create a map of pin IDs to cluster IDs
     const pinToClusterMap = new Map<string, number>()
     for (const cluster of clusters) {
-      for (const pinId of cluster.memberPinIds) {
+      for (const pinId of cluster.memberPinIds ?? []) {
         pinToClusterMap.set(pinId, cluster.clusterId)
       }
     }
@@ -303,7 +306,7 @@ export const DiscoverMapScreen = () => {
         zoomLevel: 12,
         timestamp: Date.now(),
       })
-      
+
       // Calculate viewport bounds immediately based on target location and zoom level
       // This triggers data fetching before the map animation completes
       // At zoom level 12, approximate bounds are ±0.1 degrees (roughly 10km radius)
@@ -316,7 +319,7 @@ export const DiscoverMapScreen = () => {
       }
       setViewportBounds(immediateBounds)
       setMapReady(true)
-      
+
       // Center the map on the new location
       if (mapRef.current?.flyTo) {
         mapRef.current.flyTo([location.longitude, location.latitude], 12)
@@ -327,47 +330,49 @@ export const DiscoverMapScreen = () => {
 
   // Handle viewport changes from map (debounced by 500ms in MapContainer)
   // Only update viewport bounds for data fetching, not persisted state (to avoid excessive updates)
-  const handleViewportChange = useCallback(
-    (bounds: ViewportBounds, _zoom: number) => {
-      // Only update bounds if they've changed significantly (avoid unnecessary refetches)
-      // Check both center position and bounds size to determine if viewport changed meaningfully
-      setViewportBounds((prevBounds) => {
-        if (!prevBounds) {
-          setMapReady(true)
-          return bounds // First bounds update
-        }
-        
-        // Calculate center points
-        const prevCenterLat = (prevBounds.north + prevBounds.south) / 2
-        const prevCenterLng = (prevBounds.east + prevBounds.west) / 2
-        const centerLat = (bounds.north + bounds.south) / 2
-        const centerLng = (bounds.east + bounds.west) / 2
-        
-        // Calculate bounds size (width and height)
-        const prevLatRange = Math.abs(prevBounds.north - prevBounds.south)
-        const prevLngRange = Math.abs(prevBounds.east - prevBounds.west)
-        const latRange = Math.abs(bounds.north - bounds.south)
-        const lngRange = Math.abs(bounds.east - bounds.west)
-        
-        // Check if center moved significantly (more than 20% of viewport size)
-        const centerLatDiff = Math.abs(centerLat - prevCenterLat) / prevLatRange
-        const centerLngDiff = Math.abs(centerLng - prevCenterLng) / prevLngRange
-        
-        // Check if bounds size changed significantly (more than 15% change in zoom)
-        const latRangeDiff = Math.abs(latRange - prevLatRange) / prevLatRange
-        const lngRangeDiff = Math.abs(lngRange - prevLngRange) / prevLngRange
-        
-        // Only update if center moved significantly OR bounds size changed significantly
-        // This prevents refetching on small pans while still updating on zoom changes
-        if (centerLatDiff > 0.2 || centerLngDiff > 0.2 || latRangeDiff > 0.15 || lngRangeDiff > 0.15) {
-          setMapReady(true)
-          return bounds
-        }
-        return prevBounds // Keep previous bounds to avoid unnecessary refetch
-      })
-    },
-    []
-  )
+  const handleViewportChange = useCallback((bounds: ViewportBounds, _zoom: number) => {
+    // Only update bounds if they've changed significantly (avoid unnecessary refetches)
+    // Check both center position and bounds size to determine if viewport changed meaningfully
+    setViewportBounds((prevBounds) => {
+      if (!prevBounds) {
+        setMapReady(true)
+        return bounds // First bounds update
+      }
+
+      // Calculate center points
+      const prevCenterLat = (prevBounds.north + prevBounds.south) / 2
+      const prevCenterLng = (prevBounds.east + prevBounds.west) / 2
+      const centerLat = (bounds.north + bounds.south) / 2
+      const centerLng = (bounds.east + bounds.west) / 2
+
+      // Calculate bounds size (width and height)
+      const prevLatRange = Math.abs(prevBounds.north - prevBounds.south)
+      const prevLngRange = Math.abs(prevBounds.east - prevBounds.west)
+      const latRange = Math.abs(bounds.north - bounds.south)
+      const lngRange = Math.abs(bounds.east - bounds.west)
+
+      // Check if center moved significantly (more than 20% of viewport size)
+      const centerLatDiff = Math.abs(centerLat - prevCenterLat) / prevLatRange
+      const centerLngDiff = Math.abs(centerLng - prevCenterLng) / prevLngRange
+
+      // Check if bounds size changed significantly (more than 15% change in zoom)
+      const latRangeDiff = Math.abs(latRange - prevLatRange) / prevLatRange
+      const lngRangeDiff = Math.abs(lngRange - prevLngRange) / prevLngRange
+
+      // Only update if center moved significantly OR bounds size changed significantly
+      // This prevents refetching on small pans while still updating on zoom changes
+      if (
+        centerLatDiff > 0.2 ||
+        centerLngDiff > 0.2 ||
+        latRangeDiff > 0.15 ||
+        lngRangeDiff > 0.15
+      ) {
+        setMapReady(true)
+        return bounds
+      }
+      return prevBounds // Keep previous bounds to avoid unnecessary refetch
+    })
+  }, [])
 
   const handleMapReady = useCallback(({ bounds }: { bounds: ViewportBounds; zoom: number }) => {
     setViewportBounds(bounds)
@@ -376,28 +381,44 @@ export const DiscoverMapScreen = () => {
 
   const resultsCount = talentProfiles.length + organizations.length + jobs.length
 
+  useEffect(() => {
+    if (!isSmallScreen) {
+      setMobileViewMode('map')
+      setFiltersSheetOpen(false)
+    }
+  }, [isSmallScreen])
+
+  const handleMobileViewChange = useCallback((value: string) => {
+    setMobileViewMode(value === 'list' ? 'list' : 'map')
+  }, [])
+
+  const mobileListSheetOpen = isSmallScreen && mobileViewMode === 'list'
+
   return (
     <YStack flex={1} height="100vh" overflow="hidden" position="relative">
-      {/* Filter Bar - Full width at top */}
-      <MapFilterBar
-        onLocationSelect={handleLocationSelect}
-        showWorkers={showWorkers}
-        showOrganizations={showOrganizations}
-        showJobs={showJobs}
-        onShowWorkersChange={(value) => updateFilters({ showWorkers: value })}
-        onShowOrganizationsChange={(value) => updateFilters({ showOrganizations: value })}
-        onShowJobsChange={(value) => updateFilters({ showJobs: value })}
-        resultsCount={resultsCount}
-        onResultsPress={() => {
-          if (isSmallScreen) {
-            setShowResultsSheet(true)
-          } else {
+      {/* Filter Bar / Mobile Header */}
+      {isSmallScreen ? (
+        <MobileTopControls
+          resultsCount={resultsCount}
+          onFiltersPress={() => setFiltersSheetOpen(true)}
+        />
+      ) : (
+        <MapFilterBar
+          onLocationSelect={handleLocationSelect}
+          showWorkers={showWorkers}
+          showOrganizations={showOrganizations}
+          showJobs={showJobs}
+          onShowWorkersChange={(value) => updateFilters({ showWorkers: value })}
+          onShowOrganizationsChange={(value) => updateFilters({ showOrganizations: value })}
+          onShowJobsChange={(value) => updateFilters({ showJobs: value })}
+          resultsCount={resultsCount}
+          onResultsPress={() => {
             updateResultsRailVisible(!showRail)
-          }
-        }}
-        onReset={handleReset}
-        railVisible={!isSmallScreen && showRail}
-      />
+          }}
+          onReset={handleReset}
+          railVisible={!isSmallScreen && showRail}
+        />
+      )}
 
       {/* Map and Results Rail Container */}
       <XStack flex={1} overflow="hidden" position="relative">
@@ -496,65 +517,110 @@ export const DiscoverMapScreen = () => {
       />
 
       {/* Mobile Results Sheet */}
-      <Sheet
-        modal
-        open={showResultsSheet}
-        onOpenChange={setShowResultsSheet}
-        snapPoints={[85, 50]}
-        dismissOnSnapToBottom
-      >
-        <Sheet.Overlay />
-        <Sheet.Handle />
-        <Sheet.Frame>
-          <YStack flex={1} overflow="hidden">
-            <ResultsRail
-              isVisible={true}
-              profiles={
-                showWorkers
-                  ? talentProfiles.filter((profile) => {
-                      const pinState = pinStates.get(profile.id)
-                      return (
-                        !pinState ||
-                        (pinState.visibility !== 'hidden' &&
-                          pinState.visibility !== 'transitioning-out')
-                      )
-                    })
-                  : []
-              }
-              organizations={
-                showOrganizations
-                  ? organizations.filter((org) => {
-                      const pinState = pinStates.get(org.id)
-                      return (
-                        !pinState ||
-                        (pinState.visibility !== 'hidden' &&
-                          pinState.visibility !== 'transitioning-out')
-                      )
-                    })
-                  : []
-              }
-              jobs={
-                showJobs
-                  ? jobs.filter((job) => {
-                      const pinState = pinStates.get(job.id)
-                      return (
-                        !pinState ||
-                        (pinState.visibility !== 'hidden' &&
-                          pinState.visibility !== 'transitioning-out')
-                      )
-                    })
-                  : []
-              }
-              selectedId={selectedProfileId}
-              onSelect={(id) => {
-                setSelectedProfileId(id)
-              }}
-              isLoading={isLoading || isLoadingOrgs || isLoadingJobs}
-              resultListRef={resultListRef}
-            />
-          </YStack>
-        </Sheet.Frame>
-      </Sheet>
+      {isSmallScreen && (
+        <Sheet
+          modal
+          open={mobileListSheetOpen}
+          onOpenChange={(open: boolean) => {
+            if (!open) {
+              setMobileViewMode('map')
+            }
+          }}
+          snapPoints={[90, 70, 50]}
+          dismissOnSnapToBottom
+        >
+          <Sheet.Overlay />
+          <Sheet.Handle />
+          <Sheet.Frame>
+            <YStack flex={1} overflow="hidden">
+              <ResultsRail
+                isVisible={true}
+                profiles={
+                  showWorkers
+                    ? talentProfiles.filter((profile) => {
+                        const pinState = pinStates.get(profile.id)
+                        return (
+                          !pinState ||
+                          (pinState.visibility !== 'hidden' &&
+                            pinState.visibility !== 'transitioning-out')
+                        )
+                      })
+                    : []
+                }
+                organizations={
+                  showOrganizations
+                    ? organizations.filter((org) => {
+                        const pinState = pinStates.get(org.id)
+                        return (
+                          !pinState ||
+                          (pinState.visibility !== 'hidden' &&
+                            pinState.visibility !== 'transitioning-out')
+                        )
+                      })
+                    : []
+                }
+                jobs={
+                  showJobs
+                    ? jobs.filter((job) => {
+                        const pinState = pinStates.get(job.id)
+                        return (
+                          !pinState ||
+                          (pinState.visibility !== 'hidden' &&
+                            pinState.visibility !== 'transitioning-out')
+                        )
+                      })
+                    : []
+                }
+                selectedId={selectedProfileId}
+                onSelect={(id) => {
+                  setSelectedProfileId(id)
+                  setMobileViewMode('map')
+                  if (mapRef.current?.centerOnPin) {
+                    mapRef.current.centerOnPin(id)
+                  }
+                }}
+                isLoading={isLoading || isLoadingOrgs || isLoadingJobs}
+                resultListRef={resultListRef}
+              />
+            </YStack>
+          </Sheet.Frame>
+        </Sheet>
+      )}
+
+      {/* Mobile Search & Filters Sheet */}
+      {isSmallScreen && (
+        <Sheet
+          modal
+          open={filtersSheetOpen}
+          onOpenChange={setFiltersSheetOpen}
+          snapPoints={[85, 60]}
+          dismissOnSnapToBottom
+        >
+          <Sheet.Overlay />
+          <Sheet.Handle />
+          <Sheet.Frame>
+            <YStack flex={1} p="$4" gap="$4">
+              <Text fontSize="$6" fontWeight="700">
+                Search & Filters
+              </Text>
+              <MapFilterBar
+                onLocationSelect={handleLocationSelect}
+                showWorkers={showWorkers}
+                showOrganizations={showOrganizations}
+                showJobs={showJobs}
+                onShowWorkersChange={(value) => updateFilters({ showWorkers: value })}
+                onShowOrganizationsChange={(value) => updateFilters({ showOrganizations: value })}
+                onShowJobsChange={(value) => updateFilters({ showJobs: value })}
+                resultsCount={resultsCount}
+                onResultsPress={() => {
+                  setMobileViewMode('list')
+                }}
+                onReset={handleReset}
+              />
+            </YStack>
+          </Sheet.Frame>
+        </Sheet>
+      )}
 
       {/* User Profile Panel (map overlay) */}
       <UserProfilePanel
@@ -562,12 +628,114 @@ export const DiscoverMapScreen = () => {
         open={userPanelOpen}
         onOpenChange={setUserPanelOpen}
         position={
-          isSmallScreen
-            ? { top: 80, left: 16, right: 16 }
-            : { top: 80, right: showRail ? 460 : 16 }
+          isSmallScreen ? { top: 80, left: 16, right: 16 } : { top: 80, right: showRail ? 460 : 16 }
         }
       />
+
+      {/* Mobile bottom map/list toggle */}
+      {isSmallScreen && (
+        <MobileViewToggleBar activeView={mobileViewMode} onViewChange={handleMobileViewChange} />
+      )}
     </YStack>
+  )
+}
+
+type MobileTopControlsProps = {
+  resultsCount: number
+  onFiltersPress: () => void
+}
+
+const MobileTopControls = ({ resultsCount, onFiltersPress }: MobileTopControlsProps) => {
+  return (
+    <XStack
+      width="100%"
+      px="$4"
+      py="$3"
+      gap="$3"
+      items="center"
+      bg="$background"
+      borderBottomWidth={1}
+      borderBottomColor="$borderColor"
+    >
+      <YStack flex={1}>
+        <Text fontSize="$1" color="$color10">
+          Results
+        </Text>
+        <Text fontSize="$5" fontWeight="700">
+          {resultsCount}
+        </Text>
+      </YStack>
+
+      <Button
+        size="$4"
+        variant="outlined"
+        px="$5"
+        icon={Search}
+        aria-label="Open search and filters"
+        onPress={onFiltersPress}
+      >
+        Search & Filters
+      </Button>
+    </XStack>
+  )
+}
+
+type MobileViewToggleBarProps = {
+  activeView: 'map' | 'list'
+  onViewChange: (value: string) => void
+}
+
+const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarProps) => {
+  return (
+    <XStack
+      position="absolute"
+      b="$3"
+      l="$3"
+      r="$3"
+      bg="$color2"
+      rounded="$6"
+      p="$1"
+      shadowColor="$shadowColor"
+      shadowOffset={{ width: 0, height: -2 }}
+      shadowOpacity={0.15}
+      shadowRadius={12}
+      style={{ zIndex: 60 }}
+    >
+      <Tabs value={activeView} onValueChange={onViewChange} activationMode="manual" flex={1}>
+        <Tabs.List flex={1} gap="$2" bg="transparent">
+          <Tabs.Tab
+            value="map"
+            flex={1}
+            bg={activeView === 'map' ? '$background' : 'transparent'}
+            rounded="$5"
+            px="$4"
+            py="$3"
+          >
+            <XStack items="center" justify="center" gap="$2">
+              <MapIcon size={16} />
+              <Text fontSize="$4" fontWeight="600">
+                Map
+              </Text>
+            </XStack>
+          </Tabs.Tab>
+          <Tabs.Tab
+            value="list"
+            flex={1}
+            bg={activeView === 'list' ? '$background' : 'transparent'}
+            rounded="$5"
+            px="$4"
+            py="$3"
+          >
+            <XStack items="center" justify="center" gap="$2">
+              <ListIcon size={16} />
+              <Text fontSize="$4" fontWeight="600">
+                List
+              </Text>
+            </XStack>
+          </Tabs.Tab>
+        </Tabs.List>
+      </Tabs>
+    </XStack>
   )
 }
 

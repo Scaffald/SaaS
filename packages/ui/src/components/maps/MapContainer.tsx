@@ -1,10 +1,10 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState, useCallback } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { View } from 'tamagui'
 import type { MapContainerProps, MapContainerRef, ViewportBounds, ClusterInfo } from './types'
-import { MapFallback } from './MapFallback'
-import { CustomMarker } from './CustomMarker'
+import type { CustomMarker } from './CustomMarker'
 import { generateCirclePolygon, validateGeoJSONFeatureCollection } from './utils'
-import { useThemeSetting } from '@app/core/provider/theme/UniversalThemeProvider'
+import { useThemeSetting } from '../../../../core/provider/theme/UniversalThemeProvider'
+import { createPulsingDot } from './PulsingDot'
 
 import 'mapbox-gl/dist/mapbox-gl.css'
 
@@ -24,6 +24,21 @@ function extractViewportBounds(map: mapboxgl.Map): ViewportBounds {
   }
 }
 
+function ensurePulsingDotImage(map: mapboxgl.Map) {
+  if (map.hasImage('pulsing-dot')) {
+    map.removeImage('pulsing-dot')
+  }
+
+  const pulsingDot = createPulsingDot(map, {
+    size: 200,
+    innerColor: 'rgba(59, 130, 246, 1)',
+    outerColor: 'rgba(59, 130, 246, 0.4)',
+    duration: 1000,
+  })
+
+  map.addImage('pulsing-dot', pulsingDot, { pixelRatio: 2 })
+}
+
 export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
   (
     {
@@ -37,7 +52,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       onViewportChange,
       onMapReady,
       onClustersChange,
-      pinStates,
+      pinStates: _pinStates,
       style,
     },
     ref
@@ -50,12 +65,33 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
     const centerMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const [isMapReady, setIsMapReady] = useState(false)
     const [currentZoom, setCurrentZoom] = useState(zoom)
-
     // Determine map style based on app theme
     const mapStyle =
       resolvedTheme === 'dark'
         ? 'mapbox://styles/mapbox/dark-v11'
         : 'mapbox://styles/mapbox/streets-v12'
+    const isStyleLoadingRef = useRef(false)
+    const latestPinsRef = useRef(pins)
+    const currentStyleRef = useRef(mapStyle)
+    const onPinPressRef = useRef(onPinPress)
+    const onPinHoverRef = useRef(onPinHover)
+    const onClustersChangeRef = useRef(onClustersChange)
+
+    useEffect(() => {
+      latestPinsRef.current = pins
+    }, [pins])
+
+    useEffect(() => {
+      onPinPressRef.current = onPinPress
+    }, [onPinPress])
+
+    useEffect(() => {
+      onPinHoverRef.current = onPinHover
+    }, [onPinHover])
+
+    useEffect(() => {
+      onClustersChangeRef.current = onClustersChange
+    }, [onClustersChange])
 
     // Viewport change handler ref for debouncing
     const viewportChangeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -162,8 +198,9 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
               features: [],
             },
             cluster: true,
-            clusterMaxZoom: 17, // Max zoom to cluster points on
+            clusterMaxZoom: 14, // Max zoom to cluster points on
             clusterRadius: 50, // Radius of each cluster when clustering points (px)
+            generateId: true, // Generate IDs for features
           })
 
           // Add cluster circle layer
@@ -176,23 +213,22 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
               'circle-color': [
                 'step',
                 ['get', 'point_count'],
-                '#51bbd6', // Color for clusters with < 10 points
-                10,
-                '#f1f075', // Color for clusters with 10-99 points
+                '#51bbd6', // Blue for clusters with < 100 points
                 100,
-                '#f28cb1', // Color for clusters with 100+ points
+                '#f1f075', // Yellow for clusters with 100-749 points
+                750,
+                '#f28cb1', // Pink for clusters with 750+ points
               ],
               'circle-radius': [
                 'step',
                 ['get', 'point_count'],
-                20, // 40px diameter for < 10 points
-                10,
-                30, // 60px diameter for 10-99 points
+                20, // 20px radius for < 100 points
                 100,
-                40, // 80px diameter for 100+ points
+                30, // 30px radius for 100-749 points
+                750,
+                40, // 40px radius for 750+ points
               ],
-              'circle-stroke-width': 2,
-              'circle-stroke-color': '#fff',
+              'circle-emissive-strength': 1,
             },
           })
 
@@ -205,54 +241,111 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
             layout: {
               'text-field': ['get', 'point_count_abbreviated'],
               'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-              'text-size': [
-                'step',
-                ['get', 'point_count'],
-                14, // Text size for < 10 points
-                10,
-                16, // Text size for 10-99 points
-                100,
-                18, // Text size for 100+ points
-              ],
-            },
-            paint: {
-              'text-color': '#ffffff',
+              'text-size': 12,
             },
           })
 
-          // Don't add a layer for unclustered points - we'll handle them with CustomMarkers
-          // This ensures the GeoJSON source only shows clusters, not individual points
+          // Add unclustered point layer
+          map.addLayer({
+            id: 'unclustered-point',
+            type: 'circle',
+            source: 'pins',
+            filter: ['!', ['has', 'point_count']],
+            paint: {
+              'circle-color': [
+                'case',
+                ['has', 'color'],
+                ['get', 'color'],
+                '#11b4da', // Default blue color
+              ],
+              'circle-radius': 4,
+              'circle-stroke-width': 1,
+              'circle-stroke-color': '#fff',
+              'circle-emissive-strength': 1,
+            },
+          })
 
           // Handle cluster clicks - zoom in
           map.on('click', 'clusters', (e) => {
             const features = map.queryRenderedFeatures(e.point, {
               layers: ['clusters'],
             })
-            if (!features || features.length === 0 || !features[0].properties?.cluster_id) {
+            if (!features.length) {
               return
             }
-            const clusterId = features[0].properties.cluster_id
-            const source = map.getSource('pins') as mapboxgl.GeoJSONSource | null
+            const clusterFeature = features[0]
+            const clusterId = clusterFeature.properties?.cluster_id
+            if (typeof clusterId !== 'number') {
+              return
+            }
+            const source = map.getSource('pins') as mapboxgl.GeoJSONSource | undefined
             if (!source) {
-              console.error('No source found')
               return
             }
             source.getClusterExpansionZoom(clusterId, (err, zoom) => {
-              if (err) return
-
+              if (err || typeof zoom !== 'number') return
               map.easeTo({
-                center: (features[0].geometry as GeoJSON.Point).coordinates as [number, number],
-                zoom: zoom as number,
+                center: (clusterFeature.geometry as GeoJSON.Point).coordinates as [number, number],
+                zoom,
               })
             })
           })
 
-          // Change cursor on cluster hover
+          // Handle unclustered point clicks
+          map.on('click', 'unclustered-point', (e) => {
+            const pinId = e.features?.[0]?.properties?.id
+            if (pinId) {
+              onPinPressRef.current?.(pinId)
+            }
+          })
+
+          // Change cursor on hover
           map.on('mouseenter', 'clusters', () => {
             map.getCanvas().style.cursor = 'pointer'
           })
           map.on('mouseleave', 'clusters', () => {
             map.getCanvas().style.cursor = ''
+          })
+          map.on('mouseenter', 'unclustered-point', () => {
+            map.getCanvas().style.cursor = 'pointer'
+          })
+          map.on('mouseleave', 'unclustered-point', () => {
+            map.getCanvas().style.cursor = ''
+          })
+
+          // Handle unclustered point hover for tooltip
+          map.on('mouseenter', 'unclustered-point', (e) => {
+            const pinId = e.features?.[0]?.properties?.id
+            if (pinId) {
+              onPinHoverRef.current?.(pinId)
+            }
+          })
+          map.on('mouseleave', 'unclustered-point', () => {
+            onPinHoverRef.current?.(null)
+          })
+
+          // Add pulsing dot image for selected pins
+          ensurePulsingDotImage(map)
+
+          // Add source for selected pin pulse
+          map.addSource('selected-pin-pulse', {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: [],
+            },
+          })
+
+          // Add symbol layer for pulsing dot (positioned below DOM markers, above map layers)
+          // DOM markers (CustomMarker) render on top, so this will appear behind them
+          map.addLayer({
+            id: 'selected-pin-pulse-layer',
+            type: 'symbol',
+            source: 'selected-pin-pulse',
+            layout: {
+              'icon-image': 'pulsing-dot',
+              'icon-size': 0.5, // Scale down the 200px image to reasonable size
+            },
           })
 
           // Track viewport changes (pan and zoom) with debouncing (500ms)
@@ -324,8 +417,164 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       const map = mapRef.current
       if (!map || !isMapReady) return
 
-      // Update map style to match app theme
+      if (currentStyleRef.current === mapStyle) {
+        return
+      }
+
+      currentStyleRef.current = mapStyle
+      isStyleLoadingRef.current = true
       map.setStyle(mapStyle)
+
+      const handleStyleData = () => {
+        isStyleLoadingRef.current = false
+
+        // Re-add pins source if it doesn't exist
+        if (!map.getSource('pins')) {
+          map.addSource('pins', {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: [],
+            },
+            cluster: true,
+            clusterMaxZoom: 14,
+            clusterRadius: 50,
+            generateId: true,
+          })
+        }
+
+        // Re-add cluster layers
+        if (!map.getLayer('clusters')) {
+          map.addLayer({
+            id: 'clusters',
+            type: 'circle',
+            source: 'pins',
+            filter: ['has', 'point_count'],
+            paint: {
+              'circle-color': [
+                'step',
+                ['get', 'point_count'],
+                '#51bbd6',
+                100,
+                '#f1f075',
+                750,
+                '#f28cb1',
+              ],
+              'circle-radius': ['step', ['get', 'point_count'], 20, 100, 30, 750, 40],
+              'circle-emissive-strength': 1,
+            },
+          })
+        }
+
+        if (!map.getLayer('cluster-count')) {
+          map.addLayer({
+            id: 'cluster-count',
+            type: 'symbol',
+            source: 'pins',
+            filter: ['has', 'point_count'],
+            layout: {
+              'text-field': ['get', 'point_count_abbreviated'],
+              'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+              'text-size': 12,
+            },
+          })
+        }
+
+        // Re-add unclustered point layer
+        if (!map.getLayer('unclustered-point')) {
+          map.addLayer({
+            id: 'unclustered-point',
+            type: 'circle',
+            source: 'pins',
+            filter: ['!', ['has', 'point_count']],
+            paint: {
+              'circle-color': [
+                'case',
+                ['has', 'color'],
+                ['get', 'color'],
+                '#11b4da', // Default blue color
+              ],
+              'circle-radius': 4,
+              'circle-stroke-width': 1,
+              'circle-stroke-color': '#fff',
+              'circle-emissive-strength': 1,
+            },
+          })
+        }
+
+        // Re-add pulsing dot image
+        ensurePulsingDotImage(map)
+
+        // Re-add source for selected pin pulse
+        if (!map.getSource('selected-pin-pulse')) {
+          map.addSource('selected-pin-pulse', {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: [],
+            },
+          })
+        }
+
+        // Re-add symbol layer for pulsing dot
+        if (!map.getLayer('selected-pin-pulse-layer')) {
+          map.addLayer({
+            id: 'selected-pin-pulse-layer',
+            type: 'symbol',
+            source: 'selected-pin-pulse',
+            layout: {
+              'icon-image': 'pulsing-dot',
+              'icon-size': 0.5,
+            },
+          })
+        }
+
+        // Update selected pin pulse if there's a selected pin
+        const pinsSnapshot = latestPinsRef.current
+        const selectedPin = pinsSnapshot.find((pin) => pin.selected === true)
+        if (selectedPin) {
+          const source = map.getSource('selected-pin-pulse') as mapboxgl.GeoJSONSource | null
+          if (source) {
+            const [lng, lat] = selectedPin.coordinate
+            if (
+              typeof lng === 'number' &&
+              typeof lat === 'number' &&
+              !Number.isNaN(lng) &&
+              !Number.isNaN(lat) &&
+              lng >= -180 &&
+              lng <= 180 &&
+              lat >= -90 &&
+              lat <= 90
+            ) {
+              try {
+                source.setData({
+                  type: 'FeatureCollection',
+                  features: [
+                    {
+                      type: 'Feature',
+                      geometry: {
+                        type: 'Point',
+                        coordinates: selectedPin.coordinate,
+                      },
+                      properties: {
+                        id: selectedPin.id,
+                      },
+                    },
+                  ],
+                })
+              } catch (error) {
+                console.warn('Error updating selected pin pulse:', error)
+              }
+            }
+          }
+        }
+      }
+
+      map.once('styledata', handleStyleData)
+
+      return () => {
+        map.off('styledata', handleStyleData)
+      }
     }, [mapStyle, isMapReady])
 
     // Handle map resize events
@@ -367,7 +616,9 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       }
     }, [isMapReady])
 
-    // Handle pin clicks and empty map clicks
+    // Handle empty map clicks (deselect when clicking on empty space)
+    // Note: Layer-specific click handlers are set up in map.on('load') and style change handlers
+    // This handler only fires for clicks that don't hit any layer
     useEffect(() => {
       if (!mapRef.current || !isMapReady) {
         return
@@ -376,24 +627,26 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       const map = mapRef.current
 
       const handleMapClick = (e: mapboxgl.MapMouseEvent) => {
-        // Check if clicking on a cluster
+        // Check if clicking on any map feature (clusters, unclustered points, or other layers)
         const features = map.queryRenderedFeatures(e.point, {
-          layers: ['clusters'],
+          layers: ['clusters', 'unclustered-point', 'selected-pin-pulse-layer'],
         })
 
         // If not clicking on any feature, deselect
+        // Layer-specific handlers will handle clicks on clusters and unclustered points
         if (features.length === 0) {
-          onPinPress?.(null)
+          onPinPressRef.current?.(null)
         }
       }
 
-      // Add click handler for empty space
+      // Add click handler for empty space (with lower priority than layer handlers)
+      // Layer handlers fire first, so this only fires for empty space
       map.on('click', handleMapClick)
 
       return () => {
         map.off('click', handleMapClick)
       }
-    }, [isMapReady, onPinPress])
+    }, [isMapReady])
 
     // Update markers when pins or zoom change
     useEffect(() => {
@@ -410,55 +663,10 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
           return
         }
 
-        // Viewport culling: only process pins within viewport bounds + 10% buffer
-        const bounds = map.getBounds()
-        const viewportPins = pins.filter((pin) => {
-          const [lng, lat] = pin.coordinate
-          // Add 10% buffer to prevent pins from disappearing at edges
-          const lngRange = bounds.getEast() - bounds.getWest()
-          const latRange = bounds.getNorth() - bounds.getSouth()
-          const lngBuffer = lngRange * 0.1
-          const latBuffer = latRange * 0.1
+        const CLUSTER_MAX_ZOOM = 14
 
-          return (
-            lng >= bounds.getWest() - lngBuffer &&
-            lng <= bounds.getEast() + lngBuffer &&
-            lat >= bounds.getSouth() - latBuffer &&
-            lat <= bounds.getNorth() + latBuffer
-          )
-        })
-
-        // Track which pins should exist
-        const pinsToKeep = new Set<string>()
-        const pinsToRemove = new Set<string>()
-
-        // Determine which markers to keep vs remove
-        for (const [pinId] of markersRef.current.entries()) {
-          const pinExists = viewportPins.some((p) => p.id === pinId)
-          if (!pinExists) {
-            pinsToRemove.add(pinId)
-          } else {
-            pinsToKeep.add(pinId)
-          }
-        }
-
-        // Remove markers that are no longer needed
-        for (const pinId of pinsToRemove) {
-          const marker = markersRef.current.get(pinId)
-          if (marker) {
-            marker.remove()
-            markersRef.current.delete(pinId)
-          }
-        }
-
-        // Update existing markers instead of recreating
-        const pinsToUpdate = viewportPins.filter((pin) => pinsToKeep.has(pin.id))
-        const pinsToCreate = viewportPins.filter((pin) => !pinsToKeep.has(pin.id))
-
-        const CLUSTER_MAX_ZOOM = 17
-
-        // Update GeoJSON source FIRST so clusters can render
-        // Use all pins for clustering (not just viewport), as clusters may span viewport
+        // Update GeoJSON source with all pins
+        // Mapbox handles clustering and rendering automatically
         const geojsonData: GeoJSON.FeatureCollection = {
           type: 'FeatureCollection',
           features: pins
@@ -487,44 +695,61 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
                 subtitle: pin.subtitle,
                 availability: pin.availability,
                 organization: pin.organization,
+                ...(pin.color && { color: pin.color }),
               },
             })),
         }
 
         // Validate GeoJSON before updating
         if (validateGeoJSONFeatureCollection(geojsonData)) {
-          const source = map.getSource('pins') as mapboxgl.GeoJSONSource
-          if (source) {
-            source.setData(geojsonData)
+          try {
+            const source = map.getSource('pins') as mapboxgl.GeoJSONSource | null
+            if (source) {
+              source.setData(geojsonData)
+            }
+          } catch (error) {
+            console.warn('Error updating pins source:', error)
           }
         } else {
           console.warn('Invalid GeoJSON data generated from pins')
         }
 
-        // Wait for clusters to render, then create markers for unclustered pins
-        // Use double requestAnimationFrame to ensure clusters are fully rendered
+        // Update cluster info for state management
+        // Use requestAnimationFrame to ensure source is updated
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            const pinsSource = map.getSource('pins') as mapboxgl.GeoJSONSource | null
+            try {
+              const notifyClusters = (clusters: ClusterInfo[]) => {
+                onClustersChangeRef.current?.(clusters)
+              }
 
-            // Get all cluster features from the source (more reliable than rendered features)
-            let clusterFeatures: Array<{
-              coordinates: [number, number]
-              clusterId: number
-              pointCount: number
-            }> = []
+              // Verify map is loaded and source exists
+              if (!map.isStyleLoaded() || !map.loaded()) {
+                notifyClusters([])
+                return
+              }
 
-            if (pinsSource && currentZoom <= CLUSTER_MAX_ZOOM) {
+              const pinsSource = map.getSource('pins') as mapboxgl.GeoJSONSource | null
+              if (!pinsSource) {
+                return
+              }
+
+              // Only query clusters if we're at a zoom level where clustering occurs
+              if (currentZoom > CLUSTER_MAX_ZOOM) {
+                notifyClusters([])
+                return
+              }
+
+              // Query source features to get all clusters
+              // Wrap in try-catch to handle cases where source might not be ready
               try {
-                // Query source features to get all clusters
-                const bounds = map.getBounds()
                 const sourceFeatures = map.querySourceFeatures('pins', {
                   sourceLayer: undefined,
                   filter: ['has', 'point_count'],
                 })
 
                 // Extract cluster information
-                clusterFeatures = sourceFeatures
+                const clusterFeatures = sourceFeatures
                   .map((feature) => {
                     if (feature.geometry.type === 'Point' && feature.properties?.cluster_id) {
                       return {
@@ -537,294 +762,84 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
                   })
                   .filter((item): item is NonNullable<typeof item> => item !== null)
 
+                if (clusterFeatures.length === 0) {
+                  notifyClusters([])
+                  return
+                }
+
                 // Extract cluster info with member pin IDs for state management
-                if (onClustersChange && pinsSource) {
-                  const clusterInfos: ClusterInfo[] = []
-                  let processedClusters = 0
-                  const totalClusters = clusterFeatures.length
+                const clusterInfos: ClusterInfo[] = []
+                let processedClusters = 0
+                const totalClusters = clusterFeatures.length
 
-                  if (totalClusters === 0) {
-                    // No clusters - call callback with empty array
-                    onClustersChange([])
-                  } else {
-                    // Process each cluster to get member pin IDs
-                    for (const cluster of clusterFeatures) {
-                      pinsSource.getClusterLeaves(
-                        cluster.clusterId,
-                        Number.MAX_SAFE_INTEGER,
-                        0,
-                        (err, leaves) => {
-                          if (!err && leaves) {
-                            const memberPinIds = leaves
-                              .map((leaf) => leaf.properties?.id as string)
-                              .filter((id): id is string => typeof id === 'string')
+                // Process each cluster to get member pin IDs
+                for (const cluster of clusterFeatures) {
+                  try {
+                    pinsSource.getClusterLeaves(
+                      cluster.clusterId,
+                      Number.MAX_SAFE_INTEGER,
+                      0,
+                      (err, leaves) => {
+                        if (!err && leaves) {
+                          const memberPinIds = leaves
+                            .map((leaf) => leaf.properties?.id as string)
+                            .filter((id): id is string => typeof id === 'string')
 
-                            clusterInfos.push({
-                              clusterId: cluster.clusterId,
-                              coordinates: cluster.coordinates,
-                              pointCount: cluster.pointCount,
-                              memberPinIds,
-                            })
-                          }
-
-                          processedClusters++
-                          // Call callback when all clusters are processed
-                          if (processedClusters === totalClusters) {
-                            onClustersChange(clusterInfos)
-                          }
+                          clusterInfos.push({
+                            clusterId: cluster.clusterId,
+                            coordinates: cluster.coordinates,
+                            pointCount: cluster.pointCount,
+                            memberPinIds,
+                          })
                         }
-                      )
+
+                        processedClusters++
+                        // Call callback when all clusters are processed
+                        if (processedClusters === totalClusters) {
+                          notifyClusters(clusterInfos)
+                        }
+                      }
+                    )
+                  } catch (error) {
+                    console.warn('Error getting cluster leaves:', error)
+                    processedClusters++
+                    if (processedClusters === totalClusters) {
+                      notifyClusters(clusterInfos)
                     }
                   }
                 }
               } catch (error) {
                 console.warn('Failed to query source clusters:', error)
-                if (onClustersChange) {
-                  onClustersChange([])
-                }
+                notifyClusters([])
               }
-            } else if (onClustersChange) {
-              // No clusters at this zoom level
-              onClustersChange([])
-            }
-
-            // Helper to check if a pin is in a cluster
-            // Uses multiple detection methods for reliability
-            const isPinInCluster = (pin: (typeof pins)[0]): boolean => {
-              if (currentZoom > CLUSTER_MAX_ZOOM || !pinsSource) {
-                return false
-              }
-
-              try {
-                // Method 1: Query rendered features to find clusters at pin's screen position
-                // This is the most direct method - if a cluster is rendered at the pin location, the pin is in it
-                const pinPoint = map.project(pin.coordinate)
-                const buffer = 60 // pixels - cluster visual radius + buffer for reliability
-                const bbox: [[number, number], [number, number]] = [
-                  [pinPoint.x - buffer, pinPoint.y - buffer],
-                  [pinPoint.x + buffer, pinPoint.y + buffer],
-                ]
-
-                const clusterFeaturesAtPin = map.queryRenderedFeatures(bbox, {
-                  layers: ['clusters'],
-                })
-
-                if (clusterFeaturesAtPin.length > 0) {
-                  // Found a cluster at this position - pin is likely in it
-                  // Verify by checking if pin coordinates are very close to cluster center
-                  for (const clusterFeature of clusterFeaturesAtPin) {
-                    if (clusterFeature.geometry.type === 'Point') {
-                      const clusterCoords = clusterFeature.geometry.coordinates as [number, number]
-                      const [pinLng, pinLat] = pin.coordinate
-                      const [clusterLng, clusterLat] = clusterCoords
-
-                      // Quick distance check - if very close, definitely in cluster
-                      const latDiff = Math.abs(clusterLat - pinLat)
-                      const lngDiff = Math.abs(clusterLng - pinLng)
-                      const distance = Math.sqrt(latDiff ** 2 + lngDiff ** 2)
-
-                      // At zoom 10, 50px cluster radius ≈ 0.01 degrees
-                      // Use zoom-adaptive threshold
-                      const threshold = 0.01 / 1.5 ** Math.max(0, currentZoom - 10)
-                      if (distance < threshold) {
-                        return true
-                      }
-                    }
-                  }
-                  // Cluster found but coordinates don't match exactly - still likely clustered
-                  // Use screen distance as additional check
-                  const clusterCoords = clusterFeaturesAtPin[0].geometry as GeoJSON.Point
-                  if (clusterCoords.coordinates) {
-                    const clusterPoint = map.project(clusterCoords.coordinates as [number, number])
-                    const screenDistance = Math.sqrt(
-                      (pinPoint.x - clusterPoint.x) ** 2 + (pinPoint.y - clusterPoint.y) ** 2
-                    )
-                    // Use zoom-adaptive threshold
-                    const screenThreshold = Math.max(40, 60 / 1.2 ** Math.max(0, currentZoom - 10))
-                    if (screenDistance < screenThreshold) {
-                      return true
-                    }
-                  }
-                }
-
-                // Method 2: Check against known cluster features using geographic distance
-                // This is more reliable than screen distance as it accounts for map projection
-                for (const cluster of clusterFeatures) {
-                  const [pinLng, pinLat] = pin.coordinate
-                  const [clusterLng, clusterLat] = cluster.coordinates
-
-                  // Haversine distance calculation (approximate, good enough for clustering)
-                  const dLat = (clusterLat - pinLat) * (Math.PI / 180)
-                  const dLng = (clusterLng - pinLng) * (Math.PI / 180)
-                  const a =
-                    Math.sin(dLat / 2) ** 2 +
-                    Math.cos(pinLat * (Math.PI / 180)) *
-                      Math.cos(clusterLat * (Math.PI / 180)) *
-                      Math.sin(dLng / 2) ** 2
-                  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-                  const distanceKm = 6371 * c // Earth radius in km
-
-                  // Cluster radius is approximately 50 pixels, which at zoom 10 is about 0.5km
-                  // Use a conservative threshold based on zoom level
-                  const clusterRadiusKm = 0.5 / 2 ** Math.max(0, 10 - currentZoom)
-                  if (distanceKm < clusterRadiusKm * 1.5) {
-                    // Pin is within cluster radius - likely in cluster
-                    return true
-                  }
-                }
-
-                return false
-              } catch (error) {
-                // If all methods fail, fall back to screen distance check
-                try {
-                  const pinPoint = map.project(pin.coordinate)
-                  let minScreenDistance = Number.POSITIVE_INFINITY
-
-                  for (const cluster of clusterFeatures) {
-                    const clusterPoint = map.project(cluster.coordinates)
-                    const screenDistance = Math.sqrt(
-                      (pinPoint.x - clusterPoint.x) ** 2 + (pinPoint.y - clusterPoint.y) ** 2
-                    )
-
-                    if (screenDistance < minScreenDistance) {
-                      minScreenDistance = screenDistance
-                    }
-                  }
-
-                  // Use zoom-adaptive threshold: larger clusters at lower zoom levels
-                  const threshold = Math.max(30, 50 / 1.2 ** Math.max(0, currentZoom - 10))
-                  return minScreenDistance < threshold
-                } catch (fallbackError) {
-                  // If all checks fail, assume not clustered to avoid hiding pins incorrectly
-                  return false
-                }
-              }
-            }
-
-            // Update existing markers (position, state, etc.)
-            for (const pin of pinsToUpdate) {
-              const existingMarker = markersRef.current.get(pin.id)
-              if (existingMarker) {
-                // Update marker position if coordinates changed
-                const [lng, lat] = pin.coordinate
-                existingMarker.setLngLat([lng, lat])
-
-                // Update opacity based on pin state
-                const pinState = pinStates?.get(pin.id)
-                if (pinState) {
-                  const markerElement = existingMarker.getElement()
-                  if (markerElement) {
-                    markerElement.style.opacity = String(pinState.opacity)
-                    markerElement.setAttribute('data-pin-state', pinState.visibility)
-                  }
-                }
-              }
-            }
-
-            // Create new markers only for pins that are NOT in clusters and are visible
-            for (const pin of pinsToCreate) {
-              // Validate pin data
-              if (
-                !pin.id ||
-                !pin.coordinate ||
-                !Array.isArray(pin.coordinate) ||
-                pin.coordinate.length !== 2
-              ) {
-                console.warn('Invalid pin data:', pin)
-                continue
-              }
-
-              const [lng, lat] = pin.coordinate
-
-              // Validate coordinates
-              if (
-                typeof lng !== 'number' ||
-                typeof lat !== 'number' ||
-                Number.isNaN(lng) ||
-                Number.isNaN(lat)
-              ) {
-                console.warn('Invalid pin coordinates:', pin.coordinate)
-                continue
-              }
-
-              // Check if coordinates are within valid range
-              if (lng < -180 || lng > 180 || lat < -90 || lat > 90) {
-                console.warn('Pin coordinates out of range:', pin.coordinate)
-                continue
-              }
-
-              // Check pin state - skip if hidden or transitioning out
-              const pinState = pinStates?.get(pin.id)
-              if (pinState) {
-                if (
-                  pinState.visibility === 'hidden' ||
-                  pinState.visibility === 'transitioning-out'
-                ) {
-                  continue
-                }
-              } else {
-                // If no state, fall back to cluster check
-                if (isPinInCluster(pin)) {
-                  continue
-                }
-              }
-
-              try {
-                const marker = new CustomMarker({
-                  pin,
-                  onClick: (pinId) => {
-                    onPinPress?.(pinId)
-                  },
-                  onHover: onPinHover,
-                  zoom: currentZoom,
-                })
-
-                // Apply opacity based on pin state
-                const markerElement = marker.getElement()
-                if (markerElement && pinState) {
-                  markerElement.style.opacity = String(pinState.opacity)
-                  markerElement.style.transition = 'opacity 300ms ease-in-out'
-                  markerElement.setAttribute('data-pin-state', pinState.visibility)
-                }
-
-                marker.setLngLat(pin.coordinate).addTo(map)
-                markersRef.current.set(pin.id, marker)
-              } catch (error) {
-                console.error('Error creating marker for pin:', pin.id, error)
-              }
+            } catch (error) {
+              console.warn('Error processing clusters:', error)
+              onClustersChangeRef.current?.([])
             }
           })
         })
-      } catch (error) {
-        console.error('Error updating markers:', error)
-      }
-    }, [pins, isMapReady, currentZoom, onPinPress, onPinHover, pinStates, onClustersChange])
 
-    // Update existing markers' opacity when pin states change
-    useEffect(() => {
-      if (!pinStates || markersRef.current.size === 0) {
-        return
-      }
-
-      for (const [pinId, marker] of markersRef.current.entries()) {
-        const pinState = pinStates.get(pinId)
-        if (pinState) {
-          const markerElement = marker.getElement()
-          if (markerElement) {
-            markerElement.style.opacity = String(pinState.opacity)
-            markerElement.style.transition = 'opacity 300ms ease-in-out'
-            markerElement.setAttribute('data-pin-state', pinState.visibility)
-
-            // Hide marker if transitioning out or hidden
-            if (pinState.visibility === 'hidden' || pinState.visibility === 'transitioning-out') {
-              markerElement.style.display = 'none'
-            } else {
-              markerElement.style.display = ''
+        // Remove all CustomMarkers since we're using layer-based rendering
+        // Only keep markers for special cases (like card overlays)
+        for (const [pinId, marker] of markersRef.current.entries()) {
+          // Don't remove card marker
+          if (marker !== cardMarkerRef.current) {
+            try {
+              marker.remove()
+              markersRef.current.delete(pinId)
+            } catch (error) {
+              console.warn('Error removing marker:', error)
             }
           }
         }
+      } catch (error) {
+        console.error('Error updating markers:', error)
       }
-    }, [pinStates])
+    }, [pins, isMapReady, currentZoom])
+
+    // Pin states are now handled by Mapbox layers
+    // Opacity and visibility can be controlled via layer paint properties if needed
+    // For now, we rely on the layer-based rendering which is more performant
 
     // Update radius circle when radius or centerLocation changes
     useEffect(() => {
@@ -959,6 +974,90 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         console.error('Error updating center location marker:', error)
       }
     }, [centerLocation, isMapReady])
+
+    // Update pulsing dot for selected pin
+    useEffect(() => {
+      if (!mapRef.current || !isMapReady || isStyleLoadingRef.current) {
+        return
+      }
+
+      const map = mapRef.current
+
+      try {
+        // Check if source exists - it might not exist if style just changed
+        if (!map.getSource('selected-pin-pulse')) {
+          return
+        }
+
+        const source = map.getSource('selected-pin-pulse') as mapboxgl.GeoJSONSource
+        if (!source || typeof source.setData !== 'function') {
+          return
+        }
+
+        // Find the selected pin
+        const selectedPin = pins.find((pin) => pin.selected === true)
+
+        if (selectedPin) {
+          // Validate coordinates
+          const [lng, lat] = selectedPin.coordinate
+          if (
+            typeof lng !== 'number' ||
+            typeof lat !== 'number' ||
+            Number.isNaN(lng) ||
+            Number.isNaN(lat) ||
+            lng < -180 ||
+            lng > 180 ||
+            lat < -90 ||
+            lat > 90
+          ) {
+            console.warn('Invalid selected pin coordinates:', selectedPin.coordinate)
+            try {
+              source.setData({
+                type: 'FeatureCollection',
+                features: [],
+              })
+            } catch {
+              // Source might be in invalid state, ignore
+            }
+            return
+          }
+
+          // Update source with selected pin location
+          try {
+            source.setData({
+              type: 'FeatureCollection',
+              features: [
+                {
+                  type: 'Feature',
+                  geometry: {
+                    type: 'Point',
+                    coordinates: selectedPin.coordinate,
+                  },
+                  properties: {
+                    id: selectedPin.id,
+                  },
+                },
+              ],
+            })
+          } catch (e) {
+            // Source might be in invalid state during style transition
+            console.warn('Failed to update selected pin pulse source:', e)
+          }
+        } else {
+          // No pin selected - clear the source
+          try {
+            source.setData({
+              type: 'FeatureCollection',
+              features: [],
+            })
+          } catch {
+            // Source might be in invalid state, ignore
+          }
+        }
+      } catch (error) {
+        console.error('Error updating selected pin pulse:', error)
+      }
+    }, [pins, isMapReady])
 
     return (
       <View flex={1} position="relative" overflow="hidden" rounded="$5" style={style}>
