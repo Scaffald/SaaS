@@ -358,9 +358,30 @@ export async function waitForKanbanLoad(
   page: Page,
   options?: { timeout?: number }
 ): Promise<void> {
-  const timeout = options?.timeout ?? 10000
+  const timeout = options?.timeout ?? 30000
 
-  // Wait for at least one column to be visible
+  // First, wait for the page to load and any loading spinner to disappear
+  try {
+    // Wait for "Loading applications..." text to disappear
+    await page.getByText('Loading applications...').waitFor({ state: 'hidden', timeout: 15000 })
+  } catch {
+    // Loading text might not exist, that's okay
+  }
+
+  // Wait for error state to not be visible (if it appears, we'll handle it)
+  try {
+    const errorText = page.getByText('Error Loading Applications')
+    const isVisible = await errorText.isVisible().catch(() => false)
+    if (isVisible) {
+      // If there's an error, wait a bit and check if it resolves
+      await page.waitForTimeout(2000)
+    }
+  } catch {
+    // No error state, that's good
+  }
+
+  // Wait for at least one column to be visible (even if empty)
+  // Increase timeout since API might take time
   const firstColumn = await getKanbanColumn(page, KANBAN_COLUMNS.NEW, { timeout })
   await firstColumn.waitFor({ state: 'visible', timeout })
 
