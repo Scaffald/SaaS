@@ -84,7 +84,7 @@ export const MapSearchInput = ({
           exitStyle={{ opacity: 0, y: 20 }}
           opacity={1}
           y={0}
-          justify="center"
+          justify="flex-start"
           items="center"
           px="$4"
         >
@@ -104,7 +104,7 @@ export const MapSearchInput = ({
               maxResults={5}
               debounceMs={300}
               containerProps={{
-                style: { minWidth: 250, maxWidth: 600, width: '100%' },
+                style: { minWidth: 250, width: '100%' },
                 rounded: '$8',
                 shadowColor: '$shadowColor',
                 shadowOffset: { width: 0, height: 4 },
@@ -114,7 +114,7 @@ export const MapSearchInput = ({
             />
           ) : (
             <YStack
-              style={{ minWidth: 250, maxWidth: 600, width: '100%' }}
+              style={{ minWidth: 250, width: '100%' }}
               bg="$background"
               p="$4"
               rounded="$8"
