@@ -126,6 +126,13 @@ type JobFormData = {
   requires_video_interview?: boolean
   estimated_application_time_minutes?: number
   application_expiry_days?: number
+  inquiry_capability_questions?: Array<{
+    name: string
+    label: string
+    type: 'boolean' | 'number' | 'text'
+    unit?: string
+    required: boolean
+  }>
 
   // Location & Scheduling
   relocation_assistance_offered?: boolean
@@ -197,6 +204,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     recruiter_id: initialData?.recruiter_id,
     skill_ids: initialData?.skill_ids || [],
     certification_ids: initialData?.certification_ids || [],
+    inquiry_capability_questions: initialData?.inquiry_capability_questions || [],
   })
 
   // Auto-select organization if only one available
@@ -1140,6 +1148,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           requiresVideoInterview={formData.requires_video_interview}
           estimatedApplicationTimeMinutes={formData.estimated_application_time_minutes}
           applicationExpiryDays={formData.application_expiry_days}
+          inquiryCapabilityQuestions={formData.inquiry_capability_questions}
           onUpdate={handleSectionUpdate}
         />
 

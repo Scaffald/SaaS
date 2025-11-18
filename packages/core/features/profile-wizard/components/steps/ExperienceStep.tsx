@@ -229,7 +229,7 @@ function normalizeText(value?: string | null): string {
   return value?.trim() ?? ''
 }
 
-function formatExperiencePayload(data: ExperienceFormValues): ExperienceStepData {
+function formatExperiencePayload(data: Partial<ExperienceFormValues>): ExperienceStepData {
   return {
     jobTitle: normalizeText(data.jobTitle),
     companyName: normalizeText(data.companyName),

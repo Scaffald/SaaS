@@ -1,8 +1,7 @@
 import { useState } from 'react'
-import { Button, Separator, Text, XStack, YStack } from 'tamagui'
+import { Button, Separator, Text, XStack, YStack, Checkbox } from 'tamagui'
 import { Check, Edit3, FileText } from '@tamagui/lucide-icons'
 import type { ScreeningAnswers, CustomQuestionAnswer, AttachmentMetadata } from '@app/schemas'
-import { Checkbox } from '@app/ui'
 
 export interface ReviewStepProps {
   /**

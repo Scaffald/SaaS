@@ -618,13 +618,8 @@ export function AttachmentsStep({
                 <Text fontSize="$4" fontWeight="600" color="$color12" text="center">
                   Uploading...
                 </Text>
-                <Progress
-                  value={uploadProgress.portfolio || 0}
-                  max={100}
-                  backgroundColor="$blue4"
-                  progressBackgroundColor="$blue9"
-                >
-                  <Progress.Indicator animation="bouncy" />
+                <Progress value={uploadProgress.portfolio || 0} max={100} bg="$blue4">
+                  <Progress.Indicator animation="bouncy" bg="$blue9" />
                 </Progress>
                 <Text fontSize="$2" color="$color11" text="center">
                   {uploadProgress.portfolio || 0}%
@@ -636,6 +631,7 @@ export function AttachmentsStep({
           <YStack gap="$2">
             <label htmlFor="portfolio-upload">
               <YStack
+                asChild
                 p="$6"
                 rounded="$4"
                 borderWidth={2}
@@ -646,19 +642,23 @@ export function AttachmentsStep({
                 gap="$3"
                 cursor="pointer"
                 hoverStyle={{ borderColor: '$blue9', bg: '$blue2' }}
-                onDragOver={(e) => handleDragOver('portfolio', e)}
-                onDragLeave={() => handleDragLeave('portfolio')}
-                onDrop={(e) => handleDrop('portfolio', e)}
               >
-                <Upload size={32} color={errors.portfolio ? '$red9' : '$blue9'} />
-                <YStack gap="$1" items="center">
-                  <Text fontSize="$4" fontWeight="600" color="$color12">
-                    Choose a file or drag it here
-                  </Text>
-                  <Text fontSize="$3" color="$color11" text="center">
-                    PDF, DOC, or DOCX • Max 5MB
-                  </Text>
-                </YStack>
+                <div
+                  onDragOver={(e) => handleDragOver('portfolio', e)}
+                  onDragLeave={() => handleDragLeave('portfolio')}
+                  onDrop={(e) => handleDrop('portfolio', e)}
+                  style={{ width: '100%' }}
+                >
+                  <Upload size={32} color={errors.portfolio ? '$red9' : '$blue9'} />
+                  <YStack gap="$1" items="center">
+                    <Text fontSize="$4" fontWeight="600" color="$color12">
+                      Choose a file or drag it here
+                    </Text>
+                    <Text fontSize="$3" color="$color11" text="center">
+                      PDF, DOC, or DOCX • Max 5MB
+                    </Text>
+                  </YStack>
+                </div>
               </YStack>
             </label>
             <input

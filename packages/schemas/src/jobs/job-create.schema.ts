@@ -141,6 +141,19 @@ const baseJobSchema = z.object({
       })
     )
     .optional(),
+
+  // Inquiry capability questions (Migration 116)
+  inquiry_capability_questions: z
+    .array(
+      z.object({
+        name: z.string().min(1).max(100),
+        label: z.string().min(1).max(500),
+        type: z.enum(['boolean', 'number', 'text']),
+        unit: z.string().max(50).optional(),
+        required: z.boolean().default(false),
+      })
+    )
+    .optional(),
   required_attachments: z
     .record(
       z.object({

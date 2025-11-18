@@ -392,6 +392,43 @@ export const inquiriesRouter = router({
         });
       }
 
+      // Get job's capability questions and initialize capability responses
+      const { data: job } = await supabase
+        .schema("core")
+        .from("jobs")
+        .select("inquiry_capability_questions")
+        .eq("id", application.job_id)
+        .single();
+
+      if (job?.inquiry_capability_questions && Array.isArray(job.inquiry_capability_questions)) {
+        const capabilityQuestions = job.inquiry_capability_questions as Array<{
+          name: string
+          label: string
+          type: string
+          unit?: string
+          required: boolean
+        }>;
+
+        if (capabilityQuestions.length > 0) {
+          const capabilityData = capabilityQuestions.map((question) => ({
+            inquiry_id: inquiry.id,
+            capability_name: question.name,
+            response_value: null,
+            response_text: null,
+          }));
+
+          const { error: capabilityError } = await supabase
+            .schema("core")
+            .from("inquiry_capability_responses")
+            .insert(capabilityData);
+
+          if (capabilityError) {
+            // Log but don't fail - capability questions are optional
+            console.error("Failed to create capability questions:", capabilityError);
+          }
+        }
+      }
+
       return inquiry;
     }),
 

@@ -84,7 +84,7 @@ export function SuccessStep({
         borderColor="$green9"
         items="center"
         justify="center"
-        aria-hidden="true"
+        aria-hidden={true}
       >
         <Check size={48} color="$green10" />
       </YStack>
@@ -150,7 +150,7 @@ export function SuccessStep({
             icon={ExternalLink}
             onPress={() => onViewApplication(applicationId)}
             flex={1}
-            minWidth={200}
+            minW={200}
             $sm={{ width: '100%' }}
           >
             View Application Status
@@ -163,7 +163,7 @@ export function SuccessStep({
             variant="outlined"
             onPress={onReturnToJobs}
             flex={1}
-            minWidth={200}
+            minW={200}
             $sm={{ width: '100%' }}
           >
             Browse More Jobs
@@ -176,7 +176,7 @@ export function SuccessStep({
           icon={Home}
           onPress={handleReturnToDashboard}
           flex={1}
-          minWidth={200}
+          minW={200}
           $sm={{ width: '100%' }}
         >
           Return to Dashboard

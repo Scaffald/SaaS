@@ -64,7 +64,7 @@ export function CustomQuestionsStep({
   onContinue,
   isSubmitting = false,
 }: CustomQuestionsStepProps) {
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [errors, setErrors] = useState<Record<string, string | undefined>>({})
 
   /**
    * Get answer for a specific question

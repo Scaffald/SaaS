@@ -5,7 +5,7 @@ import type { ScreeningAnswers } from '@app/schemas'
 import { AddressAutocomplete } from '@app/ui'
 import type { AddressResult } from '@app/ui'
 
-const _EARLIEST_START_DATE_OPTIONS = [
+const EARLIEST_START_DATE_OPTIONS = [
   { label: 'Immediately', value: 'Immediately' },
   { label: 'Within 2 weeks', value: 'Within 2 weeks' },
   { label: 'Within 1 month', value: 'Within 1 month' },
@@ -13,7 +13,7 @@ const _EARLIEST_START_DATE_OPTIONS = [
   { label: '3+ months', value: '3+ months' },
 ]
 
-const _YEARS_EXPERIENCE_OPTIONS = [
+const YEARS_EXPERIENCE_OPTIONS = [
   { label: '0-1 years', value: '0-1' },
   { label: '1-3 years', value: '1-3' },
   { label: '3-5 years', value: '3-5' },

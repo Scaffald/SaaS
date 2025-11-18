@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Children, isValidElement, type ReactNode } from 'react'
+import { Children, isValidElement, type ReactElement, type ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { EmploymentPrefsStep } from '../EmploymentPrefsStep'
@@ -126,15 +126,20 @@ vi.mock('tamagui', () => {
   type SelectOption = { value: string; label: ReactNode }
   const SelectItem = ({ value }: { value: string; children?: ReactNode }) => <span data-value={value} />
 
+  const isSelectItemElement = (
+    element: ReactNode,
+  ): element is ReactElement<{ value: string; children?: ReactNode }> => {
+    return isValidElement(element) && element.type === SelectItem
+  }
+
   const extractOptions = (nodes: ReactNode): SelectOption[] => {
     const options: SelectOption[] = []
     Children.forEach(nodes, (child) => {
-      if (!isValidElement(child)) return
-      if (child.type === SelectItem) {
+      if (isSelectItemElement(child)) {
         options.push({ value: child.props.value, label: child.props.children })
         return
       }
-      if (child.props?.children) {
+      if (isValidElement(child) && child.props?.children) {
         options.push(...extractOptions(child.props.children))
       }
     })

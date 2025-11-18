@@ -72,9 +72,9 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
           })
 
         return (
-          <XStack key={step.id} gap="$2" items="center" flex={1} minWidth={0}>
+          <XStack key={step.id} gap="$2" items="center" flex={1} minW={0}>
             {/* Step Circle */}
-            <YStack gap="$2" items="center" flexShrink={0}>
+            <YStack gap="$2" items="center" shrink={0}>
               {status === 'completed' ? (
                 <YStack
                   width={32}
@@ -144,7 +144,7 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                 height={2}
                 bg={isLineCompleted ? '$blue9' : '$gray4'}
                 mx="$2"
-                minWidth={20}
+                minW={20}
               />
             )}
           </XStack>

@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import { YStack, XStack, Text, Input, ToggleSwitch } from '@app/ui'
+import { YStack, XStack, Text, Input, ToggleSwitch, Button, Card } from '@app/ui'
+import { Adapt, Sheet, Select, Switch } from 'tamagui'
 import { Label } from 'tamagui'
+import { Plus, X, Check } from '@tamagui/lucide-icons'
 
 interface ApplicationProcessSectionProps {
   requiresAssessment?: boolean
@@ -23,6 +25,7 @@ export function ApplicationProcessSection({
   requiresVideoInterview,
   estimatedApplicationTimeMinutes,
   applicationExpiryDays,
+  inquiryCapabilityQuestions,
   onUpdate,
 }: ApplicationProcessSectionProps) {
   const [localState, setLocalState] = useState({
@@ -31,15 +34,63 @@ export function ApplicationProcessSection({
     requires_video_interview: requiresVideoInterview,
     estimated_application_time_minutes: estimatedApplicationTimeMinutes,
     application_expiry_days: applicationExpiryDays,
+    inquiry_capability_questions: inquiryCapabilityQuestions || [],
+  })
+
+  const [showAddQuestionModal, setShowAddQuestionModal] = useState(false)
+  const [newQuestion, setNewQuestion] = useState<Partial<CapabilityQuestion>>({
+    name: '',
+    label: '',
+    type: 'boolean',
+    unit: '',
+    required: false,
   })
 
   const handleChange = (
     key: keyof typeof localState,
-    value: string | number | boolean | undefined
+    value: string | number | boolean | undefined | CapabilityQuestion[]
   ) => {
     const newState = { ...localState, [key]: value }
     setLocalState(newState)
     onUpdate(newState)
+  }
+
+  const handleAddQuestion = () => {
+    if (!newQuestion.label || !newQuestion.type) return
+
+    // Generate name from label if not provided
+    let name = newQuestion.name || newQuestion.label.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '')
+    
+    // Check if name already exists and make it unique
+    const existingNames = (localState.inquiry_capability_questions || []).map((q) => q.name)
+    if (existingNames.includes(name)) {
+      let counter = 1
+      let uniqueName = `${name}_${counter}`
+      while (existingNames.includes(uniqueName)) {
+        counter++
+        uniqueName = `${name}_${counter}`
+      }
+      name = uniqueName
+    }
+    
+    const question: CapabilityQuestion = {
+      name,
+      label: newQuestion.label,
+      type: newQuestion.type as 'boolean' | 'number' | 'text',
+      unit: newQuestion.type === 'number' ? newQuestion.unit : undefined,
+      required: newQuestion.required || false,
+    }
+
+    const updated = [...(localState.inquiry_capability_questions || []), question]
+    handleChange('inquiry_capability_questions', updated)
+    
+    setNewQuestion({ name: '', label: '', type: 'boolean', unit: '', required: false })
+    setShowAddQuestionModal(false)
+  }
+
+  const handleRemoveQuestion = (index: number) => {
+    const updated = (localState.inquiry_capability_questions || []).filter((_, i) => i !== index)
+    handleChange('inquiry_capability_questions', updated)
   }
 
   return (
@@ -131,6 +182,198 @@ export function ApplicationProcessSection({
         <Text fontSize="$2" color="$color10">
           Days after which started applications expire
         </Text>
+      </YStack>
+
+      {/* Inquiry Capability Questions */}
+      <YStack gap="$3" mt="$4" pt="$4" borderTopWidth={1} borderTopColor="$borderColor">
+        <YStack gap="$1">
+          <Text fontSize="$5" fontWeight="600">
+            Inquiry Capability Questions
+          </Text>
+          <Text fontSize="$2" color="$color10">
+            Define capability questions that will be asked during the inquiry phase
+          </Text>
+        </YStack>
+
+        {/* Existing Questions */}
+        {localState.inquiry_capability_questions && localState.inquiry_capability_questions.length > 0 && (
+          <YStack gap="$2">
+            {localState.inquiry_capability_questions.map((question, index) => (
+              <Card key={question.name} padding="$3" gap="$2" bg="$color2">
+                <XStack justify="space-between" items="center">
+                  <YStack flex={1} gap="$1">
+                    <Text fontSize="$4" fontWeight="500">
+                      {question.label}
+                    </Text>
+                    <XStack gap="$2">
+                      <Text fontSize="$2" color="$color11">
+                        Type: {question.type}
+                      </Text>
+                      {question.unit && (
+                        <Text fontSize="$2" color="$color11">
+                          Unit: {question.unit}
+                        </Text>
+                      )}
+                      {question.required && (
+                        <Text fontSize="$2" color="$blue10" fontWeight="600">
+                          Required
+                        </Text>
+                      )}
+                    </XStack>
+                  </YStack>
+                  <Button
+                    size="$2"
+                    variant="outlined"
+                    icon={X}
+                    onPress={() => handleRemoveQuestion(index)}
+                    aria-label="Remove question"
+                  />
+                </XStack>
+              </Card>
+            ))}
+          </YStack>
+        )}
+
+        {/* Add Question Button */}
+        <Button
+          variant="outlined"
+          icon={Plus}
+          onPress={() => setShowAddQuestionModal(true)}
+        >
+          Add Capability Question
+        </Button>
+
+        {/* Add Question Modal */}
+        <Sheet
+          modal
+          open={showAddQuestionModal}
+          onOpenChange={(open) => {
+            setShowAddQuestionModal(open)
+            if (!open) {
+              setNewQuestion({ name: '', label: '', type: 'boolean', unit: '', required: false })
+            }
+          }}
+        >
+          <Adapt when="sm" platform="touch">
+            <Sheet.Frame padding="$4" gap="$4">
+              <YStack gap="$3">
+                <Text fontSize="$6" fontWeight="600">
+                  Add Capability Question
+                </Text>
+
+                {/* Question Label */}
+                <YStack gap="$2">
+                  <Label>Question Label *</Label>
+                  <Input
+                    placeholder="e.g., Are you able to lift heavy objects?"
+                    value={newQuestion.label || ''}
+                    onChangeText={(text) =>
+                      setNewQuestion({
+                        ...newQuestion,
+                        label: text,
+                        name: text
+                          .toLowerCase()
+                          .replace(/[^a-z0-9]+/g, '_')
+                          .replace(/^_+|_+$/g, ''),
+                      })
+                    }
+                  />
+                </YStack>
+
+                {/* Question Type */}
+                <YStack gap="$2">
+                  <Label>Question Type *</Label>
+                  <Select
+                    value={newQuestion.type || 'boolean'}
+                    onValueChange={(type) =>
+                      setNewQuestion({ ...newQuestion, type: type as 'boolean' | 'number' | 'text' })
+                    }
+                  >
+                    <Select.Trigger>
+                      <Select.Value placeholder="Select type" />
+                    </Select.Trigger>
+                    <Adapt when="sm" platform="touch">
+                      <Sheet modal dismissOnSnapToBottom>
+                        <Sheet.Frame>
+                          <Sheet.ScrollView>
+                            <Adapt.Contents />
+                          </Sheet.ScrollView>
+                        </Sheet.Frame>
+                        <Sheet.Overlay />
+                      </Sheet>
+                    </Adapt>
+                    <Select.Content zIndex={200000}>
+                      <Select.Viewport>
+                        <Select.Item value="boolean" index={0}>
+                          <Select.ItemText>Yes/No</Select.ItemText>
+                          <Select.ItemIndicator marginLeft="auto">
+                            <Check size={16} />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                        <Select.Item value="number" index={1}>
+                          <Select.ItemText>Numeric</Select.ItemText>
+                          <Select.ItemIndicator marginLeft="auto">
+                            <Check size={16} />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                        <Select.Item value="text" index={2}>
+                          <Select.ItemText>Text</Select.ItemText>
+                          <Select.ItemIndicator marginLeft="auto">
+                            <Check size={16} />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                      </Select.Viewport>
+                    </Select.Content>
+                  </Select>
+                </YStack>
+
+                {/* Unit (for number type) */}
+                {newQuestion.type === 'number' && (
+                  <YStack gap="$2">
+                    <Label>Unit (optional)</Label>
+                    <Input
+                      placeholder="e.g., Pounds, Hours, Miles"
+                      value={newQuestion.unit || ''}
+                      onChangeText={(text) => setNewQuestion({ ...newQuestion, unit: text })}
+                    />
+                  </YStack>
+                )}
+
+                {/* Required */}
+                <XStack gap="$2" items="center">
+                  <Switch
+                    checked={newQuestion.required || false}
+                    onCheckedChange={(checked) =>
+                      setNewQuestion({ ...newQuestion, required: checked })
+                    }
+                  />
+                  <Text fontSize="$3">Required</Text>
+                </XStack>
+
+                {/* Actions */}
+                <XStack gap="$3" justify="flex-end" mt="$2">
+                  <Button
+                    variant="outlined"
+                    onPress={() => {
+                      setShowAddQuestionModal(false)
+                      setNewQuestion({ name: '', label: '', type: 'boolean', unit: '', required: false })
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    theme="blue"
+                    onPress={handleAddQuestion}
+                    disabled={!newQuestion.label || !newQuestion.type}
+                  >
+                    Add Question
+                  </Button>
+                </XStack>
+              </YStack>
+            </Sheet.Frame>
+            <Sheet.Overlay />
+          </Adapt>
+        </Sheet>
       </YStack>
     </YStack>
   )
