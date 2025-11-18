@@ -20,6 +20,7 @@ const teamFormOptionsMock = vi.hoisted(() => ({
 }))
 
 const setValueSpy = vi.hoisted(() => vi.fn())
+const handleSubmitSpy = vi.hoisted(() => vi.fn())
 
 vi.mock('../../hooks/useTeamFormOptions', () => teamFormOptionsMock)
 
@@ -106,17 +107,20 @@ vi.mock('react-hook-form', () => {
       return {
         control: store,
         handleSubmit:
-          (onSubmit: (data: Record<string, unknown>) => Promise<void> | void) =>
-          () => {
-            // Ensure required fields are present before submitting
-            const submitData = {
-              ...store.values,
-              defaultRoleId: store.values.defaultRoleId ?? 'role-1',
-              defaultRoleKey: store.values.defaultRoleKey ?? 'member',
-              organizationId: 'org-1',
+          (onSubmit: (data: Record<string, unknown>) => Promise<void> | void) => {
+            const submitHandler = async () => {
+              handleSubmitSpy()
+              // Ensure required fields are present before submitting
+              const submitData = {
+                ...store.values,
+                defaultRoleId: store.values.defaultRoleId ?? 'role-1',
+                defaultRoleKey: store.values.defaultRoleKey ?? 'member',
+                organizationId: 'org-1',
+              }
+              // Await onSubmit to ensure mutation is triggered
+              await onSubmit(submitData)
             }
-            // Call onSubmit synchronously to ensure mutation is triggered
-            void onSubmit(submitData)
+            return submitHandler
           },
         formState: { errors: {}, isDirty: true },
         setValue: setValueSpy,
@@ -302,12 +306,41 @@ describe('TeamForm', () => {
   beforeEach(() => {
     createTeamMock.mutateAsync.mockReset()
     updateTeamMock.mutateAsync.mockReset()
-    createTeamMock.useMutation.mockReturnValue({ mutateAsync: createTeamMock.mutateAsync, isPending: false })
-    updateTeamMock.useMutation.mockReturnValue({ mutateAsync: updateTeamMock.mutateAsync, isPending: false })
+    
+    // Set up useMutation mocks to call onError when mutateAsync rejects
+    createTeamMock.useMutation.mockImplementation((options?: { onError?: (error: Error) => void }) => {
+      const wrappedMutateAsync = async (...args: unknown[]) => {
+        try {
+          return await createTeamMock.mutateAsync(...args)
+        } catch (error) {
+          if (options?.onError && error instanceof Error) {
+            options.onError(error)
+          }
+          throw error
+        }
+      }
+      return { mutateAsync: wrappedMutateAsync, isPending: false }
+    })
+    
+    updateTeamMock.useMutation.mockImplementation((options?: { onError?: (error: Error) => void }) => {
+      const wrappedMutateAsync = async (...args: unknown[]) => {
+        try {
+          return await updateTeamMock.mutateAsync(...args)
+        } catch (error) {
+          if (options?.onError && error instanceof Error) {
+            options.onError(error)
+          }
+          throw error
+        }
+      }
+      return { mutateAsync: wrappedMutateAsync, isPending: false }
+    })
+    
     toastMock.show.mockReset()
     routerMock.push.mockReset()
     routerMock.back.mockReset()
     setValueSpy.mockReset()
+    handleSubmitSpy.mockReset()
   })
 
   it('submits create mutation with provided defaults', async () => {
@@ -425,7 +458,7 @@ describe('TeamForm', () => {
       expect(screen.queryByText('Loading team options…')).not.toBeInTheDocument()
     }, { timeout: 1000 })
 
-    // Ensure form values are set
+    // Ensure form values are set in the store
     setValueSpy('name', 'Test Team')
     setValueSpy('defaultRoleId', 'role-1')
     setValueSpy('defaultRoleKey', 'member')
@@ -433,19 +466,32 @@ describe('TeamForm', () => {
     setValueSpy('invitationPolicy', 'invite_only')
     setValueSpy('slug', 'test-team')
 
-    // Wait for button and click it
-    const submitButton = await waitFor(() => screen.getByTestId('team-form-submit'))
+    // Wait for button to be enabled and visible
+    const submitButton = await waitFor(() => {
+      const btn = screen.getByTestId('team-form-submit')
+      expect(btn).toBeInTheDocument()
+      expect(btn).not.toBeDisabled()
+      return btn
+    })
+
+    // Click the button
     await user.click(submitButton)
 
-    // Wait for mutation to be called
+    // Verify handleSubmit was called (this confirms the button click worked)
+    await waitFor(() => {
+      expect(handleSubmitSpy).toHaveBeenCalled()
+    }, { timeout: 1000 })
+
+    // Wait for mutation to be called - the onSubmit should trigger it
     await waitFor(() => {
       expect(createTeamMock.mutateAsync).toHaveBeenCalled()
     }, { timeout: 3000 })
 
-    // The onError handler should show a toast
+    // The mutation's onError handler should show a toast
+    // Since the mutation rejects, the onError callback should fire
     await waitFor(() => {
       expect(toastMock.show).toHaveBeenCalled()
-    }, { timeout: 1000 })
+    }, { timeout: 2000 })
   })
 
   it('resets form when reset is called', () => {
