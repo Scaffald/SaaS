@@ -84,6 +84,7 @@ export interface InternalJob {
 interface InternalJobCardProps {
   job: InternalJob
   hasApplied?: boolean
+  applicationId?: string | null
 }
 
 /**
@@ -173,7 +174,7 @@ function formatRelativeTime(dateString?: string): string {
  * Internal Job Card Component
  * Displays a job posting from internal organizations
  */
-export function InternalJobCard({ job, hasApplied }: InternalJobCardProps) {
+export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobCardProps) {
   const router = useRouter()
   const payRange = formatPayRange(
     job.pay_range_min_cents,
@@ -183,6 +184,8 @@ export function InternalJobCard({ job, hasApplied }: InternalJobCardProps) {
   const employmentType = formatEmploymentType(job.employment_type)
   const remoteOption = formatRemoteOption(job.remote_option)
   const postedTime = formatRelativeTime(job.posted_at || job.created_at)
+  const hasInquiryLink = Boolean(hasApplied && applicationId)
+  const buttonLabel = hasInquiryLink ? 'View Inquiry' : hasApplied ? 'View Application' : 'View Details'
 
   return (
     <Card
@@ -314,10 +317,16 @@ export function InternalJobCard({ job, hasApplied }: InternalJobCardProps) {
         <Button
           size="$3"
           theme="info"
-          onPress={() => router.push(RouteBuilder.discoverJobDetail(job.id))}
+          onPress={() => {
+            if (hasInquiryLink && applicationId) {
+              router.push(RouteBuilder.dashboardApplicationInquiry(applicationId))
+              return
+            }
+            router.push(RouteBuilder.discoverJobDetail(job.id))
+          }}
           mt="$2"
         >
-          {hasApplied ? 'View Application' : 'View Details'}
+          {buttonLabel}
         </Button>
       </YStack>
     </Card>

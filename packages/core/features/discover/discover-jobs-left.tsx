@@ -51,13 +51,20 @@ export function DiscoverJobsLeft({
   const internalJobs = internalData?.jobs || []
 
   // Create a set of job IDs user has applied to
-  type ApplicationSummary = { job_id?: string | null }
+  type ApplicationSummary = { job_id?: string | null; id?: string }
 
   const appliedJobIds = new Set<string>(
     ((userApplications ?? []) as ApplicationSummary[])
       .map((application) => application.job_id)
       .filter((jobId): jobId is string => Boolean(jobId))
   )
+
+  const applicationIdByJobId = new Map<string, string>()
+  for (const application of (userApplications ?? []) as ApplicationSummary[]) {
+    if (application.job_id && application.id) {
+      applicationIdByJobId.set(application.job_id, application.id)
+    }
+  }
 
   const isLoading = externalLoading || internalLoading
 
@@ -156,6 +163,7 @@ export function DiscoverJobsLeft({
               key={`internal-${item.job.id}`}
               job={item.job}
               hasApplied={appliedJobIds.has(item.job.id)}
+              applicationId={applicationIdByJobId.get(item.job.id)}
             />
           )
         })}

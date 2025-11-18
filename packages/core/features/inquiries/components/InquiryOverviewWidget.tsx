@@ -4,6 +4,7 @@ import type { inferRouterOutputs } from '@trpc/server'
 
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
+import { RouteBuilder } from '@app/core/constants/routes'
 
 type ApplicationRecord = NonNullable<
   inferRouterOutputs<AppRouter>['applications']['getUserApplications']
@@ -63,7 +64,9 @@ export function InquiryOverviewWidget() {
           </Text>
           <Button
             size="$3"
-            onPress={() => router.push(`/dashboard/applications/${application.id}/inquiry`)}
+            onPress={() =>
+              router.push(RouteBuilder.dashboardApplicationInquiry(application.id))
+            }
           >
             View Inquiry
           </Button>

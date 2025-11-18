@@ -674,6 +674,8 @@ export const RouteBuilder = {
   dashboardWorkLogDetail: (workLogId: string | number) =>
     buildRoute(ROUTES.DASHBOARD_WORK_LOGS_DETAIL, { workLogId }),
   dashboardWorkLogCreate: () => ROUTES.DASHBOARD_WORK_LOGS_CREATE.path,
+  dashboardApplicationInquiry: (applicationId: string | number) =>
+    buildRoute(ROUTES.DASHBOARD_APPLICATION_INQUIRY, { applicationId }),
 } as const;
 
 // ============================================================================

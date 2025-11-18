@@ -149,30 +149,6 @@ export function InquiryViewCandidate({
     )
   }
 
-  const { inquiry, sections: rawSections, comments } = data
-  const sections = rawSections as InquirySectionStatus[]
-  const jobInfo = data.job ?? data.application?.job ?? null
-  const applicationInfo = data.application ?? null
-  const capabilityQuestions =
-    (data.capabilityQuestions as CapabilityQuestionDefinition[] | undefined) ?? []
-
-  // Calculate progress
-  const acceptedSections = sections.filter((s) => s.accepted_by).length
-  const totalSections = sections.length
-  const progress = totalSections > 0 ? (acceptedSections / totalSections) * 100 : 0
-
-  // Group comments by section
-  const commentsBySection = useMemo(() => {
-    const grouped: Record<string, typeof comments> = {}
-    for (const comment of comments) {
-      if (!grouped[comment.section_name]) {
-        grouped[comment.section_name] = []
-      }
-      grouped[comment.section_name].push(comment)
-    }
-    return grouped
-  }, [comments])
-
   // Format rate for display
   const formatRate = () => {
     if (!inquiry.rate_min_cents) return 'Not specified'
@@ -193,6 +169,20 @@ export function InquiryViewCandidate({
     })
   }
 
+  const formatEmploymentTypeLabel = (value?: string | null) => {
+    if (!value) return null
+    const map: Record<string, string> = {
+      permanent: 'Permanent',
+      temporary: 'Temporary',
+      full_time: 'Full time',
+      part_time: 'Part time',
+      contract: 'Contract',
+      temp: 'Temporary',
+      intern: 'Internship',
+    }
+    return map[value] ?? value
+  }
+
   // Format workdays
   const formatWorkdays = () => {
     if (!inquiry.workdays || inquiry.workdays.length === 0) return 'Not specified'
@@ -208,20 +198,66 @@ export function InquiryViewCandidate({
     return inquiry.workdays.map((day: string) => dayLabels[day] || day).join(', ')
   }
 
-  const formatJobPayRange = () => {
-    if (!jobInfo) return 'Not specified'
-    const min = jobInfo.payRangeMinCents
-    const max = jobInfo.payRangeMaxCents
+  type JobPayRangeSource = {
+    payRangeMinCents?: number | null
+    payRangeMaxCents?: number | null
+    payRangeType?: string | null
+  }
+
+  const formatJobPayRange = (job?: JobPayRangeSource | null) => {
+    if (!job) return null
+    const { payRangeMinCents: min, payRangeMaxCents: max, payRangeType: type } = job
+    if (!min && !max) {
+      return null
+    }
+
+    const formatCurrency = (value: number) =>
+      `$${(value / 100).toLocaleString('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+      })}`
+
+    let range: string
     if (min && max) {
-      return `$${(min / 100).toFixed(2)} - $${(max / 100).toFixed(2)}`
+      range = `${formatCurrency(min)} - ${formatCurrency(max)}`
+    } else if (min) {
+      range = formatCurrency(min)
+    } else if (max) {
+      range = formatCurrency(max)
+    } else {
+      range = ''
     }
-    if (min) {
-      return `$${(min / 100).toFixed(2)}`
+
+    if (!range) {
+      return null
     }
-    if (max) {
-      return `$${(max / 100).toFixed(2)}`
+
+    if (!type) {
+      return range
     }
-    return 'Not specified'
+
+    switch (type) {
+      case 'hourly':
+        return `${range}/hr`
+      case 'salary':
+        return `${range}/yr`
+      case 'contract':
+        return `${range} contract`
+      case 'project':
+        return `${range} project`
+      default:
+        return range
+    }
+  }
+
+  const formatRemoteOptionLabel = (value?: string | null) => {
+    if (!value) return null
+    const map: Record<string, string> = {
+      remote: 'Remote',
+      on_site: 'On-site',
+      hybrid: 'Hybrid',
+    }
+    return map[value] ?? value
   }
 
   const formatDateTime = (value?: string | null) => {
@@ -237,6 +273,66 @@ export function InquiryViewCandidate({
     if (!status) return 'Not specified'
     return status.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
   }
+
+  const { inquiry, sections: rawSections, comments } = data
+  const sections = rawSections as InquirySectionStatus[]
+  const jobInfo = data.job ?? data.application?.job ?? null
+  const applicationInfo = data.application ?? null
+  const capabilityQuestions =
+    (data.capabilityQuestions as CapabilityQuestionDefinition[] | undefined) ?? []
+  const jobTitleDisplay =
+    jobInfo?.title ??
+    applicationInfo?.job?.title ??
+    data.application?.jobTitle ??
+    inquiry.job_title ??
+    'Job'
+  const jobOrganizationName =
+    jobInfo?.organizationName ??
+    jobInfo?.organization?.name ??
+    applicationInfo?.job?.organization?.name ??
+    null
+  const jobLocation =
+    jobInfo?.location ?? applicationInfo?.job?.location ?? inquiry.working_hours_timezone ?? null
+  const jobEmploymentType = formatEmploymentTypeLabel(
+    jobInfo?.employmentType ?? applicationInfo?.job?.employmentType ?? inquiry.employment_type
+  )
+  const jobRemoteOption = formatRemoteOptionLabel(
+    jobInfo?.remoteOption ?? applicationInfo?.job?.remoteOption ?? null
+  )
+  const jobPayRange =
+    formatJobPayRange(jobInfo) ??
+    formatJobPayRange(applicationInfo?.job ?? null) ??
+    null
+  const applicationStatus = formatStatus(applicationInfo?.status)
+  const submittedAtDisplay = formatDateTime(applicationInfo?.createdAt)
+  const updatedAtDisplay = formatDateTime(applicationInfo?.updatedAt)
+  const stageChangedDisplay = formatDateTime(applicationInfo?.stageChangedAt)
+
+  // Calculate progress
+  const acceptedSections = sections.filter((s) => s.accepted_by).length
+  const totalSections = sections.length
+  const progress = totalSections > 0 ? (acceptedSections / totalSections) * 100 : 0
+
+  // Group comments by section
+  const commentsBySection = useMemo(() => {
+    const grouped: Record<string, typeof comments> = {}
+    for (const comment of comments) {
+      if (!grouped[comment.section_name]) {
+        grouped[comment.section_name] = []
+      }
+      grouped[comment.section_name].push(comment)
+    }
+    return grouped
+  }, [comments])
+
+  const DetailRow = ({ label, value }: { label: string; value?: string | null }) => (
+    <XStack justify="space-between" items="center">
+      <Text fontSize="$3">{label}</Text>
+      <Text fontWeight="600" fontSize="$3" color="$color12">
+        {value && value.length > 0 ? value : 'Not specified'}
+      </Text>
+    </XStack>
+  )
 
   const SectionHeader = ({
     title,
@@ -332,29 +428,12 @@ export function InquiryViewCandidate({
           />
           {expandedSections.has('job_details') && (
             <YStack gap="$2" p="$3" bg="$background" rounded="$3" borderWidth={1} borderColor="$borderColor">
-              {jobInfo ? (
-                <YStack gap="$2">
-                  {[
-                    { label: 'Role', value: jobInfo.title },
-                    { label: 'Organization', value: jobInfo.organization?.name },
-                    { label: 'Location', value: jobInfo.location },
-                    { label: 'Employment type', value: jobInfo.employmentType },
-                    { label: 'Remote option', value: jobInfo.remoteOption },
-                    { label: 'Pay range', value: formatJobPayRange() },
-                  ].map((row) => (
-                    <XStack key={row.label} justify="space-between" items="center">
-                      <Text fontSize="$3">{row.label}</Text>
-                      <Text fontWeight="600" fontSize="$3">
-                        {row.value || 'Not specified'}
-                      </Text>
-                    </XStack>
-                  ))}
-                </YStack>
-              ) : (
-                <Text fontSize="$3" color="$color11">
-                  Job details are unavailable.
-                </Text>
-              )}
+              <DetailRow label="Role" value={jobTitleDisplay} />
+              <DetailRow label="Organization" value={jobOrganizationName} />
+              <DetailRow label="Location" value={jobLocation} />
+              <DetailRow label="Employment type" value={jobEmploymentType} />
+              <DetailRow label="Remote option" value={jobRemoteOption} />
+              <DetailRow label="Pay range" value={jobPayRange} />
             </YStack>
           )}
         </YStack>
@@ -371,30 +450,18 @@ export function InquiryViewCandidate({
             <YStack gap="$2" p="$3" bg="$background" rounded="$3" borderWidth={1} borderColor="$borderColor">
               {applicationInfo ? (
                 <YStack gap="$2">
-                  <XStack justify="space-between" items="center">
-                    <Text fontSize="$3">Status</Text>
-                    <Text fontWeight="600" fontSize="$3">
-                      {formatStatus(applicationInfo.status)}
-                    </Text>
-                  </XStack>
-                  <XStack justify="space-between" items="center">
-                    <Text fontSize="$3">Application score</Text>
-                    <Text fontWeight="600" fontSize="$3">
-                      {applicationInfo.applicationScore ?? 'Not scored'}
-                    </Text>
-                  </XStack>
-                  <XStack justify="space-between" items="center">
-                    <Text fontSize="$3">Submitted</Text>
-                    <Text fontWeight="600" fontSize="$3">
-                      {formatDateTime(applicationInfo.createdAt)}
-                    </Text>
-                  </XStack>
-                  <XStack justify="space-between" items="center">
-                    <Text fontSize="$3">Last updated</Text>
-                    <Text fontWeight="600" fontSize="$3">
-                      {formatDateTime(applicationInfo.updatedAt)}
-                    </Text>
-                  </XStack>
+                  <DetailRow label="Status" value={applicationStatus} />
+                  <DetailRow
+                    label="Application score"
+                    value={
+                      typeof applicationInfo.applicationScore === 'number'
+                        ? applicationInfo.applicationScore.toString()
+                        : null
+                    }
+                  />
+                  <DetailRow label="Submitted" value={submittedAtDisplay} />
+                  <DetailRow label="Last updated" value={updatedAtDisplay} />
+                  <DetailRow label="Stage changed" value={stageChangedDisplay} />
                 </YStack>
               ) : (
                 <Text fontSize="$3" color="$color11">
@@ -613,25 +680,51 @@ export function InquiryViewCandidate({
                 <YStack gap="$3">
                   {capabilityQuestions.map((question) => {
                     const response = capabilityResponseState[question.name]
-                    if (question.type === 'boolean') {
+                    const normalizedType = question.type?.toLowerCase()
+
+                    if (normalizedType === 'boolean') {
                       return (
                         <CapabilityQuestionInput
                           key={question.name}
                           question={question.label}
                           value={response?.responseValue}
-                          onChange={(value) => handleCapabilityResponse(question.name, value)}
+                          onChange={(value) =>
+                            handleCapabilityResponse(question.name, value, undefined)
+                          }
                         />
                       )
                     }
+
+                    const isNumeric =
+                      normalizedType === 'number' ||
+                      normalizedType === 'numeric' ||
+                      normalizedType === 'integer'
+
+                    const placeholder = question.unit
+                      ? `Add response (${question.unit})`
+                      : 'Add response'
 
                     return (
                       <YStack key={question.name} gap="$1">
                         <Text fontWeight="600" fontSize="$3">
                           {question.label}
+                          {question.required ? ' *' : ''}
                         </Text>
-                        <Text fontSize="$3" color="$color11">
-                          {response?.responseText || 'No response yet'}
-                        </Text>
+                        <Input
+                          value={response?.responseText ?? ''}
+                          onChangeText={(value) =>
+                            handleCapabilityResponse(
+                              question.name,
+                              undefined,
+                              value?.trim().length ? value : undefined
+                            )
+                          }
+                          inputMode={isNumeric ? 'numeric' : 'text'}
+                          keyboardType={isNumeric ? 'numeric' : undefined}
+                          placeholder={placeholder}
+                          multiline={!isNumeric}
+                          numberOfLines={!isNumeric ? 3 : 1}
+                        />
                       </YStack>
                     )
                   })}
