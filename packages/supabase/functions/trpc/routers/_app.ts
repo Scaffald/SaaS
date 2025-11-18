@@ -32,6 +32,7 @@ import { successFeesRouter } from "./success-fees.router.ts";
 import { idVerificationRouter } from "./id-verification.router.ts";
 import { paymentsRouter } from "./payments.router.ts";
 import { legalAgreementsRouter } from "./legal-agreements.router.ts";
+import { accountDeletionRouter } from "./account-deletion.router.ts";
 
 /**
  * Main application router
@@ -71,6 +72,7 @@ export const appRouter = t.router({
   idVerification: idVerificationRouter,
   payments: paymentsRouter,
   legalAgreements: legalAgreementsRouter,
+  accountDeletion: accountDeletionRouter,
 });
 
 // Export the router type for client-side usage

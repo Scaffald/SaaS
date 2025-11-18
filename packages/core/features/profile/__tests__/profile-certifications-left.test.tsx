@@ -244,11 +244,8 @@ const apiMock = vi.hoisted(() => {
 vi.mock('@app/core/utils/api', () => apiMock)
 
 // Import component after all mocks are set up
-let ProfileCertificationsLeft: React.ComponentType<{ onSelectCertificationForProof?: (certId: string, certTitle: string) => void }>
-beforeAll(async () => {
-  const module = await import('../profile-certifications-left')
-  ProfileCertificationsLeft = module.ProfileCertificationsLeft
-})
+// Use static import instead of dynamic import to avoid hanging
+import { ProfileCertificationsLeft } from '../profile-certifications-left'
 
 describe('ProfileCertificationsLeft', () => {
   const renderComponent = () => {

@@ -16,6 +16,7 @@ import { OrganizationLocationsInput } from './OrganizationLocationsInput'
 import { OrganizationProjectPrivacySettings } from './OrganizationProjectPrivacySettings'
 import { OrganizationPaymentMethodsPanel } from '../payments/OrganizationPaymentMethodsPanel'
 import { OrganizationCreditsPanel } from '../payments/OrganizationCreditsPanel'
+import { OrganizationDeletionPanel } from '@app/core/features/organizations/components/OrganizationDeletionPanel'
 
 type OrganizationFormData = OrganizationCreate
 
@@ -335,6 +336,11 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       {/* Account Credits - Only in edit mode */}
       {mode === 'edit' && organizationId && (
         <OrganizationCreditsPanel organizationId={organizationId} />
+      )}
+
+      {/* Account Deletion - Only in edit mode */}
+      {mode === 'edit' && organizationId && (
+        <OrganizationDeletionPanel organizationId={organizationId} />
       )}
 
       {/* Submit buttons */}

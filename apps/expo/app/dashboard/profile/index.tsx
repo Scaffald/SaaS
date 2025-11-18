@@ -10,6 +10,7 @@ import {
 import { ProfileCertificationsRight } from '@app/core/features/profile/profile-certifications-right'
 import { useUser } from '@app/core/utils/useUser'
 import { IdVerificationWidget } from '@app/core/features/id-verification'
+import { AccountDeletionPanel } from '@app/core/features/profile/components/AccountDeletionPanel'
 
 /**
  * Profile Index - Own profile view
@@ -38,6 +39,7 @@ export default function ProfileIndexScreen() {
             <IdVerificationWidget />
             <ProfileCertificationsRight />
             <PreferencesWidget showEdit />
+            <AccountDeletionPanel />
           </YStack>
         </QuickLinksSidebar>
       }
