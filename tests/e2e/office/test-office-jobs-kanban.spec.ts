@@ -9,7 +9,7 @@
  */
 
 import { test, expect, type Page } from '@playwright/test'
-import { navigateToOfficeRoute, OFFICE_ROUTES } from '../../infrastructure/playwright/helpers/helpers/office-navigation'
+import { navigateToOfficeRoute } from '../../infrastructure/playwright/helpers/helpers/office-navigation'
 
 // Use super-admin auth state (Zach) who has 'office' role required for /office routes
 test.use({ storageState: 'tests/.auth/super-admin.json' })
@@ -63,7 +63,7 @@ async function dragJobToColumn(
 
 test.describe('Office • Jobs Kanban Board Structure', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
-    await navigateToOfficeRoute(page, OFFICE_ROUTES.JOBS)
+    await navigateToOfficeRoute(page, '/office/cms/jobs')
     await waitForKanbanLoad(page)
   })
 
@@ -134,7 +134,7 @@ test.describe('Office • Jobs Kanban Board Structure', () => {
 
 test.describe('Office • Jobs Kanban Drag and Drop', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
-    await navigateToOfficeRoute(page, OFFICE_ROUTES.JOBS)
+    await navigateToOfficeRoute(page, '/office/cms/jobs')
     await waitForKanbanLoad(page)
   })
 
@@ -205,7 +205,7 @@ test.describe('Office • Jobs Kanban Drag and Drop', () => {
 
 test.describe('Office • Jobs Kanban Card Interaction', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
-    await navigateToOfficeRoute(page, OFFICE_ROUTES.JOBS)
+    await navigateToOfficeRoute(page, '/office/cms/jobs')
     await waitForKanbanLoad(page)
   })
 
@@ -239,7 +239,7 @@ test.describe('Office • Jobs Kanban Card Interaction', () => {
 
 test.describe('Office • Jobs Kanban View Toggle', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
-    await navigateToOfficeRoute(page, OFFICE_ROUTES.JOBS)
+    await navigateToOfficeRoute(page, '/office/cms/jobs')
     await waitForKanbanLoad(page)
   })
 

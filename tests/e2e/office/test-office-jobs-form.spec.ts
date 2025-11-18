@@ -9,7 +9,7 @@
  */
 
 import { test, expect, type Page } from '@playwright/test'
-import { navigateToOfficeRoute, OFFICE_ROUTES } from '../../infrastructure/playwright/helpers/helpers/office-navigation'
+import { navigateToOfficeRoute } from '../../infrastructure/playwright/helpers/helpers/office-navigation'
 import { generateJobData, generateTestId } from '../../infrastructure/playwright/helpers/helpers/office-test-data'
 
 // Use super-admin auth state (Zach) who has 'office' role required for /office routes
@@ -37,7 +37,7 @@ async function selectFirstOrganization(page: Page) {
 
 test.describe('Office • Jobs Form - Basic Information Section', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
-    await navigateToOfficeRoute(page, OFFICE_ROUTES.JOB_CREATE)
+    await navigateToOfficeRoute(page, '/office/cms/jobs/create')
     await waitForOrganizationSelect(page)
   })
 
@@ -91,7 +91,7 @@ test.describe('Office • Jobs Form - Basic Information Section', () => {
 
 test.describe('Office • Jobs Form - Location & Work Settings', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
-    await navigateToOfficeRoute(page, OFFICE_ROUTES.JOB_CREATE)
+    await navigateToOfficeRoute(page, '/office/cms/jobs/create')
     await waitForOrganizationSelect(page)
     await selectFirstOrganization(page)
   })
@@ -115,7 +115,7 @@ test.describe('Office • Jobs Form - Location & Work Settings', () => {
 
 test.describe('Office • Jobs Form - Form Actions', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
-    await navigateToOfficeRoute(page, OFFICE_ROUTES.JOB_CREATE)
+    await navigateToOfficeRoute(page, '/office/cms/jobs/create')
     await waitForOrganizationSelect(page)
   })
 
@@ -203,7 +203,7 @@ test.describe('Office • Jobs Form - Edit Mode', () => {
 
   test.beforeEach(async ({ page }: { page: Page }) => {
     // Create a job first for editing
-    await navigateToOfficeRoute(page, OFFICE_ROUTES.JOB_CREATE)
+    await navigateToOfficeRoute(page, '/office/cms/jobs/create')
     await waitForOrganizationSelect(page)
     await selectFirstOrganization(page)
 
