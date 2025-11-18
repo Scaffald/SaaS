@@ -7,7 +7,7 @@ export interface SupabaseTestClientOptions {
   readonly supabaseUrl?: string
   readonly anonKey?: string
   readonly serviceRoleKey?: string
-  readonly schema?: string
+  readonly schema?: 'public'
   readonly clientOptions?: SupabaseClientOptions
 }
 

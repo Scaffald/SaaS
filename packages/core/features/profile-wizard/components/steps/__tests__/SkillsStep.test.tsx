@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { SkillsStep } from '../SkillsStep'
 
+const mockStepNavigation = vi.fn()
 vi.mock('../StepNavigation', () => ({
   StepNavigation: ({
     canGoNext,
@@ -15,15 +16,26 @@ vi.mock('../StepNavigation', () => ({
   }: {
     canGoNext: boolean
     isSaving: boolean
-    onNext: () => void
+    onNext: () => void | Promise<void>
     onBack: () => void
     onSaveForLater?: () => void
     onSkip?: () => void
-  }) => (
-    <div>
-      <button type="button" disabled={!canGoNext || isSaving} onClick={onNext}>
-        Continue
-      </button>
+  }) => {
+    mockStepNavigation({ canGoNext, isSaving, onNext, onBack, onSaveForLater, onSkip })
+    return (
+      <div>
+        <button
+          type="button"
+          disabled={!canGoNext || isSaving}
+          onClick={async () => {
+            const result = onNext()
+            if (result instanceof Promise) {
+              await result
+            }
+          }}
+        >
+          Continue
+        </button>
       <button type="button" onClick={onBack}>
         Back
       </button>
@@ -34,11 +46,12 @@ vi.mock('../StepNavigation', () => ({
       ) : null}
       {onSkip ? (
         <button type="button" onClick={onSkip}>
-          Skip
+          Skip This Step
         </button>
       ) : null}
-    </div>
-  ),
+      </div>
+    )
+  },
 }))
 
 vi.mock('@app/core/features/profile/components/InlineSkillSearch', () => ({
@@ -259,10 +272,19 @@ describe('SkillsStep', () => {
       />,
     )
 
+    // Wait for component to render
+    const continueButton = await screen.findByRole('button', { name: /continue/i })
+    
+    // Verify StepNavigation was called with canGoNext=false
     await waitFor(() => {
-      const continueButton = screen.getByRole('button', { name: /continue/i })
-      expect(continueButton).toBeDisabled()
+      expect(mockStepNavigation).toHaveBeenCalled()
     })
+    
+    const lastCall = mockStepNavigation.mock.calls[mockStepNavigation.mock.calls.length - 1]?.[0]
+    expect(lastCall?.canGoNext).toBe(false)
+    
+    // The button should be disabled because canGoNext=false
+    expect(continueButton).toBeDisabled()
   })
 
   it('enables continue button when 3 or more skills are selected', () => {
@@ -404,13 +426,20 @@ describe('SkillsStep', () => {
       />,
     )
 
+    await waitFor(() => {
+      const continueButton = screen.getByRole('button', { name: /continue/i })
+      expect(continueButton).not.toBeDisabled()
+    })
+
     const continueButton = screen.getByRole('button', { name: /continue/i })
-    fireEvent.click(continueButton)
+    await fireEvent.click(continueButton)
 
     await waitFor(() => {
-      expect(onContinue).toHaveBeenCalledWith({
-        skills: initialData.skills,
-      })
+      expect(onContinue).toHaveBeenCalled()
+    })
+
+    expect(onContinue).toHaveBeenCalledWith({
+      skills: initialData.skills,
     })
   })
 
@@ -460,7 +489,12 @@ describe('SkillsStep', () => {
       />,
     )
 
-    const skipButton = screen.getByText('Skip')
+    await waitFor(() => {
+      const skipButton = screen.getByText('Skip This Step')
+      expect(skipButton).toBeInTheDocument()
+    })
+
+    const skipButton = screen.getByText('Skip This Step')
     fireEvent.click(skipButton)
 
     await waitFor(() => {

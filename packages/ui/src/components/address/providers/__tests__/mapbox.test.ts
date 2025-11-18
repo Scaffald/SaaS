@@ -4,7 +4,7 @@ import { GeocodingError } from '../../types'
 import type { ProviderConfig, SearchOptions } from '../../types'
 
 // Mock fetch globally
-global.fetch = vi.fn()
+global.fetch = vi.fn() as typeof fetch
 
 describe('MapboxProvider', () => {
   const mockConfig: ProviderConfig = {

@@ -16,7 +16,8 @@
     "../../packages/supabase/helpers.ts",
     "../../packages/supabase/functions/_shared/schemas/**/*.ts",
     "../../packages/supabase/functions/_shared/phone.ts",
-    "../../vitest.config.ts"
+    "../../vitest.config.ts",
+    "../../tests/infrastructure/vitest/helpers/database.ts"
   ],
   "exclude": [
     "../../packages/supabase/functions/trpc/**/*",

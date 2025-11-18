@@ -1,6 +1,13 @@
-import type { CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
+import type { CSSProperties } from 'react'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
+
+interface ExtendedCSSProperties extends CSSProperties {
+  shadowOpacity?: number | string;
+  shadowRadius?: number | string;
+  shadowOffset?: { width: number | string; height: number | string };
+}
 
 vi.mock('tamagui', async () => {
   const actual = await vi.importActual<typeof import('tamagui')>('tamagui')
@@ -50,7 +57,7 @@ vi.mock('tamagui', async () => {
     return { style: styleProps, passthrough } as const
   }
 
-  const MockButton = ({ children, onPress, ...rest }: { children: ReactNode; onPress?: () => void; style?: CSSProperties }) => {
+  const MockButton = ({ children, onPress, ...rest }: { children: ReactNode; onPress?: () => void; style?: ExtendedCSSProperties }) => {
     const { style, passthrough } = mapStyleProps(rest)
     return (
       <button type="button" onClick={onPress} style={style} {...passthrough}>
@@ -59,7 +66,7 @@ vi.mock('tamagui', async () => {
     )
   }
 
-  const MockXStack = ({ children, ...rest }: { children: ReactNode; style?: CSSProperties }) => {
+  const MockXStack = ({ children, ...rest }: { children: ReactNode; style?: ExtendedCSSProperties }) => {
     const { style, passthrough } = mapStyleProps(rest)
     return (
       <div data-testid="x-stack" style={style} {...passthrough}>
@@ -89,7 +96,7 @@ describe('FilterBar Visual Enhancement', () => {
     render(<FilterBar />)
     
     const container = screen.getAllByTestId('x-stack')[1] // Second XStack is the inner container
-    const styles = container.style as CSSProperties
+    const styles = container.style as ExtendedCSSProperties
     
     // Verify backdrop blur is applied
     expect(styles.backdropFilter).toBe('blur(10px)')
@@ -100,7 +107,7 @@ describe('FilterBar Visual Enhancement', () => {
     render(<FilterBar />)
     
     const container = screen.getAllByTestId('x-stack')[1]
-    const styles = container.style as CSSProperties
+    const styles = container.style as ExtendedCSSProperties
     
     // Verify border (CSS returns as string)
     expect(styles.borderWidth).toBe('2px')
@@ -118,7 +125,7 @@ describe('FilterBar Visual Enhancement', () => {
     render(<FilterBar />)
     
     const container = screen.getAllByTestId('x-stack')[1]
-    const styles = container.style as CSSProperties
+    const styles = container.style as ExtendedCSSProperties
     
     // Verify opacity is set for semi-transparency (CSS may return as string)
     const opacity = styles.opacity
@@ -129,7 +136,7 @@ describe('FilterBar Visual Enhancement', () => {
     render(<FilterBar />)
     
     const container = screen.getAllByTestId('x-stack')[1]
-    const styles = container.style as CSSProperties
+    const styles = container.style as ExtendedCSSProperties
     
     // Verify rounded corners (borderRadius should be set)
     expect(styles.borderRadius).toBeDefined()

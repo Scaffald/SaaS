@@ -7,25 +7,20 @@ import type { ClusterInfo } from '../useMapPinState'
 describe('useMapPinState', () => {
   const mockPin: MapPinType = {
     id: 'pin-1',
-    type: 'worker',
-    coordinates: [42.3601, -71.0589],
+    pinType: 'worker',
+    coordinate: [42.3601, -71.0589],
     data: { id: 'user-1', name: 'John Doe' },
   }
 
   const mockPin2: MapPinType = {
     id: 'pin-2',
-    type: 'organization',
+    pinType: 'organization',
     coordinates: [42.3651, -71.0639],
     data: { id: 'org-1', name: 'Acme Corp' },
   }
 
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.useFakeTimers()
-  })
-
-  afterEach(() => {
-    vi.useRealTimers()
   })
 
   it('initializes with empty state', () => {
@@ -52,7 +47,7 @@ describe('useMapPinState', () => {
   })
 
   it('pins transition to visible after delay', async () => {
-    const { result } = renderHook(() => useMapPinState({ transitionDuration: 100 }))
+    const { result } = renderHook(() => useMapPinState({ transitionDuration: 50 }))
 
     act(() => {
       result.current.processPins([mockPin], [])
@@ -61,24 +56,19 @@ describe('useMapPinState', () => {
     // Pin should start as transitioning-in
     expect(result.current.pinStates.get('pin-1')?.visibility).toBe('transitioning-in')
 
-    // Fast-forward time to complete transition
-    act(() => {
-      vi.advanceTimersByTime(150) // More than transition duration
-    })
-
-    // Allow React to process state updates
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0))
-    })
-
-    const pinState = result.current.pinStates.get('pin-1')
-    // After transition, pin should be visible
-    expect(pinState?.visibility).toBe('visible')
-    expect(pinState?.opacity).toBe(1)
+    // Wait for transition to complete
+    await waitFor(
+      () => {
+        const pinState = result.current.pinStates.get('pin-1')
+        expect(pinState?.visibility).toBe('visible')
+        expect(pinState?.opacity).toBe(1)
+      },
+      { timeout: 200 }
+    )
   })
 
   it('removed pins transition out', async () => {
-    const { result } = renderHook(() => useMapPinState({ transitionDuration: 100 }))
+    const { result } = renderHook(() => useMapPinState({ transitionDuration: 50 }))
 
     // Add pin
     act(() => {
@@ -86,15 +76,12 @@ describe('useMapPinState', () => {
     })
 
     // Wait for transition in
-    act(() => {
-      vi.advanceTimersByTime(150)
-    })
-
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0))
-    })
-
-    expect(result.current.pinStates.get('pin-1')?.visibility).toBe('visible')
+    await waitFor(
+      () => {
+        expect(result.current.pinStates.get('pin-1')?.visibility).toBe('visible')
+      },
+      { timeout: 200 }
+    )
 
     // Remove pin
     act(() => {
@@ -105,17 +92,14 @@ describe('useMapPinState', () => {
     const pinState = result.current.pinStates.get('pin-1')
     expect(pinState?.visibility).toBe('transitioning-out')
 
-    // Fast-forward to complete transition out
-    act(() => {
-      vi.advanceTimersByTime(150)
-    })
-
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0))
-    })
-
-    const finalPinState = result.current.pinStates.get('pin-1')
-    expect(finalPinState?.visibility).toBe('hidden')
+    // Wait for transition out to complete
+    await waitFor(
+      () => {
+        const finalPinState = result.current.pinStates.get('pin-1')
+        expect(finalPinState?.visibility).toBe('hidden')
+      },
+      { timeout: 200 }
+    )
   })
 
   it('cluster assignment hides pins', () => {
@@ -141,7 +125,7 @@ describe('useMapPinState', () => {
   })
 
   it('visiblePins includes only visible/transitioning-in pins', async () => {
-    const { result } = renderHook(() => useMapPinState({ transitionDuration: 100 }))
+    const { result } = renderHook(() => useMapPinState({ transitionDuration: 50 }))
 
     act(() => {
       result.current.processPins([mockPin, mockPin2], [])
@@ -150,18 +134,15 @@ describe('useMapPinState', () => {
     // Both pins should be in visiblePins (transitioning-in counts as visible)
     expect(result.current.visiblePins.length).toBe(2)
 
-    // Fast-forward to make them fully visible
-    act(() => {
-      vi.advanceTimersByTime(150)
-    })
-
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0))
-    })
-
-    expect(result.current.visiblePins.length).toBe(2)
-    expect(result.current.visiblePins.some((p) => p.id === 'pin-1')).toBe(true)
-    expect(result.current.visiblePins.some((p) => p.id === 'pin-2')).toBe(true)
+    // Wait for transitions to complete
+    await waitFor(
+      () => {
+        expect(result.current.visiblePins.length).toBe(2)
+        expect(result.current.visiblePins.some((p) => p.id === 'pin-1')).toBe(true)
+        expect(result.current.visiblePins.some((p) => p.id === 'pin-2')).toBe(true)
+      },
+      { timeout: 200 }
+    )
   })
 
   it('clusteredPins includes only clustered pins', () => {
@@ -187,7 +168,7 @@ describe('useMapPinState', () => {
   })
 
   it('transitioningPins includes transitioning states', async () => {
-    const { result } = renderHook(() => useMapPinState({ transitionDuration: 100 }))
+    const { result } = renderHook(() => useMapPinState({ transitionDuration: 50 }))
 
     act(() => {
       result.current.processPins([mockPin], [])
@@ -197,17 +178,14 @@ describe('useMapPinState', () => {
     expect(result.current.transitioningPins.length).toBe(1)
     expect(result.current.transitioningPins[0].id).toBe('pin-1')
 
-    // Fast-forward to complete transition
-    act(() => {
-      vi.advanceTimersByTime(150)
-    })
-
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0))
-    })
-
-    // Pin should no longer be transitioning (now visible)
-    expect(result.current.transitioningPins.length).toBe(0)
+    // Wait for transition to complete
+    await waitFor(
+      () => {
+        // Pin should no longer be transitioning (now visible)
+        expect(result.current.transitioningPins.length).toBe(0)
+      },
+      { timeout: 200 }
+    )
   })
 
   it('clearStates resets all state', () => {
@@ -233,7 +211,7 @@ describe('useMapPinState', () => {
     const clusters: ClusterInfo[] = [
       {
         clusterId: 1,
-        coordinates: [42.3601, -71.0589],
+        coordinate: [42.3601, -71.0589],
         pointCount: 2,
         memberPinIds: ['pin-1', 'pin-2'],
       },
@@ -250,22 +228,19 @@ describe('useMapPinState', () => {
   })
 
   it('updatePinVisibility updates pin state', async () => {
-    const { result } = renderHook(() => useMapPinState({ transitionDuration: 100 }))
+    const { result } = renderHook(() => useMapPinState({ transitionDuration: 50 }))
 
     act(() => {
       result.current.processPins([mockPin], [])
     })
 
     // Wait for transition in
-    act(() => {
-      vi.advanceTimersByTime(150)
-    })
-
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0))
-    })
-
-    expect(result.current.pinStates.get('pin-1')?.visibility).toBe('visible')
+    await waitFor(
+      () => {
+        expect(result.current.pinStates.get('pin-1')?.visibility).toBe('visible')
+      },
+      { timeout: 200 }
+    )
 
     // Manually update visibility
     act(() => {
