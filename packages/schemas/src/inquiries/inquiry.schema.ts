@@ -68,47 +68,52 @@ const dateStringSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
 })
 
 /**
+ * Base inquiry object schema (before refinements)
+ * Used to create both single and bulk inquiry schemas
+ */
+const baseInquiryObjectSchema = z.object({
+  applicationId: z.string().uuid('Invalid application ID'),
+
+  // Employment terms
+  employmentType: employmentTypeSchema.optional(),
+  employmentTypeNegotiable: z.boolean().default(true),
+  workSchedule: workScheduleSchema.optional(),
+  workScheduleNegotiable: z.boolean().default(true),
+  scheduleShifts: z.boolean().default(false),
+  workingHoursStart: timeStringSchema.optional(),
+  workingHoursEnd: timeStringSchema.optional(),
+  workingHoursTimezone: z.string().optional(),
+  workingHoursNegotiable: z.boolean().default(true),
+  workdays: z.array(workdaySchema).default([]),
+  workdaysNegotiable: z.boolean().default(true),
+  employmentStartDate: dateStringSchema,
+  employmentEndDate: dateStringSchema.optional(),
+  employmentDatesNegotiable: z.boolean().default(true),
+
+  // Compensation
+  rateType: rateTypeSchema,
+  rateMinCents: z.number().int().positive('Rate minimum must be positive'),
+  rateMaxCents: z.number().int().positive('Rate maximum must be positive').optional(),
+  rateNegotiable: z.boolean().default(true),
+
+  // Capabilities
+  enduranceRequired: z.boolean().default(false),
+
+  // Other
+  willingToTravel: z.boolean().optional(),
+  travelDistanceMiles: z.number().int().positive().optional(),
+  willingToWorkOvertime: z.boolean().optional(),
+  hasDriversLicense: z.boolean().optional(),
+  additionalNotes: z
+    .string()
+    .max(2000, 'Additional notes must be 2000 characters or less')
+    .optional(),
+})
+
+/**
  * Inquiry create schema - for creating new inquiries
  */
-export const inquiryCreateSchema = z
-  .object({
-    applicationId: z.string().uuid('Invalid application ID'),
-
-    // Employment terms
-    employmentType: employmentTypeSchema.optional(),
-    employmentTypeNegotiable: z.boolean().default(true),
-    workSchedule: workScheduleSchema.optional(),
-    workScheduleNegotiable: z.boolean().default(true),
-    scheduleShifts: z.boolean().default(false),
-    workingHoursStart: timeStringSchema.optional(),
-    workingHoursEnd: timeStringSchema.optional(),
-    workingHoursTimezone: z.string().optional(),
-    workingHoursNegotiable: z.boolean().default(true),
-    workdays: z.array(workdaySchema).default([]),
-    workdaysNegotiable: z.boolean().default(true),
-    employmentStartDate: dateStringSchema,
-    employmentEndDate: dateStringSchema.optional(),
-    employmentDatesNegotiable: z.boolean().default(true),
-
-    // Compensation
-    rateType: rateTypeSchema,
-    rateMinCents: z.number().int().positive('Rate minimum must be positive'),
-    rateMaxCents: z.number().int().positive('Rate maximum must be positive').optional(),
-    rateNegotiable: z.boolean().default(true),
-
-    // Capabilities
-    enduranceRequired: z.boolean().default(false),
-
-    // Other
-    willingToTravel: z.boolean().optional(),
-    travelDistanceMiles: z.number().int().positive().optional(),
-    willingToWorkOvertime: z.boolean().optional(),
-    hasDriversLicense: z.boolean().optional(),
-    additionalNotes: z
-      .string()
-      .max(2000, 'Additional notes must be 2000 characters or less')
-      .optional(),
-  })
+export const inquiryCreateSchema = baseInquiryObjectSchema
   .refine(
     (data) => {
       // If rateMaxCents is provided, it must be >= rateMinCents
@@ -154,6 +159,58 @@ export const inquiryCreateSchema = z
   )
 
 export type InquiryCreateInput = z.infer<typeof inquiryCreateSchema>
+
+/**
+ * Bulk inquiry schema - same as inquiryCreateSchema but without applicationId
+ * Used for creating inquiries for multiple applications at once
+ */
+export const bulkInquirySchema = baseInquiryObjectSchema
+  .omit({ applicationId: true })
+  .refine(
+    (data) => {
+      // If rateMaxCents is provided, it must be >= rateMinCents
+      if (data.rateMaxCents !== undefined) {
+        return data.rateMaxCents >= data.rateMinCents
+      }
+      return true
+    },
+    {
+      message: 'Rate maximum must be greater than or equal to rate minimum',
+      path: ['rateMaxCents'],
+    }
+  )
+  .refine(
+    (data) => {
+      // If both start and end times are provided, end must be after start
+      if (data.workingHoursStart && data.workingHoursEnd) {
+        const [startHour, startMin] = data.workingHoursStart.split(':').map(Number)
+        const [endHour, endMin] = data.workingHoursEnd.split(':').map(Number)
+        const startMinutes = startHour * 60 + startMin
+        const endMinutes = endHour * 60 + endMin
+        return endMinutes > startMinutes
+      }
+      return true
+    },
+    {
+      message: 'End time must be after start time',
+      path: ['workingHoursEnd'],
+    }
+  )
+  .refine(
+    (data) => {
+      // If end date is provided, it must be after start date
+      if (data.employmentEndDate && data.employmentStartDate) {
+        return data.employmentEndDate >= data.employmentStartDate
+      }
+      return true
+    },
+    {
+      message: 'End date must be on or after start date',
+      path: ['employmentEndDate'],
+    }
+  )
+
+export type BulkInquiryInput = z.infer<typeof bulkInquirySchema>
 
 /**
  * Inquiry update schema - for editing existing inquiries

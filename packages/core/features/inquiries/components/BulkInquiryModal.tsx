@@ -10,13 +10,13 @@ import {
   ScrollView,
   Separator,
   CustomCheckbox,
-  Progress,
 } from '@app/ui'
 import { Adapt, Sheet, Select, Switch, TextArea } from 'tamagui'
-import { Check, Info } from '@tamagui/lucide-icons'
+import { Check } from '@tamagui/lucide-icons'
+import { Progress } from 'tamagui'
 import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
-import { inquiryCreateSchema, type InquiryCreateInput } from '@app/schemas'
+import { bulkInquirySchema, type BulkInquiryInput } from '@app/schemas'
 import { InquiryHelpSidebar } from './InquiryHelpSidebar'
 
 interface BulkInquiryModalProps {
@@ -51,8 +51,8 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
     }>
   } | null>(null)
 
-  const form = useForm<Omit<InquiryCreateInput, 'applicationId'>>({
-    resolver: zodResolver(inquiryCreateSchema.omit({ applicationId: true })),
+  const form = useForm<BulkInquiryInput>({
+    resolver: zodResolver(bulkInquirySchema),
     mode: 'onChange',
     defaultValues: {
       employmentType: undefined,
@@ -83,7 +83,17 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
   })
 
   const createBulk = api.inquiries.createBulk.useMutation({
-    onSuccess: (result) => {
+    onSuccess: (result: {
+      total: number
+      successful: number
+      failed: number
+      results: Array<{
+        applicationId: string
+        success: boolean
+        inquiryId?: string
+        error?: string
+      }>
+    }) => {
       setBulkResults(result)
       setShowResults(true)
 
@@ -123,7 +133,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
   const onSubmit = handleSubmit(async (data) => {
     await createBulk.mutateAsync({
       applicationIds,
-      inquiryData: data as InquiryCreateInput,
+        inquiryData: data as BulkInquiryInput,
     })
   })
 
@@ -152,9 +162,9 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
   if (showResults && bulkResults) {
     return (
       <Sheet modal open={open} onOpenChange={handleClose}>
-        <Sheet.Frame padding="$4" maxHeight="80vh">
+        <Sheet.Frame>
           <ScrollView>
-            <YStack gap="$4">
+            <YStack gap="$4" p="$4">
               <Text fontSize="$7" fontWeight="600">
                 Bulk Inquiry Results
               </Text>
@@ -215,8 +225,9 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
   return (
     <Sheet modal open={open} onOpenChange={handleClose}>
       <Adapt when="sm" platform="touch">
-        <Sheet.Frame padding="$4" maxHeight="90vh">
+        <Sheet.Frame>
           <FormProvider {...form}>
+            <YStack p="$4">
             <XStack gap="$4" flex={1} $sm={{ flexDirection: 'column' }}>
               {/* Main Form */}
               <YStack flex={1} gap="$4">
@@ -491,6 +502,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                 <InquiryHelpSidebar />
               </YStack>
             </XStack>
+            </YStack>
           </FormProvider>
         </Sheet.Frame>
         <Sheet.Overlay />

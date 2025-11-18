@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import Stripe from "stripe";
 import { z } from "zod";
 
 import {
@@ -233,10 +234,39 @@ const adminToggleActiveInputSchema = z.object({
   is_active: z.boolean(),
 });
 
+const requestBackgroundCheckInputSchema = z.object({
+  package_id: z.string().uuid(),
+  tier: z.string().min(1),
+  add_on_ids: z.array(z.string().uuid()).optional(),
+  paid_by: backgroundCheckPaidByEnum.default("worker"),
+  organization_id: z.string().uuid().optional(),
+  job_id: z.string().uuid().optional(),
+  worker_user_id: z.string().uuid().optional(),
+  custom_configuration: z.record(z.unknown()).optional(),
+  metadata: z.record(z.unknown()).optional(),
+});
+
+const confirmBackgroundCheckPaymentSchema = z.object({
+  background_check_id: z.string().uuid(),
+  payment_intent_id: z.string().min(5),
+});
+
+const purchaseSharedAccessInputSchema = z.object({
+  background_check_id: z.string().uuid(),
+  organization_id: z.string().uuid(),
+});
+
+const confirmSharedAccessPaymentInputSchema = purchaseSharedAccessInputSchema.extend({
+  payment_intent_id: z.string().min(5),
+});
+
 const BACKGROUND_CHECK_BUCKET_ID = "background-check-documents";
 const SIGNED_UPLOAD_URL_TTL_SECONDS = 60 * 5;
 const SIGNED_DOWNLOAD_URL_TTL_SECONDS = 60 * 60;
 const MAX_DOCUMENT_SIZE_BYTES = 10 * 1024 * 1024;
+const STRIPE_API_VERSION = "2024-06-20";
+const stripeHttpClient = Stripe.createFetchHttpClient();
+const SHARED_BACKGROUND_CHECK_DISCOUNT = 0.25;
 
 function sanitizeFileName(fileName: string): string {
   const cleaned = fileName.replace(/[^A-Za-z0-9._-]/g, "_");
@@ -266,6 +296,325 @@ type BackgroundCheckRecord = {
   expires_at?: string | null;
   estimated_completion_date?: string | null;
 };
+
+async function loadStripeClient(ctx: Context): Promise<Stripe> {
+  const { data: settings, error } = await ctx.supabaseAdmin
+    .schema("core")
+    .from("stripe_settings")
+    .select("api_key_secret_id")
+    .eq("settings_name", "stripe")
+    .maybeSingle();
+
+  if (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: `Failed to load Stripe settings: ${error.message}`,
+    });
+  }
+
+  if (!settings?.api_key_secret_id) {
+    throw new TRPCError({
+      code: "FAILED_PRECONDITION",
+      message: "Stripe API key is not configured.",
+    });
+  }
+
+  const { data: secretValue, error: secretError } = await ctx.supabaseAdmin
+    .schema("core")
+    .rpc("get_secret_value", {
+      p_secret_id: settings.api_key_secret_id,
+    });
+
+  if (secretError || !secretValue) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: secretError
+        ? `Failed to read Stripe secret: ${secretError.message}`
+        : "Stripe API secret unavailable.",
+    });
+  }
+
+  return new Stripe(secretValue, {
+    apiVersion: STRIPE_API_VERSION,
+    httpClient: stripeHttpClient,
+  });
+}
+
+async function userHasPlatformRole(ctx: Context): Promise<boolean> {
+  if (!ctx.user?.id) {
+    return false;
+  }
+
+  const { data, error } = await ctx.supabaseAdmin
+    .schema("core")
+    .from("role_assignments")
+    .select("role:roles(name, scope)")
+    .eq("user_id", ctx.user.id);
+
+  if (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: `Unable to verify platform roles: ${error.message}`,
+    });
+  }
+
+  return Boolean(
+    data?.some(
+      (assignment) =>
+        assignment.role?.scope === "platform" &&
+        ["office", "super_admin"].includes(assignment.role?.name ?? ""),
+    ),
+  );
+}
+
+async function ensureOrganizationAccess(ctx: Context, organizationId: string) {
+  if (!ctx.user?.id) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  if (await userHasPlatformRole(ctx)) {
+    return;
+  }
+
+  const { data: organization, error: orgError } = await ctx.supabaseAdmin
+    .schema("core")
+    .from("organizations")
+    .select("id, owner_user_id")
+    .eq("id", organizationId)
+    .maybeSingle();
+
+  if (orgError) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: `Failed to load organization: ${orgError.message}`,
+    });
+  }
+
+  if (!organization) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Organization not found",
+    });
+  }
+
+  if (organization.owner_user_id === ctx.user.id) {
+    return;
+  }
+
+  const { data: membership, error: membershipError } = await ctx.supabaseAdmin
+    .schema("core")
+    .from("role_assignments")
+    .select("scope_org_id")
+    .eq("user_id", ctx.user.id)
+    .eq("scope_org_id", organizationId)
+    .maybeSingle();
+
+  if (membershipError) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: `Failed to verify organization membership: ${membershipError.message}`,
+    });
+  }
+
+  if (!membership) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "You do not have permission to act on this organization",
+    });
+  }
+}
+
+async function recordBackgroundCheckTransaction(ctx: Context, params: {
+  organizationId?: string | null;
+  userId?: string | null;
+  backgroundCheckId?: string | null;
+  backgroundCheckAccessId?: string | null;
+  amountCents: number;
+  transactionType: "background_check" | "background_check_shared";
+  paymentIntentId: string;
+  metadata?: Record<string, unknown>;
+}) {
+  const { error } = await ctx.supabaseAdmin
+    .schema("core")
+    .from("payment_transactions")
+    .insert({
+      organization_id: params.organizationId ?? null,
+      user_id: params.userId ?? null,
+      background_check_id: params.backgroundCheckId ?? null,
+      background_check_access_id: params.backgroundCheckAccessId ?? null,
+      amount_cents: params.amountCents,
+      currency: "usd",
+      transaction_type: params.transactionType,
+      stripe_payment_intent_id: params.paymentIntentId,
+      metadata: params.metadata ?? {},
+    });
+
+  if (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: `Failed to record payment transaction: ${error.message}`,
+    });
+  }
+}
+
+async function submitBackgroundCheckToNationSearch(
+  ctx: Context,
+  backgroundCheckId: string,
+): Promise<BackgroundCheckRecord> {
+  const { supabaseAdmin } = ctx;
+
+  const { data: record, error: recordError } = await supabaseAdmin
+    .schema("core")
+    .from("background_checks")
+    .select(
+      `
+        id,
+        user_id,
+        status,
+        status_history,
+        package_id,
+        check_type_ids,
+        custom_configuration,
+        metadata,
+        package:background_check_packages(id, slug, check_type_ids, metadata)
+      `,
+    )
+    .eq("id", backgroundCheckId)
+    .maybeSingle();
+
+  if (recordError) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: `Failed to load background check: ${recordError.message}`,
+    });
+  }
+
+  if (!record) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Background check not found",
+    });
+  }
+
+  const pkg = record.package;
+  const checkTypeIds = Array.isArray(record.check_type_ids) &&
+      record.check_type_ids.length > 0
+    ? record.check_type_ids
+    : Array.isArray(pkg?.check_type_ids)
+    ? pkg?.check_type_ids
+    : [];
+
+  if (!pkg || checkTypeIds.length === 0) {
+    throw new TRPCError({
+      code: "FAILED_PRECONDITION",
+      message: "Background check package is misconfigured",
+    });
+  }
+
+  const nationSearch = createNationSearchClient();
+  const payload = {
+    package_code: pkg.slug ?? "",
+    user: {
+      id: (record.user_id ?? "") as string,
+    },
+    metadata: {
+      background_check_id: record.id,
+    },
+    custom_configuration: record.custom_configuration ?? {},
+  };
+
+  const statusHistory = Array.isArray(record.status_history)
+    ? [...(record.status_history as unknown[])]
+    : [];
+
+  let finalRecord: BackgroundCheckRecord = record as unknown as BackgroundCheckRecord;
+  let historyRef: unknown = statusHistory;
+
+  try {
+    const response = await nationSearch.initiateCheck(payload);
+    const providerCheckId = response?.id ?? null;
+
+    if (providerCheckId) {
+      const newHistory = appendStatusHistory(historyRef, {
+        status: "in_progress",
+        occurred_at: new Date().toISOString(),
+        actor: "worker",
+      });
+
+      const metadataPatch = mergeMetadata(record.metadata, {
+        provider_check_id: providerCheckId,
+        provider_reference: response.metadata ?? null,
+      });
+
+      const { data: updatedRecord, error: updateError } = await supabaseAdmin
+        .schema("core")
+        .from("background_checks")
+        .update({
+          provider_check_id: providerCheckId,
+          status: "in_progress",
+          status_history: newHistory,
+          metadata: metadataPatch,
+          estimated_completion_date: response.estimated_completion_date ?? null,
+        })
+        .eq("id", record.id)
+        .select(BACKGROUND_CHECK_BASE_COLUMNS)
+        .maybeSingle();
+
+      historyRef = newHistory;
+
+      if (!updateError && updatedRecord) {
+        finalRecord = updatedRecord as BackgroundCheckRecord;
+      } else {
+        finalRecord = {
+          ...finalRecord,
+          provider_check_id: providerCheckId,
+          status: "in_progress",
+          status_history: newHistory,
+          metadata: metadataPatch,
+          estimated_completion_date: response.estimated_completion_date ?? null,
+        };
+      }
+    }
+  } catch (error) {
+    if (isNationSearchOutageError(error)) {
+      const outageHistory = appendStatusHistory(historyRef, {
+        status: "pending",
+        occurred_at: new Date().toISOString(),
+        actor: "system",
+        notes: "queued_due_to_provider_outage",
+      });
+      const outageMetadata = mergeMetadata(record.metadata, {
+        provider_outage: true,
+        provider_message: error instanceof Error ? error.message : String(error),
+      });
+
+      const { data: outageRecord } = await supabaseAdmin
+        .schema("core")
+        .from("background_checks")
+        .update({
+          status_history: outageHistory,
+          metadata: outageMetadata,
+        })
+        .eq("id", record.id)
+        .select(BACKGROUND_CHECK_BASE_COLUMNS)
+        .maybeSingle();
+
+      historyRef = outageHistory;
+      finalRecord = (outageRecord as BackgroundCheckRecord | null) ?? {
+        ...finalRecord,
+        status_history: outageHistory,
+        metadata: outageMetadata,
+      };
+    } else {
+      console.error(
+        "[backgroundChecks.submitBackgroundCheckToNationSearch] initiation failed",
+        error,
+      );
+    }
+  }
+
+  return finalRecord;
+}
 
 async function syncBackgroundCheckFromProvider(params: {
   nationSearch: ReturnType<typeof createNationSearchClient>;
@@ -589,6 +938,485 @@ async function fetchAdminPackages(
 }
 
 export const backgroundChecksRouter = t.router({
+  getPricing: protectedProcedure.query(async ({ ctx }) => {
+    const { supabaseAdmin } = ctx;
+
+    const { data: tiers, error: tiersError } = await supabaseAdmin
+      .schema("core")
+      .from("service_pricing")
+      .select("id, tier, name, description, price_cents, metadata")
+      .eq("service_type", "background_check")
+      .eq("is_active", true)
+      .order("display_order", { ascending: true });
+
+    if (tiersError) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: `Failed to load background check pricing: ${tiersError.message}`,
+      });
+    }
+
+    const { data: addOns, error: addOnsError } = await supabaseAdmin
+      .schema("core")
+      .from("background_check_addons")
+      .select("id, name, description, price_cents, metadata")
+      .eq("is_active", true)
+      .order("display_order", { ascending: true });
+
+    if (addOnsError) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: `Failed to load background check add-ons: ${addOnsError.message}`,
+      });
+    }
+
+    return {
+      tiers: tiers ?? [],
+      addOns: addOns ?? [],
+    };
+  }),
+
+  requestCheck: protectedProcedure
+    .input(requestBackgroundCheckInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabaseAdmin, user } = ctx;
+      const workerUserId = input.worker_user_id ?? user?.id;
+
+      if (!workerUserId) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      if (input.paid_by === "organization" && !input.organization_id) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Organization is required when paid_by is organization",
+        });
+      }
+
+      if (input.organization_id) {
+        await ensureOrganizationAccess(ctx, input.organization_id);
+      }
+
+      const { data: pkg, error: pkgError } = await supabaseAdmin
+        .schema("core")
+        .from("background_check_packages")
+        .select("id, slug, check_type_ids, metadata")
+        .eq("id", input.package_id)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (pkgError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to load background check package: ${pkgError.message}`,
+        });
+      }
+
+      if (!pkg) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Background check package not found",
+        });
+      }
+
+      const checkTypeIds = Array.isArray(pkg.check_type_ids)
+        ? pkg.check_type_ids
+        : [];
+
+      if (checkTypeIds.length === 0) {
+        throw new TRPCError({
+          code: "FAILED_PRECONDITION",
+          message: "The selected package does not include any components",
+        });
+      }
+
+      const { data: tierRow, error: tierError } = await supabaseAdmin
+        .schema("core")
+        .from("service_pricing")
+        .select("id, tier, name, price_cents")
+        .eq("service_type", "background_check")
+        .eq("tier", input.tier)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (tierError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to load pricing tier: ${tierError.message}`,
+        });
+      }
+
+      if (!tierRow) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `Pricing tier "${input.tier}" not found`,
+        });
+      }
+
+      let addOnsTotal = 0;
+      const activeAddOnIds: string[] = [];
+
+      if (input.add_on_ids?.length) {
+        const { data: addOns, error: addOnsError } = await supabaseAdmin
+          .schema("core")
+          .from("background_check_addons")
+          .select("id, price_cents")
+          .in("id", input.add_on_ids)
+          .eq("is_active", true);
+
+        if (addOnsError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to load add-ons: ${addOnsError.message}`,
+          });
+        }
+
+        for (const addOn of addOns ?? []) {
+          activeAddOnIds.push(addOn.id);
+          addOnsTotal += addOn.price_cents ?? 0;
+        }
+      }
+
+      const totalPriceCents = tierRow.price_cents + addOnsTotal;
+      const now = new Date().toISOString();
+      const statusHistory = [
+        {
+          status: "pending",
+          occurred_at: now,
+          actor: input.organization_id ? "organization" : "worker",
+        },
+      ];
+
+      const { data: insertedRecord, error: insertError } = await supabaseAdmin
+        .schema("core")
+        .from("background_checks")
+        .insert({
+          user_id: workerUserId,
+          initiated_by_user_id: user?.id ?? null,
+          initiated_by_org_id: input.organization_id ?? null,
+          organization_id: input.organization_id ?? null,
+          package_id: pkg.id,
+          check_type_ids: checkTypeIds,
+          custom_configuration: input.custom_configuration ?? {},
+          status: "pending",
+          status_history: statusHistory,
+          paid_by: input.paid_by,
+          tier: input.tier,
+          add_on_ids: activeAddOnIds,
+          base_price_cents: tierRow.price_cents,
+          add_ons_price_cents: addOnsTotal,
+          total_price_cents: totalPriceCents,
+          metadata: input.metadata ?? {},
+          invited_at: now,
+        })
+        .select("id, total_price_cents")
+        .maybeSingle();
+
+      if (insertError || !insertedRecord) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: insertError
+            ? `Unable to create background check: ${insertError.message}`
+            : "Unable to create background check record",
+        });
+      }
+
+      const stripe = await loadStripeClient(ctx);
+      const intent = await stripe.paymentIntents.create({
+        amount: totalPriceCents,
+        currency: "usd",
+        metadata: {
+          background_check_id: insertedRecord.id,
+          tier: input.tier,
+          package_id: input.package_id,
+          stage: "background_check",
+        },
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+
+      const { error: updateError } = await supabaseAdmin
+        .schema("core")
+        .from("background_checks")
+        .update({
+          payment_intent_id: intent.id,
+        })
+        .eq("id", insertedRecord.id);
+
+      if (updateError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to link payment intent: ${updateError.message}`,
+        });
+      }
+
+      await recordBackgroundCheckTransaction(ctx, {
+        organizationId: input.paid_by === "organization"
+          ? input.organization_id ?? null
+          : null,
+        userId: user?.id ?? null,
+        backgroundCheckId: insertedRecord.id,
+        amountCents: totalPriceCents,
+        transactionType: "background_check",
+        paymentIntentId: intent.id,
+        metadata: {
+          tier: input.tier,
+          add_on_ids: activeAddOnIds,
+        },
+      });
+
+      return {
+        backgroundCheckId: insertedRecord.id,
+        paymentIntentId: intent.id,
+        clientSecret: intent.client_secret,
+        amountCents: totalPriceCents,
+      };
+    }),
+
+  confirmCheckPayment: protectedProcedure
+    .input(confirmBackgroundCheckPaymentSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabaseAdmin, user } = ctx;
+
+      const { data: checkRecord, error: checkError } = await supabaseAdmin
+        .schema("core")
+        .from("background_checks")
+        .select(
+          "id, user_id, initiated_by_user_id, organization_id, payment_intent_id",
+        )
+        .eq("id", input.background_check_id)
+        .maybeSingle();
+
+      if (checkError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to load background check: ${checkError.message}`,
+        });
+      }
+
+      if (!checkRecord) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Background check not found",
+        });
+      }
+
+      let hasAccess = false;
+
+      if (
+        (checkRecord.user_id && checkRecord.user_id === user?.id) ||
+        (checkRecord.initiated_by_user_id && checkRecord.initiated_by_user_id === user?.id)
+      ) {
+        hasAccess = true;
+      } else if (checkRecord.organization_id) {
+        try {
+          await ensureOrganizationAccess(ctx, checkRecord.organization_id);
+          hasAccess = true;
+        } catch {
+          hasAccess = false;
+        }
+      }
+
+      if (!hasAccess) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You do not have permission to confirm this payment",
+        });
+      }
+
+      if (!checkRecord.payment_intent_id ||
+        checkRecord.payment_intent_id !== input.payment_intent_id) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Payment intent does not match the background check record",
+        });
+      }
+
+      const stripe = await loadStripeClient(ctx);
+      const intent = await stripe.paymentIntents.retrieve(input.payment_intent_id);
+
+      if (intent.status !== "succeeded") {
+        throw new TRPCError({
+          code: "FAILED_PRECONDITION",
+          message: "Payment has not succeeded yet.",
+        });
+      }
+
+      const paidAt = new Date(intent.created * 1000).toISOString();
+
+      const { error: updateError } = await supabaseAdmin
+        .schema("core")
+        .from("background_checks")
+        .update({
+          paid_at: paidAt,
+        })
+        .eq("id", checkRecord.id);
+
+      if (updateError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to update background check record: ${updateError.message}`,
+        });
+      }
+
+      await supabaseAdmin
+        .schema("core")
+        .from("payment_transactions")
+        .update({
+          status: "succeeded",
+          succeeded_at: paidAt,
+        })
+        .eq("stripe_payment_intent_id", input.payment_intent_id);
+
+      const finalRecord = await submitBackgroundCheckToNationSearch(
+        ctx,
+        checkRecord.id,
+      );
+
+      return finalRecord;
+    }),
+
+  purchaseSharedAccess: protectedProcedure
+    .input(purchaseSharedAccessInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabaseAdmin, user } = ctx;
+      await ensureOrganizationAccess(ctx, input.organization_id);
+
+      const { data: checkRecord, error: checkError } = await supabaseAdmin
+        .schema("core")
+        .from("background_checks")
+        .select("id, total_price_cents, is_public, shared_with_org_ids")
+        .eq("id", input.background_check_id)
+        .maybeSingle();
+
+      if (checkError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to load background check: ${checkError.message}`,
+        });
+      }
+
+      if (!checkRecord) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Background check not found",
+        });
+      }
+
+      const allowedOrganizations = Array.isArray(checkRecord.shared_with_org_ids)
+        ? checkRecord.shared_with_org_ids
+        : [];
+
+      const hasAccess = checkRecord.is_public ||
+        allowedOrganizations.includes(input.organization_id);
+
+      if (!hasAccess) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "This background check is not shared with your organization",
+        });
+      }
+
+      const discountedPrice = Math.max(
+        1,
+        Math.round(
+          checkRecord.total_price_cents *
+            (1 - SHARED_BACKGROUND_CHECK_DISCOUNT),
+        ),
+      );
+
+      const stripe = await loadStripeClient(ctx);
+      const intent = await stripe.paymentIntents.create({
+        amount: discountedPrice,
+        currency: "usd",
+        metadata: {
+          background_check_id: checkRecord.id,
+          organization_id: input.organization_id,
+          stage: "background_check_shared",
+        },
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+
+      await recordBackgroundCheckTransaction(ctx, {
+        organizationId: input.organization_id,
+        userId: user?.id ?? null,
+        backgroundCheckId: checkRecord.id,
+        amountCents: discountedPrice,
+        transactionType: "background_check_shared",
+        paymentIntentId: intent.id,
+      });
+
+      return {
+        paymentIntentId: intent.id,
+        clientSecret: intent.client_secret,
+        amountCents: discountedPrice,
+      };
+    }),
+
+  confirmSharedAccessPayment: protectedProcedure
+    .input(confirmSharedAccessPaymentInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabaseAdmin, user } = ctx;
+      await ensureOrganizationAccess(ctx, input.organization_id);
+
+      const stripe = await loadStripeClient(ctx);
+      const intent = await stripe.paymentIntents.retrieve(input.payment_intent_id);
+
+      if (intent.status !== "succeeded") {
+        throw new TRPCError({
+          code: "FAILED_PRECONDITION",
+          message: "Payment has not succeeded yet.",
+        });
+      }
+
+      const paidAt = new Date(intent.created * 1000).toISOString();
+
+      const { data: existingAccess } = await supabaseAdmin
+        .schema("core")
+        .from("background_check_access")
+        .select("id")
+        .eq("background_check_id", input.background_check_id)
+        .eq("organization_id", input.organization_id)
+        .maybeSingle();
+
+      if (existingAccess) {
+        return { ok: true };
+      }
+
+      const { error: insertError } = await supabaseAdmin
+        .schema("core")
+        .from("background_check_access")
+        .insert({
+          background_check_id: input.background_check_id,
+          organization_id: input.organization_id,
+          accessed_by_user_id: user?.id ?? null,
+          payment_intent_id: input.payment_intent_id,
+          price_cents: intent.amount ?? 0,
+          paid_at: paidAt,
+        });
+
+      if (insertError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to grant shared access: ${insertError.message}`,
+        });
+      }
+
+      await supabaseAdmin
+        .schema("core")
+        .from("payment_transactions")
+        .update({
+          status: "succeeded",
+          succeeded_at: paidAt,
+        })
+        .eq("stripe_payment_intent_id", input.payment_intent_id);
+
+      return { ok: true };
+    }),
+
   /**
    * List active NationSearch packages with resolved component metadata.
    */
