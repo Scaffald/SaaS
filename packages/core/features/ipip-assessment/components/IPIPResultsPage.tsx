@@ -37,7 +37,7 @@ export function IPIPResultsPage() {
 
   if (results.isLoading) {
     return (
-      <YStack gap="$4" p="$8" items="center">
+      <YStack gap="$4" p="$8" items="center" aria-live="polite">
         <Text fontSize="$5" color="$color11">
           Loading your results...
         </Text>
@@ -55,7 +55,7 @@ export function IPIPResultsPage() {
   // Handle critical errors (network, API failures)
   if (results.error && !results.hasPartialResults) {
     return (
-      <YStack gap="$4" p="$8" items="center">
+      <YStack gap="$4" p="$8" items="center" aria-live="assertive">
         <AlertCircle size="$3" color="$red10" />
         <Text fontSize="$5" color="$red10" fontWeight="600">
           Error Loading Results

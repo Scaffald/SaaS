@@ -1,4 +1,5 @@
 import { Text, XStack, YStack } from 'tamagui'
+import { VisuallyHidden } from '@tamagui/visually-hidden'
 import { RadarChart, BarChart } from '@app/ui'
 import type { IPIPDomain, IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
 import type { NormalizedScores } from '../utils/scoreNormalizer'
@@ -57,11 +58,27 @@ export function ChartView({
     return {
       value,
       label: domainName.substring(0, 3), // Short labels: "Ope", "Con", etc.
+      result: normalized?.result ?? domainScore?.result ?? 'neutral',
+      domainName,
     }
   })
 
+  const radarSummaryText = radarData
+    .map(
+      (data) =>
+        `${data.domainName}: ${data.value}% (${data.result === 'neutral' ? 'balanced' : data.result}).`,
+    )
+    .join(' ')
+
   return (
     <YStack gap="$6" width="100%">
+      {/* Accessible summary for assistive technologies */}
+      <VisuallyHidden>
+        <Text>
+          {`Radar chart summary. ${radarSummaryText || 'No radar data available. Please continue the assessment.'}`}
+        </Text>
+      </VisuallyHidden>
+
       {/* Archetype Badge */}
       {isComplete && archetype && (
         <YStack
@@ -164,6 +181,7 @@ export function ChartView({
                 borderWidth={1}
                 borderColor="$gray7"
                 opacity={0.6}
+                aria-live="polite"
               >
                 <Text fontSize="$4" fontWeight="600" color="$gray10">
                   {domainName} Facets
@@ -259,7 +277,15 @@ export function ChartView({
 
       {/* Partial Results Message */}
       {!isComplete && completedDomains > 0 && (
-        <YStack gap="$2" p="$4" bg="$yellow2" rounded="$4" borderWidth={1} borderColor="$yellow7">
+        <YStack
+          gap="$2"
+          p="$4"
+          bg="$yellow2"
+          rounded="$4"
+          borderWidth={1}
+          borderColor="$yellow7"
+          aria-live="polite"
+        >
           <Text fontSize="$4" fontWeight="600" color="$yellow11">
             Complete Your Assessment
           </Text>

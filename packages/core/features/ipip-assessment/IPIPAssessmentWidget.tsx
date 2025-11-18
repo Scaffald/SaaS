@@ -161,7 +161,14 @@ export function IPIPAssessmentWidget() {
                 {progress}/120 ({progressPercentage}%)
               </Text>
             </XStack>
-            <Progress value={progressPercentage} max={100}>
+            <Progress
+              value={progressPercentage}
+              max={100}
+              aria-label="Overall personality assessment progress"
+              aria-valuenow={progressPercentage}
+              aria-valuemin={0}
+              aria-valuemax={100}
+            >
               <Progress.Indicator animation="bouncy" />
             </Progress>
             {completedDomains > 0 && (

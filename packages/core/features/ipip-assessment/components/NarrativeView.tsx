@@ -27,7 +27,7 @@ export function NarrativeView({
   // Handle missing data gracefully - show partial results if available
   if (!scores && completedDomains === 0) {
     return (
-      <YStack gap="$4" p="$4" items="center">
+      <YStack gap="$4" p="$4" items="center" aria-live="polite">
         <Text fontSize="$4" color="$color11">
           No results available yet. Complete at least one domain to see results.
         </Text>
@@ -54,7 +54,15 @@ export function NarrativeView({
 
       {/* Show message if summary unavailable but we have partial data */}
       {!overallSummary && completedDomains > 0 && (
-        <YStack gap="$2" p="$4" bg="$blue2" rounded="$4" borderWidth={1} borderColor="$blue7">
+        <YStack
+          gap="$2"
+          p="$4"
+          bg="$blue2"
+          rounded="$4"
+          borderWidth={1}
+          borderColor="$blue7"
+          aria-live="polite"
+        >
           <Text fontSize="$4" fontWeight="600" color="$blue11">
             Partial Results
           </Text>

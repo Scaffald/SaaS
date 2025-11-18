@@ -122,7 +122,15 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
 
   if (!isComplete) {
     return (
-      <YStack gap="$3" p="$4" bg="$color2" rounded="$4" borderWidth={1} borderColor="$borderColor">
+      <YStack
+        gap="$3"
+        p="$4"
+        bg="$color2"
+        rounded="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+        aria-live="polite"
+      >
         <XStack items="center" gap="$2">
           <Lock size="$1" color="$color10" />
           <Text fontSize="$4" fontWeight="600" color="$color11">
@@ -166,7 +174,12 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
               Show your personality archetype classification
             </Text>
           </YStack>
-          <Switch checked={includeArchetype} onCheckedChange={setIncludeArchetype} size="$3" />
+          <Switch
+            checked={includeArchetype}
+            onCheckedChange={setIncludeArchetype}
+            size="$3"
+            aria-label="Toggle archetype visibility in shared results"
+          />
         </XStack>
 
         <XStack justify="space-between" items="center" p="$3" bg="$color1" rounded="$3">
@@ -178,7 +191,12 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
               Show Big Five domain scores and percentages
             </Text>
           </YStack>
-          <Switch checked={includeScores} onCheckedChange={setIncludeScores} size="$3" />
+          <Switch
+            checked={includeScores}
+            onCheckedChange={setIncludeScores}
+            size="$3"
+            aria-label="Toggle domain scores visibility in shared results"
+          />
         </XStack>
       </YStack>
 
@@ -241,7 +259,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
           </Button>
         </YStack>
       ) : (
-        <YStack gap="$3">
+        <YStack gap="$3" aria-live="polite">
           <Text fontSize="$4" fontWeight="600" color="$color12">
             Your Share Link
           </Text>
@@ -287,7 +305,15 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
       {cooldownInfo && (
         <>
           <Separator />
-          <YStack gap="$2" p="$3" bg="$yellow2" rounded="$3" borderWidth={1} borderColor="$yellow7">
+          <YStack
+            gap="$2"
+            p="$3"
+            bg="$yellow2"
+            rounded="$3"
+            borderWidth={1}
+            borderColor="$yellow7"
+            aria-live="polite"
+          >
             <XStack items="center" gap="$2">
               <Calendar size="$1" color="$yellow11" />
               <Text fontSize="$4" fontWeight="600" color="$yellow11">
