@@ -8,6 +8,10 @@ import {
 } from "../shared/setup.ts";
 import { requireAuthSetup } from "../shared/test-context.ts";
 
+if (!Deno.env.get("STRIPE_MOCK_MODE")) {
+  Deno.env.set("STRIPE_MOCK_MODE", "1");
+}
+
 async function withSeededBackgroundCheck(
   userId: string,
   options: { status?: string } = {},
@@ -193,6 +197,185 @@ Deno.test({
       assertExists(error, "Expected BAD_REQUEST for oversized file");
       assertEquals(error?.data?.code, "BAD_REQUEST");
     });
+  },
+});
+
+Deno.test({
+  name: "backgroundChecks.requestCheck enforces consent for worker self-service",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    await requireAuthSetup();
+    const tokens = await loadCachedTokens();
+    assertExists(tokens, "Auth tokens should be cached");
+
+    const seedClient = createSeedClient();
+    const slugSuffix = crypto.randomUUID().slice(0, 8);
+    const typeId = crypto.randomUUID();
+    const packageId = crypto.randomUUID();
+    const pricingId = crypto.randomUUID();
+    const tierKey = `tier-${slugSuffix}`;
+    let createdCheckId: string | null = null;
+    let createdPaymentIntentId: string | null = null;
+
+    try {
+      await seedClient
+        .schema("core")
+        .from("background_check_types")
+        .insert({
+          id: typeId,
+          slug: `test-type-${slugSuffix}`,
+          display_name: `Test Type ${slugSuffix}`,
+          platform_cost_cents: 1200,
+          retail_cost_cents: 2200,
+          required_documents: [],
+          metadata: {},
+          provider_configuration: {},
+        });
+
+      await seedClient
+        .schema("core")
+        .from("background_check_packages")
+        .insert({
+          id: packageId,
+          slug: `test-package-${slugSuffix}`,
+          display_name: `Test Package ${slugSuffix}`,
+          check_type_ids: [typeId],
+          platform_cost_cents: 2200,
+          retail_cost_cents: 3200,
+          component_overrides: [],
+          metadata: {},
+          is_active: true,
+        });
+
+      await seedClient
+        .schema("core")
+        .from("service_pricing")
+        .insert({
+          id: pricingId,
+          service_type: "background_check",
+          tier: tierKey,
+          name: `Test Tier ${slugSuffix}`,
+          price_cents: 3200,
+          is_active: true,
+          display_order: 0,
+          metadata: {},
+        });
+
+      const missingConsentResponse = await callTRPCEndpoint(
+        "backgroundChecks.requestCheck",
+        {
+          package_id: packageId,
+          tier: tierKey,
+          paid_by: "worker",
+          metadata: {},
+        },
+        {
+          type: "mutation",
+          authToken: tokens.regular.token,
+        },
+      );
+
+      const missingConsentError = missingConsentResponse[0]?.error;
+      assertExists(missingConsentError, "Expected consent error");
+      assertEquals(missingConsentError.data?.code, "BAD_REQUEST");
+
+      const consentTimestamp = new Date().toISOString();
+      const response = await callTRPCEndpoint(
+        "backgroundChecks.requestCheck",
+        {
+          package_id: packageId,
+          tier: tierKey,
+          paid_by: "worker",
+          consent: {
+            consent_signature: "Test Worker",
+            consent_given_at: consentTimestamp,
+            consent_ip_address: "127.0.0.1",
+            consent_user_agent: "deno-test",
+            disclosure_provided_at: consentTimestamp,
+            summary_of_rights_provided_at: consentTimestamp,
+          },
+          metadata: {
+            documents: [],
+          },
+        },
+        {
+          type: "mutation",
+          authToken: tokens.regular.token,
+        },
+      );
+
+      const session = response[0]?.result?.data as
+        | {
+          backgroundCheckId: string;
+          paymentIntentId: string;
+          clientSecret: string;
+          amountCents: number;
+        }
+        | undefined;
+      assertExists(session, "Expected payment session payload");
+
+      createdCheckId = session.backgroundCheckId;
+      createdPaymentIntentId = session.paymentIntentId;
+
+      const { data: consentRows } = await seedClient
+        .schema("core")
+        .from("background_check_consent")
+        .select("consent_text, metadata")
+        .eq("background_check_id", session.backgroundCheckId);
+
+      assertExists(consentRows, "Consent rows should be returned");
+      assertEquals(consentRows.length, 1, "Only one consent record expected");
+      assertEquals(
+        consentRows[0]?.consent_text,
+        "By proceeding you acknowledge that Scaffolded Trades will obtain a consumer report (background check) for employment purposes.\n\nYou have the right to request information about the nature and scope of any consumer report and dispute inaccurate information.",
+      );
+      const consentMetadata = consentRows[0]?.metadata as
+        | Record<string, unknown>
+        | undefined;
+      assertExists(consentMetadata, "Consent metadata should be stored");
+      assertEquals(consentMetadata?.consent_signature, "Test Worker");
+      assertEquals(consentMetadata?.consent_source, "worker_self_service");
+    } finally {
+      if (createdPaymentIntentId) {
+        await seedClient
+          .schema("core")
+          .from("payment_transactions")
+          .delete()
+          .eq("stripe_payment_intent_id", createdPaymentIntentId);
+      }
+
+      if (createdCheckId) {
+        await seedClient
+          .schema("core")
+          .from("background_check_consent")
+          .delete()
+          .eq("background_check_id", createdCheckId);
+        await seedClient
+          .schema("core")
+          .from("background_checks")
+          .delete()
+          .eq("id", createdCheckId);
+      }
+
+      await seedClient
+        .schema("core")
+        .from("service_pricing")
+        .delete()
+        .eq("id", pricingId);
+
+      await seedClient
+        .schema("core")
+        .from("background_check_packages")
+        .delete()
+        .eq("id", packageId);
+
+      await seedClient
+        .schema("core")
+        .from("background_check_types")
+        .delete()
+        .eq("id", typeId);
+    }
   },
 });
 

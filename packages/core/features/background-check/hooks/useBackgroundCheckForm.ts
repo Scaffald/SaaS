@@ -64,6 +64,30 @@ const DEFAULT_CONSENT: ConsentDetails = {
   signature: '',
 }
 
+function serializeConsent(
+  consent: ConsentDetails,
+): RouterInputs['backgroundChecks']['requestCheck']['consent'] | undefined {
+  if (!consent.acceptsDisclosure) {
+    return undefined
+  }
+
+  const signature = consent.signature?.trim()
+  if (!signature) {
+    return undefined
+  }
+
+  const timestamp = consent.signedAt ?? new Date().toISOString()
+
+  return {
+    consent_signature: signature,
+    consent_given_at: timestamp,
+    consent_ip_address: consent.ipAddress ?? undefined,
+    consent_user_agent: consent.userAgent ?? undefined,
+    disclosure_provided_at: consent.signedAt ?? timestamp,
+    summary_of_rights_provided_at: consent.signedAt ?? timestamp,
+  }
+}
+
 type PaymentSession = {
   backgroundCheckId: string
   paymentIntentId: string
@@ -232,8 +256,12 @@ export function useBackgroundCheckForm() {
       throw new Error('Self-service background checks are currently billed to the worker.')
     }
 
+    const consentPayload = serializeConsent(state.consent)
+    if (!consentPayload) {
+      throw new Error('Consent is required before continuing to payment.')
+    }
+
     const metadata = {
-      consent: state.consent,
       documents: state.documents.map((doc) => ({
         storagePath: doc.storagePath,
         documentType: doc.documentType,
@@ -248,6 +276,7 @@ export function useBackgroundCheckForm() {
         (selectedPackage.display_name as string | undefined) ??
         'custom',
       paid_by: 'worker',
+      consent: consentPayload,
       metadata,
     })
 

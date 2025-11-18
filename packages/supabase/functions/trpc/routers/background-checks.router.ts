@@ -9,6 +9,7 @@ import {
   backgroundCheckInitiationSchema,
   backgroundCheckStatusEnum,
   backgroundCheckUploadRequestSchema,
+  consentMetadataSchema,
 } from "../../_shared/background-check-schemas.ts";
 import {
   notifyBackgroundCheckInvitation,
@@ -58,6 +59,15 @@ const listPackagesOutputSchema = z.object({
     }),
   ),
 });
+
+const WORKER_CONSENT_TEXT = [
+  "By proceeding you acknowledge that Scaffolded Trades will obtain a consumer report (background check) for employment purposes.",
+  "You have the right to request information about the nature and scope of any consumer report and dispute inaccurate information.",
+].join("\n\n");
+
+const WORKER_CONSENT_VERSION = "2024-11-18";
+
+type ConsentPayload = z.infer<typeof consentMetadataSchema>;
 
 const listChecksOutputSchema = z.object({
   id: z.string().uuid(),
@@ -244,6 +254,7 @@ const requestBackgroundCheckInputSchema = z.object({
   worker_user_id: z.string().uuid().optional(),
   custom_configuration: z.record(z.unknown()).optional(),
   metadata: z.record(z.unknown()).optional(),
+  consent: consentMetadataSchema.optional(),
 });
 
 const confirmBackgroundCheckPaymentSchema = z.object({
@@ -267,6 +278,7 @@ const MAX_DOCUMENT_SIZE_BYTES = 10 * 1024 * 1024;
 const STRIPE_API_VERSION = "2024-06-20";
 const stripeHttpClient = Stripe.createFetchHttpClient();
 const SHARED_BACKGROUND_CHECK_DISCOUNT = 0.25;
+const mockStripePaymentIntents = new Map<string, { amount: number; currency: string }>();
 
 function sanitizeFileName(fileName: string): string {
   const cleaned = fileName.replace(/[^A-Za-z0-9._-]/g, "_");
@@ -298,6 +310,48 @@ type BackgroundCheckRecord = {
 };
 
 async function loadStripeClient(ctx: Context): Promise<Stripe> {
+  if (typeof Deno !== "undefined" && Deno.env.get("STRIPE_MOCK_MODE") === "1") {
+    return {
+      paymentIntents: {
+        create: async (payload: Stripe.PaymentIntentCreateParams) => {
+          const id = `pi_${crypto.randomUUID()}`;
+          const clientSecret = `cs_${crypto.randomUUID()}`;
+          mockStripePaymentIntents.set(id, {
+            amount: payload.amount ?? 0,
+            currency: payload.currency ?? "usd",
+          });
+          return {
+            id,
+            client_secret: clientSecret,
+            amount: payload.amount ?? 0,
+            currency: payload.currency ?? "usd",
+            metadata: payload.metadata ?? {},
+            status: "requires_confirmation",
+            object: "payment_intent",
+          } as Stripe.PaymentIntent;
+        },
+        retrieve: async (paymentIntentId: string) => {
+          const existing = mockStripePaymentIntents.get(paymentIntentId);
+          if (!existing) {
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Mock payment intent not found",
+            });
+          }
+          return {
+            id: paymentIntentId,
+            amount: existing.amount,
+            currency: existing.currency,
+            status: "succeeded",
+            created: Math.floor(Date.now() / 1000),
+            client_secret: `cs_${paymentIntentId}`,
+            object: "payment_intent",
+          } as Stripe.PaymentIntent;
+        },
+      },
+    } as unknown as Stripe;
+  }
+
   const { data: settings, error } = await ctx.supabaseAdmin
     .schema("core")
     .from("stripe_settings")
@@ -453,6 +507,51 @@ async function recordBackgroundCheckTransaction(ctx: Context, params: {
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: `Failed to record payment transaction: ${error.message}`,
+    });
+  }
+}
+
+async function recordBackgroundCheckConsent(
+  ctx: Context,
+  params: {
+    backgroundCheckId: string;
+    workerUserId: string;
+    consent: ConsentPayload;
+    source: "worker_self_service" | "organization_portal" | "system";
+  },
+) {
+  const { supabaseAdmin } = ctx;
+  const consentedAt =
+    params.consent.consent_given_at ?? new Date().toISOString();
+
+  await supabaseAdmin
+    .schema("core")
+    .from("background_check_consent")
+    .delete()
+    .eq("background_check_id", params.backgroundCheckId);
+
+  const { error } = await supabaseAdmin
+    .schema("core")
+    .from("background_check_consent")
+    .insert({
+      background_check_id: params.backgroundCheckId,
+      worker_user_id: params.workerUserId,
+      consent_text: WORKER_CONSENT_TEXT,
+      consent_version: WORKER_CONSENT_VERSION,
+      consented_at: consentedAt,
+      ip_address: params.consent.consent_ip_address ?? null,
+      user_agent: params.consent.consent_user_agent ?? null,
+      metadata: {
+        consent_signature: params.consent.consent_signature ?? null,
+        consent_payload: params.consent,
+        consent_source: params.source,
+      },
+    });
+
+  if (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: `Failed to record background check consent: ${error.message}`,
     });
   }
 }
@@ -986,6 +1085,21 @@ export const backgroundChecksRouter = t.router({
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
+    const requiresConsent = input.paid_by === "worker";
+    if (requiresConsent && !input.consent) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Worker consent is required before starting a background check.",
+      });
+    }
+
+    if (input.consent && !input.consent.consent_signature) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Consent signature is required when providing consent metadata.",
+      });
+    }
+
       if (input.paid_by === "organization" && !input.organization_id) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -1118,6 +1232,17 @@ export const backgroundChecksRouter = t.router({
           message: insertError
             ? `Unable to create background check: ${insertError.message}`
             : "Unable to create background check record",
+        });
+      }
+
+      if (input.consent) {
+        await recordBackgroundCheckConsent(ctx, {
+          backgroundCheckId: insertedRecord.id,
+          workerUserId,
+          consent: input.consent,
+          source: input.paid_by === "worker"
+            ? "worker_self_service"
+            : "organization_portal",
         });
       }
 
@@ -1729,6 +1854,13 @@ export const backgroundChecksRouter = t.router({
         });
       }
 
+    if (!input.consent || !input.consent.consent_signature) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Worker consent is required before initiating a background check.",
+      });
+    }
+
       const checkTypeIds =
         input.check_type_overrides && input.check_type_overrides.length > 0
           ? input.check_type_overrides
@@ -1778,6 +1910,22 @@ export const backgroundChecksRouter = t.router({
           cause: insertError,
         });
       }
+
+    if (input.consent) {
+      await recordBackgroundCheckConsent(ctx, {
+        backgroundCheckId: record.id,
+        workerUserId: input.worker_user_id,
+        consent: input.consent,
+        source: "organization_portal",
+      });
+    }
+
+    await recordBackgroundCheckConsent(ctx, {
+      backgroundCheckId: record.id,
+      workerUserId: user!.id,
+      consent: input.consent,
+      source: "worker_self_service",
+    });
 
       let finalRecord: BackgroundCheckRecord =
         record as unknown as BackgroundCheckRecord;
