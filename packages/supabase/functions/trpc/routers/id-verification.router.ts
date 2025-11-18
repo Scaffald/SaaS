@@ -26,6 +26,14 @@ const getCurrentVerificationInput = z.object({
   workerUserId: z.string().uuid().optional(),
 });
 
+const listVerificationsInput = z.object({
+  limit: z.number().int().min(1).max(200).default(50),
+  offset: z.number().int().min(0).default(0),
+  search: z.string().trim().max(120).optional(),
+  status: z.enum(["all", "active", "expired", "revoked"]).default("all"),
+  organizationId: z.string().uuid().optional(),
+});
+
 const revokeVerificationInput = z.object({
   idVerificationId: z.string().uuid(),
   reason: z.string().trim().min(5).max(500),
@@ -477,6 +485,202 @@ export const idVerificationRouter = t.router({
         badgeStatus: data.badge_status,
         badgeExpiresAt: data.badge_expires_at,
         verifiedAt: data.verified_at,
+      };
+    }),
+
+  listVerifications: officeProcedure
+    .input(listVerificationsInput)
+    .query(async ({ ctx, input }) => {
+      type RowRecord = {
+        id: string;
+        worker_user_id: string | null;
+        initiated_by_user_id: string | null;
+        initiated_by_org_id: string | null;
+        payment_intent_id: string | null;
+        price_cents: number | null;
+        paid_at: string | null;
+        badge_status: string | null;
+        badge_expires_at: string | null;
+        verification_level: string | null;
+        verified_at: string | null;
+        persona_status: string | null;
+        created_at: string | null;
+        worker: {
+          id?: string | null;
+          display_name?: string | null;
+          email?: string | null;
+          avatar_path?: string | null;
+        } | null;
+        initiator: {
+          id?: string | null;
+          display_name?: string | null;
+          email?: string | null;
+        } | null;
+        organization: {
+          id?: string | null;
+          name?: string | null;
+        } | null;
+      };
+
+      type DerivedStatus = "active" | "expired" | "revoked";
+      const queryLimit = 500;
+
+      let query = ctx.supabase
+        .schema("core")
+        .from("id_verifications")
+        .select(
+          `
+            id,
+            worker_user_id,
+            initiated_by_user_id,
+            initiated_by_org_id,
+            payment_intent_id,
+            price_cents,
+            paid_at,
+            badge_status,
+            badge_expires_at,
+            verification_level,
+            verified_at,
+            persona_status,
+            created_at,
+            worker:users!id_verifications_worker_user_id_fkey(id, display_name, email, avatar_path),
+            initiator:users!id_verifications_initiated_by_user_id_fkey(id, display_name, email),
+            organization:organizations!id_verifications_initiated_by_org_id_fkey(id, name)
+          `,
+        )
+        .order("created_at", { ascending: false })
+        .limit(queryLimit);
+
+      if (input.organizationId) {
+        query = query.eq("initiated_by_org_id", input.organizationId);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to load ID verifications: ${error.message}`,
+        });
+      }
+
+      const rows: RowRecord[] = (data ?? []) as RowRecord[];
+      const now = Date.now();
+
+      const deriveStatus = (row: RowRecord): DerivedStatus => {
+        const baseStatus = row.badge_status === "revoked"
+          ? "revoked"
+          : row.badge_status === "expired"
+            ? "expired"
+            : "active";
+
+        if (
+          baseStatus === "active" &&
+          row.badge_expires_at &&
+          !Number.isNaN(Date.parse(row.badge_expires_at)) &&
+          Date.parse(row.badge_expires_at) < now
+        ) {
+          return "expired";
+        }
+
+        return baseStatus;
+      };
+
+      const deriveWorkerName = (row: RowRecord): string => {
+        const displayName = row.worker?.display_name?.trim();
+        if (displayName) return displayName;
+        const email = row.worker?.email?.trim();
+        if (email) return email;
+        if (row.worker_user_id) {
+          return `User ${row.worker_user_id.slice(0, 8)}`;
+        }
+        return "Unknown worker";
+      };
+
+      const normalized = rows.map((row) => {
+        const badgeStatus = deriveStatus(row);
+        const source: "worker" | "organization" | "platform" = row.initiated_by_org_id
+          ? "organization"
+          : row.initiated_by_user_id &&
+              row.worker_user_id &&
+              row.initiated_by_user_id !== row.worker_user_id
+            ? "platform"
+            : "worker";
+
+        return {
+          id: row.id,
+          workerUserId: row.worker_user_id,
+          workerName: deriveWorkerName(row),
+          workerEmail: row.worker?.email ?? null,
+          workerAvatarUrl: row.worker?.avatar_path ?? null,
+          organizationId: row.organization?.id ?? row.initiated_by_org_id ?? null,
+          organizationName: row.organization?.name ?? null,
+          initiatedByUserId: row.initiated_by_user_id,
+          initiatedByOrgId: row.initiated_by_org_id,
+          paymentIntentId: row.payment_intent_id,
+          priceCents: row.price_cents ?? 0,
+          paidAt: row.paid_at,
+          badgeStatus,
+          rawBadgeStatus: row.badge_status,
+          badgeExpiresAt: row.badge_expires_at,
+          verificationLevel: row.verification_level,
+          personaStatus: row.persona_status,
+          verifiedAt: row.verified_at,
+          createdAt: row.created_at,
+          source,
+        };
+      });
+
+      const summary = normalized.reduce(
+        (acc, item) => {
+          acc.total += 1;
+          acc[item.badgeStatus] += 1;
+          return acc;
+        },
+        {
+          total: 0,
+          active: 0,
+          expired: 0,
+          revoked: 0,
+        } as Record<"total" | DerivedStatus, number>,
+      );
+
+      const statusFiltered = input.status === "all"
+        ? normalized
+        : normalized.filter((item) => item.badgeStatus === input.status);
+
+      const searchTerm = input.search?.trim().toLowerCase();
+      const filtered = searchTerm
+        ? statusFiltered.filter((item) => {
+          const haystack = [
+            item.workerName,
+            item.workerEmail ?? "",
+            item.organizationName ?? "",
+            item.badgeStatus,
+            item.personaStatus ?? "",
+            item.verificationLevel ?? "",
+          ]
+            .join(" ")
+            .toLowerCase();
+          return haystack.includes(searchTerm);
+        })
+        : statusFiltered;
+
+      const total = filtered.length;
+      const start = Math.min(input.offset, total);
+      const end = Math.min(start + input.limit, total);
+      const items = filtered.slice(start, end);
+
+      return {
+        items,
+        total,
+        hasMore: end < total,
+        summary: {
+          total: summary.total,
+          active: summary.active,
+          expired: summary.expired,
+          revoked: summary.revoked,
+        },
       };
     }),
 

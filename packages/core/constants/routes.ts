@@ -16,6 +16,7 @@ import {
   Building2,
   ClipboardCheck,
   FileText,
+  Fingerprint,
   GraduationCap,
   HardDrive,
   Palette,
@@ -383,6 +384,15 @@ const ROUTES_CONFIG = {
     menuOrder: 2,
     menuIcon: ShieldCheck,
   },
+  OFFICE_ATS_ID_VERIFICATIONS: {
+    path: "/office/ats/id-verifications",
+    title: "ID Verifications",
+    isProtected: true,
+    menuCategory: "recruitment",
+    menuOrder: 3,
+    menuIcon: Fingerprint,
+    menuParent: "OFFICE_ATS",
+  },
   OFFICE_ATS_CHECKS_ADMIN: {
     path: "/office/ats/admin",
     title: "Review Background Checks",
@@ -633,6 +643,7 @@ export const RouteBuilder = {
     buildRoute(ROUTES.OFFICE_CMS_PROJECTS_DETAIL, { id }),
   officeBackgroundChecksRequest: () => ROUTES.OFFICE_ATS_CHECKS_REQUEST.path,
   officeBackgroundChecksAdmin: () => ROUTES.OFFICE_ATS_CHECKS_ADMIN.path,
+  officeIdVerifications: () => ROUTES.OFFICE_ATS_ID_VERIFICATIONS.path,
   officeStorage: () => ROUTES.OFFICE_STORAGE.path,
   dashboardBackgroundCheck: () =>
     ROUTES.DASHBOARD_PROFILE_BACKGROUND_CHECK.path,
@@ -820,6 +831,7 @@ export const ROUTE_HIERARCHY: readonly RouteHierarchyNode[] = [
         key: "OFFICE_ATS",
         children: [
           { key: "OFFICE_ATS_CHECKS" },
+        { key: "OFFICE_ATS_ID_VERIFICATIONS" },
           { key: "OFFICE_ATS_CHECKS_REQUEST" },
           { key: "OFFICE_ATS_CHECKS_ADMIN" },
           { key: "OFFICE_ATS_DETAIL" },
@@ -889,6 +901,7 @@ export const OFFICE_ROUTES = {
   PROJECTS_EDIT: ROUTES.OFFICE_CMS_PROJECTS_EDIT,
   UNIVERSITIES: ROUTES.OFFICE_CMS_UNIVERSITIES,
   BACKGROUND_CHECKS: ROUTES.OFFICE_ATS_CHECKS,
+  ID_VERIFICATIONS: ROUTES.OFFICE_ATS_ID_VERIFICATIONS,
   BACKGROUND_CHECKS_ADMIN: ROUTES.OFFICE_ATS_CHECKS_ADMIN,
   NOTIFICATIONS: ROUTES.OFFICE_NOTIFICATIONS,
   SETTINGS: ROUTES.OFFICE_SETTINGS,
