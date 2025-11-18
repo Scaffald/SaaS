@@ -105,8 +105,13 @@ export function InquiryCreateForm({
   })
 
   // Use edit hook if in edit mode, otherwise use create hook
-  const { form, handleSubmit, handleSaveDraft, isSubmitting } =
-    mode === 'edit' && inquiryId ? editHook : createHook
+  const hookResult = mode === 'edit' && inquiryId ? editHook : createHook
+
+  // Extract form handlers - edit hook doesn't have handleSaveDraft
+  const { form, handleSubmit, isSubmitting } = hookResult
+  const handleSaveDraft = 'handleSaveDraft' in hookResult ? hookResult.handleSaveDraft : async () => {
+    // No-op for edit mode - save draft not applicable
+  }
 
   // Pre-populate form if initialData provided
   useEffect(() => {
