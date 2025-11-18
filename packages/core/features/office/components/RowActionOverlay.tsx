@@ -106,7 +106,6 @@ export function RowActionOverlay<TData>({
     <XStack
       ref={overlayRef}
       position="absolute"
-      zIndex={1000}
       bg="$color2"
       borderWidth={1}
       borderColor="$borderColor"
@@ -115,6 +114,7 @@ export function RowActionOverlay<TData>({
       gap="$2"
       boxShadow="0 4px 12px rgba(0, 0, 0, 0.15)"
       style={{
+        zIndex: 1000,
         left: `${position.x}px`,
         top: `${position.y}px`,
       }}
