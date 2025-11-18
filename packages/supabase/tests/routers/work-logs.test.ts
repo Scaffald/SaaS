@@ -1826,3 +1826,1620 @@ Deno.test({
     }
   },
 });
+
+Deno.test({
+  name: "Work logs router - verify transitions pending_verification to verified",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient();
+    const cachedTokens = await loadCachedTokens();
+
+    let authToken = cachedTokens?.regular?.token ?? null;
+    if (!authToken) {
+      authToken = await getAuthToken(
+        TEST_USERS.regular.email,
+        TEST_USERS.regular.password,
+      );
+    }
+
+    assertExists(authToken, "Authentication token required");
+
+    let userId = cachedTokens?.regular?.userId ?? null;
+    if (!userId) {
+      const { data: userResponse, error: userLookupError } = await admin.auth
+        .admin.getUserByEmail(TEST_USERS.regular.email);
+      if (userLookupError) {
+        throw userLookupError;
+      }
+      userId = userResponse?.user?.id ?? null;
+    }
+
+    assertExists(userId, "Unable to resolve test user id");
+
+    const suffix = crypto.randomUUID().slice(0, 8);
+    const organizationId = crypto.randomUUID();
+    const projectId = crypto.randomUUID();
+    const workLogId = crypto.randomUUID();
+    const roleAssignmentId = crypto.randomUUID();
+
+    try {
+      const { data: officeRole, error: officeRoleError } = await admin
+        .schema("core")
+        .from("roles")
+        .select("id")
+        .eq("name", "office")
+        .eq("scope", "platform")
+        .maybeSingle();
+
+      assertExists(officeRole, "Office role not found");
+      if (officeRoleError) {
+        throw officeRoleError;
+      }
+
+      await admin
+        .schema("core")
+        .from("users")
+        .upsert({
+          id: userId,
+          username: `test-user-${suffix}`,
+          slug: `test-user-${suffix}`,
+          display_name: "Test User",
+        });
+
+      await admin
+        .schema("core")
+        .from("organizations")
+        .insert({
+          id: organizationId,
+          owner_user_id: userId,
+          name: `Verify Org ${suffix}`,
+          slug: `verify-org-${suffix}`,
+          visibility: "public",
+        });
+
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .insert({
+          id: projectId,
+          organization_id: organizationId,
+          name: `Verify Project ${suffix}`,
+          project_number: `PRJ-${suffix}`,
+          status: "active",
+        });
+
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .insert({
+          id: workLogId,
+          user_id: userId,
+          project_id: projectId,
+          entry_type: "daily",
+          log_date: "2025-01-10",
+          time_entries: [{ start: "08:00", end: "12:00" }],
+          work_description: "Work to verify",
+          status: "pending_verification",
+          submitted_at: new Date().toISOString(),
+        });
+
+      await admin
+        .schema("core")
+        .from("role_assignments")
+        .upsert({
+          id: roleAssignmentId,
+          role_id: officeRole.id,
+          user_id: userId,
+        }, { onConflict: "role_id,user_id,scope_org_id,scope_team_id" });
+
+      const response = await callTRPCEndpoint(
+        "workLogs.verify",
+        { workLogId },
+        { authToken, type: "mutation" },
+      );
+
+      const payload = response[0]?.result?.data;
+      assertExists(payload, "Expected verify payload");
+      assertEquals(payload.status, "verified", "Should transition to verified");
+      assertExists(payload.verified_at, "Should have verified_at");
+      assertEquals(payload.verified_by_user_id, userId);
+    } finally {
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .delete()
+        .eq("id", workLogId);
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .delete()
+        .eq("id", projectId);
+      await admin
+        .schema("core")
+        .from("organizations")
+        .delete()
+        .eq("id", organizationId);
+      await admin
+        .schema("core")
+        .from("role_assignments")
+        .delete()
+        .eq("id", roleAssignmentId);
+    }
+  },
+});
+
+Deno.test({
+  name: "Work logs router - dispute creates dispute with conversation",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient();
+    const cachedTokens = await loadCachedTokens();
+
+    let authToken = cachedTokens?.regular?.token ?? null;
+    if (!authToken) {
+      authToken = await getAuthToken(
+        TEST_USERS.regular.email,
+        TEST_USERS.regular.password,
+      );
+    }
+
+    assertExists(authToken, "Authentication token required");
+
+    let userId = cachedTokens?.regular?.userId ?? null;
+    if (!userId) {
+      const { data: userResponse, error: userLookupError } = await admin.auth
+        .admin.getUserByEmail(TEST_USERS.regular.email);
+      if (userLookupError) {
+        throw userLookupError;
+      }
+      userId = userResponse?.user?.id ?? null;
+    }
+
+    assertExists(userId, "Unable to resolve test user id");
+
+    const suffix = crypto.randomUUID().slice(0, 8);
+    const organizationId = crypto.randomUUID();
+    const projectId = crypto.randomUUID();
+    const workLogId = crypto.randomUUID();
+    const roleAssignmentId = crypto.randomUUID();
+
+    try {
+      const { data: officeRole, error: officeRoleError } = await admin
+        .schema("core")
+        .from("roles")
+        .select("id")
+        .eq("name", "office")
+        .eq("scope", "platform")
+        .maybeSingle();
+
+      assertExists(officeRole, "Office role not found");
+      if (officeRoleError) {
+        throw officeRoleError;
+      }
+
+      await admin
+        .schema("core")
+        .from("users")
+        .upsert({
+          id: userId,
+          username: `test-user-${suffix}`,
+          slug: `test-user-${suffix}`,
+          display_name: "Test User",
+        });
+
+      await admin
+        .schema("core")
+        .from("organizations")
+        .insert({
+          id: organizationId,
+          owner_user_id: userId,
+          name: `Dispute Org ${suffix}`,
+          slug: `dispute-org-${suffix}`,
+          visibility: "public",
+        });
+
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .insert({
+          id: projectId,
+          organization_id: organizationId,
+          name: `Dispute Project ${suffix}`,
+          project_number: `PRJ-${suffix}`,
+          status: "active",
+        });
+
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .insert({
+          id: workLogId,
+          user_id: userId,
+          project_id: projectId,
+          entry_type: "daily",
+          log_date: "2025-01-10",
+          time_entries: [{ start: "08:00", end: "12:00" }],
+          work_description: "Work to dispute",
+          status: "pending_verification",
+          submitted_at: new Date().toISOString(),
+        });
+
+      await admin
+        .schema("core")
+        .from("role_assignments")
+        .upsert({
+          id: roleAssignmentId,
+          role_id: officeRole.id,
+          user_id: userId,
+        }, { onConflict: "role_id,user_id,scope_org_id,scope_team_id" });
+
+      const response = await callTRPCEndpoint(
+        "workLogs.dispute",
+        {
+          workLogId,
+          reason: "Hours seem incorrect",
+          message: "Please review the time entries",
+        },
+        { authToken, type: "mutation" },
+      );
+
+      const payload = response[0]?.result?.data;
+      assertExists(payload, "Expected dispute payload");
+      assertEquals(payload.status, "disputed", "Should transition to disputed");
+      assertExists(payload.disputed_at, "Should have disputed_at");
+      assertEquals(payload.dispute_reason, "Hours seem incorrect");
+    } finally {
+      await admin
+        .schema("core")
+        .from("work_log_conversations")
+        .delete()
+        .eq("work_log_id", workLogId);
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .delete()
+        .eq("id", workLogId);
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .delete()
+        .eq("id", projectId);
+      await admin
+        .schema("core")
+        .from("organizations")
+        .delete()
+        .eq("id", organizationId);
+      await admin
+        .schema("core")
+        .from("role_assignments")
+        .delete()
+        .eq("id", roleAssignmentId);
+    }
+  },
+});
+
+Deno.test({
+  name: "Work logs router - addCollaborator adds collaborator with view permission",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient();
+    const cachedTokens = await loadCachedTokens();
+
+    let authToken = cachedTokens?.regular?.token ?? null;
+    if (!authToken) {
+      authToken = await getAuthToken(
+        TEST_USERS.regular.email,
+        TEST_USERS.regular.password,
+      );
+    }
+
+    assertExists(authToken, "Authentication token required");
+
+    let userId = cachedTokens?.regular?.userId ?? null;
+    if (!userId) {
+      const { data: userResponse, error: userLookupError } = await admin.auth
+        .admin.getUserByEmail(TEST_USERS.regular.email);
+      if (userLookupError) {
+        throw userLookupError;
+      }
+      userId = userResponse?.user?.id ?? null;
+    }
+
+    assertExists(userId, "Unable to resolve test user id");
+
+    const suffix = crypto.randomUUID().slice(0, 8);
+    const organizationId = crypto.randomUUID();
+    const projectId = crypto.randomUUID();
+    const workLogId = crypto.randomUUID();
+    const collaboratorUserId = crypto.randomUUID();
+    let collaboratorId: string | null = null;
+
+    try {
+      await admin
+        .schema("core")
+        .from("users")
+        .upsert([
+          {
+            id: userId,
+            username: `test-user-${suffix}`,
+            slug: `test-user-${suffix}`,
+            display_name: "Test User",
+          },
+          {
+            id: collaboratorUserId,
+            username: `collab-user-${suffix}`,
+            slug: `collab-user-${suffix}`,
+            display_name: "Collaborator",
+          },
+        ]);
+
+      await admin
+        .schema("core")
+        .from("organizations")
+        .insert({
+          id: organizationId,
+          owner_user_id: userId,
+          name: `Collab Org ${suffix}`,
+          slug: `collab-org-${suffix}`,
+          visibility: "public",
+        });
+
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .insert({
+          id: projectId,
+          organization_id: organizationId,
+          name: `Collab Project ${suffix}`,
+          project_number: `PRJ-${suffix}`,
+          status: "active",
+        });
+
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .insert({
+          id: workLogId,
+          user_id: userId,
+          project_id: projectId,
+          entry_type: "daily",
+          log_date: "2025-01-10",
+          time_entries: [{ start: "08:00", end: "12:00" }],
+          work_description: "Collaborative work",
+          status: "draft",
+        });
+
+      const response = await callTRPCEndpoint(
+        "workLogs.addCollaborator",
+        {
+          workLogId,
+          collaboratorUserId,
+          permissionLevel: "view",
+        },
+        { authToken, type: "mutation" },
+      );
+
+      const payload = response[0]?.result?.data;
+      assertExists(payload, "Expected collaborator payload");
+      assertEquals(payload.work_log_id, workLogId);
+      assertEquals(payload.collaborator_user_id, collaboratorUserId);
+      assertEquals(payload.permission_level, "view");
+      collaboratorId = payload.id;
+    } finally {
+      if (collaboratorId) {
+        await admin
+          .schema("core")
+          .from("work_log_collaborators")
+          .delete()
+          .eq("id", collaboratorId);
+      }
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .delete()
+        .eq("id", workLogId);
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .delete()
+        .eq("id", projectId);
+      await admin
+        .schema("core")
+        .from("organizations")
+        .delete()
+        .eq("id", organizationId);
+    }
+  },
+});
+
+Deno.test({
+  name: "Work logs router - updateCollaborator changes permission level",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient();
+    const cachedTokens = await loadCachedTokens();
+
+    let authToken = cachedTokens?.regular?.token ?? null;
+    if (!authToken) {
+      authToken = await getAuthToken(
+        TEST_USERS.regular.email,
+        TEST_USERS.regular.password,
+      );
+    }
+
+    assertExists(authToken, "Authentication token required");
+
+    let userId = cachedTokens?.regular?.userId ?? null;
+    if (!userId) {
+      const { data: userResponse, error: userLookupError } = await admin.auth
+        .admin.getUserByEmail(TEST_USERS.regular.email);
+      if (userLookupError) {
+        throw userLookupError;
+      }
+      userId = userResponse?.user?.id ?? null;
+    }
+
+    assertExists(userId, "Unable to resolve test user id");
+
+    const suffix = crypto.randomUUID().slice(0, 8);
+    const organizationId = crypto.randomUUID();
+    const projectId = crypto.randomUUID();
+    const workLogId = crypto.randomUUID();
+    const collaboratorUserId = crypto.randomUUID();
+    const collaboratorId = crypto.randomUUID();
+
+    try {
+      await admin
+        .schema("core")
+        .from("users")
+        .upsert([
+          {
+            id: userId,
+            username: `test-user-${suffix}`,
+            slug: `test-user-${suffix}`,
+            display_name: "Test User",
+          },
+          {
+            id: collaboratorUserId,
+            username: `collab-user-${suffix}`,
+            slug: `collab-user-${suffix}`,
+            display_name: "Collaborator",
+          },
+        ]);
+
+      await admin
+        .schema("core")
+        .from("organizations")
+        .insert({
+          id: organizationId,
+          owner_user_id: userId,
+          name: `Update Collab Org ${suffix}`,
+          slug: `update-collab-org-${suffix}`,
+          visibility: "public",
+        });
+
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .insert({
+          id: projectId,
+          organization_id: organizationId,
+          name: `Update Collab Project ${suffix}`,
+          project_number: `PRJ-${suffix}`,
+          status: "active",
+        });
+
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .insert({
+          id: workLogId,
+          user_id: userId,
+          project_id: projectId,
+          entry_type: "daily",
+          log_date: "2025-01-10",
+          time_entries: [{ start: "08:00", end: "12:00" }],
+          work_description: "Collaborative work",
+          status: "draft",
+        });
+
+      await admin
+        .schema("core")
+        .from("work_log_collaborators")
+        .insert({
+          id: collaboratorId,
+          work_log_id: workLogId,
+          collaborator_user_id: collaboratorUserId,
+          permission_level: "view",
+        });
+
+      const response = await callTRPCEndpoint(
+        "workLogs.updateCollaborator",
+        {
+          workLogId,
+          collaboratorUserId,
+          permissionLevel: "edit",
+        },
+        { authToken, type: "mutation" },
+      );
+
+      const payload = response[0]?.result?.data;
+      assertExists(payload, "Expected update collaborator payload");
+      assertEquals(payload.permission_level, "edit", "Permission should be updated");
+    } finally {
+      await admin
+        .schema("core")
+        .from("work_log_collaborators")
+        .delete()
+        .eq("id", collaboratorId);
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .delete()
+        .eq("id", workLogId);
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .delete()
+        .eq("id", projectId);
+      await admin
+        .schema("core")
+        .from("organizations")
+        .delete()
+        .eq("id", organizationId);
+    }
+  },
+});
+
+Deno.test({
+  name: "Work logs router - removeCollaborator removes collaborator access",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient();
+    const cachedTokens = await loadCachedTokens();
+
+    let authToken = cachedTokens?.regular?.token ?? null;
+    if (!authToken) {
+      authToken = await getAuthToken(
+        TEST_USERS.regular.email,
+        TEST_USERS.regular.password,
+      );
+    }
+
+    assertExists(authToken, "Authentication token required");
+
+    let userId = cachedTokens?.regular?.userId ?? null;
+    if (!userId) {
+      const { data: userResponse, error: userLookupError } = await admin.auth
+        .admin.getUserByEmail(TEST_USERS.regular.email);
+      if (userLookupError) {
+        throw userLookupError;
+      }
+      userId = userResponse?.user?.id ?? null;
+    }
+
+    assertExists(userId, "Unable to resolve test user id");
+
+    const suffix = crypto.randomUUID().slice(0, 8);
+    const organizationId = crypto.randomUUID();
+    const projectId = crypto.randomUUID();
+    const workLogId = crypto.randomUUID();
+    const collaboratorUserId = crypto.randomUUID();
+    const collaboratorId = crypto.randomUUID();
+
+    try {
+      await admin
+        .schema("core")
+        .from("users")
+        .upsert([
+          {
+            id: userId,
+            username: `test-user-${suffix}`,
+            slug: `test-user-${suffix}`,
+            display_name: "Test User",
+          },
+          {
+            id: collaboratorUserId,
+            username: `collab-user-${suffix}`,
+            slug: `collab-user-${suffix}`,
+            display_name: "Collaborator",
+          },
+        ]);
+
+      await admin
+        .schema("core")
+        .from("organizations")
+        .insert({
+          id: organizationId,
+          owner_user_id: userId,
+          name: `Remove Collab Org ${suffix}`,
+          slug: `remove-collab-org-${suffix}`,
+          visibility: "public",
+        });
+
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .insert({
+          id: projectId,
+          organization_id: organizationId,
+          name: `Remove Collab Project ${suffix}`,
+          project_number: `PRJ-${suffix}`,
+          status: "active",
+        });
+
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .insert({
+          id: workLogId,
+          user_id: userId,
+          project_id: projectId,
+          entry_type: "daily",
+          log_date: "2025-01-10",
+          time_entries: [{ start: "08:00", end: "12:00" }],
+          work_description: "Collaborative work",
+          status: "draft",
+        });
+
+      await admin
+        .schema("core")
+        .from("work_log_collaborators")
+        .insert({
+          id: collaboratorId,
+          work_log_id: workLogId,
+          collaborator_user_id: collaboratorUserId,
+          permission_level: "view",
+        });
+
+      const response = await callTRPCEndpoint(
+        "workLogs.removeCollaborator",
+        {
+          workLogId,
+          collaboratorUserId,
+        },
+        { authToken, type: "mutation" },
+      );
+
+      const payload = response[0]?.result?.data;
+      assertExists(payload, "Expected remove collaborator payload");
+
+      const { data: remaining } = await admin
+        .schema("core")
+        .from("work_log_collaborators")
+        .select("*")
+        .eq("work_log_id", workLogId)
+        .eq("collaborator_user_id", collaboratorUserId);
+
+      assertEquals(remaining?.length, 0, "Collaborator should be removed");
+    } finally {
+      await admin
+        .schema("core")
+        .from("work_log_collaborators")
+        .delete()
+        .eq("id", collaboratorId);
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .delete()
+        .eq("id", workLogId);
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .delete()
+        .eq("id", projectId);
+      await admin
+        .schema("core")
+        .from("organizations")
+        .delete()
+        .eq("id", organizationId);
+    }
+  },
+});
+
+Deno.test({
+  name: "Work logs router - addComment adds message to conversation",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient();
+    const cachedTokens = await loadCachedTokens();
+
+    let authToken = cachedTokens?.regular?.token ?? null;
+    if (!authToken) {
+      authToken = await getAuthToken(
+        TEST_USERS.regular.email,
+        TEST_USERS.regular.password,
+      );
+    }
+
+    assertExists(authToken, "Authentication token required");
+
+    let userId = cachedTokens?.regular?.userId ?? null;
+    if (!userId) {
+      const { data: userResponse, error: userLookupError } = await admin.auth
+        .admin.getUserByEmail(TEST_USERS.regular.email);
+      if (userLookupError) {
+        throw userLookupError;
+      }
+      userId = userResponse?.user?.id ?? null;
+    }
+
+    assertExists(userId, "Unable to resolve test user id");
+
+    const suffix = crypto.randomUUID().slice(0, 8);
+    const organizationId = crypto.randomUUID();
+    const projectId = crypto.randomUUID();
+    const workLogId = crypto.randomUUID();
+    let conversationId: string | null = null;
+
+    try {
+      await admin
+        .schema("core")
+        .from("users")
+        .upsert({
+          id: userId,
+          username: `test-user-${suffix}`,
+          slug: `test-user-${suffix}`,
+          display_name: "Test User",
+        });
+
+      await admin
+        .schema("core")
+        .from("organizations")
+        .insert({
+          id: organizationId,
+          owner_user_id: userId,
+          name: `Comment Org ${suffix}`,
+          slug: `comment-org-${suffix}`,
+          visibility: "public",
+        });
+
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .insert({
+          id: projectId,
+          organization_id: organizationId,
+          name: `Comment Project ${suffix}`,
+          project_number: `PRJ-${suffix}`,
+          status: "active",
+        });
+
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .insert({
+          id: workLogId,
+          user_id: userId,
+          project_id: projectId,
+          entry_type: "daily",
+          log_date: "2025-01-10",
+          time_entries: [{ start: "08:00", end: "12:00" }],
+          work_description: "Work with comments",
+          status: "pending_verification",
+          submitted_at: new Date().toISOString(),
+        });
+
+      const response = await callTRPCEndpoint(
+        "workLogs.addComment",
+        {
+          workLogId,
+          message: "This looks good!",
+        },
+        { authToken, type: "mutation" },
+      );
+
+      const payload = response[0]?.result?.data;
+      assertExists(payload, "Expected comment payload");
+      assertEquals(payload.message, "This looks good!");
+      assertEquals(payload.work_log_id, workLogId);
+      assertEquals(payload.user_id, userId);
+      conversationId = payload.id;
+    } finally {
+      if (conversationId) {
+        await admin
+          .schema("core")
+          .from("work_log_conversations")
+          .delete()
+          .eq("id", conversationId);
+      }
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .delete()
+        .eq("id", workLogId);
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .delete()
+        .eq("id", projectId);
+      await admin
+        .schema("core")
+        .from("organizations")
+        .delete()
+        .eq("id", organizationId);
+    }
+  },
+});
+
+Deno.test({
+  name: "Work logs router - addComment rejects comment on draft work log",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient();
+    const cachedTokens = await loadCachedTokens();
+
+    let authToken = cachedTokens?.regular?.token ?? null;
+    if (!authToken) {
+      authToken = await getAuthToken(
+        TEST_USERS.regular.email,
+        TEST_USERS.regular.password,
+      );
+    }
+
+    assertExists(authToken, "Authentication token required");
+
+    let userId = cachedTokens?.regular?.userId ?? null;
+    if (!userId) {
+      const { data: userResponse, error: userLookupError } = await admin.auth
+        .admin.getUserByEmail(TEST_USERS.regular.email);
+      if (userLookupError) {
+        throw userLookupError;
+      }
+      userId = userResponse?.user?.id ?? null;
+    }
+
+    assertExists(userId, "Unable to resolve test user id");
+
+    const suffix = crypto.randomUUID().slice(0, 8);
+    const organizationId = crypto.randomUUID();
+    const projectId = crypto.randomUUID();
+    const workLogId = crypto.randomUUID();
+
+    try {
+      await admin
+        .schema("core")
+        .from("users")
+        .upsert({
+          id: userId,
+          username: `test-user-${suffix}`,
+          slug: `test-user-${suffix}`,
+          display_name: "Test User",
+        });
+
+      await admin
+        .schema("core")
+        .from("organizations")
+        .insert({
+          id: organizationId,
+          owner_user_id: userId,
+          name: `Comment Draft Org ${suffix}`,
+          slug: `comment-draft-org-${suffix}`,
+          visibility: "public",
+        });
+
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .insert({
+          id: projectId,
+          organization_id: organizationId,
+          name: `Comment Draft Project ${suffix}`,
+          project_number: `PRJ-${suffix}`,
+          status: "active",
+        });
+
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .insert({
+          id: workLogId,
+          user_id: userId,
+          project_id: projectId,
+          entry_type: "daily",
+          log_date: "2025-01-10",
+          time_entries: [{ start: "08:00", end: "12:00" }],
+          work_description: "Draft work",
+          status: "draft",
+        });
+
+      const response = await callTRPCEndpoint(
+        "workLogs.addComment",
+        {
+          workLogId,
+          message: "Comment on draft",
+        },
+        { authToken, type: "mutation" },
+      );
+
+      const error = response[0]?.error;
+      assertExists(error, "Expected error for draft work log");
+      const code = error?.data?.code ?? "";
+      assertEquals(code, "BAD_REQUEST", "Should return BAD_REQUEST");
+    } finally {
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .delete()
+        .eq("id", workLogId);
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .delete()
+        .eq("id", projectId);
+      await admin
+        .schema("core")
+        .from("organizations")
+        .delete()
+        .eq("id", organizationId);
+    }
+  },
+});
+
+Deno.test({
+  name: "Work logs router - exportWorkLog generates CSV export",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient();
+    const cachedTokens = await loadCachedTokens();
+
+    let authToken = cachedTokens?.regular?.token ?? null;
+    if (!authToken) {
+      authToken = await getAuthToken(
+        TEST_USERS.regular.email,
+        TEST_USERS.regular.password,
+      );
+    }
+
+    assertExists(authToken, "Authentication token required");
+
+    let userId = cachedTokens?.regular?.userId ?? null;
+    if (!userId) {
+      const { data: userResponse, error: userLookupError } = await admin.auth
+        .admin.getUserByEmail(TEST_USERS.regular.email);
+      if (userLookupError) {
+        throw userLookupError;
+      }
+      userId = userResponse?.user?.id ?? null;
+    }
+
+    assertExists(userId, "Unable to resolve test user id");
+
+    const suffix = crypto.randomUUID().slice(0, 8);
+    const organizationId = crypto.randomUUID();
+    const projectId = crypto.randomUUID();
+    const workLogId = crypto.randomUUID();
+    let exportPath: string | null = null;
+
+    try {
+      await admin
+        .schema("core")
+        .from("users")
+        .upsert({
+          id: userId,
+          username: `test-user-${suffix}`,
+          slug: `test-user-${suffix}`,
+          display_name: "Test User",
+        });
+
+      await admin
+        .schema("core")
+        .from("organizations")
+        .insert({
+          id: organizationId,
+          owner_user_id: userId,
+          name: `Export Org ${suffix}`,
+          slug: `export-org-${suffix}`,
+          visibility: "public",
+        });
+
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .insert({
+          id: projectId,
+          organization_id: organizationId,
+          name: `Export Project ${suffix}`,
+          project_number: `PRJ-${suffix}`,
+          status: "active",
+        });
+
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .insert({
+          id: workLogId,
+          user_id: userId,
+          project_id: projectId,
+          entry_type: "daily",
+          log_date: "2025-01-10",
+          time_entries: [{ start: "08:00", end: "12:00" }],
+          work_description: "Work to export",
+          status: "verified",
+          submitted_at: new Date().toISOString(),
+          verified_at: new Date().toISOString(),
+        });
+
+      const response = await callTRPCEndpoint(
+        "workLogs.exportWorkLog",
+        { workLogId, format: "csv" },
+        { authToken, type: "mutation" },
+      );
+
+      const payload = response[0]?.result?.data;
+      assertExists(payload, "Expected export payload");
+      assertEquals(payload.mimeType, "text/csv");
+      assert(payload.byteLength > 0, "Export should include byte length");
+      assert(payload.downloadUrl.length > 0, "Signed URL expected");
+      assert(payload.storagePath.includes(workLogId));
+      exportPath = payload.storagePath;
+    } finally {
+      if (exportPath) {
+        await admin.storage
+          .from("work-log-exports")
+          .remove([exportPath]);
+      }
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .delete()
+        .eq("id", workLogId);
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .delete()
+        .eq("id", projectId);
+      await admin
+        .schema("core")
+        .from("organizations")
+        .delete()
+        .eq("id", organizationId);
+    }
+  },
+});
+
+Deno.test({
+  name: "Work logs router - updatePhotoMetadata updates caption and display order",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient();
+    const cachedTokens = await loadCachedTokens();
+
+    let authToken = cachedTokens?.regular?.token ?? null;
+    if (!authToken) {
+      authToken = await getAuthToken(
+        TEST_USERS.regular.email,
+        TEST_USERS.regular.password,
+      );
+    }
+
+    assertExists(authToken, "Authentication token required");
+
+    let userId = cachedTokens?.regular?.userId ?? null;
+    if (!userId) {
+      const { data: userResponse, error: userLookupError } = await admin.auth
+        .admin.getUserByEmail(TEST_USERS.regular.email);
+      if (userLookupError) {
+        throw userLookupError;
+      }
+      userId = userResponse?.user?.id ?? null;
+    }
+
+    assertExists(userId, "Unable to resolve test user id");
+
+    const suffix = crypto.randomUUID().slice(0, 8);
+    const organizationId = crypto.randomUUID();
+    const projectId = crypto.randomUUID();
+    const workLogId = crypto.randomUUID();
+    const photoId = crypto.randomUUID();
+
+    try {
+      await admin
+        .schema("core")
+        .from("users")
+        .upsert({
+          id: userId,
+          username: `test-user-${suffix}`,
+          slug: `test-user-${suffix}`,
+          display_name: "Test User",
+        });
+
+      await admin
+        .schema("core")
+        .from("organizations")
+        .insert({
+          id: organizationId,
+          owner_user_id: userId,
+          name: `Photo Metadata Org ${suffix}`,
+          slug: `photo-metadata-org-${suffix}`,
+          visibility: "public",
+        });
+
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .insert({
+          id: projectId,
+          organization_id: organizationId,
+          name: `Photo Metadata Project ${suffix}`,
+          project_number: `PRJ-${suffix}`,
+          status: "active",
+        });
+
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .insert({
+          id: workLogId,
+          user_id: userId,
+          project_id: projectId,
+          entry_type: "daily",
+          log_date: "2025-01-10",
+          time_entries: [{ start: "08:00", end: "12:00" }],
+          work_description: "Work with photo",
+          status: "draft",
+        });
+
+      await admin
+        .schema("core")
+        .from("work_log_photos")
+        .insert({
+          id: photoId,
+          work_log_id: workLogId,
+          file_path: `${userId}/${workLogId}/photo.jpg`,
+          file_size_bytes: 1_024,
+          caption: "Original caption",
+          display_order: 0,
+        });
+
+      const response = await callTRPCEndpoint(
+        "workLogs.updatePhotoMetadata",
+        {
+          workLogId,
+          photoId,
+          caption: "Updated caption",
+          displayOrder: 1,
+        },
+        { authToken, type: "mutation" },
+      );
+
+      const payload = response[0]?.result?.data;
+      assertExists(payload, "Expected photo metadata payload");
+      assertEquals(payload.caption, "Updated caption");
+      assertEquals(payload.display_order, 1);
+    } finally {
+      await admin
+        .schema("core")
+        .from("work_log_photos")
+        .delete()
+        .eq("id", photoId);
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .delete()
+        .eq("id", workLogId);
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .delete()
+        .eq("id", projectId);
+      await admin
+        .schema("core")
+        .from("organizations")
+        .delete()
+        .eq("id", organizationId);
+    }
+  },
+});
+
+Deno.test({
+  name: "Work logs router - updatePhotoVisibility toggles profile visibility",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient();
+    const cachedTokens = await loadCachedTokens();
+
+    let authToken = cachedTokens?.regular?.token ?? null;
+    if (!authToken) {
+      authToken = await getAuthToken(
+        TEST_USERS.regular.email,
+        TEST_USERS.regular.password,
+      );
+    }
+
+    assertExists(authToken, "Authentication token required");
+
+    let userId = cachedTokens?.regular?.userId ?? null;
+    if (!userId) {
+      const { data: userResponse, error: userLookupError } = await admin.auth
+        .admin.getUserByEmail(TEST_USERS.regular.email);
+      if (userLookupError) {
+        throw userLookupError;
+      }
+      userId = userResponse?.user?.id ?? null;
+    }
+
+    assertExists(userId, "Unable to resolve test user id");
+
+    const suffix = crypto.randomUUID().slice(0, 8);
+    const organizationId = crypto.randomUUID();
+    const projectId = crypto.randomUUID();
+    const workLogId = crypto.randomUUID();
+    const photoId = crypto.randomUUID();
+
+    try {
+      await admin
+        .schema("core")
+        .from("users")
+        .upsert({
+          id: userId,
+          username: `test-user-${suffix}`,
+          slug: `test-user-${suffix}`,
+          display_name: "Test User",
+        });
+
+      await admin
+        .schema("core")
+        .from("organizations")
+        .insert({
+          id: organizationId,
+          owner_user_id: userId,
+          name: `Photo Visibility Org ${suffix}`,
+          slug: `photo-visibility-org-${suffix}`,
+          visibility: "public",
+        });
+
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .insert({
+          id: projectId,
+          organization_id: organizationId,
+          name: `Photo Visibility Project ${suffix}`,
+          project_number: `PRJ-${suffix}`,
+          status: "active",
+        });
+
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .insert({
+          id: workLogId,
+          user_id: userId,
+          project_id: projectId,
+          entry_type: "daily",
+          log_date: "2025-01-10",
+          time_entries: [{ start: "08:00", end: "12:00" }],
+          work_description: "Work with photo",
+          status: "draft",
+        });
+
+      await admin
+        .schema("core")
+        .from("work_log_photos")
+        .insert({
+          id: photoId,
+          work_log_id: workLogId,
+          file_path: `${userId}/${workLogId}/photo.jpg`,
+          file_size_bytes: 1_024,
+          show_on_profile: false,
+        });
+
+      const response = await callTRPCEndpoint(
+        "workLogs.updatePhotoVisibility",
+        {
+          workLogId,
+          photoId,
+          showOnProfile: true,
+        },
+        { authToken, type: "mutation" },
+      );
+
+      const payload = response[0]?.result?.data;
+      assertExists(payload, "Expected photo visibility payload");
+      assertEquals(payload.show_on_profile, true);
+    } finally {
+      await admin
+        .schema("core")
+        .from("work_log_photos")
+        .delete()
+        .eq("id", photoId);
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .delete()
+        .eq("id", workLogId);
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .delete()
+        .eq("id", projectId);
+      await admin
+        .schema("core")
+        .from("organizations")
+        .delete()
+        .eq("id", organizationId);
+    }
+  },
+});
+
+Deno.test({
+  name: "Work logs router - deletePhoto removes photo and updates storage",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient();
+    const cachedTokens = await loadCachedTokens();
+
+    let authToken = cachedTokens?.regular?.token ?? null;
+    if (!authToken) {
+      authToken = await getAuthToken(
+        TEST_USERS.regular.email,
+        TEST_USERS.regular.password,
+      );
+    }
+
+    assertExists(authToken, "Authentication token required");
+
+    let userId = cachedTokens?.regular?.userId ?? null;
+    if (!userId) {
+      const { data: userResponse, error: userLookupError } = await admin.auth
+        .admin.getUserByEmail(TEST_USERS.regular.email);
+      if (userLookupError) {
+        throw userLookupError;
+      }
+      userId = userResponse?.user?.id ?? null;
+    }
+
+    assertExists(userId, "Unable to resolve test user id");
+
+    const suffix = crypto.randomUUID().slice(0, 8);
+    const organizationId = crypto.randomUUID();
+    const projectId = crypto.randomUUID();
+    const workLogId = crypto.randomUUID();
+    const photoId = crypto.randomUUID();
+    const filePath = `${userId}/${workLogId}/photo.jpg`;
+
+    try {
+      await admin
+        .schema("core")
+        .from("users")
+        .upsert({
+          id: userId,
+          username: `test-user-${suffix}`,
+          slug: `test-user-${suffix}`,
+          display_name: "Test User",
+        });
+
+      await admin
+        .schema("core")
+        .from("organizations")
+        .insert({
+          id: organizationId,
+          owner_user_id: userId,
+          name: `Delete Photo Org ${suffix}`,
+          slug: `delete-photo-org-${suffix}`,
+          visibility: "public",
+        });
+
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .insert({
+          id: projectId,
+          organization_id: organizationId,
+          name: `Delete Photo Project ${suffix}`,
+          project_number: `PRJ-${suffix}`,
+          status: "active",
+        });
+
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .insert({
+          id: workLogId,
+          user_id: userId,
+          project_id: projectId,
+          entry_type: "daily",
+          log_date: "2025-01-10",
+          time_entries: [{ start: "08:00", end: "12:00" }],
+          work_description: "Work with photo",
+          status: "draft",
+        });
+
+      await admin
+        .schema("core")
+        .from("work_log_photos")
+        .insert({
+          id: photoId,
+          work_log_id: workLogId,
+          file_path: filePath,
+          file_size_bytes: 1_024,
+        });
+
+      await admin
+        .schema("core")
+        .from("user_storage_usage")
+        .upsert({
+          user_id: userId,
+          work_log_photos_bytes: 1_024,
+          portfolio_photos_bytes: 0,
+          certification_files_bytes: 0,
+        });
+
+      const response = await callTRPCEndpoint(
+        "workLogs.deletePhoto",
+        {
+          workLogId,
+          photoId,
+        },
+        { authToken, type: "mutation" },
+      );
+
+      const payload = response[0]?.result?.data;
+      assertExists(payload, "Expected delete photo payload");
+      assertEquals(payload.success, true);
+
+      const { data: remaining } = await admin
+        .schema("core")
+        .from("work_log_photos")
+        .select("*")
+        .eq("id", photoId);
+
+      assertEquals(remaining?.length, 0, "Photo should be deleted");
+    } finally {
+      await admin
+        .schema("core")
+        .from("work_log_photos")
+        .delete()
+        .eq("id", photoId);
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .delete()
+        .eq("id", workLogId);
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .delete()
+        .eq("id", projectId);
+      await admin
+        .schema("core")
+        .from("organizations")
+        .delete()
+        .eq("id", organizationId);
+    }
+  },
+});
+
+Deno.test({
+  name: "Work logs router - updateProfileVisibility updates visibility settings",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient();
+    const cachedTokens = await loadCachedTokens();
+
+    let authToken = cachedTokens?.regular?.token ?? null;
+    if (!authToken) {
+      authToken = await getAuthToken(
+        TEST_USERS.regular.email,
+        TEST_USERS.regular.password,
+      );
+    }
+
+    assertExists(authToken, "Authentication token required");
+
+    let userId = cachedTokens?.regular?.userId ?? null;
+    if (!userId) {
+      const { data: userResponse, error: userLookupError } = await admin.auth
+        .admin.getUserByEmail(TEST_USERS.regular.email);
+      if (userLookupError) {
+        throw userLookupError;
+      }
+      userId = userResponse?.user?.id ?? null;
+    }
+
+    assertExists(userId, "Unable to resolve test user id");
+
+    const suffix = crypto.randomUUID().slice(0, 8);
+    const organizationId = crypto.randomUUID();
+    const projectId = crypto.randomUUID();
+    const workLogId = crypto.randomUUID();
+
+    try {
+      await admin
+        .schema("core")
+        .from("users")
+        .upsert({
+          id: userId,
+          username: `test-user-${suffix}`,
+          slug: `test-user-${suffix}`,
+          display_name: "Test User",
+        });
+
+      await admin
+        .schema("core")
+        .from("organizations")
+        .insert({
+          id: organizationId,
+          owner_user_id: userId,
+          name: `Profile Visibility Org ${suffix}`,
+          slug: `profile-visibility-org-${suffix}`,
+          visibility: "public",
+        });
+
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .insert({
+          id: projectId,
+          organization_id: organizationId,
+          name: `Profile Visibility Project ${suffix}`,
+          project_number: `PRJ-${suffix}`,
+          status: "active",
+        });
+
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .insert({
+          id: workLogId,
+          user_id: userId,
+          project_id: projectId,
+          entry_type: "daily",
+          log_date: "2025-01-10",
+          time_entries: [{ start: "08:00", end: "12:00" }],
+          work_description: "Work to show on profile",
+          status: "verified",
+          submitted_at: new Date().toISOString(),
+          verified_at: new Date().toISOString(),
+          visibility: "private",
+          show_on_profile: false,
+        });
+
+      const response = await callTRPCEndpoint(
+        "workLogs.updateProfileVisibility",
+        {
+          workLogId,
+          visibility: "public",
+          showOnProfile: true,
+          showDateRangeOnProfile: true,
+        },
+        { authToken, type: "mutation" },
+      );
+
+      const payload = response[0]?.result?.data;
+      assertExists(payload, "Expected profile visibility payload");
+      assertEquals(payload.visibility, "public");
+      assertEquals(payload.show_on_profile, true);
+      assertEquals(payload.show_date_range_on_profile, true);
+    } finally {
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .delete()
+        .eq("id", workLogId);
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .delete()
+        .eq("id", projectId);
+      await admin
+        .schema("core")
+        .from("organizations")
+        .delete()
+        .eq("id", organizationId);
+    }
+  },
+});
