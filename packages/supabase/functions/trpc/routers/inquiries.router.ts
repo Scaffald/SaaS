@@ -52,7 +52,6 @@ const INQUIRY_TO_APPLICATION_STATUS: Record<InquiryStatus, ApplicationStatusForI
   accepted: 'offer',
   rejected: 'screen',
   withdrawn: 'screen',
-}
 
 function canTransitionInquiryStatus(
   currentStatus: InquiryStatus,
@@ -148,8 +147,11 @@ interface ApplicationDetails {
   id: string
   status: string | null
   applicationScore: number | null
+  appliedAt: string | null
+  stageChangedAt: string | null
   createdAt: string
   updatedAt: string
+  jobTitle: string | null
   job: {
     id: string
     title: string | null
@@ -159,12 +161,15 @@ interface ApplicationDetails {
     organization: { id: string; name: string | null } | null
     payRangeMinCents: number | null
     payRangeMaxCents: number | null
+    payRangeType: string | null
+    capabilityQuestions: JobCapabilityQuestion[]
   } | null
   candidate: {
     id: string
     displayName: string | null
     username: string | null
     avatarPath: string | null
+    name: string | null
   } | null
 }
 
@@ -187,6 +192,7 @@ function mapApplicationRecord(
         remote_option: string | null
         pay_range_min_cents: number | null
         pay_range_max_cents: number | null
+        pay_range_type: string | null
         organization: { id: string; name: string | null } | null
         inquiry_capability_questions?: JobCapabilityQuestion[] | null
       }
@@ -201,16 +207,21 @@ function mapApplicationRecord(
       }
     | null
 
-  const capabilityQuestions =
-    (job?.inquiry_capability_questions as JobCapabilityQuestion[] | null) ?? []
+  const rawCapabilityQuestions = job?.inquiry_capability_questions ?? []
+  const capabilityQuestions = Array.isArray(rawCapabilityQuestions)
+    ? (rawCapabilityQuestions as JobCapabilityQuestion[])
+    : []
 
   return {
     application: {
       id: application.id,
       status: application.status ?? null,
       applicationScore: application.application_score ?? null,
+      appliedAt: application.applied_at ?? null,
+      stageChangedAt: application.stage_changed_at ?? null,
       createdAt: application.created_at,
       updatedAt: application.updated_at,
+      jobTitle: job?.title ?? null,
       job: job
         ? {
             id: job.id,
@@ -226,6 +237,8 @@ function mapApplicationRecord(
               : null,
             payRangeMinCents: job.pay_range_min_cents ?? null,
             payRangeMaxCents: job.pay_range_max_cents ?? null,
+            payRangeType: job.pay_range_type ?? null,
+            capabilityQuestions,
           }
         : null,
       candidate: candidate
@@ -234,6 +247,7 @@ function mapApplicationRecord(
             displayName: candidate.display_name ?? null,
             username: candidate.username ?? null,
             avatarPath: candidate.avatar_path ?? null,
+            name: candidate.display_name ?? candidate.username ?? null,
           }
         : null,
     },
@@ -265,12 +279,12 @@ async function getUserDisplayName(
 }
 
 /**
- * Helper function to get organization name from job
+ * Helper function to get organization metadata from a job record
  */
-async function getOrganizationName(
+async function getOrganizationInfo(
   supabase: any,
   jobId: string,
-): Promise<string | null> {
+): Promise<{ id: string | null; name: string | null }> {
   const { data: job } = await supabase
     .schema("core")
     .from("jobs")
@@ -278,11 +292,14 @@ async function getOrganizationName(
     .eq("id", jobId)
     .single();
 
-  if (!job || !job.organizations) {
-    return null;
-  }
+  const organizationId = (job as { organization_id?: string } | null)?.organization_id ?? null;
+  const organizationName =
+    (job?.organizations as { name: string | null } | null)?.name ?? null;
 
-  return (job.organizations as { name: string | null })?.name || null;
+  return {
+    id: organizationId,
+    name: organizationName,
+  };
 }
 
 /**
@@ -707,18 +724,24 @@ export const inquiriesRouter = router({
             .single();
 
           if (applicationData) {
-            // Get organization name for notification
-            const orgName = await getOrganizationName(supabase, applicationData.job_id);
+            // Get organization metadata for notification
+            const organization = await getOrganizationInfo(supabase, applicationData.job_id);
+            const organizationName = organization.name ?? "Organization";
 
             // Send notification
             await insertNotification(supabaseServiceRole, {
               user_id: applicationData.user_id,
               type: "inquiry.sent",
+              severity: "info",
               title: "New Inquiry Received",
-              message: orgName
-                ? `You have received an inquiry from ${orgName}`
-                : "You have received a new inquiry",
+              message: `You have received an inquiry from ${organizationName}`,
               cta_url: `/dashboard/applications/${applicationId}/inquiry`,
+              metadata: {
+                inquiry_id: inquiry.id,
+                application_id: applicationId,
+                job_id: applicationData.job_id,
+                organization_id: organization.id,
+              },
             });
           }
 
@@ -839,6 +862,8 @@ export const inquiriesRouter = router({
           `
           id,
           status,
+          applied_at,
+          stage_changed_at,
           application_score,
           created_at,
           updated_at,
@@ -850,6 +875,7 @@ export const inquiriesRouter = router({
             remote_option,
             pay_range_min_cents,
             pay_range_max_cents,
+            pay_range_type,
             organization:organizations!organization_id(
               id,
               name
@@ -992,6 +1018,8 @@ export const inquiriesRouter = router({
         .select(
           `
           id,
+          applied_at,
+          stage_changed_at,
           status,
           application_score,
           created_at,
@@ -1004,6 +1032,7 @@ export const inquiriesRouter = router({
             remote_option,
             pay_range_min_cents,
             pay_range_max_cents,
+            pay_range_type,
             organization:organizations!organization_id(
               id,
               name
