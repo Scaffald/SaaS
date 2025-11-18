@@ -4,8 +4,8 @@
  * The negotiation experience is intentionally linear so both the applicant and
  * the organization have clear expectations about what happens next:
  *
- * draft -> sent -> candidate_responded <-> organization_responded -> accepted/rejected
- *                                           \-> withdrawn (from either party)
+ * draft -> sent -> candidate_responded <-> organization_responded -> accepted / rejected
+ *                                            \---------------> withdrawn (either party)
  *
  * Terminal statuses (accepted, rejected, withdrawn) freeze the record so
  * downstream systems (application status, notifications, etc.) can treat the
@@ -29,7 +29,10 @@ export type ApplicationStatusForInquiry =
   | 'offer'
 
 /**
- * Valid status transitions for each inquiry status
+ * Valid status transitions for each inquiry status.
+ *
+ * Whenever this matrix changes, mirror the update in `packages/supabase/functions/trpc/routers/inquiries.router.ts`
+ * to ensure both API and client enforce the same legal graph.
  */
 export const INQUIRY_STATUS_TRANSITIONS: Record<InquiryStatus, InquiryStatus[]> = {
   draft: ['sent', 'withdrawn'],
@@ -42,7 +45,10 @@ export const INQUIRY_STATUS_TRANSITIONS: Record<InquiryStatus, InquiryStatus[]> 
 }
 
 /**
- * Map inquiry status to application status
+ * Map inquiry status to the application pipeline status.
+ *
+ * Applications should present an `inquired` stage whenever the negotiation is in-flight
+ * and fall back to `screen` once negotiations end unsuccessfully.
  */
 export const INQUIRY_TO_APPLICATION_STATUS: Record<InquiryStatus, ApplicationStatusForInquiry | null> = {
   draft: 'screen', // Draft inquiries don't change application status
@@ -55,7 +61,11 @@ export const INQUIRY_TO_APPLICATION_STATUS: Record<InquiryStatus, ApplicationSta
 }
 
 /**
- * Check if a status transition is valid
+ * Check if a status transition is valid.
+ *
+ * @param currentStatus - Status that the inquiry currently holds.
+ * @param newStatus - Status we want to move the inquiry into.
+ * @returns `true` when the transition is allowed (including no-ops), `false` otherwise.
  */
 export function canTransitionInquiryStatus(
   currentStatus: InquiryStatus,
@@ -72,7 +82,9 @@ export function canTransitionInquiryStatus(
 }
 
 /**
- * Get the application status for a given inquiry status
+ * Get the application status for a given inquiry status.
+ *
+ * Useful for quick lookups when re-syncing the ATS pipeline.
  */
 export function getApplicationStatusForInquiry(
   inquiryStatus: InquiryStatus
@@ -81,14 +93,16 @@ export function getApplicationStatusForInquiry(
 }
 
 /**
- * Check if an inquiry status is terminal (cannot transition further)
+ * Check if an inquiry status is terminal (cannot transition further).
  */
 export function isTerminalStatus(status: InquiryStatus): boolean {
   return INQUIRY_STATUS_TRANSITIONS[status].length === 0
 }
 
 /**
- * Get all possible next statuses for a given inquiry status
+ * Get all possible next statuses for a given inquiry status.
+ *
+ * Used by both the UI (for button rendering) and shared tests.
  */
 export function getNextPossibleStatuses(currentStatus: InquiryStatus): InquiryStatus[] {
   return [...INQUIRY_STATUS_TRANSITIONS[currentStatus]]

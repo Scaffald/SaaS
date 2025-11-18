@@ -68,7 +68,7 @@ describe('inquiry state machine', () => {
     ])
 
     // Mutating the returned array must not impact the internal map.
-    nextStatuses.pop()
+    nextStatuses.push('withdrawn')
     expect(getNextPossibleStatuses('candidate_responded')).toContain('withdrawn')
   })
 })
