@@ -3,8 +3,8 @@ import type { IPIPDomain, IPIPScores } from '@app/core/features/personality-asse
 /**
  * Normalized domain scores (0-100 scale)
  */
-export interface NormalizedScores {
-  [key in IPIPDomain]: {
+export type NormalizedScores = {
+  [K in IPIPDomain]: {
     percentage: number;
     average: number;
     result: 'low' | 'neutral' | 'high';

@@ -1,7 +1,13 @@
 export { IPIPAssessmentWidget } from './IPIPAssessmentWidget'
 export { IPIPAssessmentWizard } from './IPIPAssessmentWizard'
+export { IPIPResultsPage } from './components/IPIPResultsPage'
+export { NarrativeView } from './components/NarrativeView'
+export { DomainCard } from './components/DomainCard'
+export { FacetList } from './components/FacetList'
 export { mapToArchetype, getAllArchetypeScores } from './utils/archetypeMapper'
 export type { ArchetypeResult } from './utils/archetypeMapper'
 export { normalizeScores } from './utils/scoreNormalizer'
 export type { NormalizedScores } from './utils/scoreNormalizer'
+export { generateOverallSummary } from './utils/narrativeGenerator'
+export { useIPIPResults } from './hooks/useIPIPResults'
 
