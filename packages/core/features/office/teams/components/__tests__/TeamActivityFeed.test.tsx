@@ -1,7 +1,16 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
+import type { ReactNode } from 'react'
 
 const mockUseQuery = vi.fn()
+
+vi.mock('tamagui', () => ({
+  Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+  YStack: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
+  XStack: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
+  Text: ({ children }: { children?: ReactNode }) => <span>{children}</span>,
+  Spinner: () => <span>Loading</span>,
+}))
 
 vi.mock('@app/core/utils/api', () => ({
   api: {
@@ -11,6 +20,13 @@ vi.mock('@app/core/utils/api', () => ({
       },
     },
   },
+}))
+
+vi.mock('@tamagui/lucide-icons', () => ({
+  Check: () => <span data-testid="check-icon">Check</span>,
+  ChevronDown: () => <span data-testid="chevron-down-icon">ChevronDown</span>,
+  MessageCircle: () => <span data-testid="message-circle-icon">MessageCircle</span>,
+  Send: () => <span data-testid="send-icon">Send</span>,
 }))
 
 const { TeamActivityFeed } = await import('../TeamActivityFeed')

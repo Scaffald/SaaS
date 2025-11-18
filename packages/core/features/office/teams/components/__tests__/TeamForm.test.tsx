@@ -65,6 +65,12 @@ vi.mock('@app/schemas', () => {
   }
 })
 
+vi.mock('@tamagui/lucide-icons', () => ({
+  Palette: () => <span data-testid="palette-icon">Palette</span>,
+  Check: () => <span data-testid="check-icon">Check</span>,
+  ChevronDown: () => <span data-testid="chevron-down-icon">ChevronDown</span>,
+}))
+
 vi.mock('react-hook-form', () => {
   return {
     useForm: ({ defaultValues }: { defaultValues?: Record<string, unknown> }) => {

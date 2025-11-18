@@ -43,6 +43,13 @@ vi.mock('tamagui', async () => {
   }
 })
 
+vi.mock('@tamagui/lucide-icons', () => ({
+  Crown: () => <span data-testid="crown-icon">Crown</span>,
+  LogOut: () => <span data-testid="log-out-icon">LogOut</span>,
+  Plus: () => <span data-testid="plus-icon">Plus</span>,
+  UserMinus: () => <span data-testid="user-minus-icon">UserMinus</span>,
+}))
+
 const { TeamMembersList } = await import('../TeamMembersList')
 
 describe('TeamMembersList', () => {

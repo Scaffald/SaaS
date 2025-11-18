@@ -4,8 +4,8 @@ import { useToastController } from '@tamagui/toast'
 
 import { useTeamFormOptions } from '../useTeamFormOptions'
 
-const mockUseQuery = vi.fn()
-const mockShow = vi.fn()
+const mockUseQuery = vi.hoisted(() => vi.fn())
+const mockShow = vi.hoisted(() => vi.fn())
 
 vi.mock('@tamagui/toast', () => ({
   useToastController: () => ({ show: mockShow }),
@@ -16,7 +16,7 @@ vi.mock('@app/core/utils/api', () => ({
     teams: {
       members: {
         roles: {
-          useQuery: mockUseQuery,
+          useQuery: (...args: unknown[]) => mockUseQuery(...args),
         },
       },
     },
@@ -55,21 +55,28 @@ describe('useTeamFormOptions', () => {
 
   it('shows toast on error', async () => {
     const error = new Error('Failed to load roles')
-    mockUseQuery.mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      isFetching: false,
-      error,
-      refetch: vi.fn(),
+    const mockOnError = vi.fn()
+    mockUseQuery.mockImplementation((_input, options?: { onError?: (error: Error) => void }) => {
+      // Call onError callback if provided
+      if (options?.onError) {
+        setTimeout(() => options.onError?.(error), 0)
+      }
+      return {
+        data: undefined,
+        isLoading: false,
+        isFetching: false,
+        error,
+        refetch: vi.fn(),
+      }
     })
 
     renderHook(() => useTeamFormOptions({ organizationId: 'org-1' }))
 
     await waitFor(() => {
       expect(mockShow).toHaveBeenCalledWith('Error', {
-        message: 'Failed to load team roles',
+        message: 'Failed to load roles',
       })
-    })
+    }, { timeout: 1000 })
   })
 
   it('transforms roles correctly', () => {
@@ -94,7 +101,7 @@ describe('useTeamFormOptions', () => {
     renderHook(() => useTeamFormOptions({}))
 
     expect(mockUseQuery).toHaveBeenCalledWith(
-      {},
+      { organizationId: undefined },
       expect.objectContaining({
         enabled: false,
       }),

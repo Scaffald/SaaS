@@ -12,10 +12,10 @@ vi.mock('@app/core/utils/api', () => ({
       invitations: {
         create: { useMutation: mockUseMutation },
       },
-    },
-    members: {
-      roles: {
-        useQuery: mockUseQuery,
+      members: {
+        roles: {
+          useQuery: mockUseQuery,
+        },
       },
     },
   },
@@ -25,14 +25,18 @@ vi.mock('@tamagui/toast', () => ({
   useToastController: () => ({ show: mockShow }),
 }))
 
-vi.mock('tamagui', async () => {
-  const actual = await vi.importActual<typeof import('tamagui')>('tamagui')
-  return {
-    ...actual,
-    ResponsiveModal: ({ open, children }: { open: boolean; children: React.ReactNode }) =>
-      open ? <div data-testid="modal">{children}</div> : null,
-  }
-})
+vi.mock('@app/ui/components/ResponsiveModal', () => ({
+  ResponsiveModal: ({ open, children }: { open: boolean; children: React.ReactNode }) =>
+    open ? <div data-testid="modal">{children}</div> : null,
+}))
+
+vi.mock('@tamagui/lucide-icons', () => ({
+  Check: () => <span data-testid="check-icon">Check</span>,
+  ChevronDown: () => <span data-testid="chevron-down-icon">ChevronDown</span>,
+  Mail: () => <span data-testid="mail-icon">Mail</span>,
+  UserPlus: () => <span data-testid="user-plus-icon">UserPlus</span>,
+  X: () => <span data-testid="x-icon">X</span>,
+}))
 
 const { TeamInviteModal } = await import('../TeamInviteModal')
 

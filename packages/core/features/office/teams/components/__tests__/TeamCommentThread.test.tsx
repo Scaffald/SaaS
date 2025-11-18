@@ -1,10 +1,18 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
+import type { ReactNode } from 'react'
 
 const mockUseQuery = vi.fn()
 const mockUseMutation = vi.fn()
 const mockShow = vi.fn()
+const mockUseUtils = vi.fn(() => ({
+  teams: {
+    analytics: {
+      comments: { invalidate: vi.fn() },
+    },
+  },
+}))
 
 vi.mock('@app/core/utils/api', () => ({
   api: {
@@ -14,11 +22,36 @@ vi.mock('@app/core/utils/api', () => ({
         postComment: { useMutation: mockUseMutation },
       },
     },
+    useUtils: mockUseUtils,
   },
 }))
 
 vi.mock('@tamagui/toast', () => ({
   useToastController: () => ({ show: mockShow }),
+}))
+
+vi.mock('tamagui', () => ({
+  Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+  YStack: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
+  XStack: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
+  Text: ({ children }: { children?: ReactNode }) => <span>{children}</span>,
+  Input: ({ value, onChangeText, placeholder }: { value?: string; onChangeText?: (text: string) => void; placeholder?: string }) => (
+    <input
+      type="text"
+      value={value || ''}
+      onChange={(e) => onChangeText?.(e.target.value)}
+      placeholder={placeholder}
+    />
+  ),
+  Button: ({ children, onPress }: { children?: ReactNode; onPress?: () => void }) => (
+    <button type="button" onClick={onPress}>{children}</button>
+  ),
+  useMedia: () => ({ sm: false }),
+}))
+
+vi.mock('@tamagui/lucide-icons', () => ({
+  MessageCircle: () => <span data-testid="message-circle-icon">MessageCircle</span>,
+  Send: () => <span data-testid="send-icon">Send</span>,
 }))
 
 const { TeamCommentThread } = await import('../TeamCommentThread')
