@@ -21,7 +21,7 @@ export default defineConfig({
   // Retry failed tests once (helps with flaky tests)
   retries: process.env.CI ? 2 : 0,
   
-  reporter: [['list']],
+  reporter: [['./tests/infrastructure/playwright/quiet-reporter.ts']],
   
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:8081',

@@ -66,6 +66,13 @@ This directory contains streamlined Cursor rules that establish guard rails and 
 - Validate external data with type guards
 - Use generic types for reusable code
 
+### 10. `testing-logging.mdc`
+**Testing workflow reminders** - Always applied:
+- Quiet reporters log only suite lifecycle + failures for Vitest/Playwright
+- Use `TEST_LOG_VERBOSE=1` (global) or `// @testlog verbose` (per file) to re-enable success logs
+- `TEST_LOG_DEBUG=1` surfaces reporter internals when diagnosing hangs
+- Last `completed …` line tells you which suite is still running/hung; rerun that file directly when stuck
+
 ## Key Benefits
 
 1. **CI/CD Alignment** - Local development matches GitHub Actions exactly

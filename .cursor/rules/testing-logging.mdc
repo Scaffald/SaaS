@@ -1,0 +1,20 @@
+---
+description: "Testing workflow reminders: quiet reporters, verbose toggles, and hang diagnostics"
+alwaysApply: true
+---
+
+# Testing & Logging Reminders
+
+## Quiet Reporters
+- Vitest and Playwright use custom quiet reporters that only log suite lifecycle events and failures.
+- Expect `queued path/to/spec.test.ts` when a suite is scheduled and `completed path/to/spec.test.ts` when it finishes; the last `completed …` line shows which suite ran most recently (helpful when diagnosing hangs).
+
+## Verbose Toggles
+- **Global:** export `TEST_LOG_VERBOSE=1` before running `pnpm test:unit`, `pnpm test:watch`, or `pnpm test:playwright` to re-enable success logs for all suites.
+- **Per-file:** add `// @testlog verbose` to the top of a flaky spec file to temporarily surface `✓`/`↷` logs for that file only. Remove the pragma once the suite is stable.
+- **Deep debugging:** set `TEST_LOG_DEBUG=1` to emit internal reporter diagnostics (task IDs, file states). Only use when investigating reporter behavior; disable afterwards.
+
+## Preventing Hanging Tasks
+- When a test run appears stuck, look at the most recent `queued …` / `completed …` lines to identify the suite currently executing.
+- If the same suite stays queued without completion, re-run that file directly (e.g., `pnpm vitest run path/to/spec.test.ts`) to isolate the issue.
+- Encourage adding the pragma or `TEST_LOG_VERBOSE` while debugging long-running suites so you can see individual test progress without permanently increasing log noise.

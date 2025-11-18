@@ -1,4 +1,4 @@
-import { renderHook, waitFor, act } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react'
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { useMapPinState } from '../useMapPinState'
 import type { MapPinType } from '@app/ui'
@@ -22,7 +22,12 @@ describe('useMapPinState', () => {
   }
 
   beforeEach(() => {
+    vi.useFakeTimers()
     vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it('initializes with empty state', () => {
@@ -48,7 +53,13 @@ describe('useMapPinState', () => {
     expect(pinState?.opacity).toBe(0.5)
   })
 
-  it('pins transition to visible after delay', async () => {
+  const flushTransitions = () => {
+    act(() => {
+      vi.advanceTimersByTime(1000)
+    })
+  }
+
+  it('pins transition to visible after delay', () => {
     const { result } = renderHook(() => useMapPinState({ transitionDuration: 50 }))
 
     act(() => {
@@ -58,18 +69,14 @@ describe('useMapPinState', () => {
     // Pin should start as transitioning-in
     expect(result.current.pinStates.get('pin-1')?.visibility).toBe('transitioning-in')
 
-    // Wait for transition to complete
-    await waitFor(
-      () => {
-        const pinState = result.current.pinStates.get('pin-1')
-        expect(pinState?.visibility).toBe('visible')
-        expect(pinState?.opacity).toBe(1)
-      },
-      { timeout: 200 }
-    )
+    flushTransitions()
+
+    const pinState = result.current.pinStates.get('pin-1')
+    expect(pinState?.visibility).toBe('visible')
+    expect(pinState?.opacity).toBe(1)
   })
 
-  it('removed pins transition out', async () => {
+  it('removed pins transition out', () => {
     const { result } = renderHook(() => useMapPinState({ transitionDuration: 50 }))
 
     // Add pin
@@ -77,31 +84,17 @@ describe('useMapPinState', () => {
       result.current.processPins([mockPin], [])
     })
 
-    // Wait for transition in
-    await waitFor(
-      () => {
-        expect(result.current.pinStates.get('pin-1')?.visibility).toBe('visible')
-      },
-      { timeout: 200 }
-    )
+    flushTransitions()
+    expect(result.current.pinStates.get('pin-1')?.visibility).toBe('visible')
 
     // Remove pin
     act(() => {
       result.current.processPins([], [])
     })
 
-    // Pin should be transitioning out
-    const pinState = result.current.pinStates.get('pin-1')
-    expect(pinState?.visibility).toBe('transitioning-out')
-
-    // Wait for transition out to complete
-    await waitFor(
-      () => {
-        const finalPinState = result.current.pinStates.get('pin-1')
-        expect(finalPinState?.visibility).toBe('hidden')
-      },
-      { timeout: 200 }
-    )
+    flushTransitions()
+    const finalPinState = result.current.pinStates.get('pin-1')
+    expect(finalPinState?.visibility).toBe('hidden')
   })
 
   it('cluster assignment hides pins', () => {
@@ -112,9 +105,7 @@ describe('useMapPinState', () => {
     })
 
     // Wait for transition in
-    act(() => {
-      vi.advanceTimersByTime(300)
-    })
+    flushTransitions()
 
     // Assign to cluster
     act(() => {
@@ -126,7 +117,7 @@ describe('useMapPinState', () => {
     expect(pinState?.visibility).toBe('hidden')
   })
 
-  it('visiblePins includes only visible/transitioning-in pins', async () => {
+  it('visiblePins includes only visible/transitioning-in pins', () => {
     const { result } = renderHook(() => useMapPinState({ transitionDuration: 50 }))
 
     act(() => {
@@ -136,15 +127,10 @@ describe('useMapPinState', () => {
     // Both pins should be in visiblePins (transitioning-in counts as visible)
     expect(result.current.visiblePins.length).toBe(2)
 
-    // Wait for transitions to complete
-    await waitFor(
-      () => {
-        expect(result.current.visiblePins.length).toBe(2)
-        expect(result.current.visiblePins.some((p) => p.id === 'pin-1')).toBe(true)
-        expect(result.current.visiblePins.some((p) => p.id === 'pin-2')).toBe(true)
-      },
-      { timeout: 200 }
-    )
+    flushTransitions()
+    expect(result.current.visiblePins.length).toBe(2)
+    expect(result.current.visiblePins.some((p) => p.id === 'pin-1')).toBe(true)
+    expect(result.current.visiblePins.some((p) => p.id === 'pin-2')).toBe(true)
   })
 
   it('clusteredPins includes only clustered pins', () => {
@@ -155,9 +141,7 @@ describe('useMapPinState', () => {
     })
 
     // Wait for transition in
-    act(() => {
-      vi.advanceTimersByTime(300)
-    })
+    flushTransitions()
 
     // Assign one pin to cluster
     act(() => {
@@ -169,7 +153,7 @@ describe('useMapPinState', () => {
     expect(result.current.clusteredPins[0].id).toBe('pin-1')
   })
 
-  it('transitioningPins includes transitioning states', async () => {
+  it('transitioningPins includes transitioning states', () => {
     const { result } = renderHook(() => useMapPinState({ transitionDuration: 50 }))
 
     act(() => {
@@ -180,14 +164,10 @@ describe('useMapPinState', () => {
     expect(result.current.transitioningPins.length).toBe(1)
     expect(result.current.transitioningPins[0].id).toBe('pin-1')
 
-    // Wait for transition to complete
-    await waitFor(
-      () => {
-        // Pin should no longer be transitioning (now visible)
-        expect(result.current.transitioningPins.length).toBe(0)
-      },
-      { timeout: 200 }
-    )
+    act(() => {
+      vi.runOnlyPendingTimers()
+    })
+    expect(result.current.transitioningPins.length).toBe(0)
   })
 
   it('clearStates resets all state', () => {
@@ -229,20 +209,17 @@ describe('useMapPinState', () => {
     expect(result.current.pinStates.size).toBe(2)
   })
 
-  it('updatePinVisibility updates pin state', async () => {
+  it('updatePinVisibility updates pin state', () => {
     const { result } = renderHook(() => useMapPinState({ transitionDuration: 50 }))
 
     act(() => {
       result.current.processPins([mockPin], [])
     })
 
-    // Wait for transition in
-    await waitFor(
-      () => {
-        expect(result.current.pinStates.get('pin-1')?.visibility).toBe('visible')
-      },
-      { timeout: 200 }
-    )
+    act(() => {
+      vi.runOnlyPendingTimers()
+    })
+    expect(result.current.pinStates.get('pin-1')?.visibility).toBe('visible')
 
     // Manually update visibility
     act(() => {

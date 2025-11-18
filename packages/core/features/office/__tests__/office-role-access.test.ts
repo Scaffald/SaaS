@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { createServiceRoleClient } from '../../../../../tests/infrastructure/vitest/helpers/database'
 
+const hasServiceRoleKey =
+  typeof process.env.SUPABASE_TEST_SERVICE_ROLE_KEY === 'string' ||
+  typeof process.env.SUPABASE_SERVICE_ROLE_KEY === 'string'
+
+const describeIfHasKey = hasServiceRoleKey ? describe : describe.skip
+
 interface RoleAssignmentQueryResponse {
   data: {
     role: {
@@ -11,7 +17,7 @@ interface RoleAssignmentQueryResponse {
   error: Error | null;
 }
 
-describe('Office Role Access', () => {
+describeIfHasKey('Office Role Access', () => {
   describe('Database: @unicorn.love emails have office role', () => {
     it('should verify that all @unicorn.love emails have the office role assigned', async () => {
       const supabase = await createServiceRoleClient()

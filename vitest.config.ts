@@ -7,6 +7,10 @@ import { defineConfig, type UserConfig } from 'vitest/config'
 import { flowRemoveTypesPlugin } from './tests/infrastructure/vitest/plugins/flow-remove'
 const workspaceRoot = fileURLToPath(new URL('.', import.meta.url))
 const coverageReportsDirectory = resolve(workspaceRoot, 'coverage')
+const quietReporterPath = resolve(
+  workspaceRoot,
+  'tests/infrastructure/vitest/reporters/quiet-progress.ts',
+)
 
 type VitestPlugin = NonNullable<UserConfig['plugins']>[number]
 const plugins: VitestPlugin[] = [
@@ -14,7 +18,6 @@ const plugins: VitestPlugin[] = [
   flowRemoveTypesPlugin(),
 ]
 const reactNativeMockPath = resolve(workspaceRoot, 'tests/infrastructure/vitest/mocks/react-native.ts')
-console.log('[Vitest] react-native mock path:', reactNativeMockPath)
 
 export default defineConfig({
   root: workspaceRoot,
@@ -61,6 +64,7 @@ export default defineConfig({
       'tests/infrastructure/**',
     ],
     setupFiles: [resolve(workspaceRoot, 'tests/infrastructure/vitest/setup.ts')],
+    reporters: [quietReporterPath, 'hanging-process'],
     server: {
       deps: {
         inline: [

@@ -91,6 +91,11 @@ vi.mock('tamagui', () => {
 
   const useWindowDimensions = () => ({ width: windowDimensions.width })
 
+  const useMedia = () => ({
+    sm: windowDimensions.width <= 800,
+    gtSm: windowDimensions.width > 800,
+  })
+
   return {
     Dialog,
     Sheet,
@@ -100,6 +105,7 @@ vi.mock('tamagui', () => {
     YStack,
     Text,
     useWindowDimensions,
+    useMedia,
   }
 })
 

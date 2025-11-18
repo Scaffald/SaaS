@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { YStack, XStack, Text, Button, ScrollView, Separator } from '@app/ui'
+import { YStack, XStack, Text, Button, ScrollView, Separator, Input } from '@app/ui'
 import { ChevronDown, ChevronUp, Check, MessageSquare } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'

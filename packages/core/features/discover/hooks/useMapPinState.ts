@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useState, useRef, useCallback, useMemo } from 'react'
 import type { MapPinType as MapPin } from '@app/ui'
 
 /**
@@ -201,38 +201,22 @@ export function useMapPinState(
   /**
    * Queue a transition for a pin
    */
-  const queueTransition = useCallback(
-    (pinId: string, targetState: PinVisibilityState) => {
-      transitionQueueRef.current.push({
-        pinId,
-        targetState,
-        timestamp: Date.now(),
-      })
-    },
-    []
-  )
-
-  /**
-   * Process transition queue
-   */
-  useEffect(() => {
-    if (transitionQueueRef.current.length === 0 || isProcessingRef.current) {
+  const processTransitions = useCallback(() => {
+    if (isProcessingRef.current || transitionQueueRef.current.length === 0) {
       return
     }
 
     isProcessingRef.current = true
 
-    const processNext = () => {
+    const runNext = () => {
       const item = transitionQueueRef.current.shift()
       if (!item) {
         isProcessingRef.current = false
         return
       }
 
-      // Update pin to transitioning state first
       updatePinVisibility(item.pinId, item.targetState)
 
-      // After transition duration, update to final state
       setTimeout(() => {
         if (item.targetState === 'transitioning-in') {
           updatePinVisibility(item.pinId, 'visible')
@@ -240,13 +224,27 @@ export function useMapPinState(
           updatePinVisibility(item.pinId, 'hidden')
         }
 
-        // Process next item in queue
-        setTimeout(processNext, transitionQueueDelay)
+        setTimeout(() => {
+          isProcessingRef.current = false
+          processTransitions()
+        }, transitionQueueDelay)
       }, transitionDuration)
     }
 
-    processNext()
+    runNext()
   }, [transitionDuration, transitionQueueDelay, updatePinVisibility])
+
+  const queueTransition = useCallback(
+    (pinId: string, targetState: PinVisibilityState) => {
+      transitionQueueRef.current.push({
+        pinId,
+        targetState,
+        timestamp: Date.now(),
+      })
+      processTransitions()
+    },
+    [processTransitions]
+  )
 
   /**
    * Main function to process new pins and clusters

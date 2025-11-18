@@ -61,6 +61,17 @@ const ProgressMock = Object.assign(createPrimitive('div'), {
   Indicator: createPrimitive('div'),
 })
 
+const useMediaMock = () => ({
+  // Desktop defaults
+  gtMd: true,
+  gtSm: true,
+  md: true,
+  sm: false,
+  xs: false,
+  short: false,
+  long: true,
+})
+
 vi.mock('tamagui', () => ({
   __esModule: true as const,
   Text: createPrimitive('span'),
@@ -76,6 +87,8 @@ vi.mock('tamagui', () => ({
   Sheet: SheetMock,
   Select: SelectMock,
   Dialog: DialogMock,
+  createTamagui: vi.fn(() => ({})),
+  useMedia: useMediaMock,
 }))
 
 vi.mock('@tamagui/lucide-icons', () => {
@@ -105,6 +118,12 @@ vi.mock('react-native', () => ({
   TouchableOpacity: createComponent('button'),
   TextInput: createComponent('input'),
   ScrollView: createComponent('div'),
+  FlatList: createComponent('div'),
+  Image: createComponent('img'),
+  StyleSheet: {
+    create: (styles: Record<string, unknown>) => styles,
+    flatten: (styles: unknown) => styles,
+  },
   Dimensions: {
     get: (_type: 'screen' | 'window') => ({
       width: 1024,

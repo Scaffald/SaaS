@@ -22,6 +22,22 @@ This guide translates the Vitest tooling introduced for REQ-172 into practical w
 
 > ℹ️ All of the commands above run Vitest in **non-watch mode by default**. Use `pnpm test:watch` (or pass `--watch` when invoking `vitest` directly) whenever you need automatic re-runs while editing files.
 
+## Test Logging & Diagnostics
+
+- **Vitest + Playwright now default to quiet reporters.** Successful specs stay silent; instead you get `queued apps/.../file.test.ts` when a suite enters the execution plan and `completed apps/.../file.test.ts` when it finishes. Even if workers run suites out of order, the final “completed …” line tells you which file finished last (and therefore which one is currently running or hung).
+- **Preserve summaries.** Both reporters still delegate to the standard summary output, so you continue to see total tests, pass/fail counts, and durations at the end of each run.
+- **Opt-in verbose logging globally:** `TEST_LOG_VERBOSE=1 pnpm test:unit` (or `TEST_LOG_VERBOSE=1 pnpm test:playwright`) restores success logs for every test.
+- **Opt-in verbose logging per file:** add a pragma comment to the top of the spec you want to monitor while it is flaky:
+
+```
+// @testlog verbose
+import { describe, it, expect } from 'vitest'
+```
+
+  Only files with this pragma (or when the env var is set) will print `✓` entries for passing tests. Remove the pragma once the suite is stable to keep the console noise-free.
+
+These reporters live under `tests/infrastructure/vitest/reporters/quiet-progress.ts` and `tests/infrastructure/playwright/quiet-reporter.ts`. Update them if future scenarios need richer metadata (e.g., linking to trace IDs).
+
 ## Running Individual Suites
 
 Vitest respects native filtering flags:
