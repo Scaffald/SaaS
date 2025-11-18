@@ -26,6 +26,7 @@ import { projectsRouter } from "./projects.router.ts";
 import { sitesRouter } from "./sites.router.ts";
 import { addressesRouter } from "./addresses.router.ts";
 import { newsRouter } from "./news.router.ts";
+import { inquiriesRouter } from "./inquiries.router.ts";
 
 /**
  * Main application router
@@ -59,6 +60,7 @@ export const appRouter = t.router({
   sites: sitesRouter,
   addresses: addressesRouter,
   news: newsRouter,
+  inquiries: inquiriesRouter,
 });
 
 // Export the router type for client-side usage
