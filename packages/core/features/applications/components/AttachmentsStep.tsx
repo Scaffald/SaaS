@@ -1,7 +1,8 @@
-import { useState } from 'react'
-import { Button, Text, XStack, YStack } from 'tamagui'
-import { ArrowLeft, FileText, Upload, X } from '@tamagui/lucide-icons'
+import { useState, useCallback, useRef } from 'react'
+import { Button, Text, XStack, YStack, Progress } from 'tamagui'
+import { ArrowLeft, FileText, Upload, X, CheckCircle2 } from '@tamagui/lucide-icons'
 import type { AttachmentMetadata } from '@app/schemas'
+import { api } from '@app/core/utils/api'
 
 type AttachmentType = 'resume' | 'cover_letter' | 'portfolio'
 
@@ -41,6 +42,11 @@ export interface AttachmentsStepProps {
    * Whether resume is required
    */
   requireResume?: boolean
+
+  /**
+   * Application ID for file uploads (optional - if not provided, files are stored locally)
+   */
+  applicationId?: string
 }
 
 /**
@@ -62,9 +68,16 @@ export function AttachmentsStep({
   onContinue,
   isSubmitting = false,
   requireResume = true,
+  applicationId,
 }: AttachmentsStepProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [uploading, setUploading] = useState<Record<string, boolean>>({})
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({})
+  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({})
+  const dragOverRefs = useRef<Record<string, boolean>>({})
+
+  const getUploadUrlMutation = api.applications.getUploadUrl.useMutation()
+  const confirmUploadMutation = api.applications.confirmUpload.useMutation()
 
   /**
    * Get attachment by type
@@ -96,66 +109,166 @@ export function AttachmentsStep({
   /**
    * Handle file selection
    */
-  const handleFileSelect = async (type: AttachmentType, file: File) => {
-    // Validate file type
-    if (!isValidFileType(file)) {
-      setErrors({
-        ...errors,
-        [type]: 'Please upload a PDF, DOC, or DOCX file',
-      })
-      return
-    }
-
-    // Validate file size
-    if (!isValidFileSize(file)) {
-      setErrors({
-        ...errors,
-        [type]: 'File size must be less than 5MB',
-      })
-      return
-    }
-
-    // Clear errors
-    const newErrors = { ...errors }
-    delete newErrors[type]
-    setErrors(newErrors)
-
-    // Set uploading state
-    setUploading({ ...uploading, [type]: true })
-
-    try {
-      // TODO: Implement actual upload logic using tRPC
-      // For now, just create metadata
-      const newAttachment: AttachmentMetadata = {
-        path: `applications/${type}/${file.name}`,
-        filename: file.name,
-        size: file.size,
-        mime_type: file.type,
-        uploaded_at: new Date().toISOString(),
+  const handleFileSelect = useCallback(
+    async (type: AttachmentType, file: File) => {
+      // Validate file type
+      if (!isValidFileType(file)) {
+        setErrors((prev) => ({
+          ...prev,
+          [type]: 'Please upload a PDF, DOC, or DOCX file',
+        }))
+        return
       }
 
-      // Update attachments
-      onAttachmentsChange({
-        ...attachments,
-        [type]: newAttachment,
+      // Validate file size
+      if (!isValidFileSize(file)) {
+        setErrors((prev) => ({
+          ...prev,
+          [type]: 'File size must be less than 5MB',
+        }))
+        return
+      }
+
+      // Clear errors
+      setErrors((prev) => {
+        const newErrors = { ...prev }
+        newErrors[type] = undefined
+        return newErrors
       })
-    } catch {
-      setErrors({
-        ...errors,
-        [type]: 'Failed to upload file. Please try again.',
-      })
-    } finally {
-      setUploading({ ...uploading, [type]: false })
-    }
-  }
+
+      // Set uploading state
+      setUploading((prev) => ({ ...prev, [type]: true }))
+      setUploadProgress((prev) => ({ ...prev, [type]: 0 }))
+
+      try {
+        let attachmentMetadata: AttachmentMetadata
+
+        if (applicationId) {
+          // Get upload URL from tRPC
+          const { uploadUrl, path } = await getUploadUrlMutation.mutateAsync({
+            application_id: applicationId,
+            attachment_type: type,
+            filename: file.name,
+            mime_type: file.type,
+            size: file.size,
+          })
+
+          // Upload file to Supabase storage
+          const formData = new FormData()
+          formData.append('file', file)
+
+          // Simulate progress (actual upload doesn't provide progress events)
+          setUploadProgress((prev) => ({ ...prev, [type]: 50 }))
+
+          const uploadResponse = await fetch(uploadUrl, {
+            method: 'PUT',
+            body: file,
+            headers: {
+              'Content-Type': file.type,
+            },
+          })
+
+          if (!uploadResponse.ok) {
+            throw new Error('Failed to upload file to storage')
+          }
+
+          setUploadProgress((prev) => ({ ...prev, [type]: 90 }))
+
+          // Confirm upload
+          await confirmUploadMutation.mutateAsync({
+            application_id: applicationId,
+            attachment_type: type,
+            path,
+            filename: file.name,
+            size: file.size,
+            mime_type: file.type,
+          })
+
+          attachmentMetadata = {
+            path,
+            filename: file.name,
+            size: file.size,
+            mime_type: file.type,
+            uploaded_at: new Date().toISOString(),
+          }
+        } else {
+          // No application ID - store metadata locally (will be uploaded when application is created)
+          attachmentMetadata = {
+            path: `applications/${type}/${file.name}`,
+            filename: file.name,
+            size: file.size,
+            mime_type: file.type,
+            uploaded_at: new Date().toISOString(),
+          }
+        }
+
+        setUploadProgress((prev) => ({ ...prev, [type]: 100 }))
+
+        // Update attachments
+        onAttachmentsChange({
+          ...attachments,
+          [type]: attachmentMetadata,
+        })
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to upload file. Please try again.'
+        setErrors((prev) => ({
+          ...prev,
+          [type]: errorMessage,
+        }))
+      } finally {
+        setUploading((prev) => ({ ...prev, [type]: false }))
+        // Reset progress after a delay
+        setTimeout(() => {
+          setUploadProgress((prev) => {
+            const newProgress = { ...prev }
+            newProgress[type] = undefined
+            return newProgress
+          })
+        }, 500)
+      }
+    },
+    [applicationId, attachments, onAttachmentsChange, getUploadUrlMutation, confirmUploadMutation]
+  )
+
+  /**
+   * Handle drag and drop
+   */
+  const handleDragOver = useCallback(
+    (type: AttachmentType, e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      dragOverRefs.current[type] = true
+    },
+    []
+  )
+
+  const handleDragLeave = useCallback((type: AttachmentType) => {
+    dragOverRefs.current[type] = false
+  }, [])
+
+  const handleDrop = useCallback(
+    (type: AttachmentType, e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      dragOverRefs.current[type] = false
+
+      const file = e.dataTransfer.files?.[0]
+      if (file) {
+        handleFileSelect(type, file)
+      }
+    },
+    [handleFileSelect]
+  )
 
   /**
    * Handle file removal
    */
   const handleFileRemove = (type: AttachmentType) => {
     const newAttachments = { ...attachments }
-    delete newAttachments[type]
-    onAttachmentsChange(newAttachments)
+    // Remove the attachment by creating a new object without it
+    const { [type]: _removed, ...rest } = newAttachments
+    onAttachmentsChange(rest as Attachments)
   }
 
   /**
@@ -214,15 +327,15 @@ export function AttachmentsStep({
           <XStack
             p="$4"
             rounded="$4"
-            borderWidth={1}
-            borderColor="$borderColor"
-            bg="$background"
+            borderWidth={2}
+            borderColor="$green9"
+            bg="$green2"
             justify="space-between"
             items="center"
             gap="$3"
           >
             <XStack gap="$3" items="center" flex={1}>
-              <FileText size={24} color="$blue9" />
+              <CheckCircle2 size={24} color="$green10" />
               <YStack flex={1}>
                 <Text fontSize="$4" fontWeight="600" color="$color12">
                   {getAttachment('resume')?.filename}
@@ -241,6 +354,36 @@ export function AttachmentsStep({
               disabled={isSubmitting || uploading.resume}
             />
           </XStack>
+        ) : uploading.resume ? (
+          <YStack gap="$2">
+            <YStack
+              p="$6"
+              rounded="$4"
+              borderWidth={2}
+              borderColor="$blue9"
+              bg="$blue2"
+              items="center"
+              gap="$3"
+            >
+              <Upload size={32} color="$blue10" />
+              <YStack gap="$2" width="100%">
+                <Text fontSize="$4" fontWeight="600" color="$color12" text="center">
+                  Uploading...
+                </Text>
+                <Progress
+                  value={uploadProgress.resume || 0}
+                  max={100}
+                  backgroundColor="$blue4"
+                  progressBackgroundColor="$blue9"
+                >
+                  <Progress.Indicator animation="bouncy" />
+                </Progress>
+                <Text fontSize="$2" color="$color11" text="center">
+                  {uploadProgress.resume || 0}%
+                </Text>
+              </YStack>
+            </YStack>
+          </YStack>
         ) : (
           <YStack gap="$2">
             <label htmlFor="resume-upload">
@@ -248,13 +391,16 @@ export function AttachmentsStep({
                 p="$6"
                 rounded="$4"
                 borderWidth={2}
-                borderColor={errors.resume ? '$red9' : '$borderColor'}
+                borderColor={errors.resume ? '$red9' : dragOverRefs.current.resume ? '$blue9' : '$borderColor'}
                 borderStyle="dashed"
-                bg="$background"
+                bg={dragOverRefs.current.resume ? '$blue2' : '$background'}
                 items="center"
                 gap="$3"
                 cursor="pointer"
                 hoverStyle={{ borderColor: '$blue9', bg: '$blue2' }}
+                onDragOver={(e) => handleDragOver('resume', e)}
+                onDragLeave={() => handleDragLeave('resume')}
+                onDrop={(e) => handleDrop('resume', e)}
               >
                 <Upload size={32} color={errors.resume ? '$red9' : '$blue9'} />
                 <YStack gap="$1" items="center">
@@ -268,6 +414,9 @@ export function AttachmentsStep({
               </YStack>
             </label>
             <input
+              ref={(el) => {
+                fileInputRefs.current.resume = el
+              }}
               id="resume-upload"
               type="file"
               accept=".pdf,.doc,.docx"
@@ -284,12 +433,6 @@ export function AttachmentsStep({
               </Text>
             )}
           </YStack>
-        )}
-
-        {uploading.resume && (
-          <Text fontSize="$3" color="$blue10">
-            Uploading...
-          </Text>
         )}
       </YStack>
 
@@ -308,15 +451,15 @@ export function AttachmentsStep({
           <XStack
             p="$4"
             rounded="$4"
-            borderWidth={1}
-            borderColor="$borderColor"
-            bg="$background"
+            borderWidth={2}
+            borderColor="$green9"
+            bg="$green2"
             justify="space-between"
             items="center"
             gap="$3"
           >
             <XStack gap="$3" items="center" flex={1}>
-              <FileText size={24} color="$blue9" />
+              <CheckCircle2 size={24} color="$green10" />
               <YStack flex={1}>
                 <Text fontSize="$4" fontWeight="600" color="$color12">
                   {getAttachment('cover_letter')?.filename}
@@ -335,6 +478,36 @@ export function AttachmentsStep({
               disabled={isSubmitting || uploading.cover_letter}
             />
           </XStack>
+        ) : uploading.cover_letter ? (
+          <YStack gap="$2">
+            <YStack
+              p="$6"
+              rounded="$4"
+              borderWidth={2}
+              borderColor="$blue9"
+              bg="$blue2"
+              items="center"
+              gap="$3"
+            >
+              <Upload size={32} color="$blue10" />
+              <YStack gap="$2" width="100%">
+                <Text fontSize="$4" fontWeight="600" color="$color12" text="center">
+                  Uploading...
+                </Text>
+                <Progress
+                  value={uploadProgress.cover_letter || 0}
+                  max={100}
+                  backgroundColor="$blue4"
+                  progressBackgroundColor="$blue9"
+                >
+                  <Progress.Indicator animation="bouncy" />
+                </Progress>
+                <Text fontSize="$2" color="$color11" text="center">
+                  {uploadProgress.cover_letter || 0}%
+                </Text>
+              </YStack>
+            </YStack>
+          </YStack>
         ) : (
           <YStack gap="$2">
             <label htmlFor="cover-letter-upload">
@@ -342,15 +515,18 @@ export function AttachmentsStep({
                 p="$6"
                 rounded="$4"
                 borderWidth={2}
-                borderColor="$borderColor"
+                borderColor={errors.cover_letter ? '$red9' : dragOverRefs.current.cover_letter ? '$blue9' : '$borderColor'}
                 borderStyle="dashed"
-                bg="$background"
+                bg={dragOverRefs.current.cover_letter ? '$blue2' : '$background'}
                 items="center"
                 gap="$3"
                 cursor="pointer"
                 hoverStyle={{ borderColor: '$blue9', bg: '$blue2' }}
+                onDragOver={(e) => handleDragOver('cover_letter', e)}
+                onDragLeave={() => handleDragLeave('cover_letter')}
+                onDrop={(e) => handleDrop('cover_letter', e)}
               >
-                <Upload size={32} color="$blue9" />
+                <Upload size={32} color={errors.cover_letter ? '$red9' : '$blue9'} />
                 <YStack gap="$1" items="center">
                   <Text fontSize="$4" fontWeight="600" color="$color12">
                     Choose a file or drag it here
@@ -362,6 +538,9 @@ export function AttachmentsStep({
               </YStack>
             </label>
             <input
+              ref={(el) => {
+                fileInputRefs.current.cover_letter = el
+              }}
               id="cover-letter-upload"
               type="file"
               accept=".pdf,.doc,.docx"
@@ -378,12 +557,6 @@ export function AttachmentsStep({
               </Text>
             )}
           </YStack>
-        )}
-
-        {uploading.cover_letter && (
-          <Text fontSize="$3" color="$blue10">
-            Uploading...
-          </Text>
         )}
       </YStack>
 
@@ -402,15 +575,15 @@ export function AttachmentsStep({
           <XStack
             p="$4"
             rounded="$4"
-            borderWidth={1}
-            borderColor="$borderColor"
-            bg="$background"
+            borderWidth={2}
+            borderColor="$green9"
+            bg="$green2"
             justify="space-between"
             items="center"
             gap="$3"
           >
             <XStack gap="$3" items="center" flex={1}>
-              <FileText size={24} color="$blue9" />
+              <CheckCircle2 size={24} color="$green10" />
               <YStack flex={1}>
                 <Text fontSize="$4" fontWeight="600" color="$color12">
                   {getAttachment('portfolio')?.filename}
@@ -429,6 +602,36 @@ export function AttachmentsStep({
               disabled={isSubmitting || uploading.portfolio}
             />
           </XStack>
+        ) : uploading.portfolio ? (
+          <YStack gap="$2">
+            <YStack
+              p="$6"
+              rounded="$4"
+              borderWidth={2}
+              borderColor="$blue9"
+              bg="$blue2"
+              items="center"
+              gap="$3"
+            >
+              <Upload size={32} color="$blue10" />
+              <YStack gap="$2" width="100%">
+                <Text fontSize="$4" fontWeight="600" color="$color12" text="center">
+                  Uploading...
+                </Text>
+                <Progress
+                  value={uploadProgress.portfolio || 0}
+                  max={100}
+                  backgroundColor="$blue4"
+                  progressBackgroundColor="$blue9"
+                >
+                  <Progress.Indicator animation="bouncy" />
+                </Progress>
+                <Text fontSize="$2" color="$color11" text="center">
+                  {uploadProgress.portfolio || 0}%
+                </Text>
+              </YStack>
+            </YStack>
+          </YStack>
         ) : (
           <YStack gap="$2">
             <label htmlFor="portfolio-upload">
@@ -436,15 +639,18 @@ export function AttachmentsStep({
                 p="$6"
                 rounded="$4"
                 borderWidth={2}
-                borderColor="$borderColor"
+                borderColor={errors.portfolio ? '$red9' : dragOverRefs.current.portfolio ? '$blue9' : '$borderColor'}
                 borderStyle="dashed"
-                bg="$background"
+                bg={dragOverRefs.current.portfolio ? '$blue2' : '$background'}
                 items="center"
                 gap="$3"
                 cursor="pointer"
                 hoverStyle={{ borderColor: '$blue9', bg: '$blue2' }}
+                onDragOver={(e) => handleDragOver('portfolio', e)}
+                onDragLeave={() => handleDragLeave('portfolio')}
+                onDrop={(e) => handleDrop('portfolio', e)}
               >
-                <Upload size={32} color="$blue9" />
+                <Upload size={32} color={errors.portfolio ? '$red9' : '$blue9'} />
                 <YStack gap="$1" items="center">
                   <Text fontSize="$4" fontWeight="600" color="$color12">
                     Choose a file or drag it here
@@ -456,6 +662,9 @@ export function AttachmentsStep({
               </YStack>
             </label>
             <input
+              ref={(el) => {
+                fileInputRefs.current.portfolio = el
+              }}
               id="portfolio-upload"
               type="file"
               accept=".pdf,.doc,.docx"
@@ -472,12 +681,6 @@ export function AttachmentsStep({
               </Text>
             )}
           </YStack>
-        )}
-
-        {uploading.portfolio && (
-          <Text fontSize="$3" color="$blue10">
-            Uploading...
-          </Text>
         )}
       </YStack>
 

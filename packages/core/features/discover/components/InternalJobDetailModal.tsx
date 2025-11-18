@@ -37,6 +37,7 @@ import { Chip } from '@app/ui'
 import type { InternalJob } from './InternalJobCard'
 import { api } from '@app/core/utils/api'
 import { ApplicationWizard, QuickApplyModal } from '@app/core/features/applications/components'
+import { getApplicationFlow } from '@app/core/features/applications/utils/getApplicationFlow'
 
 interface InternalJobDetailModalProps {
   job: InternalJob | null
@@ -200,21 +201,24 @@ export function InternalJobDetailModal({
 
   // Extract required and optional skills from job
   // Note: InternalJob type doesn't include is_required, so we'll show all skills as required for now
-  // This will be enhanced in Task 12 with proper flow selection
   const requiredSkills = (job.skills || [])
     .map((skill) => skill.name || skill.id)
     .filter((name): name is string => Boolean(name))
   const optionalSkills: string[] = [] // Will be populated when job_skills includes is_required
 
-  // Determine which application flow to use
-  // For now, use QuickApplyModal for simple jobs (flow selection logic will be added in Task 12)
-  // TODO: Add flow selection logic in Task 12 based on custom_application_questions and required_attachments
-  const useQuickApply = true // Temporary - will be replaced with actual flow selection logic
+  // Determine which application flow to use based on job requirements
+  const flowType = getApplicationFlow({
+    id: job.id,
+    title: job.title,
+    organization: job.organization,
+    custom_application_questions: job.custom_application_questions,
+    required_attachments: job.required_attachments,
+  })
 
   const handleApply = () => {
     if (hasApplied) return
 
-    if (useQuickApply) {
+    if (flowType === 'quick') {
       setShowQuickApplyModal(true)
     } else {
       setShowApplicationWizard(true)
@@ -559,13 +563,13 @@ export function InternalJobDetailModal({
               )}
 
               {/* Application Section */}
-              {!hasApplied && !showApplicationForm && !showApplicationWizard && (
+              {!hasApplied && !showApplicationForm && !showApplicationWizard && !showQuickApplyModal && (
                 <>
                   <Separator />
                   <Button
                     size="$4"
                     theme="info"
-                    onPress={() => setShowApplicationWizard(true)}
+                    onPress={handleApply}
                     mt="$2"
                   >
                     Apply for this Position

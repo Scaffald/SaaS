@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { YStack, Text, Button, Spinner } from 'tamagui'
 import { ExternalLink } from '@tamagui/lucide-icons'
-import { ApplicationWizard } from '@app/core/features/applications/components'
+import { ApplicationWizard, QuickApplyModal } from '@app/core/features/applications/components'
+import { getApplicationFlow } from '@app/core/features/applications/utils/getApplicationFlow'
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 import { ROUTES } from '@app/core/constants/routes'
@@ -69,8 +71,110 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
     )
   }
 
-  // Internal job - show ApplicationWizard
+  // Internal job - show appropriate flow based on job requirements
   if (!isExternal && 'organization' in job) {
+    const [showQuickApply, setShowQuickApply] = useState(false)
+
+    // Determine which flow to use
+    const flowType = getApplicationFlow({
+      id: job.id,
+      title: job.title,
+      organization: job.organization,
+      custom_application_questions:
+        'custom_application_questions' in job
+          ? (job.custom_application_questions as
+              | Array<{
+                  id: string
+                  question: string
+                  type: 'short_text' | 'long_text' | 'single_choice' | 'multiple_choice' | 'yes_no'
+                  required: boolean
+                  options?: string[]
+                }>
+              | undefined)
+          : undefined,
+      required_attachments:
+        'required_attachments' in job
+          ? (job.required_attachments as
+              | Record<
+                  string,
+                  {
+                    required: boolean
+                    max_size_mb?: number
+                  }
+                >
+              | undefined)
+          : undefined,
+    })
+
+    // Track flow selection (using console.log for now since analytics events need to be added to the type system)
+    useEffect(() => {
+      if (job) {
+        // TODO: Add 'application_flow_selected' to analytics event types
+        console.log('Application flow selected:', { flow_type: flowType, job_id: job.id })
+      }
+    }, [job, flowType])
+
+    // Quick apply flow
+    if (flowType === 'quick') {
+      return (
+        <YStack flex={1} p="$4" gap="$4">
+          <YStack gap="$3">
+            <Text fontSize="$6" fontWeight="700" color="$color12">
+              Apply to {job.title}
+            </Text>
+            <Text fontSize="$4" color="$color11" lineHeight="$5">
+              This is a quick application. You'll answer a few screening questions and submit your
+              application.
+            </Text>
+          </YStack>
+
+          <Button
+            size="$5"
+            theme="info"
+            onPress={() => {
+              setShowQuickApply(true)
+              // TODO: Add 'application_started' to analytics event types
+              console.log('Application started:', { flow_type: 'quick', job_id: job.id })
+            }}
+          >
+            Apply Now
+          </Button>
+
+          <Button
+            size="$4"
+            chromeless
+            onPress={() => {
+              router.push(ROUTES.DASHBOARD_DISCOVER_JOBS.path)
+            }}
+          >
+            Back to Jobs
+          </Button>
+
+          {showQuickApply && (
+            <QuickApplyModal
+              jobId={job.id}
+              jobTitle={job.title}
+              organizationName={job.organization?.name || 'Unknown Organization'}
+              open={showQuickApply}
+              onOpenChange={setShowQuickApply}
+              onSuccess={(applicationId) => {
+                console.log('Quick application submitted successfully:', applicationId)
+                // TODO: Add 'application_completed' to analytics event types
+                console.log('Application completed:', {
+                  flow_type: 'quick',
+                  job_id: job.id,
+                  application_id: applicationId,
+                })
+                setShowQuickApply(false)
+                // Could navigate to applications page or show success
+              }}
+            />
+          )}
+        </YStack>
+      )
+    }
+
+    // Full wizard flow
     return (
       <YStack flex={1} height="100%">
         <ApplicationWizard
@@ -79,6 +183,12 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           organizationName={job.organization?.name || 'Unknown Organization'}
           onSuccess={(applicationId) => {
             console.log('Application submitted successfully:', applicationId)
+            // TODO: Add 'application_completed' to analytics event types
+            console.log('Application completed:', {
+              flow_type: 'full',
+              job_id: job.id,
+              application_id: applicationId,
+            })
             // Could navigate to applications page or show success
           }}
           onCancel={() => {

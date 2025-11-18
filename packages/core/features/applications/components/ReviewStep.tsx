@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { Button, Separator, Text, XStack, YStack } from 'tamagui'
-import { Check, Edit3 } from '@tamagui/lucide-icons'
+import { Check, Edit3, FileText } from '@tamagui/lucide-icons'
 import type { ScreeningAnswers, CustomQuestionAnswer, AttachmentMetadata } from '@app/schemas'
+import { Checkbox } from '@app/ui'
 
 export interface ReviewStepProps {
   /**
@@ -58,6 +60,8 @@ export function ReviewStep({
   isSubmitting = false,
   isEditMode = false,
 }: ReviewStepProps) {
+  const [hasConsent, setHasConsent] = useState(false)
+
   return (
     <YStack gap="$6" width="100%" maxW={800} p="$4">
       {/* Header */}
@@ -74,14 +78,18 @@ export function ReviewStep({
       <YStack
         gap="$4"
         bg="$background"
-        p="$4"
+        p="$6"
         rounded="$4"
         borderWidth={1}
         borderColor="$borderColor"
+        shadowColor="$gray4"
+        shadowOffset={{ width: 0, height: 1 }}
+        shadowOpacity={0.1}
+        shadowRadius={3}
       >
         <XStack justify="space-between" items="center">
           <Text fontSize="$6" fontWeight="bold" color="$color12">
-            Basic Information
+            Screening Questions
           </Text>
           <Button
             size="$3"
@@ -89,14 +97,17 @@ export function ReviewStep({
             icon={Edit3}
             onPress={() => onEdit('screening')}
             disabled={isSubmitting}
+            chromeless
           >
-            Edit
+            <Text fontSize="$3" color="$blue10" fontWeight="500">
+              Edit
+            </Text>
           </Button>
         </XStack>
 
         <Separator />
 
-        <YStack gap="$3">
+        <YStack gap="$4">
           <InfoRow
             label="Current Location"
             value={screeningAnswers.current_location || 'Not provided'}
@@ -107,14 +118,18 @@ export function ReviewStep({
           />
           <InfoRow
             label="Years of Experience"
-            value={screeningAnswers.years_experience?.toString() || 'Not provided'}
+            value={
+              screeningAnswers.years_experience
+                ? `${screeningAnswers.years_experience} years`
+                : 'Not provided'
+            }
           />
           <InfoRow
             label="Work Authorization"
             value={
               screeningAnswers.is_authorized_to_work
-                ? 'Yes, authorized to work'
-                : 'Will require sponsorship'
+                ? 'Yes, authorized to work in the US'
+                : 'No, will require sponsorship'
             }
           />
           <InfoRow
@@ -129,10 +144,14 @@ export function ReviewStep({
         <YStack
           gap="$4"
           bg="$background"
-          p="$4"
+          p="$6"
           rounded="$4"
           borderWidth={1}
           borderColor="$borderColor"
+          shadowColor="$gray4"
+          shadowOffset={{ width: 0, height: 1 }}
+          shadowOpacity={0.1}
+          shadowRadius={3}
         >
           <XStack justify="space-between" items="center">
             <Text fontSize="$6" fontWeight="bold" color="$color12">
@@ -144,17 +163,20 @@ export function ReviewStep({
               icon={Edit3}
               onPress={() => onEdit('questions')}
               disabled={isSubmitting}
+              chromeless
             >
-              Edit
+              <Text fontSize="$3" color="$blue10" fontWeight="500">
+                Edit
+              </Text>
             </Button>
           </XStack>
 
           <Separator />
 
-          <YStack gap="$3">
-            {customQuestionAnswers.map((answer) => (
+          <YStack gap="$4">
+            {customQuestionAnswers.map((answer, index) => (
               <InfoRow
-                key={answer.question}
+                key={answer.question_id || index}
                 label={answer.question}
                 value={formatAnswer(answer.answer)}
               />
@@ -167,14 +189,18 @@ export function ReviewStep({
       <YStack
         gap="$4"
         bg="$background"
-        p="$4"
+        p="$6"
         rounded="$4"
         borderWidth={1}
         borderColor="$borderColor"
+        shadowColor="$gray4"
+        shadowOffset={{ width: 0, height: 1 }}
+        shadowOpacity={0.1}
+        shadowRadius={3}
       >
         <XStack justify="space-between" items="center">
           <Text fontSize="$6" fontWeight="bold" color="$color12">
-            Uploaded Documents
+            Documents
           </Text>
           <Button
             size="$3"
@@ -182,43 +208,70 @@ export function ReviewStep({
             icon={Edit3}
             onPress={() => onEdit('attachments')}
             disabled={isSubmitting}
+            chromeless
           >
-            Edit
+            <Text fontSize="$3" color="$blue10" fontWeight="500">
+              Edit
+            </Text>
           </Button>
         </XStack>
 
         <Separator />
 
-        <YStack gap="$3">
-          {Object.keys(attachments).length > 0 ? (
-            Object.entries(attachments).map(([type, metadata]) => (
-              <XStack key={type} gap="$2" items="center">
-                <Check size={20} color="$green10" />
-                <YStack gap="$1" flex={1}>
-                  <Text fontSize="$3" fontWeight="600" color="$color12">
-                    {formatAttachmentType(type)}
-                  </Text>
-                  <Text fontSize="$2" color="$color10">
-                    {metadata.filename} ({formatFileSize(metadata.size)})
-                  </Text>
-                </YStack>
-              </XStack>
-            ))
+        <YStack gap="$4">
+          {attachments.resume ? (
+            <DocumentRow
+              type="Resume"
+              metadata={attachments.resume}
+              required
+            />
           ) : (
             <Text fontSize="$3" color="$color10">
-              No documents uploaded
+              Resume: Not provided
             </Text>
+          )}
+
+          {attachments.cover_letter ? (
+            <DocumentRow
+              type="Cover Letter"
+              metadata={attachments.cover_letter}
+              required={false}
+            />
+          ) : (
+            <Text fontSize="$3" color="$color10">
+              Cover Letter: Not provided
+            </Text>
+          )}
+
+          {attachments.portfolio && (
+            <DocumentRow
+              type="Portfolio"
+              metadata={attachments.portfolio}
+              required={false}
+            />
           )}
         </YStack>
       </YStack>
 
-      {/* Terms and Conditions */}
-      <YStack gap="$2" p="$4" bg="$blue2" rounded="$4" borderWidth={1} borderColor="$blue7">
-        <Text fontSize="$3" color="$color12">
-          By submitting this application, you confirm that all information provided is accurate and
-          complete. You understand that any false information may result in rejection of your
-          application or termination of employment if discovered after hiring.
-        </Text>
+      {/* Submission Consent */}
+      <YStack gap="$3" p="$4" bg="$background" rounded="$4" borderWidth={1} borderColor="$borderColor">
+        <XStack gap="$3" items="flex-start">
+          <Checkbox
+            checked={hasConsent}
+            onCheckedChange={setHasConsent}
+            disabled={isSubmitting}
+            size="medium"
+            ariaLabel="I certify that the information provided is accurate and complete"
+          />
+          <YStack gap="$1" flex={1}>
+            <Text fontSize="$4" fontWeight="500" color="$color12">
+              I certify that the information provided is accurate and complete
+            </Text>
+            <Text fontSize="$2" color="$color11">
+              By submitting this application, you agree to our Terms of Service and Privacy Policy
+            </Text>
+          </YStack>
+        </XStack>
       </YStack>
 
       {/* Submit Button */}
@@ -226,8 +279,9 @@ export function ReviewStep({
         size="$5"
         theme="info"
         onPress={onSubmit}
-        disabled={isSubmitting}
+        disabled={isSubmitting || !hasConsent}
         icon={isSubmitting ? undefined : Check}
+        opacity={!hasConsent ? 0.5 : 1}
       >
         {isSubmitting
           ? isEditMode
@@ -246,14 +300,70 @@ export function ReviewStep({
  */
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <YStack gap="$1">
-      <Text fontSize="$2" fontWeight="600" color="$color11">
+    <YStack gap="$2">
+      <Text fontSize="$3" fontWeight="400" color="$gray11">
         {label}
       </Text>
-      <Text fontSize="$3" color="$color12">
+      <Text fontSize="$4" fontWeight="500" color="$color12">
         {value}
       </Text>
     </YStack>
+  )
+}
+
+/**
+ * Helper component for displaying document rows
+ */
+function DocumentRow({
+  type,
+  metadata,
+  required,
+}: {
+  type: string
+  metadata: AttachmentMetadata
+  required: boolean
+}) {
+  const uploadedDate = metadata.uploaded_at
+    ? new Date(metadata.uploaded_at)
+    : null
+  const formattedDate = uploadedDate
+    ? uploadedDate.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    : 'Recently uploaded'
+
+  return (
+    <XStack gap="$3" items="center">
+      <FileText size={20} color="$blue10" />
+      <YStack gap="$1" flex={1}>
+        <XStack gap="$2" items="center">
+          <Text fontSize="$4" fontWeight="500" color="$color12">
+            {type}
+          </Text>
+          {required && (
+            <Text fontSize="$2" color="$red10">
+              (Required)
+            </Text>
+          )}
+        </XStack>
+        <Text fontSize="$3" color="$color11">
+          {metadata.filename}
+        </Text>
+        <XStack gap="$2" items="center">
+          <Text fontSize="$2" color="$color10">
+            {formatFileSize(metadata.size)}
+          </Text>
+          <Text fontSize="$2" color="$color10">
+            •
+          </Text>
+          <Text fontSize="$2" color="$color10">
+            Uploaded {formattedDate}
+          </Text>
+        </XStack>
+      </YStack>
+    </XStack>
   )
 }
 
@@ -268,20 +378,6 @@ function formatAnswer(answer: string | string[] | boolean): string {
     return answer ? 'Yes' : 'No'
   }
   return answer
-}
-
-/**
- * Format attachment type for display
- */
-function formatAttachmentType(type: string): string {
-  const types: Record<string, string> = {
-    resume: 'Resume',
-    cover_letter: 'Cover Letter',
-    portfolio: 'Portfolio',
-    assessment: 'Assessment',
-    video_interview: 'Video Interview',
-  }
-  return types[type] || type
 }
 
 /**

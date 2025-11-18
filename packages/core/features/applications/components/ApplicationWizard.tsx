@@ -12,6 +12,7 @@ import { useApplicationForm } from '../hooks/useApplicationForm'
 import type { ApplicationStepType, AttachmentMetadata } from '@app/schemas'
 import { ApplicationStep } from '@app/schemas'
 import type { CustomQuestion } from './CustomQuestionsStep'
+import { SaveStatusIndicator } from '@app/ui'
 
 export interface ApplicationWizardProps {
   /**
@@ -86,6 +87,10 @@ export function ApplicationWizard({
     submitError,
     completedSteps,
     isEditMode,
+    applicationId,
+    isSaving,
+    lastSavedAt,
+    saveError,
   } = useApplicationForm(jobId)
 
   // TODO: Fetch actual custom questions for this job
@@ -126,9 +131,7 @@ export function ApplicationWizard({
         applicationId={submittedApplicationId}
         jobTitle={jobTitle}
         organizationName={organizationName}
-        onViewApplication={
-          onViewApplication ? () => onViewApplication(submittedApplicationId) : undefined
-        }
+        onViewApplication={onViewApplication}
         onReturnToJobs={onReturnToJobs}
       />
     )
@@ -144,14 +147,22 @@ export function ApplicationWizard({
         borderBottomColor="$borderColor"
         gap="$3"
       >
-        <YStack gap="$1">
-          <Text fontSize="$6" fontWeight="bold" color="$color12">
-            {isEditMode ? 'Update Application' : 'Apply'} to {jobTitle}
-          </Text>
-          <Text fontSize="$3" color="$color11">
-            {organizationName}
-          </Text>
-        </YStack>
+        <XStack justify="space-between" items="flex-start" width="100%">
+          <YStack gap="$1" flex={1}>
+            <Text fontSize="$6" fontWeight="bold" color="$color12">
+              {isEditMode ? 'Update Application' : 'Apply'} to {jobTitle}
+            </Text>
+            <Text fontSize="$3" color="$color11">
+              {organizationName}
+            </Text>
+          </YStack>
+          {/* Save Status Indicator */}
+          <SaveStatusIndicator
+            status={isSaving ? 'saving' : saveError ? 'error' : lastSavedAt ? 'saved' : 'idle'}
+            lastSavedAt={lastSavedAt || undefined}
+            error={saveError || undefined}
+          />
+        </XStack>
 
         {/* Progress Indicator */}
         <ProgressIndicator
@@ -220,9 +231,17 @@ export function ApplicationWizard({
                 if (newAttachments.portfolio) attachmentsRecord.portfolio = newAttachments.portfolio
                 updateAllAttachments(attachmentsRecord)
               }}
-              onPrevious={() => previousStep('custom_questions')}
+              onPrevious={() => {
+                // Go back to custom questions if they exist, otherwise to screening
+                if (customQuestions.length > 0) {
+                  previousStep('custom_questions')
+                } else {
+                  previousStep('screening')
+                }
+              }}
               onContinue={() => nextStep('review')}
               isSubmitting={isSubmitting}
+              applicationId={applicationId}
             />
           )}
 

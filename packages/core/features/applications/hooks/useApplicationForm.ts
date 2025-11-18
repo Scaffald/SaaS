@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type {
   ApplicationCreateInput,
   ApplicationStepType,
@@ -18,6 +18,8 @@ export interface ApplicationFormState {
   isDirty: boolean;
   isSaving: boolean;
   applicationId?: string;
+  lastSavedAt?: Date | null;
+  saveError?: string | null;
 }
 
 const INITIAL_STATE: Omit<ApplicationFormState, "jobId"> = {
@@ -75,9 +77,115 @@ export function useApplicationForm(
         customQuestionAnswers:
           existingApp.application.custom_question_answers || [],
         attachments: existingApp.application.attachments || {},
+        isDirty: false, // Loaded data is clean
+        lastSavedAt: existingApp.application.updated_at
+          ? new Date(existingApp.application.updated_at)
+          : null,
       }));
     }
   }, [existingApp]);
+
+  /**
+   * Create a draft application if one doesn't exist
+   */
+  const createDraft = useCallback(async () => {
+    if (state.applicationId) return state.applicationId;
+
+    setState((prev) => ({ ...prev, isSaving: true }));
+
+    try {
+      const draftData: ApplicationCreateInput = {
+        job_id: jobId,
+        current_location: state.screeningAnswers.current_location || "",
+        willing_to_relocate: state.screeningAnswers.willing_to_relocate || false,
+        years_experience: state.screeningAnswers.years_experience || 0,
+        is_authorized_to_work: state.screeningAnswers.is_authorized_to_work || false,
+        earliest_start_date: state.screeningAnswers.earliest_start_date || "",
+        custom_question_answers: state.customQuestionAnswers,
+        attachments: state.attachments,
+        completed_steps: state.completedSteps,
+        is_complete: false, // Draft, not complete
+      };
+
+      const result = await submitMutation.mutateAsync(draftData);
+
+      setState((prev) => ({
+        ...prev,
+        applicationId: result.id,
+        isSaving: false,
+        isDirty: false,
+        lastSavedAt: new Date(),
+        saveError: null,
+      }));
+
+      return result.id;
+    } catch (error) {
+      console.error("Failed to create draft:", error);
+      setState((prev) => ({
+        ...prev,
+        isSaving: false,
+        saveError: error instanceof Error ? error.message : "Failed to save",
+      }));
+      throw error;
+    }
+  }, [jobId, state, submitMutation]);
+
+  /**
+   * Save progress for current step
+   */
+  const saveProgress = useCallback(async () => {
+    // Create draft if needed
+    let appId = state.applicationId;
+    if (!appId) {
+      try {
+        appId = await createDraft();
+      } catch (_error) {
+        // If draft creation fails, we can't save
+        return;
+      }
+    }
+
+    if (!appId) return;
+
+    setState((prev) => ({ ...prev, isSaving: true, saveError: null }));
+
+    try {
+      const data: Record<string, unknown> = {};
+
+      // Include all relevant data, not just current step
+      Object.assign(data, {
+        current_location: state.screeningAnswers.current_location,
+        willing_to_relocate: state.screeningAnswers.willing_to_relocate,
+        years_experience: state.screeningAnswers.years_experience,
+        is_authorized_to_work: state.screeningAnswers.is_authorized_to_work,
+        earliest_start_date: state.screeningAnswers.earliest_start_date,
+        custom_question_answers: state.customQuestionAnswers,
+        attachments: state.attachments,
+      });
+
+      await updateStepMutation.mutateAsync({
+        application_id: appId,
+        step: state.currentStep,
+        data,
+      });
+
+      setState((prev) => ({
+        ...prev,
+        isDirty: false,
+        isSaving: false,
+        lastSavedAt: new Date(),
+        saveError: null,
+      }));
+    } catch (error) {
+      console.error("Failed to save progress:", error);
+      setState((prev) => ({
+        ...prev,
+        isSaving: false,
+        saveError: error instanceof Error ? error.message : "Failed to save",
+      }));
+      throw error;
+    }
+  }, [state, updateStepMutation, createDraft]);
 
   /**
    * Update screening answers
@@ -140,6 +248,16 @@ export function useApplicationForm(
    */
   const nextStep = useCallback(
     async (step: ApplicationStepType) => {
+      // Auto-save before navigation if dirty
+      if (state.isDirty) {
+        try {
+          await saveProgress();
+        } catch (error) {
+          // Continue navigation even if save fails
+          console.error("Failed to save before navigation:", error);
+        }
+      }
+
       // Mark current step as completed
       setState((prev) => ({
         ...prev,
@@ -148,58 +266,89 @@ export function useApplicationForm(
           : [...prev.completedSteps, prev.currentStep],
         currentStep: step,
       }));
-
-      // Auto-save progress if application exists
-      if (state.applicationId && state.isDirty) {
-        await saveProgress();
-      }
     },
-    [state.applicationId, state.isDirty],
+    [state.isDirty, saveProgress],
   );
 
   /**
    * Go back to previous step
    */
-  const previousStep = useCallback((step: ApplicationStepType) => {
-    setState((prev) => ({
-      ...prev,
-      currentStep: step,
-    }));
-  }, []);
-
-  /**
-   * Save progress for current step
-   */
-  const saveProgress = useCallback(async () => {
-    if (!state.applicationId) return;
-
-    setState((prev) => ({ ...prev, isSaving: true }));
-
-    try {
-      const data: Record<string, unknown> = {};
-
-      // Include relevant data for current step
-      if (state.currentStep === "screening") {
-        Object.assign(data, state.screeningAnswers);
-      } else if (state.currentStep === "custom_questions") {
-        data.custom_question_answers = state.customQuestionAnswers;
-      } else if (state.currentStep === "attachments") {
-        data.attachments = state.attachments;
+  const previousStep = useCallback(
+    async (step: ApplicationStepType) => {
+      // Auto-save before navigation if dirty
+      if (state.isDirty) {
+        try {
+          await saveProgress();
+        } catch (error) {
+          // Continue navigation even if save fails
+          console.error("Failed to save before navigation:", error);
+        }
       }
 
-      await updateStepMutation.mutateAsync({
-        application_id: state.applicationId,
-        step: state.currentStep,
-        data,
-      });
+      setState((prev) => ({
+        ...prev,
+        currentStep: step,
+      }));
+    },
+    [state.isDirty, saveProgress],
+  );
 
-      setState((prev) => ({ ...prev, isDirty: false, isSaving: false }));
-    } catch (error) {
-      console.error("Failed to save progress:", error);
-      setState((prev) => ({ ...prev, isSaving: false }));
-      throw error;
+  // Debounced auto-save (500ms delay)
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    if (!state.isDirty || state.isSaving) {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+        debounceTimeoutRef.current = null;
+      }
+      return;
     }
-  }, [state, updateStepMutation]);
+
+    // Clear existing timeout
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    // Set new timeout for debounced save
+    debounceTimeoutRef.current = setTimeout(() => {
+      saveProgress().catch((error) => {
+        console.error("Auto-save failed:", error);
+      });
+    }, 500) as unknown as NodeJS.Timeout;
+
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, [state.isDirty, state.isSaving, saveProgress]);
+
+  // Interval-based auto-save (30 seconds)
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    if (!state.isDirty || state.isSaving) {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      return;
+    }
+
+    // Set up interval for periodic saves
+    intervalRef.current = setInterval(() => {
+      if (state.isDirty && !state.isSaving) {
+        saveProgress().catch((error) => {
+          console.error("Interval auto-save failed:", error);
+        });
+      }
+    }, 30000) as unknown as NodeJS.Timeout; // 30 seconds
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [state.isDirty, state.isSaving, saveProgress]);
 
   /**
    * Submit complete application (create or update)
@@ -300,5 +449,9 @@ export function useApplicationForm(
 
     // Edit mode flag
     isEditMode: !!state.applicationId,
+
+    // Auto-save state
+    lastSavedAt: state.lastSavedAt,
+    saveError: state.saveError,
   };
 }

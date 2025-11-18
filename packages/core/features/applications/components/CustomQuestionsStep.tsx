@@ -10,6 +10,8 @@ export interface CustomQuestion {
   type: 'short_text' | 'long_text' | 'single_choice' | 'multiple_choice' | 'yes_no'
   required: boolean
   options?: string[]
+  min_length?: number // Minimum characters for text questions (default: 50 for required)
+  max_length?: number // Maximum characters for text questions (default: 1000)
 }
 
 export interface CustomQuestionsStepProps {
@@ -108,20 +110,78 @@ export function CustomQuestionsStep({
   }
 
   /**
-   * Validate all required questions before continuing
+   * Get character count for text answer
+   */
+  const getCharacterCount = (questionId: string): number => {
+    const answer = getAnswer(questionId)
+    if (typeof answer === 'string') {
+      return answer.length
+    }
+    return 0
+  }
+
+  /**
+   * Get minimum length for a question
+   */
+  const getMinLength = (question: CustomQuestion): number => {
+    if (question.min_length !== undefined) {
+      return question.min_length
+    }
+    // Default: 50 characters for required questions, 0 for optional
+    return question.required ? 50 : 0
+  }
+
+  /**
+   * Get maximum length for a question
+   */
+  const getMaxLength = (question: CustomQuestion): number => {
+    return question.max_length ?? 1000
+  }
+
+  /**
+   * Validate a single question
+   */
+  const validateQuestion = (question: CustomQuestion): string | undefined => {
+    const answer = getAnswer(question.id)
+
+    // Required field validation
+    if (question.required) {
+      if (answer === undefined || answer === null || answer === '') {
+        return 'This question is required'
+      }
+
+      if (Array.isArray(answer) && answer.length === 0) {
+        return 'Please select at least one option'
+      }
+    }
+
+    // Text length validation
+    if (typeof answer === 'string' && answer.length > 0) {
+      const minLength = getMinLength(question)
+      const maxLength = getMaxLength(question)
+
+      if (answer.length < minLength) {
+        return `Please provide at least ${minLength} characters`
+      }
+
+      if (answer.length > maxLength) {
+        return `Maximum ${maxLength} characters allowed`
+      }
+    }
+
+    return undefined
+  }
+
+  /**
+   * Validate all questions before continuing
    */
   const validateAndContinue = () => {
     const newErrors: Record<string, string> = {}
 
     for (const question of questions) {
-      if (question.required) {
-        const answer = getAnswer(question.id)
-
-        if (answer === undefined || answer === null || answer === '') {
-          newErrors[question.id] = 'This question is required'
-        } else if (Array.isArray(answer) && answer.length === 0) {
-          newErrors[question.id] = 'Please select at least one option'
-        }
+      const error = validateQuestion(question)
+      if (error) {
+        newErrors[question.id] = error
       }
     }
 
@@ -129,6 +189,32 @@ export function CustomQuestionsStep({
 
     if (Object.keys(newErrors).length === 0) {
       onContinue()
+    }
+  }
+
+  /**
+   * Handle text change with length validation
+   */
+  const handleTextChange = (
+    questionId: string,
+    question: string,
+    type: 'short_text' | 'long_text',
+    text: string,
+    maxLength: number
+  ) => {
+    // Enforce maximum length
+    const truncatedText = text.slice(0, maxLength)
+    updateAnswer(questionId, question, type, truncatedText)
+
+    // Clear error if validation passes
+    const questionObj = questions.find((q) => q.id === questionId)
+    if (questionObj) {
+      const error = validateQuestion(questionObj)
+      if (!error && errors[questionId]) {
+        const newErrors = { ...errors }
+        newErrors[questionId] = undefined
+        setErrors(newErrors)
+      }
     }
   }
 
@@ -140,9 +226,37 @@ export function CustomQuestionsStep({
           Additional Questions
         </Text>
         <Text fontSize="$4" color="$color11">
-          Please answer the following questions about this position.
+          The employer has requested additional information
         </Text>
       </YStack>
+
+      {/* Validation Summary */}
+      {Object.entries(errors).some(([, error]) => error !== undefined) && (
+        <YStack
+          p="$4"
+          rounded="$4"
+          bg="$red2"
+          borderWidth={1}
+          borderColor="$red7"
+          gap="$2"
+        >
+          <Text fontSize="$4" fontWeight="600" color="$red11">
+            Please complete the following:
+          </Text>
+          <YStack gap="$1">
+            {Object.entries(errors)
+              .filter(([, error]) => error !== undefined)
+              .map(([questionId, error]) => {
+                const question = questions.find((q) => q.id === questionId)
+                return (
+                  <Text key={questionId} fontSize="$3" color="$red11">
+                    • {question?.question || 'Question'}: {error}
+                  </Text>
+                )
+              })}
+          </YStack>
+        </YStack>
+      )}
 
       {/* Questions */}
       <YStack gap="$5">
@@ -159,29 +273,71 @@ export function CustomQuestionsStep({
 
             {/* Short Text Input */}
             {question.type === 'short_text' && (
-              <Input
-                value={(getAnswer(question.id) as string) || ''}
-                onChangeText={(text) =>
-                  updateAnswer(question.id, question.question, 'short_text', text)
-                }
-                placeholder="Your answer"
-                borderColor={errors[question.id] ? '$red9' : '$borderColor'}
-                disabled={isSubmitting}
-              />
+              <YStack gap="$2">
+                <Input
+                  value={(getAnswer(question.id) as string) || ''}
+                  onChangeText={(text) =>
+                    handleTextChange(
+                      question.id,
+                      question.question,
+                      'short_text',
+                      text,
+                      getMaxLength(question)
+                    )
+                  }
+                  placeholder="Type your answer here..."
+                  borderColor={errors[question.id] ? '$red9' : '$borderColor'}
+                  disabled={isSubmitting}
+                  maxLength={getMaxLength(question)}
+                />
+                <XStack justify="flex-end">
+                  <Text
+                    fontSize="$2"
+                    color={
+                      getCharacterCount(question.id) > getMaxLength(question)
+                        ? '$red10'
+                        : '$gray11'
+                    }
+                  >
+                    {getCharacterCount(question.id)} / {getMaxLength(question)} characters
+                  </Text>
+                </XStack>
+              </YStack>
             )}
 
             {/* Long Text Input */}
             {question.type === 'long_text' && (
-              <TextArea
-                value={(getAnswer(question.id) as string) || ''}
-                onChangeText={(text) =>
-                  updateAnswer(question.id, question.question, 'long_text', text)
-                }
-                placeholder="Your answer"
-                style={{ height: 120 }}
-                borderColor={errors[question.id] ? '$red9' : '$borderColor'}
-                disabled={isSubmitting}
-              />
+              <YStack gap="$2">
+                <TextArea
+                  value={(getAnswer(question.id) as string) || ''}
+                  onChangeText={(text) =>
+                    handleTextChange(
+                      question.id,
+                      question.question,
+                      'long_text',
+                      text,
+                      getMaxLength(question)
+                    )
+                  }
+                  placeholder="Type your answer here..."
+                  style={{ minHeight: 120 }}
+                  borderColor={errors[question.id] ? '$red9' : '$borderColor'}
+                  disabled={isSubmitting}
+                  maxLength={getMaxLength(question)}
+                />
+                <XStack justify="flex-end">
+                  <Text
+                    fontSize="$2"
+                    color={
+                      getCharacterCount(question.id) > getMaxLength(question)
+                        ? '$red10'
+                        : '$gray11'
+                    }
+                  >
+                    {getCharacterCount(question.id)} / {getMaxLength(question)} characters
+                  </Text>
+                </XStack>
+              </YStack>
             )}
 
             {/* Single Choice (Radio Buttons) */}
@@ -344,7 +500,12 @@ export function CustomQuestionsStep({
         >
           Previous
         </Button>
-        <Button size="$4" theme="info" onPress={validateAndContinue} disabled={isSubmitting}>
+        <Button
+          size="$4"
+          theme="info"
+          onPress={validateAndContinue}
+          disabled={isSubmitting || Object.values(errors).some((error) => error !== undefined)}
+        >
           {isSubmitting ? 'Saving...' : 'Continue'}
         </Button>
       </XStack>

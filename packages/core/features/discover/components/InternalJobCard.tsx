@@ -63,6 +63,22 @@ export interface InternalJob {
   relocation_assistance_details?: string
   work_schedule_details?: string
   timezone?: string
+
+  // Application process configuration (Migration 071)
+  custom_application_questions?: Array<{
+    id: string
+    question: string
+    type: 'short_text' | 'long_text' | 'single_choice' | 'multiple_choice' | 'yes_no'
+    required: boolean
+    options?: string[]
+  }>
+  required_attachments?: Record<
+    string,
+    {
+      required: boolean
+      max_size_mb?: number
+    }
+  >
 }
 
 interface InternalJobCardProps {
