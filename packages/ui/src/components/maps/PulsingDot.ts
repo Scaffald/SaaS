@@ -22,7 +22,7 @@ export function createPulsingDot(
     duration = 1000, // 1 second animation cycle
   } = options
 
-  return {
+  const pulsingDot: mapboxgl.StyleImageInterface & { context?: CanvasRenderingContext2D | null } = {
     width: size,
     height: size,
     data: new Uint8Array(size * size * 4),
@@ -88,4 +88,5 @@ export function createPulsingDot(
       return true
     },
   }
+  return pulsingDot
 }

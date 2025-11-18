@@ -14,7 +14,7 @@ function formatLocationForDisplay(location: string | object | null | undefined, 
   const locationStr = typeof location === 'string' 
     ? location 
     : (typeof location === 'object' && 'formattedAddress' in location)
-      ? location.formattedAddress || `${location.city || ''}, ${location.state || ''}`.trim()
+      ? (location.formattedAddress as string) || (('city' in location && 'state' in location) ? `${(location.city as string) || ''}, ${(location.state as string) || ''}`.trim() : '')
       : '';
   return isRemote ? `${locationStr} (Remote)` : locationStr;
 }

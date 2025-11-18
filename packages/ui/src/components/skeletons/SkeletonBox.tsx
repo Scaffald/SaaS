@@ -33,9 +33,10 @@ export const SkeletonBox = ({
         ...(typeof width === 'string' ? { width } : {}),
         ...(typeof height === 'string' ? { height } : {}),
       }}
+      // @ts-expect-error - rounded prop type mismatch with theme tokens
       rounded={
         typeof borderRadius === 'string' && borderRadius.startsWith('$')
-          ? (borderRadius as `$${string}`)
+          ? borderRadius
           : typeof borderRadius === 'number'
             ? borderRadius
             : '$2'

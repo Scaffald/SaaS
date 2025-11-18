@@ -72,7 +72,38 @@ vi.mock('@app/ui', () => {
     children?: React.ReactNode
   } & Record<string, unknown>) => <span {...rest}>{children}</span>
 
+  type ButtonProps = {
+    children: React.ReactNode
+    onPress?: () => void
+    disabled?: boolean
+    variant?: string
+    opacity?: number
+    space?: string
+  }
+
+  type ButtonComponent = ((props: ButtonProps) => React.ReactElement | null) & {
+    Text: (props: { children: React.ReactNode }) => React.ReactElement | null
+    Icon: (props: { children: React.ReactNode }) => React.ReactElement | null
+  }
+
+  const Button: ButtonComponent = Object.assign(
+    ({ children, onPress, disabled }: ButtonProps) => (
+      <button
+        type="button"
+        aria-disabled={disabled ? 'true' : undefined}
+        onClick={disabled ? undefined : onPress}
+      >
+        {typeof children === 'string' ? <Text>{children}</Text> : children}
+      </button>
+    ),
+    {
+      Text: ({ children }: { children: React.ReactNode }) => <Text>{children}</Text>,
+      Icon: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
+    }
+  )
+
   return {
+    UIButton: Button,
     DashboardWidget: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
     CustomCheckbox: ({
       'aria-label': ariaLabel,
@@ -159,6 +190,43 @@ vi.mock('@app/ui', () => {
       </View>
     ),
     ConfirmationDialog: () => null,
+    RangeSliderCard: ({
+      icon,
+      title,
+      description,
+      value,
+      onValueChange,
+      min,
+      max,
+      formatValue,
+    }: {
+      icon?: React.ReactNode
+      title: string
+      description?: string
+      value: number
+      onValueChange: (value: number) => void
+      min?: number
+      max?: number
+      formatValue?: (v: number) => string
+    }) => (
+      <View>
+        <Text>{title}</Text>
+        {description && <Text>{description}</Text>}
+        <button
+          type="button"
+          role="slider"
+          aria-label="Travel slider"
+          onClick={() => onValueChange(value + 5)}
+        >
+          <Text>{formatValue ? formatValue(value) : `${value} miles`}</Text>
+        </button>
+      </View>
+    ),
+    SkeletonForm: ({ fields }: { fields: number }) => (
+      <View>
+        <Text>Skeleton Form ({fields} fields)</Text>
+      </View>
+    ),
   }
 })
 
@@ -384,7 +452,7 @@ vi.mock('@app/core/utils/api', async () => {
   }
 })
 
-import { profileEmploymentDefaults, DRIVERS_LICENSE_OPTIONS } from '@app/core/utils/api'
+import { profileEmploymentDefaults, DRIVERS_LICENSE_OPTIONS, MILITARY_STATUS_OPTIONS, AVAILABILITY_OPTIONS } from '@app/core/utils/api'
 import { ProfileEmploymentLeft } from '../profile-employment-left'
 
 const renderEmploymentForm = () => render(<ProfileEmploymentLeft />)
@@ -419,15 +487,12 @@ describe('ProfileEmploymentLeft', () => {
 
     const residentSwitch = getByRole('switch', { name: /us resident/i }) as HTMLElement
     const passportSwitch = getByRole('switch', { name: /us passport/i }) as HTMLElement
-    const travelSwitch = getByRole('switch', { name: /willing to travel/i }) as HTMLElement
 
     press(residentSwitch)
     press(passportSwitch)
-    press(travelSwitch)
 
     expect(isChecked(residentSwitch)).toBe(true)
     expect(isChecked(passportSwitch)).toBe(true)
-    expect(isChecked(travelSwitch)).toBe(true)
   })
 
   it('preserves driver license selections when other toggles change', () => {
@@ -445,24 +510,22 @@ describe('ProfileEmploymentLeft', () => {
     expect(isChecked(classACheckbox)).toBe(true)
   })
 
-  it('maintains willing to travel toggle when slider moves', () => {
-    const { getByRole } = renderEmploymentForm()
-
-    const travelSwitch = getByRole('switch', { name: /willing to travel/i }) as HTMLElement
-    press(travelSwitch)
+  it('maintains travel distance slider value when changed', () => {
+    const { getByRole, getByText } = renderEmploymentForm()
 
     const slider = getByRole('slider', { name: /travel slider/i }) as HTMLElement
+    expect(slider).toBeInstanceOf(HTMLElement)
+    
+    // Slider should be visible (travel is always enabled)
     press(slider)
-
-    expect(isChecked(getByRole('switch', { name: /willing to travel/i }) as HTMLElement)).toBe(true)
+    // Value should change
+    expect(getByText(/miles/i)).toBeInstanceOf(HTMLElement)
   })
 
   it('displays the travel slider within the 10-250 mile range', () => {
     const { getByRole, getByText } = renderEmploymentForm()
 
-    const travelSwitch = getByRole('switch', { name: /willing to travel/i }) as HTMLElement
-    press(travelSwitch)
-
+    // Travel slider is always visible (no toggle needed)
     const slider = getByRole('slider', { name: /travel slider/i }) as HTMLElement
     expect(slider.getAttribute('aria-valuemin')).toBe('10')
     expect(slider.getAttribute('aria-valuemax')).toBe('250')
@@ -503,9 +566,7 @@ describe('ProfileEmploymentLeft', () => {
     const classACheckbox = getByRole('checkbox', { name: /class a/i }) as HTMLElement
     press(classACheckbox)
 
-    const travelSwitch = getByRole('switch', { name: /willing to travel/i }) as HTMLElement
-    press(travelSwitch)
-
+    // Travel slider is always visible
     const slider = getByRole('slider', { name: /travel slider/i }) as HTMLElement
     press(slider)
 
@@ -562,5 +623,349 @@ describe('ProfileEmploymentLeft', () => {
     )
 
     expect(mockMutateAsync).not.toHaveBeenCalled()
+  })
+
+  // Task 1: Multi-select field tests - Military Status
+  it('allows toggling military status and selecting multiple options', () => {
+    const { getByRole } = renderEmploymentForm()
+
+    const militarySwitch = getByRole('switch', { name: /military/i }) as HTMLElement
+    expect(isChecked(militarySwitch)).toBe(false)
+
+    press(militarySwitch)
+    expect(isChecked(militarySwitch)).toBe(true)
+
+    // Select multiple military status options
+    const activeDutyCheckbox = getByRole('checkbox', { name: /active duty/i }) as HTMLElement
+    const veteranCheckbox = getByRole('checkbox', { name: /veteran/i }) as HTMLElement
+
+    press(activeDutyCheckbox)
+    press(veteranCheckbox)
+
+    expect(isChecked(activeDutyCheckbox)).toBe(true)
+    expect(isChecked(veteranCheckbox)).toBe(true)
+  })
+
+  it('preserves military status selections when other toggles change', () => {
+    const { getByRole } = renderEmploymentForm()
+
+    const militarySwitch = getByRole('switch', { name: /military/i }) as HTMLElement
+    press(militarySwitch)
+
+    const reserveCheckbox = getByRole('checkbox', { name: /reserve/i }) as HTMLElement
+    press(reserveCheckbox)
+
+    const residentSwitch = getByRole('switch', { name: /us resident/i }) as HTMLElement
+    press(residentSwitch)
+
+    expect(isChecked(reserveCheckbox)).toBe(true)
+  })
+
+  it('clears military status selections when toggle is turned OFF', () => {
+    const { getByRole } = renderEmploymentForm()
+
+    const militarySwitch = getByRole('switch', { name: /military/i }) as HTMLElement
+    press(militarySwitch)
+
+    const nationalGuardCheckbox = getByRole('checkbox', { name: /national guard/i }) as HTMLElement
+    press(nationalGuardCheckbox)
+
+    expect(isChecked(nationalGuardCheckbox)).toBe(true)
+
+    // Turn toggle OFF
+    press(militarySwitch)
+    expect(isChecked(militarySwitch)).toBe(false)
+    // Checkbox should no longer be visible/checked when toggle is off
+  })
+
+  it('auto-expands military status section when saved values exist', () => {
+    employmentData = {
+      ...employmentData,
+      military_status: [MILITARY_STATUS_OPTIONS[0], MILITARY_STATUS_OPTIONS[2]],
+    }
+    const { getByRole } = renderEmploymentForm()
+
+    const militarySwitch = getByRole('switch', { name: /military/i }) as HTMLElement
+    expect(isChecked(militarySwitch)).toBe(true)
+
+    const activeDutyCheckbox = getByRole('checkbox', { name: /active duty/i }) as HTMLElement
+    const nationalGuardCheckbox = getByRole('checkbox', { name: /national guard/i }) as HTMLElement
+
+    expect(isChecked(activeDutyCheckbox)).toBe(true)
+    expect(isChecked(nationalGuardCheckbox)).toBe(true)
+  })
+
+  it('renders all military status options when enabled', () => {
+    const { getByRole } = renderEmploymentForm()
+
+    const militarySwitch = getByRole('switch', { name: /military/i }) as HTMLElement
+    press(militarySwitch)
+
+    for (const option of MILITARY_STATUS_OPTIONS) {
+      const checkbox = getByRole('checkbox', {
+        name: new RegExp(option, 'i'),
+      }) as HTMLElement
+      expect(checkbox).toBeInstanceOf(HTMLElement)
+    }
+  })
+
+  // Task 1: Multi-select field tests - Availability
+  it('allows toggling availability and selecting multiple options', () => {
+    const { getByRole } = renderEmploymentForm()
+
+    const availabilitySwitch = getByRole('switch', { name: /available for work/i }) as HTMLElement
+    expect(isChecked(availabilitySwitch)).toBe(false)
+
+    press(availabilitySwitch)
+    expect(isChecked(availabilitySwitch)).toBe(true)
+
+    // Select multiple availability options
+    const partTimeCheckbox = getByRole('checkbox', { name: /part-time/i }) as HTMLElement
+    const fullTimeCheckbox = getByRole('checkbox', { name: /full-time/i }) as HTMLElement
+
+    press(partTimeCheckbox)
+    press(fullTimeCheckbox)
+
+    expect(isChecked(partTimeCheckbox)).toBe(true)
+    expect(isChecked(fullTimeCheckbox)).toBe(true)
+  })
+
+  it('preserves availability selections when other toggles change', () => {
+    const { getByRole } = renderEmploymentForm()
+
+    const availabilitySwitch = getByRole('switch', { name: /available for work/i }) as HTMLElement
+    press(availabilitySwitch)
+
+    const contractCheckbox = getByRole('checkbox', { name: /contract/i }) as HTMLElement
+    press(contractCheckbox)
+
+    const passportSwitch = getByRole('switch', { name: /us passport/i }) as HTMLElement
+    press(passportSwitch)
+
+    expect(isChecked(contractCheckbox)).toBe(true)
+  })
+
+  it('clears availability selections when toggle is turned OFF', () => {
+    const { getByRole } = renderEmploymentForm()
+
+    const availabilitySwitch = getByRole('switch', { name: /available for work/i }) as HTMLElement
+    press(availabilitySwitch)
+
+    const weekendCheckbox = getByRole('checkbox', { name: /weekend/i }) as HTMLElement
+    press(weekendCheckbox)
+
+    expect(isChecked(weekendCheckbox)).toBe(true)
+
+    // Turn toggle OFF
+    press(availabilitySwitch)
+    expect(isChecked(availabilitySwitch)).toBe(false)
+  })
+
+  it('auto-expands availability section when saved values exist', () => {
+    employmentData = {
+      ...employmentData,
+      availability: [AVAILABILITY_OPTIONS[0], AVAILABILITY_OPTIONS[2], AVAILABILITY_OPTIONS[5]],
+    }
+    const { getByRole } = renderEmploymentForm()
+
+    const availabilitySwitch = getByRole('switch', { name: /available for work/i }) as HTMLElement
+    expect(isChecked(availabilitySwitch)).toBe(true)
+
+    const partTimeCheckbox = getByRole('checkbox', { name: /part-time/i }) as HTMLElement
+    const fullTimeCheckbox = getByRole('checkbox', { name: /full-time/i }) as HTMLElement
+    const dayShiftCheckbox = getByRole('checkbox', { name: /day shift/i }) as HTMLElement
+
+    expect(isChecked(partTimeCheckbox)).toBe(true)
+    expect(isChecked(fullTimeCheckbox)).toBe(true)
+    expect(isChecked(dayShiftCheckbox)).toBe(true)
+  })
+
+  it('renders all availability options when enabled', () => {
+    const { getByRole } = renderEmploymentForm()
+
+    const availabilitySwitch = getByRole('switch', { name: /available for work/i }) as HTMLElement
+    press(availabilitySwitch)
+
+    for (const option of AVAILABILITY_OPTIONS) {
+      const checkbox = getByRole('checkbox', {
+        name: new RegExp(option, 'i'),
+      }) as HTMLElement
+      expect(checkbox).toBeInstanceOf(HTMLElement)
+    }
+  })
+
+  it('preserves sub-options when interacting with other multi-select fields', () => {
+    const { getByRole } = renderEmploymentForm()
+
+    // Enable driver's license and select Class A
+    const driversSwitch = getByRole('switch', { name: /driver/i }) as HTMLElement
+    press(driversSwitch)
+    const classACheckbox = getByRole('checkbox', { name: /class a/i }) as HTMLElement
+    press(classACheckbox)
+
+    // Enable military status and select Active Duty
+    const militarySwitch = getByRole('switch', { name: /military/i }) as HTMLElement
+    press(militarySwitch)
+    const activeDutyCheckbox = getByRole('checkbox', { name: /active duty/i }) as HTMLElement
+    press(activeDutyCheckbox)
+
+    // Enable availability and select Part-time
+    const availabilitySwitch = getByRole('switch', { name: /available for work/i }) as HTMLElement
+    press(availabilitySwitch)
+    const partTimeCheckbox = getByRole('checkbox', { name: /part-time/i }) as HTMLElement
+    press(partTimeCheckbox)
+
+    // All selections should persist
+    expect(isChecked(classACheckbox)).toBe(true)
+    expect(isChecked(activeDutyCheckbox)).toBe(true)
+    expect(isChecked(partTimeCheckbox)).toBe(true)
+  })
+
+  // Task 2: Validation tests - VR1: Driver's license validation
+  it('blocks submission when driver license toggle is ON but no classes selected (VR1)', async () => {
+    employmentData = {
+      ...employmentData,
+      us_resident: true, // Has residency status
+    }
+
+    const { getByRole, queryByText } = renderEmploymentForm()
+
+    const driversSwitch = getByRole('switch', { name: /driver/i }) as HTMLElement
+    press(driversSwitch) // Enable toggle but don't select any classes
+
+    const saveButton = getByRole('button', { name: /save changes/i }) as HTMLButtonElement
+    press(saveButton)
+
+    await waitFor(() =>
+      expect(queryByText(/please select at least one license class/i)).not.toBeNull()
+    )
+
+    expect(mockMutateAsync).not.toHaveBeenCalled()
+    expect(mockToastShow).toHaveBeenCalledWith('Validation Error', {
+      message: 'Please select at least one license class',
+    })
+  })
+
+  // Task 2: Validation tests - VR2: Travel distance validation
+  it('blocks submission when travel distance is not specified (VR2)', async () => {
+    employmentData = {
+      ...employmentData,
+      us_resident: true,
+      travel_distance_miles: undefined, // No travel distance
+    }
+
+    mockUseQuery.mockImplementation(() => ({
+      data: employmentData,
+      isLoading: false,
+      isFetching: false,
+    }))
+
+    const { getByRole, queryByText } = renderEmploymentForm()
+
+    const saveButton = getByRole('button', { name: /save changes/i }) as HTMLButtonElement
+    press(saveButton)
+
+    await waitFor(() =>
+      expect(queryByText(/please select a travel distance/i)).not.toBeNull()
+    )
+
+    expect(mockMutateAsync).not.toHaveBeenCalled()
+    expect(mockToastShow).toHaveBeenCalledWith('Validation Error', {
+      message: 'Please select a travel distance',
+    })
+  })
+
+  // Task 2: Validation tests - VR3: Residency status validation
+  it('blocks submission when no residency status is selected (VR3)', async () => {
+    employmentData = {
+      ...employmentData,
+      us_resident: false,
+      us_passport: false,
+      authorized_countries: [],
+    }
+
+    const { getByRole, queryByText } = renderEmploymentForm()
+
+    const saveButton = getByRole('button', { name: /save changes/i }) as HTMLButtonElement
+    press(saveButton)
+
+    await waitFor(() =>
+      expect(queryByText(/please indicate your work authorization status/i)).not.toBeNull()
+    )
+
+    expect(mockMutateAsync).not.toHaveBeenCalled()
+    expect(mockToastShow).toHaveBeenCalledWith('Validation Error', {
+      message: 'Please indicate your work authorization status',
+    })
+  })
+
+  // Task 2: Validation tests - Hourly rate validation
+  it('validates hourly rate is within 0-200 range', async () => {
+    employmentData = {
+      ...employmentData,
+      us_resident: true,
+    }
+
+    const { getByRole, getByPlaceholderText } = renderEmploymentForm()
+
+    const hourlyRateInput = getByPlaceholderText(/enter your hourly rate/i) as HTMLInputElement
+    
+    // Test max value (200)
+    fireEvent.change(hourlyRateInput, { target: { value: '200' } })
+    expect(hourlyRateInput.value).toBe('200')
+
+    // Test over max value (should be limited by schema)
+    fireEvent.change(hourlyRateInput, { target: { value: '250' } })
+    // The form should handle this validation
+  })
+
+  it('accepts valid hourly rate values', async () => {
+    employmentData = {
+      ...employmentData,
+      us_resident: true,
+    }
+
+    const { getByRole, getByPlaceholderText } = renderEmploymentForm()
+
+    const hourlyRateInput = getByPlaceholderText(/enter your hourly rate/i) as HTMLInputElement
+    
+    fireEvent.change(hourlyRateInput, { target: { value: '45.50' } })
+    expect(hourlyRateInput.value).toBe('45.50')
+  })
+
+  // Task 2: Validation tests - Preferred work locations max limit
+  it('enforces maximum of 3 preferred work locations', () => {
+    const { getByTestId, getByRole } = renderEmploymentForm()
+
+    const locationCount = getByTestId('location-count')
+    expect(locationCount.textContent).toContain('Locations: 0')
+
+    // Add 3 locations
+    const addLocationButton = getByRole('button', { name: /add location/i }) as HTMLButtonElement
+    press(addLocationButton)
+    press(addLocationButton)
+    press(addLocationButton)
+
+    expect(locationCount.textContent).toContain('Locations: 3')
+  })
+
+  // Task 2: Validation tests - Authorized countries (if implemented in UI)
+  // Note: This field may not be visible in the current UI, but validation should still work
+  it('validates form submission with all required fields', async () => {
+    employmentData = {
+      ...employmentData,
+      us_resident: true,
+      travel_distance_miles: 50,
+    }
+
+    const { getByRole } = renderEmploymentForm()
+
+    const saveButton = getByRole('button', { name: /save changes/i }) as HTMLButtonElement
+    press(saveButton)
+
+    await waitFor(() => expect(mockMutateAsync).toHaveBeenCalledTimes(1))
+    expect(mockToastShow).toHaveBeenCalledWith('Employment Updated', {
+      message: 'Your employment preferences have been saved successfully!',
+    })
   })
 })

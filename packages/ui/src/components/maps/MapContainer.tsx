@@ -1109,7 +1109,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
               map.removeImage(imageId)
             }
 
-            map.addImage(imageId, canvas, { pixelRatio: 2 })
+            map.addImage(imageId, canvas as any, { pixelRatio: 2 })
             avatarImageCacheRef.current.set(imageId, {
               url: nextUrl,
               borderColor: pinColors.worker,

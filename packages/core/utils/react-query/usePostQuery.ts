@@ -6,9 +6,10 @@ function usePostQuery() {
   // Using supabase directly from import
 
   const queryFn = async () => {
-    const result = await supabase
+    // Type instantiation is excessively deep - posts table may not exist in database types yet
+    // biome-ignore lint/suspicious/noExplicitAny: Type instantiation is excessively deep, requires any cast
+    const result = await (supabase as any)
       .schema("core")
-      // @ts-expect-error - posts table may not exist in database types yet
       .from("posts")
       .select("*")
       .order("created_at", {

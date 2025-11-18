@@ -13,7 +13,8 @@ export interface SkeletonFormProps {
 export function SkeletonForm({ fields = 5, gap = spacing.md }: SkeletonFormProps) {
   const gapValue = typeof gap === 'string' ? (gap.startsWith('$') ? gap : undefined) : gap
   return (
-    <YStack gap={gapValue as any} aria-busy="true" aria-label="Loading form">
+    // @ts-expect-error - gap prop type mismatch with theme tokens
+    <YStack gap={gapValue} aria-busy="true" aria-label="Loading form">
       {Array.from({ length: fields }).map((_, index) => (
         <YStack key={`skeleton-form-field-${index}-${fields}`} gap={spacing.sm}>
           {/* Label */}

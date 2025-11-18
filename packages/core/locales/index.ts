@@ -50,7 +50,15 @@ const resolveInitialLocale = (): SupportedLocale => {
     }
   }
 
-  return normalizeLocale(Localization.locale);
+  // Fallback: try to get locale from getLocales if available, otherwise use default
+  if (typeof Localization.getLocales === "function") {
+    const locales = Localization.getLocales();
+    if (locales?.length) {
+      const [primary] = locales;
+      return normalizeLocale(primary?.languageTag ?? primary?.languageCode);
+    }
+  }
+  return DEFAULT_LOCALE;
 };
 
 export const i18n = new I18n(translations);

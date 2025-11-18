@@ -81,7 +81,7 @@ export class CustomMarker extends mapboxgl.Marker {
   /**
    * Handle map click events to detect marker clicks
    */
-  _onMapClick(e: MapMouseEvent): void {
+  override _onMapClick(e: MapMouseEvent): void {
     const targetElement = e.originalEvent.target as Node
     const element = this.getElement()
 
