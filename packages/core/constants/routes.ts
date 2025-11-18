@@ -11,6 +11,7 @@
 
 import type { ComponentType } from "react";
 import {
+  AlertTriangle,
   Bell,
   Briefcase,
   Building2,
@@ -341,6 +342,14 @@ const ROUTES_CONFIG = {
     menuOrder: 4,
     menuIcon: FileText,
   },
+  OFFICE_VIOLATIONS: {
+    path: "/office/violations",
+    title: "Violation Reports",
+    isProtected: true,
+    menuCategory: "system",
+    menuOrder: 5,
+    menuIcon: AlertTriangle,
+  },
   OFFICE_SETTINGS: {
     path: "/office/settings",
     title: "Office Settings",
@@ -664,6 +673,7 @@ export const RouteBuilder = {
   officeStorage: () => ROUTES.OFFICE_STORAGE.path,
   officePayments: () => ROUTES.OFFICE_PAYMENTS.path,
   officeTransactions: () => ROUTES.OFFICE_TRANSACTIONS.path,
+  officeViolations: () => ROUTES.OFFICE_VIOLATIONS.path,
   dashboardBackgroundCheck: () =>
     ROUTES.DASHBOARD_PROFILE_BACKGROUND_CHECK.path,
   dashboardBackgroundCheckInitiate: () =>
@@ -862,6 +872,7 @@ export const ROUTE_HIERARCHY: readonly RouteHierarchyNode[] = [
       { key: "OFFICE_STORAGE" },
       { key: "OFFICE_PAYMENTS" },
       { key: "OFFICE_TRANSACTIONS" },
+      { key: "OFFICE_VIOLATIONS" },
       {
         key: "OFFICE_SETTINGS",
         children: [
@@ -930,6 +941,7 @@ export const OFFICE_ROUTES = {
   STORAGE: ROUTES.OFFICE_STORAGE,
   PAYMENTS: ROUTES.OFFICE_PAYMENTS,
   TRANSACTIONS: ROUTES.OFFICE_TRANSACTIONS,
+  VIOLATIONS: ROUTES.OFFICE_VIOLATIONS,
   SETTINGS: ROUTES.OFFICE_SETTINGS,
   SETTINGS_GEOGRAPHIC: ROUTES.OFFICE_SETTINGS_GEOGRAPHIC,
   SETTINGS_STRIPE: ROUTES.OFFICE_SETTINGS_STRIPE,

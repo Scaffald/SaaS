@@ -50,7 +50,7 @@ export function OrganizationCreditsPanel({
       setShowDepositForm(false);
       setDepositAmount("");
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast.show("Failed to deposit credits", {
         message: error.message,
         type: "error",
@@ -161,7 +161,7 @@ export function OrganizationCreditsPanel({
               icon={CreditCard}
               onPress={() => {
                 const amountCents = Math.round(Number.parseFloat(depositAmount) * 100);
-                if (isNaN(amountCents) || amountCents <= 0) {
+                if (Number.isNaN(amountCents) || amountCents <= 0) {
                   toast.show("Invalid amount", {
                     message: "Please enter a valid amount greater than zero.",
                     type: "error",
@@ -188,7 +188,7 @@ export function OrganizationCreditsPanel({
                 Recent Transactions
               </Text>
               <YStack gap="$1">
-                {ledgerQuery.data.items.slice(0, 5).map((entry) => (
+                {ledgerQuery.data.items.slice(0, 5).map((entry: { id: string; description?: string | null; transactionType: string; createdAt: string; amountCents: number; direction: "credit" | "debit"; currency?: string }) => (
                   <XStack
                     key={entry.id}
                     justify="space-between"

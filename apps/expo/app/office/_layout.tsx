@@ -66,6 +66,7 @@ export default function OfficeLayout() {
         <Drawer.Screen name="storage/index" options={{ title: 'Storage Analytics' }} />
         <Drawer.Screen name="payments/index" options={{ title: 'Payment Analytics' }} />
         <Drawer.Screen name="transactions/index" options={{ title: 'Transaction History' }} />
+        <Drawer.Screen name="violations/index" options={{ title: 'Violation Reports' }} />
         <Drawer.Screen name="settings/geographic" options={{ title: 'Geographic Settings' }} />
         <Drawer.Screen name="settings/stripe" options={{ title: 'Stripe Payments' }} />
       </DrawerLayout>

@@ -31,6 +31,7 @@ import { stripeSettingsRouter } from "./stripe-settings.router.ts";
 import { successFeesRouter } from "./success-fees.router.ts";
 import { idVerificationRouter } from "./id-verification.router.ts";
 import { paymentsRouter } from "./payments.router.ts";
+import { legalAgreementsRouter } from "./legal-agreements.router.ts";
 
 /**
  * Main application router
@@ -69,6 +70,7 @@ export const appRouter = t.router({
   successFees: successFeesRouter,
   idVerification: idVerificationRouter,
   payments: paymentsRouter,
+  legalAgreements: legalAgreementsRouter,
 });
 
 // Export the router type for client-side usage

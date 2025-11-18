@@ -621,6 +621,21 @@ export const successFeesRouter = t.router({
         })
         .eq("stripe_payment_intent_id", input.paymentIntentId);
 
+      // Create hire agreement when upfront payment is confirmed
+      try {
+        await ctx.caller.legalAgreements.createHireAgreement({
+          organizationId: successFee.organization_id,
+          workerUserId: successFee.worker_user_id,
+          applicationId: successFee.application_id ?? undefined,
+          successFeeId: successFee.id,
+          termsAccepted: true,
+          antiCircumventionAccepted: true,
+        });
+      } catch (agreementError) {
+        // Log but don't fail the payment confirmation if agreement creation fails
+        console.error("Failed to create hire agreement:", agreementError);
+      }
+
       return { ok: true };
     }),
 

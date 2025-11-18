@@ -124,7 +124,7 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
             </Table.Head>
             <Table.Body>
               {activeMembers.map((member: { userId: string; roles: string[]; profile?: { display_name?: string; headline?: string } | null }) => {
-                const activitySummary: { actions: number; lastActionAt: string | null } | undefined = member.userId ? (activityByUser.get(member.userId) as { actions: number; lastActionAt: string | null } | undefined) : null
+                const activitySummary: { actions: number; lastActionAt: string | null } | undefined = member.userId ? (activityByUser.get(member.userId) as { actions: number; lastActionAt: string | null } | undefined) : undefined
                 return (
                   <Table.Row key={member.userId}>
                     <Table.Cell>
