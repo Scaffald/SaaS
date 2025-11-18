@@ -41,6 +41,10 @@ const DialogMock = Object.assign(createPrimitive('div'), {
   Close: createPrimitive('button'),
 })
 
+const ProgressMock = Object.assign(createPrimitive('div'), {
+  Indicator: createPrimitive('div'),
+})
+
 vi.mock('tamagui', () => ({
   __esModule: true as const,
   Text: createPrimitive('span'),
@@ -50,7 +54,7 @@ vi.mock('tamagui', () => ({
   ScrollView: createPrimitive('div'),
   Label: createPrimitive('label'),
   Checkbox: Object.assign(createPrimitive('input'), { displayName: 'Checkbox' }),
-  Progress: createPrimitive('div'),
+  Progress: ProgressMock,
   Adapt: { Contents: createPrimitive('div') },
   Sheet: SheetMock,
   Select: SelectMock,

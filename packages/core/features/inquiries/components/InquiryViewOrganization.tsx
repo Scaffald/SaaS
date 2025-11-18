@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { YStack, XStack, Text, ScrollView, Separator, Card } from '@app/ui'
 import { Check } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
+import { useInquirySubscription } from '@app/core/utils/supabase/useInquirySubscription'
 import { InquiryCommentThread } from './InquiryCommentThread'
 import type { InquirySectionName } from '@app/schemas'
 
@@ -45,6 +46,9 @@ export function InquiryViewOrganization({
   candidateName: providedCandidateName,
   jobTitle: providedJobTitle,
 }: InquiryViewOrganizationProps) {
+  // Subscribe to real-time updates for this inquiry
+  useInquirySubscription(inquiryId)
+
   const { data, isLoading, error } = api.inquiries.getByApplication.useQuery({
     applicationId,
   })

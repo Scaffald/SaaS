@@ -3,6 +3,7 @@ import { YStack, XStack, Text, Button, ScrollView, Separator } from '@app/ui'
 import { ChevronDown, ChevronUp, Check, MessageSquare } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
+import { useInquirySubscription } from '@app/core/utils/supabase/useInquirySubscription'
 import { InquiryCommentThread } from './InquiryCommentThread'
 import { CapabilityQuestionInput } from './CapabilityQuestionInput'
 import type { InquirySectionName } from '@app/schemas'
@@ -17,6 +18,10 @@ export function InquiryViewCandidate({
   inquiryId,
 }: InquiryViewCandidateProps) {
   const toast = useToastController()
+
+  // Subscribe to real-time updates for this inquiry
+  useInquirySubscription(inquiryId)
+
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(['employment', 'compensation', 'capabilities', 'other'])
   )
