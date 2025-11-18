@@ -99,7 +99,8 @@ vi.mock('tamagui', () => {
   }: {
     source?: { uri?: string }
   } & Record<string, unknown>) => (
-    <img src={source?.uri} data-testid="portfolio-image" {...rest} />
+    // biome-ignore lint/a11y/useAltText: Test mock, decorative
+    <img src={source?.uri} data-testid="portfolio-image" alt="" aria-hidden="true" {...rest} />
   )
 
   const Card = ({

@@ -259,7 +259,8 @@ vi.mock('tamagui', () => {
   }: {
     source?: { uri?: string }
   } & Record<string, unknown>) => (
-    <img src={source?.uri} data-testid="portfolio-image" {...rest} />
+    // biome-ignore lint/a11y/useAltText: Test mock, decorative
+    <img src={source?.uri} data-testid="portfolio-image" alt="" aria-hidden="true" {...rest} />
   )
 
   const H4 = ({
@@ -384,7 +385,10 @@ describe('PortfolioManager', () => {
       render(<PortfolioManager userId="user-123" />)
 
       const editButtons = screen.getAllByTestId('edit-icon')
-      fireEvent.click(editButtons[0].closest('button')!)
+      const editButton = editButtons[0].closest('button')
+      if (editButton) {
+        fireEvent.click(editButton)
+      }
 
       expect(screen.getByText('Edit Portfolio Item')).toBeInTheDocument()
       expect(screen.getByDisplayValue('Project Alpha')).toBeInTheDocument()
@@ -394,7 +398,10 @@ describe('PortfolioManager', () => {
       render(<PortfolioManager userId="user-123" />)
 
       const editButtons = screen.getAllByTestId('edit-icon')
-      fireEvent.click(editButtons[0].closest('button')!)
+      const editButton = editButtons[0].closest('button')
+      if (editButton) {
+        fireEvent.click(editButton)
+      }
 
       const titleInput = screen.getByDisplayValue('Project Alpha')
       fireEvent.change(titleInput, { target: { value: 'Updated Project' } })
@@ -442,7 +449,10 @@ describe('PortfolioManager', () => {
 
       const arrowUpButtons = screen.getAllByTestId('arrow-up-icon')
       // Click move up on second item
-      fireEvent.click(arrowUpButtons[1].closest('button')!)
+      const upButton = arrowUpButtons[1]?.closest('button')
+      if (upButton) {
+        fireEvent.click(upButton)
+      }
 
       expect(mockReorderMutation).toHaveBeenCalled()
     })
@@ -452,7 +462,10 @@ describe('PortfolioManager', () => {
 
       const arrowDownButtons = screen.getAllByTestId('arrow-down-icon')
       // Click move down on first item
-      fireEvent.click(arrowDownButtons[0].closest('button')!)
+      const downButton = arrowDownButtons[0]?.closest('button')
+      if (downButton) {
+        fireEvent.click(downButton)
+      }
 
       expect(mockReorderMutation).toHaveBeenCalled()
     })
@@ -491,7 +504,10 @@ describe('PortfolioManager', () => {
       render(<PortfolioManager userId="user-123" />)
 
       const editButtons = screen.getAllByTestId('edit-icon')
-      fireEvent.click(editButtons[0].closest('button')!)
+      const editButton = editButtons[0].closest('button')
+      if (editButton) {
+        fireEvent.click(editButton)
+      }
 
       const cancelButtons = screen.getAllByText('Cancel')
       fireEvent.click(cancelButtons[0])

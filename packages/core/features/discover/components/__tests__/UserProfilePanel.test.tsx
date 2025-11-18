@@ -131,7 +131,8 @@ vi.mock('tamagui', () => {
   )
 
   Avatar.Image = ({ source, ...rest }: { source?: { uri?: string } } & Record<string, unknown>) => (
-    <img src={source?.uri} data-testid="avatar-image" {...rest} />
+    // biome-ignore lint/a11y/useAltText: Test mock, decorative
+    <img src={source?.uri} data-testid="avatar-image" alt="" aria-hidden="true" {...rest} />
   )
 
   Avatar.Fallback = ({
