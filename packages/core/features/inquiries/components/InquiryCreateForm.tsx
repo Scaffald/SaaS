@@ -190,8 +190,8 @@ export function InquiryCreateForm({
   )
 
   const smartDefaults = smartDefaultsData?.defaults ?? null
-  const smartDefaultFields = smartDefaultsData?.fields ?? []
-  const smartDefaultsFieldLabels = useMemo(
+  const smartDefaultFields = (smartDefaultsData?.fields ?? []) as string[]
+  const smartDefaultsFieldLabels = useMemo<string[]>(
     () =>
       smartDefaultFields.map(
         (field) => SMART_DEFAULT_FIELD_LABELS[field] ?? field

@@ -6,9 +6,10 @@ import { ComparisonColumn, type InquiryComparisonRecord } from './ComparisonColu
 interface InquiryComparisonViewProps {
   inquiryIds: string[]
   onClose?: () => void
+  onRemoveInquiry?: (inquiryId: string) => void
 }
 
-export function InquiryComparisonView({ inquiryIds, onClose }: InquiryComparisonViewProps) {
+export function InquiryComparisonView({ inquiryIds, onClose, onRemoveInquiry }: InquiryComparisonViewProps) {
   const {
     data,
     isLoading,
@@ -18,41 +19,71 @@ export function InquiryComparisonView({ inquiryIds, onClose }: InquiryComparison
   })
   const inquiries = data as InquiryComparisonRecord[] | undefined
 
-  // Calculate differences for highlighting
   const differences = useMemo(() => {
     if (!inquiries || inquiries.length < 2) return new Set<string>()
 
     const diffFields = new Set<string>()
 
-    // Compare employment type
-    const employmentTypes = inquiries.map((i) => i.inquiry.employment_type)
-    if (new Set(employmentTypes).size > 1) {
-      diffFields.add('employmentType')
+    const compare = (key: string, getValue: (record: InquiryComparisonRecord) => unknown) => {
+      const serialized = inquiries.map((record) => serializeValue(getValue(record)))
+      if (new Set(serialized).size > 1) {
+        diffFields.add(key)
+      }
     }
 
-    // Compare work schedule
-    const workSchedules = inquiries.map((i) => i.inquiry.work_schedule)
-    if (new Set(workSchedules).size > 1) {
-      diffFields.add('workSchedule')
-    }
-
-    // Compare working hours
-    const workingHours = inquiries.map(
-      (i) => `${i.inquiry.working_hours_start}-${i.inquiry.working_hours_end}`
+    compare('employmentType', (record) => record.inquiry.employment_type)
+    compare('workSchedule', (record) => record.inquiry.work_schedule)
+    compare('workingHours', (record) =>
+      `${record.inquiry.working_hours_start}-${record.inquiry.working_hours_end}`,
     )
-    if (new Set(workingHours).size > 1) {
-      diffFields.add('workingHours')
-    }
-
-    // Compare rate
-    const rates = inquiries.map(
-      (i) => `${i.inquiry.rate_type}-${i.inquiry.rate_min_cents}-${i.inquiry.rate_max_cents}`
+    compare('workingHoursTimezone', (record) => record.inquiry.working_hours_timezone)
+    compare('workdays', (record) => (record.inquiry.workdays ?? []).join(','))
+    compare('employmentStartDate', (record) => record.inquiry.employment_start_date)
+    compare('workScheduleNegotiable', (record) => record.inquiry.work_schedule_negotiable)
+    compare('workingHoursNegotiable', (record) => record.inquiry.working_hours_negotiable)
+    compare('employmentDatesNegotiable', (record) => record.inquiry.employment_dates_negotiable)
+    compare('rate', (record) =>
+      `${record.inquiry.rate_type}-${record.inquiry.rate_min_cents}-${record.inquiry.rate_max_cents}`,
     )
-    if (new Set(rates).size > 1) {
-      diffFields.add('rate')
-    }
+    compare('rateNegotiable', (record) => record.inquiry.rate_negotiable)
+    compare('willingToTravel', (record) => record.inquiry.willing_to_travel)
+    compare('willingToWorkOvertime', (record) => record.inquiry.willing_to_work_overtime)
+    compare('hasDriversLicense', (record) => record.inquiry.has_drivers_license)
+
+    // Capabilities
+    const capabilityNames = new Set<string>()
+    inquiries.forEach((record) => {
+      record.capabilityResponses?.forEach((response: InquiryComparisonRecord['capabilityResponses'][number]) => {
+        capabilityNames.add(response.capability_name)
+      })
+    })
+
+    capabilityNames.forEach((name) => {
+      const serialized = inquiries.map((record) => {
+        const response = record.capabilityResponses?.find(
+          (entry: InquiryComparisonRecord['capabilityResponses'][number]) =>
+            entry.capability_name === name,
+        )
+        const value =
+          response?.response_value !== null && response?.response_value !== undefined
+            ? response.response_value.toString()
+            : response?.response_text ?? 'Not answered'
+        return serializeValue(value)
+      })
+      if (new Set(serialized).size > 1) {
+        diffFields.add(`capability:${name}`)
+      }
+    })
 
     return diffFields
+  }, [inquiries])
+
+  const summary = useMemo(() => {
+    if (!inquiries) return null
+    const statuses = new Set(inquiries.map((record) => record.inquiry.status))
+    return {
+      uniqueStatuses: statuses,
+    }
   }, [inquiries])
 
   if (isLoading) {
@@ -87,6 +118,11 @@ export function InquiryComparisonView({ inquiryIds, onClose }: InquiryComparison
           <Text fontSize="$3" color="$color11">
             Comparing {inquiries.length} candidate{inquiries.length !== 1 ? 's' : ''}
           </Text>
+          {summary && summary.uniqueStatuses.size > 1 && (
+            <Text fontSize="$2" color="$color10">
+              Highlighted rows indicate differing terms between candidates.
+            </Text>
+          )}
         </YStack>
         {onClose && (
           <Button variant="outlined" onPress={onClose}>
@@ -104,11 +140,20 @@ export function InquiryComparisonView({ inquiryIds, onClose }: InquiryComparison
               inquiryData={inquiryData}
               width={400}
               highlightDifferences={differences}
+              canRemove={Boolean(onRemoveInquiry) && inquiryIds.length > 2}
+              onRemove={onRemoveInquiry}
             />
           ))}
         </XStack>
       </ScrollView>
     </YStack>
   )
+}
+
+function serializeValue(value: unknown) {
+  if (value === null || value === undefined) return 'null'
+  if (Array.isArray(value)) return JSON.stringify(value)
+  if (typeof value === 'object') return JSON.stringify(value)
+  return String(value)
 }
 

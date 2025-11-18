@@ -46,6 +46,8 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
   const [showBulkInquiry, setShowBulkInquiry] = useState(false)
   const [showComparison, setShowComparison] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
+  const [comparisonInquiryIds, setComparisonInquiryIds] = useState<string[]>([])
+  const [inquiryToApplicationMap, setInquiryToApplicationMap] = useState<Record<string, string>>({})
 
   // Fetch inquiry IDs for selected applications
   const selectedApplications = useMemo(
@@ -56,14 +58,13 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
     [selectedApplicationIds, applications]
   )
 
-  // Get inquiry IDs for selected applications
-  const [inquiryIds, setInquiryIds] = useState<string[]>([])
   const utils = api.useUtils()
 
   // Fetch inquiry IDs when selection changes
   useEffect(() => {
     const fetchInquiryIds = async () => {
       const ids: string[] = []
+      const map: Record<string, string> = {}
 
       for (const app of selectedApplications) {
         try {
@@ -72,19 +73,22 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
           })
           if (inquiryData?.inquiry?.id) {
             ids.push(inquiryData.inquiry.id)
+            map[inquiryData.inquiry.id] = app.id
           }
         } catch {
           // Skip applications without inquiries
         }
       }
 
-      setInquiryIds(ids)
+      setComparisonInquiryIds(ids)
+      setInquiryToApplicationMap(map)
     }
 
     if (selectedApplications.length >= 2) {
       fetchInquiryIds()
     } else {
-      setInquiryIds([])
+      setComparisonInquiryIds([])
+      setInquiryToApplicationMap({})
     }
   }, [selectedApplications, utils])
 
@@ -105,6 +109,29 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
 
   const clearSelection = () => {
     setSelectedApplicationIds(new Set())
+  }
+
+  const handleRemoveComparisonInquiry = (inquiryId: string) => {
+    setComparisonInquiryIds((prev) => {
+      const next = prev.filter((id) => id !== inquiryId)
+      if (next.length < 2) {
+        setShowComparison(false)
+      }
+      return next
+    })
+    setInquiryToApplicationMap((prev) => {
+      const next = { ...prev }
+      const applicationId = next[inquiryId]
+      delete next[inquiryId]
+      if (applicationId) {
+        setSelectedApplicationIds((current) => {
+          const nextSet = new Set(current)
+          nextSet.delete(applicationId)
+          return nextSet
+        })
+      }
+      return next
+    })
   }
 
   // Configure drag sensors
@@ -192,19 +219,19 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
             </Button>
             {selectedApplications.length >= 2 &&
               selectedApplications.length <= 5 &&
-              inquiryIds.length >= 2 && (
+              comparisonInquiryIds.length >= 2 && (
                 <Button
                   size="$3"
                   theme="blue"
                   variant="outlined"
                   onPress={() => {
-                    if (inquiryIds.length >= 2 && inquiryIds.length <= 5) {
+                    if (comparisonInquiryIds.length >= 2 && comparisonInquiryIds.length <= 5) {
                       setShowComparison(true)
                     }
                   }}
                   $sm={{ width: '100%' }}
                 >
-                  Compare {inquiryIds.length}
+                  Compare {comparisonInquiryIds.length}
                 </Button>
               )}
             <Button
@@ -279,11 +306,12 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
 
       {showComparison && (
         <InquiryComparisonModal
-          inquiryIds={inquiryIds}
+          inquiryIds={comparisonInquiryIds}
           open={showComparison}
           onClose={() => {
             setShowComparison(false)
           }}
+          onRemoveInquiry={handleRemoveComparisonInquiry}
         />
       )}
     </>
@@ -294,9 +322,15 @@ interface InquiryComparisonModalProps {
   inquiryIds: string[]
   open: boolean
   onClose: () => void
+  onRemoveInquiry?: (inquiryId: string) => void
 }
 
-function InquiryComparisonModal({ inquiryIds, open, onClose }: InquiryComparisonModalProps) {
+function InquiryComparisonModal({
+  inquiryIds,
+  open,
+  onClose,
+  onRemoveInquiry,
+}: InquiryComparisonModalProps) {
   if (!open || inquiryIds.length < 2) {
     return null
   }
@@ -306,7 +340,11 @@ function InquiryComparisonModal({ inquiryIds, open, onClose }: InquiryComparison
       bg="$background"
       style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000 }}
     >
-      <InquiryComparisonView inquiryIds={inquiryIds} onClose={onClose} />
+      <InquiryComparisonView
+        inquiryIds={inquiryIds}
+        onClose={onClose}
+        onRemoveInquiry={onRemoveInquiry}
+      />
     </YStack>
   )
 }

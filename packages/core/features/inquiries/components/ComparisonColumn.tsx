@@ -1,5 +1,5 @@
 import { YStack, XStack, Text, Button } from '@app/ui'
-import { Card, Avatar, Separator } from 'tamagui'
+import { Card, Avatar, Separator, type GetThemeValueForKey } from 'tamagui'
 import { Check, MessageSquare } from '@tamagui/lucide-icons'
 import { ComparisonField } from './ComparisonField'
 import type { inferRouterOutputs } from '@trpc/server'
@@ -20,12 +20,16 @@ interface ComparisonColumnProps {
   inquiryData: InquiryComparisonRecord
   width: number
   highlightDifferences: Set<string>
+  canRemove?: boolean
+  onRemove?: (inquiryId: string) => void
 }
 
 export function ComparisonColumn({
   inquiryData,
   width,
   highlightDifferences,
+  canRemove = false,
+  onRemove,
 }: ComparisonColumnProps) {
   const router = useRouter()
   const sections: InquiryComparisonRecord['sections'] = inquiryData.sections ?? []
@@ -38,9 +42,6 @@ export function ComparisonColumn({
     application?.candidate?.username ||
     application?.candidate?.name ||
     'Candidate'
-  const candidateAvatar =
-    application?.candidate?.avatarPath || application?.candidate?.avatar || null
-  const jobTitle = application?.job?.title ?? application?.jobTitle ?? null
 
   // Format rate for display
   const formatRate = () => {
@@ -118,6 +119,12 @@ export function ComparisonColumn({
     return comments.filter((comment: CommentRecord) => comment.section_name === sectionName).length
   }
 
+  const inquiryStatus = inquiry.status
+  const inquiryUpdatedAt = formatDate(inquiry.updated_at)
+  const candidateAvatar =
+    application?.candidate?.avatarPath || application?.candidate?.avatar || null
+  const jobTitle = application?.job?.title ?? application?.jobTitle ?? null
+
   return (
     <YStack
       width={width}
@@ -150,6 +157,22 @@ export function ComparisonColumn({
               </Text>
             )}
           </YStack>
+          {canRemove && onRemove && (
+            <Button
+              size="$2"
+              variant="outlined"
+              color="$red11"
+              borderColor="$red8"
+              onPress={() => onRemove(inquiry.id)}
+            >
+              Remove
+            </Button>
+          )}
+        </XStack>
+
+        <XStack flexWrap="wrap" gap="$2">
+          <StatusBadge label={inquiryStatus} />
+          <SubtleBadge label={`Updated ${inquiryUpdatedAt}`} />
         </XStack>
 
         {/* Section Status Badges */}
@@ -213,11 +236,15 @@ export function ComparisonColumn({
           value={formatWorkingHours()}
           isDifferent={highlightDifferences.has('workingHours')}
         />
-        <ComparisonField label="Workdays" value={formatWorkdays()} isDifferent={false} />
+        <ComparisonField
+          label="Workdays"
+          value={formatWorkdays()}
+          isDifferent={highlightDifferences.has('workdays')}
+        />
         <ComparisonField
           label="Start Date"
           value={formatDate(inquiry.employment_start_date)}
-          isDifferent={false}
+          isDifferent={highlightDifferences.has('employmentStartDate')}
         />
         {inquiry.employment_end_date && (
           <ComparisonField
@@ -226,6 +253,21 @@ export function ComparisonColumn({
             isDifferent={false}
           />
         )}
+        <ComparisonField
+          label="Schedule Negotiable"
+          value={inquiry.work_schedule_negotiable ? 'Yes' : 'No'}
+          isDifferent={highlightDifferences.has('workScheduleNegotiable')}
+        />
+        <ComparisonField
+          label="Working Hours Negotiable"
+          value={inquiry.working_hours_negotiable ? 'Yes' : 'No'}
+          isDifferent={highlightDifferences.has('workingHoursNegotiable')}
+        />
+        <ComparisonField
+          label="Dates Negotiable"
+          value={inquiry.employment_dates_negotiable ? 'Yes' : 'No'}
+          isDifferent={highlightDifferences.has('employmentDatesNegotiable')}
+        />
         {getSectionStatus('employment').accepted && (
           <XStack items="center" gap="$1" mt="$1">
             <Check size={14} color="$green11" />
@@ -253,6 +295,11 @@ export function ComparisonColumn({
           label="Rate"
           value={formatRate()}
           isDifferent={highlightDifferences.has('rate')}
+        />
+        <ComparisonField
+          label="Negotiable"
+          value={inquiry.rate_negotiable ? 'Yes' : 'No'}
+          isDifferent={highlightDifferences.has('rateNegotiable')}
         />
         {getSectionStatus('compensation').accepted && (
           <XStack items="center" gap="$1" mt="$1">
@@ -288,7 +335,7 @@ export function ComparisonColumn({
                   ? response.response_value.toString()
                   : response.response_text || 'Not answered'
               }
-              isDifferent={false}
+              isDifferent={highlightDifferences.has(`capability:${response.capability_name}`)}
             />
           ))}
           {getSectionStatus('capabilities').accepted && (
@@ -311,6 +358,51 @@ export function ComparisonColumn({
         </Card>
       )}
 
+      <Card p="$3" gap="$2">
+        <Text fontSize="$4" fontWeight="600">
+          Other Terms
+        </Text>
+        <ComparisonField
+          label="Travel"
+          value={
+            inquiry.willing_to_travel === null || inquiry.willing_to_travel === undefined
+              ? 'Not specified'
+              : inquiry.willing_to_travel
+                ? 'Yes'
+                : 'No'
+          }
+          isDifferent={highlightDifferences.has('willingToTravel')}
+          description={
+            inquiry.travel_distance_miles
+              ? `${inquiry.travel_distance_miles} miles`
+              : undefined
+          }
+        />
+        <ComparisonField
+          label="Overtime"
+          value={
+            inquiry.willing_to_work_overtime === null ||
+            inquiry.willing_to_work_overtime === undefined
+              ? 'Not specified'
+              : inquiry.willing_to_work_overtime
+                ? 'Open to overtime'
+                : 'No overtime'
+          }
+          isDifferent={highlightDifferences.has('willingToWorkOvertime')}
+        />
+        <ComparisonField
+          label="Driver's License"
+          value={
+            inquiry.has_drivers_license === null || inquiry.has_drivers_license === undefined
+              ? 'Not specified'
+              : inquiry.has_drivers_license
+                ? 'Yes'
+                : 'No'
+          }
+          isDifferent={highlightDifferences.has('hasDriversLicense')}
+        />
+      </Card>
+
       {/* View Full Inquiry Button */}
       <Button
         size="$3"
@@ -329,6 +421,36 @@ export function ComparisonColumn({
 
       <InquiryHistoryTimeline inquiryId={inquiry.id} />
     </YStack>
+  )
+}
+
+const statusColors: Record<string, GetThemeValueForKey<'color'>> = {
+  draft: '$gray10',
+  sent: '$blue10',
+  candidate_responded: '$purple10',
+  organization_responded: '$yellow10',
+  accepted: '$green10',
+  rejected: '$red10',
+  withdrawn: '$gray10',
+}
+
+function StatusBadge({ label }: { label: string }) {
+  return (
+    <XStack px="$2" py="$1" bg="$color3" rounded="$3" items="center" gap="$1">
+          <Text fontSize="$2" color={statusColors[label] ?? '$color11'} fontWeight="600">
+        {label.replace(/_/g, ' ')}
+      </Text>
+    </XStack>
+  )
+}
+
+function SubtleBadge({ label }: { label: string }) {
+  return (
+    <XStack px="$2" py="$1" bg="$color2" rounded="$3">
+      <Text fontSize="$2" color="$color10">
+        {label}
+      </Text>
+    </XStack>
   )
 }
 
