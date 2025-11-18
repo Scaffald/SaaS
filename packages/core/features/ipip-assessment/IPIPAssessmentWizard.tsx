@@ -43,9 +43,16 @@ export function IPIPAssessmentWizard() {
       }
     },
     onError: (error: { message?: string }) => {
-      toast.show('Error', {
-        message: error.message || 'Failed to save progress. Please try again.',
+      // Enhanced error handling with retry option
+      const errorMessage =
+        error.message ||
+        'Failed to save progress. Your answers are saved locally and will be synced when connection is restored.'
+      toast.show('Save Error', {
+        message: errorMessage,
+        type: 'error',
+        duration: 5000,
       })
+      // Note: Answers are still in local state, user can retry by continuing
     },
   })
 

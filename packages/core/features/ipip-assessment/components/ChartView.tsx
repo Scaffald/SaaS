@@ -27,22 +27,35 @@ export function ChartView({
   isComplete,
   completedDomains,
 }: ChartViewProps) {
-  if (!scores || !normalizedScores) {
+  // Handle missing data gracefully
+  if (!scores && completedDomains === 0) {
     return (
       <YStack gap="$4" p="$4" items="center">
         <Text fontSize="$4" color="$color11">
-          Loading chart data...
+          No chart data available yet. Complete at least one domain to see visualizations.
         </Text>
       </YStack>
     )
   }
 
   // Prepare radar chart data for Big Five domains
+  // Use normalized scores if available, otherwise calculate from raw scores
   const radarData = DOMAIN_ORDER.map((domain) => {
-    const normalized = normalizedScores[domain]
+    const normalized = normalizedScores?.[domain]
+    const domainScore = scores?.[domain]
     const domainName = DOMAIN_NAMES[domain]
+
+    let value = 0
+    if (normalized?.percentage !== undefined) {
+      value = normalized.percentage
+    } else if (domainScore && domainScore.count > 0) {
+      // Fallback: calculate percentage from raw score
+      const average = domainScore.score / domainScore.count
+      value = Math.round(((average - 1) / 4) * 100)
+    }
+
     return {
-      value: normalized?.percentage || 0,
+      value,
       label: domainName.substring(0, 3), // Short labels: "Ope", "Con", etc.
     }
   })

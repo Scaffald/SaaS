@@ -24,29 +24,45 @@ export function NarrativeView({
   isComplete,
   completedDomains,
 }: NarrativeViewProps) {
-  if (!scores || !normalizedScores || !narratives) {
+  // Handle missing data gracefully - show partial results if available
+  if (!scores && completedDomains === 0) {
     return (
       <YStack gap="$4" p="$4" items="center">
         <Text fontSize="$4" color="$color11">
-          Loading results...
+          No results available yet. Complete at least one domain to see results.
         </Text>
       </YStack>
     )
   }
 
-  const overallSummary = generateOverallSummary(scores)
+  // Generate summary only if we have scores
+  const overallSummary = scores ? generateOverallSummary(scores) : null
 
   return (
     <YStack gap="$6" width="100%">
-      {/* Overall Summary */}
-      <YStack gap="$3" p="$5" bg="$blue2" rounded="$4" borderWidth={1} borderColor="$blue7">
-        <Text fontSize="$6" fontWeight="bold" color="$blue11">
-          Your Personality Profile
-        </Text>
-        <Text fontSize="$4" color="$blue10" lineHeight="$5">
-          {overallSummary}
-        </Text>
-      </YStack>
+      {/* Overall Summary - only show if we have scores and narratives */}
+      {overallSummary && (
+        <YStack gap="$3" p="$5" bg="$blue2" rounded="$4" borderWidth={1} borderColor="$blue7">
+          <Text fontSize="$6" fontWeight="bold" color="$blue11">
+            Your Personality Profile
+          </Text>
+          <Text fontSize="$4" color="$blue10" lineHeight="$5">
+            {overallSummary}
+          </Text>
+        </YStack>
+      )}
+
+      {/* Show message if summary unavailable but we have partial data */}
+      {!overallSummary && completedDomains > 0 && (
+        <YStack gap="$2" p="$4" bg="$blue2" rounded="$4" borderWidth={1} borderColor="$blue7">
+          <Text fontSize="$4" fontWeight="600" color="$blue11">
+            Partial Results
+          </Text>
+          <Text fontSize="$3" color="$blue10">
+            Complete more domains to see your full personality profile summary.
+          </Text>
+        </YStack>
+      )}
 
       {/* Domain Cards */}
       <YStack gap="$4">

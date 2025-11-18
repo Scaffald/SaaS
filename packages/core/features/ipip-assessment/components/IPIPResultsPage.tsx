@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'expo-router'
 import { Button, Text, Tabs, XStack, YStack } from 'tamagui'
+import { AlertCircle, RefreshCcw } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
 import { NarrativeView } from './NarrativeView'
@@ -14,8 +15,8 @@ import { useIPIPResults } from '../hooks/useIPIPResults'
 export function IPIPResultsPage() {
   const router = useRouter()
   const results = useIPIPResults()
-  const utils = api.useUtils()
   const [activeTab, setActiveTab] = useState<'narrative' | 'chart'>('narrative')
+  const utils = api.useUtils()
 
   const awardXP = api.personalityAssessment.awardResultsViewXP.useMutation({
     onSuccess: () => {
@@ -44,21 +45,38 @@ export function IPIPResultsPage() {
     )
   }
 
-  if (results.error) {
+  const utils = api.useUtils()
+
+  const handleRetry = () => {
+    utils.personalityAssessment.getAssessmentStatus.invalidate()
+    utils.personalityAssessment.getArchetype.invalidate()
+  }
+
+  // Handle critical errors (network, API failures)
+  if (results.error && !results.hasPartialResults) {
     return (
       <YStack gap="$4" p="$8" items="center">
+        <AlertCircle size="$3" color="$red10" />
         <Text fontSize="$5" color="$red10" fontWeight="600">
           Error Loading Results
         </Text>
-        <Text fontSize="$4" color="$color11">
-          {results.error.message}
+        <Text fontSize="$4" color="$color11" text="center">
+          {results.error.message || 'Unable to load your assessment results. Please try again.'}
         </Text>
-        <Button onPress={() => router.push(ROUTES.DASHBOARD.path)}>Return to Dashboard</Button>
+        <XStack gap="$3">
+          <Button icon={RefreshCcw} onPress={handleRetry} theme="blue">
+            Retry
+          </Button>
+          <Button variant="outlined" onPress={() => router.push(ROUTES.DASHBOARD.path)}>
+            Return to Dashboard
+          </Button>
+        </XStack>
       </YStack>
     )
   }
 
-  if (!results.scores && results.completedDomains === 0) {
+  // Handle case where no assessment has been started
+  if (!results.scores && results.completedDomains === 0 && !results.isLoading) {
     return (
       <YStack gap="$4" p="$8" items="center">
         <Text fontSize="$5" color="$color11" fontWeight="600">
@@ -67,10 +85,15 @@ export function IPIPResultsPage() {
         <Text fontSize="$4" color="$color10" text="center">
           Complete the IPIP assessment to see your personality results.
         </Text>
-        <Button onPress={() => router.push(ROUTES.DASHBOARD.path)}>Start Assessment</Button>
+        <Button onPress={() => router.push(ROUTES.DASHBOARD_ASSESSMENT_IPIP.path)}>
+          Start Assessment
+        </Button>
       </YStack>
     )
   }
+
+  // Show warnings for partial data errors but still display what we have
+  const hasDataErrors = results.scoringError || results.normalizationError || results.narrativeError
 
   return (
     <YStack gap="$6" width="100%" p="$4" style={{ maxWidth: 1000, alignSelf: 'center' }}>
@@ -136,8 +159,31 @@ export function IPIPResultsPage() {
         </Tabs.Content>
       </Tabs>
 
+      {/* Data Quality Warnings */}
+      {hasDataErrors && (
+        <YStack gap="$2" p="$4" bg="$yellow2" rounded="$4" borderWidth={1} borderColor="$yellow7">
+          <XStack items="center" gap="$2">
+            <AlertCircle size="$1" color="$yellow11" />
+            <Text fontSize="$4" fontWeight="600" color="$yellow11">
+              Partial Data Available
+            </Text>
+          </XStack>
+          <Text fontSize="$3" color="$yellow10">
+            Some results may be incomplete. {results.scoringError && 'Scoring calculation failed. '}
+            {results.normalizationError && 'Score normalization failed. '}
+            {results.narrativeError && 'Narrative content unavailable. '}
+            You can still view available results below.
+          </Text>
+          <Button size="$3" variant="outlined" icon={RefreshCcw} onPress={handleRetry} mt="$2">
+            Refresh Data
+          </Button>
+        </YStack>
+      )}
+
       {/* Share Results Section */}
-      <ShareResults isComplete={results.isComplete} nextAvailableAt={results.nextAvailableAt} />
+      {results.isComplete && (
+        <ShareResults isComplete={results.isComplete} nextAvailableAt={results.nextAvailableAt} />
+      )}
     </YStack>
   )
 }

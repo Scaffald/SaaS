@@ -25,6 +25,10 @@ export interface IPIPResultsData {
   nextAvailableAt: string | null | undefined
   isLoading: boolean
   error: Error | null
+  hasPartialResults: boolean
+  scoringError: Error | null
+  normalizationError: Error | null
+  narrativeError: Error | null
 }
 
 /**
@@ -42,38 +46,57 @@ export function useIPIPResults(): IPIPResultsData {
   const answers = (assessment?.ipip_answers as IPIPAnswer[]) || []
   const isComplete = answers.length >= 120
   const completedDomains = Math.floor(answers.length / 24)
+  const hasPartialResults = answers.length > 0 && answers.length < 120
 
   // Calculate scores if we have answers
-  const scores = useMemo<IPIPScores | null>(() => {
-    if (answers.length === 0) return null
+  const scoresResult = useMemo<{ scores: IPIPScores | null; error: Error | null }>(() => {
+    if (answers.length === 0) return { scores: null, error: null }
     try {
-      return getScore({ answers })
+      const calculatedScores = getScore({ answers })
+      return { scores: calculatedScores, error: null }
     } catch (error) {
       console.error('Error calculating IPIP scores:', error)
-      return null
+      const scoringError =
+        error instanceof Error ? error : new Error('Failed to calculate personality scores')
+      return { scores: null, error: scoringError }
     }
   }, [answers])
 
+  const scores = scoresResult.scores
+  const scoringError = scoresResult.error
+
   // Normalize scores to 0-100 scale
-  const normalizedScores = useMemo(() => {
-    if (!scores) return null
+  const normalizedResult = useMemo(() => {
+    if (!scores) return { normalizedScores: null, error: null }
     try {
-      return normalizeScores(scores)
+      const normalized = normalizeScores(scores)
+      return { normalizedScores: normalized, error: null }
     } catch (error) {
       console.error('Error normalizing scores:', error)
-      return null
+      const normalizationError =
+        error instanceof Error ? error : new Error('Failed to normalize scores')
+      return { normalizedScores: null, error: normalizationError }
     }
   }, [scores])
 
+  const normalizedScores = normalizedResult.normalizedScores
+  const normalizationError = normalizedResult.error
+
   // Load narrative content
-  const narratives = useMemo(() => {
+  const narrativeResult = useMemo(() => {
     try {
-      return getResults()
+      const loadedNarratives = getResults()
+      return { narratives: loadedNarratives, error: null }
     } catch (error) {
       console.error('Error loading narratives:', error)
-      return null
+      const narrativeError =
+        error instanceof Error ? error : new Error('Failed to load narrative content')
+      return { narratives: null, error: narrativeError }
     }
   }, [])
+
+  const narratives = narrativeResult.narratives
+  const narrativeError = narrativeResult.error
 
   // Format archetype data
   const archetype = useMemo(() => {
@@ -96,6 +119,10 @@ export function useIPIPResults(): IPIPResultsData {
     nextAvailableAt: assessment?.next_available_at,
     isLoading: assessmentLoading || archetypeLoading,
     error: assessmentError as Error | null,
+    hasPartialResults,
+    scoringError,
+    normalizationError,
+    narrativeError,
   }
 }
 
