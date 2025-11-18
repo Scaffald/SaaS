@@ -15,6 +15,7 @@ import { supabase } from '@app/core/utils/supabase/client'
 import { OrganizationLocationsInput } from './OrganizationLocationsInput'
 import { OrganizationProjectPrivacySettings } from './OrganizationProjectPrivacySettings'
 import { OrganizationPaymentMethodsPanel } from '../payments/OrganizationPaymentMethodsPanel'
+import { OrganizationCreditsPanel } from '../payments/OrganizationCreditsPanel'
 
 type OrganizationFormData = OrganizationCreate
 
@@ -329,6 +330,11 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       {/* Payment Methods - Only in edit mode */}
       {mode === 'edit' && organizationId && (
         <OrganizationPaymentMethodsPanel organizationId={organizationId} />
+      )}
+
+      {/* Account Credits - Only in edit mode */}
+      {mode === 'edit' && organizationId && (
+        <OrganizationCreditsPanel organizationId={organizationId} />
       )}
 
       {/* Submit buttons */}

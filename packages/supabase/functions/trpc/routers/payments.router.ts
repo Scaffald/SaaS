@@ -1489,6 +1489,301 @@ export const paymentsRouter = t.router({
         metadata: transaction.metadata,
       };
     }),
+
+  // =========================================================
+  // Account Credits (Pre-funding)
+  // =========================================================
+
+  /**
+   * Get account credits balance for an organization
+   */
+  getAccountCredits: protectedProcedure
+    .input(z.object({ organizationId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      await ensureOrganizationAccess(ctx, input.organizationId);
+
+      const { data: credits, error } = await ctx.supabaseAdmin
+        .schema("core")
+        .from("account_credits")
+        .select("*")
+        .eq("organization_id", input.organizationId)
+        .maybeSingle();
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to load account credits: ${error.message}`,
+        });
+      }
+
+      if (!credits) {
+        // Return zero balance if no record exists
+        return {
+          id: null,
+          organizationId: input.organizationId,
+          balanceCents: 0,
+          currency: "usd",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+      }
+
+      return {
+        id: credits.id,
+        organizationId: credits.organization_id,
+        balanceCents: credits.balance_cents,
+        currency: credits.currency,
+        createdAt: credits.created_at,
+        updatedAt: credits.updated_at,
+      };
+    }),
+
+  /**
+   * Deposit credits to an organization account (top-up via Stripe)
+   */
+  depositCredits: officeProcedure
+    .input(
+      z.object({
+        organizationId: z.string().uuid(),
+        amountCents: z.number().int().positive(),
+        paymentMethodId: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ensureOrganizationAccess(ctx, input.organizationId);
+      const stripe = await loadStripeClient(ctx);
+      const customerId = await getOrCreateStripeCustomer(
+        ctx,
+        stripe,
+        input.organizationId,
+      );
+
+      // Create PaymentIntent for credit deposit
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: input.amountCents,
+        currency: "usd",
+        customer: customerId,
+        payment_method: input.paymentMethodId,
+        confirm: input.paymentMethodId ? true : false,
+        description: `Account credit deposit - ${input.amountCents / 100} USD`,
+        metadata: {
+          organization_id: input.organizationId,
+          transaction_type: "credit_deposit",
+        },
+      });
+
+      // Record payment transaction
+      const { data: transaction, error: txError } = await ctx.supabaseAdmin
+        .schema("core")
+        .from("payment_transactions")
+        .insert({
+          organization_id: input.organizationId,
+          user_id: ctx.user?.id ?? null,
+          stripe_payment_intent_id: paymentIntent.id,
+          amount_cents: input.amountCents,
+          currency: "usd",
+          transaction_type: "credit_deposit",
+          status: paymentIntent.status === "succeeded" ? "succeeded" : "pending",
+          succeeded_at:
+            paymentIntent.status === "succeeded"
+              ? new Date().toISOString()
+              : null,
+        })
+        .select("*")
+        .maybeSingle();
+
+      if (txError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to record payment transaction: ${txError.message}`,
+        });
+      }
+
+      // If payment succeeded, deposit credits
+      if (paymentIntent.status === "succeeded" && transaction) {
+        const { error: creditError } = await ctx.supabaseAdmin
+          .schema("core")
+          .rpc("apply_credit_transaction", {
+            p_organization_id: input.organizationId,
+            p_amount_cents: input.amountCents,
+            p_transaction_type: "deposit",
+            p_direction: "credit",
+            p_description: `Credit deposit via Stripe`,
+            p_payment_transaction_id: transaction.id,
+            p_created_by: ctx.user?.id ?? null,
+          });
+
+        if (creditError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to deposit credits: ${creditError.message}`,
+          });
+        }
+      }
+
+      return {
+        paymentIntentId: paymentIntent.id,
+        clientSecret: paymentIntent.client_secret,
+        status: paymentIntent.status,
+        transactionId: transaction?.id ?? null,
+      };
+    }),
+
+  /**
+   * Get credit ledger (transaction history)
+   */
+  getCreditLedger: protectedProcedure
+    .input(
+      z
+        .object({
+          organizationId: z.string().uuid(),
+          limit: z.number().int().positive().max(500).default(50),
+          offset: z.number().int().nonnegative().default(0),
+          transactionType: z
+            .enum(["deposit", "withdrawal", "refund", "expiration", "adjustment"])
+            .optional(),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      if (!input?.organizationId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "organizationId is required",
+        });
+      }
+
+      await ensureOrganizationAccess(ctx, input.organizationId);
+
+      const { supabaseAdmin } = ctx;
+
+      let query = supabaseAdmin
+        .schema("core")
+        .from("credit_ledger")
+        .select("*")
+        .eq("organization_id", input.organizationId)
+        .order("created_at", { ascending: false })
+        .range(input?.offset ?? 0, (input?.offset ?? 0) + (input?.limit ?? 50) - 1);
+
+      if (input?.transactionType) {
+        query = query.eq("transaction_type", input.transactionType);
+      }
+
+      const { data, error, count } = await query;
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to load credit ledger: ${error.message}`,
+        });
+      }
+
+      return {
+        items: (data ?? []).map((row) => ({
+          id: row.id,
+          accountCreditId: row.account_credit_id,
+          organizationId: row.organization_id,
+          amountCents: row.amount_cents,
+          currency: row.currency,
+          transactionType: row.transaction_type,
+          direction: row.direction,
+          description: row.description,
+          paymentTransactionId: row.payment_transaction_id,
+          successFeeId: row.success_fee_id,
+          backgroundCheckId: row.background_check_id,
+          idVerificationId: row.id_verification_id,
+          metadata: row.metadata ?? {},
+          createdBy: row.created_by,
+          createdAt: row.created_at,
+        })),
+        totalCount: count ?? 0,
+      };
+    }),
+
+  /**
+   * Apply credits to a payment (internal helper, called by payment flows)
+   */
+  applyCreditsToPayment: protectedProcedure
+    .input(
+      z.object({
+        organizationId: z.string().uuid(),
+        amountCents: z.number().int().positive(),
+        transactionType: z.enum([
+          "success_fee_upfront",
+          "success_fee_final",
+          "background_check",
+          "background_check_shared",
+          "id_verification",
+        ]),
+        description: z.string(),
+        paymentTransactionId: z.string().uuid().optional(),
+        successFeeId: z.string().uuid().optional(),
+        backgroundCheckId: z.string().uuid().optional(),
+        idVerificationId: z.string().uuid().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ensureOrganizationAccess(ctx, input.organizationId);
+
+      const { error } = await ctx.supabaseAdmin.schema("core").rpc(
+        "apply_credit_transaction",
+        {
+          p_organization_id: input.organizationId,
+          p_amount_cents: input.amountCents,
+          p_transaction_type: "withdrawal",
+          p_direction: "debit",
+          p_description: input.description,
+          p_payment_transaction_id: input.paymentTransactionId ?? null,
+          p_success_fee_id: input.successFeeId ?? null,
+          p_background_check_id: input.backgroundCheckId ?? null,
+          p_id_verification_id: input.idVerificationId ?? null,
+          p_created_by: ctx.user?.id ?? null,
+        },
+      );
+
+      if (error) {
+        throw new TRPCError({
+          code: error.message.includes("Insufficient credits")
+            ? "BAD_REQUEST"
+            : "INTERNAL_SERVER_ERROR",
+          message: error.message,
+        });
+      }
+
+      return { ok: true };
+    }),
+
+  /**
+   * Check if organization has sufficient credits and optionally apply them
+   * This is a helper for payment flows to check/use credits before creating PaymentIntents
+   */
+  checkAndApplyCredits: protectedProcedure
+    .input(
+      z.object({
+        organizationId: z.string().uuid(),
+        amountCents: z.number().int().positive(),
+        autoApply: z.boolean().default(false),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      await ensureOrganizationAccess(ctx, input.organizationId);
+
+      const credits = await ctx.caller.payments.getAccountCredits({
+        organizationId: input.organizationId,
+      });
+
+      const hasSufficientCredits = credits.balanceCents >= input.amountCents;
+      const creditAmount = Math.min(credits.balanceCents, input.amountCents);
+      const remainingAmount = input.amountCents - creditAmount;
+
+      return {
+        hasSufficientCredits,
+        balanceCents: credits.balanceCents,
+        creditAmount,
+        remainingAmount,
+        willUseCredits: hasSufficientCredits && input.autoApply,
+      };
+    }),
 });
 
 
