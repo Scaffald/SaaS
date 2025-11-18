@@ -67,8 +67,43 @@ vi.mock('tamagui', () => {
       placeholder={placeholder}
     />
   )
-  const Select = ({ children }: { children?: ReactNode }) => <select>{children}</select>
-  const RadioGroup = ({ children }: { children?: ReactNode }) => <div role="radiogroup">{children}</div>
+  const SelectTrigger = ({ children, disabled }: { children?: ReactNode; iconAfter?: ReactNode; disabled?: boolean }) => (
+    <button type="button" disabled={disabled}>{children}</button>
+  )
+  const SelectValue = ({ placeholder }: { placeholder?: string }) => <span>{placeholder}</span>
+  const SelectContent = ({ children }: { children?: ReactNode }) => <div>{children}</div>
+  const SelectViewport = ({ children }: { children?: ReactNode }) => <div>{children}</div>
+  const SelectGroup = ({ children }: { children?: ReactNode }) => <div>{children}</div>
+  const SelectLabel = ({ children }: { children?: ReactNode }) => <div>{children}</div>
+  const SelectItem = ({ children, value }: { children?: ReactNode; value?: string }) => <div data-value={value}>{children}</div>
+  const SelectItemText = ({ children }: { children?: ReactNode }) => <span>{children}</span>
+  const SelectItemIndicator = ({ children }: { children?: ReactNode }) => <span>{children}</span>
+  const SelectScrollUpButton = () => null
+  const SelectScrollDownButton = () => null
+  
+  const Select = Object.assign(() => null, {
+    Trigger: SelectTrigger,
+    Value: SelectValue,
+    Content: SelectContent,
+    Viewport: SelectViewport,
+    Group: SelectGroup,
+    Label: SelectLabel,
+    Item: SelectItem,
+    ItemText: SelectItemText,
+    ItemIndicator: SelectItemIndicator,
+    ScrollUpButton: SelectScrollUpButton,
+    ScrollDownButton: SelectScrollDownButton,
+  })
+  
+  const RadioGroupItem = ({ value, id }: { value: string; id?: string }) => (
+    <input type="radio" id={id} value={value} name="invite-type" />
+  )
+  const RadioGroup = Object.assign(({ children }: { children?: ReactNode }) => (
+    <div role="radiogroup">{children}</div>
+  ), {
+    Item: RadioGroupItem,
+  })
+  
   const Spinner = () => <span>Loading</span>
   
   return {
