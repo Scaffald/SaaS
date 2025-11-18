@@ -1,16 +1,20 @@
-import { useState } from 'react'
-import { YStack, Button, Text, XStack, ResponsiveModal } from '@app/ui'
-import { TextArea } from 'tamagui'
-import type { ApplicationStatus } from '../../mock-data/ats-mock-data'
+import { useEffect, useMemo, useState } from 'react'
+import { YStack, Button, Text, XStack, ResponsiveModal, Spinner } from '@app/ui'
+import { Card, TextArea } from 'tamagui'
+import { useToastController } from '@tamagui/toast'
+import { api } from '@app/core/utils/api'
+import { PaymentIntentForm } from '../../../payments/components/PaymentIntentForm'
+import type { ApplicationStatus, MockApplication } from '../../mock-data/ats-mock-data'
 
 interface ApplicationStatusChangeModalProps {
   open: boolean
   onClose: () => void
-  onConfirm: (reason: string) => void
+  onConfirm: (reason: string) => Promise<void> | void
   candidateName: string
   fromStatus: ApplicationStatus
   toStatus: ApplicationStatus
   isLoading?: boolean
+  application?: MockApplication
 }
 
 const STATUS_LABELS: Record<ApplicationStatus, string> = {
@@ -31,15 +35,105 @@ export const ApplicationStatusChangeModal = ({
   fromStatus,
   toStatus,
   isLoading = false,
+  application,
 }: ApplicationStatusChangeModalProps) => {
   const [reason, setReason] = useState('')
+  const toast = useToastController()
+  const successFeeMutation = api.successFees.createSuccessFee.useMutation()
+  const confirmUpfrontPaymentMutation = api.successFees.confirmUpfrontPayment.useMutation()
 
-  const handleConfirm = () => {
-    if (toStatus === 'rejected' && !reason.trim()) {
-      // Rejection reason is required
+  const isRejection = toStatus === 'rejected'
+  const isHire = toStatus === 'hired'
+
+  const hireInputs = useMemo(() => (isHire ? deriveHireInputs(application) : null), [application, isHire])
+  const hireSummary = useMemo(
+    () =>
+      hireInputs
+        ? deriveSchedule(hireInputs.totalHireValueCents, hireInputs.jobDurationDays, hireInputs.hireStartDate)
+        : null,
+    [hireInputs]
+  )
+
+  const [initializingIntent, setInitializingIntent] = useState(false)
+  const [intentState, setIntentState] =
+    useState<Awaited<ReturnType<typeof successFeeMutation.mutateAsync>> | null>(null)
+  const [paymentError, setPaymentError] = useState<string | null>(null)
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false)
+  const [paymentCompleted, setPaymentCompleted] = useState(false)
+
+  const hireInputsKey = hireInputs
+    ? [
+        hireInputs.organizationId,
+        hireInputs.workerUserId,
+        hireInputs.jobId,
+        hireInputs.applicationId,
+        hireInputs.totalHireValueCents,
+        hireInputs.jobDurationDays,
+        hireInputs.hireStartDate,
+      ].join(':')
+    : 'missing'
+
+  useEffect(() => {
+    if (!open || !isHire) {
+      setIntentState(null)
+      setPaymentError(null)
+      setPaymentCompleted(false)
+      setInitializingIntent(false)
       return
     }
-    onConfirm(reason)
+
+    if (!hireInputs) {
+      setIntentState(null)
+      setPaymentError(null)
+      return
+    }
+
+    let cancelled = false
+    const createIntent = async () => {
+      setInitializingIntent(true)
+      setPaymentError(null)
+      try {
+        const result = await successFeeMutation.mutateAsync({
+          organizationId: hireInputs.organizationId,
+          workerUserId: hireInputs.workerUserId,
+          jobId: hireInputs.jobId,
+          applicationId: hireInputs.applicationId,
+          totalHireValueCents: hireInputs.totalHireValueCents,
+          jobDurationDays: hireInputs.jobDurationDays,
+          hireStartDate: hireInputs.hireStartDate,
+        })
+        if (!cancelled) {
+          setIntentState(result)
+        }
+      } catch (error) {
+        if (!cancelled) {
+          const message = error instanceof Error ? error.message : 'Unable to create success fee intent.'
+          setPaymentError(message)
+          setIntentState(null)
+        }
+      } finally {
+        if (!cancelled) {
+          setInitializingIntent(false)
+        }
+      }
+    }
+
+    createIntent()
+
+    return () => {
+      cancelled = true
+    }
+  }, [open, isHire, hireInputsKey, successFeeMutation])
+
+  const handleConfirm = async () => {
+    if (isHire) {
+      return
+    }
+    if (isRejection && !reason.trim()) {
+      return
+    }
+
+    await onConfirm(reason)
     setReason('')
   }
 
@@ -48,7 +142,32 @@ export const ApplicationStatusChangeModal = ({
     onClose()
   }
 
-  const isRejection = toStatus === 'rejected'
+  const confirmDisabled = isLoading || (isRejection && !reason.trim())
+
+  const handlePaymentSuccess = async (paymentIntentId: string) => {
+    if (!intentState) return
+    setIsProcessingPayment(true)
+    setPaymentError(null)
+    try {
+      await confirmUpfrontPaymentMutation.mutateAsync({
+        successFeeId: intentState.successFeeId,
+        paymentIntentId,
+      })
+      setPaymentCompleted(true)
+      toast.show('Upfront fee paid', { message: 'Hire confirmed successfully.' })
+      await onConfirm(reason)
+      setReason('')
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unable to confirm payment.'
+      setPaymentError(message)
+      toast.show('Payment confirmation failed', {
+        message,
+        type: 'error',
+      })
+    } finally {
+      setIsProcessingPayment(false)
+    }
+  }
 
   return (
     <ResponsiveModal
@@ -70,6 +189,37 @@ export const ApplicationStatusChangeModal = ({
             <Text fontWeight="600">{STATUS_LABELS[toStatus]}</Text>
           </Text>
         </YStack>
+
+        {isHire && (
+          <YStack gap="$3">
+            <HireSummaryCard
+              hireSummary={hireSummary}
+              isProcessing={initializingIntent}
+              hasMissingData={!hireInputs}
+              paymentError={paymentError}
+            />
+
+            {initializingIntent && (
+              <YStack gap="$1" items="center">
+                <Spinner size="small" />
+                <Text color="$color11" fontSize="$3">
+                  Preparing payment form…
+                </Text>
+              </YStack>
+            )}
+
+            {hireInputs && intentState?.clientSecret && hireSummary && (
+              <PaymentIntentForm
+                clientSecret={intentState.clientSecret}
+                amountCents={intentState.schedule.upfrontAmountCents}
+                description={`Charge ${intentState.schedule.upfrontPercentage}% upfront success fee`}
+                submitLabel={paymentCompleted ? 'Payment complete' : 'Charge & Confirm Hire'}
+                disabled={paymentCompleted || isProcessingPayment}
+                onSuccess={handlePaymentSuccess}
+              />
+            )}
+          </YStack>
+        )}
 
         {/* Reason input */}
         <YStack gap="$2">
@@ -101,19 +251,186 @@ export const ApplicationStatusChangeModal = ({
           <Button data-testid="status-change-cancel-button" variant="outlined" onPress={handleClose} disabled={isLoading}>
             Cancel
           </Button>
-          <Button
-            data-testid="status-change-confirm-button"
-            onPress={handleConfirm}
-            disabled={isLoading || (isRejection && !reason.trim())}
-            bg={isRejection ? '$red9' : '$green9'}
-            hoverStyle={{
-              bg: isRejection ? '$red10' : '$green10',
-            }}
-          >
-            {isLoading ? 'Processing...' : isRejection ? 'Reject Application' : 'Confirm Hire'}
-          </Button>
+          {!isHire && (
+            <Button
+              data-testid="status-change-confirm-button"
+              onPress={handleConfirm}
+              disabled={confirmDisabled}
+              bg={isRejection ? '$red9' : '$green9'}
+              hoverStyle={{
+                bg: isRejection ? '$red10' : '$green10',
+              }}
+            >
+              {isLoading
+                ? 'Processing...'
+                : isRejection
+                  ? 'Reject Application'
+                  : 'Confirm Hire'}
+            </Button>
+          )}
         </XStack>
       </YStack>
     </ResponsiveModal>
+  )
+}
+
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+})
+
+interface HireInputs {
+  organizationId: string
+  workerUserId: string
+  jobId: string
+  applicationId: string
+  totalHireValueCents: number
+  jobDurationDays: number
+  hireStartDate: string
+}
+
+function deriveHireInputs(application?: MockApplication | null): HireInputs | null {
+  if (!application) return null
+
+  const organizationId = application.job.organizationId || application.organizationId
+  const workerUserId = application.workerUserId || application.candidate.id
+
+  if (!organizationId || !workerUserId) {
+    return null
+  }
+
+  const payRangeMax = application.job.payRangeMaxCents ?? undefined
+  const payRangeMin = application.job.payRangeMinCents ?? undefined
+  const payType = application.job.payRangeType ?? 'salary'
+
+  const baseAmount = payRangeMax ?? payRangeMin
+  if (!baseAmount || baseAmount <= 0) {
+    return null
+  }
+
+  let totalHireValueCents = baseAmount
+  if (payType === 'hourly') {
+    totalHireValueCents = Math.round(baseAmount * 40 * 52)
+  }
+
+  const jobDurationDays = payType === 'salary' ? 60 : 21
+
+  const hireStartDate = normalizeDate(
+    application.screeningAnswers.earliestStartDate || application.job.targetStartDate || undefined
+  )
+
+  return {
+    organizationId,
+    workerUserId,
+    jobId: application.job.id,
+    applicationId: application.id,
+    totalHireValueCents,
+    jobDurationDays,
+    hireStartDate,
+  }
+}
+
+function toISODate(date: Date) {
+  const [datePart] = date.toISOString().split('T')
+  return datePart ?? ''
+}
+
+function normalizeDate(value?: string): string {
+  if (!value) return toISODate(new Date())
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.getTime())) {
+    return toISODate(new Date())
+  }
+  return toISODate(parsed)
+}
+
+function deriveSchedule(totalHireValueCents: number, jobDurationDays: number, hireStartDate: string) {
+  const paymentSchedule = jobDurationDays >= 30 ? 'standard' : 'short'
+  const upfrontPercentage = paymentSchedule === 'standard' ? 20 : 50
+  const finalPercentage = 100 - upfrontPercentage
+  const upfrontAmountCents = Math.round(totalHireValueCents * (upfrontPercentage / 100))
+  const finalAmountCents = Math.max(totalHireValueCents - upfrontAmountCents, 0)
+  const finalDueDate = addDays(hireStartDate, paymentSchedule === 'standard' ? 30 : Math.max(jobDurationDays, 1))
+
+  return {
+    totalHireValueCents,
+    paymentSchedule,
+    upfrontPercentage,
+    finalPercentage,
+    upfrontAmountCents,
+    finalAmountCents,
+    finalDueDate,
+  }
+}
+
+function addDays(isoDate: string, days: number) {
+  const date = new Date(isoDate)
+  if (Number.isNaN(date.getTime())) return isoDate
+  const clone = new Date(date)
+  clone.setDate(clone.getDate() + days)
+  return toISODate(clone)
+}
+
+function HireSummaryCard({
+  hireSummary,
+  isProcessing,
+  hasMissingData,
+  paymentError,
+}: {
+  hireSummary: ReturnType<typeof deriveSchedule> | null
+  isProcessing: boolean
+  hasMissingData: boolean
+  paymentError: string | null
+}) {
+  if (hasMissingData) {
+    return (
+      <Card p="$3" bg="$yellow2" borderColor="$yellow8" borderWidth={1}>
+        <Text fontWeight="600" color="$yellow11">
+          Add pay range information to this job before marking the hire.
+        </Text>
+        <Text mt="$1" fontSize="$3" color="$yellow11">
+          We use the job&apos;s pay range to calculate success fees and payment schedules.
+        </Text>
+      </Card>
+    )
+  }
+
+  if (!hireSummary) {
+    return null
+  }
+
+  return (
+    <Card p="$4" borderWidth={1} borderColor="$borderColor">
+      <YStack gap="$2">
+        <Text fontSize="$4" fontWeight="600">
+          Success Fee Overview
+        </Text>
+        <XStack justify="space-between">
+          <Text color="$color11">Total Hire Value</Text>
+          <Text fontWeight="600">{currencyFormatter.format(hireSummary.totalHireValueCents / 100)}</Text>
+        </XStack>
+        <XStack justify="space-between">
+          <Text color="$color11">Upfront ({hireSummary.upfrontPercentage}%)</Text>
+          <Text fontWeight="600">{currencyFormatter.format(hireSummary.upfrontAmountCents / 100)}</Text>
+        </XStack>
+        <XStack justify="space-between">
+          <Text color="$color11">Final ({hireSummary.finalPercentage}%)</Text>
+          <Text fontWeight="600">
+            {currencyFormatter.format(hireSummary.finalAmountCents / 100)} • Due {hireSummary.finalDueDate}
+          </Text>
+        </XStack>
+        {isProcessing && (
+          <Text fontSize="$2" color="$color11">
+            Creating payment intent...
+          </Text>
+        )}
+        {paymentError && (
+          <Text fontSize="$2" color="$red10">
+            {paymentError}
+          </Text>
+        )}
+      </YStack>
+    </Card>
   )
 }

@@ -29,6 +29,8 @@ import { newsRouter } from "./news.router.ts";
 import { inquiriesRouter } from "./inquiries.router.ts";
 import { stripeSettingsRouter } from "./stripe-settings.router.ts";
 import { successFeesRouter } from "./success-fees.router.ts";
+import { idVerificationRouter } from "./id-verification.router.ts";
+import { paymentsRouter } from "./payments.router.ts";
 
 /**
  * Main application router
@@ -65,6 +67,8 @@ export const appRouter = t.router({
   inquiries: inquiriesRouter,
   stripeSettings: stripeSettingsRouter,
   successFees: successFeesRouter,
+  idVerification: idVerificationRouter,
+  payments: paymentsRouter,
 });
 
 // Export the router type for client-side usage
