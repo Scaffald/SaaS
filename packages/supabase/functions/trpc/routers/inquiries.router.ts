@@ -11,6 +11,131 @@ import {
 import { protectedProcedure, t } from "../middleware.ts";
 import { insertNotification } from "../../_shared/notifications/utils.ts";
 
+// Import state machine utilities (inline since we can't import from core)
+type InquiryStatus =
+  | 'draft'
+  | 'sent'
+  | 'candidate_responded'
+  | 'organization_responded'
+  | 'accepted'
+  | 'rejected'
+  | 'withdrawn'
+
+type ApplicationStatusForInquiry =
+  | 'screen'
+  | 'inquired'
+  | 'offer'
+
+const INQUIRY_STATUS_TRANSITIONS: Record<InquiryStatus, InquiryStatus[]> = {
+  draft: ['sent', 'withdrawn'],
+  sent: ['candidate_responded', 'withdrawn'],
+  candidate_responded: ['organization_responded', 'accepted', 'rejected', 'withdrawn'],
+  organization_responded: ['candidate_responded', 'accepted', 'rejected', 'withdrawn'],
+  accepted: [],
+  rejected: [],
+  withdrawn: [],
+}
+
+const INQUIRY_TO_APPLICATION_STATUS: Record<InquiryStatus, ApplicationStatusForInquiry | null> = {
+  draft: 'screen',
+  sent: 'inquired',
+  candidate_responded: 'inquired',
+  organization_responded: 'inquired',
+  accepted: 'offer',
+  rejected: 'screen',
+  withdrawn: 'screen',
+}
+
+function canTransitionInquiryStatus(
+  currentStatus: InquiryStatus,
+  newStatus: InquiryStatus
+): boolean {
+  if (currentStatus === newStatus) {
+    return true
+  }
+  const allowedTransitions = INQUIRY_STATUS_TRANSITIONS[currentStatus]
+  return allowedTransitions.includes(newStatus)
+}
+
+function getApplicationStatusForInquiry(
+  inquiryStatus: InquiryStatus
+): ApplicationStatusForInquiry | null {
+  return INQUIRY_TO_APPLICATION_STATUS[inquiryStatus]
+}
+
+/**
+ * Helper function to update inquiry status with validation
+ */
+async function updateInquiryStatus(
+  supabase: any,
+  inquiryId: string,
+  newStatus: InquiryStatus,
+  currentStatus: InquiryStatus,
+  actorId: string
+): Promise<InquiryStatus> {
+  // Validate transition
+  if (!canTransitionInquiryStatus(currentStatus, newStatus)) {
+    throw new TRPCError({
+      code: 'BAD_REQUEST',
+      message: `Cannot transition from ${currentStatus} to ${newStatus}`,
+    });
+  }
+
+  const now = new Date().toISOString();
+
+  // Update inquiry status
+  const { error } = await supabase
+    .schema('core')
+    .from('application_inquiries')
+    .update({
+      status: newStatus,
+      updated_at: now,
+    })
+    .eq('id', inquiryId);
+
+  if (error) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: `Failed to update inquiry status: ${error.message}`,
+      cause: error,
+    });
+  }
+
+  return newStatus;
+}
+
+/**
+ * Helper function to sync application status with inquiry status
+ */
+async function syncApplicationStatus(
+  supabaseAdmin: any,
+  applicationId: string,
+  inquiryStatus: InquiryStatus
+): Promise<void> {
+  const applicationStatus = getApplicationStatusForInquiry(inquiryStatus);
+
+  if (!applicationStatus) {
+    // No status change needed (e.g., draft)
+    return;
+  }
+
+  const now = new Date().toISOString();
+
+  const { error } = await supabaseAdmin
+    .schema('core')
+    .from('applications')
+    .update({
+      status: applicationStatus,
+      stage_changed_at: now,
+    })
+    .eq('id', applicationId);
+
+  if (error) {
+    // Log but don't fail - inquiry status is already updated
+    console.error('Failed to sync application status:', error);
+  }
+}
+
 const router = t.router;
 
 /**
@@ -395,48 +520,25 @@ export const inquiriesRouter = router({
         );
       }
 
-      if (inquiry.status !== "draft") {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Only draft inquiries can be sent",
-        });
-      }
+      // Use state machine to validate and update status
+      const newStatus = await updateInquiryStatus(
+        supabase,
+        input.inquiryId,
+        'sent',
+        inquiry.status as InquiryStatus,
+        user.id
+      );
 
+      // Update sent_at timestamp
       const now = new Date().toISOString();
-
-      // Update inquiry status and sent_at
-      const { error: updateError } = await supabase
+      await supabase
         .schema("core")
         .from("application_inquiries")
-        .update({
-          status: "sent",
-          sent_at: now,
-          updated_at: now,
-        })
+        .update({ sent_at: now })
         .eq("id", input.inquiryId);
 
-      if (updateError) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to send inquiry: ${updateError.message}`,
-          cause: updateError,
-        });
-      }
-
-      // Update application status to 'inquired'
-      const { error: appUpdateError } = await supabase
-        .schema("core")
-        .from("applications")
-        .update({
-          status: "inquired",
-          stage_changed_at: now,
-        })
-        .eq("id", inquiry.application_id);
-
-      if (appUpdateError) {
-        // Log but don't fail - inquiry is already sent
-        console.error("Failed to update application status:", appUpdateError);
-      }
+      // Sync application status
+      await syncApplicationStatus(ctx.supabaseAdmin, inquiry.application_id, newStatus);
 
       // Get application and job info for notification
       const { data: application } = await supabase
@@ -532,26 +634,31 @@ export const inquiriesRouter = router({
         .eq("id", inquiry.application_id)
         .single();
 
-      let newStatus = inquiry.status;
+      // Determine new status based on who is commenting
       const isApplicant = application?.user_id === user.id;
       const isOrgMember = inquiry.created_by === user.id || !isApplicant;
+      const currentStatus = inquiry.status as InquiryStatus;
 
-      if (isApplicant && inquiry.status === "sent") {
-        newStatus = "candidate_responded";
-      } else if (isOrgMember && inquiry.status === "candidate_responded") {
-        newStatus = "organization_responded";
+      let targetStatus: InquiryStatus | null = null;
+
+      if (isApplicant && currentStatus === "sent") {
+        targetStatus = "candidate_responded";
+      } else if (isOrgMember && currentStatus === "candidate_responded") {
+        targetStatus = "organization_responded";
       }
 
-      // Update inquiry status if changed
-      if (newStatus !== inquiry.status) {
-        await supabase
-          .schema("core")
-          .from("application_inquiries")
-          .update({
-            status: newStatus,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", input.inquiryId);
+      // Update inquiry status if needed (using state machine validation)
+      if (targetStatus && targetStatus !== currentStatus) {
+        const newStatus = await updateInquiryStatus(
+          supabase,
+          input.inquiryId,
+          targetStatus,
+          currentStatus,
+          user.id
+        );
+
+        // Sync application status
+        await syncApplicationStatus(ctx.supabaseAdmin, inquiry.application_id, newStatus);
       }
 
       // Get application info to determine recipient
@@ -744,16 +851,18 @@ export const inquiriesRouter = router({
 
       const allAccepted = sections?.every((s) => s.accepted_by !== null);
 
-      // Update inquiry status if all sections accepted
+      // Update inquiry status if all sections accepted (using state machine validation)
       if (allAccepted && inquiry.status !== "accepted") {
-        await supabase
-          .schema("core")
-          .from("application_inquiries")
-          .update({
-            status: "accepted",
-            updated_at: now,
-          })
-          .eq("id", input.inquiryId);
+        const newStatus = await updateInquiryStatus(
+          supabase,
+          input.inquiryId,
+          "accepted",
+          inquiry.status as InquiryStatus,
+          user.id
+        );
+
+        // Sync application status
+        await syncApplicationStatus(ctx.supabaseAdmin, inquiry.application_id, newStatus);
       }
 
       // Get application and job info for notification
@@ -1142,6 +1251,71 @@ export const inquiriesRouter = router({
       }
 
       return updated;
+    }),
+
+  /**
+   * Change inquiry status explicitly
+   * Validates status transitions using state machine
+   */
+  changeStatus: protectedProcedure
+    .input(
+      z.object({
+        inquiryId: z.string().uuid(),
+        newStatus: z.enum([
+          'sent',
+          'candidate_responded',
+          'organization_responded',
+          'accepted',
+          'rejected',
+          'withdrawn',
+        ]),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      // Get current inquiry
+      const { data: inquiry, error: inquiryError } = await supabase
+        .schema('core')
+        .from('application_inquiries')
+        .select('id, status, application_id, created_by')
+        .eq('id', input.inquiryId)
+        .single();
+
+      if (inquiryError || !inquiry) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Inquiry not found',
+        });
+      }
+
+      // Verify user has access
+      if (inquiry.created_by !== user.id) {
+        await verifyApplicationAccess(
+          supabase,
+          user.id,
+          inquiry.application_id,
+          true,
+        );
+      }
+
+      // Update status with validation
+      const newStatus = await updateInquiryStatus(
+        supabase,
+        input.inquiryId,
+        input.newStatus as InquiryStatus,
+        inquiry.status as InquiryStatus,
+        user.id
+      );
+
+      // Sync application status
+      await syncApplicationStatus(
+        ctx.supabaseAdmin,
+        inquiry.application_id,
+        newStatus
+      );
+
+      return { success: true, newStatus };
     }),
 });
 

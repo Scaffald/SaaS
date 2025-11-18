@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import type { ReactNode } from 'react'
+import { Children, isValidElement, type ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { EmploymentPrefsStep } from '../EmploymentPrefsStep'
@@ -100,21 +100,13 @@ vi.mock('tamagui', () => {
     value = '',
     onChangeText,
     placeholder,
-    keyboardType,
     ...rest
   }: {
     value?: string
     onChangeText?: (value: string) => void
     placeholder?: string
-    keyboardType?: string
   } & Record<string, unknown>) => (
-    <input
-      value={value}
-      onChange={(event) => onChangeText?.(event.target.value)}
-      placeholder={placeholder}
-      type={keyboardType === 'numeric' ? 'number' : 'text'}
-      {...rest}
-    />
+    <input value={value} onChange={(event) => onChangeText?.(event.target.value)} placeholder={placeholder} {...rest} />
   )
 
   const Text = ({
@@ -131,7 +123,25 @@ vi.mock('tamagui', () => {
     children?: ReactNode
   } & Record<string, unknown>) => <p {...rest}>{children}</p>
 
-  const Select = ({
+  type SelectOption = { value: string; label: ReactNode }
+  const SelectItem = ({ value }: { value: string; children?: ReactNode }) => <span data-value={value} />
+
+  const extractOptions = (nodes: ReactNode): SelectOption[] => {
+    const options: SelectOption[] = []
+    Children.forEach(nodes, (child) => {
+      if (!isValidElement(child)) return
+      if (child.type === SelectItem) {
+        options.push({ value: child.props.value, label: child.props.children })
+        return
+      }
+      if (child.props?.children) {
+        options.push(...extractOptions(child.props.children))
+      }
+    })
+    return options
+  }
+
+  const SelectComponent = ({
     value,
     onValueChange,
     children,
@@ -139,44 +149,31 @@ vi.mock('tamagui', () => {
     value?: string
     onValueChange?: (value: string) => void
     children?: ReactNode
-  }) => (
-    <div data-testid="select-wrapper">
-      <select value={value || ''} onChange={(e) => onValueChange?.(e.target.value)}>
-        {children}
-      </select>
-    </div>
-  )
+  }) => {
+    const options = extractOptions(children)
 
-  Select.Trigger = ({ children }: { children?: ReactNode }) => (
-    <div data-testid="select-trigger">{children}</div>
-  )
+    return (
+      <div data-testid="select-wrapper">
+        <select value={value || ''} onChange={(e) => onValueChange?.(e.target.value)}>
+          <option value="">Select...</option>
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    )
+  }
 
-  Select.Value = ({ placeholder }: { placeholder?: string }) => (
-    <span data-testid="select-value">{placeholder || 'Select...'}</span>
-  )
-
-  Select.Content = ({ children }: { children?: ReactNode }) => (
-    <div data-testid="select-content">{children}</div>
-  )
-
-  Select.Viewport = ({ children }: { children?: ReactNode }) => (
-    <div data-testid="select-viewport">{children}</div>
-  )
-
-  Select.Item = ({
-    value,
-    children,
-  }: {
-    value: string
-    children?: ReactNode
-  }) => (
-    <option value={value}>{children}</option>
-  )
-
-  Select.ItemText = ({ children }: { children?: ReactNode }) => <>{children}</>
-
-  Select.ScrollUpButton = () => null
-  Select.ScrollDownButton = () => null
+  SelectComponent.Trigger = () => null
+  SelectComponent.Value = () => null
+  SelectComponent.Content = ({ children }: { children?: ReactNode }) => <>{children}</>
+  SelectComponent.Viewport = ({ children }: { children?: ReactNode }) => <>{children}</>
+  SelectComponent.Item = SelectItem
+  SelectComponent.ItemText = ({ children }: { children?: ReactNode }) => <>{children}</>
+  SelectComponent.ScrollUpButton = () => null
+  SelectComponent.ScrollDownButton = () => null
 
   const Adapt = ({ children }: { children?: ReactNode }) => <>{children}</>
   const Sheet = ({ children }: { children?: ReactNode }) => <div>{children}</div>
@@ -184,7 +181,7 @@ vi.mock('tamagui', () => {
   Sheet.ScrollView = () => null
   Sheet.Overlay = () => null
 
-  Select.Adapt = Adapt
+  SelectComponent.Adapt = Adapt
 
   const Button = ({
     children,
@@ -207,7 +204,7 @@ vi.mock('tamagui', () => {
     Input,
     Text,
     Paragraph,
-    Select,
+    Select: SelectComponent,
     Adapt,
     Sheet,
     Button,

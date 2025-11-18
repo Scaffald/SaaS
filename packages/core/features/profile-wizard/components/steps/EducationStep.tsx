@@ -56,8 +56,8 @@ export function EducationStep({
 
   useEffect(() => {
     const payload: EducationStepData = {
-      degreeType: values.degreeType ?? '',
-      institutionName: values.institutionName ?? '',
+      degreeType: normalizeText(values.degreeType),
+      institutionName: normalizeText(values.institutionName),
       startDate: normalizeWizardDate(values.startDate),
       endDate: values.isCurrent ? null : normalizeWizardDate(values.endDate),
       isCurrent: values.isCurrent ?? false,
@@ -71,23 +71,13 @@ export function EducationStep({
   }, [values, isDirty, onStepStateChange])
 
   const submit = handleSubmit(async (data) => {
-    await onContinue({
-      degreeType: data.degreeType ?? '',
-      institutionName: data.institutionName ?? '',
-      startDate: normalizeWizardDate(data.startDate),
-      endDate: data.isCurrent ? null : normalizeWizardDate(data.endDate),
-      isCurrent: data.isCurrent ?? false,
-    })
+    await onContinue(
+      formatEducationPayload(data),
+    )
   })
 
   const handleSaveForLater = handleSubmit(async (data) => {
-    await onSaveForLater?.({
-      degreeType: data.degreeType ?? '',
-      institutionName: data.institutionName ?? '',
-      startDate: normalizeWizardDate(data.startDate),
-      endDate: data.isCurrent ? null : normalizeWizardDate(data.endDate),
-      isCurrent: data.isCurrent ?? false,
-    })
+    await onSaveForLater?.(formatEducationPayload(data))
   })
 
   const handleSkip = async () => {
@@ -209,6 +199,20 @@ function normalizeWizardDate(value?: string | null): string | null {
   if (!value) return null
   const trimmed = value.trim()
   return trimmed.length > 0 ? trimmed : null
+}
+
+function normalizeText(value?: string | null): string {
+  return value?.trim() ?? ''
+}
+
+function formatEducationPayload(data: EducationFormValues): EducationStepData {
+  return {
+    degreeType: normalizeText(data.degreeType),
+    institutionName: normalizeText(data.institutionName),
+    startDate: normalizeWizardDate(data.startDate),
+    endDate: data.isCurrent ? null : normalizeWizardDate(data.endDate),
+    isCurrent: data.isCurrent ?? false,
+  }
 }
 
 function toEducationFormValues(data?: EducationStepData | null): EducationFormValues {

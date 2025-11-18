@@ -60,14 +60,7 @@ export function ExperienceStep({
   }, [initialData, reset])
 
   useEffect(() => {
-    const payload: ExperienceStepData = {
-      jobTitle: values.jobTitle ?? '',
-      companyName: values.companyName ?? '',
-      startDate: normalizeWizardDate(values.startDate),
-      endDate: values.isCurrent ? null : normalizeWizardDate(values.endDate),
-      isCurrent: values.isCurrent ?? true,
-      summary: values.summary ?? '',
-    }
+    const payload = formatExperiencePayload(values)
 
     onStepStateChange?.({
       data: payload,
@@ -77,25 +70,11 @@ export function ExperienceStep({
   }, [values, isValid, isDirty, onStepStateChange])
 
   const submit = handleSubmit(async (data) => {
-    await onContinue({
-      jobTitle: data.jobTitle.trim(),
-      companyName: data.companyName.trim(),
-      startDate: normalizeWizardDate(data.startDate),
-      endDate: data.isCurrent ? null : normalizeWizardDate(data.endDate),
-      isCurrent: data.isCurrent,
-      summary: data.summary?.trim(),
-    })
+    await onContinue(formatExperiencePayload(data))
   })
 
   const handleSaveForLater = handleSubmit(async (data) => {
-    await onSaveForLater?.({
-      jobTitle: data.jobTitle.trim(),
-      companyName: data.companyName.trim(),
-      startDate: normalizeWizardDate(data.startDate),
-      endDate: data.isCurrent ? null : normalizeWizardDate(data.endDate),
-      isCurrent: data.isCurrent,
-      summary: data.summary?.trim(),
-    })
+    await onSaveForLater?.(formatExperiencePayload(data))
   })
 
   const handleSkip = async () => {
@@ -242,7 +221,23 @@ function formatWizardDate(date: Date): string {
 
 function normalizeWizardDate(value?: string | null): string | null {
   if (!value) return null
-  return value || null
+  const trimmed = value.trim()
+  return trimmed.length > 0 ? trimmed : null
+}
+
+function normalizeText(value?: string | null): string {
+  return value?.trim() ?? ''
+}
+
+function formatExperiencePayload(data: ExperienceFormValues): ExperienceStepData {
+  return {
+    jobTitle: normalizeText(data.jobTitle),
+    companyName: normalizeText(data.companyName),
+    startDate: normalizeWizardDate(data.startDate),
+    endDate: data.isCurrent ? null : normalizeWizardDate(data.endDate),
+    isCurrent: data.isCurrent ?? true,
+    summary: normalizeText(data.summary),
+  }
 }
 
 function toExperienceFormValues(data?: ExperienceStepData | null): ExperienceFormValues {

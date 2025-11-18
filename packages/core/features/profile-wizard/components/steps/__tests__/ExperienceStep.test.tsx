@@ -266,7 +266,8 @@ describe('ExperienceStep', () => {
     })
   })
 
-  it('shows validation errors for empty required fields', async () => {
+  it('shows validation errors for empty required fields after interaction', async () => {
+    const user = userEvent.setup()
     render(
       <ExperienceStep
         initialData={undefined}
@@ -280,9 +281,17 @@ describe('ExperienceStep', () => {
       />,
     )
 
-    const user = userEvent.setup()
-    const nextButton = screen.getByRole('button', { name: /next: certifications/i })
-    await user.click(nextButton)
+    const jobTitleInput = screen.getByPlaceholderText('Lead Carpenter')
+    await user.type(jobTitleInput, 'Electrician')
+    await user.clear(jobTitleInput)
+
+    const companyInput = screen.getByPlaceholderText('Summit Builders')
+    await user.type(companyInput, 'Summit')
+    await user.clear(companyInput)
+
+    const startDateInput = screen.getByTestId('input-start-date-*')
+    fireEvent.change(startDateInput, { target: { value: '2020-01' } })
+    fireEvent.change(startDateInput, { target: { value: '' } })
 
     await waitFor(() => {
       expect(screen.getByText('Job title is required')).toBeInTheDocument()
