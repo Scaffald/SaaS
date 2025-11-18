@@ -5,6 +5,7 @@ import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
 import { NarrativeView } from './NarrativeView'
 import { ChartView } from './ChartView'
+import { ShareResults } from './ShareResults'
 import { useIPIPResults } from '../hooks/useIPIPResults'
 
 /**
@@ -134,6 +135,9 @@ export function IPIPResultsPage() {
           />
         </Tabs.Content>
       </Tabs>
+
+      {/* Share Results Section */}
+      <ShareResults isComplete={results.isComplete} nextAvailableAt={results.nextAvailableAt} />
     </YStack>
   )
 }

@@ -22,6 +22,7 @@ export interface IPIPResultsData {
   } | null
   isComplete: boolean
   completedDomains: number
+  nextAvailableAt: string | null | undefined
   isLoading: boolean
   error: Error | null
 }
@@ -92,6 +93,7 @@ export function useIPIPResults(): IPIPResultsData {
     archetype,
     isComplete,
     completedDomains,
+    nextAvailableAt: assessment?.next_available_at,
     isLoading: assessmentLoading || archetypeLoading,
     error: assessmentError as Error | null,
   }

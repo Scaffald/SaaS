@@ -1324,11 +1324,11 @@ export const personalityAssessmentRouter = t.router({
           .update({ view_count: (tokenData.view_count || 0) + 1 })
           .eq("token", input.token);
 
-        // Get assessment results (anonymized)
+        // Get assessment results (anonymized) - return answers for client-side processing
         const { data: assessment, error: assessmentError } = await supabase
           .schema("core")
           .from("personality_assessments")
-          .select("ipip_scores, ipip_completed_at")
+          .select("ipip_answers, ipip_completed_at, user_id")
           .eq("id", tokenData.assessment_id)
           .single();
 
@@ -1339,17 +1339,9 @@ export const personalityAssessmentRouter = t.router({
           });
         }
 
-        // Get user_id from assessment for archetype lookup
-        const { data: assessmentUser } = await supabase
-          .schema("core")
-          .from("personality_assessments")
-          .select("user_id")
-          .eq("id", tokenData.assessment_id)
-          .single();
-
         // Get archetype if available
         let archetypeData = null;
-        if (assessmentUser?.user_id) {
+        if (assessment.user_id) {
           const { data } = await supabase
             .schema("core")
             .from("user_archetypes")
@@ -1362,14 +1354,14 @@ export const personalityAssessmentRouter = t.router({
               )
             `,
             )
-            .eq("user_id", assessmentUser.user_id)
+            .eq("user_id", assessment.user_id)
             .eq("is_primary", true)
             .single();
           archetypeData = data;
         }
 
         return {
-          scores: assessment.ipip_scores,
+          answers: assessment.ipip_answers,
           completedAt: assessment.ipip_completed_at,
           archetype: archetypeData
             ? {
