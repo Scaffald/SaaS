@@ -33,7 +33,7 @@ describe('analytics events', () => {
 
         expect(result.success).toBe(true)
         if (result.success) {
-          expect(result.data.has_anonymous_history).toBe(true)
+          expect((result.data as { has_anonymous_history?: boolean }).has_anonymous_history).toBe(true)
         }
       })
 
@@ -128,7 +128,7 @@ describe('analytics events', () => {
 
         expect(result.success).toBe(true)
         if (result.success) {
-          expect(result.data.organization_id).toBe('org-456')
+          expect((result.data as { organization_id?: string | null }).organization_id).toBe('org-456')
         }
       })
 

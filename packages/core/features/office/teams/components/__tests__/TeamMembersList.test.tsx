@@ -114,7 +114,7 @@ vi.mock('@tamagui/lucide-icons', () => ({
   GraduationCap: () => <span data-testid="graduation-cap-icon">GraduationCap</span>,
   Building2: () => <span data-testid="building2-icon">Building2</span>,
   FileText: () => <span data-testid="file-text-icon">FileText</span>,
-}), { virtual: true })
+}))
 
 vi.mock('@app/core/constants/routes', () => ({
   ROUTES: {

@@ -130,24 +130,37 @@ vi.mock('tamagui', async () => {
       const child = children as React.ReactElement
       if (child && typeof child === 'object' && 'props' in child) {
         // Merge existing onClick/onPress with our handler
-        const existingOnClick = child.props.onClick || child.props.onPress
-        return React.cloneElement(child, {
-          onClick: (e: React.MouseEvent) => {
-            e.preventDefault()
-            existingOnClick?.(e)
-            handleClose()
-          },
-          onPress: (e?: unknown) => {
-            existingOnClick?.(e)
-            handleClose()
-          },
-          onKeyDown: (e: React.KeyboardEvent) => {
-            if (e.key === 'Enter' || e.key === ' ') {
+        const childProps = child.props as {
+          onClick?: (e: React.MouseEvent) => void
+          onPress?: (e: React.MouseEvent) => void
+        }
+        const existingOnClick = childProps.onClick || childProps.onPress
+        return React.cloneElement(
+          child as React.ReactElement<{
+            onClick?: (e: React.MouseEvent) => void
+            onPress?: (e: React.MouseEvent) => void
+            onKeyDown?: (e: React.KeyboardEvent) => void
+          }>,
+          {
+            onClick: (e: React.MouseEvent) => {
               e.preventDefault()
+              existingOnClick?.(e)
               handleClose()
-            }
-          },
-        })
+            },
+            onPress: (e?: React.MouseEvent) => {
+              if (e) {
+                existingOnClick?.(e)
+              }
+              handleClose()
+            },
+            onKeyDown: (e: React.KeyboardEvent) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                handleClose()
+              }
+            },
+          }
+        )
       }
       return (
         <button

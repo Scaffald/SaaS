@@ -7,6 +7,21 @@ import { useWorkLogSync } from '../useWorkLogSync';
 import * as api from '@app/core/utils/api';
 import * as offlineStorage from '../../utils/offline-storage';
 import type { OfflineWorkLog } from '../../types/offline';
+import type { CreateWorkLogInput } from '../../schemas';
+
+const createWorkLogInput = (overrides: Partial<CreateWorkLogInput>): CreateWorkLogInput => ({
+  projectId: 'project-1',
+  entryType: 'daily',
+  logDate: '2025-01-10',
+  timeEntries: [{ start: '08:00', end: '12:00' }],
+  workDescription: 'Test',
+  tasksCompleted: [],
+  skillsUsed: [],
+  visibility: 'private',
+  showOnProfile: false,
+  showDateRangeOnProfile: false,
+  ...overrides,
+});
 
 vi.mock('@app/core/utils/api', () => ({
   api: {
@@ -117,13 +132,7 @@ describe('useWorkLogSync', () => {
         updatedAt: '2025-01-10T00:00:00Z',
         payload: {
           kind: 'create',
-          input: {
-            projectId: 'project-1',
-            entryType: 'daily',
-            logDate: '2025-01-10',
-            timeEntries: [{ start: '08:00', end: '12:00' }],
-            workDescription: 'Test',
-          },
+          input: createWorkLogInput({ workDescription: 'Test' }),
         },
         syncStatus: 'pending',
         photos: [],
@@ -136,13 +145,7 @@ describe('useWorkLogSync', () => {
         updatedAt: '2025-01-10T00:00:00Z',
         payload: {
           kind: 'create',
-          input: {
-            projectId: 'project-1',
-            entryType: 'daily',
-            logDate: '2025-01-11',
-            timeEntries: [{ start: '08:00', end: '12:00' }],
-            workDescription: 'Test 2',
-          },
+          input: createWorkLogInput({ logDate: '2025-01-11', workDescription: 'Test 2' }),
         },
         syncStatus: 'queued',
         photos: [],
@@ -155,13 +158,7 @@ describe('useWorkLogSync', () => {
         updatedAt: '2025-01-10T00:00:00Z',
         payload: {
           kind: 'create',
-          input: {
-            projectId: 'project-1',
-            entryType: 'daily',
-            logDate: '2025-01-12',
-            timeEntries: [{ start: '08:00', end: '12:00' }],
-            workDescription: 'Test 3',
-          },
+          input: createWorkLogInput({ logDate: '2025-01-12', workDescription: 'Test 3' }),
         },
         syncStatus: 'synced',
         photos: [],
@@ -245,13 +242,7 @@ describe('useWorkLogSync', () => {
         updatedAt: '2025-01-10T00:00:00Z',
         payload: {
           kind: 'create',
-          input: {
-            projectId: 'project-1',
-            entryType: 'daily',
-            logDate: '2025-01-10',
-            timeEntries: [{ start: '08:00', end: '12:00' }],
-            workDescription: 'Test',
-          },
+          input: createWorkLogInput({ workDescription: 'Test' }),
         },
         syncStatus: 'queued',
         photos: [],
@@ -269,7 +260,7 @@ describe('useWorkLogSync', () => {
       }),
     );
 
-    expect(result.current.canSync).toBe(false);
+    expect(result.current.pendingSyncCount).toBe(1);
   });
 });
 

@@ -8,9 +8,10 @@ import type { ReactElement, ReactNode } from 'react'
 const mockUseQuery: Mock<
   [],
   {
-    data: EmploymentProfileFormData
+    data: EmploymentProfileFormData | undefined
     isLoading: boolean
     isFetching: boolean
+    error?: Error
   }
 > = vi.fn()
 const mockMutateAsync: Mock<[EmploymentProfileFormData], Promise<{ success: boolean }>> = vi.fn()
@@ -884,11 +885,11 @@ describe('ProfileEmploymentLeft', () => {
     const hourlyRateInput = getByPlaceholderText(/enter your hourly rate/i) as HTMLInputElement
     
     // Test max value (200)
-    fireEvent.change(hourlyRateInput, { target: { value: '200' } })
+    fireEvent(hourlyRateInput, 'changeText', '200')
     expect(hourlyRateInput.value).toBe('200')
 
     // Test over max value (should be limited by schema)
-    fireEvent.change(hourlyRateInput, { target: { value: '250' } })
+    fireEvent(hourlyRateInput, 'changeText', '250')
     // The form should handle this validation
   })
 
@@ -902,7 +903,7 @@ describe('ProfileEmploymentLeft', () => {
 
     const hourlyRateInput = getByPlaceholderText(/enter your hourly rate/i) as HTMLInputElement
     
-    fireEvent.change(hourlyRateInput, { target: { value: '45.50' } })
+    fireEvent(hourlyRateInput, 'changeText', '45.50')
     // Value may be formatted, so just check it contains the number
     expect(hourlyRateInput.value).toMatch(/45/)
   })
@@ -1007,15 +1008,14 @@ describe('ProfileEmploymentLeft', () => {
 
   it('handles query error gracefully', () => {
     mockUseQuery.mockImplementation(() => ({
-      data: undefined,
+      data: undefined as EmploymentProfileFormData | undefined,
       isLoading: false,
       isFetching: false,
       error: new Error('Failed to fetch employment data'),
     }))
 
-    const { container } = renderEmploymentForm()
     // Form should still render (shows skeleton or empty state)
-    expect(container).toBeInstanceOf(HTMLElement)
+    expect(() => renderEmploymentForm()).not.toThrow()
   })
 
   // Task 4: Form state management tests
@@ -1089,9 +1089,8 @@ describe('ProfileEmploymentLeft', () => {
       isFetching: false,
     }))
 
-    const { container } = renderEmploymentForm()
     // Should render without infinite loop
-    expect(container).toBeInstanceOf(HTMLElement)
+    expect(() => renderEmploymentForm()).not.toThrow()
   })
 
   // Task 5: Field interaction tests
@@ -1100,11 +1099,11 @@ describe('ProfileEmploymentLeft', () => {
 
     const hourlyRateInput = getByPlaceholderText(/enter your hourly rate/i) as HTMLInputElement
     
-    fireEvent.change(hourlyRateInput, { target: { value: '25.50' } })
+    fireEvent(hourlyRateInput, 'changeText', '25.50')
     // Value may be formatted, so just check it contains the number
     expect(hourlyRateInput.value).toMatch(/25/)
 
-    fireEvent.change(hourlyRateInput, { target: { value: '' } })
+    fireEvent(hourlyRateInput, 'changeText', '')
     expect(hourlyRateInput.value).toBe('')
   })
 
@@ -1113,7 +1112,7 @@ describe('ProfileEmploymentLeft', () => {
 
     const hourlyRateInput = getByPlaceholderText(/enter your hourly rate/i) as HTMLInputElement
     
-    fireEvent.change(hourlyRateInput, { target: { value: '45.75' } })
+    fireEvent(hourlyRateInput, 'changeText', '45.75')
     // Value may be formatted, so just check it contains the number
     expect(hourlyRateInput.value).toMatch(/45/)
   })

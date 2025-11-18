@@ -79,7 +79,7 @@ vi.mock('@tamagui/lucide-icons', () => ({
   GraduationCap: () => <span data-testid="graduation-cap-icon">GraduationCap</span>,
   Building2: () => <span data-testid="building2-icon">Building2</span>,
   FileText: () => <span data-testid="file-text-icon">FileText</span>,
-}), { virtual: true })
+}))
 
 vi.mock('@app/core/constants/routes', () => ({
   ROUTES: {
@@ -92,7 +92,7 @@ vi.mock('@app/core/constants/routes', () => ({
 vi.mock('react-hook-form', () => {
   return {
     useForm: ({ defaultValues }: { defaultValues?: Record<string, unknown> }) => {
-      const values = { 
+      const values: Record<string, unknown> = { 
         ...(defaultValues ?? {}),
         // Ensure default role is set for form validation
         defaultRoleId: defaultValues?.defaultRoleId ?? 'role-1',

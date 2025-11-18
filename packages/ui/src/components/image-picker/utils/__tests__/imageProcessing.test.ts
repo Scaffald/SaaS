@@ -17,7 +17,7 @@ describe('processCroppedImage (web)', () => {
     width: number
     height: number
     getContext: ReturnType<typeof vi.fn>
-    toBlob: Mock<[(blob: Blob | null) => void, string], void>
+    toBlob: Mock<[(blob: Blob | null) => void, string, (number | undefined)?], void>
   }
 
   beforeEach(() => {
@@ -33,7 +33,7 @@ describe('processCroppedImage (web)', () => {
       width: 0,
       height: 0,
       getContext: vi.fn().mockReturnValue(ctxMock),
-      toBlob: vi.fn((callback: (blob: Blob | null) => void, mime: string) => {
+      toBlob: vi.fn((callback: (blob: Blob | null) => void, mime: string, quality?: number) => {
         const fakeBlob = {
           type: mime,
           size: 4,
@@ -42,7 +42,7 @@ describe('processCroppedImage (web)', () => {
           },
         }
         callback(fakeBlob as unknown as Blob)
-      }) as Mock<[(blob: Blob | null) => void, string], void>,
+      }) as Mock<[(blob: Blob | null) => void, string, (number | undefined)?], void>,
     }
 
     const createElementSpy = vi
@@ -415,9 +415,9 @@ describe('processCroppedImage (web)', () => {
     })
 
     it('throws error when blob generation fails', async () => {
-      canvasMock.toBlob = vi.fn((callback: (blob: Blob | null) => void) => {
+      canvasMock.toBlob = vi.fn((callback: (blob: Blob | null) => void, _mime?: string, _quality?: number) => {
         callback(null) // Simulate blob generation failure
-      }) as Mock<[(blob: Blob | null) => void, string], void>
+      }) as unknown as Mock<[(blob: Blob | null) => void, string, (number | undefined)?], void>
 
       await expect(
         processCroppedImage({

@@ -173,9 +173,10 @@ describe('Avatar Image Picker Integration Tests', () => {
       }
 
       expect(storedOnSelect).toBeDefined()
-      if (storedOnSelect) {
+      const onSelect = storedOnSelect
+      if (onSelect) {
         await act(async () => {
-          await storedOnSelect(mockSelection)
+          await onSelect(mockSelection)
         })
       }
 
@@ -216,9 +217,10 @@ describe('Avatar Image Picker Integration Tests', () => {
       }
 
       expect(storedOnSelect).toBeDefined()
-      if (storedOnSelect) {
+      const onSelect = storedOnSelect
+      if (onSelect) {
         await act(async () => {
-          await storedOnSelect(mockSelection)
+          await onSelect(mockSelection)
         })
       }
 
@@ -366,9 +368,10 @@ describe('Avatar Image Picker Integration Tests', () => {
       }
 
       expect(storedOnSelect).toBeDefined()
-      if (storedOnSelect) {
+      const onSelect = storedOnSelect
+      if (onSelect) {
         await act(async () => {
-          await storedOnSelect(mockSelection)
+          await onSelect(mockSelection)
         })
       }
 
@@ -422,9 +425,10 @@ describe('Avatar Image Picker Integration Tests', () => {
       mockOnCropError.mockClear()
 
       expect(storedOnSelect).toBeDefined()
-      if (storedOnSelect) {
+      const onSelect = storedOnSelect
+      if (onSelect) {
         await act(async () => {
-          await storedOnSelect(mockSelection)
+          await onSelect(mockSelection)
         })
       }
 
@@ -449,9 +453,10 @@ describe('Avatar Image Picker Integration Tests', () => {
       }
 
       expect(storedOnSelect).toBeDefined()
-      if (storedOnSelect) {
+      const onSelect = storedOnSelect
+      if (onSelect) {
         await act(async () => {
-          await storedOnSelect(mockSelection)
+          await onSelect(mockSelection)
         })
       }
 
@@ -525,15 +530,16 @@ describe('Avatar Image Picker Integration Tests', () => {
       const mockFile2 = new File(['test2'], 'test2.jpg', { type: 'image/jpeg' })
 
       expect(storedOnSelect).toBeDefined()
-      if (storedOnSelect) {
+      const onSelect = storedOnSelect
+      if (onSelect) {
         // Trigger first upload
         await act(async () => {
-          await storedOnSelect({ platform: 'web' as const, file: mockFile1 })
+          await onSelect({ platform: 'web' as const, file: mockFile1 })
         })
 
         // Immediately trigger second upload
         await act(async () => {
-          await storedOnSelect({ platform: 'web' as const, file: mockFile2 })
+          await onSelect({ platform: 'web' as const, file: mockFile2 })
         })
       }
 
@@ -551,9 +557,10 @@ describe('Avatar Image Picker Integration Tests', () => {
       }
 
       expect(storedOnSelect).toBeDefined()
-      if (storedOnSelect) {
+      const onSelect = storedOnSelect
+      if (onSelect) {
         await act(async () => {
-          await storedOnSelect(mockSelection)
+          await onSelect(mockSelection)
         })
       }
 

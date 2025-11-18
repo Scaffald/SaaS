@@ -10,6 +10,21 @@ import {
 } from '../offline-storage';
 import type { OfflineWorkLog, SyncSettings } from '../../types/offline';
 import { DEFAULT_SYNC_SETTINGS } from '../../types/offline';
+import type { CreateWorkLogInput } from '../../schemas';
+
+const createWorkLogInput = (overrides: Partial<CreateWorkLogInput>): CreateWorkLogInput => ({
+  projectId: 'project-1',
+  entryType: 'daily',
+  logDate: '2025-01-10',
+  timeEntries: [{ start: '08:00', end: '12:00' }],
+  workDescription: 'Test work',
+  tasksCompleted: [],
+  skillsUsed: [],
+  visibility: 'private',
+  showOnProfile: false,
+  showDateRangeOnProfile: false,
+  ...overrides,
+});
 
 vi.mock('@react-native-async-storage/async-storage', () => ({
   default: {
@@ -41,13 +56,7 @@ describe('offline-storage', () => {
           updatedAt: '2025-01-10T00:00:00Z',
           payload: {
             kind: 'create',
-            input: {
-              projectId: 'project-1',
-              entryType: 'daily',
-              logDate: '2025-01-10',
-              timeEntries: [{ start: '08:00', end: '12:00' }],
-              workDescription: 'Test work',
-            },
+            input: createWorkLogInput({ workDescription: 'Test work' }),
           },
           syncStatus: 'pending',
           photos: [],
@@ -120,13 +129,7 @@ describe('offline-storage', () => {
           updatedAt: '2025-01-10T00:00:00Z',
           payload: {
             kind: 'create',
-            input: {
-              projectId: 'project-1',
-              entryType: 'daily',
-              logDate: '2025-01-10',
-              timeEntries: [{ start: '08:00', end: '12:00' }],
-              workDescription: 'Test work',
-            },
+            input: createWorkLogInput({ workDescription: 'Test work' }),
           },
           syncStatus: 'pending',
           photos: [],
@@ -211,7 +214,8 @@ describe('offline-storage', () => {
       const settings: SyncSettings = {
         syncOverWifiOnly: true,
         autoSync: false,
-        requireConfirmation: true,
+        maxRetries: 3,
+        lastSyncedAt: null,
       };
 
       await saveSyncSettings(settings);
@@ -229,7 +233,8 @@ describe('offline-storage', () => {
         saveSyncSettings({
           syncOverWifiOnly: true,
           autoSync: false,
-          requireConfirmation: true,
+          maxRetries: 3,
+          lastSyncedAt: null,
         }),
       ).resolves.not.toThrow();
     });

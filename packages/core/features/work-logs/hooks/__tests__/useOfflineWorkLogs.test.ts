@@ -5,6 +5,21 @@ import { Platform } from 'react-native';
 import { useOfflineWorkLogs } from '../useOfflineWorkLogs';
 import * as offlineStorage from '../../utils/offline-storage';
 import type { OfflineWorkLog } from '../../types/offline';
+import type { CreateWorkLogInput } from '../../schemas';
+
+const createWorkLogInput = (overrides: Partial<CreateWorkLogInput>): CreateWorkLogInput => ({
+  projectId: 'project-1',
+  entryType: 'daily',
+  logDate: '2025-01-10',
+  timeEntries: [{ start: '08:00', end: '12:00' }],
+  workDescription: 'Test work',
+  tasksCompleted: [],
+  skillsUsed: [],
+  visibility: 'private',
+  showOnProfile: false,
+  showDateRangeOnProfile: false,
+  ...overrides,
+});
 
 vi.mock('../../utils/offline-storage');
 vi.mock('expo-file-system/legacy', () => ({
@@ -34,13 +49,7 @@ describe('useOfflineWorkLogs', () => {
         updatedAt: '2025-01-10T00:00:00Z',
         payload: {
           kind: 'create',
-          input: {
-            projectId: 'project-1',
-            entryType: 'daily',
-            logDate: '2025-01-10',
-            timeEntries: [{ start: '08:00', end: '12:00' }],
-            workDescription: 'Test work',
-          },
+          input: createWorkLogInput({ workDescription: 'Test work' }),
         },
         syncStatus: 'pending',
         photos: [],
@@ -72,21 +81,17 @@ describe('useOfflineWorkLogs', () => {
       await result.current.queueWorkLog({
         payload: {
           kind: 'create',
-          input: {
-            projectId: 'project-1',
-            entryType: 'daily',
-            logDate: '2025-01-10',
-            timeEntries: [{ start: '08:00', end: '12:00' }],
-            workDescription: 'New work log',
-          },
+          input: createWorkLogInput({ workDescription: 'New work log' }),
         },
       });
     });
 
     expect(result.current.offlineWorkLogs.length).toBe(1);
-    expect(result.current.offlineWorkLogs[0]?.payload.input.workDescription).toBe(
-      'New work log',
-    );
+    expect(
+      result.current.offlineWorkLogs[0]?.payload.kind === 'create'
+        ? result.current.offlineWorkLogs[0].payload.input.workDescription
+        : undefined,
+    ).toBe('New work log');
     expect(offlineStorage.saveOfflineWorkLogs).toHaveBeenCalled();
   });
 
@@ -97,13 +102,7 @@ describe('useOfflineWorkLogs', () => {
       updatedAt: '2025-01-10T00:00:00Z',
       payload: {
         kind: 'create',
-        input: {
-          projectId: 'project-1',
-          entryType: 'daily',
-          logDate: '2025-01-10',
-          timeEntries: [{ start: '08:00', end: '12:00' }],
-          workDescription: 'Original',
-        },
+        input: createWorkLogInput({ workDescription: 'Original' }),
       },
       syncStatus: 'pending',
       photos: [],
@@ -120,21 +119,28 @@ describe('useOfflineWorkLogs', () => {
     });
 
     await act(async () => {
-      await result.current.mutateOfflineWorkLog('log-1', (current) => ({
-        ...current,
-        payload: {
-          ...current.payload,
-          input: {
-            ...current.payload.input,
-            workDescription: 'Updated',
-          },
-        },
-      }));
+      await result.current.mutateOfflineWorkLog('log-1', (current) => {
+        if (current.payload.kind === 'create') {
+          return {
+            ...current,
+            payload: {
+              ...current.payload,
+              input: {
+                ...current.payload.input,
+                workDescription: 'Updated',
+              },
+            },
+          }
+        }
+        return current
+      });
     });
 
-    expect(result.current.offlineWorkLogs[0]?.payload.input.workDescription).toBe(
-      'Updated',
-    );
+    expect(
+      result.current.offlineWorkLogs[0]?.payload.kind === 'create'
+        ? result.current.offlineWorkLogs[0].payload.input.workDescription
+        : undefined,
+    ).toBe('Updated');
     expect(offlineStorage.saveOfflineWorkLogs).toHaveBeenCalled();
   });
 
@@ -145,13 +151,7 @@ describe('useOfflineWorkLogs', () => {
       updatedAt: '2025-01-10T00:00:00Z',
       payload: {
         kind: 'create',
-        input: {
-          projectId: 'project-1',
-          entryType: 'daily',
-          logDate: '2025-01-10',
-          timeEntries: [{ start: '08:00', end: '12:00' }],
-          workDescription: 'To be removed',
-        },
+        input: createWorkLogInput({ workDescription: 'To be removed' }),
       },
       syncStatus: 'pending',
       photos: [],
@@ -182,13 +182,7 @@ describe('useOfflineWorkLogs', () => {
       updatedAt: '2025-01-10T00:00:00Z',
       payload: {
         kind: 'create',
-        input: {
-          projectId: 'project-1',
-          entryType: 'daily',
-          logDate: '2025-01-10',
-          timeEntries: [{ start: '08:00', end: '12:00' }],
-          workDescription: 'Test',
-        },
+        input: createWorkLogInput({ workDescription: 'Test' }),
       },
       syncStatus: 'pending',
       photos: [],
@@ -226,13 +220,7 @@ describe('useOfflineWorkLogs', () => {
         updatedAt: '2025-01-10T00:00:00Z',
         payload: {
           kind: 'create',
-          input: {
-            projectId: 'project-1',
-            entryType: 'daily',
-            logDate: '2025-01-10',
-            timeEntries: [{ start: '08:00', end: '12:00' }],
-            workDescription: 'Refreshed',
-          },
+          input: createWorkLogInput({ workDescription: 'Refreshed' }),
         },
         syncStatus: 'pending',
         photos: [],
@@ -256,13 +244,7 @@ describe('useOfflineWorkLogs', () => {
       updatedAt: '2025-01-10T00:00:00Z',
       payload: {
         kind: 'create',
-        input: {
-          projectId: 'project-1',
-          entryType: 'daily',
-          logDate: '2025-01-10',
-          timeEntries: [{ start: '08:00', end: '12:00' }],
-          workDescription: 'Test',
-        },
+        input: createWorkLogInput({ workDescription: 'Test' }),
       },
       syncStatus: 'pending',
       photos: [],

@@ -80,7 +80,7 @@ vi.mock('expo-updates', () => ({
 
 // Mock react-native Platform
 const mockPlatform = {
-  OS: 'ios' as const,
+  OS: 'ios' as 'ios' | 'android' | 'web',
   select: vi.fn(<T>(selections: { ios?: T; android?: T; web?: T; default?: T }) => {
     return selections.ios ?? selections.default
   }),
@@ -144,8 +144,12 @@ describe('analytics client', () => {
       delete process.env.POSTHOG_KEY_PROD
       mockConstants.expoConfig.extra = {
         appEnv: 'development',
+        posthogKey: 'test-key',
+        posthogHost: 'https://app.posthog.com',
         analytics: {
           posthog: {
+            key: 'test-key',
+            host: 'https://app.posthog.com',
             env: 'development',
           },
         },
