@@ -206,7 +206,10 @@ describe('ProfileEducationRight', () => {
     const confirmButtons = screen.getAllByRole('button', { name: /^Delete$/i })
     fireEvent.click(confirmButtons[confirmButtons.length - 1])
 
-    await waitFor(() => expect(deleteMutationSpy).toHaveBeenCalledWith({ educationId: 'ed-2' }))
+    await waitFor(
+      () => expect(deleteMutationSpy).toHaveBeenCalledWith({ educationId: 'ed-2' }),
+      { timeout: 1000 },
+    )
   })
 
   it('renders formatted date ranges and location metadata', () => {

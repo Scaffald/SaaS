@@ -52,13 +52,15 @@ export function InquiryComparisonView({ inquiryIds, onClose, onRemoveInquiry }: 
 
     // Capabilities
     const capabilityNames = new Set<string>()
-    inquiries.forEach((record) => {
-      record.capabilityResponses?.forEach((response: InquiryComparisonRecord['capabilityResponses'][number]) => {
-        capabilityNames.add(response.capability_name)
-      })
-    })
+    for (const record of inquiries) {
+      if (record.capabilityResponses) {
+        for (const response of record.capabilityResponses) {
+          capabilityNames.add(response.capability_name)
+        }
+      }
+    }
 
-    capabilityNames.forEach((name) => {
+    for (const name of capabilityNames) {
       const serialized = inquiries.map((record) => {
         const response = record.capabilityResponses?.find(
           (entry: InquiryComparisonRecord['capabilityResponses'][number]) =>
@@ -73,7 +75,7 @@ export function InquiryComparisonView({ inquiryIds, onClose, onRemoveInquiry }: 
       if (new Set(serialized).size > 1) {
         diffFields.add(`capability:${name}`)
       }
-    })
+    }
 
     return diffFields
   }, [inquiries])

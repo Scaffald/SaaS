@@ -175,9 +175,12 @@ describe('Profile Experience Improvements', () => {
     fireEvent.change(endDateInput, { target: { value: '2019-12' } })
 
     // Should show error
-    await waitFor(() => {
-      expect(screen.getByTestId('date-error')).toBeInTheDocument()
-    })
+    await waitFor(
+      () => {
+        expect(screen.getByTestId('date-error')).toBeInTheDocument()
+      },
+      { timeout: 1000 },
+    )
   })
 
   it('should calculate total years of experience from entries', () => {

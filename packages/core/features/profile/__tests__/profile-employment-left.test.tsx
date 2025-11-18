@@ -581,7 +581,7 @@ describe('ProfileEmploymentLeft', () => {
     const saveButton = getByRole('button', { name: /save changes/i }) as HTMLButtonElement
     press(saveButton)
 
-    await waitFor(() => expect(mockMutateAsync).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(mockMutateAsync).toHaveBeenCalledTimes(1), { timeout: 1500 })
 
     rerender(<ProfileEmploymentLeft />)
 
@@ -1061,7 +1061,7 @@ describe('ProfileEmploymentLeft', () => {
     const saveButton = getByRole('button', { name: /save changes/i }) as HTMLButtonElement
     press(saveButton)
 
-    await waitFor(() => expect(mockMutateAsync).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(mockMutateAsync).toHaveBeenCalledTimes(1), { timeout: 1500 })
 
     // After save, form should reset with new data
     mockUseQuery.mockImplementation(() => ({

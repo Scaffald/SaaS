@@ -2363,6 +2363,83 @@ export const organizationsRouter = t.router({
       return data;
     }),
 
+  /**
+   * Get inquiry reminder settings for an organization
+   */
+  getReminderSettings: protectedProcedure
+    .input(z.object({ organizationId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      await ensureOrganizationAccess(ctx, input.organizationId, {
+        requireAdmin: true,
+      });
+
+      const { data: org, error } = await ctx.supabase
+        .schema("core")
+        .from("organizations")
+        .select("inquiry_reminder_enabled, inquiry_reminder_days")
+        .eq("id", input.organizationId)
+        .single();
+
+      if (error || !org) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization not found",
+        });
+      }
+
+      return {
+        reminderEnabled: org.inquiry_reminder_enabled ?? true,
+        reminderDays: org.inquiry_reminder_days ?? 3,
+      };
+    }),
+
+  /**
+   * Update inquiry reminder settings for an organization
+   */
+  updateReminderSettings: protectedProcedure
+    .input(
+      z.object({
+        organizationId: z.string().uuid(),
+        reminderEnabled: z.boolean(),
+        reminderDays: z.number().int().min(1).max(14),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ensureOrganizationAccess(ctx, input.organizationId, {
+        requireAdmin: true,
+      });
+
+      const { data: org, error } = await ctx.supabase
+        .schema("core")
+        .from("organizations")
+        .update({
+          inquiry_reminder_enabled: input.reminderEnabled,
+          inquiry_reminder_days: input.reminderDays,
+        })
+        .eq("id", input.organizationId)
+        .select("inquiry_reminder_enabled, inquiry_reminder_days")
+        .single();
+
+      if (error || !org) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to update reminder settings: ${error?.message}`,
+        });
+      }
+
+      await recordOrganizationAuditLog(ctx, input.organizationId, {
+        actionType: "settings.update",
+        targetType: "settings",
+        targetId: input.organizationId,
+        description: `Updated inquiry reminder settings: ${input.reminderEnabled ? 'enabled' : 'disabled'}, ${input.reminderDays} days`,
+      });
+
+      return {
+        reminderEnabled: org.inquiry_reminder_enabled ?? true,
+        reminderDays: org.inquiry_reminder_days ?? 3,
+      };
+    }),
+
   listAuditLog: protectedProcedure
     .input(auditLogListSchema)
     .query(async ({ ctx, input }) => {

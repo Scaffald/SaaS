@@ -3047,6 +3047,56 @@ export type Database = {
           },
         ]
       }
+      inquiry_templates: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          is_default: boolean
+          last_used_at: string | null
+          name: string
+          organization_id: string
+          template_data: Json
+          updated_at: string
+          usage_count: number
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          is_default?: boolean
+          last_used_at?: string | null
+          name: string
+          organization_id: string
+          template_data: Json
+          updated_at?: string
+          usage_count?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          is_default?: boolean
+          last_used_at?: string | null
+          name?: string
+          organization_id?: string
+          template_data?: Json
+          updated_at?: string
+          usage_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inquiry_templates_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invites: {
         Row: {
           consumed_at: string | null
@@ -4900,6 +4950,13 @@ export type Database = {
             columns: ["id_verification_id"]
             isOneToOne: false
             referencedRelation: "id_verifications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_transactions_id_verification_id_fkey"
+            columns: ["id_verification_id"]
+            isOneToOne: false
+            referencedRelation: "v_id_verification_latest"
             referencedColumns: ["id"]
           },
           {
@@ -8168,6 +8225,35 @@ export type Database = {
       }
     }
     Views: {
+      v_id_verification_latest: {
+        Row: {
+          badge_expires_at: string | null
+          badge_status: string | null
+          id: string | null
+          persona_status: string | null
+          revocation_reason: string | null
+          revoked_at: string | null
+          updated_at: string | null
+          verified_at: string | null
+          worker_user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "id_verifications_worker_user_id_fkey"
+            columns: ["worker_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "id_verifications_worker_user_id_fkey"
+            columns: ["worker_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_news_feed_health: {
         Row: {
           cached_article_count: number | null
@@ -8205,35 +8291,6 @@ export type Database = {
             foreignKeyName: "profile_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      v_id_verification_latest: {
-        Row: {
-          badge_expires_at: string | null
-          badge_status: string | null
-          id: string | null
-          persona_status: string | null
-          revoked_at: string | null
-          revocation_reason: string | null
-          updated_at: string | null
-          verified_at: string | null
-          worker_user_id: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "id_verifications_worker_user_id_fkey"
-            columns: ["worker_user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "id_verifications_worker_user_id_fkey"
-            columns: ["worker_user_id"]
-            isOneToOne: false
             referencedRelation: "v_profile_search"
             referencedColumns: ["id"]
           },

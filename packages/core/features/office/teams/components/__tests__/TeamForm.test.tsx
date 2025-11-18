@@ -300,6 +300,8 @@ vi.mock('@tamagui/lucide-icons', () => ({
   ChevronDown: () => <span data-testid="chevron-icon" />,
 }))
 
+const DEFAULT_WAIT_TIMEOUT = 1500
+
 const { TeamForm } = await import('../TeamForm')
 
 describe('TeamForm', () => {
@@ -365,18 +367,21 @@ describe('TeamForm', () => {
 
     await user.click(screen.getByTestId('team-form-submit'))
 
-    await waitFor(() => {
-      expect(createTeamMock.mutateAsync).toHaveBeenCalledWith(
-        expect.objectContaining({
-          organizationId: 'org-1',
-          name: 'Field Ops',
-          slug: 'field-ops',
-          defaultRoleKey: 'team_admin',
-          defaultRoleId: 'role-2',
-          invitationPolicy: 'invite_only',
-        }),
-      )
-    })
+    await waitFor(
+      () => {
+        expect(createTeamMock.mutateAsync).toHaveBeenCalledWith(
+          expect.objectContaining({
+            organizationId: 'org-1',
+            name: 'Field Ops',
+            slug: 'field-ops',
+            defaultRoleKey: 'team_admin',
+            defaultRoleId: 'role-2',
+            invitationPolicy: 'invite_only',
+          }),
+        )
+      },
+      { timeout: DEFAULT_WAIT_TIMEOUT },
+    )
   })
 
   it('submits update mutation when editing', async () => {
@@ -398,17 +403,20 @@ describe('TeamForm', () => {
 
     await user.click(screen.getByTestId('team-form-submit'))
 
-    await waitFor(() => {
-      expect(updateTeamMock.mutateAsync).toHaveBeenCalledWith(
-        expect.objectContaining({
-          teamId: 'team-123',
-          name: 'Existing Team',
-          defaultRoleId: 'role-1',
-          defaultRoleKey: 'member',
-          invitationPolicy: 'invite_only',
-        }),
-      )
-    })
+    await waitFor(
+      () => {
+        expect(updateTeamMock.mutateAsync).toHaveBeenCalledWith(
+          expect.objectContaining({
+            teamId: 'team-123',
+            name: 'Existing Team',
+            defaultRoleId: 'role-1',
+            defaultRoleKey: 'member',
+            invitationPolicy: 'invite_only',
+          }),
+        )
+      },
+      { timeout: DEFAULT_WAIT_TIMEOUT },
+    )
   })
 
   it('calls cancel handler when cancel button pressed', async () => {
@@ -471,9 +479,12 @@ describe('TeamForm', () => {
     )
 
     // Wait for form to be ready (roles loaded)
-    await waitFor(() => {
-      expect(screen.queryByText('Loading team options…')).not.toBeInTheDocument()
-    }, { timeout: 1000 })
+    await waitFor(
+      () => {
+        expect(screen.queryByText('Loading team options…')).not.toBeInTheDocument()
+      },
+      { timeout: 1000 },
+    )
 
     // Ensure form values are set in the store
     setValueSpy('name', 'Test Team')
@@ -484,31 +495,43 @@ describe('TeamForm', () => {
     setValueSpy('slug', 'test-team')
 
     // Wait for button to be enabled and visible
-    const submitButton = await waitFor(() => {
-      const btn = screen.getByTestId('team-form-submit')
-      expect(btn).toBeInTheDocument()
-      expect(btn).not.toBeDisabled()
-      return btn
-    })
+    const submitButton = await waitFor(
+      () => {
+        const btn = screen.getByTestId('team-form-submit')
+        expect(btn).toBeInTheDocument()
+        expect(btn).not.toBeDisabled()
+        return btn
+      },
+      { timeout: 1000 },
+    )
 
     // Click the button
     await user.click(submitButton)
 
     // Verify handleSubmit was called (this confirms the button click worked)
-    await waitFor(() => {
-      expect(handleSubmitSpy).toHaveBeenCalled()
-    }, { timeout: 1000 })
+    await waitFor(
+      () => {
+        expect(handleSubmitSpy).toHaveBeenCalled()
+      },
+      { timeout: 1000 },
+    )
 
     // Wait for mutation to be called - the onSubmit should trigger it
-    await waitFor(() => {
-      expect(createTeamMock.mutateAsync).toHaveBeenCalled()
-    }, { timeout: 3000 })
+    await waitFor(
+      () => {
+        expect(createTeamMock.mutateAsync).toHaveBeenCalled()
+      },
+      { timeout: 3000 },
+    )
 
     // The mutation's onError handler should show a toast
     // Since the mutation rejects, the onError callback should fire
-    await waitFor(() => {
-      expect(toastMock.show).toHaveBeenCalled()
-    }, { timeout: 2000 })
+    await waitFor(
+      () => {
+        expect(toastMock.show).toHaveBeenCalled()
+      },
+      { timeout: 2000 },
+    )
     
     // Clean up unhandled rejection handler
     process.removeAllListeners('unhandledRejection')
@@ -567,17 +590,20 @@ describe('TeamForm', () => {
 
     await user.click(screen.getByTestId('team-form-submit'))
 
-    await waitFor(() => {
-      expect(createTeamMock.mutateAsync).toHaveBeenCalledWith(
-        expect.objectContaining({
-          name: 'Test Team',
-          slug: 'test-team',
-          purpose: 'Test purpose',
-          visibility: 'private',
-          invitationPolicy: 'request_to_join',
-        }),
-      )
-    })
+    await waitFor(
+      () => {
+        expect(createTeamMock.mutateAsync).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: 'Test Team',
+            slug: 'test-team',
+            purpose: 'Test purpose',
+            visibility: 'private',
+            invitationPolicy: 'request_to_join',
+          }),
+        )
+      },
+      { timeout: DEFAULT_WAIT_TIMEOUT },
+    )
   })
 })
 

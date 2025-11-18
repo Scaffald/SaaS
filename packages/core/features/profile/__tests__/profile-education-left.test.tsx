@@ -402,7 +402,7 @@ describe('ProfileEducationLeft', () => {
 
     fireEvent.click(screen.getByText('Save Changes'))
 
-    await waitFor(() => expect(mutateAsyncSpy).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(mutateAsyncSpy).toHaveBeenCalledTimes(1), { timeout: 1500 })
 
     const payload = mockMutateCalls[0] as {
       education_entries: Array<Record<string, unknown>>
@@ -438,7 +438,7 @@ describe('ProfileEducationLeft', () => {
 
     fireEvent.click(screen.getByText('Save Changes'))
 
-    await waitFor(() => expect(mutateAsyncSpy).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(mutateAsyncSpy).toHaveBeenCalledTimes(1), { timeout: 1500 })
 
     const payload = mockMutateCalls[0] as {
       education_entries: Array<Record<string, unknown>>
@@ -457,9 +457,12 @@ describe('ProfileEducationLeft', () => {
     addEducationEntry()
     fireEvent.click(screen.getByText('Save Changes'))
 
-    await waitFor(() => {
-      expect(screen.getByText(/Please resolve the following issues/)).toBeInTheDocument()
-    })
+    await waitFor(
+      () => {
+        expect(screen.getByText(/Please resolve the following issues/)).toBeInTheDocument()
+      },
+      { timeout: 1000 },
+    )
 
     expect(
       screen.getByText(

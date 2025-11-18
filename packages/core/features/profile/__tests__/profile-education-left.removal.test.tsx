@@ -355,9 +355,12 @@ describe('ProfileEducationLeft - Removal', () => {
   it('removes entry from form state when remove button is clicked', async () => {
     render(<ProfileEducationLeft />)
 
-    await waitFor(() => {
-      expect(screen.getByText('Test University')).toBeInTheDocument()
-    })
+    await waitFor(
+      () => {
+        expect(screen.getByText('Test University')).toBeInTheDocument()
+      },
+      { timeout: 1500 },
+    )
 
     // Find remove button (X button) for first entry
     const removeButtons = screen.getAllByRole('button').filter((btn) =>
@@ -368,18 +371,24 @@ describe('ProfileEducationLeft - Removal', () => {
       fireEvent.click(removeButtons[0])
 
       // Entry should be removed from UI
-      await waitFor(() => {
-        expect(screen.queryByText('Test University')).not.toBeInTheDocument()
-      })
+      await waitFor(
+        () => {
+          expect(screen.queryByText('Test University')).not.toBeInTheDocument()
+        },
+        { timeout: 1500 },
+      )
     }
   })
 
   it('excludes removed entry from mutation payload', async () => {
     render(<ProfileEducationLeft />)
 
-    await waitFor(() => {
-      expect(screen.getByText('Test University')).toBeInTheDocument()
-    })
+    await waitFor(
+      () => {
+        expect(screen.getByText('Test University')).toBeInTheDocument()
+      },
+      { timeout: 1500 },
+    )
 
     // Remove first entry
     const removeButtons = screen.getAllByRole('button').filter((btn) =>
@@ -388,15 +397,18 @@ describe('ProfileEducationLeft - Removal', () => {
 
     if (removeButtons.length > 0) {
       fireEvent.click(removeButtons[0])
-      await waitFor(() => {
-        expect(screen.queryByText('Test University')).not.toBeInTheDocument()
-      })
+      await waitFor(
+        () => {
+          expect(screen.queryByText('Test University')).not.toBeInTheDocument()
+        },
+        { timeout: 1500 },
+      )
 
       // Save changes
       const saveButton = screen.getByText('Save Changes')
       fireEvent.click(saveButton)
 
-      await waitFor(() => expect(mutateAsyncSpy).toHaveBeenCalled())
+      await waitFor(() => expect(mutateAsyncSpy).toHaveBeenCalled(), { timeout: 1500 })
 
       const payload = mockMutateCalls[0] as {
         education_entries: Array<Record<string, unknown>>

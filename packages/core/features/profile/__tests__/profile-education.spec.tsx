@@ -81,9 +81,12 @@ describe('ProfileEducationLeft', () => {
 
     fireEvent.press(screen.getByText('Save Changes'))
 
-    await waitFor(() => {
-      expect(mockSaveEducationCall).toHaveBeenCalledTimes(1)
-    })
+    await waitFor(
+      () => {
+        expect(mockSaveEducationCall).toHaveBeenCalledTimes(1)
+      },
+      { timeout: 1000 },
+    )
   })
 })
 
@@ -103,9 +106,12 @@ describe('EducationEntryEditModal', () => {
 
     fireEvent.press(screen.getByText('Save Changes'))
 
-    await waitFor(() => {
-      expect(mockSaveEducationCall).toHaveBeenCalled()
-    })
+    await waitFor(
+      () => {
+        expect(mockSaveEducationCall).toHaveBeenCalled()
+      },
+      { timeout: 1000 },
+    )
   })
 })
 
@@ -137,8 +143,10 @@ describe('ProfileEducationRight', () => {
 
     fireEvent.press(screen.getAllByText('Delete')[1])
 
-    await waitFor(() =>
-      expect(mockDeleteEducationCall).toHaveBeenCalledWith({ educationId: 'entry-2' }),
+    await waitFor(
+      () =>
+        expect(mockDeleteEducationCall).toHaveBeenCalledWith({ educationId: 'entry-2' }),
+      { timeout: 1000 },
     )
   })
 })
