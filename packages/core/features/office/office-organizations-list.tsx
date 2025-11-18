@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
-import { Button, Dialog, Label, Separator, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Button, Dialog, Label, Paragraph, Separator, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import {
   ArrowRightCircle,
@@ -36,6 +36,10 @@ type OrganizationRequestRow = {
   slug: string
   website: string | null
   notes: string | null
+  message?: string | null
+  personal_note?: string | null
+  viewed_at?: string | null
+  resent_count?: number | null
   status: 'pending' | 'approved' | 'rejected'
   metadata: Record<string, unknown>
   created_at: string
@@ -410,8 +414,18 @@ export function OfficeOrganizationsList() {
                             Submitted {new Date(request.created_at).toLocaleString()}
                           </Text>
                           {request.notes ? (
+                            <Paragraph fontSize="$2" color="$color11">
+                              Notes: {request.notes}
+                            </Paragraph>
+                          ) : null}
+                          {request.message ? (
+                            <Paragraph fontSize="$2" color="$color11">
+                              Message: {request.message}
+                            </Paragraph>
+                          ) : null}
+                          {typeof request.resent_count === 'number' && request.resent_count > 0 ? (
                             <Text fontSize="$2" color="$color11">
-                              {request.notes}
+                              Resent {request.resent_count} time(s)
                             </Text>
                           ) : null}
                         </YStack>

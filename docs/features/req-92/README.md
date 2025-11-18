@@ -33,6 +33,14 @@ This document captures the foundational changes and the remaining follow-up item
    - Added `req-92-engagement` tRPC integration coverage to validate organization requests, follows, and employment claims end to end.
    - Next: expand widget duplicate detection tests and responsive layout checks across web + native surfaces.
 
+## November 2025 Implementation Notes
+
+- Added Supabase migrations `117-121` to support document storage tables, organization settings/audit logs, storage quotas, enhanced invites, and normalized location data.
+- Extended the organizations tRPC router with endpoints for invitations, members, documents (upload/version/share), folders, settings, audit export, storage usage warnings, and location CRUD.
+- Created typed organization hooks in `packages/core/features/organizations/api.ts` plus expanded shared schemas for invites, documents, locations, and settings.
+- Built the initial `/dashboard/organizations` management screen that surfaces members, documents, and settings panels powered by the new hooks.
+- Updated the office organizations moderation list to display requester notes/messages and resurfaced counts tied to the enhanced invitation telemetry.
+
 ## Getting Started
 
 1. Review the updated files:
