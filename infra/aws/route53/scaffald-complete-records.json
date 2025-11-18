@@ -1,0 +1,173 @@
+{
+  "Comment": "Complete DNS migration from CloudFlare to Route53 for scaffald.com - includes all existing DNS records",
+  "Changes": [
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "scaffald.com.",
+        "Type": "A",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "31.43.161.6"
+          },
+          {
+            "Value": "31.43.160.6"
+          }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "scaffald.com.",
+        "Type": "MX",
+        "TTL": 3600,
+        "ResourceRecords": [
+          {
+            "Value": "1 aspmx.l.google.com."
+          },
+          {
+            "Value": "5 alt1.aspmx.l.google.com."
+          },
+          {
+            "Value": "5 alt2.aspmx.l.google.com."
+          },
+          {
+            "Value": "10 alt3.aspmx.l.google.com."
+          },
+          {
+            "Value": "10 alt4.aspmx.l.google.com."
+          }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "scaffald.com.",
+        "Type": "TXT",
+        "TTL": 3600,
+        "ResourceRecords": [
+          {
+            "Value": "\"v=spf1 include:_spf.google.com -all\""
+          },
+          {
+            "Value": "\"google-site-verification=oqtb9xbbDI9xs76dnntMiJ__5f3VIIE84jX7dJPnceg\""
+          },
+          {
+            "Value": "\"google-site-verification=6gyB8V0IzqW6Gt0Ke8if0t1gPIgJR_6kKcYCJ8XoyEg\""
+          }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "www.scaffald.com.",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "sites.framer.app"
+          }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "app.scaffald.com.",
+        "Type": "A",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "104.21.90.219"
+          },
+          {
+            "Value": "172.67.205.140"
+          }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "staging.scaffald.com.",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "dec60148739e932d.vercel-dns-016.com"
+          }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "_dmarc.scaffald.com.",
+        "Type": "TXT",
+        "TTL": 3600,
+        "ResourceRecords": [
+          {
+            "Value": "\"v=DMARC1; p=none; rua=mailto:dmarc_agg@vali.email\""
+          }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "_amazonses.alerts.scaffald.com.",
+        "Type": "TXT",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "\"mJgyMJb0eMplU6Dsb5lngH6cr7HNCWwkWfHncACUq/c=\""
+          }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "p6ieaar322qoeqp3pua7q7z2qx3g3igv._domainkey.alerts.scaffald.com.",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "p6ieaar322qoeqp3pua7q7z2qx3g3igv.dkim.amazonses.com"
+          }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "pe735hzppzgozimyzvbel5nihjqweggs._domainkey.alerts.scaffald.com.",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "pe735hzppzgozimyzvbel5nihjqweggs.dkim.amazonses.com"
+          }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "y5omsbta6szh56upw3hfpx3cpkev6hk4._domainkey.alerts.scaffald.com.",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "y5omsbta6szh56upw3hfpx3cpkev6hk4.dkim.amazonses.com"
+          }
+        ]
+      }
+    }
+  ]
+}
+

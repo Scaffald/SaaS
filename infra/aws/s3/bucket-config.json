@@ -1,0 +1,39 @@
+{
+  "Bucket": "scaffald-app-prod",
+  "ACL": "private",
+  "VersioningConfiguration": {
+    "Status": "Enabled"
+  },
+  "WebsiteConfiguration": {
+    "IndexDocument": {
+      "Suffix": "index.html"
+    },
+    "ErrorDocument": {
+      "Key": "index.html"
+    }
+  },
+  "PublicAccessBlockConfiguration": {
+    "BlockPublicAcls": true,
+    "IgnorePublicAcls": true,
+    "BlockPublicPolicy": true,
+    "RestrictPublicBuckets": true
+  },
+  "CorsConfiguration": {
+    "CORSRules": [
+      {
+        "AllowedOrigins": [
+          "https://app.scaffald.com"
+        ],
+        "AllowedMethods": [
+          "GET",
+          "HEAD"
+        ],
+        "AllowedHeaders": [
+          "*"
+        ],
+        "MaxAgeSeconds": 3000
+      }
+    ]
+  }
+}
+
