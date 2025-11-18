@@ -2,6 +2,7 @@ import { act, renderHook, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useProfileWizard } from '../useProfileWizard'
+import type { ProfileWizardProgressResponse } from '../useProfileWizard'
 
 const mockGetProgressQuery = {
   data: undefined as unknown,
@@ -74,7 +75,7 @@ describe('useProfileWizard', () => {
   })
 
   it('loads saved progress from API', async () => {
-    const savedProgress: unknown = {
+    const savedProgress: ProfileWizardProgressResponse = {
       currentStep: 'experience' as const,
       completedSteps: ['general', 'skills'],
       completionPercentage: 35,

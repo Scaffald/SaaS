@@ -3,7 +3,20 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useCompletionNudges } from '../useCompletionNudges'
 
-const mockGetPersonalizedBenefitsQuery = {
+interface Benefit {
+  id: string;
+  title: string;
+  description: string;
+  relatedSection: string;
+  userType: 'worker';
+  opportunityCount: number;
+}
+
+const mockGetPersonalizedBenefitsQuery: {
+  data: { benefits: Benefit[] } | undefined;
+  isLoading: boolean;
+  refetch: ReturnType<typeof vi.fn>;
+} = {
   data: undefined,
   isLoading: false,
   refetch: vi.fn().mockResolvedValue({}),

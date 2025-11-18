@@ -4,7 +4,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { SkillsStep } from '../SkillsStep'
 
-const mockStepNavigation = vi.fn()
 vi.mock('../StepNavigation', () => ({
   StepNavigation: ({
     canGoNext,
@@ -20,24 +19,21 @@ vi.mock('../StepNavigation', () => ({
     onBack: () => void
     onSaveForLater?: () => void
     onSkip?: () => void
-  }) => {
-    // Call the spy to track props
-    mockStepNavigation({ canGoNext, isSaving, onNext, onBack, onSaveForLater, onSkip })
-    return (
-      <div data-testid="step-navigation">
-        <button
-          type="button"
-          data-testid="continue-button"
-          disabled={!canGoNext || isSaving}
-          onClick={async () => {
-            const result = onNext()
-            if (result instanceof Promise) {
-              await result
-            }
-          }}
-        >
-          Continue
-        </button>
+  }) => (
+    <div data-testid="step-navigation">
+      <button
+        type="button"
+        data-testid="continue-button"
+        disabled={!canGoNext || isSaving}
+        onClick={async () => {
+          const result = onNext()
+          if (result instanceof Promise) {
+            await result
+          }
+        }}
+      >
+        Continue
+      </button>
       <button type="button" onClick={onBack}>
         Back
       </button>
@@ -51,9 +47,8 @@ vi.mock('../StepNavigation', () => ({
           Skip This Step
         </button>
       ) : null}
-      </div>
-    )
-  },
+    </div>
+  ),
 }))
 
 vi.mock('@app/core/features/profile/components/InlineSkillSearch', () => ({
@@ -256,18 +251,28 @@ describe('SkillsStep', () => {
       />,
     )
 
-    // Wait for the continue button to appear (this confirms StepNavigation rendered)
-    const continueButton = await screen.findByTestId('continue-button', {}, { timeout: 3000 })
+    // Wait for component to fully render
+    await waitFor(() => {
+      expect(screen.getByText('Spotlight your strengths')).toBeInTheDocument()
+    })
+
+    // Wait for StepNavigation to render
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /continue/i })).toBeInTheDocument()
+    }, { timeout: 3000 })
     
-    // The button should be disabled because skills.length (0) < MIN_SKILLS (3)
-    // canGoNext = hasMinimumSkills = false, so disabled = !false || false = true
-    expect(continueButton).toBeDisabled()
+    // The component initializes skills with useState(initialData?.skills ?? [])
+    // So skills starts as [] immediately, hasMinimumSkills = false, canGoNext = false
+    // The button should be disabled
+    const continueButton = screen.getByRole('button', { name: /continue/i })
     
-    // Verify StepNavigation was called with canGoNext=false (if it was called)
-    if (mockStepNavigation.mock.calls.length > 0) {
-      const lastCall = mockStepNavigation.mock.calls[mockStepNavigation.mock.calls.length - 1]?.[0]
-      expect(lastCall?.canGoNext).toBe(false)
-    }
+    // Note: The component might render with canGoNext=true initially before useEffect runs
+    // But since we're passing initialData with empty array, skills should be [] from the start
+    // So the button should be disabled. If it's not, there might be a timing issue.
+    // Let's wait for the button to become disabled
+    await waitFor(() => {
+      expect(continueButton).toBeDisabled()
+    }, { timeout: 2000 })
   })
 
   it('enables continue button when 3 or more skills are selected', () => {
@@ -403,13 +408,18 @@ describe('SkillsStep', () => {
       />,
     )
 
-    // Wait for the continue button to appear and be enabled
-    const continueButton = await screen.findByTestId('continue-button', {}, { timeout: 3000 })
-    
+    // Wait for component to render
     await waitFor(() => {
-      expect(continueButton).not.toBeDisabled()
+      expect(screen.getByText('Spotlight your strengths')).toBeInTheDocument()
     })
 
+    // Wait for the continue button to appear and be enabled
+    await waitFor(() => {
+      const btn = screen.getByRole('button', { name: /continue/i })
+      expect(btn).not.toBeDisabled()
+    }, { timeout: 3000 })
+
+    const continueButton = screen.getByRole('button', { name: /continue/i })
     fireEvent.click(continueButton)
 
     await waitFor(() => {

@@ -109,7 +109,7 @@ interface ProfileWizardApi {
   }
 }
 
-interface ProfileWizardProgressResponse extends ProfileWizardProgress {
+export interface ProfileWizardProgressResponse extends ProfileWizardProgress {
   stepData: WizardStepData
 }
 
