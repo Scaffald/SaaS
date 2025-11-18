@@ -8,6 +8,12 @@ import { InquiryCommentThread } from './InquiryCommentThread'
 import { CapabilityQuestionInput } from './CapabilityQuestionInput'
 import type { InquirySectionName } from '@app/schemas'
 
+interface InquirySectionStatus {
+  section_name: InquirySectionName
+  accepted_by: string | null
+  accepted_at: string | null
+}
+
 interface InquiryViewCandidateProps {
   applicationId: string
   inquiryId: string
@@ -120,10 +126,11 @@ export function InquiryViewCandidate({
     )
   }
 
-  const { inquiry, sections, comments } = data
+  const { inquiry, sections: rawSections, comments } = data
+  const sections = rawSections as InquirySectionStatus[]
 
   // Calculate progress
-  const acceptedSections = sections.filter((s: { accepted_by: string | null }) => s.accepted_by).length
+  const acceptedSections = sections.filter((s) => s.accepted_by).length
   const totalSections = sections.length
   const progress = totalSections > 0 ? (acceptedSections / totalSections) * 100 : 0
 
@@ -195,6 +202,7 @@ export function InquiryViewCandidate({
         rounded="$3"
         cursor="pointer"
         onPress={() => toggleSection(sectionName)}
+        $sm={{ p: '$4', height: 48 }}
       >
         <XStack items="center" gap="$2" flex={1}>
           {isExpanded ? (
@@ -236,7 +244,7 @@ export function InquiryViewCandidate({
 
   return (
     <ScrollView>
-      <YStack gap="$4" p="$4">
+      <YStack gap="$4" p="$4" $sm={{ gap: '$6', p: '$3' }}>
         {/* Progress Indicator */}
         <YStack gap="$2" p="$4" bg="$blue2" rounded="$4">
           <XStack justify="space-between" items="center">
@@ -393,6 +401,7 @@ export function InquiryViewCandidate({
                   onPress={() => handleAcceptSection('employment')}
                   disabled={acceptSectionMutation.isLoading}
                   theme="success"
+                  $sm={{ height: 48 }}
                 >
                   {acceptSectionMutation.isLoading ? 'Accepting...' : 'Accept Employment Terms'}
                 </Button>
@@ -448,7 +457,8 @@ export function InquiryViewCandidate({
                 <Button
                   onPress={() => handleAcceptSection('compensation')}
                   disabled={acceptSectionMutation.isLoading}
-                  theme="green"
+                  theme="success"
+                  $sm={{ height: 48 }}
                 >
                   {acceptSectionMutation.isLoading ? 'Accepting...' : 'Accept Compensation Terms'}
                 </Button>
@@ -515,7 +525,8 @@ export function InquiryViewCandidate({
                 <Button
                   onPress={() => handleAcceptSection('capabilities')}
                   disabled={acceptSectionMutation.isLoading}
-                  theme="green"
+                  theme="success"
+                  $sm={{ height: 48 }}
                 >
                   {acceptSectionMutation.isLoading ? 'Accepting...' : 'Accept Capabilities Terms'}
                 </Button>
@@ -600,7 +611,8 @@ export function InquiryViewCandidate({
                 <Button
                   onPress={() => handleAcceptSection('other')}
                   disabled={acceptSectionMutation.isLoading}
-                  theme="green"
+                  theme="success"
+                  $sm={{ height: 48 }}
                 >
                   {acceptSectionMutation.isLoading ? 'Accepting...' : 'Accept Other Terms'}
                 </Button>

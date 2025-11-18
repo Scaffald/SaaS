@@ -31,7 +31,7 @@ interface AuditLogEntry {
   } | null
 }
 
-const getEventColor = (eventType: EventType): string => {
+const getEventColor = (eventType: EventType): `$${string}` => {
   switch (eventType) {
     case 'inquiry_created':
     case 'inquiry_sent':
@@ -191,7 +191,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
                 >
                   <EventIcon size={8} color="white" />
                 </YStack>
-                {!isLast && <YStack flex={1} width={2} bg="$gray5" minHeight={40} />}
+                {!isLast && <YStack flex={1} width={2} bg="$gray5" height={40} />}
               </YStack>
 
               {/* Event details */}

@@ -124,7 +124,9 @@ vi.mock('tamagui', () => {
   } & Record<string, unknown>) => <p {...rest}>{children}</p>
 
   type SelectOption = { value: string; label: ReactNode }
-  const SelectItem = ({ value }: { value: string; children?: ReactNode }) => <span data-value={value} />
+  const SelectItem = ({ value, children }: { value: string; children?: ReactNode }) => (
+    <span data-value={value}>{children}</span>
+  )
 
   const isSelectItemElement = (
     element: ReactNode,

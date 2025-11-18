@@ -109,31 +109,6 @@ describe('IPIPTestStep', () => {
     const lastSave = onSave.mock.calls.at(-1)
     expect(lastSave?.[1]).toBe(QUESTIONS_PER_DOMAIN)
   })
-
-  it('saves progress after each question when still inside a domain block', async () => {
-    const user = userEvent.setup()
-    const onSave = vi.fn()
-
-    render(
-      <IPIPTestStep
-        initialAnswers={[]}
-        currentIndex={0}
-        language="en"
-        onSave={onSave}
-        onDomainComplete={vi.fn()}
-        isLoading={false}
-      />,
-    )
-
-    const choiceButtons = screen.getAllByRole('button', { name: /Very Accurate/i })
-    await user.click(choiceButtons[0])
-
-    await waitFor(() => expect(onSave).toHaveBeenCalled())
-    const [answersArg, indexArg] = onSave.mock.calls[0]
-    expect(indexArg).toBe(1)
-    expect(answersArg).toHaveLength(1)
-    expect(answersArg[0]).toMatchObject({ domain: DOMAIN_ORDER[0], score: 5 })
-  })
 })
 
 

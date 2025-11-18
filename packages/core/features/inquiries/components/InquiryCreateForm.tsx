@@ -156,7 +156,7 @@ export function InquiryCreateForm({
         {/* Main Form */}
         <YStack flex={1} gap="$4">
           <ScrollView>
-            <YStack gap="$6" p="$4">
+            <YStack gap="$6" p="$4" $sm={{ gap: '$8', p: '$3' }}>
               {/* Employment Section */}
               <YStack gap="$4">
                 <XStack items="center" gap="$2">
@@ -174,7 +174,7 @@ export function InquiryCreateForm({
                     control={control}
                     name="employmentType"
                     render={({ field }) => (
-                      <XStack gap="$2">
+                      <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
                         {EMPLOYMENT_TYPE_OPTIONS.map((option) => {
                           const isSelected = field.value === option.value
                           return (
@@ -185,6 +185,7 @@ export function InquiryCreateForm({
                               variant={isSelected ? undefined : 'outlined'}
                               onPress={() => field.onChange(option.value)}
                               size="$4"
+                              $sm={{ height: 48 }}
                             >
                               {option.label}
                             </Button>
@@ -222,7 +223,7 @@ export function InquiryCreateForm({
                     control={control}
                     name="workSchedule"
                     render={({ field }) => (
-                      <XStack gap="$2">
+                      <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
                         {WORK_SCHEDULE_OPTIONS.map((option) => {
                           const isSelected = field.value === option.value
                           return (
@@ -233,6 +234,7 @@ export function InquiryCreateForm({
                               variant={isSelected ? undefined : 'outlined'}
                               onPress={() => field.onChange(option.value)}
                               size="$4"
+                              $sm={{ height: 48 }}
                             >
                               {option.label}
                             </Button>
@@ -397,7 +399,7 @@ export function InquiryCreateForm({
                     control={control}
                     name="workdays"
                     render={({ field }) => (
-                      <XStack gap="$2" flexWrap="wrap">
+                      <XStack gap="$2" flexWrap="wrap" $sm={{ gap: '$3' }}>
                         {WORKDAYS.map((day) => {
                           const isSelected = field.value?.includes(day.value)
                           return (
@@ -418,6 +420,7 @@ export function InquiryCreateForm({
                               size="$3"
                               px="$3"
                               rounded="$10"
+                              $sm={{ height: 48, px: '$4' }}
                             >
                               {day.label}
                             </Button>
@@ -839,7 +842,12 @@ export function InquiryCreateForm({
             $sm={{ flexDirection: 'column-reverse' }}
           >
             {onCancel && (
-              <Button variant="outlined" onPress={onCancel} disabled={isSubmitting}>
+              <Button
+                variant="outlined"
+                onPress={onCancel}
+                disabled={isSubmitting}
+                $sm={{ height: 48, flex: 1 }}
+              >
                 Cancel
               </Button>
             )}
@@ -849,16 +857,27 @@ export function InquiryCreateForm({
                   variant="outlined"
                   onPress={onSaveDraft}
                   disabled={isSubmitting}
+                  $sm={{ height: 48, flex: 1 }}
                 >
                   Save Draft
                 </Button>
-                <Button onPress={onSubmit} disabled={isSubmitting} theme="blue">
+                <Button
+                  onPress={onSubmit}
+                  disabled={isSubmitting}
+                  theme="blue"
+                  $sm={{ height: 48, flex: 1 }}
+                >
                   {isSubmitting ? 'Sending...' : 'Continue'}
                 </Button>
               </>
             )}
             {mode === 'edit' && (
-              <Button onPress={onSubmit} disabled={isSubmitting} theme="blue">
+              <Button
+                onPress={onSubmit}
+                disabled={isSubmitting}
+                theme="blue"
+                $sm={{ height: 48, flex: 1 }}
+              >
                 {isSubmitting ? 'Saving...' : 'Save Changes'}
               </Button>
             )}

@@ -4,18 +4,28 @@ import { Adapt, Sheet, Select, Switch } from 'tamagui'
 import { Label } from 'tamagui'
 import { Plus, X, Check } from '@tamagui/lucide-icons'
 
+interface CapabilityQuestion {
+  name: string
+  label: string
+  type: 'boolean' | 'number' | 'text'
+  unit?: string
+  required: boolean
+}
+
 interface ApplicationProcessSectionProps {
   requiresAssessment?: boolean
   assessmentDetails?: string
   requiresVideoInterview?: boolean
   estimatedApplicationTimeMinutes?: number
   applicationExpiryDays?: number
+  inquiryCapabilityQuestions?: CapabilityQuestion[]
   onUpdate: (data: {
     requires_assessment?: boolean
     assessment_details?: string
     requires_video_interview?: boolean
     estimated_application_time_minutes?: number
     application_expiry_days?: number
+    inquiry_capability_questions?: CapabilityQuestion[]
   }) => void
 }
 

@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react'
-import { YStack, XStack, Text, ScrollView, Separator, Card, Button } from '@app/ui'
+import { useMemo } from 'react'
+import { YStack, XStack, Text, ScrollView, Separator, Button } from '@app/ui'
+import { Card } from 'tamagui'
 import { Check, Pencil, X } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
 import { useInquirySubscription } from '@app/core/utils/supabase/useInquirySubscription'
 import { InquiryCommentThread } from './InquiryCommentThread'
-import { InquiryCreateForm } from './InquiryCreateForm'
 import type { InquirySectionName, InquiryCreateInput } from '@app/schemas'
 
 interface InquiryViewOrganizationProps {
@@ -160,7 +160,7 @@ export function InquiryViewOrganization({
     sectionName: InquirySectionName
     children: React.ReactNode
   }) => {
-    const section = sections.find((s) => s.section_name === sectionName)
+    const section = sections.find((s: { section_name: InquirySectionName }) => s.section_name === sectionName)
     const sectionComments = commentsBySection[sectionName] || []
 
     return (
@@ -196,17 +196,12 @@ export function InquiryViewOrganization({
 
   return (
     <ScrollView>
-      <YStack gap="$4" p="$4">
+      <YStack gap="$4" p="$4" $sm={{ gap: '$6', p: '$3' }}>
         {/* Header with Edit button */}
         <XStack justify="space-between" items="center">
           <Text fontSize="$8" fontWeight="600">
             Inquiry
           </Text>
-          {inquiry.status !== 'draft' && (
-            <Button variant="outlined" icon={Pencil} onPress={() => setIsEditing(true)}>
-              Edit
-            </Button>
-          )}
         </XStack>
         <Text fontSize="$4" color="$color11">
           {candidateName} - {jobTitle}
