@@ -27,6 +27,11 @@ describe('domainGrouping helpers', () => {
     })
   })
 
+  it('always returns domain buckets in canonical DOMAIN_ORDER, even with missing data', () => {
+    const grouped = groupQuestionsByDomain([])
+    expect(Object.keys(grouped)).toEqual(DOMAIN_ORDER)
+  })
+
   it('maps question indexes to the correct domain bucket', () => {
     expect(getDomainIndexFromQuestionIndex(0)).toBe(0)
     expect(getDomainIndexFromQuestionIndex(QUESTIONS_PER_DOMAIN - 1)).toBe(0)
@@ -64,6 +69,12 @@ describe('domainGrouping helpers', () => {
     const lastIndex = QUESTIONS_PER_DOMAIN - 1
     expect(isLastQuestionInDomain(lastIndex)).toBe(true)
     expect(isLastQuestionInDomain(lastIndex - 1)).toBe(false)
+  })
+
+  it('returns null when the question index exceeds the final domain block', () => {
+    const beyondFinalIndex = QUESTIONS_PER_DOMAIN * DOMAIN_ORDER.length
+    expect(getCurrentDomain(beyondFinalIndex)).toBeNull()
+    expect(isLastQuestionInDomain(beyondFinalIndex)).toBe(false)
   })
 
   it('exposes friendly domain names for accessibility/UX copy', () => {

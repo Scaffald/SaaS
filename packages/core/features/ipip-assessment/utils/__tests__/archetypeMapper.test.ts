@@ -69,6 +69,19 @@ describe('archetypeMapper', () => {
     // Scores should be sorted in descending order
     expect(archetypeScores[0].score).toBeGreaterThanOrEqual(archetypeScores[1].score)
   })
+
+  it('maps low conscientiousness and high openness/extraversion to Innovator', () => {
+    const scores = createScores({
+      O: { score: 120, count: 24, result: 'high' },
+      E: { score: 120, count: 24, result: 'high' },
+      C: { score: 24, count: 24, result: 'low' },
+    })
+
+    const result = mapToArchetype(scores)
+
+    expect(result.archetype).toBe('Innovator')
+    expect(result.confidence).toBeGreaterThanOrEqual(80)
+  })
 })
 
 

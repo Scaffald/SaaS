@@ -487,6 +487,68 @@ export const inquiriesRouter = router({
     }),
 
   /**
+   * Get inquiry history/audit trail
+   * Returns all audit log entries for an inquiry
+   */
+  getHistory: protectedProcedure
+    .input(z.object({ inquiryId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      // Get inquiry to verify access
+      const { data: inquiry, error: inquiryError } = await supabase
+        .schema("core")
+        .from("application_inquiries")
+        .select("id, application_id")
+        .eq("id", input.inquiryId)
+        .single();
+
+      if (inquiryError || !inquiry) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Inquiry not found",
+        });
+      }
+
+      // Verify user has access to this inquiry
+      await verifyApplicationAccess(
+        supabase,
+        user.id,
+        inquiry.application_id,
+      );
+
+      // Get audit log entries with actor information
+      const { data: history, error: historyError } = await supabase
+        .schema("core")
+        .from("inquiry_audit_log")
+        .select(`
+          id,
+          event_type,
+          actor_id,
+          event_data,
+          created_at,
+          actor:users!actor_id(
+            id,
+            display_name,
+            username,
+            avatar_path
+          )
+        `)
+        .eq("inquiry_id", input.inquiryId)
+        .order("created_at", { ascending: true });
+
+      if (historyError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to get inquiry history: ${historyError.message}`,
+          cause: historyError,
+        });
+      }
+
+      return history || [];
+    }),
+
+  /**
    * Send inquiry (change status from draft to sent)
    * Updates application status to 'inquired'
    */

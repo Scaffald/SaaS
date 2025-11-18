@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, type DragEvent } from 'react'
 import { Button, Text, XStack, YStack, Progress } from 'tamagui'
 import { ArrowLeft, FileText, Upload, X, CheckCircle2 } from '@tamagui/lucide-icons'
 import type { AttachmentMetadata } from '@app/schemas'
@@ -70,9 +70,9 @@ export function AttachmentsStep({
   requireResume = true,
   applicationId,
 }: AttachmentsStepProps) {
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [errors, setErrors] = useState<Record<string, string | undefined>>({})
   const [uploading, setUploading] = useState<Record<string, boolean>>({})
-  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({})
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number | undefined>>({})
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({})
   const dragOverRefs = useRef<Record<string, boolean>>({})
 
@@ -235,7 +235,7 @@ export function AttachmentsStep({
    * Handle drag and drop
    */
   const handleDragOver = useCallback(
-    (type: AttachmentType, e: React.DragEvent) => {
+    (type: AttachmentType, e: DragEvent) => {
       e.preventDefault()
       e.stopPropagation()
       dragOverRefs.current[type] = true
@@ -248,7 +248,7 @@ export function AttachmentsStep({
   }, [])
 
   const handleDrop = useCallback(
-    (type: AttachmentType, e: React.DragEvent) => {
+    (type: AttachmentType, e: DragEvent) => {
       e.preventDefault()
       e.stopPropagation()
       dragOverRefs.current[type] = false
@@ -370,13 +370,8 @@ export function AttachmentsStep({
                 <Text fontSize="$4" fontWeight="600" color="$color12" text="center">
                   Uploading...
                 </Text>
-                <Progress
-                  value={uploadProgress.resume || 0}
-                  max={100}
-                  backgroundColor="$blue4"
-                  progressBackgroundColor="$blue9"
-                >
-                  <Progress.Indicator animation="bouncy" />
+                <Progress value={uploadProgress.resume || 0} max={100} bg="$blue4">
+                  <Progress.Indicator animation="bouncy" bg="$blue9" />
                 </Progress>
                 <Text fontSize="$2" color="$color11" text="center">
                   {uploadProgress.resume || 0}%
@@ -388,6 +383,7 @@ export function AttachmentsStep({
           <YStack gap="$2">
             <label htmlFor="resume-upload">
               <YStack
+                asChild
                 p="$6"
                 rounded="$4"
                 borderWidth={2}
@@ -398,19 +394,23 @@ export function AttachmentsStep({
                 gap="$3"
                 cursor="pointer"
                 hoverStyle={{ borderColor: '$blue9', bg: '$blue2' }}
-                onDragOver={(e) => handleDragOver('resume', e)}
-                onDragLeave={() => handleDragLeave('resume')}
-                onDrop={(e) => handleDrop('resume', e)}
               >
-                <Upload size={32} color={errors.resume ? '$red9' : '$blue9'} />
-                <YStack gap="$1" items="center">
-                  <Text fontSize="$4" fontWeight="600" color="$color12">
-                    Choose a file or drag it here
-                  </Text>
-                  <Text fontSize="$3" color="$color11" text="center">
-                    PDF, DOC, or DOCX • Max 5MB
-                  </Text>
-                </YStack>
+                <div
+                  onDragOver={(e) => handleDragOver('resume', e)}
+                  onDragLeave={() => handleDragLeave('resume')}
+                  onDrop={(e) => handleDrop('resume', e)}
+                  style={{ width: '100%' }}
+                >
+                  <Upload size={32} color={errors.resume ? '$red9' : '$blue9'} />
+                  <YStack gap="$1" items="center">
+                    <Text fontSize="$4" fontWeight="600" color="$color12">
+                      Choose a file or drag it here
+                    </Text>
+                    <Text fontSize="$3" color="$color11" text="center">
+                      PDF, DOC, or DOCX • Max 5MB
+                    </Text>
+                  </YStack>
+                </div>
               </YStack>
             </label>
             <input
@@ -494,13 +494,8 @@ export function AttachmentsStep({
                 <Text fontSize="$4" fontWeight="600" color="$color12" text="center">
                   Uploading...
                 </Text>
-                <Progress
-                  value={uploadProgress.cover_letter || 0}
-                  max={100}
-                  backgroundColor="$blue4"
-                  progressBackgroundColor="$blue9"
-                >
-                  <Progress.Indicator animation="bouncy" />
+                <Progress value={uploadProgress.cover_letter || 0} max={100} bg="$blue4">
+                  <Progress.Indicator animation="bouncy" bg="$blue9" />
                 </Progress>
                 <Text fontSize="$2" color="$color11" text="center">
                   {uploadProgress.cover_letter || 0}%
@@ -512,6 +507,7 @@ export function AttachmentsStep({
           <YStack gap="$2">
             <label htmlFor="cover-letter-upload">
               <YStack
+                asChild
                 p="$6"
                 rounded="$4"
                 borderWidth={2}
@@ -522,19 +518,23 @@ export function AttachmentsStep({
                 gap="$3"
                 cursor="pointer"
                 hoverStyle={{ borderColor: '$blue9', bg: '$blue2' }}
-                onDragOver={(e) => handleDragOver('cover_letter', e)}
-                onDragLeave={() => handleDragLeave('cover_letter')}
-                onDrop={(e) => handleDrop('cover_letter', e)}
               >
-                <Upload size={32} color={errors.cover_letter ? '$red9' : '$blue9'} />
-                <YStack gap="$1" items="center">
-                  <Text fontSize="$4" fontWeight="600" color="$color12">
-                    Choose a file or drag it here
-                  </Text>
-                  <Text fontSize="$3" color="$color11" text="center">
-                    PDF, DOC, or DOCX • Max 5MB
-                  </Text>
-                </YStack>
+                <div
+                  onDragOver={(e) => handleDragOver('cover_letter', e)}
+                  onDragLeave={() => handleDragLeave('cover_letter')}
+                  onDrop={(e) => handleDrop('cover_letter', e)}
+                  style={{ width: '100%' }}
+                >
+                  <Upload size={32} color={errors.cover_letter ? '$red9' : '$blue9'} />
+                  <YStack gap="$1" items="center">
+                    <Text fontSize="$4" fontWeight="600" color="$color12">
+                      Choose a file or drag it here
+                    </Text>
+                    <Text fontSize="$3" color="$color11" text="center">
+                      PDF, DOC, or DOCX • Max 5MB
+                    </Text>
+                  </YStack>
+                </div>
               </YStack>
             </label>
             <input

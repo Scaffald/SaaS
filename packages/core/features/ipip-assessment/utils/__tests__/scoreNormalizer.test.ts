@@ -68,6 +68,17 @@ describe('normalizeScores', () => {
     expect(normalized.A.average).toBe(3)
     expect(normalized.A.result).toBe('neutral')
   })
+
+  it('rounds calculated averages and percentages to two decimals', () => {
+    const scores = createScores({
+      A: { score: 85, count: 24, result: 'high' }, // average ≈ 3.54
+    })
+
+    const normalized = normalizeScores(scores)
+
+    expect(normalized.A.average).toBe(3.54)
+    expect(normalized.A.percentage).toBe(63.54)
+  })
 })
 
 
