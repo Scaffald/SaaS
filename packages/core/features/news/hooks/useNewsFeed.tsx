@@ -16,12 +16,14 @@ export function useNewsFeedByIndustry({
   category,
   region,
   staleTime = 15 * 60 * 1000, // 15 minutes
+  enabled,
 }: {
   industryId: string
   maxItems?: number
   category?: string
   region?: string
   staleTime?: number
+  enabled?: boolean
 }) {
   // Validate industryId is a valid UUID before making the query
   // UUID v4 format: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
@@ -39,7 +41,7 @@ export function useNewsFeedByIndustry({
     {
       staleTime,
       retry: 2,
-      enabled: isValidUUID, // Only run query if industryId is a valid UUID
+      enabled: enabled !== undefined ? enabled && isValidUUID : isValidUUID, // Only run query if enabled (if provided) and industryId is a valid UUID
     }
   )
 
@@ -76,17 +78,20 @@ export function useAggregatedNews({
   maxTotalItems = 10,
   category,
   region,
+  enabled,
 }: {
   industryId: string
   maxTotalItems?: number
   category?: string
   region?: string
+  enabled?: boolean
 }) {
   return useNewsFeedByIndustry({
     industryId,
     maxItems: maxTotalItems,
     category,
     region,
+    enabled,
   })
 }
 

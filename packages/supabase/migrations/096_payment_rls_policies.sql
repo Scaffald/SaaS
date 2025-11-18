@@ -217,7 +217,7 @@ CREATE POLICY background_check_disputes_select
   FOR SELECT
   TO authenticated
   USING (
-    worker_user_id = auth.uid()
+    user_id = auth.uid()
     OR EXISTS (
       SELECT 1
       FROM core.background_checks bc
@@ -243,15 +243,15 @@ CREATE POLICY background_check_disputes_insert_worker
   ON core.background_check_disputes
   FOR INSERT
   TO authenticated
-  WITH CHECK (worker_user_id = auth.uid());
+  WITH CHECK (user_id = auth.uid());
 
 DROP POLICY IF EXISTS background_check_disputes_update_worker ON core.background_check_disputes;
 CREATE POLICY background_check_disputes_update_worker
   ON core.background_check_disputes
   FOR UPDATE
   TO authenticated
-  USING (worker_user_id = auth.uid())
-  WITH CHECK (worker_user_id = auth.uid());
+  USING (user_id = auth.uid())
+  WITH CHECK (user_id = auth.uid());
 
 DROP POLICY IF EXISTS background_check_disputes_manage_service_role ON core.background_check_disputes;
 CREATE POLICY background_check_disputes_manage_service_role

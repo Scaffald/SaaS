@@ -13,8 +13,9 @@ import {
   Calendar,
   ExternalLink,
 } from '@tamagui/lucide-icons'
-import { Chip } from '@app/ui'
+import { Chip, extractPlainText } from '@app/ui'
 import { api } from '@app/core/utils/api'
+import type { JSONContent } from '@tiptap/core'
 
 interface DiscoverJobDetailRightProps {
   jobId: string
@@ -257,7 +258,11 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
               Job Description
             </Text>
             <Text fontSize="$3" color="$color11" lineHeight="$4">
-              {job.description}
+              {typeof job.description === 'string'
+                ? job.description
+                : job.description
+                  ? extractPlainText(job.description as JSONContent)
+                  : ''}
             </Text>
           </YStack>
 
@@ -515,7 +520,9 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                 Job Description
               </Text>
               <Text fontSize="$3" color="$color11" lineHeight="$4">
-                {job.description}
+                {typeof job.description === 'string'
+                  ? job.description
+                  : extractPlainText(job.description as JSONContent)}
               </Text>
             </YStack>
           )}

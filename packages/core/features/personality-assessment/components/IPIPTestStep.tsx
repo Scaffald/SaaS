@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Button, Text, XStack, YStack, Progress } from 'tamagui'
+import { Button, Text, XStack, YStack, Progress, AnimatePresence } from 'tamagui'
 import {
   getQuestions,
   getChoices,
@@ -171,14 +171,41 @@ export function IPIPTestStep({
     <YStack gap="$6" width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
       {/* Domain Header */}
       {currentDomain && (
-        <YStack gap="$2" p="$4" bg="$blue2" rounded="$4" borderWidth={1} borderColor="$blue7">
-          <Text fontSize="$5" fontWeight="bold" color="$blue11">
-            {DOMAIN_NAMES[currentDomain]}
-          </Text>
-          <Text fontSize="$3" color="$blue10">
-            Question {questionIndexInDomain + 1} of {QUESTIONS_PER_DOMAIN} in this domain
-          </Text>
-        </YStack>
+        <XStack
+          gap="$2"
+          p="$4"
+          bg="$blue2"
+          rounded="$4"
+          borderWidth={1}
+          borderColor="$blue7"
+          justify="space-between"
+          items="center"
+        >
+          <YStack gap="$1">
+            <Text fontSize="$5" fontWeight="bold" color="$blue11">
+              {DOMAIN_NAMES[currentDomain]}
+            </Text>
+            <Text fontSize="$3" color="$blue10">
+              Question {questionIndexInDomain + 1} of {QUESTIONS_PER_DOMAIN} in this domain
+            </Text>
+          </YStack>
+          <AnimatePresence>
+            <Text
+              key={`domain-progress-${domainProgress}`}
+              fontSize="$5"
+              fontWeight="600"
+              color="$blue11"
+              animation="quick"
+              enterStyle={{ opacity: 0, scale: 0.8, y: -4 }}
+              exitStyle={{ opacity: 0, scale: 0.8, y: -4 }}
+              opacity={1}
+              scale={1}
+              y={0}
+            >
+              {domainProgress}%
+            </Text>
+          </AnimatePresence>
+        </XStack>
       )}
 
       {/* Progress Bar */}
@@ -194,21 +221,6 @@ export function IPIPTestStep({
         <Progress value={overallProgress} max={100}>
           <Progress.Indicator animation="bouncy" />
         </Progress>
-        {currentDomain && (
-          <YStack gap="$1">
-            <XStack justify="space-between" items="center">
-              <Text fontSize="$2" color="$color10">
-                {DOMAIN_NAMES[currentDomain]} Progress
-              </Text>
-              <Text fontSize="$2" color="$color10">
-                {domainProgress}%
-              </Text>
-            </XStack>
-            <Progress value={domainProgress} max={100} size="$1">
-              <Progress.Indicator animation="bouncy" />
-            </Progress>
-          </YStack>
-        )}
       </YStack>
 
       {/* Question */}

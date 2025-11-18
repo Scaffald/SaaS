@@ -1,17 +1,33 @@
 import { TRPCError } from "@trpc/server";
-import Stripe from "stripe";
+import type Stripe from "stripe";
 import { z } from "zod";
 
 import type { Context } from "../context.ts";
 import { officeProcedure, protectedProcedure, t } from "../middleware.ts";
 
 const STRIPE_API_VERSION = "2024-06-20";
-const stripeHttpClient = Stripe.createFetchHttpClient();
+
+// Lazy initialization of Stripe to avoid module loading issues
+let StripeClass: typeof import("stripe").default | null = null;
+
+async function getStripeClass(): Promise<typeof import("stripe").default> {
+  if (!StripeClass) {
+    const stripeModule = await import("stripe");
+    StripeClass = stripeModule.default;
+  }
+  return StripeClass;
+}
+
+async function getStripeHttpClient() {
+  const Stripe = await getStripeClass();
+  return Stripe.createFetchHttpClient();
+}
 
 async function loadStripeClient(ctx: Context): Promise<Stripe> {
   if (Deno.env.get("STRIPE_MOCK_MODE") === "1") {
+    const Stripe = await getStripeClass();
     return new Stripe("sk_test_mock", {
-      httpClient: stripeHttpClient,
+      httpClient: await getStripeHttpClient(),
       apiVersion: STRIPE_API_VERSION,
     });
   }
@@ -28,8 +44,9 @@ async function loadStripeClient(ctx: Context): Promise<Stripe> {
   // For now, use environment variable fallback
   const apiKey = Deno.env.get("STRIPE_SECRET_KEY") ?? "sk_test_mock";
 
+  const Stripe = await getStripeClass();
   return new Stripe(apiKey, {
-    httpClient: stripeHttpClient,
+    httpClient: await getStripeHttpClient(),
     apiVersion: STRIPE_API_VERSION,
   });
 }

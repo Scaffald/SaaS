@@ -1,5 +1,5 @@
 -- =========================================================
--- 128_req_221_inquiry_reminders.sql
+-- 131_req_221_inquiry_reminders.sql
 -- Implements automated reminder system for pending inquiries
 -- =========================================================
 
@@ -40,6 +40,8 @@ COMMENT ON COLUMN core.organizations.inquiry_reminder_days IS
 
 -- Add constraint for reminder days
 ALTER TABLE core.organizations
+  DROP CONSTRAINT IF EXISTS organizations_inquiry_reminder_days_check;
+ALTER TABLE core.organizations
   ADD CONSTRAINT organizations_inquiry_reminder_days_check
   CHECK (inquiry_reminder_days >= 1 AND inquiry_reminder_days <= 14);
 
@@ -78,6 +80,7 @@ CREATE INDEX IF NOT EXISTS idx_inquiry_reminders_inquiry_sent
 ALTER TABLE core.inquiry_reminders ENABLE ROW LEVEL SECURITY;
 
 -- Users can view reminders for inquiries they have access to
+DROP POLICY IF EXISTS inquiry_reminders_select ON core.inquiry_reminders;
 CREATE POLICY inquiry_reminders_select ON core.inquiry_reminders
   FOR SELECT TO authenticated
   USING (

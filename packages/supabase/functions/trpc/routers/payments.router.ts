@@ -1,13 +1,29 @@
 import { TRPCError } from "@trpc/server";
-import Stripe from "stripe";
+import type Stripe from "stripe";
 import { z } from "zod";
 
 import type { Context } from "../context.ts";
-import type { Database } from "../database.types.ts";
+import type { Database } from "../_shared/database.types.ts";
 import { officeProcedure, protectedProcedure, t } from "../middleware.ts";
 
 const STRIPE_API_VERSION = "2024-06-20";
-const stripeHttpClient = Stripe.createFetchHttpClient();
+
+// Lazy initialization of Stripe to avoid module loading issues
+let StripeClass: typeof import("stripe").default | null = null;
+
+async function getStripeClass(): Promise<typeof import("stripe").default> {
+  if (!StripeClass) {
+    const stripeModule = await import("stripe");
+    StripeClass = stripeModule.default;
+  }
+  return StripeClass;
+}
+
+async function getStripeHttpClient() {
+  const Stripe = await getStripeClass();
+  return Stripe.createFetchHttpClient();
+}
+
 const mockStripeSetupIntents = new Map<string, Stripe.SetupIntent>();
 const mockStripePaymentMethods = new Map<string, Stripe.PaymentMethod>();
 const mockStripeCustomers = new Map<
@@ -19,7 +35,7 @@ function stripeMockEnabled(): boolean {
   return typeof Deno !== "undefined" && Deno.env.get("STRIPE_MOCK_MODE") === "1";
 }
 
-function createMockStripeClient(): Stripe {
+async function createMockStripeClient(): Promise<Stripe> {
   const setupIntents = {
     create: async (
       params: Stripe.SetupIntentCreateParams,
@@ -192,9 +208,10 @@ async function loadStripeClient(ctx: Context): Promise<Stripe> {
     });
   }
 
+  const Stripe = await getStripeClass();
   return new Stripe(secretValue, {
     apiVersion: STRIPE_API_VERSION,
-    httpClient: stripeHttpClient,
+    httpClient: await getStripeHttpClient(),
   });
 }
 

@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {
   inquiryCreateSchema,
+  bulkInquirySchema,
   inquiryUpdateSchema,
   inquiryCommentSchema,
   capabilityResponseSchema,
@@ -11,7 +12,7 @@ import {
   inquiryTemplateUpdateSchema,
   inquiryTemplateApplySchema,
   type InquiryCreateInput,
-} from "@app/schemas";
+} from "../../_shared/inquiry-schemas.ts";
 import { protectedProcedure, t } from "../middleware.ts";
 import { insertNotification } from "../../_shared/notifications/utils.ts";
 
@@ -56,6 +57,7 @@ const INQUIRY_TO_APPLICATION_STATUS: Record<InquiryStatus, ApplicationStatusForI
   accepted: 'offer',
   rejected: 'screen',
   withdrawn: 'screen',
+}
 
 function canTransitionInquiryStatus(
   currentStatus: InquiryStatus,
@@ -1143,7 +1145,7 @@ export const inquiriesRouter = router({
     .input(
       z.object({
         applicationIds: z.array(z.string().uuid()).min(1).max(50),
-        inquiryData: inquiryCreateSchema.omit({ applicationId: true }),
+        inquiryData: bulkInquirySchema,
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -1868,11 +1870,11 @@ export const inquiriesRouter = router({
         });
       }
 
-      // Determine new status based on who is commenting
+      // Get application info to determine recipient and status
       const { data: application } = await supabase
         .schema("core")
         .from("applications")
-        .select("user_id")
+        .select("user_id, job_id, jobs(organization_id, organizations(name))")
         .eq("id", inquiry.application_id)
         .single();
 
@@ -1902,14 +1904,6 @@ export const inquiriesRouter = router({
         // Sync application status
         await syncApplicationStatus(ctx.supabaseAdmin, inquiry.application_id, newStatus);
       }
-
-      // Get application info to determine recipient
-      const { data: application } = await supabase
-        .schema("core")
-        .from("applications")
-        .select("user_id, job_id, jobs(organization_id, organizations(name))")
-        .eq("id", inquiry.application_id)
-        .single();
 
       if (application) {
         const senderName = await getUserDisplayName(supabase, user.id);

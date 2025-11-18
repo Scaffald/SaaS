@@ -47,6 +47,7 @@ export const ResultCard = memo(
         p="$3"
         bg={isSelected ? '$blue9' : '$background'}
         gap="$2"
+        width="100%"
         pressStyle={{ scale: 0.98 }}
         hoverStyle={{ bg: isSelected ? '$blue9' : '$color2' }}
         onPress={() => onSelect(profile.id)}

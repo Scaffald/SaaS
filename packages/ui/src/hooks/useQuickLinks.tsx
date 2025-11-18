@@ -17,8 +17,9 @@ const normalizePath = (value: string | null | undefined) => {
 }
 
 const shouldRenderQuickLinks = (path: string) => {
-  if (path === '/dashboard' || path === '/dashboard/index') return false
-  if (path.startsWith('/dashboard/profile')) return false
+  // Exclude all dashboard paths
+  if (path.startsWith('/dashboard')) return false
+  // Keep office paths enabled
   return true
 }
 

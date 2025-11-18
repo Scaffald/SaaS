@@ -201,6 +201,7 @@ ON CONFLICT (role_id, user_id, scope_org_id, scope_team_id) DO NOTHING; -- Skip 
 
 -- Update geo coordinates for users based on their location
 -- This populates the PostGIS geography field for the v_profile_search view
+-- First, update users with exact location matches
 UPDATE core.profile
 SET geo = ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography
 FROM (VALUES
@@ -220,6 +221,41 @@ FROM (VALUES
   ('Massachusetts, United States', -71.3824, 42.4072)
 ) AS coords(location_text, longitude, latitude)
 WHERE core.profile.location = coords.location_text;
+
+-- Update users with location strings that contain city/state patterns
+-- This handles users with locations that don't match exact strings
+-- Use approximate coordinates based on location text patterns
+UPDATE core.profile
+SET geo = ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography
+FROM (
+  SELECT 
+    location,
+    CASE
+      -- Massachusetts cities (approximate center of state)
+      WHEN location ILIKE '%massachusetts%' OR location ILIKE '%ma%' THEN -71.3824
+      -- Michigan cities (approximate center of state)
+      WHEN location ILIKE '%michigan%' OR location ILIKE '%mi%' THEN -84.5555
+      -- New Hampshire
+      WHEN location ILIKE '%new hampshire%' OR location ILIKE '%nh%' THEN -71.5381
+      -- Kentucky
+      WHEN location ILIKE '%kentucky%' OR location ILIKE '%ky%' THEN -85.7585
+      -- Default to US center if we can't determine
+      ELSE -98.5795
+    END AS longitude,
+    CASE
+      WHEN location ILIKE '%massachusetts%' OR location ILIKE '%ma%' THEN 42.4072
+      WHEN location ILIKE '%michigan%' OR location ILIKE '%mi%' THEN 43.3266
+      WHEN location ILIKE '%new hampshire%' OR location ILIKE '%nh%' THEN 43.4525
+      WHEN location ILIKE '%kentucky%' OR location ILIKE '%ky%' THEN 37.8393
+      ELSE 39.8283
+    END AS latitude
+  FROM core.profile
+  WHERE location IS NOT NULL 
+    AND location != ''
+    AND geo IS NULL
+) AS fallback_coords
+WHERE core.profile.location = fallback_coords.location
+  AND core.profile.geo IS NULL;
 
 COMMIT;
 

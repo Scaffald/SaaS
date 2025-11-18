@@ -24,6 +24,7 @@ COMMENT ON COLUMN core.account_credits.balance_cents
 CREATE INDEX IF NOT EXISTS account_credits_org_idx
   ON core.account_credits (organization_id);
 
+DROP TRIGGER IF EXISTS account_credits_set_updated_at ON core.account_credits;
 CREATE TRIGGER account_credits_set_updated_at
   BEFORE UPDATE ON core.account_credits
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();

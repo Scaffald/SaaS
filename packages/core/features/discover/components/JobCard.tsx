@@ -41,6 +41,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
       animation="quick"
       p="$3"
       gap="$3"
+      width="100%"
       cursor="pointer"
       hoverStyle={{
         borderColor: '$yellow6',

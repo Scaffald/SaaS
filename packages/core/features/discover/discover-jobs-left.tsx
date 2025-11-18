@@ -2,7 +2,8 @@ import { YStack, ScrollView, Text, XStack } from 'tamagui'
 import { ExternalJobCard, type ExternalJob } from './components/ExternalJobCard'
 import { InternalJobCard, type InternalJob } from './components/InternalJobCard'
 import { api } from '@app/core/utils/api'
-import { SkeletonList } from '@app/ui'
+import { SkeletonList, extractPlainText } from '@app/ui'
+import type { JSONContent } from '@tiptap/core'
 
 interface DiscoverJobsLeftProps {
   searchQuery: string
@@ -90,10 +91,17 @@ export function DiscoverJobsLeft({
         if (!matchesSearch) return false
       } else {
         const intJob = job as InternalJob
+        // Extract plain text from description if it's rich text JSON
+        const descriptionText =
+          typeof intJob.description === 'string'
+            ? intJob.description
+            : intJob.description
+              ? extractPlainText(intJob.description as JSONContent)
+              : ''
         const matchesSearch =
           intJob.title.toLowerCase().includes(query) ||
           intJob.organization?.name?.toLowerCase().includes(query) ||
-          intJob.description?.toLowerCase().includes(query)
+          descriptionText.toLowerCase().includes(query)
         if (!matchesSearch) return false
       }
     }

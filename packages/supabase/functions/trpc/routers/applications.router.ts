@@ -352,6 +352,7 @@ export const applicationsRouter = router({
           .enum([
             "pending",
             "reviewing",
+            "inquired",
             "interview",
             "offer",
             "hired",

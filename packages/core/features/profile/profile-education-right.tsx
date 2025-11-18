@@ -253,7 +253,7 @@ export function ProfileEducationRight() {
       {/* Edit Modal */}
       <EducationEntryEditModal
         open={!!editingEntry}
-        onOpenChange={(open) => !open && setEditingEntry(null)}
+        onOpenChange={(open: boolean) => !open && setEditingEntry(null)}
         educationEntry={editingEntry}
         onSuccess={() => {
           educationQuery.refetch()

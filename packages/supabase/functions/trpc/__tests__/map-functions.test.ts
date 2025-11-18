@@ -1,6 +1,6 @@
 /**
  * Map Functions Tests
- * Tests for get_organizations_with_coords function and v_profile_search view
+ * Tests for get_organizations_with_coords, get_jobs_with_coords functions and v_profile_search view
  *
  * These are direct database endpoints accessed via PostgREST, not tRPC endpoints.
  * They provide data for the discover/map page.
@@ -362,6 +362,164 @@ Deno.test({
     // If we got this far without error, PostGIS geometry type is accessible
     console.log("✅ PostGIS geometry type is accessible via extensions schema");
     console.log("   Function uses: SET search_path = public, extensions");
+  },
+  sanitizeResources: false,
+  sanitizeOps: false,
+});
+
+Deno.test({
+  name: "Map Functions - get_jobs_with_coords returns valid data",
+  async fn() {
+    const result = await callSupabaseRPC("get_jobs_with_coords");
+
+    assertEquals(result.ok, true, "Should return successful response");
+    assertExists(result.data, "Should have data");
+    assertEquals(Array.isArray(result.data), true, "Data should be an array");
+
+    console.log(
+      `✅ Found ${result.data.length} jobs with coordinates`,
+    );
+
+    if (result.data.length > 0) {
+      const job = result.data[0];
+
+      // Verify required fields exist
+      assertExists(job.id, "Job should have id");
+      assertExists(job.title, "Job should have title");
+      assertExists(job.organization_id, "Job should have organization_id");
+      assertExists(job.longitude, "Job should have longitude");
+      assertExists(job.latitude, "Job should have latitude");
+      assertExists(job.status, "Job should have status");
+
+      // Verify longitude/latitude are numbers
+      assertEquals(
+        typeof job.longitude,
+        "number",
+        "Longitude should be a number",
+      );
+      assertEquals(
+        typeof job.latitude,
+        "number",
+        "Latitude should be a number",
+      );
+
+      // Verify coordinates are in valid range
+      assert(
+        job.longitude >= -180 && job.longitude <= 180,
+        "Longitude should be between -180 and 180",
+      );
+      assert(
+        job.latitude >= -90 && job.latitude <= 90,
+        "Latitude should be between -90 and 90",
+      );
+
+      // Verify status is 'open'
+      assertEquals(
+        job.status,
+        "open",
+        "Job status should be 'open'",
+      );
+
+      console.log(
+        `   Sample job: ${job.title} at (${job.latitude}, ${job.longitude})`,
+      );
+    } else {
+      console.log(
+        "⚠️  No jobs with coordinates found - seed data may be needed or jobs may not have geo coordinates set",
+      );
+    }
+  },
+  sanitizeResources: false,
+  sanitizeOps: false,
+});
+
+Deno.test({
+  name: "Map Functions - get_jobs_with_coords respects limit",
+  async fn() {
+    const result = await callSupabaseRPC("get_jobs_with_coords");
+
+    assertEquals(result.ok, true, "Should return successful response");
+
+    if (result.data && result.data.length > 0) {
+      // Function has a LIMIT 500 clause
+      assert(
+        result.data.length <= 500,
+        "Should not return more than 500 jobs",
+      );
+      console.log(
+        `✅ Correctly limited to ${result.data.length} jobs (max 500)`,
+      );
+    } else {
+      console.log("⚠️  No data to test limit");
+    }
+  },
+  sanitizeResources: false,
+  sanitizeOps: false,
+});
+
+Deno.test({
+  name: "Map Functions - get_jobs_with_coords only returns open jobs",
+  async fn() {
+    const result = await callSupabaseRPC("get_jobs_with_coords");
+
+    assertEquals(result.ok, true, "Should return successful response");
+
+    if (result.data && result.data.length > 0) {
+      // All returned jobs should have status 'open'
+      const allOpen = result.data.every(
+        (job: { status: string }) => job.status === "open",
+      );
+
+      assertEquals(
+        allOpen,
+        true,
+        "All jobs should have status 'open'",
+      );
+
+      console.log(
+        `✅ All ${result.data.length} jobs have status 'open'`,
+      );
+    } else {
+      console.log("⚠️  No jobs found");
+    }
+  },
+  sanitizeResources: false,
+  sanitizeOps: false,
+});
+
+Deno.test({
+  name: "Map Functions - get_jobs_with_coords includes organization_name",
+  async fn() {
+    const result = await callSupabaseRPC("get_jobs_with_coords");
+
+    assertEquals(result.ok, true, "Should return successful response");
+
+    if (result.data && result.data.length > 0) {
+      const job = result.data[0];
+
+      // Organization name should be included (may be null if org doesn't exist)
+      assertExists(
+        "organization_name" in job,
+        "Job should have organization_name field",
+      );
+
+      if (job.organization_name) {
+        assertEquals(
+          typeof job.organization_name,
+          "string",
+          "Organization name should be a string if present",
+        );
+        console.log(
+          `✅ Job includes organization name: ${job.organization_name}`,
+        );
+      } else {
+        console.log(
+          "⚠️  Job has null organization_name (organization may not exist)",
+        );
+      }
+    } else {
+      console.log("⚠️  No jobs found to test organization_name");
+    }
   },
   sanitizeResources: false,
   sanitizeOps: false,

@@ -40,6 +40,7 @@ async function main() {
 
   for (const industry of industries) {
     const { error } = await supabase
+      .schema("core")
       .from("industries")
       .upsert(industry, { onConflict: "slug" });
 
@@ -52,6 +53,7 @@ async function main() {
 
   // Verify
   const { data, error } = await supabase
+    .schema("core")
     .from("industries")
     .select("*");
 

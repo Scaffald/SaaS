@@ -449,6 +449,7 @@ export const jobsRouter = t.router({
           .enum([
             "pending",
             "reviewing",
+            "inquired",
             "interview",
             "offer",
             "hired",

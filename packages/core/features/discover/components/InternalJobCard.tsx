@@ -1,8 +1,9 @@
 import { Card, Text, XStack, YStack, Button } from 'tamagui'
 import { Building2, MapPin, DollarSign, Briefcase, Clock } from '@tamagui/lucide-icons'
-import { Chip } from '@app/ui'
+import { Chip, extractPlainText } from '@app/ui'
 import { useRouter } from 'expo-router'
 import { RouteBuilder } from '@app/core/constants/routes'
+import type { JSONContent } from '@tiptap/core'
 
 /**
  * Internal job type definition with all enhanced fields
@@ -10,7 +11,7 @@ import { RouteBuilder } from '@app/core/constants/routes'
 export interface InternalJob {
   id: string
   title: string
-  description: string
+  description: string | JSONContent
   employment_type?: string
   remote_option?: string
   location?: string
@@ -185,7 +186,19 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
   const remoteOption = formatRemoteOption(job.remote_option)
   const postedTime = formatRelativeTime(job.posted_at || job.created_at)
   const hasInquiryLink = Boolean(hasApplied && applicationId)
-  const buttonLabel = hasInquiryLink ? 'View Inquiry' : hasApplied ? 'View Application' : 'View Details'
+  const buttonLabel = hasInquiryLink
+    ? 'View Inquiry'
+    : hasApplied
+      ? 'View Application'
+      : 'View Details'
+
+  // Extract plain text from description (handles both string and rich text JSON)
+  const descriptionText =
+    typeof job.description === 'string'
+      ? job.description
+      : job.description
+        ? extractPlainText(job.description as JSONContent)
+        : ''
 
   return (
     <Card
@@ -249,9 +262,9 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
         </YStack>
 
         {/* Description preview */}
-        {job.description && (
+        {descriptionText && (
           <Text fontSize="$3" color="$color11" numberOfLines={2}>
-            {job.description}
+            {descriptionText}
           </Text>
         )}
 

@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import Stripe from "stripe";
+import type Stripe from "stripe";
 import { z } from "zod";
 
 import type { Context } from "../context.ts";
@@ -7,7 +7,22 @@ import { officeProcedure, protectedProcedure, t } from "../middleware.ts";
 import { mergeMetadata } from "../../_shared/id-verification-utils.ts";
 
 const STRIPE_API_VERSION = "2024-06-20";
-const stripeHttpClient = Stripe.createFetchHttpClient();
+
+// Lazy initialization of Stripe to avoid module loading issues
+let StripeClass: typeof import("stripe").default | null = null;
+
+async function getStripeClass(): Promise<typeof import("stripe").default> {
+  if (!StripeClass) {
+    const stripeModule = await import("stripe");
+    StripeClass = stripeModule.default;
+  }
+  return StripeClass;
+}
+
+async function getStripeHttpClient() {
+  const Stripe = await getStripeClass();
+  return Stripe.createFetchHttpClient();
+}
 const mockStripePaymentIntents = new Map<
   string,
   {
@@ -147,9 +162,10 @@ async function loadStripeClient(ctx: Context): Promise<Stripe> {
     });
   }
 
+  const Stripe = await getStripeClass();
   return new Stripe(secretValue, {
     apiVersion: STRIPE_API_VERSION,
-    httpClient: stripeHttpClient,
+    httpClient: await getStripeHttpClient(),
   });
 }
 

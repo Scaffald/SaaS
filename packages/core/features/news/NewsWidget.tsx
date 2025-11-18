@@ -144,6 +144,8 @@ export function NewsWidget({
 
   // Get industry ID from user profile or lookup by slug
   const [industryId, setIndustryId] = useState<string | null>(null)
+  // Construction industry ID for fallback news
+  const [constructionIndustryId, setConstructionIndustryId] = useState<string | null>(null)
 
   useEffect(() => {
     async function resolveIndustryId() {
@@ -180,6 +182,24 @@ export function NewsWidget({
     void resolveIndustryId()
   }, [generalInfo?.industries?.id, industry])
 
+  // Resolve construction industry ID for fallback news
+  useEffect(() => {
+    async function resolveConstructionIndustryId() {
+      const { data: constructionData } = await supabase
+        .schema('core')
+        .from('industries')
+        .select('id')
+        .eq('slug', 'construction')
+        .single()
+
+      if (constructionData?.id) {
+        setConstructionIndustryId(constructionData.id)
+      }
+    }
+
+    void resolveConstructionIndustryId()
+  }, [])
+
   const {
     data: newsItems = [],
     isLoading,
@@ -189,6 +209,18 @@ export function NewsWidget({
   } = useAggregatedNews({
     industryId: industryId || '', // Will be validated in hook - query disabled if invalid
     maxTotalItems: fetchCount,
+  })
+
+  // Fallback query for global ENR news when no matching news is found
+  // Only fetch fallback if main query is done, no error, and construction industry ID is available
+  // We'll check enrichedNews length after it's computed to determine if we need fallback
+  const {
+    data: fallbackNewsItems = [],
+    isLoading: isFallbackLoading,
+  } = useAggregatedNews({
+    industryId: constructionIndustryId || '', // Construction industry for global ENR news
+    maxTotalItems: headlineLimit,
+    enabled: !isLoading && !isError && !!constructionIndustryId, // Fetch fallback when main query is done
   })
 
   const [preferences, setPreferences] = useState<NewsPreferences>({
@@ -316,6 +348,36 @@ export function NewsWidget({
     return [...sorted, ...fallback]
   }, [headlineLimit, newsItems, preferences, relevanceContext])
 
+  // Use fallback news (global ENR) when no matching news is found
+  const fallbackEnrichedNews = useMemo(() => {
+    if (!fallbackNewsItems.length) return [] as EnrichedNewsItem[]
+
+    // For fallback, just sort by date (no relevance scoring needed)
+    return fallbackNewsItems
+      .sort((a: NewsItem, b: NewsItem) => {
+        const dateA = a.pubDate instanceof Date ? a.pubDate : new Date(a.pubDate)
+        const dateB = b.pubDate instanceof Date ? b.pubDate : new Date(b.pubDate)
+        return dateB.getTime() - dateA.getTime()
+      })
+      .slice(0, headlineLimit)
+      .map((item: NewsItem) => ({
+        ...item,
+        relevanceScore: 0,
+        reasons: [],
+        hoursSincePublished: getHoursSince(item.pubDate),
+      }))
+  }, [fallbackNewsItems, headlineLimit])
+
+  // Determine which news to display: enriched news if available, otherwise fallback
+  const displayNews = useMemo(() => {
+    // If we have enriched news, use it
+    if (enrichedNews.length > 0) {
+      return enrichedNews
+    }
+    // Otherwise, use fallback news (global ENR)
+    return fallbackEnrichedNews
+  }, [enrichedNews, fallbackEnrichedNews])
+
   const handleNewsClick = async (article: NewsItem) => {
     if (onArticleClick) {
       onArticleClick(article)
@@ -380,7 +442,7 @@ export function NewsWidget({
         </XStack>
       </XStack>
 
-      {isLoading && enrichedNews.length === 0 ? (
+      {isLoading && displayNews.length === 0 && !isFallbackLoading ? (
         <YStack items="center" p={spacing.xl} gap={spacing.sm}>
           <Spinner size="large" color="$blue7" />
           <Text color="$color11" fontSize="$4">
@@ -389,7 +451,7 @@ export function NewsWidget({
         </YStack>
       ) : null}
 
-      {isError ? (
+      {isError && displayNews.length === 0 ? (
         <YStack items="center" p={spacing.xl} gap={spacing.sm}>
           <AlertCircle size={24} color="$red10" />
           <Text color="$red11" fontSize="$4" style={{ textAlign: 'center' }}>
@@ -410,20 +472,9 @@ export function NewsWidget({
         </YStack>
       ) : null}
 
-      {!isLoading && !isError && enrichedNews.length === 0 ? (
-        <YStack items="center" p={spacing.xl} gap={spacing.sm}>
-          <Text color="$color11" fontSize="$4" fontWeight="600">
-            No relevant news found
-          </Text>
-          <Text color="$color10" fontSize="$3" style={{ textAlign: 'center' }}>
-            We’ll keep looking for updates that match your profile.
-          </Text>
-        </YStack>
-      ) : null}
-
-      {enrichedNews.length > 0 && (
+      {displayNews.length > 0 && (
         <YStack gap="$3" px={spacing.lg} pb={spacing.sm}>
-          {enrichedNews.map((item: EnrichedNewsItem) => (
+          {displayNews.map((item: EnrichedNewsItem) => (
             <Pressable key={item.id} onPress={() => handleNewsClick(item)}>
               {({ pressed }) => (
                 <YStack

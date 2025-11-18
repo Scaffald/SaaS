@@ -16,7 +16,7 @@ export const employmentProfileSchema = z.object({
   travel_distance_miles: z.number().min(10).max(250).default(25),
 
   // Residency (multiple countries but keep US boolean)
-  us_resident: z.boolean().default(false),
+  us_resident: z.boolean().optional(),
   authorized_countries: z.array(z.string()).max(
     3,
     "Maximum 3 countries allowed",
@@ -80,7 +80,7 @@ export const employmentProfileDefaults: Partial<EmploymentProfileFormData> = {
   preferred_work_locations: [],
   open_to_travel: true,
   travel_distance_miles: 25,
-  us_resident: false,
+  us_resident: undefined,
   authorized_countries: [],
   us_passport: false,
   drivers_license_classes: [],

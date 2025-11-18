@@ -305,26 +305,6 @@ export const profileEmploymentInputSchema = z
   })
   .partial()
   .superRefine((data, ctx) => {
-    const residencyFieldsProvided =
-      typeof data.us_resident !== 'undefined' ||
-      typeof data.us_passport !== 'undefined' ||
-      typeof data.authorized_countries !== 'undefined';
-
-    if (residencyFieldsProvided) {
-      const hasResidencyStatus =
-        Boolean(data.us_resident) ||
-        Boolean(data.us_passport) ||
-        (Array.isArray(data.authorized_countries) && data.authorized_countries.length > 0);
-
-      if (!hasResidencyStatus) {
-        ctx.addIssue({
-          path: ['us_resident'],
-          code: z.ZodIssueCode.custom,
-          message: 'Please indicate your work authorization status',
-        });
-      }
-    }
-
     // All users are willing to travel, so travel_distance_miles is always required
     if (data.travel_distance_miles === undefined || data.travel_distance_miles === null) {
       ctx.addIssue({
@@ -353,7 +333,7 @@ export const profileEmploymentDefaults: Partial<EmploymentProfileFormData> = {
   preferred_work_locations: [],
   open_to_travel: true,
   travel_distance_miles: 25,
-  us_resident: false,
+  us_resident: undefined,
   authorized_countries: [],
   us_passport: false,
   drivers_license_classes: [],

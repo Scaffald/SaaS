@@ -198,23 +198,9 @@ export function ProfileEmploymentLeft() {
     mode: 'onChange', // Real-time validation
   })
 
-  const usResidentValue = watch('us_resident')
-  const usPassportValue = watch('us_passport')
-  const authorizedCountriesValue = watch('authorized_countries')
   const driversLicenseClassesValue = watch('drivers_license_classes')
   const travelDistanceValue = watch('travel_distance_miles')
   const driversLicenseToggleRef = useRef(false)
-
-  useEffect(() => {
-    const hasResidencyStatus =
-      Boolean(usResidentValue) ||
-      Boolean(usPassportValue) ||
-      (Array.isArray(authorizedCountriesValue) && authorizedCountriesValue.length > 0)
-
-    if (hasResidencyStatus) {
-      clearErrors(['us_resident', 'us_passport', 'authorized_countries'])
-    }
-  }, [usResidentValue, usPassportValue, authorizedCountriesValue, clearErrors])
 
   useEffect(() => {
     if (Array.isArray(driversLicenseClassesValue) && driversLicenseClassesValue.length > 0) {
@@ -255,22 +241,6 @@ export function ProfileEmploymentLeft() {
       'drivers_license_classes',
       'travel_distance_miles',
     ])
-
-    const hasResidencyStatus =
-      Boolean(data.us_resident) ||
-      Boolean(data.us_passport) ||
-      (Array.isArray(data.authorized_countries) && data.authorized_countries.length > 0)
-
-    if (!hasResidencyStatus) {
-      setError('us_resident', {
-        type: 'manual',
-        message: 'Please indicate your work authorization status',
-      })
-      toast.show('Validation Error', {
-        message: 'Please indicate your work authorization status',
-      })
-      return
-    }
 
     if (
       driversLicenseToggleRef.current &&

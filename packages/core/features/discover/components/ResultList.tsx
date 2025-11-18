@@ -126,14 +126,14 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
 
     if (isLoading) {
       return (
-        <YStack flex={1} gap="$3" p="$3">
+        <YStack flex={1} gap="$3" p="$3" width="100%">
           <SkeletonList count={5} gap="$2" variant="profile" />
         </YStack>
       )
     }
 
     return (
-      <YStack flex={1} gap="$3" overflow="hidden">
+      <YStack flex={1} gap="$3" overflow="hidden" width="100%">
         <XStack justify="space-between" items="center" shrink={0} pt="$3" px="$3">
           <Text fontWeight="700" fontSize="$5">
             {allResults.length} results
@@ -144,9 +144,17 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
           flex={1}
           showsVerticalScrollIndicator
           renderToHardwareTextureAndroid
+          width="100%"
         >
-          <YStack gap="$2" pb="$6">
-            {allResults.map((result, index) => (
+          <YStack gap="$2" pb="$6" width="100%">
+            {allResults.length === 0 ? (
+              <YStack p="$4" items="center" justify="center" minH={200} width="100%">
+                <Text color="$color10" fontSize="$4" textAlign="center">
+                  No results found
+                </Text>
+              </YStack>
+            ) : (
+              allResults.map((result, index) => (
               <YStack key={result.id} gap="$2">
                 {result.type === 'profile' ? (
                   <ResultCard
@@ -171,7 +179,8 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
                 )}
                 {index < allResults.length - 1 ? <Separator /> : null}
               </YStack>
-            ))}
+            ))
+            )}
           </YStack>
         </ScrollView>
       </YStack>

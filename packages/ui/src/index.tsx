@@ -30,7 +30,7 @@ export {
 export { Button as UIButton } from './components/buttons/Button'
 
 // Re-export Toast components
-export { ToastProvider, ToastViewport } from '@tamagui/toast'
+export { ToastProvider, ToastViewport, useToastController as useToast } from '@tamagui/toast'
 
 // Re-export our custom components
 export { FieldError } from './components/FieldError'

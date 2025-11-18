@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import Stripe from "stripe";
+import type Stripe from "stripe";
 import { z } from "zod";
 
 import {
@@ -7,6 +7,7 @@ import {
   backgroundCheckDisputeSchema,
   backgroundCheckDocumentUploadSchema,
   backgroundCheckInitiationSchema,
+  backgroundCheckPaidByEnum,
   backgroundCheckStatusEnum,
   backgroundCheckUploadRequestSchema,
   consentMetadataSchema,
@@ -276,9 +277,24 @@ const SIGNED_UPLOAD_URL_TTL_SECONDS = 60 * 5;
 const SIGNED_DOWNLOAD_URL_TTL_SECONDS = 60 * 60;
 const MAX_DOCUMENT_SIZE_BYTES = 10 * 1024 * 1024;
 const STRIPE_API_VERSION = "2024-06-20";
-const stripeHttpClient = Stripe.createFetchHttpClient();
 const SHARED_BACKGROUND_CHECK_DISCOUNT = 0.25;
 const mockStripePaymentIntents = new Map<string, { amount: number; currency: string }>();
+
+// Lazy initialization of Stripe to avoid module loading issues
+let StripeClass: typeof import("stripe").default | null = null;
+
+async function getStripeClass(): Promise<typeof import("stripe").default> {
+  if (!StripeClass) {
+    const stripeModule = await import("stripe");
+    StripeClass = stripeModule.default;
+  }
+  return StripeClass;
+}
+
+async function getStripeHttpClient() {
+  const Stripe = await getStripeClass();
+  return Stripe.createFetchHttpClient();
+}
 
 function sanitizeFileName(fileName: string): string {
   const cleaned = fileName.replace(/[^A-Za-z0-9._-]/g, "_");
@@ -388,9 +404,10 @@ async function loadStripeClient(ctx: Context): Promise<Stripe> {
     });
   }
 
+  const Stripe = await getStripeClass();
   return new Stripe(secretValue, {
     apiVersion: STRIPE_API_VERSION,
-    httpClient: stripeHttpClient,
+    httpClient: await getStripeHttpClient(),
   });
 }
 
