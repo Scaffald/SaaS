@@ -141,12 +141,28 @@ vi.mock('tamagui', () => {
     children?: ReactNode
   } & Record<string, unknown>) => <p {...rest}>{children}</p>
 
+  const Button = ({
+    children,
+    onPress,
+    disabled,
+    ...rest
+  }: {
+    children?: ReactNode
+    onPress?: () => void
+    disabled?: boolean
+  } & Record<string, unknown>) => (
+    <button type="button" disabled={disabled} onClick={onPress} {...rest}>
+      {children}
+    </button>
+  )
+
   return {
     YStack: Stack,
     XStack: Stack,
     Input,
     Text,
     Paragraph,
+    Button,
   }
 })
 

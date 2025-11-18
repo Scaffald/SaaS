@@ -60,10 +60,14 @@ describe('useTalentProfiles', () => {
       from: mockFrom,
     })
 
-    mockUseQuery.mockReturnValue({
-      data: [],
-      isLoading: false,
-      error: null,
+    // Default mock that executes queryFn
+    mockUseQuery.mockImplementation(async (options) => {
+      const data = options?.queryFn ? await options.queryFn() : []
+      return {
+        data,
+        isLoading: false,
+        error: null,
+      }
     })
   })
 

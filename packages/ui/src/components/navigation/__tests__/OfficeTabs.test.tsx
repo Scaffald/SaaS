@@ -32,6 +32,7 @@ vi.mock('tamagui', () => {
       React.createElement(tag, rest, children)
 
   const mockUseWindowDimensions = vi.fn(() => ({ width: 1440, height: 900 }))
+  const useMedia = () => ({ sm: false })
 
   return {
     Button: createComponent('button'),
@@ -39,6 +40,7 @@ vi.mock('tamagui', () => {
     XStack: createComponent('div'),
     YStack: createComponent('div'),
     useWindowDimensions: mockUseWindowDimensions,
+    useMedia,
   }
 })
 

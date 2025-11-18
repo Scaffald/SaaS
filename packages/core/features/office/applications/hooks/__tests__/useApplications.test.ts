@@ -48,6 +48,9 @@ vi.mock('@app/core/utils/api', () => ({
       confirmUpload: { useMutation: mocks.confirmUploadMutation.useMutation },
       calculateScore: { useMutation: mocks.calculateScoreMutation.useMutation },
     },
+    office: {
+      listApplications: { useQuery: mocks.useUserApplications },
+    },
     useUtils: vi.fn(() => ({
       applications: {
         getByUser: { invalidate: mocks.invalidateGetByUser },
@@ -103,7 +106,7 @@ describe('office applications hooks', () => {
     mocks.getUploadUrlMutation.options.onSuccess = undefined
 
     mocks.useUserApplications.mockReturnValue({
-      data: [{ id: 'app-1' }],
+      data: { applications: [{ id: 'app-1' }] },
       isLoading: false,
       isError: false,
       error: null,

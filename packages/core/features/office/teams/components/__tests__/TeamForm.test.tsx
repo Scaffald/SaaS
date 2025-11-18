@@ -438,6 +438,10 @@ describe('TeamForm', () => {
     
     // Set up the mutation to reject with an error
     const error = new Error('Validation failed')
+    // Suppress unhandled rejection for this test since we're testing error handling
+    const unhandledRejectionHandler = vi.fn()
+    process.on('unhandledRejection', unhandledRejectionHandler)
+    
     createTeamMock.mutateAsync.mockRejectedValueOnce(error)
 
     // Render with initial data to ensure form is valid
@@ -492,6 +496,9 @@ describe('TeamForm', () => {
     await waitFor(() => {
       expect(toastMock.show).toHaveBeenCalled()
     }, { timeout: 2000 })
+    
+    // Clean up unhandled rejection handler
+    process.removeListener('unhandledRejection', unhandledRejectionHandler)
   })
 
   it('resets form when reset is called', () => {

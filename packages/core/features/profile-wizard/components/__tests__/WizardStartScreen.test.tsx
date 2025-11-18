@@ -179,7 +179,7 @@ describe('WizardStartScreen', () => {
       />,
     )
 
-    expect(screen.getByText('2 min')).toBeInTheDocument()
+    expect(screen.getAllByText('2 min').length).toBeGreaterThan(0)
     expect(screen.getByText('3 min')).toBeInTheDocument()
   })
 

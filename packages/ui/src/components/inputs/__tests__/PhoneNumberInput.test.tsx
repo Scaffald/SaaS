@@ -70,6 +70,8 @@ vi.mock('tamagui', () => {
 
   const Paragraph = ({ children, ...rest }: any) => <p {...rest}>{children}</p>
 
+  const useMedia = () => ({ sm: false })
+
   return {
     YStack,
     XStack,
@@ -81,6 +83,7 @@ vi.mock('tamagui', () => {
     AnimatePresence,
     useWindowDimensions,
     Paragraph,
+    useMedia,
   }
 })
 

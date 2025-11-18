@@ -15,6 +15,9 @@ const createUtilsMock = () => {
       getExperience: makeSection(),
       getExperienceSummary: makeSection(),
       getUserSkills: makeSection(),
+      skillsMultiTaxonomy: {
+        getUserSkills: makeSection(),
+      },
       certifications: {
         getUserCertificationTree: makeSection(),
         getTopLevelCertifications: makeSection(),
@@ -61,6 +64,11 @@ describe('invalidateProfileQueries', () => {
   it('still resolves when some invalidations reject', async () => {
     const utils = createUtilsMock()
     const [first, , third] = collectInvalidateSpies(utils)
+    
+    // Suppress unhandled rejection warnings since Promise.allSettled handles them
+    const originalConsoleError = console.error
+    console.error = vi.fn()
+    
     first.mockRejectedValueOnce(new Error('network'))
     third.mockRejectedValueOnce(new Error('timeout'))
 
@@ -69,5 +77,8 @@ describe('invalidateProfileQueries', () => {
     for (const spy of collectInvalidateSpies(utils)) {
       expect(spy).toHaveBeenCalledTimes(1)
     }
+    
+    // Restore console.error
+    console.error = originalConsoleError
   })
 })

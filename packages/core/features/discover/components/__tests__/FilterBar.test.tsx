@@ -10,6 +10,14 @@ vi.mock('tamagui', async () => {
     const passthrough: Record<string, unknown> = {}
     for (const [key, value] of Object.entries(props)) {
       if (key === 'style') continue
+      // Handle responsive props - in test environment, assume $gtSm applies
+      if (key === '$gtSm' && typeof value === 'object' && value !== null) {
+        const responsiveProps = value as Record<string, unknown>
+        if ('r' in responsiveProps) {
+          styleProps.right = responsiveProps.r
+        }
+        continue
+      }
       switch (key) {
         case 'position':
         case 'px':

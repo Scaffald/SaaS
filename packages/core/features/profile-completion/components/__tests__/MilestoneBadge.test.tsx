@@ -9,11 +9,13 @@ import type { CompletionMilestone } from '../../hooks/useCompletionStatus'
 vi.mock('tamagui', () => {
   const Stack = ({
     children,
+    opacity,
     ...rest
   }: {
     children?: ReactNode
+    opacity?: number
   } & Record<string, unknown>) => (
-    <div {...rest}>
+    <div {...rest} style={{ ...(rest.style as Record<string, unknown>), opacity }}>
       {children}
     </div>
   )

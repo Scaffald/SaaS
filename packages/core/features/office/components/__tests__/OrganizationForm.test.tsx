@@ -5,6 +5,9 @@ import type { ReactNode } from 'react'
 
 const createOrganizationMock = vi.hoisted(() => ({ mutateAsync: vi.fn(), useMutation: vi.fn() }))
 const updateOrganizationMock = vi.hoisted(() => ({ mutateAsync: vi.fn(), useMutation: vi.fn() }))
+const getOrganizationQueryMock = vi.hoisted(() => ({ data: undefined, isLoading: false, useQuery: vi.fn() }))
+const getProjectsWithOverridesQueryMock = vi.hoisted(() => ({ data: undefined, isLoading: false, useQuery: vi.fn() }))
+const updateLocationVisibilityMock = vi.hoisted(() => ({ mutateAsync: vi.fn(), isPending: false, useMutation: vi.fn() }))
 const toastMock = vi.hoisted(() => ({ show: vi.fn() }))
 const routerMock = vi.hoisted(() => ({ push: vi.fn() }))
 
@@ -13,6 +16,11 @@ vi.mock('@app/core/utils/api', () => ({
     office: {
       createOrganization: { useMutation: createOrganizationMock.useMutation },
       updateOrganization: { useMutation: updateOrganizationMock.useMutation },
+    },
+    organizations: {
+      getOrganization: { useQuery: getOrganizationQueryMock.useQuery },
+      getProjectsWithOverrides: { useQuery: getProjectsWithOverridesQueryMock.useQuery },
+      updateLocationVisibility: { useMutation: updateLocationVisibilityMock.useMutation },
     },
   },
 }))
@@ -212,6 +220,9 @@ describe('OrganizationForm', () => {
     updateOrganizationMock.mutateAsync.mockReset()
     createOrganizationMock.useMutation.mockReturnValue({ mutateAsync: createOrganizationMock.mutateAsync, isPending: false })
     updateOrganizationMock.useMutation.mockReturnValue({ mutateAsync: updateOrganizationMock.mutateAsync, isPending: false })
+    getOrganizationQueryMock.useQuery.mockReturnValue({ data: undefined, isLoading: false })
+    getProjectsWithOverridesQueryMock.useQuery.mockReturnValue({ data: undefined, isLoading: false })
+    updateLocationVisibilityMock.useMutation.mockReturnValue({ mutateAsync: updateLocationVisibilityMock.mutateAsync, isPending: false })
     toastMock.show.mockReset()
     routerMock.push.mockReset()
   })

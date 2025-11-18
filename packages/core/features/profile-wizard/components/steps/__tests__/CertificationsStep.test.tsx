@@ -354,7 +354,7 @@ describe('CertificationsStep', () => {
       />,
     )
 
-    const continueButton = screen.getByRole('button', { name: /continue/i })
+    const continueButton = screen.getByRole('button', { name: /next: preferences/i })
     fireEvent.click(continueButton)
 
     await waitFor(() => {
@@ -412,7 +412,7 @@ describe('CertificationsStep', () => {
       />,
     )
 
-    const skipButton = screen.getByText('Skip')
+    const skipButton = screen.getByRole('button', { name: /skip/i })
     fireEvent.click(skipButton)
 
     await waitFor(() => {

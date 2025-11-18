@@ -82,6 +82,14 @@ vi.mock('@app/core/utils/api', () => ({
     })),
     profile: {
       import: {
+        getImportData: {
+          useQuery: vi.fn(() => ({
+            data: null,
+            isLoading: false,
+            isError: false,
+            refetch: vi.fn(),
+          })),
+        },
         saveImportData: {
           useMutation: () => mockSaveImportMutation,
         },

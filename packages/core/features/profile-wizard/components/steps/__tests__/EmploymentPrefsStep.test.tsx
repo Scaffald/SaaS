@@ -177,6 +177,21 @@ vi.mock('tamagui', () => {
 
   Select.Adapt = Adapt
 
+  const Button = ({
+    children,
+    onPress,
+    disabled,
+    ...rest
+  }: {
+    children?: ReactNode
+    onPress?: () => void
+    disabled?: boolean
+  } & Record<string, unknown>) => (
+    <button type="button" disabled={disabled} onClick={onPress} {...rest}>
+      {children}
+    </button>
+  )
+
   return {
     YStack: Stack,
     XStack: Stack,
@@ -186,6 +201,7 @@ vi.mock('tamagui', () => {
     Select,
     Adapt,
     Sheet,
+    Button,
   }
 })
 
