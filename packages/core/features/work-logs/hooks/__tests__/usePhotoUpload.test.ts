@@ -25,14 +25,14 @@ vi.mock('@app/core/utils/api', () => ({
         useMutation: vi.fn(),
       },
     },
-  },
-  useUtils: vi.fn(() => ({
-    workLogs: {
-      getById: {
-        invalidate: vi.fn(),
+    useUtils: vi.fn(() => ({
+      workLogs: {
+        getById: {
+          invalidate: vi.fn(),
+        },
       },
-    },
-  })),
+    })),
+  },
 }));
 
 vi.mock('@tamagui/toast', () => ({
@@ -41,11 +41,18 @@ vi.mock('@tamagui/toast', () => ({
   })),
 }));
 
+const mockUploadToSignedUrl = vi.fn().mockResolvedValue({ error: null });
+const mockCreateSignedUrl = vi.fn().mockResolvedValue({
+  data: { signedUrl: 'https://example.com/signed-url.jpg' },
+  error: null,
+});
+
 vi.mock('@app/core/utils/supabase/client', () => ({
   supabase: {
     storage: {
       from: vi.fn(() => ({
-        uploadToSignedUrl: vi.fn().mockResolvedValue({ error: null }),
+        uploadToSignedUrl: mockUploadToSignedUrl,
+        createSignedUrl: mockCreateSignedUrl,
       })),
     },
   },
@@ -76,6 +83,11 @@ describe('usePhotoUpload', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUploadToSignedUrl.mockResolvedValue({ error: null });
+    mockCreateSignedUrl.mockResolvedValue({
+      data: { signedUrl: 'https://example.com/signed-url.jpg' },
+      error: null,
+    });
     vi.mocked(api.api.workLogs.getById.useQuery).mockReturnValue(
       mockGetByIdQuery as never,
     );
@@ -256,7 +268,7 @@ describe('usePhotoUpload', () => {
 
   it('refreshes photos', async () => {
     const mockInvalidate = vi.fn().mockResolvedValue(undefined);
-    vi.mocked(api.useUtils).mockReturnValue({
+    vi.mocked(api.api.useUtils).mockReturnValue({
       workLogs: {
         getById: {
           invalidate: mockInvalidate,
@@ -273,6 +285,356 @@ describe('usePhotoUpload', () => {
     });
 
     expect(mockInvalidate).toHaveBeenCalledWith({ workLogId: 'work-log-1' });
+  });
+
+  it('uploads photo successfully (web)', async () => {
+    const mockFile = new File(['test image data'], 'test.jpg', {
+      type: 'image/jpeg',
+    });
+    const mockUploadResponse = {
+      filePath: 'work-log-1/test.jpg',
+      token: 'upload-token',
+      photo: {
+        id: 'photo-2',
+        file_path: 'work-log-1/test.jpg',
+      },
+    };
+
+    mockUploadMutation.mockResolvedValue(mockUploadResponse);
+
+    const mockInvalidate = vi.fn().mockResolvedValue(undefined);
+    vi.mocked(api.api.useUtils).mockReturnValue({
+      workLogs: {
+        getById: {
+          invalidate: mockInvalidate,
+        },
+      },
+    } as never);
+
+    const { result } = renderHook(() =>
+      usePhotoUpload({ workLogId: 'work-log-1' }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.isReady).toBe(true);
+    });
+
+    await act(async () => {
+      await result.current.uploadPhoto({
+        candidate: {
+          platform: 'web',
+          id: 'candidate-1',
+          fileName: 'test.jpg',
+          mimeType: 'image/jpeg',
+          size: 1024,
+          file: mockFile,
+        },
+      });
+    });
+
+    expect(mockUploadMutation).toHaveBeenCalled();
+    expect(mockInvalidate).toHaveBeenCalled();
+  });
+
+  // Note: Native upload test skipped due to complexity of mocking expo-image-manipulator
+  // The native upload flow is tested via integration tests
+
+  it('handles upload error and shows toast', async () => {
+    const mockFile = new File(['test image data'], 'test.jpg', {
+      type: 'image/jpeg',
+    });
+
+    const uploadError = new Error('Upload failed');
+    mockUploadMutation.mockRejectedValue(uploadError);
+
+    const mockToast = vi.fn();
+    vi.mocked(useToastController).mockReturnValue({
+      show: mockToast,
+    } as never);
+
+    const { result } = renderHook(() =>
+      usePhotoUpload({ workLogId: 'work-log-1' }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.isReady).toBe(true);
+    });
+
+    await act(async () => {
+      await result.current.uploadPhoto({
+        candidate: {
+          platform: 'web',
+          id: 'candidate-1',
+          fileName: 'test.jpg',
+          mimeType: 'image/jpeg',
+          size: 1024,
+          file: mockFile,
+        },
+      });
+    });
+
+    await waitFor(() => {
+      expect(result.current.uploadError).toBe('Upload failed');
+      expect(mockToast).toHaveBeenCalledWith('Upload Failed', {
+        message: 'Upload failed',
+        type: 'error',
+      });
+    });
+  });
+
+  it('prevents upload when workLogId is missing', async () => {
+    const mockFile = new File(['test image data'], 'test.jpg', {
+      type: 'image/jpeg',
+    });
+
+    const { result } = renderHook(() => usePhotoUpload());
+
+    await act(async () => {
+      await expect(
+        result.current.uploadPhoto({
+          candidate: {
+            platform: 'web',
+            id: 'candidate-1',
+            fileName: 'test.jpg',
+            mimeType: 'image/jpeg',
+            size: 1024,
+            file: mockFile,
+          },
+        }),
+      ).rejects.toThrow('Work log must be saved before uploading photos');
+    });
+  });
+
+  it('prevents upload when max photos reached', async () => {
+    const mockQueryWithMaxPhotos = {
+      data: {
+        id: 'work-log-1',
+        photos: Array.from({ length: 10 }, (_, i) => ({
+          id: `photo-${i}`,
+          work_log_id: 'work-log-1',
+          file_path: `path/to/photo${i}.jpg`,
+        })),
+      },
+      isLoading: false,
+    };
+
+    vi.mocked(api.api.workLogs.getById.useQuery).mockReturnValue(
+      mockQueryWithMaxPhotos as never,
+    );
+
+    const mockFile = new File(['test image data'], 'test.jpg', {
+      type: 'image/jpeg',
+    });
+
+    const { result } = renderHook(() =>
+      usePhotoUpload({ workLogId: 'work-log-1', maxPhotos: 10 }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.canUploadMore).toBe(false);
+    });
+
+    await act(async () => {
+      await expect(
+        result.current.uploadPhoto({
+          candidate: {
+            platform: 'web',
+            id: 'candidate-1',
+            fileName: 'test.jpg',
+            mimeType: 'image/jpeg',
+            size: 1024,
+            file: mockFile,
+          },
+        }),
+      ).rejects.toThrow('Maximum of 10 photos reached');
+    });
+  });
+
+  it('tracks upload progress', async () => {
+    const mockFile = new File(['test image data'], 'test.jpg', {
+      type: 'image/jpeg',
+    });
+    const mockUploadResponse = {
+      filePath: 'work-log-1/test.jpg',
+      token: 'upload-token',
+      photo: {
+        id: 'photo-2',
+        file_path: 'work-log-1/test.jpg',
+      },
+    };
+
+    mockUploadMutation.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => resolve(mockUploadResponse), 100);
+        }),
+    );
+
+    const mockInvalidate = vi.fn().mockResolvedValue(undefined);
+    vi.mocked(api.api.useUtils).mockReturnValue({
+      workLogs: {
+        getById: {
+          invalidate: mockInvalidate,
+        },
+      },
+    } as never);
+
+    const { result } = renderHook(() =>
+      usePhotoUpload({ workLogId: 'work-log-1' }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.isReady).toBe(true);
+    });
+
+    const uploadPromise = act(async () => {
+      await result.current.uploadPhoto({
+        candidate: {
+          platform: 'web',
+          id: 'candidate-1',
+          fileName: 'test.jpg',
+          mimeType: 'image/jpeg',
+          size: 1024,
+          file: mockFile,
+        },
+      });
+    });
+
+    // Check that upload state changes
+    await waitFor(() => {
+      expect(result.current.isUploading).toBe(true);
+    });
+
+    await uploadPromise;
+
+    await waitFor(() => {
+      expect(result.current.isUploading).toBe(false);
+      expect(result.current.uploadProgress).toBe(0);
+    });
+  });
+
+  it('handles storage upload error', async () => {
+    const mockFile = new File(['test image data'], 'test.jpg', {
+      type: 'image/jpeg',
+    });
+    const mockUploadResponse = {
+      filePath: 'work-log-1/test.jpg',
+      token: 'upload-token',
+      photo: {
+        id: 'photo-2',
+        file_path: 'work-log-1/test.jpg',
+      },
+    };
+
+    mockUploadMutation.mockResolvedValue(mockUploadResponse);
+    mockUploadToSignedUrl.mockResolvedValue({
+      error: { message: 'Storage error' },
+    });
+
+    const mockToast = vi.fn();
+    vi.mocked(useToastController).mockReturnValue({
+      show: mockToast,
+    } as never);
+
+    const { result } = renderHook(() =>
+      usePhotoUpload({ workLogId: 'work-log-1' }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.isReady).toBe(true);
+    });
+
+    await act(async () => {
+      await result.current.uploadPhoto({
+        candidate: {
+          platform: 'web',
+          id: 'candidate-1',
+          fileName: 'test.jpg',
+          mimeType: 'image/jpeg',
+          size: 1024,
+          file: mockFile,
+        },
+      });
+    });
+
+    await waitFor(() => {
+      expect(result.current.uploadError).toBeTruthy();
+      expect(mockToast).toHaveBeenCalledWith('Upload Failed', {
+        message: expect.stringContaining('Storage error'),
+        type: 'error',
+      });
+    });
+  });
+
+  it('handles update photo error', async () => {
+    const updateError = new Error('Update failed');
+    mockUpdateMetadataMutation.mockRejectedValue(updateError);
+
+    const { result } = renderHook(() =>
+      usePhotoUpload({ workLogId: 'work-log-1' }),
+    );
+
+    await act(async () => {
+      await expect(
+        result.current.updatePhoto('photo-1', {
+          caption: 'Updated caption',
+        }),
+      ).rejects.toThrow('Update failed');
+    });
+  });
+
+  it('handles delete photo error', async () => {
+    const deleteError = new Error('Delete failed');
+    mockDeleteMutation.mockRejectedValue(deleteError);
+
+    const { result } = renderHook(() =>
+      usePhotoUpload({ workLogId: 'work-log-1' }),
+    );
+
+    await act(async () => {
+      await expect(
+        result.current.deletePhoto('photo-1'),
+      ).rejects.toThrow('Delete failed');
+    });
+  });
+
+  it('does not update photo when workLogId is missing', async () => {
+    const { result } = renderHook(() => usePhotoUpload());
+
+    await act(async () => {
+      await result.current.updatePhoto('photo-1', {
+        caption: 'Updated caption',
+      });
+    });
+
+    expect(mockUpdateMetadataMutation).not.toHaveBeenCalled();
+  });
+
+  it('does not delete photo when workLogId is missing', async () => {
+    const { result } = renderHook(() => usePhotoUpload());
+
+    await act(async () => {
+      await result.current.deletePhoto('photo-1');
+    });
+
+    expect(mockDeleteMutation).not.toHaveBeenCalled();
+  });
+
+  it('handles loading state', () => {
+    const mockQueryLoading = {
+      data: undefined,
+      isLoading: true,
+    };
+
+    vi.mocked(api.api.workLogs.getById.useQuery).mockReturnValue(
+      mockQueryLoading as never,
+    );
+
+    const { result } = renderHook(() =>
+      usePhotoUpload({ workLogId: 'work-log-1' }),
+    );
+
+    expect(result.current.isLoadingPhotos).toBe(true);
   });
 });
 
