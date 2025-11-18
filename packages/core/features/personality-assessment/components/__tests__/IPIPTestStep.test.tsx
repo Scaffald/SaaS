@@ -11,11 +11,13 @@ import { DOMAIN_NAMES, DOMAIN_ORDER, QUESTIONS_PER_DOMAIN } from '@app/core/feat
 import { describe, expect, it, vi } from 'vitest'
 import { IPIPTestStep } from '../IPIPTestStep'
 
-const numberToFacet = (value: number): IPIPFacet => String(value) as IPIPFacet
+const hoistedData = vi.hoisted(() => {
+  const domainOrder: IPIPDomain[] = ['A', 'E', 'N', 'C', 'O']
+  const questionsPerDomain = 24
+  const numberToFacet = (value: number): IPIPFacet => String(value) as IPIPFacet
 
-const createMockQuestions = (): IPIPQuestion[] => {
-  return DOMAIN_ORDER.flatMap((domain) =>
-    Array.from({ length: QUESTIONS_PER_DOMAIN }, (_, index) => ({
+  const mockQuestions: IPIPQuestion[] = domainOrder.flatMap((domain) =>
+    Array.from({ length: questionsPerDomain }, (_, index) => ({
       id: `${domain}-${index}`,
       text: `Question ${domain}-${index}`,
       domain,
@@ -23,36 +25,33 @@ const createMockQuestions = (): IPIPQuestion[] => {
       keyed: index % 2 === 0 ? 'plus' : 'minus',
     })),
   )
-}
 
-const createChoiceSet = (labelPrefix: string, scores: [IPIPChoice['score'], string][]): IPIPChoice[] =>
-  scores.map(([score, text]) => ({
-    score,
-    text: `${labelPrefix} ${text}`,
-    color: score,
-  }))
+  const choiceLabels: Array<[IPIPChoice['score'], string]> = [
+    [1, 'Very Inaccurate'],
+    [2, 'Moderately Inaccurate'],
+    [3, 'Neither Accurate Nor Inaccurate'],
+    [4, 'Moderately Accurate'],
+    [5, 'Very Accurate'],
+  ]
 
-const mockQuestions = createMockQuestions()
-const mockChoices: IPIPChoices = {
-  plus: createChoiceSet('Plus', [
-    [1, 'Choice 1'],
-    [2, 'Choice 2'],
-    [3, 'Choice 3'],
-    [4, 'Choice 4'],
-    [5, 'Choice 5'],
-  ]),
-  minus: createChoiceSet('Minus', [
-    [1, 'Choice 1'],
-    [2, 'Choice 2'],
-    [3, 'Choice 3'],
-    [4, 'Choice 4'],
-    [5, 'Choice 5'],
-  ]),
-}
+  const createChoiceSet = (): IPIPChoice[] =>
+    choiceLabels.map(([score, text]) => ({
+      text,
+      score,
+      color: score,
+    }))
+
+  const mockChoices: IPIPChoices = {
+    plus: createChoiceSet(),
+    minus: createChoiceSet(),
+  }
+
+  return { mockQuestions, mockChoices }
+})
 
 vi.mock('../lib/ipip', () => ({
-  getQuestions: () => mockQuestions,
-  getChoices: () => mockChoices,
+  getQuestions: () => hoistedData.mockQuestions,
+  getChoices: () => hoistedData.mockChoices,
 }))
 
 describe('IPIPTestStep', () => {
@@ -89,8 +88,15 @@ describe('IPIPTestStep', () => {
     )
 
     for (let i = 0; i < QUESTIONS_PER_DOMAIN; i += 1) {
-      const choiceButtons = screen.getAllByRole('button', { name: /Choice 5/i })
+      const choiceButtons = screen.getAllByRole('button', { name: /Very Accurate/i })
       await user.click(choiceButtons[0])
+      if (i < QUESTIONS_PER_DOMAIN - 1) {
+        const expectedIndex = i + 1
+        await waitFor(() => {
+          const lastCall = onSave.mock.calls.at(-1)
+          expect(lastCall?.[1]).toBe(expectedIndex)
+        })
+      }
     }
 
     await waitFor(() => expect(onDomainComplete).toHaveBeenCalledTimes(1))

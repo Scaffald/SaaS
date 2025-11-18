@@ -9,8 +9,51 @@ import {
   commentReadStatusSchema,
 } from "@app/schemas";
 import { protectedProcedure, t } from "../middleware.ts";
+import { insertNotification } from "../../_shared/notifications/utils.ts";
 
 const router = t.router;
+
+/**
+ * Helper function to get user display name
+ */
+async function getUserDisplayName(
+  supabase: any,
+  userId: string,
+): Promise<string> {
+  const { data } = await supabase
+    .schema("core")
+    .from("users")
+    .select("display_name, username")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (!data) {
+    return "User";
+  }
+
+  return data.display_name?.trim() || data.username?.trim() || "User";
+}
+
+/**
+ * Helper function to get organization name from job
+ */
+async function getOrganizationName(
+  supabase: any,
+  jobId: string,
+): Promise<string | null> {
+  const { data: job } = await supabase
+    .schema("core")
+    .from("jobs")
+    .select("organization_id, organizations(name)")
+    .eq("id", jobId)
+    .single();
+
+  if (!job || !job.organizations) {
+    return null;
+  }
+
+  return (job.organizations as { name: string | null })?.name || null;
+}
 
 /**
  * Helper function to check if user has access to an application
@@ -395,6 +438,36 @@ export const inquiriesRouter = router({
         console.error("Failed to update application status:", appUpdateError);
       }
 
+      // Get application and job info for notification
+      const { data: application } = await supabase
+        .schema("core")
+        .from("applications")
+        .select("user_id, job_id, jobs(title, organization_id, organizations(name))")
+        .eq("id", inquiry.application_id)
+        .single();
+
+      if (application && application.user_id) {
+        const job = application.jobs as any;
+        const orgName = job?.organizations?.name || "Organization";
+        const jobTitle = job?.title || "Job";
+
+        // Notify candidate that inquiry has been sent
+        await insertNotification(supabase, {
+          user_id: application.user_id,
+          type: "inquiry.sent",
+          severity: "info",
+          title: `Inquiry from ${orgName}`,
+          message: `${orgName} has sent you an inquiry for ${jobTitle}`,
+          cta_url: `/dashboard/applications/${inquiry.application_id}/inquiry`,
+          metadata: {
+            inquiry_id: inquiry.id,
+            application_id: inquiry.application_id,
+            job_id: application.job_id,
+            organization_id: job?.organization_id,
+          },
+        });
+      }
+
       return { success: true };
     }),
 
@@ -479,6 +552,73 @@ export const inquiriesRouter = router({
             updated_at: new Date().toISOString(),
           })
           .eq("id", input.inquiryId);
+      }
+
+      // Get application info to determine recipient
+      const { data: application } = await supabase
+        .schema("core")
+        .from("applications")
+        .select("user_id, job_id, jobs(organization_id, organizations(name))")
+        .eq("id", inquiry.application_id)
+        .single();
+
+      if (application) {
+        const senderName = await getUserDisplayName(supabase, user.id);
+        const sectionLabels: Record<string, string> = {
+          employment: "Employment",
+          compensation: "Compensation",
+          capabilities: "Capabilities",
+          other: "Other",
+        };
+        const sectionLabel = sectionLabels[input.sectionName] || input.sectionName;
+
+        // Notify the other party
+        if (isApplicant) {
+          // Candidate commented, notify organization members
+          const job = application.jobs as any;
+          if (job?.organization_id) {
+            // Get organization owner
+            const { data: org } = await supabase
+              .schema("core")
+              .from("organizations")
+              .select("owner_user_id")
+              .eq("id", job.organization_id)
+              .single();
+
+            if (org?.owner_user_id) {
+              await insertNotification(supabase, {
+                user_id: org.owner_user_id,
+                type: "inquiry.comment_added",
+                severity: "info",
+                title: `New Comment from ${senderName}`,
+                message: `${senderName} commented on the ${sectionLabel} section`,
+                cta_url: `/office/applications/${inquiry.application_id}/inquiry`,
+                metadata: {
+                  inquiry_id: inquiry.id,
+                  application_id: inquiry.application_id,
+                  section_name: input.sectionName,
+                  comment_id: comment.id,
+                },
+              });
+            }
+          }
+        } else {
+          // Organization commented, notify candidate
+          await insertNotification(supabase, {
+            user_id: application.user_id,
+            type: "inquiry.comment_added",
+            severity: "info",
+            title: `New Comment from ${senderName}`,
+            message: `${senderName} commented on the ${sectionLabel} section`,
+            cta_url: `/dashboard/applications/${inquiry.application_id}/inquiry`,
+            metadata: {
+              inquiry_id: inquiry.id,
+              application_id: inquiry.application_id,
+              section_name: input.sectionName,
+              comment_id: comment.id,
+            },
+          });
+        }
       }
 
       return comment;
@@ -616,6 +756,79 @@ export const inquiriesRouter = router({
           .eq("id", input.inquiryId);
       }
 
+      // Get application and job info for notification
+      const { data: application } = await supabase
+        .schema("core")
+        .from("applications")
+        .select("user_id, job_id, jobs(organization_id, organizations(name))")
+        .eq("id", inquiry.application_id)
+        .single();
+
+      if (application) {
+        const candidateName = await getUserDisplayName(supabase, user.id);
+        const sectionLabels: Record<string, string> = {
+          employment: "Employment",
+          compensation: "Compensation",
+          capabilities: "Capabilities",
+          other: "Other",
+        };
+        const sectionLabel = sectionLabels[input.sectionName] || input.sectionName;
+        const job = application.jobs as any;
+
+        if (allAccepted) {
+          // All sections accepted - notify organization
+          if (job?.organization_id) {
+            const { data: org } = await supabase
+              .schema("core")
+              .from("organizations")
+              .select("owner_user_id")
+              .eq("id", job.organization_id)
+              .single();
+
+            if (org?.owner_user_id) {
+              await insertNotification(supabase, {
+                user_id: org.owner_user_id,
+                type: "inquiry.fully_accepted",
+                severity: "info",
+                title: "All Terms Accepted",
+                message: `${candidateName} has accepted all inquiry terms`,
+                cta_url: `/office/applications/${inquiry.application_id}/inquiry`,
+                metadata: {
+                  inquiry_id: inquiry.id,
+                  application_id: inquiry.application_id,
+                },
+              });
+            }
+          }
+        } else {
+          // Single section accepted - notify organization
+          if (job?.organization_id) {
+            const { data: org } = await supabase
+              .schema("core")
+              .from("organizations")
+              .select("owner_user_id")
+              .eq("id", job.organization_id)
+              .single();
+
+            if (org?.owner_user_id) {
+              await insertNotification(supabase, {
+                user_id: org.owner_user_id,
+                type: "inquiry.section_accepted",
+                severity: "info",
+                title: "Section Accepted",
+                message: `${candidateName} accepted the ${sectionLabel} terms`,
+                cta_url: `/office/applications/${inquiry.application_id}/inquiry`,
+                metadata: {
+                  inquiry_id: inquiry.id,
+                  application_id: inquiry.application_id,
+                  section_name: input.sectionName,
+                },
+              });
+            }
+          }
+        }
+      }
+
       return { success: true, allAccepted: !!allAccepted };
     }),
 
@@ -673,6 +886,45 @@ export const inquiriesRouter = router({
           message: `Failed to submit response: ${responseError.message}`,
           cause: responseError,
         });
+      }
+
+      // Get application and job info for notification
+      const { data: application } = await supabase
+        .schema("core")
+        .from("applications")
+        .select("user_id, job_id, jobs(organization_id, organizations(name))")
+        .eq("id", inquiry.application_id)
+        .single();
+
+      if (application) {
+        const candidateName = await getUserDisplayName(supabase, user.id);
+        const job = application.jobs as any;
+
+        // Notify organization of capability response
+        if (job?.organization_id) {
+          const { data: org } = await supabase
+            .schema("core")
+            .from("organizations")
+            .select("owner_user_id")
+            .eq("id", job.organization_id)
+            .single();
+
+          if (org?.owner_user_id) {
+            await insertNotification(supabase, {
+              user_id: org.owner_user_id,
+              type: "inquiry.capability_answered",
+              severity: "info",
+              title: "Capability Question Answered",
+              message: `${candidateName} answered a capability question`,
+              cta_url: `/office/applications/${inquiry.application_id}/inquiry`,
+              metadata: {
+                inquiry_id: inquiry.id,
+                application_id: inquiry.application_id,
+                capability_name: input.capabilityName,
+              },
+            });
+          }
+        }
       }
 
       return response;
