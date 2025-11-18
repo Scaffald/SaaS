@@ -9,6 +9,7 @@ import {
 } from '@app/core/features/profile/widgets'
 import { ProfileCertificationsRight } from '@app/core/features/profile/profile-certifications-right'
 import { useUser } from '@app/core/utils/useUser'
+import { IdVerificationWidget } from '@app/core/features/id-verification'
 
 /**
  * Profile Index - Own profile view
@@ -34,6 +35,7 @@ export default function ProfileIndexScreen() {
         <QuickLinksSidebar>
           <YStack gap="$4">
             <SkillsWidget userId={user.id} showEdit />
+            <IdVerificationWidget />
             <ProfileCertificationsRight />
             <PreferencesWidget showEdit />
           </YStack>

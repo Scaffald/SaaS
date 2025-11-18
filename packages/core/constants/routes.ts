@@ -131,6 +131,11 @@ const ROUTES_CONFIG = {
     title: "Experience",
     isProtected: true,
   },
+  DASHBOARD_PROFILE_ID_VERIFICATION: {
+    path: "/dashboard/profile/id-verification",
+    title: "ID Verification",
+    isProtected: true,
+  },
   DASHBOARD_PROFILE_BACKGROUND_CHECK: {
     path: "/dashboard/profile/background-check",
     title: "Background Checks",
@@ -637,6 +642,8 @@ export const RouteBuilder = {
     buildRoute(ROUTES.DASHBOARD_PROFILE_BACKGROUND_CHECK_DISPUTE, {
       checkId,
     }),
+  dashboardProfileIdVerification: () =>
+    ROUTES.DASHBOARD_PROFILE_ID_VERIFICATION.path,
 
   // Dashboard routes
   dashboardUser: (userId: string | number) =>
@@ -681,6 +688,7 @@ export const ROUTE_HIERARCHY: readonly RouteHierarchyNode[] = [
           { key: "DASHBOARD_PROFILE_IMPORT_REVIEW" },
           { key: "DASHBOARD_PROFILE_EDUCATION" },
           { key: "DASHBOARD_PROFILE_EXPERIENCE" },
+          { key: "DASHBOARD_PROFILE_ID_VERIFICATION" },
           {
             key: "DASHBOARD_PROFILE_BACKGROUND_CHECK",
             children: [
@@ -849,6 +857,7 @@ export const AUTH_ROUTES = {
 export const DASHBOARD_ROUTES = {
   INDEX: ROUTES.DASHBOARD,
   PROFILE: ROUTES.DASHBOARD_PROFILE,
+  PROFILE_ID_VERIFICATION: ROUTES.DASHBOARD_PROFILE_ID_VERIFICATION,
   PROFILE_BACKGROUND_CHECK: ROUTES.DASHBOARD_PROFILE_BACKGROUND_CHECK,
   PROFILE_BACKGROUND_CHECK_INITIATE:
     ROUTES.DASHBOARD_PROFILE_BACKGROUND_CHECK_INITIATE,
