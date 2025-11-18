@@ -37,8 +37,8 @@ export const STEP_INFO: Record<AssessmentStep, StepInfo> = {
   },
   ipip: {
     id: "ipip",
-    label: "Personality Questions",
-    description: "Answer 120 personality questions",
+    label: "Personality Assessment",
+    description: "Answer 120 personality assessment questions",
     order: 3,
   },
   luscher2: {

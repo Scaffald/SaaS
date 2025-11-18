@@ -258,14 +258,14 @@ const ROUTES_CONFIG = {
     isProtected: true,
   },
   // Dashboard > Assessments > Personality Tests
-  DASHBOARD_ASSESSMENT_LUSCHER_1: {
+  DASHBOARD_ASSESSMENT_LUSCHER: {
     path: "/dashboard/assessments/pulse",
     title: "Weekly Pulse",
     isProtected: true,
   },
   DASHBOARD_ASSESSMENT_IPIP: {
     path: "/dashboard/assessments/ipip",
-    title: "Personality Questions",
+    title: "Personality",
     isProtected: true,
   },
   // Dashboard > Assessments > Career Tests
@@ -277,12 +277,6 @@ const ROUTES_CONFIG = {
   DASHBOARD_ASSESSMENT_OCCUPATION: {
     path: "/dashboard/assessments/occupation",
     title: "Occupation Preferences",
-    isProtected: true,
-  },
-  // Dashboard > Assessment (Legacy - keep for backward compatibility)
-  DASHBOARD_ASSESSMENT_PERSONALITY: {
-    path: "/dashboard/assessment/personality",
-    title: "Personality Assessment",
     isProtected: true,
   },
 
@@ -673,11 +667,10 @@ export const ROUTE_HIERARCHY: readonly RouteHierarchyNode[] = [
       {
         key: "DASHBOARD_ASSESSMENTS",
         children: [
-          { key: "DASHBOARD_ASSESSMENT_LUSCHER_1" },
+          { key: "DASHBOARD_ASSESSMENT_LUSCHER" },
           { key: "DASHBOARD_ASSESSMENT_IPIP" },
           { key: "DASHBOARD_ASSESSMENT_RIASEC" },
           { key: "DASHBOARD_ASSESSMENT_OCCUPATION" },
-          { key: "DASHBOARD_ASSESSMENT_PERSONALITY" },
         ],
       },
       {

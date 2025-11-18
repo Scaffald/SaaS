@@ -12,8 +12,8 @@ export interface SkeletonBoxProps {
 }
 
 const SkeletonBoxBase = styled(View, {
-  backgroundColor: '$color3',
-  borderRadius: '$2',
+  background: '$color3',
+  rounded: '$2',
   overflow: 'hidden',
   opacity: 0.6,
 })
@@ -27,9 +27,19 @@ export const SkeletonBox = ({
 }: SkeletonBoxProps) => {
   return (
     <SkeletonBoxBase
-      width={width}
-      height={height}
-      borderRadius={borderRadius || '$2'}
+      width={typeof width === 'string' ? undefined : width}
+      height={typeof height === 'string' ? undefined : height}
+      style={{
+        ...(typeof width === 'string' ? { width } : {}),
+        ...(typeof height === 'string' ? { height } : {}),
+      }}
+      rounded={
+        typeof borderRadius === 'string' && borderRadius.startsWith('$')
+          ? (borderRadius as `$${string}`)
+          : typeof borderRadius === 'number'
+            ? borderRadius
+            : '$2'
+      }
       opacity={animated ? 0.6 : 0.5}
       aria-busy="true"
       aria-label="Loading content"

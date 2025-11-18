@@ -52,7 +52,7 @@ export function SiteOverlapNotification({
   return (
     <Card p="$4" bg="$yellow2" borderColor="$yellow8" borderWidth={2}>
       <YStack gap="$4">
-        <XStack gap="$3" ai="flex-start">
+        <XStack gap="$3" items="flex-start">
           <AlertTriangle size={24} color="$yellow11" />
           <YStack flex={1} gap="$2">
             <Text fontSize="$5" fontWeight="600" color="$yellow11">
@@ -62,14 +62,14 @@ export function SiteOverlapNotification({
               Site boundaries overlap by {overlapPercent}% (threshold: {threshold}%)
             </Text>
             <XStack gap="$2" flexWrap="wrap">
-              <Card p="$2" bg="$yellow3" borderRadius="$2">
-                <XStack gap="$2" ai="center">
+              <Card p="$2" bg="$yellow3" rounded="$2">
+                <XStack gap="$2" items="center">
                   <MapPin size={14} />
                   <Text fontSize="$2">Site 1: {siteId.slice(0, 8)}...</Text>
                 </XStack>
               </Card>
-              <Card p="$2" bg="$yellow3" borderRadius="$2">
-                <XStack gap="$2" ai="center">
+              <Card p="$2" bg="$yellow3" rounded="$2">
+                <XStack gap="$2" items="center">
                   <MapPin size={14} />
                   <Text fontSize="$2">Site 2: {overlappingSiteId.slice(0, 8)}...</Text>
                 </XStack>
@@ -78,7 +78,7 @@ export function SiteOverlapNotification({
           </YStack>
         </XStack>
 
-        <XStack gap="$2" flexWrap="wrap" jc="flex-end">
+        <XStack gap="$2" flexWrap="wrap" justify="flex-end">
           <Button
             size="$3"
             variant="outlined"

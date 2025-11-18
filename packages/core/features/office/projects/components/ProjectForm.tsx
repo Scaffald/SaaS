@@ -120,7 +120,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
   const isLoading = createMutation.isPending || updateMutation.isPending
 
   return (
-    <YStack gap="$4" p="$4" maxWidth={800} mx="auto">
+    <YStack gap="$4" p="$4" style={{ maxWidth: 800 }} mx="auto">
       <Text fontSize="$8" fontWeight="600">
         {mode === 'create' ? 'Create Project' : 'Edit Project'}
       </Text>
@@ -133,7 +133,6 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
               <Select
                 value={formData.organization_id}
                 onValueChange={(value) => setFormData(prev => ({ ...prev, organization_id: value }))}
-                disabled={mode === 'edit'}
               >
                 <Select.Trigger>
                   <Select.Value placeholder="Select organization" />
@@ -150,7 +149,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
                 </Adapt>
                 <Select.Content zIndex={200000}>
                   <Select.Viewport>
-                    {organizationsData.map((org, index) => (
+                    {organizationsData.map((org: typeof organizationsData[0], index: number) => (
                       <Select.Item key={org.id} value={org.id} index={index}>
                         <Select.ItemText>{org.name}</Select.ItemText>
                         <Select.ItemIndicator marginLeft="auto">
@@ -179,7 +178,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
               value={formData.description}
               onChangeText={(value) => setFormData(prev => ({ ...prev, description: value }))}
               placeholder="Enter project description"
-              minHeight={100}
+              style={{ minHeight: 100 }}
             />
           </YStack>
 
@@ -228,7 +227,6 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
                 value={formData.start_date}
                 onChangeText={(value) => setFormData(prev => ({ ...prev, start_date: value }))}
                 placeholder="YYYY-MM-DD"
-                type="date"
               />
             </YStack>
 
@@ -238,7 +236,6 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
                 value={formData.end_date}
                 onChangeText={(value) => setFormData(prev => ({ ...prev, end_date: value }))}
                 placeholder="YYYY-MM-DD"
-                type="date"
               />
             </YStack>
           </XStack>
@@ -247,7 +244,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
             <YStack gap="$4">
               <Text fontWeight="600">Location Visibility Settings</Text>
               
-              <XStack gap="$2" ai="center">
+              <XStack gap="$2" items="center">
                 <Switch
                   checked={formData.location_visibility_override}
                   onCheckedChange={(checked) => setFormData(prev => ({ ...prev, location_visibility_override: checked }))}
@@ -256,7 +253,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
               </XStack>
 
               {formData.location_visibility_override && (
-                <YStack gap="$2" p="$2" bg="$yellow3" borderRadius="$2">
+                <YStack gap="$2" p="$2" bg="$yellow3" rounded="$2">
                   <Text fontSize="$2" color="$yellow11">
                     ⚠️ This overrides your organization's global setting
                   </Text>
@@ -272,7 +269,6 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
                       setFormData(prev => ({ ...prev, location_visibility: value }))
                     }
                   }}
-                  disabled={!formData.location_visibility_override}
                 >
                   <Select.Trigger>
                     <Select.Value />
@@ -310,7 +306,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
             </YStack>
           </Card>
 
-          <XStack gap="$4" jc="flex-end">
+          <XStack gap="$4" justify="flex-end">
             <Button
               variant="outlined"
               onPress={() => router.back()}

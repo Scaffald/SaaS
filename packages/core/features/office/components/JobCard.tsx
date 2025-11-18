@@ -1,4 +1,4 @@
-import { Card, XStack, YStack, Text } from 'tamagui'
+import { Card, XStack, YStack, Text, type GetThemeValueForKey } from 'tamagui'
 import { Briefcase, MapPin, DollarSign, Building2, Users, Calendar, User } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '@app/supabase/client-types'
@@ -48,12 +48,12 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
   const createdDate = formatDate(job.created_at)
 
   // Get primary team name
-  const primaryTeam = job.teamAssignments?.find((assignment) => assignment.isPrimary)?.team
+  const primaryTeam = job.teamAssignments?.find((assignment: typeof job.teamAssignments[0]) => assignment.isPrimary)?.team
   const teamName = primaryTeam?.name || job.team?.name || null
 
   return (
     <Card
-      elevate={isSelected ? 2 : 1}
+      elevate={isSelected}
       bordered
       bg={isSelected ? '$yellow2' : '$background'}
       borderColor={isSelected ? '$yellow8' : '$borderColor'}
@@ -96,11 +96,11 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
           px="$2"
           py="$1"
           rounded="$3"
-          bg={statusColors.bg}
+          bg={statusColors.bg as GetThemeValueForKey<'backgroundColor'>}
           borderWidth={1}
-          borderColor={statusColors.border}
+          borderColor={statusColors.border as GetThemeValueForKey<'borderColor'>}
         >
-          <Text fontSize="$2" fontWeight="600" color={statusColors.text}>
+          <Text fontSize="$2" fontWeight="600" color={statusColors.text as GetThemeValueForKey<'color'>}>
             {getStatusLabel(job.status)}
           </Text>
         </XStack>

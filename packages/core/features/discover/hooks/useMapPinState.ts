@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
-import type { MapPin } from '@app/ui'
+import type { MapPinType as MapPin } from '@app/ui'
 
 /**
  * Pin visibility state types

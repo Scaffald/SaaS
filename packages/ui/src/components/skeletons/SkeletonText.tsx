@@ -33,8 +33,9 @@ export const SkeletonText = ({
     return width
   }
 
+  const gapValue = typeof gap === 'string' ? (gap.startsWith('$') ? gap : undefined) : gap
   return (
-    <YStack gap={gap} aria-busy="true" aria-label="Loading content">
+    <YStack gap={gapValue as any} aria-busy="true" aria-label="Loading content">
       {Array.from({ length: lines }).map((_, index) => (
         <SkeletonBox
           key={`skeleton-text-line-${index}-${lines}`}

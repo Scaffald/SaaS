@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { YStack, XStack, Text, Button, Input, Card } from 'tamagui'
-import { Trash2, Plus, Edit2 } from '@tamagui/lucide-icons'
+import { Trash2, Plus, Edit3 } from '@tamagui/lucide-icons'
 import type { Coordinate, Boundary } from '@app/schemas'
 
 export interface SiteBoundaryDrawerProps {
@@ -90,7 +90,7 @@ export function SiteBoundaryDrawer({
     <YStack gap="$4">
       <Card p="$4">
         <YStack gap="$4">
-          <XStack jc="space-between" ai="center">
+          <XStack justify="space-between" items="center">
             <Text fontSize="$6" fontWeight="600">
               Site Boundary
             </Text>
@@ -101,7 +101,7 @@ export function SiteBoundaryDrawer({
 
           {/* Map Container - TODO: Integrate Mapbox GL Draw */}
           <Card p="$4" bg="$gray2" minHeight={400} borderRadius="$4">
-            <Text color="$gray10" textAlign="center">
+            <Text color="$gray10" style={{ textAlign: 'center' }}>
               Map display with interactive polygon drawing coming soon.
               {'\n'}
               This will use Mapbox GL Draw for click-to-add-point functionality.
@@ -136,7 +136,7 @@ export function SiteBoundaryDrawer({
               <YStack gap="$2">
                 {coordinates.map((coord, index) => (
                   <Card key={`${coord[0]}-${coord[1]}-${index}`} p="$2" bg="$gray2">
-                    <XStack gap="$2" ai="center" jc="space-between">
+                    <XStack gap="$2" items="center" justify="space-between">
                       <XStack gap="$2" flex={1}>
                         <Text fontSize="$2" color="$gray10">
                           Point {index + 1}:
@@ -177,7 +177,7 @@ export function SiteBoundaryDrawer({
                         <Button
                           size="$2"
                           variant="outlined"
-                          icon={Edit2}
+                          icon={Edit3}
                           onPress={() => setEditingIndex(index)}
                           disabled={editingIndex !== null}
                         />
@@ -198,7 +198,8 @@ export function SiteBoundaryDrawer({
 
           {coordinates.length > 0 && (
             <Button
-              theme="red"
+              bg="$red9"
+              color="$red12"
               onPress={() => {
                 setCoordinates([])
                 onBoundaryChange?.([])

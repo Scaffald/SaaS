@@ -144,8 +144,8 @@ export const generateDashboardDrawerItems = (options?: {
     {
       key: "assessment-pulse",
       titleKey: "navigation.assessmentsPulse",
-      href: ROUTES.DASHBOARD_ASSESSMENT_LUSCHER_1.path,
-      routeKey: "DASHBOARD_ASSESSMENT_LUSCHER_1",
+      href: ROUTES.DASHBOARD_ASSESSMENT_LUSCHER.path,
+      routeKey: "DASHBOARD_ASSESSMENT_LUSCHER",
       isCompleted: options?.assessmentStatus?.luscher1.isCompleted,
       isOnCooldown: options?.assessmentStatus?.luscher1.isOnCooldown,
     },

@@ -77,8 +77,7 @@ export function OrganizationProjectPrivacySettings({
           <Text fontWeight="600">Default Project Location Visibility</Text>
           <Select
             value={selectedVisibility}
-            onValueChange={setSelectedVisibility}
-            disabled={updateMutation.isPending}
+            onValueChange={(value) => setSelectedVisibility(value as ProjectLocationVisibility)}
           >
             <Select.Trigger iconAfter={ChevronDown}>
               <Select.Value />
@@ -135,7 +134,7 @@ export function OrganizationProjectPrivacySettings({
           </YStack>
         </Card>
 
-        <XStack jc="flex-end">
+        <XStack justify="flex-end">
           <Button
             theme="blue"
             onPress={handleSave}

@@ -1238,7 +1238,6 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                   }
                 }}
                 placeholder="YYYY-MM-DDTHH:mm (e.g., 2024-12-25T09:00)"
-                icon={Calendar}
                 disabled={isLoading}
                 keyboardType="default"
               />

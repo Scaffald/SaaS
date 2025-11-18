@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { YStack, XStack, Text, Input, Button, Card, Spinner } from 'tamagui'
 import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
-import { OfficePageLayout } from '@app/core/features/office/components/OfficePageLayout'
 import { supabase } from '@app/core/utils/supabase/client'
 
 export default function GeographicSettingsPage() {
@@ -57,7 +56,7 @@ export default function GeographicSettingsPage() {
     try {
       const { error } = await supabase.schema('core').from('system_config').upsert({
         key: 'site_overlap_threshold_percent',
-        value: numValue,
+        value: numValue.toString(),
         description: 'Percentage threshold for site overlap notifications',
       })
 
@@ -76,18 +75,26 @@ export default function GeographicSettingsPage() {
 
   if (isLoading) {
     return (
-      <OfficePageLayout title="Geographic Settings">
+      <YStack flex={1} p="$4" gap="$4" items="center" justify="center">
+        <Text fontSize="$8" fontWeight="600">
+          Geographic Settings
+        </Text>
         <Spinner />
-      </OfficePageLayout>
+      </YStack>
     )
   }
 
   return (
-    <OfficePageLayout
-      title="Geographic Settings"
-      description="Configure geographic validation settings for site boundaries"
-    >
-      <YStack gap="$4" p="$4" maxWidth={600}>
+    <YStack flex={1} p="$4" gap="$4">
+      <YStack gap="$2">
+        <Text fontSize="$8" fontWeight="600">
+          Geographic Settings
+        </Text>
+        <Text fontSize="$4" color="$gray11">
+          Configure geographic validation settings for site boundaries
+        </Text>
+      </YStack>
+      <YStack gap="$4" style={{ maxWidth: 600 }}>
         <Card p="$4">
           <YStack gap="$4">
             <YStack gap="$2">
@@ -103,7 +110,7 @@ export default function GeographicSettingsPage() {
 
             <YStack gap="$2">
               <Text fontWeight="600">Threshold Percentage</Text>
-              <XStack gap="$2" ai="center">
+              <XStack gap="$2" items="center">
                 <Input
                   value={threshold}
                   onChangeText={setThreshold}
@@ -133,7 +140,7 @@ export default function GeographicSettingsPage() {
               </YStack>
             </Card>
 
-            <XStack jc="flex-end" gap="$2">
+            <XStack justify="flex-end" gap="$2">
               <Button
                 variant="outlined"
                 onPress={() => {
@@ -178,6 +185,6 @@ export default function GeographicSettingsPage() {
           </YStack>
         </Card>
       </YStack>
-    </OfficePageLayout>
+    </YStack>
   )
 }

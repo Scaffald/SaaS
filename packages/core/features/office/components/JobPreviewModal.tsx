@@ -80,7 +80,6 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
       onOpenChange={onOpenChange}
       title="Job Preview"
       size="large"
-      description="This is how the job will appear to candidates"
     >
       {isLoading ? (
         <YStack py="$8" items="center" justify="center">
@@ -96,7 +95,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
           </Text>
         </YStack>
       ) : (
-        <ScrollView maxHeight={600}>
+        <ScrollView style={{ maxHeight: 600 }}>
           <YStack gap="$4" p="$4">
             {/* Job Header */}
             <YStack gap="$3" items="center">

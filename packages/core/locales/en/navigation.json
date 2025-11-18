@@ -14,7 +14,7 @@
   "profileExperience": "Experience",
   "assessments": "Assessments",
   "assessmentsPulse": "Weekly Pulse",
-  "assessmentsPersonality": "Personality Questions",
+  "assessmentsPersonality": "Personality Assessment",
   "assessmentsRiasec": "Career Interests",
   "assessmentsOccupation": "Occupation Preferences",
   "office": "Office",
@@ -30,4 +30,3 @@
   "notifications": "Notifications",
   "styleguide": "Styleguide"
 }
-

@@ -330,7 +330,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
                       <Check size={16} />
                     </Select.ItemIndicator>
                   </Select.Item>
-                  {organizationsData.organizations.map((org, index) => (
+                  {organizationsData.organizations.map((org: typeof organizationsData.organizations[0], index: number) => (
                     <Select.Item key={org.id} value={org.id} index={index + 1}>
                       <Select.ItemText>{org.name}</Select.ItemText>
                       <Select.ItemIndicator>
@@ -491,14 +491,13 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
               <Button
                 size="$3"
                 onPress={() => setViewMode('kanban')}
-                variant={viewMode === 'kanban' ? 'outlined' : undefined}
+                variant="outlined"
               >
                 Kanban
               </Button>
               <Button
                 size="$3"
                 onPress={() => setViewMode('list')}
-                variant={viewMode === 'list' ? 'outlined' : undefined}
               >
                 List
               </Button>
@@ -559,14 +558,13 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
                   <Button
                     size="$2"
                     onPress={() => setViewMode('kanban')}
-                    variant={viewMode === 'kanban' ? 'outlined' : undefined}
+                    variant="outlined"
                   >
                     Kanban
                   </Button>
                   <Button
                     size="$2"
                     onPress={() => setViewMode('list')}
-                    variant={viewMode === 'list' ? 'outlined' : undefined}
                   >
                     List
                   </Button>

@@ -17,7 +17,7 @@ export default defineConfig({
     alias: [
       { find: 'react-native', replacement: 'react-native-web' },
       { find: '@app/core', replacement: resolve(workspaceRoot, 'packages/core') },
-      { find: '@app/ui', replacement: resolve(workspaceRoot, 'packages/ui') },
+      { find: '@app/ui', replacement: resolve(workspaceRoot, 'packages/ui/src') },
       { find: '@app/supabase', replacement: resolve(workspaceRoot, 'packages/supabase') },
       { find: '@app/schemas', replacement: resolve(workspaceRoot, 'packages/schemas/src') },
       {

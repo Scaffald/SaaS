@@ -28,6 +28,14 @@ export interface NotificationItem {
   ctaUrl?: string | null
   ctaLabel?: string | null
   channels: string[]
+  metadata?: {
+    notification_type?: string
+    site_id?: string
+    overlapping_site_id?: string
+    overlap_percent?: number
+    threshold?: number
+    [key: string]: unknown
+  } | null
 }
 
 type ButtonRef = ElementRef<typeof Button>

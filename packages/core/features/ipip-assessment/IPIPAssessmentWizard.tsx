@@ -12,7 +12,7 @@ interface SaveIPIPProgressResult {
 }
 
 /**
- * IPIPAssessmentWizard - Standalone wizard for IPIP Personality Questions
+ * IPIPAssessmentWizard - Standalone wizard for IPIP
  */
 export function IPIPAssessmentWizard() {
   const router = useRouter()

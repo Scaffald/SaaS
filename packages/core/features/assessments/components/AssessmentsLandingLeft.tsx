@@ -19,15 +19,15 @@ const ASSESSMENT_LANDING_CARDS: AssessmentLandingCard[] = [
     description:
       'Capture how you are feeling this week so coaches can tailor guidance and keep a pulse on engagement.',
     ctaLabel: 'Open Weekly Pulse',
-    route: ROUTES.DASHBOARD_ASSESSMENT_LUSCHER_1,
+    route: ROUTES.DASHBOARD_ASSESSMENT_LUSCHER,
     estimatedTime: 'Takes ~2 minutes',
   },
   {
     key: 'ipip',
-    title: 'Personality Questions',
+    title: 'Personality Assessment',
     description:
       'Answer a research-backed personality inventory to help match you with environments where you thrive.',
-    ctaLabel: 'Start Personality Questions',
+    ctaLabel: 'Start Personality Assessment',
     route: ROUTES.DASHBOARD_ASSESSMENT_IPIP,
     estimatedTime: 'Takes ~12 minutes',
   },

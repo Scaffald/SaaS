@@ -55,7 +55,7 @@ export function PersonalityAssessmentWidget() {
   }
 
   const handleStart = () => {
-    router.push(ROUTES.DASHBOARD_ASSESSMENT_PERSONALITY.path)
+    router.push(ROUTES.DASHBOARD_ASSESSMENT_IPIP.path)
   }
 
   return (

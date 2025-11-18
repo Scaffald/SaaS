@@ -11,8 +11,9 @@ export interface SkeletonListProps {
 }
 
 export function SkeletonList({ count = 5, gap = '$3', variant = 'job' }: SkeletonListProps) {
+  const gapValue = typeof gap === 'string' ? (gap.startsWith('$') ? gap : undefined) : gap
   return (
-    <YStack gap={gap} aria-busy="true" aria-label="Loading content list">
+    <YStack gap={gapValue as any} aria-busy="true" aria-label="Loading content list">
       {Array.from({ length: count }).map((_, index) => (
         <SkeletonCard key={`skeleton-list-item-${index}-${count}`} variant={variant} />
       ))}

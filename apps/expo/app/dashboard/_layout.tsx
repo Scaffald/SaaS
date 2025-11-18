@@ -64,7 +64,10 @@ export default function Layout() {
         <Drawer.Screen name="profile/skills/index" options={{ title: 'Skills' }} />
         <Drawer.Screen name="profile/certifications/index" options={{ title: 'Certifications' }} />
         <Drawer.Screen name="assessments/pulse/index" options={{ title: 'Weekly Pulse' }} />
-        <Drawer.Screen name="assessments/ipip/index" options={{ title: 'Personality Questions' }} />
+        <Drawer.Screen
+          name="assessments/ipip/index"
+          options={{ title: 'Personality Assessment' }}
+        />
         <Drawer.Screen name="assessments/riasec/index" options={{ title: 'Career Interests' }} />
         <Drawer.Screen
           name="assessments/occupation/index"

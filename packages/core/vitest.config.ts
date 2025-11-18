@@ -17,6 +17,7 @@ const packageConfig: UserConfig = {
     alias: [
       { find: 'react-native', replacement: 'react-native-web' },
       { find: '@app/core', replacement: resolve(workspaceRoot, 'packages/core') },
+      { find: '@app/ui/components', replacement: resolve(workspaceRoot, 'packages/ui/src/components') },
     ],
   },
 }

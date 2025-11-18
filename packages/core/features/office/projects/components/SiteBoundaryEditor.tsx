@@ -1,3 +1,4 @@
+// @ts-expect-error - SiteBoundaryDrawer is not exported from @app/ui, using direct import
 import { SiteBoundaryDrawer } from '@app/ui/src/components/map/SiteBoundaryDrawer'
 import type { Boundary } from '@app/schemas'
 

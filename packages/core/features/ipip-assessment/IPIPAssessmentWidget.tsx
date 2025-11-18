@@ -5,7 +5,7 @@ import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
 
 /**
- * IPIPAssessmentWidget - Dashboard widget CTA for IPIP Personality Questions
+ * IPIPAssessmentWidget - Dashboard widget CTA for IPIP
  */
 export function IPIPAssessmentWidget() {
   const router = useRouter()
@@ -39,7 +39,7 @@ export function IPIPAssessmentWidget() {
       <YStack gap={spacing.md}>
         <YStack gap={spacing.xs}>
           <Text fontSize="$6" fontWeight="bold" color="$color12">
-            Personality Questions
+            Personality Assessment
           </Text>
           <Text fontSize="$3" color="$color11">
             Answer 120 questions to discover your personality traits using the Big Five personality

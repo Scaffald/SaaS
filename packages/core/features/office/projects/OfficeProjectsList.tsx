@@ -3,11 +3,10 @@ import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { useMemo, useState } from 'react'
 import { useRouter } from 'expo-router'
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
-import { Adapt, Button, Select, Sheet, Text, XStack, YStack } from 'tamagui'
+import { Adapt, Button, Select, Sheet, Text, XStack, YStack, H2 } from 'tamagui'
 import { Check, ChevronDown, Pencil, Eye, EyeOff, ArrowRightCircle, RefreshCw } from '@tamagui/lucide-icons'
 import { DashboardLayout } from '@app/ui'
 import { QuickActionsWidget } from '../components/QuickActionsWidget'
-import { OfficePageLayout } from '../components/OfficePageLayout'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
 
 type Project = {
@@ -83,7 +82,7 @@ const createColumns = (_router: ReturnType<typeof useRouter>) => [
       const hasOverride = info.row.original.location_visibility_override
       
       return (
-        <XStack gap="$2" ai="center">
+        <XStack gap="$2" items="center">
           <Icon size={16} />
           <Text>{label}</Text>
           {hasOverride && (
@@ -123,20 +122,25 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
   return (
     <DashboardLayout
       leftContent={
-        <OfficePageLayout
-          title={showHeader ? 'Projects' : undefined}
-          description={showHeader ? 'Manage construction projects with geographic data' : undefined}
-        >
-          <YStack gap="$4" p="$4">
-        <XStack gap="$4" ai="center" jc="space-between" flexWrap="wrap">
-          <XStack gap="$4" ai="center" flexWrap="wrap">
+        <YStack flex={1} p="$4" gap="$4">
+          {showHeader && (
+            <YStack gap="$2">
+              <H2>Projects</H2>
+              <Text fontSize="$4" color="$gray11">
+                Manage construction projects with geographic data
+              </Text>
+            </YStack>
+          )}
+          <YStack gap="$4">
+        <XStack gap="$4" items="center" justify="space-between" flexWrap="wrap">
+          <XStack gap="$4" items="center" flexWrap="wrap">
             {organizationsData && (
-              <Select
-                value={selectedOrg || ''}
-                onValueChange={setSelectedOrg}
-                size="$3"
-                w={200}
-              >
+              <XStack width={200}>
+                <Select
+                  value={selectedOrg || ''}
+                  onValueChange={setSelectedOrg}
+                  size="$3"
+                >
                 <Select.Trigger>
                   <Select.Value placeholder="All Organizations" />
                 </Select.Trigger>
@@ -158,7 +162,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                         <Check size={16} />
                       </Select.ItemIndicator>
                     </Select.Item>
-                    {organizationsData.map((org) => (
+                    {organizationsData.map((org: typeof organizationsData[0]) => (
                       <Select.Item key={org.id} value={org.id} index={organizationsData.indexOf(org) + 1}>
                         <Select.ItemText>{org.name}</Select.ItemText>
                         <Select.ItemIndicator marginLeft="auto">
@@ -169,14 +173,15 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                   </Select.Viewport>
                 </Select.Content>
               </Select>
+              </XStack>
             )}
 
-            <Select
-              value={statusFilter || ''}
-              onValueChange={setStatusFilter}
-              size="$3"
-              w={150}
-            >
+            <XStack width={150}>
+              <Select
+                value={statusFilter || ''}
+                onValueChange={setStatusFilter}
+                size="$3"
+              >
               <Select.Trigger>
                 <Select.Value placeholder="All Statuses" />
               </Select.Trigger>
@@ -224,12 +229,14 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                   </Select.Item>
                 </Select.Viewport>
               </Select.Content>
-            </Select>
+              </Select>
+            </XStack>
           </XStack>
 
           <Button
-            onPress={() => router.push(ROUTES.OFFICE_CMS_PROJECTS_CREATE)}
-            theme="blue"
+            onPress={() => router.push(ROUTES.OFFICE_CMS_PROJECTS_CREATE.path)}
+            bg="$blue9"
+            color="$blue12"
           >
             Create Project
           </Button>
@@ -241,14 +248,14 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
           <Text>No projects found</Text>
         ) : (
           <YStack gap="$2">
-            {projects.map((project) => (
+            {projects.map((project: typeof projects[0]) => (
               <XStack
                 key={project.id}
                 p="$4"
                 bg="$background"
-                borderRadius="$4"
-                jc="space-between"
-                ai="center"
+                rounded="$4"
+                justify="space-between"
+                items="center"
                 borderWidth={1}
                 borderColor="$borderColor"
               >
@@ -258,7 +265,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                     {project.organization?.name || 'No organization'} • {project.status}
                   </Text>
                 </YStack>
-                <XStack gap="$2" ai="center">
+                <XStack gap="$2" items="center">
                   {getVisibilityIcon(project.location_visibility)({ size: 16 })}
                   <Button
                     size="$2"
@@ -276,14 +283,14 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
             ))}
           </YStack>
         )}
+        </YStack>
       </YStack>
-        </OfficePageLayout>
       }
       rightContent={
         <QuickActionsWidget
           context="list"
           resourceName="Project"
-          onCreate={() => router.push(ROUTES.OFFICE_CMS_PROJECTS_CREATE)}
+          onCreate={() => router.push(ROUTES.OFFICE_CMS_PROJECTS_CREATE.path)}
           onRefresh={() => refetch()}
           isLoading={isLoading}
         />

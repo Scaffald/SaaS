@@ -55,7 +55,7 @@ export function SavingModal({
         {isError ? (
           <>
             <AlertCircle size={48} color="$red9" />
-            <Text fontSize="$4" color="$color12" textAlign="center">
+            <Text fontSize="$4" color="$color12" style={{ textAlign: 'center' }}>
               {errorMessage || 'Failed to save your changes. Please try again.'}
             </Text>
             <XStack gap="$3" pt="$2">
@@ -72,10 +72,10 @@ export function SavingModal({
         ) : (
           <>
             <Spinner size="large" color="$blue9" />
-            <Text fontSize="$4" color="$color12" textAlign="center">
+            <Text fontSize="$4" color="$color12" style={{ textAlign: 'center' }}>
               Saving your changes...
             </Text>
-            <Text fontSize="$3" color="$color11" textAlign="center">
+            <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
               Please wait
             </Text>
           </>

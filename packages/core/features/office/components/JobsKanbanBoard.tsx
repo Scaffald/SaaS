@@ -47,7 +47,7 @@ export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
       setUpdatingJobId(null)
       onJobUpdate?.()
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
       console.error('Failed to update job status:', error)
       setUpdatingJobId(null)
       // TODO: Show error toast
@@ -196,9 +196,9 @@ function StatusColumn({
               rounded="$3"
               items="center"
               justify="center"
-              minHeight={100}
+              style={{ minHeight: 100 }}
             >
-              <Text fontSize="$2" color="$color10" textAlign="center">
+              <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>
                 No jobs
               </Text>
             </YStack>

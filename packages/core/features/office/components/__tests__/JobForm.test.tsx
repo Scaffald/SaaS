@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
@@ -8,15 +8,42 @@ const updateJobMock = vi.hoisted(() => ({ mutate: vi.fn(), mutateAsync: vi.fn(),
 const toastMock = vi.hoisted(() => ({ show: vi.fn() }))
 const routerMock = vi.hoisted(() => ({ back: vi.fn() }))
 const teamsListMock = vi.hoisted(() => ({ useQuery: vi.fn() }))
+const searchSkillsMock = vi.hoisted(() => ({ useMutation: vi.fn() }))
+const primaryIndustryMock = vi.hoisted(() => ({ useQuery: vi.fn() }))
+const searchCertificationsMock = vi.hoisted(() => ({ useQuery: vi.fn() }))
+const getJobMock = vi.hoisted(() => ({ useQuery: vi.fn() }))
+
+// Mock rich-text before other mocks to ensure it's hoisted
+vi.mock('@app/ui/components/rich-text', () => ({
+  RichTextEditor: ({ value, onChange, 'data-testid': dataTestId, placeholder, disabled }: { value?: unknown; onChange?: (content: unknown) => void; 'data-testid'?: string; placeholder?: string; disabled?: boolean }) => (
+    <textarea
+      data-testid={dataTestId}
+      placeholder={placeholder}
+      value={typeof value === 'string' ? value : ''}
+      onChange={(event) => onChange?.(event.target.value)}
+      disabled={disabled}
+    />
+  ),
+  plainTextToTipTap: (text: string) => ({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] }),
+  extractPlainText: (content: unknown) => (typeof content === 'string' ? content : ''),
+}))
 
 vi.mock('@app/core/utils/api', () => ({
   api: {
     office: {
       createJob: { useMutation: createJobMock.useMutation },
       updateJob: { useMutation: updateJobMock.useMutation },
+      searchCertifications: { useQuery: searchCertificationsMock.useQuery },
+      getJob: { useQuery: getJobMock.useQuery },
     },
     teams: {
       list: { useQuery: teamsListMock.useQuery },
+    },
+    profile: {
+      skillsMultiTaxonomy: {
+        searchSkills: { useMutation: searchSkillsMock.useMutation },
+        getPrimaryIndustry: { useQuery: primaryIndustryMock.useQuery },
+      },
     },
   },
 }))
@@ -88,11 +115,17 @@ vi.mock('@app/ui', () => ({
     </div>
   ),
   Spinner: () => <span>spinner</span>,
+  ResponsiveModal: ({ children, open }: { children: ReactNode; open?: boolean; onOpenChange?: (open: boolean) => void }) => (
+    open ? <div data-testid="responsive-modal">{children}</div> : null
+  ),
 }))
 
 vi.mock('@tamagui/lucide-icons', () => ({
   Check: () => <span data-testid="check-icon" />,
   ChevronDown: () => <span data-testid="chevron-icon" />,
+  Eye: () => <span data-testid="eye-icon" />,
+  Calendar: () => <span data-testid="calendar-icon" />,
+  X: () => <span data-testid="x-icon" />,
 }))
 
 const selectChange = { onChange: (_value: string) => {} }
@@ -127,9 +160,21 @@ vi.mock('tamagui', async () => {
   SelectRoot.ItemText = ({ children }: { children: ReactNode }) => <span>{children}</span>
   SelectRoot.ItemIndicator = ({ children }: { children: ReactNode }) => <span>{children}</span>
 
+  const SwitchRoot = ({ checked, onCheckedChange, disabled }: { checked?: boolean; onCheckedChange?: (checked: boolean) => void; disabled?: boolean }) => (
+    <button
+      type="button"
+      data-testid="switch"
+      data-checked={checked}
+      disabled={disabled}
+      onClick={() => onCheckedChange?.(!checked)}
+    />
+  )
+  SwitchRoot.Thumb = () => <span data-testid="switch-thumb" />
+
   return {
     ...actual,
     Select: SelectRoot,
+    Switch: SwitchRoot,
     Adapt: Object.assign(({ children }: { children: ReactNode }) => <>{children}</>, {
       Contents: ({ children }: { children: ReactNode }) => <>{children}</>,
     }),
@@ -202,6 +247,11 @@ describe('JobForm', () => {
   const onSuccess = vi.fn()
 
   beforeEach(() => {
+    // Setup default return values for API mocks
+    searchSkillsMock.useMutation.mockReturnValue({ mutate: vi.fn(), mutateAsync: vi.fn() })
+    primaryIndustryMock.useQuery.mockReturnValue({ data: null })
+    searchCertificationsMock.useQuery.mockReturnValue({ data: [] })
+    getJobMock.useQuery.mockReturnValue({ data: null, isLoading: false })
     process.env.EXPO_PUBLIC_MAPBOX_TOKEN = 'pk.test'
     createJobMock.mutate.mockReset()
     createJobMock.mutateAsync.mockReset()
@@ -608,7 +658,12 @@ describe('JobForm', () => {
     it('calls onSuccess callback after successful submission', async () => {
       const user = userEvent.setup()
       createJobMock.mutate.mockImplementation((_data, options) => {
+        // Call onSuccess immediately to simulate successful mutation
         options?.onSuccess?.()
+      })
+      createJobMock.useMutation.mockReturnValue({ 
+        mutate: createJobMock.mutate, 
+        isPending: false 
       })
 
       render(<JobForm mode="create" onSuccess={onSuccess} />)
@@ -623,14 +678,22 @@ describe('JobForm', () => {
 
       await user.click(screen.getByTestId('job-save-draft-button'))
 
-      expect(onSuccess).toHaveBeenCalled()
+      // Wait for async callback
+      await waitFor(() => {
+        expect(onSuccess).toHaveBeenCalled()
+      })
     })
 
     it('shows error toast on submission failure', async () => {
       const user = userEvent.setup()
       const error = new Error('Submission failed')
       createJobMock.mutate.mockImplementation((_data, options) => {
+        // Call onError immediately to simulate failed mutation
         options?.onError?.(error)
+      })
+      createJobMock.useMutation.mockReturnValue({ 
+        mutate: createJobMock.mutate, 
+        isPending: false 
       })
 
       render(<JobForm mode="create" onSuccess={onSuccess} />)
@@ -645,7 +708,10 @@ describe('JobForm', () => {
 
       await user.click(screen.getByTestId('job-save-draft-button'))
 
-      expect(toastMock.show).toHaveBeenCalledWith('Error: Submission failed', { variant: 'error' })
+      // Wait for async callback
+      await waitFor(() => {
+        expect(toastMock.show).toHaveBeenCalledWith('Error: Submission failed', { variant: 'error' })
+      })
     })
   })
 

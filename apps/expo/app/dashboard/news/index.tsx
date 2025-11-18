@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { Platform } from 'react-native'
 import { YStack, Text, ScrollView, Spinner, Paragraph, XStack } from 'tamagui'
 import { useRouter } from 'expo-router'
@@ -9,6 +9,7 @@ import { NewsCard, UIButton as StyledButton, spacing } from '@app/ui'
 import { useAggregatedNews } from '@app/core/features/news/hooks/useNewsFeed'
 import { getDefaultFeeds, findFeedById } from '@app/core/features/news/config/news-feeds'
 import { redirect } from '@app/core/utils/redirect'
+import { supabase } from '@app/core/utils/supabase/client'
 import type { NewsItem } from '@app/core/features/news'
 
 const FULL_PAGE_ITEM_COUNT = 40
@@ -28,15 +29,25 @@ const formatTimeAgo = (date: Date) => {
 
 export default function NewsPage() {
   const router = useRouter()
+  const [industryId, setIndustryId] = useState<string>('')
 
-  const defaultFeedIds = useMemo(() => getDefaultFeeds(DEFAULT_INDUSTRY), [])
-  const selectedFeedUrls = useMemo(
-    () =>
-      defaultFeedIds
-        .map((feedId) => findFeedById(DEFAULT_INDUSTRY, feedId)?.url)
-        .filter((url): url is string => Boolean(url)),
-    [defaultFeedIds]
-  )
+  // Get industry ID from slug
+  useEffect(() => {
+    async function resolveIndustryId() {
+      const { data: industryData } = await supabase
+        .schema('core')
+        .from('industries')
+        .select('id')
+        .eq('slug', DEFAULT_INDUSTRY)
+        .single()
+
+      if (industryData?.id) {
+        setIndustryId(industryData.id)
+      }
+    }
+
+    void resolveIndustryId()
+  }, [])
 
   const {
     data: newsItems = [],
@@ -44,7 +55,10 @@ export default function NewsPage() {
     isError,
     error,
     refetch,
-  } = useAggregatedNews(selectedFeedUrls, FULL_PAGE_ITEM_COUNT)
+  } = useAggregatedNews({
+    industryId,
+    maxTotalItems: FULL_PAGE_ITEM_COUNT,
+  })
 
   const handleOpenArticle = async (article: NewsItem) => {
     try {
@@ -135,7 +149,7 @@ export default function NewsPage() {
         ) : null}
 
         <YStack gap="$4">
-          {newsItems.map((item) => (
+          {newsItems.map((item: NewsItem) => (
             <NewsCard
               key={item.id}
               title={item.title}

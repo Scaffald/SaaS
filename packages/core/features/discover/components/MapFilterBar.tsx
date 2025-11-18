@@ -89,7 +89,7 @@ export const MapFilterBar = ({
 
   return (
     <XStack
-      w="100%"
+      width="100%"
       px="$4"
       py="$3"
       gap="$3"
@@ -105,8 +105,8 @@ export const MapFilterBar = ({
       {/* Search Input */}
       <XStack
         flex={1}
-        minWidth={isSmallScreen ? '100%' : 200}
-        $sm={{ minWidth: '100%', maxWidth: '100%' }}
+        style={{ minWidth: isSmallScreen ? '100%' : 200 }}
+        $sm={{ minW: '100%', maxW: '100%' }}
       >
         {tokenValidation.valid ? (
           <AddressAutocomplete
@@ -132,7 +132,7 @@ export const MapFilterBar = ({
           />
         ) : (
           <YStack
-            w="100%"
+            width="100%"
             bg="$background"
             p="$3"
             rounded="$4"
@@ -171,7 +171,7 @@ export const MapFilterBar = ({
         hoverStyle={{ bg: '$backgroundHover' }}
         pressStyle={{ bg: '$backgroundPress' }}
         icon={resultsCount > 0 ? undefined : List}
-        $sm={{ minWidth: '100%' }}
+        $sm={{ minW: '100%' }}
       >
         {resultsCount > 0 ? (
           <Text fontSize="$4" fontWeight="600">
@@ -193,7 +193,7 @@ export const MapFilterBar = ({
         hoverStyle={{ bg: '$backgroundHover' }}
         pressStyle={{ bg: '$backgroundPress' }}
         aria-label="Reset filters and search"
-        $sm={{ minWidth: '100%' }}
+        $sm={{ minW: '100%' }}
       />
     </XStack>
   )

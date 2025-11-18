@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createServiceRoleClient } from '../../../../../../tests/infrastructure/vitest/helpers/database'
+import { createServiceRoleClient } from '../../../../../tests/infrastructure/vitest/helpers/database'
 
 describe('Office Role Access', () => {
   describe('Database: @unicorn.love emails have office role', () => {
@@ -42,7 +42,7 @@ describe('Office Role Access', () => {
         expect(roleAssignments?.length).toBeGreaterThan(0)
 
         const hasOfficeRole = roleAssignments?.some(
-          (assignment) =>
+          (assignment: typeof roleAssignments[0]) =>
             assignment.role?.name === 'office' &&
             assignment.role?.scope === 'platform',
         )

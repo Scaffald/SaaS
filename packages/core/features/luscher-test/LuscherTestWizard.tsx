@@ -4,7 +4,7 @@ import { AssessmentWizard, AssessmentProgress } from '@app/core/features/assessm
 import { LuscherTestStep } from '@app/core/features/personality-assessment/components/LuscherTestStep'
 import { IntroductionStep, CooldownStep, ResultsStep, ResultsSidebar } from './components'
 import { api } from '@app/core/utils/api'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import { DashboardLayout } from '@app/ui'
 import { Text, YStack } from 'tamagui'
 
 type TestStep = 'intro' | 'luscher1' | 'cooldown' | 'luscher2' | 'results'
@@ -285,7 +285,7 @@ export function LuscherTestWizard() {
   return (
     <DashboardLayout
       leftContent={wizardContent}
-      rightContent={<QuickLinksSidebar>{railContent}</QuickLinksSidebar>}
+      rightContent={railContent}
     />
   )
 }

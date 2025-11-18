@@ -1,7 +1,6 @@
 import { useLocalSearchParams } from 'expo-router'
 import { YStack, XStack, Text, Button, Card, Spinner } from 'tamagui'
 import { api } from '@app/core/utils/api'
-import { OfficePageLayout } from '@app/core/features/office/components/OfficePageLayout'
 import { RouteBuilder } from '@app/core/constants/routes'
 import { Eye, EyeOff, Plus, CheckCircle, Clock, XCircle } from '@tamagui/lucide-icons'
 
@@ -12,25 +11,34 @@ export default function ProjectDetailPage() {
 
   if (!id) {
     return (
-      <OfficePageLayout title="Project Not Found">
+      <YStack flex={1} p="$4" gap="$4">
+        <Text fontSize="$8" fontWeight="600">
+          Project Not Found
+        </Text>
         <Text>Project ID is required</Text>
-      </OfficePageLayout>
+      </YStack>
     )
   }
 
   if (isLoading) {
     return (
-      <OfficePageLayout title="Loading Project...">
+      <YStack flex={1} p="$4" gap="$4" items="center" justify="center">
+        <Text fontSize="$8" fontWeight="600">
+          Loading Project...
+        </Text>
         <Spinner />
-      </OfficePageLayout>
+      </YStack>
     )
   }
 
   if (!data?.project) {
     return (
-      <OfficePageLayout title="Project Not Found">
+      <YStack flex={1} p="$4" gap="$4">
+        <Text fontSize="$8" fontWeight="600">
+          Project Not Found
+        </Text>
         <Text>Project not found</Text>
-      </OfficePageLayout>
+      </YStack>
     )
   }
 
@@ -91,12 +99,22 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <OfficePageLayout title={project.name} description={project.description || undefined}>
-      <YStack gap="$4" p="$4">
+    <YStack flex={1} p="$4" gap="$4">
+      <YStack gap="$2">
+        <Text fontSize="$8" fontWeight="600">
+          {project.name}
+        </Text>
+        {project.description && (
+          <Text fontSize="$4" color="$gray11">
+            {project.description}
+          </Text>
+        )}
+      </YStack>
+      <YStack gap="$4">
         {/* Project Info */}
         <Card p="$4">
           <YStack gap="$4">
-            <XStack jc="space-between" ai="center">
+            <XStack justify="space-between" items="center">
               <Text fontSize="$8" fontWeight="600">
                 {project.name}
               </Text>
@@ -144,7 +162,7 @@ export default function ProjectDetailPage() {
                 <Text fontSize="$2" color="$gray10">
                   Location Visibility
                 </Text>
-                <XStack gap="$2" ai="center">
+                <XStack gap="$2" items="center">
                   {getVisibilityIcon(project.location_visibility)({ size: 16 })}
                   <Text fontWeight="600">{getVisibilityLabel(project.location_visibility)}</Text>
                   {project.location_visibility_override && (
@@ -161,7 +179,7 @@ export default function ProjectDetailPage() {
         {/* Location Section */}
         <Card p="$4">
           <YStack gap="$4">
-            <XStack jc="space-between" ai="center">
+            <XStack justify="space-between" items="center">
               <Text fontSize="$6" fontWeight="600">
                 Location
               </Text>
@@ -177,7 +195,7 @@ export default function ProjectDetailPage() {
                 {sites.length > 0 && (
                   <YStack gap="$2">
                     <Text fontWeight="600">Site Boundaries</Text>
-                    {sites.map((ps) => (
+                    {sites.map((ps: (typeof sites)[0]) => (
                       <Card key={ps.id} p="$2" bg="$gray2">
                         <Text>
                           {ps.site?.site_identifier || `Site ${ps.site?.id?.slice(0, 8)}`}
@@ -195,7 +213,7 @@ export default function ProjectDetailPage() {
                 {addresses.length > 0 && (
                   <YStack gap="$2">
                     <Text fontWeight="600">Property Addresses</Text>
-                    {addresses.map((pa) => (
+                    {addresses.map((pa: (typeof addresses)[0]) => (
                       <Card key={pa.id} p="$2" bg="$gray2">
                         <Text>
                           {pa.address?.address?.street || ''}
@@ -225,7 +243,7 @@ export default function ProjectDetailPage() {
         {/* Workers Section */}
         <Card p="$4">
           <YStack gap="$4">
-            <XStack jc="space-between" ai="center">
+            <XStack justify="space-between" items="center">
               <Text fontSize="$6" fontWeight="600">
                 Workers
               </Text>
@@ -238,15 +256,15 @@ export default function ProjectDetailPage() {
               <Text color="$gray10">No workers assigned yet</Text>
             ) : (
               <YStack gap="$2">
-                {workers.map((worker) => {
+                {workers.map((worker: (typeof workers)[0]) => {
                   const StatusIcon = getWorkerStatusIcon(worker.status)
                   const statusColor = getWorkerStatusColor(worker.status)
 
                   return (
                     <Card key={worker.id} p="$3" bg="$gray2">
-                      <XStack jc="space-between" ai="center">
+                      <XStack justify="space-between" items="center">
                         <YStack gap="$1" flex={1}>
-                          <XStack gap="$2" ai="center">
+                          <XStack gap="$2" items="center">
                             <StatusIcon size={16} color={statusColor} />
                             <Text fontWeight="600">Worker {worker.user_id?.slice(0, 8)}</Text>
                           </XStack>
@@ -275,7 +293,8 @@ export default function ProjectDetailPage() {
                           <XStack gap="$2">
                             <Button
                               size="$2"
-                              theme="green"
+                              bg="$green9"
+                              color="$green12"
                               onPress={async () => {
                                 // TODO: Implement approve
                                 console.log('Approve worker', worker.id)
@@ -285,7 +304,8 @@ export default function ProjectDetailPage() {
                             </Button>
                             <Button
                               size="$2"
-                              theme="red"
+                              bg="$red9"
+                              color="$red12"
                               onPress={async () => {
                                 // TODO: Implement reject
                                 console.log('Reject worker', worker.id)
@@ -315,6 +335,6 @@ export default function ProjectDetailPage() {
           </YStack>
         </Card>
       </YStack>
-    </OfficePageLayout>
+    </YStack>
   )
 }

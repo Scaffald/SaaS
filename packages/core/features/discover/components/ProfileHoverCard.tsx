@@ -91,8 +91,8 @@ export function ProfileHoverCard({
       p="$3"
       minW={240}
       maxW={300}
-      zIndex={1000}
       style={{
+        zIndex: 1000,
         transform: 'translate(-50%, calc(-100% - 4px))',
         top: position?.y ?? 0,
         left: position?.x ?? 0,
@@ -174,7 +174,7 @@ export function ProfileHoverCard({
           {/* Top Skills */}
           {workerPreview.topSkills && workerPreview.topSkills.length > 0 && (
             <XStack gap="$1" flexWrap="wrap">
-              {workerPreview.topSkills.slice(0, 3).map((skill) => {
+              {workerPreview.topSkills.slice(0, 3).map((skill: typeof workerPreview.topSkills[0]) => {
                 const skillKey =
                   skill.csiSkillId ||
                   skill.onetOccupationId ||
