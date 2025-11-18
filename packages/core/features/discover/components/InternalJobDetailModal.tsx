@@ -36,7 +36,7 @@ import {
 import { Chip } from '@app/ui'
 import type { InternalJob } from './InternalJobCard'
 import { api } from '@app/core/utils/api'
-import { ApplicationWizard } from '@app/core/features/applications/components'
+import { ApplicationWizard, QuickApplyModal } from '@app/core/features/applications/components'
 
 interface InternalJobDetailModalProps {
   job: InternalJob | null
@@ -158,6 +158,7 @@ export function InternalJobDetailModal({
   })
   const [showApplicationForm, setShowApplicationForm] = useState(false)
   const [showApplicationWizard, setShowApplicationWizard] = useState(false)
+  const [showQuickApplyModal, setShowQuickApplyModal] = useState(false)
   const [applicationSuccess, setApplicationSuccess] = useState(false)
 
   const applyMutation = api.jobs.createApplication.useMutation({
@@ -197,15 +198,27 @@ export function InternalJobDetailModal({
     job.require_work_authorization ||
     job.require_earliest_start_date
 
+  // Extract required and optional skills from job
+  // Note: InternalJob type doesn't include is_required, so we'll show all skills as required for now
+  // This will be enhanced in Task 12 with proper flow selection
+  const requiredSkills = (job.skills || [])
+    .map((skill) => skill.name || skill.id)
+    .filter((name): name is string => Boolean(name))
+  const optionalSkills: string[] = [] // Will be populated when job_skills includes is_required
+
+  // Determine which application flow to use
+  // For now, use QuickApplyModal for simple jobs (flow selection logic will be added in Task 12)
+  // TODO: Add flow selection logic in Task 12 based on custom_application_questions and required_attachments
+  const useQuickApply = true // Temporary - will be replaced with actual flow selection logic
+
   const handleApply = () => {
     if (hasApplied) return
 
-    // For now, just submit with cover letter
-    // In the future, we'll include screening responses
-    applyMutation.mutate({
-      job_id: job.id,
-      cover_letter: formData.cover_letter || undefined,
-    })
+    if (useQuickApply) {
+      setShowQuickApplyModal(true)
+    } else {
+      setShowApplicationWizard(true)
+    }
   }
 
   const handleClose = () => {
@@ -764,6 +777,25 @@ export function InternalJobDetailModal({
           </ScrollView>
         </Dialog.Content>
       </Dialog.Portal>
+
+      {/* Quick Apply Modal */}
+      {job && (
+        <QuickApplyModal
+          jobId={job.id}
+          jobTitle={job.title}
+          organizationName={job.organization?.name || 'Unknown Organization'}
+          open={showQuickApplyModal}
+          onOpenChange={setShowQuickApplyModal}
+          onSuccess={(applicationId) => {
+            console.log('Quick application submitted successfully:', applicationId)
+            setShowQuickApplyModal(false)
+            setApplicationSuccess(true)
+            onApplySuccess?.()
+          }}
+          requiredSkills={requiredSkills}
+          optionalSkills={optionalSkills}
+        />
+      )}
     </Dialog>
   )
 }
