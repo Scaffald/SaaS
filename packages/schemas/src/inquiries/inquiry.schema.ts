@@ -70,85 +70,88 @@ const dateStringSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
 /**
  * Inquiry create schema - for creating new inquiries
  */
-export const inquiryCreateSchema = z.object({
-  applicationId: z.string().uuid('Invalid application ID'),
+export const inquiryCreateSchema = z
+  .object({
+    applicationId: z.string().uuid('Invalid application ID'),
 
-  // Employment terms
-  employmentType: employmentTypeSchema.optional(),
-  employmentTypeNegotiable: z.boolean().default(true),
-  workSchedule: workScheduleSchema.optional(),
-  workScheduleNegotiable: z.boolean().default(true),
-  scheduleShifts: z.boolean().default(false),
-  workingHoursStart: timeStringSchema.optional(),
-  workingHoursEnd: timeStringSchema.optional(),
-  workingHoursTimezone: z.string().optional(),
-  workingHoursNegotiable: z.boolean().default(true),
-  workdays: z.array(workdaySchema).default([]),
-  workdaysNegotiable: z.boolean().default(true),
-  employmentStartDate: dateStringSchema,
-  employmentEndDate: dateStringSchema.optional(),
-  employmentDatesNegotiable: z.boolean().default(true),
+    // Employment terms
+    employmentType: employmentTypeSchema.optional(),
+    employmentTypeNegotiable: z.boolean().default(true),
+    workSchedule: workScheduleSchema.optional(),
+    workScheduleNegotiable: z.boolean().default(true),
+    scheduleShifts: z.boolean().default(false),
+    workingHoursStart: timeStringSchema.optional(),
+    workingHoursEnd: timeStringSchema.optional(),
+    workingHoursTimezone: z.string().optional(),
+    workingHoursNegotiable: z.boolean().default(true),
+    workdays: z.array(workdaySchema).default([]),
+    workdaysNegotiable: z.boolean().default(true),
+    employmentStartDate: dateStringSchema,
+    employmentEndDate: dateStringSchema.optional(),
+    employmentDatesNegotiable: z.boolean().default(true),
 
-  // Compensation
-  rateType: rateTypeSchema,
-  rateMinCents: z.number().int().positive('Rate minimum must be positive'),
-  rateMaxCents: z
-    .number()
-    .int()
-    .positive('Rate maximum must be positive')
-    .optional(),
-  rateNegotiable: z.boolean().default(true),
+    // Compensation
+    rateType: rateTypeSchema,
+    rateMinCents: z.number().int().positive('Rate minimum must be positive'),
+    rateMaxCents: z.number().int().positive('Rate maximum must be positive').optional(),
+    rateNegotiable: z.boolean().default(true),
 
-  // Capabilities
-  enduranceRequired: z.boolean().default(false),
+    // Capabilities
+    enduranceRequired: z.boolean().default(false),
 
-  // Other
-  willingToTravel: z.boolean().optional(),
-  travelDistanceMiles: z.number().int().positive().optional(),
-  willingToWorkOvertime: z.boolean().optional(),
-  hasDriversLicense: z.boolean().optional(),
-  additionalNotes: z.string().max(2000, 'Additional notes must be 2000 characters or less').optional(),
-}).refine(
-  (data) => {
-    // If rateMaxCents is provided, it must be >= rateMinCents
-    if (data.rateMaxCents !== undefined) {
-      return data.rateMaxCents >= data.rateMinCents
+    // Other
+    willingToTravel: z.boolean().optional(),
+    travelDistanceMiles: z.number().int().positive().optional(),
+    willingToWorkOvertime: z.boolean().optional(),
+    hasDriversLicense: z.boolean().optional(),
+    additionalNotes: z
+      .string()
+      .max(2000, 'Additional notes must be 2000 characters or less')
+      .optional(),
+  })
+  .refine(
+    (data) => {
+      // If rateMaxCents is provided, it must be >= rateMinCents
+      if (data.rateMaxCents !== undefined) {
+        return data.rateMaxCents >= data.rateMinCents
+      }
+      return true
+    },
+    {
+      message: 'Rate maximum must be greater than or equal to rate minimum',
+      path: ['rateMaxCents'],
     }
-    return true
-  },
-  {
-    message: 'Rate maximum must be greater than or equal to rate minimum',
-    path: ['rateMaxCents'],
-  }
-).refine(
-  (data) => {
-    // If both start and end times are provided, end must be after start
-    if (data.workingHoursStart && data.workingHoursEnd) {
-      const [startHour, startMin] = data.workingHoursStart.split(':').map(Number)
-      const [endHour, endMin] = data.workingHoursEnd.split(':').map(Number)
-      const startMinutes = startHour * 60 + startMin
-      const endMinutes = endHour * 60 + endMin
-      return endMinutes > startMinutes
+  )
+  .refine(
+    (data) => {
+      // If both start and end times are provided, end must be after start
+      if (data.workingHoursStart && data.workingHoursEnd) {
+        const [startHour, startMin] = data.workingHoursStart.split(':').map(Number)
+        const [endHour, endMin] = data.workingHoursEnd.split(':').map(Number)
+        const startMinutes = startHour * 60 + startMin
+        const endMinutes = endHour * 60 + endMin
+        return endMinutes > startMinutes
+      }
+      return true
+    },
+    {
+      message: 'End time must be after start time',
+      path: ['workingHoursEnd'],
     }
-    return true
-  },
-  {
-    message: 'End time must be after start time',
-    path: ['workingHoursEnd'],
-  }
-).refine(
-  (data) => {
-    // If end date is provided, it must be after start date
-    if (data.employmentEndDate && data.employmentStartDate) {
-      return data.employmentEndDate >= data.employmentStartDate
+  )
+  .refine(
+    (data) => {
+      // If end date is provided, it must be after start date
+      if (data.employmentEndDate && data.employmentStartDate) {
+        return data.employmentEndDate >= data.employmentStartDate
+      }
+      return true
+    },
+    {
+      message: 'End date must be on or after start date',
+      path: ['employmentEndDate'],
     }
-    return true
-  },
-  {
-    message: 'End date must be on or after start date',
-    path: ['employmentEndDate'],
-  }
-)
+  )
 
 export type InquiryCreateInput = z.infer<typeof inquiryCreateSchema>
 
@@ -156,81 +159,85 @@ export type InquiryCreateInput = z.infer<typeof inquiryCreateSchema>
  * Inquiry update schema - for editing existing inquiries
  * All fields are optional except id
  */
-export const inquiryUpdateSchema = z.object({
-  id: z.string().uuid('Invalid inquiry ID'),
+export const inquiryUpdateSchema = z
+  .object({
+    id: z.string().uuid('Invalid inquiry ID'),
 
-  // Employment terms (all optional)
-  employmentType: employmentTypeSchema.optional(),
-  employmentTypeNegotiable: z.boolean().optional(),
-  workSchedule: workScheduleSchema.optional(),
-  workScheduleNegotiable: z.boolean().optional(),
-  scheduleShifts: z.boolean().optional(),
-  workingHoursStart: timeStringSchema.optional(),
-  workingHoursEnd: timeStringSchema.optional(),
-  workingHoursTimezone: z.string().optional(),
-  workingHoursNegotiable: z.boolean().optional(),
-  workdays: z.array(workdaySchema).optional(),
-  workdaysNegotiable: z.boolean().optional(),
-  employmentStartDate: dateStringSchema.optional(),
-  employmentEndDate: dateStringSchema.optional(),
-  employmentDatesNegotiable: z.boolean().optional(),
+    // Employment terms (all optional)
+    employmentType: employmentTypeSchema.optional(),
+    employmentTypeNegotiable: z.boolean().optional(),
+    workSchedule: workScheduleSchema.optional(),
+    workScheduleNegotiable: z.boolean().optional(),
+    scheduleShifts: z.boolean().optional(),
+    workingHoursStart: timeStringSchema.optional(),
+    workingHoursEnd: timeStringSchema.optional(),
+    workingHoursTimezone: z.string().optional(),
+    workingHoursNegotiable: z.boolean().optional(),
+    workdays: z.array(workdaySchema).optional(),
+    workdaysNegotiable: z.boolean().optional(),
+    employmentStartDate: dateStringSchema.optional(),
+    employmentEndDate: dateStringSchema.optional(),
+    employmentDatesNegotiable: z.boolean().optional(),
 
-  // Compensation (all optional)
-  rateType: rateTypeSchema.optional(),
-  rateMinCents: z.number().int().positive().optional(),
-  rateMaxCents: z.number().int().positive().optional(),
-  rateNegotiable: z.boolean().optional(),
+    // Compensation (all optional)
+    rateType: rateTypeSchema.optional(),
+    rateMinCents: z.number().int().positive().optional(),
+    rateMaxCents: z.number().int().positive().optional(),
+    rateNegotiable: z.boolean().optional(),
 
-  // Capabilities (all optional)
-  enduranceRequired: z.boolean().optional(),
+    // Capabilities (all optional)
+    enduranceRequired: z.boolean().optional(),
 
-  // Other (all optional)
-  willingToTravel: z.boolean().optional(),
-  travelDistanceMiles: z.number().int().positive().optional(),
-  willingToWorkOvertime: z.boolean().optional(),
-  hasDriversLicense: z.boolean().optional(),
-  additionalNotes: z.string().max(2000).optional(),
-}).refine(
-  (data) => {
-    // If rateMaxCents is provided, rateMinCents must also be provided and rateMaxCents >= rateMinCents
-    if (data.rateMaxCents !== undefined && data.rateMinCents !== undefined) {
-      return data.rateMaxCents >= data.rateMinCents
+    // Other (all optional)
+    willingToTravel: z.boolean().optional(),
+    travelDistanceMiles: z.number().int().positive().optional(),
+    willingToWorkOvertime: z.boolean().optional(),
+    hasDriversLicense: z.boolean().optional(),
+    additionalNotes: z.string().max(2000).optional(),
+  })
+  .refine(
+    (data) => {
+      // If rateMaxCents is provided, rateMinCents must also be provided and rateMaxCents >= rateMinCents
+      if (data.rateMaxCents !== undefined && data.rateMinCents !== undefined) {
+        return data.rateMaxCents >= data.rateMinCents
+      }
+      return true
+    },
+    {
+      message: 'Rate maximum must be greater than or equal to rate minimum',
+      path: ['rateMaxCents'],
     }
-    return true
-  },
-  {
-    message: 'Rate maximum must be greater than or equal to rate minimum',
-    path: ['rateMaxCents'],
-  }
-).refine(
-  (data) => {
-    // If both start and end times are provided, end must be after start
-    if (data.workingHoursStart && data.workingHoursEnd) {
-      const [startHour, startMin] = data.workingHoursStart.split(':').map(Number)
-      const [endHour, endMin] = data.workingHoursEnd.split(':').map(Number)
-      const startMinutes = startHour * 60 + startMin
-      const endMinutes = endHour * 60 + endMin
-      return endMinutes > startMinutes
+  )
+  .refine(
+    (data) => {
+      // If both start and end times are provided, end must be after start
+      if (data.workingHoursStart && data.workingHoursEnd) {
+        const [startHour, startMin] = data.workingHoursStart.split(':').map(Number)
+        const [endHour, endMin] = data.workingHoursEnd.split(':').map(Number)
+        const startMinutes = startHour * 60 + startMin
+        const endMinutes = endHour * 60 + endMin
+        return endMinutes > startMinutes
+      }
+      return true
+    },
+    {
+      message: 'End time must be after start time',
+      path: ['workingHoursEnd'],
     }
-    return true
-  },
-  {
-    message: 'End time must be after start time',
-    path: ['workingHoursEnd'],
-  }
-).refine(
-  (data) => {
-    // If end date is provided, start date must also be provided and end >= start
-    if (data.employmentEndDate && data.employmentStartDate) {
-      return data.employmentEndDate >= data.employmentStartDate
+  )
+  .refine(
+    (data) => {
+      // If end date is provided, start date must also be provided and end >= start
+      if (data.employmentEndDate && data.employmentStartDate) {
+        return data.employmentEndDate >= data.employmentStartDate
+      }
+      return true
+    },
+    {
+      message: 'End date must be on or after start date',
+      path: ['employmentEndDate'],
     }
-    return true
-  },
-  {
-    message: 'End date must be on or after start date',
-    path: ['employmentEndDate'],
-  }
-)
+  )
 
 export type InquiryUpdateInput = z.infer<typeof inquiryUpdateSchema>
 
@@ -251,23 +258,22 @@ export type InquiryCommentInput = z.infer<typeof inquiryCommentSchema>
 /**
  * Capability response schema - for answering capability questions
  */
-export const capabilityResponseSchema = z.object({
-  inquiryId: z.string().uuid('Invalid inquiry ID'),
-  capabilityName: z.string().min(1, 'Capability name is required'),
-  responseValue: z.boolean().optional(),
-  responseText: z
-    .string()
-    .max(500, 'Response text must be 500 characters or less')
-    .optional(),
-}).refine(
-  (data) => {
-    // Either responseValue or responseText must be provided
-    return data.responseValue !== undefined || data.responseText !== undefined
-  },
-  {
-    message: 'Either response value or response text must be provided',
-  }
-)
+export const capabilityResponseSchema = z
+  .object({
+    inquiryId: z.string().uuid('Invalid inquiry ID'),
+    capabilityName: z.string().min(1, 'Capability name is required'),
+    responseValue: z.boolean().optional(),
+    responseText: z.string().max(500, 'Response text must be 500 characters or less').optional(),
+  })
+  .refine(
+    (data) => {
+      // Either responseValue or responseText must be provided
+      return data.responseValue !== undefined || data.responseText !== undefined
+    },
+    {
+      message: 'Either response value or response text must be provided',
+    }
+  )
 
 export type CapabilityResponseInput = z.infer<typeof capabilityResponseSchema>
 
@@ -289,4 +295,3 @@ export const commentReadStatusSchema = z.object({
 })
 
 export type CommentReadStatusInput = z.infer<typeof commentReadStatusSchema>
-

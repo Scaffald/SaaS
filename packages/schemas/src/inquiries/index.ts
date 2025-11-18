@@ -3,4 +3,3 @@
  */
 
 export * from './inquiry.schema'
-

@@ -307,6 +307,28 @@ const ROUTES_CONFIG = {
     menuOrder: 2,
     menuIcon: HardDrive,
   },
+  OFFICE_SETTINGS: {
+    path: "/office/settings",
+    title: "Office Settings",
+    isProtected: true,
+    menuCategory: "system",
+    menuOrder: 4,
+    menuIcon: ShieldCheck,
+  },
+  OFFICE_SETTINGS_GEOGRAPHIC: {
+    path: "/office/settings/geographic",
+    title: "Geographic Settings",
+    isProtected: true,
+    menuCategory: "system",
+    menuParent: "OFFICE_SETTINGS",
+  },
+  OFFICE_SETTINGS_STRIPE: {
+    path: "/office/settings/stripe",
+    title: "Stripe Payments",
+    isProtected: true,
+    menuCategory: "system",
+    menuParent: "OFFICE_SETTINGS",
+  },
   OFFICE_ATS: {
     path: "/office/ats",
     title: "Applications",
@@ -771,6 +793,13 @@ export const ROUTE_HIERARCHY: readonly RouteHierarchyNode[] = [
       },
       { key: "OFFICE_NOTIFICATIONS" },
       { key: "OFFICE_STORAGE" },
+      {
+        key: "OFFICE_SETTINGS",
+        children: [
+          { key: "OFFICE_SETTINGS_GEOGRAPHIC" },
+          { key: "OFFICE_SETTINGS_STRIPE" },
+        ],
+      },
     ],
   },
 ] as const;
@@ -825,6 +854,9 @@ export const OFFICE_ROUTES = {
   BACKGROUND_CHECKS: ROUTES.OFFICE_ATS_CHECKS,
   BACKGROUND_CHECKS_ADMIN: ROUTES.OFFICE_ATS_CHECKS_ADMIN,
   NOTIFICATIONS: ROUTES.OFFICE_NOTIFICATIONS,
+  SETTINGS: ROUTES.OFFICE_SETTINGS,
+  SETTINGS_GEOGRAPHIC: ROUTES.OFFICE_SETTINGS_GEOGRAPHIC,
+  SETTINGS_STRIPE: ROUTES.OFFICE_SETTINGS_STRIPE,
 } as const;
 
 // ============================================================================

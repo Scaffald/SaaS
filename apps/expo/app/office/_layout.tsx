@@ -64,6 +64,8 @@ export default function OfficeLayout() {
           options={{ title: 'Request Background Check' }}
         />
         <Drawer.Screen name="storage/index" options={{ title: 'Storage Analytics' }} />
+        <Drawer.Screen name="settings/geographic" options={{ title: 'Geographic Settings' }} />
+        <Drawer.Screen name="settings/stripe" options={{ title: 'Stripe Payments' }} />
       </DrawerLayout>
     </ErrorBoundary>
   )

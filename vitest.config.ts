@@ -4,18 +4,31 @@ import { resolve } from 'node:path'
 import react from '@vitejs/plugin-react'
 import { defineConfig, type UserConfig } from 'vitest/config'
 
+import { flowRemoveTypesPlugin } from './tests/infrastructure/vitest/plugins/flow-remove'
 const workspaceRoot = fileURLToPath(new URL('.', import.meta.url))
 const coverageReportsDirectory = resolve(workspaceRoot, 'coverage')
 
 type VitestPlugin = NonNullable<UserConfig['plugins']>[number]
-const plugins: VitestPlugin[] = [react() as unknown as VitestPlugin]
+const plugins: VitestPlugin[] = [
+  react() as unknown as VitestPlugin,
+  flowRemoveTypesPlugin(),
+]
+const reactNativeMockPath = resolve(workspaceRoot, 'tests/infrastructure/vitest/mocks/react-native.ts')
+console.log('[Vitest] react-native mock path:', reactNativeMockPath)
 
 export default defineConfig({
   root: workspaceRoot,
   plugins,
   resolve: {
     alias: [
-      { find: 'react-native', replacement: 'react-native-web' },
+      {
+        find: 'react-native',
+        replacement: reactNativeMockPath,
+      },
+      {
+        find: /^react-native\//,
+        replacement: reactNativeMockPath,
+      },
       { find: '@app/core', replacement: resolve(workspaceRoot, 'packages/core') },
       { find: '@app/ui', replacement: resolve(workspaceRoot, 'packages/ui/src') },
       { find: '@app/supabase', replacement: resolve(workspaceRoot, 'packages/supabase') },
@@ -49,7 +62,14 @@ export default defineConfig({
     setupFiles: [resolve(workspaceRoot, 'tests/infrastructure/vitest/setup.ts')],
     server: {
       deps: {
-        inline: ['@testing-library/react-native', 'expo-router'],
+        inline: [
+          '@testing-library/react-native',
+          'expo-router',
+          'tamagui',
+          '@tamagui',
+          'react-native',
+          /^react-native\//,
+        ],
       },
     },
     coverage: {

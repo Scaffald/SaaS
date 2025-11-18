@@ -13,6 +13,50 @@ const createComponent =
   ({ children, ...props }: Record<string, unknown>) =>
     React.createElement(tag, props, children)
 
+const createPrimitive = (tag: string) =>
+  React.forwardRef((props: Record<string, unknown>, ref: React.Ref<HTMLElement>) =>
+    React.createElement(tag, { ref, ...props }, props.children),
+  )
+
+const SelectMock = Object.assign(createPrimitive('select'), {
+  Trigger: createPrimitive('button'),
+  Value: createPrimitive('span'),
+  Content: createPrimitive('div'),
+  Viewport: createPrimitive('div'),
+  Item: createPrimitive('div'),
+  ItemText: createPrimitive('span'),
+  ItemIndicator: createPrimitive('span'),
+})
+
+const SheetMock = Object.assign(createPrimitive('div'), {
+  Frame: createPrimitive('div'),
+  ScrollView: createPrimitive('div'),
+  Overlay: createPrimitive('div'),
+})
+
+const DialogMock = Object.assign(createPrimitive('div'), {
+  Portal: ({ children }: { children: React.ReactNode }) => React.createElement(React.Fragment, null, children),
+  Overlay: createPrimitive('div'),
+  Content: createPrimitive('div'),
+  Close: createPrimitive('button'),
+})
+
+vi.mock('tamagui', () => ({
+  __esModule: true as const,
+  Text: createPrimitive('span'),
+  Button: createPrimitive('button'),
+  YStack: createPrimitive('div'),
+  XStack: createPrimitive('div'),
+  ScrollView: createPrimitive('div'),
+  Label: createPrimitive('label'),
+  Checkbox: Object.assign(createPrimitive('input'), { displayName: 'Checkbox' }),
+  Progress: createPrimitive('div'),
+  Adapt: { Contents: createPrimitive('div') },
+  Sheet: SheetMock,
+  Select: SelectMock,
+  Dialog: DialogMock,
+}))
+
 vi.mock('react-native', () => ({
   __esModule: true as const,
   View: createComponent('div'),

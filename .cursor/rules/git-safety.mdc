@@ -1,0 +1,11 @@
+---
+description: "Git safety guardrails: never rebase/reset or manipulate safety-critical files/hooks"
+alwaysApply: true
+---
+
+# Git Safety Guardrails
+
+- **Never rewrite history**: Do **not** run `git rebase`, `git reset`, or other history‑altering commands. Work on top of the current branch and communicate with the team instead.
+- **Do not disable protections**: Avoid moving, deleting, or renaming hook files (e.g., `.git/hooks/pre-commit`) or other safety scripts. If a hook blocks progress, use documented overrides such as `git commit --no-verify`.
+- **Prefer explicit flags**: When a safety check must be bypassed, rely on supported flags (`--no-verify`, etc.) instead of editing or removing files.
+- **Escalate blockers**: If history rewriting or disabling safeguards seems necessary, stop and coordinate with the team before taking action.
