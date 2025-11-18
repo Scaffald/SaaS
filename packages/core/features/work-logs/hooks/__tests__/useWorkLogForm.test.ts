@@ -63,6 +63,8 @@ vi.mock('../useOfflineWorkLogs', () => ({
   })),
 }));
 
+const VALID_PROJECT_ID = '11111111-1111-1111-1111-111111111111'
+
 vi.mock('@app/core/utils/location/useWorkLogLocation', () => ({
   useWorkLogLocation: vi.fn(() => ({
     location: null,
@@ -212,8 +214,10 @@ describe('useWorkLogForm', () => {
     });
 
     act(() => {
-      result.current.form.setValue('projectId', 'project-1');
+      result.current.form.setValue('projectId', VALID_PROJECT_ID);
       result.current.form.setValue('workDescription', 'Offline work');
+      result.current.form.setValue('timeEntries.0.start', '08:00');
+      result.current.form.setValue('timeEntries.0.end', '12:00');
     });
 
     await waitFor(() => {
@@ -242,8 +246,10 @@ describe('useWorkLogForm', () => {
     );
 
     act(() => {
-      result.current.form.setValue('projectId', 'project-1');
+      result.current.form.setValue('projectId', VALID_PROJECT_ID);
       result.current.form.setValue('workDescription', 'Test work');
+      result.current.form.setValue('timeEntries.0.start', '08:00');
+      result.current.form.setValue('timeEntries.0.end', '12:00');
     });
 
     await act(async () => {

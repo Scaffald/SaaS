@@ -251,7 +251,8 @@ describe('WizardStartScreen', () => {
     )
 
     // Total should be sum of all step times: 2+2+3+2+2+2 = 13
-    expect(screen.getByText(/13 minutes|6 guided steps/i)).toBeInTheDocument()
+    expect(screen.getByText('13 minutes')).toBeInTheDocument()
+    expect(screen.getByText(/6 guided steps/i)).toBeInTheDocument()
   })
 
   it('displays step descriptions', () => {

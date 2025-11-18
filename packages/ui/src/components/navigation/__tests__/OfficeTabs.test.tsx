@@ -39,6 +39,7 @@ vi.mock('tamagui', () => {
     ScrollView: createComponent('div'),
     XStack: createComponent('div'),
     YStack: createComponent('div'),
+    Paragraph: createComponent('p'),
     useWindowDimensions: mockUseWindowDimensions,
     useMedia,
   }

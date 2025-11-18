@@ -284,10 +284,20 @@ vi.mock('@app/core/utils/api', () => {
     api: {
       profile: {
         getEducation: {
-          useQuery: () => educationQueryHelpers,
+          useQuery: () => ({
+            data: educationQueryHelpers.getData(),
+            isLoading: false,
+            isError: false,
+            refetch: vi.fn(),
+          }),
         },
         getEducationLevel: {
-          useQuery: () => educationLevelQueryHelpers,
+          useQuery: () => ({
+            data: educationLevelQueryHelpers.getData(),
+            isLoading: false,
+            isError: false,
+            refetch: vi.fn(),
+          }),
         },
         saveEducation: {
           useMutation: (options?: {

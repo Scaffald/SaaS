@@ -110,10 +110,8 @@ export function IPIPTestStep({
     if (isDomainComplete && currentDomain) {
       const domainAnswers = newAnswers.filter((a) => a.domain === currentDomain)
       if (domainAnswers.length >= QUESTIONS_PER_DOMAIN) {
-        // Domain complete - trigger callback
-        if (onDomainComplete) {
-          onDomainComplete(currentDomain, newAnswers)
-        }
+        // Domain complete - trigger callback with domain-specific answers
+        onDomainComplete?.(currentDomain, domainAnswers)
         // Still save progress
         setCurrentIndex(nextIndex)
         onSave(newAnswers, nextIndex)

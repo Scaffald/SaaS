@@ -17,8 +17,8 @@ vi.mock('tamagui', () => ({
   useTheme: () => ({
     background: { val: themeBackground.current },
   }),
-  useWindowDimensions: () => ({
-    width: windowWidth.current,
+  useMedia: () => ({
+    sm: windowWidth.current <= 800,
   }),
 }))
 
@@ -48,7 +48,7 @@ describe('DashboardWidget', () => {
 
     render(<DashboardWidget>Compact</DashboardWidget>)
 
-    expect(cardPropsStore.current.p).toBe(spacing.md)
+    expect(cardPropsStore.current.p).toBe(spacing.xs)
   })
 
   it('uses dark elevated shadow styles when requested', () => {

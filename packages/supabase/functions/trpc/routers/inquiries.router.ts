@@ -433,6 +433,230 @@ export const inquiriesRouter = router({
     }),
 
   /**
+   * Create inquiries for multiple applications in bulk
+   * Organization members can send the same inquiry to multiple candidates
+   */
+  createBulk: protectedProcedure
+    .input(
+      z.object({
+        applicationIds: z.array(z.string().uuid()).min(1).max(50),
+        inquiryData: inquiryCreateSchema.omit({ applicationId: true }),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+      const results: Array<{
+        applicationId: string;
+        success: boolean;
+        inquiryId?: string;
+        error?: string;
+      }> = [];
+
+      // Get service role client for status updates
+      const { createClient } = await import("@supabase/supabase-js");
+      const supabaseServiceRole = createClient(
+        Deno.env.get("SUPABASE_URL") ?? "",
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+        { auth: { persistSession: false } }
+      );
+
+      // Process each application
+      for (const applicationId of input.applicationIds) {
+        try {
+          // Verify user has organization access to this application
+          const application = await verifyApplicationAccess(
+            supabase,
+            user.id,
+            applicationId,
+            true,
+          );
+
+          // Check if inquiry already exists
+          const { data: existingInquiry } = await supabase
+            .schema("core")
+            .from("application_inquiries")
+            .select("id, status")
+            .eq("application_id", applicationId)
+            .single();
+
+          if (existingInquiry && existingInquiry.status !== "withdrawn") {
+            results.push({
+              applicationId,
+              success: false,
+              error: "An active inquiry already exists for this application",
+            });
+            continue;
+          }
+
+          // Prepare inquiry data (convert camelCase to snake_case)
+          const inquiryData = {
+            application_id: applicationId,
+            created_by: user.id,
+            status: "sent" as const, // Bulk inquiries are sent immediately
+            sent_at: new Date().toISOString(),
+            employment_type: input.inquiryData.employmentType ?? null,
+            employment_type_negotiable: input.inquiryData.employmentTypeNegotiable,
+            work_schedule: input.inquiryData.workSchedule ?? null,
+            work_schedule_negotiable: input.inquiryData.workScheduleNegotiable,
+            schedule_shifts: input.inquiryData.scheduleShifts,
+            working_hours_start: input.inquiryData.workingHoursStart ?? null,
+            working_hours_end: input.inquiryData.workingHoursEnd ?? null,
+            working_hours_timezone: input.inquiryData.workingHoursTimezone ?? null,
+            working_hours_negotiable: input.inquiryData.workingHoursNegotiable,
+            workdays: input.inquiryData.workdays.length > 0 ? input.inquiryData.workdays : null,
+            workdays_negotiable: input.inquiryData.workdaysNegotiable,
+            employment_start_date: input.inquiryData.employmentStartDate,
+            employment_end_date: input.inquiryData.employmentEndDate ?? null,
+            employment_dates_negotiable: input.inquiryData.employmentDatesNegotiable,
+            rate_type: input.inquiryData.rateType,
+            rate_min_cents: input.inquiryData.rateMinCents,
+            rate_max_cents: input.inquiryData.rateMaxCents ?? null,
+            rate_negotiable: input.inquiryData.rateNegotiable,
+            endurance_required: input.inquiryData.enduranceRequired,
+            willing_to_travel: input.inquiryData.willingToTravel ?? null,
+            travel_distance_miles: input.inquiryData.travelDistanceMiles ?? null,
+            willing_to_work_overtime: input.inquiryData.willingToWorkOvertime ?? null,
+            has_drivers_license: input.inquiryData.hasDriversLicense ?? null,
+            additional_notes: input.inquiryData.additionalNotes ?? null,
+          };
+
+          // Create inquiry
+          const { data: inquiry, error: inquiryError } = await supabase
+            .schema("core")
+            .from("application_inquiries")
+            .insert(inquiryData)
+            .select()
+            .single();
+
+          if (inquiryError || !inquiry) {
+            results.push({
+              applicationId,
+              success: false,
+              error: inquiryError?.message || "Failed to create inquiry",
+            });
+            continue;
+          }
+
+          // Initialize inquiry sections
+          const sections = ["employment", "compensation", "capabilities", "other"];
+          const sectionData = sections.map((sectionName) => ({
+            inquiry_id: inquiry.id,
+            section_name: sectionName,
+          }));
+
+          const { error: sectionsError } = await supabase
+            .schema("core")
+            .from("inquiry_sections")
+            .insert(sectionData);
+
+          if (sectionsError) {
+            // Rollback inquiry creation
+            await supabase
+              .schema("core")
+              .from("application_inquiries")
+              .delete()
+              .eq("id", inquiry.id);
+
+            results.push({
+              applicationId,
+              success: false,
+              error: `Failed to create inquiry sections: ${sectionsError.message}`,
+            });
+            continue;
+          }
+
+          // Get job's capability questions and initialize capability responses
+          const { data: job } = await supabase
+            .schema("core")
+            .from("jobs")
+            .select("inquiry_capability_questions")
+            .eq("id", application.job_id)
+            .single();
+
+          if (job?.inquiry_capability_questions && Array.isArray(job.inquiry_capability_questions)) {
+            const capabilityQuestions = job.inquiry_capability_questions as Array<{
+              name: string;
+              label: string;
+              type: string;
+              unit?: string;
+              required: boolean;
+            }>;
+
+            if (capabilityQuestions.length > 0) {
+              const capabilityData = capabilityQuestions.map((question) => ({
+                inquiry_id: inquiry.id,
+                capability_name: question.name,
+                response_value: null,
+                response_text: null,
+              }));
+
+              const { error: capabilityError } = await supabase
+                .schema("core")
+                .from("inquiry_capability_responses")
+                .insert(capabilityData);
+
+              if (capabilityError) {
+                // Log but don't fail - capability questions are optional
+                console.error("Failed to create capability questions:", capabilityError);
+              }
+            }
+          }
+
+          // Sync application status to 'inquired'
+          await syncApplicationStatus(supabaseServiceRole, applicationId, "sent");
+
+          // Get candidate info for notification
+          const { data: applicationData } = await supabase
+            .schema("core")
+            .from("applications")
+            .select("user_id, job_id")
+            .eq("id", applicationId)
+            .single();
+
+          if (applicationData) {
+            // Get organization name for notification
+            const orgName = await getOrganizationName(supabase, applicationData.job_id);
+
+            // Send notification
+            await insertNotification(supabaseServiceRole, {
+              user_id: applicationData.user_id,
+              type: "inquiry.sent",
+              title: "New Inquiry Received",
+              message: orgName
+                ? `You have received an inquiry from ${orgName}`
+                : "You have received a new inquiry",
+              cta_url: `/dashboard/applications/${applicationId}/inquiry`,
+            });
+          }
+
+          results.push({
+            applicationId,
+            success: true,
+            inquiryId: inquiry.id,
+          });
+        } catch (error: unknown) {
+          const errorMessage =
+            error instanceof Error ? error.message : "Unknown error occurred";
+          results.push({
+            applicationId,
+            success: false,
+            error: errorMessage,
+          });
+        }
+      }
+
+      const successful = results.filter((r) => r.success).length;
+      const failed = results.filter((r) => !r.success).length;
+
+      return {
+        total: input.applicationIds.length,
+        successful,
+        failed,
+        results,
+      };
+    }),
+
+  /**
    * Get inquiry by application ID
    * Returns inquiry with sections, comments, and responses
    */

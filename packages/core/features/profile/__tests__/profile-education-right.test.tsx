@@ -191,7 +191,8 @@ describe('ProfileEducationRight', () => {
   it('opens the edit modal when edit button is pressed', () => {
     render(<ProfileEducationRight />)
 
-    fireEvent.click(screen.getAllByRole('button', { name: 'Edit' })[0])
+    const editButtons = screen.getAllByRole('button', { name: /Edit education entry/i })
+    fireEvent.click(editButtons[0])
 
     expect(editModalOpens.some(Boolean)).toBe(true)
     expect(screen.getByTestId('education-edit-modal')).toBeInTheDocument()
@@ -200,9 +201,9 @@ describe('ProfileEducationRight', () => {
   it('confirms deletion and triggers delete mutation', async () => {
     render(<ProfileEducationRight />)
 
-    const deleteButtons = screen.getAllByRole('button', { name: 'Delete' })
-    fireEvent.click(deleteButtons[1])
-    const confirmButtons = screen.getAllByRole('button', { name: 'Delete' })
+    const deleteIconButtons = screen.getAllByRole('button', { name: /Delete education entry/i })
+    fireEvent.click(deleteIconButtons[1])
+    const confirmButtons = screen.getAllByRole('button', { name: /^Delete$/i })
     fireEvent.click(confirmButtons[confirmButtons.length - 1])
 
     await waitFor(() => expect(deleteMutationSpy).toHaveBeenCalledWith({ educationId: 'ed-2' }))

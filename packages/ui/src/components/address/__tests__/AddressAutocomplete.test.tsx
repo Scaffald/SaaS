@@ -20,20 +20,51 @@ vi.mock('../hooks', () => ({
 }))
 
 // Mock Tamagui components
-vi.mock('tamagui', async () => {
-  const actual = await vi.importActual<typeof import('tamagui')>('tamagui')
+vi.mock('tamagui', () => {
+  const React = require('react') as typeof import('react')
+
+  const createComponent =
+    (tag = 'div') =>
+    ({ children, ...props }: { children?: React.ReactNode } & Record<string, unknown>) =>
+      React.createElement(tag, props, children)
+
+  const Button = Object.assign(
+    ({ children, onPress, ...props }: any) => (
+      <button data-testid="button" onClick={onPress} {...props}>
+        {children}
+      </button>
+    ),
+    {
+      Text: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
+    }
+  )
+
+  const PopoverRoot = ({ children, open, onOpenChange }: any) => (
+    <div
+      data-testid="popover"
+      data-open={open}
+      onClick={() => onOpenChange?.(!open)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onOpenChange?.(!open)
+        }
+      }}
+    >
+      {children}
+    </div>
+  )
+
+  const PopoverTrigger = ({ children, asChild }: any) =>
+    asChild ? children : <div>{children}</div>
+  const PopoverContent = ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="popover-content">{children}</div>
+  )
+
   return {
-    ...actual,
-    YStack: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
-      <div data-testid="y-stack" {...props}>
-        {children}
-      </div>
-    ),
-    XStack: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
-      <div data-testid="x-stack" {...props}>
-        {children}
-      </div>
-    ),
+    YStack: createComponent(),
+    XStack: createComponent(),
+    Text: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
     Input: ({ onChangeText, onFocus, onBlur, onKeyPress, ...props }: any) => (
       <input
         data-testid="address-input"
@@ -48,57 +79,25 @@ vi.mock('tamagui', async () => {
         {...props}
       />
     ),
-    Text: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
-    Spinner: () => <span data-testid="spinner">Loading...</span>,
-    Button: Object.assign(
-      ({ children, onPress, ...props }: any) => (
-        <button data-testid="button" onClick={onPress} {...props}>
-          {children}
-        </button>
-      ),
-      {
-        Text: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
-      }
-    ),
     ScrollView: ({ children }: { children: React.ReactNode }) => (
       <div data-testid="scroll-view">{children}</div>
     ),
     Separator: () => <hr data-testid="separator" />,
-    Popover: Object.assign(
-      ({ children, open, onOpenChange, placement }: any) => (
-        <div
-          data-testid="popover"
-          data-open={open}
-          onClick={() => onOpenChange?.(!open)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault()
-              onOpenChange?.(!open)
-            }
-          }}
-        >
-          {children}
-        </div>
-      ),
-      {
-        Trigger: ({ children, asChild }: any) => (asChild ? children : <div>{children}</div>),
-        Content: ({ children }: { children: React.ReactNode }) => (
-          <div data-testid="popover-content">{children}</div>
-        ),
-      }
-    ),
+    Spinner: () => <span data-testid="spinner">Loading...</span>,
+    Button,
+    Popover: Object.assign(PopoverRoot, {
+      Trigger: PopoverTrigger,
+      Content: PopoverContent,
+    }),
+    useTheme: () => ({
+      background: { val: '#fff' },
+    }),
   }
 })
 
 vi.mock('../FieldError', () => ({
   FieldError: ({ message }: { message?: string }) =>
     message ? <div data-testid="field-error">{message}</div> : null,
-}))
-
-// Mock Tamagui theme hooks to avoid theme provider requirement
-vi.mock('@tamagui/web', () => ({
-  useThemeState: () => ({ name: 'light' }),
-  useThemeWithState: () => ({ name: 'light' }),
 }))
 
 describe('AddressAutocomplete', () => {

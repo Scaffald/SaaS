@@ -1,14 +1,16 @@
 import { useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
-import { XStack, YStack, Text, Card, Avatar, type GetThemeValueForKey } from 'tamagui'
+import { XStack, YStack, Text, Card, Avatar, type GetThemeValueForKey, Button } from 'tamagui'
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { DroppableColumn, DraggableCard } from '@app/ui'
+import { CheckSquare, Square } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
 import type { MockApplication, ApplicationStatus } from '../../mock-data/ats-mock-data'
 import { CandidateDetailModal } from './CandidateDetailModal'
 import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
 import { InquiryStatusBadges } from './kanban/InquiryStatusBadges'
+import { BulkInquiryModal } from '@app/core/features/inquiries/components/BulkInquiryModal'
 import { useApplicationStatusChange } from '../hooks/useApplicationStatusChange'
 
 const STATUSES: ApplicationStatus[] = ['new', 'screen', 'inquired', 'interview', 'offer', 'hired', 'rejected']
@@ -39,10 +41,28 @@ interface ApplicationsKanbanBoardProps {
 
 export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoardProps) => {
   const [selectedApplication, setSelectedApplication] = useState<MockApplication | null>(null)
+  const [selectedApplicationIds, setSelectedApplicationIds] = useState<Set<string>>(new Set())
+  const [showBulkInquiry, setShowBulkInquiry] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
 
   const { changeStatus, isChanging, pendingChange, confirmChange, cancelChange } =
     useApplicationStatusChange()
+
+  const toggleApplicationSelection = (applicationId: string) => {
+    setSelectedApplicationIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(applicationId)) {
+        next.delete(applicationId)
+      } else {
+        next.add(applicationId)
+      }
+      return next
+    })
+  }
+
+  const clearSelection = () => {
+    setSelectedApplicationIds(new Set())
+  }
 
   // Configure drag sensors
   const sensors = useSensors(
@@ -98,6 +118,35 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
 
   return (
     <>
+      {/* Bulk Action Bar */}
+      {selectedApplicationIds.size > 0 && (
+        <XStack
+          gap="$3"
+          p="$3"
+          bg="$blue2"
+          items="center"
+          justify="space-between"
+          borderBottomWidth={1}
+          borderBottomColor="$borderColor"
+        >
+          <Text fontSize="$4" fontWeight="600">
+            {selectedApplicationIds.size} candidate{selectedApplicationIds.size !== 1 ? 's' : ''} selected
+          </Text>
+          <XStack gap="$2">
+            <Button size="$3" variant="outlined" onPress={clearSelection}>
+              Clear
+            </Button>
+            <Button
+              size="$3"
+              theme="blue"
+              onPress={() => setShowBulkInquiry(true)}
+            >
+              Send Inquiry to {selectedApplicationIds.size}
+            </Button>
+          </XStack>
+        </XStack>
+      )}
+
       <DndContext
         sensors={sensors}
         onDragStart={handleDragStart}
@@ -113,7 +162,9 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                 label={STATUS_LABELS[status]}
                 color={STATUS_COLORS[status]}
                 applications={groupedApplications[status]}
+                selectedApplicationIds={selectedApplicationIds}
                 onSelectApplication={setSelectedApplication}
+                onToggleSelection={toggleApplicationSelection}
               />
             ))}
           </XStack>
@@ -145,6 +196,15 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
           isLoading={isChanging}
         />
       )}
+
+      <BulkInquiryModal
+        open={showBulkInquiry}
+        onClose={() => {
+          setShowBulkInquiry(false)
+          clearSelection()
+        }}
+        applicationIds={Array.from(selectedApplicationIds)}
+      />
     </>
   )
 }
@@ -154,7 +214,9 @@ interface StatusColumnProps {
   label: string
   color: GetThemeValueForKey<'backgroundColor'>
   applications: MockApplication[]
+  selectedApplicationIds: Set<string>
   onSelectApplication: (application: MockApplication) => void
+  onToggleSelection: (applicationId: string) => void
 }
 
 const StatusColumn = ({
@@ -162,7 +224,9 @@ const StatusColumn = ({
   label,
   color,
   applications,
+  selectedApplicationIds,
   onSelectApplication,
+  onToggleSelection,
 }: StatusColumnProps) => {
   return (
     <DroppableColumn id={status} items={applications.map((app) => app.id)}>
@@ -191,7 +255,15 @@ const StatusColumn = ({
           ) : (
             applications.map((app) => (
               <DraggableCard key={app.id} id={app.id}>
-                <ApplicationCard application={app} onPress={() => onSelectApplication(app)} />
+                <ApplicationCard
+                  application={app}
+                  isSelected={selectedApplicationIds.has(app.id)}
+                  onPress={() => onSelectApplication(app)}
+                  onToggleSelection={(e) => {
+                    e.stopPropagation()
+                    onToggleSelection(app.id)
+                  }}
+                />
               </DraggableCard>
             ))
           )}
@@ -203,11 +275,18 @@ const StatusColumn = ({
 
 interface ApplicationCardProps {
   application: MockApplication
+  isSelected?: boolean
   onPress: () => void
+  onToggleSelection?: (e: { stopPropagation: () => void }) => void
   isDragging?: boolean
 }
 
-const ApplicationCard = ({ application, onPress }: ApplicationCardProps) => {
+const ApplicationCard = ({
+  application,
+  isSelected = false,
+  onPress,
+  onToggleSelection,
+}: ApplicationCardProps) => {
   const appliedDate = new Date(application.appliedAt).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
@@ -227,15 +306,40 @@ const ApplicationCard = ({ application, onPress }: ApplicationCardProps) => {
     <Card
       data-testid={`kanban-card-${application.id}`}
       p="$3"
-      bg="$background"
+      bg={isSelected ? '$blue3' : '$background'}
+      borderWidth={isSelected ? 2 : 0}
+      borderColor="$blue9"
       hoverStyle={{
-        bg: 'gray',
+        bg: isSelected ? '$blue4' : 'gray',
       }}
       pressStyle={{ scale: 0.98 }}
       animation="quick"
       elevate
       onPress={onPress}
     >
+      {/* Selection Checkbox */}
+      {onToggleSelection && (
+        <XStack position="absolute" top="$2" right="$2" zIndex={10}>
+          <Button
+            size="$2"
+            circular
+            unstyled
+            onPress={onToggleSelection}
+            bg={isSelected ? '$blue9' : '$color5'}
+            items="center"
+            justify="center"
+            width={24}
+            height={24}
+          >
+            {isSelected ? (
+              <CheckSquare size={16} color="white" />
+            ) : (
+              <Square size={16} color="$color11" />
+            )}
+          </Button>
+        </XStack>
+      )}
+
       {/* Candidate Info */}
       <XStack gap="$3" items="flex-start" mb="$2">
         <Avatar circular size="$4">
