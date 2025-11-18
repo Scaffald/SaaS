@@ -685,9 +685,8 @@ describe('JobForm', () => {
       })
 
       const titleInput = screen.getByTestId('job-title-input')
-      // Select all and replace to ensure clean update
-      await user.click(titleInput)
-      await user.keyboard('{Control>}a{/Control}')
+      // Clear and type new value
+      await user.clear(titleInput)
       await user.type(titleInput, 'Updated Job')
 
       // Wait for form state to update and button to be enabled
@@ -810,8 +809,9 @@ describe('JobForm', () => {
       })
 
       const titleInput = screen.getByTestId('job-title-input')
-      // Don't clear - just append to ensure description stays intact
-      await user.type(titleInput, ' - Updated')
+      // Clear and type new value
+      await user.clear(titleInput)
+      await user.type(titleInput, 'Updated Title')
 
       // Wait for form state to update and button to be enabled
       const saveButton = screen.getByTestId('job-save-draft-button')
@@ -826,7 +826,7 @@ describe('JobForm', () => {
         expect(updateJobMock.mutate).toHaveBeenCalledWith(
           expect.objectContaining({
             id: 'job-123',
-            title: expect.stringContaining('Updated Title'),
+            title: 'Updated Title',
           })
         )
       })
