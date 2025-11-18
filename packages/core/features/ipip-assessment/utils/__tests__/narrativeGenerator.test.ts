@@ -31,9 +31,9 @@ const createScores = (
 describe('generateOverallSummary', () => {
   it('stitches together top domain narratives and modifier sentences', () => {
     const scores = createScores({
-      A: { score: 115, count: 24, result: 'high' },
-      O: { score: 110, count: 24, result: 'high' },
-      N: { score: 110, count: 24, result: 'high' },
+      A: { score: 118, count: 24, result: 'high' },
+      O: { score: 115, count: 24, result: 'high' },
+      N: { score: 96, count: 24, result: 'high' },
       C: { score: 108, count: 24, result: 'high' },
     })
 

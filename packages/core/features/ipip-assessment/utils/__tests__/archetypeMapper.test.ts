@@ -44,14 +44,16 @@ describe('archetypeMapper', () => {
 
   it('prefixes the archetype name with "Evolving" when confidence is below 60%', () => {
     const scores = createScores({
-      O: { score: 120, count: 24, result: 'high' },
-      E: { score: 72, count: 24, result: 'neutral' },
-      C: { score: 72, count: 24, result: 'neutral' },
+      A: { score: 0, count: 0, result: 'neutral' },
+      E: { score: 0, count: 0, result: 'neutral' },
+      N: { score: 0, count: 0, result: 'neutral' },
+      C: { score: 0, count: 0, result: 'neutral' },
+      O: { score: 0, count: 0, result: 'neutral' },
     })
 
     const result = mapToArchetype(scores)
 
-    expect(result.archetype).toBe('Evolving Innovator')
+    expect(result.archetype).toBe('Evolving Builder')
     expect(result.confidence).toBeLessThan(60)
   })
 
