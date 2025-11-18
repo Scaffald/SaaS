@@ -748,6 +748,153 @@ export const inquiriesRouter = router({
     }),
 
   /**
+   * Get multiple inquiries by IDs for comparison
+   * Returns inquiries with sections, comments, and capability responses
+   */
+  getMultiple: protectedProcedure
+    .input(z.object({ inquiryIds: z.array(z.string().uuid()).min(2).max(5) }))
+    .query(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      // Get inquiries
+      const { data: inquiries, error: inquiriesError } = await supabase
+        .schema("core")
+        .from("application_inquiries")
+        .select("*")
+        .in("id", input.inquiryIds);
+
+      if (inquiriesError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch inquiries: ${inquiriesError.message}`,
+          cause: inquiriesError,
+        });
+      }
+
+      if (!inquiries || inquiries.length === 0) {
+        return [];
+      }
+
+      // Verify user has access to all inquiries
+      for (const inquiry of inquiries) {
+        await verifyApplicationAccess(
+          supabase,
+          user.id,
+          inquiry.application_id,
+        );
+      }
+
+      // Fetch related data for all inquiries
+      const inquiryIds = inquiries.map((i) => i.id);
+
+      // Get sections
+      const { data: sections, error: sectionsError } = await supabase
+        .schema("core")
+        .from("inquiry_sections")
+        .select("*")
+        .in("inquiry_id", inquiryIds);
+
+      if (sectionsError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch sections: ${sectionsError.message}`,
+          cause: sectionsError,
+        });
+      }
+
+      // Get comments
+      const { data: comments, error: commentsError } = await supabase
+        .schema("core")
+        .from("inquiry_comments")
+        .select("*")
+        .in("inquiry_id", inquiryIds)
+        .order("created_at", { ascending: true });
+
+      if (commentsError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch comments: ${commentsError.message}`,
+          cause: commentsError,
+        });
+      }
+
+      // Get capability responses
+      const { data: capabilityResponses, error: responsesError } = await supabase
+        .schema("core")
+        .from("inquiry_capability_responses")
+        .select("*")
+        .in("inquiry_id", inquiryIds);
+
+      if (responsesError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch capability responses: ${responsesError.message}`,
+          cause: responsesError,
+        });
+      }
+
+      // Get applications with candidate info
+      const applicationIds = inquiries.map((i) => i.application_id);
+      const { data: applications, error: applicationsError } = await supabase
+        .schema("core")
+        .from("applications")
+        .select(
+          `
+          id,
+          job_id,
+          jobs!job_id(
+            id,
+            title
+          ),
+          users!user_id(
+            id,
+            display_name,
+            username,
+            avatar_path
+          )
+        `
+        )
+        .in("id", applicationIds);
+
+      if (applicationsError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch applications: ${applicationsError.message}`,
+          cause: applicationsError,
+        });
+      }
+
+      // Combine data for each inquiry
+      return inquiries.map((inquiry) => {
+        const application = applications?.find((a) => a.id === inquiry.application_id);
+        const job = application?.jobs as { id: string; title: string } | null;
+        const candidate = application?.users as {
+          id: string;
+          display_name: string | null;
+          username: string | null;
+          avatar_path: string | null;
+        } | null;
+
+        return {
+          inquiry,
+          sections: sections?.filter((s) => s.inquiry_id === inquiry.id) || [],
+          comments: comments?.filter((c) => c.inquiry_id === inquiry.id) || [],
+          capabilityResponses:
+            capabilityResponses?.filter((r) => r.inquiry_id === inquiry.id) || [],
+          application: {
+            id: inquiry.application_id,
+            jobTitle: job?.title || null,
+            candidate: {
+              id: candidate?.id || null,
+              name: candidate?.display_name || candidate?.username || "Unknown",
+              avatar: candidate?.avatar_path || null,
+            },
+          },
+        };
+      });
+    }),
+
+  /**
    * Get inquiry history/audit trail
    * Returns all audit log entries for an inquiry
    */

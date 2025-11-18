@@ -29,7 +29,7 @@ vi.mock('tamagui', () => {
       React.createElement(tag, props, children)
 
   const Button = Object.assign(
-    ({ children, onPress, ...props }: any) => (
+    ({ children, onPress, unstyled: _unstyled, circular: _circular, ...props }: any) => (
       <button data-testid="button" onClick={onPress} {...props}>
         {children}
       </button>
@@ -65,6 +65,7 @@ vi.mock('tamagui', () => {
     YStack: createComponent(),
     XStack: createComponent(),
     Text: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
+    Paragraph: ({ children }: { children: React.ReactNode }) => <p>{children}</p>,
     Input: ({ onChangeText, onFocus, onBlur, onKeyPress, ...props }: any) => (
       <input
         data-testid="address-input"
@@ -89,6 +90,7 @@ vi.mock('tamagui', () => {
       Trigger: PopoverTrigger,
       Content: PopoverContent,
     }),
+    AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
     useTheme: () => ({
       background: { val: '#fff' },
     }),
@@ -147,7 +149,7 @@ describe('AddressAutocomplete', () => {
   it('displays error message on error', async () => {
     mockHookReturn.error = 'Search failed'
     render(<AddressAutocomplete />)
-    expect(screen.getByTestId('field-error')).toHaveTextContent('Search failed')
+    expect(screen.getByText('Search failed')).toBeInTheDocument()
   })
 
   it('shows dropdown with results', async () => {

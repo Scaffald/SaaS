@@ -104,10 +104,10 @@ export function IPIPTestStep({
     setAnswers(newAnswers)
 
     const nextIndex = currentIndex + 1
-    const isDomainComplete = isLastQuestionInDomain(currentIndex) && currentDomain
+      const _isDomainComplete = isLastQuestionInDomain(currentIndex) && currentDomain
 
     // Check if domain is complete (24 questions answered for this domain)
-    if (isDomainComplete && currentDomain) {
+    if (currentDomain && questionIndexInDomain === QUESTIONS_PER_DOMAIN - 1) {
       const domainAnswers = newAnswers.filter((a) => a.domain === currentDomain)
       if (domainAnswers.length >= QUESTIONS_PER_DOMAIN) {
         // Domain complete - trigger callback with domain-specific answers

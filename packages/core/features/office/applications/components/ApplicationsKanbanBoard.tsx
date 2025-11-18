@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import React, { useMemo, useState, useCallback, useEffect } from 'react'
 import { ScrollView } from 'react-native'
 import { XStack, YStack, Text, Card, Avatar, type GetThemeValueForKey, Button } from 'tamagui'
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
@@ -11,6 +11,7 @@ import { CandidateDetailModal } from './CandidateDetailModal'
 import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
 import { InquiryStatusBadges } from './kanban/InquiryStatusBadges'
 import { BulkInquiryModal } from '@app/core/features/inquiries/components/BulkInquiryModal'
+import { InquiryComparisonView } from '@app/core/features/inquiries/components/InquiryComparisonView'
 import { useApplicationStatusChange } from '../hooks/useApplicationStatusChange'
 
 const STATUSES: ApplicationStatus[] = ['new', 'screen', 'inquired', 'interview', 'offer', 'hired', 'rejected']
@@ -43,7 +44,49 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
   const [selectedApplication, setSelectedApplication] = useState<MockApplication | null>(null)
   const [selectedApplicationIds, setSelectedApplicationIds] = useState<Set<string>>(new Set())
   const [showBulkInquiry, setShowBulkInquiry] = useState(false)
+  const [showComparison, setShowComparison] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
+
+  // Fetch inquiry IDs for selected applications
+  const selectedApplications = useMemo(
+    () =>
+      Array.from(selectedApplicationIds)
+        .map((id) => applications.find((app) => app.id === id))
+        .filter((app): app is MockApplication => !!app && app.status === 'inquired'),
+    [selectedApplicationIds, applications]
+  )
+
+  // Get inquiry IDs for selected applications
+  const [inquiryIds, setInquiryIds] = useState<string[]>([])
+  const utils = api.useUtils()
+
+  // Fetch inquiry IDs when selection changes
+  useEffect(() => {
+    const fetchInquiryIds = async () => {
+      const ids: string[] = []
+
+      for (const app of selectedApplications) {
+        try {
+          const inquiryData = await utils.inquiries.getByApplication.fetch({
+            applicationId: app.id,
+          })
+          if (inquiryData?.inquiry?.id) {
+            ids.push(inquiryData.inquiry.id)
+          }
+        } catch {
+          // Skip applications without inquiries
+        }
+      }
+
+      setInquiryIds(ids)
+    }
+
+    if (selectedApplications.length >= 2) {
+      fetchInquiryIds()
+    } else {
+      setInquiryIds([])
+    }
+  }, [selectedApplications, utils])
 
   const { changeStatus, isChanging, pendingChange, confirmChange, cancelChange } =
     useApplicationStatusChange()
@@ -128,18 +171,43 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
           justify="space-between"
           borderBottomWidth={1}
           borderBottomColor="$borderColor"
+          flexWrap="wrap"
+          $sm={{ flexDirection: 'column', items: 'stretch' }}
         >
           <Text fontSize="$4" fontWeight="600">
             {selectedApplicationIds.size} candidate{selectedApplicationIds.size !== 1 ? 's' : ''} selected
           </Text>
-          <XStack gap="$2">
-            <Button size="$3" variant="outlined" onPress={clearSelection}>
+          <XStack gap="$2" flexWrap="wrap" $sm={{ width: '100%', flexDirection: 'column' }}>
+            <Button
+              size="$3"
+              variant="outlined"
+              onPress={clearSelection}
+              $sm={{ width: '100%' }}
+            >
               Clear
             </Button>
+            {selectedApplications.length >= 2 &&
+              selectedApplications.length <= 5 &&
+              inquiryIds.length >= 2 && (
+                <Button
+                  size="$3"
+                  theme="blue"
+                  variant="outlined"
+                  onPress={() => {
+                    if (inquiryIds.length >= 2 && inquiryIds.length <= 5) {
+                      setShowComparison(true)
+                    }
+                  }}
+                  $sm={{ width: '100%' }}
+                >
+                  Compare {inquiryIds.length}
+                </Button>
+              )}
             <Button
               size="$3"
               theme="blue"
               onPress={() => setShowBulkInquiry(true)}
+              $sm={{ width: '100%' }}
             >
               Send Inquiry to {selectedApplicationIds.size}
             </Button>
@@ -205,7 +273,43 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
         }}
         applicationIds={Array.from(selectedApplicationIds)}
       />
+
+      {showComparison && (
+        <InquiryComparisonModal
+          selectedApplications={selectedApplications}
+          open={showComparison}
+          onClose={() => {
+            setShowComparison(false)
+          }}
+        />
+      )}
     </>
+  )
+}
+
+interface InquiryComparisonModalProps {
+  inquiryIds: string[]
+  open: boolean
+  onClose: () => void
+}
+
+function InquiryComparisonModal({ inquiryIds, open, onClose }: InquiryComparisonModalProps) {
+  if (!open || inquiryIds.length < 2) {
+    return null
+  }
+
+  return (
+    <YStack
+      position="fixed"
+      top={0}
+      left={0}
+      right={0}
+      bottom={0}
+      bg="$background"
+      zIndex={1000}
+    >
+      <InquiryComparisonView inquiryIds={inquiryIds} onClose={onClose} />
+    </YStack>
   )
 }
 

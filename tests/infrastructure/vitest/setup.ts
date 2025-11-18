@@ -18,6 +18,22 @@ const createPrimitive = (tag: string) =>
     React.createElement(tag, { ref, ...props }, props.children),
   )
 
+const ButtonMock = React.forwardRef(
+  (
+    { onPress, children, ...props }: Record<string, unknown> & { onPress?: () => void },
+    ref: React.Ref<HTMLButtonElement>,
+  ) =>
+    React.createElement(
+      'button',
+      {
+        ref,
+        ...props,
+        onClick: typeof onPress === 'function' ? onPress : props.onClick,
+      },
+      children,
+    ),
+)
+
 const SelectMock = Object.assign(createPrimitive('select'), {
   Trigger: createPrimitive('button'),
   Value: createPrimitive('span'),
@@ -48,9 +64,10 @@ const ProgressMock = Object.assign(createPrimitive('div'), {
 vi.mock('tamagui', () => ({
   __esModule: true as const,
   Text: createPrimitive('span'),
-  Button: createPrimitive('button'),
+  Button: ButtonMock,
   YStack: createPrimitive('div'),
   XStack: createPrimitive('div'),
+  View: createPrimitive('div'),
   ScrollView: createPrimitive('div'),
   Label: createPrimitive('label'),
   Checkbox: Object.assign(createPrimitive('input'), { displayName: 'Checkbox' }),

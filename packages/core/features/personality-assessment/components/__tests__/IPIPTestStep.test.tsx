@@ -1,5 +1,62 @@
+import { describe, expect, it, vi } from 'vitest'
+
+vi.mock('@tamagui/web', () => {
+  return {
+    useThemeState: () => ({
+      isNewTheme: false,
+      theme: {},
+      className: '',
+      style: {},
+    }),
+    useThemeWithState: () => ({
+      isNewTheme: false,
+      theme: {},
+      className: '',
+      style: {},
+    }),
+    setupHooks: () => {},
+    View: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>,
+  }
+})
+
+vi.mock('tamagui', () => {
+  const React = require('react') as typeof import('react')
+  const create =
+    (tag = 'div') =>
+    ({ children, ...props }: { children?: React.ReactNode } & Record<string, unknown>) =>
+      React.createElement(tag, props, children)
+
+  const Progress = Object.assign(
+    ({ children, ...props }: { children?: React.ReactNode } & Record<string, unknown>) => (
+      <div data-testid="progress" {...props}>
+        {children}
+      </div>
+    ),
+    {
+      Indicator: ({ children, ...props }: { children?: React.ReactNode } & Record<string, unknown>) => (
+        <div data-testid="progress-indicator" {...props}>
+          {children}
+        </div>
+      ),
+    },
+  )
+
+  return {
+    YStack: create(),
+    XStack: create(),
+    Text: ({ children }: { children?: React.ReactNode }) => <span>{children}</span>,
+    Button: ({ children, onPress, ...props }: { children?: React.ReactNode; onPress?: () => void }) => (
+      <button type="button" onClick={onPress} {...props}>
+        {children}
+      </button>
+    ),
+    Progress,
+  }
+})
+
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { ReactNode } from 'react'
 import type {
   IPIPChoice,
   IPIPChoices,
@@ -8,8 +65,6 @@ import type {
   IPIPQuestion,
 } from '@app/core/features/personality-assessment/lib/ipip'
 import { DOMAIN_NAMES, DOMAIN_ORDER, QUESTIONS_PER_DOMAIN } from '@app/core/features/ipip-assessment/utils/domainGrouping'
-import { describe, expect, it, vi } from 'vitest'
-import { IPIPTestStep } from '../IPIPTestStep'
 
 const hoistedData = vi.hoisted(() => {
   const domainOrder: IPIPDomain[] = ['A', 'E', 'N', 'C', 'O']
@@ -49,6 +104,8 @@ const hoistedData = vi.hoisted(() => {
   return { mockQuestions, mockChoices }
 })
 
+import { IPIPTestStep } from '../IPIPTestStep'
+
 const createPrefilledAnswers = () =>
   hoistedData.mockQuestions.slice(0, QUESTIONS_PER_DOMAIN - 1).map((question, index) => ({
     id: question.id,
@@ -61,6 +118,28 @@ vi.mock('../lib/ipip', () => ({
   getQuestions: () => hoistedData.mockQuestions,
   getChoices: () => hoistedData.mockChoices,
 }))
+
+vi.mock('tamagui', async () => {
+  const actual = await vi.importActual<typeof import('tamagui')>('tamagui')
+  return {
+    ...actual,
+    Button: ({
+      onPress,
+      children,
+      accessibilityLabel,
+      disabled,
+    }: {
+      onPress?: () => void
+      children?: React.ReactNode
+      accessibilityLabel?: string
+      disabled?: boolean
+    }) => (
+      <button type="button" onClick={onPress} aria-label={accessibilityLabel} disabled={disabled}>
+        {children}
+      </button>
+    ),
+  }
+})
 
 describe('IPIPTestStep', () => {
   it('renders the current domain header using DOMAIN_NAMES for accessibility', () => {
