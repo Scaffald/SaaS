@@ -24,3 +24,6 @@ export type { SuccessStepProps } from './SuccessStep'
 
 export { ProgressIndicator } from './ProgressIndicator'
 export type { ProgressIndicatorProps } from './ProgressIndicator'
+
+export { QuickApplyModal } from './QuickApplyModal'
+export type { QuickApplyModalProps } from './QuickApplyModal'
