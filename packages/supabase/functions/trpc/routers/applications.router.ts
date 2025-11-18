@@ -21,6 +21,19 @@ const router = t.router;
 export const applicationsRouter = router({
   /**
    * Submit a new application
+   * 
+   * Supports both quick applications (screening questions only) and full applications
+   * (with custom questions and/or document uploads).
+   * 
+   * For quick applications:
+   * - Provide screening answers (current_location, willing_to_relocate, etc.)
+   * - Attachments are optional (can be empty object)
+   * - Set is_complete: true
+   * 
+   * For full applications:
+   * - Include custom_question_answers if job has custom questions
+   * - Include attachments (resume required, cover_letter optional)
+   * - Set is_complete: true
    */
   submit: publicProcedure
     .input(applicationSubmitSchema)

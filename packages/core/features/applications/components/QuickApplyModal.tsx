@@ -99,7 +99,7 @@ export function QuickApplyModal({
   const toast = useToastController()
 
   const submitMutation = api.applications.submit.useMutation({
-    onSuccess: (application) => {
+    onSuccess: (application: { id: string }) => {
       setShowSuccess(true)
       toast.show('Application sent successfully', {
         message: `Your application to ${jobTitle} has been submitted.`,
@@ -110,7 +110,7 @@ export function QuickApplyModal({
         handleClose()
       }, 2000)
     },
-    onError: (error) => {
+    onError: (error: { message?: string }) => {
       const message = error.message || 'Failed to submit application. Please try again.'
       toast.show('Error', {
         message,
@@ -283,8 +283,8 @@ export function QuickApplyModal({
           exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
           gap="$4"
           width="90%"
-          maxWidth={600}
-          maxHeight="90%"
+          maxW={600}
+          maxH="90%"
         >
           {/* Header */}
           <YStack gap="$2">
@@ -374,7 +374,8 @@ export function QuickApplyModal({
                   <Button
                     flex={1}
                     size="$4"
-                    theme={formData.willing_to_relocate ? 'info' : 'outlined'}
+                    theme={formData.willing_to_relocate ? 'info' : undefined}
+                    variant={formData.willing_to_relocate ? undefined : 'outlined'}
                     onPress={() => {
                       setFormData((prev) => ({ ...prev, willing_to_relocate: true }))
                     }}
@@ -385,7 +386,8 @@ export function QuickApplyModal({
                   <Button
                     flex={1}
                     size="$4"
-                    theme={!formData.willing_to_relocate ? 'info' : 'outlined'}
+                    theme={!formData.willing_to_relocate ? 'info' : undefined}
+                    variant={!formData.willing_to_relocate ? undefined : 'outlined'}
                     onPress={() => {
                       setFormData((prev) => ({ ...prev, willing_to_relocate: false }))
                     }}
@@ -404,7 +406,6 @@ export function QuickApplyModal({
                 <Select
                   value={getYearsExperienceValue()}
                   onValueChange={handleYearsExperienceChange}
-                  disabled={isSubmitting}
                 >
                   <Select.Trigger
                     id="years_experience"
@@ -491,7 +492,8 @@ export function QuickApplyModal({
                   <Button
                     flex={1}
                     size="$4"
-                    theme={formData.is_authorized_to_work ? 'info' : 'outlined'}
+                    theme={formData.is_authorized_to_work ? 'info' : undefined}
+                    variant={formData.is_authorized_to_work ? undefined : 'outlined'}
                     onPress={() => {
                       setFormData((prev) => ({ ...prev, is_authorized_to_work: true }))
                       validateField('is_authorized_to_work', true)
@@ -503,7 +505,8 @@ export function QuickApplyModal({
                   <Button
                     flex={1}
                     size="$4"
-                    theme={!formData.is_authorized_to_work ? 'info' : 'outlined'}
+                    theme={!formData.is_authorized_to_work ? 'info' : undefined}
+                    variant={!formData.is_authorized_to_work ? undefined : 'outlined'}
                     onPress={() => {
                       setFormData((prev) => ({ ...prev, is_authorized_to_work: false }))
                       validateField('is_authorized_to_work', false)
@@ -528,7 +531,6 @@ export function QuickApplyModal({
                 <Select
                   value={formData.earliest_start_date}
                   onValueChange={handleEarliestStartDateChange}
-                  disabled={isSubmitting}
                 >
                   <Select.Trigger
                     id="earliest_start_date"
