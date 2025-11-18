@@ -10,6 +10,7 @@ import {
   inquiryTemplateCreateSchema,
   inquiryTemplateUpdateSchema,
   inquiryTemplateApplySchema,
+  inquiryTemplateDataSchema,
 } from "@app/schemas";
 import { protectedProcedure, t } from "../middleware.ts";
 import { insertNotification } from "../../_shared/notifications/utils.ts";
@@ -507,6 +508,127 @@ async function getApplicationOrganizationId(
   return job?.organization_id ?? null;
 }
 
+const DEFAULT_WORKDAYS: Array<"monday" | "tuesday" | "wednesday" | "thursday" | "friday"> = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+];
+
+const DEFAULT_WORKING_HOURS = {
+  start: "09:00",
+  end: "17:00",
+};
+
+type SmartDefaultsPayload = Partial<z.infer<typeof inquiryTemplateDataSchema>>;
+
+function coerceEmploymentType(value: string | null): "permanent" | "temporary" | undefined {
+  if (!value) return undefined;
+  const normalized = value.toLowerCase();
+  if (normalized.includes("temp")) {
+    return "temporary";
+  }
+  if (normalized.includes("contract")) {
+    return "temporary";
+  }
+  if (normalized.includes("perm")) {
+    return "permanent";
+  }
+  return normalized === "temporary" ? "temporary" : normalized === "permanent" ? "permanent" : undefined;
+}
+
+function coerceRateType(value: string | null): "hourly" | "salary" | undefined {
+  if (!value) return undefined;
+  const normalized = value.toLowerCase();
+  if (normalized.includes("hour")) {
+    return "hourly";
+  }
+  if (normalized.includes("salary") || normalized.includes("annual")) {
+    return "salary";
+  }
+  return normalized === "hourly" ? "hourly" : normalized === "salary" ? "salary" : undefined;
+}
+
+function guessTimezoneFromLocation(location: string | null): string {
+  if (!location) return "America/New_York";
+  const normalized = location.toLowerCase();
+  if (/(seattle|portland|washington|oregon|pacific|ca\b|california|los angeles|san francisco|santa)/.test(normalized)) {
+    return "America/Los_Angeles";
+  }
+  if (/(denver|colorado|mountain)/.test(normalized)) {
+    return "America/Denver";
+  }
+  if (/(chicago|illinois|midwest|texas|houston|dallas|austin|central)/.test(normalized)) {
+    return "America/Chicago";
+  }
+  if (/(phoenix|arizona)/.test(normalized)) {
+    return "America/Phoenix";
+  }
+  return "America/New_York";
+}
+
+function getDefaultStartDate(): string {
+  const today = new Date();
+  const twoWeeksMs = 14 * 24 * 60 * 60 * 1000;
+  const target = new Date(today.getTime() + twoWeeksMs);
+  return target.toISOString().slice(0, 10);
+}
+
+function buildSmartDefaults(job: Record<string, any> | null): SmartDefaultsPayload {
+  if (!job) return {};
+
+  const defaults: SmartDefaultsPayload = {};
+
+  const employmentType = coerceEmploymentType(job.employment_type ?? job.employmentType ?? null);
+  if (employmentType) {
+    defaults.employmentType = employmentType;
+  }
+
+  const rateType = coerceRateType(job.pay_range_type ?? job.payRangeType ?? null);
+  if (rateType) {
+    defaults.rateType = rateType;
+  }
+
+  if (typeof job.pay_range_min_cents === "number") {
+    defaults.rateMinCents = job.pay_range_min_cents;
+  }
+  if (typeof job.pay_range_max_cents === "number") {
+    defaults.rateMaxCents = job.pay_range_max_cents;
+  }
+
+  defaults.workSchedule =
+    employmentType === "temporary"
+      ? "day_week"
+      : (job.work_schedule as "full_time" | "part_time" | "day_week") ?? "full_time";
+
+  defaults.workingHoursStart = DEFAULT_WORKING_HOURS.start;
+  defaults.workingHoursEnd = DEFAULT_WORKING_HOURS.end;
+  const timezoneFromAddress =
+    (job.address && typeof job.address === "object" && "timezone" in job.address
+      ? (job.address.timezone as string | null)
+      : null) ?? null;
+  defaults.workingHoursTimezone = guessTimezoneFromLocation(
+    job.timezone ?? timezoneFromAddress ?? job.location ?? (job.address?.city as string | null) ?? null,
+  );
+  defaults.workdays = DEFAULT_WORKDAYS;
+  defaults.employmentStartDate = getDefaultStartDate();
+
+  if (job.remote_option) {
+    defaults.workScheduleNegotiable = true;
+  }
+
+  if (job.overtime_eligible !== undefined) {
+    defaults.willingToWorkOvertime = job.overtime_eligible;
+  }
+
+  if (job.travel_percentage !== undefined) {
+    defaults.willingToTravel = job.travel_percentage > 0;
+  }
+
+  return defaults;
+}
+
 /**
  * Inquiries router - handles job inquiry and negotiation operations
  */
@@ -735,6 +857,66 @@ export const inquiriesRouter = router({
       return {
         templateData: template.template_data,
         templateId: template.id,
+      };
+    }),
+
+  /**
+   * Provide suggested inquiry defaults based on job/application metadata
+   */
+  getSmartDefaults: protectedProcedure
+    .input(z.object({ applicationId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+      const application = await verifyApplicationAccess(
+        supabase,
+        user.id,
+        input.applicationId,
+        true,
+      );
+
+      if (!application?.job_id) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Application is missing job context",
+        });
+      }
+
+      const { data: job, error: jobError } = await supabase
+        .schema("core")
+        .from("jobs")
+        .select(
+          `
+            id,
+            title,
+            location,
+            employment_type,
+            pay_range_min_cents,
+            pay_range_max_cents,
+            pay_range_type,
+            remote_option,
+            address,
+            timezone
+          `,
+        )
+        .eq("id", application.job_id)
+        .maybeSingle();
+
+      if (jobError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to load job context: ${jobError.message}`,
+          cause: jobError,
+        });
+      }
+
+      const defaults = buildSmartDefaults(job);
+      const appliedFields = Object.keys(defaults);
+
+      return {
+        defaults,
+        appliedFields,
+        jobTitle: job?.title ?? null,
+        jobLocation: job?.location ?? null,
       };
     }),
 

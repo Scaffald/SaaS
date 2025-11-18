@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from 'react'
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import { Platform } from 'react-native'
 import { Controller, FormProvider } from 'react-hook-form'
 import {
@@ -122,6 +122,8 @@ export function InquiryCreateForm({
   const [templateName, setTemplateName] = useState('')
   const [templateDescription, setTemplateDescription] = useState('')
   const [deletingTemplateId, setDeletingTemplateId] = useState<string | null>(null)
+  const [smartDefaultsApplied, setSmartDefaultsApplied] = useState(false)
+  const smartDefaultsAutoApplied = useRef(false)
 
   const {
     data: templatesData,
@@ -146,6 +148,16 @@ export function InquiryCreateForm({
   const applyTemplateMutation = api.inquiries.applyTemplate.useMutation()
   const deleteTemplateMutation = api.inquiries.deleteTemplate.useMutation()
 
+  const {
+    data: smartDefaultsData,
+    isLoading: isSmartDefaultsLoading,
+  } = api.inquiries.getSmartDefaults.useQuery(
+    { applicationId },
+    {
+      enabled: mode === 'create',
+    }
+  )
+
   const templateOptions = useMemo(
     () =>
       templateList.map((template, index) => ({
@@ -157,6 +169,9 @@ export function InquiryCreateForm({
       })),
     [templateList]
   )
+
+  const smartDefaults = useMemo(() => smartDefaultsData?.defaults ?? null, [smartDefaultsData])
+  const smartDefaultsFieldCount = smartDefaultsData?.appliedFields?.length ?? 0
 
   const getErrorMessage = useCallback((error: unknown, fallback: string) => {
     if (error instanceof Error) {
@@ -262,6 +277,22 @@ export function InquiryCreateForm({
     [deleteTemplateMutation, toast, selectedTemplateId, refetchTemplates, getErrorMessage]
   )
 
+  const handleApplySmartDefaults = useCallback(() => {
+    if (!smartDefaults || Object.keys(smartDefaults).length === 0) {
+      return
+    }
+    form.reset({
+      ...form.getValues(),
+      ...smartDefaults,
+    })
+    setSmartDefaultsApplied(true)
+  }, [form, smartDefaults])
+
+  const handleClearSmartDefaults = useCallback(() => {
+    form.reset()
+    setSmartDefaultsApplied(false)
+  }, [form])
+
   // Pre-populate form if initialData provided
   useEffect(() => {
     if (initialData && form) {
@@ -273,7 +304,7 @@ export function InquiryCreateForm({
     control,
     handleSubmit: handleFormSubmit,
     watch,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = form
 
   const watchedValues = watch()
@@ -285,6 +316,28 @@ export function InquiryCreateForm({
   const onSaveDraft = handleFormSubmit(async (data) => {
     await handleSaveDraft(data)
   })
+
+  useEffect(() => {
+    if (mode !== 'create') {
+      return
+    }
+    if (smartDefaultsAutoApplied.current) {
+      return
+    }
+    if (!smartDefaults || Object.keys(smartDefaults).length === 0) {
+      return
+    }
+    if (isDirty) {
+      return
+    }
+
+    form.reset({
+      ...form.getValues(),
+      ...smartDefaults,
+    })
+    smartDefaultsAutoApplied.current = true
+    setSmartDefaultsApplied(true)
+  }, [mode, smartDefaults, form, isDirty])
 
   // Format cents to dollars for display
   const formatCentsToDollars = (cents: number | undefined): string => {
@@ -418,6 +471,72 @@ export function InquiryCreateForm({
                   </Text>
                 )}
               </YStack>
+
+              {/* Smart Defaults Banner */}
+              {mode === 'create' && (
+                <YStack
+                  gap="$3"
+                  p="$3"
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  bg="$background"
+                  rounded="$4"
+                >
+                  <XStack
+                    justify="space-between"
+                    items="center"
+                    gap="$3"
+                    $sm={{ flexDirection: 'column' }}
+                  >
+                    <YStack gap="$1" flex={1}>
+                      <Text fontSize="$6" fontWeight="700">
+                        Smart defaults
+                      </Text>
+                      {isSmartDefaultsLoading ? (
+                        <Text fontSize="$3" color="$color11">
+                          Loading job-based recommendations…
+                        </Text>
+                      ) : smartDefaultsFieldCount > 0 ? (
+                        <Text fontSize="$3" color="$color11">
+                          {smartDefaultsApplied
+                            ? `Applied ${smartDefaultsFieldCount} fields from ${
+                                smartDefaultsData?.jobTitle ?? 'the job posting'
+                              }.`
+                            : `Prefill ${smartDefaultsFieldCount} fields from ${
+                                smartDefaultsData?.jobTitle ?? 'the job posting'
+                              }.`}
+                        </Text>
+                      ) : (
+                        <Text fontSize="$3" color="$color11">
+                          No defaults available for this job yet.
+                        </Text>
+                      )}
+                    </YStack>
+                    <XStack gap="$2" $sm={{ width: '100%' }}>
+                      <Button
+                        variant="outlined"
+                        onPress={handleClearSmartDefaults}
+                        disabled={!smartDefaultsApplied}
+                        $sm={{ flex: 1 }}
+                      >
+                        Clear
+                      </Button>
+                      <Button
+                        onPress={handleApplySmartDefaults}
+                        disabled={!smartDefaults || Object.keys(smartDefaults).length === 0}
+                        $sm={{ flex: 1 }}
+                      >
+                        {smartDefaultsApplied ? 'Reapply defaults' : 'Apply defaults'}
+                      </Button>
+                    </XStack>
+                  </XStack>
+                  {smartDefaultsData?.appliedFields && smartDefaultsData.appliedFields.length > 0 && (
+                    <Text fontSize="$2" color="$color11">
+                      Fields: {smartDefaultsData.appliedFields.join(', ')}
+                    </Text>
+                  )}
+                </YStack>
+              )}
 
               {/* Employment Section */}
               <YStack gap="$4">
