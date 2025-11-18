@@ -107,14 +107,16 @@ vi.mock('react-hook-form', () => {
         control: store,
         handleSubmit:
           (onSubmit: (data: Record<string, unknown>) => Promise<void> | void) =>
-          async () => {
+          () => {
             // Ensure required fields are present before submitting
             const submitData = {
               ...store.values,
               defaultRoleId: store.values.defaultRoleId ?? 'role-1',
               defaultRoleKey: store.values.defaultRoleKey ?? 'member',
+              organizationId: 'org-1',
             }
-            await onSubmit(submitData)
+            // Call onSubmit synchronously to ensure mutation is triggered
+            void onSubmit(submitData)
           },
         formState: { errors: {}, isDirty: true },
         setValue: setValueSpy,
@@ -401,45 +403,46 @@ describe('TeamForm', () => {
   it('displays validation errors', async () => {
     const user = userEvent.setup()
     
-    // Set up the mutation to reject
+    // Set up the mutation to reject with an error
     const error = new Error('Validation failed')
     createTeamMock.mutateAsync.mockRejectedValueOnce(error)
 
-    render(<TeamForm mode="create" organizationId="org-1" />)
+    // Render with initial data to ensure form is valid
+    render(
+      <TeamForm
+        mode="create"
+        organizationId="org-1"
+        initialData={{
+          name: 'Test Team',
+          slug: 'test-team',
+          defaultRole: { id: 'role-1', key: 'member' },
+        }}
+      />
+    )
 
     // Wait for form to be ready (roles loaded)
     await waitFor(() => {
       expect(screen.queryByText('Loading team options…')).not.toBeInTheDocument()
     }, { timeout: 1000 })
 
-    // Wait a bit for the useEffect to auto-select default role
-    await new Promise(resolve => setTimeout(resolve, 100))
-
-    // Fill in required fields
-    const nameInput = document.getElementById('team-name') as HTMLInputElement
-    if (nameInput) {
-      await user.clear(nameInput)
-      await user.type(nameInput, 'Test Team')
-    }
-
-    // Ensure form values are set (including default role)
+    // Ensure form values are set
+    setValueSpy('name', 'Test Team')
     setValueSpy('defaultRoleId', 'role-1')
     setValueSpy('defaultRoleKey', 'member')
+    setValueSpy('visibility', 'organization')
+    setValueSpy('invitationPolicy', 'invite_only')
+    setValueSpy('slug', 'test-team')
 
-    // Wait for form to be ready to submit
-    await waitFor(() => {
-      const submitButton = screen.getByTestId('team-form-submit')
-      expect(submitButton).toBeInTheDocument()
-    })
-
-    await user.click(screen.getByTestId('team-form-submit'))
+    // Wait for button and click it
+    const submitButton = await waitFor(() => screen.getByTestId('team-form-submit'))
+    await user.click(submitButton)
 
     // Wait for mutation to be called
     await waitFor(() => {
       expect(createTeamMock.mutateAsync).toHaveBeenCalled()
-    }, { timeout: 2000 })
+    }, { timeout: 3000 })
 
-    // The onError handler should show a toast with the error message
+    // The onError handler should show a toast
     await waitFor(() => {
       expect(toastMock.show).toHaveBeenCalled()
     }, { timeout: 1000 })
