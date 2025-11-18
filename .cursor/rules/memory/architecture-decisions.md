@@ -203,6 +203,18 @@ import { ComponentB } from './components/ComponentB'
 - **Authenticated user** context in policies
 - **Input validation** with Zod schemas
 
+## Recent Architecture Updates
+
+### AWS Notifications Bootstrap (Nov 18, 2025)
+- **Decision**: Stand up AWS-native notification backend for alerts (email + SMS) to decouple from third-party SaaS tools and keep infra under direct control.
+- **Scope**:
+  - SES domain `alerts.scaffald.com` verified with configuration set `scf-alerts` and SNS topic for bounce/complaint events.
+  - SNS + Pinpoint SMS foundation with transactional defaults and future analytics via Pinpoint project `alerts-barebones`.
+  - Lambda dispatchers (`alerts-email-dispatcher`, `alerts-sms-dispatcher`) deployed with IAM role `alerts-lambda-notifications`; temporary open function URLs enable quick integration from Supabase/Edge Functions.
+  - Route53 hosted zone `scaffald.com` created to eventually host DNS; SES TXT/DKIM records preprovisioned for a seamless move.
+- **Rationale**: Gain a low-cost, first-party path for transactional notifications while preserving the ability to layer marketing tooling later.
+- **Future Enhancements**: add retries/DLQs, secure the Lambda endpoints (IAM/API Gateway), port existing DNS records before switching name servers, integrate with Supabase queues.
+
 ## Performance Decisions
 
 ### Build Optimization

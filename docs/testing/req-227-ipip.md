@@ -1,41 +1,31 @@
 # REQ-227 • IPIP Personality System — Current Coverage Gaps
 
 ## 1. Coverage Artifacts Snapshot
-- The generated Istanbul report under `coverage/` contains folders for `core/discover`, `core/office`, and `core/profile`, but **no entries for any `ipip-*` modules**. Running `rg -l "ipip" coverage` returns no matches, which confirms the new IPIP feature set is presently **missing from collected coverage metrics**.
-- Because these modules are absent from the latest coverage output, current line/branch/file percentages are effectively 0% for:
+- Istanbul’s aggregated HTML still lacks the new IPIP modules because the latest run predates these suites. Until CI re-generates coverage, the report under `coverage/` will continue to exclude:
   - `packages/core/features/ipip-assessment/**/*`
-  - `packages/core/features/personality-assessment/lib/ipip/*` (newer helper files are not exercised beyond legacy unit specs)
-  - `packages/core/features/ipip-assessment/components/*`
+  - `packages/core/features/personality-assessment/lib/ipip/*`
   - `packages/supabase/functions/trpc/routers/personality-assessment.router.ts`
-  - `tests/e2e/**` flows dedicated to IPIP/Archetype UX
+  - `tests/e2e/**` cases dedicated to IPIP/Archetype UX
+- Interim verification relies on targeted commands:
+  - `CI=1 pnpm vitest run --pool forks packages/core/features/ipip-assessment/hooks/__tests__/useIPIPResults.test.tsx …`
+  - `pnpm --filter @app/supabase test packages/supabase/tests/routers/personality-assessment.test.ts`
+  - `pnpm test:e2e -- --grep "@REQ-227"`
 
-## 2. Existing Automated Tests
+## 2. Existing Automated Tests (Current State)
 
 ### Core Utility / Legacy Specs
-- `packages/core/features/personality-assessment/lib/ipip/__tests__/score.test.ts` covers the legacy `getScore` helper’s aggregation logic but **does not exercise**:
-  - 120-question fixtures / deterministic final outputs
-  - error surfacing when custom `calcHandler` throws
-  - facet/domain boundary handling used by the new micro-block flow
-- `packages/core/features/ipip-assessment/utils/__tests__/` currently only tests:
-  - `archetypeMapper` happy-path confidence calculations
-  - `scoreNormalizer` basic percentage math
-  - `narrativeGenerator` simple summary creation
-  - `domainGrouping` existence (but lacks edge-index assertions)
+- `packages/core/features/personality-assessment/lib/ipip/__tests__/score.test.ts` now uses 120-question fixtures, custom handler errors, and facet boundary checks.
+- `packages/core/features/ipip-assessment/utils/__tests__/` covers `domainGrouping`, `scoreNormalizer`, `narrativeGenerator`, and `archetypeMapper` edge cases (rounding, tie-breaking, fallback messaging).
 
 ### Hooks & Components
-- `packages/core/features/ipip-assessment/__tests__/IPIPAssessmentWizard.test.tsx` exercises the wizard shell only (domain completion toast & save payload). No tests exist for:
-  - `useIPIPResults`
-  - `IPIPResultsPage`, `NarrativeView`, `ChartView`, `DomainCard`, `FacetList`, or `ShareResults`
-  - Partial-results banners, warning states, or cooldown UX
+- `packages/core/features/ipip-assessment/hooks/__tests__/useIPIPResults.test.tsx` verifies partial data, memoized errors, and archetype formatting.
+- Component suites exercise `NarrativeView`, `DomainCard`, `FacetList`, `ChartView`, `ShareResults`, and `IPIPResultsPage` for tabbing/accessibility, partial warnings, share UX, and archetype badges.
 
 ### Supabase Router (Deno)
-- `packages/supabase/tests/routers/personality-assessment.test.ts` contains **two** baseline tests that only verify `getAssessmentStatus` auth + record creation. None of the REQ-227 endpoints (`saveIPIPProgress`, `getArchetype*`, share token mutations, XP awards, cooldown enforcement) are covered.
+- `packages/supabase/tests/routers/personality-assessment.test.ts` now validates `saveIPIPProgress` auth, partial vs full completions (XP + archetype history), share token lifecycle, and `getSharedResults`.
 
 ### End-to-End / Playwright
-- `tests/e2e/dashboard/test-req-227-ipip-results.spec.ts` validates that the results page loads tabs and (optionally) renders the share card. It does **not**:
-  - Drive the micro-block completion flow
-  - Assert archetype badge content
-  - Hit share token flows, cooldown UI, or error fallbacks
+- `tests/e2e/dashboard/test-req-227-ipip-results.spec.ts` navigates tabs, verifies share privacy toggles, generates a link, and loads the public shared page. (Micro-block completion flows remain future work once fixtures allow.)
 
 ## 3. Gap Summary (Mapped to Plan Tasks)
 | Area | Current State | High-Priority Additions |
@@ -47,4 +37,17 @@
 | **Documentation / tracking** | ✅ This file now documents coverage status and gaps | Keep this doc + testing matrix in sync whenever suites expand; capture WCAG/perf checkpoints per release |
 
 These observations establish the baseline required by Task **“Document current IPIP coverage gaps”** and feed directly into the follow-up todo items (unit expansions, hook/component tests, backend + e2e coverage, and documentation updates).
+
+## 4. Accessibility & WCAG Touchpoints
+- **Keyboard navigation**: Tabs (`NarrativeView`/`ChartView`) and share privacy toggles expose ARIA labels; Playwright checks ensure tabs are visible and clickable via `getByRole`.
+- **Screen reader text**: `ChartView` renders a `VisuallyHidden` summary capturing radar data; component tests assert fallback messaging.
+- **Color contrast**: Domain cards/facets rely on Tamagui semantic tokens (`$color12`, `$green10`, etc.) which map to >=4.5:1 combinations. Manual verification checklist:
+  1. Run `pnpm ui:check` to ensure theme tokens remain compliant.
+  2. In Expo web, tab through `/dashboard/assessments/ipip/results` and confirm visible focus indicators on tabs, share switches, CTA buttons.
+  3. VoiceOver/NVDA smoke test: ensure “Your Personality Results” header announces and `ShareResults` lock state conveys completion requirement.
+
+## 5. Performance Considerations
+- Radar/facet charts animate via `react-native-gifted-charts` at 800–1000 ms durations. Keep animations smooth by limiting data arrays (5 domains, 6 facets each) and deferring heavy computations to hooks (`useMemo`).
+- Supabase router tests insert/delete fixtures using UUID suffixes to avoid slow global cleanups. If E2E flows start creating large answer sets, consider nightly cron to purge `personality_assessments` test rows.
+- Recommended quick perf check before release: open `/dashboard/assessments/ipip/results` in Expo web, record Lighthouse > Performance at least 80+, ensure initial paint <2 s on M2 MBP class hardware.
 

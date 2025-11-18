@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import type { ReactNode } from 'react'
 import type { IPIPScore, IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
 import type { NormalizedScores } from '../../utils/scoreNormalizer'
 import { describe, expect, it, vi } from 'vitest'
@@ -12,6 +13,12 @@ vi.mock('@app/ui', () => ({
   ),
   BarChart: (props: { data: unknown[]; domain?: string }) => (
     <div data-testid={`bar-chart-${props.data?.length ?? 0}`}>{props.domain}</div>
+  ),
+}))
+
+vi.mock('@tamagui/visually-hidden', () => ({
+  VisuallyHidden: ({ children }: { children: ReactNode }) => (
+    <div data-testid="sr-only">{children}</div>
   ),
 }))
 

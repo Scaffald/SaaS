@@ -22,6 +22,7 @@ import {
   Palette,
   ShieldCheck,
   Users,
+  CreditCard,
 } from "@tamagui/lucide-icons";
 
 // ============================================================================
@@ -323,6 +324,14 @@ const ROUTES_CONFIG = {
     menuCategory: "system",
     menuOrder: 2,
     menuIcon: HardDrive,
+  },
+  OFFICE_PAYMENTS: {
+    path: "/office/payments",
+    title: "Payment Analytics",
+    isProtected: true,
+    menuCategory: "system",
+    menuOrder: 3,
+    menuIcon: CreditCard,
   },
   OFFICE_SETTINGS: {
     path: "/office/settings",
@@ -645,6 +654,7 @@ export const RouteBuilder = {
   officeBackgroundChecksAdmin: () => ROUTES.OFFICE_ATS_CHECKS_ADMIN.path,
   officeIdVerifications: () => ROUTES.OFFICE_ATS_ID_VERIFICATIONS.path,
   officeStorage: () => ROUTES.OFFICE_STORAGE.path,
+  officePayments: () => ROUTES.OFFICE_PAYMENTS.path,
   dashboardBackgroundCheck: () =>
     ROUTES.DASHBOARD_PROFILE_BACKGROUND_CHECK.path,
   dashboardBackgroundCheckInitiate: () =>
@@ -841,6 +851,7 @@ export const ROUTE_HIERARCHY: readonly RouteHierarchyNode[] = [
       },
       { key: "OFFICE_NOTIFICATIONS" },
       { key: "OFFICE_STORAGE" },
+      { key: "OFFICE_PAYMENTS" },
       {
         key: "OFFICE_SETTINGS",
         children: [
@@ -906,6 +917,8 @@ export const OFFICE_ROUTES = {
   ID_VERIFICATIONS: ROUTES.OFFICE_ATS_ID_VERIFICATIONS,
   BACKGROUND_CHECKS_ADMIN: ROUTES.OFFICE_ATS_CHECKS_ADMIN,
   NOTIFICATIONS: ROUTES.OFFICE_NOTIFICATIONS,
+  STORAGE: ROUTES.OFFICE_STORAGE,
+  PAYMENTS: ROUTES.OFFICE_PAYMENTS,
   SETTINGS: ROUTES.OFFICE_SETTINGS,
   SETTINGS_GEOGRAPHIC: ROUTES.OFFICE_SETTINGS_GEOGRAPHIC,
   SETTINGS_STRIPE: ROUTES.OFFICE_SETTINGS_STRIPE,

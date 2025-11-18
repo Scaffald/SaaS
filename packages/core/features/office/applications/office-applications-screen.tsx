@@ -81,7 +81,7 @@ export const OfficeApplicationsScreen = () => {
       const statusMap: Record<string, ApplicationStatus> = {
         pending: 'new',
         reviewing: 'screen',
-    inquired: 'inquired',
+        inquired: 'inquired',
         interview: 'interview',
         offer: 'offer',
         hired: 'hired',

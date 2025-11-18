@@ -78,6 +78,41 @@ vi.mock('@tamagui/toast', () => ({
   }),
 }))
 
+vi.mock('react-hook-form', async () => {
+  const actual = await vi.importActual<typeof import('react-hook-form')>('react-hook-form')
+  return {
+    ...actual,
+    useForm: () => {
+      const values: Record<string, string> = {
+        reason: '',
+        otherReason: '',
+        details: '',
+      }
+
+      return {
+        control: {},
+        handleSubmit: (fn: (data: typeof values) => Promise<void> | void) => async () => {
+          await fn({ ...values })
+        },
+        reset: vi.fn((next?: Partial<typeof values>) => {
+          Object.assign(values, { reason: '', otherReason: '', details: '', ...next })
+        }),
+        watch: () => ({ ...values }),
+        formState: {
+          isDirty: true,
+          errors: {},
+        },
+        setValue: vi.fn(
+          (key: keyof typeof values, value: string) => {
+            values[key] = value
+          },
+        ),
+        getValues: () => ({ ...values }),
+      }
+    },
+  }
+})
+
 const { useDispute } = await import('../useDispute')
 
 function createWrapper() {
@@ -112,15 +147,29 @@ describe('useDispute hook', () => {
       refetch: vi.fn(),
     })
 
+    mocks.createUploadUrlUseMutation.mockReturnValue({
+      mutateAsync: mocks.createUploadUrlMutateAsync,
+    })
+
+    mocks.submitDisputeUseMutation.mockReturnValue({
+      mutateAsync: mocks.submitDisputeMutateAsync,
+    })
+
     mocks.createUploadUrlMutateAsync.mockResolvedValue({
       bucket: 'background-check-documents',
       storagePath: 'user/check/document.pdf',
       token: 'signed-token',
+      documentType: 'dispute_supporting_1',
     })
 
     mocks.submitDisputeMutateAsync.mockResolvedValue({
       id: 'dispute-1',
       status: 'pending',
+    })
+
+    mocks.storageUpload.mockResolvedValue({
+      data: null,
+      error: null,
     })
   })
 
@@ -151,6 +200,7 @@ describe('useDispute hook', () => {
     })
 
     expect(result.current.attachments).toHaveLength(1)
+    expect(result.current.attachmentError).toBeNull()
     expect(result.current.attachments[0]).toMatchObject({
       name: 'evidence.pdf',
       mimeType: 'application/pdf',
@@ -163,8 +213,16 @@ describe('useDispute hook', () => {
 
     const { result } = renderHook(() => useDispute({ checkId: 'check-123' }), { wrapper })
 
+    expect(mocks.createUploadUrlUseMutation).toHaveBeenCalled()
+    expect(mocks.submitDisputeUseMutation).toHaveBeenCalled()
+
     const fileContent = 'x'.repeat(512)
     const file = new File([fileContent], 'evidence.pdf', { type: 'application/pdf' })
+    if (!('arrayBuffer' in file)) {
+      Object.defineProperty(file, 'arrayBuffer', {
+        value: async () => new TextEncoder().encode(fileContent).buffer,
+      })
+    }
 
     await act(async () => {
       await result.current.addAttachment({
@@ -172,6 +230,8 @@ describe('useDispute hook', () => {
         file,
       })
     })
+
+    expect(result.current.attachments).toHaveLength(1)
 
     await act(async () => {
       result.current.form.setValue('reason', 'incorrect_records', { shouldDirty: true })
@@ -183,10 +243,15 @@ describe('useDispute hook', () => {
     })
 
     let success = false
+    const submitDisputeFn = result.current.submitDispute
+
     await act(async () => {
-      success = await result.current.submitDispute()
+      success = await submitDisputeFn()
     })
 
+    expect(mocks.createUploadUrlMutateAsync).toHaveBeenCalled()
+    expect(mocks.submitDisputeMutateAsync).toHaveBeenCalled()
+    expect(result.current.submissionError).toBeNull()
     expect(success).toBe(true)
     expect(mocks.createUploadUrlMutateAsync).toHaveBeenCalledWith({
       background_check_id: 'check-123',

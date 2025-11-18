@@ -1,0 +1,58 @@
+{
+  "Comment": "Add SES verification + DKIM records for alerts.scaffald.com",
+  "Changes": [
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "_amazonses.alerts.scaffald.com.",
+        "Type": "TXT",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "\"mJgyMJb0eMplU6Dsb5lngH6cr7HNCWwkWfHncACUq/c=\""
+          }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "p6ieaar322qoeqp3pua7q7z2qx3g3igv._domainkey.alerts.scaffald.com.",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "p6ieaar322qoeqp3pua7q7z2qx3g3igv.dkim.amazonses.com"
+          }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "pe735hzppzgozimyzvbel5nihjqweggs._domainkey.alerts.scaffald.com.",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "pe735hzppzgozimyzvbel5nihjqweggs.dkim.amazonses.com"
+          }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "y5omsbta6szh56upw3hfpx3cpkev6hk4._domainkey.alerts.scaffald.com.",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "y5omsbta6szh56upw3hfpx3cpkev6hk4.dkim.amazonses.com"
+          }
+        ]
+      }
+    }
+  ]
+}
+

@@ -246,6 +246,277 @@ export const paymentsRouter = t.router({
 
       return { ok: true };
     }),
+
+  /**
+   * Admin: Get payment analytics and KPIs
+   */
+  adminGetAnalytics: officeProcedure
+    .input(
+      z
+        .object({
+          startDate: z.string().datetime().optional(),
+          endDate: z.string().datetime().optional(),
+          organizationId: z.string().uuid().optional(),
+          transactionType: z
+            .enum([
+              "success_fee_upfront",
+              "success_fee_final",
+              "background_check",
+              "background_check_shared",
+              "id_verification",
+              "credit_deposit",
+              "credit_refund",
+            ])
+            .optional(),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const { supabaseAdmin } = ctx;
+
+      const startDate = input?.startDate
+        ? new Date(input.startDate)
+        : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // Default: last 30 days
+      const endDate = input?.endDate ? new Date(input.endDate) : new Date();
+
+      let query = supabaseAdmin
+        .schema("core")
+        .from("payment_transactions")
+        .select("*")
+        .gte("created_at", startDate.toISOString())
+        .lte("created_at", endDate.toISOString());
+
+      if (input?.organizationId) {
+        query = query.eq("organization_id", input.organizationId);
+      }
+
+      if (input?.transactionType) {
+        query = query.eq("transaction_type", input.transactionType);
+      }
+
+      const { data: transactions, error } = await query;
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to load payment analytics: ${error.message}`,
+        });
+      }
+
+      const allTransactions = transactions ?? [];
+
+      // Calculate KPIs
+      const totalRevenue = allTransactions
+        .filter((t) => t.status === "succeeded")
+        .reduce((sum, t) => sum + (t.amount_cents ?? 0), 0);
+
+      const totalTransactions = allTransactions.length;
+      const succeededTransactions = allTransactions.filter(
+        (t) => t.status === "succeeded",
+      ).length;
+      const failedTransactions = allTransactions.filter(
+        (t) => t.status === "failed",
+      ).length;
+      const pendingTransactions = allTransactions.filter(
+        (t) => t.status === "pending",
+      ).length;
+
+      const successRate =
+        totalTransactions > 0
+          ? (succeededTransactions / totalTransactions) * 100
+          : 0;
+
+      // Breakdown by transaction type
+      const byType = allTransactions.reduce(
+        (acc, t) => {
+          const type = t.transaction_type ?? "unknown";
+          if (!acc[type]) {
+            acc[type] = {
+              count: 0,
+              revenue: 0,
+              succeeded: 0,
+              failed: 0,
+            };
+          }
+          acc[type].count += 1;
+          if (t.status === "succeeded") {
+            acc[type].revenue += t.amount_cents ?? 0;
+            acc[type].succeeded += 1;
+          }
+          if (t.status === "failed") {
+            acc[type].failed += 1;
+          }
+          return acc;
+        },
+        {} as Record<
+          string,
+          { count: number; revenue: number; succeeded: number; failed: number }
+        >,
+      );
+
+      // Breakdown by status
+      const byStatus = allTransactions.reduce(
+        (acc, t) => {
+          const status = t.status ?? "unknown";
+          acc[status] = (acc[status] ?? 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
+
+      // Time series data (daily revenue)
+      const dailyRevenue = allTransactions
+        .filter((t) => t.status === "succeeded")
+        .reduce(
+          (acc, t) => {
+            const date = new Date(t.created_at).toISOString().split("T")[0]!;
+            acc[date] = (acc[date] ?? 0) + (t.amount_cents ?? 0);
+            return acc;
+          },
+          {} as Record<string, number>,
+        );
+
+      // Failed transactions queue
+      const failedQueue = allTransactions
+        .filter((t) => t.status === "failed")
+        .map((t) => ({
+          id: t.id,
+          transactionType: t.transaction_type,
+          amountCents: t.amount_cents,
+          failureReason: t.failure_reason,
+          createdAt: t.created_at,
+          failedAt: t.failed_at,
+          organizationId: t.organization_id,
+          userId: t.user_id,
+        }))
+        .sort(
+          (a, b) =>
+            new Date(b.failed_at ?? b.created_at).getTime() -
+            new Date(a.failed_at ?? a.created_at).getTime(),
+        );
+
+      return {
+        kpis: {
+          totalRevenue,
+          totalTransactions,
+          succeededTransactions,
+          failedTransactions,
+          pendingTransactions,
+          successRate: Math.round(successRate * 100) / 100,
+        },
+        breakdowns: {
+          byType,
+          byStatus,
+        },
+        timeSeries: {
+          dailyRevenue,
+        },
+        failedQueue,
+      };
+    }),
+
+  /**
+   * Admin: List payment transactions with filters
+   */
+  adminListTransactions: officeProcedure
+    .input(
+      z
+        .object({
+          limit: z.number().int().positive().max(500).default(100),
+          offset: z.number().int().nonnegative().default(0),
+          status: z
+            .enum(["pending", "succeeded", "failed", "refunded", "cancelled"])
+            .optional(),
+          transactionType: z
+            .enum([
+              "success_fee_upfront",
+              "success_fee_final",
+              "background_check",
+              "background_check_shared",
+              "id_verification",
+              "credit_deposit",
+              "credit_refund",
+            ])
+            .optional(),
+          organizationId: z.string().uuid().optional(),
+          startDate: z.string().datetime().optional(),
+          endDate: z.string().datetime().optional(),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const { supabaseAdmin } = ctx;
+
+      let query = supabaseAdmin
+        .schema("core")
+        .from("payment_transactions")
+        .select(
+          `
+          *,
+          organization:organizations(id, name),
+          user:users(id, display_name, email)
+        `,
+        )
+        .order("created_at", { ascending: false })
+        .range(input?.offset ?? 0, (input?.offset ?? 0) + (input?.limit ?? 100) - 1);
+
+      if (input?.status) {
+        query = query.eq("status", input.status);
+      }
+
+      if (input?.transactionType) {
+        query = query.eq("transaction_type", input.transactionType);
+      }
+
+      if (input?.organizationId) {
+        query = query.eq("organization_id", input.organizationId);
+      }
+
+      if (input?.startDate) {
+        query = query.gte("created_at", input.startDate);
+      }
+
+      if (input?.endDate) {
+        query = query.lte("created_at", input.endDate);
+      }
+
+      const { data, error, count } = await query;
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to load transactions: ${error.message}`,
+        });
+      }
+
+      return {
+        items: (data ?? []).map((row) => ({
+          id: row.id,
+          organizationId: row.organization_id,
+          organizationName:
+            (row.organization as { name?: string } | null)?.name ?? null,
+          userId: row.user_id,
+          userName:
+            (row.user as { display_name?: string; email?: string } | null)
+              ?.display_name ??
+            (row.user as { display_name?: string; email?: string } | null)
+              ?.email ??
+            null,
+          amountCents: row.amount_cents,
+          currency: row.currency,
+          transactionType: row.transaction_type,
+          status: row.status,
+          failureReason: row.failure_reason,
+          stripePaymentIntentId: row.stripe_payment_intent_id,
+          createdAt: row.created_at,
+          succeededAt: row.succeeded_at,
+          failedAt: row.failed_at,
+          refundedAt: row.refunded_at,
+          metadata: row.metadata ?? {},
+        })),
+        totalCount: count ?? 0,
+      };
+    }),
 });
 
 
