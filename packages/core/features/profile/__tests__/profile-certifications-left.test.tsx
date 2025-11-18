@@ -170,86 +170,88 @@ const queryState = vi.hoisted(() => ({
 const refetchTree = vi.fn()
 const addCertificationSpy = vi.fn().mockResolvedValue({ success: true })
 
-const noopMutation = () => ({
-  mutateAsync: vi.fn(),
-  isPending: false,
-})
+const apiMock = vi.hoisted(() => {
+  const noopMutation = () => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+  })
 
-vi.mock('@app/core/utils/api', () => ({
-  api: {
-    profile: {
-      certifications: {
-        getUserCertificationTree: {
-          useQuery: () => ({
-            data: queryState.tree,
-            isLoading: false,
-            refetch: refetchTree,
-          }),
-        },
-        getTopLevelCertifications: {
-          useQuery: () => ({
-            data: queryState.searchResults,
-            isLoading: false,
-          }),
-        },
-        addCertification: {
-          useMutation: () => ({
-            mutateAsync: addCertificationSpy,
-            isPending: false,
-          }),
-        },
-        addTopLevelCertification: {
-          useMutation: noopMutation,
-        },
-        addCategoryCertification: {
-          useMutation: noopMutation,
-        },
-        toggleSpecificCertification: {
-          useMutation: noopMutation,
-        },
-        removeTopLevelCertification: {
-          useMutation: () => ({
-            mutateAsync: vi.fn(),
-            isLoading: false,
-          }),
-        },
-        saveCertifications: {
-          useMutation: () => ({
-            mutateAsync: vi.fn(),
-            isPending: false,
-          }),
-        },
-        uploadCertificationFile: {
-          useMutation: () => ({
-            mutateAsync: vi.fn(),
-            isPending: false,
-          }),
-        },
-      },
-    },
-    useContext: () => ({
+  return {
+    api: {
       profile: {
         certifications: {
           getUserCertificationTree: {
-            invalidate: vi.fn(),
+            useQuery: () => ({
+              data: queryState.tree,
+              isLoading: false,
+              refetch: refetchTree,
+            }),
+          },
+          getTopLevelCertifications: {
+            useQuery: () => ({
+              data: queryState.searchResults,
+              isLoading: false,
+            }),
+          },
+          addCertification: {
+            useMutation: () => ({
+              mutateAsync: addCertificationSpy,
+              isPending: false,
+            }),
+          },
+          addTopLevelCertification: {
+            useMutation: noopMutation,
+          },
+          addCategoryCertification: {
+            useMutation: noopMutation,
+          },
+          toggleSpecificCertification: {
+            useMutation: noopMutation,
+          },
+          removeTopLevelCertification: {
+            useMutation: () => ({
+              mutateAsync: vi.fn(),
+              isLoading: false,
+            }),
+          },
+          saveCertifications: {
+            useMutation: () => ({
+              mutateAsync: vi.fn(),
+              isPending: false,
+            }),
+          },
+          uploadCertificationFile: {
+            useMutation: () => ({
+              mutateAsync: vi.fn(),
+              isPending: false,
+            }),
           },
         },
       },
-    }),
-  },
-}))
+      useContext: () => ({
+        profile: {
+          certifications: {
+            getUserCertificationTree: {
+              invalidate: vi.fn(),
+            },
+          },
+        },
+      }),
+    },
+  }
+})
 
-let ProfileCertificationsLeft: React.ComponentType | null = null
+vi.mock('@app/core/utils/api', () => apiMock)
+
+// Import component after all mocks are set up
+let ProfileCertificationsLeft: React.ComponentType<{ onSelectCertificationForProof?: (certId: string, certTitle: string) => void }>
+beforeAll(async () => {
+  const module = await import('../profile-certifications-left')
+  ProfileCertificationsLeft = module.ProfileCertificationsLeft
+})
 
 describe('ProfileCertificationsLeft', () => {
-  beforeAll(async () => {
-    ;({ ProfileCertificationsLeft } = await import('../profile-certifications-left'))
-  })
-
   const renderComponent = () => {
-    if (!ProfileCertificationsLeft) {
-      throw new Error('ProfileCertificationsLeft failed to load')
-    }
     return render(<ProfileCertificationsLeft />)
   }
 
