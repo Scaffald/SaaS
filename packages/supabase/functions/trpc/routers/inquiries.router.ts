@@ -10,7 +10,7 @@ import {
   inquiryTemplateCreateSchema,
   inquiryTemplateUpdateSchema,
   inquiryTemplateApplySchema,
-  inquiryTemplateDataSchema,
+  type InquiryCreateInput,
 } from "@app/schemas";
 import { protectedProcedure, t } from "../middleware.ts";
 import { insertNotification } from "../../_shared/notifications/utils.ts";
@@ -508,6 +508,84 @@ async function getApplicationOrganizationId(
   return job?.organization_id ?? null;
 }
 
+type InquiryDefaultField = keyof InquiryCreateInput;
+
+function formatDateOnly(value?: string | null) {
+  if (!value) return null;
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return parsed.toISOString().split("T")[0];
+}
+
+function mapEmploymentTypeDefault(
+  value?: string | null,
+): InquiryCreateInput["employmentType"] | undefined {
+  if (!value) return undefined;
+  const normalized = value.toLowerCase();
+  if (normalized.includes("temp") || normalized.includes("contract") || normalized.includes("intern")) {
+    return "temporary";
+  }
+  if (normalized.includes("perm")) {
+    return "permanent";
+  }
+  if (normalized === "temporary" || normalized === "contract") {
+    return "temporary";
+  }
+  if (normalized === "permanent") {
+    return "permanent";
+  }
+  return undefined;
+}
+
+function mapWorkScheduleDefault(
+  value?: string | null,
+): InquiryCreateInput["workSchedule"] | undefined {
+  if (!value) return undefined;
+  const normalized = value.toLowerCase();
+  if (normalized.includes("part")) return "part_time";
+  if (normalized.includes("full")) return "full_time";
+  if (normalized.includes("day") || normalized.includes("shift") || normalized.includes("contract")) return "day_week";
+  if (normalized === "full_time") return "full_time";
+  if (normalized === "part_time") return "part_time";
+  if (normalized === "day_week") return "day_week";
+  return undefined;
+}
+
+function mapRateTypeDefault(
+  value?: string | null,
+): InquiryCreateInput["rateType"] | undefined {
+  if (!value) return undefined;
+  const normalized = value.toLowerCase();
+  if (normalized.includes("hour")) return "hourly";
+  if (normalized.includes("salary") || normalized.includes("annual") || normalized.includes("year")) {
+    return "salary";
+  }
+  if (normalized === "hourly") return "hourly";
+  if (normalized === "salary") return "salary";
+  return undefined;
+}
+
+function addDefaultField(
+  defaults: Partial<InquiryCreateInput>,
+  fields: InquiryDefaultField[],
+  key: InquiryDefaultField,
+  value: InquiryCreateInput[typeof key] | null | undefined,
+) {
+  if (value === undefined || value === null) {
+    return;
+  }
+  if (typeof value === "string" && value.trim().length === 0) {
+    return;
+  }
+  if (Array.isArray(value) && value.length === 0) {
+    return;
+  }
+  defaults[key] = value;
+  if (!fields.includes(key)) {
+    fields.push(key);
+  }
+}
+
 const DEFAULT_WORKDAYS: Array<"monday" | "tuesday" | "wednesday" | "thursday" | "friday"> = [
   "monday",
   "tuesday",
@@ -520,35 +598,6 @@ const DEFAULT_WORKING_HOURS = {
   start: "09:00",
   end: "17:00",
 };
-
-type SmartDefaultsPayload = Partial<z.infer<typeof inquiryTemplateDataSchema>>;
-
-function coerceEmploymentType(value: string | null): "permanent" | "temporary" | undefined {
-  if (!value) return undefined;
-  const normalized = value.toLowerCase();
-  if (normalized.includes("temp")) {
-    return "temporary";
-  }
-  if (normalized.includes("contract")) {
-    return "temporary";
-  }
-  if (normalized.includes("perm")) {
-    return "permanent";
-  }
-  return normalized === "temporary" ? "temporary" : normalized === "permanent" ? "permanent" : undefined;
-}
-
-function coerceRateType(value: string | null): "hourly" | "salary" | undefined {
-  if (!value) return undefined;
-  const normalized = value.toLowerCase();
-  if (normalized.includes("hour")) {
-    return "hourly";
-  }
-  if (normalized.includes("salary") || normalized.includes("annual")) {
-    return "salary";
-  }
-  return normalized === "hourly" ? "hourly" : normalized === "salary" ? "salary" : undefined;
-}
 
 function guessTimezoneFromLocation(location: string | null): string {
   if (!location) return "America/New_York";
@@ -573,60 +622,6 @@ function getDefaultStartDate(): string {
   const twoWeeksMs = 14 * 24 * 60 * 60 * 1000;
   const target = new Date(today.getTime() + twoWeeksMs);
   return target.toISOString().slice(0, 10);
-}
-
-function buildSmartDefaults(job: Record<string, any> | null): SmartDefaultsPayload {
-  if (!job) return {};
-
-  const defaults: SmartDefaultsPayload = {};
-
-  const employmentType = coerceEmploymentType(job.employment_type ?? job.employmentType ?? null);
-  if (employmentType) {
-    defaults.employmentType = employmentType;
-  }
-
-  const rateType = coerceRateType(job.pay_range_type ?? job.payRangeType ?? null);
-  if (rateType) {
-    defaults.rateType = rateType;
-  }
-
-  if (typeof job.pay_range_min_cents === "number") {
-    defaults.rateMinCents = job.pay_range_min_cents;
-  }
-  if (typeof job.pay_range_max_cents === "number") {
-    defaults.rateMaxCents = job.pay_range_max_cents;
-  }
-
-  defaults.workSchedule =
-    employmentType === "temporary"
-      ? "day_week"
-      : (job.work_schedule as "full_time" | "part_time" | "day_week") ?? "full_time";
-
-  defaults.workingHoursStart = DEFAULT_WORKING_HOURS.start;
-  defaults.workingHoursEnd = DEFAULT_WORKING_HOURS.end;
-  const timezoneFromAddress =
-    (job.address && typeof job.address === "object" && "timezone" in job.address
-      ? (job.address.timezone as string | null)
-      : null) ?? null;
-  defaults.workingHoursTimezone = guessTimezoneFromLocation(
-    job.timezone ?? timezoneFromAddress ?? job.location ?? (job.address?.city as string | null) ?? null,
-  );
-  defaults.workdays = DEFAULT_WORKDAYS;
-  defaults.employmentStartDate = getDefaultStartDate();
-
-  if (job.remote_option) {
-    defaults.workScheduleNegotiable = true;
-  }
-
-  if (job.overtime_eligible !== undefined) {
-    defaults.willingToWorkOvertime = job.overtime_eligible;
-  }
-
-  if (job.travel_percentage !== undefined) {
-    defaults.willingToTravel = job.travel_percentage > 0;
-  }
-
-  return defaults;
 }
 
 /**
@@ -861,7 +856,7 @@ export const inquiriesRouter = router({
     }),
 
   /**
-   * Provide suggested inquiry defaults based on job/application metadata
+   * Provide smart defaults derived from the associated job
    */
   getSmartDefaults: protectedProcedure
     .input(z.object({ applicationId: z.string().uuid() }))
@@ -874,11 +869,12 @@ export const inquiriesRouter = router({
         true,
       );
 
-      if (!application?.job_id) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Application is missing job context",
-        });
+      const jobId =
+        application.job_id ??
+        ((application.job as { id?: string } | null)?.id ?? null);
+
+      if (!jobId) {
+        return { defaults: null, fields: [], job: null };
       }
 
       const { data: job, error: jobError } = await supabase
@@ -886,37 +882,116 @@ export const inquiriesRouter = router({
         .from("jobs")
         .select(
           `
-            id,
-            title,
-            location,
-            employment_type,
-            pay_range_min_cents,
-            pay_range_max_cents,
-            pay_range_type,
-            remote_option,
-            address,
-            timezone
-          `,
+          id,
+          title,
+          location,
+          employment_type,
+          pay_range_min_cents,
+          pay_range_max_cents,
+          pay_range_type,
+          remote_option,
+          address,
+          timezone,
+          target_start_date,
+          travel_percentage,
+          require_drivers_license,
+          overtime_eligible,
+          work_schedule,
+          work_schedule_details,
+          shift_requirements
+        `,
         )
-        .eq("id", application.job_id)
-        .maybeSingle();
+        .eq("id", jobId)
+        .single();
 
-      if (jobError) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to load job context: ${jobError.message}`,
-          cause: jobError,
-        });
+      if (jobError || !job) {
+        return { defaults: null, fields: [], job: null };
       }
 
-      const defaults = buildSmartDefaults(job);
-      const appliedFields = Object.keys(defaults);
+      const defaults: Partial<InquiryCreateInput> = {};
+      const fields: InquiryDefaultField[] = [];
+
+      const employmentTypeDefault = mapEmploymentTypeDefault(job.employment_type);
+      addDefaultField(defaults, fields, "employmentType", employmentTypeDefault);
+
+      const workScheduleDefault =
+        mapWorkScheduleDefault(job.work_schedule ?? job.employment_type) ??
+        (employmentTypeDefault === "temporary" ? "day_week" : undefined);
+      addDefaultField(defaults, fields, "workSchedule", workScheduleDefault);
+
+      if (job.remote_option) {
+        addDefaultField(defaults, fields, "workScheduleNegotiable", true);
+      }
+
+      addDefaultField(defaults, fields, "workingHoursStart", DEFAULT_WORKING_HOURS.start);
+      addDefaultField(defaults, fields, "workingHoursEnd", DEFAULT_WORKING_HOURS.end);
+
+      const addressData = (job.address ?? null) as Record<string, any> | null;
+      const addressTimezone =
+        addressData && typeof addressData.timezone === "string" ? (addressData.timezone as string) : null;
+      const addressCity =
+        addressData && typeof addressData.city === "string" ? (addressData.city as string) : null;
+
+      const timezone =
+        job.timezone ??
+        addressTimezone ??
+        guessTimezoneFromLocation(job.location ?? addressCity ?? null);
+      addDefaultField(defaults, fields, "workingHoursTimezone", timezone);
+
+      addDefaultField(defaults, fields, "workdays", DEFAULT_WORKDAYS);
+
+      const startDate =
+        formatDateOnly(job.target_start_date) ?? getDefaultStartDate();
+      addDefaultField(defaults, fields, "employmentStartDate", startDate);
+
+      const rateTypeDefault = mapRateTypeDefault(job.pay_range_type);
+      addDefaultField(defaults, fields, "rateType", rateTypeDefault);
+      addDefaultField(defaults, fields, "rateMinCents", job.pay_range_min_cents);
+      addDefaultField(defaults, fields, "rateMaxCents", job.pay_range_max_cents);
+
+      if (job.travel_percentage !== undefined && job.travel_percentage !== null) {
+        addDefaultField(
+          defaults,
+          fields,
+          "willingToTravel",
+          job.travel_percentage > 0,
+        );
+      }
+
+      if (job.require_drivers_license !== undefined) {
+        addDefaultField(
+          defaults,
+          fields,
+          "hasDriversLicense",
+          job.require_drivers_license,
+        );
+      }
+      if (job.overtime_eligible !== undefined) {
+        addDefaultField(
+          defaults,
+          fields,
+          "willingToWorkOvertime",
+          job.overtime_eligible,
+        );
+      }
+      if (job.shift_requirements) {
+        addDefaultField(defaults, fields, "scheduleShifts", true);
+      }
+      addDefaultField(
+        defaults,
+        fields,
+        "additionalNotes",
+        job.work_schedule_details ?? undefined,
+      );
 
       return {
-        defaults,
-        appliedFields,
-        jobTitle: job?.title ?? null,
-        jobLocation: job?.location ?? null,
+        defaults: fields.length ? defaults : null,
+        fields,
+        job: {
+          id: job.id,
+          title: job.title ?? null,
+          location: job.location ?? null,
+        },
       };
     }),
 

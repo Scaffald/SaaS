@@ -20,6 +20,25 @@ import { useInquiryEdit } from '../hooks/useInquiryEdit'
 import { InquiryHelpSidebar } from './InquiryHelpSidebar'
 import type { InquiryCreateInput } from '@app/schemas'
 
+const SMART_DEFAULT_FIELD_LABELS: Record<string, string> = {
+  employmentType: 'Employment type',
+  workSchedule: 'Work schedule',
+  workingHoursStart: 'Working hours (start)',
+  workingHoursEnd: 'Working hours (end)',
+  workingHoursTimezone: 'Working hours timezone',
+  workdays: 'Workdays',
+  employmentStartDate: 'Employment start date',
+  rateType: 'Rate type',
+  rateMinCents: 'Minimum rate',
+  rateMaxCents: 'Maximum rate',
+  workScheduleNegotiable: 'Schedule negotiable',
+  workingHoursNegotiable: 'Working hours negotiable',
+  workdaysNegotiable: 'Workdays negotiable',
+  employmentDatesNegotiable: 'Dates negotiable',
+  willingToTravel: 'Willing to travel',
+  willingToWorkOvertime: 'Willing to work overtime',
+}
+
 interface InquiryCreateFormProps {
   applicationId: string
   inquiryId?: string
@@ -65,21 +84,6 @@ const TIMEZONE_OPTIONS = [
   { value: 'America/Anchorage', label: 'Alaska Time (AKT)' },
   { value: 'Pacific/Honolulu', label: 'Hawaii Time (HST)' },
 ]
-
-const _SMART_DEFAULT_FIELD_LABELS: Record<string, string> = {
-  employmentType: 'Employment type',
-  workSchedule: 'Work schedule',
-  workingHoursTimezone: 'Time zone',
-  employmentStartDate: 'Start date',
-  rateType: 'Rate type',
-  rateMinCents: 'Minimum rate',
-  rateMaxCents: 'Maximum rate',
-  willingToTravel: 'Travel requirement',
-  hasDriversLicense: "Driver's license",
-  willingToWorkOvertime: 'Overtime expectation',
-  scheduleShifts: 'Shift scheduling',
-  additionalNotes: 'Additional notes',
-}
 
 const getDateInputProps = () => {
   if (Platform.OS === 'web') {
@@ -185,23 +189,28 @@ export function InquiryCreateForm({
     [templateList]
   )
 
-  const smartDefaults = useMemo(() => smartDefaultsData?.defaults ?? null, [smartDefaultsData])
-  const smartDefaultsFieldCount = smartDefaultsData?.appliedFields?.length ?? 0
+  const smartDefaults = smartDefaultsData?.defaults ?? null
+  const smartDefaultFields = smartDefaultsData?.fields ?? []
+  const smartDefaultsFieldLabels = useMemo(
+    () =>
+      smartDefaultFields.map(
+        (field) => SMART_DEFAULT_FIELD_LABELS[field] ?? field
+      ),
+    [smartDefaultFields]
+  )
+  const smartDefaultsFieldCount = smartDefaultFields.length
   const smartDefaultsSourceDescription = useMemo(() => {
-    if (!smartDefaultsData?.jobTitle) {
-      return smartDefaultsData?.jobLocation ?? 'job posting'
+    if (!smartDefaultsData?.job) {
+      return 'job posting'
     }
-    if (smartDefaultsData.jobLocation) {
-      return `${smartDefaultsData.jobTitle} (${smartDefaultsData.jobLocation})`
-    }
-    return smartDefaultsData.jobTitle
+    return smartDefaultsData.job.title ?? 'job posting'
   }, [smartDefaultsData])
   const autoFilledFields = useMemo(() => {
-    if (!smartDefaultsApplied || !smartDefaultsData?.appliedFields) {
+    if (!smartDefaultsApplied) {
       return new Set<string>()
     }
-    return new Set<string>(smartDefaultsData.appliedFields)
-  }, [smartDefaultsApplied, smartDefaultsData])
+    return new Set<string>(smartDefaultFields)
+  }, [smartDefaultsApplied, smartDefaultFields])
 
   const getErrorMessage = useCallback((error: unknown, fallback: string) => {
     if (error instanceof Error) {
@@ -307,20 +316,32 @@ export function InquiryCreateForm({
     [deleteTemplateMutation, toast, selectedTemplateId, refetchTemplates, getErrorMessage]
   )
 
-  const handleApplySmartDefaults = useCallback(() => {
-    if (!smartDefaults || Object.keys(smartDefaults).length === 0) {
-      return
-    }
-    form.reset({
-      ...form.getValues(),
-      ...smartDefaults,
-    })
-    setSmartDefaultsApplied(true)
-  }, [form, smartDefaults])
+  const handleApplySmartDefaults = useCallback(
+    (options?: { force?: boolean }) => {
+      if (!smartDefaults || Object.keys(smartDefaults).length === 0) {
+        return
+      }
+      const nextValues: InquiryCreateInput = {
+        ...form.getValues(),
+        ...smartDefaults,
+      }
+      if (options?.force) {
+        form.reset(nextValues)
+      } else {
+        form.reset(nextValues, {
+          keepDirty: true,
+          keepDirtyValues: true,
+        })
+      }
+      setSmartDefaultsApplied(true)
+    },
+    [form, smartDefaults]
+  )
 
   const handleClearSmartDefaults = useCallback(() => {
     form.reset()
     setSmartDefaultsApplied(false)
+    smartDefaultsAutoApplied.current = true
   }, [form])
 
   // Pre-populate form if initialData provided
@@ -348,26 +369,18 @@ export function InquiryCreateForm({
   })
 
   useEffect(() => {
-    if (mode !== 'create') {
+    if (
+      mode !== 'create' ||
+      smartDefaultsAutoApplied.current ||
+      !smartDefaults ||
+      smartDefaultFields.length === 0 ||
+      isDirty
+    ) {
       return
     }
-    if (smartDefaultsAutoApplied.current) {
-      return
-    }
-    if (!smartDefaults || Object.keys(smartDefaults).length === 0) {
-      return
-    }
-    if (isDirty) {
-      return
-    }
-
-    form.reset({
-      ...form.getValues(),
-      ...smartDefaults,
-    })
+    handleApplySmartDefaults()
     smartDefaultsAutoApplied.current = true
-    setSmartDefaultsApplied(true)
-  }, [mode, smartDefaults, form, isDirty])
+  }, [mode, smartDefaults, smartDefaultFields.length, isDirty, handleApplySmartDefaults])
 
   // Format cents to dollars for display
   const formatCentsToDollars = (cents: number | undefined): string => {
@@ -552,8 +565,8 @@ export function InquiryCreateForm({
                       ) : smartDefaultsFieldCount > 0 ? (
                         <Text fontSize="$3" color="$color11">
                           {smartDefaultsApplied
-                            ? `Applied ${smartDefaultsFieldCount} fields from ${smartDefaultsSourceDescription}.`
-                            : `Prefill ${smartDefaultsFieldCount} fields from ${smartDefaultsSourceDescription}.`}
+                            ? `Applied ${smartDefaultsFieldCount} field${smartDefaultsFieldCount === 1 ? '' : 's'} from ${smartDefaultsSourceDescription}.`
+                            : `Prefill ${smartDefaultsFieldCount} field${smartDefaultsFieldCount === 1 ? '' : 's'} from ${smartDefaultsSourceDescription}.`}
                         </Text>
                       ) : (
                         <Text fontSize="$3" color="$color11">
@@ -571,18 +584,24 @@ export function InquiryCreateForm({
                         Clear
                       </Button>
                       <Button
-                        onPress={handleApplySmartDefaults}
-                        disabled={!smartDefaults || Object.keys(smartDefaults).length === 0}
+                        onPress={() => handleApplySmartDefaults({ force: true })}
+                        disabled={smartDefaultsFieldCount === 0}
                         $sm={{ flex: 1 }}
                       >
                         {smartDefaultsApplied ? 'Reapply defaults' : 'Apply defaults'}
                       </Button>
                     </XStack>
                   </XStack>
-                  {smartDefaultsData?.appliedFields && smartDefaultsData.appliedFields.length > 0 && (
-                    <Text fontSize="$2" color="$color11">
-                      Fields: {smartDefaultsData.appliedFields.join(', ')}
-                    </Text>
+                  {smartDefaultsFieldLabels.length > 0 && (
+                    <XStack gap="$2" flexWrap="wrap">
+                      {smartDefaultsFieldLabels.map((label) => (
+                        <YStack key={label} px="$2" py="$1" bg="$gray3" rounded="$3">
+                          <Text fontSize="$2" color="$color11">
+                            {label}
+                          </Text>
+                        </YStack>
+                      ))}
+                    </XStack>
                   )}
                 </YStack>
               )}
