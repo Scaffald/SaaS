@@ -1,10 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'expo-router'
-import { Button, Text, XStack, YStack } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
+import { Button, Text, Tabs, XStack, YStack } from 'tamagui'
 import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
 import { NarrativeView } from './NarrativeView'
+import { ChartView } from './ChartView'
 import { useIPIPResults } from '../hooks/useIPIPResults'
 
 /**
@@ -12,9 +12,9 @@ import { useIPIPResults } from '../hooks/useIPIPResults'
  */
 export function IPIPResultsPage() {
   const router = useRouter()
-  const toast = useToastController()
   const results = useIPIPResults()
   const utils = api.useUtils()
+  const [activeTab, setActiveTab] = useState<'narrative' | 'chart'>('narrative')
 
   const awardXP = api.personalityAssessment.awardResultsViewXP.useMutation({
     onSuccess: () => {
@@ -84,65 +84,56 @@ export function IPIPResultsPage() {
       </YStack>
 
       {/* Tab Navigation */}
-      <XStack gap="$2" borderBottomWidth={1} borderColor="$borderColor">
-        <Button
-          size="$4"
-          variant="outlined"
-          borderBottomWidth={2}
-          borderBottomColor="$blue9"
-          disabled
+      <Tabs
+        value={activeTab}
+        onValueChange={(value) => setActiveTab(value as 'narrative' | 'chart')}
+        orientation="horizontal"
+        flexDirection="column"
+      >
+        <Tabs.List
+          separator={<YStack width="$1" />}
+          disablePassBorderRadius="bottom"
+          aria-label="Manage your personality results view"
         >
-          Narrative View
-        </Button>
-        <Button
-          size="$4"
-          variant="outlined"
-          onPress={() => {
-            // Chart View will be implemented in Task 6
-            toast.show('Coming Soon', {
-              message: 'Chart View will be available in the next update.',
-            })
-          }}
-        >
-          Chart View
-        </Button>
-      </XStack>
+          <Tabs.Tab flex={1} value="narrative">
+            <Text fontSize="$4" fontWeight="600">
+              Narrative View
+            </Text>
+          </Tabs.Tab>
+          <Tabs.Tab flex={1} value="chart">
+            <Text fontSize="$4" fontWeight="600">
+              Chart View
+            </Text>
+          </Tabs.Tab>
+        </Tabs.List>
 
-      {/* Narrative View */}
-      <NarrativeView
-        scores={results.scores}
-        normalizedScores={results.normalizedScores}
-        narratives={results.narratives}
-        isComplete={results.isComplete}
-        completedDomains={results.completedDomains}
-      />
+        <Tabs.Content value="narrative" p="$4" bg="$color1" roundedBottom="$4" borderWidth={1} borderColor="$borderColor">
+          <NarrativeView
+            scores={results.scores}
+            normalizedScores={results.normalizedScores}
+            narratives={results.narratives}
+            isComplete={results.isComplete}
+            completedDomains={results.completedDomains}
+          />
+        </Tabs.Content>
 
-      {/* Archetype Notice */}
-      {results.isComplete && results.archetype && (
-        <YStack gap="$2" p="$4" bg="$green2" rounded="$4" borderWidth={1} borderColor="$green7">
-          <Text fontSize="$4" fontWeight="600" color="$green11">
-            Your Archetype: {results.archetype.name}
-          </Text>
-          <Text fontSize="$3" color="$green10">
-            Confidence: {results.archetype.confidence}%
-          </Text>
-          <Text fontSize="$3" color="$green10">
-            View the Chart tab to see your archetype details and visualization.
-          </Text>
-        </YStack>
-      )}
-
-      {/* Incomplete Notice */}
-      {!results.isComplete && (
-        <YStack gap="$2" p="$4" bg="$blue2" rounded="$4" borderWidth={1} borderColor="$blue7">
-          <Text fontSize="$4" fontWeight="600" color="$blue11">
-            Complete Your Assessment
-          </Text>
-          <Text fontSize="$3" color="$blue10">
-            Finish all 120 questions to unlock your archetype classification and full results.
-          </Text>
-        </YStack>
-      )}
+        <Tabs.Content value="chart" p="$4" bg="$color1" roundedBottom="$4" borderWidth={1} borderColor="$borderColor">
+          <ChartView
+            scores={results.scores}
+            normalizedScores={results.normalizedScores}
+            archetype={
+              results.archetype
+                ? {
+                    archetype: results.archetype.name,
+                    confidence: results.archetype.confidence,
+                  }
+                : null
+            }
+            isComplete={results.isComplete}
+            completedDomains={results.completedDomains}
+          />
+        </Tabs.Content>
+      </Tabs>
     </YStack>
   )
 }
