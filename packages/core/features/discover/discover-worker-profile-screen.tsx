@@ -14,6 +14,7 @@ import {
 } from '@app/core/features/profile/widgets'
 import { api } from '@app/core/utils/api'
 import { useAuth } from '@app/core/provider/auth/useAuth'
+import { ROUTES } from '@app/core/constants/routes'
 
 const SHIMMER_WIDTH = 220
 
@@ -182,7 +183,7 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
 function createSkeletonLayout(): DiscoverWorkerProfileScreenResult {
   const skeletonBreadcrumbs: BreadcrumbItem[] = [
     { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Discover Workers', href: '/dashboard/discover/workers' },
+    { label: 'Discover Workers', href: ROUTES.DASHBOARD_DISCOVER_WORKERS.path },
     { label: 'Loading…', isActive: true },
   ]
 
@@ -210,7 +211,7 @@ export function DiscoverWorkerProfileScreen({
 
   const baseBreadcrumbs: BreadcrumbItem[] = [
     { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Discover Workers', href: '/dashboard/discover/workers' },
+    { label: 'Discover Workers', href: ROUTES.DASHBOARD_DISCOVER_WORKERS.path },
   ]
 
   if (!safeUserId) {

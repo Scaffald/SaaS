@@ -2,7 +2,6 @@ import { useState, useRef } from 'react'
 import type { ResultListRef } from './components/ResultList'
 import { DiscoverWorkersLeft } from './discover-workers-left'
 import { DiscoverWorkersRight } from './discover-workers-right'
-import { WorkerPreviewModal } from './components/WorkerPreviewModal'
 
 /**
  * Discover Workers Screen Component
@@ -15,15 +14,11 @@ export function DiscoverWorkersScreen() {
   const [selectedSkills, setSelectedSkills] = useState<string[]>([])
   const [selectedCertifications, setSelectedCertifications] = useState<string[]>([])
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
-  const [modalOpen, setModalOpen] = useState(false)
-  const [modalUserId, setModalUserId] = useState<string | null>(null)
 
   const resultListRef = useRef<ResultListRef>(null)
 
   const handleSelect = (id: string) => {
     setSelectedProfileId(id)
-    setModalUserId(id)
-    setModalOpen(true)
     // Optionally scroll to the selected profile
     setTimeout(() => {
       resultListRef.current?.scrollToCard(id)
@@ -32,19 +27,16 @@ export function DiscoverWorkersScreen() {
 
   return {
     left: (
-      <>
-        <DiscoverWorkersLeft
-          searchQuery={searchQuery}
-          selectedIndustries={selectedIndustries}
-          minScore={minScore}
-          selectedSkills={selectedSkills}
-          selectedCertifications={selectedCertifications}
-          selectedProfileId={selectedProfileId}
-          onSelect={handleSelect}
-          resultListRef={resultListRef}
-        />
-        <WorkerPreviewModal userId={modalUserId} open={modalOpen} onOpenChange={setModalOpen} />
-      </>
+      <DiscoverWorkersLeft
+        searchQuery={searchQuery}
+        selectedIndustries={selectedIndustries}
+        minScore={minScore}
+        selectedSkills={selectedSkills}
+        selectedCertifications={selectedCertifications}
+        selectedProfileId={selectedProfileId}
+        onSelect={handleSelect}
+        resultListRef={resultListRef}
+      />
     ),
     right: (
       <DiscoverWorkersRight

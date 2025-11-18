@@ -15,12 +15,12 @@ type ResultCardProps = {
 }
 
 export const ResultCard = memo(
+  // biome-ignore lint/correctness/noUnusedVariables: forwardedRef is used in the ref callback below
   forwardRef<TamaguiElement, ResultCardProps>(({ profile, isSelected, onSelect }, forwardedRef) => {
     const router = useRouter()
     const toast = useToastController()
 
-    const handleViewFullProfile = () => {
-      onSelect(profile.id)
+    const handleCardPress = () => {
       try {
         router.push(RouteBuilder.discoverWorkerDetail(profile.id))
       } catch (navigationError) {
@@ -29,6 +29,10 @@ export const ResultCard = memo(
           message: 'Please try again.',
         })
       }
+    }
+
+    const handleViewFullProfile = () => {
+      handleCardPress()
     }
 
     return (
@@ -50,7 +54,7 @@ export const ResultCard = memo(
         width="100%"
         pressStyle={{ scale: 0.98 }}
         hoverStyle={{ bg: isSelected ? '$blue9' : '$color2' }}
-        onPress={() => onSelect(profile.id)}
+        onPress={handleCardPress}
         // Add animation for selection highlight
         animation={isSelected ? 'bouncy' : undefined}
         animateOnly={['backgroundColor', 'borderColor']}

@@ -217,7 +217,6 @@ export const reviewsRouter = t.router({
       // Check for existing draft - simplified without status field
       const { data: existingDraft } = await ctx.supabase
         .schema("core")
-        .schema("core")
         .from("reviews")
         .select("*")
         .eq("author_user_id", ctx.user.id)
@@ -232,7 +231,6 @@ export const reviewsRouter = t.router({
 
       // Create new review (no status field in current schema)
       const { data: review, error } = await ctx.supabase
-        .schema("core")
         .schema("core")
         .from("reviews")
         .insert({
@@ -394,13 +392,16 @@ export const reviewsRouter = t.router({
 
       // Delete existing ratings for this review
       await ctx.supabase
+        .schema("core")
         .from("review_skill_ratings")
         .delete()
         .eq("review_id", input.reviewId);
 
       // Insert new ratings
       if (input.ratings.length > 0) {
-        const { error } = await ctx.supabase.from("review_skill_ratings")
+        const { error } = await ctx.supabase
+          .schema("core")
+          .from("review_skill_ratings")
           .insert(
             input.ratings.map((rating) => ({
               review_id: input.reviewId,
@@ -445,6 +446,7 @@ export const reviewsRouter = t.router({
 
       // Upsert category rating
       const { error } = await ctx.supabase
+        .schema("core")
         .from("review_category_ratings")
         .upsert(
           {
@@ -492,13 +494,16 @@ export const reviewsRouter = t.router({
 
       // Delete existing votes for this review
       await ctx.supabase
+        .schema("core")
         .from("review_soft_skill_votes")
         .delete()
         .eq("review_id", input.reviewId);
 
       // Insert new votes
       if (input.votes.length > 0) {
-        const { error } = await ctx.supabase.from("review_soft_skill_votes")
+        const { error } = await ctx.supabase
+          .schema("core")
+          .from("review_soft_skill_votes")
           .insert(
             input.votes.map((vote) => ({
               review_id: input.reviewId,
@@ -627,6 +632,7 @@ export const reviewsRouter = t.router({
    */
   getMyReviews: protectedProcedure.query(async ({ ctx }) => {
     const { data, error } = await ctx.supabase
+      .schema("core")
       .from("reviews")
       .select("*")
       .eq("author_user_id", ctx.user.id)

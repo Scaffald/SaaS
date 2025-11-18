@@ -300,8 +300,14 @@ else
     ]
   },
   "CustomErrorResponses": {
-    "Quantity": 1,
+    "Quantity": 2,
     "Items": [
+      {
+        "ErrorCode": 403,
+        "ResponsePagePath": "/index.html",
+        "ResponseCode": "200",
+        "ErrorCachingMinTTL": 300
+      },
       {
         "ErrorCode": 404,
         "ResponsePagePath": "/index.html",

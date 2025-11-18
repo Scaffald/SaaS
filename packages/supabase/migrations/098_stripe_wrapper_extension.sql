@@ -10,27 +10,39 @@ CREATE SCHEMA IF NOT EXISTS extensions;
 CREATE EXTENSION IF NOT EXISTS wrappers WITH SCHEMA extensions;
 
 -- Create Stripe FDW if it does not already exist
+-- Only create if wrappers extension handlers are available
 DO $$
 BEGIN
   IF NOT EXISTS (
     SELECT 1
     FROM pg_foreign_data_wrapper
     WHERE fdwname = 'stripe_wrapper'
+  ) AND EXISTS (
+    SELECT 1
+    FROM pg_proc p
+    JOIN pg_namespace n ON p.pronamespace = n.oid
+    WHERE n.nspname = 'extensions'
+    AND p.proname = 'stripe_fdw_handler'
   ) THEN
     CREATE FOREIGN DATA WRAPPER stripe_wrapper
-      HANDLER stripe_fdw_handler
-      VALIDATOR stripe_fdw_validator;
+      HANDLER extensions.stripe_fdw_handler
+      VALIDATOR extensions.stripe_fdw_validator;
   END IF;
 END;
 $$;
 
 -- Create Stripe server with placeholder secret id (to be updated via configure function)
+-- Only create if the FDW exists (which means wrappers extension is available)
 DO $$
 BEGIN
   IF NOT EXISTS (
     SELECT 1
     FROM pg_foreign_server
     WHERE srvname = 'stripe_server'
+  ) AND EXISTS (
+    SELECT 1
+    FROM pg_foreign_data_wrapper
+    WHERE fdwname = 'stripe_wrapper'
   ) THEN
     CREATE SERVER stripe_server
       FOREIGN DATA WRAPPER stripe_wrapper
