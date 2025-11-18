@@ -75,7 +75,7 @@ export function NarrativeView({
       {/* Domain Cards */}
       <YStack gap="$4">
         {DOMAIN_ORDER.map((domain) => {
-          const domainScore = scores[domain]
+          const domainScore = scores?.[domain] ?? null
           const normalizedDomainScore = normalizedScores?.[domain]
           const domainNarrative = narratives?.[domain]
           const domainIndex = DOMAIN_ORDER.indexOf(domain)

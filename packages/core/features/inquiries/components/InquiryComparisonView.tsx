@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { YStack, XStack, Text, ScrollView, Separator, Button } from '@app/ui'
 import { api } from '@app/core/utils/api'
-import { ComparisonColumn } from './ComparisonColumn'
+import { ComparisonColumn, type InquiryComparisonRecord } from './ComparisonColumn'
 
 interface InquiryComparisonViewProps {
   inquiryIds: string[]
@@ -9,9 +9,14 @@ interface InquiryComparisonViewProps {
 }
 
 export function InquiryComparisonView({ inquiryIds, onClose }: InquiryComparisonViewProps) {
-  const { data: inquiries, isLoading, error } = api.inquiries.getMultiple.useQuery({
+  const {
+    data,
+    isLoading,
+    error,
+  } = api.inquiries.getMultiple.useQuery({
     inquiryIds,
   })
+  const inquiries = data as InquiryComparisonRecord[] | undefined
 
   // Calculate differences for highlighting
   const differences = useMemo(() => {
@@ -92,7 +97,7 @@ export function InquiryComparisonView({ inquiryIds, onClose }: InquiryComparison
 
       {/* Comparison Grid */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <XStack gap="$4" minWidth="100%" pb="$4">
+        <XStack gap="$4" pb="$4" style={{ minWidth: '100%' }}>
           {inquiries.map((inquiryData) => (
             <ComparisonColumn
               key={inquiryData.inquiry.id}

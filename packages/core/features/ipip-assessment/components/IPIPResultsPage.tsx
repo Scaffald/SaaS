@@ -45,8 +45,6 @@ export function IPIPResultsPage() {
     )
   }
 
-  const utils = api.useUtils()
-
   const handleRetry = () => {
     utils.personalityAssessment.getAssessmentStatus.invalidate()
     utils.personalityAssessment.getArchetype.invalidate()
@@ -131,7 +129,15 @@ export function IPIPResultsPage() {
           </Tabs.Tab>
         </Tabs.List>
 
-        <Tabs.Content value="narrative" p="$4" bg="$color1" roundedBottom="$4" borderWidth={1} borderColor="$borderColor">
+        <Tabs.Content
+          value="narrative"
+          p="$4"
+          bg="$color1"
+          borderBottomLeftRadius="$4"
+          borderBottomRightRadius="$4"
+          borderWidth={1}
+          borderColor="$borderColor"
+        >
           <NarrativeView
             scores={results.scores}
             normalizedScores={results.normalizedScores}
@@ -141,7 +147,15 @@ export function IPIPResultsPage() {
           />
         </Tabs.Content>
 
-        <Tabs.Content value="chart" p="$4" bg="$color1" roundedBottom="$4" borderWidth={1} borderColor="$borderColor">
+        <Tabs.Content
+          value="chart"
+          p="$4"
+          bg="$color1"
+          borderBottomLeftRadius="$4"
+          borderBottomRightRadius="$4"
+          borderWidth={1}
+          borderColor="$borderColor"
+        >
           <ChartView
             scores={results.scores}
             normalizedScores={results.normalizedScores}
@@ -149,6 +163,7 @@ export function IPIPResultsPage() {
               results.archetype
                 ? {
                     archetype: results.archetype.name,
+                    name: results.archetype.name,
                     confidence: results.archetype.confidence,
                   }
                 : null

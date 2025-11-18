@@ -8,6 +8,7 @@ import { DOMAIN_NAMES, DOMAIN_ORDER } from '../utils/domainGrouping'
 
 export interface ArchetypeResult {
   archetype: string
+  name: string
   confidence: number
 }
 
@@ -173,7 +174,7 @@ export function ChartView({
       {/* Facet Bars for Each Domain */}
       <YStack gap="$4">
         {DOMAIN_ORDER.map((domain) => {
-          const domainScore = scores[domain]
+          const domainScore = scores?.[domain]
           const domainName = DOMAIN_NAMES[domain]
           const domainIndex = DOMAIN_ORDER.indexOf(domain)
           const domainIsComplete = domainIndex < completedDomains
@@ -264,9 +265,9 @@ export function ChartView({
                       p="$2"
                       bg="$color1"
                       rounded="$2"
-                      minWidth={80}
                       items="center"
                       justify="center"
+                      style={{ minWidth: 80 }}
                     >
                       <Text fontSize="$2" fontWeight="600" color="$color10">
                         F{facetKey}

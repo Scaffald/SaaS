@@ -78,6 +78,26 @@ vi.mock('tamagui', () => ({
   Dialog: DialogMock,
 }))
 
+vi.mock('@tamagui/lucide-icons', () => {
+  const IconMock =
+    (name: string) =>
+    ({ ...props }: Record<string, unknown>) =>
+      React.createElement('span', { 'data-icon': name, ...props })
+
+  return new Proxy(
+    {},
+    {
+      get: (_target, prop) => {
+        if (prop === '__esModule') return true
+        if (typeof prop === 'string') {
+          return IconMock(prop)
+        }
+        return IconMock('icon')
+      },
+    },
+  )
+})
+
 vi.mock('react-native', () => ({
   __esModule: true as const,
   View: createComponent('div'),

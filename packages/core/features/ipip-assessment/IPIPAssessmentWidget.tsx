@@ -103,7 +103,12 @@ export function IPIPAssessmentWidget() {
                       <Progress value={percentage} max={100} size="$1" width={100}>
                         <Progress.Indicator animation="bouncy" />
                       </Progress>
-                      <Text fontSize="$2" fontWeight="600" color="$color10" minWidth={45}>
+                      <Text
+                        fontSize="$2"
+                        fontWeight="600"
+                        color="$color10"
+                        style={{ minWidth: 45 }}
+                      >
                         {percentage}%
                       </Text>
                       <Text
@@ -116,7 +121,7 @@ export function IPIPAssessmentWidget() {
                               ? '$blue10'
                               : '$gray10'
                         }
-                        minWidth={50}
+                        style={{ minWidth: 50 }}
                       >
                         {result.toUpperCase()}
                       </Text>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { XStack, YStack, Text, Button, Avatar, Tabs, Spinner } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { ResponsiveModal } from '@app/ui'
@@ -8,6 +8,8 @@ import { ApplicationDetailsTab } from './ApplicationDetailsTab'
 import { NotesTab } from './NotesTab'
 import { MessagesTab } from './MessagesTab'
 import { InquiryTab } from './InquiryTab'
+import { InquiryCreateForm } from '@app/core/features/inquiries/components/InquiryCreateForm'
+import type { InquiryCreateInput } from '@app/schemas'
 import { api } from '@app/core/utils/api'
 import { useUser } from '@app/core/utils/useUser'
 import type { AppRouter } from '@app/supabase/client-types'
@@ -15,6 +17,37 @@ import type { inferRouterOutputs } from '@trpc/server'
 
 type MembersListOutput = inferRouterOutputs<AppRouter>['teams']['members']['list']
 type MemberRecord = NonNullable<MembersListOutput['members']>[number]
+type InquiryQueryOutput = inferRouterOutputs<AppRouter>['inquiries']['getByApplication']
+
+const mapInquiryToFormValues = (
+  inquiry: NonNullable<InquiryQueryOutput>['inquiry']
+): InquiryCreateInput => ({
+  applicationId: inquiry.application_id,
+  employmentType: (inquiry.employment_type as InquiryCreateInput['employmentType']) ?? undefined,
+  employmentTypeNegotiable: inquiry.employment_type_negotiable ?? true,
+  workSchedule: (inquiry.work_schedule as InquiryCreateInput['workSchedule']) ?? undefined,
+  workScheduleNegotiable: inquiry.work_schedule_negotiable ?? true,
+  scheduleShifts: inquiry.schedule_shifts ?? false,
+  workingHoursStart: inquiry.working_hours_start ?? undefined,
+  workingHoursEnd: inquiry.working_hours_end ?? undefined,
+  workingHoursTimezone: inquiry.working_hours_timezone ?? 'America/New_York',
+  workingHoursNegotiable: inquiry.working_hours_negotiable ?? true,
+  workdays: inquiry.workdays ?? [],
+  workdaysNegotiable: inquiry.workdays_negotiable ?? true,
+  employmentStartDate: inquiry.employment_start_date ?? '',
+  employmentEndDate: inquiry.employment_end_date ?? undefined,
+  employmentDatesNegotiable: inquiry.employment_dates_negotiable ?? true,
+  rateType: (inquiry.rate_type as InquiryCreateInput['rateType']) ?? 'hourly',
+  rateMinCents: inquiry.rate_min_cents ?? 0,
+  rateMaxCents: inquiry.rate_max_cents ?? undefined,
+  rateNegotiable: inquiry.rate_negotiable ?? true,
+  enduranceRequired: inquiry.endurance_required ?? false,
+  willingToTravel: inquiry.willing_to_travel ?? undefined,
+  travelDistanceMiles: inquiry.travel_distance_miles ?? undefined,
+  willingToWorkOvertime: inquiry.willing_to_work_overtime ?? undefined,
+  hasDriversLicense: inquiry.has_drivers_license ?? undefined,
+  additionalNotes: inquiry.additional_notes ?? undefined,
+})
 
 interface CandidateDetailModalProps {
   application: MockApplication | null
@@ -28,11 +61,24 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
   )
 
   // Check if there's an inquiry for this application
-  const { data: inquiryData } = api.inquiries.getByApplication.useQuery(
+  const { data: inquiryData, isLoading: isInquiryLoading } = api.inquiries.getByApplication.useQuery(
     { applicationId: application?.id || '' },
     { enabled: !!application?.id && open }
   )
   const hasInquiry = !!inquiryData?.inquiry
+  const [inquiryMode, setInquiryMode] = useState<'view' | 'create' | 'edit'>(hasInquiry ? 'view' : 'create')
+
+  useEffect(() => {
+    setInquiryMode((currentMode) => {
+      if (hasInquiry && currentMode === 'create') {
+        return 'view'
+      }
+      if (!hasInquiry && currentMode === 'view') {
+        return 'create'
+      }
+      return currentMode
+    })
+  }, [hasInquiry])
 
   if (!application) return null
 
@@ -82,6 +128,18 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
   const scoreColor =
     application.score >= 80 ? '$green10' : application.score >= 60 ? '$blue10' : '$red10'
   const scoreBg = application.score >= 80 ? '$green3' : application.score >= 60 ? '$blue3' : '$red3'
+
+  const inquiryFormValues = useMemo(() => {
+    if (!inquiryData?.inquiry) {
+      return null
+    }
+    return mapInquiryToFormValues(inquiryData.inquiry)
+  }, [inquiryData?.inquiry])
+
+  const handleInquirySuccess = async () => {
+    await utils.inquiries.getByApplication.invalidate({ applicationId: application.id })
+    setInquiryMode('view')
+  }
 
   return (
     <ResponsiveModal
@@ -227,13 +285,11 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
               Messages ({application.messages.length})
             </Text>
           </Tabs.Tab>
-          {hasInquiry && (
-            <Tabs.Tab value="inquiry" flex={1}>
-              <Text fontSize="$3" fontWeight="600">
-                Inquiry
-              </Text>
-            </Tabs.Tab>
-          )}
+          <Tabs.Tab value="inquiry" flex={1}>
+            <Text fontSize="$3" fontWeight="600">
+              Inquiry
+            </Text>
+          </Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Content value="profile" pt="$4">
@@ -256,16 +312,60 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           <MessagesTab messages={application.messages} applicationId={application.id} />
         </Tabs.Content>
 
-        {hasInquiry && inquiryData && (
-          <Tabs.Content value="inquiry" pt="$4">
+        <Tabs.Content value="inquiry" pt="$4">
+          {inquiryMode === 'view' && isInquiryLoading && (
+            <YStack p="$4" items="center" gap="$4">
+              <Spinner size="large" />
+              <Text>Loading inquiry...</Text>
+            </YStack>
+          )}
+
+          {inquiryMode === 'view' && hasInquiry && inquiryData && (
             <InquiryTab
               applicationId={application.id}
-              inquiryId={inquiryData.inquiry.id}
               candidateName={application.candidate.name}
               jobTitle={application.job.title}
+              data={inquiryData}
+              onEditInquiry={() => setInquiryMode('edit')}
+              editLabel={inquiryData.inquiry.status === 'draft' ? 'Finish Draft' : 'Edit Inquiry'}
             />
-          </Tabs.Content>
-        )}
+          )}
+
+          {inquiryMode === 'create' && (
+            <InquiryCreateForm
+              applicationId={application.id}
+              onSuccess={handleInquirySuccess}
+              onCancel={() => setInquiryMode(hasInquiry ? 'view' : 'create')}
+            />
+          )}
+
+          {inquiryMode === 'edit' && hasInquiry && inquiryData?.inquiry && inquiryFormValues ? (
+            <InquiryCreateForm
+              applicationId={application.id}
+              inquiryId={inquiryData.inquiry.id}
+              mode="edit"
+              initialData={inquiryFormValues}
+              onSuccess={handleInquirySuccess}
+              onCancel={() => setInquiryMode('view')}
+            />
+          ) : null}
+
+          {inquiryMode === 'view' && !hasInquiry && !isInquiryLoading && (
+            <YStack p="$4" gap="$3">
+              <Text color="$color11">No inquiry has been created for this candidate yet.</Text>
+              <Button theme="blue" onPress={() => setInquiryMode('create')}>
+                Start Inquiry
+              </Button>
+            </YStack>
+          )}
+
+          {inquiryMode === 'edit' && (!inquiryData?.inquiry || !inquiryFormValues) && (
+            <YStack p="$4" items="center" gap="$4">
+              <Spinner size="large" />
+              <Text>Preparing inquiry for editing...</Text>
+            </YStack>
+          )}
+        </Tabs.Content>
       </Tabs>
     </ResponsiveModal>
   )

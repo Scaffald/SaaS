@@ -1,47 +1,23 @@
-import { YStack, XStack, Text, Card, Avatar, Button } from '@app/ui'
+import { YStack, XStack, Text, Button } from '@app/ui'
+import { Card, Avatar, Separator } from 'tamagui'
 import { Check, MessageSquare } from '@tamagui/lucide-icons'
 import { ComparisonField } from './ComparisonField'
+import type { inferRouterOutputs } from '@trpc/server'
+import type { AppRouter } from '@app/supabase/client-types'
+import { useRouter } from 'expo-router'
+import { ROUTES } from '@app/core/constants/routes'
+import { InquiryHistoryTimeline } from './InquiryHistoryTimeline'
+
+export type InquiryComparisonRecord = NonNullable<
+  inferRouterOutputs<AppRouter>['inquiries']['getMultiple']
+>[number]
+
+type SectionRecord = InquiryComparisonRecord['sections'][number]
+type CommentRecord = InquiryComparisonRecord['comments'][number]
+type CapabilityResponseRecord = InquiryComparisonRecord['capabilityResponses'][number]
 
 interface ComparisonColumnProps {
-  inquiryData: {
-    inquiry: {
-      id: string
-      application_id: string
-      employment_type: string | null
-      work_schedule: string | null
-      working_hours_start: string | null
-      working_hours_end: string | null
-      working_hours_timezone: string | null
-      rate_type: string
-      rate_min_cents: number | null
-      rate_max_cents: number | null
-      employment_start_date: string | null
-      employment_end_date: string | null
-      workdays: string[] | null
-    }
-    sections: Array<{
-      section_name: string
-      accepted_by: string | null
-      accepted_at: string | null
-    }>
-    comments: Array<{
-      section_name: string
-    }>
-    capabilityResponses: Array<{
-      capability_name: string
-      response_value: boolean | null
-      response_text: string | null
-    }>
-    application: {
-      id: string
-      jobTitle: string | null
-      candidate: {
-        id: string | null
-        name: string
-        avatar: string | null
-      }
-    }
-  }
+  inquiryData: InquiryComparisonRecord
   width: number
   highlightDifferences: Set<string>
 }
@@ -51,7 +27,20 @@ export function ComparisonColumn({
   width,
   highlightDifferences,
 }: ComparisonColumnProps) {
-  const { inquiry, sections, comments, capabilityResponses, application } = inquiryData
+  const router = useRouter()
+  const sections: InquiryComparisonRecord['sections'] = inquiryData.sections ?? []
+  const comments: InquiryComparisonRecord['comments'] = inquiryData.comments ?? []
+  const capabilityResponses: InquiryComparisonRecord['capabilityResponses'] =
+    inquiryData.capabilityResponses ?? []
+  const { inquiry, application } = inquiryData
+  const candidateName =
+    application?.candidate?.displayName ||
+    application?.candidate?.username ||
+    application?.candidate?.name ||
+    'Candidate'
+  const candidateAvatar =
+    application?.candidate?.avatarPath || application?.candidate?.avatar || null
+  const jobTitle = application?.job?.title ?? application?.jobTitle ?? null
 
   // Format rate for display
   const formatRate = () => {
@@ -115,7 +104,9 @@ export function ComparisonColumn({
 
   // Get section acceptance status
   const getSectionStatus = (sectionName: string) => {
-    const section = sections.find((s) => s.section_name === sectionName)
+    const section = sections.find(
+      (sectionItem: SectionRecord) => sectionItem.section_name === sectionName,
+    )
     return {
       accepted: !!section?.accepted_by,
       acceptedAt: section?.accepted_at || null,
@@ -124,7 +115,7 @@ export function ComparisonColumn({
 
   // Get comment count for section
   const getCommentCount = (sectionName: string) => {
-    return comments.filter((c) => c.section_name === sectionName).length
+    return comments.filter((comment: CommentRecord) => comment.section_name === sectionName).length
   }
 
   return (
@@ -136,26 +127,26 @@ export function ComparisonColumn({
       rounded="$4"
       borderWidth={1}
       borderColor="$borderColor"
-      $sm={{ width: '100%', minWidth: '100%' }}
+      $sm={{ width: '100%' }}
     >
       {/* Candidate Header */}
       <YStack gap="$2">
         <XStack gap="$2" items="center">
           <Avatar circular size="$4">
-            <Avatar.Image src={application.candidate.avatar || undefined} />
+            <Avatar.Image src={candidateAvatar || undefined} />
             <Avatar.Fallback bg="$blue9">
               <Text color="white" fontWeight="600">
-                {application.candidate.name.charAt(0).toUpperCase()}
+                {candidateName.charAt(0).toUpperCase()}
               </Text>
             </Avatar.Fallback>
           </Avatar>
           <YStack flex={1}>
             <Text fontSize="$5" fontWeight="600">
-              {application.candidate.name}
+              {candidateName}
             </Text>
-            {application.jobTitle && (
+            {jobTitle && (
               <Text fontSize="$2" color="$color11">
-                {application.jobTitle}
+                {jobTitle}
               </Text>
             )}
           </YStack>
@@ -288,7 +279,7 @@ export function ComparisonColumn({
           <Text fontSize="$4" fontWeight="600">
             Capabilities
           </Text>
-          {capabilityResponses.map((response) => (
+          {capabilityResponses.map((response: CapabilityResponseRecord) => (
             <ComparisonField
               key={response.capability_name}
               label={response.capability_name}
@@ -320,10 +311,23 @@ export function ComparisonColumn({
         </Card>
       )}
 
-      {/* View Full Inquiry Button - navigation handled by parent */}
-      <Button size="$3" variant="outlined" disabled>
+      {/* View Full Inquiry Button */}
+      <Button
+        size="$3"
+        variant="outlined"
+        onPress={() =>
+          router.push(
+            ROUTES.OFFICE_APPLICATION_INQUIRY.path.replace(
+              ':applicationId',
+              inquiry.application_id
+            )
+          )
+        }
+      >
         View Full Inquiry
       </Button>
+
+      <InquiryHistoryTimeline inquiryId={inquiry.id} />
     </YStack>
   )
 }

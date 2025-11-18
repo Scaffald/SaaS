@@ -137,12 +137,16 @@ vi.mock('tamagui', () => {
   const extractOptions = (nodes: ReactNode): SelectOption[] => {
     const options: SelectOption[] = []
     Children.forEach(nodes, (child) => {
+      if (!isValidElement(child)) {
+        return
+      }
       if (isSelectItemElement(child)) {
         options.push({ value: child.props.value, label: child.props.children })
         return
       }
-      if (isValidElement(child) && child.props?.children) {
-        options.push(...extractOptions(child.props.children))
+      const nestedChildren = (child.props as { children?: ReactNode }).children
+      if (nestedChildren) {
+        options.push(...extractOptions(nestedChildren))
       }
     })
     return options

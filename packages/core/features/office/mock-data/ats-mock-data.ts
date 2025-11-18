@@ -18,6 +18,8 @@ export type ApplicationStatus =
 
 export interface MockApplication {
   id: string;
+  organizationId?: string | null;
+  workerUserId?: string | null;
   candidate: {
     id: string;
     name: string;
@@ -49,6 +51,12 @@ export interface MockApplication {
     company: string;
     location: string;
     payRange: string;
+    organizationId?: string | null;
+    payRangeMinCents?: number | null;
+    payRangeMaxCents?: number | null;
+    payRangeType?: "hourly" | "salary" | "contract" | "project" | string | null;
+    employmentType?: string | null;
+    targetStartDate?: string | null;
   };
   team?: {
     id: string | null;

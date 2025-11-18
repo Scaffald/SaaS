@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import { Button, ScrollView, Separator, Text, XStack, YStack } from 'tamagui'
 
 import { useBackgroundCheckForm } from '../hooks/useBackgroundCheckForm'
@@ -26,7 +26,10 @@ export function BackgroundCheckWizard() {
     goToStep,
     nextStep,
     previousStep,
-    submitBackgroundCheck,
+    paymentSession,
+    createPaymentSession,
+    confirmPaymentSession,
+    isCreatingPaymentSession,
   } = useBackgroundCheckForm()
 
   const requiredDocuments = useMemo(() => {
@@ -82,8 +85,17 @@ export function BackgroundCheckWizard() {
         return (
           <PaymentStep
             payment={state.payment}
+            selectedPackage={selectedPackage}
             onUpdatePayment={updatePayment}
-            onComplete={() => handleSubmit()}
+            paymentSession={paymentSession}
+            isCreatingSession={isCreatingPaymentSession}
+            isConfirmingPayment={isSubmitting}
+            submitError={submitError}
+            onCreatePaymentSession={createPaymentSession}
+            onPaymentSuccess={async (paymentIntentId) => {
+              await confirmPaymentSession(paymentIntentId)
+              goToStep('confirmation')
+            }}
           />
         )
       case 'confirmation':
@@ -123,11 +135,6 @@ export function BackgroundCheckWizard() {
         return null
     }
   }
-
-  const handleSubmit = useCallback(async () => {
-    if (isSubmitting) return
-    await submitBackgroundCheck()
-  }, [isSubmitting, submitBackgroundCheck])
 
   return (
     <YStack flex={1} bg="$background">

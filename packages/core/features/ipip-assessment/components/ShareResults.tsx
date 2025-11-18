@@ -22,7 +22,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
   const [includeScores, setIncludeScores] = useState(true)
 
   const generateShareToken = api.personalityAssessment.generateShareToken.useMutation({
-    onSuccess: (data) => {
+    onSuccess: (data: { token: string }) => {
       // Build share URL
       const baseUrl =
         typeof window !== 'undefined' && window.location
@@ -35,7 +35,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
       })
       utils.personalityAssessment.getAssessmentStatus.invalidate()
     },
-    onError: (error) => {
+    onError: (error: { message?: string }) => {
       toast.show('Error creating share link', {
         message: error.message || 'Please try again.',
         type: 'error',
@@ -51,7 +51,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
       })
       utils.personalityAssessment.getAssessmentStatus.invalidate()
     },
-    onError: (error) => {
+    onError: (error: { message?: string }) => {
       toast.show('Error revoking share link', {
         message: error.message || 'Please try again.',
         type: 'error',
@@ -278,6 +278,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
               fontSize="$3"
               color="$color11"
               numberOfLines={1}
+              data-testid="share-link-url"
             >
               {shareLink}
             </Text>

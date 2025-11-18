@@ -1,24 +1,28 @@
-import { memo } from 'react'
-import { Button, RadioGroup, Text, XStack, YStack } from 'tamagui'
+import { memo, useEffect } from 'react'
+import { Button, Text, YStack } from 'tamagui'
 
-import type { BackgroundCheckPaidBy, PaymentDetails } from '../hooks/useBackgroundCheckForm'
+import { PaymentIntentForm } from '@app/core/features/payments/components/PaymentIntentForm'
+
+import type { PaymentDetails } from '../hooks/useBackgroundCheckForm'
+
+type PaymentSessionState = {
+  backgroundCheckId: string
+  paymentIntentId: string
+  clientSecret: string
+  amountCents: number
+}
 
 interface PaymentStepProps {
   payment: PaymentDetails
+  selectedPackage?: { display_name?: string | null } | null
   onUpdatePayment: (updates: Partial<PaymentDetails>) => void
-  onComplete: () => void
+  paymentSession: PaymentSessionState | null
+  isCreatingSession: boolean
+  isConfirmingPayment: boolean
+  submitError: Error | null
+  onCreatePaymentSession: () => Promise<unknown>
+  onPaymentSuccess: (paymentIntentId: string) => Promise<void> | void
 }
-
-const PAYMENT_OPTIONS: Array<{ value: BackgroundCheckPaidBy; label: string; description: string }> =
-  [
-    { value: 'worker', label: 'Worker (You)', description: 'You will cover the background check.' },
-    {
-      value: 'organization',
-      label: 'Organization',
-      description: 'The hiring organization will cover the cost.',
-    },
-    { value: 'platform', label: 'Platform', description: 'Platform sponsored screening.' },
-  ]
 
 const formatCurrency = (cents: number | null | undefined) => {
   if (cents == null) return '—'
@@ -30,17 +34,22 @@ const formatCurrency = (cents: number | null | undefined) => {
 
 export const PaymentStep = memo(function PaymentStep({
   payment,
+  selectedPackage,
   onUpdatePayment,
-  onComplete,
+  paymentSession,
+  isCreatingSession,
+  isConfirmingPayment,
+  submitError,
+  onCreatePaymentSession,
+  onPaymentSuccess,
 }: PaymentStepProps) {
-  const handlePaymentSelection = (value: BackgroundCheckPaidBy) => {
-    onUpdatePayment({ paidBy: value })
-  }
+  useEffect(() => {
+    if (payment.paidBy !== 'worker') {
+      onUpdatePayment({ paidBy: 'worker' })
+    }
+  }, [onUpdatePayment, payment.paidBy])
 
-  const completePayment = () => {
-    onUpdatePayment({ status: 'succeeded' })
-    onComplete()
-  }
+  const canCreateSession = Boolean(payment.costCents && selectedPackage)
 
   return (
     <YStack gap="$4" flex={1}>
@@ -49,8 +58,8 @@ export const PaymentStep = memo(function PaymentStep({
           Payment & Authorization
         </Text>
         <Text fontSize="$3" color="$color11">
-          Confirm the payment method for your screening. Any applicable charges will be processed
-          securely.
+          Pay for your screening securely with Stripe. Charges are non-refundable and required
+          before we can submit your background check.
         </Text>
       </YStack>
 
@@ -61,43 +70,38 @@ export const PaymentStep = memo(function PaymentStep({
         <Text fontSize="$6" fontWeight="bold" color="$color12">
           {formatCurrency(payment.costCents)}
         </Text>
-      </YStack>
-
-      <YStack gap="$2">
-        <Text fontSize="$3" fontWeight="bold" color="$color12">
-          Who is covering the cost?
+        <Text fontSize="$2" color="$color10">
+          Package: {selectedPackage?.display_name ?? 'Select a package to continue'}
         </Text>
-        <RadioGroup
-          value={payment.paidBy}
-          onValueChange={(value: BackgroundCheckPaidBy) => handlePaymentSelection(value)}
-        >
-          <YStack gap="$3">
-            {PAYMENT_OPTIONS.map((option) => (
-              <XStack key={option.value} items="flex-start" gap="$3">
-                <RadioGroup.Item value={option.value} size="$4">
-                  <RadioGroup.Indicator />
-                </RadioGroup.Item>
-                <YStack gap="$1" flex={1}>
-                  <Text fontSize="$3" color="$color12" fontWeight="bold">
-                    {option.label}
-                  </Text>
-                  <Text fontSize="$2" color="$color10">
-                    {option.description}
-                  </Text>
-                </YStack>
-              </XStack>
-            ))}
-          </YStack>
-        </RadioGroup>
       </YStack>
 
-      <Button
-        size="$4"
-        theme="blue"
-        onPress={completePayment}
-      >
-        Confirm & Continue
-      </Button>
+      {submitError && (
+        <YStack bg="$red3" p="$3" rounded="$3">
+          <Text color="$red11">{submitError.message}</Text>
+        </YStack>
+      )}
+
+      {!paymentSession && (
+        <Button
+          size="$4"
+          theme="blue"
+          disabled={!canCreateSession || isCreatingSession || isConfirmingPayment}
+          onPress={() => onCreatePaymentSession()}
+        >
+          {isCreatingSession ? 'Preparing payment form…' : 'Continue to secure payment'}
+        </Button>
+      )}
+
+      {paymentSession && (
+        <PaymentIntentForm
+          clientSecret={paymentSession.clientSecret}
+          amountCents={paymentSession.amountCents}
+          description={`Background check: ${selectedPackage?.display_name ?? 'Selected package'}`}
+          submitLabel={isConfirmingPayment ? 'Processing…' : 'Pay & start screening'}
+          disabled={isConfirmingPayment}
+          onSuccess={(paymentIntentId) => onPaymentSuccess(paymentIntentId)}
+        />
+      )}
     </YStack>
   )
 })

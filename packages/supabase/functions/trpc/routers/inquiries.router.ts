@@ -26,6 +26,14 @@ type ApplicationStatusForInquiry =
   | 'inquired'
   | 'offer'
 
+type JobCapabilityQuestion = {
+  name: string
+  label: string
+  type: string
+  unit?: string
+  required: boolean
+};
+
 const INQUIRY_STATUS_TRANSITIONS: Record<InquiryStatus, InquiryStatus[]> = {
   draft: ['sent', 'withdrawn'],
   sent: ['candidate_responded', 'withdrawn'],
@@ -133,6 +141,103 @@ async function syncApplicationStatus(
   if (error) {
     // Log but don't fail - inquiry status is already updated
     console.error('Failed to sync application status:', error);
+  }
+}
+
+interface ApplicationDetails {
+  id: string
+  status: string | null
+  applicationScore: number | null
+  createdAt: string
+  updatedAt: string
+  job: {
+    id: string
+    title: string | null
+    employmentType: string | null
+    location: string | null
+    remoteOption: string | null
+    organization: { id: string; name: string | null } | null
+    payRangeMinCents: number | null
+    payRangeMaxCents: number | null
+  } | null
+  candidate: {
+    id: string
+    displayName: string | null
+    username: string | null
+    avatarPath: string | null
+  } | null
+}
+
+function mapApplicationRecord(
+  application: Record<string, any> | null
+): {
+  application: ApplicationDetails | null
+  capabilityQuestions: JobCapabilityQuestion[]
+} {
+  if (!application) {
+    return { application: null, capabilityQuestions: [] }
+  }
+
+  const job = application.job as
+    | {
+        id: string
+        title: string | null
+        employment_type: string | null
+        location: string | null
+        remote_option: string | null
+        pay_range_min_cents: number | null
+        pay_range_max_cents: number | null
+        organization: { id: string; name: string | null } | null
+        inquiry_capability_questions?: JobCapabilityQuestion[] | null
+      }
+    | null
+
+  const candidate = application.candidate as
+    | {
+        id: string
+        display_name: string | null
+        username: string | null
+        avatar_path: string | null
+      }
+    | null
+
+  const capabilityQuestions =
+    (job?.inquiry_capability_questions as JobCapabilityQuestion[] | null) ?? []
+
+  return {
+    application: {
+      id: application.id,
+      status: application.status ?? null,
+      applicationScore: application.application_score ?? null,
+      createdAt: application.created_at,
+      updatedAt: application.updated_at,
+      job: job
+        ? {
+            id: job.id,
+            title: job.title ?? null,
+            employmentType: job.employment_type ?? null,
+            location: job.location ?? null,
+            remoteOption: job.remote_option ?? null,
+            organization: job.organization
+              ? {
+                  id: job.organization.id,
+                  name: job.organization.name ?? null,
+                }
+              : null,
+            payRangeMinCents: job.pay_range_min_cents ?? null,
+            payRangeMaxCents: job.pay_range_max_cents ?? null,
+          }
+        : null,
+      candidate: candidate
+        ? {
+            id: candidate.id,
+            displayName: candidate.display_name ?? null,
+            username: candidate.username ?? null,
+            avatarPath: candidate.avatar_path ?? null,
+          }
+        : null,
+    },
+    capabilityQuestions,
   }
 }
 
@@ -400,32 +505,26 @@ export const inquiriesRouter = router({
         .eq("id", application.job_id)
         .single();
 
-      if (job?.inquiry_capability_questions && Array.isArray(job.inquiry_capability_questions)) {
-        const capabilityQuestions = job.inquiry_capability_questions as Array<{
-          name: string
-          label: string
-          type: string
-          unit?: string
-          required: boolean
-        }>;
+      const jobCapabilityQuestions = Array.isArray(job?.inquiry_capability_questions)
+        ? (job.inquiry_capability_questions as JobCapabilityQuestion[])
+        : [];
 
-        if (capabilityQuestions.length > 0) {
-          const capabilityData = capabilityQuestions.map((question) => ({
-            inquiry_id: inquiry.id,
-            capability_name: question.name,
-            response_value: null,
-            response_text: null,
-          }));
+      if (jobCapabilityQuestions.length > 0) {
+        const capabilityData = jobCapabilityQuestions.map((question) => ({
+          inquiry_id: inquiry.id,
+          capability_name: question.name,
+          response_value: null,
+          response_text: null,
+        }));
 
-          const { error: capabilityError } = await supabase
-            .schema("core")
-            .from("inquiry_capability_responses")
-            .insert(capabilityData);
+        const { error: capabilityError } = await supabase
+          .schema("core")
+          .from("inquiry_capability_responses")
+          .insert(capabilityData);
 
-          if (capabilityError) {
-            // Log but don't fail - capability questions are optional
-            console.error("Failed to create capability questions:", capabilityError);
-          }
+        if (capabilityError) {
+          // Log but don't fail - capability questions are optional
+          console.error("Failed to create capability questions:", capabilityError);
         }
       }
 
@@ -573,32 +672,26 @@ export const inquiriesRouter = router({
             .eq("id", application.job_id)
             .single();
 
-          if (job?.inquiry_capability_questions && Array.isArray(job.inquiry_capability_questions)) {
-            const capabilityQuestions = job.inquiry_capability_questions as Array<{
-              name: string;
-              label: string;
-              type: string;
-              unit?: string;
-              required: boolean;
-            }>;
+          const jobCapabilityQuestions = Array.isArray(job?.inquiry_capability_questions)
+            ? (job.inquiry_capability_questions as JobCapabilityQuestion[])
+            : [];
 
-            if (capabilityQuestions.length > 0) {
-              const capabilityData = capabilityQuestions.map((question) => ({
-                inquiry_id: inquiry.id,
-                capability_name: question.name,
-                response_value: null,
-                response_text: null,
-              }));
+          if (jobCapabilityQuestions.length > 0) {
+            const capabilityData = jobCapabilityQuestions.map((question) => ({
+              inquiry_id: inquiry.id,
+              capability_name: question.name,
+              response_value: null,
+              response_text: null,
+            }));
 
-              const { error: capabilityError } = await supabase
-                .schema("core")
-                .from("inquiry_capability_responses")
-                .insert(capabilityData);
+            const { error: capabilityError } = await supabase
+              .schema("core")
+              .from("inquiry_capability_responses")
+              .insert(capabilityData);
 
-              if (capabilityError) {
-                // Log but don't fail - capability questions are optional
-                console.error("Failed to create capability questions:", capabilityError);
-              }
+            if (capabilityError) {
+              // Log but don't fail - capability questions are optional
+              console.error("Failed to create capability questions:", capabilityError);
             }
           }
 
@@ -739,11 +832,69 @@ export const inquiriesRouter = router({
         });
       }
 
+      const { data: applicationRecord, error: applicationError } = await supabase
+        .schema("core")
+        .from("applications")
+        .select(
+          `
+          id,
+          status,
+          application_score,
+          created_at,
+          updated_at,
+          job:jobs!job_id(
+            id,
+            title,
+            employment_type,
+            location,
+            remote_option,
+            pay_range_min_cents,
+            pay_range_max_cents,
+            organization:organizations!organization_id(
+              id,
+              name
+            ),
+            inquiry_capability_questions
+          ),
+          candidate:users!user_id(
+            id,
+            display_name,
+            username,
+            avatar_path
+          )
+        `
+        )
+        .eq("id", input.applicationId)
+        .single();
+
+      if (applicationError) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch application: ${applicationError.message}`,
+          cause: applicationError,
+        });
+      }
+
+      if (!applicationRecord) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Application not found",
+        });
+      }
+
+      const { application: applicationDetails, capabilityQuestions } = mapApplicationRecord(
+        applicationRecord
+      );
+
       return {
         inquiry,
         sections: sections || [],
         comments: comments || [],
         capabilityResponses: capabilityResponses || [],
+        application: applicationDetails,
+        candidate: applicationDetails?.candidate ?? null,
+        job: applicationDetails?.job ?? null,
+        capabilityQuestions,
       };
     }),
 
@@ -841,12 +992,25 @@ export const inquiriesRouter = router({
         .select(
           `
           id,
-          job_id,
-          jobs!job_id(
+          status,
+          application_score,
+          created_at,
+          updated_at,
+          job:jobs!job_id(
             id,
-            title
+            title,
+            employment_type,
+            location,
+            remote_option,
+            pay_range_min_cents,
+            pay_range_max_cents,
+            organization:organizations!organization_id(
+              id,
+              name
+            ),
+            inquiry_capability_questions
           ),
-          users!user_id(
+          candidate:users!user_id(
             id,
             display_name,
             username,
@@ -866,14 +1030,11 @@ export const inquiriesRouter = router({
 
       // Combine data for each inquiry
       return inquiries.map((inquiry) => {
-        const application = applications?.find((a) => a.id === inquiry.application_id);
-        const job = application?.jobs as { id: string; title: string } | null;
-        const candidate = application?.users as {
-          id: string;
-          display_name: string | null;
-          username: string | null;
-          avatar_path: string | null;
-        } | null;
+        const applicationRecord =
+          applications?.find((a) => a.id === inquiry.application_id) ?? null;
+        const { application: applicationDetails, capabilityQuestions } = mapApplicationRecord(
+          applicationRecord
+        );
 
         return {
           inquiry,
@@ -881,15 +1042,10 @@ export const inquiriesRouter = router({
           comments: comments?.filter((c) => c.inquiry_id === inquiry.id) || [],
           capabilityResponses:
             capabilityResponses?.filter((r) => r.inquiry_id === inquiry.id) || [],
-          application: {
-            id: inquiry.application_id,
-            jobTitle: job?.title || null,
-            candidate: {
-              id: candidate?.id || null,
-              name: candidate?.display_name || candidate?.username || "Unknown",
-              avatar: candidate?.avatar_path || null,
-            },
-          },
+          application: applicationDetails,
+          candidate: applicationDetails?.candidate ?? null,
+          job: applicationDetails?.job ?? null,
+          capabilityQuestions,
         };
       });
     }),

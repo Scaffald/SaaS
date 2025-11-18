@@ -74,21 +74,44 @@ const mockClearImportMutation = {
   isPending: false,
 }
 
-const mockGetImportDataQuery = vi.hoisted(() => vi.fn(() => ({
-  data: {
-    payload: {
-      experience: [],
-      education: [],
-      skills: [],
-      certifications: [],
-      general: [],
+type RawImportList = Array<Record<string, unknown>>
+type MockImportPayload = {
+  experience: RawImportList
+  education: RawImportList
+  skills: RawImportList
+  certifications: RawImportList
+  general: RawImportList
+}
+
+type MockImportDataResponse = {
+  data?: {
+    payload: MockImportPayload
+    expiresAt: string
+  }
+  isLoading: boolean
+  isError: boolean
+  refetch: () => void
+}
+
+const createEmptyPayload = (): MockImportPayload => ({
+  experience: [],
+  education: [],
+  skills: [],
+  certifications: [],
+  general: [],
+})
+
+const mockGetImportDataQuery = vi.hoisted(() =>
+  vi.fn<[], MockImportDataResponse>(() => ({
+    data: {
+      payload: createEmptyPayload(),
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     },
-    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-  },
-  isLoading: false,
-  isError: false,
-  refetch: vi.fn(),
-})))
+    isLoading: false,
+    isError: false,
+    refetch: vi.fn(),
+  }))
+)
 
 vi.mock('@app/core/utils/api', () => ({
   api: {
@@ -301,9 +324,7 @@ describe('ImportReviewScreen', () => {
               confidence_score: 80,
             },
           ],
-          skills: [
-            { id: 'skill-1', name: 'Electrical Wiring', confidence_score: 75 },
-          ],
+          skills: [{ id: 'skill-1', name: 'Electrical Wiring', confidence_score: 75 }],
           certifications: [],
           general: [],
         },
@@ -312,7 +333,7 @@ describe('ImportReviewScreen', () => {
       isLoading: false,
       isError: false,
       refetch: vi.fn(),
-    })
+    } satisfies MockImportDataResponse)
   })
 
   it('renders imported data sections', () => {
@@ -410,7 +431,7 @@ describe('ImportReviewScreen', () => {
       isLoading: false,
       isError: false,
       refetch: vi.fn(),
-    })
+    } satisfies MockImportDataResponse)
 
     render(<ImportReviewScreen />)
 
@@ -434,7 +455,7 @@ describe('ImportReviewScreen', () => {
       isLoading: false,
       isError: false,
       refetch: vi.fn(),
-    })
+    } satisfies MockImportDataResponse)
 
     render(<ImportReviewScreen />)
 
@@ -449,7 +470,7 @@ describe('ImportReviewScreen', () => {
       isLoading: true,
       isError: false,
       refetch: vi.fn(),
-    })
+    } satisfies MockImportDataResponse)
 
     render(<ImportReviewScreen />)
 
@@ -465,7 +486,7 @@ describe('ImportReviewScreen', () => {
       isLoading: false,
       isError: true,
       refetch: vi.fn(),
-    })
+    } satisfies MockImportDataResponse)
 
     render(<ImportReviewScreen />)
 

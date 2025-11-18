@@ -64,6 +64,13 @@ const DEFAULT_CONSENT: ConsentDetails = {
   signature: '',
 }
 
+type PaymentSession = {
+  backgroundCheckId: string
+  paymentIntentId: string
+  clientSecret: string
+  amountCents: number
+}
+
 export function useBackgroundCheckForm() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [state, setState] = useState<BackgroundCheckFormState>({
@@ -77,12 +84,14 @@ export function useBackgroundCheckForm() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<Error | null>(null)
+  const [paymentSession, setPaymentSession] = useState<PaymentSession | null>(null)
 
   const packagesQuery = api.backgroundChecks.listPackages.useQuery(undefined, {
     staleTime: 1000 * 60 * 5,
   })
 
-  const initiateMutation = api.backgroundChecks.initiate.useMutation()
+  const requestCheckMutation = api.backgroundChecks.requestCheck.useMutation()
+  const confirmPaymentMutation = api.backgroundChecks.confirmCheckPayment.useMutation()
   const createUploadUrlMutation = api.backgroundChecks.createUploadUrl.useMutation()
   const addDocumentMetadataMutation = api.backgroundChecks.addDocumentMetadata.useMutation()
 
@@ -93,6 +102,10 @@ export function useBackgroundCheckForm() {
       (pkg: BackgroundCheckPackage) => pkg.id === state.selectedPackageId,
     )
   }, [packagesQuery.data, state.selectedPackageId])
+
+  useEffect(() => {
+    setPaymentSession(null)
+  }, [state.selectedPackageId])
 
   useEffect(() => {
     if (selectedPackage?.retail_cost_cents != null) {
@@ -206,44 +219,77 @@ export function useBackgroundCheckForm() {
     [addDocumentMetadataMutation, upsertDocument],
   )
 
-  const submitBackgroundCheck = useCallback(async () => {
-    if (!state.selectedPackageId) {
-      throw new Error('Please select a background check package.')
+  const createPaymentSession = useCallback(async () => {
+    if (paymentSession) {
+      return paymentSession
     }
 
-    setIsSubmitting(true)
-    setSubmitError(null)
-
-    try {
-      const response = await initiateMutation.mutateAsync({
-        package_id: state.selectedPackageId,
-        paid_by: state.payment.paidBy,
-        cost_cents: state.payment.costCents,
-        metadata: {
-          consent: state.consent,
-          documents: state.documents.map((doc) => ({
-            storagePath: doc.storagePath,
-            documentType: doc.documentType,
-            fileName: doc.fileName,
-          })),
-          ...state.metadata,
-        },
-      })
-
-      setState((prev) => ({
-        ...prev,
-        checkId: response.id,
-      }))
-      setCurrentStepIndex(WIZARD_STEPS.indexOf('confirmation'))
-      return response
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      setSubmitError(err)
-      throw err
-    } finally {
-      setIsSubmitting(false)
+    if (!state.selectedPackageId || !selectedPackage) {
+      throw new Error('Select a background check package before paying.')
     }
-  }, [initiateMutation, state])
+
+    if (state.payment.paidBy !== 'worker') {
+      throw new Error('Self-service background checks are currently billed to the worker.')
+    }
+
+    const metadata = {
+      consent: state.consent,
+      documents: state.documents.map((doc) => ({
+        storagePath: doc.storagePath,
+        documentType: doc.documentType,
+        fileName: doc.fileName,
+      })),
+      ...state.metadata,
+    }
+
+    const response = await requestCheckMutation.mutateAsync({
+      package_id: state.selectedPackageId,
+      tier: (selectedPackage.slug as string | undefined) ??
+        (selectedPackage.display_name as string | undefined) ??
+        'custom',
+      paid_by: 'worker',
+      metadata,
+    })
+
+    setPaymentSession(response)
+    return response
+  }, [paymentSession, requestCheckMutation, selectedPackage, state.consent, state.documents, state.metadata, state.selectedPackageId, state.payment.paidBy])
+
+  const confirmPaymentSession = useCallback(
+    async (paymentIntentId: string) => {
+      if (!paymentSession) {
+        throw new Error('No payment session available.')
+      }
+
+      setIsSubmitting(true)
+      setSubmitError(null)
+
+      try {
+        const record = await confirmPaymentMutation.mutateAsync({
+          background_check_id: paymentSession.backgroundCheckId,
+          payment_intent_id: paymentIntentId,
+        })
+
+        setState((prev) => ({
+          ...prev,
+          payment: {
+            ...prev.payment,
+            status: 'succeeded',
+          },
+          checkId: record?.id ?? paymentSession.backgroundCheckId,
+        }))
+        setPaymentSession(null)
+        return record
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error))
+        setSubmitError(err)
+        throw err
+      } finally {
+        setIsSubmitting(false)
+      }
+    },
+    [confirmPaymentMutation, paymentSession],
+  )
 
   return {
     steps: WIZARD_STEPS,
@@ -264,6 +310,9 @@ export function useBackgroundCheckForm() {
     previousStep,
     requestDocumentUpload,
     recordDocumentMetadata,
-    submitBackgroundCheck,
+    paymentSession,
+    createPaymentSession,
+    confirmPaymentSession,
+    isCreatingPaymentSession: requestCheckMutation.isPending,
   }
 }

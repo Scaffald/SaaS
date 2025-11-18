@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { YStack, XStack, Text, Button, ScrollView, Separator } from '@app/ui'
 import { ChevronDown, ChevronUp, Check, MessageSquare } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
@@ -6,12 +6,21 @@ import { useToastController } from '@tamagui/toast'
 import { useInquirySubscription } from '@app/core/utils/supabase/useInquirySubscription'
 import { InquiryCommentThread } from './InquiryCommentThread'
 import { CapabilityQuestionInput } from './CapabilityQuestionInput'
+import { InquiryHistoryTimeline } from './InquiryHistoryTimeline'
 import type { InquirySectionName } from '@app/schemas'
 
 interface InquirySectionStatus {
   section_name: InquirySectionName
   accepted_by: string | null
   accepted_at: string | null
+}
+
+interface CapabilityQuestionDefinition {
+  name: string
+  label: string
+  type: string
+  unit?: string
+  required: boolean
 }
 
 interface InquiryViewCandidateProps {
@@ -29,15 +38,29 @@ export function InquiryViewCandidate({
   useInquirySubscription(inquiryId)
 
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(['employment', 'compensation', 'capabilities', 'other'])
+    new Set(['employment', 'compensation', 'capabilities', 'other', 'job_details', 'application_data'])
   )
-  const [capabilityResponses, setCapabilityResponses] = useState<
+  const [capabilityResponseState, setCapabilityResponseState] = useState<
     Record<string, { responseValue?: boolean; responseText?: string }>
   >({})
-
   const { data, isLoading, error } = api.inquiries.getByApplication.useQuery({
     applicationId,
   })
+
+  useEffect(() => {
+    if (!data?.capabilityResponses) {
+      return
+    }
+
+    const nextState: Record<string, { responseValue?: boolean; responseText?: string }> = {}
+    for (const response of data.capabilityResponses) {
+      nextState[response.capability_name] = {
+        responseValue: response.response_value ?? undefined,
+        responseText: response.response_text ?? undefined,
+      }
+    }
+    setCapabilityResponseState(nextState)
+  }, [data?.capabilityResponses])
 
   const acceptSectionMutation = api.inquiries.acceptSection.useMutation({
     onSuccess: () => {
@@ -101,7 +124,7 @@ export function InquiryViewCandidate({
         responseValue,
         responseText,
       })
-      setCapabilityResponses((prev) => ({
+      setCapabilityResponseState((prev) => ({
         ...prev,
         [capabilityName]: { responseValue, responseText },
       }))
@@ -128,6 +151,10 @@ export function InquiryViewCandidate({
 
   const { inquiry, sections: rawSections, comments } = data
   const sections = rawSections as InquirySectionStatus[]
+  const jobInfo = data.job ?? data.application?.job ?? null
+  const applicationInfo = data.application ?? null
+  const capabilityQuestions =
+    (data.capabilityQuestions as CapabilityQuestionDefinition[] | undefined) ?? []
 
   // Calculate progress
   const acceptedSections = sections.filter((s) => s.accepted_by).length
@@ -179,6 +206,36 @@ export function InquiryViewCandidate({
       sunday: 'Sun',
     }
     return inquiry.workdays.map((day: string) => dayLabels[day] || day).join(', ')
+  }
+
+  const formatJobPayRange = () => {
+    if (!jobInfo) return 'Not specified'
+    const min = jobInfo.payRangeMinCents
+    const max = jobInfo.payRangeMaxCents
+    if (min && max) {
+      return `$${(min / 100).toFixed(2)} - $${(max / 100).toFixed(2)}`
+    }
+    if (min) {
+      return `$${(min / 100).toFixed(2)}`
+    }
+    if (max) {
+      return `$${(max / 100).toFixed(2)}`
+    }
+    return 'Not specified'
+  }
+
+  const formatDateTime = (value?: string | null) => {
+    if (!value) return 'Not specified'
+    return new Date(value).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  }
+
+  const formatStatus = (status?: string | null) => {
+    if (!status) return 'Not specified'
+    return status.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
   }
 
   const SectionHeader = ({
@@ -275,10 +332,29 @@ export function InquiryViewCandidate({
           />
           {expandedSections.has('job_details') && (
             <YStack gap="$2" p="$3" bg="$background" rounded="$3" borderWidth={1} borderColor="$borderColor">
-              <Text fontSize="$3" color="$color11">
-                Job details will be loaded here
-              </Text>
-              {/* TODO: Load and display job details */}
+              {jobInfo ? (
+                <YStack gap="$2">
+                  {[
+                    { label: 'Role', value: jobInfo.title },
+                    { label: 'Organization', value: jobInfo.organization?.name },
+                    { label: 'Location', value: jobInfo.location },
+                    { label: 'Employment type', value: jobInfo.employmentType },
+                    { label: 'Remote option', value: jobInfo.remoteOption },
+                    { label: 'Pay range', value: formatJobPayRange() },
+                  ].map((row) => (
+                    <XStack key={row.label} justify="space-between" items="center">
+                      <Text fontSize="$3">{row.label}</Text>
+                      <Text fontWeight="600" fontSize="$3">
+                        {row.value || 'Not specified'}
+                      </Text>
+                    </XStack>
+                  ))}
+                </YStack>
+              ) : (
+                <Text fontSize="$3" color="$color11">
+                  Job details are unavailable.
+                </Text>
+              )}
             </YStack>
           )}
         </YStack>
@@ -293,10 +369,38 @@ export function InquiryViewCandidate({
           />
           {expandedSections.has('application_data') && (
             <YStack gap="$2" p="$3" bg="$background" rounded="$3" borderWidth={1} borderColor="$borderColor">
-              <Text fontSize="$3" color="$color11">
-                Application data will be loaded here
-              </Text>
-              {/* TODO: Load and display application data */}
+              {applicationInfo ? (
+                <YStack gap="$2">
+                  <XStack justify="space-between" items="center">
+                    <Text fontSize="$3">Status</Text>
+                    <Text fontWeight="600" fontSize="$3">
+                      {formatStatus(applicationInfo.status)}
+                    </Text>
+                  </XStack>
+                  <XStack justify="space-between" items="center">
+                    <Text fontSize="$3">Application score</Text>
+                    <Text fontWeight="600" fontSize="$3">
+                      {applicationInfo.applicationScore ?? 'Not scored'}
+                    </Text>
+                  </XStack>
+                  <XStack justify="space-between" items="center">
+                    <Text fontSize="$3">Submitted</Text>
+                    <Text fontWeight="600" fontSize="$3">
+                      {formatDateTime(applicationInfo.createdAt)}
+                    </Text>
+                  </XStack>
+                  <XStack justify="space-between" items="center">
+                    <Text fontSize="$3">Last updated</Text>
+                    <Text fontWeight="600" fontSize="$3">
+                      {formatDateTime(applicationInfo.updatedAt)}
+                    </Text>
+                  </XStack>
+                </YStack>
+              ) : (
+                <Text fontSize="$3" color="$color11">
+                  Application metadata is unavailable.
+                </Text>
+              )}
             </YStack>
           )}
         </YStack>
@@ -497,7 +601,7 @@ export function InquiryViewCandidate({
                   </Text>
                   <CapabilityQuestionInput
                     question="Can you meet the endurance requirements for this role?"
-                    value={capabilityResponses.endurance?.responseValue}
+                    value={capabilityResponseState.endurance?.responseValue}
                     onChange={(value) =>
                       handleCapabilityResponse('endurance', value, undefined)
                     }
@@ -505,11 +609,34 @@ export function InquiryViewCandidate({
                 </YStack>
               )}
 
-              {/* Additional Capability Questions */}
-              {/* TODO: Load capability questions from job requirements */}
-              <Text fontSize="$3" color="$color11">
-                Additional capability questions will be displayed here
-              </Text>
+              {capabilityQuestions.length > 0 && (
+                <YStack gap="$3">
+                  {capabilityQuestions.map((question) => {
+                    const response = capabilityResponseState[question.name]
+                    if (question.type === 'boolean') {
+                      return (
+                        <CapabilityQuestionInput
+                          key={question.name}
+                          question={question.label}
+                          value={response?.responseValue}
+                          onChange={(value) => handleCapabilityResponse(question.name, value)}
+                        />
+                      )
+                    }
+
+                    return (
+                      <YStack key={question.name} gap="$1">
+                        <Text fontWeight="600" fontSize="$3">
+                          {question.label}
+                        </Text>
+                        <Text fontSize="$3" color="$color11">
+                          {response?.responseText || 'No response yet'}
+                        </Text>
+                      </YStack>
+                    )
+                  })}
+                </YStack>
+              )}
 
               <Separator />
 
@@ -630,6 +757,8 @@ export function InquiryViewCandidate({
             </YStack>
           )}
         </YStack>
+
+        <InquiryHistoryTimeline inquiryId={inquiryId} />
       </YStack>
     </ScrollView>
   )

@@ -69,6 +69,16 @@ describe('normalizeScores', () => {
     expect(normalized.A.result).toBe('neutral')
   })
 
+  it('still defaults to neutral when the raw score is non-zero but count is zero', () => {
+    const scores = createScores({
+      E: { score: 999, count: 0, result: 'neutral' },
+    })
+
+    const normalized = normalizeScores(scores)
+
+    expect(normalized.E).toMatchObject({ percentage: 50, average: 3, result: 'neutral' })
+  })
+
   it('rounds calculated averages and percentages to two decimals', () => {
     const scores = createScores({
       A: { score: 85, count: 24, result: 'high' }, // average ≈ 3.54
@@ -78,6 +88,17 @@ describe('normalizeScores', () => {
 
     expect(normalized.A.average).toBe(3.54)
     expect(normalized.A.percentage).toBe(63.54)
+  })
+
+  it('does not mutate the original scores object', () => {
+    const scores = createScores({
+      N: { score: 60, count: 24, result: 'neutral' },
+    })
+    const cloned = JSON.parse(JSON.stringify(scores)) as IPIPScores
+
+    normalizeScores(scores)
+
+    expect(scores).toEqual(cloned)
   })
 })
 

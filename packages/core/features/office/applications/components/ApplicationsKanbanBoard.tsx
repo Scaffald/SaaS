@@ -127,6 +127,10 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
     )
   }, [applications])
 
+  const pendingApplication = pendingChange
+    ? applications.find((app) => app.id === pendingChange.applicationId)
+    : null
+
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string)
   }
@@ -256,12 +260,11 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
           open={true}
           onClose={cancelChange}
           onConfirm={confirmChange}
-          candidateName={
-            applications.find((app) => app.id === pendingChange.applicationId)?.candidate.name || ''
-          }
+          candidateName={pendingApplication?.candidate.name || ''}
           fromStatus={pendingChange.fromStatus}
           toStatus={pendingChange.toStatus}
           isLoading={isChanging}
+          application={pendingApplication || undefined}
         />
       )}
 
@@ -276,7 +279,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
 
       {showComparison && (
         <InquiryComparisonModal
-          selectedApplications={selectedApplications}
+          inquiryIds={inquiryIds}
           open={showComparison}
           onClose={() => {
             setShowComparison(false)
@@ -300,13 +303,8 @@ function InquiryComparisonModal({ inquiryIds, open, onClose }: InquiryComparison
 
   return (
     <YStack
-      position="fixed"
-      top={0}
-      left={0}
-      right={0}
-      bottom={0}
       bg="$background"
-      zIndex={1000}
+      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000 }}
     >
       <InquiryComparisonView inquiryIds={inquiryIds} onClose={onClose} />
     </YStack>
@@ -423,7 +421,14 @@ const ApplicationCard = ({
     >
       {/* Selection Checkbox */}
       {onToggleSelection && (
-        <XStack position="absolute" top="$2" right="$2" zIndex={10}>
+        <XStack
+          style={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            zIndex: 10,
+          }}
+        >
           <Button
             size="$2"
             circular

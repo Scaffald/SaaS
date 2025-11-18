@@ -11,7 +11,7 @@ import {
   Separator,
   CustomCheckbox,
 } from '@app/ui'
-import { Adapt, Sheet, Select, Switch, TextArea } from 'tamagui'
+import { Sheet, Select, TextArea } from 'tamagui'
 import { Check } from '@tamagui/lucide-icons'
 import { Progress } from 'tamagui'
 import { api } from '@app/core/utils/api'
@@ -224,289 +224,287 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
 
   return (
     <Sheet modal open={open} onOpenChange={handleClose}>
-      <Adapt when="sm" platform="touch">
+      <>
         <Sheet.Frame>
           <FormProvider {...form}>
-            <YStack p="$4">
-            <XStack gap="$4" flex={1} $sm={{ flexDirection: 'column' }}>
-              {/* Main Form */}
-              <YStack flex={1} gap="$4">
-                <ScrollView>
-                  <YStack gap="$6" p="$4" $sm={{ gap: '$8', p: '$3' }}>
-                    {/* Header */}
-                    <YStack gap="$2">
-                      <Text fontSize="$8" fontWeight="700">
-                        Send Inquiry to {applicationIds.length} Candidates
-                      </Text>
-                      <Text fontSize="$3" color="$color11">
-                        The same inquiry will be sent to all selected candidates
-                      </Text>
-                    </YStack>
-
-                    {/* Progress indicator */}
-                    {isSubmitting && (
-                      <YStack gap="$2" p="$4" bg="$blue2" rounded="$4">
-                        <Text fontSize="$4" fontWeight="600">
-                          Sending inquiries...
+            <YStack p="$4" flex={1}>
+              <XStack gap="$4" flex={1} $sm={{ flexDirection: 'column' }}>
+                {/* Main Form */}
+                <YStack flex={1} gap="$4">
+                  <ScrollView>
+                    <YStack gap="$6" p="$4" $sm={{ gap: '$8', p: '$3' }}>
+                      {/* Header */}
+                      <YStack gap="$2">
+                        <Text fontSize="$8" fontWeight="700">
+                          Send Inquiry to {applicationIds.length} Candidates
                         </Text>
-                        <Progress value={75} />
-                        <Text fontSize="$2" color="$color11">
-                          Please wait while we send inquiries to all candidates
+                        <Text fontSize="$3" color="$color11">
+                          The same inquiry will be sent to all selected candidates
                         </Text>
                       </YStack>
-                    )}
 
-                    {/* Employment Section */}
-                    <YStack gap="$4">
-                      <XStack items="center" gap="$2">
-                        <Text fontSize="$6" fontWeight="700">
-                          Employment
-                        </Text>
-                      </XStack>
+                      {/* Progress indicator */}
+                      {isSubmitting && (
+                        <YStack gap="$2" p="$4" bg="$blue2" rounded="$4">
+                          <Text fontSize="$4" fontWeight="600">
+                            Sending inquiries...
+                          </Text>
+                          <Progress value={75} />
+                          <Text fontSize="$2" color="$color11">
+                            Please wait while we send inquiries to all candidates
+                          </Text>
+                        </YStack>
+                      )}
 
-                      {/* Employment Type */}
-                      <YStack gap="$2">
-                        <Text fontWeight="600" fontSize="$4">
-                          Employment type
-                        </Text>
-                        <Controller
-                          control={control}
-                          name="employmentType"
-                          render={({ field }) => (
-                            <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
-                              {EMPLOYMENT_TYPE_OPTIONS.map((option) => {
-                                const isSelected = field.value === option.value
-                                return (
-                                  <Button
-                                    key={option.value}
-                                    flex={1}
-                                    theme={isSelected ? 'blue' : 'gray'}
-                                    variant={isSelected ? undefined : 'outlined'}
-                                    onPress={() => field.onChange(option.value)}
-                                    size="$4"
-                                    $sm={{ height: 48 }}
-                                  >
-                                    {option.label}
-                                  </Button>
-                                )
-                              })}
-                            </XStack>
-                          )}
-                        />
+                      {/* Employment Section */}
+                      <YStack gap="$4">
                         <XStack items="center" gap="$2">
+                          <Text fontSize="$6" fontWeight="700">
+                            Employment
+                          </Text>
+                        </XStack>
+
+                        {/* Employment Type */}
+                        <YStack gap="$2">
+                          <Text fontWeight="600" fontSize="$4">
+                            Employment type
+                          </Text>
                           <Controller
                             control={control}
-                            name="employmentTypeNegotiable"
+                            name="employmentType"
                             render={({ field }) => (
-                              <CustomCheckbox
-                                checked={!field.value}
-                                onCheckedChange={(checked) =>
-                                  field.onChange(!checked)
-                                }
-                                size="medium"
-                              />
+                              <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
+                                {EMPLOYMENT_TYPE_OPTIONS.map((option) => {
+                                  const isSelected = field.value === option.value
+                                  return (
+                                    <Button
+                                      key={option.value}
+                                      flex={1}
+                                      theme={isSelected ? 'blue' : 'gray'}
+                                      variant={isSelected ? undefined : 'outlined'}
+                                      onPress={() => field.onChange(option.value)}
+                                      size="$4"
+                                      $sm={{ height: 48 }}
+                                    >
+                                      {option.label}
+                                    </Button>
+                                  )
+                                })}
+                              </XStack>
                             )}
                           />
-                          <Text fontSize="$3" color="$color11">
-                            Non-negotiable
+                          <XStack items="center" gap="$2">
+                            <Controller
+                              control={control}
+                              name="employmentTypeNegotiable"
+                              render={({ field }) => (
+                                <CustomCheckbox
+                                  checked={!field.value}
+                                  onCheckedChange={(checked) => field.onChange(!checked)}
+                                  size="medium"
+                                />
+                              )}
+                            />
+                            <Text fontSize="$3" color="$color11">
+                              Non-negotiable
+                            </Text>
+                          </XStack>
+                        </YStack>
+
+                        {/* Work Schedule */}
+                        <YStack gap="$2">
+                          <Text fontWeight="600" fontSize="$4">
+                            Work schedule
                           </Text>
+                          <Controller
+                            control={control}
+                            name="workSchedule"
+                            render={({ field }) => (
+                              <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
+                                {WORK_SCHEDULE_OPTIONS.map((option) => {
+                                  const isSelected = field.value === option.value
+                                  return (
+                                    <Button
+                                      key={option.value}
+                                      flex={1}
+                                      theme={isSelected ? 'blue' : 'gray'}
+                                      variant={isSelected ? undefined : 'outlined'}
+                                      onPress={() => field.onChange(option.value)}
+                                      size="$4"
+                                      $sm={{ height: 48 }}
+                                    >
+                                      {option.label}
+                                    </Button>
+                                  )
+                                })}
+                              </XStack>
+                            )}
+                          />
+                        </YStack>
+                      </YStack>
+
+                      <Separator />
+
+                      {/* Compensation Section */}
+                      <YStack gap="$4">
+                        <Text fontSize="$6" fontWeight="700">
+                          Compensation
+                        </Text>
+
+                        {/* Rate Type */}
+                        <YStack gap="$2">
+                          <Text fontWeight="600" fontSize="$4">
+                            Rate type
+                          </Text>
+                          <Controller
+                            control={control}
+                            name="rateType"
+                            render={({ field }) => (
+                              <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
+                                <Button
+                                  flex={1}
+                                  theme={field.value === 'hourly' ? 'blue' : 'gray'}
+                                  variant={field.value === 'hourly' ? undefined : 'outlined'}
+                                  onPress={() => field.onChange('hourly')}
+                                  size="$4"
+                                  $sm={{ height: 48 }}
+                                >
+                                  Hourly
+                                </Button>
+                                <Button
+                                  flex={1}
+                                  theme={field.value === 'salary' ? 'blue' : 'gray'}
+                                  variant={field.value === 'salary' ? undefined : 'outlined'}
+                                  onPress={() => field.onChange('salary')}
+                                  size="$4"
+                                  $sm={{ height: 48 }}
+                                >
+                                  Salary
+                                </Button>
+                              </XStack>
+                            )}
+                          />
+                        </YStack>
+
+                        {/* Rate Range */}
+                        <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
+                          <YStack gap="$2" flex={1}>
+                            <Text fontWeight="600" fontSize="$4">
+                              Minimum rate
+                            </Text>
+                            <Controller
+                              control={control}
+                              name="rateMinCents"
+                              render={({ field }) => (
+                                <Input
+                                  placeholder={
+                                    watchedValues.rateType === 'hourly' ? '$0.00/hr' : '$0,000/yr'
+                                  }
+                                  value={formatCentsToDollars(field.value)}
+                                  onChangeText={(text) => {
+                                    const cents = parseDollarsToCents(text)
+                                    field.onChange(cents)
+                                  }}
+                                  keyboardType="numeric"
+                                />
+                              )}
+                            />
+                          </YStack>
+                          <YStack gap="$2" flex={1}>
+                            <Text fontWeight="600" fontSize="$4">
+                              Maximum rate (optional)
+                            </Text>
+                            <Controller
+                              control={control}
+                              name="rateMaxCents"
+                              render={({ field }) => (
+                                <Input
+                                  placeholder={
+                                    watchedValues.rateType === 'hourly' ? '$0.00/hr' : '$0,000/yr'
+                                  }
+                                  value={formatCentsToDollars(field.value)}
+                                  onChangeText={(text) => {
+                                    const cents = parseDollarsToCents(text)
+                                    field.onChange(cents)
+                                  }}
+                                  keyboardType="numeric"
+                                />
+                              )}
+                            />
+                          </YStack>
                         </XStack>
                       </YStack>
 
-                      {/* Work Schedule */}
-                      <YStack gap="$2">
-                        <Text fontWeight="600" fontSize="$4">
-                          Work schedule
+                      <Separator />
+
+                      {/* Other Section */}
+                      <YStack gap="$4">
+                        <Text fontSize="$6" fontWeight="700">
+                          Additional Notes
                         </Text>
                         <Controller
                           control={control}
-                          name="workSchedule"
+                          name="additionalNotes"
                           render={({ field }) => (
-                            <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
-                              {WORK_SCHEDULE_OPTIONS.map((option) => {
-                                const isSelected = field.value === option.value
-                                return (
-                                  <Button
-                                    key={option.value}
-                                    flex={1}
-                                    theme={isSelected ? 'blue' : 'gray'}
-                                    variant={isSelected ? undefined : 'outlined'}
-                                    onPress={() => field.onChange(option.value)}
-                                    size="$4"
-                                    $sm={{ height: 48 }}
-                                  >
-                                    {option.label}
-                                  </Button>
-                                )
-                              })}
-                            </XStack>
-                          )}
-                        />
-                      </YStack>
-                    </YStack>
-
-                    <Separator />
-
-                    {/* Compensation Section */}
-                    <YStack gap="$4">
-                      <Text fontSize="$6" fontWeight="700">
-                        Compensation
-                      </Text>
-
-                      {/* Rate Type */}
-                      <YStack gap="$2">
-                        <Text fontWeight="600" fontSize="$4">
-                          Rate type
-                        </Text>
-                        <Controller
-                          control={control}
-                          name="rateType"
-                          render={({ field }) => (
-                            <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
-                              <Button
-                                flex={1}
-                                theme={field.value === 'hourly' ? 'blue' : 'gray'}
-                                variant={field.value === 'hourly' ? undefined : 'outlined'}
-                                onPress={() => field.onChange('hourly')}
-                                size="$4"
-                                $sm={{ height: 48 }}
-                              >
-                                Hourly
-                              </Button>
-                              <Button
-                                flex={1}
-                                theme={field.value === 'salary' ? 'blue' : 'gray'}
-                                variant={field.value === 'salary' ? undefined : 'outlined'}
-                                onPress={() => field.onChange('salary')}
-                                size="$4"
-                                $sm={{ height: 48 }}
-                              >
-                                Salary
-                              </Button>
-                            </XStack>
+                            <TextArea
+                              placeholder="Add any additional information or requirements..."
+                              value={field.value || ''}
+                              onChangeText={field.onChange}
+                              numberOfLines={4}
+                              height={120}
+                            />
                           )}
                         />
                       </YStack>
 
-                      {/* Rate Range */}
-                      <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
-                        <YStack gap="$2" flex={1}>
-                          <Text fontWeight="600" fontSize="$4">
-                            Minimum rate
-                          </Text>
-                          <Controller
-                            control={control}
-                            name="rateMinCents"
-                            render={({ field }) => (
-                              <Input
-                                placeholder={
-                                  watchedValues.rateType === 'hourly' ? '$0.00/hr' : '$0,000/yr'
-                                }
-                                value={formatCentsToDollars(field.value)}
-                                onChangeText={(text) => {
-                                  const cents = parseDollarsToCents(text)
-                                  field.onChange(cents)
-                                }}
-                                keyboardType="numeric"
-                              />
-                            )}
-                          />
-                        </YStack>
-                        <YStack gap="$2" flex={1}>
-                          <Text fontWeight="600" fontSize="$4">
-                            Maximum rate (optional)
-                          </Text>
-                          <Controller
-                            control={control}
-                            name="rateMaxCents"
-                            render={({ field }) => (
-                              <Input
-                                placeholder={
-                                  watchedValues.rateType === 'hourly' ? '$0.00/hr' : '$0,000/yr'
-                                }
-                                value={formatCentsToDollars(field.value)}
-                                onChangeText={(text) => {
-                                  const cents = parseDollarsToCents(text)
-                                  field.onChange(cents)
-                                }}
-                                keyboardType="numeric"
-                              />
-                            )}
-                          />
-                        </YStack>
+                      {/* Form Actions */}
+                      <XStack
+                        gap="$3"
+                        p="$4"
+                        bg="$background"
+                        borderTopWidth={1}
+                        borderTopColor="$borderColor"
+                        justify="flex-end"
+                        $sm={{ flexDirection: 'column-reverse' }}
+                      >
+                        <Button
+                          variant="outlined"
+                          onPress={handleClose}
+                          disabled={isSubmitting}
+                          $sm={{ height: 48, flex: 1 }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          onPress={onSubmit}
+                          disabled={isSubmitting}
+                          theme="blue"
+                          $sm={{ height: 48, flex: 1 }}
+                        >
+                          {isSubmitting ? 'Sending...' : `Send to ${applicationIds.length} Candidates`}
+                        </Button>
                       </XStack>
                     </YStack>
+                  </ScrollView>
+                </YStack>
 
-                    <Separator />
-
-                    {/* Other Section */}
-                    <YStack gap="$4">
-                      <Text fontSize="$6" fontWeight="700">
-                        Additional Notes
-                      </Text>
-                      <Controller
-                        control={control}
-                        name="additionalNotes"
-                        render={({ field }) => (
-                          <TextArea
-                            placeholder="Add any additional information or requirements..."
-                            value={field.value || ''}
-                            onChangeText={field.onChange}
-                            numberOfLines={4}
-                            height={120}
-                          />
-                        )}
-                      />
-                    </YStack>
-
-                    {/* Form Actions */}
-                    <XStack
-                      gap="$3"
-                      p="$4"
-                      bg="$background"
-                      borderTopWidth={1}
-                      borderTopColor="$borderColor"
-                      justify="flex-end"
-                      $sm={{ flexDirection: 'column-reverse' }}
-                    >
-                      <Button
-                        variant="outlined"
-                        onPress={handleClose}
-                        disabled={isSubmitting}
-                        $sm={{ height: 48, flex: 1 }}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        onPress={onSubmit}
-                        disabled={isSubmitting}
-                        theme="blue"
-                        $sm={{ height: 48, flex: 1 }}
-                      >
-                        {isSubmitting ? 'Sending...' : `Send to ${applicationIds.length} Candidates`}
-                      </Button>
-                    </XStack>
-                  </YStack>
-                </ScrollView>
-              </YStack>
-
-              {/* Help Sidebar */}
-              <YStack
-                width={300}
-                p="$4"
-                bg="$color2"
-                borderLeftWidth={1}
-                borderLeftColor="$borderColor"
-                $sm={{ display: 'none' }}
-              >
-                <InquiryHelpSidebar />
-              </YStack>
-            </XStack>
+                {/* Help Sidebar */}
+                <YStack
+                  width={300}
+                  p="$4"
+                  bg="$color2"
+                  borderLeftWidth={1}
+                  borderLeftColor="$borderColor"
+                  $sm={{ display: 'none' }}
+                >
+                  <InquiryHelpSidebar />
+                </YStack>
+              </XStack>
             </YStack>
           </FormProvider>
         </Sheet.Frame>
         <Sheet.Overlay />
-      </Adapt>
+      </>
     </Sheet>
   )
 }

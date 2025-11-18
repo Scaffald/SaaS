@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { YStack, XStack, Text } from '@app/ui'
-import { Avatar } from 'tamagui'
+import { Avatar, type GetThemeValueForKey } from 'tamagui'
 import { Check, MessageSquare, Edit3, Send, FileText, AlertCircle } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
 
@@ -185,7 +185,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
                   width={12}
                   height={12}
                   rounded="$10"
-                  bg={eventColor as `$${string}`}
+                  bg={eventColor as GetThemeValueForKey<'backgroundColor'>}
                   items="center"
                   justify="center"
                 >

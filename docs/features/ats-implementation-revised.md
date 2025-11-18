@@ -28,6 +28,15 @@ UI with Mocks → Iterate → Finalize → Wire Backend → Integration
 (Fast, flexible, early feedback)
 ```
 
+## 🤝 Inquiry & Negotiation Flow Updates (REQ-221)
+
+- `/office/applications/:applicationId/inquiry` now hosts the full-screen negotiation workspace for recruiters (with real-time updates, terms editing, and the inquiry history timeline).
+- `/dashboard/applications/:applicationId/inquiry` gives candidates a dedicated workspace that surfaces job details, application metadata, capability questions, and their own history view.
+- The kanban comparison modal now includes per-candidate timelines plus a working "View Full Inquiry" CTA that jumps into the new office route.
+- Workers see an **Active Negotiations** widget on the dashboard that links into their inquiry view whenever an employer has moved an application into the `inquired` stage.
+
+> These UX hooks replace the earlier "TODO" placeholders and ensure both recruiters and candidates can reach the negotiation experience without relying on notifications alone.
+
 ---
 
 ## 📋 Revised Implementation Phases

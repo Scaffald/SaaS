@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { YStack, XStack, Text, Input, ToggleSwitch, Button, Card } from '@app/ui'
-import { Adapt, Sheet, Select, Switch } from 'tamagui'
-import { Label } from 'tamagui'
+import { YStack, XStack, Text, Input, ToggleSwitch, Button } from '@app/ui'
+import { Adapt, Sheet, Select, Switch, Card, Label } from 'tamagui'
 import { Plus, X, Check } from '@tamagui/lucide-icons'
 
 interface CapabilityQuestion {
@@ -209,7 +208,7 @@ export function ApplicationProcessSection({
         {localState.inquiry_capability_questions && localState.inquiry_capability_questions.length > 0 && (
           <YStack gap="$2">
             {localState.inquiry_capability_questions.map((question, index) => (
-              <Card key={question.name} padding="$3" gap="$2" bg="$color2">
+              <Card key={question.name} p="$3" gap="$2" bg="$color2">
                 <XStack justify="space-between" items="center">
                   <YStack flex={1} gap="$1">
                     <Text fontSize="$4" fontWeight="500">
@@ -257,15 +256,15 @@ export function ApplicationProcessSection({
         <Sheet
           modal
           open={showAddQuestionModal}
-          onOpenChange={(open) => {
-            setShowAddQuestionModal(open)
-            if (!open) {
+          onOpenChange={(nextOpen: boolean) => {
+            setShowAddQuestionModal(nextOpen)
+            if (!nextOpen) {
               setNewQuestion({ name: '', label: '', type: 'boolean', unit: '', required: false })
             }
           }}
         >
-          <Adapt when="sm" platform="touch">
-            <Sheet.Frame padding="$4" gap="$4">
+          <>
+            <Sheet.Frame p="$4" gap="$4">
               <YStack gap="$3">
                 <Text fontSize="$6" fontWeight="600">
                   Add Capability Question
@@ -382,7 +381,7 @@ export function ApplicationProcessSection({
               </YStack>
             </Sheet.Frame>
             <Sheet.Overlay />
-          </Adapt>
+          </>
         </Sheet>
       </YStack>
     </YStack>

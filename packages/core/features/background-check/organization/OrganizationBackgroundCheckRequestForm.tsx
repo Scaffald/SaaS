@@ -3,27 +3,41 @@ import { ScrollView } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Button, Input, Label, Select, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
 import { Check, ChevronDown, CircleAlert } from '@tamagui/lucide-icons'
-import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server'
+import type { inferRouterOutputs } from '@trpc/server'
 
 import type { AppRouter } from '@app/supabase/client-types'
 import { ROUTES } from '@app/core/constants/routes'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
 import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
+import { PaymentIntentForm } from '@app/core/features/payments/components/PaymentIntentForm'
 
-type RouterInputs = inferRouterInputs<AppRouter>
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type PackageSummary = RouterOutputs['backgroundChecks']['listPackages'][number]
 type WorkerSummary = RouterOutputs['workers']['getWorkers']['workers'][number]
 type JobSummary = RouterOutputs['office']['listJobs']['jobs'][number]
 type OrganizationSummary = RouterOutputs['office']['getOrganizations']['organizations'][number]
-type OrganizationInitiateInput = RouterInputs['backgroundChecks']['organizationInitiate']
+
+type PaymentSession = {
+  backgroundCheckId: string
+  paymentIntentId: string
+  clientSecret: string
+  amountCents: number
+}
 
 const formatCurrency = (cents: number | null | undefined) => {
   if (typeof cents !== 'number') return '—'
   return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(
     cents / 100
   )
+}
+
+const getPackageTier = (pkg: PackageSummary | null) => {
+  if (!pkg?.metadata || typeof pkg.metadata !== 'object') {
+    return undefined
+  }
+  const maybeTier = (pkg.metadata as Record<string, unknown>).tier
+  return typeof maybeTier === 'string' ? maybeTier : undefined
 }
 
 export function OrganizationBackgroundCheckRequestForm() {
@@ -89,30 +103,8 @@ export function OrganizationBackgroundCheckRequestForm() {
   )
   const jobs = useMemo<JobSummary[]>(() => jobsQuery.data?.jobs ?? [], [jobsQuery.data?.jobs])
 
-  const initiateMutation = api.backgroundChecks.organizationInitiate.useMutation({
-    onSuccess: async (_data: unknown, variables: OrganizationInitiateInput | undefined) => {
-      const orgId =
-        typeof variables?.organization_id === 'string' ? variables.organization_id : organizationId
-      toast.show('Background check requested', {
-        message: 'Worker has been invited to start their background check.',
-      })
-      if (orgId) {
-        await utils.backgroundChecks.organizationListChecks.invalidate({
-          organization_id: orgId,
-        })
-        router.replace({
-          pathname: ROUTES.OFFICE_ATS_CHECKS.path,
-          params: { organizationId: orgId },
-        })
-      }
-    },
-    onError: (error: unknown) => {
-      toast.show('Unable to request background check', {
-        message: error instanceof Error ? error.message : 'Please try again in a moment.',
-        type: 'error',
-      })
-    },
-  })
+  const requestPaymentMutation = api.backgroundChecks.requestCheck.useMutation()
+  const confirmPaymentMutation = api.backgroundChecks.confirmCheckPayment.useMutation()
 
   const selectedPackage = useMemo<PackageSummary | null>(() => {
     if (!selectedPackageId) return null
@@ -129,9 +121,55 @@ export function OrganizationBackgroundCheckRequestForm() {
     return jobs.find((job) => job.id === selectedJobId) ?? null
   }, [jobs, selectedJobId])
 
+  const [paymentSession, setPaymentSession] = useState<PaymentSession | null>(null)
+  const [requestError, setRequestError] = useState<string | null>(null)
+
+  useEffect(() => {
+    setPaymentSession(null)
+    setRequestError(null)
+  }, [organizationId, selectedPackageId, selectedWorkerId])
+
   const costCents = selectedPackage?.retail_cost_cents ?? selectedPackage?.platform_cost_cents ?? 0
 
+  const handlePaymentSuccess = async (paymentIntentId: string) => {
+    if (!paymentSession) return
+
+    try {
+      const record = await confirmPaymentMutation.mutateAsync({
+        background_check_id: paymentSession.backgroundCheckId,
+        payment_intent_id: paymentIntentId,
+      })
+
+      toast.show('Background check requested', {
+        message: 'Worker has been invited to start their background check.',
+      })
+
+      const orgId = organizationId
+      if (orgId) {
+        await utils.backgroundChecks.organizationListChecks.invalidate({
+          organization_id: orgId,
+        })
+        router.replace({
+          pathname: ROUTES.OFFICE_ATS_CHECKS.path,
+          params: { organizationId: orgId },
+        })
+      } else if (record?.organization_id) {
+        await utils.backgroundChecks.organizationListChecks.invalidate({
+          organization_id: record.organization_id,
+        })
+      }
+      setPaymentSession(null)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unable to confirm payment.'
+      toast.show('Payment confirmation failed', { message, type: 'error' })
+    }
+  }
+
   const handleSubmit = async () => {
+    if (paymentSession) {
+      return
+    }
+
     if (!organizationId) {
       toast.show('Select an organization', {
         message: 'Choose an organization before requesting a check.',
@@ -147,18 +185,34 @@ export function OrganizationBackgroundCheckRequestForm() {
       return
     }
 
-    await initiateMutation.mutateAsync({
-      organization_id: organizationId,
-      worker_user_id: selectedWorkerId,
-      package_id: selectedPackage.id,
-      job_id: selectedJobId ?? undefined,
-      paid_by: 'organization',
-      cost_cents: costCents,
-      metadata: {
-        requested_via: 'office_dashboard',
-        notes: notes.trim() || undefined,
-      },
-    })
+    setRequestError(null)
+
+    try {
+      const response = await requestPaymentMutation.mutateAsync({
+        package_id: selectedPackage.id,
+        tier: getPackageTier(selectedPackage) ??
+          (selectedPackage.slug as string | undefined) ??
+          (selectedPackage.display_name as string | undefined) ??
+          'custom',
+        organization_id: organizationId,
+        worker_user_id: selectedWorkerId,
+        job_id: selectedJobId ?? undefined,
+        paid_by: 'organization',
+        metadata: {
+          requested_via: 'office_dashboard',
+          notes: notes.trim() || undefined,
+        },
+      })
+
+      setPaymentSession(response)
+      toast.show('Payment required', {
+        message: 'Enter billing details to submit this background check.',
+      })
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unable to create payment session.'
+      setRequestError(message)
+      toast.show('Unable to start payment', { message, type: 'error' })
+    }
   }
 
   if (isLoadingOrganizations || isLoadingPackages) {
@@ -424,9 +478,32 @@ export function OrganizationBackgroundCheckRequestForm() {
               </Text>
             </Text>
             <Text fontSize="$2" color="$color10">
-              Charges will be billed to your payment method on file once the screening begins.
+              Charges are collected immediately via Stripe. Screenings are submitted after payment
+              succeeds.
             </Text>
           </YStack>
+
+          {requestError && (
+            <YStack bg="$red3" p="$3" rounded="$4">
+              <Text color="$red11">{requestError}</Text>
+            </YStack>
+          )}
+
+          {paymentSession && (
+            <YStack gap="$2">
+              <Text fontSize="$4" fontWeight="600" color="$color12">
+                Complete payment
+              </Text>
+              <PaymentIntentForm
+                clientSecret={paymentSession.clientSecret}
+                amountCents={paymentSession.amountCents}
+                description={`Background check for ${selectedWorker?.name ?? 'selected worker'}`}
+                submitLabel={confirmPaymentMutation.isPending ? 'Processing…' : 'Pay & send invite'}
+                disabled={confirmPaymentMutation.isPending}
+                onSuccess={handlePaymentSuccess}
+              />
+            </YStack>
+          )}
         </YStack>
 
         <XStack gap="$3">
@@ -434,21 +511,39 @@ export function OrganizationBackgroundCheckRequestForm() {
             flex={1}
             size="$4"
             variant="outlined"
-            disabled={initiateMutation.isLoading}
+            disabled={requestPaymentMutation.isPending || confirmPaymentMutation.isPending}
             onPress={() => router.back()}
           >
             Cancel
           </Button>
-          <Button
-            flex={1}
-            size="$4"
-            theme="blue"
-            onPress={handleSubmit}
-            disabled={initiateMutation.isLoading}
-          >
-            {initiateMutation.isLoading ? 'Requesting…' : 'Send Invitation'}
-          </Button>
+          {!paymentSession && (
+            <Button
+              flex={1}
+              size="$4"
+              theme="blue"
+              onPress={handleSubmit}
+              disabled={requestPaymentMutation.isPending}
+            >
+              {requestPaymentMutation.isPending ? 'Preparing payment…' : 'Continue to payment'}
+            </Button>
+          )}
         </XStack>
+        {paymentSession && (
+          <Button
+            size="$3"
+            variant="outlined"
+            mt="$2"
+            onPress={() => {
+              if (!confirmPaymentMutation.isPending) {
+                setPaymentSession(null)
+                setRequestError(null)
+              }
+            }}
+            disabled={confirmPaymentMutation.isPending}
+          >
+            Reset payment form
+          </Button>
+        )}
       </YStack>
     </ScrollView>
   )

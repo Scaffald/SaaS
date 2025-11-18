@@ -62,6 +62,34 @@ describe('generateOverallSummary', () => {
       'Your personality profile shows a balanced approach across all domains, allowing you to adapt flexibly to different situations and challenges.',
     )
   })
+
+  it('generates a meaningful summary when only a single domain has responses', () => {
+    const scores = createScores({
+      A: { score: 120, count: 24, result: 'high' },
+      E: { score: 0, count: 0, result: 'neutral' },
+      N: { score: 0, count: 0, result: 'neutral' },
+      C: { score: 0, count: 0, result: 'neutral' },
+      O: { score: 0, count: 0, result: 'neutral' },
+    })
+
+    const summary = generateOverallSummary(scores)
+
+    expect(summary).toContain('Your high level of Agreeableness indicates')
+    expect(summary).toContain('Together, these traits shape how you approach challenges')
+  })
+
+  it('orders the opening narrative by the highest average scores, not domain order', () => {
+    const scores = createScores({
+      C: { score: 120, count: 24, result: 'high' }, // average 5.0
+      O: { score: 110, count: 24, result: 'high' }, // average ≈ 4.58
+      A: { score: 90, count: 24, result: 'high' }, // average 3.75
+    })
+
+    const summary = generateOverallSummary(scores)
+
+    expect(summary.startsWith('Your score on Conscientiousness is high.')).toBe(true)
+    expect(summary).toContain('Your score on Openness to Experience is high')
+  })
 })
 
 

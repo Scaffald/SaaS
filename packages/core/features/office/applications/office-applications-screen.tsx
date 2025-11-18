@@ -6,6 +6,27 @@ import { ApplicationsKanbanBoard } from './components/ApplicationsKanbanBoard'
 import { ApplicationsFilters } from './components/ApplicationsFilters'
 import type { ApplicationStatus, MockApplication } from '../mock-data/ats-mock-data'
 
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+})
+
+function formatPayRange(
+  minCents?: number | null,
+  maxCents?: number | null,
+  type?: string | null
+) {
+  if (!minCents && !maxCents) return ''
+  const label =
+    minCents && maxCents
+      ? `${currencyFormatter.format(minCents / 100)} - ${currencyFormatter.format(maxCents / 100)}`
+      : currencyFormatter.format(((maxCents ?? minCents) ?? 0) / 100)
+  const suffix =
+    type === 'hourly' ? '/hr' : type === 'salary' ? '/yr' : type === 'contract' ? ' (contract)' : type === 'project' ? ' (project)' : ''
+  return `${label}${suffix}`
+}
+
 export const OfficeApplicationsScreen = () => {
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban')
   const [filters, setFilters] = useState<{
@@ -43,6 +64,12 @@ export const OfficeApplicationsScreen = () => {
           isPrimary: boolean
           team?: { name: string | null }
         }>
+        pay_range_min_cents?: number | null
+        pay_range_max_cents?: number | null
+        pay_range_type?: string | null
+        employment_type?: string | null
+        organization_id?: string | null
+        target_start_date?: string | null
       } | null
       const assignments = jobInfo?.teamAssignments ?? []
       const primaryAssignment =
@@ -54,6 +81,7 @@ export const OfficeApplicationsScreen = () => {
       const statusMap: Record<string, ApplicationStatus> = {
         pending: 'new',
         reviewing: 'screen',
+    inquired: 'inquired',
         interview: 'interview',
         offer: 'offer',
         hired: 'hired',
@@ -103,8 +131,20 @@ export const OfficeApplicationsScreen = () => {
           title: app.job_title || 'Position',
           company: '', // Not in current schema
           location: app.job_location || '',
-          payRange: '', // Not displayed in kanban view
+          payRange: formatPayRange(
+            jobInfo?.pay_range_min_cents,
+            jobInfo?.pay_range_max_cents,
+            jobInfo?.pay_range_type
+          ),
+          organizationId: jobInfo?.organization_id ?? null,
+          payRangeMinCents: jobInfo?.pay_range_min_cents ?? null,
+          payRangeMaxCents: jobInfo?.pay_range_max_cents ?? null,
+          payRangeType: jobInfo?.pay_range_type ?? null,
+          employmentType: jobInfo?.employment_type ?? null,
+          targetStartDate: jobInfo?.target_start_date ?? null,
         },
+        organizationId: jobInfo?.organization_id ?? null,
+        workerUserId: app.user_id ?? null,
         team: {
           id: primaryTeamId,
           name: primaryTeamName,

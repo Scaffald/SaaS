@@ -131,7 +131,7 @@ export function StripeSettingsPage() {
         </Paragraph>
       </YStack>
 
-      <YStack gap="$4" maxWidth={720}>
+      <YStack gap="$4" style={{ maxWidth: 720, width: '100%' }}>
         <Card p="$4" gap="$4">
           <YStack gap="$2">
             <Text fontSize="$6" fontWeight="600">

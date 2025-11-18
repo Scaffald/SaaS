@@ -6,15 +6,6 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export type Database = Record<string, never>
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
-
 export type Database = {
   auth: {
     Tables: {

@@ -244,6 +244,17 @@ const ROUTES_CONFIG = {
     isProtected: true,
   },
 
+  DASHBOARD_APPLICATIONS: {
+    path: "/dashboard/applications",
+    title: "Applications",
+    isProtected: true,
+  },
+  DASHBOARD_APPLICATION_INQUIRY: {
+    path: "/dashboard/applications/:applicationId/inquiry",
+    title: "Inquiry",
+    isProtected: true,
+  },
+
   // Dashboard > Users (dynamic)
   DASHBOARD_USER: {
     path: "/dashboard/users/:userId",
@@ -328,6 +339,21 @@ const ROUTES_CONFIG = {
     isProtected: true,
     menuCategory: "system",
     menuParent: "OFFICE_SETTINGS",
+  },
+  OFFICE_APPLICATIONS: {
+    path: "/office/applications",
+    title: "Applications",
+    isProtected: true,
+    menuCategory: "recruitment",
+    menuOrder: 1,
+    menuIcon: ClipboardCheck,
+  },
+  OFFICE_APPLICATION_INQUIRY: {
+    path: "/office/applications/:applicationId/inquiry",
+    title: "Inquiry Detail",
+    isProtected: true,
+    menuCategory: "recruitment",
+    menuParent: "OFFICE_APPLICATIONS",
   },
   OFFICE_ATS: {
     path: "/office/ats",
@@ -834,6 +860,8 @@ export const DASHBOARD_ROUTES = {
   WORK_LOGS: ROUTES.DASHBOARD_WORK_LOGS,
   WORK_LOGS_CREATE: ROUTES.DASHBOARD_WORK_LOGS_CREATE,
   WORK_LOGS_DETAIL: ROUTES.DASHBOARD_WORK_LOGS_DETAIL,
+  APPLICATIONS: ROUTES.DASHBOARD_APPLICATIONS,
+  APPLICATION_INQUIRY: ROUTES.DASHBOARD_APPLICATION_INQUIRY,
 } as const;
 
 /**
@@ -857,6 +885,8 @@ export const OFFICE_ROUTES = {
   SETTINGS: ROUTES.OFFICE_SETTINGS,
   SETTINGS_GEOGRAPHIC: ROUTES.OFFICE_SETTINGS_GEOGRAPHIC,
   SETTINGS_STRIPE: ROUTES.OFFICE_SETTINGS_STRIPE,
+  APPLICATIONS: ROUTES.OFFICE_APPLICATIONS,
+  APPLICATION_INQUIRY: ROUTES.OFFICE_APPLICATION_INQUIRY,
 } as const;
 
 // ============================================================================

@@ -8,6 +8,7 @@ import { api } from '@app/core/utils/api'
 import { ProfileCompletionExperience } from '../profile-completion/components/ProfileCompletionExperience'
 import { ResumeImportWidget } from '@app/core/features/resume'
 import { SkeletonCard } from '@app/ui'
+import { InquiryOverviewWidget } from '@app/core/features/inquiries/components/InquiryOverviewWidget'
 
 /**
  * Dashboard Index Left Component
@@ -40,6 +41,7 @@ export function DashboardIndexLeft() {
       {/* <ResumeImportWidget /> */}
       {/* <ProfileCompletionExperience /> */}
       <ProfileSnapshotWidget />
+      <InquiryOverviewWidget />
       <IPIPAssessmentWidget />
       <RIASECAssessmentWidget />
       <OccupationAssessmentWidget />

@@ -2979,7 +2979,12 @@ export const officeRouter = t.router({
             title,
             location,
             organization_id,
-            status
+            status,
+            pay_range_min_cents,
+            pay_range_max_cents,
+            pay_range_type,
+            employment_type,
+            target_start_date
           ),
           candidate:users!user_id(
             id,

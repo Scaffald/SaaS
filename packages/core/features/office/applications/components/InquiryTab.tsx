@@ -1,48 +1,52 @@
-import { YStack, Spinner, Text } from '@app/ui'
+import { Button, Text, YStack } from '@app/ui'
+import type { inferRouterOutputs } from '@trpc/server'
+
+import type { AppRouter } from '@app/supabase/client-types'
 import { InquiryViewOrganization } from '@app/core/features/inquiries/components/InquiryViewOrganization'
-import { api } from '@app/core/utils/api'
+import { InquiryHistoryTimeline } from '@app/core/features/inquiries/components/InquiryHistoryTimeline'
+
+type InquiryQueryOutput = NonNullable<
+  inferRouterOutputs<AppRouter>['inquiries']['getByApplication']
+>
 
 interface InquiryTabProps {
   applicationId: string
-  inquiryId: string
   candidateName: string
   jobTitle: string
+  data: InquiryQueryOutput
+  onEditInquiry?: () => void
+  editLabel?: string
 }
 
 export function InquiryTab({
   applicationId,
-  inquiryId,
   candidateName,
   jobTitle,
+  data,
+  onEditInquiry,
+  editLabel = 'Edit Inquiry',
 }: InquiryTabProps) {
-  const { data: inquiryData, isLoading } = api.inquiries.getByApplication.useQuery({
-    applicationId,
-  })
-
-  if (isLoading) {
-    return (
-      <YStack p="$4" items="center" gap="$4">
-        <Spinner size="large" />
-        <Text>Loading inquiry...</Text>
-      </YStack>
-    )
-  }
-
-  if (!inquiryData || !inquiryData.inquiry) {
-    return (
-      <YStack p="$4" items="center" gap="$4">
-        <Text color="$color11">No inquiry found for this application</Text>
-      </YStack>
-    )
-  }
+  const { inquiry } = data
 
   return (
-    <InquiryViewOrganization
-      applicationId={applicationId}
-      inquiryId={inquiryId}
-      candidateName={candidateName}
-      jobTitle={jobTitle}
-    />
+    <YStack gap="$4">
+      {onEditInquiry && (
+        <YStack items="flex-end">
+          <Button size="$3" variant="outlined" onPress={onEditInquiry}>
+            {editLabel}
+          </Button>
+        </YStack>
+      )}
+
+      <InquiryViewOrganization
+        applicationId={applicationId}
+        inquiryId={inquiry.id}
+        candidateName={candidateName}
+        jobTitle={jobTitle}
+      />
+
+      <InquiryHistoryTimeline inquiryId={inquiry.id} />
+    </YStack>
   )
 }
 

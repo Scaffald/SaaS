@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import type { Database } from "@app/supabase/types";
 
 import { supabase } from "../supabase/client";
 import { useUser } from "../useUser";
@@ -13,7 +12,7 @@ function useEventsQuery() {
     
     const result = await (supabase
       .schema("core")
-      // @ts-expect-error - events table may not exist in database types yet
+      // @ts-expect-error events table may not exist in generated types yet
       // biome-ignore lint/suspicious/noExplicitAny: events table may not exist in database types yet
       .from("events") as any)
       .select("*")

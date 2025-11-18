@@ -257,10 +257,10 @@ export function ReviewStep({
         <XStack gap="$3" items="flex-start">
           <Checkbox
             checked={hasConsent}
-            onCheckedChange={setHasConsent}
+            onCheckedChange={(value) => setHasConsent(value === true)}
             disabled={isSubmitting}
-            size="medium"
-            ariaLabel="I certify that the information provided is accurate and complete"
+            size="$3"
+            aria-label="I certify that the information provided is accurate and complete"
           />
           <YStack gap="$1" flex={1}>
             <Text fontSize="$4" fontWeight="500" color="$color12">

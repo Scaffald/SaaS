@@ -1491,6 +1491,15 @@ GET /applications/{id}/messages
 
 ---
 
+## Inquiry Detail Route Smoke Test (REQ-221)
+
+1. From the kanban board, open any card in the **Inquired** column and launch the comparison modal.
+2. Click **View Full Inquiry** and confirm the app navigates to `/office/applications/{applicationId}/inquiry`.
+3. Verify that the page shows the editable inquiry view, the negotiation timeline, and live comments without requiring a refresh.
+4. Navigate directly to the same URL (via copy/paste) to ensure deep links work for bookmarked investigations.
+
+---
+
 ## References
 
 - **Source Code**: `/packages/core/features/office/applications/`

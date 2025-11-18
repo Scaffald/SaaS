@@ -65,6 +65,23 @@ describe('domainGrouping helpers', () => {
     expect(getDomainProgress(QUESTIONS_PER_DOMAIN)).toBe(100)
   })
 
+  it('rounds domain progress for partial micro-blocks without exceeding 100', () => {
+    // 5 of 24 answers ≈ 20.83% -> rounds to 21%
+    expect(getDomainProgress(5)).toBe(21)
+    // 17 of 24 answers ≈ 70.83% -> rounds to 71%
+    expect(getDomainProgress(17)).toBe(71)
+    // Values beyond 24 simply scale mathematically – callers should clamp beforehand
+    expect(getDomainProgress(QUESTIONS_PER_DOMAIN + 3)).toBe(113)
+  })
+
+  it('floors completed domain counts even when the current block is partially answered', () => {
+    const almostTwoDomains = QUESTIONS_PER_DOMAIN * 2 - 3
+    expect(getCompletedDomainsCount(almostTwoDomains)).toBe(1)
+
+    const halfwayThroughThird = QUESTIONS_PER_DOMAIN * 2 + 12
+    expect(getCompletedDomainsCount(halfwayThroughThird)).toBe(2)
+  })
+
   it('identifies when the current question represents the last item in a domain', () => {
     const lastIndex = QUESTIONS_PER_DOMAIN - 1
     expect(isLastQuestionInDomain(lastIndex)).toBe(true)

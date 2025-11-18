@@ -142,6 +142,7 @@ export default function SharedIPIPResultsRoute() {
                   processedResults.archetype
                     ? {
                         archetype: processedResults.archetype.name || '',
+                        name: processedResults.archetype.name || '',
                         confidence: processedResults.archetype.confidence || 0,
                       }
                     : null

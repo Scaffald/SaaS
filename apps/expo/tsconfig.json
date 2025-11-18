@@ -5,6 +5,7 @@
     "src",
     "types.d.ts",
     "../../types/custom-modules.d.ts",
+    "../../types/flow-remove-types.d.ts",
     "../../packages/ui",
     "../../packages/api",
     "../../packages/core",
@@ -17,7 +18,8 @@
     "../../packages/supabase/functions/_shared/schemas/**/*.ts",
     "../../packages/supabase/functions/_shared/phone.ts",
     "../../vitest.config.ts",
-    "../../tests/infrastructure/vitest/helpers/database.ts"
+    "../../tests/infrastructure/vitest/helpers/database.ts",
+    "../../tests/infrastructure/vitest/plugins/flow-remove.ts"
   ],
   "exclude": [
     "../../packages/supabase/functions/trpc/**/*",

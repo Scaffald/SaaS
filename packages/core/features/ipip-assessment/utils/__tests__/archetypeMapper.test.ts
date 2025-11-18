@@ -82,6 +82,32 @@ describe('archetypeMapper', () => {
     expect(result.archetype).toBe('Innovator')
     expect(result.confidence).toBeGreaterThanOrEqual(80)
   })
+
+  it('rounds fractional confidence scores and still returns the base archetype when >= 60%', () => {
+    const scores = createScores({
+      C: { score: 120, count: 24, result: 'high' },
+      O: { score: 120, count: 24, result: 'high' },
+      E: { score: 72, count: 24, result: 'neutral' },
+    })
+
+    const result = mapToArchetype(scores)
+
+    expect(result.archetype).toBe('Maker')
+    expect(result.confidence).toBe(73) // (1.6 / 2.2) * 100 ≈ 72.7 -> rounds to 73
+  })
+
+  it('aligns getAllArchetypeScores ordering with mapToArchetype output', () => {
+    const scores = createScores({
+      E: { score: 120, count: 24, result: 'high' },
+      A: { score: 120, count: 24, result: 'high' },
+    })
+
+    const result = mapToArchetype(scores)
+    const archetypeScores = getAllArchetypeScores(scores)
+
+    expect(archetypeScores[0]?.name).toBe(result.archetype)
+    expect(archetypeScores.every((entry, index, arr) => index === 0 || entry.score <= arr[index - 1].score)).toBe(true)
+  })
 })
 
 

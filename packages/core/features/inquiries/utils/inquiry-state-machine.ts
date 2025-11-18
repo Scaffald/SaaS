@@ -1,6 +1,17 @@
 /**
- * Inquiry workflow state machine
- * Defines valid status transitions and application status mapping
+ * Inquiry workflow state machine.
+ *
+ * The negotiation experience is intentionally linear so both the applicant and
+ * the organization have clear expectations about what happens next:
+ *
+ * draft -> sent -> candidate_responded <-> organization_responded -> accepted/rejected
+ *                                           \-> withdrawn (from either party)
+ *
+ * Terminal statuses (accepted, rejected, withdrawn) freeze the record so
+ * downstream systems (application status, notifications, etc.) can treat the
+ * result as immutable. All helper utilities in this file are shared between the
+ * Supabase router and the client to guarantee we enforce the exact same rules
+ * everywhere.
  */
 
 export type InquiryStatus =
