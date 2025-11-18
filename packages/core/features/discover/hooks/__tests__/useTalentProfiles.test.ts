@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
 // Mock Supabase client - use vi.hoisted
@@ -60,14 +60,11 @@ describe('useTalentProfiles', () => {
       from: mockFrom,
     })
 
-    // Default mock that executes queryFn
-    mockUseQuery.mockImplementation(async (options) => {
-      const data = options?.queryFn ? await options.queryFn() : []
-      return {
-        data,
-        isLoading: false,
-        error: null,
-      }
+    // Default mock - will be overridden by individual tests
+    mockUseQuery.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: null,
     })
   })
 
@@ -153,21 +150,38 @@ describe('useTalentProfiles', () => {
       error: null,
     })
 
-    mockUseQuery.mockImplementation(async (options) => {
-      const data = options.queryFn ? await options.queryFn() : []
-      return {
-        data,
-        isLoading: false,
-        error: null,
+    const queryResult: { data: unknown; isLoading: boolean; error: Error | null } = {
+      data: undefined,
+      isLoading: true,
+      error: null,
+    }
+
+    mockUseQuery.mockImplementation((options) => {
+      if (options?.queryFn) {
+        Promise.resolve(options.queryFn())
+          .then((data) => {
+            queryResult.data = data
+            queryResult.isLoading = false
+          })
+          .catch((err) => {
+            queryResult.error = err instanceof Error ? err : new Error(String(err))
+            queryResult.isLoading = false
+          })
       }
+      return queryResult
     })
 
-    const { result } = renderHook(() => useTalentProfiles({ bounds: mockBounds }))
+    const { result, rerender } = renderHook(() => useTalentProfiles({ bounds: mockBounds }))
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 10))
+      rerender()
+    })
 
     await waitFor(() => {
       expect(result.current.data).toBeDefined()
       expect(result.current.data?.[0]?.name).toBe('John Doe')
-    })
+    }, { timeout: 3000 })
   })
 
   it('handles database errors', async () => {
@@ -177,27 +191,36 @@ describe('useTalentProfiles', () => {
       error,
     })
 
-    mockUseQuery.mockImplementation(async (options) => {
-      let queryError = null
-      try {
-        if (options.queryFn) {
-          await options.queryFn()
-        }
-      } catch (err) {
-        queryError = err
+    const queryResult: { data: unknown; isLoading: boolean; error: Error | null } = {
+      data: undefined,
+      isLoading: true,
+      error: null,
+    }
+
+    mockUseQuery.mockImplementation((options) => {
+      if (options?.queryFn) {
+        Promise.resolve(options.queryFn())
+          .then(() => {
+            queryResult.isLoading = false
+          })
+          .catch((err) => {
+            queryResult.error = err instanceof Error ? err : new Error(String(err))
+            queryResult.isLoading = false
+          })
       }
-      return {
-        data: undefined,
-        isLoading: false,
-        error: queryError,
-      }
+      return queryResult
     })
 
-    const { result } = renderHook(() => useTalentProfiles({ bounds: mockBounds }))
+    const { result, rerender } = renderHook(() => useTalentProfiles({ bounds: mockBounds }))
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 10))
+      rerender()
+    })
 
     await waitFor(() => {
       expect(result.current.error).toBeTruthy()
-    })
+    }, { timeout: 3000 })
   })
 
   it('returns empty array for no results', async () => {
@@ -206,20 +229,37 @@ describe('useTalentProfiles', () => {
       error: null,
     })
 
-    mockUseQuery.mockImplementation(async (options) => {
-      const data = options.queryFn ? await options.queryFn() : []
-      return {
-        data,
-        isLoading: false,
-        error: null,
+    const queryResult: { data: unknown; isLoading: boolean; error: Error | null } = {
+      data: undefined,
+      isLoading: true,
+      error: null,
+    }
+
+    mockUseQuery.mockImplementation((options) => {
+      if (options?.queryFn) {
+        Promise.resolve(options.queryFn())
+          .then((data) => {
+            queryResult.data = data
+            queryResult.isLoading = false
+          })
+          .catch((err) => {
+            queryResult.error = err instanceof Error ? err : new Error(String(err))
+            queryResult.isLoading = false
+          })
       }
+      return queryResult
     })
 
-    const { result } = renderHook(() => useTalentProfiles({ bounds: mockBounds }))
+    const { result, rerender } = renderHook(() => useTalentProfiles({ bounds: mockBounds }))
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 10))
+      rerender()
+    })
 
     await waitFor(() => {
       expect(result.current.data).toEqual([])
-    })
+    }, { timeout: 3000 })
   })
 
   it('respects enabled flag', () => {

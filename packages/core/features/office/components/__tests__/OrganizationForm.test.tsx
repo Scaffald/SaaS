@@ -198,6 +198,9 @@ vi.mock('tamagui', async () => {
     Spinner,
     ScrollView,
     H4: ({ children }: { children: ReactNode }) => <h4>{children}</h4>,
+    Card: ({ children, ...rest }: { children?: ReactNode } & Record<string, unknown>) => (
+      <div {...rest}>{children}</div>
+    ),
   }
 })
 

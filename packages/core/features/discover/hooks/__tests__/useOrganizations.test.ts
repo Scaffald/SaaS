@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
 // Mock Supabase client - use vi.hoisted
@@ -45,18 +45,31 @@ describe('useOrganizations', () => {
       error: null,
     })
 
-    // Default mock that executes queryFn
-    mockUseQuery.mockImplementation(async (options) => {
-      const data = options?.queryFn ? await options.queryFn() : []
-      return {
-        data,
-        isLoading: false,
-        error: null,
-      }
+    // Default mock - will be overridden by individual tests
+    // The issue is that useQuery must return synchronously, but queryFn is async
+    // So we need each test to handle this properly
+    mockUseQuery.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: null,
     })
   })
 
   it('calls RPC function correctly', () => {
+    const queryResult: { data: unknown; isLoading: boolean; error: Error | null } = {
+      data: [],
+      isLoading: false,
+      error: null,
+    }
+
+    mockUseQuery.mockImplementation((options) => {
+      if (options?.queryFn) {
+        // Execute queryFn to trigger RPC call
+        Promise.resolve(options.queryFn()).catch(() => {})
+      }
+      return queryResult
+    })
+
     renderHook(() => useOrganizations({ bounds: mockBounds }))
 
     expect(mockRpc).toHaveBeenCalledWith('get_organizations_with_coords')
@@ -91,23 +104,43 @@ describe('useOrganizations', () => {
       error: null,
     })
 
-    mockUseQuery.mockImplementation(async (options) => {
-      const data = options.queryFn ? await options.queryFn() : []
-      return {
-        data,
-        isLoading: false,
-        error: null,
+    // Use a synchronous mock that stores the result
+    const queryResult: { data: unknown; isLoading: boolean; error: Error | null } = {
+      data: undefined,
+      isLoading: true,
+      error: null,
+    }
+
+    mockUseQuery.mockImplementation((options) => {
+      if (options?.queryFn) {
+        // Execute queryFn and update result when it resolves
+        Promise.resolve(options.queryFn())
+          .then((data) => {
+            queryResult.data = data
+            queryResult.isLoading = false
+          })
+          .catch((err) => {
+            queryResult.error = err instanceof Error ? err : new Error(String(err))
+            queryResult.isLoading = false
+          })
       }
+      return queryResult
     })
 
-    const { result } = renderHook(() => useOrganizations({ bounds: mockBounds }))
+    const { result, rerender } = renderHook(() => useOrganizations({ bounds: mockBounds }))
+
+    // Wait for promise to resolve and trigger re-render
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 10))
+      rerender()
+    })
 
     await waitFor(() => {
       expect(result.current.data).toBeDefined()
       // Only org-1 should be in results (org-2 is outside bounds)
       expect(result.current.data?.length).toBe(1)
       expect(result.current.data?.[0].id).toBe('org-1')
-    })
+    }, { timeout: 3000 })
   })
 
   it('enforces limit of 200', async () => {
@@ -127,20 +160,32 @@ describe('useOrganizations', () => {
       error: null,
     })
 
-    mockUseQuery.mockImplementation(async (options) => {
-      const data = options.queryFn ? await options.queryFn() : []
-      return {
-        data,
-        isLoading: false,
-        error: null,
+    const queryResult: { data: unknown; isLoading: boolean; error: Error | null } = {
+      data: undefined,
+      isLoading: true,
+      error: null,
+    }
+
+    mockUseQuery.mockImplementation((options) => {
+      if (options?.queryFn) {
+        Promise.resolve(options.queryFn())
+          .then((data) => {
+            queryResult.data = data
+            queryResult.isLoading = false
+          })
+          .catch((err) => {
+            queryResult.error = err instanceof Error ? err : new Error(String(err))
+            queryResult.isLoading = false
+          })
       }
+      return queryResult
     })
 
     const { result } = renderHook(() => useOrganizations({ bounds: mockBounds, limit: 300 }))
 
     await waitFor(() => {
       expect(result.current.data?.length).toBeLessThanOrEqual(200)
-    })
+    }, { timeout: 3000 })
   })
 
   it('transforms organizations correctly', async () => {
@@ -160,13 +205,25 @@ describe('useOrganizations', () => {
       error: null,
     })
 
-    mockUseQuery.mockImplementation(async (options) => {
-      const data = options.queryFn ? await options.queryFn() : []
-      return {
-        data,
-        isLoading: false,
-        error: null,
+    const queryResult: { data: unknown; isLoading: boolean; error: Error | null } = {
+      data: undefined,
+      isLoading: true,
+      error: null,
+    }
+
+    mockUseQuery.mockImplementation((options) => {
+      if (options?.queryFn) {
+        Promise.resolve(options.queryFn())
+          .then((data) => {
+            queryResult.data = data
+            queryResult.isLoading = false
+          })
+          .catch((err) => {
+            queryResult.error = err instanceof Error ? err : new Error(String(err))
+            queryResult.isLoading = false
+          })
       }
+      return queryResult
     })
 
     const { result } = renderHook(() => useOrganizations({ bounds: mockBounds }))
@@ -178,7 +235,7 @@ describe('useOrganizations', () => {
         industry: 'Technology',
         coordinates: [-71.0589, 42.3601],
       })
-    })
+    }, { timeout: 3000 })
   })
 
   it('filters out invalid coordinates', async () => {
@@ -210,13 +267,25 @@ describe('useOrganizations', () => {
       error: null,
     })
 
-    mockUseQuery.mockImplementation(async (options) => {
-      const data = options.queryFn ? await options.queryFn() : []
-      return {
-        data,
-        isLoading: false,
-        error: null,
+    const queryResult: { data: unknown; isLoading: boolean; error: Error | null } = {
+      data: undefined,
+      isLoading: true,
+      error: null,
+    }
+
+    mockUseQuery.mockImplementation((options) => {
+      if (options?.queryFn) {
+        Promise.resolve(options.queryFn())
+          .then((data) => {
+            queryResult.data = data
+            queryResult.isLoading = false
+          })
+          .catch((err) => {
+            queryResult.error = err instanceof Error ? err : new Error(String(err))
+            queryResult.isLoading = false
+          })
       }
+      return queryResult
     })
 
     const { result } = renderHook(() => useOrganizations({ bounds: mockBounds }))
@@ -225,35 +294,41 @@ describe('useOrganizations', () => {
       // Only valid org should be included
       expect(result.current.data?.length).toBe(1)
       expect(result.current.data?.[0].id).toBe('org-1')
-    })
+    }, { timeout: 3000 })
   })
 
-  it('handles RPC errors', () => {
+  it('handles RPC errors', async () => {
     const error = { message: 'RPC error' }
     mockReturns.mockResolvedValue({
       data: null,
       error,
     })
 
-    mockUseQuery.mockImplementation(async (options) => {
-      let queryError = null
-      try {
-        if (options.queryFn) {
-          await options.queryFn()
-        }
-      } catch (err) {
-        queryError = err
+    const queryResult: { data: unknown; isLoading: boolean; error: Error | null } = {
+      data: undefined,
+      isLoading: true,
+      error: null,
+    }
+
+    mockUseQuery.mockImplementation((options) => {
+      if (options?.queryFn) {
+        Promise.resolve(options.queryFn())
+          .then(() => {
+            queryResult.isLoading = false
+          })
+          .catch((err) => {
+            queryResult.error = err instanceof Error ? err : new Error(String(err))
+            queryResult.isLoading = false
+          })
       }
-      return {
-        data: undefined,
-        isLoading: false,
-        error: queryError,
-      }
+      return queryResult
     })
 
     const { result } = renderHook(() => useOrganizations({ bounds: mockBounds }))
 
-    expect(result.current.error).toBeTruthy()
+    await waitFor(() => {
+      expect(result.current.error).toBeTruthy()
+    }, { timeout: 3000 })
   })
 
   it('returns empty array for no results', async () => {
@@ -262,20 +337,32 @@ describe('useOrganizations', () => {
       error: null,
     })
 
-    mockUseQuery.mockImplementation(async (options) => {
-      const data = options.queryFn ? await options.queryFn() : []
-      return {
-        data,
-        isLoading: false,
-        error: null,
+    const queryResult: { data: unknown; isLoading: boolean; error: Error | null } = {
+      data: undefined,
+      isLoading: true,
+      error: null,
+    }
+
+    mockUseQuery.mockImplementation((options) => {
+      if (options?.queryFn) {
+        Promise.resolve(options.queryFn())
+          .then((data) => {
+            queryResult.data = data
+            queryResult.isLoading = false
+          })
+          .catch((err) => {
+            queryResult.error = err instanceof Error ? err : new Error(String(err))
+            queryResult.isLoading = false
+          })
       }
+      return queryResult
     })
 
     const { result } = renderHook(() => useOrganizations({ bounds: mockBounds }))
 
     await waitFor(() => {
       expect(result.current.data).toEqual([])
-    })
+    }, { timeout: 3000 })
   })
 })
 
