@@ -20,6 +20,8 @@ This guide translates the Vitest tooling introduced for REQ-172 into practical w
 | Vitest UI dashboard | `pnpm test:vitest:ui` | Hosts an interactive runner at `http://localhost:51204`. |
 | Target a workspace | `pnpm --filter @app/core test` | Replace `@app/core` with any workspace (`@app/ui`, `@app/schemas`, `expo-app`). |
 
+> ℹ️ All of the commands above run Vitest in **non-watch mode by default**. Use `pnpm test:watch` (or pass `--watch` when invoking `vitest` directly) whenever you need automatic re-runs while editing files.
+
 ## Running Individual Suites
 
 Vitest respects native filtering flags:

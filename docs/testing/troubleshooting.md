@@ -6,6 +6,10 @@ Common hiccups when running the Vitest and Supabase suites, plus the fixes that 
 
 When running inside restricted environments (e.g. remote sandboxes) Node may not have permission to read `node_modules`. Re-run the command with elevated permissions or outside the sandbox. Locally this error usually means the repo is on a read-only volume.
 
+## Vitest Appears to Hang After a Suite Fails
+
+Vitest defaults to watch mode when it detects an interactive shell. Our shared config now sets `watch: false`, so every standard command (`pnpm test`, `pnpm --filter … test`, `pnpm test:unit`) exits after one run. If you intentionally invoke `vitest` directly—or need live re-runs—pass `--watch` (or use `pnpm test:watch`). This prevents accidental hangs while still allowing opt-in watch workflows.
+
 ## Supabase Integration Tests Fail with `TRPC response should include data`
 
 The O*NET integration relies on the `onet.search_occupations` RPC. If your local database lacks the function, the test exits early with a warning and the assertion fails. Options:
