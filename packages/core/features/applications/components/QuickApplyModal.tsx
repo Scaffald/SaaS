@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Dialog, YStack, XStack, Text, Button, ScrollView, Select, Adapt, Sheet, Label } from 'tamagui'
-import { X, Check } from '@tamagui/lucide-icons'
+import { X, Check, CheckCircle2 } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
 import { AddressAutocomplete } from '@app/ui'
 import type { AddressResult } from '@app/ui'
 import type { ScreeningAnswers } from '@app/schemas'
+import { api } from '@app/core/utils/api'
 
 export interface QuickApplyModalProps {
   /**
@@ -73,12 +75,12 @@ const EARLIEST_START_DATE_OPTIONS = [
 ]
 
 export function QuickApplyModal({
-  jobId: _jobId,
+  jobId,
   jobTitle,
   organizationName,
   open,
   onOpenChange,
-  onSuccess: _onSuccess,
+  onSuccess,
   requiredSkills = [],
   optionalSkills = [],
 }: QuickApplyModalProps) {
@@ -91,8 +93,31 @@ export function QuickApplyModal({
   })
   const [errors, setErrors] = useState<Partial<Record<keyof ScreeningAnswers, string>>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
 
   const mapboxToken = process.env.EXPO_PUBLIC_MAPBOX_TOKEN
+  const toast = useToastController()
+
+  const submitMutation = api.applications.submit.useMutation({
+    onSuccess: (application) => {
+      setShowSuccess(true)
+      toast.show('Application sent successfully', {
+        message: `Your application to ${jobTitle} has been submitted.`,
+      })
+      onSuccess?.(application.id)
+      // Close modal after 2 seconds
+      setTimeout(() => {
+        handleClose()
+      }, 2000)
+    },
+    onError: (error) => {
+      const message = error.message || 'Failed to submit application. Please try again.'
+      toast.show('Error', {
+        message,
+      })
+      setIsSubmitting(false)
+    },
+  })
 
   const handleClose = () => {
     setFormData({
@@ -104,6 +129,7 @@ export function QuickApplyModal({
     })
     setErrors({})
     setIsSubmitting(false)
+    setShowSuccess(false)
     onOpenChange(false)
   }
 
@@ -171,24 +197,55 @@ export function QuickApplyModal({
   }
 
   const handleSubmit = async () => {
-    // Validate all fields
-    validateField('current_location', formData.current_location)
-    validateField('years_experience', formData.years_experience)
-    validateField('is_authorized_to_work', formData.is_authorized_to_work)
-    validateField('earliest_start_date', formData.earliest_start_date)
+    // Validate all fields first
+    const validationErrors: Partial<Record<keyof ScreeningAnswers, string>> = {}
 
-    // Wait a tick for state to update, then check errors
-    setTimeout(() => {
-      setErrors((currentErrors) => {
-        const hasErrors = Object.values(currentErrors).some((error) => error !== undefined)
-        if (hasErrors) {
-          return currentErrors
-        }
+    if (!formData.current_location || !formData.current_location.trim()) {
+      validationErrors.current_location = 'Current location is required'
+    }
+    if (formData.years_experience === undefined || formData.years_experience === null) {
+      validationErrors.years_experience = 'Years of experience is required'
+    }
+    if (formData.is_authorized_to_work === undefined || formData.is_authorized_to_work === null) {
+      validationErrors.is_authorized_to_work = 'Work authorization status is required'
+    }
+    if (!formData.earliest_start_date || !formData.earliest_start_date.trim()) {
+      validationErrors.earliest_start_date = 'Earliest start date is required'
+    }
 
-        // Submission logic will be implemented in Task 3
-        return currentErrors
+    setErrors(validationErrors)
+
+    // If there are validation errors, don't submit
+    if (Object.values(validationErrors).some((error) => error !== undefined)) {
+      return
+    }
+
+    // Submit application
+    // At this point, all fields are validated and guaranteed to be present
+    const currentLocation = formData.current_location || ''
+    const yearsExperience = formData.years_experience ?? 0
+    const isAuthorized = formData.is_authorized_to_work ?? false
+    const earliestStartDate = formData.earliest_start_date || ''
+
+    setIsSubmitting(true)
+    try {
+      await submitMutation.mutateAsync({
+        job_id: jobId,
+        current_location: currentLocation,
+        willing_to_relocate: formData.willing_to_relocate || false,
+        years_experience: yearsExperience,
+        is_authorized_to_work: isAuthorized,
+        earliest_start_date: earliestStartDate,
+        screening_answers: {},
+        custom_question_answers: [],
+        attachments: {},
+        completed_steps: [],
+        is_complete: true,
       })
-    }, 0)
+    } catch (error) {
+      // Error handling is done in mutation onError
+      console.error('Failed to submit application:', error)
+    }
   }
 
   const getYearsExperienceValue = () => {
@@ -246,9 +303,34 @@ export function QuickApplyModal({
             </XStack>
           </YStack>
 
-          {/* Form Content */}
-          <ScrollView showsVerticalScrollIndicator={false} flex={1}>
-            <YStack gap="$4" p="$4">
+          {/* Success State */}
+          {showSuccess ? (
+            <YStack gap="$4" p="$6" items="center" justify="center" flex={1}>
+              <YStack
+                width={80}
+                height={80}
+                rounded="$12"
+                bg="$green2"
+                borderWidth={2}
+                borderColor="$green9"
+                items="center"
+                justify="center"
+              >
+                <CheckCircle2 size={48} color="$green10" />
+              </YStack>
+              <YStack gap="$2" items="center">
+                <Text fontSize="$7" fontWeight="bold" color="$color12" text="center">
+                  Application Submitted!
+                </Text>
+                <Text fontSize="$4" color="$color11" text="center">
+                  Your application to {jobTitle} at {organizationName} has been sent successfully.
+                </Text>
+              </YStack>
+            </YStack>
+          ) : (
+            /* Form Content */
+            <ScrollView showsVerticalScrollIndicator={false} flex={1}>
+              <YStack gap="$4" p="$4">
               {/* Current Location */}
               <YStack gap="$2">
                 <Label htmlFor="current_location" fontSize="$4" fontWeight="600">
@@ -485,21 +567,24 @@ export function QuickApplyModal({
               </YStack>
             </YStack>
           </ScrollView>
+          )}
 
           {/* Footer */}
-          <XStack gap="$3" justify="flex-end" pt="$4" borderTopWidth={1} borderTopColor="$borderColor">
-            <Button size="$4" variant="outlined" onPress={handleClose} disabled={isSubmitting}>
-              Cancel
-            </Button>
-            <Button
-              size="$4"
-              theme="info"
-              onPress={handleSubmit}
-              disabled={isSubmitting || Object.values(errors).some((error) => error !== undefined)}
-            >
-              {isSubmitting ? 'Submitting...' : 'Submit'}
-            </Button>
-          </XStack>
+          {!showSuccess && (
+            <XStack gap="$3" justify="flex-end" pt="$4" borderTopWidth={1} borderTopColor="$borderColor">
+              <Button size="$4" variant="outlined" onPress={handleClose} disabled={isSubmitting}>
+                Cancel
+              </Button>
+              <Button
+                size="$4"
+                theme="info"
+                onPress={handleSubmit}
+                disabled={isSubmitting || Object.values(errors).some((error) => error !== undefined)}
+              >
+                {isSubmitting ? 'Submitting...' : 'Submit'}
+              </Button>
+            </XStack>
+          )}
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog>
