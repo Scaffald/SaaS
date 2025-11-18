@@ -217,7 +217,7 @@ describe('AvatarImagePicker', () => {
       }
 
       expect(mockCreateObjectURL).toHaveBeenCalledWith(mockFile)
-      
+
       // Wait for the modal to open
       await waitFor(() => {
         const calls = mockAvatarCropModal.mock.calls
@@ -243,7 +243,7 @@ describe('AvatarImagePicker', () => {
       }
 
       expect(mockCreateObjectURL).not.toHaveBeenCalled()
-      
+
       // Wait for the modal to open
       await waitFor(() => {
         const calls = mockAvatarCropModal.mock.calls
