@@ -10,8 +10,19 @@ module.exports = (api) => {
           envName: 'APP_ENV',
           moduleName: '@env',
           path: '../../.env',
-          blocklist: null,
-          allowlist: null,
+          // SECURITY: Block all non-EXPO_PUBLIC variables to prevent secrets from being bundled
+          // Note: react-native-dotenv doesn't support regex in allowlist, so we use blocklist
+          // Only APP_ENV and EXPO_PUBLIC_* variables will be accessible
+          blocklist: [
+            // Block all non-EXPO_PUBLIC variables (except APP_ENV and NODE_ENV which are needed)
+            // This is a safety measure - ideally only EXPO_PUBLIC_* vars should be used
+          ],
+          allowlist: [
+            'APP_ENV',
+            'NODE_ENV',
+            // Note: EXPO_PUBLIC_* variables should be accessed via process.env, not @env module
+            // The @env module is mainly for APP_ENV
+          ],
           safe: false,
           allowUndefined: true,
           verbose: false,

@@ -27,22 +27,16 @@ const APP_ENV: AnalyticsEnvironment =
   (process.env.APP_ENV as AnalyticsEnvironment) ??
   'development'
 
+// SECURITY: Only use EXPO_PUBLIC variables - non-public env vars should never be in client bundle
 const POSTHOG_KEY =
   (EXTRA_CONFIG.posthogKey as string | undefined) ??
   (ANALYTICS_EXTRA.key as string | undefined) ??
-  process.env.POSTHOG_KEY ??
   process.env.EXPO_PUBLIC_POSTHOG_API_KEY ??
-  ((APP_ENV === 'development'
-    ? process.env.POSTHOG_KEY_DEV
-    : APP_ENV === 'staging'
-      ? process.env.POSTHOG_KEY_STAGING
-      : process.env.POSTHOG_KEY_PROD) ??
-    '')
+  ''
 
 const POSTHOG_HOST =
   (EXTRA_CONFIG.posthogHost as string | undefined) ??
   (ANALYTICS_EXTRA.host as string | undefined) ??
-  process.env.POSTHOG_HOST ??
   process.env.EXPO_PUBLIC_POSTHOG_HOST ??
   DEFAULT_POSTHOG_HOST
 

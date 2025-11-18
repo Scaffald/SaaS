@@ -15,20 +15,14 @@ const APP_ENV = process.env.APP_ENV || "development";
 const IS_PRODUCTION = APP_ENV === "production";
 const APP_VERSION = process.env.APP_VERSION || "1.0.0";
 
-const posthogKeyByEnv = {
-  development: process.env.POSTHOG_KEY_DEV,
-  staging: process.env.POSTHOG_KEY_STAGING,
-  production: process.env.POSTHOG_KEY_PROD,
-};
-
+// SECURITY: Only use EXPO_PUBLIC_* variables in client bundle
+// Non-public PostHog keys should be server-side only
 const EXPO_PUBLIC_POSTHOG_API_KEY = process.env.EXPO_PUBLIC_POSTHOG_API_KEY;
 const EXPO_PUBLIC_POSTHOG_HOST = process.env.EXPO_PUBLIC_POSTHOG_HOST;
 const EXPO_PUBLIC_POSTHOG_PROJECT = process.env.EXPO_PUBLIC_POSTHOG_PROJECT;
 
-const POSTHOG_KEY = process.env.POSTHOG_KEY || EXPO_PUBLIC_POSTHOG_API_KEY ||
-  posthogKeyByEnv[APP_ENV] || "";
-const POSTHOG_HOST = process.env.POSTHOG_HOST || EXPO_PUBLIC_POSTHOG_HOST ||
-  "https://app.posthog.com";
+// Fallback for app.config.ts (only used during build, not in client bundle)
+const POSTHOG_HOST = EXPO_PUBLIC_POSTHOG_HOST || "https://app.posthog.com";
 
 const IOS_BUNDLE_BASE = "com.scaffald.app";
 const ANDROID_PACKAGE_BASE = "com.scaffald.app";
@@ -175,15 +169,18 @@ export default {
       },
       analytics: {
         posthog: {
-          host: POSTHOG_HOST,
-          key: POSTHOG_KEY,
+          // Only use EXPO_PUBLIC variables - these are safe to expose to clients
+          host: EXPO_PUBLIC_POSTHOG_HOST || POSTHOG_HOST ||
+            "https://app.posthog.com",
+          key: EXPO_PUBLIC_POSTHOG_API_KEY || "",
           env: APP_ENV,
           project: EXPO_PUBLIC_POSTHOG_PROJECT,
         },
       },
       appEnv: APP_ENV,
-      posthogHost: POSTHOG_HOST,
-      posthogKey: POSTHOG_KEY,
+      // Only expose public PostHog config - non-public keys should be server-side only
+      posthogHost: EXPO_PUBLIC_POSTHOG_HOST || "https://app.posthog.com",
+      posthogKey: EXPO_PUBLIC_POSTHOG_API_KEY || "",
       posthogProject: EXPO_PUBLIC_POSTHOG_PROJECT,
     },
     runtimeVersion: {

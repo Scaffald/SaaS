@@ -15,7 +15,7 @@ The static web application is hosted on AWS using S3 for storage and CloudFront 
 |------------|--------|--------|--------|-----------|
 | **Development** | `dev` | `scaffald-app-dev` | `dev.scaffald.com` | Yes (pending cert validation) |
 | **Preview** | `preview` | `scaffald-app-preview` | `preview.scaffald.com` | Yes (pending cert validation) |
-| **Production** | `main` | `scaffald-app-prod` | `app.scaffald.com` | Yes |
+| **Production** | `main` | `scaffald-app-prod` | `app.scaffald.com` | Yes (pending cert validation) |
 
 ### Infrastructure Components
 
