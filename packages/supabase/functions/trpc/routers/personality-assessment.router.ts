@@ -1,6 +1,9 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { protectedProcedure, t } from "../middleware.ts";
+import { protectedProcedure, publicProcedure, t } from "../middleware.ts";
+import { mapToArchetype } from "@app/core/features/ipip-assessment/utils/archetypeMapper";
+import { getScore } from "@app/core/features/personality-assessment/lib/ipip/score";
+import type { IPIPAnswer } from "@app/core/features/personality-assessment/lib/ipip";
 
 /**
  * Personality Assessment Router - Handles personality assessment operations
@@ -234,6 +237,11 @@ export const personalityAssessmentRouter = t.router({
             updateData.current_step = "luscher2";
           }
           updateData.completion_score = Math.round(luscher1Progress + 25); // 25% for completed IPIP
+
+          // Set 30-day cooldown for retest
+          const nextAvailableAt = new Date();
+          nextAvailableAt.setDate(nextAvailableAt.getDate() + 30);
+          updateData.next_available_at = nextAvailableAt.toISOString();
         }
 
         const { error } = await supabase
@@ -248,6 +256,90 @@ export const personalityAssessmentRouter = t.router({
             code: "INTERNAL_SERVER_ERROR",
             message: `Failed to save IPIP progress: ${error.message}`,
           });
+        }
+
+        // On completion: calculate archetype, store it, and award completion bonus XP
+        if (isComplete) {
+          try {
+            // Calculate IPIP scores
+            const scores = getScore({ answers: input.answers as IPIPAnswer[] });
+
+            // Calculate archetype
+            const archetypeResult = mapToArchetype(scores);
+
+            // Get archetype ID from database
+            const { data: archetypeData, error: archetypeError } = await supabase
+              .schema("core")
+              .from("archetypes")
+              .select("id")
+              .eq("name", archetypeResult.archetype.replace("Evolving ", ""))
+              .single();
+
+            if (!archetypeError && archetypeData) {
+              // Mark previous archetypes as not primary
+              await supabase
+                .schema("core")
+                .from("user_archetypes")
+                .update({ is_primary: false })
+                .eq("user_id", user.id);
+
+              // Store new archetype as primary
+              await supabase
+                .schema("core")
+                .from("user_archetypes")
+                .insert({
+                  user_id: user.id,
+                  archetype_id: archetypeData.id,
+                  assessment_date: now,
+                  confidence_score: archetypeResult.confidence,
+                  domain_scores: scores as unknown as Record<string, unknown>,
+                  is_primary: true,
+                });
+
+              // Award +50 XP completion bonus (check if already awarded)
+              const { data: existingXP } = await supabase
+                .schema("core")
+                .from("user_assessment_xp")
+                .select("id")
+                .eq("user_id", user.id)
+                .eq("assessment_type", "ipip")
+                .eq("xp_type", "completion")
+                .single();
+
+              if (!existingXP) {
+                // Award +50 XP
+                const { data: userData } = await supabase
+                  .schema("core")
+                  .from("users")
+                  .select("frequency_xp")
+                  .eq("id", user.id)
+                  .single();
+
+                const currentXP = (userData?.frequency_xp as number) || 0;
+                const newXP = currentXP + 50;
+
+                await supabase
+                  .schema("core")
+                  .from("users")
+                  .update({ frequency_xp: newXP })
+                  .eq("id", user.id);
+
+                // Track XP award
+                await supabase
+                  .schema("core")
+                  .from("user_assessment_xp")
+                  .insert({
+                    user_id: user.id,
+                    assessment_type: "ipip",
+                    xp_type: "completion",
+                    xp_amount: 50,
+                  });
+              }
+            }
+          } catch (archetypeError) {
+            // Log but don't fail the save operation
+            console.error("Error calculating archetype:", archetypeError);
+          }
         }
 
         return { success: true, isComplete };
@@ -920,4 +1012,439 @@ export const personalityAssessmentRouter = t.router({
         });
       }
     }),
+
+  /**
+   * Get current archetype for user
+   */
+  getArchetype: protectedProcedure.query(async ({ ctx }) => {
+    const { supabase, user } = ctx;
+
+    try {
+      const { data, error } = await supabase
+        .schema("core")
+        .from("user_archetypes")
+        .select(
+          `
+          id,
+          assessment_date,
+          confidence_score,
+          domain_scores,
+          is_primary,
+          archetypes (
+            id,
+            name,
+            description,
+            strengths,
+            work_styles,
+            team_dynamics,
+            growth_areas
+          )
+        `,
+        )
+        .eq("user_id", user.id)
+        .eq("is_primary", true)
+        .single();
+
+      if (error && error.code !== "PGRST116") {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch archetype: ${error.message}`,
+        });
+      }
+
+      if (!data) {
+        return null;
+      }
+
+      return {
+        archetype: (data.archetypes as { name: string; description: string; strengths: string[]; work_styles: string; team_dynamics: string; growth_areas: string[] })?.name || null,
+        confidence: data.confidence_score,
+        assessmentDate: data.assessment_date,
+        domainScores: data.domain_scores,
+        details: data.archetypes as {
+          name: string;
+          description: string;
+          strengths: string[];
+          work_styles: string;
+          team_dynamics: string;
+          growth_areas: string[];
+        } | null,
+      };
+    } catch (error) {
+      if (error instanceof TRPCError) throw error;
+      console.error("Error in getArchetype:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to get archetype",
+      });
+    }
+  }),
+
+  /**
+   * Get archetype history for user
+   */
+  getArchetypeHistory: protectedProcedure.query(async ({ ctx }) => {
+    const { supabase, user } = ctx;
+
+    try {
+      const { data, error } = await supabase
+        .schema("core")
+        .from("user_archetypes")
+        .select(
+          `
+          id,
+          assessment_date,
+          confidence_score,
+          domain_scores,
+          is_primary,
+          archetypes (
+            id,
+            name,
+            description
+          )
+        `,
+        )
+        .eq("user_id", user.id)
+        .order("assessment_date", { ascending: false });
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to fetch archetype history: ${error.message}`,
+        });
+      }
+
+      return (data || []).map((item) => ({
+        id: item.id,
+        archetype: (item.archetypes as { name: string } | null)?.name || null,
+        confidence: item.confidence_score,
+        assessmentDate: item.assessment_date,
+        domainScores: item.domain_scores,
+        isPrimary: item.is_primary,
+      }));
+    } catch (error) {
+      if (error instanceof TRPCError) throw error;
+      console.error("Error in getArchetypeHistory:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to get archetype history",
+      });
+    }
+  }),
+
+  /**
+   * Generate share token for IPIP results
+   */
+  generateShareToken: protectedProcedure
+    .input(
+      z.object({
+        expiresInDays: z.number().min(1).max(365).optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      try {
+        // Validate user has completed IPIP
+        const { data: assessment } = await supabase
+          .schema("core")
+          .from("personality_assessments")
+          .select("id, ipip_completed_at")
+          .eq("user_id", user.id)
+          .single();
+
+        if (!assessment?.ipip_completed_at) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "IPIP assessment must be completed before sharing",
+          });
+        }
+
+        // Calculate expiration
+        const expiresAt = input.expiresInDays
+          ? new Date(Date.now() + input.expiresInDays * 24 * 60 * 60 * 1000).toISOString()
+          : null;
+
+        // Generate token (UUID will be generated by database)
+        const { data: tokenData, error: tokenError } = await supabase
+          .schema("core")
+          .from("ipip_share_tokens")
+          .insert({
+            user_id: user.id,
+            assessment_id: assessment.id,
+            expires_at: expiresAt,
+          })
+          .select("token")
+          .single();
+
+        if (tokenError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to generate share token: ${tokenError.message}`,
+          });
+        }
+
+        // Award +5 XP for first share (check if already awarded)
+        const { data: existingXP } = await supabase
+          .schema("core")
+          .from("user_assessment_xp")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("assessment_type", "ipip")
+          .eq("xp_type", "share")
+          .single();
+
+        if (!existingXP) {
+          const { data: userData } = await supabase
+            .schema("core")
+            .from("users")
+            .select("frequency_xp")
+            .eq("id", user.id)
+            .single();
+
+          const currentXP = (userData?.frequency_xp as number) || 0;
+          const newXP = currentXP + 5;
+
+          await supabase
+            .schema("core")
+            .from("users")
+            .update({ frequency_xp: newXP })
+            .eq("id", user.id);
+
+          await supabase
+            .schema("core")
+            .from("user_assessment_xp")
+            .insert({
+              user_id: user.id,
+              assessment_type: "ipip",
+              xp_type: "share",
+              xp_amount: 5,
+            });
+        }
+
+        return {
+          token: tokenData.token,
+          shareUrl: `/profile/ipip/share/${tokenData.token}`,
+          expiresAt: expiresAt,
+        };
+      } catch (error) {
+        if (error instanceof TRPCError) throw error;
+        console.error("Error in generateShareToken:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to generate share token",
+        });
+      }
+    }),
+
+  /**
+   * Revoke share token
+   */
+  revokeShareToken: protectedProcedure
+    .input(
+      z.object({
+        token: z.string().uuid(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+
+      try {
+        const { error } = await supabase
+          .schema("core")
+          .from("ipip_share_tokens")
+          .update({ is_revoked: true })
+          .eq("token", input.token)
+          .eq("user_id", user.id);
+
+        if (error) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to revoke token: ${error.message}`,
+          });
+        }
+
+        return { success: true };
+      } catch (error) {
+        if (error instanceof TRPCError) throw error;
+        console.error("Error in revokeShareToken:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to revoke share token",
+        });
+      }
+    }),
+
+  /**
+   * Get shared results by token (public endpoint)
+   */
+  getSharedResults: publicProcedure
+    .input(
+      z.object({
+        token: z.string().uuid(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { supabase } = ctx;
+
+      try {
+        // Validate token
+        const { data: tokenData, error: tokenError } = await supabase
+          .schema("core")
+          .from("ipip_share_tokens")
+          .select("assessment_id, expires_at, is_revoked, view_count")
+          .eq("token", input.token)
+          .single();
+
+        if (tokenError || !tokenData) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Share link not found or invalid",
+          });
+        }
+
+        if (tokenData.is_revoked) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "This share link has been revoked",
+          });
+        }
+
+        if (tokenData.expires_at && new Date(tokenData.expires_at) < new Date()) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "This share link has expired",
+          });
+        }
+
+        // Increment view count
+        await supabase
+          .schema("core")
+          .from("ipip_share_tokens")
+          .update({ view_count: (tokenData.view_count || 0) + 1 })
+          .eq("token", input.token);
+
+        // Get assessment results (anonymized)
+        const { data: assessment, error: assessmentError } = await supabase
+          .schema("core")
+          .from("personality_assessments")
+          .select("ipip_scores, ipip_completed_at")
+          .eq("id", tokenData.assessment_id)
+          .single();
+
+        if (assessmentError || !assessment) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Assessment results not found",
+          });
+        }
+
+        // Get user_id from assessment for archetype lookup
+        const { data: assessmentUser } = await supabase
+          .schema("core")
+          .from("personality_assessments")
+          .select("user_id")
+          .eq("id", tokenData.assessment_id)
+          .single();
+
+        // Get archetype if available
+        let archetypeData = null;
+        if (assessmentUser?.user_id) {
+          const { data } = await supabase
+            .schema("core")
+            .from("user_archetypes")
+            .select(
+              `
+              confidence_score,
+              archetypes (
+                name,
+                description
+              )
+            `,
+            )
+            .eq("user_id", assessmentUser.user_id)
+            .eq("is_primary", true)
+            .single();
+          archetypeData = data;
+        }
+
+        return {
+          scores: assessment.ipip_scores,
+          completedAt: assessment.ipip_completed_at,
+          archetype: archetypeData
+            ? {
+                name: (archetypeData.archetypes as { name: string } | null)?.name || null,
+                confidence: archetypeData.confidence_score,
+              }
+            : null,
+        };
+      } catch (error) {
+        if (error instanceof TRPCError) throw error;
+        console.error("Error in getSharedResults:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get shared results",
+        });
+      }
+    }),
+
+  /**
+   * Award XP for viewing results (one-time)
+   */
+  awardResultsViewXP: protectedProcedure.mutation(async ({ ctx }) => {
+    const { supabase, user } = ctx;
+
+    try {
+      // Check if already awarded
+      const { data: existingXP } = await supabase
+        .schema("core")
+        .from("user_assessment_xp")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("assessment_type", "ipip")
+        .eq("xp_type", "view")
+        .single();
+
+      if (existingXP) {
+        return { success: true, alreadyAwarded: true };
+      }
+
+      // Award +2 XP
+      const { data: userData } = await supabase
+        .schema("core")
+        .from("users")
+        .select("frequency_xp")
+        .eq("id", user.id)
+        .single();
+
+      const currentXP = (userData?.frequency_xp as number) || 0;
+      const newXP = currentXP + 2;
+
+      await supabase
+        .schema("core")
+        .from("users")
+        .update({ frequency_xp: newXP })
+        .eq("id", user.id);
+
+      // Track XP award
+      await supabase
+        .schema("core")
+        .from("user_assessment_xp")
+        .insert({
+          user_id: user.id,
+          assessment_type: "ipip",
+          xp_type: "view",
+          xp_amount: 2,
+        });
+
+      return { success: true, newXP };
+    } catch (error) {
+      if (error instanceof TRPCError) throw error;
+      console.error("Error in awardResultsViewXP:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to award results view XP",
+      });
+    }
+  }),
 });
