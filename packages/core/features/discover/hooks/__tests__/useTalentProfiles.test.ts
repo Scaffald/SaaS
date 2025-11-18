@@ -38,22 +38,27 @@ describe('useTalentProfiles', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockSchema.mockReturnValue({
-      from: mockFrom,
+    
+    // Set up the chain properly
+    mockLimit.mockResolvedValue({
+      data: [],
+      error: null,
     })
-    mockFrom.mockReturnValue({
-      select: mockSelect,
-    })
+    mockOrder.mockReturnThis()
+    mockLte.mockReturnThis()
+    mockGte.mockReturnThis()
     mockSelect.mockReturnValue({
       gte: mockGte,
       lte: mockLte,
       limit: mockLimit,
       order: mockOrder,
     })
-    mockGte.mockReturnThis()
-    mockLte.mockReturnThis()
-    mockLimit.mockReturnThis()
-    mockOrder.mockReturnThis()
+    mockFrom.mockReturnValue({
+      select: mockSelect,
+    })
+    mockSchema.mockReturnValue({
+      from: mockFrom,
+    })
 
     mockUseQuery.mockReturnValue({
       data: [],

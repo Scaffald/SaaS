@@ -9,7 +9,11 @@ import type {
   MapPin,
 } from './types'
 import type { CustomMarker } from './CustomMarker'
-import { generateCirclePolygon, validateGeoJSONFeatureCollection } from './utils'
+import {
+  generateCirclePolygon,
+  validateGeoJSONFeatureCollection,
+  extractViewportBounds,
+} from './utils'
 import { useThemeSetting } from '../../../../core/provider/theme/UniversalThemeProvider'
 import { createPulsingDot } from './PulsingDot'
 import {
@@ -31,19 +35,6 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 
 // Import mapboxgl with proper typing
 import mapboxgl from 'mapbox-gl'
-
-/**
- * Extract viewport bounds from a Mapbox map instance
- */
-function extractViewportBounds(map: mapboxgl.Map): ViewportBounds {
-  const bounds = map.getBounds() as mapboxgl.LngLatBounds
-  return {
-    north: bounds.getNorth(),
-    south: bounds.getSouth(),
-    east: bounds.getEast(),
-    west: bounds.getWest(),
-  }
-}
 
 function ensurePulsingDotImage(map: mapboxgl.Map) {
   if (map.hasImage('pulsing-dot')) {
@@ -184,15 +175,15 @@ const createAvatarCanvas = (
 }
 
 function applyStandardStyleConfig(
-  map: mapboxgl.Map,
-  themeMode: 'light' | 'dark',
-  styleUrl?: string
+  _map: mapboxgl.Map,
+  _themeMode: 'light' | 'dark',
+  _styleUrl?: string
 ) {
-  if (!shouldApplyStandardConfig(styleUrl)) {
+  if (!shouldApplyStandardConfig(_styleUrl)) {
     return
   }
 
-  const config = getStandardStyleConfig(themeMode)
+  const config = getStandardStyleConfig(_themeMode)
   if (!config) {
     return
   }
@@ -1109,6 +1100,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
               map.removeImage(imageId)
             }
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             map.addImage(imageId, canvas as any, { pixelRatio: 2 })
             avatarImageCacheRef.current.set(imageId, {
               url: nextUrl,

@@ -1,3 +1,5 @@
+import type { ViewportBounds } from './types'
+
 /**
  * Generate a circle polygon GeoJSON feature
  * @param center - [longitude, latitude]
@@ -63,4 +65,24 @@ export function validateGeoJSONFeatureCollection(data: unknown): data is GeoJSON
     const f = feature as Record<string, unknown>
     return f.type === 'Feature' && f.geometry && f.properties
   })
+}
+
+/**
+ * Extract viewport bounds from a Mapbox map instance
+ * @throws Error if map bounds are not available
+ */
+export function extractViewportBounds(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  map: any
+): ViewportBounds {
+  const bounds = map.getBounds()
+  if (!bounds) {
+    throw new Error('Map bounds are not available')
+  }
+  return {
+    north: bounds.getNorth(),
+    south: bounds.getSouth(),
+    east: bounds.getEast(),
+    west: bounds.getWest(),
+  }
 }

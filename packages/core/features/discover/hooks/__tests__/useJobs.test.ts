@@ -37,22 +37,24 @@ describe('useJobs', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockSchema.mockReturnValue({
-      from: mockFrom,
+    
+    // Set up the chain properly
+    mockReturns.mockResolvedValue({
+      data: [],
+      error: null,
     })
-    mockFrom.mockReturnValue({
-      select: mockSelect,
-    })
+    mockLimit.mockReturnThis()
+    mockEq.mockReturnThis()
     mockSelect.mockReturnValue({
       eq: mockEq,
       limit: mockLimit,
       returns: mockReturns,
     })
-    mockEq.mockReturnThis()
-    mockLimit.mockReturnThis()
-    mockReturns.mockResolvedValue({
-      data: [],
-      error: null,
+    mockFrom.mockReturnValue({
+      select: mockSelect,
+    })
+    mockSchema.mockReturnValue({
+      from: mockFrom,
     })
 
     mockUseQuery.mockReturnValue({

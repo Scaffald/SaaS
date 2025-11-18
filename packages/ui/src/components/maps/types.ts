@@ -18,6 +18,7 @@ export interface MapPin {
     tone: 'success' | 'warning' | 'danger'
   }>
   selected?: boolean
+  data?: any
 }
 
 export interface MapRegion {

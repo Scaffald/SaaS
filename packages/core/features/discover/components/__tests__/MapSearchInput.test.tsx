@@ -145,4 +145,80 @@ describe('MapSearchInput', () => {
     })
     expect(closeHandler).toHaveBeenCalled()
   })
+
+  describe('validateMapboxToken edge cases', () => {
+    it('returns invalid for undefined token', () => {
+      process.env.EXPO_PUBLIC_MAPBOX_TOKEN = undefined
+
+      render(
+        <MapSearchInput
+          isVisible
+          onClose={closeHandler}
+          onLocationSelect={selectHandler}
+        />
+      )
+
+      expect(screen.getByText('Map Search Unavailable')).toBeInTheDocument()
+    })
+
+    it('returns invalid for empty string token', () => {
+      process.env.EXPO_PUBLIC_MAPBOX_TOKEN = ''
+
+      render(
+        <MapSearchInput
+          isVisible
+          onClose={closeHandler}
+          onLocationSelect={selectHandler}
+        />
+      )
+
+      expect(screen.getByText('Map Search Unavailable')).toBeInTheDocument()
+    })
+
+    it('returns invalid for token not starting with "pk."', () => {
+      process.env.EXPO_PUBLIC_MAPBOX_TOKEN = 'invalid-token'
+
+      render(
+        <MapSearchInput
+          isVisible
+          onClose={closeHandler}
+          onLocationSelect={selectHandler}
+        />
+      )
+
+      expect(screen.getByText('Map search configuration error. Please contact support.')).toBeInTheDocument()
+    })
+
+    it('returns valid for token starting with "pk."', () => {
+      process.env.EXPO_PUBLIC_MAPBOX_TOKEN = 'pk.valid-token-123'
+
+      render(
+        <MapSearchInput
+          isVisible
+          onClose={closeHandler}
+          onLocationSelect={selectHandler}
+        />
+      )
+
+      // Should render the search input, not error message
+      expect(screen.queryByText('Map Search Unavailable')).not.toBeInTheDocument()
+      expect(screen.queryByText('Map search configuration error')).not.toBeInTheDocument()
+      expect(screen.getByLabelText('search')).toBeInTheDocument()
+    })
+
+    it('displays user-friendly error messages', () => {
+      process.env.EXPO_PUBLIC_MAPBOX_TOKEN = undefined
+
+      render(
+        <MapSearchInput
+          isVisible
+          onClose={closeHandler}
+          onLocationSelect={selectHandler}
+        />
+      )
+
+      // Error message should be user-friendly (check for the displayed text)
+      expect(screen.getByText('Map Search Unavailable')).toBeInTheDocument()
+    })
+  })
 })

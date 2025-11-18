@@ -8,6 +8,7 @@ describe('useMapPinState', () => {
   const mockPin: MapPinType = {
     id: 'pin-1',
     pinType: 'worker',
+    title: 'Mock Worker Pin',
     coordinate: [42.3601, -71.0589],
     data: { id: 'user-1', name: 'John Doe' },
   }
@@ -15,7 +16,8 @@ describe('useMapPinState', () => {
   const mockPin2: MapPinType = {
     id: 'pin-2',
     pinType: 'organization',
-    coordinates: [42.3651, -71.0639],
+    title: 'Mock Organization Pin',
+    coordinate: [42.3651, -71.0639],
     data: { id: 'org-1', name: 'Acme Corp' },
   }
 
@@ -211,7 +213,7 @@ describe('useMapPinState', () => {
     const clusters: ClusterInfo[] = [
       {
         clusterId: 1,
-        coordinate: [42.3601, -71.0589],
+        coordinates: [42.3601, -71.0589],
         pointCount: 2,
         memberPinIds: ['pin-1', 'pin-2'],
       },
