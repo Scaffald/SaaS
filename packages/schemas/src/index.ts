@@ -34,3 +34,6 @@ export * from './teams'
 
 // Project schemas
 export * from './projects'
+
+// Inquiry schemas
+export * from './inquiries'
