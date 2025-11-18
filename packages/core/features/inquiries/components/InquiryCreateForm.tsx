@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { Platform } from 'react-native'
 import { Controller, FormProvider } from 'react-hook-form'
 import {
@@ -13,6 +13,8 @@ import {
 } from '@app/ui'
 import { Adapt, Sheet, Select, Switch, TextArea } from 'tamagui'
 import { Check, Info, HelpCircle } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { api } from '@app/core/utils/api'
 import { useInquiryForm } from '../hooks/useInquiryForm'
 import { useInquiryEdit } from '../hooks/useInquiryEdit'
 import { InquiryHelpSidebar } from './InquiryHelpSidebar'
@@ -113,6 +115,153 @@ export function InquiryCreateForm({
     // No-op for edit mode - save draft not applicable
   }
 
+  const toast = useToastController()
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
+  const [saveTemplateOpen, setSaveTemplateOpen] = useState(false)
+  const [manageTemplatesOpen, setManageTemplatesOpen] = useState(false)
+  const [templateName, setTemplateName] = useState('')
+  const [templateDescription, setTemplateDescription] = useState('')
+  const [deletingTemplateId, setDeletingTemplateId] = useState<string | null>(null)
+
+  const {
+    data: templatesData,
+    isLoading: isTemplatesLoading,
+    refetch: refetchTemplates,
+  } = api.inquiries.getTemplatesForApplication.useQuery(
+    { applicationId },
+    { enabled: Boolean(applicationId) }
+  )
+
+  const templates = templatesData ?? []
+  type TemplateRow = {
+    id: string
+    name: string
+    description: string | null
+    usage_count: number | null
+    last_used_at: string | null
+  }
+  const templateList = templates as TemplateRow[]
+
+  const createTemplateMutation = api.inquiries.createTemplate.useMutation()
+  const applyTemplateMutation = api.inquiries.applyTemplate.useMutation()
+  const deleteTemplateMutation = api.inquiries.deleteTemplate.useMutation()
+
+  const templateOptions = useMemo(
+    () =>
+      templateList.map((template, index) => ({
+        id: template.id,
+        name: template.name,
+        description: template.description ?? '',
+        usageCount: template.usage_count ?? 0,
+        index,
+      })),
+    [templateList]
+  )
+
+  const getErrorMessage = useCallback((error: unknown, fallback: string) => {
+    if (error instanceof Error) {
+      return error.message
+    }
+    if (typeof error === 'string') {
+      return error
+    }
+    return fallback
+  }, [])
+
+  const handleApplyTemplate = useCallback(async () => {
+    if (!selectedTemplateId) {
+      return
+    }
+
+    try {
+      const result = await applyTemplateMutation.mutateAsync({
+        templateId: selectedTemplateId,
+        applicationId,
+      })
+
+      if (result?.templateData) {
+        form.reset({
+          applicationId,
+          ...result.templateData,
+        } as InquiryCreateInput)
+        toast.show('Template applied', {
+          message: 'Inquiry form has been updated with saved terms.',
+        })
+      }
+    } catch (error) {
+      toast.show('Unable to apply template', {
+        message: getErrorMessage(error, 'Please try again.'),
+      })
+    }
+  }, [selectedTemplateId, applyTemplateMutation, applicationId, form, toast, getErrorMessage])
+
+  const handleSaveTemplate = useCallback(async () => {
+    const trimmedName = templateName.trim()
+    const trimmedDescription = templateDescription.trim()
+
+    if (!trimmedName) {
+      toast.show('Template name required', {
+        message: 'Please enter a name before saving.',
+      })
+      return
+    }
+
+    const { applicationId: _omitted, ...templateData } = form.getValues()
+
+    try {
+      await createTemplateMutation.mutateAsync({
+        applicationId,
+        name: trimmedName,
+        description: trimmedDescription ? trimmedDescription : undefined,
+        templateData,
+      })
+
+      toast.show('Template saved', {
+        message: 'You can reuse it for future inquiries.',
+      })
+      setTemplateName('')
+      setTemplateDescription('')
+      setSaveTemplateOpen(false)
+      refetchTemplates()
+    } catch (error) {
+      toast.show('Unable to save template', {
+        message: getErrorMessage(error, 'Please try again.'),
+      })
+    }
+  }, [
+    templateName,
+    templateDescription,
+    form,
+    createTemplateMutation,
+    applicationId,
+    toast,
+    refetchTemplates,
+    getErrorMessage,
+  ])
+
+  const handleDeleteTemplate = useCallback(
+    async (templateId: string) => {
+      try {
+        setDeletingTemplateId(templateId)
+        await deleteTemplateMutation.mutateAsync({ templateId })
+        toast.show('Template deleted', {
+          message: 'Removed from your organization templates.',
+        })
+        if (selectedTemplateId === templateId) {
+          setSelectedTemplateId(null)
+        }
+        refetchTemplates()
+      } catch (error) {
+        toast.show('Unable to delete template', {
+          message: getErrorMessage(error, 'Please try again.'),
+        })
+      } finally {
+        setDeletingTemplateId(null)
+      }
+    },
+    [deleteTemplateMutation, toast, selectedTemplateId, refetchTemplates, getErrorMessage]
+  )
+
   // Pre-populate form if initialData provided
   useEffect(() => {
     if (initialData && form) {
@@ -151,12 +300,125 @@ export function InquiryCreateForm({
   }
 
   return (
-    <FormProvider {...form}>
-      <XStack gap="$4" flex={1} $sm={{ flexDirection: 'column' }}>
+    <>
+      <FormProvider {...form}>
+        <XStack gap="$4" flex={1} $sm={{ flexDirection: 'column' }}>
         {/* Main Form */}
         <YStack flex={1} gap="$4">
           <ScrollView>
             <YStack gap="$6" p="$4" $sm={{ gap: '$8', p: '$3' }}>
+              {/* Templates Section */}
+              <YStack
+                gap="$3"
+                p="$3"
+                borderWidth={1}
+                borderColor="$borderColor"
+                bg="$background"
+                rounded="$4"
+              >
+                <XStack
+                  justify="space-between"
+                  items="center"
+                  gap="$3"
+                  $sm={{ flexDirection: 'column' }}
+                >
+                  <YStack>
+                    <Text fontSize="$6" fontWeight="700">
+                      Templates
+                    </Text>
+                    <Text fontSize="$3" color="$color11">
+                      Reuse saved inquiry terms for this organization.
+                    </Text>
+                  </YStack>
+                  <XStack gap="$2" $sm={{ width: '100%' }}>
+                    <Button
+                      size="$3"
+                      variant="outlined"
+                      onPress={() => setSaveTemplateOpen(true)}
+                      disabled={createTemplateMutation.isLoading}
+                      $sm={{ flex: 1 }}
+                    >
+                      Save current
+                    </Button>
+                    <Button
+                      size="$3"
+                      variant="outlined"
+                      onPress={() => setManageTemplatesOpen(true)}
+                      $sm={{ flex: 1 }}
+                    >
+                      Manage
+                    </Button>
+                  </XStack>
+                </XStack>
+
+                <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
+                  <YStack flex={1}>
+                    <Select
+                      value={selectedTemplateId ?? undefined}
+                      onValueChange={setSelectedTemplateId}
+                    >
+                      <Select.Trigger disabled={templates.length === 0 || isTemplatesLoading}>
+                        <Select.Value
+                          placeholder={
+                            templates.length === 0
+                              ? 'No templates yet'
+                              : 'Choose a template'
+                          }
+                        />
+                      </Select.Trigger>
+                      <Adapt when="sm" platform="touch">
+                        <Sheet modal dismissOnSnapToBottom>
+                          <Sheet.Frame>
+                            <Sheet.ScrollView>
+                              <Adapt.Contents />
+                            </Sheet.ScrollView>
+                          </Sheet.Frame>
+                          <Sheet.Overlay />
+                        </Sheet>
+                      </Adapt>
+                      <Select.Content zIndex={200000}>
+                        <Select.ScrollUpButton />
+                        <Select.Viewport>
+                          {templateOptions.map((template) => (
+                            <Select.Item
+                              key={template.id}
+                              value={template.id}
+                              index={template.index}
+                            >
+                              <Select.ItemText>{template.name}</Select.ItemText>
+                              <Select.ItemIndicator marginLeft="auto">
+                                <Check size={16} />
+                              </Select.ItemIndicator>
+                            </Select.Item>
+                          ))}
+                        </Select.Viewport>
+                        <Select.ScrollDownButton />
+                      </Select.Content>
+                    </Select>
+                  </YStack>
+
+                  <Button
+                    size="$3"
+                    onPress={handleApplyTemplate}
+                    disabled={!selectedTemplateId || applyTemplateMutation.isLoading}
+                    $sm={{ width: '100%' }}
+                  >
+                    {applyTemplateMutation.isLoading ? 'Applying…' : 'Apply template'}
+                  </Button>
+                </XStack>
+
+                {isTemplatesLoading && (
+                  <Text fontSize="$3" color="$color11">
+                    Loading templates…
+                  </Text>
+                )}
+                {!isTemplatesLoading && templates.length === 0 && (
+                  <Text fontSize="$3" color="$color11">
+                    Save templates to quickly reuse standard employment terms.
+                  </Text>
+                )}
+              </YStack>
+
               {/* Employment Section */}
               <YStack gap="$4">
                 <XStack items="center" gap="$2">
@@ -895,8 +1157,139 @@ export function InquiryCreateForm({
         >
           <InquiryHelpSidebar />
         </YStack>
-      </XStack>
-    </FormProvider>
+        </XStack>
+      </FormProvider>
+
+      <Sheet
+        modal
+        open={saveTemplateOpen}
+        onOpenChange={setSaveTemplateOpen}
+        snapPoints={[80]}
+        dismissOnSnapToBottom
+      >
+        <Sheet.Overlay />
+        <Sheet.Handle />
+        <Sheet.Frame p="$4" gap="$4">
+          <Text fontSize="$6" fontWeight="700">
+            Save template
+          </Text>
+          <Text fontSize="$3" color="$color11">
+            Capture the current inquiry terms as a reusable template.
+          </Text>
+          <YStack gap="$2">
+            <Text fontWeight="600">Template name</Text>
+            <Input
+              placeholder="E.g., Standard day shift"
+              value={templateName}
+              onChangeText={setTemplateName}
+            />
+          </YStack>
+          <YStack gap="$2">
+            <Text fontWeight="600">Description (optional)</Text>
+            <TextArea
+              placeholder="Describe when to use this template..."
+              value={templateDescription}
+              onChangeText={setTemplateDescription}
+              numberOfLines={4}
+            />
+          </YStack>
+          <XStack gap="$3" justify="flex-end">
+            <Button
+              variant="outlined"
+              onPress={() => setSaveTemplateOpen(false)}
+              disabled={createTemplateMutation.isLoading}
+            >
+              Cancel
+            </Button>
+            <Button
+              theme="blue"
+              onPress={handleSaveTemplate}
+              disabled={createTemplateMutation.isLoading}
+            >
+              {createTemplateMutation.isLoading ? 'Saving…' : 'Save template'}
+            </Button>
+          </XStack>
+        </Sheet.Frame>
+      </Sheet>
+
+      <Sheet
+        modal
+        open={manageTemplatesOpen}
+        onOpenChange={setManageTemplatesOpen}
+        snapPoints={[90]}
+        dismissOnSnapToBottom
+      >
+        <Sheet.Overlay />
+        <Sheet.Handle />
+        <Sheet.Frame p="$4" gap="$4">
+          <Text fontSize="$6" fontWeight="700">
+            Manage templates
+          </Text>
+          {templates.length === 0 ? (
+            <Text fontSize="$3" color="$color11">
+              No templates saved yet. Create one from the inquiry form.
+            </Text>
+          ) : (
+            <Sheet.ScrollView>
+              <YStack gap="$3" py="$2">
+                {templateList.map((template) => {
+                  const templateId = template.id
+                  const usageCount = template.usage_count ?? 0
+                  const lastUsedAt = template.last_used_at ?? null
+                  return (
+                    <YStack
+                      key={templateId}
+                      p="$3"
+                      gap="$2"
+                      borderWidth={1}
+                      borderColor="$borderColor"
+                      rounded="$4"
+                      bg="$background"
+                    >
+                      <XStack
+                        gap="$3"
+                        items="center"
+                        justify="space-between"
+                        $sm={{ flexDirection: 'column' }}
+                      >
+                        <YStack flex={1} gap="$1">
+                          <Text fontSize="$4" fontWeight="600">
+                            {template.name}
+                          </Text>
+                          {template.description && (
+                            <Text fontSize="$3" color="$color11">
+                              {template.description}
+                            </Text>
+                          )}
+                          <Text fontSize="$2" color="$color11">
+                            {usageCount} use{usageCount === 1 ? '' : 's'} ·{' '}
+                            {lastUsedAt
+                              ? new Date(lastUsedAt).toLocaleDateString()
+                              : 'Never used'}
+                          </Text>
+                        </YStack>
+                        <Button
+                          size="$3"
+                          variant="outlined"
+                          color="$red11"
+                          borderColor="$red8"
+                          onPress={() => handleDeleteTemplate(templateId)}
+                          disabled={
+                            deleteTemplateMutation.isLoading && deletingTemplateId === templateId
+                          }
+                        >
+                          Delete
+                        </Button>
+                      </XStack>
+                    </YStack>
+                  )
+                })}
+              </YStack>
+            </Sheet.ScrollView>
+          )}
+        </Sheet.Frame>
+      </Sheet>
+    </>
   )
 }
 

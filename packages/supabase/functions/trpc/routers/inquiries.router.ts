@@ -7,6 +7,9 @@ import {
   capabilityResponseSchema,
   sectionAcceptanceSchema,
   commentReadStatusSchema,
+  inquiryTemplateCreateSchema,
+  inquiryTemplateUpdateSchema,
+  inquiryTemplateApplySchema,
 } from "@app/schemas";
 import { protectedProcedure, t } from "../middleware.ts";
 import { insertNotification } from "../../_shared/notifications/utils.ts";
@@ -405,9 +408,336 @@ async function verifyIsApplicant(
 }
 
 /**
+ * Ensure the current user is a member/owner of the target organization
+ */
+async function ensureOrganizationMembership(
+  supabase: any,
+  userId: string,
+  organizationId: string,
+) {
+  const { data: organization } = await supabase
+    .schema("core")
+    .from("organizations")
+    .select("id, owner_user_id")
+    .eq("id", organizationId)
+    .single();
+
+  if (!organization) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Organization not found",
+    });
+  }
+
+  if (organization.owner_user_id === userId) {
+    return organization;
+  }
+
+  const { data: membership } = await supabase
+    .schema("core")
+    .from("role_assignments")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("scope_org_id", organizationId)
+    .maybeSingle();
+
+  if (!membership) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "You do not have access to this organization",
+    });
+  }
+
+  return organization;
+}
+
+/**
+ * Verify the user has access to the requested template
+ */
+async function verifyTemplateAccess(
+  supabase: any,
+  userId: string,
+  templateId: string,
+) {
+  const { data: template, error } = await supabase
+    .schema("core")
+    .from("inquiry_templates")
+    .select("*")
+    .eq("id", templateId)
+    .single();
+
+  if (error || !template) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Inquiry template not found",
+    });
+  }
+
+  await ensureOrganizationMembership(supabase, userId, template.organization_id);
+  return template;
+}
+
+/**
+ * Resolve the organization ID for a given application record
+ */
+async function getApplicationOrganizationId(
+  supabase: any,
+  application: Record<string, any> | null,
+) {
+  const organizationId =
+    (application?.job as { organization_id?: string } | null)?.organization_id ??
+    application?.job?.organization_id ??
+    null;
+
+  if (organizationId) {
+    return organizationId;
+  }
+
+  if (!application?.job_id) {
+    return null;
+  }
+
+  const { data: job } = await supabase
+    .schema("core")
+    .from("jobs")
+    .select("organization_id")
+    .eq("id", application.job_id)
+    .single();
+
+  return job?.organization_id ?? null;
+}
+
+/**
  * Inquiries router - handles job inquiry and negotiation operations
  */
 export const inquiriesRouter = router({
+  /**
+   * List all templates available to the application's organization
+   */
+  getTemplatesForApplication: protectedProcedure
+    .input(z.object({ applicationId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+      const application = await verifyApplicationAccess(
+        supabase,
+        user.id,
+        input.applicationId,
+        true,
+      );
+
+      const organizationId = await getApplicationOrganizationId(supabase, application);
+
+      if (!organizationId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Application is missing organization context",
+        });
+      }
+
+      const { data: templates, error } = await supabase
+        .schema("core")
+        .from("inquiry_templates")
+        .select("*")
+        .eq("organization_id", organizationId)
+        .order("is_default", { ascending: false })
+        .order("usage_count", { ascending: false })
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to load templates: ${error.message}`,
+          cause: error,
+        });
+      }
+
+      return templates ?? [];
+    }),
+
+  /**
+   * Create a reusable template scoped to the application's organization
+   */
+  createTemplate: protectedProcedure
+    .input(inquiryTemplateCreateSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+      const application = await verifyApplicationAccess(
+        supabase,
+        user.id,
+        input.applicationId,
+        true,
+      );
+
+      const organizationId = await getApplicationOrganizationId(supabase, application);
+
+      if (!organizationId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Application is missing organization context",
+        });
+      }
+
+      await ensureOrganizationMembership(supabase, user.id, organizationId);
+
+      const payload = {
+        organization_id: organizationId,
+        created_by: user.id,
+        name: input.name.trim(),
+        description: input.description ?? null,
+        template_data: input.templateData,
+      };
+
+      const { data, error } = await supabase
+        .schema("core")
+        .from("inquiry_templates")
+        .insert(payload)
+        .select()
+        .single();
+
+      if (error || !data) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to create template: ${error?.message ?? "Unknown error"}`,
+          cause: error,
+        });
+      }
+
+      return data;
+    }),
+
+  /**
+   * Update template metadata or data payload
+   */
+  updateTemplate: protectedProcedure
+    .input(inquiryTemplateUpdateSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+      await verifyTemplateAccess(supabase, user.id, input.templateId);
+
+      const updateData: Record<string, unknown> = {};
+      if (input.name !== undefined) {
+        updateData.name = input.name.trim();
+      }
+      if (input.description !== undefined) {
+        updateData.description = input.description ?? null;
+      }
+      if (input.templateData !== undefined) {
+        updateData.template_data = input.templateData;
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        const { data: existing } = await supabase
+          .schema("core")
+          .from("inquiry_templates")
+          .select("*")
+          .eq("id", input.templateId)
+          .single();
+        return existing;
+      }
+
+      const { data, error } = await supabase
+        .schema("core")
+        .from("inquiry_templates")
+        .update(updateData)
+        .eq("id", input.templateId)
+        .select()
+        .single();
+
+      if (error || !data) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to update template: ${error?.message ?? "Unknown error"}`,
+          cause: error,
+        });
+      }
+
+      return data;
+    }),
+
+  /**
+   * Delete an organization template
+   */
+  deleteTemplate: protectedProcedure
+    .input(z.object({ templateId: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+      await verifyTemplateAccess(supabase, user.id, input.templateId);
+
+      const { error } = await supabase
+        .schema("core")
+        .from("inquiry_templates")
+        .delete()
+        .eq("id", input.templateId);
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to delete template: ${error.message}`,
+          cause: error,
+        });
+      }
+
+      return { success: true };
+    }),
+
+  /**
+   * Apply a template and increment usage metrics
+   */
+  applyTemplate: protectedProcedure
+    .input(inquiryTemplateApplySchema)
+    .mutation(async ({ ctx, input }) => {
+      const { supabase, user } = ctx;
+      const application = await verifyApplicationAccess(
+        supabase,
+        user.id,
+        input.applicationId,
+        true,
+      );
+      const template = await verifyTemplateAccess(
+        supabase,
+        user.id,
+        input.templateId,
+      );
+
+      const organizationId = await getApplicationOrganizationId(supabase, application);
+
+      if (!organizationId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Application is missing organization context",
+        });
+      }
+
+      if (organizationId !== template.organization_id) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Template does not belong to this organization",
+        });
+      }
+
+      const { error } = await supabase
+        .schema("core")
+        .from("inquiry_templates")
+        .update({
+          usage_count: (template.usage_count ?? 0) + 1,
+          last_used_at: new Date().toISOString(),
+        })
+        .eq("id", template.id);
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to record template usage: ${error.message}`,
+          cause: error,
+        });
+      }
+
+      return {
+        templateData: template.template_data,
+        templateId: template.id,
+      };
+    }),
+
   /**
    * Create a new inquiry for an application
    * Organization members can create inquiries for applications to their jobs

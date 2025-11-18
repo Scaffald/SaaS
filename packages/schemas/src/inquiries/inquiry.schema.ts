@@ -213,6 +213,53 @@ export const bulkInquirySchema = baseInquiryObjectSchema
 export type BulkInquiryInput = z.infer<typeof bulkInquirySchema>
 
 /**
+ * Inquiry template data schema - reuses the bulk inquiry structure
+ */
+export const inquiryTemplateDataSchema = bulkInquirySchema
+export type InquiryTemplateDataInput = z.infer<typeof inquiryTemplateDataSchema>
+
+/**
+ * Create a reusable inquiry template
+ */
+export const inquiryTemplateCreateSchema = z.object({
+  applicationId: z.string().uuid('Invalid application ID'),
+  name: z
+    .string()
+    .min(1, 'Template name is required')
+    .max(120, 'Template name must be 120 characters or less'),
+  description: z.string().max(500, 'Description must be 500 characters or less').optional(),
+  templateData: inquiryTemplateDataSchema,
+})
+
+export type InquiryTemplateCreateInput = z.infer<typeof inquiryTemplateCreateSchema>
+
+/**
+ * Update an existing template (name/description/data)
+ */
+export const inquiryTemplateUpdateSchema = z.object({
+  templateId: z.string().uuid('Invalid template ID'),
+  name: z
+    .string()
+    .min(1, 'Template name is required')
+    .max(120, 'Template name must be 120 characters or less')
+    .optional(),
+  description: z.string().max(500, 'Description must be 500 characters or less').optional(),
+  templateData: inquiryTemplateDataSchema.optional(),
+})
+
+export type InquiryTemplateUpdateInput = z.infer<typeof inquiryTemplateUpdateSchema>
+
+/**
+ * Apply template to an application (increments usage counts)
+ */
+export const inquiryTemplateApplySchema = z.object({
+  templateId: z.string().uuid('Invalid template ID'),
+  applicationId: z.string().uuid('Invalid application ID'),
+})
+
+export type InquiryTemplateApplyInput = z.infer<typeof inquiryTemplateApplySchema>
+
+/**
  * Inquiry update schema - for editing existing inquiries
  * All fields are optional except id
  */

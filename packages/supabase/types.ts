@@ -3055,11 +3055,18 @@ export type Database = {
           id: string
           invitee_email: string
           issuer_user_id: string
+          message: string | null
+          metadata: Json
+          organization_id: string | null
+          personal_note: string | null
+          resent_count: number
           role_name: string | null
           status: string
           target_id: string
           target_type: string
           token: string
+          updated_at: string
+          viewed_at: string | null
         }
         Insert: {
           consumed_at?: string | null
@@ -3068,11 +3075,18 @@ export type Database = {
           id?: string
           invitee_email: string
           issuer_user_id: string
+          message?: string | null
+          metadata?: Json
+          organization_id?: string | null
+          personal_note?: string | null
+          resent_count?: number
           role_name?: string | null
           status?: string
           target_id: string
           target_type: string
           token: string
+          updated_at?: string
+          viewed_at?: string | null
         }
         Update: {
           consumed_at?: string | null
@@ -3081,11 +3095,18 @@ export type Database = {
           id?: string
           invitee_email?: string
           issuer_user_id?: string
+          message?: string | null
+          metadata?: Json
+          organization_id?: string | null
+          personal_note?: string | null
+          resent_count?: number
           role_name?: string | null
           status?: string
           target_id?: string
           target_type?: string
           token?: string
+          updated_at?: string
+          viewed_at?: string | null
         }
         Relationships: [
           {
@@ -3100,6 +3121,13 @@ export type Database = {
             columns: ["issuer_user_id"]
             isOneToOne: false
             referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invites_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]
@@ -3799,6 +3827,642 @@ export type Database = {
           },
         ]
       }
+      organization_audit_log: {
+        Row: {
+          action_type: string
+          actor_email: string | null
+          actor_role: string | null
+          actor_user_id: string | null
+          after_data: Json | null
+          before_data: Json | null
+          created_at: string
+          description: string | null
+          id: string
+          ip_address: unknown
+          metadata: Json
+          organization_id: string
+          target_id: string | null
+          target_type: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action_type: string
+          actor_email?: string | null
+          actor_role?: string | null
+          actor_user_id?: string | null
+          after_data?: Json | null
+          before_data?: Json | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          ip_address?: unknown
+          metadata?: Json
+          organization_id: string
+          target_id?: string | null
+          target_type?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action_type?: string
+          actor_email?: string | null
+          actor_role?: string | null
+          actor_user_id?: string | null
+          after_data?: Json | null
+          before_data?: Json | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          ip_address?: unknown
+          metadata?: Json
+          organization_id?: string
+          target_id?: string | null
+          target_type?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_audit_log_actor_user_id_fkey"
+            columns: ["actor_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_audit_log_actor_user_id_fkey"
+            columns: ["actor_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_audit_log_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organization_document_shares: {
+        Row: {
+          access_token: string | null
+          created_at: string
+          created_by: string
+          document_id: string
+          expires_at: string | null
+          external_email: string | null
+          id: string
+          metadata: Json
+          organization_id: string
+          permission: Database["core"]["Enums"]["organization_document_permission"]
+          revoked_at: string | null
+          share_type: Database["core"]["Enums"]["organization_document_share_type"]
+          target_user_id: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          access_token?: string | null
+          created_at?: string
+          created_by: string
+          document_id: string
+          expires_at?: string | null
+          external_email?: string | null
+          id?: string
+          metadata?: Json
+          organization_id: string
+          permission?: Database["core"]["Enums"]["organization_document_permission"]
+          revoked_at?: string | null
+          share_type?: Database["core"]["Enums"]["organization_document_share_type"]
+          target_user_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          access_token?: string | null
+          created_at?: string
+          created_by?: string
+          document_id?: string
+          expires_at?: string | null
+          external_email?: string | null
+          id?: string
+          metadata?: Json
+          organization_id?: string
+          permission?: Database["core"]["Enums"]["organization_document_permission"]
+          revoked_at?: string | null
+          share_type?: Database["core"]["Enums"]["organization_document_share_type"]
+          target_user_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_document_shares_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_document_shares_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_document_shares_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "organization_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_document_shares_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_document_shares_target_user_id_fkey"
+            columns: ["target_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_document_shares_target_user_id_fkey"
+            columns: ["target_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_document_shares_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_document_shares_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organization_document_versions: {
+        Row: {
+          checksum: string | null
+          created_at: string
+          document_id: string
+          id: string
+          mime_type: string | null
+          notes: string | null
+          organization_id: string
+          size_bytes: number
+          storage_object_path: string
+          uploaded_by: string
+          version_number: number
+        }
+        Insert: {
+          checksum?: string | null
+          created_at?: string
+          document_id: string
+          id?: string
+          mime_type?: string | null
+          notes?: string | null
+          organization_id: string
+          size_bytes?: number
+          storage_object_path: string
+          uploaded_by: string
+          version_number: number
+        }
+        Update: {
+          checksum?: string | null
+          created_at?: string
+          document_id?: string
+          id?: string
+          mime_type?: string | null
+          notes?: string | null
+          organization_id?: string
+          size_bytes?: number
+          storage_object_path?: string
+          uploaded_by?: string
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_document_versions_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "organization_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_document_versions_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_document_versions_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organization_documents: {
+        Row: {
+          category: Database["core"]["Enums"]["organization_document_category"]
+          created_at: string
+          created_by: string
+          deleted_at: string | null
+          description: string | null
+          folder_id: string | null
+          id: string
+          is_deleted: boolean
+          is_template: boolean
+          latest_checksum: string | null
+          latest_mime_type: string | null
+          latest_size_bytes: number
+          latest_version_id: string | null
+          latest_version_number: number
+          metadata: Json
+          name: string
+          organization_id: string
+          storage_bucket: string
+          storage_prefix: string
+          tags: string[]
+          template_variables: Json
+          total_size_bytes: number
+          updated_at: string
+          updated_by: string | null
+          version_count: number
+        }
+        Insert: {
+          category?: Database["core"]["Enums"]["organization_document_category"]
+          created_at?: string
+          created_by: string
+          deleted_at?: string | null
+          description?: string | null
+          folder_id?: string | null
+          id?: string
+          is_deleted?: boolean
+          is_template?: boolean
+          latest_checksum?: string | null
+          latest_mime_type?: string | null
+          latest_size_bytes?: number
+          latest_version_id?: string | null
+          latest_version_number?: number
+          metadata?: Json
+          name: string
+          organization_id: string
+          storage_bucket?: string
+          storage_prefix?: string
+          tags?: string[]
+          template_variables?: Json
+          total_size_bytes?: number
+          updated_at?: string
+          updated_by?: string | null
+          version_count?: number
+        }
+        Update: {
+          category?: Database["core"]["Enums"]["organization_document_category"]
+          created_at?: string
+          created_by?: string
+          deleted_at?: string | null
+          description?: string | null
+          folder_id?: string | null
+          id?: string
+          is_deleted?: boolean
+          is_template?: boolean
+          latest_checksum?: string | null
+          latest_mime_type?: string | null
+          latest_size_bytes?: number
+          latest_version_id?: string | null
+          latest_version_number?: number
+          metadata?: Json
+          name?: string
+          organization_id?: string
+          storage_bucket?: string
+          storage_prefix?: string
+          tags?: string[]
+          template_variables?: Json
+          total_size_bytes?: number
+          updated_at?: string
+          updated_by?: string | null
+          version_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_documents_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_documents_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_documents_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "organization_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_documents_latest_version_id_fkey"
+            columns: ["latest_version_id"]
+            isOneToOne: false
+            referencedRelation: "organization_document_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_documents_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_documents_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_documents_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organization_folders: {
+        Row: {
+          created_at: string
+          created_by: string
+          deleted_at: string | null
+          depth: number
+          description: string | null
+          id: string
+          is_deleted: boolean
+          metadata: Json
+          name: string
+          organization_id: string
+          parent_folder_id: string | null
+          sort_order: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          deleted_at?: string | null
+          depth?: number
+          description?: string | null
+          id?: string
+          is_deleted?: boolean
+          metadata?: Json
+          name: string
+          organization_id: string
+          parent_folder_id?: string | null
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          deleted_at?: string | null
+          depth?: number
+          description?: string | null
+          id?: string
+          is_deleted?: boolean
+          metadata?: Json
+          name?: string
+          organization_id?: string
+          parent_folder_id?: string | null
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_folders_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_folders_parent_folder_id_fkey"
+            columns: ["parent_folder_id"]
+            isOneToOne: false
+            referencedRelation: "organization_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_folders_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_folders_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organization_limit_overrides: {
+        Row: {
+          active: boolean
+          created_at: string
+          file_bytes: number | null
+          granted_by_user_id: string | null
+          id: string
+          member_count: number | null
+          metadata: Json
+          organization_id: string
+          reason: string | null
+          storage_bytes: number | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          file_bytes?: number | null
+          granted_by_user_id?: string | null
+          id?: string
+          member_count?: number | null
+          metadata?: Json
+          organization_id: string
+          reason?: string | null
+          storage_bytes?: number | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          file_bytes?: number | null
+          granted_by_user_id?: string | null
+          id?: string
+          member_count?: number | null
+          metadata?: Json
+          organization_id?: string
+          reason?: string | null
+          storage_bytes?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_limit_overrides_granted_by_user_id_fkey"
+            columns: ["granted_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_limit_overrides_granted_by_user_id_fkey"
+            columns: ["granted_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_limit_overrides_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organization_locations: {
+        Row: {
+          address: Json
+          created_at: string
+          created_by: string
+          email: string | null
+          id: string
+          is_active: boolean
+          latitude: number | null
+          location_type: Database["core"]["Enums"]["organization_location_type"]
+          longitude: number | null
+          metadata: Json
+          name: string
+          organization_id: string
+          phone: string | null
+          timezone: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          address?: Json
+          created_at?: string
+          created_by: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          latitude?: number | null
+          location_type?: Database["core"]["Enums"]["organization_location_type"]
+          longitude?: number | null
+          metadata?: Json
+          name: string
+          organization_id: string
+          phone?: string | null
+          timezone?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          address?: Json
+          created_at?: string
+          created_by?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          latitude?: number | null
+          location_type?: Database["core"]["Enums"]["organization_location_type"]
+          longitude?: number | null
+          metadata?: Json
+          name?: string
+          organization_id?: string
+          phone?: string | null
+          timezone?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_locations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_locations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_locations_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_locations_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_locations_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organization_requests: {
         Row: {
           created_at: string
@@ -3886,6 +4550,102 @@ export type Database = {
           },
         ]
       }
+      organization_settings: {
+        Row: {
+          business_hours: Json
+          created_at: string
+          created_by: string | null
+          default_currency: string
+          enforce_mfa: boolean
+          holiday_calendar: Json
+          ip_allow_list: string[]
+          locale: string
+          notification_preferences: Json
+          organization_id: string
+          privacy_preferences: Json
+          security_preferences: Json
+          session_timeout_minutes: number
+          storage_warning_thresholds: number[]
+          timezone: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          business_hours?: Json
+          created_at?: string
+          created_by?: string | null
+          default_currency?: string
+          enforce_mfa?: boolean
+          holiday_calendar?: Json
+          ip_allow_list?: string[]
+          locale?: string
+          notification_preferences?: Json
+          organization_id: string
+          privacy_preferences?: Json
+          security_preferences?: Json
+          session_timeout_minutes?: number
+          storage_warning_thresholds?: number[]
+          timezone?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          business_hours?: Json
+          created_at?: string
+          created_by?: string | null
+          default_currency?: string
+          enforce_mfa?: boolean
+          holiday_calendar?: Json
+          ip_allow_list?: string[]
+          locale?: string
+          notification_preferences?: Json
+          organization_id?: string
+          privacy_preferences?: Json
+          security_preferences?: Json
+          session_timeout_minutes?: number
+          storage_warning_thresholds?: number[]
+          timezone?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_settings_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_settings_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_settings_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organization_skills: {
         Row: {
           created_at: string | null
@@ -3933,6 +4693,38 @@ export type Database = {
           },
         ]
       }
+      organization_storage_usage: {
+        Row: {
+          document_count: number
+          organization_id: string
+          storage_bytes: number
+          updated_at: string
+          version_count: number
+        }
+        Insert: {
+          document_count?: number
+          organization_id: string
+          storage_bytes?: number
+          updated_at?: string
+          version_count?: number
+        }
+        Update: {
+          document_count?: number
+          organization_id?: string
+          storage_bytes?: number
+          updated_at?: string
+          version_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_storage_usage_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organizations: {
         Row: {
           address: Json | null
@@ -3944,6 +4736,7 @@ export type Database = {
           geo: unknown
           id: string
           industry_id: string | null
+          locations: Json
           logo_url: string | null
           name: string
           owner_user_id: string | null
@@ -3966,6 +4759,7 @@ export type Database = {
           geo?: unknown
           id?: string
           industry_id?: string | null
+          locations?: Json
           logo_url?: string | null
           name: string
           owner_user_id?: string | null
@@ -3988,6 +4782,7 @@ export type Database = {
           geo?: unknown
           id?: string
           industry_id?: string | null
+          locations?: Json
           logo_url?: string | null
           name?: string
           owner_user_id?: string | null
@@ -5311,6 +6106,94 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscription_tier_limits: {
+        Row: {
+          created_at: string
+          description: string | null
+          max_file_bytes: number
+          max_members: number
+          max_storage_bytes: number
+          soft_warning_thresholds: number[]
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          max_file_bytes?: number
+          max_members?: number
+          max_storage_bytes?: number
+          soft_warning_thresholds?: number[]
+          tier: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          max_file_bytes?: number
+          max_members?: number
+          max_storage_bytes?: number
+          soft_warning_thresholds?: number[]
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      success_fee_jobs: {
+        Row: {
+          created_at: string
+          id: string
+          job_type: string
+          last_error: string | null
+          payload: Json
+          processed_at: string | null
+          processed_by: string | null
+          success_fee_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          job_type: string
+          last_error?: string | null
+          payload?: Json
+          processed_at?: string | null
+          processed_by?: string | null
+          success_fee_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          job_type?: string
+          last_error?: string | null
+          payload?: Json
+          processed_at?: string | null
+          processed_by?: string | null
+          success_fee_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "success_fee_jobs_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "success_fee_jobs_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "success_fee_jobs_success_fee_id_fkey"
+            columns: ["success_fee_id"]
+            isOneToOne: false
+            referencedRelation: "success_fees"
             referencedColumns: ["id"]
           },
         ]
@@ -7327,6 +8210,35 @@ export type Database = {
           },
         ]
       }
+      v_id_verification_latest: {
+        Row: {
+          badge_expires_at: string | null
+          badge_status: string | null
+          id: string | null
+          persona_status: string | null
+          revoked_at: string | null
+          revocation_reason: string | null
+          updated_at: string | null
+          verified_at: string | null
+          worker_user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "id_verifications_worker_user_id_fkey"
+            columns: ["worker_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "id_verifications_worker_user_id_fkey"
+            columns: ["worker_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_profile_search: {
         Row: {
           availability: string[] | null
@@ -7490,6 +8402,8 @@ export type Database = {
         Args: { p_data: Json; p_secret: string }
         Returns: string
       }
+      enqueue_due_success_fees: { Args: never; Returns: number }
+      enqueue_duration_check_success_fees: { Args: never; Returns: number }
       extract_tiptap_plain_text: { Args: { content: Json }; Returns: string }
       get_current_verification: {
         Args: { p_worker_user_id: string }
@@ -7501,6 +8415,7 @@ export type Database = {
           verified_at: string
         }[]
       }
+      get_org_id_from_path: { Args: { object_name: string }; Returns: string }
       get_organizations_with_coords: {
         Args: never
         Returns: {
@@ -7523,6 +8438,10 @@ export type Database = {
       }
       import_external_jobs: { Args: never; Returns: Json }
       import_news_articles: { Args: never; Returns: Json }
+      is_org_member: {
+        Args: { org_id: string; target_user?: string }
+        Returns: boolean
+      }
       is_team_admin: { Args: { target_team_id: string }; Returns: boolean }
       is_work_log_owner: {
         Args: { target_work_log_id: string }
@@ -7734,6 +8653,22 @@ export type Database = {
         | "inquiry.section_accepted"
         | "inquiry.fully_accepted"
         | "inquiry.capability_answered"
+      organization_document_category:
+        | "contracts"
+        | "templates"
+        | "compliance"
+        | "certifications"
+        | "onboarding"
+        | "general"
+        | "other"
+      organization_document_permission: "view" | "edit" | "manage"
+      organization_document_share_type: "organization_member" | "external"
+      organization_location_type:
+        | "headquarters"
+        | "branch"
+        | "job_site"
+        | "remote"
+        | "other"
       organization_request_status: "pending" | "approved" | "rejected"
       project_status: "planning" | "active" | "completed" | "on_hold"
       project_worker_status: "pending" | "approved" | "rejected"
@@ -11500,6 +12435,24 @@ export const Constants = {
         "inquiry.section_accepted",
         "inquiry.fully_accepted",
         "inquiry.capability_answered",
+      ],
+      organization_document_category: [
+        "contracts",
+        "templates",
+        "compliance",
+        "certifications",
+        "onboarding",
+        "general",
+        "other",
+      ],
+      organization_document_permission: ["view", "edit", "manage"],
+      organization_document_share_type: ["organization_member", "external"],
+      organization_location_type: [
+        "headquarters",
+        "branch",
+        "job_site",
+        "remote",
+        "other",
       ],
       organization_request_status: ["pending", "approved", "rejected"],
       project_status: ["planning", "active", "completed", "on_hold"],
