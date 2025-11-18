@@ -9,11 +9,7 @@ import type {
   MapPin,
 } from './types'
 import type { CustomMarker } from './CustomMarker'
-import {
-  generateCirclePolygon,
-  validateGeoJSONFeatureCollection,
-  extractViewportBounds,
-} from './utils'
+import { validateGeoJSONFeatureCollection, extractViewportBounds } from './utils'
 import { useThemeSetting } from '../../../../core/provider/theme/UniversalThemeProvider'
 import { createPulsingDot } from './PulsingDot'
 import {
@@ -1125,86 +1121,32 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
     // Opacity and visibility can be controlled via layer paint properties if needed
     // For now, we rely on the layer-based rendering which is more performant
 
-    // Update radius circle when radius or centerLocation changes
+    // Remove radius circle if it exists (radius circle display disabled)
     useEffect(() => {
-      if (!mapRef.current || !isMapReady || !radius || !centerLocation) {
+      if (!mapRef.current || !isMapReady) {
         return
       }
 
       const map = mapRef.current
 
       try {
-        // Validate radius
-        if (radius < 0 || radius > 200) {
-          console.warn('Invalid radius value:', radius, 'Expected 0-200 miles')
-          return
+        // Remove circle layers if they exist
+        if (map.getLayer('circle-fill')) {
+          map.removeLayer('circle-fill')
+        }
+        if (map.getLayer('circle-outline')) {
+          map.removeLayer('circle-outline')
         }
 
-        // Validate centerLocation
-        const [lng, lat] = centerLocation
-        if (
-          typeof lng !== 'number' ||
-          typeof lat !== 'number' ||
-          Number.isNaN(lng) ||
-          Number.isNaN(lat)
-        ) {
-          console.warn('Invalid centerLocation coordinates:', centerLocation)
-          return
-        }
-
-        if (lng < -180 || lng > 180 || lat < -90 || lat > 90) {
-          console.warn('centerLocation coordinates out of range:', centerLocation)
-          return
-        }
-
-        // Generate circle polygon
-        const circlePolygon = generateCirclePolygon(centerLocation, radius)
-
-        // Check if source exists, create if not
-        const source = map.getSource('locationCircle') as mapboxgl.GeoJSONSource | null
-        if (!source) {
-          map.addSource('locationCircle', {
-            type: 'geojson',
-            data: {
-              type: 'FeatureCollection',
-              features: [circlePolygon],
-            },
-          })
-
-          // Add fill layer
-          map.addLayer({
-            id: 'circle-fill',
-            type: 'fill',
-            source: 'locationCircle',
-            paint: {
-              'fill-color': 'hsl(0, 0%, 13%)',
-              'fill-opacity': 0.04,
-            },
-            filter: ['==', ['geometry-type'], 'Polygon'],
-          })
-
-          // Add outline layer
-          map.addLayer({
-            id: 'circle-outline',
-            type: 'line',
-            source: 'locationCircle',
-            paint: {
-              'line-color': 'hsl(0, 0%, 13%)',
-              'line-opacity': 0.24,
-            },
-            filter: ['==', ['geometry-type'], 'Polygon'],
-          })
-        } else {
-          // Update existing source
-          source.setData({
-            type: 'FeatureCollection',
-            features: [circlePolygon],
-          })
+        // Remove circle source if it exists
+        if (map.getSource('locationCircle')) {
+          map.removeSource('locationCircle')
         }
       } catch (error) {
-        console.error('Error updating radius circle:', error)
+        // Ignore errors if layers/source don't exist
+        // This is expected on first render or if already cleaned up
       }
-    }, [radius, centerLocation, isMapReady])
+    }, [isMapReady])
 
     // Update center location marker
     useEffect(() => {

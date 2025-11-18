@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Button, Text, XStack, YStack, Progress, AnimatePresence } from 'tamagui'
+import { Button, Text, XStack, YStack, Progress } from 'tamagui'
 import {
   getQuestions,
   getChoices,
@@ -189,22 +189,9 @@ export function IPIPTestStep({
               Question {questionIndexInDomain + 1} of {QUESTIONS_PER_DOMAIN} in this domain
             </Text>
           </YStack>
-          <AnimatePresence>
-            <Text
-              key={`domain-progress-${domainProgress}`}
-              fontSize="$5"
-              fontWeight="600"
-              color="$blue11"
-              animation="quick"
-              enterStyle={{ opacity: 0, scale: 0.8, y: -4 }}
-              exitStyle={{ opacity: 0, scale: 0.8, y: -4 }}
-              opacity={1}
-              scale={1}
-              y={0}
-            >
-              {domainProgress}%
-            </Text>
-          </AnimatePresence>
+          <Text fontSize="$5" fontWeight="600" color="$blue11">
+            {domainProgress}%
+          </Text>
         </XStack>
       )}
 

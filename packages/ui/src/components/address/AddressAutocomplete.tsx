@@ -34,7 +34,7 @@ import type { AddressAutocompleteProps, AddressResult } from './types'
  * ```
  */
 export function AddressAutocomplete({
-  value = '',
+  value: propsValue,
   onAddressSelect,
   onChange,
   placeholder = 'Search addresses...',
@@ -49,11 +49,31 @@ export function AddressAutocomplete({
   maxResults = 5,
   containerProps = {},
 }: AddressAutocompleteProps) {
-  const [inputValue, setInputValue] = useState(value)
+  // Determine if controlled or uncontrolled
+  const isControlled = propsValue !== undefined
+  const defaultValue = isControlled ? propsValue : ''
+
+  // Internal state for uncontrolled mode
+  const [stateInputValue, setStateInputValue] = useState(defaultValue)
   const [showResults, setShowResults] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
+
+  // Refs
   const inputRef = useRef<TextInput | null>(null)
   const resultsRef = useRef<ScrollView>(null)
+  const isFocusedRef = useRef(false)
+  const mounted = useRef(false)
+
+  // Mounted tracking
+  useEffect(() => {
+    mounted.current = true
+    return () => {
+      mounted.current = false
+    }
+  }, [])
+
+  // Determine current input value (controlled vs uncontrolled)
+  const inputValue = isControlled ? (propsValue ?? '') : stateInputValue
 
   // Memoize config to prevent recreation on every render
   const providerConfig = useMemo(() => {
@@ -88,59 +108,86 @@ export function AddressAutocomplete({
     maxResults,
   })
 
-  // Update input value when external value changes
-  // Only sync if the external value is different AND we're not currently editing
+  // Update internal state when uncontrolled value prop changes externally
+  // (This handles the case where value prop is provided initially but component is uncontrolled)
   useEffect(() => {
-    if (value !== inputValue && !showResults) {
-      setInputValue(value)
+    // Only sync if uncontrolled and value prop changed externally (not during editing)
+    if (!isControlled && propsValue !== undefined && propsValue !== stateInputValue) {
+      // Only update if not currently focused/editing to avoid conflicts
+      if (!isFocusedRef.current && mounted.current) {
+        setStateInputValue(propsValue)
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value])
+  }, [isControlled, propsValue, stateInputValue])
 
   // Handle input changes
   const handleInputChange = useCallback(
     (text: string) => {
-      setInputValue(text)
+      if (!mounted.current) return
+
+      // Update internal state if uncontrolled
+      if (!isControlled) {
+        setStateInputValue(text)
+      }
+
       setSelectedIndex(-1)
       onChange?.(text)
 
       if (text.trim()) {
         search(text)
-        setShowResults(true)
+        // Only show results if focused
+        if (isFocusedRef.current) {
+          if (mounted.current) {
+            setShowResults(true)
+          }
+        }
       } else {
         clearResults()
-        setShowResults(false)
+        if (mounted.current) {
+          setShowResults(false)
+        }
       }
     },
-    [onChange, search, clearResults]
+    [onChange, search, clearResults, isControlled]
   )
 
   // Handle address selection
   const handleAddressSelect = useCallback(
     (address: AddressResult) => {
-      setInputValue(address.formattedAddress)
+      if (!mounted.current) return
+
+      // Update internal state if uncontrolled
+      if (!isControlled) {
+        setStateInputValue(address.formattedAddress)
+      }
+
       setShowResults(false)
       setSelectedIndex(-1)
+      isFocusedRef.current = false
       onAddressSelect?.(address)
       onChange?.(address.formattedAddress)
       inputRef.current?.blur()
     },
-    [onAddressSelect, onChange]
+    [onAddressSelect, onChange, isControlled]
   )
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback(
     (event: { nativeEvent: { key: string } }) => {
-      if (!showResults || results.length === 0) return
+      if (!mounted.current || !showResults || results.length === 0) return
 
       const key = event.nativeEvent.key
 
       switch (key) {
         case 'ArrowDown':
-          setSelectedIndex((prev) => (prev < results.length - 1 ? prev + 1 : prev))
+          if (mounted.current) {
+            setSelectedIndex((prev) => (prev < results.length - 1 ? prev + 1 : prev))
+          }
           break
         case 'ArrowUp':
-          setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1))
+          if (mounted.current) {
+            setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1))
+          }
           break
         case 'Enter':
           if (selectedIndex >= 0 && selectedIndex < results.length) {
@@ -148,8 +195,11 @@ export function AddressAutocomplete({
           }
           break
         case 'Escape':
-          setShowResults(false)
-          setSelectedIndex(-1)
+          if (mounted.current) {
+            setShowResults(false)
+            setSelectedIndex(-1)
+            isFocusedRef.current = false
+          }
           inputRef.current?.blur()
           break
       }
@@ -159,29 +209,43 @@ export function AddressAutocomplete({
 
   // Handle input focus
   const handleInputFocus = useCallback(() => {
-    if (results.length > 0) {
+    if (!mounted.current) return
+    isFocusedRef.current = true
+    // Show results if we have them or are loading
+    if (results.length > 0 || loading) {
       setShowResults(true)
     }
-  }, [results.length])
+  }, [results.length, loading])
 
   // Handle input blur
   const handleInputBlur = useCallback(() => {
-    // Delay hiding results to allow for result selection
+    if (!mounted.current) return
+    isFocusedRef.current = false
+    // Use a small delay to allow for result selection via mouse/touch
+    // But check mounted state before updating
     setTimeout(() => {
-      setShowResults(false)
-      setSelectedIndex(-1)
+      if (mounted.current && !isFocusedRef.current) {
+        setShowResults(false)
+        setSelectedIndex(-1)
+      }
     }, 150)
   }, [])
 
   // Clear input
   const handleClear = useCallback(() => {
-    setInputValue('')
+    if (!mounted.current) return
+
+    // Update internal state if uncontrolled
+    if (!isControlled) {
+      setStateInputValue('')
+    }
+
     setShowResults(false)
     setSelectedIndex(-1)
     clearResults()
     onChange?.('')
     inputRef.current?.focus()
-  }, [onChange, clearResults])
+  }, [onChange, clearResults, isControlled])
 
   // Result item component
   const ResultItem = memo(({ address, index }: { address: AddressResult; index: number }) => (
@@ -207,6 +271,20 @@ export function AddressAutocomplete({
     </Button>
   ))
 
+  // Update showResults when results or loading state changes while focused
+  useEffect(() => {
+    if (!mounted.current) return
+
+    if (isFocusedRef.current) {
+      if (results.length > 0 || loading) {
+        setShowResults(true)
+      } else if (results.length === 0 && !loading) {
+        // Only hide if we have no results and aren't loading
+        setShowResults(false)
+      }
+    }
+  }, [results.length, loading])
+
   const displayError = error || searchError
   const hasResults = results.length > 0
   const showDropdown = showResults && (hasResults || loading)
@@ -214,7 +292,17 @@ export function AddressAutocomplete({
   return (
     <YStack gap="$2">
       {/* Universal Popover for all platforms */}
-      <Popover placement="bottom-start" open={showDropdown} onOpenChange={setShowResults}>
+      <Popover
+        placement="bottom-start"
+        open={showDropdown}
+        onOpenChange={(open) => {
+          // Only allow Popover to close if input is not focused
+          // This prevents Popover from closing when clicking outside while typing
+          if (!open && !isFocusedRef.current) {
+            setShowResults(false)
+          }
+        }}
+      >
         <Popover.Trigger asChild>
           <XStack
             borderWidth={1}

@@ -19,6 +19,9 @@ interface DiscoverJobDetailLeftProps {
  */
 export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   const router = useRouter()
+  
+  // Hooks must be called unconditionally at the top level
+  const [showQuickApply, setShowQuickApply] = useState(false)
 
   // Try fetching as internal job first
   const { data: internalJobData, isLoading: internalLoading } = api.jobs.getJobDetails.useQuery(
@@ -38,6 +41,47 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   const externalJob = externalJobs?.jobs?.find((j: { id: string }) => j.id === jobId)
   const job = internalJob || externalJob
   const isExternal = !!externalJob
+
+  // Determine which flow to use (must be computed before conditional returns)
+  const flowType = job && !isExternal && 'organization' in job
+    ? getApplicationFlow({
+        id: job.id,
+        title: job.title,
+        organization: job.organization,
+        custom_application_questions:
+          'custom_application_questions' in job
+            ? (job.custom_application_questions as
+                | Array<{
+                    id: string
+                    question: string
+                    type: 'short_text' | 'long_text' | 'single_choice' | 'multiple_choice' | 'yes_no'
+                    required: boolean
+                    options?: string[]
+                  }>
+                | undefined)
+            : undefined,
+        required_attachments:
+          'required_attachments' in job
+            ? (job.required_attachments as
+                | Record<
+                    string,
+                    {
+                      required: boolean
+                      max_size_mb?: number
+                    }
+                  >
+                | undefined)
+            : undefined,
+      })
+    : null
+
+  // Track flow selection
+  useEffect(() => {
+    if (job && flowType) {
+      // TODO: Add 'application_flow_selected' to analytics event types
+      console.log('Application flow selected:', { flow_type: flowType, job_id: job.id })
+    }
+  }, [job, flowType])
 
   useEffect(() => {
     if (job) {
@@ -72,48 +116,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   }
 
   // Internal job - show appropriate flow based on job requirements
-  if (!isExternal && 'organization' in job) {
-    const [showQuickApply, setShowQuickApply] = useState(false)
-
-    // Determine which flow to use
-    const flowType = getApplicationFlow({
-      id: job.id,
-      title: job.title,
-      organization: job.organization,
-      custom_application_questions:
-        'custom_application_questions' in job
-          ? (job.custom_application_questions as
-              | Array<{
-                  id: string
-                  question: string
-                  type: 'short_text' | 'long_text' | 'single_choice' | 'multiple_choice' | 'yes_no'
-                  required: boolean
-                  options?: string[]
-                }>
-              | undefined)
-          : undefined,
-      required_attachments:
-        'required_attachments' in job
-          ? (job.required_attachments as
-              | Record<
-                  string,
-                  {
-                    required: boolean
-                    max_size_mb?: number
-                  }
-                >
-              | undefined)
-          : undefined,
-    })
-
-    // Track flow selection (using console.log for now since analytics events need to be added to the type system)
-    useEffect(() => {
-      if (job) {
-        // TODO: Add 'application_flow_selected' to analytics event types
-        console.log('Application flow selected:', { flow_type: flowType, job_id: job.id })
-      }
-    }, [job, flowType])
-
+  if (!isExternal && 'organization' in job && flowType) {
     // Quick apply flow
     if (flowType === 'quick') {
       return (

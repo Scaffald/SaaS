@@ -51,17 +51,25 @@ export const buildJobsQuery = (options: UseJobsOptions = {}) => {
     // Get jobs with coordinates extracted from PostGIS geography
     // Note: RPC function doesn't support bounds filtering yet
     // We'll fetch all and filter in memory (with a reasonable limit)
-    const { data: jobs, error: jobsError } = await supabase
-      .schema("core")
-      .rpc("get_jobs_with_coords")
-      .returns<JobWithCoords[]>();
+    const result = await (supabase
+      .schema("public")
+      // @ts-ignore - get_jobs_with_coords may not be in generated types yet
+      // biome-ignore lint/suspicious/noExplicitAny: RPC function may not exist in database types yet
+      .rpc("get_jobs_with_coords") as any) as { data: JobWithCoords[] | null; error: { message: string } | null };
+    const { data: jobs, error: jobsError } = result;
 
     if (jobsError) {
       console.error("Error fetching jobs:", jobsError);
       throw new Error(`Failed to fetch jobs: ${jobsError.message}`);
     }
 
-    if (!jobs || jobs.length === 0) {
+    // Type guard: ensure jobs is an array
+    if (!Array.isArray(jobs)) {
+      console.log("No jobs found in database");
+      return [];
+    }
+
+    if (jobs.length === 0) {
       console.log("No jobs found in database");
       return [];
     }

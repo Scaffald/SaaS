@@ -149,7 +149,7 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
           <YStack gap="$2" pb="$6" width="100%">
             {allResults.length === 0 ? (
               <YStack p="$4" items="center" justify="center" minH={200} width="100%">
-                <Text color="$color10" fontSize="$4" textAlign="center">
+                <Text color="$color10" fontSize="$4" style={{ textAlign: 'center' }}>
                   No results found
                 </Text>
               </YStack>

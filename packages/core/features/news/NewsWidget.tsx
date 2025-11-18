@@ -378,6 +378,20 @@ export function NewsWidget({
     return fallbackEnrichedNews
   }, [enrichedNews, fallbackEnrichedNews])
 
+  // Hide widget entirely if no news is available (after loading completes)
+  const shouldShowWidget = useMemo(() => {
+    // Show widget if we're still loading (either main or fallback)
+    if (isLoading || isFallbackLoading) {
+      return true
+    }
+    // Show widget if there's an error (so user can see error message)
+    if (isError) {
+      return true
+    }
+    // Hide widget if no news is available
+    return displayNews.length > 0
+  }, [isLoading, isFallbackLoading, isError, displayNews.length])
+
   const handleNewsClick = async (article: NewsItem) => {
     if (onArticleClick) {
       onArticleClick(article)
@@ -416,6 +430,11 @@ export function NewsWidget({
     return 'From your feeds'
   }
 
+  // Hide widget entirely if no news is available
+  if (!shouldShowWidget) {
+    return null
+  }
+
   return (
     <YStack gap={spacing.md}>
       <XStack justify="space-between" items="center" px={spacing.lg} pt={spacing.sm}>
@@ -424,12 +443,13 @@ export function NewsWidget({
         </Text>
 
         <XStack gap={spacing.xs} items="center">
-          <StyledButton
+          {/* TODO: Implement and refine filter button functionality later */}
+          {/* <StyledButton
             size="$3"
             variant="outlined"
             icon={<Settings2 size={16} />}
             onPress={() => setPreferencesOpen(true)}
-          />
+          /> */}
           <StyledButton
             size="$3"
             variant="outlined"

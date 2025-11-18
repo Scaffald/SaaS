@@ -66,6 +66,16 @@ export function useAddressAutocomplete(
 
   const provider = externalProvider || hookProvider
   const abortControllerRef = useRef<AbortController | null>(null)
+  const mounted = useRef(false)
+  const lastRequest = useRef<unknown>(undefined)
+
+  // Mounted tracking
+  useEffect(() => {
+    mounted.current = true
+    return () => {
+      mounted.current = false
+    }
+  }, [])
 
   // Debounced query
   const debouncedQuery = useAddressDebounce(query, debounceMs)
@@ -75,6 +85,7 @@ export function useAddressAutocomplete(
     async (searchQuery: string) => {
       // Validate inputs
       if (!searchQuery.trim() || searchQuery.length < minLength) {
+        if (!mounted.current) return
         setResults([])
         setLoading(false)
         setError(null)
@@ -82,6 +93,7 @@ export function useAddressAutocomplete(
       }
 
       if (!provider || !isReady) {
+        if (!mounted.current) return
         setError('Geocoding provider not available')
         setLoading(false)
         return
@@ -92,7 +104,12 @@ export function useAddressAutocomplete(
         abortControllerRef.current.abort()
       }
 
+      // Create new request token
+      const request = {}
+      lastRequest.current = request
       abortControllerRef.current = new AbortController()
+
+      if (!mounted.current) return
       setLoading(true)
       setError(null)
 
@@ -102,15 +119,25 @@ export function useAddressAutocomplete(
           limit: maxResults,
         })
 
+        // Check if component is still mounted and this is still the latest request
+        if (!mounted.current || request !== lastRequest.current) {
+          return
+        }
+
         // Check if request was aborted
         if (abortControllerRef.current?.signal.aborted) {
           return
         }
 
+        if (!mounted.current) return
         setResults(searchResults)
         setError(null)
       } catch (err: unknown) {
-        // Don't show error for aborted requests
+        // Don't show error for aborted requests or if unmounted/stale
+        if (!mounted.current || request !== lastRequest.current) {
+          return
+        }
+
         if (
           err instanceof Error &&
           (err.name === 'AbortError' || abortControllerRef.current?.signal.aborted)
@@ -120,11 +147,17 @@ export function useAddressAutocomplete(
 
         console.error('Address search failed:', err)
         const errorMessage = err instanceof Error ? err.message : 'Search failed'
+        if (!mounted.current) return
         setError(errorMessage)
         setResults([])
       } finally {
-        setLoading(false)
-        abortControllerRef.current = null
+        // Only update loading state if still mounted and this is the latest request
+        if (mounted.current && request === lastRequest.current) {
+          setLoading(false)
+        }
+        if (request === lastRequest.current) {
+          abortControllerRef.current = null
+        }
       }
     },
     [provider, isReady, searchOptions, maxResults, minLength]
@@ -141,11 +174,13 @@ export function useAddressAutocomplete(
 
   // Manual search function
   const search = useCallback((searchQuery: string) => {
+    if (!mounted.current) return
     setQuery(searchQuery)
   }, [])
 
   // Clear results function
   const clearResults = useCallback(() => {
+    if (!mounted.current) return
     setResults([])
     setError(null)
     setQuery('')
@@ -154,6 +189,7 @@ export function useAddressAutocomplete(
       abortControllerRef.current.abort()
       abortControllerRef.current = null
     }
+    lastRequest.current = undefined
   }, [])
 
   // Cleanup on unmount

@@ -103,12 +103,8 @@ export const MapFilterBar = ({
       }}
     >
       {/* Search Input */}
-      <XStack
-        flex={1}
-        style={{ minWidth: isSmallScreen ? '100%' : 200 }}
-        $sm={{ minW: '100%', maxW: '100%' }}
-      >
-        {tokenValidation.valid ? (
+      {tokenValidation.valid ? (
+        <YStack flex={1} minW={isSmallScreen ? '100%' : 200} $sm={{ minW: '100%', maxW: '100%' }}>
           <AddressAutocomplete
             value={searchQuery}
             onChange={setSearchQuery}
@@ -124,33 +120,35 @@ export const MapFilterBar = ({
             maxResults={5}
             debounceMs={300}
             containerProps={{
-              flex: 1,
               w: '100%',
               bg: 'white',
               rounded: '$4',
             }}
           />
-        ) : (
-          <YStack
-            width="100%"
-            bg="$background"
-            p="$3"
-            rounded="$4"
-            borderWidth={1}
-            borderColor="$red8"
-            gap="$2"
-          >
-            <XStack items="center" gap="$2">
-              <Text fontSize="$3" color="$red10" fontWeight="600">
-                Map Search Unavailable
-              </Text>
-            </XStack>
-            <Text fontSize="$2" color="$color10">
-              {tokenValidation.error}
+        </YStack>
+      ) : (
+        <YStack
+          flex={1}
+          width="100%"
+          minW={isSmallScreen ? '100%' : 200}
+          bg="$background"
+          p="$3"
+          rounded="$4"
+          borderWidth={1}
+          borderColor="$red8"
+          gap="$2"
+          $sm={{ minW: '100%', maxW: '100%' }}
+        >
+          <XStack items="center" gap="$2">
+            <Text fontSize="$3" color="$red10" fontWeight="600">
+              Map Search Unavailable
             </Text>
-          </YStack>
-        )}
-      </XStack>
+          </XStack>
+          <Text fontSize="$2" color="$color10">
+            {tokenValidation.error}
+          </Text>
+        </YStack>
+      )}
 
       {/* Filter Dropdown */}
       <FilterDropdown
@@ -198,4 +196,3 @@ export const MapFilterBar = ({
     </XStack>
   )
 }
-
