@@ -40,6 +40,43 @@ function createMockStripeClient(): Stripe {
   };
 
   const paymentMethods = {
+    attach: async (
+      paymentMethodId: string,
+      params: Stripe.PaymentMethodAttachParams,
+    ): Promise<Stripe.PaymentMethod> => {
+      const existing = mockStripePaymentMethods.get(paymentMethodId);
+      if (existing) {
+        existing.customer = params.customer ?? null;
+        return existing;
+      }
+      const method: Stripe.PaymentMethod = {
+        id: paymentMethodId,
+        object: "payment_method",
+        customer: params.customer ?? null,
+        type: "card",
+        card: {
+          brand: "visa",
+          last4: "4242",
+          exp_month: 12,
+          exp_year: new Date().getFullYear() + 2,
+        },
+        billing_details: {
+          name: "Mock Card",
+          email: "billing@example.com",
+          phone: null,
+          address: {
+            city: null,
+            country: "US",
+            line1: null,
+            line2: null,
+            postal_code: "94107",
+            state: null,
+          },
+        },
+      } as Stripe.PaymentMethod;
+      mockStripePaymentMethods.set(paymentMethodId, method);
+      return method;
+    },
     retrieve: async (
       paymentMethodId: string,
     ): Promise<Stripe.PaymentMethod> => {
@@ -1032,7 +1069,7 @@ export const paymentsRouter = t.router({
       await ensureOrganizationAccess(ctx, method.organization_id);
 
       // Detach from Stripe
-      const stripe = await loadStripeClientForPaymentMethods(ctx);
+      const stripe = await loadStripeClient(ctx);
       try {
         await stripe.paymentMethods.detach(method.stripe_payment_method_id);
       } catch (stripeError) {

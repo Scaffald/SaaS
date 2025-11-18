@@ -14,6 +14,7 @@ import { Check, ChevronDown } from '@tamagui/lucide-icons'
 import { supabase } from '@app/core/utils/supabase/client'
 import { OrganizationLocationsInput } from './OrganizationLocationsInput'
 import { OrganizationProjectPrivacySettings } from './OrganizationProjectPrivacySettings'
+import { OrganizationPaymentMethodsPanel } from '../payments/OrganizationPaymentMethodsPanel'
 
 type OrganizationFormData = OrganizationCreate
 
@@ -323,6 +324,11 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       {/* Project Location Privacy - Only in edit mode */}
       {mode === 'edit' && organizationId && (
         <OrganizationProjectPrivacySettings organizationId={organizationId} />
+      )}
+
+      {/* Payment Methods - Only in edit mode */}
+      {mode === 'edit' && organizationId && (
+        <OrganizationPaymentMethodsPanel organizationId={organizationId} />
       )}
 
       {/* Submit buttons */}
